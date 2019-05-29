@@ -2,147 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD862E7FD
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67AE62E808
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfE2WRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 18:17:21 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:34458 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726399AbfE2WRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:17:21 -0400
-Received: by mail-lf1-f65.google.com with SMTP id v18so3382802lfi.1
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:17:20 -0700 (PDT)
+        id S1726547AbfE2WSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 18:18:49 -0400
+Received: from mail-qt1-f176.google.com ([209.85.160.176]:39546 "EHLO
+        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbfE2WSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:18:49 -0400
+Received: by mail-qt1-f176.google.com with SMTP id i34so4630105qta.6
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:18:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fIvU+ha0PviU/sibSkvPHyTumVcfp/XuVnG8TGWl1tg=;
-        b=IhDJTlpcamR/KqtIXXIXgJdfXAsLI2C+ZEXAuUNYlKWGn6wHjE6fpIPNIeDhT7ycQ8
-         57igNJrmJ5BNTBnviUUG/OZd+IF7VgnoVis5ZCCvJxb17ZrBByYBXhXN+ZRYNnc3FRIy
-         brSYU1jvKSGa+TNQ8WETswSfhGeqztSbfJ7L/bGXevP+zB/TZdI4CXbRsu2J41G+yDwo
-         qMRxFM1D7xND12GCJwbw+whugNAe6MnXELtdl7/PWacMAbHfg0mkPJsrxG4ICI+/4Bgd
-         Umpf4FN+xj/KrTwt5uEEEDaa00hFCmx8k3DNIvdAxi+WqGo7sS1kO5oJBoew7DOwAn5i
-         7ioA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Wc/2ZTn3bTmajEUQNWRtv6uulelmq6BsGRobTvdNAko=;
+        b=SksXRdsB8O7xv2f88XfT5zyPQ0rks09KzTEHjOnbw/ryUGuywHy5C96zm7m55V4q1S
+         6pOsPtw7TOD4SVxUkZVF6hQVs99zRYAPUXoTYJjTjUlXY9L9EvD9Cu3uYN3qX+rlsoQx
+         WWgrHNM4W/Dqq8MGzbR7W8JMqj5bR8alEOxERhiCFvJGCcSL4H4Jc5HW66kKpESk8wmh
+         6KVbUPIhHzmYlipsNDxxyrG8BX5og+rz5KIOWdRFvXWw618m0zTP4qATl5bw61Z6KRvf
+         ey9UjpJwQOjMA7VP5vq5C7zNgR67G428HtZ2cSushTk7wJyPG4qSakQr9c1C8A6E0ppa
+         mVDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fIvU+ha0PviU/sibSkvPHyTumVcfp/XuVnG8TGWl1tg=;
-        b=RwnJakdYSiwxrSAmdFFUonAgbvHb2b4FaJWLwDu0UfEgInfBkTZNgTWF6gdYmkOIs/
-         MIs56SNoZRruZjR6319O7EdaefZcupSzYRvwpikZmtUoXoGCiycbFEnTaSngY9NMPlv5
-         KPL+0xHrvZCOwIspdvHPkBQSWDlGvnnjbl/7jav3UReo1PaczeN2lsT/QWFG9ARJkvHl
-         FcRc3DP2iQIuXQ5oYnS8KcX1eYxnPgT5qUYhO9b4rKde3yVEdKTVWW7hOV8pWFx57Y6S
-         kvdUL/VifzMg8gc1C2TouYapKNX79vkyPG/ncy4W6P5KznkPEIUxCcLR4rJg55WOImwP
-         o+Nw==
-X-Gm-Message-State: APjAAAU7VgfQMglUU33Zwfp148z6vc/J4YdxNQ1xcdRA2AcfA1bJhlj2
-        wld0LXUXsFB2C4k3lYcrmOQMo04cXrI5BdhT8Kkz
-X-Google-Smtp-Source: APXvYqyxrQhJxL6YTK1IQrRGp/CVZ4FR/LfHLvH12rSsobg2OWRzTR6O4bHJaXr5UpPyFchEPI025JnE2t3cIS5I/r8=
-X-Received: by 2002:a19:c301:: with SMTP id t1mr140375lff.137.1559168239261;
- Wed, 29 May 2019 15:17:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Wc/2ZTn3bTmajEUQNWRtv6uulelmq6BsGRobTvdNAko=;
+        b=AqULn0T1j7jkkROApuSScNgrz4/iYnTRJ+TictlUPi0v1klDigttMVNt7Nq6IItcct
+         6jP13v3oUBbNj05rjimz/FBisG4DCEZs6LpZrnzApiEAQ1oRJlOQSK9wuhgHLrzzaCXJ
+         BoaQukzVrBYfHLp8qmlBIX6FiIWo4VEK+0QvsZ1bCzoP80V8U7ZBmfUdaYfEZxLOIniR
+         b+myhtQjuCkMXut1niCqrfXfsbDSFuaoLR7XhjDu5of1q7N/mJqjTCfY8KV5ECDh34vl
+         ++DTVIfa8VjOpMZ2j4yV0IY34yK8hKCya/dcAJN/n7b2rWDszKKstAojvwhyYvEFOoeE
+         MS7A==
+X-Gm-Message-State: APjAAAXAjlr8pc92IWVLERGfQiz7dki7STouQSg+BkZUCi5W8R2QWzLI
+        0OtbJWDB7gLc2wmGsGlKxUEdAw==
+X-Google-Smtp-Source: APXvYqyrWklChrPKL+Kd4yWTw1qaxtz9fRC45MEyUccJVW59QWt96Dd3OtsUvwdgNreRsyBaN2yHeg==
+X-Received: by 2002:aed:39e5:: with SMTP id m92mr394942qte.106.1559168328672;
+        Wed, 29 May 2019 15:18:48 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s28sm400345qtc.81.2019.05.29.15.18.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 29 May 2019 15:18:48 -0700 (PDT)
+Date:   Wed, 29 May 2019 15:18:44 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "Paul Burton" <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-mips@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/2] net: mscc: ocelot: Hardware ofload for
+ tc flower filter
+Message-ID: <20190529151802.19aa82a2@cakuba.netronome.com>
+In-Reply-To: <1559125580-6375-3-git-send-email-horatiu.vultur@microchip.com>
+References: <1559125580-6375-1-git-send-email-horatiu.vultur@microchip.com>
+ <1559125580-6375-3-git-send-email-horatiu.vultur@microchip.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <cover.1554732921.git.rgb@redhat.com> <423ed5e5c5e4ed7c3e26ac7d2bd7c267aaae777c.1554732921.git.rgb@redhat.com>
-In-Reply-To: <423ed5e5c5e4ed7c3e26ac7d2bd7c267aaae777c.1554732921.git.rgb@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 29 May 2019 18:17:08 -0400
-Message-ID: <CAHC9VhQ9t-mvJGNCzArjg+MTGNXcZbVrWV4=RUD5ML_bHqua1Q@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 09/10] audit: add support for containerid to
- network namespaces
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->
-> Audit events could happen in a network namespace outside of a task
-> context due to packets received from the net that trigger an auditing
-> rule prior to being associated with a running task.  The network
-> namespace could be in use by multiple containers by association to the
-> tasks in that network namespace.  We still want a way to attribute
-> these events to any potential containers.  Keep a list per network
-> namespace to track these audit container identifiiers.
->
-> Add/increment the audit container identifier on:
-> - initial setting of the audit container identifier via /proc
-> - clone/fork call that inherits an audit container identifier
-> - unshare call that inherits an audit container identifier
-> - setns call that inherits an audit container identifier
-> Delete/decrement the audit container identifier on:
-> - an inherited audit container identifier dropped when child set
-> - process exit
-> - unshare call that drops a net namespace
-> - setns call that drops a net namespace
->
-> Please see the github audit kernel issue for contid net support:
->   https://github.com/linux-audit/audit-kernel/issues/92
-> Please see the github audit testsuiite issue for the test case:
->   https://github.com/linux-audit/audit-testsuite/issues/64
-> Please see the github audit wiki for the feature overview:
->   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> ---
->  include/linux/audit.h | 19 +++++++++++
->  kernel/audit.c        | 88 +++++++++++++++++++++++++++++++++++++++++++++++++--
->  kernel/nsproxy.c      |  4 +++
->  3 files changed, 108 insertions(+), 3 deletions(-)
-
-...
-
-> diff --git a/kernel/audit.c b/kernel/audit.c
-> index 6c742da66b32..996213591617 100644
-> --- a/kernel/audit.c
-> +++ b/kernel/audit.c
-> @@ -376,6 +384,75 @@ static struct sock *audit_get_sk(const struct net *net)
->         return aunet->sk;
->  }
->
-> +void audit_netns_contid_add(struct net *net, u64 contid)
+On Wed, 29 May 2019 12:26:20 +0200, Horatiu Vultur wrote:
+> +static int ocelot_flower_replace(struct tc_cls_flower_offload *f,
+> +				 struct ocelot_port_block *port_block)
 > +{
-> +       struct audit_net *aunet;
-> +       struct list_head *contid_list;
-> +       struct audit_contid *cont;
+> +	struct ocelot_ace_rule *rule;
+> +	int ret;
 > +
-> +       if (!net)
-> +               return;
-> +       if (!audit_contid_valid(contid))
-> +               return;
-> +       aunet = net_generic(net, audit_net_id);
-> +       if (!aunet)
-> +               return;
-> +       contid_list = &aunet->contid_list;
-> +       spin_lock(&aunet->contid_list_lock);
-> +       list_for_each_entry_rcu(cont, contid_list, list)
-> +               if (cont->id == contid) {
-> +                       refcount_inc(&cont->refcount);
-> +                       goto out;
-> +               }
-> +       cont = kmalloc(sizeof(struct audit_contid), GFP_ATOMIC);
-> +       if (cont) {
-> +               INIT_LIST_HEAD(&cont->list);
+> +	if (port_block->port->tc.block_shared)
+> +		return -EOPNOTSUPP;
 
-I thought you were going to get rid of this INIT_LIST_HEAD() call?
-
-> +               cont->id = contid;
-> +               refcount_set(&cont->refcount, 1);
-> +               list_add_rcu(&cont->list, contid_list);
-> +       }
-> +out:
-> +       spin_unlock(&aunet->contid_list_lock);
-> +}
-
---
-paul moore
-www.paul-moore.com
+FWIW since you only support TRAP and DROP actions here (AFAICT) you
+should actually be okay with shared blocks.  The problems with shared
+blocks start when the action is stateful (like act_police), because we
+can't share that state between devices.  But for most actions which just
+maintain statistics, it's fine to allow shared blocks.  HTH
