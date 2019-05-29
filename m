@@ -2,68 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9692D653
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 09:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F4F2D68B
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 09:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfE2H2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 03:28:47 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:40751 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbfE2H2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 03:28:47 -0400
-X-Originating-IP: 90.88.147.134
-Received: from bootlin.com (aaubervilliers-681-1-27-134.w90-88.abo.wanadoo.fr [90.88.147.134])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id A1C95C000A;
-        Wed, 29 May 2019 07:28:42 +0000 (UTC)
-Date:   Wed, 29 May 2019 09:28:45 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, olteanv@gmail.com,
-        thomas.petazzoni@bootlin.com, davem@davemloft.net,
-        vivien.didelot@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 06/11] net: phylink: Add struct
- phylink_config to PHYLINK API
-Message-ID: <20190529092845.4bc7439f@bootlin.com>
-In-Reply-To: <1559065097-31832-7-git-send-email-ioana.ciornei@nxp.com>
-References: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
-        <1559065097-31832-7-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726787AbfE2HkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 03:40:02 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:39686 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726057AbfE2HkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 03:40:01 -0400
+Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 305D0C263A;
+        Wed, 29 May 2019 07:39:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559115584; bh=u0bHvq09qbXFfPIAKp6YPrwchkqDTwxdAG0Y1BAOgdk=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=lkJyzDP25Iq5Bo1MkV7iN3kRiuFWrghtGGqU3Xu15XD6DGkmrZI7mPOucZQPcX281
+         /3XhmhGqVJEOtctZctfG9bKvjGYFF3JZjyaURA28P+YVo1r5hEcZxhm571aN26dbrd
+         qw+1xHh8xk+/Iz64V1t+Iqj+fdW8AWDQq/LMlpn3o6r89wsXuo9eCrZATweQ3EaPEH
+         pPKdptPsTFlx/0EnN3fG/Fx9g6hG67rKjHFhuoM7Q7IvrV6VpTRqJidrxwHCvLZalE
+         QWryRDqmQIzyaAghUme5LnU+WnwIYs4PyNZzjjHS0CIH7Lnr1C5DoRQ9cTFghvDj+M
+         RQLMD2AF8w2DQ==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 74DCBA0070;
+        Wed, 29 May 2019 07:39:52 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 29 May 2019 00:39:51 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
+ 29 May 2019 09:39:49 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Biao Huang <biao.huang@mediatek.com>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.com" <jianguo.zhang@mediatek.com>,
+        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: RE: [v4, PATCH] net: stmmac: add support for hash table size
+ 128/256 in dwmac4
+Thread-Topic: [v4, PATCH] net: stmmac: add support for hash table size
+ 128/256 in dwmac4
+Thread-Index: AQHVFb9bD/NyYV8x/ESH/6Rc+9wGiKaBtu5A
+Date:   Wed, 29 May 2019 07:39:49 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B932F51@DE02WEMBXB.internal.synopsys.com>
+References: <1559093924-7791-1-git-send-email-biao.huang@mediatek.com>
+ <1559093924-7791-2-git-send-email-biao.huang@mediatek.com>
+In-Reply-To: <1559093924-7791-2-git-send-email-biao.huang@mediatek.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ioana,
+From: Biao Huang <biao.huang@mediatek.com>
+Date: Wed, May 29, 2019 at 02:38:44
 
-On Tue, 28 May 2019 20:38:12 +0300
-Ioana Ciornei <ioana.ciornei@nxp.com> wrote:
+>  	} else if (!netdev_mc_empty(dev)) {
+> -		u32 mc_filter[2];
+> +		u32 mc_filter[8];
+>  		struct netdev_hw_addr *ha;
 
->The phylink_config structure will encapsulate a pointer to a struct
->device and the operation type requested for this instance of PHYLINK.
->This patch does not make any functional changes, it just transitions the
->PHYLINK internals and all its users to the new API.
->
->A pointer to a phylink_config structure will be passed to
->phylink_create() instead of the net_device directly. Also, the same
->phylink_config pointer will be passed back to all phylink_mac_ops
->callbacks instead of the net_device. Using this mechanism, a PHYLINK
->user can get the original net_device using a structure such as
->'to_net_dev(config->dev)' or directly the structure containing the
->phylink_config using a container_of call.
+The reverse christmas tree also applies here.
 
-I see that you mixed both to_net_dev and container_of uses in mvpp2, is
-there a reason for that ?
+I also see some coding-style errors, like missing line breaks, etc...=20
+that checkpatch should complain about.
 
-Other than that, for the mvpp2 part,
-
-Reviewed-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Tested-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Also, please run this patch against stmmac selftests and add the output=20
+to the commit log.
 
 Thanks,
-
-Maxime
+Jose Miguel Abreu
