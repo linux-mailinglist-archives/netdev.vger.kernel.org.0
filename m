@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A27682D2BB
+	by mail.lfdr.de (Postfix) with ESMTP id 38DB32D2BA
 	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbfE2AR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:17:29 -0400
+        id S1727209AbfE2AR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:17:27 -0400
 Received: from mga11.intel.com ([192.55.52.93]:59372 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726988AbfE2AR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 20:17:26 -0400
+        id S1726601AbfE2AR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 20:17:27 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
@@ -24,9 +24,9 @@ Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 02/10] igb: mark expected switch fall-through
-Date:   Tue, 28 May 2019 17:17:18 -0700
-Message-Id: <20190529001726.26097-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 03/10] igb: mark expected switch fall-through
+Date:   Tue, 28 May 2019 17:17:19 -0700
+Message-Id: <20190529001726.26097-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
 References: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
@@ -45,12 +45,12 @@ where we are expecting to fall through.
 
 This patch fixes the following warning:
 
-drivers/net/ethernet/intel/igb/igb_main.c: In function ‘__igb_notify_dca’:
-drivers/net/ethernet/intel/igb/igb_main.c:6694:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   if (dca_add_requester(dev) == 0) {
+drivers/net/ethernet/intel/igb/e1000_82575.c: In function ‘igb_get_invariants_82575’:
+drivers/net/ethernet/intel/igb/e1000_82575.c:636:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   if (igb_sgmii_uses_mdio_82575(hw)) {
       ^
-drivers/net/ethernet/intel/igb/igb_main.c:6701:2: note: here
-  case DCA_PROVIDER_REMOVE:
+drivers/net/ethernet/intel/igb/e1000_82575.c:642:2: note: here
+  case E1000_CTRL_EXT_LINK_MODE_PCIE_SERDES:
   ^~~~
 
 Warning level 3 was used: -Wimplicit-fallthrough=3
@@ -65,22 +65,22 @@ Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
+ drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index e5b7e638df28..fc925adbd9fa 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6696,7 +6696,7 @@ static int __igb_notify_dca(struct device *dev, void *data)
- 			igb_setup_dca(adapter);
+diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
+index bafdcf70a353..3ec2ce0725d5 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_82575.c
++++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
+@@ -638,7 +638,7 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
+ 			dev_spec->sgmii_active = true;
  			break;
  		}
--		/* Fall Through since DCA is disabled. */
-+		/* Fall Through - since DCA is disabled. */
- 	case DCA_PROVIDER_REMOVE:
- 		if (adapter->flags & IGB_FLAG_DCA_ENABLED) {
- 			/* without this a class_device is left
+-		/* fall through for I2C based SGMII */
++		/* fall through - for I2C based SGMII */
+ 	case E1000_CTRL_EXT_LINK_MODE_PCIE_SERDES:
+ 		/* read media type from SFP EEPROM */
+ 		ret_val = igb_set_sfp_media_type_82575(hw);
 -- 
 2.21.0
 
