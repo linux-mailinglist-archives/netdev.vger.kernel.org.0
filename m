@@ -2,149 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13BA42E16B
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8842E16C
 	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:44:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbfE2Pom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 11:44:42 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:34863 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbfE2Pol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:44:41 -0400
-Received: by mail-yw1-f65.google.com with SMTP id k128so1272829ywf.2
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 08:44:41 -0700 (PDT)
+        id S1727074AbfE2Poq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 11:44:46 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:41201 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726464AbfE2Pop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:44:45 -0400
+Received: by mail-qt1-f193.google.com with SMTP id s57so3149894qte.8
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 08:44:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UzvX+fHwwsVK/rYT0lCyOiKU2IYlx0wYtIIUBRbu7rI=;
-        b=wPNQdOcNDJpcN8SLZ3QoXpbTi5+UGW9J1bJY4DkqqyBqOI5d3yqzNACNWIULW+15uA
-         IOXbGpvkbYBV0VebvqxyIL8ibS8C+tAyRbVca1/XXkDA4xi9WNrW/FL80v5lLwXrn6WX
-         cwhMZKxdm4TSwzUMarPMwb5BPTzYFDP5T/Ff+/xk4GmpGLuIB99ZDBFE5ZsPst2thb98
-         KdZKvl1cychGGc0G2K0seDV4UyZX6QAlop/QAK4INAj89+MOLqABeimnQbx0EAjB+tY6
-         Hst//WxZmOF9GBbIbUWdiIPxGEGXGapkxHSeWkuEL+nez7jMLVZmRFPRVONUbF3V+1jb
-         nIBQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1ugujwbWgw1/+lNpmVHIPPx1F2E+BasHxCTHWAskdck=;
+        b=o1aCXY6QwgPqVPWNxW/mR+NePkCQhV48n8Mt6GSlseE37otqM4mgfdz2cxkumutL3a
+         JUd1w2TGRD7MVByGJJr4jnqlqEF8p2oicfXvs0wnUiYm8R2bRU+S00voiY8C2Vpfxg3q
+         di4E518nNeyuC/8LBnCjDpzykolf5RuBIhVfSlKH10cdCPxfJpLz2QfsSUh1ES05GWL+
+         fjDlSXsmPG/8xkFfxVKjJnCdHU4NbIJGoFOVT4WK5ihoDMQflYxw5PYvuScSmXMyaT3k
+         iX4e58p2REWT+N7j9YHZ9EiWPw10xOuVXPWH8ILwW7WRQdCePQAu/pyezERUIp7ZRWb3
+         v1dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UzvX+fHwwsVK/rYT0lCyOiKU2IYlx0wYtIIUBRbu7rI=;
-        b=mwbj4a02tuC3AHDT2W+n9qIa6YANhjJ6Ny+YbUqjpADz5QpSGRrSN2qtGmeRp9IOw5
-         i7DQ6NJRxbBWZX0NIg8CQYvZ2HiHVnm3F/FLuYZW77AbrCUgnGJ30p7cezS4qhLulxNH
-         qXtcvYPe6MXuj+BbL2ougG33hgYTUhAJ5I64S0pug4n9cFc9KQTfuSwIDz1cSkIclqxb
-         8y52w4gK7IlJsQtNyPDKQusgnd4e3ht5d81pRGh650a6xqPswi8j2VsFPYvjscVycc2C
-         6mQo4WhWzxa8Rlusii01xD6EgbIPd7wZZTWoQUJi/W+t8+0tPCaJWHfddJ6++1dcN30T
-         TXZg==
-X-Gm-Message-State: APjAAAUSLG6bwM7UBnULgSVPhdow3dPcaEsukh9GAzrwaHpVqbXDauDs
-        FrGbSILi8og9NCa4kZStnSHb+N0ttewk0PbJiqERHm9tKaNIRw==
-X-Google-Smtp-Source: APXvYqzA+PBa1BbnJDLnJot49Cdhzw+OKvDs168TcBrvjO423z/o9cDuc2+4zCLPwjWJyT1pCgHVlblOYoJI3350nLM=
-X-Received: by 2002:a81:59c2:: with SMTP id n185mr60560151ywb.21.1559144680103;
- Wed, 29 May 2019 08:44:40 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1ugujwbWgw1/+lNpmVHIPPx1F2E+BasHxCTHWAskdck=;
+        b=RV6BWvtJTHnkNOxUbiUUiKZrrvzI4ME0VkxooeM2UsmBhgqkvnsFX5nA2LXHzkP5uL
+         4qo5HwhWNuq67NHQFenmjw/AMYVOMnJt37oMoQbji2zu5ET2xMIYH8JWSi4QltlHkXtc
+         k10DJT0DgUP+FBteQrigmncekr50AXLKMpwVa3V0yxu7YEcAgXz8Uw0Glgi3ZkrpNkme
+         7C6/uyI+OLWHQPVVTpC0w07NnVomKw05RgVO88K161yTlW5CEu/i67N/pJ7MzalC1Ghe
+         x+YyfO8V2SagM6xqQd90PlwlktpwldJN8c7tCctG+EMiBVW972HmjCgmS5nHWCDznD+L
+         yjBw==
+X-Gm-Message-State: APjAAAUayFWVKjHYf02LiObnkq9pUrEfv2p0rXPjN9qgQOTgHrG98+dj
+        46TJdJVayx5Ko5pcxng3qVxm4A==
+X-Google-Smtp-Source: APXvYqxqnCKs4vhZYrzxvQ9szeXZkCd06oIOiF7pZ4AcglMdx6oo5ZlX5NJY/2HaYtoiPUau/KE6Mg==
+X-Received: by 2002:ac8:2744:: with SMTP id h4mr22163820qth.180.1559144679558;
+        Wed, 29 May 2019 08:44:39 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id h20sm8438354qtc.16.2019.05.29.08.44.38
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 08:44:38 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hW0ko-00050C-AD; Wed, 29 May 2019 12:44:38 -0300
+Date:   Wed, 29 May 2019 12:44:38 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v2 13/17] RDMA/core: Get sum value of all
+ counters when perform a sysfs stat read
+Message-ID: <20190529154438.GB8567@ziepe.ca>
+References: <20190429083453.16654-1-leon@kernel.org>
+ <20190429083453.16654-14-leon@kernel.org>
+ <20190522172636.GF15023@ziepe.ca>
+ <20190529110524.GU4633@mtr-leonro.mtl.com>
 MIME-Version: 1.0
-References: <1559117459-27353-1-git-send-email-92siuyang@gmail.com>
- <CANn89iLxxiX+4E7EURNKb=xRkk97rPaKTkpSc6Yu7fZbiwPT6w@mail.gmail.com> <CAKgHYH2uW=iSUM1j5pLhaQXpm35XK2rWq45M2Yih1-Dn=es0SA@mail.gmail.com>
-In-Reply-To: <CAKgHYH2uW=iSUM1j5pLhaQXpm35XK2rWq45M2Yih1-Dn=es0SA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 29 May 2019 08:44:27 -0700
-Message-ID: <CANn89iJ1qoP9PpJZVcatvdtRX4SqUrKrWDfer1hdid+gxYQXhA@mail.gmail.com>
-Subject: Re: [PATCH] ipv4: tcp_input: fix stack out of bounds when parsing TCP options.
-To:     Yang Xiao <92siuyang@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190529110524.GU4633@mtr-leonro.mtl.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 8:11 AM Yang Xiao <92siuyang@gmail.com> wrote:
->
-> Indeed, condition opsize < 2 and opsize > length can deduce that length >= 2.
-> However, before the condition (if opsize < 2), there may be one-byte
-> out-of-bound access in line 12.
-> I'm not sure whether I have put it very clearly.
-
-Maybe I should have been clear about the 320 bytes we have at the end
-of skb->head
-
-This is the struct skb_shared_info
-
-So reading one byte, 'out-of-bound' here is harmless.
-
-Whatever value is read, we will return early without ever looking at a
-following byte.
-
-
->
-> On Wed, May 29, 2019 at 10:20 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Wed, May 29, 2019 at 1:10 AM Young Xiao <92siuyang@gmail.com> wrote:
+On Wed, May 29, 2019 at 02:05:24PM +0300, Leon Romanovsky wrote:
+> On Wed, May 22, 2019 at 02:26:36PM -0300, Jason Gunthorpe wrote:
+> > On Mon, Apr 29, 2019 at 11:34:49AM +0300, Leon Romanovsky wrote:
+> > > diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+> > > index c56ffc61ab1e..8ae4906a60e7 100644
+> > > +++ b/drivers/infiniband/core/device.c
+> > > @@ -1255,7 +1255,11 @@ int ib_register_device(struct ib_device *device, const char *name)
+> > >  		goto dev_cleanup;
+> > >  	}
 > > >
-> > > The TCP option parsing routines in tcp_parse_options function could
-> > > read one byte out of the buffer of the TCP options.
-> > >
-> > > 1         while (length > 0) {
-> > > 2                 int opcode = *ptr++;
-> > > 3                 int opsize;
-> > > 4
-> > > 5                 switch (opcode) {
-> > > 6                 case TCPOPT_EOL:
-> > > 7                         return;
-> > > 8                 case TCPOPT_NOP:        /* Ref: RFC 793 section 3.1 */
-> > > 9                         length--;
-> > > 10                        continue;
-> > > 11                default:
-> > > 12                        opsize = *ptr++; //out of bound access
-> > >
-> > > If length = 1, then there is an access in line2.
-> > > And another access is occurred in line 12.
-> > > This would lead to out-of-bound access.
-> > >
-> > > Therefore, in the patch we check that the available data length is
-> > > larger enough to pase both TCP option code and size.
-> > >
-> > > Signed-off-by: Young Xiao <92siuyang@gmail.com>
-> > > ---
-> > >  net/ipv4/tcp_input.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > > index 20f6fac..9775825 100644
-> > > --- a/net/ipv4/tcp_input.c
-> > > +++ b/net/ipv4/tcp_input.c
-> > > @@ -3791,6 +3791,8 @@ void tcp_parse_options(const struct net *net,
-> > >                         length--;
-> > >                         continue;
-> > >                 default:
-> > > +                       if (length < 2)
-> > > +                               return;
-> > >                         opsize = *ptr++;
-> > >                         if (opsize < 2) /* "silly options" */
-> > >                                 return;
+> > > -	rdma_counter_init(device);
+> > > +	ret = rdma_counter_init(device);
+> > > +	if (ret) {
+> > > +		dev_warn(&device->dev, "Couldn't initialize counter\n");
+> > > +		goto sysfs_cleanup;
+> > > +	}
 > >
-> > In practice we are good, since we have at least 320 bytes of room there,
-> > and the test done later catches silly options.
+> > Don't put this things randomly, if there is some reason it should be
+> > after sysfs it needs a comment, otherwise if it is just allocating
+> > memory it belongs earlier, and the unwind should be done in release.
 > >
-> > if (opsize < 2) /* "silly options" */
-> >     return;
-> > if (opsize > length)   /* remember, opsize >= 2 here */
-> >      return; /* don't parse partial options */
+> > I also think it is very strange/wrong that both sysfs and counters are
+> > allocating the same alloc_hw_stats object
 > >
-> > I guess adding yet another conditional will make this code obviously
-> > correct for all eyes
-> > and various tools.
-> >
-> > Thanks.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
->
->
->
-> --
-> Best regards!
->
-> Young
-> -----------------------------------------------------------
+> > Why can't they share?
+> 
+> They can, but we wanted to separate "legacy" counters which were exposed
+> through sysfs and "new" counters which can be enabled/disable automatically.
+
+Is there any cross contamination through the hw_stats? If no they
+should just share.
+
+Jason
