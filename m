@@ -2,162 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C62E2D9F9
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7D02D9C4
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:58:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbfE2KGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:06:14 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:60151 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725956AbfE2KGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:06:13 -0400
-X-Greylist: delayed 510 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 May 2019 06:06:12 EDT
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A37261B2A;
-        Wed, 29 May 2019 05:57:41 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 29 May 2019 05:57:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
-         h=date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:content-transfer-encoding:in-reply-to; s=fm1; bh=U
-        v/IO1lpsMhYefZCZE7IzUSu7PAH6TRG1LbnuRgviM4=; b=mn/7Y1LZeF5WEZX9C
-        kyxZtrcWF3ULGfrAWaVTCu5SVtlugVE3VqZmjWKq6xRLw16HfohMo8gWCyfoiTDU
-        8ddDr3hcah8IDP6Hys4o8IC2EdotB5aWhP8EraoIMIJh7rSxM+BKMMZLl9NkVZnK
-        u8d8d3Tq/d+bMYPb6BDrLZqiB9tpWxyCpNDdk+W8+YDBdrWfUs98RZG9TU53K7Dz
-        JzBTbjFIf3kdd64Cj3KvVjOeVIk0m+zXZwZfm3VO+qvQIqvJ5VIncx8ff7FI9cB1
-        yNg71nTx/SLC0V1NRLStXOGxLLLNq2SftFdwZcoJwvxVzm0f9yJ9xJHcvbMQXOqS
-        f9JWA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=Uv/IO1lpsMhYefZCZE7IzUSu7PAH6TRG1LbnuRgvi
-        M4=; b=XISi7eb0l5udJyx94Grx8xbNBu9uDmTspw9Ab8MZI6lurhPep2RI+RxCG
-        ZQTte0gx97SzC5lbqL/OsmzePdtwqlKhCnCKwx+J0wQH/g8awSkdq4a1owukWtLA
-        pSl7na4swI9Jn5vGwVD9JNDTU+FqQo7zHiwOYrXVPzhmvKU0bhF2leedTKJqnsWJ
-        ZtZ3NyH7sqtqulHulH6p8cFT/inzGk9BoRibxUJQCqYn7HfABDtSJ4wgJtcE93Dn
-        ubSwIKAl5IYPjRHsfy/9y3A9uQnHlGjBxilfoFBwIobYLPZxf0MeJIy/dpZ66Cd6
-        VespO6do/dcNZaF/vdhqkw+ACdFLw==
-X-ME-Sender: <xms:k1fuXLxZbQcc-ANNiTUK7UBI2sL_vR5WZupSdrUc2A253Dtx8L_3pw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgvdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjggfsehtkeertddtreejnecuhfhrohhmpefvrghk
-    rghshhhiucfurghkrghmohhtohcuoehoqdhtrghkrghshhhisehsrghkrghmohgttghhih
-    drjhhpqeenucfkphepudegrdefrdejhedrudekudenucfrrghrrghmpehmrghilhhfrhho
-    mhepohdqthgrkhgrshhhihesshgrkhgrmhhotggthhhirdhjphenucevlhhushhtvghruf
-    hiiigvpedt
-X-ME-Proxy: <xmx:k1fuXDqJLSpSTXkTZTciZs27YxisYeoGB6fGIVbV6inmjPgmkZdzug>
-    <xmx:k1fuXDzlPHfLKSKrwsKOVVoZfcm6NUzgWaAMmPe5QrZQEgSnVBAz3g>
-    <xmx:k1fuXCurnFtFsjwzcDFGDUTFxiwmFbRMHUebTfAZecsGB5BQqUsLjQ>
-    <xmx:lVfuXHp1xBd2evfpTHfjZBexRzt3oLWMlb8KBbQqAvRZxYLnnEZERg>
-Received: from workstation (ae075181.dynamic.ppp.asahi-net.or.jp [14.3.75.181])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 59261380084;
-        Wed, 29 May 2019 05:57:34 -0400 (EDT)
-Date:   Wed, 29 May 2019 18:57:31 +0900
-From:   Takashi Sakamoto <o-takashi@sakamocchi.jp>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Igor Konopko <igor.j.konopko@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Matias Bjorling <mb@lightnvm.io>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Joe Perches <joe@perches.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] ALSA: fireface: Use ULL suffixes for 64-bit constants
-Message-ID: <20190529095730.GA7089@workstation>
-Mail-Followup-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-        Igor Konopko <igor.j.konopko@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Matias Bjorling <mb@lightnvm.io>, Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Joe Perches <joe@perches.com>, Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <20190528142424.19626-1-geert@linux-m68k.org>
- <20190528142424.19626-5-geert@linux-m68k.org>
+        id S1726713AbfE2J6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 05:58:22 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:46778 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfE2J6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:58:21 -0400
+Received: by mail-lj1-f196.google.com with SMTP id m15so1768831ljg.13
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 02:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/sVA9YKu8BEhrQsD2y3FdbEDwI/iZvTti9LgKUCmCho=;
+        b=g+VZs9Wxzz58VQ5DfHuZCBSCmF8aIdt6hK2FWdf0aNvXP76PgEkEf4YXVcL7dYgQHM
+         VpIeRvv5y1ZohW1l8kwQ1c890KodOvZp0InN/sTV9/KjSQEYcDEXqVue1N/EBRHpf1UD
+         m2osWXg00PBOXJjV+EHuOoBB/GHktgYIA/LqkSY+ZUWgKu/urkNwpq8DWtOZTc/6egeV
+         NE9etHNAxCUyYK3TH6bo2fQpZRnnr2lM4RfGEc0eiN2Z5wGJFVIrFscKwD7vSDgBc/hK
+         4aRzH1y/V6P1mdWF4oOeZZp/vj/703I/BX3k0UU3AVEA9WhXraoDNNN8qLYYSnRy2aNC
+         TitA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=/sVA9YKu8BEhrQsD2y3FdbEDwI/iZvTti9LgKUCmCho=;
+        b=LakfgB5keCo2BX2hgSqYm0NYodpC1fYGoxmQsguzKUwddG+Gv5Db0UqtBscUMEMh9N
+         rzrKigbS0+cHU7s1uT8cjATnMUre8ix2Nb/wPyLs2W3/Rc+FxM/tZ/UOPzDbjR92uX3o
+         oBJ+8mxwBjSdluFk0lRD6cW/bJWESRHeBDsTJkVr6CQjY4TGb1Q+ONZsB5a1T7tNpmBT
+         IrKRvAIobFMk0mGZ11WoSV1Lk1az/sC6lA0CdoAwFPbhV+zNTLtZFNDRqxXj5OWRz/jt
+         j6Kqfo+Tqmm5WpnA4rUgHyRlaGyHGWS5HWHSuzgZQJ0++4XRsO8wKHSMFqNbaEvc9ZMJ
+         qmyw==
+X-Gm-Message-State: APjAAAUjGkpUhfb16iKruKr/W+xPgsAhX8tiOmA9rwHTpP//eoqC++BT
+        Osb+y6ZO/14U1e0dORC2q4G0bw==
+X-Google-Smtp-Source: APXvYqwKiANimuGQ4pshZYkZK2pN3RuXOcvwID5gqoUKwV2aHk7xiqEVLVSRPzHagRqjYp4pJSQQsw==
+X-Received: by 2002:a2e:9c09:: with SMTP id s9mr39657738lji.74.1559123899025;
+        Wed, 29 May 2019 02:58:19 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id h10sm3937299ljm.9.2019.05.29.02.58.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 02:58:18 -0700 (PDT)
+Date:   Wed, 29 May 2019 12:58:16 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
+Message-ID: <20190529095814.GA4639@khorivan>
+Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
+        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
+ <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
+ <20190529101659.2aa714b8@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190528142424.19626-5-geert@linux-m68k.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190529101659.2aa714b8@carbon>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, May 29, 2019 at 10:16:59AM +0200, Jesper Dangaard Brouer wrote:
+>On Thu, 23 May 2019 21:20:35 +0300
+>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+>
+>> +static struct page *cpsw_alloc_page(struct cpsw_common *cpsw)
+>> +{
+>> +	struct page_pool *pool = cpsw->rx_page_pool;
+>> +	struct page *page, *prev_page = NULL;
+>> +	int try = pool->p.pool_size << 2;
+>> +	int start_free = 0, ret;
+>> +
+>> +	do {
+>> +		page = page_pool_dev_alloc_pages(pool);
+>> +		if (!page)
+>> +			return NULL;
+>> +
+>> +		/* if netstack has page_pool recycling remove the rest */
+>> +		if (page_ref_count(page) == 1)
+>> +			break;
+>> +
+>> +		/* start free pages in use, shouldn't happen */
+>> +		if (prev_page == page || start_free) {
+>> +			/* dma unmap/puts page if rfcnt != 1 */
+>> +			page_pool_recycle_direct(pool, page);
+>> +			start_free = 1;
+>> +			continue;
+>> +		}
+>> +
+>> +		/* if refcnt > 1, page has been holding by netstack, it's pity,
+>> +		 * so put it to the ring to be consumed later when fast cash is
+>> +		 * empty. If ring is full then free page by recycling as above.
+>> +		 */
+>> +		ret = ptr_ring_produce(&pool->ring, page);
+>
+>This looks very wrong to me!  First of all you are manipulation
+>directly with the internal pool->ring and not using the API, which
+>makes this code un-maintainable.
+Yes I know, it's hack, it was with assumption to be dropped once page_pool
+recycling is added.
 
-On Tue, May 28, 2019 at 04:24:23PM +0200, Geert Uytterhoeven wrote:
-> With gcc 4.1:
-> 
->     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_switch_fetching_mode’:
->     sound/firewire/fireface/ff-protocol-latter.c:97: warning: integer constant is too large for ‘long’ type
->     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_begin_session’:
->     sound/firewire/fireface/ff-protocol-latter.c:170: warning: integer constant is too large for ‘long’ type
->     sound/firewire/fireface/ff-protocol-latter.c:197: warning: integer constant is too large for ‘long’ type
->     sound/firewire/fireface/ff-protocol-latter.c:205: warning: integer constant is too large for ‘long’ type
->     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_finish_session’:
->     sound/firewire/fireface/ff-protocol-latter.c:214: warning: integer constant is too large for ‘long’ type
-> 
-> Fix this by adding the missing "ULL" suffixes.
-> Add the same suffix to the last constant, to maintain consistency.
-> 
-> Fixes: fd1cc9de64c2ca6c ("ALSA: fireface: add support for Fireface UCX")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
->  sound/firewire/fireface/ff-protocol-latter.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>Second this is wrong, as page_pool
+>assume the in-variance that pages on the ring have refcnt==1.
+Yes, but this is w/o obvious reason, seems like it can work with refcnt > 1 if
+remove restriction and use >= instead of ==.
 
-Thanks for your care.
+As I answered on Ilias comment, I'm going to leave version from RFC and drop
+this one.
 
-Reviewed-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+>
+>> +		if (ret) {
+>> +			page_pool_recycle_direct(pool, page);
+>> +			continue;
+>> +		}
+>> +
+>> +		if (!prev_page)
+>> +			prev_page = page;
+>> +	} while (try--);
+>> +
+>> +	return page;
+>> +}
+>
+>
+>-- 
+>Best regards,
+>  Jesper Dangaard Brouer
+>  MSc.CS, Principal Kernel Engineer at Red Hat
+>  LinkedIn: http://www.linkedin.com/in/brouer
 
-> diff --git a/sound/firewire/fireface/ff-protocol-latter.c b/sound/firewire/fireface/ff-protocol-latter.c
-> index c8236ff89b7fb9de..b30d02d359b1d21b 100644
-> --- a/sound/firewire/fireface/ff-protocol-latter.c
-> +++ b/sound/firewire/fireface/ff-protocol-latter.c
-> @@ -9,11 +9,11 @@
->  
->  #include "ff.h"
->  
-> -#define LATTER_STF		0xffff00000004
-> -#define LATTER_ISOC_CHANNELS	0xffff00000008
-> -#define LATTER_ISOC_START	0xffff0000000c
-> -#define LATTER_FETCH_MODE	0xffff00000010
-> -#define LATTER_SYNC_STATUS	0x0000801c0000
-> +#define LATTER_STF		0xffff00000004ULL
-> +#define LATTER_ISOC_CHANNELS	0xffff00000008ULL
-> +#define LATTER_ISOC_START	0xffff0000000cULL
-> +#define LATTER_FETCH_MODE	0xffff00000010ULL
-> +#define LATTER_SYNC_STATUS	0x0000801c0000ULL
->  
->  static int parse_clock_bits(u32 data, unsigned int *rate,
->  			    enum snd_ff_clock_src *src)
-> -- 
-> 2.17.1
-> 
-
-
-Regards
-
-Takashi Sakamoto
+-- 
+Regards,
+Ivan Khoronzhuk
