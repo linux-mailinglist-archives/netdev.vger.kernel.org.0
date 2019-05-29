@@ -2,144 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBCC2E1CE
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1752E1DA
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbfE2QBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 12:01:11 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:36446 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfE2QBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 12:01:10 -0400
-Received: by mail-yw1-f68.google.com with SMTP id e68so1293875ywf.3
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 09:01:10 -0700 (PDT)
+        id S1727049AbfE2QES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 12:04:18 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37041 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726304AbfE2QES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 12:04:18 -0400
+Received: by mail-lf1-f66.google.com with SMTP id m15so2552066lfh.4
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 09:04:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XPrHCbcCsNef2jSZM/g/XQcezPiyqyIiC5REnh0/eSU=;
-        b=u05Zb0trAPOZWtt+gcSapUiKAhRmlKzjqRravknOondeT/3wa6ADIj8DY7WfXOyOLH
-         fMJMu9Q+2QLQKPNqpzfdlikJSWDoozUo+ep+yElgkrB07qG6DxzjbFOGSDR0DDwBdpib
-         MV4TCgjHYk7KN0kP42CwWaFEu4bOCRnUJQPF08DFFI04VYgqDROaZ+Ec87P6gS+M+Lyf
-         jwl1VZ94mKViet2J/Qz0H2dYP1PRGLJD3JSCqt1g7oorovfWQX5VAWjPX8vjxGtwurcB
-         mswhIDPfza+bD3GdvMi8Vl+sGU+u9VECrmn3EpAK6PQzyU29oFdf1iA5x5CaLa3d0XiN
-         B+hQ==
+        bh=fB+cE1ut8lOVdr24ZDohYBT90Ji3/h8bhXQdn1faj1w=;
+        b=C5m+Zu7u/SeSHtGLhmMKET9XoxgFL4mD6irfr1OzHmPMiWJG4UfEnieyQSYkdsDMbz
+         NztjNr31dmPXfzZ3lzJfnhB89ckJVnCG+7h6ahdNAD3nNBS4e5GBGT7Q1FfvYy9A/d2t
+         0el6ltxCkWdty489akWnO7C/D56fRp/QK9Gq1MjwNH7leTwcZQjo+IlSUGIig8cFaTMj
+         0L15j3WZSxzF3+3o5zoKI9TCExfFDg6cBQTBs9JTWpIB8kHa3JpZKusP6gcb+AMIQUQC
+         eUDOdkdjk2raExQ1k92WIgMi99ke3kB6JhKgkKl6aj9SVPgmPG4HF7X1pZT7PQ+Y3nOE
+         WAIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XPrHCbcCsNef2jSZM/g/XQcezPiyqyIiC5REnh0/eSU=;
-        b=GT+FHf5LnVbLg2wLPCrGU1B+EY+SWt4kB6nsPTmP4D+bOrV4RROU5VaG7XOYkPr2cw
-         W7iPd/sYIFV7uKGX9SB1m5rwF7IrHlkNLN0BtzuCdBzDh3FxtoxpFZPUhcwcE1VdM0gG
-         m2Xa2jaY5FpeIpBJH32SBl/xQYsKLgEEaOknPw/LwBK0lXiAcanenmlOApfTctBzYYeK
-         DwW+Oo7BIBcPjAsWNyj0AJ73xqlQG5D7dFUq2m9TkfsUaPL+ZqwxtrahSA1DGV7+BIxg
-         sEj+masc5t0JRb8r/JwLdZn1vUEOovWiAcH9wZvHs6+rzRCLXhHBQCrZR8FXbTvbqXJp
-         RmqA==
-X-Gm-Message-State: APjAAAXMx3c8paFW2RXxyh4eXnjT0UAJHvqM4pd5YgfXhg+d8Q75op0/
-        iQl9Z05KemGBIlPDP1ii9oj1Jl9Dtldief/0K593Pw==
-X-Google-Smtp-Source: APXvYqwfxD9KIX8UqVjT1h6eHKGyi7P+1pkf9cBDw9YJsI/OY+BmVcm2eVABC+x9PT5lSCxxPsKn+fs9F+HYQe0nEp8=
-X-Received: by 2002:a81:6946:: with SMTP id e67mr44438984ywc.424.1559145665722;
- Wed, 29 May 2019 09:01:05 -0700 (PDT)
+        bh=fB+cE1ut8lOVdr24ZDohYBT90Ji3/h8bhXQdn1faj1w=;
+        b=DLzKHJlm2s13plo0zqpifHzU0XGuFkKp6q9VF99cLgjC0yM9dS96ICh5RxNVv5OD8x
+         jdotycGm+LU5qhQTC4nuTzEcmS6/Pf9Motc5ak3koVjMo7CleVBR78kBS1rHR5rul/de
+         yfQ9Iu1tc7TnPdXiAJtyipdsE/Yv6/0vDObI+MuF0u3m2Z5xrJZ2eN76WaBp+9DGAsn3
+         QU/nJMw5J30VeErda5CP0hSCX0w35OsRmnchAMXxoVMyoqqDFmagVH1QPZGt5Ls6QYSb
+         VHXkLICU5pySK3U9UYlPgcyngLMPUvtP52WFtKTrdACxdUaH24EReSB5v5ihWuxbCdPx
+         DypQ==
+X-Gm-Message-State: APjAAAUQAoPB1Uf9FRfgA+MVHiMi+as81G/dobI8bAEXl6If2GGBK+59
+        JWMR03CtDJFHjI6knPjI+jofKczJqAB/iKYboOtW
+X-Google-Smtp-Source: APXvYqyArKmcXTpF9obffp6rqvd9jlGrddtztE9fceghduTlG/S8zQkl5yFpMpSrjd7E8vT35Mvy/bolgsx3MCM9V/0=
+X-Received: by 2002:a19:c301:: with SMTP id t1mr4444303lff.137.1559145850119;
+ Wed, 29 May 2019 09:04:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <e070e241-fb65-a5b0-3155-7380a9203bcf@molgen.mpg.de>
- <8627ea1e-8e51-c425-97f6-aeb57176e11a@gmail.com> <eb730f01-0c6d-0589-36cc-7193d64c1ee8@molgen.mpg.de>
-In-Reply-To: <eb730f01-0c6d-0589-36cc-7193d64c1ee8@molgen.mpg.de>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 29 May 2019 09:00:54 -0700
-Message-ID: <CANn89i+VvwMaHy2Br-0CcC3gPQ+PmG3Urpn4KpqL0P7XBykmcw@mail.gmail.com>
-Subject: Re: Driver has suspect GRO implementation, TCP performance may be compromised.
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <cover.1554732921.git.rgb@redhat.com> <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
+ <20190529145742.GA8959@cisco> <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190529153427.GB8959@cisco>
+In-Reply-To: <20190529153427.GB8959@cisco>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 29 May 2019 12:03:58 -0400
+Message-ID: <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+To:     Tycho Andersen <tycho@tycho.ws>
+Cc:     Richard Guy Briggs <rgb@redhat.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 7:49 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+On Wed, May 29, 2019 at 11:34 AM Tycho Andersen <tycho@tycho.ws> wrote:
 >
-> Dear Eric,
->
->
-> Thank you for the quick reply.
->
-> On 05/28/19 19:18, Eric Dumazet wrote:
-> > On 5/28/19 8:42 AM, Paul Menzel wrote:
->
-> >> Occasionally, Linux outputs the message below on the workstation Dell
-> >> OptiPlex 5040 MT.
-> >>
-> >>     TCP: net00: Driver has suspect GRO implementation, TCP performance may be compromised.
-> >>
-> >> Linux 4.14.55 and Linux 5.2-rc2 show the message, and the WWW also
-> >> gives some hits [1][2].
-> >>
-> >> ```
-> >> $ sudo ethtool -i net00
-> >> driver: e1000e
-> >> version: 3.2.6-k
-> >> firmware-version: 0.8-4
-> >> expansion-rom-version:
-> >> bus-info: 0000:00:1f.6
-> >> supports-statistics: yes
-> >> supports-test: yes
-> >> supports-eeprom-access: yes
-> >> supports-register-dump: yes
-> >> supports-priv-flags: no
-> >> ```
-> >>
-> >> Can the driver e1000e be improved?
-> >>
-> >> Any idea, what triggers this, as I do not see it every boot? Download
-> >> of big files?
-> >>
-> > Maybe the driver/NIC can receive frames bigger than MTU, although this would be strange.
+> On Wed, May 29, 2019 at 11:29:05AM -0400, Paul Moore wrote:
+> > On Wed, May 29, 2019 at 10:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
+> > >
+> > > On Mon, Apr 08, 2019 at 11:39:09PM -0400, Richard Guy Briggs wrote:
+> > > > It is not permitted to unset the audit container identifier.
+> > > > A child inherits its parent's audit container identifier.
+> > >
+> > > ...
+> > >
+> > > >  /**
+> > > > + * audit_set_contid - set current task's audit contid
+> > > > + * @contid: contid value
+> > > > + *
+> > > > + * Returns 0 on success, -EPERM on permission failure.
+> > > > + *
+> > > > + * Called (set) from fs/proc/base.c::proc_contid_write().
+> > > > + */
+> > > > +int audit_set_contid(struct task_struct *task, u64 contid)
+> > > > +{
+> > > > +     u64 oldcontid;
+> > > > +     int rc = 0;
+> > > > +     struct audit_buffer *ab;
+> > > > +     uid_t uid;
+> > > > +     struct tty_struct *tty;
+> > > > +     char comm[sizeof(current->comm)];
+> > > > +
+> > > > +     task_lock(task);
+> > > > +     /* Can't set if audit disabled */
+> > > > +     if (!task->audit) {
+> > > > +             task_unlock(task);
+> > > > +             return -ENOPROTOOPT;
+> > > > +     }
+> > > > +     oldcontid = audit_get_contid(task);
+> > > > +     read_lock(&tasklist_lock);
+> > > > +     /* Don't allow the audit containerid to be unset */
+> > > > +     if (!audit_contid_valid(contid))
+> > > > +             rc = -EINVAL;
+> > > > +     /* if we don't have caps, reject */
+> > > > +     else if (!capable(CAP_AUDIT_CONTROL))
+> > > > +             rc = -EPERM;
+> > > > +     /* if task has children or is not single-threaded, deny */
+> > > > +     else if (!list_empty(&task->children))
+> > > > +             rc = -EBUSY;
+> > > > +     else if (!(thread_group_leader(task) && thread_group_empty(task)))
+> > > > +             rc = -EALREADY;
+> > > > +     read_unlock(&tasklist_lock);
+> > > > +     if (!rc)
+> > > > +             task->audit->contid = contid;
+> > > > +     task_unlock(task);
+> > > > +
+> > > > +     if (!audit_enabled)
+> > > > +             return rc;
+> > >
+> > > ...but it is allowed to change it (assuming
+> > > capable(CAP_AUDIT_CONTROL), of course)? Seems like this might be more
+> > > immediately useful since we still live in the world of majority
+> > > privileged containers if we didn't allow changing it, in addition to
+> > > un-setting it.
 > >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index c61edd023b352123e2a77465782e0d32689e96b0..cb0194f66125bcba427e6e7e3cacf0c93040ef61 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -150,8 +150,10 @@ static void tcp_gro_dev_warn(struct sock *sk, const struct sk_buff *skb,
-> >                 rcu_read_lock();
-> >                 dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
-> >                 if (!dev || len >= dev->mtu)
-> > -                       pr_warn("%s: Driver has suspect GRO implementation, TCP performance may be compromised.\n",
-> > -                               dev ? dev->name : "Unknown driver");
-> > +                       pr_warn("%s: Driver has suspect GRO implementation, TCP performance may be compromised."
-> > +                               " len %u mtu %u\n",
-> > +                               dev ? dev->name : "Unknown driver",
-> > +                               len, dev ? dev->mtu : 0);
-> >                 rcu_read_unlock();
-> >         }
-> >  }
+> > The idea is that only container orchestrators should be able to
+> > set/modify the audit container ID, and since setting the audit
+> > container ID can have a significant effect on the records captured
+> > (and their routing to multiple daemons when we get there) modifying
+> > the audit container ID is akin to modifying the audit configuration
+> > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
+> > is that you would only change the audit container ID from one
+> > set/inherited value to another if you were nesting containers, in
+> > which case the nested container orchestrator would need to be granted
+> > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
+> > compromise).
 >
-> I applied your patch on commit 9fb67d643 (Merge tag 'pinctrl-v5.2-2' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl):
->
->      [ 5507.291769] TCP: net00: Driver has suspect GRO implementation, TCP performance may be compromised. len 1856 mtu 1500
+> But then don't you want some kind of ns_capable() instead (probably
+> not the obvious one, though...)? With capable(), you can't really nest
+> using the audit-id and user namespaces together.
 
+You want capable() and not ns_capable() because you want to ensure
+that the orchestrator has the rights in the init_ns as changes to the
+audit container ID could have an auditing impact that spans the entire
+system.  Setting the audit container ID is equivalent to munging the
+kernel's audit configuration, and the audit configuration is not
+"namespaced" in any way.  The audit container ID work is about
+providing the right "container context" (as defined by userspace) with
+the audit records so that admins have a better understanding about
+what is going on in the system; it is very explicitly not creating an
+audit namespace.
 
-The 'GRO' in the warning can be probably ignored, since this NIC does
-not implement its own GRO.
+At some point in the future we will want to support running multiple
+audit daemons, and have a configurable way of routing audit records
+based on the audit container ID, which will blur the line regarding
+audit namespaces, but even then I would argue we are not creating an
+audit namespace.
 
-You can confirm this with this debug patch:
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c
-b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 0e09bede42a2bd2c912366a68863a52a22def8ee..014a43ce77e09664bda0568dd118064b006acd67
-100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -561,6 +561,9 @@ static void e1000_receive_skb(struct e1000_adapter *adapter,
-        if (staterr & E1000_RXD_STAT_VP)
-                __vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), tag);
-
-+       if (skb->len > netdev->mtu)
-+               pr_err_ratelimited("received packet bigger (%u) than
-MTU (%u)\n",
-+                                  skb->len, netdev->mtu);
-        napi_gro_receive(&adapter->napi, skb);
- }
+-- 
+paul moore
+www.paul-moore.com
