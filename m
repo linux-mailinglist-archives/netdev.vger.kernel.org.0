@@ -2,111 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F9FE2E777
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 23:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A082E2E78E
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 23:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbfE2VaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 17:30:19 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46311 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbfE2VaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 17:30:19 -0400
-Received: by mail-pg1-f196.google.com with SMTP id v9so618615pgr.13
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 14:30:19 -0700 (PDT)
+        id S1726512AbfE2Vm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 17:42:59 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53130 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726489AbfE2Vm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 17:42:59 -0400
+Received: by mail-wm1-f66.google.com with SMTP id y3so2602489wmm.2
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 14:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zqIInZ7u9FocDA0H1JcIPg2m8dIqSr989gc/4vOLzf4=;
-        b=AlVOqlZGnq7FyKZWP7f3RfIPaxELGMjnkN0opwHogt0VTYHJ6GBPRm/4PVKVbA7RW4
-         Jwwj8GzrcUB8RHJVRpsjcH6J2d9DHg7OYQJgFtZqDtbyUVV55de+V3tVP8zcfKjrqsRF
-         J953PZXQ+QHTchz77pjADNUUikSn/cgyrMgWnoA3F6qvai4GxMewEmWYfF0v5lbAdAgA
-         wQf/mVqSIloGK5tM95Gl6cXjI0oqqePspAUsddTO+qCidFmE6WvvltHFwV5/A1P1XRTl
-         GuuUT089yZOSKZTvy0cVkcHdxzbnyTFuLpnyywDhD/XtcF98AICd7nOutlhAhK7cCROU
-         dv1Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=QT9REVzj/zN4pcNf/wgqbMS6z5Bkw3ZkieHoc+FddFY=;
+        b=n1rh+yKFDTSjSefvAuzTlIP8jrQopyJAiQZE/Yjvvnq9kNEohdBGi+0lgKnCcoeOtX
+         FUXXRtDklmzK6DJpRkRo8laa64KCzhGUmV6COUnKiDMYqeEa8e2SOw3pAowBz/QJ0Alf
+         1S1b2oaOTk0OXzNe9lnBA3rMEjGhv/CrCLVhOVgqCho5Tg+wNUQfKpIEbn9LQEpVLXig
+         VpU9nP3x1XXD8JquYq+BM3IeaOQaOnplVctdBnotgqdYpIz8QIjc/NmQb8LgCQzpJCDW
+         MxU38LlqpnEmpVXH0CuVbXPw1/q/0iqw8kLiM23FbaT/B+5BTq+NhGjmy2XhuyVJzCxe
+         CFGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zqIInZ7u9FocDA0H1JcIPg2m8dIqSr989gc/4vOLzf4=;
-        b=GyWKyn1Dk+ItSjVVnNP6tQPlhPnQ02kq1SNoNkgCw5D3JPnLEoNBNSXE6WTZyBPj/2
-         qYJ5xZSZ4g2FsD2xrkU3In9lzI4KRjjK8Qhk7WWSXMTcS6lUKIGbkUwsZ+iknqaMu8dn
-         TQo5UhetmyFSy2HLBl0nR/KvuhkpPHiWm4X6hOCNVypgmTqCp/w+b4MQKvzI7HkaoLFc
-         2Xt/kJSgL76KHl5yBhovQpDsGngHWWLoFVCs/DSM1wR7+ve8fQTwwX+1QakX3h4Bgy++
-         lLGRPtXv7tG8O7yhSuA36pA+11SGyqYL13ETNU+triuOYaR4WFdX15tCm+HU7TyxT9L2
-         BRWg==
-X-Gm-Message-State: APjAAAWf92m9yL/D5mOEzbp+Pg3Xe49uiQws0bKO1dlPawdyPzZjJHnu
-        TTw0tyLcq7r/LJDaWchUs0flSS2u
-X-Google-Smtp-Source: APXvYqz5vYtnNVBiVS8jyXQdVWJcLfi9fdD6C17t//mYShsvfvpysQa3s80GIe4uAbbBdekVfAkSZQ==
-X-Received: by 2002:a17:90a:a516:: with SMTP id a22mr15132845pjq.27.1559165418796;
-        Wed, 29 May 2019 14:30:18 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id h3sm707278pfq.66.2019.05.29.14.30.17
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 May 2019 14:30:17 -0700 (PDT)
-Subject: Re: [PATCH] inet: frags: Remove unnecessary
- smp_store_release/READ_ONCE
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20190524160340.169521-12-edumazet@google.com>
- <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
- <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
- <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <28815527-83bd-b139-a162-0ed927b88fe5@gmail.com>
-Date:   Wed, 29 May 2019 14:30:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QT9REVzj/zN4pcNf/wgqbMS6z5Bkw3ZkieHoc+FddFY=;
+        b=MABkwp11mts1XuxJRP++lnyN3YJ4d+PSHc1zAna/uPPpZt+X2GWnJXBqEhIRo1mf4D
+         XECy0kGJ7FdQrk64VhM+So84Uu0Mf42zkeCxtLsmIB1jMHzGr2vu9BhFqLy4XIJ/7k1Q
+         XnfT4z1RR4wjkqJasWN6QYKZe3Gkrs0t1Ne36IP+0ptntDD9G0hLENexKTLWGSyARMlD
+         iLWArGeNYbqmZ479AvDvKH9cHWBEi2QGXz/ks8Cjs3mun7P3xvLcEkdEnipPE23E0YT3
+         6IOtUGM50C5Upls0GzJHlgrn1gcyQ1a0mp6wXsj4EnCJGQrSvunPYD8IaB4gwoXC04ZZ
+         Fukg==
+X-Gm-Message-State: APjAAAVQhFEKJqG5X//kbrJxghGyXaqKtPHlmQ6mcaZTTYxOydFdJw4r
+        dq9ahP5KMIJN+dt3irdiEGA=
+X-Google-Smtp-Source: APXvYqzYu4c5mSznZXYkexehE/ozKrTvezVh16xU6CEUMNXoQLnGU/UKYwsJdxu3oVUrxTUHApOnfQ==
+X-Received: by 2002:a1c:228b:: with SMTP id i133mr123375wmi.140.1559166177247;
+        Wed, 29 May 2019 14:42:57 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.27.188])
+        by smtp.gmail.com with ESMTPSA id u19sm1421060wmu.41.2019.05.29.14.42.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 14:42:56 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     ioana.ciornei@nxp.com, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v2 net 0/2] Fixes for DSA tagging using 802.1Q
+Date:   Thu, 30 May 2019 00:42:29 +0300
+Message-Id: <20190529214231.10485-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+During the prototyping for the "Decoupling PHYLINK from struct
+net_device" patchset, the CPU port of the sja1105 driver was moved to a
+different spot.  This uncovered an issue in the tag_8021q DSA code,
+which used to work by mistake - the CPU port was the last hardware port
+numerically, and this was masking an ordering issue which is very likely
+to be seen in other drivers that make use of 802.1Q tags.
 
+A question was also raised whether the VID numbers bear any meaning, and
+the conclusion was that they don't, at least not in an absolute sense.
+The second patch defines bit fields inside the DSA 802.1Q VID so that
+tcpdump can decode it unambiguously (although the meaning is now clear
+even by visual inspection).
 
-On 5/28/19 10:40 PM, Herbert Xu wrote:
+Ioana Ciornei (1):
+  net: dsa: tag_8021q: Change order of rx_vid setup
 
-> I see now that it is actually relying on the barrier/locking
-> semantics of call_rcu vs. rcu_read_lock.  So the smp_store_release
-> and READ_ONCE are simply unnecessary and could be confusing to
-> future readers.
-> 
-> ---8<---
-> The smp_store_release call in fqdir_exit cannot protect the setting
-> of fqdir->dead as claimed because its memory barrier is only
-> guaranteed to be one-way and the barrier precedes the setting of
-> fqdir->dead.
-> 
-> IOW it doesn't provide any barriers between fq->dir and the following
-> hash table destruction.
-> 
-> In fact, the code is safe anyway because call_rcu does provide both
-> the memory barrier as well as a guarantee that when the destruction
-> work starts executing all RCU readers will see the updated value for
-> fqdir->dead.
-> 
-> Therefore this patch removes the unnecessary smp_store_release call
-> as well as the corresponding READ_ONCE on the read-side in order to
-> not confuse future readers of this code.  Comments have been added
-> in their places.
-> 
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> 
+Vladimir Oltean (1):
+  net: dsa: tag_8021q: Create a stable binary format
 
-SGTM, thanks.
+ net/dsa/tag_8021q.c | 79 +++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 65 insertions(+), 14 deletions(-)
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-David, this targets net-next tree :)
-
+-- 
+2.17.1
 
