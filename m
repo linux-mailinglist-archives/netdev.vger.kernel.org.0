@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6872C2D833
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F5142D82C
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbfE2Irn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:47:43 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:33785 "EHLO
+        id S1726541AbfE2Irp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:47:45 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55315 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725914AbfE2Irm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:42 -0400
+        by vger.kernel.org with ESMTP id S1726326AbfE2Iro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:44 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3928921CFD;
-        Wed, 29 May 2019 04:47:42 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 8D85D22405;
+        Wed, 29 May 2019 04:47:43 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:42 -0400
+  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=YnOVfRaaLAwMCi1mAmBRDLj2FhYFV1o4bwVL+x0WR3s=; b=bjOt1JwC
-        Ogy+MvxgXBT2e6GlxJqsn85/UbAx68DqPuV2DOuSJezOhOz4gLCEvrh7AviyVavC
-        B9+0REiR4472AvD5Dw6u/X5uolxWN98ShXkqypiR0GwSKVVsmVllIwbHRANz/OB/
-        CfKN2pU2Qc484hB+zp3a0Nz+3nvi532+RbYiZ3K/nJ9kcYiubcyzIW2J6A74zxLU
-        CxhbRg2S7W5eQ4qXnkCboFE+/689OkFPh1vp7eWaJtr48ODWx2f6KVfLJ+Phm/W3
-        lTQVx+b+kw1nqmLL9HQImYLjVP9GqEHfTR7CbdfZ7nviT1Pmmdig4IyB7W0EcJMr
-        VVtDVrTdeGlOwA==
-X-ME-Sender: <xms:LkfuXIlHgQh6abtRHRHA08d3QREO7AlVv09-8yBTQnPDPSLI1O6CYg>
+        fm2; bh=vop8i05Id7VLWRbhNzHrFADQyhLqjTRnDpcF4k/7Ptk=; b=NbzI7Cx0
+        fHs3tAkAKvqMdXgkp4UAynrD6XTz64UQcBwOb5EH7Ru9RDT4n9Ml0oNMCMndKb+2
+        u5kFOtvakBLDmTTipNILcfekW2QP0z+62b/2JbLIEnqZv6PiaqSljNbvR72uhop+
+        bM4BTrB3I3WIjksAt4UoB6RXJQVmTLfRDDnJY1xxah8sSn5CUCpkI0/tRlIL2zNQ
+        oTCtp7f+OeQlEd68UV1he79KN/0yM9jqTuxxZtTZDNatqxBOXiEYWmO1//cRQm+c
+        SOwJAOI7/YtG4vodJrUusNDv3PeQbqTS+eLzAeNmgMpyc+za6nCkJgY1e3vlbF3m
+        ffpPxSC00SJPpA==
+X-ME-Sender: <xms:L0fuXPLRWSZs-3vaoeyvhH6vqA1gBp3DvCy4zyYrctWiprODuD5GTA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgtdelucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:LkfuXAyATmvHqU9oJpUr2XAvSSQfBTp6Q69JxK51CALYDgT47I-OUA>
-    <xmx:LkfuXPZyAxGUTJAxFWsmAIXT-GktZUsA7iresUHOW9BCUaUiZf-OuA>
-    <xmx:LkfuXHsRE9HffqZERhfxnE6psfjmGJpIDe_243oUWw0vIvQ4Gzrk5A>
-    <xmx:LkfuXL9oVFT8MPCnvG9_IELRLBsU0dqqP5k7315Osu9rbnY8-5Qnyg>
+X-ME-Proxy: <xmx:L0fuXAqAxZ1etVQ5EmoB-0ajq-BGKZHm_zdHKilmt-ViZzSdp9KuVg>
+    <xmx:L0fuXDyWzV3OIb5-2AwpmI8QBvoiKS4J9UGNfWxOsDCnZYdPzmebGw>
+    <xmx:L0fuXFrHQ8tIPm0hczOhjm3xWyzSKs8cqkmMbbdFQRcI7Vz2V3bi-Q>
+    <xmx:L0fuXPUSkm67U1JwOhOVzUwYqAe_rKYB_PjyoVahS4RCKUEV6j93KQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C88BD80065;
-        Wed, 29 May 2019 04:47:40 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2A52080063;
+        Wed, 29 May 2019 04:47:42 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/8] mlxsw: i2c: Allow flexible setting of I2C transactions size
-Date:   Wed, 29 May 2019 11:47:16 +0300
-Message-Id: <20190529084722.22719-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/8] mlxsw: core: Re-order initialization sequence
+Date:   Wed, 29 May 2019 11:47:17 +0300
+Message-Id: <20190529084722.22719-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190529084722.22719-1-idosch@idosch.org>
 References: <20190529084722.22719-1-idosch@idosch.org>
@@ -59,196 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@mellanox.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-Current implementation uses fixed size of I2C data transaction buffer.
-Allow to set size of I2C transactions according to I2C physical adapter
-capability. For that purpose adapter read and write size is obtained
-from the I2C physical adapter and buffer size is set according to the
-minimum of these two values. If adapter does not provide such info,
-default buffer size is to be used.
-It allows to improve performance of I2C access to silicon when long
-size transactions are used.
+The driver core first registers with the hwmon and thermal subsystems
+and only then proceeds to initialize the switch driver (e.g.,
+mlxsw_spectrum). It is only during the last stage that the current
+firmware version is validated and a newer one flashed, if necessary.
 
-Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+The above means that if a new firmware feature is utilized by the
+hwmon/thermal code, the driver will not be able to load.
+
+Solve this by re-ordering initializing the switch driver before
+registering with the hwmon and thermal subsystems.
+
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reported-by: Shalom Toledo <shalomt@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c | 64 ++++++++++++++++-------
- 1 file changed, 46 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-index 803ce9623205..95f408d0e103 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-@@ -43,11 +43,10 @@
- #define MLXSW_I2C_PREP_SIZE		(MLXSW_I2C_ADDR_WIDTH + 28)
- #define MLXSW_I2C_MBOX_SIZE		20
- #define MLXSW_I2C_MBOX_OUT_PARAM_OFF	12
--#define MLXSW_I2C_MAX_BUFF_SIZE		32
- #define MLXSW_I2C_MBOX_OFFSET_BITS	20
- #define MLXSW_I2C_MBOX_SIZE_BITS	12
- #define MLXSW_I2C_ADDR_BUF_SIZE		4
--#define MLXSW_I2C_BLK_MAX		32
-+#define MLXSW_I2C_BLK_DEF		32
- #define MLXSW_I2C_RETRY			5
- #define MLXSW_I2C_TIMEOUT_MSECS		5000
- #define MLXSW_I2C_MAX_DATA_SIZE		256
-@@ -62,6 +61,7 @@
-  * @dev: I2C device;
-  * @core: switch core pointer;
-  * @bus_info: bus info block;
-+ * @block_size: maximum block size allowed to pass to under layer;
-  */
- struct mlxsw_i2c {
- 	struct {
-@@ -74,6 +74,7 @@ struct mlxsw_i2c {
- 	struct device *dev;
- 	struct mlxsw_core *core;
- 	struct mlxsw_bus_info bus_info;
-+	u16 block_size;
- };
- 
- #define MLXSW_I2C_READ_MSG(_client, _addr_buf, _buf, _len) {	\
-@@ -315,20 +316,26 @@ mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
- 	struct i2c_client *client = to_i2c_client(dev);
- 	struct mlxsw_i2c *mlxsw_i2c = i2c_get_clientdata(client);
- 	unsigned long timeout = msecs_to_jiffies(MLXSW_I2C_TIMEOUT_MSECS);
--	u8 tran_buf[MLXSW_I2C_MAX_BUFF_SIZE + MLXSW_I2C_ADDR_BUF_SIZE];
- 	int off = mlxsw_i2c->cmd.mb_off_in, chunk_size, i, j;
- 	unsigned long end;
-+	u8 *tran_buf;
- 	struct i2c_msg write_tran =
--		MLXSW_I2C_WRITE_MSG(client, tran_buf, MLXSW_I2C_PUSH_CMD_SIZE);
-+		MLXSW_I2C_WRITE_MSG(client, NULL, MLXSW_I2C_PUSH_CMD_SIZE);
- 	int err;
- 
-+	tran_buf = kmalloc(mlxsw_i2c->block_size + MLXSW_I2C_ADDR_BUF_SIZE,
-+			   GFP_KERNEL);
-+	if (!tran_buf)
-+		return -ENOMEM;
-+
-+	write_tran.buf = tran_buf;
- 	for (i = 0; i < num; i++) {
--		chunk_size = (in_mbox_size > MLXSW_I2C_BLK_MAX) ?
--			     MLXSW_I2C_BLK_MAX : in_mbox_size;
-+		chunk_size = (in_mbox_size > mlxsw_i2c->block_size) ?
-+			     mlxsw_i2c->block_size : in_mbox_size;
- 		write_tran.len = MLXSW_I2C_ADDR_WIDTH + chunk_size;
- 		mlxsw_i2c_set_slave_addr(tran_buf, off);
- 		memcpy(&tran_buf[MLXSW_I2C_ADDR_BUF_SIZE], in_mbox +
--		       MLXSW_I2C_BLK_MAX * i, chunk_size);
-+		       mlxsw_i2c->block_size * i, chunk_size);
- 
- 		j = 0;
- 		end = jiffies + timeout;
-@@ -342,9 +349,10 @@ mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
- 			 (j++ < MLXSW_I2C_RETRY));
- 
- 		if (err != 1) {
--			if (!err)
-+			if (!err) {
- 				err = -EIO;
--			return err;
-+				goto mlxsw_i2c_write_exit;
-+			}
- 		}
- 
- 		off += chunk_size;
-@@ -355,24 +363,27 @@ mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
- 	err = mlxsw_i2c_write_cmd(client, mlxsw_i2c, 0);
- 	if (err) {
- 		dev_err(&client->dev, "Could not start transaction");
--		return -EIO;
-+		err = -EIO;
-+		goto mlxsw_i2c_write_exit;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 6ee6de7f0160..182762898361 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1098,6 +1098,12 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
+ 			goto err_register_params;
  	}
  
- 	/* Wait until go bit is cleared. */
- 	err = mlxsw_i2c_wait_go_bit(client, mlxsw_i2c, p_status);
- 	if (err) {
- 		dev_err(&client->dev, "HW semaphore is not released");
--		return err;
-+		goto mlxsw_i2c_write_exit;
- 	}
- 
- 	/* Validate transaction completion status. */
- 	if (*p_status) {
- 		dev_err(&client->dev, "Bad transaction completion status %x\n",
- 			*p_status);
--		return -EIO;
-+		err = -EIO;
- 	}
- 
--	return 0;
-+mlxsw_i2c_write_exit:
-+	kfree(tran_buf);
-+	return err;
- }
- 
- /* Routine executes I2C command. */
-@@ -395,8 +406,8 @@ mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
- 
- 	if (in_mbox) {
- 		reg_size = mlxsw_i2c_get_reg_size(in_mbox);
--		num = reg_size / MLXSW_I2C_BLK_MAX;
--		if (reg_size % MLXSW_I2C_BLK_MAX)
-+		num = reg_size / mlxsw_i2c->block_size;
-+		if (reg_size % mlxsw_i2c->block_size)
- 			num++;
- 
- 		if (mutex_lock_interruptible(&mlxsw_i2c->cmd.lock) < 0) {
-@@ -416,7 +427,7 @@ mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
- 	} else {
- 		/* No input mailbox is case of initialization query command. */
- 		reg_size = MLXSW_I2C_MAX_DATA_SIZE;
--		num = reg_size / MLXSW_I2C_BLK_MAX;
-+		num = reg_size / mlxsw_i2c->block_size;
- 
- 		if (mutex_lock_interruptible(&mlxsw_i2c->cmd.lock) < 0) {
- 			dev_err(&client->dev, "Could not acquire lock");
-@@ -432,8 +443,8 @@ mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
- 	/* Send read transaction to get output mailbox content. */
- 	read_tran[1].buf = out_mbox;
- 	for (i = 0; i < num; i++) {
--		chunk_size = (reg_size > MLXSW_I2C_BLK_MAX) ?
--			     MLXSW_I2C_BLK_MAX : reg_size;
-+		chunk_size = (reg_size > mlxsw_i2c->block_size) ?
-+			     mlxsw_i2c->block_size : reg_size;
- 		read_tran[1].len = chunk_size;
- 		mlxsw_i2c_set_slave_addr(tran_buf, off);
- 
-@@ -546,6 +557,7 @@ static const struct mlxsw_bus mlxsw_i2c_bus = {
- static int mlxsw_i2c_probe(struct i2c_client *client,
- 			   const struct i2c_device_id *id)
- {
-+	const struct i2c_adapter_quirks *quirks = client->adapter->quirks;
- 	struct mlxsw_i2c *mlxsw_i2c;
- 	u8 status;
- 	int err;
-@@ -554,6 +566,22 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
- 	if (!mlxsw_i2c)
- 		return -ENOMEM;
- 
-+	if (quirks) {
-+		if ((quirks->max_read_len &&
-+		     quirks->max_read_len < MLXSW_I2C_BLK_DEF) ||
-+		    (quirks->max_write_len &&
-+		     quirks->max_write_len < MLXSW_I2C_BLK_DEF)) {
-+			dev_err(&client->dev, "Insufficient transaction buffer length\n");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		mlxsw_i2c->block_size = max_t(u16, MLXSW_I2C_BLK_DEF,
-+					      min_t(u16, quirks->max_read_len,
-+						    quirks->max_write_len));
-+	} else {
-+		mlxsw_i2c->block_size = MLXSW_I2C_BLK_DEF;
++	if (mlxsw_driver->init) {
++		err = mlxsw_driver->init(mlxsw_core, mlxsw_bus_info);
++		if (err)
++			goto err_driver_init;
 +	}
 +
- 	i2c_set_clientdata(client, mlxsw_i2c);
- 	mutex_init(&mlxsw_i2c->cmd.lock);
+ 	err = mlxsw_hwmon_init(mlxsw_core, mlxsw_bus_info, &mlxsw_core->hwmon);
+ 	if (err)
+ 		goto err_hwmon_init;
+@@ -1107,22 +1113,17 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
+ 	if (err)
+ 		goto err_thermal_init;
  
+-	if (mlxsw_driver->init) {
+-		err = mlxsw_driver->init(mlxsw_core, mlxsw_bus_info);
+-		if (err)
+-			goto err_driver_init;
+-	}
+-
+ 	if (mlxsw_driver->params_register && !reload)
+ 		devlink_params_publish(devlink);
+ 
+ 	return 0;
+ 
+-err_driver_init:
+-	mlxsw_thermal_fini(mlxsw_core->thermal);
+ err_thermal_init:
+ 	mlxsw_hwmon_fini(mlxsw_core->hwmon);
+ err_hwmon_init:
++	if (mlxsw_core->driver->fini)
++		mlxsw_core->driver->fini(mlxsw_core);
++err_driver_init:
+ 	if (mlxsw_driver->params_unregister && !reload)
+ 		mlxsw_driver->params_unregister(mlxsw_core);
+ err_register_params:
+@@ -1187,10 +1188,10 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ 
+ 	if (mlxsw_core->driver->params_unregister && !reload)
+ 		devlink_params_unpublish(devlink);
+-	if (mlxsw_core->driver->fini)
+-		mlxsw_core->driver->fini(mlxsw_core);
+ 	mlxsw_thermal_fini(mlxsw_core->thermal);
+ 	mlxsw_hwmon_fini(mlxsw_core->hwmon);
++	if (mlxsw_core->driver->fini)
++		mlxsw_core->driver->fini(mlxsw_core);
+ 	if (mlxsw_core->driver->params_unregister && !reload)
+ 		mlxsw_core->driver->params_unregister(mlxsw_core);
+ 	if (!reload)
 -- 
 2.20.1
 
