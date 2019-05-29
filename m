@@ -2,157 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0E12E567
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D3C2E5A8
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbfE2TeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 15:34:01 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:45612 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbfE2TeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 15:34:01 -0400
-Received: by mail-qt1-f195.google.com with SMTP id t1so4061657qtc.12
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 12:34:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=01+Ie6CLfHPKOYKN8E/zxFpoYc7CQc9jAgSj/7deQVI=;
-        b=No/5yMZ7t+NjOgPmVQICbxZquQSWTUxFaWfrX4NjDcdXIOLOnKHkXW7bUslOsLRlZH
-         OyKAry4xtlelGMzFsFHprL4hVL8wpSoqf+HKAzytEN6wbRuZawGe/5kF6YsHb56Ol/jR
-         Vb4SdJp0mIa2n/7CIG8dHCYMFv2cjY9BhJSACLimLVOzzbhU51QiYY33JbfyshV38yQv
-         PT5UOW5tTP/vnsOGMXJ2NZcQ9GqjB5g0Hl1BlFh0RTmeqoKvrN1p0m0vYrZZ9Ql70lez
-         tnYErdNMB0bc0VaFcR+BjVasWC2gJJWaVXaaw2iN3GSqh7bNhAUETFaG8KxUQavIRKUC
-         wnqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=01+Ie6CLfHPKOYKN8E/zxFpoYc7CQc9jAgSj/7deQVI=;
-        b=ZpDr+puC+pd1/eOcVxrFSDFMgit/jr/i65XZw1SsrT34JHa7xgpCH3uXzRqKCRZS17
-         JChUUMpP6B+Z2xqXoezv4t4zo9wxzy5UQm5moyeEvY/2SFxxk9BNVFeyg3yezLqxF0YF
-         0IPupP4+ljPltFO/10YYXjK8CDv2/cnf0BkPKQcDQPaaI2iB00mLxUfOts0xUQtgbkVO
-         o+NKqKWOHo8IPwWmIFXgmYPIx9ZrXl/a4bmOiv21fndYTp/lLA7YVJepi4RIZci47gwM
-         Wf8W6ZxDmcsDzkr8MlWeXqdTwn1djMSznmnjJcgN6oaC0PeZU6+Wmcy8syT14BDiwU/F
-         SDwA==
-X-Gm-Message-State: APjAAAVB//zay2+Yi/FZJSgJxOkDkGuloU2z35sLvTmSzkQ+K7l5XOZi
-        QltljVngvWV0jrXOFyHHzs26aLrd
-X-Google-Smtp-Source: APXvYqyFMpPPHrlHDJZCxPY57OY6b2KcBnyOtlbbMRlraxwlBJBvDVFirjA8HIITkMtEfuWfzvujpg==
-X-Received: by 2002:ac8:87d:: with SMTP id x58mr540570qth.368.1559158440083;
-        Wed, 29 May 2019 12:34:00 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id c5sm151007qtj.27.2019.05.29.12.33.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 May 2019 12:33:59 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: correct zerocopy refcnt with udp MSG_MORE
-Date:   Wed, 29 May 2019 15:33:57 -0400
-Message-Id: <20190529193357.73457-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
+        id S1726373AbfE2T7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 15:59:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:50660 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725956AbfE2T7S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 15:59:18 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E12C0B2DDE;
+        Wed, 29 May 2019 19:59:07 +0000 (UTC)
+Received: from ovpn-112-20.rdu2.redhat.com (ovpn-112-20.rdu2.redhat.com [10.10.112.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E93061491;
+        Wed, 29 May 2019 19:59:03 +0000 (UTC)
+Message-ID: <cb2ef612be9e347a7cbceb26831f8d5ebea4eacf.camel@redhat.com>
+Subject: Re: cellular modem APIs - take 2
+From:   Dan Williams <dcbw@redhat.com>
+To:     Johannes Berg <johannes@sipsolutions.net>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Daniele Palmas <dnlplm@gmail.com>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Date:   Wed, 29 May 2019 14:59:02 -0500
+In-Reply-To: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
+References: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Wed, 29 May 2019 19:59:18 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Mon, 2019-05-27 at 15:20 +0200, Johannes Berg wrote:
+> Hi all,
+> 
+> Sorry for the long delay in getting back to this. I'm meaning to write
+> some code soon also for this, to illustrate better, but I figured I'd
+> still get some thoughts out before I do that.
+> 
+> After more discussion (@Intel) and the previous thread(s), I've pretty
+> much come to the conclusion that we should have a small subsystem for
+> WWAN, rather than fudging everything like we previously did.
+> 
+> We can debate whether or not that should use 'real' netlink or generic
+> netlink - personally I know the latter better and I think it has some
+> real advantages like easier message parsing (it's automatic more or
+> less) including strict checking and automatic policy introspection (I
+> recently wrote the code for this and it's plugged into generic netlink
+> family, for other netlink families it needs more hand-written code). But
+> I could possibly be convinced of doing something else, and/or perhaps
+> building more infrastructure for 'real' netlink to realize those
+> benefits there as well.
+> 
+> 
+> In terms of what I APIs are needed, the kernel-driver side and userspace
+> side go pretty much hand in hand (the wwan subsystem just providing the
+> glue), so what I say below is pretty much both a method/function call
+> (kernel internal API) or a netlink message (userspace API).
+> 
+> 1) I think a generic abstraction of WWAN device that is not a netdev
+>    is needed. Yes, on the one hand it's quite nice to be able to work on
+>    top of a given netdev, but it's also limiting because it requires the
+>    data flow to go through there, and packets that are tagged in some
+>    way be exchanged there.
+>    For VLANs this can be out-of-band (in a sense) with hw-accel, but for
+>    rmnet-style it's in-band, and that limits what we can do.
+> 
+>    Now, of course this doesn't mean there shouldn't be a netdev created
+>    by default in most cases, but it gives us a way to do additional
+>    things that we cannot do with *just* a netdev.
+> 
+>    From a driver POV though, it would register a new "wwan_device", and
+>    then get some generic callback to create a netdev on top, maybe by
+>    default from the subsystem or from the user.
+> 
+> 2) Clearly, one needs to be able to create PDN netdevs, with the PDN
+>    given to the command. Here's another advantage: If these are created
+>    on top of another abstraction, not another netdev, they can have
+>    their own queues, multiqueue RX etc. much more easily.
+> 
+>    Also, things like the "if I have just a single channel, drop the mux
+>    headers" can then be entirely done in the driver, and the default
+>    netdev no longer has the possibility of muxed and IP frames on the
+>    same datapath.
+> 
+>    This also enables more things like handling checksum offload directly
+>    in the driver, which doesn't behave so well with VLANs I think.
+> 
+>    All of that will just be easier for 5G too, I believe, with
+>    acceleration being handled per PDN, multi-queue working without
+>    ndo_select_queue, etc.
+> 
+>    Quite possibly there might be some additional (vendor-dependent?)
+>    configuration for when such netdevs are created, but we need to
+>    figure out if that really needs to be at creation time, or just
+>    ethtool later or something like that. I guess it depends on how
+>    generic it needs to be.
 
-TCP zerocopy takes a uarg reference for every skb, plus one for the
-tcp_sendmsg_locked datapath temporarily, to avoid reaching refcnt zero
-as it builds, sends and frees skbs inside its inner loop.
+I'm pretty sure it would have to be async via netlink or ethtool or
+whatever later, because the control plane (ModemManager,
+libmbim/libqmi, oFono, etc) is what sets up the PDP/EPS context and
+thus the data channel. A netdev (or a queue on that netdev) would be a
+representation of that data channel, but that's not something the
+kernel knows beforehand.
 
-UDP and RAW zerocopy do not send inside the inner loop so do not need
-the extra sock_zerocopy_get + sock_zerocopy_put pair. Commit
-52900d22288ed ("udp: elide zerocopy operation in hot path") introduced
-extra_uref to pass the initial reference taken in sock_zerocopy_alloc
-to the first generated skb.
+> 3) Separately, we need to have an ability to create "generalized control
+>    channels". I'm thinking there would be a general command "create
+>    control channel" with a given type (e.g. ATCMD, RPC, MBIM, GNSS) plus
+>    a list of vendor-specific channels (e.g. for tracing).
+> 
+>    I'm unsure where this channel should really go - somehow it seems to
+>    me that for many (most?) of these registering them as a serial line
+>    would be most appropriate, but some, especially vendor-defined
+>    channels like tracing, would probably better use a transport that's
+>    higher bandwidth than, e.g. netdevs.
 
-But, sock_zerocopy_realloc takes this extra reference at the start of
-every call. With MSG_MORE, no new skb may be generated to attach the
-extra_uref to, so refcnt is incorrectly 2 with only one skb.
+There's only a couple protocols that are run over serial transport,
+namely AT, DM/DIAG, and Sierra's CnS.
 
-Do not take the extra ref if uarg && !tcp, which implies MSG_MORE.
-Update extra_uref accordingly.
+Most of the rest like QMI and MBIM are packet-based protocols that can
+use different transports. QMI for example can use CDC-WDM for USB
+devices but on SoCs will use Qualcomm's SMD I believe.
 
-This conditional assignment triggers a false positive may be used
-uninitialized warning, so have to initialize extra_uref at define.
+Should you really need to account for these specially, or would some
+kind of sysfs linkage like SET_NETDEV_DEV() be more appropriate?
 
-Fixes: 52900d22288ed ("udp: elide zerocopy operation in hot path")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Diagnosed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/core/skbuff.c     | 6 +++++-
- net/ipv4/ip_output.c  | 4 ++--
- net/ipv6/ip6_output.c | 4 ++--
- 3 files changed, 9 insertions(+), 5 deletions(-)
+Really all you want to do is (a) identify which WWAN device a given
+control/data channel is for and (b) perhaps tag different control/data
+channels with attributes like primary/secondary/gps/sim/etc often
+through USB attributes or hardcoded data on SoCs.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e89be62826937..eaad23f9c7b5b 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1036,7 +1036,11 @@ struct ubuf_info *sock_zerocopy_realloc(struct sock *sk, size_t size,
- 			uarg->len++;
- 			uarg->bytelen = bytelen;
- 			atomic_set(&sk->sk_zckey, ++next);
--			sock_zerocopy_get(uarg);
-+
-+			/* no extra ref when appending to datagram (MSG_MORE) */
-+			if (sk->sk_type == SOCK_STREAM)
-+				sock_zerocopy_get(uarg);
-+
- 			return uarg;
- 		}
- 	}
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index bfd0ca554977a..8c9189a41b136 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -878,7 +878,7 @@ static int __ip_append_data(struct sock *sk,
- 	int csummode = CHECKSUM_NONE;
- 	struct rtable *rt = (struct rtable *)cork->dst;
- 	unsigned int wmem_alloc_delta = 0;
--	bool paged, extra_uref;
-+	bool paged, extra_uref = false;
- 	u32 tskey = 0;
- 
- 	skb = skb_peek_tail(queue);
-@@ -918,7 +918,7 @@ static int __ip_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = true;
-+		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index adef2236abe2e..f9e43323e6673 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1275,7 +1275,7 @@ static int __ip6_append_data(struct sock *sk,
- 	int csummode = CHECKSUM_NONE;
- 	unsigned int maxnonfragsize, headersize;
- 	unsigned int wmem_alloc_delta = 0;
--	bool paged, extra_uref;
-+	bool paged, extra_uref = false;
- 
- 	skb = skb_peek_tail(queue);
- 	if (!skb) {
-@@ -1344,7 +1344,7 @@ static int __ip6_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = true;
-+		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
--- 
-2.22.0.rc1.257.g3120a18244-goog
+>    One way I thought of doing this was to create an abstraction in the
+>    wwan framework that lets the driver use SKBs anyway (i.e. TX and RX
+>    on these channels using SKBs) and then translate them to some channel
+>    in the framework - that way, we can even select at runtime if we want
+>    a netdev (not really plugged into the network stack, ARPHDR_VOID?) or
+>    some other kind of transport. Building that would allow us to add
+>    transport types in the future too.
+
+I'm not quite sure what you mean here, can you explain?
+
+>    I guess such a channel should also be created by default, if it's
+>    not already created by the driver in some out-of-band way anyway (and
+>    most likely it shouldn't be, but I guess drivers might have some
+>    entirely different communication channels for AT CMDs?)
+
+For existing devices we're not talking about monolithic drivers here
+(excepting 'hso') which I guess is part of the issue. A given device
+might be driven by 2 or 3 different kernel drivers (usb-serial derived,
+netdev, cdc-wdm) and they all expose different channels and none of
+them coordinate. You have to do sysfs matching up the family tree to
+find out they are associated with each other. If the kernel can take
+over some of that responsibility great.
+
+But the diversity is large. Any given TTY representing an AT channel
+could be from USB drivers (usb-serial, cdc-wdm, vendor-specific driver
+like sierra/hso, option) or PCI (nozomi) or platform stuff (Qualcomm
+SoC ones). You can also do AT-over-QMI if you want.
+
+I think it's worth discussing how this could be better unified but
+maybe small steps to get there are more feasible.
+
+> 4) There was a question about something like pure IP channels that
+>    belong to another PDN and apparently now separate netdevs might be
+>    used, but it seems to me that could just be a queue reserved on the
+>    regular netdevs and then when you say ("enable video streaming on
+>    wwan1 interface") that can do some magic to classify the video
+>    packets (DSCP?) to another hardware queue for better QoS.
+
+Most stuff is pure IP these days (both for QMI/rmnet and MBIM at least)
+and having ethernet encapsulation is kinda pointless. But anyway you'd
+need some mechanism to map that particular queue to a given channel/PDN
+created by the control channel.
+
+But classification is mostly done in the hardware/network because
+setting different QoS for a given PDP/EPS context is basically saying
+how much airtime the queue gets. No amount of kernel involvement is
+going to change what the network lets you transmit. And I honestly
+don't know how the firmware responds when its internal queues for a
+given context are full that would tell a kernel queue to stop sending
+more.
+
+Dan
+
+> 
+> 
+> Anyway, if all of this doesn't seem completely outlandish I'll try to
+> write some code to illustrate it (sooner, rather than later).
+> 
+> Thanks,
+> johannes
+> 
 
