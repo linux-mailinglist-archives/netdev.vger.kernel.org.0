@@ -2,196 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE6D2DAFC
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED8F2DB43
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726054AbfE2Knr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:43:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725914AbfE2Knr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 06:43:47 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 287F220B1F;
-        Wed, 29 May 2019 10:43:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559126625;
-        bh=UZHuK5J4d2ARgW4rgRrKDqFG/SphReo8IyUG0b7Cu14=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aP/tevokopg/JutRzQ2zZtW6rD1c/SLHY9A2LqVun0P2V50OZqcuujcQqNyhZjdd0
-         m0J+yxsfWHsAvUtJth4efkAGhIJYqmo+m5O0L6LvthmvyFzYIQJ1F/5rpzJC/oSX0r
-         aM/CQVSNWxxBdj4Z68KpxgcQIUGT4pkSRyoz9maA=
-Date:   Wed, 29 May 2019 13:43:40 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v2 05/17] RDMA/counter: Add set/clear per-port
- auto mode support
-Message-ID: <20190529104340.GT4633@mtr-leonro.mtl.com>
-References: <20190429083453.16654-1-leon@kernel.org>
- <20190429083453.16654-6-leon@kernel.org>
- <20190522165608.GA14554@ziepe.ca>
- <20190529101218.GS4633@mtr-leonro.mtl.com>
+        id S1726097AbfE2K6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:58:38 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53881 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726018AbfE2K6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:58:38 -0400
+Received: by mail-wm1-f66.google.com with SMTP id d17so1348018wmb.3
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 03:58:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=4gM+INWJgv9FdjldlOiqfPQs/3KoKbaQl3oay9t+Fsc=;
+        b=BgC+O3V1CDCLG9eAonc2x3Z0pzthiSs90mJ/qq6CbpX16xCwRLb2GL1CAWLAh2YSbc
+         sP5VbYTGIBAl2Rs0tVm88/uFymzBoNl34hew/6CwMLQlov/U0iBZcNQUs0ZopEv1UfnU
+         4L9rdL7bvkyhznUXNIswsObQZQlY6UQbOzJpxyCIuKZOUj8G47PFf67/k76T0iFCq4Ae
+         UhxBBu6KiyMwzlp0eEa6AwfI7UMqsGIoyjh9w2tuuWoTRShkGHwzamHJ69dEQ3IO8iBF
+         vY7Ldvi6B5R+9+PixwqTO8/4kji1o1IA0ULXPE7ahcV9ZYhWB81p6tDCQlUKJUZDLFa4
+         bk7A==
+X-Gm-Message-State: APjAAAUXcnLrahAIvY1qWUH9jr+5WEVLgH1ceZ6gr+wrAhwxvljSZYXB
+        3mft9FmlgzSgr8aLhRsj14hMxQ==
+X-Google-Smtp-Source: APXvYqx8DFltvKkXywu9P2M63vLL0b9huUgQDGKM0bNckHf+CE/QRL47FPbLHu0JlvqcBJyV8vRuLQ==
+X-Received: by 2002:a1c:acc8:: with SMTP id v191mr6597928wme.177.1559127515682;
+        Wed, 29 May 2019 03:58:35 -0700 (PDT)
+Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
+        by smtp.gmail.com with ESMTPSA id j123sm9038134wmb.32.2019.05.29.03.58.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 29 May 2019 03:58:34 -0700 (PDT)
+Date:   Wed, 29 May 2019 12:58:32 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
+Message-ID: <20190529105832.oz3sagbne5teq3nt@steredhat>
+References: <20190528105623.27983-1-sgarzare@redhat.com>
+ <20190528105623.27983-4-sgarzare@redhat.com>
+ <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190529101218.GS4633@mtr-leonro.mtl.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 01:12:18PM +0300, Leon Romanovsky wrote:
-> On Wed, May 22, 2019 at 01:56:08PM -0300, Jason Gunthorpe wrote:
-> > On Mon, Apr 29, 2019 at 11:34:41AM +0300, Leon Romanovsky wrote:
-> > > From: Mark Zhang <markz@mellanox.com>
-> > >
-> > > Add an API to support set/clear per-port auto mode.
-> > >
-> > > Signed-off-by: Mark Zhang <markz@mellanox.com>
-> > > Reviewed-by: Majd Dibbiny <majd@mellanox.com>
-> > > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> > >  drivers/infiniband/core/Makefile   |  2 +-
-> > >  drivers/infiniband/core/counters.c | 77 ++++++++++++++++++++++++++++++
-> > >  drivers/infiniband/core/device.c   |  4 ++
-> > >  include/rdma/ib_verbs.h            |  2 +
-> > >  include/rdma/rdma_counter.h        | 24 ++++++++++
-> > >  include/uapi/rdma/rdma_netlink.h   | 26 ++++++++++
-> > >  6 files changed, 134 insertions(+), 1 deletion(-)
-> > >  create mode 100644 drivers/infiniband/core/counters.c
-> > >
-> > > diff --git a/drivers/infiniband/core/Makefile b/drivers/infiniband/core/Makefile
-> > > index 313f2349b518..cddf748c15c9 100644
-> > > +++ b/drivers/infiniband/core/Makefile
-> > > @@ -12,7 +12,7 @@ ib_core-y :=			packer.o ud_header.o verbs.o cq.o rw.o sysfs.o \
-> > >  				device.o fmr_pool.o cache.o netlink.o \
-> > >  				roce_gid_mgmt.o mr_pool.o addr.o sa_query.o \
-> > >  				multicast.o mad.o smi.o agent.o mad_rmpp.o \
-> > > -				nldev.o restrack.o
-> > > +				nldev.o restrack.o counters.o
-> > >
-> > >  ib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o
-> > >  ib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o
-> > > diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-> > > new file mode 100644
-> > > index 000000000000..bda8d945a758
-> > > +++ b/drivers/infiniband/core/counters.c
-> > > @@ -0,0 +1,77 @@
-> > > +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-> > > +/*
-> > > + * Copyright (c) 2019 Mellanox Technologies. All rights reserved.
-> > > + */
-> > > +#include <rdma/ib_verbs.h>
-> > > +#include <rdma/rdma_counter.h>
-> > > +
-> > > +#include "core_priv.h"
-> > > +#include "restrack.h"
-> > > +
-> > > +#define ALL_AUTO_MODE_MASKS (RDMA_COUNTER_MASK_QP_TYPE)
-> > > +
-> > > +static int __counter_set_mode(struct rdma_counter_mode *curr,
-> > > +			      enum rdma_nl_counter_mode new_mode,
-> > > +			      enum rdma_nl_counter_mask new_mask)
-> > > +{
-> > > +	if ((new_mode == RDMA_COUNTER_MODE_AUTO) &&
-> > > +	    ((new_mask & (~ALL_AUTO_MODE_MASKS)) ||
-> > > +	     (curr->mode != RDMA_COUNTER_MODE_NONE)))
-> > > +		return -EINVAL;
-> > > +
-> > > +	curr->mode = new_mode;
-> > > +	curr->mask = new_mask;
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +/**
-> > > + * rdma_counter_set_auto_mode() - Turn on/off per-port auto mode
-> > > + *
-> > > + * When @on is true, the @mask must be set
-> > > + */
-> > > +int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
-> > > +			       bool on, enum rdma_nl_counter_mask mask)
-> > > +{
-> > > +	struct rdma_port_counter *port_counter;
-> > > +	int ret;
-> > > +
-> > > +	if (!rdma_is_port_valid(dev, port))
-> > > +		return -EINVAL;
-> > > +
-> > > +	port_counter = &dev->port_data[port].port_counter;
-> > > +	mutex_lock(&port_counter->lock);
-> > > +	if (on) {
-> > > +		ret = __counter_set_mode(&port_counter->mode,
-> > > +					 RDMA_COUNTER_MODE_AUTO, mask);
-> > > +	} else {
-> > > +		if (port_counter->mode.mode != RDMA_COUNTER_MODE_AUTO) {
-> > > +			ret = -EINVAL;
-> > > +			goto out;
-> > > +		}
-> > > +		ret = __counter_set_mode(&port_counter->mode,
-> > > +					 RDMA_COUNTER_MODE_NONE, 0);
-> > > +	}
-> > > +
-> > > +out:
-> > > +	mutex_unlock(&port_counter->lock);
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +void rdma_counter_init(struct ib_device *dev)
-> > > +{
-> > > +	struct rdma_port_counter *port_counter;
-> > > +	u32 port;
-> > > +
-> > > +	if (!dev->ops.alloc_hw_stats)
-> > > +		return;
-> > > +
-> > > +	rdma_for_each_port(dev, port) {
-> > > +		port_counter = &dev->port_data[port].port_counter;
-> > > +		port_counter->mode.mode = RDMA_COUNTER_MODE_NONE;
-> > > +		mutex_init(&port_counter->lock);
-> > > +	}
-> > > +}
-> > > +
-> > > +void rdma_counter_cleanup(struct ib_device *dev)
-> > > +{
-> > > +}
-> >
-> > Please don't add empty functions
+On Wed, May 29, 2019 at 11:22:40AM +0800, Jason Wang wrote:
+> 
+> On 2019/5/28 下午6:56, Stefano Garzarella wrote:
+> > We flush all pending works before to call vdev->config->reset(vdev),
+> > but other works can be queued before the vdev->config->del_vqs(vdev),
+> > so we add another flush after it, to avoid use after free.
+> > 
+> > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > ---
+> >   net/vmw_vsock/virtio_transport.c | 23 +++++++++++++++++------
+> >   1 file changed, 17 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> > index e694df10ab61..ad093ce96693 100644
+> > --- a/net/vmw_vsock/virtio_transport.c
+> > +++ b/net/vmw_vsock/virtio_transport.c
+> > @@ -660,6 +660,15 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+> >   	return ret;
+> >   }
+> > +static void virtio_vsock_flush_works(struct virtio_vsock *vsock)
+> > +{
+> > +	flush_work(&vsock->loopback_work);
+> > +	flush_work(&vsock->rx_work);
+> > +	flush_work(&vsock->tx_work);
+> > +	flush_work(&vsock->event_work);
+> > +	flush_work(&vsock->send_pkt_work);
+> > +}
+> > +
+> >   static void virtio_vsock_remove(struct virtio_device *vdev)
+> >   {
+> >   	struct virtio_vsock *vsock = vdev->priv;
+> > @@ -668,12 +677,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+> >   	mutex_lock(&the_virtio_vsock_mutex);
+> >   	the_virtio_vsock = NULL;
+> > -	flush_work(&vsock->loopback_work);
+> > -	flush_work(&vsock->rx_work);
+> > -	flush_work(&vsock->tx_work);
+> > -	flush_work(&vsock->event_work);
+> > -	flush_work(&vsock->send_pkt_work);
+> > -
+> >   	/* Reset all connected sockets when the device disappear */
+> >   	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
+> > @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+> >   	vsock->event_run = false;
+> >   	mutex_unlock(&vsock->event_lock);
+> > +	/* Flush all pending works */
+> > +	virtio_vsock_flush_works(vsock);
+> > +
+> >   	/* Flush all device writes and interrupts, device will not use any
+> >   	 * more buffers.
+> >   	 */
+> > @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+> >   	/* Delete virtqueues and flush outstanding callbacks if any */
+> >   	vdev->config->del_vqs(vdev);
+> > +	/* Other works can be queued before 'config->del_vqs()', so we flush
+> > +	 * all works before to free the vsock object to avoid use after free.
+> > +	 */
+> > +	virtio_vsock_flush_works(vsock);
+> 
+> 
+> Some questions after a quick glance:
+> 
+> 1) It looks to me that the work could be queued from the path of
+> vsock_transport_cancel_pkt() . Is that synchronized here?
 >
-> It is brought here for symmetry, the function is going to be filled in
-> patch "RDMA/core: Get sum value of all counters when perform a sysfs
-> stat read".
->
-> >
-> > > @@ -1304,6 +1307,7 @@ static void __ib_unregister_device(struct ib_device *ib_dev)
-> > >  		goto out;
-> > >
-> > >  	disable_device(ib_dev);
-> > > +	rdma_counter_cleanup(ib_dev);
-> >
-> > This is the wrong place to call this, the patch that actually adds a
-> > body is just doing kfree's so it is properly called
-> > 'rdma_counter_release' and it belongs in ib_device_release()
->
-> I'll move.
->
-> >
-> > And it shouldn't test hw_stats, and it shouldn't have a 'fail' stanza
-> > for allocation either.
->
-> Not all devices implement hw_stat.
 
-ok, I think that I found a way to rewrite the code without need to check hw_stat.
+Both virtio_transport_send_pkt() and vsock_transport_cancel_pkt() can
+queue work from the upper layer (socket).
 
-Thanks
+Setting the_virtio_vsock to NULL, should synchronize, but after a careful look
+a rare issue could happen:
+we are setting the_virtio_vsock to NULL at the start of .remove() and we
+are freeing the object pointed by it at the end of .remove(), so
+virtio_transport_send_pkt() or vsock_transport_cancel_pkt() may still be
+running, accessing the object that we are freed.
 
->
-> >
-> > Jason
+Should I use something like RCU to prevent this issue?
+
+    virtio_transport_send_pkt() and vsock_transport_cancel_pkt()
+    {
+        rcu_read_lock();
+        vsock = rcu_dereference(the_virtio_vsock_mutex);
+        ...
+        rcu_read_unlock();
+    }
+
+    virtio_vsock_remove()
+    {
+        rcu_assign_pointer(the_virtio_vsock_mutex, NULL);
+        synchronize_rcu();
+
+        ...
+
+        free(vsock);
+    }
+
+Could there be a better approach?
+
+
+> 2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run still
+> needed? It looks to me we've already done except that we need flush rx_work
+> in the end since send_pkt_work can requeue rx_work.
+
+The main reason of tx_run/rx_run/event_run is to prevent that a worker
+function is running while we are calling config->reset().
+
+E.g. if an interrupt comes between virtio_vsock_flush_works() and
+config->reset(), it can queue new works that can access the device while
+we are in config->reset().
+
+IMHO they are still needed.
+
+What do you think?
+
+
+Thanks for your questions,
+Stefano
