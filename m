@@ -2,176 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA582E252
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F63F2E282
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbfE2QfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 12:35:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34316 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726140AbfE2QfK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 12:35:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 44FF8ACC5;
-        Wed, 29 May 2019 16:35:08 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH bpf v3] libbpf: Return btf_fd for load_sk_storage_btf
-Date:   Wed, 29 May 2019 18:36:16 +0200
-Message-Id: <20190529163616.8418-1-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.21.0
+        id S1727049AbfE2Qr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 12:47:59 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35478 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726605AbfE2Qr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 12:47:59 -0400
+Received: by mail-pl1-f193.google.com with SMTP id p1so1302261plo.2
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 09:47:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=LArDVKRa2Hzf5PlnwX4cyFiSYWQYWyR8ZEKtVR4D5g0=;
+        b=wZvjiLkMjxIV3U605ucfGcHlTeqqqEyPbkHoEG0bR5Yc1l7/jTbywqQSebf9rf6u6a
+         D0pSapazx0IpZu1vahEgwwUB7dHZByLrGOqtmWiJjlzvmiUpu+WecHvNCu4+owbN1VSu
+         1LbVESAaGpJk8Gd3NpOlHfZCohtESYfH0ll9F0ZJuG4ff+dTNwzqPT0TQl5CPbVjC8jw
+         UcNcmgSrFD8AYFnMj/6YSI2JNzc8EXgauJwe+IcDNLvQ2qjAE+VVAqMJh2Q4TablssOU
+         lRVEJeU17QtXUOAdJMx8Mg/y4QaL6J0dRKv8ePMFRSeGoHjwJwbNtiwdZ47TaKBvw5MP
+         +kRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=LArDVKRa2Hzf5PlnwX4cyFiSYWQYWyR8ZEKtVR4D5g0=;
+        b=AOE6muI8MiSbIbVZs2JfBt5Dy0SzgLOT711ekHVs4CIgA74ok4PxKMyOs2qSkp4/FA
+         TPEIAfbXi7Tq2Xy5XrRG+XfVWzA2YsxFp4MpSETh9nH9kUK/VsjNTARtKGNazo7VT452
+         UBAGCIRApVnCGHMplqJaUVBOMJjWjnyvU5ksjSzOU96/I90S3i45mx3QqlzZR069NaTs
+         Vg6ZeW2H1cz0AiAcSHjh5FKy9x5pRyycw3fNd2wQF+4wGIINZdqN0RHfu6CiVmPGWyLO
+         BufBU1AGORCXeJUg/oqNIWHZODG+ju+vhRFvJMXzsGAjMiBcsu2Iv4yjMF5/AbqLCmCN
+         Ak+w==
+X-Gm-Message-State: APjAAAUEHiyrHKDY9mOtoPFKpiFwpB7S8xS7WPE0FGOph7NxvQ76KJu6
+        HyJ+8szku/9Q9VXMTL0GDP6Jtw==
+X-Google-Smtp-Source: APXvYqwRy4QHiFsgMTSRreFgKpnfxh+hV5epAT62qU5fz/u3hiRqzhJSXzFmL5UXecq+g+OMxS6vvg==
+X-Received: by 2002:a17:902:b204:: with SMTP id t4mr90696012plr.285.1559148478587;
+        Wed, 29 May 2019 09:47:58 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id c127sm161004pfb.107.2019.05.29.09.47.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 29 May 2019 09:47:58 -0700 (PDT)
+Date:   Wed, 29 May 2019 09:47:54 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, saeedm@mellanox.com,
+        leon@kernel.org, f.fainelli@gmail.com
+Subject: Re: [patch net-next v2 7/7] netdevsim: implement fake flash
+ updating with notifications
+Message-ID: <20190529094754.49a15c20@cakuba.netronome.com>
+In-Reply-To: <20190529080016.GD2252@nanopsycho>
+References: <20190528114846.1983-1-jiri@resnulli.us>
+        <20190528114846.1983-8-jiri@resnulli.us>
+        <20190528130115.5062c085@cakuba.netronome.com>
+        <20190529080016.GD2252@nanopsycho>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before this change, function load_sk_storage_btf expected that
-libbpf__probe_raw_btf was returning a BTF descriptor, but in fact it was
-returning an information about whether the probe was successful (0 or
-1). load_sk_storage_btf was using that value as an argument of the close
-function, which was resulting in closing stdout and thus terminating the
-process which called that function.
+On Wed, 29 May 2019 10:00:16 +0200, Jiri Pirko wrote:
+> Tue, May 28, 2019 at 10:01:15PM CEST, jakub.kicinski@netronome.com wrote:
+> >On Tue, 28 May 2019 13:48:46 +0200, Jiri Pirko wrote:  
+> >> From: Jiri Pirko <jiri@mellanox.com>
+> >> 
+> >> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> >> ---
+> >> v1->v2:
+> >> - added debugfs toggle to enable/disable flash status notifications  
+> >
+> >Could you please add a selftest making use of netdevsim code?  
+> 
+> How do you imagine the selftest should look like. What should it test
+> exactly?
 
-That bug was visible in bpftool. `bpftool feature` subcommand was always
-exiting too early (because of closed stdout) and it didn't display all
-requested probes. `bpftool -j feature` or `bpftool -p feature` were not
-returning a valid json object.
+Well you're adding notifications, probably that the notifications
+arrive correctly?  Plus that devlink doesn't hung when there are no
+notifications.  It doesn't have to be a super advanced test, just
+exercising the code paths in the kernel is fine.
 
-This change remnames the libbpf__probe_raw_btf function to
-libbpf__load_raw_btf, which now returns a BTF descriptor, as expected in
-load_sk_storage_btf.
+In principle netdevsim is for testing and you add no tests, its not
+the first time you're doing this.
 
-v2:
-- Fix typo in the commit message.
+> >Sorry, I must have liked the feature so much first time I missed this :)
+> >  
+> >> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> >> index b509b941d5ca..c5c417a3c0ce 100644
+> >> --- a/drivers/net/netdevsim/dev.c
+> >> +++ b/drivers/net/netdevsim/dev.c
+> >> @@ -220,8 +222,49 @@ static int nsim_dev_reload(struct devlink *devlink,
+> >>  	return 0;
+> >>  }
+> >>  
+> >> +#define NSIM_DEV_FLASH_SIZE 500000
+> >> +#define NSIM_DEV_FLASH_CHUNK_SIZE 1000
+> >> +#define NSIM_DEV_FLASH_CHUNK_TIME_MS 10
+> >> +
+> >> +static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
+> >> +				 const char *component,
+> >> +				 struct netlink_ext_ack *extack)
+> >> +{
+> >> +	struct nsim_dev *nsim_dev = devlink_priv(devlink);
+> >> +	int i;
+> >> +
+> >> +	if (nsim_dev->fw_update_status) {
+> >> +		devlink_flash_update_begin_notify(devlink);
+> >> +		devlink_flash_update_status_notify(devlink,
+> >> +						   "Preparing to flash",
+> >> +						   component, 0, 0);
+> >> +	}
+> >> +
+> >> +	for (i = 0; i < NSIM_DEV_FLASH_SIZE / NSIM_DEV_FLASH_CHUNK_SIZE; i++) {
+> >> +		if (nsim_dev->fw_update_status)
+> >> +			devlink_flash_update_status_notify(devlink, "Flashing",
+> >> +							   component,
+> >> +							   i * NSIM_DEV_FLASH_CHUNK_SIZE,
+> >> +							   NSIM_DEV_FLASH_SIZE);
+> >> +		msleep(NSIM_DEV_FLASH_CHUNK_TIME_MS);  
+> >
+> >In automated testing it may be a little annoying if this takes > 5sec  
+> 
+> I wanted to emulate real device. I can make this 5 sec if you want, no
+> problem.
 
-v3:
-- Simplify BTF descriptor handling in bpf_object__probe_btf_* functions.
-- Rename libbpf__probe_raw_btf function to libbpf__load_raw_btf and
-return a BTF descriptor.
+Is my maths off?  The loop is 5 sec now:
 
-Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
----
- tools/lib/bpf/libbpf.c          | 28 ++++++++++++++++------------
- tools/lib/bpf/libbpf_internal.h |  4 ++--
- tools/lib/bpf/libbpf_probes.c   | 13 ++++---------
- 3 files changed, 22 insertions(+), 23 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 197b574406b3..5d046cc7b207 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1645,14 +1645,16 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
- 		/* FUNC x */                                    /* [3] */
- 		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
- 	};
--	int res;
-+	int btf_fd;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__load_raw_btf((char *)types, sizeof(types),
-+				      strs, sizeof(strs));
-+	if (btf_fd >= 0) {
- 		obj->caps.btf_func = 1;
-+		close(btf_fd);
-+		return 1;
-+	}
-+
- 	return 0;
- }
- 
-@@ -1670,14 +1672,16 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
- 		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
- 		BTF_VAR_SECINFO_ENC(2, 0, 4),
- 	};
--	int res;
-+	int btf_fd;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__load_raw_btf((char *)types, sizeof(types),
-+				      strs, sizeof(strs));
-+	if (btf_fd >= 0) {
- 		obj->caps.btf_datasec = 1;
-+		close(btf_fd);
-+		return 1;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index f3025b4d90e1..dfab8012185c 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -34,7 +34,7 @@ do {				\
- #define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
- #define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
- 
--int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
--			  const char *str_sec, size_t str_len);
-+int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
-+			 const char *str_sec, size_t str_len);
- 
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 5e2aa83f637a..6635a31a7a16 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -133,8 +133,8 @@ bool bpf_probe_prog_type(enum bpf_prog_type prog_type, __u32 ifindex)
- 	return errno != EINVAL && errno != EOPNOTSUPP;
- }
- 
--int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
--			  const char *str_sec, size_t str_len)
-+int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
-+			 const char *str_sec, size_t str_len)
- {
- 	struct btf_header hdr = {
- 		.magic = BTF_MAGIC,
-@@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
- 	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
- 
- 	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
--	if (btf_fd < 0) {
--		free(raw_btf);
--		return 0;
--	}
- 
--	close(btf_fd);
- 	free(raw_btf);
--	return 1;
-+	return btf_fd;
- }
- 
- static int load_sk_storage_btf(void)
-@@ -190,7 +185,7 @@ static int load_sk_storage_btf(void)
- 		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
- 	};
- 
--	return libbpf__probe_raw_btf((char *)types, sizeof(types),
-+	return libbpf__load_raw_btf((char *)types, sizeof(types),
- 				     strs, sizeof(strs));
- }
- 
--- 
-2.21.0
-
+ 500000 / 1000 * 10 ms = 5000 ms = 5 sec?
