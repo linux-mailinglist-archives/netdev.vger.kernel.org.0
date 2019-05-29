@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C952D2C1
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3142D2D2BD
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727644AbfE2ARk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:17:40 -0400
-Received: from mga11.intel.com ([192.55.52.93]:59374 "EHLO mga11.intel.com"
+        id S1727535AbfE2ARc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:17:32 -0400
+Received: from mga11.intel.com ([192.55.52.93]:59372 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727182AbfE2AR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727254AbfE2AR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 28 May 2019 20:17:27 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,13 +20,15 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 28 May 2019 17:17:27 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Joseph Yasi <joe.yasi@gmail.com>,
         Aaron Brown <aaron.f.brown@intel.com>,
+        Oleksandr Natalenko <oleksandr@redhat.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 06/10] igc: Remove the obsolete workaround
-Date:   Tue, 28 May 2019 17:17:22 -0700
-Message-Id: <20190529001726.26097-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 07/10] Revert "e1000e: fix cyclic resets at link up with active tx"
+Date:   Tue, 28 May 2019 17:17:23 -0700
+Message-Id: <20190529001726.26097-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
 References: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
@@ -37,125 +39,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 
-Enables a resend request after the completion timeout workaround is not
-relevant for i225 device. This patch is clean code relevant this
-workaround.
-Minor cosmetic fixes, replace the 'spaces' with 'tabs'
+This reverts commit 0f9e980bf5ee1a97e2e401c846b2af989eb21c61.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+That change cased false-positive warning about hardware hang:
+
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+e1000e 0000:00:1f.6 eth0: Detected Hardware Unit Hang:
+   TDH                  <0>
+   TDT                  <1>
+   next_to_use          <1>
+   next_to_clean        <0>
+buffer_info[next_to_clean]:
+   time_stamp           <fffba7a7>
+   next_to_watch        <0>
+   jiffies              <fffbb140>
+   next_to_watch.status <0>
+MAC Status             <40080080>
+PHY Status             <7949>
+PHY 1000BASE-T Status  <0>
+PHY Extended Status    <3000>
+PCI Status             <10>
+e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+
+Besides warning everything works fine.
+Original issue will be fixed property in following patch.
+
+Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Reported-by: Joseph Yasi <joe.yasi@gmail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=203175
+Tested-by: Joseph Yasi <joe.yasi@gmail.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_base.c    | 49 --------------------
- drivers/net/ethernet/intel/igc/igc_defines.h | 12 ++---
- 2 files changed, 3 insertions(+), 58 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_base.c b/drivers/net/ethernet/intel/igc/igc_base.c
-index 51a8b8769c67..59258d791106 100644
---- a/drivers/net/ethernet/intel/igc/igc_base.c
-+++ b/drivers/net/ethernet/intel/igc/igc_base.c
-@@ -9,50 +9,6 @@
- #include "igc_base.h"
- #include "igc.h"
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 0e09bede42a2..e21b2ffd1e92 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -5308,13 +5308,8 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 			/* 8000ES2LAN requires a Rx packet buffer work-around
+ 			 * on link down event; reset the controller to flush
+ 			 * the Rx packet buffer.
+-			 *
+-			 * If the link is lost the controller stops DMA, but
+-			 * if there is queued Tx work it cannot be done.  So
+-			 * reset the controller to flush the Tx packet buffers.
+ 			 */
+-			if ((adapter->flags & FLAG_RX_NEEDS_RESTART) ||
+-			    e1000_desc_unused(tx_ring) + 1 < tx_ring->count)
++			if (adapter->flags & FLAG_RX_NEEDS_RESTART)
+ 				adapter->flags |= FLAG_RESTART_NOW;
+ 			else
+ 				pm_schedule_suspend(netdev->dev.parent,
+@@ -5337,6 +5332,14 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 	adapter->gotc_old = adapter->stats.gotc;
+ 	spin_unlock(&adapter->stats64_lock);
  
--/**
-- * igc_set_pcie_completion_timeout - set pci-e completion timeout
-- * @hw: pointer to the HW structure
-- */
--static s32 igc_set_pcie_completion_timeout(struct igc_hw *hw)
--{
--	u32 gcr = rd32(IGC_GCR);
--	u16 pcie_devctl2;
--	s32 ret_val = 0;
--
--	/* only take action if timeout value is defaulted to 0 */
--	if (gcr & IGC_GCR_CMPL_TMOUT_MASK)
--		goto out;
--
--	/* if capabilities version is type 1 we can write the
--	 * timeout of 10ms to 200ms through the GCR register
--	 */
--	if (!(gcr & IGC_GCR_CAP_VER2)) {
--		gcr |= IGC_GCR_CMPL_TMOUT_10ms;
--		goto out;
--	}
--
--	/* for version 2 capabilities we need to write the config space
--	 * directly in order to set the completion timeout value for
--	 * 16ms to 55ms
--	 */
--	ret_val = igc_read_pcie_cap_reg(hw, PCIE_DEVICE_CONTROL2,
--					&pcie_devctl2);
--	if (ret_val)
--		goto out;
--
--	pcie_devctl2 |= PCIE_DEVICE_CONTROL2_16ms;
--
--	ret_val = igc_write_pcie_cap_reg(hw, PCIE_DEVICE_CONTROL2,
--					 &pcie_devctl2);
--out:
--	/* disable completion timeout resend */
--	gcr &= ~IGC_GCR_CMPL_TMOUT_RESEND;
--
--	wr32(IGC_GCR, gcr);
--
--	return ret_val;
--}
--
- /**
-  * igc_reset_hw_base - Reset hardware
-  * @hw: pointer to the HW structure
-@@ -72,11 +28,6 @@ static s32 igc_reset_hw_base(struct igc_hw *hw)
- 	if (ret_val)
- 		hw_dbg("PCI-E Master disable polling has failed.\n");
- 
--	/* set the completion timeout for interface */
--	ret_val = igc_set_pcie_completion_timeout(hw);
--	if (ret_val)
--		hw_dbg("PCI-E Set completion timeout has failed.\n");
--
- 	hw_dbg("Masking off all interrupts\n");
- 	wr32(IGC_IMC, 0xffffffff);
- 
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index 6f17ed3de995..5f6bc67cb33b 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -5,8 +5,8 @@
- #define _IGC_DEFINES_H_
- 
- /* Number of Transmit and Receive Descriptors must be a multiple of 8 */
--#define REQ_TX_DESCRIPTOR_MULTIPLE  8
--#define REQ_RX_DESCRIPTOR_MULTIPLE  8
-+#define REQ_TX_DESCRIPTOR_MULTIPLE	8
-+#define REQ_RX_DESCRIPTOR_MULTIPLE	8
- 
- #define IGC_CTRL_EXT_DRV_LOAD	0x10000000 /* Drv loaded bit for FW */
- 
-@@ -29,12 +29,6 @@
- /* Status of Master requests. */
- #define IGC_STATUS_GIO_MASTER_ENABLE	0x00080000
- 
--/* PCI Express Control */
--#define IGC_GCR_CMPL_TMOUT_MASK		0x0000F000
--#define IGC_GCR_CMPL_TMOUT_10ms		0x00001000
--#define IGC_GCR_CMPL_TMOUT_RESEND	0x00010000
--#define IGC_GCR_CAP_VER2		0x00040000
--
- /* Receive Address
-  * Number of high/low register pairs in the RAR. The RAR (Receive Address
-  * Registers) holds the directed and multicast addresses that we monitor.
-@@ -395,7 +389,7 @@
- #define IGC_MDIC_ERROR		0x40000000
- #define IGC_MDIC_DEST		0x80000000
- 
--#define IGC_N0_QUEUE -1
-+#define IGC_N0_QUEUE		-1
- 
- #define IGC_MAX_MAC_HDR_LEN	127
- #define IGC_MAX_NETWORK_HDR_LEN	511
++	/* If the link is lost the controller stops DMA, but
++	 * if there is queued Tx work it cannot be done.  So
++	 * reset the controller to flush the Tx packet buffers.
++	 */
++	if (!netif_carrier_ok(netdev) &&
++	    (e1000_desc_unused(tx_ring) + 1 < tx_ring->count))
++		adapter->flags |= FLAG_RESTART_NOW;
++
+ 	/* If reset is necessary, do it outside of interrupt context. */
+ 	if (adapter->flags & FLAG_RESTART_NOW) {
+ 		schedule_work(&adapter->reset_task);
 -- 
 2.21.0
 
