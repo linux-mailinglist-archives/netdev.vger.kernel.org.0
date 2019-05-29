@@ -2,204 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A5842D3B7
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 04:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC80F2DA40
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfE2CSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 22:18:25 -0400
-Received: from mga11.intel.com ([192.55.52.93]:1353 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726253AbfE2CSY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 22:18:24 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 19:18:23 -0700
-X-ExtLoop1: 1
-Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
-  by fmsmga008.fm.intel.com with ESMTP; 28 May 2019 19:18:20 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1726097AbfE2KTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:19:54 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:41906 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725894AbfE2KTy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:19:54 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9A355C0B5D;
+        Wed, 29 May 2019 10:20:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559125202; bh=CMy51JE8T+YPenb1ih3A8dtRDeJ83erB+4fJTh+U8/I=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=N+lR0n52tLvat1+WG/X4JISGvOtS1Sm55Q+e2sAkGNFUNMF75xeqUbxQY4tX1nEe4
+         gQ6gbpelkRJnIxRFuypeb8cfKZ5IOstARV09dNKa9GanFdBYQLar7+1PJFVDOSsW1G
+         loTgQNWIpfmMtzIJ4iE1EmrTeI+ZvI0jZ498eVzeTYE1HRzYfBllly5GKrH+TrvMA3
+         d2imQ2CMERdzV1nTmNA2blX1I6o7GAymmRu7D0h70ek2EadD79BE/1rB6IOJY3i7Ql
+         +L5slKX07+h/LvMqFQB/m2R2o7JPvz0jCp6VX5xttlHL2iqEcXhkk5rAn0yBaLZzo7
+         fzTEwInWq7k5A==
+Received: from US01WEHTC2.internal.synopsys.com (us01wehtc2.internal.synopsys.com [10.12.239.237])
+        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id D09C0A0093;
+        Wed, 29 May 2019 10:19:51 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ US01WEHTC2.internal.synopsys.com (10.12.239.237) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 29 May 2019 03:19:51 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
+ 29 May 2019 12:19:49 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Voon Weifeng <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         biao huang <biao.huang@mediatek.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [PATCH net-next v3 5/5] net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
-Date:   Wed, 29 May 2019 18:18:38 +0800
-Message-Id: <1559125118-24324-6-git-send-email-weifeng.voon@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1559125118-24324-1-git-send-email-weifeng.voon@intel.com>
-References: <1559125118-24324-1-git-send-email-weifeng.voon@intel.com>
+        Kweh Hock Leong <hock.leong.kweh@intel.com>
+Subject: RE: [PATCH net-next v4 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Topic: [PATCH net-next v4 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Index: AQHVFfyhBPDZHqmVr0ee5rETl2X1rKaB4+Pw
+Date:   Wed, 29 May 2019 10:19:48 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9333E2@DE02WEMBXB.internal.synopsys.com>
+References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
+ <1559149107-14631-3-git-send-email-weifeng.voon@intel.com>
+In-Reply-To: <1559149107-14631-3-git-send-email-weifeng.voon@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added EHL SGMII 1Gbps PCI ID. Different MII and speed will have
-different PCI ID.
+From: Voon Weifeng <weifeng.voon@intel.com>
+Date: Wed, May 29, 2019 at 17:58:24
 
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 111 +++++++++++++++++++++++
- 1 file changed, 111 insertions(+)
+> +/* Helpers for DW xPCS */
+> +struct stmmac_xpcs {
+> +	void (*xpcs_init)(struct net_device *ndev, int pcs_mode);
+> +	void (*xpcs_ctrl_ane)(struct net_device *ndev, bool ane, bool loopback)=
+;
+> +	void (*xpcs_get_adv_lp)(struct net_device *ndev, struct rgmii_adv *adv,
+> +				int pcs_mode);
+> +	int (*xpcs_irq_status)(struct net_device *ndev,
+> +			       struct stmmac_extra_stats *x, int pcs_mode);
+> +};
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 7cbc01f316fa..f2225c1eafc2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -23,6 +23,7 @@
- #include <linux/dmi.h>
- 
- #include "stmmac.h"
-+#include "dwxpcs.h"
- 
- /*
-  * This struct is used to associate PCI Function of MAC controller on a board,
-@@ -118,6 +119,113 @@ static int stmmac_default_data(struct pci_dev *pdev,
- 	.setup = stmmac_default_data,
- };
- 
-+static int ehl_common_data(struct pci_dev *pdev,
-+			   struct plat_stmmacenet_data *plat)
-+{
-+	int i;
-+
-+	plat->bus_id = 1;
-+	plat->phy_addr = 0;
-+	plat->clk_csr = 5;
-+	plat->has_gmac = 0;
-+	plat->has_gmac4 = 1;
-+	plat->xpcs_phy_addr = 0x16;
-+	plat->pcs_mode = AN_CTRL_PCS_MD_C37_SGMII;
-+	plat->force_sf_dma_mode = 0;
-+	plat->tso_en = 1;
-+
-+	plat->rx_queues_to_use = 8;
-+	plat->tx_queues_to_use = 8;
-+	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
-+
-+	for (i = 0; i < plat->rx_queues_to_use; i++) {
-+		plat->rx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+		plat->rx_queues_cfg[i].chan = i;
-+
-+		/* Disable Priority config by default */
-+		plat->rx_queues_cfg[i].use_prio = false;
-+
-+		/* Disable RX queues routing by default */
-+		plat->rx_queues_cfg[i].pkt_route = 0x0;
-+	}
-+
-+	for (i = 0; i < plat->tx_queues_to_use; i++) {
-+		plat->tx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+
-+		/* Disable Priority config by default */
-+		plat->tx_queues_cfg[i].use_prio = false;
-+	}
-+
-+	plat->tx_sched_algorithm = MTL_TX_ALGORITHM_WRR;
-+	plat->tx_queues_cfg[0].weight = 0x09;
-+	plat->tx_queues_cfg[1].weight = 0x0A;
-+	plat->tx_queues_cfg[2].weight = 0x0B;
-+	plat->tx_queues_cfg[3].weight = 0x0C;
-+	plat->tx_queues_cfg[4].weight = 0x0D;
-+	plat->tx_queues_cfg[5].weight = 0x0E;
-+	plat->tx_queues_cfg[6].weight = 0x0F;
-+	plat->tx_queues_cfg[7].weight = 0x10;
-+
-+	plat->mdio_bus_data->phy_reset = NULL;
-+	plat->mdio_bus_data->phy_mask = 0;
-+
-+	plat->dma_cfg->pbl = 32;
-+	plat->dma_cfg->pblx8 = true;
-+	plat->dma_cfg->fixed_burst = 0;
-+	plat->dma_cfg->mixed_burst = 0;
-+	plat->dma_cfg->aal = 0;
-+
-+	plat->axi = devm_kzalloc(&pdev->dev, sizeof(*plat->axi),
-+				 GFP_KERNEL);
-+	if (!plat->axi)
-+		return -ENOMEM;
-+	plat->axi->axi_lpi_en = 0;
-+	plat->axi->axi_xit_frm = 0;
-+	plat->axi->axi_wr_osr_lmt = 0;
-+	plat->axi->axi_rd_osr_lmt = 2;
-+	plat->axi->axi_blen[0] = 4;
-+	plat->axi->axi_blen[1] = 8;
-+	plat->axi->axi_blen[2] = 16;
-+
-+	/* Set default value for multicast hash bins */
-+	plat->multicast_filter_bins = HASH_TABLE_SIZE;
-+
-+	/* Set default value for unicast filter entries */
-+	plat->unicast_filter_entries = 1;
-+
-+	/* Set the maxmtu to a default of JUMBO_LEN */
-+	plat->maxmtu = JUMBO_LEN;
-+
-+	/* Set 32KB fifo size as the advertised fifo size in
-+	 * the HW features is not the same as the HW implementation
-+	 */
-+	plat->tx_fifo_size = 32768;
-+	plat->rx_fifo_size = 32768;
-+
-+	return 0;
-+}
-+
-+static int ehl_sgmii1g_data(struct pci_dev *pdev,
-+			    struct plat_stmmacenet_data *plat)
-+{
-+	int ret;
-+
-+	/* Set common default data first */
-+	ret = ehl_common_data(pdev, plat);
-+
-+	if (ret)
-+		return ret;
-+
-+	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->has_xpcs = 1;
-+
-+	return 0;
-+}
-+
-+static struct stmmac_pci_info ehl_sgmii1g_pci_info = {
-+	.setup = ehl_sgmii1g_data,
-+};
-+
- static const struct stmmac_pci_func_data galileo_stmmac_func_data[] = {
- 	{
- 		.func = 6,
-@@ -290,6 +398,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 	res.addr = pcim_iomap_table(pdev)[i];
- 	res.wol_irq = pdev->irq;
- 	res.irq = pdev->irq;
-+	res.xpcs_irq = 0;
- 
- 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
- }
-@@ -359,6 +468,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 
- #define STMMAC_QUARK_ID  0x0937
- #define STMMAC_DEVICE_ID 0x1108
-+#define STMMAC_EHL_SGMII1G_ID   0x4b31
- 
- #define STMMAC_DEVICE(vendor_id, dev_id, info)	{	\
- 	PCI_VDEVICE(vendor_id, dev_id),			\
-@@ -369,6 +479,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 	STMMAC_DEVICE(STMMAC, STMMAC_DEVICE_ID, stmmac_pci_info),
- 	STMMAC_DEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_MAC, stmmac_pci_info),
- 	STMMAC_DEVICE(INTEL, STMMAC_QUARK_ID, quark_pci_info),
-+	STMMAC_DEVICE(INTEL, STMMAC_EHL_SGMII1G_ID, ehl_sgmii1g_pci_info),
- 	{}
- };
- 
--- 
-1.9.1
+Please rename the structure to stmmac_xpcs_ops, to keep consistency with=20
+other helpers.
 
+Thanks,
+Jose Miguel Abreu
