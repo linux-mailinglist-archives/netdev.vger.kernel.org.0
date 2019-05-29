@@ -2,70 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AA02D40C
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4CC2D434
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726131AbfE2DAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 23:00:41 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34842 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725816AbfE2DAl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 23:00:41 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BEBA775CA4A0DB04526B;
-        Wed, 29 May 2019 11:00:33 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Wed, 29 May 2019
- 11:00:26 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <maxime.chevallier@bootlin.com>,
-        <antoine.tenart@bootlin.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v2 net-next] net: mvpp2: cls: Remove unnessesary check in mvpp2_ethtool_cls_rule_ins
-Date:   Wed, 29 May 2019 10:59:06 +0800
-Message-ID: <20190529025906.17452-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-In-Reply-To: <20190527134646.21804-1-yuehaibing@huawei.com>
-References: <20190527134646.21804-1-yuehaibing@huawei.com>
+        id S1726399AbfE2DWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 23:22:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58200 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725856AbfE2DWw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 23:22:52 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D2D51308425C;
+        Wed, 29 May 2019 03:22:51 +0000 (UTC)
+Received: from [10.72.12.48] (ovpn-12-48.pek2.redhat.com [10.72.12.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D46731972B;
+        Wed, 29 May 2019 03:22:42 +0000 (UTC)
+Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
+To:     Stefano Garzarella <sgarzare@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+References: <20190528105623.27983-1-sgarzare@redhat.com>
+ <20190528105623.27983-4-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
+Date:   Wed, 29 May 2019 11:22:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20190528105623.27983-4-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 29 May 2019 03:22:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix smatch warning:
 
-drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c:1236
- mvpp2_ethtool_cls_rule_ins() warn: unsigned 'info->fs.location' is never less than zero.
+On 2019/5/28 下午6:56, Stefano Garzarella wrote:
+> We flush all pending works before to call vdev->config->reset(vdev),
+> but other works can be queued before the vdev->config->del_vqs(vdev),
+> so we add another flush after it, to avoid use after free.
+>
+> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>   net/vmw_vsock/virtio_transport.c | 23 +++++++++++++++++------
+>   1 file changed, 17 insertions(+), 6 deletions(-)
+>
+> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> index e694df10ab61..ad093ce96693 100644
+> --- a/net/vmw_vsock/virtio_transport.c
+> +++ b/net/vmw_vsock/virtio_transport.c
+> @@ -660,6 +660,15 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+>   	return ret;
+>   }
+>   
+> +static void virtio_vsock_flush_works(struct virtio_vsock *vsock)
+> +{
+> +	flush_work(&vsock->loopback_work);
+> +	flush_work(&vsock->rx_work);
+> +	flush_work(&vsock->tx_work);
+> +	flush_work(&vsock->event_work);
+> +	flush_work(&vsock->send_pkt_work);
+> +}
+> +
+>   static void virtio_vsock_remove(struct virtio_device *vdev)
+>   {
+>   	struct virtio_vsock *vsock = vdev->priv;
+> @@ -668,12 +677,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+>   	mutex_lock(&the_virtio_vsock_mutex);
+>   	the_virtio_vsock = NULL;
+>   
+> -	flush_work(&vsock->loopback_work);
+> -	flush_work(&vsock->rx_work);
+> -	flush_work(&vsock->tx_work);
+> -	flush_work(&vsock->event_work);
+> -	flush_work(&vsock->send_pkt_work);
+> -
+>   	/* Reset all connected sockets when the device disappear */
+>   	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
+>   
+> @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+>   	vsock->event_run = false;
+>   	mutex_unlock(&vsock->event_lock);
+>   
+> +	/* Flush all pending works */
+> +	virtio_vsock_flush_works(vsock);
+> +
+>   	/* Flush all device writes and interrupts, device will not use any
+>   	 * more buffers.
+>   	 */
+> @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+>   	/* Delete virtqueues and flush outstanding callbacks if any */
+>   	vdev->config->del_vqs(vdev);
+>   
+> +	/* Other works can be queued before 'config->del_vqs()', so we flush
+> +	 * all works before to free the vsock object to avoid use after free.
+> +	 */
+> +	virtio_vsock_flush_works(vsock);
 
-'info->fs.location' is u32 type, never less than zero.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
-v2: rework patch based net-next
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Some questions after a quick glance:
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-index bd19a910dc90..e1c90adb2982 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
-@@ -1300,8 +1300,7 @@ int mvpp2_ethtool_cls_rule_ins(struct mvpp2_port *port,
- 	struct mvpp2_ethtool_fs *efs, *old_efs;
- 	int ret = 0;
- 
--	if (info->fs.location >= MVPP2_N_RFS_ENTRIES_PER_FLOW ||
--	    info->fs.location < 0)
-+	if (info->fs.location >= MVPP2_N_RFS_ENTRIES_PER_FLOW)
- 		return -EINVAL;
- 
- 	efs = kzalloc(sizeof(*efs), GFP_KERNEL);
--- 
-2.20.1
+1) It looks to me that the work could be queued from the path of 
+vsock_transport_cancel_pkt() . Is that synchronized here?
+
+2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run 
+still needed? It looks to me we've already done except that we need 
+flush rx_work in the end since send_pkt_work can requeue rx_work.
+
+Thanks
 
 
+> +
+>   	kfree(vsock);
+>   	mutex_unlock(&the_virtio_vsock_mutex);
+>   }
