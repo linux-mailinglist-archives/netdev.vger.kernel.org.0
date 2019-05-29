@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 533AF2E4C0
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FED12E4B4
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbfE2Srp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 14:47:45 -0400
+        id S1726532AbfE2Srr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 14:47:47 -0400
 Received: from mga03.intel.com ([134.134.136.65]:45223 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725990AbfE2Srp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726131AbfE2Srp (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 29 May 2019 14:47:45 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,13 +20,14 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 29 May 2019 11:47:43 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 02/15] ice: Remove direct write for GLLAN_RCTL_0
-Date:   Wed, 29 May 2019 11:47:41 -0700
-Message-Id: <20190529184754.12693-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 03/15] ice: Implement toggling ethtool rx-vlan-filter
+Date:   Wed, 29 May 2019 11:47:42 -0700
+Message-Id: <20190529184754.12693-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
 References: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
@@ -37,32 +38,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Clear PXE mode AQ call (opcode 0x0110) is now supported in FW. So
-remove the direct register write to GLLAN_RCTL_0.
+Implement the toggling of rx-vlan-filter; enable|disable VLAN
+pruning based on on|off, respectively.
 
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 713e43e2bc59..1ad541a010fb 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -51,9 +51,6 @@ static enum ice_status ice_set_mac_type(struct ice_hw *hw)
-  */
- void ice_dev_onetime_setup(struct ice_hw *hw)
- {
--	/* configure Rx - set non pxe mode */
--	wr32(hw, GLLAN_RCTL_0, 0x1);
--
- #define MBX_PF_VT_PFALLOC	0x00231E80
- 	/* set VFs per PF */
- 	wr32(hw, MBX_PF_VT_PFALLOC, rd32(hw, PF_VT_PFALLOC_HIF));
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 0a4abc21890c..eaa1b25dd1b0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2876,6 +2876,13 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 		 (netdev->features & NETIF_F_HW_VLAN_CTAG_TX))
+ 		ret = ice_vsi_manage_vlan_insertion(vsi);
+ 
++	if ((features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
++	    !(netdev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
++		ret = ice_cfg_vlan_pruning(vsi, true, false);
++	else if (!(features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
++		 (netdev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
++		ret = ice_cfg_vlan_pruning(vsi, false, false);
++
+ 	return ret;
+ }
+ 
 -- 
 2.21.0
 
