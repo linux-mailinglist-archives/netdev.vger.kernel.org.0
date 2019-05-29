@@ -2,169 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C702D3A1
+	by mail.lfdr.de (Postfix) with ESMTP id 40A7A2D3A0
 	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 04:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726453AbfE2COg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 22:14:36 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51287 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726365AbfE2COf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 22:14:35 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f10so434617wmb.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 19:14:35 -0700 (PDT)
+        id S1725935AbfE2COc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 22:14:32 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34168 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfE2COb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 22:14:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id n19so554884pfa.1;
+        Tue, 28 May 2019 19:14:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PgN9lZYSW6MUtr26KWEiWvJfTzaEUZF1csnSpUPQerE=;
-        b=lZLRd7AY1yFOgFozQ18TnhvB00PzlNJpD55vnKrhDjOMnW7ajh1Ok4sEbMRnEoBVaX
-         B/aGZaf8y14SOTxFdYiEm6YiJHsAP9F4sI00qMWR53fBqkcZQMOnxYZGxBtZ9ZNayNnx
-         yiByKnKWAbYSuHhVxXc1cJzAuVmJeDuVpsAyQMZjdQatNjbqggdOcxpJVrvZv4FkcHHw
-         F4CZte41m0l+hJqTWmpLJnb1Kquc1o3xCUZC2mja8SY3yHKiy8kgcci1FcLHGxV3d8AT
-         XUON3TtXabGyL2duGSLLvsHjm0iRg/xasGElpEVOzIJxBKenfCLehopRhrQuq3UTw9Be
-         2X3A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=eibd82PDYGzjDHcvf9kKMO0L4SQdQbd6quNdYGpibfM=;
+        b=k72j/tM5Giqi+1CvS28Pmto4rtL65GYTAyQZaiQiVZociIrgV+4rhYE61LAQS/5BF0
+         ji+2cmQ5YRlE5icSR75OU0T40TdrlkF75HLZhh7Q0KHABeQWpP2aHNEMgqVt+ag7Gka8
+         slw/FuY0VootE8uzvDnC4KlZgD+C1+CXjOVmzXIfKOQ8dY6IDeSsvVzJpodNup+Yb9PF
+         68ZkLM8obhQz4+Je0pCLTZKiG1MUvltPN9OhYaLl7BhjoAHuaY18Hijr+DhKa2e8ynaR
+         iZgzmK1vh0iezrfEVm9AAWJlBnnkP1CM23ybK5f7WHDfThOjfcIpjHB9ZodKkwE1fCVu
+         zcpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PgN9lZYSW6MUtr26KWEiWvJfTzaEUZF1csnSpUPQerE=;
-        b=HARh9jam/Y7fKUGBiroM/5aJi97mQV6K0hEXC5e9IORDo/LkaoJzUbrRhf4ajzbzV7
-         gYqIsZWLVDqfRXSWq1cJpnLkDBCbxBqmOyWZQS++9O0ups/4K5zH5XWvKz5ZSJ0slh9B
-         4gBS4o44JEbqPQuLKXjG3GktDUbSk78caq6YTtFpg6Fu48U5UYjJ7NIeEQ95xBowF5Z0
-         4FEO0vHuLbO2eGSMEUwRnGB33cttVT1pbObuS6K0k+quv1vNUl/t3uqF2dAnsWrYJBqu
-         KOsif+8DAEG+ofVkhtbEgEmm1kXWM3I5Ottcic61/R3Q4su93TgSE4erRIiJ0BD+Q4fw
-         bPSA==
-X-Gm-Message-State: APjAAAWjDrRRRcVUiv0lZ/VW/aoys9f+ADh2qHsxmNfvgRDYbNGwu0ir
-        4opkfMLMgvfotv1Ju3Rb6CUU8OErlJa1q/ph0UHkgg==
-X-Google-Smtp-Source: APXvYqwV5Z/Yh3VSHZzh2tY/Yfn0Vg2NBiPtNn1HworED7jgWcefE36Pti2Ya0dkyOrfzoNvX0CONroxn1ejKSEkF94=
-X-Received: by 2002:a7b:c8c1:: with SMTP id f1mr5349103wml.164.1559096074170;
- Tue, 28 May 2019 19:14:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190528235627.1315-1-olteanv@gmail.com> <20190528235627.1315-2-olteanv@gmail.com>
-In-Reply-To: <20190528235627.1315-2-olteanv@gmail.com>
-From:   John Stultz <john.stultz@linaro.org>
-Date:   Tue, 28 May 2019 19:14:22 -0700
-Message-ID: <CALAqxLWjT0ZJerFa+BVCKW+-ws6DYFy7kqEfNVK8ioGdY=VQeQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/5] timecounter: Add helper for reconstructing
- partial timestamps
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, vivien.didelot@gmail.com,
-        andrew@lunn.ch, "David S. Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eibd82PDYGzjDHcvf9kKMO0L4SQdQbd6quNdYGpibfM=;
+        b=djN+MKLDTZkiRCKzX1S+Sx04uEcKra+FrGVn9OiNY8Y5hUW3Paj2QvKlz++0C2xdY0
+         Q+rJmV7Etu7SZpvWdl/89XVzz+bASd3eFHtl2w6toWOWZEk7Wvfj9hBbJlZKeBXt8L12
+         qO/m5E75eMkQ9O9nJKZDt4AewlavYHhTVSxIWD/ipKUTyq0dGsLr4a9F8KSbypWdOcJU
+         BtpnKu5n/tpxe65pjn1NvMNqjskBfNJZTppZeVu4B16GIuiBtwTwly3TAgKDL0Y5iEws
+         S0f3szAttC8/QB1sALs+rnSA5CETZJaBoytSp0JYrzljcxudKyIzcUnJEfmz+g5AiEPs
+         wSxg==
+X-Gm-Message-State: APjAAAUq5h/7ZQQPZMRJehbKvXMPmw7DcF7Iui6Cxx/xMYl45jK4xZAw
+        owustf9D3nX+mdLNmxB1XUc=
+X-Google-Smtp-Source: APXvYqyBsBONvrPCzpGFfP8/a/GfBRbtaVlnB6/6M9FXkCxG7un0Wp+FJI4Bj9fcqaSzr5Hl9EDQDw==
+X-Received: by 2002:a63:1b0e:: with SMTP id b14mr25084443pgb.365.1559096071272;
+        Tue, 28 May 2019 19:14:31 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id e8sm4738669pgj.2.2019.05.28.19.14.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 28 May 2019 19:14:30 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     ecree@solarflare.com, mhabets@solarflare.com, davem@davemloft.net,
+        fw@strlen.de, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] falcon: pass valid pointer from ef4_enqueue_unwind.
+Date:   Wed, 29 May 2019 10:15:39 +0800
+Message-Id: <1559096139-25698-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 4:58 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Some PTP hardware offers a 64-bit free-running counter whose snapshots
-> are used for timestamping, but only makes part of that snapshot
-> available as timestamps (low-order bits).
->
-> In that case, timecounter/cyclecounter users must bring the cyclecounter
-> and timestamps to the same bit width, and they currently have two
-> options of doing so:
->
-> - Trim the higher bits of the timecounter itself to the number of bits
->   of the timestamps.  This might work for some setups, but if the
->   wraparound of the timecounter in this case becomes high (~10 times per
->   second) then this causes additional strain on the system, which must
->   read the clock that often just to avoid missing the wraparounds.
->
-> - Reconstruct the timestamp by racing to read the PTP time within one
->   wraparound cycle since the timestamp was generated.  This is
->   preferable when the wraparound time is small (do a time-critical
->   readout once vs doing it periodically), and it has no drawback even
->   when the wraparound is comfortably sized.
->
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  include/linux/timecounter.h |  7 +++++++
->  kernel/time/timecounter.c   | 33 +++++++++++++++++++++++++++++++++
->  2 files changed, 40 insertions(+)
->
-> diff --git a/include/linux/timecounter.h b/include/linux/timecounter.h
-> index 2496ad4cfc99..03eab1f3bb9c 100644
-> --- a/include/linux/timecounter.h
-> +++ b/include/linux/timecounter.h
-> @@ -30,6 +30,9 @@
->   *     by the implementor and user of specific instances of this API.
->   *
->   * @read:              returns the current cycle value
-> + * @partial_tstamp_mask:bitmask in case the hardware emits timestamps
-> + *                     which only capture low-order bits of the full
-> + *                     counter, and should be reconstructed.
->   * @mask:              bitmask for two's complement
->   *                     subtraction of non 64 bit counters,
->   *                     see CYCLECOUNTER_MASK() helper macro
-> @@ -38,6 +41,7 @@
->   */
->  struct cyclecounter {
->         u64 (*read)(const struct cyclecounter *cc);
-> +       u64 partial_tstamp_mask;
->         u64 mask;
->         u32 mult;
->         u32 shift;
-> @@ -136,4 +140,7 @@ extern u64 timecounter_read(struct timecounter *tc);
->  extern u64 timecounter_cyc2time(struct timecounter *tc,
->                                 u64 cycle_tstamp);
->
-> +extern u64 cyclecounter_reconstruct(const struct cyclecounter *cc,
-> +                                   u64 ts_partial);
-> +
->  #endif
-> diff --git a/kernel/time/timecounter.c b/kernel/time/timecounter.c
-> index 85b98e727306..d4657d64e38d 100644
-> --- a/kernel/time/timecounter.c
-> +++ b/kernel/time/timecounter.c
-> @@ -97,3 +97,36 @@ u64 timecounter_cyc2time(struct timecounter *tc,
->         return nsec;
->  }
->  EXPORT_SYMBOL_GPL(timecounter_cyc2time);
-> +
-> +/**
-> + * cyclecounter_reconstruct - reconstructs @ts_partial
-> + * @cc:                Pointer to cycle counter.
-> + * @ts_partial:        Typically RX or TX NIC timestamp, provided by hardware as
-> + *             the lower @partial_tstamp_mask bits of the cycle counter,
-> + *             sampled at the time the timestamp was collected.
-> + *             To reconstruct into a full @mask bit-wide timestamp, the
-> + *             cycle counter is read and the high-order bits (up to @mask) are
-> + *             filled in.
-> + *             Must be called within one wraparound of @partial_tstamp_mask
-> + *             bits of the cycle counter.
-> + */
-> +u64 cyclecounter_reconstruct(const struct cyclecounter *cc, u64 ts_partial)
-> +{
-> +       u64 ts_reconstructed;
-> +       u64 cycle_now;
-> +
-> +       cycle_now = cc->read(cc);
-> +
-> +       ts_reconstructed = (cycle_now & ~cc->partial_tstamp_mask) |
-> +                           ts_partial;
-> +
-> +       /* Check lower bits of current cycle counter against the timestamp.
-> +        * If the current cycle counter is lower than the partial timestamp,
-> +        * then wraparound surely occurred and must be accounted for.
-> +        */
-> +       if ((cycle_now & cc->partial_tstamp_mask) <= ts_partial)
-> +               ts_reconstructed -= (cc->partial_tstamp_mask + 1);
-> +
-> +       return ts_reconstructed;
-> +}
-> +EXPORT_SYMBOL_GPL(cyclecounter_reconstruct);
+The bytes_compl and pkts_compl pointers passed to ef4_dequeue_buffers
+cannot be NULL. Add a paranoid warning to check this condition and fix
+the one case where they were NULL.
 
-Hrm. Is this actually generic? Would it make more sense to have the
-specific implementations with this quirk implement this in their
-read() handler? If not, why?
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+---
+ drivers/net/ethernet/sfc/falcon/tx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-thanks
--john
+diff --git a/drivers/net/ethernet/sfc/falcon/tx.c b/drivers/net/ethernet/sfc/falcon/tx.c
+index c5059f4..ed89bc6 100644
+--- a/drivers/net/ethernet/sfc/falcon/tx.c
++++ b/drivers/net/ethernet/sfc/falcon/tx.c
+@@ -69,6 +69,7 @@ static void ef4_dequeue_buffer(struct ef4_tx_queue *tx_queue,
+ 	}
+ 
+ 	if (buffer->flags & EF4_TX_BUF_SKB) {
++		EF4_WARN_ON_PARANOID(!pkts_compl || !bytes_compl);
+ 		(*pkts_compl)++;
+ 		(*bytes_compl) += buffer->skb->len;
+ 		dev_consume_skb_any((struct sk_buff *)buffer->skb);
+@@ -271,12 +272,14 @@ static int ef4_tx_map_data(struct ef4_tx_queue *tx_queue, struct sk_buff *skb)
+ static void ef4_enqueue_unwind(struct ef4_tx_queue *tx_queue)
+ {
+ 	struct ef4_tx_buffer *buffer;
++	unsigned int bytes_compl = 0;
++	unsigned int pkts_compl = 0;
+ 
+ 	/* Work backwards until we hit the original insert pointer value */
+ 	while (tx_queue->insert_count != tx_queue->write_count) {
+ 		--tx_queue->insert_count;
+ 		buffer = __ef4_tx_queue_get_insert_buffer(tx_queue);
+-		ef4_dequeue_buffer(tx_queue, buffer, NULL, NULL);
++		ef4_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
+ 	}
+ }
+ 
+-- 
+2.7.4
+
