@@ -2,130 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D242DAA8
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:28:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF252DACA
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbfE2K2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:28:49 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:42222 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725956AbfE2K2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:28:49 -0400
-Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 5E999C0B4F;
-        Wed, 29 May 2019 10:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1559125737; bh=l3Ry4dJcHNnCIlaMLKaBRH28TBvJqRSfyTN6AhOAOps=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=AUkzjL2sJ/RHTPWV0YyfM+WfRjwl0vRQaMLM4EfQtnSszrhAkAiGlVC3mRg0l3x/H
-         DGkB/9Nqv8CEXr6Y3vSdEyQto50HfjC+Y3vZ51CvMerBAGkEJ6skUcxVBgzA0ExMTj
-         1AtQrZAuSuJP8K4shfKdF0gT//z19Y8cCEHNi1a0RFtRlCPDIAVZNPuEM6IgbqCNb0
-         RnRQJPgFMPxnNOqvkN+9B/5F4WXu8OKor6MdEBJa79ja3sIDemh+qVUnXx8g9q9lfl
-         8WXo41jBI6KlM4qqHbRs6IHMxGaTsQrAIILFJCgEdnT3mZPXc/c7Z1sfFUATXf45ND
-         z5Ej+ZB783DSA==
-Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 0BA77A0067;
-        Wed, 29 May 2019 10:28:47 +0000 (UTC)
-Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- us01wehtc1.internal.synopsys.com (10.12.239.235) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 29 May 2019 03:28:46 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
- 29 May 2019 12:28:45 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Voon Weifeng <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v4 5/5] net: stmmac: add EHL SGMII 1Gbps PCI
- info and PCI ID
-Thread-Topic: [PATCH net-next v4 5/5] net: stmmac: add EHL SGMII 1Gbps PCI
- info and PCI ID
-Thread-Index: AQHVFfypuDuCTZxVpkmcX+fHfGINwqaB5e4g
-Date:   Wed, 29 May 2019 10:28:44 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B933497@DE02WEMBXB.internal.synopsys.com>
-References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
- <1559149107-14631-6-git-send-email-weifeng.voon@intel.com>
-In-Reply-To: <1559149107-14631-6-git-send-email-weifeng.voon@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726863AbfE2Kaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:30:52 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40800 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfE2Kaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:30:52 -0400
+Received: by mail-pl1-f196.google.com with SMTP id g69so881350plb.7;
+        Wed, 29 May 2019 03:30:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=eqm2y/EYl4t9ex2ApVRgE5oPtA8beu8cf/DNbQrWYC4=;
+        b=uMu3UTNKyJbv+4as+0rx0Fi2vB4KtZcLZq5TD6/9FDRPs13p6whhNkASMmJjD6Ozb7
+         lXhyVLIo1j3zjvzxLSjkOZzArNGza7sHn9UK0KWfi50964KUPElWKYzx33u1JDcqPOVF
+         RZTY85DytWLIzMkoRfoaDvnq0lKwRX7iCNLWP9+baOTfqjvXJc6u5Fa4+VR17p7kThCZ
+         7N6y7yj/ndb9hPZ2RSui1bEQZN5uDaX93pPnFhJ6HCCzqZPkHL7gjkKdaPaTAeshvjfb
+         b8hiOAKyqBzMaAyIYXMgXIr97oY1EfFQhhyjbVr1XVCHAlavhcyQ0dpTtxU3+MgKtRf3
+         tX5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=eqm2y/EYl4t9ex2ApVRgE5oPtA8beu8cf/DNbQrWYC4=;
+        b=rhTPYxB8zjm2F1zsAMqFOX9RbP3FLsi4/ZDY1lN5purwj+sYWXD1iYcjcxyoto0rJS
+         43OaRBqHH0FumuZ4o2Wq1ZgtU5I6w2HIo4aNHF+NHbnhEFTq8pP9TLhjPkdZ5RWCxZxT
+         cDNFJTTpj2F+JhifQgry+x+Y+RT0EAm9eAgDOaFYbhwsnbjEXCXVVRL2kZSGx7H4p2Rr
+         IIk1pBmKzAqrImVkRFddbu8VMZHjSypHqqnfz1DkwvEflUGNxouyJgAR/+IEjGYco0Ym
+         qh4nQTr1zDzP68EpKKyJXMkdUrLSvbMIjtfMxkotd1hBNrhMexRZ2lHbbq/A2Yj7yA6/
+         AYkg==
+X-Gm-Message-State: APjAAAXXdgBeSA5qwTJpYanE9Bpj1a6fAvcV0nGBUwV0EAW6ArZnmnJq
+        F9N3yeDZYvZacwWIAZ2AgQ0a8UnY
+X-Google-Smtp-Source: APXvYqy4UuEQmCOIlNfSXgEQNLzqyrc/T8k26j9JHdYBHLQOWsBiZt/cus10aFbM3YVtAvOLl4GZNA==
+X-Received: by 2002:a17:902:2865:: with SMTP id e92mr29668592plb.264.1559125851418;
+        Wed, 29 May 2019 03:30:51 -0700 (PDT)
+Received: from ?IPv6:2402:f000:1:1501:200:5efe:166.111.71.21? ([2402:f000:1:1501:200:5efe:a66f:4715])
+        by smtp.gmail.com with ESMTPSA id t24sm20556776pfq.63.2019.05.29.03.30.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 03:30:50 -0700 (PDT)
+Subject: Re: [PATCH] rtlwifi: Fix null-pointer dereferences in error handling
+ code of rtl_pci_probe()
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     pkshih@realtek.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190514123439.10524-1-baijiaju1990@gmail.com>
+ <20190528115555.301E760F3C@smtp.codeaurora.org>
+ <2658b691-b992-b773-c6cf-85801adc479f@lwfinger.net>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <357682ba-d1ae-23b1-2372-b1a33d2ba1ac@gmail.com>
+Date:   Wed, 29 May 2019 18:30:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <2658b691-b992-b773-c6cf-85801adc479f@lwfinger.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Wed, May 29, 2019 at 17:58:27
 
-> +	plat->axi =3D devm_kzalloc(&pdev->dev, sizeof(*plat->axi),
-> +				 GFP_KERNEL);
-> +	if (!plat->axi)
-> +		return -ENOMEM;
 
-Missing line break here.
+On 2019/5/28 21:00, Larry Finger wrote:
+> On 5/28/19 6:55 AM, Kalle Valo wrote:
+>> Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+>>
+>>> *BUG 1:
+>>> In rtl_pci_probe(), when rtlpriv->cfg->ops->init_sw_vars() fails,
+>>> rtl_deinit_core() in the error handling code is executed.
+>>> rtl_deinit_core() calls rtl_free_entries_from_scan_list(), which uses
+>>> rtlpriv->scan_list.list in list_for_each_entry_safe(), but it has been
+>>> initialized. Thus a null-pointer dereference occurs.
+>>> The reason is that rtlpriv->scan_list.list is initialized by
+>>> INIT_LIST_HEAD() in rtl_init_core(), which has not been called.
+>>>
+>>> To fix this bug, rtl_deinit_core() should not be called when
+>>> rtlpriv->cfg->ops->init_sw_vars() fails.
+>>>
+>>> *BUG 2:
+>>> In rtl_pci_probe(), rtl_init_core() can fail when rtl_regd_init() in
+>>> this function fails, and rtlpriv->scan_list.list has not been
+>>> initialized by INIT_LIST_HEAD(). Then, rtl_deinit_core() in the error
+>>> handling code of rtl_pci_probe() is executed. Finally, a null-pointer
+>>> dereference occurs due to the same reason of the above bug.
+>>>
+>>> To fix this bug, the initialization of lists in rtl_init_core() are
+>>> performed before the call to rtl_regd_init().
+>>>
+>>> These bugs are found by a runtime fuzzing tool named FIZZER written by
+>>> us.
+>>>
+>>> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+>>
+>> Ping & Larry, is this ok to take?
+>>
+>
+> Kalle,
+>
+> Not at the moment. In reviewing the code, I was unable to see how this 
+> situation could develop, and his backtrace did not mention any rtlwifi 
+> code. For that reason, I asked him to add printk stat4ements to show 
+> the last part of rtl_pci that executed correctly. In 
+> https://marc.info/?l=linux-wireless&m=155788322631134&w=2, he promised 
+> to do that, but I have not seen the result.
+>
 
-> +	plat->axi->axi_lpi_en =3D 0;
-> +	plat->axi->axi_xit_frm =3D 0;
-> +	plat->axi->axi_wr_osr_lmt =3D 0;
+Hi Larry,
 
-This is not a valid value.
+This patch is not related to the message you mentioned.
+That message is about an occasional crash that I reported.
+That crash occurred when request_irq() in rtl_pci_intr_mode_legacy() in 
+rtl_pci_intr_mode_decide() fails.
+I have added printk statements and try to reproduce and debug that 
+crash, but that crash does not always occur, and I still do not know the 
+root cause of that crash.
 
-> +	plat->axi->axi_rd_osr_lmt =3D 2;
-> +	plat->axi->axi_blen[0] =3D 4;
-> +	plat->axi->axi_blen[1] =3D 8;
-> +	plat->axi->axi_blen[2] =3D 16;
-> +
-> +	/* Set default value for multicast hash bins */
-> +	plat->multicast_filter_bins =3D HASH_TABLE_SIZE;
-> +
-> +	/* Set default value for unicast filter entries */
-> +	plat->unicast_filter_entries =3D 1;
-> +
-> +	/* Set the maxmtu to a default of JUMBO_LEN */
-> +	plat->maxmtu =3D JUMBO_LEN;
-> +
-> +	/* Set 32KB fifo size as the advertised fifo size in
-> +	 * the HW features is not the same as the HW implementation
-> +	 */
+The null-pointer dereferences fixed by this patch are different from 
+that crash, and they always occur when the related functions fail.
+So please review these null-pointer dereferences, thanks :)
 
-Hmm ? I'm curious, can you explain ?
 
-> +	plat->tx_fifo_size =3D 32768;
-> +	plat->rx_fifo_size =3D 32768;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ehl_sgmii1g_data(struct pci_dev *pdev,
-> +			    struct plat_stmmacenet_data *plat)
-> +{
-> +	int ret;
-> +
-> +	/* Set common default data first */
-> +	ret =3D ehl_common_data(pdev, plat);
-> +
-
-Remove the extra line break please.
-
-> +	if (ret)
-> +		return ret;
-> +
+Best wishes,
+Jia-Ju Bai
 
