@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A50812E4B3
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533AF2E4C0
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbfE2Srq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 14:47:46 -0400
+        id S1726311AbfE2Srp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 14:47:45 -0400
 Received: from mga03.intel.com ([134.134.136.65]:45223 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726012AbfE2Sro (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 14:47:44 -0400
+        id S1725990AbfE2Srp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 14:47:45 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
@@ -20,14 +20,13 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 29 May 2019 11:47:43 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/15] ice: Fix LINE_SPACING style issue
-Date:   Wed, 29 May 2019 11:47:40 -0700
-Message-Id: <20190529184754.12693-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 02/15] ice: Remove direct write for GLLAN_RCTL_0
+Date:   Wed, 29 May 2019 11:47:41 -0700
+Message-Id: <20190529184754.12693-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
 References: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
@@ -38,31 +37,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bruce Allan <bruce.w.allan@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Fix a checkpatch "LINE_SPACING: Please don't use multiple blank lines"
-issue that has snuck in to the code.
+Clear PXE mode AQ call (opcode 0x0110) is now supported in FW. So
+remove the direct register write to GLLAN_RCTL_0.
 
-Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_common.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 91f3f82b43a6..713e43e2bc59 100644
+index 713e43e2bc59..1ad541a010fb 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -2928,7 +2928,6 @@ ice_dis_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u8 num_queues,
- 	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
- 		return ICE_ERR_CFG;
- 
+@@ -51,9 +51,6 @@ static enum ice_status ice_set_mac_type(struct ice_hw *hw)
+  */
+ void ice_dev_onetime_setup(struct ice_hw *hw)
+ {
+-	/* configure Rx - set non pxe mode */
+-	wr32(hw, GLLAN_RCTL_0, 0x1);
 -
- 	if (!num_queues) {
- 		/* if queue is disabled already yet the disable queue command
- 		 * has to be sent to complete the VF reset, then call
+ #define MBX_PF_VT_PFALLOC	0x00231E80
+ 	/* set VFs per PF */
+ 	wr32(hw, MBX_PF_VT_PFALLOC, rd32(hw, PF_VT_PFALLOC_HIF));
 -- 
 2.21.0
 
