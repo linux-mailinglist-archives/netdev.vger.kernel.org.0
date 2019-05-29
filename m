@@ -2,140 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE0D62DDF9
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A86962DECF
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbfE2NS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 09:18:58 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41218 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726863AbfE2NS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 09:18:58 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 27A7DAEB7;
-        Wed, 29 May 2019 13:18:57 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH bpf v2] libbpf: Return btf_fd in libbpf__probe_raw_btf
-Date:   Wed, 29 May 2019 15:20:00 +0200
-Message-Id: <20190529132000.24942-1-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.21.0
+        id S1727250AbfE2Nqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 09:46:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43328 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727014AbfE2Nqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 09:46:52 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D591A30C1208;
+        Wed, 29 May 2019 13:46:46 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CBAEC60FAF;
+        Wed, 29 May 2019 13:46:43 +0000 (UTC)
+Message-ID: <1b48684a933e6d782dca9114929fe1b23d7a4a46.camel@redhat.com>
+Subject: Re: [PATCH net-next v2] udp: Avoid post-GRO UDP checksum
+ recalculation
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Sean Tranchetti <stranche@codeaurora.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Date:   Wed, 29 May 2019 15:46:43 +0200
+In-Reply-To: <1559067774-613-1-git-send-email-stranche@codeaurora.org>
+References: <1559067774-613-1-git-send-email-stranche@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 29 May 2019 13:46:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function load_sk_storage_btf expects that libbpf__probe_raw_btf is
-returning a BTF descriptor, but before this change it was returning
-an information about whether the probe was successful (0 or 1).
-load_sk_storage_btf was using that value as an argument of the close
-function, which was resulting in closing stdout and thus terminating the
-process which called that function.
+On Tue, 2019-05-28 at 12:22 -0600, Sean Tranchetti wrote:
+> Currently, when resegmenting an unexpected UDP GRO packet, the full UDP
+> checksum will be calculated for every new SKB created by skb_segment()
+> because the netdev features passed in by udp_rcv_segment() lack any
+> information about checksum offload capabilities.
+> 
+> Usually, we have no need to perform this calculation again, as
+>   1) The GRO implementation guarantees that any packets making it to the
+>      udp_rcv_segment() function had correct checksums, and, more
+>      importantly,
+>   2) Upon the successful return of udp_rcv_segment(), we immediately pull
+>      the UDP header off and either queue the segment to the socket or
+>      hand it off to a new protocol handler.
+> 
+> Unless userspace has set the IP_CHECKSUM sockopt to indicate that they
+> want the final checksum values, we can pass the needed netdev feature
+> flags to __skb_gso_segment() to avoid checksumming each segment in
+> skb_segment().
+> 
+> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+> Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+> ---
+>  include/net/udp.h | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/udp.h b/include/net/udp.h
+> index d8ce937..dbe030d 100644
+> --- a/include/net/udp.h
+> +++ b/include/net/udp.h
+> @@ -471,12 +471,19 @@ struct udp_iter_state {
+>  static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
+>  					      struct sk_buff *skb, bool ipv4)
+>  {
+> +	netdev_features_t features = NETIF_F_SG;
+>  	struct sk_buff *segs;
+>  
+> +	/* Avoid csum recalculation by skb_segment unless userspace explicitly
+> +	 * asks for the final checksum values
+> +	 */
+> +	if (!inet_get_convert_csum(sk))
+> +		features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+> +
+>  	/* the GSO CB lays after the UDP one, no need to save and restore any
+>  	 * CB fragment
+>  	 */
+> -	segs = __skb_gso_segment(skb, NETIF_F_SG, false);
+> +	segs = __skb_gso_segment(skb, features, false);
+>  	if (unlikely(IS_ERR_OR_NULL(segs))) {
+>  		int segs_nr = skb_shinfo(skb)->gso_segs;
 
-That bug was visible in bpftool. `bpftool feature` subcommand was always
-exiting too early (because of closed stdout) and it didn't display all
-requested probes. `bpftool -j feature` or `bpftool -p feature` were not
-returning a valid json object.
+The patch itself LGTM, thanks.
 
-v2:
-- Fix typo in the commit message.
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
----
- tools/lib/bpf/libbpf.c        | 36 +++++++++++++++++++++--------------
- tools/lib/bpf/libbpf_probes.c |  7 +------
- 2 files changed, 23 insertions(+), 20 deletions(-)
+Possibly this can target the 'net' tree as the relevant commit is
+already there and the patch itself is not very invasive.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 197b574406b3..bc2dca36bced 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1645,15 +1645,19 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
- 		/* FUNC x */                                    /* [3] */
- 		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
- 	};
--	int res;
-+	int btf_fd;
-+	int ret;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
-+				       strs, sizeof(strs));
-+	if (btf_fd < 0)
-+		ret = 0;
-+	else {
-+		ret = 1;
- 		obj->caps.btf_func = 1;
--	return 0;
-+	}
-+	close(btf_fd);
-+	return ret;
- }
- 
- static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
-@@ -1670,15 +1674,19 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
- 		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
- 		BTF_VAR_SECINFO_ENC(2, 0, 4),
- 	};
--	int res;
-+	int btf_fd;
-+	int ret;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
-+				       strs, sizeof(strs));
-+	if (btf_fd < 0)
-+		ret = 0;
-+	else {
-+		ret = 1;
- 		obj->caps.btf_datasec = 1;
--	return 0;
-+	}
-+	close(btf_fd);
-+	return ret;
- }
- 
- static int
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 5e2aa83f637a..2c2828345514 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
- 	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
- 
- 	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
--	if (btf_fd < 0) {
--		free(raw_btf);
--		return 0;
--	}
- 
--	close(btf_fd);
- 	free(raw_btf);
--	return 1;
-+	return btf_fd;
- }
- 
- static int load_sk_storage_btf(void)
--- 
-2.21.0
+Paolo
+
 
