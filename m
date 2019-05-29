@@ -2,160 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E96E52DDF2
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE0D62DDF9
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727202AbfE2NRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 09:17:39 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:41819 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727194AbfE2NRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 09:17:38 -0400
-Received: by mail-lf1-f67.google.com with SMTP id 136so2033371lfa.8
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 06:17:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n6WwA4zk/EsZWyLmMz2aZvbV29nZ+j/GoKwFRPk91Ok=;
-        b=VaEW0P5hpaTjmlBZCJfOuDnnKRyM32QMYxezcsjOyVnoVYhW27UH3bA0yPB14uCnm8
-         d6tlPPbSEli4WyLUwUrT6Af2uF+lx7bxGKGmoQpy6nygRXB1RAlqDw49V/EC/UefyLAS
-         V5AOjddkiAjg9f+0GvpxSvIoihKYmZdd6fHF0dTcE1wwwdW5tr2ya6gCdVnx9qV17H6j
-         M4h7mt8SnLrfP/j7Xh+C9CJLUPWnxvm33kheunqaIOSjUWjKBJIKWfqR6xBUTSqUbF++
-         F7UHQ3L5/JoQGwtak6oBzR1ZxY7vIk7D21+uK+44fUX7ULw4Xl5awm+avPU5QlsSwapC
-         wSSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n6WwA4zk/EsZWyLmMz2aZvbV29nZ+j/GoKwFRPk91Ok=;
-        b=rMJ9/4ShX2mNk9xxGFOWWn+Cmm8iSaY2xOMYCs9E1cPXgX+PsWjIyvji52v1U6beZh
-         zLXDD27cN4GKYYdoSGzhEJ24g1MQnt9MvPAeg/Kd/x770PWRh0JAM102MQiIIT5On3Ad
-         F+oXVjt4R6Pm+iTiE92vExXFpZllgUsjKcZ/t5NnABZz3UZsqYzQH1Ul8YLlyQQ2LhnC
-         pelpL197eLxsjyhEvBT6sll32Kurit69eYBJt2uhGpBhrgnlfAD7w7OiejNh1jK2lAo/
-         Df25l42yLrRNMsQdKGcffetJI9+uT5zpn7/60NtbbQsYn8krvwVbCo4ucyTbdoi+SzDV
-         t11A==
-X-Gm-Message-State: APjAAAXc/HApgCpDHmHCCTzpTyAn5AVqtALdhgwyKKu5rd2saBAfuXWH
-        5n9UMrz431XOgACfnsXavbHLdrVj7/uN5vDOY7ZI
-X-Google-Smtp-Source: APXvYqxwNJ2hrphH/eQEWYthKv8zwdiStt+rRGVE9lGQEZKevqFhuFcT1lynINU+dx1udh6C8bZFZeqDAxzvYCLlNC0=
-X-Received: by 2002:ac2:4111:: with SMTP id b17mr7443993lfi.31.1559135851731;
- Wed, 29 May 2019 06:17:31 -0700 (PDT)
+        id S1727097AbfE2NS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 09:18:58 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41218 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726863AbfE2NS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 09:18:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 27A7DAEB7;
+        Wed, 29 May 2019 13:18:57 +0000 (UTC)
+From:   Michal Rostecki <mrostecki@opensuse.org>
+Cc:     Michal Rostecki <mrostecki@opensuse.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH bpf v2] libbpf: Return btf_fd in libbpf__probe_raw_btf
+Date:   Wed, 29 May 2019 15:20:00 +0200
+Message-Id: <20190529132000.24942-1-mrostecki@opensuse.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <cover.1554732921.git.rgb@redhat.com> <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
- <CAHC9VhRW9f6GbhvvfifbOzd9p=PgdB2gq1E7tACcaqvfb85Y8A@mail.gmail.com>
- <3299293.RYyUlNkVNy@x2> <20190529004352.vvicec7nnk6pvkwt@madcap2.tricolour.ca>
- <31804653-7518-1a9c-83af-f6ce6a6ce408@redhat.com>
-In-Reply-To: <31804653-7518-1a9c-83af-f6ce6a6ce408@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 29 May 2019 09:17:20 -0400
-Message-ID: <CAHC9VhT295iYu_uDcQ7eqVq8SSkYgEQAsoNrmpvbMR5ERcBzaA@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 00/10] audit: implement container identifier
-To:     Dan Walsh <dwalsh@redhat.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        Mrunal Patel <mpatel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 8:03 AM Daniel Walsh <dwalsh@redhat.com> wrote:
->
-> On 5/28/19 8:43 PM, Richard Guy Briggs wrote:
-> > On 2019-05-28 19:00, Steve Grubb wrote:
-> >> On Tuesday, May 28, 2019 6:26:47 PM EDT Paul Moore wrote:
-> >>> On Tue, May 28, 2019 at 5:54 PM Daniel Walsh <dwalsh@redhat.com> wrote:
-> >>>> On 4/22/19 9:49 AM, Paul Moore wrote:
-> >>>>> On Mon, Apr 22, 2019 at 7:38 AM Neil Horman <nhorman@tuxdriver.com>
-> >> wrote:
-> >>>>>> On Mon, Apr 08, 2019 at 11:39:07PM -0400, Richard Guy Briggs wrote:
-> >>>>>>> Implement kernel audit container identifier.
-> >>>>>> I'm sorry, I've lost track of this, where have we landed on it? Are we
-> >>>>>> good for inclusion?
-> >>>>> I haven't finished going through this latest revision, but unless
-> >>>>> Richard made any significant changes outside of the feedback from the
-> >>>>> v5 patchset I'm guessing we are "close".
-> >>>>>
-> >>>>> Based on discussions Richard and I had some time ago, I have always
-> >>>>> envisioned the plan as being get the kernel patchset, tests, docs
-> >>>>> ready (which Richard has been doing) and then run the actual
-> >>>>> implemented API by the userland container folks, e.g. cri-o/lxc/etc.,
-> >>>>> to make sure the actual implementation is sane from their perspective.
-> >>>>> They've already seen the design, so I'm not expecting any real
-> >>>>> surprises here, but sometimes opinions change when they have actual
-> >>>>> code in front of them to play with and review.
-> >>>>>
-> >>>>> Beyond that, while the cri-o/lxc/etc. folks are looking it over,
-> >>>>> whatever additional testing we can do would be a big win.  I'm
-> >>>>> thinking I'll pull it into a separate branch in the audit tree
-> >>>>> (audit/working-container ?) and include that in my secnext kernels
-> >>>>> that I build/test on a regular basis; this is also a handy way to keep
-> >>>>> it based against the current audit/next branch.  If any changes are
-> >>>>> needed Richard can either chose to base those changes on audit/next or
-> >>>>> the separate audit container ID branch; that's up to him.  I've done
-> >>>>> this with other big changes in other trees, e.g. SELinux, and it has
-> >>>>> worked well to get some extra testing in and keep the patchset "merge
-> >>>>> ready" while others outside the subsystem look things over.
-> >>>> Mrunal Patel (maintainer of CRI-O) and I have reviewed the API, and
-> >>>> believe this is something we can work on in the container runtimes team
-> >>>> to implement the container auditing code in CRI-O and Podman.
-> >>> Thanks Dan.  If I pulled this into a branch and built you some test
-> >>> kernels to play with, any idea how long it might take to get a proof
-> >>> of concept working on the cri-o side?
-> >> We'd need to merge user space patches and let them use that instead of the
-> >> raw interface. I'm not going to merge user space until we are pretty sure the
-> >> patch is going into the kernel.
-> > I have an f29 test rpm of the userspace bits if that helps for testing:
-> >       http://people.redhat.com/~rbriggs/ghak90/git-1db7e21/
-> >
-> > Here's what it contains (minus the last patch):
-> >       https://github.com/linux-audit/audit-userspace/compare/master...rgbriggs:ghau40-containerid-filter.v7.0
-> >
-> >> -Steve
-> >>
-> >>> FWIW, I've also reached out to some of the LXC folks I know to get
-> >>> their take on the API.  I think if we can get two different container
-> >>> runtimes to give the API a thumbs-up then I think we are in good shape
-> >>> with respect to the userspace interface.
-> >>>
-> >>> I just finished looking over the last of the pending audit kernel
-> >>> patches that were queued waiting for the merge window to open so this
-> >>> is next on my list to look at.  I plan to start doing that
-> >>> tonight/tomorrow, and as long as the changes between v5/v6 are not
-> >>> that big, it shouldn't take too long.
-> > - RGB
-> >
-> > --
-> > Richard Guy Briggs <rgb@redhat.com>
-> > Sr. S/W Engineer, Kernel Security, Base Operating Systems
-> > Remote, Ottawa, Red Hat Canada
-> > IRC: rgb, SunRaycer
-> > Voice: +1.647.777.2635, Internal: (81) 32635
->
-> Our current thoughts are to put the setting of the ID inside of conmon,
-> and then launching the OCI Runtime.  In a perfect world this would
-> happen in the OCI Runtime, but we have no controls over different OCI
-> Runtimes.
->
-> By putting it into conmon, then CRI-O and Podman will automatically get
-> the container id support.  After we have this we have to plumb it back
-> up through the contianer engines to be able to easily report the link
-> between the Container UUID and The Kernel Container Audit ID.
+Function load_sk_storage_btf expects that libbpf__probe_raw_btf is
+returning a BTF descriptor, but before this change it was returning
+an information about whether the probe was successful (0 or 1).
+load_sk_storage_btf was using that value as an argument of the close
+function, which was resulting in closing stdout and thus terminating the
+process which called that function.
 
-I'm glad you guys have a plan, that's encouraging, but sadly I have no
-idea about the level of complexity/difficulty involved in modifying
-the various container bits for a proof-of-concept?  Are we talking a
-week or two?  A month?  More?
+That bug was visible in bpftool. `bpftool feature` subcommand was always
+exiting too early (because of closed stdout) and it didn't display all
+requested probes. `bpftool -j feature` or `bpftool -p feature` were not
+returning a valid json object.
 
+v2:
+- Fix typo in the commit message.
+
+Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
+Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
+---
+ tools/lib/bpf/libbpf.c        | 36 +++++++++++++++++++++--------------
+ tools/lib/bpf/libbpf_probes.c |  7 +------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 197b574406b3..bc2dca36bced 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1645,15 +1645,19 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
+ 		/* FUNC x */                                    /* [3] */
+ 		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
+ 	};
+-	int res;
++	int btf_fd;
++	int ret;
+ 
+-	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+-				    strs, sizeof(strs));
+-	if (res < 0)
+-		return res;
+-	if (res > 0)
++	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
++				       strs, sizeof(strs));
++	if (btf_fd < 0)
++		ret = 0;
++	else {
++		ret = 1;
+ 		obj->caps.btf_func = 1;
+-	return 0;
++	}
++	close(btf_fd);
++	return ret;
+ }
+ 
+ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
+@@ -1670,15 +1674,19 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
+ 		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
+ 		BTF_VAR_SECINFO_ENC(2, 0, 4),
+ 	};
+-	int res;
++	int btf_fd;
++	int ret;
+ 
+-	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+-				    strs, sizeof(strs));
+-	if (res < 0)
+-		return res;
+-	if (res > 0)
++	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
++				       strs, sizeof(strs));
++	if (btf_fd < 0)
++		ret = 0;
++	else {
++		ret = 1;
+ 		obj->caps.btf_datasec = 1;
+-	return 0;
++	}
++	close(btf_fd);
++	return ret;
+ }
+ 
+ static int
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index 5e2aa83f637a..2c2828345514 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
+ 	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
+ 
+ 	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
+-	if (btf_fd < 0) {
+-		free(raw_btf);
+-		return 0;
+-	}
+ 
+-	close(btf_fd);
+ 	free(raw_btf);
+-	return 1;
++	return btf_fd;
+ }
+ 
+ static int load_sk_storage_btf(void)
 -- 
-paul moore
-www.paul-moore.com
+2.21.0
+
