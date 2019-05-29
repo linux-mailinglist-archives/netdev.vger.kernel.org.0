@@ -2,156 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 348512D72B
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFFF2D73B
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726396AbfE2IAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:00:20 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53292 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfE2IAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:00:19 -0400
-Received: by mail-wm1-f67.google.com with SMTP id d17so893296wmb.3
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 01:00:18 -0700 (PDT)
+        id S1726428AbfE2IE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:04:59 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34143 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725948AbfE2IE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:04:56 -0400
+Received: by mail-wm1-f66.google.com with SMTP id e19so3758651wme.1
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 01:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=clya1YzvdGb3Nmjm3u3YhkUzQ9Kua3gRnoIkhnm5ao4=;
-        b=wckKGLY0RKYccTK7dYCAhLfLU7xUwsoBAUOepmSpTDAJs/XJ5Er1MILlvXAGcclM7t
-         WCr3WAY7e4mJlwzA5l6PH5N5ognrt3duWt3K+Z+eVS4MmVzs6xcavjqWXj04qMpQoLnT
-         H7m7BbpcL1vgdqV349asySZoORUFnTLyN1JhINTyLGWxbn47B1PbEpIMJyhScVKHgEtw
-         anI87hM1yFTogXqU89q0GtlfOWPYd59CRMp3rN7ZBk2YjacOJ3dwAs2l1OtT98+AN19U
-         pAoklOq3ABaXOOEZRULSUqWGcihsTMPrWmMy0Z81C/F4ZRXV9uCgReNfpKatFc0WiUTN
-         cJbw==
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=EBIy8akgJJVzGMeoN5L9X2jn2x1GxoKHTkHoU0+i4ZQ=;
+        b=HfhL8wqCiookSl50jiJuT1YB5TlSuMeuNrqU2tWcfEUtEQ/AmjA+cvuYkaVQ4gKcHN
+         wSRpxcuZF/NNGH2Y5MLanq3MH+ekyD5LIGY1quGY/RW5R5wx60RM2QX8PBTXSjr2f0LE
+         GrSfel5vdtBCsk+50onjqOuy0SlHUJmcYWNmZ+DBqkKeGydvzo7ncC0b4i0ZsrazeUrf
+         deHnMa1fNBN0eEKOkh+v4Ss0TZu+V2tywk5KUFTt/qlnJ5I7ACVuMx3DbtH06LlW1z78
+         GWgSB5/zjVexZBSTTMUPM0xJTUHJ53ZnuNkmkf6Oq1DG3cc4TV4/F0AGW1Mtw4DTfMaA
+         KOkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=clya1YzvdGb3Nmjm3u3YhkUzQ9Kua3gRnoIkhnm5ao4=;
-        b=s69bBCybRVEQ2HJqp2BwddoHqj0oNsdsdA4vqLzTcJHxnD/iuGZlJrEhmipqLNNwq7
-         9YwMpZpG9sWpQp+NkmpckZGL90MX5/K0WEOPw6+YRC8j58T4TsyXua00nERK1ba+HOb3
-         e8ye7T4ylOX32J6E3ig46YOAv1HlYDW6hVCUn9O5YaTYiqPtDBhDz2FHs8QbMvO9rQM2
-         oOG6KLL3vHqlvHANGKuj1ypqlV03eUQVqQ/Kh0TkKIZm5APb2hRwp+6ZZOGpXwJGTEyn
-         xss61nN24OOz64PT1Ca4/ewxVVr6lq8XMQnRTQ3a67PofrnYO+lphKhyfX+N7lPTJgTk
-         KBrA==
-X-Gm-Message-State: APjAAAUAnKE8Y/g0xiSDFGxxj6BM26HGyMogEt9vnj3c0FpBe7rybPb2
-        fAKn3yo6mqNRlZqAzoRzWe33tA==
-X-Google-Smtp-Source: APXvYqxhJa3u+jqzpwzAJRIm4iWxnM1/UXJMXqOF6M4BgdCV/ryhFxBhCfo7VMjenUN9a0uoJYrHNA==
-X-Received: by 2002:a05:600c:230a:: with SMTP id 10mr6143237wmo.13.1559116817785;
-        Wed, 29 May 2019 01:00:17 -0700 (PDT)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=EBIy8akgJJVzGMeoN5L9X2jn2x1GxoKHTkHoU0+i4ZQ=;
+        b=WR6Y2fmBZ9GO9anDca2myN0cTwBvvojCdH1aRVSCcMXcVZUlt53XCCEgKEHMgGB24m
+         tRqtkv9xBg+sSwMlxjZXMNnOsJxapXHfYpKVjjvDTqTivXhBz3gWlfIBpSeM9l4Ot6+L
+         0zPWXw2I7eKoVWMXkA5fJQLhwJk9QaLWvjg9etbrWkNpLjB5KmhMIgZu3A4lAgodsTKf
+         bczUajz4sLDAY9gTCOKypFXebeEzC7ddKN/fbhOob6qiol2ThMa0ZEgbjB6uqqwNaqoY
+         enFcs6E2TNSYAh6qtGB6HJckJDO77pfpvv3cz6b0YijmJLZy20C87P6SYaSreoFs83+k
+         tfEw==
+X-Gm-Message-State: APjAAAXM4Jy7pI3Ph4BYrwxbAxYWguxgb0IxbvVuXL9weRLqow8lcBiJ
+        BQUoVifkewLuvM+qJ6jsX235Fw==
+X-Google-Smtp-Source: APXvYqxVQa+Y+auwZsalqmIXIrSP2DzX25u2YHdLtGqKGkI2wS47Xd0Zk+TI/HfX1YOt5NBkbVB2tg==
+X-Received: by 2002:a7b:c8c1:: with SMTP id f1mr5434256wml.159.1559117094718;
+        Wed, 29 May 2019 01:04:54 -0700 (PDT)
 Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
-        by smtp.gmail.com with ESMTPSA id r4sm11821608wrv.34.2019.05.29.01.00.16
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 29 May 2019 01:00:17 -0700 (PDT)
-Date:   Wed, 29 May 2019 10:00:16 +0200
+        by smtp.gmail.com with ESMTPSA id u9sm3165755wme.48.2019.05.29.01.04.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 01:04:53 -0700 (PDT)
+Date:   Wed, 29 May 2019 10:04:52 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
-        sthemmin@microsoft.com, dsahern@gmail.com, saeedm@mellanox.com,
-        leon@kernel.org, f.fainelli@gmail.com
-Subject: Re: [patch net-next v2 7/7] netdevsim: implement fake flash updating
- with notifications
-Message-ID: <20190529080016.GD2252@nanopsycho>
-References: <20190528114846.1983-1-jiri@resnulli.us>
- <20190528114846.1983-8-jiri@resnulli.us>
- <20190528130115.5062c085@cakuba.netronome.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Igor Konopko <igor.j.konopko@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Matias Bjorling <mb@lightnvm.io>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Joe Perches <joe@perches.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] [RFC] devlink: Fix uninitialized error code in
+ devlink_fmsg_prepare_skb()
+Message-ID: <20190529080452.GE2252@nanopsycho>
+References: <20190528142424.19626-1-geert@linux-m68k.org>
+ <20190528142424.19626-6-geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190528130115.5062c085@cakuba.netronome.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190528142424.19626-6-geert@linux-m68k.org>
 User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 28, 2019 at 10:01:15PM CEST, jakub.kicinski@netronome.com wrote:
->On Tue, 28 May 2019 13:48:46 +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->> v1->v2:
->> - added debugfs toggle to enable/disable flash status notifications
+Tue, May 28, 2019 at 04:24:24PM CEST, geert@linux-m68k.org wrote:
+>With gcc 4.1:
 >
->Could you please add a selftest making use of netdevsim code?
-
-How do you imagine the selftest should look like. What should it test
-exactly?
-
-
+>    net/core/devlink.c: In function ‘devlink_fmsg_prepare_skb’:
+>    net/core/devlink.c:4325: warning: ‘err’ may be used uninitialized in this function
 >
->Sorry, I must have liked the feature so much first time I missed this :)
+>Indeed, if the list has less than *start entries, an uninitialized error
+>code will be returned.
 >
->> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
->> index b509b941d5ca..c5c417a3c0ce 100644
->> --- a/drivers/net/netdevsim/dev.c
->> +++ b/drivers/net/netdevsim/dev.c
->> @@ -38,6 +38,8 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
->>  	nsim_dev->ports_ddir = debugfs_create_dir("ports", nsim_dev->ddir);
->>  	if (IS_ERR_OR_NULL(nsim_dev->ports_ddir))
->>  		return PTR_ERR_OR_ZERO(nsim_dev->ports_ddir) ?: -EINVAL;
->> +	debugfs_create_bool("fw_update_status", 0600, nsim_dev->ddir,
->> +			    &nsim_dev->fw_update_status);
->>  	return 0;
->>  }
->>  
->> @@ -220,8 +222,49 @@ static int nsim_dev_reload(struct devlink *devlink,
->>  	return 0;
->>  }
->>  
->> +#define NSIM_DEV_FLASH_SIZE 500000
->> +#define NSIM_DEV_FLASH_CHUNK_SIZE 1000
->> +#define NSIM_DEV_FLASH_CHUNK_TIME_MS 10
->> +
->> +static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
->> +				 const char *component,
->> +				 struct netlink_ext_ack *extack)
->> +{
->> +	struct nsim_dev *nsim_dev = devlink_priv(devlink);
->> +	int i;
->> +
->> +	if (nsim_dev->fw_update_status) {
->> +		devlink_flash_update_begin_notify(devlink);
->> +		devlink_flash_update_status_notify(devlink,
->> +						   "Preparing to flash",
->> +						   component, 0, 0);
->> +	}
->> +
->> +	for (i = 0; i < NSIM_DEV_FLASH_SIZE / NSIM_DEV_FLASH_CHUNK_SIZE; i++) {
->> +		if (nsim_dev->fw_update_status)
->> +			devlink_flash_update_status_notify(devlink, "Flashing",
->> +							   component,
->> +							   i * NSIM_DEV_FLASH_CHUNK_SIZE,
->> +							   NSIM_DEV_FLASH_SIZE);
->> +		msleep(NSIM_DEV_FLASH_CHUNK_TIME_MS);
+>Fix this by preinitializing err to zero.
 >
->In automated testing it may be a little annoying if this takes > 5sec
+>Fixes: 1db64e8733f65381 ("devlink: Add devlink formatted message (fmsg) API")
+>Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>---
+>I don't know if this can really happen, and if this is the right fix.
+>Perhaps err should be initialized to some valid error code instead?
 
-I wanted to emulate real device. I can make this 5 sec if you want, no
-problem.
+0 is correct here.
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
+Thanks!
 
+>---
+> net/core/devlink.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 >
->> +	}
->> +
->> +	if (nsim_dev->fw_update_status) {
->> +		devlink_flash_update_status_notify(devlink, "Flashing",
->> +						   component,
->> +						   NSIM_DEV_FLASH_SIZE,
->> +						   NSIM_DEV_FLASH_SIZE);
->> +		devlink_flash_update_status_notify(devlink, "Flashing done",
->> +						   component, 0, 0);
->> +		devlink_flash_update_end_notify(devlink);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->>  static const struct devlink_ops nsim_dev_devlink_ops = {
->>  	.reload = nsim_dev_reload,
->> +	.flash_update = nsim_dev_flash_update,
->>  };
->>  
->>  static struct nsim_dev *
+>diff --git a/net/core/devlink.c b/net/core/devlink.c
+>index d43bc52b8840d76b..91377e4eae9a43c1 100644
+>--- a/net/core/devlink.c
+>+++ b/net/core/devlink.c
+>@@ -4321,8 +4321,8 @@ devlink_fmsg_prepare_skb(struct devlink_fmsg *fmsg, struct sk_buff *skb,
+> {
+> 	struct devlink_fmsg_item *item;
+> 	struct nlattr *fmsg_nlattr;
+>+	int err = 0;
+> 	int i = 0;
+>-	int err;
+> 
+> 	fmsg_nlattr = nla_nest_start_noflag(skb, DEVLINK_ATTR_FMSG);
+> 	if (!fmsg_nlattr)
+>-- 
+>2.17.1
+>
