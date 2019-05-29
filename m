@@ -2,90 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A2D2DA39
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F082D3B2
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 04:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbfE2KRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:17:00 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:41796 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725911AbfE2KRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:17:00 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 26E42C0B58;
-        Wed, 29 May 2019 10:17:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1559125028; bh=qAsqi8gX5SUaVnl2yseXi4eGkqxzuYPQST0EcBGFiwk=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=ih+BF/HhLRpZoP3ea08rPVyFlnL16rjTQLdog92/33d09M2v38RE3mQA0P+dP7Zsv
-         W4EDk1P+4225x5TACrIGDqdWwMLpBg55BjmxyUhzS0ksEC5fHn+w1LSRsD+Z+uQ+sr
-         cln2Sisj/46hpGvIwQi7fhJeVDLofIE7LZJbgvsAizgKdtdi6JhqdFTzIS2bWSzRj0
-         LlogmNWN5pxa1bGHcEIpLeGfJr/7el9C60Z4Bvr0c9SnhmYlvPi87AeYQk2pOcPKiQ
-         Mu9jKXa3qsr6fxFuy8en3cLyD7p/1OCoCP9Dc3Llt65zEZRBXy3V0MYYE1ub98tVUC
-         3IKFQqjqnrxPg==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 55990A0104;
-        Wed, 29 May 2019 10:16:53 +0000 (UTC)
-Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 29 May 2019 03:16:53 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
- 29 May 2019 12:16:50 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Voon Weifeng <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726474AbfE2CSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 22:18:08 -0400
+Received: from mga11.intel.com ([192.55.52.93]:1353 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726253AbfE2CSI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 22:18:08 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 19:18:07 -0700
+X-ExtLoop1: 1
+Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
+  by fmsmga008.fm.intel.com with ESMTP; 28 May 2019 19:18:04 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         biao huang <biao.huang@mediatek.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
- support
-Thread-Topic: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
- support
-Thread-Index: AQHVFfyg4wQZ8d4GK06AR51mcY/UpqaB4qwA
-Date:   Wed, 29 May 2019 10:16:50 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
-References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
- <1559149107-14631-2-git-send-email-weifeng.voon@intel.com>
-In-Reply-To: <1559149107-14631-2-git-send-email-weifeng.voon@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+        Kweh Hock Leong <hock.leong.kweh@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH net-next v3 0/5] net: stmmac: enable EHL SGMII
+Date:   Wed, 29 May 2019 18:18:33 +0800
+Message-Id: <1559125118-24324-1-git-send-email-weifeng.voon@intel.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Wed, May 29, 2019 at 17:58:23
+This patch-set is to enable Ethernet controller
+(DW Ethernet QoS and DW Ethernet PCS) with SGMII interface in Elkhart Lake.
+The DW Ethernet PCS is the Physical Coding Sublayer that is between Ethernet
+MAC and PHY and uses MDIO Clause-45 as Communication.
 
-> +static void stmmac_mdio_c45_setup(struct stmmac_priv *priv, int phyreg,
-> +				  u32 *val, u32 *data)
-> +{
-> +	unsigned int reg_shift =3D priv->hw->mii.reg_shift;
-> +	unsigned int reg_mask =3D priv->hw->mii.reg_mask;
+Kweh Hock Leong (1):
+  net: stmmac: enable clause 45 mdio support
 
-Reverse christmas tree here. You also should align the function variables=20
-with the opening parenthesis of the function here and in the remaining=20
-series.
+Ong Boon Leong (3):
+  net: stmmac: introducing support for DWC xPCS logics
+  net: stmmac: add xpcs function hooks into main driver and ethtool
+  net: stmmac: add xPCS functions for device with DWMACv5.1
 
-Otherwise this patch looks good to me.
+Voon Weifeng (1):
+  net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
 
-Thanks,
-Jose Miguel Abreu
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  33 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwxpcs.c       | 198 +++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwxpcs.h       |  51 ++++++
+ drivers/net/ethernet/stmicro/stmmac/hwif.c         |  41 ++++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  21 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  50 ++++--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 152 ++++++++++++----
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c  |  40 ++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   | 111 ++++++++++++
+ include/linux/phy.h                                |   2 +
+ include/linux/stmmac.h                             |   3 +
+ 14 files changed, 649 insertions(+), 58 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.c
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.h
+
+-- 
+Changelog v2:
+*Added support for the C37 AN for 1000BASE-X and SGMII (MAC side SGMII only)
+*removed and submitted the fix patch to net
+ "net: stmmac: dma channel control register need to be init first"
+*Squash the following 2 patches and move it to the end of the patch set:
+ "net: stmmac: add EHL SGMII 1Gbps platform data and PCI ID"
+ "net: stmmac: add xPCS platform data for EHL"
+Changelog v3:
+*Applied reversed christmas tree
+1.9.1
+
