@@ -2,171 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE39F2E5AA
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09E72E5B6
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbfE2UAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 16:00:02 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:60788 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbfE2UAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 16:00:02 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hW4jq-0005Qg-Kd; Wed, 29 May 2019 21:59:54 +0200
-Message-ID: <acf18b398fd63f2dfece5981ebd5057141529e6a.camel@sipsolutions.net>
-Subject: Re: cellular modem APIs - take 2
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Dan Williams <dcbw@redhat.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Date:   Wed, 29 May 2019 21:59:51 +0200
-In-Reply-To: <662BBC5C-D0C7-4B2C-A001-D6F490D0F36F@holtmann.org>
-References: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
-         <662BBC5C-D0C7-4B2C-A001-D6F490D0F36F@holtmann.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726125AbfE2UF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 16:05:28 -0400
+Received: from mga12.intel.com ([192.55.52.136]:8900 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725956AbfE2UF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 16:05:27 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 13:05:17 -0700
+X-ExtLoop1: 1
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by orsmga003.jf.intel.com with ESMTP; 29 May 2019 13:05:16 -0700
+Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Wed, 29 May 2019 13:05:16 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.95]) by
+ ORSMSX152.amr.corp.intel.com ([169.254.8.127]) with mapi id 14.03.0415.000;
+ Wed, 29 May 2019 13:05:16 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>
+Subject: Re: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
+ hardware offloading
+Thread-Topic: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
+ hardware offloading
+Thread-Index: AQHVFX1jRoxwIAipQEiZCaa8URTGlqaBmGAAgAEzxgCAACO+AIAADiQA
+Date:   Wed, 29 May 2019 20:05:16 +0000
+Message-ID: <A9D05E0B-FC24-4904-B3E5-1E069C92A3DA@intel.com>
+References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
+ <1559065608-27888-4-git-send-email-vedang.patel@intel.com>
+ <20190528154510.41b50723@cakuba.netronome.com>
+ <62E2DD49-AC21-46DE-8E5B-EBC67230FA7D@intel.com>
+ <20190529121440.46c40967@cakuba.netronome.com>
+In-Reply-To: <20190529121440.46c40967@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.11.33]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7F7CE8E2FA89224E943C2F13B0A18B4D@intel.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
-
-> Have you actually looked at Phonet or CAIF.
-
-Phonet is just a specific protocol spoken by a specific modem (family)
-for their control plane. Not all modems are going to be speaking this.
-Same for CAIF, really. I don't really see all that much that's generic
-(enough) here. It's unfortunate that in all this time nobody ever
-bothered to even try though, and just invented all their own mechanisms
-to precisely mirror the hardware and firmware they were working with.
-
-Theoretically now, you could build a driver that still speaks CAIF or
-phonet and then translates to a specific modem, but what would the point
-be?
-
-Now, I'm looking more at the data plan than the control plane, so I
-guess you could argue I should've not just mentioned MBIM and AT
-commands, but also something like Phonet/CAIF.
-
-> And netdev by default seems like repeating the same mistake we have
-> done with WiFi. Your default context in LTE cases is only available
-> when actually registered to the LTE bearer. It is pretty much
-> pointless to have a netdev if you are not registered to the network.
-
-I partially agree with this.
-
-Of course, for WiFi, that's just wrong since the control path is on the
-netdev. Without a netdev, nothing works, and so not having one by
-default just adds something pointless to the setup necessary to bring up
-anything at all. It can be argued whether not allowing to remove it is
-right, but that just detracts from the discussion at hand and there's
-also a lot of history here.
-
-I do understand (and mostly agree) that having a netdev by default
-that's not connected to anything and has no functionality until you've
-done some out-of-band (as far as the netdev is concerned) setup is
-fairly much pointless, but OTOH having a netdev is something that people
-seem to want for various reasons (discovery, ethtool, ...).
-
-> You have to do a lot of initial modem setup before you ever get to the
-> having your default context connected. Have a look at oFono and what
-> it does to bring up the modem.
-
-Sure.
-
-> > 2) Clearly, one needs to be able to create PDN netdevs, with the PDN
-> >   given to the command. Here's another advantage: If these are created
-> >   on top of another abstraction, not another netdev, they can have
-> >   their own queues, multiqueue RX etc. much more easily.
-[...]
-> I think you need to provide actually a lot more details on how queue
-> control inside Linux would be helpful and actually work in the first
-> place. I don’t see how Linux will be ever in charge and not the modem
-> do this all for you.
-
-I think you misunderstand. I wasn't really talking about *queue control*
-(packet dequeue etc.) although this is *also* something that could be
-interesting, since the modem can only control packets that ever made it
-to the hardware.
-
-I was more thinking of what I actually wrote - "have their own queues,
-multiqueue RX etc." - i.e. control the software layer of the queues in
-the driver, rather than having all of that managed in some stacked
-netdev like VLAN.
-
-For example, with stacked netdevs like VLANs it gets difficult (and
-awkward from a network stack perspective) to put frames for different
-connections (stacked netdevs) into different hardware queues and manage
-flow control correctly.
-
-Similarly, if one connection has maybe multiple hardware queues (say for
-a specific video stream) disentangling that when you have stacked
-netdevs is much harder than when they're all separate.
-
-(And, of course, there's little point in having the underlying netdev to
-start with since it speaks a device-specific protocol the network stack
-will never understand.)
-
-> > 3) Separately, we need to have an ability to create "generalized control
-> >   channels". I'm thinking there would be a general command "create
-> >   control channel" with a given type (e.g. ATCMD, RPC, MBIM, GNSS) plus
-> >   a list of vendor-specific channels (e.g. for tracing).
-[...]
-> >   I guess such a channel should also be created by default, if it's
-> >   not already created by the driver in some out-of-band way anyway (and
-> >   most likely it shouldn't be, but I guess drivers might have some
-> >   entirely different communication channels for AT CMDs?)
-> 
-> I would just use sockets like Phonet and CAIF.
-
-It was in fact one of the options I considered, but it seems to have
-very little traction with any other userspace, and having a separate
-socket family yet again also seems a bit pointless. I guess for devices
-that do already speak Phonet or CAIF that would make sense. Possible to
-some extent, but not really useful, would be to terminate the Phonet or
-CAIF protocol inside the driver or stack, but then you end up having to
-emulate some specific firmware behaviour ...
-
-So ultimately it boils down to what protocols you want to support and
-what kind of API they typically use. I guess I don't have enough hubris
-to propose unifying the whole command set and how you talk to your
-device ;-)
-
-I suppose you could have a socket type for AT commands, but is that
-really all that useful? Or a socket type that muxes the different
-control channels you might have, which gets close to phonet/caif.
-
-> Frankly I have a problem if this is designed from the hardware point
-> of view. Unless you are familiar with how 3GPP works and what a
-> telephony stack like oFono has to do, there is really no point in
-> trying to create a WWAN subsystem.
-> 
-> Anything defined needs to be defined in terms of 3GPP and not what
-> current drivers have hacked together.
-
-That objection makes no sense to me. 3GPP doesn't define how the data
-plane is implemented in your device/OS. There's a data plane, it carries
-IP packets, but how you get those to your applications?
-
-After all, I'm not really proposing that we put oFono or something like
-it into the kernel - far from it! I'm only proposing that we kill the
-many various ways of creating and managing the necessary netdevs (VLANs,
-sysfs, rmnet, ...) from a piece of software like oFono (or libmbim or
-whatever else).
-
-Apart from CAIF and phonet, oFono doesn't even try to do this though,
-afaict, so I guess it relies on the default netdev created, or some out-
-of-band configuration is still needed?
-
-johannes
-
+W1NlbmRpbmcgdGhlIGVtYWlsIGFnYWluIHNpbmNlIHRoZSBsYXN0IG9uZSB3YXMgcmVqZWN0ZWQg
+YnkgbmV0ZGV2IGJlY2F1c2UgaXQgd2FzIGh0bWwuXQ0KDQo+IE9uIE1heSAyOSwgMjAxOSwgYXQg
+MTI6MTQgUE0sIEpha3ViIEtpY2luc2tpIDxqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUuY29tPiB3
+cm90ZToNCj4gDQo+IE9uIFdlZCwgMjkgTWF5IDIwMTkgMTc6MDY6NDkgKzAwMDAsIFBhdGVsLCBW
+ZWRhbmcgd3JvdGU6DQo+Pj4gT24gTWF5IDI4LCAyMDE5LCBhdCAzOjQ1IFBNLCBKYWt1YiBLaWNp
+bnNraSA8amFrdWIua2ljaW5za2lAbmV0cm9ub21lLmNvbT4gd3JvdGU6DQo+Pj4gT24gVHVlLCAy
+OCBNYXkgMjAxOSAxMDo0Njo0NCAtMDcwMCwgVmVkYW5nIFBhdGVsIHdyb3RlOiAgDQo+Pj4+IEZy
+b206IFZpbmljaXVzIENvc3RhIEdvbWVzIDx2aW5pY2l1cy5nb21lc0BpbnRlbC5jb20+DQo+Pj4+
+IA0KPj4+PiBUaGlzIGFkZHMgdGhlIFVBUEkgYW5kIHRoZSBjb3JlIGJpdHMgbmVjZXNzYXJ5IGZv
+ciB1c2Vyc3BhY2UgdG8NCj4+Pj4gcmVxdWVzdCBoYXJkd2FyZSBvZmZsb2FkaW5nIHRvIGJlIGVu
+YWJsZWQuDQo+Pj4+IA0KPj4+PiBUaGUgZnV0dXJlIGNvbW1pdHMgd2lsbCBlbmFibGUgaHlicmlk
+IG9yIGZ1bGwgb2ZmbG9hZGluZyBmb3IgdGFwcmlvLiBUaGlzDQo+Pj4+IGNvbW1pdCBzZXRzIHVw
+IHRoZSBpbmZyYXN0cnVjdHVyZSB0byBlbmFibGUgaXQgdmlhIHRoZSBuZXRsaW5rIGludGVyZmFj
+ZS4NCj4+Pj4gDQo+Pj4+IFNpZ25lZC1vZmYtYnk6IFZpbmljaXVzIENvc3RhIEdvbWVzIDx2aW5p
+Y2l1cy5nb21lc0BpbnRlbC5jb20+DQo+Pj4+IFNpZ25lZC1vZmYtYnk6IFZlZGFuZyBQYXRlbCA8
+dmVkYW5nLnBhdGVsQGludGVsLmNvbT4gIA0KPj4+IA0KPj4+IE90aGVyIHFkaXNjcyBvZmZsb2Fk
+IGJ5IGRlZmF1bHQsIHRoaXMgb2ZmbG9hZC1sZXZlbCBzZWxlY3Rpb24gaGVyZSBpcyBhDQo+Pj4g
+bGl0dGxlIGJpdCBpbmNvbnNpc3RlbnQgd2l0aCB0aGF0IDooDQo+Pj4gDQo+PiBUaGVyZSBhcmUg
+MiBkaWZmZXJlbnQgb2ZmbG9hZCBtb2RlcyBpbnRyb2R1Y2VkIGluIHRoaXMgcGF0Y2guDQo+PiAN
+Cj4+IDEuIFR4dGltZSBvZmZsb2FkIG1vZGU6IFRoaXMgbW9kZSBkZXBlbmRzIG9uIHNraXBfc29j
+a19jaGVjayBmbGFnIGJlaW5nIHNldCBpbiB0aGUgZXRmIHFkaXNjLiBBbHNvLCBpdCByZXF1aXJl
+cyBzb21lIG1hbnVhbCBjb25maWd1cmF0aW9uIHdoaWNoIG1pZ2h0IGJlIHNwZWNpZmljIHRvIHRo
+ZSBuZXR3b3JrIGFkYXB0ZXIgY2FyZC4gRm9yIGV4YW1wbGUsIGZvciB0aGUgaTIxMCBjYXJkLCB0
+aGUgdXNlciB3aWxsIGhhdmUgdG8gcm91dGUgYWxsIHRoZSB0cmFmZmljIHRvIHRoZSBoaWdoZXN0
+IHByaW9yaXR5IHF1ZXVlIGFuZCBpbnN0YWxsIGV0ZiBxZGlzYyB3aXRoIG9mZmxvYWQgZW5hYmxl
+ZCBvbiB0aGF0IHF1ZXVlLiBTbywgSSBkb27igJl0IHRoaW5rIHRoaXMgbW9kZSBzaG91bGQgYmUg
+ZW5hYmxlZCBieSBkZWZhdWx0Lg0KPiANCj4gRXhjZWxsZW50LCBpdCBsb29rcyBsaWtlIHRoZXJl
+IHdpbGwgYmUgZHJpdmVyIHBhdGNoZXMgbmVjZXNzYXJ5IGZvcg0KPiB0aGlzIG9mZmxvYWQgdG8g
+ZnVuY3Rpb24sIGFsc28gaXQgc2VlbXMgeW91ciBvZmZsb2FkIGVuYWJsZSBmdW5jdGlvbg0KPiBz
+dGlsbCBjb250YWlucyB0aGlzIGFmdGVyIHRoZSBzZXJpZXM6DQo+IA0KPiAJLyogRklYTUU6IGVu
+YWJsZSBvZmZsb2FkaW5nICovDQo+IA0KPiBQbGVhc2Ugb25seSBwb3N0IG9mZmxvYWQgaW5mcmFz
+dHJ1Y3R1cmUgd2hlbiBmdWxseSBmbGVzaGVkIG91dCBhbmQgd2l0aA0KPiBkcml2ZXIgcGF0Y2hl
+cyBtYWtpbmcgdXNlIG9mIGl0Lg0KPiANClRoZSBhYm92ZSBjb21tZW50IHJlZmVycyB0byB0aGUg
+ZnVsbCBvZmZsb2FkIG1vZGUgZGVzY3JpYmVkIGJlbG93LiBJdCBpcyBub3QgbmVlZGVkIGZvciB0
+eHRpbWUgb2ZmbG9hZCBtb2RlLiBUeHRpbWUgb2ZmbG9hZCBtb2RlIGlzIGVzc2VudGlhbGx5IHNl
+dHRpbmcgdGhlIHRyYW5zbWl0IHRpbWUgZm9yIGVhY2ggcGFja2V0ICBkZXBlbmRpbmcgb24gd2hh
+dCBpbnRlcnZhbCBpdCBpcyBnb2luZyB0byBiZSB0cmFuc21pdHRlZCBpbnN0ZWFkIG9mIHJlbHlp
+bmcgb24gdGhlIGhydGltZXJzIHRvIG9wZW4gZ2F0ZXMgYW5kIHNlbmQgcGFja2V0cy4gTW9yZSBk
+ZXRhaWxzIGFib3V0IHdoeSBleGFjdGx5IHRoaXMgaXMgZG9uZSBpcyBtZW50aW9uZWQgaW4gcGF0
+Y2ggIzVbMV0gb2YgdGhpcyBzZXJpZXMuDQoNCldoYXQgd2UgY2FuIGRvIGlzIGp1c3QgYWRkIHRo
+ZSB0eHRpbWUgb2ZmbG9hZCByZWxhdGVkIGZsYWcgYW5kIGFkZCB0aGUgZnVsbCBvZmZsb2FkIGZs
+YWcgd2hlbmV2ZXIgdGhlIGRyaXZlciBiaXRzIGFyZSByZWFkeS4gRG9lcyB0aGF0IGFkZHJlc3Mg
+eW91ciBjb25jZXJuPw0KDQpUaGFua3MsDQpWZWRhbmcNCj4+IDIuIEZ1bGwgb2ZmbG9hZCBtb2Rl
+OiBUaGlzIG1vZGUgaXMgY3VycmVudGx5IG5vdCBzdXBwb3J0ZWQgYnkgYW55IG5ldHdvcmsgZHJp
+dmVyLiBUaGUgc3VwcG9ydCBmb3IgdGhpcyB3aWxsIGJlIGNvbWluZyBzb29uLiBCdXQsIHdlIGNh
+biBlbmFibGUgdGhpcyBtb2RlIGJ5IGRlZmF1bHQuIA0KPj4gDQo+PiBBbHNvLCBmcm9tIHdoYXQg
+VmluaWNpdXMgdGVsbHMgbWUsIG9mZmxvYWQgbW9kZXMgZm9yIGNicywgZXRmIGFuZCBtcXByaW8g
+YXJlIGFsc28gZGlzYWJsZWQgYnkgZGVmYXVsdC4gU28sIGl0IHdpbGwgbWFrZSBtb3JlIHNlbnNl
+IHRvIGtlZXAgaXQgZGlzYWJsZWQgdG8gYmUgY29uc2lzdGVudCB3aXRoIG90aGVyIHFkaXNjcyBz
+aW1pbGFyIHRvIHRoaXMgb25lLg0KDQo=
