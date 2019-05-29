@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 825072E31E
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CC82E324
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbfE2RYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:24:04 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36622 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfE2RYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:24:04 -0400
-Received: by mail-qt1-f193.google.com with SMTP id u12so3589573qth.3;
-        Wed, 29 May 2019 10:24:03 -0700 (PDT)
+        id S1726875AbfE2RZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:25:04 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46045 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726102AbfE2RZD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:25:03 -0400
+Received: by mail-qt1-f196.google.com with SMTP id t1so3549094qtc.12;
+        Wed, 29 May 2019 10:25:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jseR0G1MK8l+SedwWAn1+xBXO7oEnZiUpZgmshuXjz0=;
-        b=Qn7GudkzA3xXSobCXURVJJ6+nQeYz/Kz6q6xjwWs1qW07xGQ4sdIYFNhDOxjhixm2s
-         HL1DEQjUwjQQuKFgpZpBPYPuu8Mlh3DP27rrBkXFZL9IxsGQF/l0VDLH2E6GaxbQ45VG
-         qNKBZvEU9+BLTdGgR5RDb2+XCCpDbSnN/9A2QB0g9Yg9lyr3sfR+VgdEHhnP7iGwWdhR
-         PRrDJGgzoWSM9MBem67FERstpmwPo/GBa+Q8RJ6dyBI4yoeh7B+5TAeaRdy//NTsxK2M
-         vRCMI1nFHs66timVejLVNIHDBsuoM662LnLMoVJxOFZ8QFXspWvSJZd9QCjfPmU6sMu+
-         BB5Q==
+        bh=xyDjyrArOUdBn73QuhTdcHYiilWIQWXHmzX8mfwMWFs=;
+        b=u9IOgIzNDMJ6/fZBbXhPHtENqfZ/3E8qggwcHxDlo0hE/EvGxwb9NXlODJU7AT9SY5
+         uJ4TDMrs6qZieU++KvoobL1nVOG66vzFfKR2heaS5f9jT+enHeqKjoefofx1pcFTB8OQ
+         PC3Cmw3tk9zPRtOaJ6bycxCygb45frs2nr6Dju5hmjIPiHyDXd+lj4nO+zL/rknAIgeE
+         6XxaMErmW0iucXBeRWO/dLbr0bF8clYTNxw+0bACl/E7tM5k6Et795p+JYSHL5FS2nsk
+         PhGE0+rLgnO50CgMEQzc9WivihDgfSFrFSM2me/4nDLdC3SltVdKEDvvT7tSki5wliC5
+         RM1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jseR0G1MK8l+SedwWAn1+xBXO7oEnZiUpZgmshuXjz0=;
-        b=gz1ITQYHf0vDIWiKE0+/QA+IuTHCW6TuAZ7ciQ4+dnWma9UsUKcFnqEpyr3e38h/Gv
-         0zXIszMfTDss2SHmbwK4zNE2pOOdYBw4QoO1LZqNHQ/HOaSJgYOm1O6+3whb2QryphG4
-         dSbVAugas5omtpe9JHA/dt4sP6dGrdA0JgH1kCUwmXidFplYCxNBUBCkf17JwFYeE07/
-         gAEJ0+eqqszf9Wxiit+4oc+xV/U289kLj9vEjXPLiv6bvvtysNoqZZBnofAC5F6gk/Q7
-         Ni+OCFE5i2IauSYIo88OOmPJ1/9N8T4Ye6yO1AMpumHSUIaCoYkPR5l/UxqQJ5zJ0W1O
-         weRQ==
-X-Gm-Message-State: APjAAAWDukBmiNdO0uzraya3jxg1u7dlgf+Cthvy7mhXGybV61UqmToE
-        jeEO/IZOZiLQ6lvtv8HyvYCVNrlmjnlU82ucAslHCA+vsVc=
-X-Google-Smtp-Source: APXvYqwqaQkbWkSA9n7gxYchfWrtWbi4aBYWgcjg5ty6Myz0wvTm9z0q5Gz3sYg/WktolcsEvCxlcdgPVZSSAJ7SHEs=
-X-Received: by 2002:aed:3bd7:: with SMTP id s23mr21030065qte.139.1559150643071;
- Wed, 29 May 2019 10:24:03 -0700 (PDT)
+        bh=xyDjyrArOUdBn73QuhTdcHYiilWIQWXHmzX8mfwMWFs=;
+        b=P0+ZRtuxJvac8yeIoTpX3YjPd1LeQ7tn2eNUD7dhsN38jkxFKUai1iEBllO71eZqwW
+         VlTaMivMFDBfRzH3dEFZDHrEVMqvaEPDIKdrICXmyziac3JEW/xnDLjgUGiguvQ0lmGT
+         +40CI7QPF2wcnS5MdQpCkq7/Xk26OSIjCU6nnvOIQpZuVWPudozRfOsW63pi4b54Noiw
+         SGLVyFf4P9XNxBwnRi4eTV7bfQHXMSFIfN0LMz6GE25e9/tv8HlMLX7MQyPz96/zQ2th
+         syoHinLBvUj/zqCtmFHldsk7sDirliPq0LCQjuO3+8HrYhzkDrD2zO5w343KkYbSjmeo
+         6NFw==
+X-Gm-Message-State: APjAAAW5bHtK+FsIUF8m2IKyPbxTMcEZWhHfyfmEtGk8qcEFn/w3dml6
+        UXoIHcimpGQZSlIu1tQIlImLRyLFOZZXBA5iS5M=
+X-Google-Smtp-Source: APXvYqzkHy4svj/A8VgjggRRpQa1tcEqtJDElgu2Xo2aKIEFmz6H2dB4ubBK7ZJHrvm/LK+7CO0RmbIXPMzmLaN9IHk=
+X-Received: by 2002:ac8:2a73:: with SMTP id l48mr5237386qtl.183.1559150702882;
+ Wed, 29 May 2019 10:25:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-7-andriin@fb.com>
-In-Reply-To: <20190529011426.1328736-7-andriin@fb.com>
+References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-8-andriin@fb.com>
+In-Reply-To: <20190529011426.1328736-8-andriin@fb.com>
 From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 29 May 2019 10:23:51 -0700
-Message-ID: <CAPhsuW4UGQ1MRzmA5YLkQ_cem70BvNLQXimXjVVej46+TZ+=Hw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 6/9] libbpf: use negative fd to specify missing BTF
+Date:   Wed, 29 May 2019 10:24:51 -0700
+Message-ID: <CAPhsuW5AzLfRcNOSRRN9YvUocMxpR2eoH6uGgwdBjqFwZPxBAw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 7/9] libbpf: simplify two pieces of logic
 To:     Andrii Nakryiko <andriin@fb.com>
 Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
@@ -61,73 +61,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> 0 is a valid FD, so it's better to initialize it to -1, as is done in
-> other places. Also, technically, BTF type ID 0 is valid (it's a VOID
-> type), so it's more reliable to check btf_fd, instead of
-> btf_key_type_id, to determine if there is any BTF associated with a map.
+> Extra check for type is unnecessary in first case.
+>
+> Extra zeroing is unnecessary, as snprintf guarantees that it will
+> zero-terminate string.
 >
 > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  tools/lib/bpf/libbpf.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
+>  tools/lib/bpf/libbpf.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 >
 > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 9c45856e7fd6..292ea9a2dc3d 100644
+> index 292ea9a2dc3d..e3bc00933145 100644
 > --- a/tools/lib/bpf/libbpf.c
 > +++ b/tools/lib/bpf/libbpf.c
-> @@ -1751,7 +1751,7 @@ bpf_object__create_maps(struct bpf_object *obj)
->                 create_attr.key_size = def->key_size;
->                 create_attr.value_size = def->value_size;
->                 create_attr.max_entries = def->max_entries;
-> -               create_attr.btf_fd = 0;
-> +               create_attr.btf_fd = -1;
->                 create_attr.btf_key_type_id = 0;
->                 create_attr.btf_value_type_id = 0;
->                 if (bpf_map_type__is_map_in_map(def->type) &&
-> @@ -1765,11 +1765,11 @@ bpf_object__create_maps(struct bpf_object *obj)
->                 }
->
->                 *pfd = bpf_create_map_xattr(&create_attr);
-> -               if (*pfd < 0 && create_attr.btf_key_type_id) {
-> +               if (*pfd < 0 && create_attr.btf_fd >= 0) {
->                         cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
->                         pr_warning("Error in bpf_create_map_xattr(%s):%s(%d). Retrying without BTF.\n",
->                                    map->name, cp, errno);
-> -                       create_attr.btf_fd = 0;
-> +                       create_attr.btf_fd = -1;
->                         create_attr.btf_key_type_id = 0;
->                         create_attr.btf_value_type_id = 0;
->                         map->btf_key_type_id = 0;
-> @@ -2053,6 +2053,9 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
->         char *log_buf;
->         int ret;
->
-> +       if (!insns || !insns_cnt)
-> +               return -EINVAL;
-> +
->         memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
->         load_attr.prog_type = prog->type;
->         load_attr.expected_attach_type = prog->expected_attach_type;
-> @@ -2063,7 +2066,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
->         load_attr.license = license;
->         load_attr.kern_version = kern_version;
->         load_attr.prog_ifindex = prog->prog_ifindex;
-> -       load_attr.prog_btf_fd = prog->btf_fd >= 0 ? prog->btf_fd : 0;
-> +       load_attr.prog_btf_fd = prog->btf_fd;
->         load_attr.func_info = prog->func_info;
->         load_attr.func_info_rec_size = prog->func_info_rec_size;
->         load_attr.func_info_cnt = prog->func_info_cnt;
-> @@ -2072,8 +2075,6 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
->         load_attr.line_info_cnt = prog->line_info_cnt;
->         load_attr.log_level = prog->log_level;
->         load_attr.prog_flags = prog->prog_flags;
-> -       if (!load_attr.insns || !load_attr.insns_cnt)
-> -               return -EINVAL;
->
->  retry_load:
->         log_buf = malloc(log_buf_size);
+> @@ -1430,8 +1430,7 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
+>                                 if (maps[map_idx].libbpf_type != type)
+>                                         continue;
+>                                 if (type != LIBBPF_MAP_UNSPEC ||
+> -                                   (type == LIBBPF_MAP_UNSPEC &&
+> -                                    maps[map_idx].offset == sym.st_value)) {
+> +                                   maps[map_idx].offset == sym.st_value) {
+>                                         pr_debug("relocation: find map %zd (%s) for insn %u\n",
+>                                                  map_idx, maps[map_idx].name, insn_idx);
+>                                         break;
+> @@ -2354,7 +2353,6 @@ struct bpf_object *bpf_object__open_buffer(void *obj_buf,
+>                 snprintf(tmp_name, sizeof(tmp_name), "%lx-%lx",
+>                          (unsigned long)obj_buf,
+>                          (unsigned long)obj_buf_sz);
+> -               tmp_name[sizeof(tmp_name) - 1] = '\0';
+>                 name = tmp_name;
+>         }
+>         pr_debug("loading object '%s' from buffer\n",
 > --
 > 2.17.1
 >
