@@ -2,84 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F56F2E372
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC2A2E3EF
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727301AbfE2Rjt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 May 2019 13:39:49 -0400
-Received: from mga09.intel.com ([134.134.136.24]:55335 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbfE2Rjt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 13:39:49 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 10:39:48 -0700
-X-ExtLoop1: 1
-Received: from pgsmsx108.gar.corp.intel.com ([10.221.44.103])
-  by orsmga007.jf.intel.com with ESMTP; 29 May 2019 10:39:46 -0700
-Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.93]) by
- PGSMSX108.gar.corp.intel.com ([169.254.8.77]) with mapi id 14.03.0415.000;
- Thu, 30 May 2019 01:39:45 +0800
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
- support
-Thread-Topic: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
- support
-Thread-Index: AQHVFfytwCWwwFk/s0y481symSRgi6aBXSwAgAD/zVA=
-Date:   Wed, 29 May 2019 17:39:44 +0000
-Message-ID: <D6759987A7968C4889FDA6FA91D5CBC814707D32@PGSMSX103.gar.corp.intel.com>
-References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
- <1559149107-14631-2-git-send-email-weifeng.voon@intel.com>
- <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
-In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.205]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727017AbfE2Ry0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:54:26 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45041 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbfE2Ry0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:54:26 -0400
+Received: by mail-wr1-f65.google.com with SMTP id w13so2385146wru.11
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 10:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d9omZqxvYZccBG8+J+KgseNWCG3BJ1gx+XKJcewaAwM=;
+        b=dsTu43qiFeJjrx15hXeFkxoTzs+Ro4nrBrOLUfRpklc2FynPwz5kv/uN9w4xkdhe14
+         VtPuEyJOtcSwJjC0rBnGIieJ1yUT5AW53DBPZw0b/h5+RiLQ1JeRe7gkTeLzkKu1+/G5
+         R1Vv6z7mjsBUuv4hNEEXlljyXYkrdEDiNWpro=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d9omZqxvYZccBG8+J+KgseNWCG3BJ1gx+XKJcewaAwM=;
+        b=r4mnn/Z9XXC51MKzJgrtGSJwHcFJd6uTeNmQKEOn0tIRphxFjkzpuooMmtYXf7PFr0
+         VQNje3Exgnt7kNZ/woMP3ZgP9analf+F9DnRcClLqXRiyF5Z5glPH9ALYYFwcMxOB169
+         6NSEgApPWaj/GJJ6u05x1fHs5GdrdC6g5Z2AjaqguVtTprcYiuO2IeQkgkqWxbyb2nGC
+         Ty11X+eAju8zJ6zgmb9kKvHksJVNbmxHcIlp5B7OXYLx70e6JYql+8k1r+fWppqbSXNL
+         HWw8ZsaqPLhD3HI3AucBPhwVdP05LkauGBdavAGVl8QHO05oYRszpt6CuPV8UBRiO9QE
+         hvkg==
+X-Gm-Message-State: APjAAAXpUDiBuxynbILEWdtwj/aHw1W5Y1hbGiWT1kKt9bm/b8NK4Wy4
+        NnTBkO05GDPlvPhTL03ZlSpacxxxBKc/hA==
+X-Google-Smtp-Source: APXvYqx6KLj+zbGmP97yvyRogoWbF2Oog9ah4ImyqMqXDz2YRUKItIToUTm4vlW5o97lgJ2YPjlgpQ==
+X-Received: by 2002:a5d:4104:: with SMTP id l4mr5843593wrp.302.1559152464098;
+        Wed, 29 May 2019 10:54:24 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id x21sm8789791wmi.1.2019.05.29.10.54.23
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 10:54:23 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, stephen@networkplumber.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH iproute2] bridge: mdb: restore text output format
+Date:   Wed, 29 May 2019 20:52:42 +0300
+Message-Id: <20190529175242.20919-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +static void stmmac_mdio_c45_setup(struct stmmac_priv *priv, int phyreg,
-> > +				  u32 *val, u32 *data)
-> > +{
-> > +	unsigned int reg_shift = priv->hw->mii.reg_shift;
-> > +	unsigned int reg_mask = priv->hw->mii.reg_mask;
-> 
-> Reverse christmas tree here. You also should align the function variables with
-> the opening parenthesis of the function here and in the remaining series.
-> 
-> Otherwise this patch looks good to me.
+While I fixed the mdb json output, I did overlook the text output.
+This patch returns the original text output format:
+ dev <bridge> port <port> grp <mcast group> <temp|permanent> <flags> <timer>
+Example (old format, restored by this patch):
+ dev br0 port eth8 grp 239.1.1.11 temp
 
-It is already reversed Christmas tree. Somehow each of the character's width in the
-email is not equal. As you can see that the first line of assignment is having more
-character than the second line of assignment.
-The alignment is also correct when I check it after doing a git am.
+Example (changed format after the commit below):
+ 23: br0  eth8  239.1.1.11  temp
 
-Regards,
-Weifeng
+We had some reports of failing scripts which were parsing the output.
+Also the old format matches the bridge mdb command syntax which makes
+it easier to build commands out of the output.
 
-> 
-> Thanks,
-> Jose Miguel Abreu
+Fixes: c7c1a1ef51ae ("bridge: colorize output and use JSON print library")
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+I know text output isn't considered API, but there are scripts out there
+which rely on the format or at least on the old strings/values to be
+present.
+
+ bridge/mdb.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index 59aa17643517..eadc6212af70 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -132,21 +132,21 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 
+ 	open_json_object(NULL);
+ 
+-	print_int(PRINT_ANY, "index", "%u: ", ifindex);
+-	print_color_string(PRINT_ANY, COLOR_IFNAME, "dev", "%s ", dev);
+-	print_string(PRINT_ANY, "port", " %s ",
++	print_int(PRINT_JSON, "index", NULL, ifindex);
++	print_color_string(PRINT_ANY, COLOR_IFNAME, "dev", "dev %s", dev);
++	print_string(PRINT_ANY, "port", " port %s",
+ 		     ll_index_to_name(e->ifindex));
+ 
+ 	print_color_string(PRINT_ANY, ifa_family_color(af),
+-			    "grp", " %s ",
++			    "grp", " grp %s",
+ 			    inet_ntop(af, src, abuf, sizeof(abuf)));
+ 
+-	print_string(PRINT_ANY, "state", " %s ",
++	print_string(PRINT_ANY, "state", " %s",
+ 			   (e->state & MDB_PERMANENT) ? "permanent" : "temp");
+ 
+ 	open_json_array(PRINT_JSON, "flags");
+ 	if (e->flags & MDB_FLAGS_OFFLOAD)
+-		print_string(PRINT_ANY, NULL, "%s ", "offload");
++		print_string(PRINT_ANY, NULL, " %s", "offload");
+ 	close_json_array(PRINT_JSON, NULL);
+ 
+ 	if (e->vid)
+-- 
+2.20.1
+
