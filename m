@@ -2,158 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BADD2E4F5
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867FE2E500
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726439AbfE2TFQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 May 2019 15:05:16 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:60331 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfE2TFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 15:05:16 -0400
-Received: from [172.20.12.219] (unknown [94.75.125.194])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 824B2CEE14;
-        Wed, 29 May 2019 21:13:35 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: cellular modem APIs - take 2
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
-Date:   Wed, 29 May 2019 21:05:12 +0200
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Dan Williams <dcbw@redhat.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <662BBC5C-D0C7-4B2C-A001-D6F490D0F36F@holtmann.org>
-References: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
-To:     Johannes Berg <johannes@sipsolutions.net>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1726617AbfE2THr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 15:07:47 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:52057 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbfE2THq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 15:07:46 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hW3vE-0003to-IG; Wed, 29 May 2019 15:07:39 -0400
+Date:   Wed, 29 May 2019 15:07:09 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: memory leak in sctp_process_init
+Message-ID: <20190529190709.GE31099@hmswarspite.think-freely.org>
+References: <00000000000097abb90589e804fd@google.com>
+ <20190528013600.GM5506@localhost.localdomain>
+ <20190528111550.GA4658@hmswarspite.think-freely.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190528111550.GA4658@hmswarspite.think-freely.org>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+On Tue, May 28, 2019 at 07:15:50AM -0400, Neil Horman wrote:
+> On Mon, May 27, 2019 at 10:36:00PM -0300, Marcelo Ricardo Leitner wrote:
+> > On Mon, May 27, 2019 at 05:48:06PM -0700, syzbot wrote:
+> > > Hello,
+> > > 
+> > > syzbot found the following crash on:
+> > > 
+> > > HEAD commit:    9c7db500 Merge tag 'selinux-pr-20190521' of git://git.kern..
+> > > git tree:       upstream
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=10388530a00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=61dd9e15a761691d
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=f7e9153b037eac9b1df8
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177fa530a00000
+> > > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
+> > > 
+> > >  0 to HW filter on device batadv0
+> > > executing program
+> > > executing program
+> > > executing program
+> > > BUG: memory leak
+> > > unreferenced object 0xffff88810ef68400 (size 1024):
+> > >   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
+> > >   hex dump (first 32 bytes):
+> > >     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
+> > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > >   backtrace:
+> > >     [<00000000a02cebbd>] kmemleak_alloc_recursive
+> > > include/linux/kmemleak.h:55 [inline]
+> > >     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
+> > >     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
+> > >     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
+> > >     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
+> > >     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
+> > >     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
+> > >     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
+> > > net/sctp/sm_make_chunk.c:2437
+> > >     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
+> > > [inline]
+> > >     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
+> > > [inline]
+> > >     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
+> > > [inline]
+> > >     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60
+> > > net/sctp/sm_sideeffect.c:1165
+> > 
+> > Note that this is on the client side. It was handling the INIT_ACK
+> > chunk, from sctp_sf_do_5_1C_ack().
+> > 
+> > I'm not seeing anything else other than sctp_association_free()
+> > releasing this memory. This means 2 things:
+> > - Every time the cookie is retransmitted, it leaks. As shown by the
+> >   repetitive leaks here.
+> > - The cookie remains allocated throughout the association, which is
+> >   also not good as that's a 1k that we could have released back to the
+> >   system right after the handshake.
+> > 
+> >   Marcelo
+> > 
+> If we have an INIT chunk bundled with a COOKIE_ECHO chunk in the same packet,
+> this might occur.  Processing for each chunk (via sctp_cmd_process_init and
+> sctp_sf_do_5_1D_ce both call sctp_process_init, which would cause a second write
+> to asoc->peer.cookie, leaving the first write (set via kmemdup), to be orphaned
+> and leak.  Seems like we should set a flag to determine if we've already cloned
+> the cookie, and free the old one if its set.  If we wanted to do that on the
+> cheap, we might be able to get away with checking asoc->stream->[in|out]cnt for
+> being non-zero as an indicator if we've already cloned the cookie
+> 
+> Neil
+> 
+> 
 
-> Sorry for the long delay in getting back to this. I'm meaning to write
-> some code soon also for this, to illustrate better, but I figured I'd
-> still get some thoughts out before I do that.
-> 
-> After more discussion (@Intel) and the previous thread(s), I've pretty
-> much come to the conclusion that we should have a small subsystem for
-> WWAN, rather than fudging everything like we previously did.
-> 
-> We can debate whether or not that should use 'real' netlink or generic
-> netlink - personally I know the latter better and I think it has some
-> real advantages like easier message parsing (it's automatic more or
-> less) including strict checking and automatic policy introspection (I
-> recently wrote the code for this and it's plugged into generic netlink
-> family, for other netlink families it needs more hand-written code). But
-> I could possibly be convinced of doing something else, and/or perhaps
-> building more infrastructure for 'real' netlink to realize those
-> benefits there as well.
-> 
-> 
-> In terms of what I APIs are needed, the kernel-driver side and userspace
-> side go pretty much hand in hand (the wwan subsystem just providing the
-> glue), so what I say below is pretty much both a method/function call
-> (kernel internal API) or a netlink message (userspace API).
-> 
-> 1) I think a generic abstraction of WWAN device that is not a netdev
->   is needed. Yes, on the one hand it's quite nice to be able to work on
->   top of a given netdev, but it's also limiting because it requires the
->   data flow to go through there, and packets that are tagged in some
->   way be exchanged there.
->   For VLANs this can be out-of-band (in a sense) with hw-accel, but for
->   rmnet-style it's in-band, and that limits what we can do.
-> 
->   Now, of course this doesn't mean there shouldn't be a netdev created
->   by default in most cases, but it gives us a way to do additional
->   things that we cannot do with *just* a netdev.
-> 
->   From a driver POV though, it would register a new "wwan_device", and
->   then get some generic callback to create a netdev on top, maybe by
->   default from the subsystem or from the user.
+Completely untested, but can you give this patch a shot?
 
-Have you actually looked at Phonet or CAIF.
 
-And netdev by default seems like repeating the same mistake we have done with WiFi. Your default context in LTE cases is only available when actually registered to the LTE bearer. It is pretty much pointless to have a netdev if you are not registered to the network.
-
-You have to do a lot of initial modem setup before you ever get to the having your default context connected. Have a look at oFono and what it does to bring up the modem.
-
-> 2) Clearly, one needs to be able to create PDN netdevs, with the PDN
->   given to the command. Here's another advantage: If these are created
->   on top of another abstraction, not another netdev, they can have
->   their own queues, multiqueue RX etc. much more easily.
-> 
->   Also, things like the "if I have just a single channel, drop the mux
->   headers" can then be entirely done in the driver, and the default
->   netdev no longer has the possibility of muxed and IP frames on the
->   same datapath.
-> 
->   This also enables more things like handling checksum offload directly
->   in the driver, which doesn't behave so well with VLANs I think.
-> 
->   All of that will just be easier for 5G too, I believe, with
->   acceleration being handled per PDN, multi-queue working without
->   ndo_select_queue, etc.
-> 
->   Quite possibly there might be some additional (vendor-dependent?)
->   configuration for when such netdevs are created, but we need to
->   figure out if that really needs to be at creation time, or just
->   ethtool later or something like that. I guess it depends on how
->   generic it needs to be.
-
-I think you need to provide actually a lot more details on how queue control inside Linux would be helpful and actually work in the first place. I don’t see how Linux will be ever in charge and not the modem do this all for you.
-
-> 3) Separately, we need to have an ability to create "generalized control
->   channels". I'm thinking there would be a general command "create
->   control channel" with a given type (e.g. ATCMD, RPC, MBIM, GNSS) plus
->   a list of vendor-specific channels (e.g. for tracing).
-> 
->   I'm unsure where this channel should really go - somehow it seems to
->   me that for many (most?) of these registering them as a serial line
->   would be most appropriate, but some, especially vendor-defined
->   channels like tracing, would probably better use a transport that's
->   higher bandwidth than, e.g. netdevs.
-> 
->   One way I thought of doing this was to create an abstraction in the
->   wwan framework that lets the driver use SKBs anyway (i.e. TX and RX
->   on these channels using SKBs) and then translate them to some channel
->   in the framework - that way, we can even select at runtime if we want
->   a netdev (not really plugged into the network stack, ARPHDR_VOID?) or
->   some other kind of transport. Building that would allow us to add
->   transport types in the future too.
-> 
->   I guess such a channel should also be created by default, if it's
->   not already created by the driver in some out-of-band way anyway (and
->   most likely it shouldn't be, but I guess drivers might have some
->   entirely different communication channels for AT CMDs?)
-
-I would just use sockets like Phonet and CAIF.
-
-> 4) There was a question about something like pure IP channels that
->   belong to another PDN and apparently now separate netdevs might be
->   used, but it seems to me that could just be a queue reserved on the
->   regular netdevs and then when you say ("enable video streaming on
->   wwan1 interface") that can do some magic to classify the video
->   packets (DSCP?) to another hardware queue for better QoS.
-> 
-> 
-> 
-> Anyway, if all of this doesn't seem completely outlandish I'll try to
-> write some code to illustrate it (sooner, rather than later).
-
-Frankly I have a problem if this is designed from the hardware point of view. Unless you are familiar with how 3GPP works and what a telephony stack like oFono has to do, there is really no point in trying to create a WWAN subsystem.
-
-Anything defined needs to be defined in terms of 3GPP and not what current drivers have hacked together.
-
-Regards
-
-Marcel
-
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index 0767701ef362..a5772d72eb87 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -1701,6 +1701,7 @@ struct sctp_association {
+ 		__u8    sack_needed:1,     /* Do we need to sack the peer? */
+ 			sack_generation:1,
+ 			zero_window_announced:1;
++			cookie_allocated:1
+ 		__u32	sack_cnt;
+ 
+ 		__u32   adaptation_ind;	 /* Adaptation Code point. */
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index 1999237ce481..b6e8fd7081b7 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -213,6 +213,7 @@ static struct sctp_association *sctp_association_init(
+ 	 */
+ 	asoc->peer.sack_needed = 1;
+ 	asoc->peer.sack_generation = 1;
++	asoc->cookie_allocated=0;
+ 
+ 	/* Assume that the peer will tell us if he recognizes ASCONF
+ 	 * as part of INIT exchange.
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 92331e1195c1..e966a3cc78bf 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2419,9 +2419,12 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+ 	/* Copy cookie in case we need to resend COOKIE-ECHO. */
+ 	cookie = asoc->peer.cookie;
+ 	if (cookie) {
++		if (asoc->peer.cookie_allocated)
++			kfree(cookie);
+ 		asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
+ 		if (!asoc->peer.cookie)
+ 			goto clean_up;
++		asoc->peer.cookie_allocated=1;
+ 	}
+ 
+ 	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
