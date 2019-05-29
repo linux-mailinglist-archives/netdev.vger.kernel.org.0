@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C4872D53F
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE3892D542
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbfE2F6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 01:58:12 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45256 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbfE2F6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 01:58:12 -0400
-Received: by mail-pg1-f196.google.com with SMTP id w34so660961pga.12;
-        Tue, 28 May 2019 22:58:11 -0700 (PDT)
+        id S1726085AbfE2F6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 01:58:15 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45892 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbfE2F6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 01:58:14 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a5so562408pls.12;
+        Tue, 28 May 2019 22:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Cx8Ilw4znmXClRGpigbzhVQkcqiKWTMxkBato++bvpI=;
-        b=GxcIhrlmFBf9mOmiefMsTydTIcIJZ+e6Sg1Gxg/d15dTtJngBniNmQPIO/bFNR/23P
-         c+kA5k/p508OIc+lmLSJ1l2ZhqSA32crjpPXa1WDEDYZv+jJSx9PZhiIyVU6jh77seTd
-         RPtFCLIVngA3HIVfB2wfRVRxUMK5AcSzrp6ZFhiQ8//LFKxa7eM//5bYpzGZYJtblx1z
-         bZX5FTNKRMzUsZ9cPt/0/qemtNDMgK3iomQ52MuruNW7SKwSHcDlH4C3UqhIKmyBEbPU
-         OhFBvQIg2sNXTJztMhFKopvyLOJsk1Lu2gusAWfKwKkZB2pTWMSVBEeV2TdC43UD/hC0
-         XUdg==
+        bh=GIGt8u9BWSQNCgAnoryyk1P0yJ0UmD3gRuAnrJaAc84=;
+        b=TxNHvq1wDp0fQwoPItyqPFjdzt35e411Vn6FTdFsaUg4TLU/l5ZNGMhBbqC5Vi79Df
+         jCrgOoiw0mJ5LPYuOgXa3PXPhXUn8ZuyLUqLbkm7ffV4FesvB1108xlds1iaRBbfjMn9
+         WDp+GuAFPpbpyhQJhWdLtgShcUvSwpUp79y1oaVeA43rY2m+zyOOVDrSOhnBJCu0G18F
+         rqHWJXPMR8tIZPLf6fH92Cx1FXUMUcwBNjt/Ea8Hszk5IhgG+bh+3BIlOEda0GmS9mOi
+         oEpBTP2cO1aOrWytVhikSvS3RzrgoowDwyZp+viKFrcHNCYwA2Jw2mCTIb8qL3avKli/
+         0IQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Cx8Ilw4znmXClRGpigbzhVQkcqiKWTMxkBato++bvpI=;
-        b=oWBegFu7tpVFx2Y+NR/JdUctxsQ/rm/LCm+xV/vEPK5ieJO5wp0Tb3GP8Q7xSU/Tqq
-         MZf3At8d7MMJJsYUdv2Qbc1MbQKC8t0kCrVHt7wWdulPs0YKXNIgwJG8b7nNz8x4yjFh
-         8Dwn3XrjY27JyPYR2jAJTqor0RYw47e9MAzP/RiN0cxxU/VKaI2kfwBe1I/tF0Qx5UeS
-         avomEPnfKB4ygI/8QrMJ3onqlUPJNTnOM9ahHy5lBHNNomjpBB0OVyDG0bIvqc1PnAyz
-         prCrU2Y8NMrOJmTlqiawKKjE/fu7POVryTIeBU94yhZmPrNzgtSstCwAk0BfveZJAKu0
-         UB6w==
-X-Gm-Message-State: APjAAAWsBJAX29fQg3bKxmHSgEi41M6CXNkP2XIkxgl3NB+WTA3DIWF1
-        0xiIQxugihkamHtl3+5j4llxqiSY
-X-Google-Smtp-Source: APXvYqwan9vmrE71O7sWw8Z0MTC7GKeUpMzh0DNYUZ5K4oe713CP6oEtKeuBdNLS2UmK5/Goyp41wQ==
-X-Received: by 2002:a17:90a:d14c:: with SMTP id t12mr10116787pjw.120.1559109491260;
-        Tue, 28 May 2019 22:58:11 -0700 (PDT)
+        bh=GIGt8u9BWSQNCgAnoryyk1P0yJ0UmD3gRuAnrJaAc84=;
+        b=BpCm/pG52NVQuyQX+Vaz2nvA6pG+ppWRCElDBruHSlsOMQAjipqDJWC7bdBf0EDWLi
+         A6Qbhn/OxeaZE76grFPMmrdlQcZ/6hj2CRwCY7fkKY+EL0O1pRNKOpQvJD6bm7GwLINz
+         DwD/qVE0BTXIX5acOrZuvyv4SJpo0ND1ACCZzES8RlXTFi8IQr9m5HUbZlO3vuu0ZKqU
+         SYENnqY+aEpc6VuVWMu742Syr4QFdIMHAdg/2hPAd7VXEgBos3ENDQ732/q39F4Bq488
+         h5EHQnxt7zVfJW33ZZ4Xy3oAB0x/f9Cx4EhkfZiK1yDePTGCXc8MvSP70/MAhekONu+5
+         mdBg==
+X-Gm-Message-State: APjAAAVY0vHfm5xXbAhFwlGw0Rh6CXpYGOzU0D1NZPm+6FQYOeAVcE86
+        nq7TgbcVE7kyKR92h014NNYk6/KO
+X-Google-Smtp-Source: APXvYqzPK1YcEdnYlnW5rM1uUAasLKT/h+InwJoOLjsmNYwgazh4QNOhqNlZ5yfKDTv1hhheL0OFjw==
+X-Received: by 2002:a17:902:8508:: with SMTP id bj8mr96585932plb.79.1559109492549;
+        Tue, 28 May 2019 22:58:12 -0700 (PDT)
 Received: from localhost.localdomain (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id w1sm19093127pfg.51.2019.05.28.22.58.09
+        by smtp.gmail.com with ESMTPSA id w1sm19093127pfg.51.2019.05.28.22.58.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 22:58:10 -0700 (PDT)
+        Tue, 28 May 2019 22:58:11 -0700 (PDT)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Miroslav Lichvar <mlichvar@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH V4 net-next 1/6] net: Introduce peer to peer one step PTP time stamping.
-Date:   Tue, 28 May 2019 22:58:02 -0700
-Message-Id: <0c508bcc9552a078451dbe3dd66580cc353b6fec.1559109077.git.richardcochran@gmail.com>
+Subject: [PATCH V4 net-next 2/6] net: Introduce a new MII time stamping interface.
+Date:   Tue, 28 May 2019 22:58:03 -0700
+Message-Id: <cc892ec1dfe16c3e5feb26e756cb20405a386948.1559109077.git.richardcochran@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <cover.1559109076.git.richardcochran@gmail.com>
 References: <cover.1559109076.git.richardcochran@gmail.com>
@@ -64,61 +64,394 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 1588 standard defines one step operation for both Sync and
-PDelay_Resp messages.  Up until now, hardware with P2P one step has
-been rare, and kernel support was lacking.  This patch adds support of
-the mode in anticipation of new hardware developments.
+Currently the stack supports time stamping in PHY devices.  However,
+there are newer, non-PHY devices that can snoop an MII bus and provide
+time stamps.  In order to support such devices, this patch introduces
+a new interface to be used by both PHY and non-PHY devices.
+
+In addition, the one and only user of the old PHY time stamping API is
+converted to the new interface.
 
 Signed-off-by: Richard Cochran <richardcochran@gmail.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 1 +
- include/uapi/linux/net_tstamp.h                  | 8 ++++++++
- net/core/dev_ioctl.c                             | 1 +
- 3 files changed, 10 insertions(+)
+ drivers/net/phy/dp83640.c       | 47 +++++++++++++++++++++++-----------
+ drivers/net/phy/phy.c           |  4 +--
+ drivers/net/phy/phy_device.c    |  2 ++
+ include/linux/mii_timestamper.h | 56 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/phy.h             | 25 ++----------------
+ net/8021q/vlan_dev.c            |  4 +--
+ net/core/ethtool.c              |  4 +--
+ net/core/timestamping.c         | 20 +++++++--------
+ 8 files changed, 108 insertions(+), 54 deletions(-)
+ create mode 100644 include/linux/mii_timestamper.h
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index 03ac10b1cd1e..44a378f26bbd 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -15380,6 +15380,7 @@ int bnx2x_configure_ptp_filters(struct bnx2x *bp)
- 		REG_WR(bp, rule, BNX2X_PTP_TX_ON_RULE_MASK);
- 		break;
- 	case HWTSTAMP_TX_ONESTEP_SYNC:
-+	case HWTSTAMP_TX_ONESTEP_P2P:
- 		BNX2X_ERR("One-step timestamping is not supported\n");
- 		return -ERANGE;
- 	}
-diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-index e5b39721c6e4..f96e650d0af9 100644
---- a/include/uapi/linux/net_tstamp.h
-+++ b/include/uapi/linux/net_tstamp.h
-@@ -90,6 +90,14 @@ enum hwtstamp_tx_types {
- 	 * queue.
- 	 */
- 	HWTSTAMP_TX_ONESTEP_SYNC,
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index 6580094161a9..a87a72818e89 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -98,6 +98,7 @@ struct dp83640_private {
+ 	struct list_head list;
+ 	struct dp83640_clock *clock;
+ 	struct phy_device *phydev;
++	struct mii_timestamper mii_ts;
+ 	struct delayed_work ts_work;
+ 	int hwts_tx_en;
+ 	int hwts_rx_en;
+@@ -201,6 +202,14 @@ static void dp83640_gpio_defaults(struct ptp_pin_desc *pd)
+ static LIST_HEAD(phyter_clocks);
+ static DEFINE_MUTEX(phyter_clocks_lock);
+ 
++static int dp83640_hwtstamp(struct mii_timestamper *mii_ts,
++			    struct ifreq *ifr);
++static int dp83640_ts_info(struct mii_timestamper *mii_ts,
++			   struct ethtool_ts_info *info);
++static bool dp83640_rxtstamp(struct mii_timestamper *mii_ts,
++			     struct sk_buff *skb, int type);
++static void dp83640_txtstamp(struct mii_timestamper *mii_ts,
++			     struct sk_buff *skb, int type);
+ static void rx_timestamp_work(struct work_struct *work);
+ 
+ /* extended register access functions */
+@@ -1133,13 +1142,18 @@ static int dp83640_probe(struct phy_device *phydev)
+ 		goto no_memory;
+ 
+ 	dp83640->phydev = phydev;
+-	INIT_DELAYED_WORK(&dp83640->ts_work, rx_timestamp_work);
++	dp83640->mii_ts.rxtstamp = dp83640_rxtstamp;
++	dp83640->mii_ts.txtstamp = dp83640_txtstamp;
++	dp83640->mii_ts.hwtstamp = dp83640_hwtstamp;
++	dp83640->mii_ts.ts_info  = dp83640_ts_info;
+ 
++	INIT_DELAYED_WORK(&dp83640->ts_work, rx_timestamp_work);
+ 	INIT_LIST_HEAD(&dp83640->rxts);
+ 	INIT_LIST_HEAD(&dp83640->rxpool);
+ 	for (i = 0; i < MAX_RXTS; i++)
+ 		list_add(&dp83640->rx_pool_data[i].list, &dp83640->rxpool);
+ 
++	phydev->mii_ts = &dp83640->mii_ts;
+ 	phydev->priv = dp83640;
+ 
+ 	spin_lock_init(&dp83640->rx_lock);
+@@ -1180,6 +1194,8 @@ static void dp83640_remove(struct phy_device *phydev)
+ 	if (phydev->mdio.addr == BROADCAST_ADDR)
+ 		return;
+ 
++	phydev->mii_ts = NULL;
 +
-+	/*
-+	 * Same as HWTSTAMP_TX_ONESTEP_SYNC, but also enables time
-+	 * stamp insertion directly into PDelay_Resp packets. In this
-+	 * case, neither transmitted Sync nor PDelay_Resp packets will
-+	 * receive a time stamp via the socket error queue.
-+	 */
-+	HWTSTAMP_TX_ONESTEP_P2P,
+ 	enable_status_frames(phydev, false);
+ 	cancel_delayed_work_sync(&dp83640->ts_work);
+ 
+@@ -1303,9 +1319,10 @@ static int dp83640_config_intr(struct phy_device *phydev)
+ 	}
+ }
+ 
+-static int dp83640_hwtstamp(struct phy_device *phydev, struct ifreq *ifr)
++static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ {
+-	struct dp83640_private *dp83640 = phydev->priv;
++	struct dp83640_private *dp83640 =
++		container_of(mii_ts, struct dp83640_private, mii_ts);
+ 	struct hwtstamp_config cfg;
+ 	u16 txcfg0, rxcfg0;
+ 
+@@ -1381,8 +1398,8 @@ static int dp83640_hwtstamp(struct phy_device *phydev, struct ifreq *ifr)
+ 
+ 	mutex_lock(&dp83640->clock->extreg_lock);
+ 
+-	ext_write(0, phydev, PAGE5, PTP_TXCFG0, txcfg0);
+-	ext_write(0, phydev, PAGE5, PTP_RXCFG0, rxcfg0);
++	ext_write(0, dp83640->phydev, PAGE5, PTP_TXCFG0, txcfg0);
++	ext_write(0, dp83640->phydev, PAGE5, PTP_RXCFG0, rxcfg0);
+ 
+ 	mutex_unlock(&dp83640->clock->extreg_lock);
+ 
+@@ -1412,10 +1429,11 @@ static void rx_timestamp_work(struct work_struct *work)
+ 		schedule_delayed_work(&dp83640->ts_work, SKB_TIMESTAMP_TIMEOUT);
+ }
+ 
+-static bool dp83640_rxtstamp(struct phy_device *phydev,
++static bool dp83640_rxtstamp(struct mii_timestamper *mii_ts,
+ 			     struct sk_buff *skb, int type)
+ {
+-	struct dp83640_private *dp83640 = phydev->priv;
++	struct dp83640_private *dp83640 =
++		container_of(mii_ts, struct dp83640_private, mii_ts);
+ 	struct dp83640_skb_info *skb_info = (struct dp83640_skb_info *)skb->cb;
+ 	struct list_head *this, *next;
+ 	struct rxts *rxts;
+@@ -1461,11 +1479,12 @@ static bool dp83640_rxtstamp(struct phy_device *phydev,
+ 	return true;
+ }
+ 
+-static void dp83640_txtstamp(struct phy_device *phydev,
++static void dp83640_txtstamp(struct mii_timestamper *mii_ts,
+ 			     struct sk_buff *skb, int type)
+ {
+ 	struct dp83640_skb_info *skb_info = (struct dp83640_skb_info *)skb->cb;
+-	struct dp83640_private *dp83640 = phydev->priv;
++	struct dp83640_private *dp83640 =
++		container_of(mii_ts, struct dp83640_private, mii_ts);
+ 
+ 	switch (dp83640->hwts_tx_en) {
+ 
+@@ -1488,9 +1507,11 @@ static void dp83640_txtstamp(struct phy_device *phydev,
+ 	}
+ }
+ 
+-static int dp83640_ts_info(struct phy_device *dev, struct ethtool_ts_info *info)
++static int dp83640_ts_info(struct mii_timestamper *mii_ts,
++			   struct ethtool_ts_info *info)
+ {
+-	struct dp83640_private *dp83640 = dev->priv;
++	struct dp83640_private *dp83640 =
++		container_of(mii_ts, struct dp83640_private, mii_ts);
+ 
+ 	info->so_timestamping =
+ 		SOF_TIMESTAMPING_TX_HARDWARE |
+@@ -1521,10 +1542,6 @@ static struct phy_driver dp83640_driver = {
+ 	.config_init	= dp83640_config_init,
+ 	.ack_interrupt  = dp83640_ack_interrupt,
+ 	.config_intr    = dp83640_config_intr,
+-	.ts_info	= dp83640_ts_info,
+-	.hwtstamp	= dp83640_hwtstamp,
+-	.rxtstamp	= dp83640_rxtstamp,
+-	.txtstamp	= dp83640_txtstamp,
  };
  
- /* possible values for hwtstamp_config->rx_filter */
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 5163d900bb4f..dbaebbe573f0 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -187,6 +187,7 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
- 	case HWTSTAMP_TX_OFF:
- 	case HWTSTAMP_TX_ON:
- 	case HWTSTAMP_TX_ONESTEP_SYNC:
-+	case HWTSTAMP_TX_ONESTEP_P2P:
- 		tx_type_valid = 1;
- 		break;
+ static int __init dp83640_init(void)
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e8885429293a..36a96234f08e 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -468,8 +468,8 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+ 		return 0;
+ 
+ 	case SIOCSHWTSTAMP:
+-		if (phydev->drv && phydev->drv->hwtstamp)
+-			return phydev->drv->hwtstamp(phydev, ifr);
++		if (phydev->mii_ts && phydev->mii_ts->hwtstamp)
++			return phydev->mii_ts->hwtstamp(phydev->mii_ts, ifr);
+ 		/* fall through */
+ 
+ 	default:
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 5d288da9a3b0..5e5ab359f6ed 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -915,6 +915,8 @@ static void phy_link_change(struct phy_device *phydev, bool up, bool do_carrier)
+ 			netif_carrier_off(netdev);
  	}
+ 	phydev->adjust_link(netdev);
++	if (phydev->mii_ts && phydev->mii_ts->link_state)
++		phydev->mii_ts->link_state(phydev->mii_ts, phydev);
+ }
+ 
+ /**
+diff --git a/include/linux/mii_timestamper.h b/include/linux/mii_timestamper.h
+new file mode 100644
+index 000000000000..8586eed2f3b9
+--- /dev/null
++++ b/include/linux/mii_timestamper.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Support for generic time stamping devices on MII buses.
++ * Copyright (C) 2018 Richard Cochran <richardcochran@gmail.com>
++ */
++#ifndef _LINUX_MII_TIMESTAMPER_H
++#define _LINUX_MII_TIMESTAMPER_H
++
++#include <linux/device.h>
++#include <linux/ethtool.h>
++#include <linux/skbuff.h>
++
++/**
++ * struct mii_timestamper - Callback interface to MII time stamping devices.
++ *
++ * @rxtstamp:	Requests a Rx timestamp for 'skb'.  If the skb is accepted,
++ *		the MII time stamping device promises to deliver it using
++ *		netif_rx() as soon as a timestamp becomes available. One of
++ *		the PTP_CLASS_ values is passed in 'type'.  The function
++ *		must return true if the skb is accepted for delivery.
++ *
++ * @txtstamp:	Requests a Tx timestamp for 'skb'.  The MII time stamping
++ *		device promises to deliver it using skb_complete_tx_timestamp()
++ *		as soon as a timestamp becomes available. One of the PTP_CLASS_
++ *		values is passed in 'type'.
++ *
++ * @hwtstamp:	Handles SIOCSHWTSTAMP ioctl for hardware time stamping.
++ *
++ * @link_state: Allows the device to respond to changes in the link
++ *		state.  The caller invokes this function while holding
++ *		the phy_device mutex.
++ *
++ * @ts_info:	Handles ethtool queries for hardware time stamping.
++ *
++ * Drivers for PHY time stamping devices should embed their
++ * mii_timestamper within a private structure, obtaining a reference
++ * to it using container_of().
++ */
++struct mii_timestamper {
++	bool (*rxtstamp)(struct mii_timestamper *mii_ts,
++			 struct sk_buff *skb, int type);
++
++	void (*txtstamp)(struct mii_timestamper *mii_ts,
++			 struct sk_buff *skb, int type);
++
++	int  (*hwtstamp)(struct mii_timestamper *mii_ts,
++			 struct ifreq *ifreq);
++
++	void (*link_state)(struct mii_timestamper *mii_ts,
++			   struct phy_device *phydev);
++
++	int  (*ts_info)(struct mii_timestamper *mii_ts,
++			struct ethtool_ts_info *ts_info);
++};
++
++#endif
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 7180b1d1e5e3..2d0f8c09e3da 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -22,6 +22,7 @@
+ #include <linux/linkmode.h>
+ #include <linux/mdio.h>
+ #include <linux/mii.h>
++#include <linux/mii_timestamper.h>
+ #include <linux/module.h>
+ #include <linux/timer.h>
+ #include <linux/workqueue.h>
+@@ -444,6 +445,7 @@ struct phy_device {
+ 
+ 	struct phylink *phylink;
+ 	struct net_device *attached_dev;
++	struct mii_timestamper *mii_ts;
+ 
+ 	u8 mdix;
+ 	u8 mdix_ctrl;
+@@ -546,29 +548,6 @@ struct phy_driver {
+ 	 */
+ 	int (*match_phy_device)(struct phy_device *phydev);
+ 
+-	/* Handles ethtool queries for hardware time stamping. */
+-	int (*ts_info)(struct phy_device *phydev, struct ethtool_ts_info *ti);
+-
+-	/* Handles SIOCSHWTSTAMP ioctl for hardware time stamping. */
+-	int  (*hwtstamp)(struct phy_device *phydev, struct ifreq *ifr);
+-
+-	/*
+-	 * Requests a Rx timestamp for 'skb'. If the skb is accepted,
+-	 * the phy driver promises to deliver it using netif_rx() as
+-	 * soon as a timestamp becomes available. One of the
+-	 * PTP_CLASS_ values is passed in 'type'. The function must
+-	 * return true if the skb is accepted for delivery.
+-	 */
+-	bool (*rxtstamp)(struct phy_device *dev, struct sk_buff *skb, int type);
+-
+-	/*
+-	 * Requests a Tx timestamp for 'skb'. The phy driver promises
+-	 * to deliver it using skb_complete_tx_timestamp() as soon as a
+-	 * timestamp becomes available. One of the PTP_CLASS_ values
+-	 * is passed in 'type'.
+-	 */
+-	void (*txtstamp)(struct phy_device *dev, struct sk_buff *skb, int type);
+-
+ 	/* Some devices (e.g. qnap TS-119P II) require PHY register changes to
+ 	 * enable Wake on LAN, so set_wol is provided to be called in the
+ 	 * ethernet driver's set_wol function. */
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index c546c4228075..12b832d32c59 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -682,8 +682,8 @@ static int vlan_ethtool_get_ts_info(struct net_device *dev,
+ 	const struct ethtool_ops *ops = vlan->real_dev->ethtool_ops;
+ 	struct phy_device *phydev = vlan->real_dev->phydev;
+ 
+-	if (phydev && phydev->drv && phydev->drv->ts_info) {
+-		 return phydev->drv->ts_info(phydev, info);
++	if (phydev && phydev->mii_ts && phydev->mii_ts->ts_info) {
++		return phydev->mii_ts->ts_info(phydev->mii_ts, info);
+ 	} else if (ops->get_ts_info) {
+ 		return ops->get_ts_info(vlan->real_dev, info);
+ 	} else {
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 4a593853cbf2..e6cb3c987677 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -2168,8 +2168,8 @@ static int ethtool_get_ts_info(struct net_device *dev, void __user *useraddr)
+ 	memset(&info, 0, sizeof(info));
+ 	info.cmd = ETHTOOL_GET_TS_INFO;
+ 
+-	if (phydev && phydev->drv && phydev->drv->ts_info) {
+-		err = phydev->drv->ts_info(phydev, &info);
++	if (phydev && phydev->mii_ts && phydev->mii_ts->ts_info) {
++		err = phydev->mii_ts->ts_info(phydev->mii_ts, &info);
+ 	} else if (ops->get_ts_info) {
+ 		err = ops->get_ts_info(dev, &info);
+ 	} else {
+diff --git a/net/core/timestamping.c b/net/core/timestamping.c
+index 42689d5c468c..95c45c4dc0f9 100644
+--- a/net/core/timestamping.c
++++ b/net/core/timestamping.c
+@@ -26,7 +26,7 @@
+ static unsigned int classify(const struct sk_buff *skb)
+ {
+ 	if (likely(skb->dev && skb->dev->phydev &&
+-		   skb->dev->phydev->drv))
++		   skb->dev->phydev->mii_ts))
+ 		return ptp_classify_raw(skb);
+ 	else
+ 		return PTP_CLASS_NONE;
+@@ -34,7 +34,7 @@ static unsigned int classify(const struct sk_buff *skb)
+ 
+ void skb_clone_tx_timestamp(struct sk_buff *skb)
+ {
+-	struct phy_device *phydev;
++	struct mii_timestamper *mii_ts;
+ 	struct sk_buff *clone;
+ 	unsigned int type;
+ 
+@@ -45,22 +45,22 @@ void skb_clone_tx_timestamp(struct sk_buff *skb)
+ 	if (type == PTP_CLASS_NONE)
+ 		return;
+ 
+-	phydev = skb->dev->phydev;
+-	if (likely(phydev->drv->txtstamp)) {
++	mii_ts = skb->dev->phydev->mii_ts;
++	if (likely(mii_ts->txtstamp)) {
+ 		clone = skb_clone_sk(skb);
+ 		if (!clone)
+ 			return;
+-		phydev->drv->txtstamp(phydev, clone, type);
++		mii_ts->txtstamp(mii_ts, clone, type);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(skb_clone_tx_timestamp);
+ 
+ bool skb_defer_rx_timestamp(struct sk_buff *skb)
+ {
+-	struct phy_device *phydev;
++	struct mii_timestamper *mii_ts;
+ 	unsigned int type;
+ 
+-	if (!skb->dev || !skb->dev->phydev || !skb->dev->phydev->drv)
++	if (!skb->dev || !skb->dev->phydev || !skb->dev->phydev->mii_ts)
+ 		return false;
+ 
+ 	if (skb_headroom(skb) < ETH_HLEN)
+@@ -75,9 +75,9 @@ bool skb_defer_rx_timestamp(struct sk_buff *skb)
+ 	if (type == PTP_CLASS_NONE)
+ 		return false;
+ 
+-	phydev = skb->dev->phydev;
+-	if (likely(phydev->drv->rxtstamp))
+-		return phydev->drv->rxtstamp(phydev, skb, type);
++	mii_ts = skb->dev->phydev->mii_ts;
++	if (likely(mii_ts->rxtstamp))
++		return mii_ts->rxtstamp(mii_ts, skb, type);
+ 
+ 	return false;
+ }
 -- 
 2.11.0
 
