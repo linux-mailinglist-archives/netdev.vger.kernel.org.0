@@ -2,98 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CAB72DAEB
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE6D2DAFC
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbfE2Khd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:37:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43166 "EHLO mail.kernel.org"
+        id S1726054AbfE2Knr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:43:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725990AbfE2Khc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 06:37:32 -0400
-Received: from localhost (ip67-88-213-2.z213-88-67.customer.algx.net [67.88.213.2])
+        id S1725914AbfE2Knr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 06:43:47 -0400
+Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2E4720B1F;
-        Wed, 29 May 2019 10:37:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 287F220B1F;
+        Wed, 29 May 2019 10:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559126251;
-        bh=SxU7w6Gjg8QT0ZippUNKx1AOfJOqaCKBDZniPh5LqSs=;
+        s=default; t=1559126625;
+        bh=UZHuK5J4d2ARgW4rgRrKDqFG/SphReo8IyUG0b7Cu14=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X1tF7/xEJxp+DEjeBZ5UhSnuwKkSs9o3uXZQH+65q0K3WUtTevT1EF7YefAVLfCnu
-         yzGvfQnyUvhDGeffyB0bypSWSfh7zNmqY5BGM3vtQYV0fDRBeQCc/gi/FGvGUnC8cq
-         xQ/sOh3NdsXQeBJ0p2ljLh31pK2HmbOXPi+KIPTA=
-Date:   Wed, 29 May 2019 03:37:31 -0700
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Stefan Bader <stefan.bader@canonical.com>
-Cc:     stable <stable@vger.kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Peter Oskolkov <posk@google.com>,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        Andy Whitcroft <andy.whitcroft@canonical.com>
-Subject: Re: [PATCH 1/4] ipv4: ipv6: netfilter: Adjust the frag mem limit
- when truesize changes
-Message-ID: <20190529103731.GB7383@kroah.com>
-References: <20190529102542.17742-1-stefan.bader@canonical.com>
- <20190529102542.17742-2-stefan.bader@canonical.com>
+        b=aP/tevokopg/JutRzQ2zZtW6rD1c/SLHY9A2LqVun0P2V50OZqcuujcQqNyhZjdd0
+         m0J+yxsfWHsAvUtJth4efkAGhIJYqmo+m5O0L6LvthmvyFzYIQJ1F/5rpzJC/oSX0r
+         aM/CQVSNWxxBdj4Z68KpxgcQIUGT4pkSRyoz9maA=
+Date:   Wed, 29 May 2019 13:43:40 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v2 05/17] RDMA/counter: Add set/clear per-port
+ auto mode support
+Message-ID: <20190529104340.GT4633@mtr-leonro.mtl.com>
+References: <20190429083453.16654-1-leon@kernel.org>
+ <20190429083453.16654-6-leon@kernel.org>
+ <20190522165608.GA14554@ziepe.ca>
+ <20190529101218.GS4633@mtr-leonro.mtl.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190529102542.17742-2-stefan.bader@canonical.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190529101218.GS4633@mtr-leonro.mtl.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 12:25:39PM +0200, Stefan Bader wrote:
-> From: Jiri Wiesner <jwiesner@suse.com>
-> 
-> The *_frag_reasm() functions are susceptible to miscalculating the byte
-> count of packet fragments in case the truesize of a head buffer changes.
-> The truesize member may be changed by the call to skb_unclone(), leaving
-> the fragment memory limit counter unbalanced even if all fragments are
-> processed. This miscalculation goes unnoticed as long as the network
-> namespace which holds the counter is not destroyed.
-> 
-> Should an attempt be made to destroy a network namespace that holds an
-> unbalanced fragment memory limit counter the cleanup of the namespace
-> never finishes. The thread handling the cleanup gets stuck in
-> inet_frags_exit_net() waiting for the percpu counter to reach zero. The
-> thread is usually in running state with a stacktrace similar to:
-> 
->  PID: 1073   TASK: ffff880626711440  CPU: 1   COMMAND: "kworker/u48:4"
->   #5 [ffff880621563d48] _raw_spin_lock at ffffffff815f5480
->   #6 [ffff880621563d48] inet_evict_bucket at ffffffff8158020b
->   #7 [ffff880621563d80] inet_frags_exit_net at ffffffff8158051c
->   #8 [ffff880621563db0] ops_exit_list at ffffffff814f5856
->   #9 [ffff880621563dd8] cleanup_net at ffffffff814f67c0
->  #10 [ffff880621563e38] process_one_work at ffffffff81096f14
-> 
-> It is not possible to create new network namespaces, and processes
-> that call unshare() end up being stuck in uninterruptible sleep state
-> waiting to acquire the net_mutex.
-> 
-> The bug was observed in the IPv6 netfilter code by Per Sundstrom.
-> I thank him for his analysis of the problem. The parts of this patch
-> that apply to IPv4 and IPv6 fragment reassembly are preemptive measures.
-> 
-> Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
-> Reported-by: Per Sundstrom <per.sundstrom@redqube.se>
-> Acked-by: Peter Oskolkov <posk@google.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> (backported from commit ebaf39e6032faf77218220707fc3fa22487784e0)
-> [smb: context adjustments in net/ipv6/netfilter/nf_conntrack_reasm.c]
-> Signed-off-by: Stefan Bader <stefan.bader@canonical.com>
+On Wed, May 29, 2019 at 01:12:18PM +0300, Leon Romanovsky wrote:
+> On Wed, May 22, 2019 at 01:56:08PM -0300, Jason Gunthorpe wrote:
+> > On Mon, Apr 29, 2019 at 11:34:41AM +0300, Leon Romanovsky wrote:
+> > > From: Mark Zhang <markz@mellanox.com>
+> > >
+> > > Add an API to support set/clear per-port auto mode.
+> > >
+> > > Signed-off-by: Mark Zhang <markz@mellanox.com>
+> > > Reviewed-by: Majd Dibbiny <majd@mellanox.com>
+> > > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> > >  drivers/infiniband/core/Makefile   |  2 +-
+> > >  drivers/infiniband/core/counters.c | 77 ++++++++++++++++++++++++++++++
+> > >  drivers/infiniband/core/device.c   |  4 ++
+> > >  include/rdma/ib_verbs.h            |  2 +
+> > >  include/rdma/rdma_counter.h        | 24 ++++++++++
+> > >  include/uapi/rdma/rdma_netlink.h   | 26 ++++++++++
+> > >  6 files changed, 134 insertions(+), 1 deletion(-)
+> > >  create mode 100644 drivers/infiniband/core/counters.c
+> > >
+> > > diff --git a/drivers/infiniband/core/Makefile b/drivers/infiniband/core/Makefile
+> > > index 313f2349b518..cddf748c15c9 100644
+> > > +++ b/drivers/infiniband/core/Makefile
+> > > @@ -12,7 +12,7 @@ ib_core-y :=			packer.o ud_header.o verbs.o cq.o rw.o sysfs.o \
+> > >  				device.o fmr_pool.o cache.o netlink.o \
+> > >  				roce_gid_mgmt.o mr_pool.o addr.o sa_query.o \
+> > >  				multicast.o mad.o smi.o agent.o mad_rmpp.o \
+> > > -				nldev.o restrack.o
+> > > +				nldev.o restrack.o counters.o
+> > >
+> > >  ib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o
+> > >  ib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o
+> > > diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
+> > > new file mode 100644
+> > > index 000000000000..bda8d945a758
+> > > +++ b/drivers/infiniband/core/counters.c
+> > > @@ -0,0 +1,77 @@
+> > > +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+> > > +/*
+> > > + * Copyright (c) 2019 Mellanox Technologies. All rights reserved.
+> > > + */
+> > > +#include <rdma/ib_verbs.h>
+> > > +#include <rdma/rdma_counter.h>
+> > > +
+> > > +#include "core_priv.h"
+> > > +#include "restrack.h"
+> > > +
+> > > +#define ALL_AUTO_MODE_MASKS (RDMA_COUNTER_MASK_QP_TYPE)
+> > > +
+> > > +static int __counter_set_mode(struct rdma_counter_mode *curr,
+> > > +			      enum rdma_nl_counter_mode new_mode,
+> > > +			      enum rdma_nl_counter_mask new_mask)
+> > > +{
+> > > +	if ((new_mode == RDMA_COUNTER_MODE_AUTO) &&
+> > > +	    ((new_mask & (~ALL_AUTO_MODE_MASKS)) ||
+> > > +	     (curr->mode != RDMA_COUNTER_MODE_NONE)))
+> > > +		return -EINVAL;
+> > > +
+> > > +	curr->mode = new_mode;
+> > > +	curr->mask = new_mask;
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +/**
+> > > + * rdma_counter_set_auto_mode() - Turn on/off per-port auto mode
+> > > + *
+> > > + * When @on is true, the @mask must be set
+> > > + */
+> > > +int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
+> > > +			       bool on, enum rdma_nl_counter_mask mask)
+> > > +{
+> > > +	struct rdma_port_counter *port_counter;
+> > > +	int ret;
+> > > +
+> > > +	if (!rdma_is_port_valid(dev, port))
+> > > +		return -EINVAL;
+> > > +
+> > > +	port_counter = &dev->port_data[port].port_counter;
+> > > +	mutex_lock(&port_counter->lock);
+> > > +	if (on) {
+> > > +		ret = __counter_set_mode(&port_counter->mode,
+> > > +					 RDMA_COUNTER_MODE_AUTO, mask);
+> > > +	} else {
+> > > +		if (port_counter->mode.mode != RDMA_COUNTER_MODE_AUTO) {
+> > > +			ret = -EINVAL;
+> > > +			goto out;
+> > > +		}
+> > > +		ret = __counter_set_mode(&port_counter->mode,
+> > > +					 RDMA_COUNTER_MODE_NONE, 0);
+> > > +	}
+> > > +
+> > > +out:
+> > > +	mutex_unlock(&port_counter->lock);
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +void rdma_counter_init(struct ib_device *dev)
+> > > +{
+> > > +	struct rdma_port_counter *port_counter;
+> > > +	u32 port;
+> > > +
+> > > +	if (!dev->ops.alloc_hw_stats)
+> > > +		return;
+> > > +
+> > > +	rdma_for_each_port(dev, port) {
+> > > +		port_counter = &dev->port_data[port].port_counter;
+> > > +		port_counter->mode.mode = RDMA_COUNTER_MODE_NONE;
+> > > +		mutex_init(&port_counter->lock);
+> > > +	}
+> > > +}
+> > > +
+> > > +void rdma_counter_cleanup(struct ib_device *dev)
+> > > +{
+> > > +}
+> >
+> > Please don't add empty functions
+>
+> It is brought here for symmetry, the function is going to be filled in
+> patch "RDMA/core: Get sum value of all counters when perform a sysfs
+> stat read".
+>
+> >
+> > > @@ -1304,6 +1307,7 @@ static void __ib_unregister_device(struct ib_device *ib_dev)
+> > >  		goto out;
+> > >
+> > >  	disable_device(ib_dev);
+> > > +	rdma_counter_cleanup(ib_dev);
+> >
+> > This is the wrong place to call this, the patch that actually adds a
+> > body is just doing kfree's so it is properly called
+> > 'rdma_counter_release' and it belongs in ib_device_release()
+>
+> I'll move.
+>
+> >
+> > And it shouldn't test hw_stats, and it shouldn't have a 'fail' stanza
+> > for allocation either.
+>
+> Not all devices implement hw_stat.
 
-I can't take a patch for 4.4.y that is not in 4.9.y as anyone upgrading
-kernel versions would have a regression :(
+ok, I think that I found a way to rewrite the code without need to check hw_stat.
 
-Can you also provide a backport of the needed patches for 4.9.y for this
-issue so I can take these?
+Thanks
 
-thanks,
-
-greg k-h
+>
+> >
+> > Jason
