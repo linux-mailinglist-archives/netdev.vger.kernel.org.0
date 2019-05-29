@@ -2,124 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8B92E2DD
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:09:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19CDB2E2DF
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbfE2RJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:09:45 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45233 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbfE2RJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:09:45 -0400
-Received: by mail-qt1-f193.google.com with SMTP id t1so3484995qtc.12;
-        Wed, 29 May 2019 10:09:44 -0700 (PDT)
+        id S1726189AbfE2RKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:10:25 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40484 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbfE2RKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:10:24 -0400
+Received: by mail-qt1-f196.google.com with SMTP id a15so1414904qtn.7;
+        Wed, 29 May 2019 10:10:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/vPyb/weYDgUvhZvoDfV2jI0RMOjFs7RPyYnsfVXMzY=;
-        b=c5OOj1/bl+OFg3Eu//NBS63TGa4en1WCthRGDYjq56M4aHJP0fLm/scCjg+jyNWCX3
-         k0RyI7Dbl7FE4Qq/sNKlx6QcuSEllb1kY3+KNlzRLjg4iJhfW0MH3VFPkZKvcZO1limX
-         jXb6Ah6nd5ydZl0X0AasHROzV0SyNsT6dQhixGOg/3T+H6LPbNE8/eMe+2gUWDMSyhYn
-         6oyko3szAbJKUcIDmJT6ej8fAxhzib+3e3hQrCkhdkRANDMMDn+LlbSegOahbdeaKUJb
-         Idtad7TUGJO2JSjRtD60Lx8YtYU2npPv6OAwDZtuENEAhb+b5UW13K+tH7ugC82mU7P4
-         FckA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zfD8WmZ0XzzBzNqL39Ed+sckVejo0rN/aLAZyGa/Zj8=;
+        b=VV1v1jDsE46vmDSLvpN6+M86Q2Dd0xxP8oj/6kATq2i49hQDZDKdl3cthoSHwyjETc
+         Zlloyy1aw6bKirPGFYZXi8PpNTPees4l+wSh8q7ytMo7N+lUKn6a0YBQF8+3uqxt2SbD
+         uOmBpbXbg5ZVWexU8EdNTVHe75pmw6ka2DgIhNVNUZxk5wgVCUo3cpvYh6nr7MTqiFzs
+         +592lfHCNQe1s/6/swj9AuWPv9tCPuEp99/Vdh8zRR+ulfDTT+U87wJ5TTy/bhCkrdnk
+         nmPdutigYPVgd16iWmMSOdoAU+zTQWtULZuziQTPr6v3/sISugsrJZVm5WBny/ai5glq
+         Xexg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/vPyb/weYDgUvhZvoDfV2jI0RMOjFs7RPyYnsfVXMzY=;
-        b=AMj7ymzOdPuTSeVRjxr4fpcy5U+ZPH5dq3ylwFyQY7rtIXgThTE/A6yqRWTpk8JRKZ
-         uo4YcwNWj5dUy1gyNsaUjEknYfn+KGqqym4O45bz+ffxVp8ZBlQWD9P1xhaOD5dGzhBv
-         DLnyDy056jB+4Fu8HdRX7Fymr6LowXogJTFAavXLS/7LtJqSVx0W046tSJnh6xSpCLa9
-         1OxSMvZ0cA68ZR63cbuMuw3CZEVn38hTnrGnBA0WDWRLzBHFzLmkmkIJD5S84W6wcKq/
-         hWk+ZlTUfAkyt6dG1g5bWtmRmu16EqJYjn5KuRwYHYEtRKOPmeNU+MxEpjVjr2HJ2yAk
-         OTrw==
-X-Gm-Message-State: APjAAAU10RE+T05gymC4JrUxj4Nk6rCPb5K61mH2IdaqlrNK6mX+N6D0
-        vvhJFaR0VYBNA5RQt9QKRFNz1r4/t8v6B1YSh+8=
-X-Google-Smtp-Source: APXvYqy1xoYTvufZJ2P25p70emZgnj7KFWdrfg2RDM0QekSzLNL2YrguC2WuGXbUKPA8iEClsbfhsk+EKqXckdHx4AY=
-X-Received: by 2002:aed:3b66:: with SMTP id q35mr19540850qte.118.1559149782745;
- Wed, 29 May 2019 10:09:42 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zfD8WmZ0XzzBzNqL39Ed+sckVejo0rN/aLAZyGa/Zj8=;
+        b=MQioUxcDEEPlAhN2vrC84YgalD2aPBZsvmycGmZB9Z0JYr3/Kvt6JwWcaDNd9/8R+1
+         DeMcdqJfK90A0qaLqvyEwZPxOSTE2d83qsTdthxf5MsyJT5rHJIUeXSf0Wy51x5B2Uai
+         o9XEaeN8MwrAbVK3gSsWVgdQH9O1mXPECDIpF2kxbOS5d8uNB7wpmRaDW3iSXlrX9Lv9
+         qG0s94CV6AX5AVfyNKXfV5b8H9kOdE6CRQdBs/nNIPC/OKXdPrtmc/BOiR1SVgxJJuqd
+         P53NqrrXpP/JpxlcRdT8PA6bdL5wtoyqfn39C+j3iREFJ/Sh1wwYeY4ZiIzJD36wJtJI
+         VP2A==
+X-Gm-Message-State: APjAAAVraAAEt0jNLqoWUnvfliEBJrjJAqXPwtlsY6t8aXbIKWnjsTpD
+        2hvx1zW2ELMsCz45kUA4kE4=
+X-Google-Smtp-Source: APXvYqzfxOc2Yx7LtqSPMNlpBx5q6J/evYIEzwzFx/e+wtCBzsO6xrpytdPLd0xkZhY0fa6ap5dbLQ==
+X-Received: by 2002:a0c:9826:: with SMTP id c35mr87305154qvd.240.1559149823411;
+        Wed, 29 May 2019 10:10:23 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:d534:113c:6e5f:4426:2d54])
+        by smtp.gmail.com with ESMTPSA id z12sm3550qkl.66.2019.05.29.10.10.22
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 29 May 2019 10:10:22 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 9B41CC1BD8; Wed, 29 May 2019 14:10:18 -0300 (-03)
+Date:   Wed, 29 May 2019 14:10:18 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] sctp: deduplicate identical skb_checksum_ops
+Message-ID: <20190529171018.GA3713@localhost.localdomain>
+References: <20190529153941.12166-1-mcroce@redhat.com>
 MIME-Version: 1.0
-References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-4-andriin@fb.com>
-In-Reply-To: <20190529011426.1328736-4-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 29 May 2019 10:09:31 -0700
-Message-ID: <CAPhsuW7Zmds01cQ6KjLgTEnmnkV61DUCjDenTiLFeQonEZNg4g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/9] libbpf: simplify endianness check
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190529153941.12166-1-mcroce@redhat.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Rewrite endianness check to use "more canonical" way, using
-> compiler-defined macros, similar to few other places in libbpf. It also
-> is more obvious and shorter.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+On Wed, May 29, 2019 at 05:39:41PM +0200, Matteo Croce wrote:
+> The same skb_checksum_ops struct is defined twice in two different places,
+> leading to code duplication. Declare it as a global variable into a common
+> header instead of allocating it on the stack on each function call.
+> bloat-o-meter reports a slight code shrink.
+> 
+> add/remove: 1/1 grow/shrink: 0/10 up/down: 128/-1282 (-1154)
+> Function                                     old     new   delta
+> sctp_csum_ops                                  -     128    +128
+> crc32c_csum_ops                               16       -     -16
+> sctp_rcv                                    6616    6583     -33
+> sctp_packet_pack                            4542    4504     -38
+> nf_conntrack_sctp_packet                    4980    4926     -54
+> execute_masked_set_action                   6453    6389     -64
+> tcf_csum_sctp                                575     428    -147
+> sctp_gso_segment                            1292    1126    -166
+> sctp_csum_check                              579     412    -167
+> sctp_snat_handler                            957     772    -185
+> sctp_dnat_handler                           1321    1132    -189
+> l4proto_manip_pkt                           2536    2313    -223
+> Total: Before=359297613, After=359296459, chg -0.00%
+> 
+> Reviewed-by: Xin Long <lucien.xin@gmail.com>
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
 
-> ---
->  tools/lib/bpf/libbpf.c | 37 ++++++++++++-------------------------
->  1 file changed, 12 insertions(+), 25 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 7b80b9ae8a1f..c98f9942fba4 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -607,31 +607,18 @@ static int bpf_object__elf_init(struct bpf_object *obj)
->         return err;
->  }
->
-> -static int
-> -bpf_object__check_endianness(struct bpf_object *obj)
-> -{
-> -       static unsigned int const endian = 1;
-> -
-> -       switch (obj->efile.ehdr.e_ident[EI_DATA]) {
-> -       case ELFDATA2LSB:
-> -               /* We are big endian, BPF obj is little endian. */
-> -               if (*(unsigned char const *)&endian != 1)
-> -                       goto mismatch;
-> -               break;
-> -
-> -       case ELFDATA2MSB:
-> -               /* We are little endian, BPF obj is big endian. */
-> -               if (*(unsigned char const *)&endian != 0)
-> -                       goto mismatch;
-> -               break;
-> -       default:
-> -               return -LIBBPF_ERRNO__ENDIAN;
-> -       }
-> -
-> -       return 0;
-> -
-> -mismatch:
-> -       pr_warning("Error: endianness mismatch.\n");
-> +static int bpf_object__check_endianness(struct bpf_object *obj)
-> +{
-> +#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-> +       if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
-> +               return 0;
-> +#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-> +       if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
-> +               return 0;
-> +#else
-> +# error "Unrecognized __BYTE_ORDER__"
-> +#endif
-> +       pr_warning("endianness mismatch.\n");
->         return -LIBBPF_ERRNO__ENDIAN;
->  }
->
-> --
-> 2.17.1
->
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
