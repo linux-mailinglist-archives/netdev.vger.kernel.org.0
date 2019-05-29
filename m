@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5142D82C
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776762D82D
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:47:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfE2Irp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:47:45 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55315 "EHLO
+        id S1726601AbfE2Irt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:47:49 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:60615 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726326AbfE2Iro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:44 -0400
+        by vger.kernel.org with ESMTP id S1726008AbfE2Irp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:45 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8D85D22405;
-        Wed, 29 May 2019 04:47:43 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id E5D8B222B2;
+        Wed, 29 May 2019 04:47:44 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:43 -0400
+  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=vop8i05Id7VLWRbhNzHrFADQyhLqjTRnDpcF4k/7Ptk=; b=NbzI7Cx0
-        fHs3tAkAKvqMdXgkp4UAynrD6XTz64UQcBwOb5EH7Ru9RDT4n9Ml0oNMCMndKb+2
-        u5kFOtvakBLDmTTipNILcfekW2QP0z+62b/2JbLIEnqZv6PiaqSljNbvR72uhop+
-        bM4BTrB3I3WIjksAt4UoB6RXJQVmTLfRDDnJY1xxah8sSn5CUCpkI0/tRlIL2zNQ
-        oTCtp7f+OeQlEd68UV1he79KN/0yM9jqTuxxZtTZDNatqxBOXiEYWmO1//cRQm+c
-        SOwJAOI7/YtG4vodJrUusNDv3PeQbqTS+eLzAeNmgMpyc+za6nCkJgY1e3vlbF3m
-        ffpPxSC00SJPpA==
-X-ME-Sender: <xms:L0fuXPLRWSZs-3vaoeyvhH6vqA1gBp3DvCy4zyYrctWiprODuD5GTA>
+        fm2; bh=8AVODrUQaY1UnksUyzZR57Rjt7HMvi4slv4x8Nho0Ho=; b=PuL6eljn
+        +PNQ2XkAk2Tw6pVyaRNNQ529CRE+Y4TF2H/7gMknG/O3YWD6Stl5k0B0nbanrHxJ
+        XHdxomDzUMTSU/O1M6dQQQI0GhLUMTAfFwdfrGGAB3PMyF8IDA/DpAP84+7UjqoF
+        GcgwJIqZD9qYuhM57nPb18MsIAMczSrQ/Dl4kFJ9pfvcYSNVdD6ZZU7n1w5fcaB0
+        jwydYX0iVVAB/STpLsHtoOFQ1RhPX6025pnzoDsWchfMF332jcrU+NstGUpC7tsp
+        dxLvJUxtuSwN8Eaub0HYm6IJ+pf536Jm6NX4QcaTH3igDjMLxRqDt/Ympvi+8D7p
+        ESGmnqwe8UCERw==
+X-ME-Sender: <xms:MEfuXCMEOPEmB3nQbcjaYnH4Qk9duolWW9Flo5yX66dAE2zydajzwA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:L0fuXAqAxZ1etVQ5EmoB-0ajq-BGKZHm_zdHKilmt-ViZzSdp9KuVg>
-    <xmx:L0fuXDyWzV3OIb5-2AwpmI8QBvoiKS4J9UGNfWxOsDCnZYdPzmebGw>
-    <xmx:L0fuXFrHQ8tIPm0hczOhjm3xWyzSKs8cqkmMbbdFQRcI7Vz2V3bi-Q>
-    <xmx:L0fuXPUSkm67U1JwOhOVzUwYqAe_rKYB_PjyoVahS4RCKUEV6j93KQ>
+    ufhiiigvpeef
+X-ME-Proxy: <xmx:MEfuXDgGQ9JTDmtIDoc0XqpQ0ZtfFlKQF3lnpAE3AnKdEwKdYqqGdA>
+    <xmx:MEfuXKP0pfmbp3cbGr7NmEbvhyGgN6pZUDUKWT03q0UiK1DpuCYpgQ>
+    <xmx:MEfuXHu5mc7E9jkc9gimAJZVjn3jMOt9TRpuuJ5PPvP1RuXZDIcDBg>
+    <xmx:MEfuXFu4mjalzykvSSHpfoTmkI8b1uzjAjDI6ohVyHj6r3PTjNyeCw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2A52080063;
-        Wed, 29 May 2019 04:47:42 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 800A280064;
+        Wed, 29 May 2019 04:47:43 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 3/8] mlxsw: core: Re-order initialization sequence
-Date:   Wed, 29 May 2019 11:47:17 +0300
-Message-Id: <20190529084722.22719-4-idosch@idosch.org>
+Subject: [PATCH net-next 4/8] mlxsw: reg: Extend sensor index field size of Management Temperature Register
+Date:   Wed, 29 May 2019 11:47:18 +0300
+Message-Id: <20190529084722.22719-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190529084722.22719-1-idosch@idosch.org>
 References: <20190529084722.22719-1-idosch@idosch.org>
@@ -59,82 +59,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Vadim Pasternak <vadimp@mellanox.com>
 
-The driver core first registers with the hwmon and thermal subsystems
-and only then proceeds to initialize the switch driver (e.g.,
-mlxsw_spectrum). It is only during the last stage that the current
-firmware version is validated and a newer one flashed, if necessary.
+Extend the size of sensor_index field of MTMP (Management Temperature
+Register), from 8 to 12 bits due to hardware change.
+Add define for sensor index for Gear Box (inter-connects) temperature
+reading.
 
-The above means that if a new firmware feature is utilized by the
-hwmon/thermal code, the driver will not be able to load.
-
-Solve this by re-ordering initializing the switch driver before
-registering with the hwmon and thermal subsystems.
-
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: Shalom Toledo <shalomt@mellanox.com>
+Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 6ee6de7f0160..182762898361 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1098,6 +1098,12 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 			goto err_register_params;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index e8002bfc1e8f..a689bf991dbd 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -8039,13 +8039,14 @@ MLXSW_ITEM32(reg, mtcap, sensor_count, 0x00, 0, 7);
  
-+	if (mlxsw_driver->init) {
-+		err = mlxsw_driver->init(mlxsw_core, mlxsw_bus_info);
-+		if (err)
-+			goto err_driver_init;
-+	}
-+
- 	err = mlxsw_hwmon_init(mlxsw_core, mlxsw_bus_info, &mlxsw_core->hwmon);
- 	if (err)
- 		goto err_hwmon_init;
-@@ -1107,22 +1113,17 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 	if (err)
- 		goto err_thermal_init;
+ MLXSW_REG_DEFINE(mtmp, MLXSW_REG_MTMP_ID, MLXSW_REG_MTMP_LEN);
  
--	if (mlxsw_driver->init) {
--		err = mlxsw_driver->init(mlxsw_core, mlxsw_bus_info);
--		if (err)
--			goto err_driver_init;
--	}
--
- 	if (mlxsw_driver->params_register && !reload)
- 		devlink_params_publish(devlink);
++#define MLXSW_REG_MTMP_GBOX_INDEX_MIN 256
+ /* reg_mtmp_sensor_index
+  * Sensors index to access.
+  * 64-127 of sensor_index are mapped to the SFP+/QSFP modules sequentially
+  * (module 0 is mapped to sensor_index 64).
+  * Access: Index
+  */
+-MLXSW_ITEM32(reg, mtmp, sensor_index, 0x00, 0, 7);
++MLXSW_ITEM32(reg, mtmp, sensor_index, 0x00, 0, 11);
  
- 	return 0;
+ /* Convert to milli degrees Celsius */
+ #define MLXSW_REG_MTMP_TEMP_TO_MC(val) (val * 125)
+@@ -8107,7 +8108,7 @@ MLXSW_ITEM32(reg, mtmp, temperature_threshold_lo, 0x10, 0, 16);
+  */
+ MLXSW_ITEM_BUF(reg, mtmp, sensor_name, 0x18, MLXSW_REG_MTMP_SENSOR_NAME_SIZE);
  
--err_driver_init:
--	mlxsw_thermal_fini(mlxsw_core->thermal);
- err_thermal_init:
- 	mlxsw_hwmon_fini(mlxsw_core->hwmon);
- err_hwmon_init:
-+	if (mlxsw_core->driver->fini)
-+		mlxsw_core->driver->fini(mlxsw_core);
-+err_driver_init:
- 	if (mlxsw_driver->params_unregister && !reload)
- 		mlxsw_driver->params_unregister(mlxsw_core);
- err_register_params:
-@@ -1187,10 +1188,10 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- 
- 	if (mlxsw_core->driver->params_unregister && !reload)
- 		devlink_params_unpublish(devlink);
--	if (mlxsw_core->driver->fini)
--		mlxsw_core->driver->fini(mlxsw_core);
- 	mlxsw_thermal_fini(mlxsw_core->thermal);
- 	mlxsw_hwmon_fini(mlxsw_core->hwmon);
-+	if (mlxsw_core->driver->fini)
-+		mlxsw_core->driver->fini(mlxsw_core);
- 	if (mlxsw_core->driver->params_unregister && !reload)
- 		mlxsw_core->driver->params_unregister(mlxsw_core);
- 	if (!reload)
+-static inline void mlxsw_reg_mtmp_pack(char *payload, u8 sensor_index,
++static inline void mlxsw_reg_mtmp_pack(char *payload, u16 sensor_index,
+ 				       bool max_temp_enable,
+ 				       bool max_temp_reset)
+ {
 -- 
 2.20.1
 
