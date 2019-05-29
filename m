@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBB3C2D500
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4432D524
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725888AbfE2FL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 01:11:56 -0400
-Received: from mga03.intel.com ([134.134.136.65]:52539 "EHLO mga03.intel.com"
+        id S1725880AbfE2Fke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 01:40:34 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:50764 "EHLO deadmen.hmeau.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725840AbfE2FL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 01:11:56 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 22:11:55 -0700
-X-ExtLoop1: 1
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by fmsmga005.fm.intel.com with ESMTP; 28 May 2019 22:11:54 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX110.amr.corp.intel.com ([169.254.10.7]) with mapi id 14.03.0415.000;
- Tue, 28 May 2019 22:11:53 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v5 0/2] Fix issues with vmalloc flush flag
-Thread-Topic: [PATCH v5 0/2] Fix issues with vmalloc flush flag
-Thread-Index: AQHVFNC+iT2yoslPq0S8A9En17xWb6aBtS+AgABQlQA=
-Date:   Wed, 29 May 2019 05:11:52 +0000
-Message-ID: <abb649f0f076777346cbe6a8a0e5d9f8b3c26b41.camel@intel.com>
-References: <20190527211058.2729-1-rick.p.edgecombe@intel.com>
-         <20190528.172327.2113097810388476996.davem@davemloft.net>
-In-Reply-To: <20190528.172327.2113097810388476996.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.252.134.167]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <63D338040718464F89739E472722ADD9@intel.com>
-Content-Transfer-Encoding: base64
+        id S1725855AbfE2Fke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 01:40:34 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
+        id 1hVrKB-00049H-0e; Wed, 29 May 2019 13:40:31 +0800
+Received: from herbert by gondobar with local (Exim 4.89)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1hVrK6-00035F-FM; Wed, 29 May 2019 13:40:26 +0800
+Date:   Wed, 29 May 2019 13:40:26 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH] inet: frags: Remove unnecessary smp_store_release/READ_ONCE
+Message-ID: <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au>
+References: <20190524160340.169521-12-edumazet@google.com>
+ <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
+ <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA1LTI4IGF0IDE3OjIzIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206IFJpY2sgRWRnZWNvbWJlIDxyaWNrLnAuZWRnZWNvbWJlQGludGVsLmNvbT4NCj4gRGF0
-ZTogTW9uLCAyNyBNYXkgMjAxOSAxNDoxMDo1NiAtMDcwMA0KPiANCj4gPiBUaGVzZSB0d28gcGF0
-Y2hlcyBhZGRyZXNzIGlzc3VlcyB3aXRoIHRoZSByZWNlbnRseSBhZGRlZA0KPiA+IFZNX0ZMVVNI
-X1JFU0VUX1BFUk1TIHZtYWxsb2MgZmxhZy4NCj4gPiANCj4gPiBQYXRjaCAxIGFkZHJlc3NlcyBh
-biBpc3N1ZSB0aGF0IGNvdWxkIGNhdXNlIGEgY3Jhc2ggYWZ0ZXIgb3RoZXINCj4gPiBhcmNoaXRl
-Y3R1cmVzIGJlc2lkZXMgeDg2IHJlbHkgb24gdGhpcyBwYXRoLg0KPiA+IA0KPiA+IFBhdGNoIDIg
-YWRkcmVzc2VzIGFuIGlzc3VlIHdoZXJlIGluIGEgcmFyZSBjYXNlIHN0cmFuZ2UgYXJndW1lbnRz
-DQo+ID4gY291bGQgYmUgcHJvdmlkZWQgdG8gZmx1c2hfdGxiX2tlcm5lbF9yYW5nZSgpLiANCj4g
-DQo+IEl0IGp1c3Qgb2NjdXJyZWQgdG8gbWUgYW5vdGhlciBzaXR1YXRpb24gdGhhdCB3b3VsZCBj
-YXVzZSB0cm91YmxlIG9uDQo+IHNwYXJjNjQsIGFuZCB0aGF0J3MgaWYgc29tZW9uZSB0aGUgYWRk
-cmVzcyByYW5nZSBvZiB0aGUgbWFpbiBrZXJuZWwNCj4gaW1hZ2UgZW5kZWQgdXAgYmVpbmcgcGFz
-c2VkIHRvIGZsdXNoX3RsYl9rZXJuZWxfcmFuZ2UoKS4NCj4gDQo+IFRoYXQgd291bGQgZmx1c2gg
-dGhlIGxvY2tlZCBrZXJuZWwgbWFwcGluZyBhbmQgY3Jhc2ggdGhlIGtlcm5lbA0KPiBpbnN0YW50
-bHkgaW4gYSBjb21wbGV0ZWx5IG5vbi1yZWNvdmVyYWJsZSB3YXkuDQoNCkhtbSwgSSBoYXZlbid0
-IHJlY2VpdmVkIHRoZSBsb2dzIGZyb20gTWVlbGlzIHRoYXQgd2lsbCBzaG93IHRoZSByZWFsDQpy
-YW5nZXMgYmVpbmcgcGFzc2VkIGludG8gZmx1c2hfdGxiX2tlcm5lbF9yYW5nZSgpIG9uIHNwYXJj
-LCBidXQgaXQNCnNob3VsZCBiZSBmbHVzaGluZyBhIHJhbmdlIHNwYW5uaW5nIGZyb20gdGhlIG1v
-ZHVsZXMgdG8gdGhlIGRpcmVjdCBtYXAuDQpJdCBsb29rcyBsaWtlIHRoZSBrZXJuZWwgaXMgYXQg
-dGhlIHZlcnkgYm90dG9tIG9mIHRoZSBhZGRyZXNzIHNwYWNlLCBzbw0Kbm90IGluY2x1ZGVkLiBP
-ciBkbyB5b3UgbWVhbiB0aGUgcGFnZXMgdGhhdCBob2xkIHRoZSBrZXJuZWwgdGV4dCBvbiB0aGUN
-CmRpcmVjdCBtYXA/DQoNCkJ1dCByZWdhcmRsZXNzIG9mIHRoaXMgbmV3IGNvZGUsIERFQlVHX1BB
-R0VBTExPQyBoYW5ncyB3aXRoIHRoZSBmaXJzdA0Kdm1hbGxvYyBmcmVlL3VubWFwLiBUaGF0IHNo
-b3VsZCBiZSBqdXN0IGZsdXNoaW5nIGEgc2luZ2xlIGFsbG9jYXRpb24gaW4NCnRoZSB2bWFsbG9j
-IHJhbmdlLg0KDQpJZiBpdCBpcyBzb21laG93IGNhdGNoaW5nIGEgbG9ja2VkIGVudHJ5IHRob3Vn
-aC4uLiBBcmUgdGhlcmUgYW55IHNwYXJjDQpmbHVzaCBtZWNoYW5pc21zIHRoYXQgY291bGQgYmUg
-dXNlZCBpbiB2bWFsbG9jIHRoYXQgd29uJ3QgdG91Y2ggbG9ja2VkDQplbnRyaWVzPyBQZXRlciBa
-IHdhcyBwb2ludGluZyBvdXQgdGhhdCBmbHVzaF90bGJfYWxsKCkgbWlnaHQgYmUgbW9yZQ0KYXBw
-cm9yaWF0ZSBmb3Igdm1hbGxvYyBhbnl3YXkuDQoNCg==
+On Tue, May 28, 2019 at 06:31:00AM -0700, Eric Dumazet wrote:
+>
+> This smp_store_release() is a left over of the first version of the patch, where
+> there was no rcu grace period enforcement.
+> 
+> I do not believe there is harm letting this, but if you disagree
+> please send a patch ;)
+
+I see now that it is actually relying on the barrier/locking
+semantics of call_rcu vs. rcu_read_lock.  So the smp_store_release
+and READ_ONCE are simply unnecessary and could be confusing to
+future readers.
+
+---8<---
+The smp_store_release call in fqdir_exit cannot protect the setting
+of fqdir->dead as claimed because its memory barrier is only
+guaranteed to be one-way and the barrier precedes the setting of
+fqdir->dead.
+
+IOW it doesn't provide any barriers between fq->dir and the following
+hash table destruction.
+
+In fact, the code is safe anyway because call_rcu does provide both
+the memory barrier as well as a guarantee that when the destruction
+work starts executing all RCU readers will see the updated value for
+fqdir->dead.
+
+Therefore this patch removes the unnecessary smp_store_release call
+as well as the corresponding READ_ONCE on the read-side in order to
+not confuse future readers of this code.  Comments have been added
+in their places.
+
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+index 2b816f1ebbb4..35e9784fab4e 100644
+--- a/net/ipv4/inet_fragment.c
++++ b/net/ipv4/inet_fragment.c
+@@ -193,10 +193,12 @@ void fqdir_exit(struct fqdir *fqdir)
+ {
+ 	fqdir->high_thresh = 0; /* prevent creation of new frags */
+ 
+-	/* paired with READ_ONCE() in inet_frag_kill() :
+-	 * We want to prevent rhashtable_remove_fast() calls
++	fqdir->dead = true;
++
++	/* call_rcu is supposed to provide memory barrier semantics,
++	 * separating the setting of fqdir->dead with the destruction
++	 * work.  This implicit barrier is paired with inet_frag_kill().
+ 	 */
+-	smp_store_release(&fqdir->dead, true);
+ 
+ 	INIT_RCU_WORK(&fqdir->destroy_rwork, fqdir_rwork_fn);
+ 	queue_rcu_work(system_wq, &fqdir->destroy_rwork);
+@@ -214,10 +216,12 @@ void inet_frag_kill(struct inet_frag_queue *fq)
+ 
+ 		fq->flags |= INET_FRAG_COMPLETE;
+ 		rcu_read_lock();
+-		/* This READ_ONCE() is paired with smp_store_release()
+-		 * in inet_frags_exit_net().
++		/* The RCU read lock provides a memory barrier
++		 * guaranteeing that if fqdir->dead is false then
++		 * the hash table destruction will not start until
++		 * after we unlock.  Paired with inet_frags_exit_net().
+ 		 */
+-		if (!READ_ONCE(fqdir->dead)) {
++		if (!fqdir->dead) {
+ 			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
+ 					       fqdir->f->rhash_params);
+ 			refcount_dec(&fq->refcnt);
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
