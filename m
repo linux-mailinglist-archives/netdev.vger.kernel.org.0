@@ -2,45 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09D712D5DA
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 09:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 677282D5DD
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 09:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbfE2HBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 03:01:46 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58404 "EHLO
+        id S1726461AbfE2HBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 03:01:54 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58410 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725895AbfE2HBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 03:01:46 -0400
+        with ESMTP id S1725895AbfE2HBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 03:01:54 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 208781478A005;
-        Wed, 29 May 2019 00:01:46 -0700 (PDT)
-Date:   Wed, 29 May 2019 00:01:45 -0700 (PDT)
-Message-Id: <20190529.000145.29235432566162518.davem@davemloft.net>
-To:     skalluru@marvell.com
-Cc:     netdev@vger.kernel.org, mkalderon@marvell.com, aelior@marvell.com
-Subject: Re: [PATCH net-next 0/2] qed*: Fix inifinite spinning of PTP poll
- thread.
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 537A61478A00B;
+        Wed, 29 May 2019 00:01:54 -0700 (PDT)
+Date:   Wed, 29 May 2019 00:01:53 -0700 (PDT)
+Message-Id: <20190529.000153.1480129500988688576.davem@davemloft.net>
+To:     gustavo@embeddedor.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] macvlan: Replace strncpy() by strscpy()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190528032133.5745-1-skalluru@marvell.com>
-References: <20190528032133.5745-1-skalluru@marvell.com>
+In-Reply-To: <20190527183855.GA32553@embeddedor>
+References: <20190527183855.GA32553@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 May 2019 00:01:46 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 May 2019 00:01:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Date: Mon, 27 May 2019 20:21:31 -0700
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Date: Mon, 27 May 2019 13:38:55 -0500
 
-> The patch series addresses an error scenario in the PTP Tx implementation.
+> The strncpy() function is being deprecated. Replace it by the safer
+> strscpy() and fix the following Coverity warning:
 > 
-> Please consider applying it to net-next.
+> "Calling strncpy with a maximum size argument of 16 bytes on destination
+> array ifrr.ifr_ifrn.ifrn_name of size 16 bytes might leave the destination
+> string unterminated."
+> 
+> Notice that, unlike strncpy(), strscpy() always null-terminates the
+> destination string.
+> 
+> Addresses-Coverity-ID: 1445537 ("Buffer not null terminated")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Series applied.
+Applied.
