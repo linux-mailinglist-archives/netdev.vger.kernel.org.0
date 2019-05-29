@@ -2,109 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A2C22E959
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 01:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E572E961
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 01:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbfE2X05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 19:26:57 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38113 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbfE2X05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 19:26:57 -0400
-Received: by mail-ed1-f66.google.com with SMTP id g13so6235343edu.5;
-        Wed, 29 May 2019 16:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4MYDvvkcBMpD3vTFCGd0htlT0GxbUehOqYVwE/XNQ9w=;
-        b=r9y1ILosMv1HdLnsdsAP+MOj8XoPRuEhpX+827w9xBOQ4atic97Pj5M57pj7RqdciP
-         o4NSSKU+sBsW+S00Z3Q9wK2lJpFLwI9hObrUubudDFxx5f2aH6wKfZv71g1B4NB8Ijg7
-         wVbYcgqIUIUm2gMwMYvxncCQqmVzUIrGYMRGSmHJiKOn0Bv1nNYKwRm1laaQkp2lNxxR
-         hOr02yrpjt7u07lHY5gfV0YLdBNIRb6c3uS4t3npWort/GbChtnyUMV0Ta0DSNqK/lvf
-         hCrjWka+iETsxPTS106cV3W4ZLjeOJSzoQUXpTqOdDwWcIXp6nK7DYoPtDHHPc4Yx2hf
-         cuLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4MYDvvkcBMpD3vTFCGd0htlT0GxbUehOqYVwE/XNQ9w=;
-        b=RF6GwOPDuvuQ8Nz58geNBG2Ra68mpikEV6G4KXgOBBJXZIvAFhezUNrjO97YBKDJWU
-         pbpu2MZLKnUXSjXFcXG4+0MSfrbVuX/XIwQWZwm/eXGVo8dUxqtndmfVTgjYdSEAu6r3
-         gOCDI3zsyIYh9Baork7LD4zVkJemrBeEaK7eUSfF6+fAQ3gehn7q284CoXeCdKWVBS72
-         uhZe8Bq0R+RrIuWImletxYL3/czdtCwPKUiy20vRJ4Ana9q2qtblIAtELefxYDKKQy1i
-         fvzmvf+KZAah7kw60AhqzaebQWGfr0vrJudq0OmHjuQkvBw07TT8e2QkFSIWcUuVOupX
-         1qGQ==
-X-Gm-Message-State: APjAAAWu8LPQmjBZCiVZlyki8D1xDRsu7UuYysAAAta3OzXqf7i6Wr9y
-        fg/Qlw969ijK6040R12JlSFrGedbSJQAZgwR45w=
-X-Google-Smtp-Source: APXvYqwnheto+zYvIaHfRrjE+flVSb0ynWBD4Kqor0qxUvVvN3xWwpreCuaWW1NOsE9qA9ag86vzCURZDstGO6tJSe8=
-X-Received: by 2002:a05:6402:1543:: with SMTP id p3mr1047442edx.108.1559172415592;
- Wed, 29 May 2019 16:26:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1559171394.git.mchehab+samsung@kernel.org> <c8f6ddd2d538e36f6036681f5756f6ea9499039f.1559171394.git.mchehab+samsung@kernel.org>
-In-Reply-To: <c8f6ddd2d538e36f6036681f5756f6ea9499039f.1559171394.git.mchehab+samsung@kernel.org>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 30 May 2019 02:26:44 +0300
-Message-ID: <CA+h21hqtfh1KTZXXC+Hmf7JUkXpWwjtJU_KS_u-wcjnWA3pLZA@mail.gmail.com>
-Subject: Re: [PATCH 21/22] docs: net: sja1105.rst: fix table format
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726576AbfE2X3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 19:29:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40390 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726240AbfE2X3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 19:29:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=DqShxMQEhEyHMa5nJ06AIiSuoDkR06vXPgvqd1K07ZQ=; b=0f26D+GPzttJBNim7aCAxOy0rN
+        zDAcOMnmZQJDAt13uQoVT4Fj3RuUR8PG2MJovUJoEywQbfKX3Bt9CAm8CZjjpw8dz/uaqmKZUeJBk
+        PJ7yhNkT0RqXugv7FoWqtyPSMQQ6t6HsUxwR/r2va9pq6EIbcKFGyneM9s4hTcnOgPJM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hW80g-0003II-9l; Thu, 30 May 2019 01:29:30 +0200
+Date:   Thu, 30 May 2019 01:29:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+Message-ID: <20190529232930.GF18059@lunn.ch>
+References: <20190528192324.28862-1-marex@denx.de>
+ <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
+ <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+ <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+ <20190528195806.GV18059@lunn.ch>
+ <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+ <20190528212252.GW18059@lunn.ch>
+ <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 at 02:24, Mauro Carvalho Chehab
-<mchehab+samsung@kernel.org> wrote:
->
-> There's a table there with produces two warnings when built
-> with Sphinx:
->
->     Documentation/networking/dsa/sja1105.rst:91: WARNING: Block quote ends without a blank line; unexpected unindent.
->     Documentation/networking/dsa/sja1105.rst:91: WARNING: Block quote ends without a blank line; unexpected unindent.
->
-> It will still produce a table, but the html output is wrong, as
-> it won't interpret the second line as the continuation for the
-> first ones, because identation doesn't match.
->
-> After the change, the output looks a way better and we got rid
-> of two warnings.
->
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> ---
->  Documentation/networking/dsa/sja1105.rst | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-> index ea7bac438cfd..cb2858dece93 100644
-> --- a/Documentation/networking/dsa/sja1105.rst
-> +++ b/Documentation/networking/dsa/sja1105.rst
-> @@ -86,13 +86,13 @@ functionality.
->  The following traffic modes are supported over the switch netdevices:
->
->  +--------------------+------------+------------------+------------------+
-> -|                    | Standalone |   Bridged with   |   Bridged with   |
-> -|                    |    ports   | vlan_filtering 0 | vlan_filtering 1 |
-> +|                    | Standalone | Bridged with     | Bridged with     |
-> +|                    | ports      | vlan_filtering 0 | vlan_filtering 1 |
->  +====================+============+==================+==================+
->  | Regular traffic    |     Yes    |       Yes        |  No (use master) |
->  +--------------------+------------+------------------+------------------+
->  | Management traffic |     Yes    |       Yes        |       Yes        |
-> -|    (BPDU, PTP)     |            |                  |                  |
-> +| (BPDU, PTP)        |            |                  |                  |
->  +--------------------+------------+------------------+------------------+
->
->  Switching features
-> --
-> 2.21.0
->
+On Tue, May 28, 2019 at 11:33:33PM +0200, Marek Vasut wrote:
+> On 5/28/19 11:22 PM, Andrew Lunn wrote:
+> >> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
+> >> so I better use all the interrupt sources to nudge the PHY subsystem and
+> >> have it check the link change.
+> > 
+> > Then it sounds like you should just ignore interrupts and stay will
+> > polling for the TJA1100.
+> 
+> Polling for the link status change is slow(er) than the IRQ driven
+> operation, so I would much rather use the interrupts.
 
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
+I agree about the speed, but it seems like interrupts on this PHY are
+not so reliable. Polling always works. But unfortunately, you cannot
+have both interrupts and polling to fix up problems when interrupts
+fail. Your call, do you think interrupts really do work?
+
+If you say that tja1101 works as expected, then please just use the
+link up/down bits for it.
+
+     Andrew
