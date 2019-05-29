@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56DC42D461
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B445C2D4CE
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 06:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbfE2D70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 23:59:26 -0400
-Received: from sobre.alvarezp.com ([173.230.155.94]:40892 "EHLO
-        sobre.alvarezp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbfE2D7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 23:59:25 -0400
-Received: from [192.168.15.65] (unknown [189.205.206.165])
-        by sobre.alvarezp.com (Postfix) with ESMTPSA id 14E8321898;
-        Tue, 28 May 2019 22:59:25 -0500 (CDT)
-Subject: Re: PROBLEM: [1/2] Marvell 88E8040 (sky2) stopped working
-To:     =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>
-Cc:     Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <26edfbe4-3c62-184b-b4cc-3d89f21ae394@alvarezp.org>
- <20190518215802.GI63920@meh.true.cz>
- <56e0a7a9-19e7-fb60-7159-6939bd6d8a45@alvarezp.org>
-From:   Octavio Alvarez <octallk1@alvarezp.org>
-Message-ID: <61d96859-ad26-68d8-6f91-56e7895b04d3@alvarezp.org>
-Date:   Tue, 28 May 2019 22:59:24 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.0
-MIME-Version: 1.0
-In-Reply-To: <56e0a7a9-19e7-fb60-7159-6939bd6d8a45@alvarezp.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: uk-UA
+        id S1725865AbfE2Eim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 00:38:42 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57090 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725840AbfE2Eim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 00:38:42 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 872A9145D4426;
+        Tue, 28 May 2019 21:38:41 -0700 (PDT)
+Date:   Tue, 28 May 2019 21:38:37 -0700 (PDT)
+Message-Id: <20190528.213837.678862722500953103.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, sharpd@cumulusnetworks.com,
+        sworley@cumulusnetworks.com, dsahern@gmail.com
+Subject: Re: [PATCH net-next 0/6] net: API and initial implementation for
+ nexthop objects
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190524214308.18615-1-dsahern@kernel.org>
+References: <20190524214308.18615-1-dsahern@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 May 2019 21:38:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/19 8:22 PM, Octavio Alvarez wrote:
-> Hi, Petr,
+From: David Ahern <dsahern@kernel.org>
+Date: Fri, 24 May 2019 14:43:02 -0700
+
+> From: David Ahern <dsahern@gmail.com>
 > 
->> I'm just shooting out of the blue, as I don't have currently any rational
->> explanation for that now, but could you please change the line above to
->> following:
->>
->>            if (!IS_ERR_OR_NULL(iap))
+> This set contains the API and initial implementation for nexthops as
+> standalone objects.
 > 
-> It worked! Thank you for being so quick!
+> Patch 1 contains the UAPI and updates to selinux struct.
+> 
+> Patch 2 contains the barebones code for nexthop commands, rbtree
+> maintenance and notifications.
+> 
+> Patch 3 then adds support for IPv4 gateways along with handling of
+> netdev events.
+> 
+> Patch 4 adds support for IPv6 gateways.
+> 
+> Patch 5 has the implementation of the encap attributes. 
+> 
+> Patch 6 adds support for nexthop groups.
+> 
+> At the end of this set, nexthop objects can be created and deleted and
+> userspace can monitor nexthop events, but ipv4 and ipv6 routes can not
+> use them yet. Once the nexthop struct is defined, follow on sets add it
+> to fib{6}_info and handle it within the respective code before routes
+> can be inserted using them.
 
-Hi, Petr,
+Series applied, I'll push this out after compile testing.
 
-I just pulled from master and I don't see any updates for sky2.c.
-
-What would be the next step for getting the fix into the kernel? I have 
-never written a patch for the kernel before and I really don't know if 
-it would break anything else or disrupt any future work.
-
-Should I write a patch or should I let you do it? And if I do, should I 
-just change IS_ERR for IS_ERR_OR_NULL for all the drivers on your 
-original patch or just for the sky2?
-
-I will be glad to help.
-
-Thanks,
-Octavio.
+Thanks David.
