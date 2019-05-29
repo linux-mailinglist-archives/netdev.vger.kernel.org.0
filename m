@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 918192E364
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F56F2E372
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbfE2RiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:38:00 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40684 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbfE2Rh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:37:59 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hW2WS-0006Jy-Su; Wed, 29 May 2019 19:37:56 +0200
-Received: from [178.197.249.12] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hW2WS-0007q8-Ff; Wed, 29 May 2019 19:37:56 +0200
-Subject: Re: [PATCH bpf-next v2] libbpf: prevent overwriting of log_level in
- bpf_object__load_progs()
-To:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <20190529142641.888-1-quentin.monnet@netronome.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f0fce994-176f-2778-5511-1d8992a1abaa@iogearbox.net>
-Date:   Wed, 29 May 2019 19:37:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <20190529142641.888-1-quentin.monnet@netronome.com>
-Content-Type: text/plain; charset=utf-8
+        id S1727301AbfE2Rjt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 May 2019 13:39:49 -0400
+Received: from mga09.intel.com ([134.134.136.24]:55335 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725917AbfE2Rjt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 13:39:49 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 10:39:48 -0700
+X-ExtLoop1: 1
+Received: from pgsmsx108.gar.corp.intel.com ([10.221.44.103])
+  by orsmga007.jf.intel.com with ESMTP; 29 May 2019 10:39:46 -0700
+Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.93]) by
+ PGSMSX108.gar.corp.intel.com ([169.254.8.77]) with mapi id 14.03.0415.000;
+ Thu, 30 May 2019 01:39:45 +0800
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+Subject: RE: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
+ support
+Thread-Topic: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
+ support
+Thread-Index: AQHVFfytwCWwwFk/s0y481symSRgi6aBXSwAgAD/zVA=
+Date:   Wed, 29 May 2019 17:39:44 +0000
+Message-ID: <D6759987A7968C4889FDA6FA91D5CBC814707D32@PGSMSX103.gar.corp.intel.com>
+References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
+ <1559149107-14631-2-git-send-email-weifeng.voon@intel.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25464/Wed May 29 09:59:09 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.205]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/29/2019 04:26 PM, Quentin Monnet wrote:
-> There are two functions in libbpf that support passing a log_level
-> parameter for the verifier for loading programs:
-> bpf_object__load_xattr() and bpf_prog_load_xattr(). Both accept an
-> attribute object containing the log_level, and apply it to the programs
-> to load.
+> > +static void stmmac_mdio_c45_setup(struct stmmac_priv *priv, int phyreg,
+> > +				  u32 *val, u32 *data)
+> > +{
+> > +	unsigned int reg_shift = priv->hw->mii.reg_shift;
+> > +	unsigned int reg_mask = priv->hw->mii.reg_mask;
 > 
-> It turns out that to effectively load the programs, the latter function
-> eventually relies on the former. This was not taken into account when
-> adding support for log_level in bpf_object__load_xattr(), and the
-> log_level passed to bpf_prog_load_xattr() later gets overwritten with a
-> zero value, thus disabling verifier logs for the program in all cases:
+> Reverse christmas tree here. You also should align the function variables with
+> the opening parenthesis of the function here and in the remaining series.
 > 
-> bpf_prog_load_xattr()             // prog->log_level = attr1->log_level;
-> -> bpf_object__load()             // attr2->log_level = 0;
->    -> bpf_object__load_xattr()    // <pass prog and attr2>
->       -> bpf_object__load_progs() // prog->log_level = attr2->log_level;
-> 
-> Fix this by OR-ing the log_level in bpf_object__load_progs(), instead of
-> overwriting it.
-> 
-> v2: Fix commit log description (confusion on function names in v1).
-> 
-> Fixes: 60276f984998 ("libbpf: add bpf_object__load_xattr() API function to pass log_level")
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Otherwise this patch looks good to me.
 
-That's better, applied, thanks!
+It is already reversed Christmas tree. Somehow each of the character's width in the
+email is not equal. As you can see that the first line of assignment is having more
+character than the second line of assignment.
+The alignment is also correct when I check it after doing a git am.
+
+Regards,
+Weifeng
+
+> 
+> Thanks,
+> Jose Miguel Abreu
