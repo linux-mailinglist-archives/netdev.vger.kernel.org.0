@@ -2,24 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D5FA2DC1F
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 13:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DBD22DC20
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 13:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726888AbfE2Lsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 07:48:42 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:46888 "EHLO
+        id S1726897AbfE2Lsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 07:48:43 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:46890 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726842AbfE2Lsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 07:48:40 -0400
+        by vger.kernel.org with ESMTP id S1726806AbfE2Lsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 07:48:41 -0400
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
         (envelope-from <fw@breakpoint.cc>)
-        id 1hVx4Q-0004VY-2m; Wed, 29 May 2019 13:48:38 +0200
+        id 1hVx4Q-0004Ve-Cg; Wed, 29 May 2019 13:48:38 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
-Cc:     eric.dumazet@gmail.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 2/7] devinet: use in_dev_for_each_ifa_rcu in more places
-Date:   Wed, 29 May 2019 13:43:27 +0200
-Message-Id: <20190529114332.19163-3-fw@strlen.de>
+Cc:     eric.dumazet@gmail.com, Florian Westphal <fw@strlen.de>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org
+Subject: [PATCH net-next 3/7] afs: switch to in_dev_for_each_ifa_rcu
+Date:   Wed, 29 May 2019 13:43:28 +0200
+Message-Id: <20190529114332.19163-4-fw@strlen.de>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529114332.19163-1-fw@strlen.de>
 References: <20190529114332.19163-1-fw@strlen.de>
@@ -30,112 +32,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This also replaces spots that used for_primary_ifa().
+The in_dev_for_each_ifa_rcu helper gets used so sparse won't
+complain when we add the proper __rcu annotation to the ifa_list
+member in struct in_device later.
 
-for_primary_ifa() aborts the loop on the first secondary address seen.
+While doing this I realized the helper only has one call site,
+so move it to where its needed.
 
-Replace it with either the rcu or rtnl variant of in_dev_for_each_ifa(),
-but two places will now also consider secondary addresses too:
-inet_addr_onlink() and inet_ifa_byprefix().
+This then revealed that we allocate a temporary buffer needlessly
+and pass an always-false bool argument.
 
-I do not understand why they should ignore secondary addresses.
+So fold this into the calling function and fill dst buffer directly.
 
-Why would a secondary address not be considered 'on link'?
-When matching a prefix, why ignore a matching secondary address?
+Compile tested only.
 
-Other places get converted as well, but gain "->flags & SECONDARY" check.
-
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-afs@lists.infradead.org
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/ipv4/devinet.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ fs/afs/Makefile     |  1 -
+ fs/afs/cmservice.c  | 49 +++++++++++++++++++++++++++------------------
+ fs/afs/internal.h   | 15 --------------
+ fs/afs/netdevices.c | 48 --------------------------------------------
+ 4 files changed, 29 insertions(+), 84 deletions(-)
+ delete mode 100644 fs/afs/netdevices.c
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 7803a4d2951c..b45421b2b734 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -327,15 +327,17 @@ static void inetdev_destroy(struct in_device *in_dev)
- 
- int inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b)
+diff --git a/fs/afs/Makefile b/fs/afs/Makefile
+index cbf31f6cd177..10359bea7070 100644
+--- a/fs/afs/Makefile
++++ b/fs/afs/Makefile
+@@ -29,7 +29,6 @@ kafs-y := \
+ 	server.o \
+ 	server_list.o \
+ 	super.o \
+-	netdevices.o \
+ 	vlclient.o \
+ 	vl_list.o \
+ 	vl_probe.o \
+diff --git a/fs/afs/cmservice.c b/fs/afs/cmservice.c
+index 01437cfe5432..054590a6b1e2 100644
+--- a/fs/afs/cmservice.c
++++ b/fs/afs/cmservice.c
+@@ -14,6 +14,8 @@
+ #include <linux/slab.h>
+ #include <linux/sched.h>
+ #include <linux/ip.h>
++#include <linux/netdevice.h>
++#include <linux/inetdevice.h>
+ #include "internal.h"
+ #include "afs_cm.h"
+ #include "protocol_yfs.h"
+@@ -584,9 +586,10 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call)
+  */
+ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
  {
-+	const struct in_ifaddr *ifa;
-+
- 	rcu_read_lock();
--	for_primary_ifa(in_dev) {
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		if (inet_ifa_match(a, ifa)) {
- 			if (!b || inet_ifa_match(b, ifa)) {
- 				rcu_read_unlock();
- 				return 1;
- 			}
- 		}
--	} endfor_ifa(in_dev);
-+	}
- 	rcu_read_unlock();
- 	return 0;
- }
-@@ -580,12 +582,14 @@ EXPORT_SYMBOL(inetdev_by_index);
- struct in_ifaddr *inet_ifa_byprefix(struct in_device *in_dev, __be32 prefix,
- 				    __be32 mask)
- {
-+	struct in_ifaddr *ifa;
-+
- 	ASSERT_RTNL();
+-	struct afs_interface *ifs;
++	struct net_device *dev;
++	struct in_device *idev;
+ 	struct afs_call *call = container_of(work, struct afs_call, work);
+-	int loop, nifs;
++	int loop, nifs = 0;
  
--	for_primary_ifa(in_dev) {
-+	in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 		if (ifa->ifa_mask == mask && inet_ifa_match(prefix, ifa))
- 			return ifa;
--	} endfor_ifa(in_dev);
-+	}
- 	return NULL;
- }
+ 	struct {
+ 		struct /* InterfaceAddr */ {
+@@ -604,19 +607,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
  
-@@ -1245,17 +1249,22 @@ static int inet_gifconf(struct net_device *dev, char __user *buf, int len, int s
- static __be32 in_dev_select_addr(const struct in_device *in_dev,
- 				 int scope)
- {
--	for_primary_ifa(in_dev) {
-+	const struct in_ifaddr *ifa;
+ 	_enter("");
+ 
+-	nifs = 0;
+-	ifs = kcalloc(32, sizeof(*ifs), GFP_KERNEL);
+-	if (ifs) {
+-		nifs = afs_get_ipv4_interfaces(call->net, ifs, 32, false);
+-		if (nifs < 0) {
+-			kfree(ifs);
+-			ifs = NULL;
+-			nifs = 0;
+-		}
+-	}
+-
+ 	memset(&reply, 0, sizeof(reply));
+-	reply.ia.nifs = htonl(nifs);
+ 
+ 	reply.ia.uuid[0] = call->net->uuid.time_low;
+ 	reply.ia.uuid[1] = htonl(ntohs(call->net->uuid.time_mid));
+@@ -626,15 +617,33 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
+ 	for (loop = 0; loop < 6; loop++)
+ 		reply.ia.uuid[loop + 5] = htonl((s8) call->net->uuid.node[loop]);
+ 
+-	if (ifs) {
+-		for (loop = 0; loop < nifs; loop++) {
+-			reply.ia.ifaddr[loop] = ifs[loop].address.s_addr;
+-			reply.ia.netmask[loop] = ifs[loop].netmask.s_addr;
+-			reply.ia.mtu[loop] = htonl(ifs[loop].mtu);
++	rcu_read_lock();
++	for_each_netdev_rcu(call->net->net, dev) {
++		const struct in_ifaddr *ifa;
 +
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
-+		if (ifa->ifa_flags & IFA_F_SECONDARY)
++		if (dev->flags & IFF_LOOPBACK)
 +			continue;
- 		if (ifa->ifa_scope != RT_SCOPE_LINK &&
- 		    ifa->ifa_scope <= scope)
- 			return ifa->ifa_local;
--	} endfor_ifa(in_dev);
-+	}
- 
- 	return 0;
- }
- 
- __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
- {
-+	const struct in_ifaddr *ifa;
- 	__be32 addr = 0;
- 	struct in_device *in_dev;
- 	struct net *net = dev_net(dev);
-@@ -1266,7 +1275,9 @@ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
- 	if (!in_dev)
- 		goto no_in_dev;
- 
--	for_primary_ifa(in_dev) {
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
-+		if (ifa->ifa_flags & IFA_F_SECONDARY)
++
++		idev = __in_dev_get_rcu(dev);
++		if (!idev)
 +			continue;
- 		if (ifa->ifa_scope > scope)
- 			continue;
- 		if (!dst || inet_ifa_match(dst, ifa)) {
-@@ -1275,7 +1286,7 @@ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
++
++		in_dev_for_each_ifa_rcu(ifa, idev) {
++			if (ifa->ifa_flags & IFA_F_SECONDARY)
++				break;
++
++			reply.ia.ifaddr[nifs] = ifa->ifa_address;
++			reply.ia.netmask[nifs] = ifa->ifa_mask;
++			reply.ia.mtu[nifs] = htonl(dev->mtu);
++			nifs++;
++			break;
  		}
- 		if (!addr)
- 			addr = ifa->ifa_local;
--	} endfor_ifa(in_dev);
-+	}
+-		kfree(ifs);
++		if (nifs >= 32)
++			break;
+ 	}
++	rcu_read_unlock();
  
- 	if (addr)
- 		goto out_unlock;
++	reply.ia.nifs = htonl(nifs);
+ 	reply.cap.capcount = htonl(1);
+ 	reply.cap.caps[0] = htonl(AFS_CAP_ERROR_TRANSLATION);
+ 	afs_send_simple_reply(call, &reply, sizeof(reply));
+diff --git a/fs/afs/internal.h b/fs/afs/internal.h
+index 2073c1a3ab4b..a22fa3b77b3c 100644
+--- a/fs/afs/internal.h
++++ b/fs/afs/internal.h
+@@ -724,15 +724,6 @@ struct afs_permits {
+ 	struct afs_permit	permits[];	/* List of permits sorted by key pointer */
+ };
+ 
+-/*
+- * record of one of a system's set of network interfaces
+- */
+-struct afs_interface {
+-	struct in_addr	address;	/* IPv4 address bound to interface */
+-	struct in_addr	netmask;	/* netmask applied to address */
+-	unsigned	mtu;		/* MTU of interface */
+-};
+-
+ /*
+  * Error prioritisation and accumulation.
+  */
+@@ -1095,12 +1086,6 @@ extern const struct file_operations afs_mntpt_file_operations;
+ extern struct vfsmount *afs_d_automount(struct path *);
+ extern void afs_mntpt_kill_timer(void);
+ 
+-/*
+- * netdevices.c
+- */
+-extern int afs_get_ipv4_interfaces(struct afs_net *, struct afs_interface *,
+-				   size_t, bool);
+-
+ /*
+  * proc.c
+  */
+diff --git a/fs/afs/netdevices.c b/fs/afs/netdevices.c
+deleted file mode 100644
+index 2a009d1939d7..000000000000
+--- a/fs/afs/netdevices.c
++++ /dev/null
+@@ -1,48 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/* AFS network device helpers
+- *
+- * Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
+- */
+-
+-#include <linux/string.h>
+-#include <linux/rtnetlink.h>
+-#include <linux/inetdevice.h>
+-#include <linux/netdevice.h>
+-#include <linux/if_arp.h>
+-#include <net/net_namespace.h>
+-#include "internal.h"
+-
+-/*
+- * get a list of this system's interface IPv4 addresses, netmasks and MTUs
+- * - maxbufs must be at least 1
+- * - returns the number of interface records in the buffer
+- */
+-int afs_get_ipv4_interfaces(struct afs_net *net, struct afs_interface *bufs,
+-			    size_t maxbufs, bool wantloopback)
+-{
+-	struct net_device *dev;
+-	struct in_device *idev;
+-	int n = 0;
+-
+-	ASSERT(maxbufs > 0);
+-
+-	rtnl_lock();
+-	for_each_netdev(net->net, dev) {
+-		if (dev->type == ARPHRD_LOOPBACK && !wantloopback)
+-			continue;
+-		idev = __in_dev_get_rtnl(dev);
+-		if (!idev)
+-			continue;
+-		for_primary_ifa(idev) {
+-			bufs[n].address.s_addr = ifa->ifa_address;
+-			bufs[n].netmask.s_addr = ifa->ifa_mask;
+-			bufs[n].mtu = dev->mtu;
+-			n++;
+-			if (n >= maxbufs)
+-				goto out;
+-		} endfor_ifa(idev);
+-	}
+-out:
+-	rtnl_unlock();
+-	return n;
+-}
 -- 
 2.21.0
 
