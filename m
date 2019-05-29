@@ -2,73 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C342C2D7F0
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A11B22D7F4
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:41:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726008AbfE2IjO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 May 2019 04:39:14 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1548 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbfE2IjO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 04:39:14 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 01:39:14 -0700
-X-ExtLoop1: 1
-Received: from pgsmsx105.gar.corp.intel.com ([10.221.44.96])
-  by orsmga001.jf.intel.com with ESMTP; 29 May 2019 01:39:11 -0700
-Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.93]) by
- PGSMSX105.gar.corp.intel.com ([169.254.4.53]) with mapi id 14.03.0415.000;
- Wed, 29 May 2019 16:39:10 +0800
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1726038AbfE2Ilg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:41:36 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17619 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725935AbfE2Ilg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 04:41:36 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 4C206269DD259F2AAC39;
+        Wed, 29 May 2019 16:41:33 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Wed, 29 May 2019
+ 16:41:26 +0800
+Subject: Re: [PATCH net-next] net: link_watch: prevent starvation when
+ processing linkwatch wq
+To:     Salil Mehta <salil.mehta@huawei.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v3 0/5] net: stmmac: enable EHL SGMII
-Thread-Topic: [PATCH net-next v3 0/5] net: stmmac: enable EHL SGMII
-Thread-Index: AQHVFcTZLHl57v7lrUiIrmrnYDAoDqaBNN0AgACP6TA=
-Date:   Wed, 29 May 2019 08:39:09 +0000
-Message-ID: <D6759987A7968C4889FDA6FA91D5CBC81470697E@PGSMSX103.gar.corp.intel.com>
-References: <1559125118-24324-1-git-send-email-weifeng.voon@intel.com>
- <78EB27739596EE489E55E81C33FEC33A0B932F7F@DE02WEMBXB.internal.synopsys.com>
-In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B932F7F@DE02WEMBXB.internal.synopsys.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.206]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Linuxarm <linuxarm@huawei.com>
+References: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
+ <20190527075838.5a65abf9@hermes.lan>
+ <a0fe690b-2bfa-7d1a-40c5-5fb95cf57d0b@huawei.com>
+ <cddd414bbf454cbaa8321a92f0d1b9b2@huawei.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <aa8d92eb-5683-9b7d-1c3f-69eec30f3a61@huawei.com>
+Date:   Wed, 29 May 2019 16:41:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <cddd414bbf454cbaa8321a92f0d1b9b2@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2019/5/29 16:12, Salil Mehta wrote:
+>> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org] On Behalf Of Yunsheng Lin
+>> Sent: Tuesday, May 28, 2019 2:04 AM
+>>
+>> On 2019/5/27 22:58, Stephen Hemminger wrote:
+>>> On Mon, 27 May 2019 09:47:54 +0800
+>>> Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>
+>>>> When user has configured a large number of virtual netdev, such
+>>>> as 4K vlans, the carrier on/off operation of the real netdev
+>>>> will also cause it's virtual netdev's link state to be processed
+>>>> in linkwatch. Currently, the processing is done in a work queue,
+>>>> which may cause worker starvation problem for other work queue.
 > 
-> Did you rebase this series against latest net-next tree ?
 > 
-> Because you are missing MMC module in your HWIF table entry. This module
-> was recently added with the addition of selftests.
+> I think we had already discussed about this internally and using separate
+> workqueue with WQ_UNBOUND should solve this problem. HNS3 driver was sharing
+> workqueue with the system workqueue. 
 
-No, the base is on last Thursday. Let me rebased on the latest net-next and submit for v4.
+Yes, using WQ_UNBOUND wq in hns3 solved the cpu starvation for hns3
+workqueue.
 
-Thanks,
-Weifeng
+But the rtnl_lock taken by linkwatch is still a problem for hns3's
+reset workqueue to do the down operation, which need a rtnl_lock.
 
 > 
-> Thanks,
-> Jose Miguel Abreu
+> 
+>>>> This patch releases the cpu when link watch worker has processed
+>>>> a fixed number of netdev' link watch event, and schedule the
+>>>> work queue again when there is still link watch event remaining.
+> 
+> 
+> We need proper examples/use-cases because of which we require above
+> kind of co-operative scheduling. Touching the common shared queue logic
+> which solid argument might invite for more problem to other modules.
+> 
+> 
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>>
+>>> Why not put link watch in its own workqueue so it is scheduled
+>>> separately from the system workqueue?
+>>
+>> From testing and debuging, the workqueue runs on the cpu where the
+>> workqueue is schedule when using normal workqueue, even using its
+>> own workqueue instead of system workqueue. So if the cpu is busy
+>> processing the linkwatch event, it is not able to process other
+>> workqueue' work when the workqueue is scheduled on the same cpu.
+>>
+>> Using unbound workqueue may solve the cpu starvation problem.
+> 
+> [...]
+> 
+>> But the __linkwatch_run_queue is called with rtnl_lock, so if it
+>> takes a lot time to process, other need to take the rtnl_lock may
+>> not be able to move forward.
+> 
+> Please help me in understanding, Are you trying to pitch this patch
+> to solve more general system issue OR still your argument/concern
+> is related to the HNS3 driver problem mentioned in this patch?
+
+As about.
+
+> 
+> Salil.
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+
