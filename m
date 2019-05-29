@@ -2,90 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5D122DA84
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03EB12DAB5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbfE2KZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:25:59 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:40611 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfE2KZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:25:47 -0400
-Received: from 1.general.smb.uk.vpn ([10.172.193.28] helo=canonical.com)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <stefan.bader@canonical.com>)
-        id 1hVvmD-0003j5-I6; Wed, 29 May 2019 10:25:45 +0000
-From:   Stefan Bader <stefan.bader@canonical.com>
-To:     stable <stable@vger.kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Peter Oskolkov <posk@google.com>,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        Andy Whitcroft <andy.whitcroft@canonical.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH 4/4] ipv6: frags: Use inet_frag_pull_head() in ip6_expire_frag_queue()
-Date:   Wed, 29 May 2019 12:25:42 +0200
-Message-Id: <20190529102542.17742-5-stefan.bader@canonical.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190529102542.17742-1-stefan.bader@canonical.com>
-References: <20190529102542.17742-1-stefan.bader@canonical.com>
+        id S1727033AbfE2K3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:29:21 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:41112 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbfE2K3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:29:20 -0400
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+X-IronPort-AV: E=Sophos;i="5.60,526,1549954800"; 
+   d="scan'208";a="33434198"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 May 2019 03:29:20 -0700
+Received: from soft-dev3.microsemi.net (10.10.85.251) by mx.microchip.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5; Wed, 29 May 2019
+ 03:29:16 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "Paul Burton" <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-mips@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH net-next v2 0/2] Add hw offload of TC flower on MSCC Ocelot
+Date:   Wed, 29 May 2019 12:26:18 +0200
+Message-ID: <1559125580-6375-1-git-send-email-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With frag code shared between IPv4 and IPv6 it is now possible
-to use inet_frag_pull_head() in ip6_expire_frag_queue() in order
-to properly extract the first skb from the frags queue.
-Since this really takes the skb out of the list, it no longer
-needs to be protected against removal (which implicitly fixes
-a crash that will happen somewhere in the call to icmp6_send()
-when the use count is forcefully checked to be 1.
+This patch series enables hardware offload for flower filter used in
+traffic controller on MSCC Ocelot board.
 
- kernel BUG at linux-4.4.0/net/core/skbuff.c:1207!
- RIP: 0010:[<ffffffff81740953>]
-  [<ffffffff81740953>] pskb_expand_head+0x243/0x250
-  [<ffffffff81740e50>] __pskb_pull_tail+0x50/0x350
-  [<ffffffff8183939a>] _decode_session6+0x26a/0x400
-  [<ffffffff817ec719>] __xfrm_decode_session+0x39/0x50
-  [<ffffffff818239d0>] icmpv6_route_lookup+0xf0/0x1c0
-  [<ffffffff81824421>] icmp6_send+0x5e1/0x940
-  [<ffffffff8183d431>] icmpv6_send+0x21/0x30
-  [<ffffffff8182b500>] ip6_expire_frag_queue+0xe0/0x120
+The patch series is based on:
+commit 1896ae827534 ("net: mscc: ocelot: Implement port policers via tc
+command")
 
-Signed-off-by: Stefan Bader <stefan.bader@canonical.com>
----
- net/ipv6/reassembly.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+v1->v2 changes:
+ - when declaring variables use reverse christmas tree
 
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 020cf70273c9..2bd45abc2516 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -110,16 +110,14 @@ void ip6_expire_frag_queue(struct net *net, struct frag_queue *fq)
- 	IP6_INC_STATS_BH(net, __in6_dev_get(dev), IPSTATS_MIB_REASMTIMEOUT);
- 
- 	/* Don't send error if the first segment did not arrive. */
--	head = fq->q.fragments;
--	if (!(fq->q.flags & INET_FRAG_FIRST_IN) || !head)
-+	if (!(fq->q.flags & INET_FRAG_FIRST_IN))
-+		goto out;
-+
-+	head = inet_frag_pull_head(&fq->q);
-+	if (!head)
- 		goto out;
- 
--	/* But use as source device on which LAST ARRIVED
--	 * segment was received. And do not use fq->dev
--	 * pointer directly, device might already disappeared.
--	 */
- 	head->dev = dev;
--	skb_get(head);
- 	spin_unlock(&fq->q.lock);
- 
- 	icmpv6_send(head, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
+CC: Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+CC: Rob Herring <robh+dt@kernel.org>
+CC: Mark Rutland <mark.rutland@arm.com>
+CC: Ralf Baechle <ralf@linux-mips.org>
+CC: Paul Burton <paul.burton@mips.com>
+CC: James Hogan <jhogan@kernel.org>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: linux-mips@vger.kernel.org
+CC: devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org
+CC: netdev@vger.kernel.org
+
+Horatiu Vultur (2):
+  net: mscc: ocelot: Add support for tcam
+  net: mscc: ocelot: Hardware ofload for tc flower filter
+
+ arch/mips/boot/dts/mscc/ocelot.dtsi       |   5 +-
+ drivers/net/ethernet/mscc/Makefile        |   2 +-
+ drivers/net/ethernet/mscc/ocelot.c        |  13 +
+ drivers/net/ethernet/mscc/ocelot.h        |   8 +
+ drivers/net/ethernet/mscc/ocelot_ace.c    | 777 ++++++++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_ace.h    | 232 +++++++++
+ drivers/net/ethernet/mscc/ocelot_board.c  |   1 +
+ drivers/net/ethernet/mscc/ocelot_flower.c | 360 ++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_regs.c   |  11 +
+ drivers/net/ethernet/mscc/ocelot_s2.h     |  64 +++
+ drivers/net/ethernet/mscc/ocelot_tc.c     |  16 +-
+ drivers/net/ethernet/mscc/ocelot_vcap.h   | 403 ++++++++++++++++
+ 12 files changed, 1883 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.h
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_flower.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_s2.h
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_vcap.h
+
 -- 
-2.17.1
+2.7.4
 
