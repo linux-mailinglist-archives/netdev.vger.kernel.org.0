@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A11B22D7F4
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 040F22D82A
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726038AbfE2Ilg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:41:36 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17619 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725935AbfE2Ilg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 04:41:36 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4C206269DD259F2AAC39;
-        Wed, 29 May 2019 16:41:33 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Wed, 29 May 2019
- 16:41:26 +0800
-Subject: Re: [PATCH net-next] net: link_watch: prevent starvation when
- processing linkwatch wq
-To:     Salil Mehta <salil.mehta@huawei.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>
-References: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
- <20190527075838.5a65abf9@hermes.lan>
- <a0fe690b-2bfa-7d1a-40c5-5fb95cf57d0b@huawei.com>
- <cddd414bbf454cbaa8321a92f0d1b9b2@huawei.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <aa8d92eb-5683-9b7d-1c3f-69eec30f3a61@huawei.com>
-Date:   Wed, 29 May 2019 16:41:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726173AbfE2Irl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:47:41 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55627 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725914AbfE2Irl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:41 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id BC5BB2239D;
+        Wed, 29 May 2019 04:47:39 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=byy/jEiE7PoLWEkSp
+        Dn/ULnSev2e+NSFkNFyq5qxQDw=; b=p4AE/k1JWf2KOgiyhqSdDt+E5hy0KwOcT
+        dTmeFOFKTzuFQ2GFusdrvG39auXKtFbaNFkd2sCbx7HjYBI1Z4ZhpgO/lwDc/27E
+        xMnn3KEfB3PNRZhRbKj47cgnyLCd4AnDk96ekdKgnB/xw6HU0YlAbt+yDpmSxT0V
+        83fbAAEIw/ppXjTJCdo3rODpkKTE/Ce1HtxoV2tO3E5mR5rzpzeHTKB2kQz99uK/
+        ODlw4vPhGfXZLBB9JsSlMkRyqJtn8Ie8RwlmFUc1rkauTxVBMYScWwD/f+OygD+E
+        TJx1Qwnnk5ZNafREP1Zbtm0PNkEJn/VXfCV/d11FrjJvaJR4PTzrQ==
+X-ME-Sender: <xms:K0fuXO4vQnAYFDjEwphUieqeHSvAlfazREtZ0a6aVwRg5xiUVk3IOg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:K0fuXHVgDfINTv5E6fogKcLIrN85IfP3LK92H0syNj4HoPbmS_AJEQ>
+    <xmx:K0fuXOg0YgpCNdfngDah04AQzVgpyYlxkYVcG8U3kD79YSLgDjnhnA>
+    <xmx:K0fuXPdp49By2ZoK1PY6-uKSzu5Sj0T3SIQoTmmGlKLPR2BXW6p6kw>
+    <xmx:K0fuXN7qM6fw1EhdflWKK9hwqWiwX7WDccyqRqu4spmTSkW8ERLc6Q>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 136268005A;
+        Wed, 29 May 2019 04:47:37 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/8] mlxsw: Hardware monitoring enhancements
+Date:   Wed, 29 May 2019 11:47:14 +0300
+Message-Id: <20190529084722.22719-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <cddd414bbf454cbaa8321a92f0d1b9b2@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/5/29 16:12, Salil Mehta wrote:
->> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org] On Behalf Of Yunsheng Lin
->> Sent: Tuesday, May 28, 2019 2:04 AM
->>
->> On 2019/5/27 22:58, Stephen Hemminger wrote:
->>> On Mon, 27 May 2019 09:47:54 +0800
->>> Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>
->>>> When user has configured a large number of virtual netdev, such
->>>> as 4K vlans, the carrier on/off operation of the real netdev
->>>> will also cause it's virtual netdev's link state to be processed
->>>> in linkwatch. Currently, the processing is done in a work queue,
->>>> which may cause worker starvation problem for other work queue.
-> 
-> 
-> I think we had already discussed about this internally and using separate
-> workqueue with WQ_UNBOUND should solve this problem. HNS3 driver was sharing
-> workqueue with the system workqueue. 
+From: Ido Schimmel <idosch@mellanox.com>
 
-Yes, using WQ_UNBOUND wq in hns3 solved the cpu starvation for hns3
-workqueue.
+This patchset from Vadim provides various hardware monitoring related
+improvements for mlxsw.
 
-But the rtnl_lock taken by linkwatch is still a problem for hns3's
-reset workqueue to do the down operation, which need a rtnl_lock.
+Patch #1 allows querying firmware version from the switch driver when
+the underlying bus is I2C. This is useful for baseboard management
+controller (BMC) systems that communicate with the ASIC over I2C.
 
-> 
-> 
->>>> This patch releases the cpu when link watch worker has processed
->>>> a fixed number of netdev' link watch event, and schedule the
->>>> work queue again when there is still link watch event remaining.
-> 
-> 
-> We need proper examples/use-cases because of which we require above
-> kind of co-operative scheduling. Touching the common shared queue logic
-> which solid argument might invite for more problem to other modules.
-> 
-> 
->>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>
->>> Why not put link watch in its own workqueue so it is scheduled
->>> separately from the system workqueue?
->>
->> From testing and debuging, the workqueue runs on the cpu where the
->> workqueue is schedule when using normal workqueue, even using its
->> own workqueue instead of system workqueue. So if the cpu is busy
->> processing the linkwatch event, it is not able to process other
->> workqueue' work when the workqueue is scheduled on the same cpu.
->>
->> Using unbound workqueue may solve the cpu starvation problem.
-> 
-> [...]
-> 
->> But the __linkwatch_run_queue is called with rtnl_lock, so if it
->> takes a lot time to process, other need to take the rtnl_lock may
->> not be able to move forward.
-> 
-> Please help me in understanding, Are you trying to pitch this patch
-> to solve more general system issue OR still your argument/concern
-> is related to the HNS3 driver problem mentioned in this patch?
+Patch #2 improves driver's performance over I2C by utilizing larger
+transactions sizes, if possible.
 
-As about.
+Patch #3 re-orders driver's initialization sequence to enforce a
+specific firmware version before new firmware features are utilized.
+This is a prerequisite for patches #4-#6.
 
-> 
-> Salil.
-> 
-> 
-> 
-> 
-> 
-> 
-> 
+Patches #4-#6 expose the temperature of inter-connect devices
+(gearboxes) that are present in Mellanox SN3800 systems and split
+2x50Gb/s lanes to 4x25Gb/s lanes.
+
+Patches #7-#8 reduce the transaction size when reading SFP modules
+temperatures, which is crucial when working over I2C.
+
+Ido Schimmel (1):
+  mlxsw: core: Re-order initialization sequence
+
+Vadim Pasternak (7):
+  mlxsw: i2c: Extend initialization with querying firmware info
+  mlxsw: i2c: Allow flexible setting of I2C transactions size
+  mlxsw: reg: Extend sensor index field size of Management Temperature
+    Register
+  mlxsw: reg: Add Management General Peripheral Information Register
+  mlxsw: core: Extend hwmon interface with inter-connect temperature
+    attributes
+  mlxsw: core: Extend the index size for temperature sensors readout
+  mlxsw: core: Reduce buffer size in transactions for SFP modules
+    temperature readout
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  21 +--
+ .../net/ethernet/mellanox/mlxsw/core_env.c    |  27 +---
+ .../net/ethernet/mellanox/mlxsw/core_hwmon.c  | 135 +++++++++++++-----
+ .../ethernet/mellanox/mlxsw/core_thermal.c    |  46 +++---
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c     |  76 +++++++---
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |  18 +++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  62 +++++++-
+ 7 files changed, 274 insertions(+), 111 deletions(-)
+
+-- 
+2.20.1
 
