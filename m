@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E29252E4BA
+	by mail.lfdr.de (Postfix) with ESMTP id 64A7B2E4B9
 	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbfE2Sr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 14:47:56 -0400
-Received: from mga17.intel.com ([192.55.52.151]:40834 "EHLO mga17.intel.com"
+        id S1726605AbfE2Srv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 14:47:51 -0400
+Received: from mga02.intel.com ([134.134.136.20]:64223 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726131AbfE2Srs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 14:47:48 -0400
+        id S1726441AbfE2Srq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 14:47:46 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 11:47:46 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 11:47:46 -0700
 X-ExtLoop1: 1
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 29 May 2019 11:47:45 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 11/15] ice: Remove redundant and premature event config
-Date:   Wed, 29 May 2019 11:47:50 -0700
-Message-Id: <20190529184754.12693-12-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 12/15] ice: Minor cleanup in ice_switch.h
+Date:   Wed, 29 May 2019 11:47:51 -0700
+Message-Id: <20190529184754.12693-13-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
 References: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
@@ -38,42 +37,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-In the path for re-enabling FW LLDP engine, there is
-a call to register for LLDP MIB change events.  This
-call is redundant, in that the call to ice_pf_dcb_cfg
-will already register the driver for these events.  Also,
-the call as it stands now is too early in the flow before
-before DCB is configured.
+Remove duplicate define for ICE_INVAL_Q_HANDLE. Move defines to the
+top of the file.
 
-Remove the redundant call.
-
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_switch.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 77c98b121e62..9dde6dd78643 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1080,12 +1080,6 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 			 * registration/init failed but do not return error
- 			 * state to ethtool
- 			 */
--			status = ice_aq_cfg_lldp_mib_change(&pf->hw, false,
--							    NULL);
--			if (status)
--				dev_dbg(&pf->pdev->dev,
--					"Fail to reg for MIB change\n");
--
- 			status = ice_init_pf_dcb(pf, true);
- 			if (status)
- 				dev_dbg(&pf->pdev->dev, "Fail to init DCB\n");
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index 732b0b9b2e15..cb123fbe30be 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -8,9 +8,11 @@
+ 
+ #define ICE_SW_CFG_MAX_BUF_LEN 2048
+ #define ICE_DFLT_VSI_INVAL 0xff
++#define ICE_FLTR_RX BIT(0)
++#define ICE_FLTR_TX BIT(1)
++#define ICE_FLTR_TX_RX (ICE_FLTR_RX | ICE_FLTR_TX)
+ #define ICE_VSI_INVAL_ID 0xffff
+ #define ICE_INVAL_Q_HANDLE 0xFFFF
+-#define ICE_INVAL_Q_HANDLE 0xFFFF
+ 
+ /* VSI queue context structure */
+ struct ice_q_ctx {
+@@ -69,9 +71,6 @@ struct ice_fltr_info {
+ 	/* rule ID returned by firmware once filter rule is created */
+ 	u16 fltr_rule_id;
+ 	u16 flag;
+-#define ICE_FLTR_RX		BIT(0)
+-#define ICE_FLTR_TX		BIT(1)
+-#define ICE_FLTR_TX_RX		(ICE_FLTR_RX | ICE_FLTR_TX)
+ 
+ 	/* Source VSI for LOOKUP_TX or source port for LOOKUP_RX */
+ 	u16 src;
 -- 
 2.21.0
 
