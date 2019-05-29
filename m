@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1A72DA67
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A302DA76
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbfE2KYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:24:02 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:46054 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725911AbfE2KYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:24:01 -0400
-Received: from mailhost.synopsys.com (dc8-mailhost1.synopsys.com [10.13.135.209])
+        id S1726786AbfE2KZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:25:29 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:42080 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725911AbfE2KZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:25:29 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 8DFE7C2177;
-        Wed, 29 May 2019 10:23:44 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 93485C0110;
+        Wed, 29 May 2019 10:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1559125424; bh=EaIlXg4+87vZfZa76Eds7saCbr0RrMdv8qglDo5oEUg=;
+        t=1559125537; bh=Pcjd9VNcn+xaJUrAja6YEnvXeWRu4uUt7EGvfdDAy0A=;
         h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=A9xTu63HZPXHp9sxs/90ChTBkUIiFdJnwJFWZEd/rtWfZge+xMXtZ2qsUB7iwUzFa
-         VAw3IfeqBGl63sFkyplgnUxhzv7nNpD26WwQsR00GICnkCWQRzQPFx4a2S0czRVt3X
-         sFFMlcnjYQGmoeIlwAWI39c7jTcJ0AzuipTDoKzGODB7GU2xB/u+lvB45cmsMfHTPw
-         ZgfUL64N5QeUvPmjhXRWoeuoEfNZBeKwt8fLRvGmc6eiWTTp3L+n0DGVXk9+hjUs7u
-         9UszmMSz+YQ9BXRBCcJUXUzLRa8SNvXAg/oD5bZTf801XjDSFaUdjtKj/jiXpgy9zS
-         21jVreUga/0ww==
-Received: from US01WEHTC2.internal.synopsys.com (us01wehtc2.internal.synopsys.com [10.12.239.237])
-        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
+        b=gMAJ/kdWirJQwLs92PvYJs5E5W+ObsL9Gp8GNdsA6a3mpH9Y018JWLx8mBauEtFDA
+         XeOVE7Ph86dwIwOdV4sTuf6WbUoc/LPS+y44yx/fDT7X8o65gK7PVdJRKxfPUm6Fgq
+         ROPeAvc3REgLOTQ7lFZXOmxYA3Oldixd8/XkktbitEryiq8SY5oFBMoirAz9bEQvrc
+         phYJqN1QEjldh+vPAnRilwZ5zk3ykewGDWdpQ9Dai9Cd2bXo+AN4/lxJ9cNTu/oUuY
+         YMYL6TK1qynpdT7ahyPd39NNJNby30gTqmRuC1mPtMaXe+6LXIvxZnmOwdrtOx3eTv
+         dwtHDI328kXnw==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id F3823A006D;
-        Wed, 29 May 2019 10:23:59 +0000 (UTC)
-Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
- US01WEHTC2.internal.synopsys.com (10.12.239.237) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 29 May 2019 03:23:59 -0700
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 354AFA009C;
+        Wed, 29 May 2019 10:25:28 +0000 (UTC)
+Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 29 May 2019 03:25:28 -0700
 Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
- 29 May 2019 12:23:57 +0200
+ by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
+ 29 May 2019 12:25:25 +0200
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     Voon Weifeng <weifeng.voon@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -49,16 +49,16 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         biao huang <biao.huang@mediatek.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Kweh Hock Leong <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v4 3/5] net: stmmac: add xpcs function hooks
- into main driver and ethtool
-Thread-Topic: [PATCH net-next v4 3/5] net: stmmac: add xpcs function hooks
- into main driver and ethtool
-Thread-Index: AQHVFfyla7qF4cEoq0uy/2sja8vl2aaB5Egw
-Date:   Wed, 29 May 2019 10:23:57 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B933429@DE02WEMBXB.internal.synopsys.com>
+Subject: RE: [PATCH net-next v4 4/5] net: stmmac: add xPCS functions for
+ device with DWMACv5.1
+Thread-Topic: [PATCH net-next v4 4/5] net: stmmac: add xPCS functions for
+ device with DWMACv5.1
+Thread-Index: AQHVFfyojskpttCUHUuHRFPbapmAMaaB5Y4g
+Date:   Wed, 29 May 2019 10:25:25 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B933444@DE02WEMBXB.internal.synopsys.com>
 References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
- <1559149107-14631-4-git-send-email-weifeng.voon@intel.com>
-In-Reply-To: <1559149107-14631-4-git-send-email-weifeng.voon@intel.com>
+ <1559149107-14631-5-git-send-email-weifeng.voon@intel.com>
+In-Reply-To: <1559149107-14631-5-git-send-email-weifeng.voon@intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -73,29 +73,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Wed, May 29, 2019 at 17:58:25
+Date: Wed, May 29, 2019 at 17:58:26
 
-> +/**
-> + *  xPCS_interrupt - xPCS ISR
-> + *  @irq: interrupt number.
-> + *  @dev_id: to pass the net device pointer.
-> + *  Description: this is the xPCS interrupt service routine.
-> + */
+> From: Ong Boon Leong <boon.leong.ong@intel.com>
+>=20
+> We introduce support for driver that has v5.10 IP and is also using
+> xPCS as MMD. This can be easily enabled for other product that integrates
+> xPCS that is not using v5.00 IP.
+>=20
+> Reviewed-by: Chuah Kim Tatt <kim.tatt.chuah@intel.com>
+> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+> Reviewed-by: Kweh Hock Leong <hock.leong.kweh@intel.com>
+> Reviewed-by: Baoli Zhang <baoli.zhang@intel.com>
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 
-Please remove all JAVA docs from the series unless they are really=20
-useful. This looks like it's stating the obvious and just pollutes the=20
-eyes.
-
-> +static irqreturn_t xpcs_interrupt(int irq, void *dev_id)
-> +{
-> +	struct net_device *ndev =3D (struct net_device *)dev_id;
-> +	struct stmmac_priv *priv =3D netdev_priv(ndev);
-> +	irqreturn_t ret =3D IRQ_NONE;
-> +
-> +	if (unlikely(!ndev)) {
-
-This is a useless check because you already dereference the pointer when=20
-you assign "priv" variable.
+Acked-by: Jose Abreu <joabreu@synopsys.com>
 
 Thanks,
-Jose Miguel Abreu
+Jose Miguel=20
+Abreu
