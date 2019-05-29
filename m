@@ -2,93 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5A22D2DE
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:36:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D6142D2E7
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbfE2AgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:36:11 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42575 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbfE2AgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 20:36:11 -0400
-Received: by mail-lf1-f68.google.com with SMTP id y13so481068lfh.9;
-        Tue, 28 May 2019 17:36:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zHVQHvdN95XyuKz1DO4twHpntO9M0ikbWPHhVAV0QGQ=;
-        b=Qui6Ks6aW+6ZekicI4zDpqszWFZDHA6u6TqPM9RB+vTwqaKtOBXuY64Y4YKNqVLtrp
-         luE1POQACVl97jtWqj8JzIZ2UK+/Rx4Wzkw73AUb/ZDhdNfyILvnAePHIiQ2cx7UDTGJ
-         JfKT70GOdYREzMPEaXadj1HDAFPB4HgGwPj47Fl2VIPVqhiy+tAZqOeY+eh1evdp+D0o
-         HxPX+6HULbDMUpMMZfAmtJigq4tecdLnH1gnzVp7SAl8k/1aqjt9IOi8HWlSzC5RrWaA
-         duGuEy9hKsMfkgLgsIurIowMl7gV/WT0YCO7gZP1/73a8nfqRuDKOMYnqPylhTvtwlD4
-         S2Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zHVQHvdN95XyuKz1DO4twHpntO9M0ikbWPHhVAV0QGQ=;
-        b=Mr9qOo+h/suIsmVEWLB21dAocSLibvWYkB7Nn+p9jiTK5CXSh6U2tNRz8tQR9U7XCM
-         leo7I6ZmLW8pCPbQMebC9ACRv8me5n5aVGKGrUQGv1SXzPXqJ4++D8XuBnhO4Ze0c+Ff
-         yBLQLzjEjuWUhiOHsUtfByVfw2ifDOn7uX5P6In8X3kTMAt9ZoO05+6b0/Com5WwsDnI
-         6INLW6Wblo8/z3qi2y/4EusHdbOIGsF2dAuxy80x47e71CSUl0L1wzblJfK5IfpNx1Qg
-         NLPPHVWZZn7UdJhHK0GEnXpNmL7baX7UIFvYHwd2uaK7SosCHcFrwpjFymdguNmSmJQG
-         z+Cg==
-X-Gm-Message-State: APjAAAVqlv2CwzQHXd7Wz1tAp4lTI/RmGCXOjGACTU6OS6IIla0niUVb
-        1hVvJ4+airpVhsRWbVqUUpzfhVvrvvqRhu1Xpuo=
-X-Google-Smtp-Source: APXvYqwBTOb9HI+K62nLJfrXYu/UDrj5nnKreJd06NaV8a9ZaK1Uk3xeMI5oOTTE9adnTGSjZeFKWP5DnE4Bhg6MFoM=
-X-Received: by 2002:a19:ca0e:: with SMTP id a14mr9926757lfg.19.1559090169462;
- Tue, 28 May 2019 17:36:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190524103648.15669-1-quentin.monnet@netronome.com> <20190524103648.15669-3-quentin.monnet@netronome.com>
-In-Reply-To: <20190524103648.15669-3-quentin.monnet@netronome.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 28 May 2019 17:35:57 -0700
-Message-ID: <CAADnVQJ_V1obLb1ZhkKWzuPhrxGBjJOuSbof6VrA6vxT+W463A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add bpf_object__load_xattr() API
- function to pass log_level
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726054AbfE2AjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:39:22 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54778 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfE2AjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 20:39:22 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AC71D14010FF9;
+        Tue, 28 May 2019 17:39:21 -0700 (PDT)
+Date:   Tue, 28 May 2019 17:39:21 -0700 (PDT)
+Message-Id: <20190528.173921.1448329544526972425.davem@davemloft.net>
+To:     tanhuazhong@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        linuxarm@huawei.com
+Subject: Re: [PATCH net-next 00/12] code optimizations & bugfixes for HNS3
+ driver
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1559034182-24737-1-git-send-email-tanhuazhong@huawei.com>
+References: <1559034182-24737-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 May 2019 17:39:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 3:36 AM Quentin Monnet
-<quentin.monnet@netronome.com> wrote:
->
-> libbpf was recently made aware of the log_level attribute for programs,
-> used to specify the level of information expected to be dumped by the
-> verifier. Function bpf_prog_load_xattr() got support for this log_level
-> parameter.
->
-> But some applications using libbpf rely on another function to load
-> programs, bpf_object__load(), which does accept any parameter for log
-> level. Create an API function based on bpf_object__load(), but accepting
-> an "attr" object as a parameter. Then add a log_level field to that
-> object, so that applications calling the new bpf_object__load_xattr()
-> can pick the desired log level.
->
-> v3:
-> - Rewrite commit log.
->
-> v2:
-> - We are in a new cycle, bump libbpf extraversion number.
->
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> ---
->  tools/lib/bpf/Makefile   |  2 +-
->  tools/lib/bpf/libbpf.c   | 20 +++++++++++++++++---
->  tools/lib/bpf/libbpf.h   |  6 ++++++
->  tools/lib/bpf/libbpf.map |  5 +++++
->  4 files changed, 29 insertions(+), 4 deletions(-)
+From: Huazhong Tan <tanhuazhong@huawei.com>
+Date: Tue, 28 May 2019 17:02:50 +0800
 
-This commit broke ./test_progs -s
-prog_tests/bpf_verif_scale.c no longer passes log_level.
-Could you please take a look?
+> This patch-set includes code optimizations and bugfixes for the HNS3
+> ethernet controller driver.
+> 
+> [patch 1/12] fixes a compile warning reported by kbuild test robot.
+> 
+> [patch 2/12] fixes HNS3_RXD_GRO_SIZE_M macro definition error.
+> 
+> [patch 3/12] adds a debugfs command to dump firmware information.
+> 
+> [patch 4/12 - 10/12] adds some code optimizaions and cleanups for
+> reset and driver unloading.
+> 
+> [patch 11/12 - 12/12] adds two bugfixes.
+
+Series applied, thanks.
