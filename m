@@ -2,100 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5219B2D8C3
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 760D72D8D5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbfE2JPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 05:15:16 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:36650 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfE2JPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:15:16 -0400
-Received: by mail-pl1-f196.google.com with SMTP id d21so809145plr.3;
-        Wed, 29 May 2019 02:15:16 -0700 (PDT)
+        id S1726626AbfE2JSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 05:18:05 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50640 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726018AbfE2JSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:18:05 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f204so1102010wme.0
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 02:18:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=7qRIoAoMwFa3C+MKmnp6p+PijydujIip3aFQ2je5+pM=;
-        b=LbPa/DcNDQZyrTlTZcHIXNLoDhP2oB1brO6jWEBdbT5/2ywWe/M8uqqFCyGf6fXKmD
-         3XpPD6bMskfXKkH0b27SrbW1e1WwJf2hgipU2Vv31Xthu0DJv02c2OgWcXv5B+TOFzk6
-         EpChEb5rq087KFHnTMZTGY9qOX0JbhAC/AwsIgdZDYp1HEh4YQwRX05/RKFUbh6htNYd
-         87R9irwxnymKcAdqJHdY8NkdqSGOlU32RomQbjMd5IJFbxBt4cJbNIuGCiCJllO6Ry2N
-         9IETQRWs25YYkj1oxKge4cTi7Lm0h7wr+o4sQzBHzhQNWSnS/CF5QDFGkPl0QPhKQXVd
-         CPcA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PA7o+E5TanGr16h7Oy845fcFh8G+pAiv4rWZfkX/jjI=;
+        b=BQTKFzkBVyyJw/5nn247Cer8dg7TyVU4wv8QAOoWRl6JTMAQiw4/zk8X4vUIF1K6jx
+         +D3zHTTJGooSSEbfuVfNF0dS0ngrIO0j4I9Pi+O2U5OaTRhGoQlbNlUcab9smZ6t5+13
+         8vNGft3DwvSM5GFWYLrT2a6i1Nk3ATXcEpu2sCce+v/M9QtHYMTs/HFqu4K5uamuDaHq
+         cxRe79oMnpsUvNedfGL8IutjCEEX/lv2gTJkbJz7EYWhh253dkGn4fqBnI59KuAAPAn9
+         SGy5qoKkjOURTS6WssbVC/74QFhP2T4nvRTmse2nVr465749SeP4T/XxMopmtV50r9up
+         lrUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7qRIoAoMwFa3C+MKmnp6p+PijydujIip3aFQ2je5+pM=;
-        b=L8KZWfzCe0ofZ4AlfTITAE/ROs+0lkpR6rUluBkkk9MkHF/LexpcwgXIZMW7litgzQ
-         +NqwjD31PRrtIWMaS4yHCHif3QDESYe8V/nBE+I3dhs9koPX/hyUCnADaEEa3XRGZ36c
-         TuYLI2HhG7ARoD0jNKcs+bpa+lWdV8f8ChFQOrT8jb1A8cQvCbpwucFClA0mVU9aqRWd
-         1CZkmEZ4RD0W3DOQYp9XgR1qeCfy1FIT5eMuNKFT6g2QlJQtrcPoWdNnxYe+3EaAR103
-         wNtOAQAaM4vKPY4qbtTcHiyv0Xw/YFIIKGevO1cdkFlqU8nNkSh8TN4oKlrDKrz4TPJb
-         dr6Q==
-X-Gm-Message-State: APjAAAWLjr72Qj+eg8XZPcahMSM92GWfe81mo1voa4U9JxG5KNZtnF8u
-        JA/Ao970DIuLm8h6HF1RLlE=
-X-Google-Smtp-Source: APXvYqymDJsmB7mrZHnSffvjL/AgMhhrCQY1tAUJ04EAhpx0MaWk+njjoQ/E63h9EnWyqTnyhnXwlw==
-X-Received: by 2002:a17:902:bd94:: with SMTP id q20mr117409634pls.146.1559121315292;
-        Wed, 29 May 2019 02:15:15 -0700 (PDT)
-Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
-        by smtp.gmail.com with ESMTPSA id y12sm11587635pgp.63.2019.05.29.02.15.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 29 May 2019 02:15:14 -0700 (PDT)
-From:   Young Xiao <92siuyang@gmail.com>
-To:     isdn@linux-pingi.de, keescook@chromium.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Young Xiao <92siuyang@gmail.com>
-Subject: [PATCH] isdn: hisax: hfc_2bds0: Fix a possible concurrency use-after-free bug in HFCD_l1hw()
-Date:   Wed, 29 May 2019 17:16:23 +0800
-Message-Id: <1559121383-28691-1-git-send-email-92siuyang@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PA7o+E5TanGr16h7Oy845fcFh8G+pAiv4rWZfkX/jjI=;
+        b=NPbFmxNrJxVj/LddBuHTyKYr2AvpZpcx1AMQFOuw02x4KqQaKovMGSii/FlJ+SqKV8
+         TLXr8t7wUJoUGfjrINVw14IvnNc7NugNyn1z8chIRffNs/Uko2c/t0bP7yxJ0lKrBXFf
+         XxzaC7IlhT83EVwMyFnVgg2J60cn+NRA66SX5vFxPVoC6N6JYHGIOtjGUCmzSDJq7/JR
+         JhimaL29Sqi2fIBkREHDTLpp4OP7dpiPd7wGffOPioT6lCLGMfsNah9dY+7NCjXoJnOT
+         UeJTfFvMz37flp3bem4qBRXE6EiFKempkYwFnWP0fgEj2gMT3VVlRBfXqhISIoBPkTzq
+         rUeQ==
+X-Gm-Message-State: APjAAAXpdh6K4eJSTVA7rfh3URF7dE/k9PQ7638P1mvgMMz76oo/20DC
+        RIulk5XcPIBHOBardZKHWxV39w==
+X-Google-Smtp-Source: APXvYqx3K5WS7jTcKEBdb+W1wgXo5qW2Emzn407GM/gllJHuwwpXz0Vlm0xarau4UMZnbVwPBod/aA==
+X-Received: by 2002:a1c:4054:: with SMTP id n81mr4716322wma.78.1559121482805;
+        Wed, 29 May 2019 02:18:02 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.187.60])
+        by smtp.gmail.com with ESMTPSA id y2sm4553438wra.58.2019.05.29.02.18.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 02:18:01 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add bpf_object__load_xattr() API
+ function to pass log_level
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20190524103648.15669-1-quentin.monnet@netronome.com>
+ <20190524103648.15669-3-quentin.monnet@netronome.com>
+ <CAADnVQJ_V1obLb1ZhkKWzuPhrxGBjJOuSbof6VrA6vxT+W463A@mail.gmail.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <d6c99b5c-8a88-f604-4ae6-76ccfb4aee49@netronome.com>
+Date:   Wed, 29 May 2019 10:18:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQJ_V1obLb1ZhkKWzuPhrxGBjJOuSbof6VrA6vxT+W463A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In drivers/isdn/hisax/hfc_2bds0.c, the function hfc2bds0_interrupt() and
-HFCD_l1hw() may be concurrently executed.
+2019-05-28 17:35 UTC-0700 ~ Alexei Starovoitov
+<alexei.starovoitov@gmail.com>
+> On Fri, May 24, 2019 at 3:36 AM Quentin Monnet
+> <quentin.monnet@netronome.com> wrote:
+>>
+>> libbpf was recently made aware of the log_level attribute for programs,
+>> used to specify the level of information expected to be dumped by the
+>> verifier. Function bpf_prog_load_xattr() got support for this log_level
+>> parameter.
+>>
+>> But some applications using libbpf rely on another function to load
+>> programs, bpf_object__load(), which does accept any parameter for log
+>> level. Create an API function based on bpf_object__load(), but accepting
+>> an "attr" object as a parameter. Then add a log_level field to that
+>> object, so that applications calling the new bpf_object__load_xattr()
+>> can pick the desired log level.
+>>
+>> v3:
+>> - Rewrite commit log.
+>>
+>> v2:
+>> - We are in a new cycle, bump libbpf extraversion number.
+>>
+>> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+>> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>> ---
+>>  tools/lib/bpf/Makefile   |  2 +-
+>>  tools/lib/bpf/libbpf.c   | 20 +++++++++++++++++---
+>>  tools/lib/bpf/libbpf.h   |  6 ++++++
+>>  tools/lib/bpf/libbpf.map |  5 +++++
+>>  4 files changed, 29 insertions(+), 4 deletions(-)
+> 
+> This commit broke ./test_progs -s
+> prog_tests/bpf_verif_scale.c no longer passes log_level.
+> Could you please take a look?
+> 
 
-HFCD_l1hw()
-    line 969: if (!cs->tx_skb)
+Indeed, I forgot that bpf_load_prog_xattr() would eventually call
+bpf_object__load_progs() as well, where the log_level is now overwritten.
 
-hfc2bds0_interrupt()
-    line 875: dev_kfree_skb_irq(cs->tx_skb);
+Fix incoming, sorry about that.
 
-Thus, a possible concurrency use-after-free bug may occur in HFCD_l1hw().
-
-To fix these bugs, the calls to spin_lock_irqsave() and
-spin_unlock_irqrestore() are added in HFCD_l1hw(), to protect the
-access to cs->tx_skb.
-
-See commit 7418e6520f22 ("isdn: hisax: hfc_pci: Fix a possible concurrency
-use-after-free bug in HFCPCI_l1hw()") for details.
-
-Signed-off-by: Young Xiao <92siuyang@gmail.com>
----
- drivers/isdn/hisax/hfc_2bds0.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/isdn/hisax/hfc_2bds0.c b/drivers/isdn/hisax/hfc_2bds0.c
-index 3715fa0..ade12c0 100644
---- a/drivers/isdn/hisax/hfc_2bds0.c
-+++ b/drivers/isdn/hisax/hfc_2bds0.c
-@@ -966,11 +966,13 @@ HFCD_l1hw(struct PStack *st, int pr, void *arg)
- 		if (cs->debug & L1_DEB_LAPD)
- 			debugl1(cs, "-> PH_REQUEST_PULL");
- #endif
-+		spin_lock_irqsave(&cs->lock, flags);
- 		if (!cs->tx_skb) {
- 			test_and_clear_bit(FLG_L1_PULL_REQ, &st->l1.Flags);
- 			st->l1.l1l2(st, PH_PULL | CONFIRM, NULL);
- 		} else
- 			test_and_set_bit(FLG_L1_PULL_REQ, &st->l1.Flags);
-+		spin_unlock_irqrestore(&cs->lock, flags);
- 		break;
- 	case (HW_RESET | REQUEST):
- 		spin_lock_irqsave(&cs->lock, flags);
--- 
-2.7.4
-
+Quentin
