@@ -2,62 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F60E2D2B8
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C18C32D2C2
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfE2APW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:15:22 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54284 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726601AbfE2APW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 20:15:22 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CDB9713FD09E7;
-        Tue, 28 May 2019 17:15:21 -0700 (PDT)
-Date:   Tue, 28 May 2019 17:15:21 -0700 (PDT)
-Message-Id: <20190528.171521.516563262658055908.davem@davemloft.net>
-To:     sbrivio@redhat.com
-Cc:     xmu@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] selftests: pmtu: Fix encapsulating device in
- pmtu_vti6_link_change_mtu
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <a53ca7bdf29b2b265d812adf51168f7c5f4e4e26.1558978791.git.sbrivio@redhat.com>
-References: <a53ca7bdf29b2b265d812adf51168f7c5f4e4e26.1558978791.git.sbrivio@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 May 2019 17:15:22 -0700 (PDT)
+        id S1726963AbfE2AR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:17:26 -0400
+Received: from mga11.intel.com ([192.55.52.93]:59372 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726601AbfE2AR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 20:17:26 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 17:17:26 -0700
+X-ExtLoop1: 1
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by FMSMGA003.fm.intel.com with ESMTP; 28 May 2019 17:17:26 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/10][pull request] 1GbE Intel Wired LAN Driver Updates 2019-05-28
+Date:   Tue, 28 May 2019 17:17:16 -0700
+Message-Id: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
-Date: Mon, 27 May 2019 19:42:23 +0200
+This series contains updates to e1000e, igb and igc.
 
-> In the pmtu_vti6_link_change_mtu test, both local and remote addresses
-> for the vti6 tunnel are assigned to the same address given to the dummy
-> interface that we use as encapsulating device with a known MTU.
-> 
-> This works as long as the dummy interface is actually selected, via
-> rt6_lookup(), as encapsulating device. But if the remote address of the
-> tunnel is a local address too, the loopback interface could also be
-> selected, and there's nothing wrong with it.
-> 
-> This is what some older -stable kernels do (3.18.z, at least), and
-> nothing prevents us from subtly changing FIB implementation to revert
-> back to that behaviour in the future.
-> 
-> Define an IPv6 prefix instead, and use two separate addresses as local
-> and remote for vti6, so that the encapsulating device can't be a
-> loopback interface.
-> 
-> Reported-by: Xiumei Mu <xmu@redhat.com>
-> Fixes: 1fad59ea1c34 ("selftests: pmtu: Add pmtu_vti6_link_change_mtu test")
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Feng adds additional information on a warning message when a read of a
+hardware register fails.
 
-Applied.
+Gustavo A. R. Silva fixes up two "fall through" code comments so that
+the checkers can actually determine that we did comment that the case
+statement is falling through to the next case.
+
+Sasha does some cleanup on the igc driver by removing duplicate
+#defines and removing unused function pointers.  Also fixed up
+white space and removed a unneeded workaround for igc.  Adds support for
+flow control to the igc driver.
+
+Konstantin Khlebnikov reverts a previous fix which was causing a false
+positive for a hardware hang.  Provides a fix so that when link is lost
+the packets in the transmit queue are flushed and wakes the transmit
+queue when the NIC is ready to send packets.
+
+The following are changes since commit c7ae09253cb8a11342d7d363591f6edf2a26552b:
+  fsl/fman: include IPSEC SPI in the Keygen extraction
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+
+Feng Tang (1):
+  igb/igc: warn when fatal read failure happens
+
+Gustavo A. R. Silva (2):
+  igb: mark expected switch fall-through
+  igb: mark expected switch fall-through
+
+Konstantin Khlebnikov (2):
+  Revert "e1000e: fix cyclic resets at link up with active tx"
+  e1000e: start network tx queue only when link is up
+
+Sasha Neftin (5):
+  igc: Fix double definitions
+  igc: Clean up unused pointers
+  igc: Remove the obsolete workaround
+  igc: Add flow control support
+  igc: Cleanup the redundant code
+
+ drivers/net/ethernet/intel/e1000e/netdev.c   | 21 +++++----
+ drivers/net/ethernet/intel/igb/e1000_82575.c |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c    |  3 +-
+ drivers/net/ethernet/intel/igc/igc_base.c    | 49 --------------------
+ drivers/net/ethernet/intel/igc/igc_defines.h | 18 +++----
+ drivers/net/ethernet/intel/igc/igc_hw.h      |  3 --
+ drivers/net/ethernet/intel/igc/igc_mac.c     | 23 ++-------
+ drivers/net/ethernet/intel/igc/igc_main.c    | 22 +++++++++
+ 8 files changed, 47 insertions(+), 94 deletions(-)
+
+-- 
+2.21.0
+
