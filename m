@@ -2,181 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9C52E47B
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9A12E4C1
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 20:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727348AbfE2SaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 14:30:01 -0400
-Received: from mx2.suse.de ([195.135.220.15]:44890 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725917AbfE2SaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 14:30:01 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 554F4AF55;
-        Wed, 29 May 2019 18:29:59 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH bpf v4] libbpf: Return btf_fd for load_sk_storage_btf
-Date:   Wed, 29 May 2019 20:31:09 +0200
-Message-Id: <20190529183109.17317-1-mrostecki@opensuse.org>
+        id S1726099AbfE2Sro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 14:47:44 -0400
+Received: from mga03.intel.com ([134.134.136.65]:45223 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725990AbfE2Sro (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 14:47:44 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 11:47:43 -0700
+X-ExtLoop1: 1
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga007.fm.intel.com with ESMTP; 29 May 2019 11:47:43 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2019-05-29
+Date:   Wed, 29 May 2019 11:47:39 -0700
+Message-Id: <20190529184754.12693-1-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before this change, function load_sk_storage_btf expected that
-libbpf__probe_raw_btf was returning a BTF descriptor, but in fact it was
-returning an information about whether the probe was successful (0 or
-1). load_sk_storage_btf was using that value as an argument of the close
-function, which was resulting in closing stdout and thus terminating the
-process which called that function.
+This series contains updates to ice driver only.
 
-That bug was visible in bpftool. `bpftool feature` subcommand was always
-exiting too early (because of closed stdout) and it didn't display all
-requested probes. `bpftool -j feature` or `bpftool -p feature` were not
-returning a valid json object.
+Bruce cleans up white space issues and fixes complaints about using
+bitop assignments using operands of different sizes.
 
-This change renames the libbpf__probe_raw_btf function to
-libbpf__load_raw_btf, which now returns a BTF descriptor, as expected in
-load_sk_storage_btf.
+Anirudh cleans up code that is no longer needed now that the firmware
+supports the functionality.  Adds support for ethtool selftestto the ice
+driver, which includes testing link, interrupts, eeprom, registers and
+packet loopback.  Also, cleaned up duplicate code.
 
-v2:
-- Fix typo in the commit message.
+Tony implements support for toggling receive VLAN filter via ethtool.
 
-v3:
-- Simplify BTF descriptor handling in bpf_object__probe_btf_* functions.
-- Rename libbpf__probe_raw_btf function to libbpf__load_raw_btf and
-return a BTF descriptor.
+Brett bumps up the minimum receive descriptor count per queue to resolve
+dropped packets.  Refactored the interrupt tracking for the ice driver
+to resolve issues seen with the co-existence of features and SR-IOV, so
+instead of having a hardware IRQ tracker and a software IRQ tracker,
+simply use one tracker.  Also adds a helper function to trigger software
+interrupts.
 
-v4:
-- Fix typo in the commit message.
+Mitch changes how Malicious Driver Detection (MDD) events are handled,
+to ensure all VFs checked for MDD events and just log the event instead
+of disabling the VF, which was preventing proper release of resources if
+the VF is rebooted or the VF driver reloaded.
 
-Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c          | 28 ++++++++++++++++------------
- tools/lib/bpf/libbpf_internal.h |  4 ++--
- tools/lib/bpf/libbpf_probes.c   | 13 ++++---------
- 3 files changed, 22 insertions(+), 23 deletions(-)
+Dave cleans up a redundant call to register LLDP MIB change events.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 197b574406b3..5d046cc7b207 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1645,14 +1645,16 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
- 		/* FUNC x */                                    /* [3] */
- 		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
- 	};
--	int res;
-+	int btf_fd;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__load_raw_btf((char *)types, sizeof(types),
-+				      strs, sizeof(strs));
-+	if (btf_fd >= 0) {
- 		obj->caps.btf_func = 1;
-+		close(btf_fd);
-+		return 1;
-+	}
-+
- 	return 0;
- }
- 
-@@ -1670,14 +1672,16 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
- 		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
- 		BTF_VAR_SECINFO_ENC(2, 0, 4),
- 	};
--	int res;
-+	int btf_fd;
- 
--	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
--				    strs, sizeof(strs));
--	if (res < 0)
--		return res;
--	if (res > 0)
-+	btf_fd = libbpf__load_raw_btf((char *)types, sizeof(types),
-+				      strs, sizeof(strs));
-+	if (btf_fd >= 0) {
- 		obj->caps.btf_datasec = 1;
-+		close(btf_fd);
-+		return 1;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index f3025b4d90e1..dfab8012185c 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -34,7 +34,7 @@ do {				\
- #define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
- #define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
- 
--int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
--			  const char *str_sec, size_t str_len);
-+int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
-+			 const char *str_sec, size_t str_len);
- 
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 5e2aa83f637a..6635a31a7a16 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -133,8 +133,8 @@ bool bpf_probe_prog_type(enum bpf_prog_type prog_type, __u32 ifindex)
- 	return errno != EINVAL && errno != EOPNOTSUPP;
- }
- 
--int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
--			  const char *str_sec, size_t str_len)
-+int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
-+			 const char *str_sec, size_t str_len)
- {
- 	struct btf_header hdr = {
- 		.magic = BTF_MAGIC,
-@@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
- 	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
- 
- 	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
--	if (btf_fd < 0) {
--		free(raw_btf);
--		return 0;
--	}
- 
--	close(btf_fd);
- 	free(raw_btf);
--	return 1;
-+	return btf_fd;
- }
- 
- static int load_sk_storage_btf(void)
-@@ -190,7 +185,7 @@ static int load_sk_storage_btf(void)
- 		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
- 	};
- 
--	return libbpf__probe_raw_btf((char *)types, sizeof(types),
-+	return libbpf__load_raw_btf((char *)types, sizeof(types),
- 				     strs, sizeof(strs));
- }
- 
+Dan adds support to retrieve the current setting of firmware logging
+from the hardware to properly initialize the hardware structure.
+
+The following are changes since commit 36f18439ea16ebb670720602bfbf47c95a6691d4:
+  macvlan: Replace strncpy() by strscpy()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Anirudh Venkataramanan (3):
+  ice: Remove direct write for GLLAN_RCTL_0
+  ice: Add handler for ethtool selftest
+  ice: Minor cleanup in ice_switch.h
+
+Brett Creeley (4):
+  ice: Set minimum default Rx descriptor count to 512
+  ice: Don't call ice_cfg_itr() for SR-IOV
+  ice: Refactor interrupt tracking
+  ice: Add a helper to trigger software interrupt
+
+Bruce Allan (2):
+  ice: Fix LINE_SPACING style issue
+  ice: Resolve static analysis warning
+
+Dan Nowlin (1):
+  ice: Add ice_get_fw_log_cfg to init FW logging
+
+Dave Ertman (1):
+  ice: Remove redundant and premature event config
+
+Md Fahad Iqbal Polash (1):
+  ice: Configure RSS LUT key only if RSS is enabled
+
+Mitch Williams (2):
+  ice: Check all VFs for MDD activity, don't disable
+  ice: Change message level
+
+Tony Nguyen (1):
+  ice: Implement toggling ethtool rx-vlan-filter
+
+ drivers/net/ethernet/intel/ice/ice.h          |  48 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  24 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  75 ++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   5 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 601 +++++++++++++++++-
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   4 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 245 ++++---
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 159 +++--
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |  31 +
+ drivers/net/ethernet/intel/ice/ice_status.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   7 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   8 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 186 +++++-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   8 +
+ 16 files changed, 1129 insertions(+), 276 deletions(-)
+
 -- 
 2.21.0
 
