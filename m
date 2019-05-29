@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 758A72E7FA
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD862E7FD
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfE2WQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 18:16:36 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46368 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726538AbfE2WQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:16:31 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m15so4048910ljg.13
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:16:29 -0700 (PDT)
+        id S1726541AbfE2WRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 18:17:21 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34458 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbfE2WRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:17:21 -0400
+Received: by mail-lf1-f65.google.com with SMTP id v18so3382802lfi.1
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Oz7cGsD/P4AYjrQuzbhSqhrqwPvDYoZyUjrCxUd5apo=;
-        b=W488NziPak7bX8NLwk8X91sVgaISEiHHggxPCEy5FTn4IJfjT1bBLLNUdZubDFWtPH
-         7KoVKeHGWUJXYe/3LbLZBn7H5JwyXSUSceIdUccTOeecjr9Rha/esMd2v5J0QgIJpV+r
-         w04dPFkQRPrhrAhVz6CVOLfdZR28+WrUYuPXRMr/nyIluc9YhOFeRWVGdDt44wALPWrq
-         PIABiusmnwb5q3e6jTuVcyQq9WGF/T14PHNRDSG8TQJ0AL3qJIxSz6hon1W/8m1HgZoD
-         RpTG7XBD0QK5YboiITTVwFV0joTjp8gpqwSWpkPmVhJkcpSP6IsYCYIr59Rl1ujOgBWb
-         A8AA==
+        bh=fIvU+ha0PviU/sibSkvPHyTumVcfp/XuVnG8TGWl1tg=;
+        b=IhDJTlpcamR/KqtIXXIXgJdfXAsLI2C+ZEXAuUNYlKWGn6wHjE6fpIPNIeDhT7ycQ8
+         57igNJrmJ5BNTBnviUUG/OZd+IF7VgnoVis5ZCCvJxb17ZrBByYBXhXN+ZRYNnc3FRIy
+         brSYU1jvKSGa+TNQ8WETswSfhGeqztSbfJ7L/bGXevP+zB/TZdI4CXbRsu2J41G+yDwo
+         qMRxFM1D7xND12GCJwbw+whugNAe6MnXELtdl7/PWacMAbHfg0mkPJsrxG4ICI+/4Bgd
+         Umpf4FN+xj/KrTwt5uEEEDaa00hFCmx8k3DNIvdAxi+WqGo7sS1kO5oJBoew7DOwAn5i
+         7ioA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Oz7cGsD/P4AYjrQuzbhSqhrqwPvDYoZyUjrCxUd5apo=;
-        b=J26C/6OexIUZEz0rgTQkOtyt6DT19/xrnCBYdU8VgfAii1qGJDAQXdW8Pvh/yHRzeA
-         rQZBpojfnGUnnJiTOcwOi+GiId3rapIJhWQqV0veMenSjB58WXP4u4yPotCSPNQnQJan
-         QT3CCPpVyd27gkIsUgk7eeB7lsCsKtMYTI992opuKQznKWHMJesXbHASsMDqsxsdKDZM
-         oLFYI9mwJeOOot7UPHrbUbvuL8AI+wmNlIjeMJ7xQwD27VutJS4vSsgUrUGXHS3uU2Uc
-         oTSSSkAOle2t+5YXY0VK3DXIv5blvaVA5axKAi9BEsqImODi6A5Wv7LOVpNKnJyXq6gV
-         HJHQ==
-X-Gm-Message-State: APjAAAWElLBjD/vCJYXsq3bXVczsDEJ1hzCHyr4BlfA0qw3i24DfA0lW
-        0JUQbFuX8Zk0ZFIHuG0NuZruSmEmQ3qTm6HCRA7+
-X-Google-Smtp-Source: APXvYqzfNdl8873L36TO9hSNPPYmytZePE3WW4+a9ltLKODcsNQS6Y9bUNbWImIKz7mxDt4DEezNtHhuOjvLWIqNvZM=
-X-Received: by 2002:a2e:3e14:: with SMTP id l20mr137436lja.40.1559168188869;
- Wed, 29 May 2019 15:16:28 -0700 (PDT)
+        bh=fIvU+ha0PviU/sibSkvPHyTumVcfp/XuVnG8TGWl1tg=;
+        b=RwnJakdYSiwxrSAmdFFUonAgbvHb2b4FaJWLwDu0UfEgInfBkTZNgTWF6gdYmkOIs/
+         MIs56SNoZRruZjR6319O7EdaefZcupSzYRvwpikZmtUoXoGCiycbFEnTaSngY9NMPlv5
+         KPL+0xHrvZCOwIspdvHPkBQSWDlGvnnjbl/7jav3UReo1PaczeN2lsT/QWFG9ARJkvHl
+         FcRc3DP2iQIuXQ5oYnS8KcX1eYxnPgT5qUYhO9b4rKde3yVEdKTVWW7hOV8pWFx57Y6S
+         kvdUL/VifzMg8gc1C2TouYapKNX79vkyPG/ncy4W6P5KznkPEIUxCcLR4rJg55WOImwP
+         o+Nw==
+X-Gm-Message-State: APjAAAU7VgfQMglUU33Zwfp148z6vc/J4YdxNQ1xcdRA2AcfA1bJhlj2
+        wld0LXUXsFB2C4k3lYcrmOQMo04cXrI5BdhT8Kkz
+X-Google-Smtp-Source: APXvYqyxrQhJxL6YTK1IQrRGp/CVZ4FR/LfHLvH12rSsobg2OWRzTR6O4bHJaXr5UpPyFchEPI025JnE2t3cIS5I/r8=
+X-Received: by 2002:a19:c301:: with SMTP id t1mr140375lff.137.1559168239261;
+ Wed, 29 May 2019 15:17:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1554732921.git.rgb@redhat.com> <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
-In-Reply-To: <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
+References: <cover.1554732921.git.rgb@redhat.com> <423ed5e5c5e4ed7c3e26ac7d2bd7c267aaae777c.1554732921.git.rgb@redhat.com>
+In-Reply-To: <423ed5e5c5e4ed7c3e26ac7d2bd7c267aaae777c.1554732921.git.rgb@redhat.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 29 May 2019 18:16:18 -0400
-Message-ID: <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
+Date:   Wed, 29 May 2019 18:17:08 -0400
+Message-ID: <CAHC9VhQ9t-mvJGNCzArjg+MTGNXcZbVrWV4=RUD5ML_bHqua1Q@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 09/10] audit: add support for containerid to
+ network namespaces
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -64,79 +65,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 >
-> Implement audit container identifier filtering using the AUDIT_CONTID
-> field name to send an 8-character string representing a u64 since the
-> value field is only u32.
+> Audit events could happen in a network namespace outside of a task
+> context due to packets received from the net that trigger an auditing
+> rule prior to being associated with a running task.  The network
+> namespace could be in use by multiple containers by association to the
+> tasks in that network namespace.  We still want a way to attribute
+> these events to any potential containers.  Keep a list per network
+> namespace to track these audit container identifiiers.
 >
-> Sending it as two u32 was considered, but gathering and comparing two
-> fields was more complex.
+> Add/increment the audit container identifier on:
+> - initial setting of the audit container identifier via /proc
+> - clone/fork call that inherits an audit container identifier
+> - unshare call that inherits an audit container identifier
+> - setns call that inherits an audit container identifier
+> Delete/decrement the audit container identifier on:
+> - an inherited audit container identifier dropped when child set
+> - process exit
+> - unshare call that drops a net namespace
+> - setns call that drops a net namespace
 >
-> The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
->
-> Please see the github audit kernel issue for the contid filter feature:
->   https://github.com/linux-audit/audit-kernel/issues/91
-> Please see the github audit userspace issue for filter additions:
->   https://github.com/linux-audit/audit-userspace/issues/40
+> Please see the github audit kernel issue for contid net support:
+>   https://github.com/linux-audit/audit-kernel/issues/92
 > Please see the github audit testsuiite issue for the test case:
 >   https://github.com/linux-audit/audit-testsuite/issues/64
 > Please see the github audit wiki for the feature overview:
 >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
 > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> Acked-by: Serge Hallyn <serge@hallyn.com>
 > Acked-by: Neil Horman <nhorman@tuxdriver.com>
 > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 > ---
->  include/linux/audit.h      |  1 +
->  include/uapi/linux/audit.h |  5 ++++-
->  kernel/audit.h             |  1 +
->  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
->  kernel/auditsc.c           |  4 ++++
->  5 files changed, 57 insertions(+), 1 deletion(-)
+>  include/linux/audit.h | 19 +++++++++++
+>  kernel/audit.c        | 88 +++++++++++++++++++++++++++++++++++++++++++++++++--
+>  kernel/nsproxy.c      |  4 +++
+>  3 files changed, 108 insertions(+), 3 deletions(-)
 
 ...
 
-> diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
-> index 63f8b3f26fab..407b5bb3b4c6 100644
-> --- a/kernel/auditfilter.c
-> +++ b/kernel/auditfilter.c
-> @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
->         }
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index 6c742da66b32..996213591617 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -376,6 +384,75 @@ static struct sock *audit_get_sk(const struct net *net)
+>         return aunet->sk;
 >  }
 >
-> +int audit_comparator64(u64 left, u32 op, u64 right)
+> +void audit_netns_contid_add(struct net *net, u64 contid)
 > +{
-> +       switch (op) {
-> +       case Audit_equal:
-> +               return (left == right);
-> +       case Audit_not_equal:
-> +               return (left != right);
-> +       case Audit_lt:
-> +               return (left < right);
-> +       case Audit_le:
-> +               return (left <= right);
-> +       case Audit_gt:
-> +               return (left > right);
-> +       case Audit_ge:
-> +               return (left >= right);
-> +       case Audit_bitmask:
-> +               return (left & right);
-> +       case Audit_bittest:
-> +               return ((left & right) == right);
-> +       default:
-> +               BUG();
+> +       struct audit_net *aunet;
+> +       struct list_head *contid_list;
+> +       struct audit_contid *cont;
+> +
+> +       if (!net)
+> +               return;
+> +       if (!audit_contid_valid(contid))
+> +               return;
+> +       aunet = net_generic(net, audit_net_id);
+> +       if (!aunet)
+> +               return;
+> +       contid_list = &aunet->contid_list;
+> +       spin_lock(&aunet->contid_list_lock);
+> +       list_for_each_entry_rcu(cont, contid_list, list)
+> +               if (cont->id == contid) {
+> +                       refcount_inc(&cont->refcount);
+> +                       goto out;
+> +               }
+> +       cont = kmalloc(sizeof(struct audit_contid), GFP_ATOMIC);
+> +       if (cont) {
+> +               INIT_LIST_HEAD(&cont->list);
 
-A little birdy mentioned the BUG() here as a potential issue and while
-I had ignored it in earlier patches because this is likely a
-cut-n-paste from another audit comparator function, I took a closer
-look this time.  It appears as though we will never have an invalid op
-value as audit_data_to_entry()/audit_to_op() ensure that the op value
-is a a known good value.  Removing the BUG() from all the audit
-comparators is a separate issue, but I think it would be good to
-remove it from this newly added comparator; keeping it so that we
-return "0" in the default case seems reasoanble.
+I thought you were going to get rid of this INIT_LIST_HEAD() call?
 
-> +               return 0;
+> +               cont->id = contid;
+> +               refcount_set(&cont->refcount, 1);
+> +               list_add_rcu(&cont->list, contid_list);
 > +       }
+> +out:
+> +       spin_unlock(&aunet->contid_list_lock);
 > +}
 
 --
