@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7CC2D973
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0392D975
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbfE2Juy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 05:50:54 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:58580 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfE2Jux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:50:53 -0400
+        id S1726522AbfE2Ju6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 05:50:58 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:48730 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725861AbfE2Ju6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:50:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1559123452; x=1590659452;
+  t=1559123457; x=1590659457;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=o9T4Xy8t/6bsC4ZE+c2ccJU/pZf0N6PW5iCl+sp5XKk=;
-  b=t0D0ti0Bdc72J3rAH66Q08cl7WsEAgPkU4xxENmJmRLOz9AaUVlPmJwO
-   HGjRJud2DFOcaO3HhaYqBdaf1co+dE2Pkh3ofyD9AXGVfuB/N1KutL6sW
-   wmlBgJT1k0MZoPSjzdYBZdx+T0LfhI+e4vqSBzOacXcqOceqSEIkoeAfM
-   s=;
+  bh=/PkLjWoL9U9q15ZxG+S6p0RYHTgFIBUMBkLDVxbnoz8=;
+  b=SlQrmutu+J//qBI/nX1La3/10Ely+hWdBFucKkxvhD1vW3hDFf8VSMRV
+   AFoZSbV2ncLfxbneoXmjjAqEUPFVyOMb919WLpcxRHi4Xp/JZ0Y5eMJ6D
+   aJKKHEDNnlwput66JJSfnXvlm7UglGTkzGUJ1huBXqv498JYOSj1GdLUC
+   Q=;
 X-IronPort-AV: E=Sophos;i="5.60,526,1549929600"; 
-   d="scan'208";a="404152449"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 29 May 2019 09:50:52 +0000
+   d="scan'208";a="768083177"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 29 May 2019 09:50:56 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com (Postfix) with ESMTPS id 44BA3C07FB;
-        Wed, 29 May 2019 09:50:51 +0000 (UTC)
-Received: from EX13D10UWB003.ant.amazon.com (10.43.161.106) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 29 May 2019 09:50:30 +0000
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 1BC9E241484;
+        Wed, 29 May 2019 09:50:55 +0000 (UTC)
+Received: from EX13D02UWB004.ant.amazon.com (10.43.161.11) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 29 May 2019 09:50:34 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D10UWB003.ant.amazon.com (10.43.161.106) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 29 May 2019 09:50:29 +0000
+ EX13D02UWB004.ant.amazon.com (10.43.161.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 29 May 2019 09:50:33 +0000
 Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.60.55) by
  mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Wed, 29 May 2019 09:50:26 +0000
+ 15.0.1367.3 via Frontend Transport; Wed, 29 May 2019 09:50:30 +0000
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
@@ -44,9 +44,9 @@ CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V1 net-next 04/11] net: ena: arrange ena_probe() function variables in reverse christmas tree
-Date:   Wed, 29 May 2019 12:49:57 +0300
-Message-ID: <20190529095004.13341-5-sameehj@amazon.com>
+Subject: [PATCH V1 net-next 05/11] net: ena: add newline at the end of pr_err prints
+Date:   Wed, 29 May 2019 12:49:58 +0300
+Message-ID: <20190529095004.13341-6-sameehj@amazon.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190529095004.13341-1-sameehj@amazon.com>
 References: <20190529095004.13341-1-sameehj@amazon.com>
@@ -59,47 +59,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sameeh Jubran <sameehj@amazon.com>
 
-Reverse christmas tree arrangement is when variables are written from longer
-to shorter with each line. Most of our functions are abiding this
-arrangement but this function does not.
-
-In this commit we arrange the variables of ena_probe() in reverse christmas
-tree.
+Some pr_err prints lacked '\n' in the end. Added where missing.
 
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index b80b5eddc..399bd5453 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3281,17 +3281,17 @@ static int ena_calc_queue_size(struct pci_dev *pdev,
- static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct ena_com_dev_get_features_ctx get_feat_ctx;
--	static int version_printed;
--	struct net_device *netdev;
--	struct ena_adapter *adapter;
- 	struct ena_llq_configurations llq_config;
- 	struct ena_com_dev *ena_dev = NULL;
--	char *queue_type_str;
--	static int adapters_found;
-+	struct ena_adapter *adapter;
-+	static int version_printed;
- 	int io_queue_num, bars, rc;
--	int queue_size;
-+	struct net_device *netdev;
-+	static int adapters_found;
-+	char *queue_type_str;
- 	u16 tx_sgl_size = 0;
- 	u16 rx_sgl_size = 0;
-+	int queue_size;
- 	bool wd_state;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index 935e8fa8d..139b31549 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -115,7 +115,7 @@ static int ena_com_admin_init_sq(struct ena_com_admin_queue *queue)
+ 					 GFP_KERNEL);
  
- 	dev_dbg(&pdev->dev, "%s\n", __func__);
+ 	if (!sq->entries) {
+-		pr_err("memory allocation failed");
++		pr_err("memory allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -137,7 +137,7 @@ static int ena_com_admin_init_cq(struct ena_com_admin_queue *queue)
+ 					 GFP_KERNEL);
+ 
+ 	if (!cq->entries) {
+-		pr_err("memory allocation failed");
++		pr_err("memory allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -160,7 +160,7 @@ static int ena_com_admin_init_aenq(struct ena_com_dev *dev,
+ 					   GFP_KERNEL);
+ 
+ 	if (!aenq->entries) {
+-		pr_err("memory allocation failed");
++		pr_err("memory allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -285,7 +285,7 @@ static inline int ena_com_init_comp_ctxt(struct ena_com_admin_queue *queue)
+ 
+ 	queue->comp_ctx = devm_kzalloc(queue->q_dmadev, size, GFP_KERNEL);
+ 	if (unlikely(!queue->comp_ctx)) {
+-		pr_err("memory allocation failed");
++		pr_err("memory allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -356,7 +356,7 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
+ 		}
+ 
+ 		if (!io_sq->desc_addr.virt_addr) {
+-			pr_err("memory allocation failed");
++			pr_err("memory allocation failed\n");
+ 			return -ENOMEM;
+ 		}
+ 	}
+@@ -382,7 +382,7 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
+ 				devm_kzalloc(ena_dev->dmadev, size, GFP_KERNEL);
+ 
+ 		if (!io_sq->bounce_buf_ctrl.base_buffer) {
+-			pr_err("bounce buffer memory allocation failed");
++			pr_err("bounce buffer memory allocation failed\n");
+ 			return -ENOMEM;
+ 		}
+ 
+@@ -440,7 +440,7 @@ static int ena_com_init_io_cq(struct ena_com_dev *ena_dev,
+ 	}
+ 
+ 	if (!io_cq->cdesc_addr.virt_addr) {
+-		pr_err("memory allocation failed");
++		pr_err("memory allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -829,7 +829,7 @@ static u32 ena_com_reg_bar_read32(struct ena_com_dev *ena_dev, u16 offset)
+ 	}
+ 
+ 	if (read_resp->reg_off != offset) {
+-		pr_err("Read failure: wrong offset provided");
++		pr_err("Read failure: wrong offset provided\n");
+ 		ret = ENA_MMIO_READ_TIMEOUT;
+ 	} else {
+ 		ret = read_resp->reg_val;
 -- 
 2.17.1
 
