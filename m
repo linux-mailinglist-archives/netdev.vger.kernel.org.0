@@ -2,130 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A75B2E2B2
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4CF2E2BA
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:01:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfE2Q7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 12:59:42 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:50967 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfE2Q7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 12:59:42 -0400
-Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hW1vJ-0002nK-FP; Wed, 29 May 2019 12:59:39 -0400
-Date:   Wed, 29 May 2019 12:59:06 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] sctp: deduplicate identical skb_checksum_ops
-Message-ID: <20190529165906.GD31099@hmswarspite.think-freely.org>
-References: <20190529153941.12166-1-mcroce@redhat.com>
+        id S1726470AbfE2RBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:01:32 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:39911 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725948AbfE2RBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:01:32 -0400
+Received: by mail-qt1-f194.google.com with SMTP id i34so3495929qta.6;
+        Wed, 29 May 2019 10:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EDg5s41H/Le6Vky7GnMK/Onoij5YEoC450y0nZXn5Zg=;
+        b=QNmDO3R/fG533Yb5gbmEk3SpaATJT5yzl9lrHaOe+xR2pN/RzIvl3i7ACuX7SPRoth
+         lVMh4ceBSJ7abRq3kgos6A8L+X0CwVtU/cJIQXMNfR4ShEhiSlESLkRVmge0SCtCZ7s0
+         b23nDkUNfvCtWkL4qaTT8+sZ0N2/IqnIYvJPrA25SQizz1ktE3ExQ7Aud4sYpOPoxFKE
+         hQzV7NmZsVQrmnKp/OinG6nCIGWiW5BDCAdmjaiZm353umjSn5wLpZWsG83/SzweW2rV
+         jP66q+6cukCgcWEJUTf1gWO65SV9JJkLxnr3genGVwOM6lj/v5BNIb0ip4gR1j+mVANC
+         NCEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EDg5s41H/Le6Vky7GnMK/Onoij5YEoC450y0nZXn5Zg=;
+        b=M6sFCa1vpi8EiYPT3qSQIfPP13H5DmBohzl8QI24xmeCCZVxmHxNhgavPPDw8Fq3ZY
+         Ysls4Yr6HgDmARzTDM56IKzOHE4RRozze2QRBvD9JieP8P1HiYRFhT3YZj64zxcwKKjV
+         gBeDzu5dyXTWYxdrHjDYcK/1so8fnrKTjzgHlK01oiUncec7a9pZpg09ab2qH6/3AbqI
+         SvKd8qj604+yY5v5qge0I6JkQPRvBUewrbKzZffBtjvrJNSj3jv01W+mzejwDHAStkgi
+         NYvJcb/+kj5PTPQIJB+CeHnc2MRtijqTtJcx/n9afrHjJe1RANfcjs3t/l2jCB274W1d
+         n+ag==
+X-Gm-Message-State: APjAAAU8ZyLp6EogG104y6j4RJv0dRDJgpTOCDbyBCL/R7De3j/gz5gL
+        xE/DP3nUZXHWy9HYdrPZipy0zb01oW0+O34h8ns=
+X-Google-Smtp-Source: APXvYqxjmlaJMlLo6JJnOpJ77hvyEMtIkkDr1X+axmuBBnQcal6HE5G7RY/U19m/Tdk9V8juCXwfdbWoWuoUd2BCb60=
+X-Received: by 2002:ac8:2af4:: with SMTP id c49mr82844115qta.83.1559149291448;
+ Wed, 29 May 2019 10:01:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190529153941.12166-1-mcroce@redhat.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-2-andriin@fb.com>
+In-Reply-To: <20190529011426.1328736-2-andriin@fb.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Wed, 29 May 2019 10:01:20 -0700
+Message-ID: <CAPhsuW7zZ=QQs2wpR46+0hydSzRYza2_7kSAr0a1nBChSHbu6Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/9] libbpf: fix detection of corrupted BPF
+ instructions section
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 05:39:41PM +0200, Matteo Croce wrote:
-> The same skb_checksum_ops struct is defined twice in two different places,
-> leading to code duplication. Declare it as a global variable into a common
-> header instead of allocating it on the stack on each function call.
-> bloat-o-meter reports a slight code shrink.
-> 
-> add/remove: 1/1 grow/shrink: 0/10 up/down: 128/-1282 (-1154)
-> Function                                     old     new   delta
-> sctp_csum_ops                                  -     128    +128
-> crc32c_csum_ops                               16       -     -16
-> sctp_rcv                                    6616    6583     -33
-> sctp_packet_pack                            4542    4504     -38
-> nf_conntrack_sctp_packet                    4980    4926     -54
-> execute_masked_set_action                   6453    6389     -64
-> tcf_csum_sctp                                575     428    -147
-> sctp_gso_segment                            1292    1126    -166
-> sctp_csum_check                              579     412    -167
-> sctp_snat_handler                            957     772    -185
-> sctp_dnat_handler                           1321    1132    -189
-> l4proto_manip_pkt                           2536    2313    -223
-> Total: Before=359297613, After=359296459, chg -0.00%
-> 
-> Reviewed-by: Xin Long <lucien.xin@gmail.com>
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Ensure that size of a section w/ BPF instruction is exactly a multiple
+> of BPF instruction size.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > ---
->  include/net/sctp/checksum.h | 12 +++++++-----
->  net/sctp/offload.c          |  7 +------
->  2 files changed, 8 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/net/sctp/checksum.h b/include/net/sctp/checksum.h
-> index 314699333bec..5a9bb09f32b6 100644
-> --- a/include/net/sctp/checksum.h
-> +++ b/include/net/sctp/checksum.h
-> @@ -43,19 +43,21 @@ static inline __wsum sctp_csum_combine(__wsum csum, __wsum csum2,
->  						   (__force __u32)csum2, len);
->  }
->  
-> +static const struct skb_checksum_ops sctp_csum_ops = {
-> +	.update  = sctp_csum_update,
-> +	.combine = sctp_csum_combine,
-> +};
+>  tools/lib/bpf/libbpf.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ca4432f5b067..05a73223e524 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -349,8 +349,11 @@ static int
+>  bpf_program__init(void *data, size_t size, char *section_name, int idx,
+>                   struct bpf_program *prog)
+>  {
+> -       if (size < sizeof(struct bpf_insn)) {
+> -               pr_warning("corrupted section '%s'\n", section_name);
+> +       const size_t bpf_insn_sz = sizeof(struct bpf_insn);
 > +
->  static inline __le32 sctp_compute_cksum(const struct sk_buff *skb,
->  					unsigned int offset)
->  {
->  	struct sctphdr *sh = (struct sctphdr *)(skb->data + offset);
-> -	const struct skb_checksum_ops ops = {
-> -		.update  = sctp_csum_update,
-> -		.combine = sctp_csum_combine,
-> -	};
->  	__le32 old = sh->checksum;
->  	__wsum new;
->  
->  	sh->checksum = 0;
-> -	new = ~__skb_checksum(skb, offset, skb->len - offset, ~(__wsum)0, &ops);
-> +	new = ~__skb_checksum(skb, offset, skb->len - offset, ~(__wsum)0,
-> +			      &sctp_csum_ops);
->  	sh->checksum = old;
->  
->  	return cpu_to_le32((__force __u32)new);
-> diff --git a/net/sctp/offload.c b/net/sctp/offload.c
-> index edfcf16e704c..dac46dfadab5 100644
-> --- a/net/sctp/offload.c
-> +++ b/net/sctp/offload.c
-> @@ -103,11 +103,6 @@ static const struct net_offload sctp6_offload = {
->  	},
->  };
->  
-> -static const struct skb_checksum_ops crc32c_csum_ops = {
-> -	.update  = sctp_csum_update,
-> -	.combine = sctp_csum_combine,
-> -};
-> -
->  int __init sctp_offload_init(void)
->  {
->  	int ret;
-> @@ -120,7 +115,7 @@ int __init sctp_offload_init(void)
->  	if (ret)
->  		goto ipv4;
->  
-> -	crc32c_csum_stub = &crc32c_csum_ops;
-> +	crc32c_csum_stub = &sctp_csum_ops;
->  	return ret;
->  
->  ipv4:
-> -- 
-> 2.21.0
-> 
-> 
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> +       if (size < bpf_insn_sz || size % bpf_insn_sz) {
 
+how about
+           if (!size || size % bpf_insn_sz)
+
+> +               pr_warning("corrupted section '%s', size: %zu\n",
+> +                          section_name, size);
+>                 return -EINVAL;
+>         }
+>
+> @@ -376,9 +379,8 @@ bpf_program__init(void *data, size_t size, char *section_name, int idx,
+>                            section_name);
+>                 goto errout;
+>         }
+> -       prog->insns_cnt = size / sizeof(struct bpf_insn);
+> -       memcpy(prog->insns, data,
+> -              prog->insns_cnt * sizeof(struct bpf_insn));
+> +       prog->insns_cnt = size / bpf_insn_sz;
+> +       memcpy(prog->insns, data, prog->insns_cnt * bpf_insn_sz);
+
+Given the check above, we can just use size in memcpy, right?
+
+Thanks,
+Song
+
+>         prog->idx = idx;
+>         prog->instances.fds = NULL;
+>         prog->instances.nr = -1;
+> --
+> 2.17.1
+>
