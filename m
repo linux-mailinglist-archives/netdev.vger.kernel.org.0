@@ -2,140 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC682E2E2
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 608342E2E5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfE2RK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:10:57 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:34516 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbfE2RK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:10:56 -0400
-Received: by mail-qk1-f195.google.com with SMTP id t64so2002105qkh.1;
-        Wed, 29 May 2019 10:10:56 -0700 (PDT)
+        id S1726761AbfE2RLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:11:08 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35126 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfE2RLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:11:08 -0400
+Received: by mail-qt1-f193.google.com with SMTP id w1so3538954qts.2;
+        Wed, 29 May 2019 10:11:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=ATwDtoWjOVCXqu7sDl5IFgBGFnm6OEQYsxPD7GTeoMc=;
-        b=oHev3x4UP07zZR6uklQz+WyfaygMFayVK0/pOOe/pxBYqFnpW2avxA8jdbrw2ec65W
-         Fri3ISzB/akPeGIMprylsCMCCx8sHzuVu4eNHbpdITWYrEpHw5qD5XbFDeQ9Cqi1ioiD
-         CGVgjriD6UQRaxDCUJedk6qttislYXsjJDPylVbmst8P4WG5udgOhh2bBJ2T2rwaGWE4
-         SgzTixruWECBXlr62RtmK0MPPkvhJzaWGqImigCCNnAUlN8eCEwuxtQhIY6TDfLxaaZS
-         gNmcmf4vCIEWIxKivec8u8CCXVfFwrugj3LJBbfCWRqhYdwmnVZi3FlLGsuxphFw0ZHW
-         vsxg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hwn3k8TDsfzBge8qQ5QquPJrcc0EBlqU7SGf+037Awo=;
+        b=sc6HmA12hd11sdBtXPYuZgbRKpVe19bXkUDGfVvk1sUQDORsdOra9ihPqxcyGXKfjt
+         kBtYRieEnVxFoxJT/EXZ1p9YKV4YxLsaELimUiDeSdZ1lY7stbQ9OwFzpVhvRVZPhBeD
+         HKhN0HBQYgOj9iujP712A+vr+i2/OtmDcGbkIPGtm1AuB3dIL7oJ9NMw3jN94kEgb2uf
+         OodyAczJQ3ETxP3cIs3zlCMYd29suOAzuA9eKVWqnf/V3NRidDqv77FodnidEdjc2YYs
+         FFSYwFFUmeBW8CydL7vG3trTPvgRXbHOCye6J5sAB3n9gIegW6SEM5uFIImBnwKkWXt1
+         kbiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=ATwDtoWjOVCXqu7sDl5IFgBGFnm6OEQYsxPD7GTeoMc=;
-        b=Adrbd8J19JLfNUfrRSQjPmLOhLI+yq01Rb6Gb7+P78lGFPFG3f7q/ANuhxh+UeN8J/
-         4RIOke8M4eWiGL6mQlbQAeEY+InnyFFJHxmMhWM3wpVHiNXdCmlELcE9w5iaBGWsFq3J
-         rw+D4Mc0uNU5xJMe8gc0MPBTEi4sVRLXcmpcxH3B69fLC3p5DBhsPdUgLKXNc2jm7qeD
-         Fi9vaupzLag9PJQZ6Djp3X9XXZt4OmmCUYoZOf9FCkgSUpC38JQpUZhr1ZxY2eejep4a
-         Ok30g49xABR1EEHSA3ZCtA4NBAk4RjxllFdM3LUpoToaHFnHfvoE2AvcHLzFLgqBBuJU
-         Za1Q==
-X-Gm-Message-State: APjAAAU3IXidGnRIYfQG9XNRH9cIFAsVwQcUlK2FrYD3ZAl0W2N1iut6
-        am7pAdeiqB8Aovm3VSWDcb0=
-X-Google-Smtp-Source: APXvYqyeW6k25mRsF7Bd54dp+F8mXgY7O82FSWRBEYEVm0CW4OafpVBvgoLxo7tWtGCNoYId7VXTgg==
-X-Received: by 2002:a37:6112:: with SMTP id v18mr12656693qkb.126.1559149855109;
-        Wed, 29 May 2019 10:10:55 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id h128sm17009qkc.27.2019.05.29.10.10.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 10:10:54 -0700 (PDT)
-Date:   Wed, 29 May 2019 13:10:53 -0400
-Message-ID: <20190529131053.GB13966@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: fix handling of upper half of
- STATS_TYPE_PORT
-In-Reply-To: <dc84827e-6bac-7a01-f998-609cfe9a33ec@prevas.dk>
-References: <20190528131701.23912-1-rasmus.villemoes@prevas.dk>
- <20190528134458.GE18059@lunn.ch>
- <dc84827e-6bac-7a01-f998-609cfe9a33ec@prevas.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hwn3k8TDsfzBge8qQ5QquPJrcc0EBlqU7SGf+037Awo=;
+        b=pxXmWlsqRs91yAFM9s9aumtcBJ3JafYcMSdJ4Bk6+1A6H8Csqqreje6whUpUkdhnex
+         uYChyCAvKwxpTYmmtBngDnPs1O4TW0JyUjeEbDosHK4qvGT5mFPGvTDvgtLT0kGwDUUx
+         W+as54Ar2P0iMRjKVuYN8d8jmJVSNiGBIziiwbFkGlKbeS4vrfA5mY7UEFtaxwitNrLh
+         N4zkKTPfIYxQlDAIFGgGYJCb6wChGC7W+zHL3SKgNCDlQDNhyTuD/0mAo5uZEK5WXbkK
+         qQABKT1IZRQnoG2OIUIhq55Cu2OjzEytC6uuj9petJ3BCMfUYAcHo26HzR48yz2ewrVD
+         8WWQ==
+X-Gm-Message-State: APjAAAWatQ0C9eHzhszQhUAykQMoHLKyXsmewCr+cQa/cNZEz8xeYOq6
+        dpl3SbyPf3/xV3k+mspbWqsTQT9SXZPVI2Z7IWM=
+X-Google-Smtp-Source: APXvYqxhRhzDbopqu1OEOYEodZhVbY3UaQFB7oyhh7Hq09SKn/L469jhQ0UcLzqeyg7/E93dG1OmvTLOqeb/qa7iR0U=
+X-Received: by 2002:a0c:ec92:: with SMTP id u18mr35227634qvo.60.1559149866863;
+ Wed, 29 May 2019 10:11:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-2-andriin@fb.com>
+ <CAPhsuW7zZ=QQs2wpR46+0hydSzRYza2_7kSAr0a1nBChSHbu6Q@mail.gmail.com>
+In-Reply-To: <CAPhsuW7zZ=QQs2wpR46+0hydSzRYza2_7kSAr0a1nBChSHbu6Q@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 29 May 2019 10:10:55 -0700
+Message-ID: <CAEf4BzaEa0xQLvJbQTf9dE8DtjeetvqkUA=SbQHdjLHy+N04WQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/9] libbpf: fix detection of corrupted BPF
+ instructions section
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rasmus, Andrew,
+On Wed, May 29, 2019 at 10:01 AM Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Ensure that size of a section w/ BPF instruction is exactly a multiple
+> > of BPF instruction size.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 12 +++++++-----
+> >  1 file changed, 7 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index ca4432f5b067..05a73223e524 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -349,8 +349,11 @@ static int
+> >  bpf_program__init(void *data, size_t size, char *section_name, int idx,
+> >                   struct bpf_program *prog)
+> >  {
+> > -       if (size < sizeof(struct bpf_insn)) {
+> > -               pr_warning("corrupted section '%s'\n", section_name);
+> > +       const size_t bpf_insn_sz = sizeof(struct bpf_insn);
+> > +
+> > +       if (size < bpf_insn_sz || size % bpf_insn_sz) {
+>
+> how about
+>            if (!size || size % bpf_insn_sz)
 
-On Wed, 29 May 2019 06:42:53 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
-> On 28/05/2019 15.44, Andrew Lunn wrote:
-> > On Tue, May 28, 2019 at 01:17:10PM +0000, Rasmus Villemoes wrote:
-> >> Currently, the upper half of a 4-byte STATS_TYPE_PORT statistic ends
-> >> up in bits 47:32 of the return value, instead of bits 31:16 as they
-> >> should.
-> >>
-> >> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-> > 
-> > Hi Rasmus
-> > 
-> > Please include a Fixes tag, to indicate where the problem was
-> > introduced. In this case, i think it was:
-> > 
-> > Fixes: 6e46e2d821bb ("net: dsa: mv88e6xxx: Fix u64 statistics")
-> > 
-> > And set the Subject to [PATCH net] to indicate this should be applied
-> > to the net tree.
-> 
-> Will do.
-> 
-> >> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> >> index 370434bdbdab..317553d2cb21 100644
-> >> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> >> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> >> @@ -785,7 +785,7 @@ static uint64_t _mv88e6xxx_get_ethtool_stat(struct mv88e6xxx_chip *chip,
-> >>  			err = mv88e6xxx_port_read(chip, port, s->reg + 1, &reg);
-> >>  			if (err)
-> >>  				return U64_MAX;
-> >> -			high = reg;
-> >> +			low |= ((u32)reg) << 16;
-> >>  		}
-> >>  		break;
-> >>  	case STATS_TYPE_BANK1:
-> > 
-> > What i don't like about this is how the function finishes:
-> > 
-> >        	}
-> >         value = (((u64)high) << 32) | low;
-> >         return value;
-> > }
-> > 
-> > A better fix might be
-> > 
-> > -		break
-> > +		value = (((u64)high) << 16 | low;
-> > +		return value;
-> 
-> Why? It's odd to have the u32 "high" sometimes represent the high 32
-> bits, sometimes the third 16 bits. It would make it harder to support an
-> 8-byte STATS_TYPE_PORT statistic. I think the code is much cleaner if
-> each case is just responsible for providing the upper/lower 32 bits,
-> then have the common case combine them; . It's just that in the
-> STATS_TYPE_BANK cases, the 32 bits are assembled from two 16 bit values
-> by a helper (mv88e6xxx_g1_stats_read), while it is "open-coded" in the
-> first case.
+sure, why not.
 
-Here "low" and "high" are u32 and refer to the upper and lower halves
-of the u64 returned value. For a 4-byte STATS_TYPE_PORT value, the
-second read refers to the bits 31:16, thus belongs to (the upper half
-of) the lower half of the 64-bit returned value, i.e. "low".
+>
+> > +               pr_warning("corrupted section '%s', size: %zu\n",
+> > +                          section_name, size);
+> >                 return -EINVAL;
+> >         }
+> >
+> > @@ -376,9 +379,8 @@ bpf_program__init(void *data, size_t size, char *section_name, int idx,
+> >                            section_name);
+> >                 goto errout;
+> >         }
+> > -       prog->insns_cnt = size / sizeof(struct bpf_insn);
+> > -       memcpy(prog->insns, data,
+> > -              prog->insns_cnt * sizeof(struct bpf_insn));
+> > +       prog->insns_cnt = size / bpf_insn_sz;
+> > +       memcpy(prog->insns, data, prog->insns_cnt * bpf_insn_sz);
+>
+> Given the check above, we can just use size in memcpy, right?
 
-The current return value is correct, as well as your patch.
+yep, good point, will update
 
-
-Thanks,
-Vivien
+>
+> Thanks,
+> Song
+>
+> >         prog->idx = idx;
+> >         prog->instances.fds = NULL;
+> >         prog->instances.nr = -1;
+> > --
+> > 2.17.1
+> >
