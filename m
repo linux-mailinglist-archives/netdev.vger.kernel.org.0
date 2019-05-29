@@ -2,103 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A86962DECF
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA30F2DED5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 15:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727250AbfE2Nqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 09:46:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43328 "EHLO mx1.redhat.com"
+        id S1727360AbfE2Ntl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 09:49:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38494 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727014AbfE2Nqw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 09:46:52 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        id S1726702AbfE2Ntk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 09:49:40 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D591A30C1208;
-        Wed, 29 May 2019 13:46:46 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CBAEC60FAF;
-        Wed, 29 May 2019 13:46:43 +0000 (UTC)
-Message-ID: <1b48684a933e6d782dca9114929fe1b23d7a4a46.camel@redhat.com>
-Subject: Re: [PATCH net-next v2] udp: Avoid post-GRO UDP checksum
- recalculation
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Sean Tranchetti <stranche@codeaurora.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Date:   Wed, 29 May 2019 15:46:43 +0200
-In-Reply-To: <1559067774-613-1-git-send-email-stranche@codeaurora.org>
-References: <1559067774-613-1-git-send-email-stranche@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        by mx1.redhat.com (Postfix) with ESMTPS id C3580300CAC0;
+        Wed, 29 May 2019 13:49:40 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-173.rdu2.redhat.com [10.10.120.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CBEAE1001E80;
+        Wed, 29 May 2019 13:49:39 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20190529114332.19163-4-fw@strlen.de>
+References: <20190529114332.19163-4-fw@strlen.de> <20190529114332.19163-1-fw@strlen.de>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, eric.dumazet@gmail.com
+Subject: Re: [PATCH net-next 3/7] afs: switch to in_dev_for_each_ifa_rcu
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 29 May 2019 13:46:51 +0000 (UTC)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <20801.1559137779.1@warthog.procyon.org.uk>
+Date:   Wed, 29 May 2019 14:49:39 +0100
+Message-ID: <20802.1559137779@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 29 May 2019 13:49:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-05-28 at 12:22 -0600, Sean Tranchetti wrote:
-> Currently, when resegmenting an unexpected UDP GRO packet, the full UDP
-> checksum will be calculated for every new SKB created by skb_segment()
-> because the netdev features passed in by udp_rcv_segment() lack any
-> information about checksum offload capabilities.
+Florian Westphal <fw@strlen.de> wrote:
+
+> The in_dev_for_each_ifa_rcu helper gets used so sparse won't
+> complain when we add the proper __rcu annotation to the ifa_list
+> member in struct in_device later.
 > 
-> Usually, we have no need to perform this calculation again, as
->   1) The GRO implementation guarantees that any packets making it to the
->      udp_rcv_segment() function had correct checksums, and, more
->      importantly,
->   2) Upon the successful return of udp_rcv_segment(), we immediately pull
->      the UDP header off and either queue the segment to the socket or
->      hand it off to a new protocol handler.
+> While doing this I realized the helper only has one call site,
+> so move it to where its needed.
 > 
-> Unless userspace has set the IP_CHECKSUM sockopt to indicate that they
-> want the final checksum values, we can pass the needed netdev feature
-> flags to __skb_gso_segment() to avoid checksumming each segment in
-> skb_segment().
+> This then revealed that we allocate a temporary buffer needlessly
+> and pass an always-false bool argument.
 > 
-> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-> Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
-> ---
->  include/net/udp.h | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+> So fold this into the calling function and fill dst buffer directly.
 > 
-> diff --git a/include/net/udp.h b/include/net/udp.h
-> index d8ce937..dbe030d 100644
-> --- a/include/net/udp.h
-> +++ b/include/net/udp.h
-> @@ -471,12 +471,19 @@ struct udp_iter_state {
->  static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
->  					      struct sk_buff *skb, bool ipv4)
->  {
-> +	netdev_features_t features = NETIF_F_SG;
->  	struct sk_buff *segs;
->  
-> +	/* Avoid csum recalculation by skb_segment unless userspace explicitly
-> +	 * asks for the final checksum values
-> +	 */
-> +	if (!inet_get_convert_csum(sk))
-> +		features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
-> +
->  	/* the GSO CB lays after the UDP one, no need to save and restore any
->  	 * CB fragment
->  	 */
-> -	segs = __skb_gso_segment(skb, NETIF_F_SG, false);
-> +	segs = __skb_gso_segment(skb, features, false);
->  	if (unlikely(IS_ERR_OR_NULL(segs))) {
->  		int segs_nr = skb_shinfo(skb)->gso_segs;
+> Compile tested only.
 
-The patch itself LGTM, thanks.
+Actually, whilst thanks are due for doing the work - it looks nicer now - I'm
+told that there's not really any point populating the list.  Current OpenAFS
+ignores it, as does AuriStor - and IBM AFS 3.6 will do the right thing.
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+The list is actually useless as it's the client's view of the world, not the
+servers, so if there's any NAT in the way its contents are invalid.  Further,
+it doesn't support IPv6 addresses.
 
-Possibly this can target the 'net' tree as the relevant commit is
-already there and the patch itself is not very invasive.
+On that basis, feel free to make it an empty list and remove all the interface
+enumeration.
 
-Paolo
-
-
+David
