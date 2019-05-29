@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D41D12D783
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2EDC2D7D0
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726453AbfE2IRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:17:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34218 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725956AbfE2IRR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 04:17:17 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6A60781F12;
-        Wed, 29 May 2019 08:17:09 +0000 (UTC)
-Received: from carbon (ovpn-200-30.brq.redhat.com [10.40.200.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F45760BDF;
-        Wed, 29 May 2019 08:17:01 +0000 (UTC)
-Date:   Wed, 29 May 2019 10:16:59 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190529101659.2aa714b8@carbon>
-In-Reply-To: <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
-References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
-        <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
+        id S1726104AbfE2I34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:29:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39754 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725935AbfE2I34 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 04:29:56 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A8F12AE56;
+        Wed, 29 May 2019 08:29:54 +0000 (UTC)
+From:   Michal Rostecki <mrostecki@opensuse.org>
+Cc:     Michal Rostecki <mrostecki@opensuse.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] libbpf: Return btf_fd in libbpf__probe_raw_btf
+Date:   Wed, 29 May 2019 10:29:41 +0200
+Message-Id: <20190529082941.9440-1-mrostecki@opensuse.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Wed, 29 May 2019 08:17:17 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 May 2019 21:20:35 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+Function load_sk_storage_btf expects that libbpf__probe_raw_btf is
+returning a btf descriptor, but before this change it was returning
+an information about whether the probe was successful (0 or 1).
+load_sk_storage_btf was using that value as an argument to the close
+function, which was resulting in closing stdout and thus terminating the
+process which used that dunction.
 
-> +static struct page *cpsw_alloc_page(struct cpsw_common *cpsw)
-> +{
-> +	struct page_pool *pool = cpsw->rx_page_pool;
-> +	struct page *page, *prev_page = NULL;
-> +	int try = pool->p.pool_size << 2;
-> +	int start_free = 0, ret;
-> +
-> +	do {
-> +		page = page_pool_dev_alloc_pages(pool);
-> +		if (!page)
-> +			return NULL;
-> +
-> +		/* if netstack has page_pool recycling remove the rest */
-> +		if (page_ref_count(page) == 1)
-> +			break;
-> +
-> +		/* start free pages in use, shouldn't happen */
-> +		if (prev_page == page || start_free) {
-> +			/* dma unmap/puts page if rfcnt != 1 */
-> +			page_pool_recycle_direct(pool, page);
-> +			start_free = 1;
-> +			continue;
-> +		}
-> +
-> +		/* if refcnt > 1, page has been holding by netstack, it's pity,
-> +		 * so put it to the ring to be consumed later when fast cash is
-> +		 * empty. If ring is full then free page by recycling as above.
-> +		 */
-> +		ret = ptr_ring_produce(&pool->ring, page);
+That bug was visible in bpftool. `bpftool feature` subcommand was always
+exiting too early (because of closed stdout) and it didn't display all
+requested probes. `bpftool -j feature` or `bpftool -p feature` were not
+returning a valid json object.
 
-This looks very wrong to me!  First of all you are manipulation
-directly with the internal pool->ring and not using the API, which
-makes this code un-maintainable.  Second this is wrong, as page_pool
-assume the in-variance that pages on the ring have refcnt==1.
+Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
+Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
+---
+ tools/lib/bpf/libbpf.c        | 36 +++++++++++++++++++++--------------
+ tools/lib/bpf/libbpf_probes.c |  7 +------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
-> +		if (ret) {
-> +			page_pool_recycle_direct(pool, page);
-> +			continue;
-> +		}
-> +
-> +		if (!prev_page)
-> +			prev_page = page;
-> +	} while (try--);
-> +
-> +	return page;
-> +}
-
-
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 197b574406b3..bc2dca36bced 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1645,15 +1645,19 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
+ 		/* FUNC x */                                    /* [3] */
+ 		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
+ 	};
+-	int res;
++	int btf_fd;
++	int ret;
+ 
+-	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+-				    strs, sizeof(strs));
+-	if (res < 0)
+-		return res;
+-	if (res > 0)
++	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
++				       strs, sizeof(strs));
++	if (btf_fd < 0)
++		ret = 0;
++	else {
++		ret = 1;
+ 		obj->caps.btf_func = 1;
+-	return 0;
++	}
++	close(btf_fd);
++	return ret;
+ }
+ 
+ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
+@@ -1670,15 +1674,19 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
+ 		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
+ 		BTF_VAR_SECINFO_ENC(2, 0, 4),
+ 	};
+-	int res;
++	int btf_fd;
++	int ret;
+ 
+-	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+-				    strs, sizeof(strs));
+-	if (res < 0)
+-		return res;
+-	if (res > 0)
++	btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
++				       strs, sizeof(strs));
++	if (btf_fd < 0)
++		ret = 0;
++	else {
++		ret = 1;
+ 		obj->caps.btf_datasec = 1;
+-	return 0;
++	}
++	close(btf_fd);
++	return ret;
+ }
+ 
+ static int
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index 5e2aa83f637a..2c2828345514 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
+ 	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
+ 
+ 	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
+-	if (btf_fd < 0) {
+-		free(raw_btf);
+-		return 0;
+-	}
+ 
+-	close(btf_fd);
+ 	free(raw_btf);
+-	return 1;
++	return btf_fd;
+ }
+ 
+ static int load_sk_storage_btf(void)
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.21.0
+
