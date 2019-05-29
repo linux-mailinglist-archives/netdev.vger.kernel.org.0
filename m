@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEE682E2EF
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:13:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D12202E300
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726301AbfE2RN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:13:27 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43617 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726024AbfE2RN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:13:27 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z24so3496311qtj.10;
-        Wed, 29 May 2019 10:13:26 -0700 (PDT)
+        id S1726253AbfE2RQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:16:28 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45408 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfE2RQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:16:27 -0400
+Received: by mail-qt1-f196.google.com with SMTP id t1so3513275qtc.12;
+        Wed, 29 May 2019 10:16:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N8w9wsu+KYuXsgQvCEuAcdE5zdMVTz0mKJysd28Lmbo=;
-        b=kgQVJ1bqvKM7QgCMT5UaTAOs9bZaZ2rUckqFitJSB/O+/FY4+YBlw+/NfqHe5uF+hN
-         5eNXZ4Cpe4/dhBjyollly95KqYwivcqz5BhExv79FYGwYo5AeD2NapM9iNHNJWQBQokm
-         miVOnE0RNOnaN6tp096ako2yw446PCb0uQIeJ2tWh20FmxU2sQYYdvLplIdKU4eUN+M/
-         bnVUwdL4XntesVTIYVhrvd+8CcATVNRI6BlSGdLpwivifteSrReahRRdkq4QmsCqI5lo
-         Jyajdu33UkXW4Rhs3AMZZGDSzH4UVzZvxIXrbPbGi16DfuzKW/ikb2eWidFG4FNai1xS
-         sX+w==
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=SmxZsC4yp+0dUjsfC/VFcgwO82eukqAJB5Z3DNdHI4E=;
+        b=I+sK8QNzJlifEmDJtSUEdxA7iMf5DhE7PlDCj12D4Qj2JYeD5fetrgUO9tTi4zJVWt
+         sWCMKnC6+PWvOFyxujnPVTlSMC+06s/ZFECg7tAdqhtVB8wAHpPU1onboRch84UjNchQ
+         hpntKi+NJsl8KPRsr59nD15p5SgD29xhYTJpEkT9vAoL/QaQhCAVR+RJQ/bmTjYwBZp+
+         B9U5UtRArgGD7oAphH//USy7HuUfGyzulwHGPg2c3UCGqJDDJWNxs6JLDPbIsNpG7ERB
+         xsCRfswZsPFXv+njq8y+RIhY7EzDb5wYZJtNInvehJLl0kBxuSJ74qB3W6xF4B7l8/oM
+         PryA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N8w9wsu+KYuXsgQvCEuAcdE5zdMVTz0mKJysd28Lmbo=;
-        b=ukVvFMjPkcslEBgjwElnGleiMhUNxTv3ecuCz2epoY7XsO3gYkoIPOpj7fO+Tve4W/
-         vSnSjUnqvKkbRUIJafMWHoq7qlIcPsXiI5BRaBs2eVsjK4exrML+2jBRHI35ixgmSWEH
-         9hMrR1PuMcdR5fDg9146E3OHCD9MPT2qSEfFir9xepinG0sBGua4JXNt5IOaPpL6nj6I
-         AQiRH2II3rHYCYYP9amq7+p5pi/utsK2E9n83Ii3wgoGQnnAxVV17p8pBtFVk0Nh3dcP
-         X+ERRkEEJegKNGbA7bT5JUJm7zNlmFnYn7RQMdRjgVxnmydnTTEaECXMTYGv9d5wW2zV
-         lKQQ==
-X-Gm-Message-State: APjAAAUdZhkED9p0i38ts4mk1jt4uvM8zLacOnIw4vI2+4gegi26qnt0
-        NpPD59RCIkHZqC6lYZh/u3VSf2ux6Ro20pjT85M=
-X-Google-Smtp-Source: APXvYqxNfjlx2IrJby4BJuA9+7aBTgl1rTpCkQ3FymoigL7YOQvMWKJ+2Jy8EydOlsCVjcuDxnZKmalhjX0YbMXaqbE=
-X-Received: by 2002:aed:3b66:: with SMTP id q35mr19559470qte.118.1559150004425;
- Wed, 29 May 2019 10:13:24 -0700 (PDT)
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=SmxZsC4yp+0dUjsfC/VFcgwO82eukqAJB5Z3DNdHI4E=;
+        b=hjzNJRgcbVmsYalQ0ry4k9U77E4ZH4KCYPpHjgDm9BYvZuqSQMNYKGdN6lXKr6mfls
+         xK6hXDBQI2TEu8u/BH4HsVeedEejfKY49Lsvvh/LtOXIDEw61lecU0wdoYGLqkyXWsFk
+         OaYov75oylnzSv0mcY+p7/2XChMQqanVStQ2DvBTmRGvuBpTeoyL4RzEXaYCgqT7QnIt
+         Aok+JHN02mUnuhNGAKbvf2dM4f/7txxXFRG+sL6Xvr1GU2r6nlSP8hFYdzv4/IzoGrX/
+         xW/ipk0yGzXQQ1+M8YLHLGUuDDZF6Vn2/7v+eiORh/+BC3fvpfjbiVOfDNKBnr2lOHBs
+         xD/w==
+X-Gm-Message-State: APjAAAUdMS+r4ErS9IZS4mpolnkX+fag1ZlqgKYe4PeffwjNDslbg97G
+        QXomboMIzsq7V5eyyGdzZdI=
+X-Google-Smtp-Source: APXvYqyeTdXQQ0wiOF0uUEZ40xhw5VKlxSPQGphUQ+KBhDBML5M9qmxu7Kp14PeiFtCOBA8B8KoKzQ==
+X-Received: by 2002:aed:24f4:: with SMTP id u49mr4066213qtc.8.1559150185996;
+        Wed, 29 May 2019 10:16:25 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id y8sm27716qth.22.2019.05.29.10.16.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 10:16:25 -0700 (PDT)
+Date:   Wed, 29 May 2019 13:16:24 -0400
+Message-ID: <20190529131624.GD13966@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: dsa: mv88e6xxx: fix handling of upper half of
+ STATS_TYPE_PORT
+In-Reply-To: <20190529070158.7040-1-rasmus.villemoes@prevas.dk>
+References: <20190529070158.7040-1-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
-References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-6-andriin@fb.com>
-In-Reply-To: <20190529011426.1328736-6-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 29 May 2019 10:13:13 -0700
-Message-ID: <CAPhsuW7jQgcKezWJ+5oBev+VsdFf=bFJBFSLMh_Pe00h78q5tA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/9] libbpf: fix error code returned on corrupted ELF
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> All of libbpf errors are negative, except this one. Fix it.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+Hi Rasmus,
 
-> ---
->  tools/lib/bpf/libbpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 7abe71ee507a..9c45856e7fd6 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1221,7 +1221,7 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
->
->         if (!obj->efile.strtabidx || obj->efile.strtabidx >= idx) {
->                 pr_warning("Corrupted ELF file: index of strtab invalid\n");
-> -               return LIBBPF_ERRNO__FORMAT;
-> +               return -LIBBPF_ERRNO__FORMAT;
->         }
->         if (btf_data) {
->                 obj->btf = btf__new(btf_data->d_buf, btf_data->d_size);
-> --
-> 2.17.1
->
+On Wed, 29 May 2019 07:02:11 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
+> Currently, the upper half of a 4-byte STATS_TYPE_PORT statistic ends
+> up in bits 47:32 of the return value, instead of bits 31:16 as they
+> should.
+> 
+> Fixes: 6e46e2d821bb ("net: dsa: mv88e6xxx: Fix u64 statistics")
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+
+Correct, this 4-byte stat must be stored in the lower half of the
+8-byte returned value:
+
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
