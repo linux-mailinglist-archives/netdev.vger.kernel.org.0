@@ -2,144 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B972E553
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0E12E567
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 21:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbfE2Tat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 15:30:49 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44484 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfE2Tat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 15:30:49 -0400
-Received: by mail-wr1-f66.google.com with SMTP id w13so2544429wru.11
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 12:30:47 -0700 (PDT)
+        id S1726253AbfE2TeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 15:34:01 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45612 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfE2TeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 15:34:01 -0400
+Received: by mail-qt1-f195.google.com with SMTP id t1so4061657qtc.12
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 12:34:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Hqz2BJYzklaCL8ORspdQT+GmUS+8RmbmfmEFZTyCC84=;
-        b=YbRlXecrtbCtUdKZcnqJg2Oxoo9rpPB1UF+J3QAdEBkgO45TuOGE7x5pTO3Db1l0Ps
-         OFahPq4gbNlSd6N25fAHGJStKAp7x6Go9RJ8enSDiY1F8iQBcfrRNtbm9yBXy1b9xF90
-         qSaIC6B3Go78CPEIO7zVhRDFgrnEUm/YQHn2GNajRb2KZs+wXGSZ3vECyodJbOcj33rg
-         QcBnlbbEvolhci1s2LSq6ADfH28y2nuyf75jleiC3W6z2B51zX3Jrv/FE7oL2xGlXely
-         KJ8EQh8kR7ZvR7zG4k32ZO2//TKqu7SvZAGz7XoXc4Y6TZSrtot8eoR4qS81YLWelmw1
-         WMZg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=01+Ie6CLfHPKOYKN8E/zxFpoYc7CQc9jAgSj/7deQVI=;
+        b=No/5yMZ7t+NjOgPmVQICbxZquQSWTUxFaWfrX4NjDcdXIOLOnKHkXW7bUslOsLRlZH
+         OyKAry4xtlelGMzFsFHprL4hVL8wpSoqf+HKAzytEN6wbRuZawGe/5kF6YsHb56Ol/jR
+         Vb4SdJp0mIa2n/7CIG8dHCYMFv2cjY9BhJSACLimLVOzzbhU51QiYY33JbfyshV38yQv
+         PT5UOW5tTP/vnsOGMXJ2NZcQ9GqjB5g0Hl1BlFh0RTmeqoKvrN1p0m0vYrZZ9Ql70lez
+         tnYErdNMB0bc0VaFcR+BjVasWC2gJJWaVXaaw2iN3GSqh7bNhAUETFaG8KxUQavIRKUC
+         wnqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Hqz2BJYzklaCL8ORspdQT+GmUS+8RmbmfmEFZTyCC84=;
-        b=tvMy9MgOFNl3yhlkuSTqmIIqvSkF66xSd7n9u+J4mLUqJ3rq92VbXwELDwGe3XnhjH
-         2TXNjI5XDEjyDXQn7MzPlORhCVAQOyziHl3O31E3DJQzefyTFnq22ZbUqD6V7fa0oTWv
-         F/WYR2RFYhY/0g6fcF260VLnATI0ZzXkGGqvxMYo7t4plqQO5+8FqiYeXCZYwTrOnHTB
-         OENhUZ26bZAoTpemaT0e+1zRobzAPcUXSCIjWdwGwNzNyAQOs/BQM7HzWtjPgW6lA44q
-         E1tYwFrhe7oN3yEJE7+I6NjpxGO81wtfgxbRF17+HYNunf42HoPDkDi8Nf1HzMn/NokT
-         MNJA==
-X-Gm-Message-State: APjAAAXoUiTakEKETNDL0QTwL6geKtVSueQwMRkCW5MwgWiIj66U3cQV
-        JLYuvkEY2194NEPTibuzhAiC0A==
-X-Google-Smtp-Source: APXvYqxdi3DhB3YtOwy5FHdMhpEjKALzT0jwWvNXrQGmfOjjI1ZOI/sGtjc/tFHccESQZuAPrloLoQ==
-X-Received: by 2002:adf:feca:: with SMTP id q10mr6906614wrs.308.1559158247320;
-        Wed, 29 May 2019 12:30:47 -0700 (PDT)
-Received: from localhost ([5.180.201.3])
-        by smtp.gmail.com with ESMTPSA id 205sm175907wmd.43.2019.05.29.12.30.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 12:30:46 -0700 (PDT)
-Date:   Wed, 29 May 2019 21:30:45 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
-        sthemmin@microsoft.com, dsahern@gmail.com, saeedm@mellanox.com,
-        leon@kernel.org, f.fainelli@gmail.com
-Subject: Re: [patch net-next v2 7/7] netdevsim: implement fake flash updating
- with notifications
-Message-ID: <20190529193045.GA4214@nanopsycho>
-References: <20190528114846.1983-1-jiri@resnulli.us>
- <20190528114846.1983-8-jiri@resnulli.us>
- <20190528130115.5062c085@cakuba.netronome.com>
- <20190529080016.GD2252@nanopsycho>
- <20190529094754.49a15c20@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=01+Ie6CLfHPKOYKN8E/zxFpoYc7CQc9jAgSj/7deQVI=;
+        b=ZpDr+puC+pd1/eOcVxrFSDFMgit/jr/i65XZw1SsrT34JHa7xgpCH3uXzRqKCRZS17
+         JChUUMpP6B+Z2xqXoezv4t4zo9wxzy5UQm5moyeEvY/2SFxxk9BNVFeyg3yezLqxF0YF
+         0IPupP4+ljPltFO/10YYXjK8CDv2/cnf0BkPKQcDQPaaI2iB00mLxUfOts0xUQtgbkVO
+         o+NKqKWOHo8IPwWmIFXgmYPIx9ZrXl/a4bmOiv21fndYTp/lLA7YVJepi4RIZci47gwM
+         Wf8W6ZxDmcsDzkr8MlWeXqdTwn1djMSznmnjJcgN6oaC0PeZU6+Wmcy8syT14BDiwU/F
+         SDwA==
+X-Gm-Message-State: APjAAAVB//zay2+Yi/FZJSgJxOkDkGuloU2z35sLvTmSzkQ+K7l5XOZi
+        QltljVngvWV0jrXOFyHHzs26aLrd
+X-Google-Smtp-Source: APXvYqyFMpPPHrlHDJZCxPY57OY6b2KcBnyOtlbbMRlraxwlBJBvDVFirjA8HIITkMtEfuWfzvujpg==
+X-Received: by 2002:ac8:87d:: with SMTP id x58mr540570qth.368.1559158440083;
+        Wed, 29 May 2019 12:34:00 -0700 (PDT)
+Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
+        by smtp.gmail.com with ESMTPSA id c5sm151007qtj.27.2019.05.29.12.33.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 12:33:59 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] net: correct zerocopy refcnt with udp MSG_MORE
+Date:   Wed, 29 May 2019 15:33:57 -0400
+Message-Id: <20190529193357.73457-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190529094754.49a15c20@cakuba.netronome.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, May 29, 2019 at 06:47:54PM CEST, jakub.kicinski@netronome.com wrote:
->On Wed, 29 May 2019 10:00:16 +0200, Jiri Pirko wrote:
->> Tue, May 28, 2019 at 10:01:15PM CEST, jakub.kicinski@netronome.com wrote:
->> >On Tue, 28 May 2019 13:48:46 +0200, Jiri Pirko wrote:  
->> >> From: Jiri Pirko <jiri@mellanox.com>
->> >> 
->> >> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> >> ---
->> >> v1->v2:
->> >> - added debugfs toggle to enable/disable flash status notifications  
->> >
->> >Could you please add a selftest making use of netdevsim code?  
->> 
->> How do you imagine the selftest should look like. What should it test
->> exactly?
->
->Well you're adding notifications, probably that the notifications
->arrive correctly?  Plus that devlink doesn't hung when there are no
->notifications.  It doesn't have to be a super advanced test, just
->exercising the code paths in the kernel is fine.
->
->In principle netdevsim is for testing and you add no tests, its not
->the first time you're doing this.
+From: Willem de Bruijn <willemb@google.com>
 
-:/
-Will add tests and send v3. Monday. Thanks!
+TCP zerocopy takes a uarg reference for every skb, plus one for the
+tcp_sendmsg_locked datapath temporarily, to avoid reaching refcnt zero
+as it builds, sends and frees skbs inside its inner loop.
 
+UDP and RAW zerocopy do not send inside the inner loop so do not need
+the extra sock_zerocopy_get + sock_zerocopy_put pair. Commit
+52900d22288ed ("udp: elide zerocopy operation in hot path") introduced
+extra_uref to pass the initial reference taken in sock_zerocopy_alloc
+to the first generated skb.
 
->
->> >Sorry, I must have liked the feature so much first time I missed this :)
->> >  
->> >> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
->> >> index b509b941d5ca..c5c417a3c0ce 100644
->> >> --- a/drivers/net/netdevsim/dev.c
->> >> +++ b/drivers/net/netdevsim/dev.c
->> >> @@ -220,8 +222,49 @@ static int nsim_dev_reload(struct devlink *devlink,
->> >>  	return 0;
->> >>  }
->> >>  
->> >> +#define NSIM_DEV_FLASH_SIZE 500000
->> >> +#define NSIM_DEV_FLASH_CHUNK_SIZE 1000
->> >> +#define NSIM_DEV_FLASH_CHUNK_TIME_MS 10
->> >> +
->> >> +static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
->> >> +				 const char *component,
->> >> +				 struct netlink_ext_ack *extack)
->> >> +{
->> >> +	struct nsim_dev *nsim_dev = devlink_priv(devlink);
->> >> +	int i;
->> >> +
->> >> +	if (nsim_dev->fw_update_status) {
->> >> +		devlink_flash_update_begin_notify(devlink);
->> >> +		devlink_flash_update_status_notify(devlink,
->> >> +						   "Preparing to flash",
->> >> +						   component, 0, 0);
->> >> +	}
->> >> +
->> >> +	for (i = 0; i < NSIM_DEV_FLASH_SIZE / NSIM_DEV_FLASH_CHUNK_SIZE; i++) {
->> >> +		if (nsim_dev->fw_update_status)
->> >> +			devlink_flash_update_status_notify(devlink, "Flashing",
->> >> +							   component,
->> >> +							   i * NSIM_DEV_FLASH_CHUNK_SIZE,
->> >> +							   NSIM_DEV_FLASH_SIZE);
->> >> +		msleep(NSIM_DEV_FLASH_CHUNK_TIME_MS);  
->> >
->> >In automated testing it may be a little annoying if this takes > 5sec  
->> 
->> I wanted to emulate real device. I can make this 5 sec if you want, no
->> problem.
->
->Is my maths off?  The loop is 5 sec now:
->
-> 500000 / 1000 * 10 ms = 5000 ms = 5 sec?
+But, sock_zerocopy_realloc takes this extra reference at the start of
+every call. With MSG_MORE, no new skb may be generated to attach the
+extra_uref to, so refcnt is incorrectly 2 with only one skb.
 
-Ah, yes. Originally I had this 20 sec. Pardon me.
+Do not take the extra ref if uarg && !tcp, which implies MSG_MORE.
+Update extra_uref accordingly.
+
+This conditional assignment triggers a false positive may be used
+uninitialized warning, so have to initialize extra_uref at define.
+
+Fixes: 52900d22288ed ("udp: elide zerocopy operation in hot path")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Diagnosed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ net/core/skbuff.c     | 6 +++++-
+ net/ipv4/ip_output.c  | 4 ++--
+ net/ipv6/ip6_output.c | 4 ++--
+ 3 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index e89be62826937..eaad23f9c7b5b 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1036,7 +1036,11 @@ struct ubuf_info *sock_zerocopy_realloc(struct sock *sk, size_t size,
+ 			uarg->len++;
+ 			uarg->bytelen = bytelen;
+ 			atomic_set(&sk->sk_zckey, ++next);
+-			sock_zerocopy_get(uarg);
++
++			/* no extra ref when appending to datagram (MSG_MORE) */
++			if (sk->sk_type == SOCK_STREAM)
++				sock_zerocopy_get(uarg);
++
+ 			return uarg;
+ 		}
+ 	}
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index bfd0ca554977a..8c9189a41b136 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -878,7 +878,7 @@ static int __ip_append_data(struct sock *sk,
+ 	int csummode = CHECKSUM_NONE;
+ 	struct rtable *rt = (struct rtable *)cork->dst;
+ 	unsigned int wmem_alloc_delta = 0;
+-	bool paged, extra_uref;
++	bool paged, extra_uref = false;
+ 	u32 tskey = 0;
+ 
+ 	skb = skb_peek_tail(queue);
+@@ -918,7 +918,7 @@ static int __ip_append_data(struct sock *sk,
+ 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = true;
++		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index adef2236abe2e..f9e43323e6673 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1275,7 +1275,7 @@ static int __ip6_append_data(struct sock *sk,
+ 	int csummode = CHECKSUM_NONE;
+ 	unsigned int maxnonfragsize, headersize;
+ 	unsigned int wmem_alloc_delta = 0;
+-	bool paged, extra_uref;
++	bool paged, extra_uref = false;
+ 
+ 	skb = skb_peek_tail(queue);
+ 	if (!skb) {
+@@ -1344,7 +1344,7 @@ static int __ip6_append_data(struct sock *sk,
+ 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = true;
++		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
+-- 
+2.22.0.rc1.257.g3120a18244-goog
+
