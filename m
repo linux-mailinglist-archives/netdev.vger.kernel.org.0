@@ -2,134 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C0A2E0AE
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7276C2E0C5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbfE2PL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 11:11:56 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:36693 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbfE2PL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:11:56 -0400
-Received: by mail-vs1-f68.google.com with SMTP id l20so2103663vsp.3;
-        Wed, 29 May 2019 08:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UIVDIT77fklabMXqDAOJeTqVDgwvqkeiaJrtX84VDSg=;
-        b=SCQOExSDY4j6nVitwzKonoEiLkjv+AyqGbzWrSdcW35kQZOpct9Bl6m3yZYRqlA710
-         AIABGbyP7sqKZEJrI11hdVw4wQee6PyT6NV0BKeCM5QO9d2iHqsH2KjR+L+GcaT8eqzC
-         UIG5j5D17DiT3itUYV4M17aQeZ7bttrh9TPhT8d0TExkePwT6D/Y9d68sV4sNYdWTPL2
-         GGE3S9kvtzDBCRXNm6paAlcQ5ypSB0ItaPxlfVVYTHW6N7akoi/ExAClCGclLQ3ZGuUb
-         RDYYDIIT33PyHsRCyT3nI4g+a7/MFxLR29+EgR5EJElJxxmlKS72UxjOPPruey5ZmQ/x
-         ILBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UIVDIT77fklabMXqDAOJeTqVDgwvqkeiaJrtX84VDSg=;
-        b=Idf3trS3owjSmL1RKIFRUN0o1tfCuplOM+ExDldngLeCEsjR8ZZswinWqKGz8nO005
-         MT+sYemAnPNOOSHaKZaAOa60ue0WRMhYxlyOLjhVWaAkYevir7d5R0UWRrd6uSDdVf4k
-         2gfnHlnCWs8b5KWADm9sQV8cxERrmeOQ2XqQ0VWtXHWB9bsjMUT6VxCmwKkDupcTPMkK
-         Xmq2pexnMYwoiYT7Hx0Atyl8Ouh1kwSU85/eC5yIta9ExoZGPsBebPnNxm27c2qHQC7W
-         xNlxM+vcY0Ya2AfpJTKlJ6RbI+BMcMPpWu1Su1Iw3Z/JgAHqgcJiHcDTDrtBANwsvML4
-         xqXQ==
-X-Gm-Message-State: APjAAAVxqS5DXNOM26oB1WH26XvcOyPQMrh39kDsm/QbOFTdE2SQdw8h
-        wW8YbE4GhtIb1MrtQltIlmWlZlYYJHJB88i05So=
-X-Google-Smtp-Source: APXvYqyVbpePc0qw8XIy67sCbwpzdYgls/MnhlRZ0Dyy1OOs6HY2INwn/MYYV2OhRgbS31JA1j5o3HdTJ+sd5SNzK2M=
-X-Received: by 2002:a67:8747:: with SMTP id j68mr38428396vsd.212.1559142715413;
- Wed, 29 May 2019 08:11:55 -0700 (PDT)
+        id S1726741AbfE2POY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 11:14:24 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:56235 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbfE2POY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:14:24 -0400
+X-Originating-IP: 90.88.147.134
+Received: from mc-bl-xps13.lan (aaubervilliers-681-1-27-134.w90-88.abo.wanadoo.fr [90.88.147.134])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id BFAAC40021;
+        Wed, 29 May 2019 15:14:18 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com
+Subject: [PATCH net v2] ethtool: Drop check for vlan etype and vlan tci when parsing flow_rule
+Date:   Wed, 29 May 2019 17:13:44 +0200
+Message-Id: <20190529151344.31267-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1559117459-27353-1-git-send-email-92siuyang@gmail.com> <CANn89iLxxiX+4E7EURNKb=xRkk97rPaKTkpSc6Yu7fZbiwPT6w@mail.gmail.com>
-In-Reply-To: <CANn89iLxxiX+4E7EURNKb=xRkk97rPaKTkpSc6Yu7fZbiwPT6w@mail.gmail.com>
-From:   Yang Xiao <92siuyang@gmail.com>
-Date:   Wed, 29 May 2019 23:11:17 +0800
-Message-ID: <CAKgHYH2uW=iSUM1j5pLhaQXpm35XK2rWq45M2Yih1-Dn=es0SA@mail.gmail.com>
-Subject: Re: [PATCH] ipv4: tcp_input: fix stack out of bounds when parsing TCP options.
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Indeed, condition opsize < 2 and opsize > length can deduce that length >= 2.
-However, before the condition (if opsize < 2), there may be one-byte
-out-of-bound access in line 12.
-I'm not sure whether I have put it very clearly.
+When parsing an ethtool flow spec to build a flow_rule, the code checks
+if both the vlan etype and the vlan tci are specified by the user to add
+a FLOW_DISSECTOR_KEY_VLAN match.
 
-On Wed, May 29, 2019 at 10:20 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, May 29, 2019 at 1:10 AM Young Xiao <92siuyang@gmail.com> wrote:
-> >
-> > The TCP option parsing routines in tcp_parse_options function could
-> > read one byte out of the buffer of the TCP options.
-> >
-> > 1         while (length > 0) {
-> > 2                 int opcode = *ptr++;
-> > 3                 int opsize;
-> > 4
-> > 5                 switch (opcode) {
-> > 6                 case TCPOPT_EOL:
-> > 7                         return;
-> > 8                 case TCPOPT_NOP:        /* Ref: RFC 793 section 3.1 */
-> > 9                         length--;
-> > 10                        continue;
-> > 11                default:
-> > 12                        opsize = *ptr++; //out of bound access
-> >
-> > If length = 1, then there is an access in line2.
-> > And another access is occurred in line 12.
-> > This would lead to out-of-bound access.
-> >
-> > Therefore, in the patch we check that the available data length is
-> > larger enough to pase both TCP option code and size.
-> >
-> > Signed-off-by: Young Xiao <92siuyang@gmail.com>
-> > ---
-> >  net/ipv4/tcp_input.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 20f6fac..9775825 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -3791,6 +3791,8 @@ void tcp_parse_options(const struct net *net,
-> >                         length--;
-> >                         continue;
-> >                 default:
-> > +                       if (length < 2)
-> > +                               return;
-> >                         opsize = *ptr++;
-> >                         if (opsize < 2) /* "silly options" */
-> >                                 return;
->
-> In practice we are good, since we have at least 320 bytes of room there,
-> and the test done later catches silly options.
->
-> if (opsize < 2) /* "silly options" */
->     return;
-> if (opsize > length)   /* remember, opsize >= 2 here */
->      return; /* don't parse partial options */
->
-> I guess adding yet another conditional will make this code obviously
-> correct for all eyes
-> and various tools.
->
-> Thanks.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+However, when the user only specified a vlan etype or a vlan tci, this
+check silently ignores these parameters.
 
+For example, the following rule :
 
+ethtool -N eth0 flow-type udp4 vlan 0x0010 action -1 loc 0
 
+will result in no error being issued, but the equivalent rule will be
+created and passed to the NIC driver :
+
+ethtool -N eth0 flow-type udp4 action -1 loc 0
+
+In the end, neither the NIC driver using the rule nor the end user have
+a way to know that these keys were dropped along the way, or that
+incorrect parameters were entered.
+
+This kind of check should be left to either the driver, or the ethtool
+flow spec layer.
+
+This commit makes so that ethtool parameters are forwarded as-is to the
+NIC driver.
+
+Since none of the users of ethtool_rx_flow_rule_create are using the
+VLAN dissector, I don't think this qualifies as a regression.
+
+Fixes: eca4205f9ec3 ("ethtool: add ethtool_rx_flow_spec to flow_rule structure translator")
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+V2: Added Fixes: tag, targetted to -net.
+
+ net/core/ethtool.c | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
+
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 4a593853cbf2..2fe86893e9b5 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -3010,26 +3010,23 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+ 		const struct ethtool_flow_ext *ext_h_spec = &fs->h_ext;
+ 		const struct ethtool_flow_ext *ext_m_spec = &fs->m_ext;
+ 
+-		if (ext_m_spec->vlan_etype &&
+-		    ext_m_spec->vlan_tci) {
+-			match->key.vlan.vlan_tpid = ext_h_spec->vlan_etype;
+-			match->mask.vlan.vlan_tpid = ext_m_spec->vlan_etype;
++		match->key.vlan.vlan_tpid = ext_h_spec->vlan_etype;
++		match->mask.vlan.vlan_tpid = ext_m_spec->vlan_etype;
+ 
+-			match->key.vlan.vlan_id =
+-				ntohs(ext_h_spec->vlan_tci) & 0x0fff;
+-			match->mask.vlan.vlan_id =
+-				ntohs(ext_m_spec->vlan_tci) & 0x0fff;
++		match->key.vlan.vlan_id =
++			ntohs(ext_h_spec->vlan_tci) & 0x0fff;
++		match->mask.vlan.vlan_id =
++			ntohs(ext_m_spec->vlan_tci) & 0x0fff;
+ 
+-			match->key.vlan.vlan_priority =
+-				(ntohs(ext_h_spec->vlan_tci) & 0xe000) >> 13;
+-			match->mask.vlan.vlan_priority =
+-				(ntohs(ext_m_spec->vlan_tci) & 0xe000) >> 13;
++		match->key.vlan.vlan_priority =
++			(ntohs(ext_h_spec->vlan_tci) & 0xe000) >> 13;
++		match->mask.vlan.vlan_priority =
++			(ntohs(ext_m_spec->vlan_tci) & 0xe000) >> 13;
+ 
+-			match->dissector.used_keys |=
+-				BIT(FLOW_DISSECTOR_KEY_VLAN);
+-			match->dissector.offset[FLOW_DISSECTOR_KEY_VLAN] =
+-				offsetof(struct ethtool_rx_flow_key, vlan);
+-		}
++		match->dissector.used_keys |=
++			BIT(FLOW_DISSECTOR_KEY_VLAN);
++		match->dissector.offset[FLOW_DISSECTOR_KEY_VLAN] =
++			offsetof(struct ethtool_rx_flow_key, vlan);
+ 	}
+ 	if (fs->flow_type & FLOW_MAC_EXT) {
+ 		const struct ethtool_flow_ext *ext_h_spec = &fs->h_ext;
 -- 
-Best regards!
+2.20.1
 
-Young
------------------------------------------------------------
