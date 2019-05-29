@@ -2,101 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E17CE2E2D6
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:06:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8B92E2DD
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726033AbfE2RG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:06:56 -0400
-Received: from mga04.intel.com ([192.55.52.120]:16973 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726005AbfE2RGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 13:06:55 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 10:06:55 -0700
-X-ExtLoop1: 1
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
-  by orsmga002.jf.intel.com with ESMTP; 29 May 2019 10:06:54 -0700
-Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
- ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Wed, 29 May 2019 10:06:54 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.95]) by
- ORSMSX114.amr.corp.intel.com ([169.254.8.116]) with mapi id 14.03.0415.000;
- Wed, 29 May 2019 10:06:54 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>
-Subject: Re: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
- hardware offloading
-Thread-Topic: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
- hardware offloading
-Thread-Index: AQHVFX1jRoxwIAipQEiZCaa8URTGlqaBmGAAgAEzxgA=
-Date:   Wed, 29 May 2019 17:06:49 +0000
-Message-ID: <62E2DD49-AC21-46DE-8E5B-EBC67230FA7D@intel.com>
-References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
- <1559065608-27888-4-git-send-email-vedang.patel@intel.com>
- <20190528154510.41b50723@cakuba.netronome.com>
-In-Reply-To: <20190528154510.41b50723@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.201]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <55D5CAF235ABE14E81A33FF047D69744@intel.com>
-Content-Transfer-Encoding: base64
+        id S1726112AbfE2RJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:09:45 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45233 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbfE2RJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:09:45 -0400
+Received: by mail-qt1-f193.google.com with SMTP id t1so3484995qtc.12;
+        Wed, 29 May 2019 10:09:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/vPyb/weYDgUvhZvoDfV2jI0RMOjFs7RPyYnsfVXMzY=;
+        b=c5OOj1/bl+OFg3Eu//NBS63TGa4en1WCthRGDYjq56M4aHJP0fLm/scCjg+jyNWCX3
+         k0RyI7Dbl7FE4Qq/sNKlx6QcuSEllb1kY3+KNlzRLjg4iJhfW0MH3VFPkZKvcZO1limX
+         jXb6Ah6nd5ydZl0X0AasHROzV0SyNsT6dQhixGOg/3T+H6LPbNE8/eMe+2gUWDMSyhYn
+         6oyko3szAbJKUcIDmJT6ej8fAxhzib+3e3hQrCkhdkRANDMMDn+LlbSegOahbdeaKUJb
+         Idtad7TUGJO2JSjRtD60Lx8YtYU2npPv6OAwDZtuENEAhb+b5UW13K+tH7ugC82mU7P4
+         FckA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/vPyb/weYDgUvhZvoDfV2jI0RMOjFs7RPyYnsfVXMzY=;
+        b=AMj7ymzOdPuTSeVRjxr4fpcy5U+ZPH5dq3ylwFyQY7rtIXgThTE/A6yqRWTpk8JRKZ
+         uo4YcwNWj5dUy1gyNsaUjEknYfn+KGqqym4O45bz+ffxVp8ZBlQWD9P1xhaOD5dGzhBv
+         DLnyDy056jB+4Fu8HdRX7Fymr6LowXogJTFAavXLS/7LtJqSVx0W046tSJnh6xSpCLa9
+         1OxSMvZ0cA68ZR63cbuMuw3CZEVn38hTnrGnBA0WDWRLzBHFzLmkmkIJD5S84W6wcKq/
+         hWk+ZlTUfAkyt6dG1g5bWtmRmu16EqJYjn5KuRwYHYEtRKOPmeNU+MxEpjVjr2HJ2yAk
+         OTrw==
+X-Gm-Message-State: APjAAAU10RE+T05gymC4JrUxj4Nk6rCPb5K61mH2IdaqlrNK6mX+N6D0
+        vvhJFaR0VYBNA5RQt9QKRFNz1r4/t8v6B1YSh+8=
+X-Google-Smtp-Source: APXvYqy1xoYTvufZJ2P25p70emZgnj7KFWdrfg2RDM0QekSzLNL2YrguC2WuGXbUKPA8iEClsbfhsk+EKqXckdHx4AY=
+X-Received: by 2002:aed:3b66:: with SMTP id q35mr19540850qte.118.1559149782745;
+ Wed, 29 May 2019 10:09:42 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-4-andriin@fb.com>
+In-Reply-To: <20190529011426.1328736-4-andriin@fb.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Wed, 29 May 2019 10:09:31 -0700
+Message-ID: <CAPhsuW7Zmds01cQ6KjLgTEnmnkV61DUCjDenTiLFeQonEZNg4g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/9] libbpf: simplify endianness check
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIEphY3ViIGZvciB0aGV5IGlucHV0cy4NCg0KPiBPbiBNYXkgMjgsIDIwMTksIGF0IDM6
-NDUgUE0sIEpha3ViIEtpY2luc2tpIDxqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUuY29tPiB3cm90
-ZToNCj4gDQo+IE9uIFR1ZSwgMjggTWF5IDIwMTkgMTA6NDY6NDQgLTA3MDAsIFZlZGFuZyBQYXRl
-bCB3cm90ZToNCj4+IEZyb206IFZpbmljaXVzIENvc3RhIEdvbWVzIDx2aW5pY2l1cy5nb21lc0Bp
-bnRlbC5jb20+DQo+PiANCj4+IFRoaXMgYWRkcyB0aGUgVUFQSSBhbmQgdGhlIGNvcmUgYml0cyBu
-ZWNlc3NhcnkgZm9yIHVzZXJzcGFjZSB0bw0KPj4gcmVxdWVzdCBoYXJkd2FyZSBvZmZsb2FkaW5n
-IHRvIGJlIGVuYWJsZWQuDQo+PiANCj4+IFRoZSBmdXR1cmUgY29tbWl0cyB3aWxsIGVuYWJsZSBo
-eWJyaWQgb3IgZnVsbCBvZmZsb2FkaW5nIGZvciB0YXByaW8uIFRoaXMNCj4+IGNvbW1pdCBzZXRz
-IHVwIHRoZSBpbmZyYXN0cnVjdHVyZSB0byBlbmFibGUgaXQgdmlhIHRoZSBuZXRsaW5rIGludGVy
-ZmFjZS4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogVmluaWNpdXMgQ29zdGEgR29tZXMgPHZpbmlj
-aXVzLmdvbWVzQGludGVsLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IFZlZGFuZyBQYXRlbCA8dmVk
-YW5nLnBhdGVsQGludGVsLmNvbT4NCj4gDQo+IE90aGVyIHFkaXNjcyBvZmZsb2FkIGJ5IGRlZmF1
-bHQsIHRoaXMgb2ZmbG9hZC1sZXZlbCBzZWxlY3Rpb24gaGVyZSBpcyBhDQo+IGxpdHRsZSBiaXQg
-aW5jb25zaXN0ZW50IHdpdGggdGhhdCA6KA0KPiANClRoZXJlIGFyZSAyIGRpZmZlcmVudCBvZmZs
-b2FkIG1vZGVzIGludHJvZHVjZWQgaW4gdGhpcyBwYXRjaC4NCg0KMS4gVHh0aW1lIG9mZmxvYWQg
-bW9kZTogVGhpcyBtb2RlIGRlcGVuZHMgb24gc2tpcF9zb2NrX2NoZWNrIGZsYWcgYmVpbmcgc2V0
-IGluIHRoZSBldGYgcWRpc2MuIEFsc28sIGl0IHJlcXVpcmVzIHNvbWUgbWFudWFsIGNvbmZpZ3Vy
-YXRpb24gd2hpY2ggbWlnaHQgYmUgc3BlY2lmaWMgdG8gdGhlIG5ldHdvcmsgYWRhcHRlciBjYXJk
-LiBGb3IgZXhhbXBsZSwgZm9yIHRoZSBpMjEwIGNhcmQsIHRoZSB1c2VyIHdpbGwgaGF2ZSB0byBy
-b3V0ZSBhbGwgdGhlIHRyYWZmaWMgdG8gdGhlIGhpZ2hlc3QgcHJpb3JpdHkgcXVldWUgYW5kIGlu
-c3RhbGwgZXRmIHFkaXNjIHdpdGggb2ZmbG9hZCBlbmFibGVkIG9uIHRoYXQgcXVldWUuIFNvLCBJ
-IGRvbuKAmXQgdGhpbmsgdGhpcyBtb2RlIHNob3VsZCBiZSBlbmFibGVkIGJ5IGRlZmF1bHQuDQoy
-LiBGdWxsIG9mZmxvYWQgbW9kZTogVGhpcyBtb2RlIGlzIGN1cnJlbnRseSBub3Qgc3VwcG9ydGVk
-IGJ5IGFueSBuZXR3b3JrIGRyaXZlci4gVGhlIHN1cHBvcnQgZm9yIHRoaXMgd2lsbCBiZSBjb21p
-bmcgc29vbi4gQnV0LCB3ZSBjYW4gZW5hYmxlIHRoaXMgbW9kZSBieSBkZWZhdWx0LiANCg0KQWxz
-bywgZnJvbSB3aGF0IFZpbmljaXVzIHRlbGxzIG1lLCBvZmZsb2FkIG1vZGVzIGZvciBjYnMsIGV0
-ZiBhbmQgbXFwcmlvIGFyZSBhbHNvIGRpc2FibGVkIGJ5IGRlZmF1bHQuIFNvLCBpdCB3aWxsIG1h
-a2UgbW9yZSBzZW5zZSB0byBrZWVwIGl0IGRpc2FibGVkIHRvIGJlIGNvbnNpc3RlbnQgd2l0aCBv
-dGhlciBxZGlzY3Mgc2ltaWxhciB0byB0aGlzIG9uZS4NCj4+IEBAIC03MzEsNiArODU3LDkgQEAg
-c3RhdGljIGludCB0YXByaW9fY2hhbmdlKHN0cnVjdCBRZGlzYyAqc2NoLCBzdHJ1Y3QgbmxhdHRy
-ICpvcHQsDQo+PiAJaWYgKGVyciA8IDApDQo+PiAJCXJldHVybiBlcnI7DQo+PiANCj4+ICsJaWYg
-KHRiW1RDQV9UQVBSSU9fQVRUUl9PRkZMT0FEX0ZMQUdTXSkNCj4+ICsJCW9mZmxvYWRfZmxhZ3Mg
-PSBubGFfZ2V0X3UzMih0YltUQ0FfVEFQUklPX0FUVFJfT0ZGTE9BRF9GTEFHU10pOw0KPiANCj4g
-WW91IHNob3VsZCBtYWtlIHN1cmUgdXNlciBkb2Vzbid0IHNldCB1bmtub3duIGJpdHMuICBPdGhl
-cndpc2UgdXNpbmcNCj4gb3RoZXIgYml0cyB3aWxsIG5vdCBiZSBwb3NzaWJsZSBpbiB0aGUgZnV0
-dXJlLg0KPiANClllcywgSSBhZ3JlZSBoZXJlLCB3aWxsIGluY2x1ZGUgdGhpcyBpbiB0aGUgbmV4
-dCBwYXRjaHNldC4NCg0KVGhhbmtzLA0KVmVkYW5nDQo+PiAJbmV3X2FkbWluID0ga3phbGxvYyhz
-aXplb2YoKm5ld19hZG1pbiksIEdGUF9LRVJORUwpOw0KPj4gCWlmICghbmV3X2FkbWluKSB7DQo+
-PiAJCU5MX1NFVF9FUlJfTVNHKGV4dGFjaywgIk5vdCBlbm91Z2ggbWVtb3J5IGZvciBhIG5ldyBz
-Y2hlZHVsZSIpOw0KDQo=
+On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Rewrite endianness check to use "more canonical" way, using
+> compiler-defined macros, similar to few other places in libbpf. It also
+> is more obvious and shorter.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+
+> ---
+>  tools/lib/bpf/libbpf.c | 37 ++++++++++++-------------------------
+>  1 file changed, 12 insertions(+), 25 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 7b80b9ae8a1f..c98f9942fba4 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -607,31 +607,18 @@ static int bpf_object__elf_init(struct bpf_object *obj)
+>         return err;
+>  }
+>
+> -static int
+> -bpf_object__check_endianness(struct bpf_object *obj)
+> -{
+> -       static unsigned int const endian = 1;
+> -
+> -       switch (obj->efile.ehdr.e_ident[EI_DATA]) {
+> -       case ELFDATA2LSB:
+> -               /* We are big endian, BPF obj is little endian. */
+> -               if (*(unsigned char const *)&endian != 1)
+> -                       goto mismatch;
+> -               break;
+> -
+> -       case ELFDATA2MSB:
+> -               /* We are little endian, BPF obj is big endian. */
+> -               if (*(unsigned char const *)&endian != 0)
+> -                       goto mismatch;
+> -               break;
+> -       default:
+> -               return -LIBBPF_ERRNO__ENDIAN;
+> -       }
+> -
+> -       return 0;
+> -
+> -mismatch:
+> -       pr_warning("Error: endianness mismatch.\n");
+> +static int bpf_object__check_endianness(struct bpf_object *obj)
+> +{
+> +#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+> +       if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
+> +               return 0;
+> +#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+> +       if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
+> +               return 0;
+> +#else
+> +# error "Unrecognized __BYTE_ORDER__"
+> +#endif
+> +       pr_warning("endianness mismatch.\n");
+>         return -LIBBPF_ERRNO__ENDIAN;
+>  }
+>
+> --
+> 2.17.1
+>
