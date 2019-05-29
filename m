@@ -2,96 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1ECD2E815
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D582E812
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbfE2WXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 18:23:17 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:56316 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726018AbfE2WXR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 18:23:17 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x4TMM6Qe021583;
-        Thu, 30 May 2019 01:22:06 +0300
-Date:   Thu, 30 May 2019 01:22:06 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Jacky Hu <hengqing.hu@gmail.com>
-cc:     jacky.hu@walmart.com, jason.niesz@walmart.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH v3] ipvs: add checksum support for gue encapsulation
-In-Reply-To: <20190528231107.14197-1-hengqing.hu@gmail.com>
-Message-ID: <alpine.LFD.2.21.1905300115590.2934@ja.home.ssi.bg>
-References: <20190528231107.14197-1-hengqing.hu@gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1726498AbfE2WWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 18:22:54 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:33416 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbfE2WWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:22:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HZkZ1cVnPcLkzNiYWfGbX5mM4gVR63gOWkL3a1rEw80=; b=nhU4GOJkfKUw2BbqWI3j1XwIe
+        cVGOpllW95KSUFw4/TTJwD2mtQ5q8aoMeA/n60btu26z4RK1x9gC4pP0+jVTr8JAH0raI21/pKlh8
+        TpQT7LF91jagxwKRnP0mpp5lx0giCal7HyCN2flC4sgOrJaYXojqc1VCmhFBaCGyc+B77gbPxS9mD
+        QODMbeyiM2JelaD2ZBVKPu8ilr2HBsTN+oHkycs5qqEI0euKn2gByg8wtbSuhSvkKHRWjjF5mT+ez
+        FulV7wX+utOER7AE7XClauGs6a2khHwUJiCtsJuzfdhcxzOs9U/5XWERjVa7BmSnXWzWj31gV0tfe
+        WM1bMm8Fw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52706)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hW6y7-0007OR-Rg; Wed, 29 May 2019 23:22:47 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hW6y4-0004ql-Bv; Wed, 29 May 2019 23:22:44 +0100
+Date:   Wed, 29 May 2019 23:22:44 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        maxime.chevallier@bootlin.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell10g: report if the PHY fails to boot
+ firmware
+Message-ID: <20190529222244.v43rsotxzjspxe4h@shell.armlinux.org.uk>
+References: <E1hVYVG-0005D8-8w@rmk-PC.armlinux.org.uk>
+ <20190529.142634.185656643572931597.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190529.142634.185656643572931597.davem@davemloft.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 29, 2019 at 02:26:34PM -0700, David Miller wrote:
+> From: Russell King <rmk+kernel@armlinux.org.uk>
+> Date: Tue, 28 May 2019 10:34:42 +0100
+> 
+> > Some boards do not have the PHY firmware programmed in the 3310's flash,
+> > which leads to the PHY not working as expected.  Warn the user when the
+> > PHY fails to boot the firmware and refuse to initialise.
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Applied and queued up for -stable, thanks.
+> 
+> Longer term in net-next we can do the PHY_HALTED thing so that the PHY
+> is accessible to update/fix the broken firmware.
 
-	Hello,
+Thanks David.
 
-On Wed, 29 May 2019, Jacky Hu wrote:
-
->  	gueh = (struct guehdr *)skb->data;
->  
->  	gueh->control = 0;
->  	gueh->version = 0;
-> -	gueh->hlen = 0;
-> +	gueh->hlen = optlen >> 2;
->  	gueh->flags = 0;
->  	gueh->proto_ctype = *next_protocol;
->  
-> +	data = &gueh[1];
-> +
-> +	if (need_priv) {
-> +		__be32 *flags = data;
-> +		u16 csum_start = skb_checksum_start_offset(skb);
-> +		__be16 *pd = data;
-
-	Packet tests show another problem. Fix is to defer
-pd assignment after data += GUE_LEN_PRIV:
-
-		__be16 *pd;
-
-> +
-> +		gueh->flags |= GUE_FLAG_PRIV;
-> +		*flags = 0;
-> +		data += GUE_LEN_PRIV;
-> +
-> +		if (csum_start < hdrlen)
-> +			return -EINVAL;
-> +
-> +		csum_start -= hdrlen;
-
-		pd = data;
-
-> +		pd[0] = htons(csum_start);
-> +		pd[1] = htons(csum_start + skb->csum_offset);
-> +
-> +		if (!skb_is_gso(skb)) {
-> +			skb->ip_summed = CHECKSUM_NONE;
-> +			skb->encapsulation = 0;
-> +		}
-> +
-> +		*flags |= GUE_PFLAG_REMCSUM;
-> +		data += GUE_PLEN_REMCSUM;
-> +	}
-> +
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
