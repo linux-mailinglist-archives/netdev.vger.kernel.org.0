@@ -2,237 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 995962D831
+	by mail.lfdr.de (Postfix) with ESMTP id F3BD12D832
 	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfE2Ir4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:47:56 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:42693 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726365AbfE2Irv (ORCPT
+        id S1726728AbfE2Irz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:47:55 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:44041 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726441AbfE2Irv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:47:51 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6C8F5223E5;
-        Wed, 29 May 2019 04:47:50 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 29 May 2019 04:47:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=SHF2GL+OFAW/jE4G2oPbxqHZ7Ibd/GTbEPfxEtomFPA=; b=eyWWpa3x
-        pbFUMZJWBEELjxvkWgXsSaG0Zqy7EsfskTo9M5lXXoWs2AjMKUvb2ci5MOQjaEKP
-        ELm4qJN4Zm4PyN5ifZ2tcM82uKmRy0AybupF5DxJ/hCzS3CWUTX+HAtGaAF0r6+n
-        ijeO7r9rn7CTZpJ0pfPDFf5ClTlL2wgqp/foxyxOMh/dwF8htAz3lafyT3oHjtfV
-        kOfFl79Qsv48t1XoWVhJXbk6ImF9wM+Say2mzJT7TruIdDWScJiAzUMF58WATy1u
-        VmqHg0pQ04S/5GPAcsjY4/LuQ3mYnXnZFX4bw6D6GQRkua/4wzVUg26bBnibpElD
-        SRUzH8GUmmSlUw==
-X-ME-Sender: <xms:NkfuXPgl6hlvbMqzxX3GYA3xtb_x2QOSf3c1BA6g0JVRkd6y0X0fBg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgtdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeej
-X-ME-Proxy: <xmx:NkfuXNckv1gHTfK69UBbnUzsWPJ8MfdHzeeWEhVefz_TTZcqLaNWAA>
-    <xmx:NkfuXKEgI7xIyIcwFgR3qlEASUiomGBHcQBUPC5Ur_3uU8QTP3rDAA>
-    <xmx:NkfuXAzQXDC5kp_wCSOn9AcdcEEcLGiXqvpsAihrZLBsPWMdMvcIMQ>
-    <xmx:NkfuXB7nn6PV0HZfhDy4DzBfZ1ZmUfI-Ps1n_1M6qaMYoQ5ys7yJfQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id EF5CD80061;
-        Wed, 29 May 2019 04:47:48 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 8/8] mlxsw: core: Reduce buffer size in transactions for SFP modules temperature readout
-Date:   Wed, 29 May 2019 11:47:22 +0300
-Message-Id: <20190529084722.22719-9-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190529084722.22719-1-idosch@idosch.org>
-References: <20190529084722.22719-1-idosch@idosch.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by mail-pf1-f195.google.com with SMTP id g9so1161565pfo.11;
+        Wed, 29 May 2019 01:47:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=TgWBMzeoaoEO+5BjILyNWDtEoQ8YNu+FEzYYyIocJk8=;
+        b=kzwVn+489j0EgyGtZJe7IBnMsoNMIAlsRcGhFOoe7UqlQNpgfLcFvu5VE16cEHkHaM
+         ACvNDjzN8h/hZIPbOqc/H1ppKdLdnxwOEF/vBfGTJt3EDJn/8YmInhqonNTSbVHPast2
+         YkAf5ZyDYXv4r5jkHpT0vb5bx5810IEMkgG+hNPhpyq/xFLN4xuzdl/tpXosEVafooYv
+         KKT2b8w4DpNZOVZo2qyfO+KtsgpPJgMiKNuDj7FT130tqOb5k6WisbqhBWXNjYJQFG3O
+         nJQdMmNTl/UBeGW3TLSITdeIFQqIz5f7gJz0H2Vm3TzkVFpf0DM/61Pcz9Rz/Kt2dVro
+         /EGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TgWBMzeoaoEO+5BjILyNWDtEoQ8YNu+FEzYYyIocJk8=;
+        b=gHavSPLBiu9mAdCh0uKEEdHuzNtPe1XYMqrCkET9754T9lQFELmpDErqg0FFPs7V/c
+         49Tm6sW9femEkAKDeeoUDbDW2W01jzeA0FuwSg9bGgbpTFjuVRZPpHVPzf0QWEJCR9jQ
+         AEoggDjdyHfVsUFjSRSRfbPbAtnYChfy70vq+A+PppRs/jFbKlp/N26jruwXFeqVhErU
+         X2hgSU+RfyQ6giheLKMCpB11V6vhbi/Ukav/a227w296X8QmqXrcxgUM//B+PyJrasCU
+         SREPLRCOjfrpvYIfwI//QtE0fQZEJ9NynUqP0tFZDxAcSmLZeUBz2I4p/KljiSy0QnE6
+         vkQw==
+X-Gm-Message-State: APjAAAUJeCRChVDeBlR0t8thR7Ka7IbvJ/SX97WEpu0fGBjLlrMGYPFp
+        vp+AQ+PvXjmDzYyyNshBHTU=
+X-Google-Smtp-Source: APXvYqxE59mLhsE+Vd7Je+BFBDHnGy0F4hye4KgMKoXaxr51JgDgxDrpr5A6jhtiE/qAk+9FLSSoDw==
+X-Received: by 2002:a62:ee04:: with SMTP id e4mr33779311pfi.232.1559119671409;
+        Wed, 29 May 2019 01:47:51 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id 24sm3191491pgn.32.2019.05.29.01.47.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 29 May 2019 01:47:50 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     isdn@linux-pingi.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] isdn: hisax: isac: fix a possible concurrency use-after-free bug in ISAC_l1hw()
+Date:   Wed, 29 May 2019 16:48:59 +0800
+Message-Id: <1559119739-27588-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@mellanox.com>
+In drivers/isdn/hisax/isac.c, the function isac_interrupt() and
+ISAC_l1hw() may be concurrently executed.
 
-Obtain SFP modules temperatures through MTMP register instead of MTBR
-register, because the first one utilizes shorter transaction buffer size
-for request. It improves performance in case low frequency interface
-(I2C) is used for communication with a chip.
+ISAC_l1hw()
+    line 499: if (!cs->tx_skb)
 
-Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+isac_interrupt()
+    line 250: dev_kfree_skb_irq(cs->tx_skb);
+
+Thus, a possible concurrency use-after-free bug may occur in ISAC_l1hw().
+
+To fix these bugs, the calls to spin_lock_irqsave() and
+spin_unlock_irqrestore() are added in HFCPCI_l1hw(), to protect the
+access to cs->tx_skb.
+
+See commit 7418e6520f22 ("isdn: hisax: hfc_pci: Fix a possible concurrency
+use-after-free bug in HFCPCI_l1hw()") for details.
+
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
 ---
- .../net/ethernet/mellanox/mlxsw/core_env.c    | 27 +++--------
- .../net/ethernet/mellanox/mlxsw/core_hwmon.c  | 34 +++-----------
- .../ethernet/mellanox/mlxsw/core_thermal.c    | 46 ++++++++-----------
- 3 files changed, 33 insertions(+), 74 deletions(-)
+ drivers/isdn/hisax/isac.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-index 72539a9a3847..d2c7ce67c300 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-@@ -92,33 +92,20 @@ int mlxsw_env_module_temp_thresholds_get(struct mlxsw_core *core, int module,
- 		u16 temp;
- 	} temp_thresh;
- 	char mcia_pl[MLXSW_REG_MCIA_LEN] = {0};
--	char mtbr_pl[MLXSW_REG_MTBR_LEN] = {0};
--	u16 module_temp;
-+	char mtmp_pl[MLXSW_REG_MTMP_LEN];
-+	unsigned int module_temp;
- 	bool qsfp;
- 	int err;
- 
--	mlxsw_reg_mtbr_pack(mtbr_pl, MLXSW_REG_MTBR_BASE_MODULE_INDEX + module,
--			    1);
--	err = mlxsw_reg_query(core, MLXSW_REG(mtbr), mtbr_pl);
-+	mlxsw_reg_mtmp_pack(mtmp_pl, MLXSW_REG_MTMP_MODULE_INDEX_MIN + module,
-+			    false, false);
-+	err = mlxsw_reg_query(core, MLXSW_REG(mtmp), mtmp_pl);
- 	if (err)
- 		return err;
--
--	/* Don't read temperature thresholds for module with no valid info. */
--	mlxsw_reg_mtbr_temp_unpack(mtbr_pl, 0, &module_temp, NULL);
--	switch (module_temp) {
--	case MLXSW_REG_MTBR_BAD_SENS_INFO: /* fall-through */
--	case MLXSW_REG_MTBR_NO_CONN: /* fall-through */
--	case MLXSW_REG_MTBR_NO_TEMP_SENS: /* fall-through */
--	case MLXSW_REG_MTBR_INDEX_NA:
-+	mlxsw_reg_mtmp_unpack(mtmp_pl, &module_temp, NULL, NULL);
-+	if (!module_temp) {
- 		*temp = 0;
- 		return 0;
--	default:
--		/* Do not consider thresholds for zero temperature. */
--		if (MLXSW_REG_MTMP_TEMP_TO_MC(module_temp) == 0) {
--			*temp = 0;
--			return 0;
--		}
--		break;
- 	}
- 
- 	/* Read Free Side Device Temperature Thresholds from page 03h
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-index 8cd446856340..056e3f55ae6c 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-@@ -214,38 +214,18 @@ static ssize_t mlxsw_hwmon_module_temp_show(struct device *dev,
- 	struct mlxsw_hwmon_attr *mlwsw_hwmon_attr =
- 			container_of(attr, struct mlxsw_hwmon_attr, dev_attr);
- 	struct mlxsw_hwmon *mlxsw_hwmon = mlwsw_hwmon_attr->hwmon;
--	char mtbr_pl[MLXSW_REG_MTBR_LEN] = {0};
--	u16 temp;
-+	char mtmp_pl[MLXSW_REG_MTMP_LEN];
-+	unsigned int temp;
- 	u8 module;
- 	int err;
- 
- 	module = mlwsw_hwmon_attr->type_index - mlxsw_hwmon->sensor_count;
--	mlxsw_reg_mtbr_pack(mtbr_pl, MLXSW_REG_MTBR_BASE_MODULE_INDEX + module,
--			    1);
--	err = mlxsw_reg_query(mlxsw_hwmon->core, MLXSW_REG(mtbr), mtbr_pl);
--	if (err) {
--		dev_err(dev, "Failed to query module temperature sensor\n");
-+	mlxsw_reg_mtmp_pack(mtmp_pl, MLXSW_REG_MTMP_MODULE_INDEX_MIN + module,
-+			    false, false);
-+	err = mlxsw_reg_query(mlxsw_hwmon->core, MLXSW_REG(mtmp), mtmp_pl);
-+	if (err)
- 		return err;
--	}
--
--	mlxsw_reg_mtbr_temp_unpack(mtbr_pl, 0, &temp, NULL);
--	/* Update status and temperature cache. */
--	switch (temp) {
--	case MLXSW_REG_MTBR_NO_CONN: /* fall-through */
--	case MLXSW_REG_MTBR_NO_TEMP_SENS: /* fall-through */
--	case MLXSW_REG_MTBR_INDEX_NA:
--		temp = 0;
--		break;
--	case MLXSW_REG_MTBR_BAD_SENS_INFO:
--		/* Untrusted cable is connected. Reading temperature from its
--		 * sensor is faulty.
--		 */
--		temp = 0;
--		break;
--	default:
--		temp = MLXSW_REG_MTMP_TEMP_TO_MC(temp);
--		break;
--	}
-+	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
- 
- 	return sprintf(buf, "%u\n", temp);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index d3e851e7ca72..cfab0e330a47 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -449,39 +449,31 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
- 	struct mlxsw_thermal_module *tz = tzdev->devdata;
- 	struct mlxsw_thermal *thermal = tz->parent;
- 	struct device *dev = thermal->bus_info->dev;
--	char mtbr_pl[MLXSW_REG_MTBR_LEN];
--	u16 temp;
-+	char mtmp_pl[MLXSW_REG_MTMP_LEN];
-+	unsigned int temp;
- 	int err;
- 
- 	/* Read module temperature. */
--	mlxsw_reg_mtbr_pack(mtbr_pl, MLXSW_REG_MTBR_BASE_MODULE_INDEX +
--			    tz->module, 1);
--	err = mlxsw_reg_query(thermal->core, MLXSW_REG(mtbr), mtbr_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_mtbr_temp_unpack(mtbr_pl, 0, &temp, NULL);
--	/* Update temperature. */
--	switch (temp) {
--	case MLXSW_REG_MTBR_NO_CONN: /* fall-through */
--	case MLXSW_REG_MTBR_NO_TEMP_SENS: /* fall-through */
--	case MLXSW_REG_MTBR_INDEX_NA: /* fall-through */
--	case MLXSW_REG_MTBR_BAD_SENS_INFO:
-+	mlxsw_reg_mtmp_pack(mtmp_pl, MLXSW_REG_MTMP_MODULE_INDEX_MIN +
-+			    tz->module, false, false);
-+	err = mlxsw_reg_query(thermal->core, MLXSW_REG(mtmp), mtmp_pl);
-+	if (err) {
-+		/* Do not return error - in case of broken module's sensor
-+		 * it will cause error message flooding.
-+		 */
- 		temp = 0;
--		break;
--	default:
--		temp = MLXSW_REG_MTMP_TEMP_TO_MC(temp);
--		/* Reset all trip point. */
--		mlxsw_thermal_module_trips_reset(tz);
--		/* Update trip points. */
--		err = mlxsw_thermal_module_trips_update(dev, thermal->core,
--							tz);
--		if (err)
--			return err;
--		break;
-+		*p_temp = (int) temp;
-+		return 0;
- 	}
--
-+	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
- 	*p_temp = (int) temp;
-+
-+	if (!temp)
-+		return 0;
-+
-+	/* Update trip points. */
-+	mlxsw_thermal_module_trips_update(dev, thermal->core, tz);
-+
- 	return 0;
- }
- 
+diff --git a/drivers/isdn/hisax/isac.c b/drivers/isdn/hisax/isac.c
+index bd40e06..60dd805 100644
+--- a/drivers/isdn/hisax/isac.c
++++ b/drivers/isdn/hisax/isac.c
+@@ -496,11 +496,13 @@ ISAC_l1hw(struct PStack *st, int pr, void *arg)
+ 		if (cs->debug & L1_DEB_LAPD)
+ 			debugl1(cs, "-> PH_REQUEST_PULL");
+ #endif
++		spin_lock_irqsave(&cs->lock, flags);
+ 		if (!cs->tx_skb) {
+ 			test_and_clear_bit(FLG_L1_PULL_REQ, &st->l1.Flags);
+ 			st->l1.l1l2(st, PH_PULL | CONFIRM, NULL);
+ 		} else
+ 			test_and_set_bit(FLG_L1_PULL_REQ, &st->l1.Flags);
++		spin_unlock_irqrestore(&cs->lock, flags);
+ 		break;
+ 	case (HW_RESET | REQUEST):
+ 		spin_lock_irqsave(&cs->lock, flags);
 -- 
-2.20.1
+2.7.4
 
