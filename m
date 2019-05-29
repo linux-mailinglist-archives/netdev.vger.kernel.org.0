@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EBD12D2C4
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A27682D2BB
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfE2ARq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:17:46 -0400
+        id S1727412AbfE2AR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:17:29 -0400
 Received: from mga11.intel.com ([192.55.52.93]:59372 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726653AbfE2AR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726988AbfE2AR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 28 May 2019 20:17:26 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,72 +20,67 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 28 May 2019 17:17:26 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Feng Tang <feng.tang@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/10] igb/igc: warn when fatal read failure happens
-Date:   Tue, 28 May 2019 17:17:17 -0700
-Message-Id: <20190529001726.26097-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 02/10] igb: mark expected switch fall-through
+Date:   Tue, 28 May 2019 17:17:18 -0700
+Message-Id: <20190529001726.26097-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
 References: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 
-Failed in read the HW register is very serious for igb/igc driver,
-as its hw_addr will be set to NULL and cause the adapter be seen as
-"REMOVED".
+In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+where we are expecting to fall through.
 
-We saw the error only a few times in the MTBF test for suspend/resume,
-but can hardly get any useful info to debug.
+This patch fixes the following warning:
 
-Adding WARN() so that we can get the necessary information about
-where and how it happens, and use it for root causing and fixing
-this "PCIe link lost issue"
+drivers/net/ethernet/intel/igb/igb_main.c: In function ‘__igb_notify_dca’:
+drivers/net/ethernet/intel/igb/igb_main.c:6694:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   if (dca_add_requester(dev) == 0) {
+      ^
+drivers/net/ethernet/intel/igb/igb_main.c:6701:2: note: here
+  case DCA_PROVIDER_REMOVE:
+  ^~~~
 
-This affects igb, igc.
+Warning level 3 was used: -Wimplicit-fallthrough=3
 
-Signed-off-by: Feng Tang <feng.tang@intel.com>
+Notice that, in this particular case, the code comment is modified
+in accordance with what GCC is expecting to find.
+
+This patch is part of the ongoing efforts to enable
+-Wimplicit-fallthrough.
+
+Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 1 +
- drivers/net/ethernet/intel/igc/igc_main.c | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 39f33afc479c..e5b7e638df28 100644
+index e5b7e638df28..fc925adbd9fa 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -753,6 +753,7 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
- 		struct net_device *netdev = igb->netdev;
- 		hw->hw_addr = NULL;
- 		netdev_err(netdev, "PCIe link lost\n");
-+		WARN(1, "igb: Failed to read reg 0x%x!\n", reg);
- 	}
- 
- 	return value;
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 34fa0e60a780..28072b9aa932 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3934,6 +3934,7 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
- 		hw->hw_addr = NULL;
- 		netif_device_detach(netdev);
- 		netdev_err(netdev, "PCIe link lost, device now detached\n");
-+		WARN(1, "igc: Failed to read reg 0x%x!\n", reg);
- 	}
- 
- 	return value;
+@@ -6696,7 +6696,7 @@ static int __igb_notify_dca(struct device *dev, void *data)
+ 			igb_setup_dca(adapter);
+ 			break;
+ 		}
+-		/* Fall Through since DCA is disabled. */
++		/* Fall Through - since DCA is disabled. */
+ 	case DCA_PROVIDER_REMOVE:
+ 		if (adapter->flags & IGB_FLAG_DCA_ENABLED) {
+ 			/* without this a class_device is left
 -- 
 2.21.0
 
