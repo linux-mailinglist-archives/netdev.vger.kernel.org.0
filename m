@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4109E2D32C
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 03:14:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2208A2D32F
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 03:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbfE2BOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 21:14:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42336 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725805AbfE2BOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 21:14:47 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4T1AbO0014498
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 18:14:46 -0700
+        id S1726464AbfE2BOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 21:14:53 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52368 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726395AbfE2BOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 21:14:49 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4T1CfbH029018
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 18:14:47 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=PJy3eQGI+XeddCLYZXrRKUEV/kYYwXW76ZqxA06u71c=;
- b=Bcv20FE/w1iDDmgqTB6cKNKRWdioRjTN9X34jxSuVKYX6q+8NqIX5A8NhYvC/vflqjLa
- 3AIfuR/qBsH+xCGgaqkDhyLu9SofxDv5h4LPKLsT3y3BSeX027YRC8JEudX175C0boKq
- pHXqTuIs2PpDJpKqGxeM9mN07DRynOEgMNA= 
+ content-type; s=facebook; bh=KujhMGj4nycZ2YeDKvNOVpoUWFsOgloeTpOHomLnSok=;
+ b=qxvHutMAmhz1xHUwrdiApH5IJJPv2Dm2h/M+O4IyBZJf/7wGUnUIIwEgnma4qvl2tj4L
+ /NKYoajTqokHQOo5GEI+lM8a3ILC813uUtm81BBFjAkTNRZwpcPQiEqxfsmGsTLd7Ehe
+ Jqp0MlJSnD0e6v3Yk8+az4MnL6fnGMBrw0Q= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ss9209hxb-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2ss8221sud-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 18:14:46 -0700
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 18:14:47 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 28 May 2019 18:14:45 -0700
+ 15.1.1713.5; Tue, 28 May 2019 18:14:46 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 2D2FA8617AA; Tue, 28 May 2019 18:14:43 -0700 (PDT)
+        id 37CCF8617AA; Tue, 28 May 2019 18:14:45 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
         <kernel-team@fb.com>
 CC:     Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 7/9] libbpf: simplify two pieces of logic
-Date:   Tue, 28 May 2019 18:14:24 -0700
-Message-ID: <20190529011426.1328736-8-andriin@fb.com>
+Subject: [PATCH bpf-next 8/9] libbpf: typo and formatting fixes
+Date:   Tue, 28 May 2019 18:14:25 -0700
+Message-ID: <20190529011426.1328736-9-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190529011426.1328736-1-andriin@fb.com>
 References: <20190529011426.1328736-1-andriin@fb.com>
@@ -60,38 +60,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extra check for type is unnecessary in first case.
-
-Extra zeroing is unnecessary, as snprintf guarantees that it will
-zero-terminate string.
+A bunch of typo and formatting fixes.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/libbpf.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ tools/lib/bpf/libbpf.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 292ea9a2dc3d..e3bc00933145 100644
+index e3bc00933145..9d9c19a1b2fe 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -1430,8 +1430,7 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
- 				if (maps[map_idx].libbpf_type != type)
- 					continue;
- 				if (type != LIBBPF_MAP_UNSPEC ||
--				    (type == LIBBPF_MAP_UNSPEC &&
--				     maps[map_idx].offset == sym.st_value)) {
-+				    maps[map_idx].offset == sym.st_value) {
- 					pr_debug("relocation: find map %zd (%s) for insn %u\n",
- 						 map_idx, maps[map_idx].name, insn_idx);
- 					break;
-@@ -2354,7 +2353,6 @@ struct bpf_object *bpf_object__open_buffer(void *obj_buf,
- 		snprintf(tmp_name, sizeof(tmp_name), "%lx-%lx",
- 			 (unsigned long)obj_buf,
- 			 (unsigned long)obj_buf_sz);
--		tmp_name[sizeof(tmp_name) - 1] = '\0';
- 		name = tmp_name;
+@@ -505,7 +505,7 @@ static struct bpf_object *bpf_object__new(const char *path,
+ 
+ 	obj->efile.fd = -1;
+ 	/*
+-	 * Caller of this function should also calls
++	 * Caller of this function should also call
+ 	 * bpf_object__elf_finish() after data collection to return
+ 	 * obj_buf to user. If not, we should duplicate the buffer to
+ 	 * avoid user freeing them before elf finish.
+@@ -574,8 +574,7 @@ static int bpf_object__elf_init(struct bpf_object *obj)
+ 		}
+ 
+ 		obj->efile.elf = elf_begin(obj->efile.fd,
+-				LIBBPF_ELF_C_READ_MMAP,
+-				NULL);
++					   LIBBPF_ELF_C_READ_MMAP, NULL);
  	}
- 	pr_debug("loading object '%s' from buffer\n",
+ 
+ 	if (!obj->efile.elf) {
+@@ -594,9 +593,9 @@ static int bpf_object__elf_init(struct bpf_object *obj)
+ 	ep = &obj->efile.ehdr;
+ 
+ 	/* Old LLVM set e_machine to EM_NONE */
+-	if ((ep->e_type != ET_REL) || (ep->e_machine && (ep->e_machine != EM_BPF))) {
+-		pr_warning("%s is not an eBPF object file\n",
+-			obj->path);
++	if (ep->e_type != ET_REL ||
++	    (ep->e_machine && ep->e_machine != EM_BPF)) {
++		pr_warning("%s is not an eBPF object file\n", obj->path);
+ 		err = -LIBBPF_ERRNO__FORMAT;
+ 		goto errout;
+ 	}
+@@ -1438,7 +1437,7 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
+ 			}
+ 
+ 			if (map_idx >= nr_maps) {
+-				pr_warning("bpf relocation: map_idx %d large than %d\n",
++				pr_warning("bpf relocation: map_idx %d larger than %d\n",
+ 					   (int)map_idx, (int)nr_maps - 1);
+ 				return -LIBBPF_ERRNO__RELOC;
+ 			}
+@@ -1797,7 +1796,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+ 			}
+ 		}
+ 
+-		pr_debug("create map %s: fd=%d\n", map->name, *pfd);
++		pr_debug("created map %s: fd=%d\n", map->name, *pfd);
+ 	}
+ 
+ 	return 0;
 -- 
 2.17.1
 
