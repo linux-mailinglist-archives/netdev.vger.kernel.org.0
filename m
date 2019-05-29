@@ -2,148 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E7D02D9C4
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D042D9FD
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfE2J6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 05:58:22 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46778 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbfE2J6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:58:21 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m15so1768831ljg.13
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 02:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/sVA9YKu8BEhrQsD2y3FdbEDwI/iZvTti9LgKUCmCho=;
-        b=g+VZs9Wxzz58VQ5DfHuZCBSCmF8aIdt6hK2FWdf0aNvXP76PgEkEf4YXVcL7dYgQHM
-         VpIeRvv5y1ZohW1l8kwQ1c890KodOvZp0InN/sTV9/KjSQEYcDEXqVue1N/EBRHpf1UD
-         m2osWXg00PBOXJjV+EHuOoBB/GHktgYIA/LqkSY+ZUWgKu/urkNwpq8DWtOZTc/6egeV
-         NE9etHNAxCUyYK3TH6bo2fQpZRnnr2lM4RfGEc0eiN2Z5wGJFVIrFscKwD7vSDgBc/hK
-         4aRzH1y/V6P1mdWF4oOeZZp/vj/703I/BX3k0UU3AVEA9WhXraoDNNN8qLYYSnRy2aNC
-         TitA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=/sVA9YKu8BEhrQsD2y3FdbEDwI/iZvTti9LgKUCmCho=;
-        b=LakfgB5keCo2BX2hgSqYm0NYodpC1fYGoxmQsguzKUwddG+Gv5Db0UqtBscUMEMh9N
-         rzrKigbS0+cHU7s1uT8cjATnMUre8ix2Nb/wPyLs2W3/Rc+FxM/tZ/UOPzDbjR92uX3o
-         oBJ+8mxwBjSdluFk0lRD6cW/bJWESRHeBDsTJkVr6CQjY4TGb1Q+ONZsB5a1T7tNpmBT
-         IrKRvAIobFMk0mGZ11WoSV1Lk1az/sC6lA0CdoAwFPbhV+zNTLtZFNDRqxXj5OWRz/jt
-         j6Kqfo+Tqmm5WpnA4rUgHyRlaGyHGWS5HWHSuzgZQJ0++4XRsO8wKHSMFqNbaEvc9ZMJ
-         qmyw==
-X-Gm-Message-State: APjAAAUjGkpUhfb16iKruKr/W+xPgsAhX8tiOmA9rwHTpP//eoqC++BT
-        Osb+y6ZO/14U1e0dORC2q4G0bw==
-X-Google-Smtp-Source: APXvYqwKiANimuGQ4pshZYkZK2pN3RuXOcvwID5gqoUKwV2aHk7xiqEVLVSRPzHagRqjYp4pJSQQsw==
-X-Received: by 2002:a2e:9c09:: with SMTP id s9mr39657738lji.74.1559123899025;
-        Wed, 29 May 2019 02:58:19 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id h10sm3937299ljm.9.2019.05.29.02.58.17
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 02:58:18 -0700 (PDT)
-Date:   Wed, 29 May 2019 12:58:16 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190529095814.GA4639@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
- <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
- <20190529101659.2aa714b8@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190529101659.2aa714b8@carbon>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726102AbfE2KHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:07:18 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60502 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726326AbfE2KHR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 06:07:17 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id E36FFAEFF;
+        Wed, 29 May 2019 10:07:15 +0000 (UTC)
+Date:   Wed, 29 May 2019 12:07:13 +0200
+Message-ID: <s5hsgsxtvzi.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     "Takashi Sakamoto" <o-takashi@sakamocchi.jp>
+Cc:     "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        <alsa-devel@alsa-project.org>, "Arnd Bergmann" <arnd@arndb.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Cong Wang" <xiyou.wangcong@gmail.com>,
+        "Igor Konopko" <igor.j.konopko@intel.com>,
+        "Clemens Ladisch" <clemens@ladisch.de>,
+        "Matias Bjorling" <mb@lightnvm.io>,
+        <linux-afs@lists.infradead.org>,
+        "Eran Ben Elisha" <eranbe@mellanox.com>,
+        "Jiri Pirko" <jiri@mellanox.com>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>,
+        "Joe Perches" <joe@perches.com>,
+        "Jaroslav Kysela" <perex@perex.cz>,
+        "David Howells" <dhowells@redhat.com>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH 4/5] ALSA: fireface: Use ULL suffixes for 64-bit constants
+In-Reply-To: <20190529095730.GA7089@workstation>
+References: <20190528142424.19626-1-geert@linux-m68k.org>
+        <20190528142424.19626-5-geert@linux-m68k.org>
+        <20190529095730.GA7089@workstation>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 10:16:59AM +0200, Jesper Dangaard Brouer wrote:
->On Thu, 23 May 2019 21:20:35 +0300
->Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->
->> +static struct page *cpsw_alloc_page(struct cpsw_common *cpsw)
->> +{
->> +	struct page_pool *pool = cpsw->rx_page_pool;
->> +	struct page *page, *prev_page = NULL;
->> +	int try = pool->p.pool_size << 2;
->> +	int start_free = 0, ret;
->> +
->> +	do {
->> +		page = page_pool_dev_alloc_pages(pool);
->> +		if (!page)
->> +			return NULL;
->> +
->> +		/* if netstack has page_pool recycling remove the rest */
->> +		if (page_ref_count(page) == 1)
->> +			break;
->> +
->> +		/* start free pages in use, shouldn't happen */
->> +		if (prev_page == page || start_free) {
->> +			/* dma unmap/puts page if rfcnt != 1 */
->> +			page_pool_recycle_direct(pool, page);
->> +			start_free = 1;
->> +			continue;
->> +		}
->> +
->> +		/* if refcnt > 1, page has been holding by netstack, it's pity,
->> +		 * so put it to the ring to be consumed later when fast cash is
->> +		 * empty. If ring is full then free page by recycling as above.
->> +		 */
->> +		ret = ptr_ring_produce(&pool->ring, page);
->
->This looks very wrong to me!  First of all you are manipulation
->directly with the internal pool->ring and not using the API, which
->makes this code un-maintainable.
-Yes I know, it's hack, it was with assumption to be dropped once page_pool
-recycling is added.
+On Wed, 29 May 2019 11:57:31 +0200,
+Takashi Sakamoto wrote:
+> 
+> Hi,
+> 
+> On Tue, May 28, 2019 at 04:24:23PM +0200, Geert Uytterhoeven wrote:
+> > With gcc 4.1:
+> > 
+> >     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_switch_fetching_mode’:
+> >     sound/firewire/fireface/ff-protocol-latter.c:97: warning: integer constant is too large for ‘long’ type
+> >     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_begin_session’:
+> >     sound/firewire/fireface/ff-protocol-latter.c:170: warning: integer constant is too large for ‘long’ type
+> >     sound/firewire/fireface/ff-protocol-latter.c:197: warning: integer constant is too large for ‘long’ type
+> >     sound/firewire/fireface/ff-protocol-latter.c:205: warning: integer constant is too large for ‘long’ type
+> >     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_finish_session’:
+> >     sound/firewire/fireface/ff-protocol-latter.c:214: warning: integer constant is too large for ‘long’ type
+> > 
+> > Fix this by adding the missing "ULL" suffixes.
+> > Add the same suffix to the last constant, to maintain consistency.
+> > 
+> > Fixes: fd1cc9de64c2ca6c ("ALSA: fireface: add support for Fireface UCX")
+> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > ---
+> >  sound/firewire/fireface/ff-protocol-latter.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> Thanks for your care.
+> 
+> Reviewed-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
->Second this is wrong, as page_pool
->assume the in-variance that pages on the ring have refcnt==1.
-Yes, but this is w/o obvious reason, seems like it can work with refcnt > 1 if
-remove restriction and use >= instead of ==.
+Applied to sound git tree now.  Thanks.
 
-As I answered on Ilias comment, I'm going to leave version from RFC and drop
-this one.
 
->
->> +		if (ret) {
->> +			page_pool_recycle_direct(pool, page);
->> +			continue;
->> +		}
->> +
->> +		if (!prev_page)
->> +			prev_page = page;
->> +	} while (try--);
->> +
->> +	return page;
->> +}
->
->
->-- 
->Best regards,
->  Jesper Dangaard Brouer
->  MSc.CS, Principal Kernel Engineer at Red Hat
->  LinkedIn: http://www.linkedin.com/in/brouer
-
--- 
-Regards,
-Ivan Khoronzhuk
+Takashi
