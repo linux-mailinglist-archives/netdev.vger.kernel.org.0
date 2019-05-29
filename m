@@ -2,177 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CED8F2DB43
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7FC2DB54
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 13:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726097AbfE2K6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 06:58:38 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53881 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfE2K6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:58:38 -0400
-Received: by mail-wm1-f66.google.com with SMTP id d17so1348018wmb.3
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 03:58:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=4gM+INWJgv9FdjldlOiqfPQs/3KoKbaQl3oay9t+Fsc=;
-        b=BgC+O3V1CDCLG9eAonc2x3Z0pzthiSs90mJ/qq6CbpX16xCwRLb2GL1CAWLAh2YSbc
-         sP5VbYTGIBAl2Rs0tVm88/uFymzBoNl34hew/6CwMLQlov/U0iBZcNQUs0ZopEv1UfnU
-         4L9rdL7bvkyhznUXNIswsObQZQlY6UQbOzJpxyCIuKZOUj8G47PFf67/k76T0iFCq4Ae
-         UhxBBu6KiyMwzlp0eEa6AwfI7UMqsGIoyjh9w2tuuWoTRShkGHwzamHJ69dEQ3IO8iBF
-         vY7Ldvi6B5R+9+PixwqTO8/4kji1o1IA0ULXPE7ahcV9ZYhWB81p6tDCQlUKJUZDLFa4
-         bk7A==
-X-Gm-Message-State: APjAAAUXcnLrahAIvY1qWUH9jr+5WEVLgH1ceZ6gr+wrAhwxvljSZYXB
-        3mft9FmlgzSgr8aLhRsj14hMxQ==
-X-Google-Smtp-Source: APXvYqx8DFltvKkXywu9P2M63vLL0b9huUgQDGKM0bNckHf+CE/QRL47FPbLHu0JlvqcBJyV8vRuLQ==
-X-Received: by 2002:a1c:acc8:: with SMTP id v191mr6597928wme.177.1559127515682;
-        Wed, 29 May 2019 03:58:35 -0700 (PDT)
-Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
-        by smtp.gmail.com with ESMTPSA id j123sm9038134wmb.32.2019.05.29.03.58.34
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 29 May 2019 03:58:34 -0700 (PDT)
-Date:   Wed, 29 May 2019 12:58:32 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
-Message-ID: <20190529105832.oz3sagbne5teq3nt@steredhat>
-References: <20190528105623.27983-1-sgarzare@redhat.com>
- <20190528105623.27983-4-sgarzare@redhat.com>
- <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
+        id S1726029AbfE2LDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 07:03:25 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:53802 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725894AbfE2LDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 07:03:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=5IdmKPZQD7bbi1GmqNaL5KPnemw6kM/fEpmK9PgYE8E=; b=NO2W9s0FKRLmviIvrzK4bPhxY
+        aqZEdPQckqol0SosB+LpZXZAzhoE3cEaIniAlefkpwWeDB6LVP3JTv1qFE+9q95TvLfNxdF8UwmzE
+        9jD5nu4D8DXcLWl4HbH20B5m0OIe+BI4ZmwQgFLtNsmwzVu4E0VDgps6Li0udTMatRUx8IDo4m2Cq
+        8afL3AIR2QMeQ/onZIdVG74tri4SK1W9tpcAOqxVFc9AXo4RtosGMl6YaT3pgPobuJZa4Ej1uNL7A
+        ZiAl7ChQnUxuEIGNT9mSfHK8+d+jYhNpZOxuMnWbncZE7NnlwX/jNhUg/ab7QnGu6clIDVuIshZhP
+        2/KnTuSFQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52700)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hVwMY-0003u7-Pe; Wed, 29 May 2019 12:03:18 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hVwMV-0004UI-Ps; Wed, 29 May 2019 12:03:15 +0100
+Date:   Wed, 29 May 2019 12:03:15 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell10g: report if the PHY fails to boot
+ firmware
+Message-ID: <20190529110315.uw4a24avp4czhcru@shell.armlinux.org.uk>
+References: <E1hVYVG-0005D8-8w@rmk-PC.armlinux.org.uk>
+ <20190528154238.ifudfslyofk22xoe@shell.armlinux.org.uk>
+ <20190528161139.GQ18059@lunn.ch>
+ <20190528162356.xjq53h4z7edvr3gl@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190528162356.xjq53h4z7edvr3gl@shell.armlinux.org.uk>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 11:22:40AM +0800, Jason Wang wrote:
-> 
-> On 2019/5/28 下午6:56, Stefano Garzarella wrote:
-> > We flush all pending works before to call vdev->config->reset(vdev),
-> > but other works can be queued before the vdev->config->del_vqs(vdev),
-> > so we add another flush after it, to avoid use after free.
+On Tue, May 28, 2019 at 05:23:56PM +0100, Russell King - ARM Linux admin wrote:
+> On Tue, May 28, 2019 at 06:11:39PM +0200, Andrew Lunn wrote:
+> > > One question: are we happy with failing the probe like this, or would it
+> > > be better to allow the probe to suceed?
+> > > 
+> > > As has been pointed out in the C45 MII access patch, we need the PHY
+> > > to bind to the network driver for the MII bus to be accessible to
+> > > userspace, so if we're going to have userspace tools to upload the
+> > > firmware, rather than using u-boot, we need the PHY to be present and
+> > > bound to the network interface.
 > > 
-> > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > ---
-> >   net/vmw_vsock/virtio_transport.c | 23 +++++++++++++++++------
-> >   1 file changed, 17 insertions(+), 6 deletions(-)
+> > Hi Russell
 > > 
-> > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > index e694df10ab61..ad093ce96693 100644
-> > --- a/net/vmw_vsock/virtio_transport.c
-> > +++ b/net/vmw_vsock/virtio_transport.c
-> > @@ -660,6 +660,15 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
-> >   	return ret;
-> >   }
-> > +static void virtio_vsock_flush_works(struct virtio_vsock *vsock)
-> > +{
-> > +	flush_work(&vsock->loopback_work);
-> > +	flush_work(&vsock->rx_work);
-> > +	flush_work(&vsock->tx_work);
-> > +	flush_work(&vsock->event_work);
-> > +	flush_work(&vsock->send_pkt_work);
-> > +}
-> > +
-> >   static void virtio_vsock_remove(struct virtio_device *vdev)
-> >   {
-> >   	struct virtio_vsock *vsock = vdev->priv;
-> > @@ -668,12 +677,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> >   	mutex_lock(&the_virtio_vsock_mutex);
-> >   	the_virtio_vsock = NULL;
-> > -	flush_work(&vsock->loopback_work);
-> > -	flush_work(&vsock->rx_work);
-> > -	flush_work(&vsock->tx_work);
-> > -	flush_work(&vsock->event_work);
-> > -	flush_work(&vsock->send_pkt_work);
-> > -
-> >   	/* Reset all connected sockets when the device disappear */
-> >   	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-> > @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> >   	vsock->event_run = false;
-> >   	mutex_unlock(&vsock->event_lock);
-> > +	/* Flush all pending works */
-> > +	virtio_vsock_flush_works(vsock);
-> > +
-> >   	/* Flush all device writes and interrupts, device will not use any
-> >   	 * more buffers.
-> >   	 */
-> > @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> >   	/* Delete virtqueues and flush outstanding callbacks if any */
-> >   	vdev->config->del_vqs(vdev);
-> > +	/* Other works can be queued before 'config->del_vqs()', so we flush
-> > +	 * all works before to free the vsock object to avoid use after free.
-> > +	 */
-> > +	virtio_vsock_flush_works(vsock);
+> > It is an interesting question. Failing the probe is the simple
+> > solution. If we don't fail the probe, we then need to allow the
+> > attach, but fail all normal operations, with a noisy kernel log.  That
+> > probably means adding a new state to the state machine, PHY_BROKEN.
+> > Enter that state if phy_start_aneg() returns an error?
 > 
+> Hi Andrew,
 > 
-> Some questions after a quick glance:
+> I don't think we need a new state - I think we can trap it in
+> the link_change_notify() method, and force phydev->state to
+> PHY_HALTED if it's in phy_is_started() mode.
 > 
-> 1) It looks to me that the work could be queued from the path of
-> vsock_transport_cancel_pkt() . Is that synchronized here?
->
+> Maybe something like:
+> 
+> 	if (phy_is_started(phydev) && priv->firmware_failed) {
+> 		dev_warn(&phydev->mdio.dev,
+> 			 "PHY firmware failure: link forced down");
+> 		phydev->state = PHY_HALTED;
+> 	}
+> 
+> Or maybe we just need to do that if phydev->state == PHY_UP or
+> PHY_RESUMING (the two states entered from phy_start())?
 
-Both virtio_transport_send_pkt() and vsock_transport_cancel_pkt() can
-queue work from the upper layer (socket).
+Here's the fuller patch for what I'm suggesting:
 
-Setting the_virtio_vsock to NULL, should synchronize, but after a careful look
-a rare issue could happen:
-we are setting the_virtio_vsock to NULL at the start of .remove() and we
-are freeing the object pointed by it at the end of .remove(), so
-virtio_transport_send_pkt() or vsock_transport_cancel_pkt() may still be
-running, accessing the object that we are freed.
+ drivers/net/phy/marvell10g.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-Should I use something like RCU to prevent this issue?
-
-    virtio_transport_send_pkt() and vsock_transport_cancel_pkt()
-    {
-        rcu_read_lock();
-        vsock = rcu_dereference(the_virtio_vsock_mutex);
-        ...
-        rcu_read_unlock();
-    }
-
-    virtio_vsock_remove()
-    {
-        rcu_assign_pointer(the_virtio_vsock_mutex, NULL);
-        synchronize_rcu();
-
-        ...
-
-        free(vsock);
-    }
-
-Could there be a better approach?
-
-
-> 2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run still
-> needed? It looks to me we've already done except that we need flush rx_work
-> in the end since send_pkt_work can requeue rx_work.
-
-The main reason of tx_run/rx_run/event_run is to prevent that a worker
-function is running while we are calling config->reset().
-
-E.g. if an interrupt comes between virtio_vsock_flush_works() and
-config->reset(), it can queue new works that can access the device while
-we are in config->reset().
-
-IMHO they are still needed.
-
-What do you think?
-
-
-Thanks for your questions,
-Stefano
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 754cde873dde..86333d98b384 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -60,6 +60,8 @@ enum {
+ };
+ 
+ struct mv3310_priv {
++	bool firmware_failed;
++
+ 	struct device *hwmon_dev;
+ 	char *hwmon_name;
+ };
+@@ -214,6 +216,10 @@ static int mv3310_probe(struct phy_device *phydev)
+ 	    (phydev->c45_ids.devices_in_package & mmd_mask) != mmd_mask)
+ 		return -ENODEV;
+ 
++	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
+ 	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT);
+ 	if (ret < 0)
+ 		return ret;
+@@ -221,13 +227,9 @@ static int mv3310_probe(struct phy_device *phydev)
+ 	if (ret & MV_PMA_BOOT_FATAL) {
+ 		dev_warn(&phydev->mdio.dev,
+ 			 "PHY failed to boot firmware, status=%04x\n", ret);
+-		return -ENODEV;
++		priv->firmware_failed = true;
+ 	}
+ 
+-	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
+-
+ 	dev_set_drvdata(&phydev->mdio.dev, priv);
+ 
+ 	ret = mv3310_hwmon_probe(phydev);
+@@ -247,6 +249,19 @@ static int mv3310_resume(struct phy_device *phydev)
+ 	return mv3310_hwmon_config(phydev, true);
+ }
+ 
++static void mv3310_link_change_notify(struct phy_device *phydev)
++{
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++	enum phy_state state = phydev->state;
++
++	if (priv->firmware_failed &&
++	    (state == PHY_UP || state == PHY_RESUMING)) {
++		dev_warn(&phydev->mdio.dev,
++			 "PHY firmware failure: link forced down");
++		phydev->state = state = PHY_HALTED;
++	}
++}
++
+ /* Some PHYs in the Alaska family such as the 88X3310 and the 88E2010
+  * don't set bit 14 in PMA Extended Abilities (1.11), although they do
+  * support 2.5GBASET and 5GBASET. For these models, we can still read their
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
