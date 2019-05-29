@@ -2,99 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B14022E2C8
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17CE2E2D6
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 19:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbfE2RDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 13:03:55 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34157 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfE2RDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 13:03:55 -0400
-Received: by mail-qt1-f193.google.com with SMTP id h1so3526803qtp.1;
-        Wed, 29 May 2019 10:03:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lyYcWrWqk2uqaWHLdJCXZCIIhh/8/m2Rv6Ciz2qleeI=;
-        b=iSYEg5Ov8Q4PYW60985QWPtPvYglm2clHxaldgubR4k9IrHX73wb8rxpsgt1SfWsUK
-         LbxMrCphd3esuOlfZY9i4PBCVSYEB70ZfOoQ4iBcEIEHubF95mlyTct1O0jDjF+XmGwo
-         5W87w1vH2F9XqbN/n2pe+gEmiPAAb9sRKnODO5o6WPzvzkqYvV4LVSct7GuyHsBqt9YL
-         F33Kpjd+P2HTGL9ElYbYrZNsxUmjzkhQuy7KqnTNe40IApe8Nqr0AxqD22pBwgkXk4P+
-         Sr+tc1d5xH+ExmjXkBzpefz+wv+VB93T24RgeGe4WTp1mhPRwSJDGwVF+JftKcF5wzuH
-         UNSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lyYcWrWqk2uqaWHLdJCXZCIIhh/8/m2Rv6Ciz2qleeI=;
-        b=WtoQSrnvehmIej60treawQqg4qWU1yBdDOPfuMFhMeMWecjhz+B7DT/s51iCF898hu
-         9OcFG93cC0+oLXW71cKMgu1Mq+dWVVzIjE1Mve9vebSn3ymUODEzOgscEwI7FLttkS/d
-         QjXAJ9o2O8LbF3sRAPhVLihXkxrq00tgZ7PqYDLhQz3DjnjM5QNtL4Fw2u/Pge7jaxxn
-         l9eMQzF1N8//txhyUeIln0ogqFOOgM+0qkEICg3O3x4EicwDTZTeAETiQ2dduePlagif
-         7GQjW5zRQVGLtgwfge50LjOuTGU+a06K77Jio97hDqCN2EQsLB/LWnKzbTszCBVmUGaK
-         uz8Q==
-X-Gm-Message-State: APjAAAVv6K6QCFCu5a1uZ/O7mSpnsGP5foxKFlS3jj/aXXAeG7nbpDRH
-        qlbPvZZURmk5A2CJSxqi6Md8eVjtseOuk/DaDP4=
-X-Google-Smtp-Source: APXvYqy02lL+Z1B3IFy6hII2uGlCJeix/zAVZ/i/X8OzJVW4iu/6Q0XrzeMW1xyFDOZUCjFfNSv7g6g0HM2ktLtATwU=
-X-Received: by 2002:aed:3b66:: with SMTP id q35mr19513211qte.118.1559149434203;
- Wed, 29 May 2019 10:03:54 -0700 (PDT)
+        id S1726033AbfE2RG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 13:06:56 -0400
+Received: from mga04.intel.com ([192.55.52.120]:16973 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726005AbfE2RGz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 13:06:55 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 May 2019 10:06:55 -0700
+X-ExtLoop1: 1
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by orsmga002.jf.intel.com with ESMTP; 29 May 2019 10:06:54 -0700
+Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Wed, 29 May 2019 10:06:54 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.95]) by
+ ORSMSX114.amr.corp.intel.com ([169.254.8.116]) with mapi id 14.03.0415.000;
+ Wed, 29 May 2019 10:06:54 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>
+Subject: Re: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
+ hardware offloading
+Thread-Topic: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
+ hardware offloading
+Thread-Index: AQHVFX1jRoxwIAipQEiZCaa8URTGlqaBmGAAgAEzxgA=
+Date:   Wed, 29 May 2019 17:06:49 +0000
+Message-ID: <62E2DD49-AC21-46DE-8E5B-EBC67230FA7D@intel.com>
+References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
+ <1559065608-27888-4-git-send-email-vedang.patel@intel.com>
+ <20190528154510.41b50723@cakuba.netronome.com>
+In-Reply-To: <20190528154510.41b50723@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.14.201]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <55D5CAF235ABE14E81A33FF047D69744@intel.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190529011426.1328736-1-andriin@fb.com> <20190529011426.1328736-3-andriin@fb.com>
-In-Reply-To: <20190529011426.1328736-3-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Wed, 29 May 2019 10:03:43 -0700
-Message-ID: <CAPhsuW6OTt78SB+1-01=PZ3wAu0DV1V3HyTvSoQTDkfVP9hfeA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/9] libbpf: preserve errno before calling into
- user callback
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 6:14 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> pr_warning ultimately may call into user-provided callback function,
-> which can clobber errno value, so we need to save it before that.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
-
-> ---
->  tools/lib/bpf/libbpf.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 05a73223e524..7b80b9ae8a1f 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -565,12 +565,12 @@ static int bpf_object__elf_init(struct bpf_object *obj)
->         } else {
->                 obj->efile.fd = open(obj->path, O_RDONLY);
->                 if (obj->efile.fd < 0) {
-> -                       char errmsg[STRERR_BUFSIZE];
-> -                       char *cp = libbpf_strerror_r(errno, errmsg,
-> -                                                    sizeof(errmsg));
-> +                       char errmsg[STRERR_BUFSIZE], *cp;
->
-> +                       err = -errno;
-> +                       cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
->                         pr_warning("failed to open %s: %s\n", obj->path, cp);
-> -                       return -errno;
-> +                       return err;
->                 }
->
->                 obj->efile.elf = elf_begin(obj->efile.fd,
-> --
-> 2.17.1
->
+VGhhbmtzIEphY3ViIGZvciB0aGV5IGlucHV0cy4NCg0KPiBPbiBNYXkgMjgsIDIwMTksIGF0IDM6
+NDUgUE0sIEpha3ViIEtpY2luc2tpIDxqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUuY29tPiB3cm90
+ZToNCj4gDQo+IE9uIFR1ZSwgMjggTWF5IDIwMTkgMTA6NDY6NDQgLTA3MDAsIFZlZGFuZyBQYXRl
+bCB3cm90ZToNCj4+IEZyb206IFZpbmljaXVzIENvc3RhIEdvbWVzIDx2aW5pY2l1cy5nb21lc0Bp
+bnRlbC5jb20+DQo+PiANCj4+IFRoaXMgYWRkcyB0aGUgVUFQSSBhbmQgdGhlIGNvcmUgYml0cyBu
+ZWNlc3NhcnkgZm9yIHVzZXJzcGFjZSB0bw0KPj4gcmVxdWVzdCBoYXJkd2FyZSBvZmZsb2FkaW5n
+IHRvIGJlIGVuYWJsZWQuDQo+PiANCj4+IFRoZSBmdXR1cmUgY29tbWl0cyB3aWxsIGVuYWJsZSBo
+eWJyaWQgb3IgZnVsbCBvZmZsb2FkaW5nIGZvciB0YXByaW8uIFRoaXMNCj4+IGNvbW1pdCBzZXRz
+IHVwIHRoZSBpbmZyYXN0cnVjdHVyZSB0byBlbmFibGUgaXQgdmlhIHRoZSBuZXRsaW5rIGludGVy
+ZmFjZS4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogVmluaWNpdXMgQ29zdGEgR29tZXMgPHZpbmlj
+aXVzLmdvbWVzQGludGVsLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IFZlZGFuZyBQYXRlbCA8dmVk
+YW5nLnBhdGVsQGludGVsLmNvbT4NCj4gDQo+IE90aGVyIHFkaXNjcyBvZmZsb2FkIGJ5IGRlZmF1
+bHQsIHRoaXMgb2ZmbG9hZC1sZXZlbCBzZWxlY3Rpb24gaGVyZSBpcyBhDQo+IGxpdHRsZSBiaXQg
+aW5jb25zaXN0ZW50IHdpdGggdGhhdCA6KA0KPiANClRoZXJlIGFyZSAyIGRpZmZlcmVudCBvZmZs
+b2FkIG1vZGVzIGludHJvZHVjZWQgaW4gdGhpcyBwYXRjaC4NCg0KMS4gVHh0aW1lIG9mZmxvYWQg
+bW9kZTogVGhpcyBtb2RlIGRlcGVuZHMgb24gc2tpcF9zb2NrX2NoZWNrIGZsYWcgYmVpbmcgc2V0
+IGluIHRoZSBldGYgcWRpc2MuIEFsc28sIGl0IHJlcXVpcmVzIHNvbWUgbWFudWFsIGNvbmZpZ3Vy
+YXRpb24gd2hpY2ggbWlnaHQgYmUgc3BlY2lmaWMgdG8gdGhlIG5ldHdvcmsgYWRhcHRlciBjYXJk
+LiBGb3IgZXhhbXBsZSwgZm9yIHRoZSBpMjEwIGNhcmQsIHRoZSB1c2VyIHdpbGwgaGF2ZSB0byBy
+b3V0ZSBhbGwgdGhlIHRyYWZmaWMgdG8gdGhlIGhpZ2hlc3QgcHJpb3JpdHkgcXVldWUgYW5kIGlu
+c3RhbGwgZXRmIHFkaXNjIHdpdGggb2ZmbG9hZCBlbmFibGVkIG9uIHRoYXQgcXVldWUuIFNvLCBJ
+IGRvbuKAmXQgdGhpbmsgdGhpcyBtb2RlIHNob3VsZCBiZSBlbmFibGVkIGJ5IGRlZmF1bHQuDQoy
+LiBGdWxsIG9mZmxvYWQgbW9kZTogVGhpcyBtb2RlIGlzIGN1cnJlbnRseSBub3Qgc3VwcG9ydGVk
+IGJ5IGFueSBuZXR3b3JrIGRyaXZlci4gVGhlIHN1cHBvcnQgZm9yIHRoaXMgd2lsbCBiZSBjb21p
+bmcgc29vbi4gQnV0LCB3ZSBjYW4gZW5hYmxlIHRoaXMgbW9kZSBieSBkZWZhdWx0LiANCg0KQWxz
+bywgZnJvbSB3aGF0IFZpbmljaXVzIHRlbGxzIG1lLCBvZmZsb2FkIG1vZGVzIGZvciBjYnMsIGV0
+ZiBhbmQgbXFwcmlvIGFyZSBhbHNvIGRpc2FibGVkIGJ5IGRlZmF1bHQuIFNvLCBpdCB3aWxsIG1h
+a2UgbW9yZSBzZW5zZSB0byBrZWVwIGl0IGRpc2FibGVkIHRvIGJlIGNvbnNpc3RlbnQgd2l0aCBv
+dGhlciBxZGlzY3Mgc2ltaWxhciB0byB0aGlzIG9uZS4NCj4+IEBAIC03MzEsNiArODU3LDkgQEAg
+c3RhdGljIGludCB0YXByaW9fY2hhbmdlKHN0cnVjdCBRZGlzYyAqc2NoLCBzdHJ1Y3QgbmxhdHRy
+ICpvcHQsDQo+PiAJaWYgKGVyciA8IDApDQo+PiAJCXJldHVybiBlcnI7DQo+PiANCj4+ICsJaWYg
+KHRiW1RDQV9UQVBSSU9fQVRUUl9PRkZMT0FEX0ZMQUdTXSkNCj4+ICsJCW9mZmxvYWRfZmxhZ3Mg
+PSBubGFfZ2V0X3UzMih0YltUQ0FfVEFQUklPX0FUVFJfT0ZGTE9BRF9GTEFHU10pOw0KPiANCj4g
+WW91IHNob3VsZCBtYWtlIHN1cmUgdXNlciBkb2Vzbid0IHNldCB1bmtub3duIGJpdHMuICBPdGhl
+cndpc2UgdXNpbmcNCj4gb3RoZXIgYml0cyB3aWxsIG5vdCBiZSBwb3NzaWJsZSBpbiB0aGUgZnV0
+dXJlLg0KPiANClllcywgSSBhZ3JlZSBoZXJlLCB3aWxsIGluY2x1ZGUgdGhpcyBpbiB0aGUgbmV4
+dCBwYXRjaHNldC4NCg0KVGhhbmtzLA0KVmVkYW5nDQo+PiAJbmV3X2FkbWluID0ga3phbGxvYyhz
+aXplb2YoKm5ld19hZG1pbiksIEdGUF9LRVJORUwpOw0KPj4gCWlmICghbmV3X2FkbWluKSB7DQo+
+PiAJCU5MX1NFVF9FUlJfTVNHKGV4dGFjaywgIk5vdCBlbm91Z2ggbWVtb3J5IGZvciBhIG5ldyBz
+Y2hlZHVsZSIpOw0KDQo=
