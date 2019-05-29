@@ -2,147 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDE72E212
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB67A2E220
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 18:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbfE2QMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 12:12:37 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36811 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbfE2QMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 12:12:36 -0400
-Received: by mail-pf1-f196.google.com with SMTP id u22so1943813pfm.3;
-        Wed, 29 May 2019 09:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xkkSoeIJ5NlHJgTUsmglQ/r401Y8KOeJXycUoDLqA0w=;
-        b=LD3U8XaRujtilCrXVCJc0zq4EJkGKx6tHIt/HRmSp0Nxib86CcafYSR2riNyx16+Qn
-         97tYzQl2BUBoJZFdUJa2yojNZ7l5GUnm0Tm+6NQaaY6IEZJVA7HCNL27czjhN5CuypEJ
-         FDT3vp3zeSIVTaR+xsi+rq8KodBOUsBY4DkeMfx73iLHkMLX3FTEkNpQahgOD75XZdt7
-         w7W9mItTBFESZ37hfKgvnPovkPI5GVhZhZJdei98545eI8m7wn9p907HisUWdN9/k7S/
-         c+D2S0qqR9v1TY0aCFBorRssrtz6zGABB3LTcjw9KiGEgt92QSmpCE3IZqc19Qu1pavO
-         yHuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xkkSoeIJ5NlHJgTUsmglQ/r401Y8KOeJXycUoDLqA0w=;
-        b=nZRo4SetSBXIqwuJVrRawm2C8W3oja69A7rMKC9MilKAB1dhafsbs9gIaYTIkhyMDd
-         z24IWyVS/2i2RxZ8jnqHbJO6bqj6TtE0XTWHz3l4rjbw/NoljgARbBEJP0jMbihD5tul
-         4YB5miNs7ThLkxjhStBLwDEA9g352gyagmueqby38wbU2Y9RoXTchKNOuC7UmTqxNJcd
-         RmO8fnfXdIZ/60i4/ytnlEQ0+H6D1LO9AR49kodIONHZAjUclO+HHraKJcPmceMxPNIJ
-         S3w2BaRiR8kgNhiWWUOaWpU8e2yYau1ZQsLnrqrboed26pMyvaTJDzzGDwOlOmIs+c5K
-         HKyw==
-X-Gm-Message-State: APjAAAWJstw4kl7EzqaLkGh+U4Qy/bgGRA4O75tAhD3GQaC6WL60chO9
-        IF/d/zL7RdocaDE8YzwwDEI=
-X-Google-Smtp-Source: APXvYqyRKYhfkHRZ5CactAZltsaeDn4rCjzo1VgAWWQYoRhR/oz2+Vkk/7tDriW4LM9FjnsdX2XpcA==
-X-Received: by 2002:a62:d41c:: with SMTP id a28mr52493954pfh.31.1559146355284;
-        Wed, 29 May 2019 09:12:35 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:31f1:bcc4:54e4:3069? ([2601:282:800:fd80:31f1:bcc4:54e4:3069])
-        by smtp.googlemail.com with ESMTPSA id 1sm73299pfn.165.2019.05.29.09.12.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 May 2019 09:12:34 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/4] rdma: Add an option to query,set net
- namespace sharing sys parameter
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        stephen@networkplumber.org, leonro@mellanox.com
-References: <20190521142244.8452-1-parav@mellanox.com>
- <20190521142244.8452-2-parav@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <014b3e56-9aa0-4b20-158c-d4907078d224@gmail.com>
-Date:   Wed, 29 May 2019 10:12:32 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190521142244.8452-2-parav@mellanox.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726699AbfE2QS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 12:18:26 -0400
+Received: from mail-eopbgr10054.outbound.protection.outlook.com ([40.107.1.54]:12771
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726396AbfE2QS0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 12:18:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kwV86SBBcW84u2+kpv7JOJzYKFmWovxWgXU18Ndjtj4=;
+ b=StGrMje0UFKOZNuddTsSNPHm59NgvMHwg8BFxNJTmzV86T/CFPA++QLJRJA+R9wZ6K0pR+snF1oTV0y9fIgYCUiK2EwfiKrVVIw6eJBPYIgPFe882seLFhvC4QKh0l62w5y7r9lUZMg2UaXzTTDx1R37oYiM1G5QdJ3n5ludsdw=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3437.eurprd04.prod.outlook.com (52.134.3.29) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Wed, 29 May 2019 16:18:22 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1922.019; Wed, 29 May 2019
+ 16:18:22 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 net-next 06/11] net: phylink: Add struct phylink_config
+ to PHYLINK API
+Thread-Topic: [PATCH v2 net-next 06/11] net: phylink: Add struct
+ phylink_config to PHYLINK API
+Thread-Index: AQHVFXx+Jo7DTUV/skyQDJJUBAdOCaaBtVKAgACStqA=
+Date:   Wed, 29 May 2019 16:18:21 +0000
+Message-ID: <VI1PR0402MB280020D1730C4860CAE9F855E01F0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
+        <1559065097-31832-7-git-send-email-ioana.ciornei@nxp.com>
+ <20190529092845.4bc7439f@bootlin.com>
+In-Reply-To: <20190529092845.4bc7439f@bootlin.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 95a68158-50b2-4b63-ddc1-08d6e45144fe
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB3437;
+x-ms-traffictypediagnostic: VI1PR0402MB3437:
+x-microsoft-antispam-prvs: <VI1PR0402MB3437B791157A300A2568CAC9E01F0@VI1PR0402MB3437.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0052308DC6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(396003)(376002)(366004)(346002)(189003)(199004)(476003)(7416002)(6916009)(3846002)(478600001)(316002)(14454004)(26005)(11346002)(53936002)(6246003)(4326008)(9686003)(486006)(446003)(68736007)(55016002)(6436002)(52536014)(66066001)(186003)(229853002)(71200400001)(71190400001)(5660300002)(81156014)(8676002)(305945005)(7696005)(6116002)(73956011)(256004)(25786009)(66946007)(66476007)(64756008)(66556008)(66446008)(2906002)(8936002)(76116006)(74316002)(76176011)(6506007)(54906003)(44832011)(86362001)(102836004)(33656002)(81166006)(7736002)(99286004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3437;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: jCTgXeeURHxdrbGy8vzE9ztdytoQ22pgo/Xl462jm6Fvk+YiFYMOlHzpR2ZGyG0ro70OMLalr2GLkSpCoLIXO8qE+QkeOvA4za6loMxw7lkFGHf0SFI0ZAcJ/PuysUOs8OUxrHQWGFn4c+SHSQhNj9PUkBjI4o/hGRBiVgyJ4IBH04H1LU3/DPHNT4tHfudt5CR9IBGkZ+8z5cavPBZNgrCQYnZvL31fw9yOCimWrGI++UaH0Zm57xjQHdRCyBoDCVXmZrMgeEqmPewrnQfrI/PUD5NOE3w/qk2q8Ypzd3RY2Ge9OmHLDfaC3O4gjGTHWCxqlpF0vJqZH7s4UdUnJ2RkZtOBh9ajzeZMiCTcSdRkPG6S7F/T/1tZw/w+NexKQOEbJFdhc66w/nWA5sAgBgR4FISuOj4P+igbfBe1AGk=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95a68158-50b2-4b63-ddc1-08d6e45144fe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2019 16:18:21.9340
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3437
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/19 8:22 AM, Parav Pandit wrote:
-> diff --git a/rdma/sys.c b/rdma/sys.c
-> new file mode 100644
-> index 00000000..78e5198f
-> --- /dev/null
-> +++ b/rdma/sys.c
-> @@ -0,0 +1,143 @@
-> +/*
-> + * sys.c	RDMA tool
-> + *
-> + *              This program is free software; you can redistribute it and/or
-> + *              modify it under the terms of the GNU General Public License
-> + *              as published by the Free Software Foundation; either version
-> + *              2 of the License, or (at your option) any later version.
-> + */
 
-Please use the SPDX line like the other rdma files.
+> Subject: Re: [PATCH v2 net-next 06/11] net: phylink: Add struct phylink_c=
+onfig to
+> PHYLINK API
+>=20
+> Hello Ioana,
+>=20
+> On Tue, 28 May 2019 20:38:12 +0300
+> Ioana Ciornei <ioana.ciornei@nxp.com> wrote:
+>=20
+> >The phylink_config structure will encapsulate a pointer to a struct
+> >device and the operation type requested for this instance of PHYLINK.
+> >This patch does not make any functional changes, it just transitions
+> >the PHYLINK internals and all its users to the new API.
+> >
+> >A pointer to a phylink_config structure will be passed to
+> >phylink_create() instead of the net_device directly. Also, the same
+> >phylink_config pointer will be passed back to all phylink_mac_ops
+> >callbacks instead of the net_device. Using this mechanism, a PHYLINK
+> >user can get the original net_device using a structure such as
+> >'to_net_dev(config->dev)' or directly the structure containing the
+> >phylink_config using a container_of call.
+>=20
+> I see that you mixed both to_net_dev and container_of uses in mvpp2, is t=
+here a
+> reason for that ?
 
-> +
-> +#include "rdma.h"
-> +
-> +static int sys_help(struct rd *rd)
-> +{
-> +	pr_out("Usage: %s system show [ netns ]\n", rd->filename);
-> +	pr_out("       %s system set netns { shared | exclusive }\n", rd->filename);
-> +	return 0;
-> +}
-> +
-> +static const char *netns_modes_str[] = {
-> +	"exclusive",
-> +	"shared",
-> +};
-> +
-> +static int sys_show_parse_cb(const struct nlmsghdr *nlh, void *data)
-> +{
-> +	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
-> +	struct rd *rd = data;
-> +
-> +	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
-> +
-> +	if (tb[RDMA_NLDEV_SYS_ATTR_NETNS_MODE]) {
-> +		const char *mode_str;
-> +		uint8_t netns_mode;
-> +
-> +		netns_mode =
-> +			mnl_attr_get_u8(tb[RDMA_NLDEV_SYS_ATTR_NETNS_MODE]);
-> +
-> +		if (netns_mode <= ARRAY_SIZE(netns_modes_str))
-> +			mode_str = netns_modes_str[netns_mode];
-> +		else
-> +			mode_str = "unknown";
-> +
-> +		if (rd->json_output)
-> +			jsonw_string_field(rd->jw, "netns", mode_str);
-> +		else
-> +			pr_out("netns %s\n", mode_str);
-> +	}
-> +	return MNL_CB_OK;
-> +}
-> +
-> +static int sys_show_no_args(struct rd *rd)
-> +{
-> +	uint32_t seq;
-> +	int ret;
-> +
-> +	rd_prepare_msg(rd, RDMA_NLDEV_CMD_SYS_GET,
-> +		       &seq, (NLM_F_REQUEST | NLM_F_ACK));
-> +	ret = rd_send_msg(rd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = rd_recv_msg(rd, sys_show_parse_cb, rd, seq);
-> +	return ret;
+When only the mvpp2_port was needed I chose to use a container_of directly =
+rather than in 2 steps: to_net_dev and then netdev_priv.
+On the other hand, when both the netdev and the mvpp2_port was used, adding=
+ just a to_net_dev was the least disruptive.
 
-since you are fixing the header, why not just
-	return rd_recv_msg(rd, sys_show_parse_cb, rd, seq);
+>=20
+> Other than that, for the mvpp2 part,
+>=20
+> Reviewed-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> Tested-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+>=20
 
-like the other functions?
+Thanks a lot for testing.
 
+--
+Ioana
+
+> Thanks,
+>=20
+> Maxime
