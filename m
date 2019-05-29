@@ -2,626 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B762D9BD
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C62E2D9F9
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 12:06:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbfE2J5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 05:57:24 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:36677 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfE2J5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:57:22 -0400
-Received: by mail-wm1-f67.google.com with SMTP id v22so1139539wml.1
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 02:57:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jmR244p0L7KEhqm4CZvGQiomHPbgkGjwuYr3JXLhFX0=;
-        b=Tc3hT79PRtblh4eYtq3+iC0QzcRTqQTicPGNAdhBybWTTz5jbU5DKfs2ACiHOmauQu
-         3ZgNuSsy7Uog+EoZEWO38SDGedaa8N6R6aLAV0dqNMES+xchw4iXlR98WNQ7EB6+5+bB
-         liFRFP6QAAdRwlcBDtMU8PBRTQQOeNtiLiUMLv5UBQbz+K7YaBEIWR2Gf4x8tLM9r71i
-         5kyOVFtbwQy2tsfOU6hhcGNVTB4heZbygJhWJZz4twJbFReBQkxwM877vyRJrREea1KZ
-         t8OoQ4FJrvU1lUZY+EHaeGCz/oQDaxX3JTUQp/tHmgEJTJlBtws1BOa/Jf5j03NRTQ7J
-         LJwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=jmR244p0L7KEhqm4CZvGQiomHPbgkGjwuYr3JXLhFX0=;
-        b=ZAWD16mcv4PtgOdUilLWToAErM2516xAkuDZf6w88Tu/MWSk35ywC9tUCJ/C5mckR0
-         ctJqu7YlsoO9MuqIrq42QX/Z4cFNDs6nTVjy++QGOKcmM90SDlzT9sBYmQtR1g2B859i
-         Hs5YfD8YOOWxs95VP8ypE9a8vb2E6KGjW7KWfA9w3R3CWuAYolDznel3r1ES7PzJTdYN
-         /tZWTvK35eO9iwfiStZXmc8XFpALu/Kda2iA3ZDgOtGZxDoSJoQqBgN94s5kQFuxIIEa
-         kO30eigVRE5QolpDhuF8hhP2ulVO7Jt/05jpX53Ba0TPQtKUay4ZfkhDkbOM01GIDwyZ
-         0qxg==
-X-Gm-Message-State: APjAAAVOzYPYqaobG59efK6OfwRjE58JgO17gW/KGPqGXg3bMvsUppUz
-        wSiGQmGFAB6RvaVSZUbytZX/IQ==
-X-Google-Smtp-Source: APXvYqxWLW0+GDnMAqksjeDwWkx0o4LUuy1kodFS1ptt4WKZJTjG/tzri3j5d6aPXyLtxRzlTM4aEQ==
-X-Received: by 2002:a05:600c:489:: with SMTP id d9mr5915205wme.173.1559123840230;
-        Wed, 29 May 2019 02:57:20 -0700 (PDT)
-Received: from cbtest28.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id 205sm6322206wmd.43.2019.05.29.02.57.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 29 May 2019 02:57:19 -0700 (PDT)
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     bjorn.topel@intel.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH bpf 2/2] selftests: bpf: complete sub-register zero extension checks
-Date:   Wed, 29 May 2019 10:57:09 +0100
-Message-Id: <1559123829-9318-3-git-send-email-jiong.wang@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1559123829-9318-1-git-send-email-jiong.wang@netronome.com>
-References: <1559123829-9318-1-git-send-email-jiong.wang@netronome.com>
+        id S1726102AbfE2KGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 06:06:14 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:60151 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725956AbfE2KGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 06:06:13 -0400
+X-Greylist: delayed 510 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 May 2019 06:06:12 EDT
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A37261B2A;
+        Wed, 29 May 2019 05:57:41 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 29 May 2019 05:57:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
+         h=date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:content-transfer-encoding:in-reply-to; s=fm1; bh=U
+        v/IO1lpsMhYefZCZE7IzUSu7PAH6TRG1LbnuRgviM4=; b=mn/7Y1LZeF5WEZX9C
+        kyxZtrcWF3ULGfrAWaVTCu5SVtlugVE3VqZmjWKq6xRLw16HfohMo8gWCyfoiTDU
+        8ddDr3hcah8IDP6Hys4o8IC2EdotB5aWhP8EraoIMIJh7rSxM+BKMMZLl9NkVZnK
+        u8d8d3Tq/d+bMYPb6BDrLZqiB9tpWxyCpNDdk+W8+YDBdrWfUs98RZG9TU53K7Dz
+        JzBTbjFIf3kdd64Cj3KvVjOeVIk0m+zXZwZfm3VO+qvQIqvJ5VIncx8ff7FI9cB1
+        yNg71nTx/SLC0V1NRLStXOGxLLLNq2SftFdwZcoJwvxVzm0f9yJ9xJHcvbMQXOqS
+        f9JWA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=Uv/IO1lpsMhYefZCZE7IzUSu7PAH6TRG1LbnuRgvi
+        M4=; b=XISi7eb0l5udJyx94Grx8xbNBu9uDmTspw9Ab8MZI6lurhPep2RI+RxCG
+        ZQTte0gx97SzC5lbqL/OsmzePdtwqlKhCnCKwx+J0wQH/g8awSkdq4a1owukWtLA
+        pSl7na4swI9Jn5vGwVD9JNDTU+FqQo7zHiwOYrXVPzhmvKU0bhF2leedTKJqnsWJ
+        ZtZ3NyH7sqtqulHulH6p8cFT/inzGk9BoRibxUJQCqYn7HfABDtSJ4wgJtcE93Dn
+        ubSwIKAl5IYPjRHsfy/9y3A9uQnHlGjBxilfoFBwIobYLPZxf0MeJIy/dpZ66Cd6
+        VespO6do/dcNZaF/vdhqkw+ACdFLw==
+X-ME-Sender: <xms:k1fuXLxZbQcc-ANNiTUK7UBI2sL_vR5WZupSdrUc2A253Dtx8L_3pw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvjedgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtugfgjggfsehtkeertddtreejnecuhfhrohhmpefvrghk
+    rghshhhiucfurghkrghmohhtohcuoehoqdhtrghkrghshhhisehsrghkrghmohgttghhih
+    drjhhpqeenucfkphepudegrdefrdejhedrudekudenucfrrghrrghmpehmrghilhhfrhho
+    mhepohdqthgrkhgrshhhihesshgrkhgrmhhotggthhhirdhjphenucevlhhushhtvghruf
+    hiiigvpedt
+X-ME-Proxy: <xmx:k1fuXDqJLSpSTXkTZTciZs27YxisYeoGB6fGIVbV6inmjPgmkZdzug>
+    <xmx:k1fuXDzlPHfLKSKrwsKOVVoZfcm6NUzgWaAMmPe5QrZQEgSnVBAz3g>
+    <xmx:k1fuXCurnFtFsjwzcDFGDUTFxiwmFbRMHUebTfAZecsGB5BQqUsLjQ>
+    <xmx:lVfuXHp1xBd2evfpTHfjZBexRzt3oLWMlb8KBbQqAvRZxYLnnEZERg>
+Received: from workstation (ae075181.dynamic.ppp.asahi-net.or.jp [14.3.75.181])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 59261380084;
+        Wed, 29 May 2019 05:57:34 -0400 (EDT)
+Date:   Wed, 29 May 2019 18:57:31 +0900
+From:   Takashi Sakamoto <o-takashi@sakamocchi.jp>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Igor Konopko <igor.j.konopko@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Matias Bjorling <mb@lightnvm.io>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Joe Perches <joe@perches.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] ALSA: fireface: Use ULL suffixes for 64-bit constants
+Message-ID: <20190529095730.GA7089@workstation>
+Mail-Followup-To: Geert Uytterhoeven <geert@linux-m68k.org>,
+        Igor Konopko <igor.j.konopko@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Matias Bjorling <mb@lightnvm.io>, Jiri Pirko <jiri@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Joe Perches <joe@perches.com>, Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20190528142424.19626-1-geert@linux-m68k.org>
+ <20190528142424.19626-5-geert@linux-m68k.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190528142424.19626-5-geert@linux-m68k.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-eBPF ISA specification requires high 32-bit cleared when only low 32-bit
-sub-register is written. JIT back-ends must guarantee this semantics when
-doing code-gen.
+Hi,
 
-This patch complete unit tests for all of those insns that could be visible
-to JIT back-ends and defining sub-registers, if JIT back-ends failed to
-guarantee the mentioned semantics, these unit tests will fail.
+On Tue, May 28, 2019 at 04:24:23PM +0200, Geert Uytterhoeven wrote:
+> With gcc 4.1:
+> 
+>     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_switch_fetching_mode’:
+>     sound/firewire/fireface/ff-protocol-latter.c:97: warning: integer constant is too large for ‘long’ type
+>     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_begin_session’:
+>     sound/firewire/fireface/ff-protocol-latter.c:170: warning: integer constant is too large for ‘long’ type
+>     sound/firewire/fireface/ff-protocol-latter.c:197: warning: integer constant is too large for ‘long’ type
+>     sound/firewire/fireface/ff-protocol-latter.c:205: warning: integer constant is too large for ‘long’ type
+>     sound/firewire/fireface/ff-protocol-latter.c: In function ‘latter_finish_session’:
+>     sound/firewire/fireface/ff-protocol-latter.c:214: warning: integer constant is too large for ‘long’ type
+> 
+> Fix this by adding the missing "ULL" suffixes.
+> Add the same suffix to the last constant, to maintain consistency.
+> 
+> Fixes: fd1cc9de64c2ca6c ("ALSA: fireface: add support for Fireface UCX")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>  sound/firewire/fireface/ff-protocol-latter.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
----
- tools/testing/selftests/bpf/verifier/subreg.c | 516 +++++++++++++++++++++++++-
- 1 file changed, 505 insertions(+), 11 deletions(-)
+Thanks for your care.
 
-diff --git a/tools/testing/selftests/bpf/verifier/subreg.c b/tools/testing/selftests/bpf/verifier/subreg.c
-index edeca3b..4c4133c 100644
---- a/tools/testing/selftests/bpf/verifier/subreg.c
-+++ b/tools/testing/selftests/bpf/verifier/subreg.c
-@@ -1,39 +1,533 @@
-+/* This file contains sub-register zero extension checks for insns defining
-+ * sub-registers, meaning:
-+ *   - All insns under BPF_ALU class. Their BPF_ALU32 variants or narrow width
-+ *     forms (BPF_END) could define sub-registers.
-+ *   - Narrow direct loads, BPF_B/H/W | BPF_LDX.
-+ *   - BPF_LD is not exposed to JIT back-ends, so no need for testing.
-+ *
-+ * "get_prandom_u32" is used to initialize low 32-bit of some registers to
-+ * prevent potential optimizations done by verifier or JIT back-ends which could
-+ * optimize register back into constant when range info shows one register is a
-+ * constant.
-+ */
- {
--	"or32 reg zero extend check",
-+	"add32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x100000000ULL),
-+	BPF_ALU32_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"add32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	/* An insn could have no effect on the low 32-bit, for example:
-+	 *   a = a + 0
-+	 *   a = a | 0
-+	 *   a = a & -1
-+	 * But, they should still zero high 32-bit.
-+	 */
-+	BPF_ALU32_IMM(BPF_ADD, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_ADD, BPF_REG_0, -2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"sub32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x1ffffffffULL),
-+	BPF_ALU32_REG(BPF_SUB, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"sub32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_SUB, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_SUB, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mul32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x100000001ULL),
-+	BPF_ALU32_REG(BPF_MUL, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mul32 imm zero extend check",
- 	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_MUL, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_MUL, BPF_REG_0, -1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"div32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
- 	BPF_MOV64_IMM(BPF_REG_0, -1),
--	BPF_MOV64_IMM(BPF_REG_2, -2),
--	BPF_ALU32_REG(BPF_OR, BPF_REG_0, BPF_REG_2),
-+	BPF_ALU32_REG(BPF_DIV, BPF_REG_0, BPF_REG_1),
- 	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
- 	BPF_EXIT_INSN(),
- 	},
--	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"div32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_DIV, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_DIV, BPF_REG_0, 2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"or32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x100000001ULL),
-+	BPF_ALU32_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"or32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_OR, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_OR, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
- 	.result = ACCEPT,
- 	.retval = 0,
- },
- {
- 	"and32 reg zero extend check",
- 	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x100000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x1ffffffffULL),
-+	BPF_ALU32_REG(BPF_AND, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"and32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_AND, BPF_REG_0, -1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_AND, BPF_REG_0, -2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"lsh32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x100000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_1, 1),
-+	BPF_ALU32_REG(BPF_LSH, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"lsh32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_LSH, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_LSH, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"rsh32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_1, 1),
-+	BPF_ALU32_REG(BPF_RSH, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"rsh32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_RSH, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_RSH, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"neg32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_NEG, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mod32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
- 	BPF_MOV64_IMM(BPF_REG_0, -1),
--	BPF_MOV64_IMM(BPF_REG_2, -2),
--	BPF_ALU32_REG(BPF_AND, BPF_REG_0, BPF_REG_2),
-+	BPF_ALU32_REG(BPF_MOD, BPF_REG_0, BPF_REG_1),
- 	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
- 	BPF_EXIT_INSN(),
- 	},
--	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mod32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_MOD, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_MOD, BPF_REG_0, 2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
- 	.result = ACCEPT,
- 	.retval = 0,
- },
- {
- 	"xor32 reg zero extend check",
- 	.insns = {
--	BPF_MOV64_IMM(BPF_REG_0, -1),
--	BPF_MOV64_IMM(BPF_REG_2, 0),
--	BPF_ALU32_REG(BPF_XOR, BPF_REG_0, BPF_REG_2),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x100000000ULL),
-+	BPF_ALU32_REG(BPF_XOR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"xor32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_XOR, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mov32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x100000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_1, BPF_REG_0),
-+	BPF_LD_IMM64(BPF_REG_0, 0x100000000ULL),
-+	BPF_MOV32_REG(BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"mov32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_MOV32_IMM(BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_MOV32_IMM(BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"arsh32 reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_1, 1),
-+	BPF_ALU32_REG(BPF_ARSH, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"arsh32 imm zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_ARSH, BPF_REG_0, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_ALU32_IMM(BPF_ARSH, BPF_REG_0, 1),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"end16 (to_le) reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_ALU64_IMM(BPF_LSH, BPF_REG_6, 32),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_ENDIAN(BPF_TO_LE, BPF_REG_0, 16),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"end32 (to_le) reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_ALU64_IMM(BPF_LSH, BPF_REG_6, 32),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_ENDIAN(BPF_TO_LE, BPF_REG_0, 32),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"end16 (to_be) reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_ALU64_IMM(BPF_LSH, BPF_REG_6, 32),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_ENDIAN(BPF_TO_BE, BPF_REG_0, 16),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"end32 (to_be) reg zero extend check",
-+	.insns = {
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-+	BPF_ALU64_IMM(BPF_LSH, BPF_REG_6, 32),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_6),
-+	BPF_ENDIAN(BPF_TO_BE, BPF_REG_0, 32),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"ldx_b zero extend check",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -4),
-+	BPF_ST_MEM(BPF_W, BPF_REG_6, 0, 0xfaceb00c),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_6, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"ldx_h zero extend check",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -4),
-+	BPF_ST_MEM(BPF_W, BPF_REG_6, 0, 0xfaceb00c),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_6, 0),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"ldx_w zero extend check",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -4),
-+	BPF_ST_MEM(BPF_W, BPF_REG_6, 0, 0xfaceb00c),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_prandom_u32),
-+	BPF_LD_IMM64(BPF_REG_1, 0x1000000000ULL),
-+	BPF_ALU64_REG(BPF_OR, BPF_REG_0, BPF_REG_1),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_6, 0),
- 	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
- 	BPF_EXIT_INSN(),
- 	},
--	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
- 	.result = ACCEPT,
- 	.retval = 0,
- },
--- 
-2.7.4
+Reviewed-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
+> diff --git a/sound/firewire/fireface/ff-protocol-latter.c b/sound/firewire/fireface/ff-protocol-latter.c
+> index c8236ff89b7fb9de..b30d02d359b1d21b 100644
+> --- a/sound/firewire/fireface/ff-protocol-latter.c
+> +++ b/sound/firewire/fireface/ff-protocol-latter.c
+> @@ -9,11 +9,11 @@
+>  
+>  #include "ff.h"
+>  
+> -#define LATTER_STF		0xffff00000004
+> -#define LATTER_ISOC_CHANNELS	0xffff00000008
+> -#define LATTER_ISOC_START	0xffff0000000c
+> -#define LATTER_FETCH_MODE	0xffff00000010
+> -#define LATTER_SYNC_STATUS	0x0000801c0000
+> +#define LATTER_STF		0xffff00000004ULL
+> +#define LATTER_ISOC_CHANNELS	0xffff00000008ULL
+> +#define LATTER_ISOC_START	0xffff0000000cULL
+> +#define LATTER_FETCH_MODE	0xffff00000010ULL
+> +#define LATTER_SYNC_STATUS	0x0000801c0000ULL
+>  
+>  static int parse_clock_bits(u32 data, unsigned int *rate,
+>  			    enum snd_ff_clock_src *src)
+> -- 
+> 2.17.1
+> 
+
+
+Regards
+
+Takashi Sakamoto
