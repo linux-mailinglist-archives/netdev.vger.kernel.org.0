@@ -2,185 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 433BF2E137
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD5512E149
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:39:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726649AbfE2Pfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 11:35:39 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:33125 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbfE2Pfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:35:39 -0400
-Received: by mail-qt1-f193.google.com with SMTP id 14so3166469qtf.0;
-        Wed, 29 May 2019 08:35:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XO3K1Hnp8UeFU/xbsoXmwGYYL20N+iCxpTzObuQfFfY=;
-        b=LeThDa38ADFHQXl2DawpI9KMmnG7bwqq7wZ3Dvabo+jw5TEMD3VVrhulfmo76p6mGy
-         bamhyGln7YM2oxS9ajLLro5MUDki21aCUie0BNA9qrwaXdBK25dvW0Wt4U9YDMY9uxzA
-         h2rRg30sTKBcixVx2wDLRy1yG54CnF17xdZkjHtPzP23O8q+N28tcnt7unF5Y9r9uYS7
-         IHYDdAtyPrQUmeZvd94Z84Va3iG5CzepfjLcEVz4XfUBpBTijBjJMzjprxL/ITkT5L8Z
-         eKpUtTmosziXNRX3P86lTvcxKZsrU2T5SLdZwTpzRelR/qqltNEFyBtqcPhC9VS80OZX
-         4lhA==
+        id S1726464AbfE2Pjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 11:39:45 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50635 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbfE2Pjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:39:45 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f204so2013963wme.0
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 08:39:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XO3K1Hnp8UeFU/xbsoXmwGYYL20N+iCxpTzObuQfFfY=;
-        b=VbTz8hWqxlAaEoVLctB43+mM0rlX/vuuldhSgApXOwYMeDRfZ1/z6wfoNTXtLhr9ZT
-         Va0xrV6Ij5/7OIOnf3pLi7M86gvT/Lgfq5v6mcPyyX1fPy5tJNsMbmnakjlve0NXnj8c
-         JpPM/ixJBCZvHWYkWk3wETxh5kcoeUsy/1GNkZOsh+dDLSvDXzp5HLPXLYbDh54sImLm
-         SjJHEy+uo6AzkhzrUsf4ws4lqKy8G32gnFQgZIrr9WFj67UXA+C008X4RLKjoeNtNhdu
-         OmyGnz4VCsiB9esNdIA89OiKMI1Q6CGhzanegNRdjhiWbJD7ttVGCsN/kYNHczfQ4nZM
-         ef7g==
-X-Gm-Message-State: APjAAAUmQ+YvVSJILZ0fnZ9hk8nxDAemOCN1DVuwvmhGsi2BYHtjiIqj
-        2rEa2LdZnW8FnK5g3boiuOi3bvjt9EtS16dmqL7rZmV9rIw=
-X-Google-Smtp-Source: APXvYqz8vJOWKPfvBsbhK2wiHTaKfMV65SSdNe3CEsU7WCEGFnWZvRH2DSJi6oFE6jPiJ6Kupu1P1s4zgrvbuvfPzxs=
-X-Received: by 2002:ac8:668d:: with SMTP id d13mr102162515qtp.59.1559144137315;
- Wed, 29 May 2019 08:35:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190529082941.9440-1-mrostecki@opensuse.org>
-In-Reply-To: <20190529082941.9440-1-mrostecki@opensuse.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 29 May 2019 08:35:25 -0700
-Message-ID: <CAEf4Bza2cUvSsncsKe4vX4GPRgAvaDcHXTsp+q4tf5ADA0GaLg@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: Return btf_fd in libbpf__probe_raw_btf
-To:     Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wA/ZRCMpAdjeog1co5RlW0FUMxyaCyOeXXfAXJGss50=;
+        b=dOGl6DF1FSW9L8svlB+HLxVukhJxtDgqSA7kSDWwDcL3O6sjx6SoUhZvYy62l80TR9
+         w7m5UjPse5NedhkegPEJwFA1mHCpmS+KqhLooRX+CKjsFGBVGvaflGn79HHzbrp7HNpQ
+         0AtTgepArot7XeYOZndVStFot5VWbsl0xkVNcIX5ORdV+O9pTgfKf0AgWHwVZv+xRBwC
+         bDj6wBBlByjhFpNkYXnO2XJGEpJI97aT2JSFcR3dqF8EgebJnSzsbQEtBQTB9mQ1hivk
+         1sCzr0zDdpPYKkfS5EbU0ntsMmG5NXKoe3mORAkExRpXMUh7nDl5lxh/FtCqVYoS8cAq
+         aLjA==
+X-Gm-Message-State: APjAAAXfxEDgULmfhyOv+GzMLOMKLQpLTZNwZ1LWyC66SWyPh5wtF/Cg
+        udyYiTTK0/I32cyLIvyyxB92RQ==
+X-Google-Smtp-Source: APXvYqwC4XJkSlH1vBwyBMcl2V4EaDp3bQES1Qhw9BlkRjb62OKPLc4S/uhGd3XVYDZ2W4pbF1MGIg==
+X-Received: by 2002:a1c:a002:: with SMTP id j2mr7184902wme.131.1559144383296;
+        Wed, 29 May 2019 08:39:43 -0700 (PDT)
+Received: from raver.teknoraver.net (net-93-144-152-91.cust.dsl.teletu.it. [93.144.152.91])
+        by smtp.gmail.com with ESMTPSA id d26sm4930371wmb.4.2019.05.29.08.39.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 29 May 2019 08:39:42 -0700 (PDT)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH net-next] sctp: deduplicate identical skb_checksum_ops
+Date:   Wed, 29 May 2019 17:39:41 +0200
+Message-Id: <20190529153941.12166-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 1:30 AM Michal Rostecki <mrostecki@opensuse.org> wrote:
->
-> Function load_sk_storage_btf expects that libbpf__probe_raw_btf is
-> returning a btf descriptor, but before this change it was returning
-> an information about whether the probe was successful (0 or 1).
-> load_sk_storage_btf was using that value as an argument to the close
-> function, which was resulting in closing stdout and thus terminating the
-> process which used that dunction.
->
-> That bug was visible in bpftool. `bpftool feature` subcommand was always
-> exiting too early (because of closed stdout) and it didn't display all
-> requested probes. `bpftool -j feature` or `bpftool -p feature` were not
-> returning a valid json object.
->
+The same skb_checksum_ops struct is defined twice in two different places,
+leading to code duplication. Declare it as a global variable into a common
+header instead of allocating it on the stack on each function call.
+bloat-o-meter reports a slight code shrink.
 
-Thanks for the fix!
+add/remove: 1/1 grow/shrink: 0/10 up/down: 128/-1282 (-1154)
+Function                                     old     new   delta
+sctp_csum_ops                                  -     128    +128
+crc32c_csum_ops                               16       -     -16
+sctp_rcv                                    6616    6583     -33
+sctp_packet_pack                            4542    4504     -38
+nf_conntrack_sctp_packet                    4980    4926     -54
+execute_masked_set_action                   6453    6389     -64
+tcf_csum_sctp                                575     428    -147
+sctp_gso_segment                            1292    1126    -166
+sctp_csum_check                              579     412    -167
+sctp_snat_handler                            957     772    -185
+sctp_dnat_handler                           1321    1132    -189
+l4proto_manip_pkt                           2536    2313    -223
+Total: Before=359297613, After=359296459, chg -0.00%
 
-> Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
-> Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
-> ---
->  tools/lib/bpf/libbpf.c        | 36 +++++++++++++++++++++--------------
->  tools/lib/bpf/libbpf_probes.c |  7 +------
->  2 files changed, 23 insertions(+), 20 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 197b574406b3..bc2dca36bced 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1645,15 +1645,19 @@ static int bpf_object__probe_btf_func(struct bpf_object *obj)
->                 /* FUNC x */                                    /* [3] */
->                 BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
->         };
-> -       int res;
-> +       int btf_fd;
-> +       int ret;
->
-> -       res = libbpf__probe_raw_btf((char *)types, sizeof(types),
-> -                                   strs, sizeof(strs));
-> -       if (res < 0)
-> -               return res;
-> -       if (res > 0)
-> +       btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
-> +                                      strs, sizeof(strs));
-> +       if (btf_fd < 0)
-> +               ret = 0;
-> +       else {
-> +               ret = 1;
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ include/net/sctp/checksum.h | 12 +++++++-----
+ net/sctp/offload.c          |  7 +------
+ 2 files changed, 8 insertions(+), 11 deletions(-)
 
-This whole ret variable seems unnecessary. Also if btf_fd is invalid,
-we probably shouldn't close it. So just this should work:
+diff --git a/include/net/sctp/checksum.h b/include/net/sctp/checksum.h
+index 314699333bec..5a9bb09f32b6 100644
+--- a/include/net/sctp/checksum.h
++++ b/include/net/sctp/checksum.h
+@@ -43,19 +43,21 @@ static inline __wsum sctp_csum_combine(__wsum csum, __wsum csum2,
+ 						   (__force __u32)csum2, len);
+ }
+ 
++static const struct skb_checksum_ops sctp_csum_ops = {
++	.update  = sctp_csum_update,
++	.combine = sctp_csum_combine,
++};
++
+ static inline __le32 sctp_compute_cksum(const struct sk_buff *skb,
+ 					unsigned int offset)
+ {
+ 	struct sctphdr *sh = (struct sctphdr *)(skb->data + offset);
+-	const struct skb_checksum_ops ops = {
+-		.update  = sctp_csum_update,
+-		.combine = sctp_csum_combine,
+-	};
+ 	__le32 old = sh->checksum;
+ 	__wsum new;
+ 
+ 	sh->checksum = 0;
+-	new = ~__skb_checksum(skb, offset, skb->len - offset, ~(__wsum)0, &ops);
++	new = ~__skb_checksum(skb, offset, skb->len - offset, ~(__wsum)0,
++			      &sctp_csum_ops);
+ 	sh->checksum = old;
+ 
+ 	return cpu_to_le32((__force __u32)new);
+diff --git a/net/sctp/offload.c b/net/sctp/offload.c
+index edfcf16e704c..dac46dfadab5 100644
+--- a/net/sctp/offload.c
++++ b/net/sctp/offload.c
+@@ -103,11 +103,6 @@ static const struct net_offload sctp6_offload = {
+ 	},
+ };
+ 
+-static const struct skb_checksum_ops crc32c_csum_ops = {
+-	.update  = sctp_csum_update,
+-	.combine = sctp_csum_combine,
+-};
+-
+ int __init sctp_offload_init(void)
+ {
+ 	int ret;
+@@ -120,7 +115,7 @@ int __init sctp_offload_init(void)
+ 	if (ret)
+ 		goto ipv4;
+ 
+-	crc32c_csum_stub = &crc32c_csum_ops;
++	crc32c_csum_stub = &sctp_csum_ops;
+ 	return ret;
+ 
+ ipv4:
+-- 
+2.21.0
 
-btf_fd = libbpf__probe_raw_btf(...);
-if (btf_fd >= 0) {
-    obj->caps.btf_func = 1;
-    close(btf_fd);
-}
-return btf_fd >= 0;
-
->                 obj->caps.btf_func = 1;
-> -       return 0;
-> +       }
-> +       close(btf_fd);
-> +       return ret;
->  }
->
->  static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
-> @@ -1670,15 +1674,19 @@ static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
->                 BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
->                 BTF_VAR_SECINFO_ENC(2, 0, 4),
->         };
-> -       int res;
-> +       int btf_fd;
-> +       int ret;
->
-> -       res = libbpf__probe_raw_btf((char *)types, sizeof(types),
-> -                                   strs, sizeof(strs));
-> -       if (res < 0)
-> -               return res;
-> -       if (res > 0)
-> +       btf_fd = libbpf__probe_raw_btf((char *)types, sizeof(types),
-> +                                      strs, sizeof(strs));
-> +       if (btf_fd < 0)
-> +               ret = 0;
-> +       else {
-> +               ret = 1;
->                 obj->caps.btf_datasec = 1;
-> -       return 0;
-> +       }
-> +       close(btf_fd);
-
-Same as above.
-
-> +       return ret;
->  }
->
->  static int
-> diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-> index 5e2aa83f637a..2c2828345514 100644
-> --- a/tools/lib/bpf/libbpf_probes.c
-> +++ b/tools/lib/bpf/libbpf_probes.c
-> @@ -157,14 +157,9 @@ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
-
-I'm wondering if it's better to rename this function to something like
-libbpf__load_raw_btf? probe (at least to me) implies true/false
-result, so feels like it might be easily misused.
-
->         memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
->
->         btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
-> -       if (btf_fd < 0) {
-> -               free(raw_btf);
-> -               return 0;
-> -       }
->
-> -       close(btf_fd);
->         free(raw_btf);
-> -       return 1;
-> +       return btf_fd;
->  }
->
->  static int load_sk_storage_btf(void)
-> --
-> 2.21.0
->
