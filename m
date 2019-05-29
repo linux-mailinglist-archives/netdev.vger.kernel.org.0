@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C34672D405
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 04:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45AA02D40C
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726649AbfE2CyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 22:54:18 -0400
-Received: from mga09.intel.com ([134.134.136.24]:64361 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726557AbfE2CyR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 22:54:17 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 19:54:17 -0700
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 28 May 2019 19:54:15 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hVojG-000Iee-HW; Wed, 29 May 2019 10:54:14 +0800
-Date:   Wed, 29 May 2019 10:54:02 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Zhongzhu Liu <liuzhongzhu@huawei.com>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Weihang Li <liweihang@hisilicon.com>,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next] net: hns3: hclge_dbg_get_m7_stats_info() can be
- static
-Message-ID: <20190529025402.GA14936@lkp-kbuild18>
-References: <201905291024.VVfliT6e%lkp@intel.com>
+        id S1726131AbfE2DAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 23:00:41 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:34842 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725816AbfE2DAl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 23:00:41 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id BEBA775CA4A0DB04526B;
+        Wed, 29 May 2019 11:00:33 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Wed, 29 May 2019
+ 11:00:26 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <maxime.chevallier@bootlin.com>,
+        <antoine.tenart@bootlin.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 net-next] net: mvpp2: cls: Remove unnessesary check in mvpp2_ethtool_cls_rule_ins
+Date:   Wed, 29 May 2019 10:59:06 +0800
+Message-ID: <20190529025906.17452-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190527134646.21804-1-yuehaibing@huawei.com>
+References: <20190527134646.21804-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201905291024.VVfliT6e%lkp@intel.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix smatch warning:
 
-Fixes: 33a90e2f20e6 ("net: hns3: add support for dump firmware statistics by debugfs")
-Signed-off-by: kbuild test robot <lkp@intel.com>
+drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c:1236
+ mvpp2_ethtool_cls_rule_ins() warn: unsigned 'info->fs.location' is never less than zero.
+
+'info->fs.location' is u32 type, never less than zero.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- hclge_debugfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: rework patch based net-next
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index ed1f533..4fbed47a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -921,7 +921,7 @@ static void hclge_dbg_dump_rst_info(struct hclge_dev *hdev)
- 		 hdev->rst_stats.reset_cnt);
- }
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+index bd19a910dc90..e1c90adb2982 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+@@ -1300,8 +1300,7 @@ int mvpp2_ethtool_cls_rule_ins(struct mvpp2_port *port,
+ 	struct mvpp2_ethtool_fs *efs, *old_efs;
+ 	int ret = 0;
  
--void hclge_dbg_get_m7_stats_info(struct hclge_dev *hdev)
-+static void hclge_dbg_get_m7_stats_info(struct hclge_dev *hdev)
- {
- 	struct hclge_desc *desc_src, *desc_tmp;
- 	struct hclge_get_m7_bd_cmd *req;
+-	if (info->fs.location >= MVPP2_N_RFS_ENTRIES_PER_FLOW ||
+-	    info->fs.location < 0)
++	if (info->fs.location >= MVPP2_N_RFS_ENTRIES_PER_FLOW)
+ 		return -EINVAL;
+ 
+ 	efs = kzalloc(sizeof(*efs), GFP_KERNEL);
+-- 
+2.20.1
+
+
