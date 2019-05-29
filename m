@@ -2,119 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAF22E0C2
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B07372E0C6
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 17:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbfE2PNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 11:13:52 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53643 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbfE2PNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:13:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id d17so1943054wmb.3
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 08:13:51 -0700 (PDT)
+        id S1726851AbfE2POc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 11:14:32 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43159 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbfE2POc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 11:14:32 -0400
+Received: by mail-ed1-f65.google.com with SMTP id w33so4300303edb.10
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 08:14:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aPd0T4nMPp5+McITAHFhs073CifRxWMUwmwxYGayYkI=;
+        b=rjaL1ZpHoM13fKR3np1C2zYZHY/Y2oQB7qrCJbgzJLx1otaUNOCPdZt2rERT+ioe2h
+         6KsBPv958jPzU3UQjxbbUNxg+JhtqvT8QFUb8nC9Tz9riw882pzmcTJ95pcRh6y6rgbG
+         o/ZtmdtmBJZDGYXEvKbw/+sFLyLcDd+crNUGqH1QIBGQj2sEUqaIR5P3xCcEjUN88426
+         jhjg2BM1Lyp/WHJk9iKtt58dMz/+R4bdN91Q1AdwkP7ZJ8yRLbiR5Ml0b/XBI3c2/izS
+         iOCznTpQno/RSXF+N/b9FH+igvcKNk86yKp1TQ4uTpz8VbIS/xJuis+Vib2kV5vwTftk
+         V0QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W2buZooF/pmx7z95pzXizhl/Lg5Xb9tNt67UtliOTiY=;
-        b=LV06o1TFO0Rk9DvfW0Ij9y8Q3aqErIhwJHxIkW4Vq2cYl+khIGgjz4i7kIhyOKcYCY
-         nMouG+lJ6fo2Saapcd7nRBt7YK+2s8c6Hr1ZwkwTKfSXNbjPZi8e3dJcvZvfp+6zk0EB
-         S1mgG7t02nzHXGwTZcunKLxcXtuPwdoDmD/3AlbVyx+CbmGc7ZQ6zUx7eYZ/M/i/7SGG
-         B0UegKGOwPWTnhC/XlraL1jzU86fEAnpGwy7NymRhcECwiEt021m5FwfGXsanCjLWjHU
-         ISytB6jw/lRxFdxndsl+GjaAr9VNozRmlShhfboFZPiolXmFYk5neevxwQxRe7TKADBm
-         EVkw==
-X-Gm-Message-State: APjAAAUy2Tid169KBI/Rcchise2+pURFB+ktKqpb248t+FMnGpjKBiAe
-        OiJQccToa/cvtUoCY2BIauKMbawoF34=
-X-Google-Smtp-Source: APXvYqw6TGNqjwQ/cGPnADmOEDWtEPldcH4/ylP16XoGpsMS5pki4FsKsIdNSaS7vfzqm2UD4Lr31w==
-X-Received: by 2002:a1c:4d07:: with SMTP id o7mr7154944wmh.156.1559142830240;
-        Wed, 29 May 2019 08:13:50 -0700 (PDT)
-Received: from raver.teknoraver.net (net-93-144-152-91.cust.dsl.teletu.it. [93.144.152.91])
-        by smtp.gmail.com with ESMTPSA id c131sm7284963wma.31.2019.05.29.08.13.49
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 29 May 2019 08:13:49 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] net: avoid indirect calls in L4 checksum calculation
-Date:   Wed, 29 May 2019 17:13:48 +0200
-Message-Id: <20190529151348.31311-1-mcroce@redhat.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aPd0T4nMPp5+McITAHFhs073CifRxWMUwmwxYGayYkI=;
+        b=kK9TCmW7KWkuVNNA55aOGdfjmHpqZrm71WpdKJf8aLePS+odw/Lu049x3xycjXWg1T
+         kBWWh3HDW1yaPUXjC6y9zQr0KW7D03637wJlTkxF7Qv4dWIUQQ5jWZbT/ewCG/zPo90e
+         N0ZMUPJJBwms7IXJCXJI9fUFrgWhfnG2xPGzH4xKHBER7WsBuayudp6N4TW7fZoFoOkW
+         /6r3S6bC0aylE58DkJE2PjSNvfm7jJ6fa/C3LyCOLxk7UP8kLMWyTFoiYVjXRpjB7uEo
+         33B1y7Yk7I9re9C6JY+03bc/zwZtI7AE9POiXE3j9pRlCS0FOKZqZ7GRvotOen2dXGhb
+         tOZg==
+X-Gm-Message-State: APjAAAWobFS9cexRk554BgAgkSKkBIgm7n7Nebx3uIJs91phG5uTH5T7
+        SYI5rroCtUUSaem2G+g8LdYhhlUblMSw5dnDWJpsew==
+X-Google-Smtp-Source: APXvYqyynSV0LClJSHiSF3L8wh+qYXkrzzzeVxYXPfS7Z6v0cRlPOwAuabI7aVssn3xyKmeIiRGE3kKSsc0Vi1d4jmw=
+X-Received: by 2002:a50:bae4:: with SMTP id x91mr137315884ede.76.1559142870576;
+ Wed, 29 May 2019 08:14:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <000000000000862b160580765e94@google.com> <3c44c1ff-2790-ec06-35c6-3572b92170c7@cumulusnetworks.com>
+ <CACT4Y+ZA8gBURbeZaDtrt5NoqFy8a8W3jyaWbs34Qjic4Bu+DA@mail.gmail.com>
+ <20190220102327.lq2zyqups2fso75z@gondor.apana.org.au> <CACT4Y+bUTWcvqEebNjoagw0JtM77NXwVu+i3cYmhgnntZRWyfg@mail.gmail.com>
+ <20190529145845.bcvuc5ows4dedqh3@gondor.apana.org.au>
+In-Reply-To: <20190529145845.bcvuc5ows4dedqh3@gondor.apana.org.au>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 29 May 2019 17:14:17 +0200
+Message-ID: <CACT4Y+bWyNawZBQkV3TyyFF0tyHnJ9UPsCW-EzmC7rwwh3yk2g@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in br_mdb_ip_get
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        syzbot <syzbot+bc5ab0af2dbf3b0ae897@syzkaller.appspotmail.com>,
+        bridge@lists.linux-foundation.org,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 283c16a2dfd3 ("indirect call wrappers: helpers to speed-up
-indirect calls of builtin") introduces some macros to avoid doing
-indirect calls.
+On Wed, May 29, 2019 at 4:58 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> Hi Dmitry:
+>
+> On Thu, Feb 21, 2019 at 11:54:42AM +0100, Dmitry Vyukov wrote:
+> >
+> > Taking into account that this still happened only once, I tend to
+> > write it off onto a previous silent memory corruption (we have dozens
+> > of known bugs that corrupt memory). So if several people already
+> > looked at it and don't see the root cause, it's probably time to stop
+> > spending time on this until we have more info.
+> >
+> > Although, there was also this one:
+> > https://groups.google.com/d/msg/syzkaller-bugs/QfCCSxdB1aM/y2cn9IZJCwAJ
+> > I have not checked if it can be the root cause of this report, but it
+> > points suspiciously close to this stack and when I looked at it, it
+> > the report looked legit.
+>
+> Have you had any more reports of this kind coming from br_multicast?
+>
+> It looks like
+>
+> ommit 1515a63fc413f160d20574ab0894e7f1020c7be2
+> Author: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> Date:   Wed Apr 3 23:27:24 2019 +0300
+>
+>     net: bridge: always clear mcast matching struct on reports and leaves
+>
+> may have at least fixed the uninitialised value error.
 
-Use these helpers to remove two indirect calls in the L4 checksum
-calculation for devices which don't have hardware support for it.
 
-As a test I generate packets with pktgen out to a dummy interface
-with HW checksumming disabled, to have the checksum calculated in
-every sent packet.
-The packet rate measured with an i7-6700K CPU and a single pktgen
-thread raised from 6143 to 6608 Kpps, an increase by 7.5%
+The most up-to-date info is always available here:
 
-Suggested-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- net/core/skbuff.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=bc5ab0af2dbf3b0ae897
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e89be6282693..0c2e7d4946ef 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -76,6 +76,7 @@
- #include <linux/highmem.h>
- #include <linux/capability.h>
- #include <linux/user_namespace.h>
-+#include <linux/indirect_call_wrapper.h>
- 
- #include "datagram.h"
- 
-@@ -2507,7 +2508,8 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
- 	if (copy > 0) {
- 		if (copy > len)
- 			copy = len;
--		csum = ops->update(skb->data + offset, copy, csum);
-+		csum = INDIRECT_CALL_1(ops->update, csum_partial_ext,
-+				       skb->data + offset, copy, csum);
- 		if ((len -= copy) == 0)
- 			return csum;
- 		offset += copy;
-@@ -2534,9 +2536,13 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
- 					      frag->page_offset + offset - start,
- 					      copy, p, p_off, p_len, copied) {
- 				vaddr = kmap_atomic(p);
--				csum2 = ops->update(vaddr + p_off, p_len, 0);
-+				csum2 = INDIRECT_CALL_1(ops->update,
-+							csum_partial_ext,
-+							vaddr + p_off, p_len, 0);
- 				kunmap_atomic(vaddr);
--				csum = ops->combine(csum, csum2, pos, p_len);
-+				csum = INDIRECT_CALL_1(ops->combine,
-+						       csum_block_add_ext, csum,
-+						       csum2, pos, p_len);
- 				pos += p_len;
- 			}
- 
-@@ -2559,7 +2565,8 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
- 				copy = len;
- 			csum2 = __skb_checksum(frag_iter, offset - start,
- 					       copy, 0, ops);
--			csum = ops->combine(csum, csum2, pos, copy);
-+			csum = INDIRECT_CALL_1(ops->combine, csum_block_add_ext,
-+					       csum, csum2, pos, copy);
- 			if ((len -= copy) == 0)
- 				return csum;
- 			offset += copy;
--- 
-2.21.0
+It says no new crashes happened besides the original one.
 
+We now have the following choices:
+
+1. Invalidate with "#syz invalid"
+2. Mark as tentatively fixed by that commit (could it fix it?) with
+"#syz fix: net: bridge: always clear mcast matching struct on reports
+and leaves"
+3. Do nothing, then syzbot will auto-close it soon (bugs without
+reproducers that did not happen in the past 180 days)
