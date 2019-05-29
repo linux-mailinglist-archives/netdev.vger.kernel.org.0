@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFFF2D73B
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA472D752
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 10:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbfE2IE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 04:04:59 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:34143 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfE2IE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:04:56 -0400
-Received: by mail-wm1-f66.google.com with SMTP id e19so3758651wme.1
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 01:04:55 -0700 (PDT)
+        id S1726099AbfE2II3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 04:08:29 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45707 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfE2II3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 04:08:29 -0400
+Received: by mail-ed1-f66.google.com with SMTP id f20so2283665edt.12
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 01:08:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=EBIy8akgJJVzGMeoN5L9X2jn2x1GxoKHTkHoU0+i4ZQ=;
-        b=HfhL8wqCiookSl50jiJuT1YB5TlSuMeuNrqU2tWcfEUtEQ/AmjA+cvuYkaVQ4gKcHN
-         wSRpxcuZF/NNGH2Y5MLanq3MH+ekyD5LIGY1quGY/RW5R5wx60RM2QX8PBTXSjr2f0LE
-         GrSfel5vdtBCsk+50onjqOuy0SlHUJmcYWNmZ+DBqkKeGydvzo7ncC0b4i0ZsrazeUrf
-         deHnMa1fNBN0eEKOkh+v4Ss0TZu+V2tywk5KUFTt/qlnJ5I7ACVuMx3DbtH06LlW1z78
-         GWgSB5/zjVexZBSTTMUPM0xJTUHJ53ZnuNkmkf6Oq1DG3cc4TV4/F0AGW1Mtw4DTfMaA
-         KOkQ==
+        d=lightnvm-io.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X55S31ao8CfYMehdctXfzJQFFMsU0ZFkppGUTIESvkI=;
+        b=DvHdwxZbhyi3JQ17yrFCBVFILG9oxWRqQorXQBbfNMQbnN8YbiVPExbIjs05xuS6s4
+         RrvSJHQYAs3QQ+qJk+dZfwVfVVvY+qXkg81SmYNRsZBDBf08Yof2IdKKDkQz21dEy6vm
+         L+WXv2nKXsarLezipgqpzLvOPptiHdm7b5gV8jZKlwcVrkXmwf20nNW8i2JmlutHBAn5
+         eSQfFQ+Fbv51uy1DIA3WxzijQ4vpMgbugqlk4yAec5p5VRJU8RtVGQRKfcpotEOKIY0d
+         k9rsY0qQqW+3hNX/G+FgxYjVDC/mO884jyhyXyIXfMA9+5aUwTsqTA98ncrDK344QAuw
+         7mjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=EBIy8akgJJVzGMeoN5L9X2jn2x1GxoKHTkHoU0+i4ZQ=;
-        b=WR6Y2fmBZ9GO9anDca2myN0cTwBvvojCdH1aRVSCcMXcVZUlt53XCCEgKEHMgGB24m
-         tRqtkv9xBg+sSwMlxjZXMNnOsJxapXHfYpKVjjvDTqTivXhBz3gWlfIBpSeM9l4Ot6+L
-         0zPWXw2I7eKoVWMXkA5fJQLhwJk9QaLWvjg9etbrWkNpLjB5KmhMIgZu3A4lAgodsTKf
-         bczUajz4sLDAY9gTCOKypFXebeEzC7ddKN/fbhOob6qiol2ThMa0ZEgbjB6uqqwNaqoY
-         enFcs6E2TNSYAh6qtGB6HJckJDO77pfpvv3cz6b0YijmJLZy20C87P6SYaSreoFs83+k
-         tfEw==
-X-Gm-Message-State: APjAAAXM4Jy7pI3Ph4BYrwxbAxYWguxgb0IxbvVuXL9weRLqow8lcBiJ
-        BQUoVifkewLuvM+qJ6jsX235Fw==
-X-Google-Smtp-Source: APXvYqxVQa+Y+auwZsalqmIXIrSP2DzX25u2YHdLtGqKGkI2wS47Xd0Zk+TI/HfX1YOt5NBkbVB2tg==
-X-Received: by 2002:a7b:c8c1:: with SMTP id f1mr5434256wml.159.1559117094718;
-        Wed, 29 May 2019 01:04:54 -0700 (PDT)
-Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
-        by smtp.gmail.com with ESMTPSA id u9sm3165755wme.48.2019.05.29.01.04.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 01:04:53 -0700 (PDT)
-Date:   Wed, 29 May 2019 10:04:52 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Igor Konopko <igor.j.konopko@intel.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X55S31ao8CfYMehdctXfzJQFFMsU0ZFkppGUTIESvkI=;
+        b=Q57aP2N8VtW5D2eGCkUJmxoSqgpG8kywyubUYsmKA34kpkKqC7xlb2ZrV4NMz4RGN5
+         hEoirK8FWbDzxKP9ZxCHKZIC5ce1MdO4HHD+lbn6QFg6nYiAQZr2fKarKZqrt5rJEBy9
+         bbDNJuzeXUpwmYVaUlEs4Jy43qRCX/pnFW6iUYfNUB+3c3nIKLTLnAjIdF3H0w6m/cgr
+         CHCGYKpyU+vpa6qVpzOLqZjyneqNxZYwitzbQUism/aXvuq/iPgBFuFBeY9fatZqP76g
+         +KbRe3bIlgaRAjdhmRrf8SnYHwEhh25dwpTkqH9MW99cBTs2cRbz/zzcXjAKjccqMYNI
+         /qzA==
+X-Gm-Message-State: APjAAAXV1Nr+SsTh2ORJUDE3MjChTUNKPtAhFdPdIzIQ14+wkmlAaUes
+        M8BMq2k38Xp3lL/HDpBCifl0YOSmE1jKgg==
+X-Google-Smtp-Source: APXvYqyxDyVCDea9bDd1l2EC8hcbEtDWlZ8Dk3yuHbGVJvqjuySoL1bR38CeVbp+JazIYUXhPBHnlQ==
+X-Received: by 2002:a17:906:6d3:: with SMTP id v19mr69214570ejb.46.1559117307851;
+        Wed, 29 May 2019 01:08:27 -0700 (PDT)
+Received: from [192.168.0.36] (2-111-91-225-cable.dk.customer.tdc.net. [2.111.91.225])
+        by smtp.googlemail.com with ESMTPSA id p18sm792916ejr.61.2019.05.29.01.08.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 01:08:27 -0700 (PDT)
+Subject: Re: [PATCH 1/5] lightnvm: Fix uninitialized pointer in
+ nvm_remove_tgt()
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Igor Konopko <igor.j.konopko@intel.com>,
         David Howells <dhowells@redhat.com>,
         "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
         Takashi Sakamoto <o-takashi@sakamocchi.jp>,
         Eran Ben Elisha <eranbe@mellanox.com>,
-        Matias Bjorling <mb@lightnvm.io>,
         Jiri Pirko <jiri@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -63,66 +61,59 @@ Cc:     Igor Konopko <igor.j.konopko@intel.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>, Joe Perches <joe@perches.com>,
         Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     linux-block@vger.kernel.org, netdev@vger.kernel.org,
         linux-afs@lists.infradead.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] [RFC] devlink: Fix uninitialized error code in
- devlink_fmsg_prepare_skb()
-Message-ID: <20190529080452.GE2252@nanopsycho>
 References: <20190528142424.19626-1-geert@linux-m68k.org>
- <20190528142424.19626-6-geert@linux-m68k.org>
+ <20190528142424.19626-2-geert@linux-m68k.org>
+From:   =?UTF-8?Q?Matias_Bj=c3=b8rling?= <mb@lightnvm.io>
+Message-ID: <4b666e32-04b6-228a-691d-0745fa48a57f@lightnvm.io>
+Date:   Wed, 29 May 2019 10:08:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20190528142424.19626-2-geert@linux-m68k.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190528142424.19626-6-geert@linux-m68k.org>
-User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 28, 2019 at 04:24:24PM CEST, geert@linux-m68k.org wrote:
->With gcc 4.1:
->
->    net/core/devlink.c: In function ‘devlink_fmsg_prepare_skb’:
->    net/core/devlink.c:4325: warning: ‘err’ may be used uninitialized in this function
->
->Indeed, if the list has less than *start entries, an uninitialized error
->code will be returned.
->
->Fix this by preinitializing err to zero.
->
->Fixes: 1db64e8733f65381 ("devlink: Add devlink formatted message (fmsg) API")
->Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
->---
->I don't know if this can really happen, and if this is the right fix.
->Perhaps err should be initialized to some valid error code instead?
-
-0 is correct here.
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-
-Thanks!
-
->---
-> net/core/devlink.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index d43bc52b8840d76b..91377e4eae9a43c1 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -4321,8 +4321,8 @@ devlink_fmsg_prepare_skb(struct devlink_fmsg *fmsg, struct sk_buff *skb,
-> {
-> 	struct devlink_fmsg_item *item;
-> 	struct nlattr *fmsg_nlattr;
->+	int err = 0;
-> 	int i = 0;
->-	int err;
+On 5/28/19 4:24 PM, Geert Uytterhoeven wrote:
+> With gcc 4.1:
 > 
-> 	fmsg_nlattr = nla_nest_start_noflag(skb, DEVLINK_ATTR_FMSG);
-> 	if (!fmsg_nlattr)
->-- 
->2.17.1
->
+>      drivers/lightnvm/core.c: In function ‘nvm_remove_tgt’:
+>      drivers/lightnvm/core.c:510: warning: ‘t’ is used uninitialized in this function
+> 
+> Indeed, if no NVM devices have been registered, t will be an
+> uninitialized pointer, and may be dereferenced later.  A call to
+> nvm_remove_tgt() can be triggered from userspace by issuing the
+> NVM_DEV_REMOVE ioctl on the lightnvm control device.
+> 
+> Fix this by preinitializing t to NULL.
+> 
+> Fixes: 843f2edbdde085b4 ("lightnvm: do not remove instance under global lock")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>   drivers/lightnvm/core.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/lightnvm/core.c b/drivers/lightnvm/core.c
+> index 0df7454832efe082..aa017f48eb8c588c 100644
+> --- a/drivers/lightnvm/core.c
+> +++ b/drivers/lightnvm/core.c
+> @@ -492,7 +492,7 @@ static void __nvm_remove_target(struct nvm_target *t, bool graceful)
+>    */
+>   static int nvm_remove_tgt(struct nvm_ioctl_remove *remove)
+>   {
+> -	struct nvm_target *t;
+> +	struct nvm_target *t = NULL;
+>   	struct nvm_dev *dev;
+>   
+>   	down_read(&nvm_lock);
+> 
+
+Thanks Geert. Would you like me to carry the patch?
