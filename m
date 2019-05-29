@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FEF2E638
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A0A42E659
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbfE2Uf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 16:35:28 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:44648 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbfE2Uf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 16:35:28 -0400
-Received: by mail-ot1-f66.google.com with SMTP id g18so3400388otj.11;
-        Wed, 29 May 2019 13:35:27 -0700 (PDT)
+        id S1726453AbfE2Ul1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 16:41:27 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54081 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbfE2Ul1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 16:41:27 -0400
+Received: by mail-wm1-f66.google.com with SMTP id d17so2527036wmb.3;
+        Wed, 29 May 2019 13:41:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JZf/KUpVGbO+aa71myahG/LJYO4Ln8SWPddjSV6CGEY=;
-        b=IkL1IQvBWqwF8FOA+9slLTyMLLisFAftKB2uSB5DQM/RTA5jjJBkS8uBpGkz9Oa7no
-         1WTxwPpJZz5gz5fJUdpUyNFrgULoYOJE6pQcSUtWDvf+DA9K2FPSr42EDnmpqycVdWGw
-         JWsW1qV4FgcyoB+dcarPRqnoEGYoWNA7UTVpER66vaGBfoRAYgPm4X9hOq0WVCdZPj0x
-         Wl84urzicC4p/K/LayIFbbjt7fJOQ4ybeXwK/V6mRICzWWTcKTcyRSywpyjpMN40/jzS
-         YulM+ZWsWZGkMt12ep/EWeuQoPZYuxUwJ0jb1EJfEq/80og9X2KOzf0jWUlxwTZAV5/0
-         Qpzg==
+        bh=9Tz0UIzcufcpr4ojWSAEz0BFZ3UGJduWbz8lnUbkZVU=;
+        b=WhMrQeiq7mQ0jLHtX70gCs13o4iNFOcAp42oU07/flu4B8w4YXaamkfijEmCOY0rwH
+         qaNVqy6X8inEKI8ORD6whNNywqdKbZIctR8GnON5I1pamJi902YAuDWCKYxytoE1F4iR
+         EXjItTYhvpODOz5mmln+08nfmPF2VHJRq5m7QyQn63bhnqFhbHH6PwJGjkvX17DiwJmZ
+         Zb2O3WSpRZ+tLgfE+hI/I0UGbiqprxY836aDUWMDaPk25ulpRnmA/MPUMLGdqF/PIvt/
+         62JcVAxWe0gHjizy0i+nO8kh75n3OL2BjxYQfIslus09LuAUo84Jn9Y/Bb/PrInzOjXd
+         L5Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JZf/KUpVGbO+aa71myahG/LJYO4Ln8SWPddjSV6CGEY=;
-        b=tCPC8McoFyecDPZP6HBZWlpcFO6+ORflCWK5HjtQYDKVCqRqwZm/ztaytwQwLpNGAg
-         trvbe0lU176Icv30cRt8iwBwn0Dwi3wfMfz/FIhvBnv3BuYOrGhlzHyMCZQ6ou373lb/
-         drrsxlKAe0ql7AZup2FA1SuaVleP+25n9IiP13H9GxK7Nuxzp1PfvLYxVWDmHPFocY0b
-         CEmPFm9aURjbrPbCnPEkuzQ++loBisoEMZsNHvvTfR4YcbvxBSdahbz4Da1TW50tIxhz
-         rVTbZ8ubgGCaydx4EstdNVTjEPAYn7o9l9fLll5oex9apNxl5TuC2LGp0RCKuadRTSG0
-         8M2A==
-X-Gm-Message-State: APjAAAV9SdTyy7BGz0Ox9CZ1n6n5qz5KvswlmKpJn6AUwUqQSNbtI8Jf
-        9ZMxG8Uo9YgZYUMiyXf1QNs=
-X-Google-Smtp-Source: APXvYqyZZ2DA3L96zPN0AYVjNJ5gQHvl0/JpFog0zHMJOkooeNjgiqw1YwiBXFN4EcG+1SUSg3hjIQ==
-X-Received: by 2002:a9d:3de1:: with SMTP id l88mr11469320otc.222.1559162127529;
-        Wed, 29 May 2019 13:35:27 -0700 (PDT)
-Received: from [192.168.1.249] (cpe-70-114-247-242.austin.res.rr.com. [70.114.247.242])
-        by smtp.googlemail.com with ESMTPSA id r7sm202279oia.22.2019.05.29.13.35.26
+        bh=9Tz0UIzcufcpr4ojWSAEz0BFZ3UGJduWbz8lnUbkZVU=;
+        b=Mj+0h1eKxoVwj9Ewpf8pam1CQrGXfYGWqvFCXPVazepvQsG+BQg04HRahT7TQg9bME
+         vgG8sVA6PcQ/xAS2SuB1v09BQGk9ybaiy0CBAwpqhe28OUa2lW6SCuAc6xwZgOjPs0Hb
+         47H6UJSPn5foO/FC0UCCftgJ2fuxh9C1ORui5/bF1NR7Xb185hGhyPpjsyBzELLtx54Q
+         p1BEDF8u1H12XouYWTrugOX+oZ5U0vyFNgMS3uYKKzeIwp+H1Rj+5e8v08DEM3ipiJ5T
+         tEyHpVo2+JRm7u2d1qugpsd5T7UJBWNKp7lOjaV+016+nC8M8LVs3j4HUDeb2jveiaWc
+         25Yw==
+X-Gm-Message-State: APjAAAUvlK7TjdIuoQ5l10udRasCLqeaYKO5sqzn8RDSkfzuNaumCYXu
+        amTxVA6L6gC2dO0/ulaIb42D/wE80H4=
+X-Google-Smtp-Source: APXvYqw/wsOiMDiZXdeIVgYS6OVEQNEqK/s0KQT2rLtryJYiwgP1BG72GC2iSHrdec4UDyAJE9p4KQ==
+X-Received: by 2002:a1c:ca01:: with SMTP id a1mr26694wmg.30.1559162484282;
+        Wed, 29 May 2019 13:41:24 -0700 (PDT)
+Received: from [192.168.1.2] ([86.121.27.188])
+        by smtp.gmail.com with ESMTPSA id l190sm701763wml.25.2019.05.29.13.41.22
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 May 2019 13:35:26 -0700 (PDT)
-Subject: Re: cellular modem APIs - take 2
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
-References: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
- <cb2ef612be9e347a7cbceb26831f8d5ebea4eacf.camel@redhat.com>
- <58bc88b7eda912133ad0fc4718ac917adc8fa63b.camel@sipsolutions.net>
-From:   Denis Kenzior <denkenz@gmail.com>
-Message-ID: <350b9aad-7b08-2f77-6000-095538f32abc@gmail.com>
-Date:   Wed, 29 May 2019 15:35:26 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        Wed, 29 May 2019 13:41:23 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, john.stultz@linaro.org, tglx@linutronix.de,
+        sboyd@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20190528235627.1315-1-olteanv@gmail.com>
+ <20190529045207.fzvhuu6d6jf5p65t@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Message-ID: <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com>
+Date:   Wed, 29 May 2019 23:41:22 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <58bc88b7eda912133ad0fc4718ac917adc8fa63b.camel@sipsolutions.net>
+In-Reply-To: <20190529045207.fzvhuu6d6jf5p65t@localhost>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,50 +68,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
-
+On 5/29/19 7:52 AM, Richard Cochran wrote:
+> On Wed, May 29, 2019 at 02:56:22AM +0300, Vladimir Oltean wrote:
+>> Not all is rosy, though.
 > 
-> It just seemed that people do want to have a netdev (if only to see that
-> their driver loaded and use ethtool to dump the firmware version), and
-> then you can reassign it to some actual context later?
-
-I can see that this is useful for developers, but really 
-counterproductive in production.  You have a bunch of services (systemd, 
-NM, ConnMan, dhcpcd, etc, etc, etc) all observing the newly created 
-devices and trying to 'own' them.  Which makes no freaking sense to do 
-until those devices are really usable.  Just because it is a netdev, 
-doesn't mean it is ethernet or behaves like it.
-
-That also leads to expectations from users that want stuff like 
-udev-consistent-naming to work, even though udev has no idea wtf a given 
-device is, when it is ready or not ready, etc.  And the flip side, there 
-may be systems that do not use systemd/udevd, so the daemons responsible 
-for management of such devices cannot sanely assume anything.  It is 
-just pure chaos.
-
-And then there's hotplug/unplug to worry about ;)
-
-So I would like to reiterate Marcel's point: creating unmanaged devices 
-should not be the default behavior.
-
+> You can sure say that again!
+>   
+>> PTP timestamping will only work when the ports are bridged. Otherwise,
+>> the metadata follow-up frames holding RX timestamps won't be received
+>> because they will be blocked by the master port's MAC filter. Linuxptp
+>> tries to put the net device in ALLMULTI/PROMISC mode,
 > 
-> It doesn't really matter much. If you have a control channel and higher-
-> level abstraction (wwan device) then having the netdev is probably more
-> of a nuisance and mostly irrelevant, just might be useful for legacy
-> reasons.
+> Untrue.
+> 
 
-Which we should be trying to eradicate, not encourage ;)
+I'm sorry, then what does this code from raw.c do?
 
->> Should you really need to account for these specially, or would some
->> kind of sysfs linkage like SET_NETDEV_DEV() be more appropriate?
+> 	mreq.mr_ifindex = index;
+> 	mreq.mr_type = PACKET_MR_ALLMULTI;
+> 	mreq.mr_alen = 0;
+> 	if (!setsockopt(fd, SOL_PACKET, option, &mreq, sizeof(mreq))) {
+> 		return 0;
+> 	}
+> 	pr_warning("setsockopt PACKET_MR_ALLMULTI failed: %m");
+> 
+> 	mreq.mr_ifindex = index;
+> 	mreq.mr_type = PACKET_MR_PROMISC;
+> 	mreq.mr_alen = 0;
+> 	if (!setsockopt(fd, SOL_PACKET, option, &mreq, sizeof(mreq))) {
+> 		return 0;
+> 	}
+> 	pr_warning("setsockopt PACKET_MR_PROMISC failed: %m");
+
+
+>> but DSA doesn't
+>> pass this on to the master port, which does the actual reception.
+>> The master port is put in promiscous mode when the slave ports are
+>> enslaved to a bridge.
 >>
->> Really all you want to do is (a) identify which WWAN device a given
->> control/data channel is for and (b) perhaps tag different control/data
->> channels with attributes like primary/secondary/gps/sim/etc often
->> through USB attributes or hardcoded data on SoCs.
+>> Also, even with software-corrected timestamps, one can observe a
+>> negative path delay reported by linuxptp:
+>>
+>> ptp4l[55.600]: master offset          8 s2 freq  +83677 path delay     -2390
+>> ptp4l[56.600]: master offset         17 s2 freq  +83688 path delay     -2391
+>> ptp4l[57.601]: master offset          6 s2 freq  +83682 path delay     -2391
+>> ptp4l[58.601]: master offset         -1 s2 freq  +83677 path delay     -2391
+>>
+>> Without investigating too deeply, this appears to be introduced by the
+>> correction applied by linuxptp to t4 (t4c: corrected master rxtstamp)
+>> during the path delay estimation process (removing the correction makes
+>> the path delay positive).
+> 
+> No.  The root cause is the time stamps delivered by the hardware or
+> your driver.  That needs to be addressed before going forward.
+> 
 
-Userspace can also choose to do its own multiplexing, so you can't even 
-really assume the above is what you 'want'.
+How can I check that the timestamps are valid?
 
 Regards,
--Denis
+-Vladimir
+
+> Thanks,
+> Richard
+> 
+
