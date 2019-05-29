@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A04692DBD0
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 13:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D56E2DBC5
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 13:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfE2LZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 07:25:54 -0400
-Received: from mail.us.es ([193.147.175.20]:52984 "EHLO mail.us.es"
+        id S1726018AbfE2LZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 07:25:57 -0400
+Received: from mail.us.es ([193.147.175.20]:53020 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726823AbfE2LZx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 07:25:53 -0400
+        id S1726857AbfE2LZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 07:25:55 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4A67CC1B6A
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 13:25:50 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 0AD41C1B77
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 13:25:51 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 39A7FDA701
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EFD6FDA714
         for <netdev@vger.kernel.org>; Wed, 29 May 2019 13:25:50 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 2EC13DA70C; Wed, 29 May 2019 13:25:50 +0200 (CEST)
+        id E4C1CDA70F; Wed, 29 May 2019 13:25:50 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EA5FFDA701;
-        Wed, 29 May 2019 13:25:47 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9EF05DA704;
+        Wed, 29 May 2019 13:25:48 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 29 May 2019 13:25:47 +0200 (CEST)
+ Wed, 29 May 2019 13:25:48 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (sys.soleta.eu [212.170.55.40])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id AC71D4265A5B;
-        Wed, 29 May 2019 13:25:47 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 5BC504265A5B;
+        Wed, 29 May 2019 13:25:48 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com
-Subject: [PATCH net-next,v3 2/9] net: ipv6: add skbuff fraglist splitter
-Date:   Wed, 29 May 2019 13:25:32 +0200
-Message-Id: <20190529112539.2126-3-pablo@netfilter.org>
+Subject: [PATCH net-next,v3 3/9] net: ipv4: split skbuff into fragments transformer
+Date:   Wed, 29 May 2019 13:25:33 +0200
+Message-Id: <20190529112539.2126-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190529112539.2126-1-pablo@netfilter.org>
 References: <20190529112539.2126-1-pablo@netfilter.org>
@@ -51,251 +51,297 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the skbuff fraglist split iterator. This API provides an
-iterator to transform the fraglist into single skbuff objects, it
-consists of:
+This patch exposes a new API to refragment a skbuff. This allows you to
+split either a linear skbuff or to force the refragmentation of an
+existing fraglist using a different mtu. The API consists of:
 
-* ip6_fraglist_init(), that initializes the internal state of the
-  fraglist iterator.
-* ip6_fraglist_prepare(), that restores the IPv6 header on the fragment.
-* ip6_fraglist_next(), that retrieves the fragment from the fraglist and
-  updates the internal state of the iterator to point to the next
-  fragment in the fraglist.
+* ip_frag_init(), that initializes the internal state of the transformer.
+* ip_frag_next(), that allows you to fetch the next fragment. This function
+  internally allocates the skbuff that represents the fragment, it pushes
+  the IPv4 header, and it also copies the payload for each fragment.
 
-The ip6_fraglist_iter object stores the internal state of the iterator.
+The ip_frag_state object stores the internal state of the splitter.
 
-This code has been extracted from ip6_fragment(). Symbols are also
+This code has been extracted from ip_do_fragment(). Symbols are also
 exported to allow to reuse this iterator from the bridge codepath to
 build its own refragmentation routine by reusing the existing codebase.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/ipv6.h    |  25 ++++++++++
- net/ipv6/ip6_output.c | 132 +++++++++++++++++++++++++++++---------------------
- 2 files changed, 102 insertions(+), 55 deletions(-)
+ include/net/ip.h     |  16 +++++
+ net/ipv4/ip_output.c | 200 ++++++++++++++++++++++++++++-----------------------
+ 2 files changed, 128 insertions(+), 88 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index daf80863d3a5..acefbc718abe 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -154,6 +154,31 @@ struct frag_hdr {
- #define	IP6_MF		0x0001
- #define	IP6_OFFSET	0xFFF8
- 
-+struct ip6_fraglist_iter {
-+	struct ipv6hdr	*tmp_hdr;
-+	struct sk_buff	*frag_list;
-+	struct sk_buff	*frag;
-+	int		offset;
-+	unsigned int	hlen;
-+	__be32		frag_id;
-+	u8		nexthdr;
-+};
-+
-+int ip6_fraglist_init(struct sk_buff *skb, unsigned int hlen, u8 *prevhdr,
-+		      u8 nexthdr, __be32 frag_id,
-+		      struct ip6_fraglist_iter *iter);
-+void ip6_fraglist_prepare(struct sk_buff *skb, struct ip6_fraglist_iter *iter);
-+
-+static inline struct sk_buff *ip6_fraglist_next(struct ip6_fraglist_iter *iter)
-+{
-+	struct sk_buff *skb = iter->frag;
-+
-+	iter->frag = skb->next;
-+	skb_mark_not_on_list(skb);
-+
-+	return skb;
-+}
-+
- #define IP6_REPLY_MARK(net, mark) \
- 	((net)->ipv6.sysctl.fwmark_reflect ? (mark) : 0)
- 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index adef2236abe2..2567b22a888a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -592,6 +592,73 @@ static void ip6_copy_metadata(struct sk_buff *to, struct sk_buff *from)
- 	skb_copy_secmark(to, from);
+diff --git a/include/net/ip.h b/include/net/ip.h
+index be899677504b..029cc3fd26bd 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -188,6 +188,22 @@ static inline struct sk_buff *ip_fraglist_next(struct ip_fraglist_iter *iter)
+ 	return skb;
  }
  
-+int ip6_fraglist_init(struct sk_buff *skb, unsigned int hlen, u8 *prevhdr,
-+		      u8 nexthdr, __be32 frag_id,
-+		      struct ip6_fraglist_iter *iter)
++struct ip_frag_state {
++	struct iphdr	*iph;
++	unsigned int	hlen;
++	unsigned int	ll_rs;
++	unsigned int	mtu;
++	unsigned int	left;
++	int		offset;
++	int		ptr;
++	__be16		not_last_frag;
++};
++
++void ip_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int ll_rs,
++		  unsigned int mtu, struct ip_frag_state *state);
++struct sk_buff *ip_frag_next(struct sk_buff *skb,
++			     struct ip_frag_state *state);
++
+ void ip_send_check(struct iphdr *ip);
+ int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+ int ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index d03eb4ae0dd4..c3f139843eca 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -609,6 +609,111 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ }
+ EXPORT_SYMBOL(ip_fraglist_prepare);
+ 
++void ip_frag_init(struct sk_buff *skb, unsigned int hlen,
++		  unsigned int ll_rs, unsigned int mtu,
++		  struct ip_frag_state *state)
 +{
-+	unsigned int first_len;
-+	struct frag_hdr *fh;
++	struct iphdr *iph = ip_hdr(skb);
 +
-+	/* BUILD HEADER */
-+	*prevhdr = NEXTHDR_FRAGMENT;
-+	iter->tmp_hdr = kmemdup(skb_network_header(skb), hlen, GFP_ATOMIC);
-+	if (!iter->tmp_hdr)
-+		return -ENOMEM;
++	state->hlen = hlen;
++	state->ll_rs = ll_rs;
++	state->mtu = mtu;
 +
-+	iter->frag_list = skb_shinfo(skb)->frag_list;
-+	iter->frag = iter->frag_list;
-+	skb_frag_list_init(skb);
++	state->left = skb->len - hlen;	/* Space per frame */
++	state->ptr = hlen;		/* Where to start from */
 +
-+	iter->offset = 0;
-+	iter->hlen = hlen;
-+	iter->frag_id = frag_id;
-+	iter->nexthdr = nexthdr;
-+
-+	__skb_pull(skb, hlen);
-+	fh = __skb_push(skb, sizeof(struct frag_hdr));
-+	__skb_push(skb, hlen);
-+	skb_reset_network_header(skb);
-+	memcpy(skb_network_header(skb), iter->tmp_hdr, hlen);
-+
-+	fh->nexthdr = nexthdr;
-+	fh->reserved = 0;
-+	fh->frag_off = htons(IP6_MF);
-+	fh->identification = frag_id;
-+
-+	first_len = skb_pagelen(skb);
-+	skb->data_len = first_len - skb_headlen(skb);
-+	skb->len = first_len;
-+	ipv6_hdr(skb)->payload_len = htons(first_len - sizeof(struct ipv6hdr));
-+
-+	return 0;
++	state->offset = (ntohs(iph->frag_off) & IP_OFFSET) << 3;
++	state->not_last_frag = iph->frag_off & htons(IP_MF);
 +}
-+EXPORT_SYMBOL(ip6_fraglist_init);
++EXPORT_SYMBOL(ip_frag_init);
 +
-+void ip6_fraglist_prepare(struct sk_buff *skb,
-+			  struct ip6_fraglist_iter *iter)
++struct sk_buff *ip_frag_next(struct sk_buff *skb, struct ip_frag_state *state)
 +{
-+	struct sk_buff *frag = iter->frag;
-+	unsigned int hlen = iter->hlen;
-+	struct frag_hdr *fh;
++	unsigned int len = state->left;
++	struct sk_buff *skb2;
++	struct iphdr *iph;
 +
-+	frag->ip_summed = CHECKSUM_NONE;
-+	skb_reset_transport_header(frag);
-+	fh = __skb_push(frag, sizeof(struct frag_hdr));
-+	__skb_push(frag, hlen);
-+	skb_reset_network_header(frag);
-+	memcpy(skb_network_header(frag), iter->tmp_hdr, hlen);
-+	iter->offset += skb->len - hlen - sizeof(struct frag_hdr);
-+	fh->nexthdr = iter->nexthdr;
-+	fh->reserved = 0;
-+	fh->frag_off = htons(iter->offset);
-+	if (frag->next)
-+		fh->frag_off |= htons(IP6_MF);
-+	fh->identification = iter->frag_id;
-+	ipv6_hdr(frag)->payload_len = htons(frag->len - sizeof(struct ipv6hdr));
-+	ip6_copy_metadata(frag, skb);
++	len = state->left;
++	/* IF: it doesn't fit, use 'mtu' - the data space left */
++	if (len > state->mtu)
++		len = state->mtu;
++	/* IF: we are not sending up to and including the packet end
++	   then align the next start on an eight byte boundary */
++	if (len < state->left)	{
++		len &= ~7;
++	}
++
++	/* Allocate buffer */
++	skb2 = alloc_skb(len + state->hlen + state->ll_rs, GFP_ATOMIC);
++	if (!skb2)
++		return ERR_PTR(-ENOMEM);
++
++	/*
++	 *	Set up data on packet
++	 */
++
++	ip_copy_metadata(skb2, skb);
++	skb_reserve(skb2, state->ll_rs);
++	skb_put(skb2, len + state->hlen);
++	skb_reset_network_header(skb2);
++	skb2->transport_header = skb2->network_header + state->hlen;
++
++	/*
++	 *	Charge the memory for the fragment to any owner
++	 *	it might possess
++	 */
++
++	if (skb->sk)
++		skb_set_owner_w(skb2, skb->sk);
++
++	/*
++	 *	Copy the packet header into the new buffer.
++	 */
++
++	skb_copy_from_linear_data(skb, skb_network_header(skb2), state->hlen);
++
++	/*
++	 *	Copy a block of the IP datagram.
++	 */
++	if (skb_copy_bits(skb, state->ptr, skb_transport_header(skb2), len))
++		BUG();
++	state->left -= len;
++
++	/*
++	 *	Fill in the new header fields.
++	 */
++	iph = ip_hdr(skb2);
++	iph->frag_off = htons((state->offset >> 3));
++
++	if (IPCB(skb)->flags & IPSKB_FRAG_PMTU)
++		iph->frag_off |= htons(IP_DF);
++
++	/* ANK: dirty, but effective trick. Upgrade options only if
++	 * the segment to be fragmented was THE FIRST (otherwise,
++	 * options are already fixed) and make it ONCE
++	 * on the initial skb, so that all the following fragments
++	 * will inherit fixed options.
++	 */
++	if (state->offset == 0)
++		ip_options_fragment(skb);
++
++	/*
++	 *	Added AC : If we are fragmenting a fragment that's not the
++	 *		   last fragment then keep MF on each bit
++	 */
++	if (state->left > 0 || state->not_last_frag)
++		iph->frag_off |= htons(IP_MF);
++	state->ptr += len;
++	state->offset += len;
++
++	iph->tot_len = htons(len + state->hlen);
++
++	ip_send_check(iph);
++
++	return skb2;
 +}
-+EXPORT_SYMBOL(ip6_fraglist_prepare);
++EXPORT_SYMBOL(ip_frag_next);
 +
- int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 		 int (*output)(struct net *, struct sock *, struct sk_buff *))
+ /*
+  *	This IP datagram is too large to be sent in one piece.  Break it up into
+  *	smaller pieces (each of size equal to IP header plus
+@@ -620,13 +725,11 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 		   int (*output)(struct net *, struct sock *, struct sk_buff *))
  {
-@@ -599,7 +666,6 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 	struct rt6_info *rt = (struct rt6_info *)skb_dst(skb);
- 	struct ipv6_pinfo *np = skb->sk && !dev_recursion_level() ?
- 				inet6_sk(skb->sk) : NULL;
--	struct ipv6hdr *tmp_hdr;
- 	struct frag_hdr *fh;
- 	unsigned int mtu, hlen, left, len, nexthdr_offset;
- 	int hroom, troom;
-@@ -651,6 +717,7 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 	hroom = LL_RESERVED_SPACE(rt->dst.dev);
- 	if (skb_has_frag_list(skb)) {
- 		unsigned int first_len = skb_pagelen(skb);
-+		struct ip6_fraglist_iter iter;
- 		struct sk_buff *frag2;
+ 	struct iphdr *iph;
+-	int ptr;
+ 	struct sk_buff *skb2;
+-	unsigned int mtu, hlen, left, len, ll_rs;
+-	int offset;
+-	__be16 not_last_frag;
+ 	struct rtable *rt = skb_rtable(skb);
++	unsigned int mtu, hlen, ll_rs;
+ 	struct ip_fraglist_iter iter;
++	struct ip_frag_state state;
+ 	int err = 0;
  
- 		if (first_len - hlen > mtu ||
-@@ -678,74 +745,29 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 			skb->truesize -= frag->truesize;
- 		}
+ 	/* for offloaded checksums cleanup checksum before fragmentation */
+@@ -730,105 +833,26 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 	}
  
--		err = 0;
--		offset = 0;
--		/* BUILD HEADER */
+ slow_path:
+-	iph = ip_hdr(skb);
 -
--		*prevhdr = NEXTHDR_FRAGMENT;
--		tmp_hdr = kmemdup(skb_network_header(skb), hlen, GFP_ATOMIC);
--		if (!tmp_hdr) {
--			err = -ENOMEM;
-+		err = ip6_fraglist_init(skb, hlen, prevhdr, nexthdr, frag_id,
-+					&iter);
-+		if (err < 0)
- 			goto fail;
+-	left = skb->len - hlen;		/* Space per frame */
+-	ptr = hlen;		/* Where to start from */
+-
+ 	/*
+ 	 *	Fragment the datagram.
+ 	 */
+ 
+-	offset = (ntohs(iph->frag_off) & IP_OFFSET) << 3;
+-	not_last_frag = iph->frag_off & htons(IP_MF);
++	ip_frag_init(skb, hlen, ll_rs, mtu, &state);
+ 
+ 	/*
+ 	 *	Keep copying data until we run out.
+ 	 */
+ 
+-	while (left > 0) {
+-		len = left;
+-		/* IF: it doesn't fit, use 'mtu' - the data space left */
+-		if (len > mtu)
+-			len = mtu;
+-		/* IF: we are not sending up to and including the packet end
+-		   then align the next start on an eight byte boundary */
+-		if (len < left)	{
+-			len &= ~7;
 -		}
--		frag = skb_shinfo(skb)->frag_list;
--		skb_frag_list_init(skb);
 -
--		__skb_pull(skb, hlen);
--		fh = __skb_push(skb, sizeof(struct frag_hdr));
--		__skb_push(skb, hlen);
--		skb_reset_network_header(skb);
--		memcpy(skb_network_header(skb), tmp_hdr, hlen);
--
--		fh->nexthdr = nexthdr;
--		fh->reserved = 0;
--		fh->frag_off = htons(IP6_MF);
--		fh->identification = frag_id;
--
--		first_len = skb_pagelen(skb);
--		skb->data_len = first_len - skb_headlen(skb);
--		skb->len = first_len;
--		ipv6_hdr(skb)->payload_len = htons(first_len -
--						   sizeof(struct ipv6hdr));
- 
- 		for (;;) {
- 			/* Prepare header of the next frame,
- 			 * before previous one went down. */
--			if (frag) {
--				frag->ip_summed = CHECKSUM_NONE;
--				skb_reset_transport_header(frag);
--				fh = __skb_push(frag, sizeof(struct frag_hdr));
--				__skb_push(frag, hlen);
--				skb_reset_network_header(frag);
--				memcpy(skb_network_header(frag), tmp_hdr,
--				       hlen);
--				offset += skb->len - hlen - sizeof(struct frag_hdr);
--				fh->nexthdr = nexthdr;
--				fh->reserved = 0;
--				fh->frag_off = htons(offset);
--				if (frag->next)
--					fh->frag_off |= htons(IP6_MF);
--				fh->identification = frag_id;
--				ipv6_hdr(frag)->payload_len =
--						htons(frag->len -
--						      sizeof(struct ipv6hdr));
--				ip6_copy_metadata(frag, skb);
--			}
-+			if (iter.frag)
-+				ip6_fraglist_prepare(skb, &iter);
- 
- 			err = output(net, sk, skb);
- 			if (!err)
- 				IP6_INC_STATS(net, ip6_dst_idev(&rt->dst),
- 					      IPSTATS_MIB_FRAGCREATES);
- 
--			if (err || !frag)
-+			if (err || !iter.frag)
- 				break;
- 
--			skb = frag;
--			frag = skb->next;
--			skb_mark_not_on_list(skb);
-+			skb = ip6_fraglist_next(&iter);
+-		/* Allocate buffer */
+-		skb2 = alloc_skb(len + hlen + ll_rs, GFP_ATOMIC);
+-		if (!skb2) {
+-			err = -ENOMEM;
++	while (state.left > 0) {
++		skb2 = ip_frag_next(skb, &state);
++		if (IS_ERR(skb2)) {
++			err = PTR_ERR(skb2);
+ 			goto fail;
  		}
  
--		kfree(tmp_hdr);
-+		kfree(iter.tmp_hdr);
- 
- 		if (err == 0) {
- 			IP6_INC_STATS(net, ip6_dst_idev(&rt->dst),
-@@ -753,7 +775,7 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 			return 0;
- 		}
- 
--		kfree_skb_list(frag);
-+		kfree_skb_list(iter.frag_list);
- 
- 		IP6_INC_STATS(net, ip6_dst_idev(&rt->dst),
- 			      IPSTATS_MIB_FRAGFAILS);
+ 		/*
+-		 *	Set up data on packet
+-		 */
+-
+-		ip_copy_metadata(skb2, skb);
+-		skb_reserve(skb2, ll_rs);
+-		skb_put(skb2, len + hlen);
+-		skb_reset_network_header(skb2);
+-		skb2->transport_header = skb2->network_header + hlen;
+-
+-		/*
+-		 *	Charge the memory for the fragment to any owner
+-		 *	it might possess
+-		 */
+-
+-		if (skb->sk)
+-			skb_set_owner_w(skb2, skb->sk);
+-
+-		/*
+-		 *	Copy the packet header into the new buffer.
+-		 */
+-
+-		skb_copy_from_linear_data(skb, skb_network_header(skb2), hlen);
+-
+-		/*
+-		 *	Copy a block of the IP datagram.
+-		 */
+-		if (skb_copy_bits(skb, ptr, skb_transport_header(skb2), len))
+-			BUG();
+-		left -= len;
+-
+-		/*
+-		 *	Fill in the new header fields.
+-		 */
+-		iph = ip_hdr(skb2);
+-		iph->frag_off = htons((offset >> 3));
+-
+-		if (IPCB(skb)->flags & IPSKB_FRAG_PMTU)
+-			iph->frag_off |= htons(IP_DF);
+-
+-		/* ANK: dirty, but effective trick. Upgrade options only if
+-		 * the segment to be fragmented was THE FIRST (otherwise,
+-		 * options are already fixed) and make it ONCE
+-		 * on the initial skb, so that all the following fragments
+-		 * will inherit fixed options.
+-		 */
+-		if (offset == 0)
+-			ip_options_fragment(skb);
+-
+-		/*
+-		 *	Added AC : If we are fragmenting a fragment that's not the
+-		 *		   last fragment then keep MF on each bit
+-		 */
+-		if (left > 0 || not_last_frag)
+-			iph->frag_off |= htons(IP_MF);
+-		ptr += len;
+-		offset += len;
+-
+-		/*
+ 		 *	Put this fragment into the sending queue.
+ 		 */
+-		iph->tot_len = htons(len + hlen);
+-
+-		ip_send_check(iph);
+-
+ 		err = output(net, sk, skb2);
+ 		if (err)
+ 			goto fail;
 -- 
 2.11.0
 
