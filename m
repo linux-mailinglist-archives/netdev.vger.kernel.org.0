@@ -2,67 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 577192E8A8
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 01:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B702E8B0
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 01:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbfE2XDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 19:03:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40284 "EHLO vps0.lunn.ch"
+        id S1726454AbfE2XGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 19:06:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40304 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726189AbfE2XDm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 19:03:42 -0400
+        id S1726189AbfE2XGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 19:06:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=g3dIPaHOm9Yirjunzdr4EeMbY8yeAgg4qL2WO6u+NKc=; b=iz5I6M7+gVI+X8TxAY6IUt4tuC
-        ATumOgL3/y+VeeZx/8MuZRLlHxXe+vo3WjcGnHF43bZINAthYmqAqhmubZj9CkCTvu00NVXneJGu2
-        wh/vzFhKWZidt2F9jHJk7ZX+KoLI4boppsXR68OAbzAFNv9tILi4GOKpEQFuhVedyIFA=;
+        bh=ps67TD8ahAPdgY6AYZQgGLpnp1EOf+TqZXRQc2Y/I2w=; b=S6T5BQS5Y1fouDKzFCiapkZpIA
+        xmxfgcCvE7ZpSx/cmatBjwhPBBjZDWuYBdgEqd3FxtvjUqm4/2luyB83ikO03mWLfpvpJ0o3o6B/U
+        bzd7P4n2cw57GBI/TVnlePzaoT1N1Dpe55bUCYVDL1eeVY+kn9uSCX2rtK4bGu/lQ/PM=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hW7bY-0002wo-GM; Thu, 30 May 2019 01:03:32 +0200
-Date:   Thu, 30 May 2019 01:03:32 +0200
+        id 1hW7eb-00031S-TW; Thu, 30 May 2019 01:06:41 +0200
+Date:   Thu, 30 May 2019 01:06:41 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+To:     "Voon, Weifeng" <weifeng.voon@intel.com>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "lkp@01.org" <lkp@01.org>,
-        kernel test robot <rong.a.chen@intel.com>
-Subject: Re: [net] 9dd6d07682: kernel_BUG_at_drivers/net/phy/mdio_bus.c
-Message-ID: <20190529230332.GC18059@lunn.ch>
-References: <1558992127-26008-11-git-send-email-ioana.ciornei@nxp.com>
- <20190529023557.GA22325@shao2-debian>
- <VI1PR0402MB2800068E2D6880BE1930DE53E01F0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
- <20190529162527.kuunt5gxif6wvhoo@shell.armlinux.org.uk>
- <VI1PR0402MB28000F3C6A070321299AA57EE01F0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+Subject: Re: [PATCH net-next v4 1/5] net: stmmac: enable clause 45 mdio
+ support
+Message-ID: <20190529230641.GD18059@lunn.ch>
+References: <1559149107-14631-1-git-send-email-weifeng.voon@intel.com>
+ <1559149107-14631-2-git-send-email-weifeng.voon@intel.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9333BC@DE02WEMBXB.internal.synopsys.com>
+ <D6759987A7968C4889FDA6FA91D5CBC814707D32@PGSMSX103.gar.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB28000F3C6A070321299AA57EE01F0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC814707D32@PGSMSX103.gar.corp.intel.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->     phydev = dsa_port_get_phy_device(dp);
->     if (!phydev)
->           return 0;
+On Wed, May 29, 2019 at 05:39:44PM +0000, Voon, Weifeng wrote:
+> > > +static void stmmac_mdio_c45_setup(struct stmmac_priv *priv, int phyreg,
+> > > +				  u32 *val, u32 *data)
+> > > +{
+> > > +	unsigned int reg_shift = priv->hw->mii.reg_shift;
+> > > +	unsigned int reg_mask = priv->hw->mii.reg_mask;
+> > 
+> > Reverse christmas tree here. You also should align the function variables with
+> > the opening parenthesis of the function here and in the remaining series.
+> > 
+> > Otherwise this patch looks good to me.
 > 
-> I don't see how this method is sane either.
+> It is already reversed Christmas tree.
 
-If i remember correctly, the thinking was, you can get away without
-the PHY, at least during bring up of a new switch/board. So don't
-consider this a fatal error. Now that it is fatal, in the sense of an
-Opps, maybe we should change this.
+Yes.
 
-      Andrew
+> Somehow each of the character's width in the
+> email is not equal.
+
+Sounds like somebody is using a proportional font in there email
+client. Bad idea.
+
+	Andrew
