@@ -2,127 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C4CC2D434
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235312D460
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 05:57:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbfE2DWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 23:22:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58200 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725856AbfE2DWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 23:22:52 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D2D51308425C;
-        Wed, 29 May 2019 03:22:51 +0000 (UTC)
-Received: from [10.72.12.48] (ovpn-12-48.pek2.redhat.com [10.72.12.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D46731972B;
-        Wed, 29 May 2019 03:22:42 +0000 (UTC)
-Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
-To:     Stefano Garzarella <sgarzare@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>
-References: <20190528105623.27983-1-sgarzare@redhat.com>
- <20190528105623.27983-4-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
-Date:   Wed, 29 May 2019 11:22:40 +0800
+        id S1726076AbfE2D5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 23:57:40 -0400
+Received: from sobre.alvarezp.com ([173.230.155.94]:40872 "EHLO
+        sobre.alvarezp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbfE2D5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 23:57:39 -0400
+Received: from [192.168.15.65] (unknown [189.205.206.165])
+        by sobre.alvarezp.com (Postfix) with ESMTPSA id 0F9D821D78;
+        Tue, 28 May 2019 22:57:38 -0500 (CDT)
+Subject: Re: PROBLEM: [2/2] Marvell 88E8040 (sky2) fails after hibernation
+To:     Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     netdev@vger.kernel.org
+References: <aba1c363-92de-66d7-4aac-b555f398e70a@alvarezp.org>
+From:   Octavio Alvarez <octallk1@alvarezp.org>
+Message-ID: <a3a201a1-0b24-8d82-90f6-9196d4aef490@alvarezp.org>
+Date:   Tue, 28 May 2019 22:57:37 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-In-Reply-To: <20190528105623.27983-4-sgarzare@redhat.com>
+In-Reply-To: <aba1c363-92de-66d7-4aac-b555f398e70a@alvarezp.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 29 May 2019 03:22:51 +0000 (UTC)
+Content-Language: uk-UA
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi!
 
-On 2019/5/28 下午6:56, Stefano Garzarella wrote:
-> We flush all pending works before to call vdev->config->reset(vdev),
-> but other works can be queued before the vdev->config->del_vqs(vdev),
-> so we add another flush after it, to avoid use after free.
->
-> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->   net/vmw_vsock/virtio_transport.c | 23 +++++++++++++++++------
->   1 file changed, 17 insertions(+), 6 deletions(-)
->
-> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> index e694df10ab61..ad093ce96693 100644
-> --- a/net/vmw_vsock/virtio_transport.c
-> +++ b/net/vmw_vsock/virtio_transport.c
-> @@ -660,6 +660,15 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
->   	return ret;
->   }
->   
-> +static void virtio_vsock_flush_works(struct virtio_vsock *vsock)
-> +{
-> +	flush_work(&vsock->loopback_work);
-> +	flush_work(&vsock->rx_work);
-> +	flush_work(&vsock->tx_work);
-> +	flush_work(&vsock->event_work);
-> +	flush_work(&vsock->send_pkt_work);
-> +}
-> +
->   static void virtio_vsock_remove(struct virtio_device *vdev)
->   {
->   	struct virtio_vsock *vsock = vdev->priv;
-> @@ -668,12 +677,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->   	mutex_lock(&the_virtio_vsock_mutex);
->   	the_virtio_vsock = NULL;
->   
-> -	flush_work(&vsock->loopback_work);
-> -	flush_work(&vsock->rx_work);
-> -	flush_work(&vsock->tx_work);
-> -	flush_work(&vsock->event_work);
-> -	flush_work(&vsock->send_pkt_work);
-> -
->   	/* Reset all connected sockets when the device disappear */
->   	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
->   
-> @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->   	vsock->event_run = false;
->   	mutex_unlock(&vsock->event_lock);
->   
-> +	/* Flush all pending works */
-> +	virtio_vsock_flush_works(vsock);
-> +
->   	/* Flush all device writes and interrupts, device will not use any
->   	 * more buffers.
->   	 */
-> @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->   	/* Delete virtqueues and flush outstanding callbacks if any */
->   	vdev->config->del_vqs(vdev);
->   
-> +	/* Other works can be queued before 'config->del_vqs()', so we flush
-> +	 * all works before to free the vsock object to avoid use after free.
-> +	 */
-> +	virtio_vsock_flush_works(vsock);
+On 5/18/19 11:07 AM, Octavio Alvarez wrote:
+> PROBLEM: [2/2] Marvell 88E8040 (sky2) fails after hibernation
+> 
+> Hibernating the machine and bringing it back does not properly bring back
+> the Marvell NIC. Most of the time a module reload does not help.
+> 
+> Problem starts on the following commit:
+> 
+> commit bc976233a872c0f20f018fb1e89264a541584e25
+> Author: Thomas Gleixner <tglx@linutronix.de>
+> Date:   Fri Dec 29 10:47:22 2017 +0100
+> 
+>      genirq/msi, x86/vector: Prevent reservation mode for non maskable MSI
 
+Sorry for insisting but can anybody help out? It was working up to 
+before kernel 4.15.
 
-Some questions after a quick glance:
+Reverting this 2017 patch over master fixes the issue but the changes 
+are unrelated to the driver:
 
-1) It looks to me that the work could be queued from the path of 
-vsock_transport_cancel_pkt() . Is that synchronized here?
+$ git show --stat=60 bc976233a872 | grep \|
+  arch/x86/kernel/apic/vector.c | 12 +++++++-
+  kernel/irq/msi.c              | 37 ++++++++++++++++++++---
 
-2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run 
-still needed? It looks to me we've already done except that we need 
-flush rx_work in the end since send_pkt_work can requeue rx_work.
-
-Thanks
-
-
-> +
->   	kfree(vsock);
->   	mutex_unlock(&the_virtio_vsock_mutex);
->   }
+Thanks,
+Octavio.
