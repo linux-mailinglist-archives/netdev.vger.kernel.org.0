@@ -2,109 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7BA52E5F8
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:18:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19FA92E5FF
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 22:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbfE2USG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 16:18:06 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:58420 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbfE2USG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 16:18:06 -0400
-Received: by mail-it1-f198.google.com with SMTP id l193so2946980ita.8
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 13:18:06 -0700 (PDT)
+        id S1726186AbfE2UXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 16:23:25 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45626 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfE2UXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 16:23:25 -0400
+Received: by mail-ed1-f66.google.com with SMTP id f20so5559504edt.12;
+        Wed, 29 May 2019 13:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gj4vz0BGKXUgHJIxFFhu0LjPh9MmI0i8cM1MVMHpNXU=;
+        b=pb/HkhkNK9dn/jM5IxeXqJl+j0jRBb+Nn98t0z9L0oMjEduFBL/zlhPaGLiB8AUI3Q
+         0t5x+Yh2MOpB62mO/xj2m/eVYFHfW5hX10n6oLh+DtoIBRV3XBq8EU7FdVWTGDAwodHt
+         HuG7NzenFCvPZ5rpAcoQmuumbt7kEGWrfgqf3C7Jw2ee0mHXo0hW6G1nuSicWDVQ3rm7
+         KEltz5eWpQ3cU0Mljjo1yXP9Ts98PF8KQZZzbt4j98Vc15OpkVul4xslUBV5Mc6URt5s
+         9mmv11fwO22QS7TpHlKsZTb8HdOUq/fwAUprwLIW1lyqFtnmdHA+T7pIyZdQJPhBXoFg
+         hDAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=LKEz7XTZ4qr1/XdWlgCrAy6dfMnUYHHEKllZWvUwqVI=;
-        b=R0ekVmTM1W6bL49V/FgCHLHpAJku4UZtw5UMK+03VRD4WJsqP0ZCSQljS0kopAO/Hb
-         nqJeFTpRlPrJlcz/Zv0MCnZ+IdtdWRN4AeEnPW4/jHKalYmXy8Ahr5Y/uN8VVnouSuxw
-         W+QMoLD7njP4KTDv7azle7xJRygb8qimiK6ZsnF4/57OzqLbWqoWZLYFl1YNhrWrL1oo
-         x17fqzPElI+i2HXxYlVs6MvW5f3hGmj2urdEwcUqM22lHEQqBCncv1GgP6AHQuYfl4ZL
-         6+X54qAGL0gThkhe9rh20u9oToAbz1VKKybi8NYfHu/InMT5vTSbL7o/r6Ya/vkmbPgI
-         cNBg==
-X-Gm-Message-State: APjAAAViD54vMnzAIh1cwyLX6c1cQz0GjfFSR0FK+Jkr71KpgsJvFAYb
-        YhOn3vX5r2q8p7ERmja8w2VFamun9fm2fRUE5mPpnG6llO7O
-X-Google-Smtp-Source: APXvYqzvVxVAHNou2Z0JaDILwh5XC9INnPe18/MwMxlAaS+3+d7wuVTTgJmnuK++bU6CaL5R1gRXPm2uk+odi2PdKTc0W8tsRp4A
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gj4vz0BGKXUgHJIxFFhu0LjPh9MmI0i8cM1MVMHpNXU=;
+        b=Hq136Cg7E4NrJeX9fFTgW/JmykQkUBQw7ATKd4M9OMILl5uODaqvYj9D/qlEuKrLMp
+         fsGkdjlrZs065QVEuYyzuBkaB2vTF3sxWaELqXXNKLjCI4WCvQ2ufDFtky8EG2OADn0a
+         0yGhpBj8HH9eNm9lVFMlQ1FN03MlBYSh1O6YUeYOfGlc2jCG9hJXW58FpZiP6oTk8gaj
+         0w39bcERjIfSH4E46SuzLRImd2UuI9ljUC2GSv7EfwyPEP86ODr0x6Ey4jpqABORcvzG
+         GP1eIf+kRO9gAmPeA1v4EPPA3tYGVZ+D2dnAcxpteJK0ERlvaKSMUtZGvxB7uc1uQKfA
+         J+KQ==
+X-Gm-Message-State: APjAAAWEjHAMoID06HxLF1sycMe2fT/V5ffQxujJSWpw1x4iqRLCoY3b
+        b9zWWQA00nueOyh4jqoul0C5vx8p2A2tq7oB08U=
+X-Google-Smtp-Source: APXvYqzpgPq4A6VzBKdh+gPHSU3+JZoMyepYWUYiLS9a2Dw2j1Q+wH5/Kl9CUek8B/idodVdai5RsjMIlcY0h4D7FEA=
+X-Received: by 2002:a50:92a3:: with SMTP id k32mr165996eda.123.1559161403202;
+ Wed, 29 May 2019 13:23:23 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:1a45:: with SMTP id 66mr80221047jai.124.1559161085617;
- Wed, 29 May 2019 13:18:05 -0700 (PDT)
-Date:   Wed, 29 May 2019 13:18:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a7f012058a0c7a65@google.com>
-Subject: memory leak in nr_loopback_queue
-From:   syzbot <syzbot+470d1a4a7b7a7c225881@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20190528235627.1315-1-olteanv@gmail.com> <20190528235627.1315-2-olteanv@gmail.com>
+ <CALAqxLWjT0ZJerFa+BVCKW+-ws6DYFy7kqEfNVK8ioGdY=VQeQ@mail.gmail.com>
+In-Reply-To: <CALAqxLWjT0ZJerFa+BVCKW+-ws6DYFy7kqEfNVK8ioGdY=VQeQ@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 29 May 2019 23:23:12 +0300
+Message-ID: <CA+h21hqV_YzunTa3BqXr76HYfFCUj2S+1tzqDotyh3rYd8HK2Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/5] timecounter: Add helper for reconstructing
+ partial timestamps
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 29 May 2019 at 05:14, John Stultz <john.stultz@linaro.org> wrote:
+>
+> On Tue, May 28, 2019 at 4:58 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > Some PTP hardware offers a 64-bit free-running counter whose snapshots
+> > are used for timestamping, but only makes part of that snapshot
+> > available as timestamps (low-order bits).
+> >
+> > In that case, timecounter/cyclecounter users must bring the cyclecounter
+> > and timestamps to the same bit width, and they currently have two
+> > options of doing so:
+> >
+> > - Trim the higher bits of the timecounter itself to the number of bits
+> >   of the timestamps.  This might work for some setups, but if the
+> >   wraparound of the timecounter in this case becomes high (~10 times per
+> >   second) then this causes additional strain on the system, which must
+> >   read the clock that often just to avoid missing the wraparounds.
+> >
+> > - Reconstruct the timestamp by racing to read the PTP time within one
+> >   wraparound cycle since the timestamp was generated.  This is
+> >   preferable when the wraparound time is small (do a time-critical
+> >   readout once vs doing it periodically), and it has no drawback even
+> >   when the wraparound is comfortably sized.
+> >
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> > ---
+> >  include/linux/timecounter.h |  7 +++++++
+> >  kernel/time/timecounter.c   | 33 +++++++++++++++++++++++++++++++++
+> >  2 files changed, 40 insertions(+)
+> >
+> > diff --git a/include/linux/timecounter.h b/include/linux/timecounter.h
+> > index 2496ad4cfc99..03eab1f3bb9c 100644
+> > --- a/include/linux/timecounter.h
+> > +++ b/include/linux/timecounter.h
+> > @@ -30,6 +30,9 @@
+> >   *     by the implementor and user of specific instances of this API.
+> >   *
+> >   * @read:              returns the current cycle value
+> > + * @partial_tstamp_mask:bitmask in case the hardware emits timestamps
+> > + *                     which only capture low-order bits of the full
+> > + *                     counter, and should be reconstructed.
+> >   * @mask:              bitmask for two's complement
+> >   *                     subtraction of non 64 bit counters,
+> >   *                     see CYCLECOUNTER_MASK() helper macro
+> > @@ -38,6 +41,7 @@
+> >   */
+> >  struct cyclecounter {
+> >         u64 (*read)(const struct cyclecounter *cc);
+> > +       u64 partial_tstamp_mask;
+> >         u64 mask;
+> >         u32 mult;
+> >         u32 shift;
+> > @@ -136,4 +140,7 @@ extern u64 timecounter_read(struct timecounter *tc);
+> >  extern u64 timecounter_cyc2time(struct timecounter *tc,
+> >                                 u64 cycle_tstamp);
+> >
+> > +extern u64 cyclecounter_reconstruct(const struct cyclecounter *cc,
+> > +                                   u64 ts_partial);
+> > +
+> >  #endif
+> > diff --git a/kernel/time/timecounter.c b/kernel/time/timecounter.c
+> > index 85b98e727306..d4657d64e38d 100644
+> > --- a/kernel/time/timecounter.c
+> > +++ b/kernel/time/timecounter.c
+> > @@ -97,3 +97,36 @@ u64 timecounter_cyc2time(struct timecounter *tc,
+> >         return nsec;
+> >  }
+> >  EXPORT_SYMBOL_GPL(timecounter_cyc2time);
+> > +
+> > +/**
+> > + * cyclecounter_reconstruct - reconstructs @ts_partial
+> > + * @cc:                Pointer to cycle counter.
+> > + * @ts_partial:        Typically RX or TX NIC timestamp, provided by hardware as
+> > + *             the lower @partial_tstamp_mask bits of the cycle counter,
+> > + *             sampled at the time the timestamp was collected.
+> > + *             To reconstruct into a full @mask bit-wide timestamp, the
+> > + *             cycle counter is read and the high-order bits (up to @mask) are
+> > + *             filled in.
+> > + *             Must be called within one wraparound of @partial_tstamp_mask
+> > + *             bits of the cycle counter.
+> > + */
+> > +u64 cyclecounter_reconstruct(const struct cyclecounter *cc, u64 ts_partial)
+> > +{
+> > +       u64 ts_reconstructed;
+> > +       u64 cycle_now;
+> > +
+> > +       cycle_now = cc->read(cc);
+> > +
+> > +       ts_reconstructed = (cycle_now & ~cc->partial_tstamp_mask) |
+> > +                           ts_partial;
+> > +
+> > +       /* Check lower bits of current cycle counter against the timestamp.
+> > +        * If the current cycle counter is lower than the partial timestamp,
+> > +        * then wraparound surely occurred and must be accounted for.
+> > +        */
+> > +       if ((cycle_now & cc->partial_tstamp_mask) <= ts_partial)
+> > +               ts_reconstructed -= (cc->partial_tstamp_mask + 1);
+> > +
+> > +       return ts_reconstructed;
+> > +}
+> > +EXPORT_SYMBOL_GPL(cyclecounter_reconstruct);
+>
+> Hrm. Is this actually generic? Would it make more sense to have the
+> specific implementations with this quirk implement this in their
+> read() handler? If not, why?
 
-syzbot found the following crash on:
+Hi John, Richard,
 
-HEAD commit:    9fb67d64 Merge tag 'pinctrl-v5.2-2' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15956d52a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
-dashboard link: https://syzkaller.appspot.com/bug?extid=470d1a4a7b7a7c225881
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11bc96a2a00000
+It's not the cycle counter that needs reconstruction, but hardware
+timestamps based on it.  Hence not possible to add a workaround in the
+read() handler.
+If it's not desirable to have this helper function in the cyclecounter
+I'll move it to the driver in v2.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+470d1a4a7b7a7c225881@syzkaller.appspotmail.com
+Thanks,
+-Vladimir
 
-2019/05/29 16:46:11 executed programs: 584
-2019/05/29 16:46:19 executed programs: 614
-2019/05/29 16:46:26 executed programs: 624
-2019/05/29 16:46:33 executed programs: 640
-2019/05/29 16:46:41 executed programs: 654
-BUG: memory leak
-unreferenced object 0xffff888117e5ba00 (size 224):
-   comm "syz-executor.2", pid 10957, jiffies 4294999655 (age 10.170s)
-   hex dump (first 32 bytes):
-     d0 50 cc 17 81 88 ff ff d0 50 cc 17 81 88 ff ff  .P.......P......
-     00 00 00 00 00 00 00 00 00 10 b2 08 81 88 ff ff  ................
-   backtrace:
-     [<00000000af44a575>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<00000000af44a575>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<00000000af44a575>] slab_alloc_node mm/slab.c:3269 [inline]
-     [<00000000af44a575>] kmem_cache_alloc_node+0x153/0x2a0 mm/slab.c:3579
-     [<000000007d2ff911>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:198
-     [<00000000f697bd2b>] alloc_skb include/linux/skbuff.h:1058 [inline]
-     [<00000000f697bd2b>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:37
-     [<00000000eb3a969d>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:775
-     [<000000002dad2e7e>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:212
-     [<000000006d8f7662>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:208
-     [<0000000004553967>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:230
-     [<000000000382326a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:716
-     [<00000000a27cdfc2>] __sys_connect+0x11d/0x170 net/socket.c:1840
-     [<0000000074ede9c3>] __do_sys_connect net/socket.c:1851 [inline]
-     [<0000000074ede9c3>] __se_sys_connect net/socket.c:1848 [inline]
-     [<0000000074ede9c3>] __x64_sys_connect+0x1e/0x30 net/socket.c:1848
-     [<000000000940d4eb>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000307bfe5c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>
+> thanks
+> -john
