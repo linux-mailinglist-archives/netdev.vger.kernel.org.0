@@ -2,187 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF72B2D981
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291842D98C
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 11:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfE2Jvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 05:51:48 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:52858 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbfE2Jvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:51:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=/f5EUi1XSNAC84dFYL879FX4cNgbBocAhTsspiFEMmM=; b=Mb/5bBw9hFyvPrY55boHa39rj
-        ib0qLtTMnflxzIhaiPSM+5tEWPJAvwnuevi6bjfDqdUykvTEJWa28IzySLFN4N+/qs/2DYEna8mFa
-        leqjBJ2EcRoFWRui0WuN+G62YwX1jGsH2PpMEKB1IwwwIM5/Co/LJjayb+13442iDMM2MW3UnRhcV
-        kueS+oGuk3VI2Ix1T1iwMHWjeIYAuaMu9aN9YU3+jcv6OQEQdtfgPK+DNn+JQTdskYue5UZSuOKhP
-        MTTVv5DkJCMgcwNd4DHKqWTboP511OfvEkUF9OO/bBIRaSWTcfWNwLxEx9NdETgWHOEiCtaL+ag5X
-        EgxjAOIhA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38354)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hVvFC-0003SV-LV; Wed, 29 May 2019 10:51:38 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hVvF5-0004RQ-Gh; Wed, 29 May 2019 10:51:31 +0100
-Date:   Wed, 29 May 2019 10:51:31 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ruslan Babayev <ruslan@babayev.com>
-Cc:     mika.westerberg@linux.intel.com, wsa@the-dreams.de, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
-        xe-linux-external@cisco.com
-Subject: Re: [net-next,v4 2/2] net: phy: sfp: enable i2c-bus detection on
- ACPI based systems
-Message-ID: <20190529095131.ans67yioljyklqol@shell.armlinux.org.uk>
-References: <20190528230233.26772-1-ruslan@babayev.com>
- <20190528230233.26772-3-ruslan@babayev.com>
+        id S1726121AbfE2JyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 05:54:08 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34513 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfE2JyI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 05:54:08 -0400
+Received: by mail-lj1-f193.google.com with SMTP id j24so1820324ljg.1
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 02:54:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lNs/p+JI3D1zMvTvnIvX3YzQkmwKplKfx1eyegHlUGs=;
+        b=b7fhwy9KHyUHN1+JlY54Izh0UyO3XPFFISf05d3A09WpwVuLvrThPkOQMuiPkXAHd2
+         av6G2ajatkgXHfRYOzoCM73Yl7wigIk/GrANkMIGKS0APqqPU8ml399Qb+v4pbmh3kd6
+         8y9/xQ49KErSRP5pPjn1hWTvlBpTrg8GTFRC8fdrGE++BIime5+AGff2+5UUnMDQfXFk
+         Vvh7BeWG2cAK2O6qE/SzBVHqhgh019YeN0H0NM71HAyAE0UoVUa5bk1oPzWvK9d3Fo2o
+         tImwEqaC5PM0ibTBMRTPr956imoYfWybaalHs2WbQ4RmAaj5VaZ3Zwvh9WBR09VmmcFc
+         Ap+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lNs/p+JI3D1zMvTvnIvX3YzQkmwKplKfx1eyegHlUGs=;
+        b=nwXl+8bgWgaju2z6uArlKThQtwsyQ1BVT+ClEYzIzu+TINZHAWjNF463ftdtWzzaFD
+         2rhqJrEVM4Zf0tML+b3E21XN7kI4nUSFrAFXnGBlneZQCZ57PkPVKH08cgUJrxObUnZ2
+         MqpCs1dNLeNFQCyZW810wdJumhxq3/JbMWklcJWKUFZNTFZ5LQUZXvo8sGggQMe3JNZz
+         utpht+bwWAxUSxTTms3CtK76L2bLCVhRTfWE5Z1xR7egAiA1Wevz6YKPPRlA6wBb2bVA
+         T3L/BdHDcNKXssNahNk5P7mq41i3+LK1uQKk6LoYbp/40jinY+Qm4MnXJ8nnfzh5l5A8
+         UpRg==
+X-Gm-Message-State: APjAAAUZ5yPKV0Z75Z2zDMg+ceqE/u7nkWZjgPHlrSLZ3qxtAPC+RSrR
+        spslVkG3QmkmUgCT+C4a06K/zw==
+X-Google-Smtp-Source: APXvYqy3vMRQTqltRLbu1to0t8Uw2L6vp3NNLrEAEyPljntAyQr8TzYLsDyYWbDU7gEOUTVGvhAhRg==
+X-Received: by 2002:a2e:9193:: with SMTP id f19mr26590199ljg.111.1559123646154;
+        Wed, 29 May 2019 02:54:06 -0700 (PDT)
+Received: from [192.168.0.199] ([31.173.80.1])
+        by smtp.gmail.com with ESMTPSA id g81sm3390192lfg.22.2019.05.29.02.54.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 May 2019 02:54:05 -0700 (PDT)
+Subject: Re: [PATCH bpf] libbpf: Return btf_fd in libbpf__probe_raw_btf
+To:     Michal Rostecki <mrostecki@opensuse.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190529082941.9440-1-mrostecki@opensuse.org>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <e28170e1-cf06-87ef-812b-9b9e6185d925@cogentembedded.com>
+Date:   Wed, 29 May 2019 12:53:42 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190528230233.26772-3-ruslan@babayev.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190529082941.9440-1-mrostecki@opensuse.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 04:02:33PM -0700, Ruslan Babayev wrote:
-> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-> systems similar to how it's done with DT.
-> 
-> An example DSD describing an SFP on an ACPI based system:
-> 
-> Device (SFP0)
-> {
->     Name (_HID, "PRP0001")
->     Name (_CRS, ResourceTemplate()
->     {
->         GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
->                "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
->             { 0, 1, 2, 3, 4 }
->     })
->     Name (_DSD, Package ()
->     {
->         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->             Package () { "compatible", "sff,sfp" },
->             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
->             Package () { "maximum-power-milliwatt", 1000 },
->             Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
->             Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
->             Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
->             Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
->             Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
->         },
->     })
-> }
-> 
-> Device (PHY0)
-> {
->     Name (_HID, "PRP0001")
->     Name (_DSD, Package ()
->     {
->         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->             Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
->             Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
->             Package () { "managed", "in-band-status" },
->             Package () { "phy-mode", "sgmii" },
->         },
->     })
-> }
-> 
-> Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
-> Cc: xe-linux-external@cisco.com
+Hello!
 
-This looks fine now, thanks.
+On 29.05.2019 11:29, Michal Rostecki wrote:
 
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Function load_sk_storage_btf expects that libbpf__probe_raw_btf is
+> returning a btf descriptor, but before this change it was returning
+> an information about whether the probe was successful (0 or 1).
+> load_sk_storage_btf was using that value as an argument to the close
+> function, which was resulting in closing stdout and thus terminating the
+> process which used that dunction.
 
-> ---
->  drivers/net/phy/sfp.c | 35 +++++++++++++++++++++++++++--------
->  1 file changed, 27 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index d4635c2178d1..554acc869c25 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -1,4 +1,5 @@
->  // SPDX-License-Identifier: GPL-2.0
-> +#include <linux/acpi.h>
->  #include <linux/ctype.h>
->  #include <linux/delay.h>
->  #include <linux/gpio/consumer.h>
-> @@ -1782,6 +1783,7 @@ static void sfp_cleanup(void *data)
->  static int sfp_probe(struct platform_device *pdev)
->  {
->  	const struct sff_data *sff;
-> +	struct i2c_adapter *i2c;
->  	struct sfp *sfp;
->  	bool poll = false;
->  	int irq, err, i;
-> @@ -1801,7 +1803,6 @@ static int sfp_probe(struct platform_device *pdev)
->  	if (pdev->dev.of_node) {
->  		struct device_node *node = pdev->dev.of_node;
->  		const struct of_device_id *id;
-> -		struct i2c_adapter *i2c;
->  		struct device_node *np;
->  
->  		id = of_match_node(sfp_of_match, node);
-> @@ -1818,14 +1819,32 @@ static int sfp_probe(struct platform_device *pdev)
->  
->  		i2c = of_find_i2c_adapter_by_node(np);
->  		of_node_put(np);
-> -		if (!i2c)
-> -			return -EPROBE_DEFER;
-> -
-> -		err = sfp_i2c_configure(sfp, i2c);
-> -		if (err < 0) {
-> -			i2c_put_adapter(i2c);
-> -			return err;
-> +	} else if (has_acpi_companion(&pdev->dev)) {
-> +		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-> +		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
-> +		struct fwnode_reference_args args;
-> +		struct acpi_handle *acpi_handle;
-> +		int ret;
-> +
-> +		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
-> +		if (ACPI_FAILURE(ret) || !is_acpi_device_node(args.fwnode)) {
-> +			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
-> +			return -ENODEV;
->  		}
-> +
-> +		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
-> +		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!i2c)
-> +		return -EPROBE_DEFER;
-> +
-> +	err = sfp_i2c_configure(sfp, i2c);
-> +	if (err < 0) {
-> +		i2c_put_adapter(i2c);
-> +		return err;
->  	}
->  
->  	for (i = 0; i < GPIO_MAX; i++)
-> -- 
-> 2.19.2
-> 
-> 
+    Function? :-)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> That bug was visible in bpftool. `bpftool feature` subcommand was always
+> exiting too early (because of closed stdout) and it didn't display all
+> requested probes. `bpftool -j feature` or `bpftool -p feature` were not
+> returning a valid json object.
+> 
+> Fixes: d7c4b3980c18 ("libbpf: detect supported kernel BTF features and sanitize BTF")
+> Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
+[...]
+
+MBR, Sergei
