@@ -2,87 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 468BC304C6
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 00:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1064C304C9
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 00:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfE3W2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 18:28:53 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:55038 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbfE3W2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 18:28:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0VN5c421RywifIF8i/3tvMhN6mXfzQVaKnVDur62RGU=; b=KHCp4Wiwwi+f9S4LXp2IJWa5zG
-        SxnfG52Z9HxmHDW4gg74ulMSbpX0CDQGMZwMd+W5Zj+3lr0uW1f1hHekCH/7sjHKruEstLuNKJWji
-        olk3QfhPAS/s/B3FHzbOEj2ynup7ZWk48Me/GhtfyzAVBus//uBGdH+fLD4xK6DtTkJ6b3VRkyThS
-        4SKYhXskAK0TnZVr53SjW5ArJZZiNr6g6vNNrZqkCWt9zCwUk47K4GQVfBrUgqtecIi/gLuFzxFOt
-        gnPfHcQ5hIyijGQfOj0LZgCOctO4GZSAJb0BvI+seY1CoYVj/KtS7DdWCZlqkY2ELPdulpDWaLiFR
-        yLh9IG1Q==;
-Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
-        by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hWTXV-0003kU-A0; Thu, 30 May 2019 22:28:49 +0000
-Subject: Re: mmotm 2019-05-29-20-52 uploaded (mpls)
-To:     akpm@linux-foundation.org, broonie@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
-        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190530035339.hJr4GziBa%akpm@linux-foundation.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <5a9fc4e5-eb29-99a9-dff6-2d4fdd5eb748@infradead.org>
-Date:   Thu, 30 May 2019 15:28:46 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726628AbfE3W3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 18:29:36 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45204 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfE3W3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 18:29:35 -0400
+Received: by mail-pf1-f195.google.com with SMTP id s11so4832048pfm.12;
+        Thu, 30 May 2019 15:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XFIS/ATJWf8i+rx5RZgt8pFQOptsz9ozO1zSHeC1TwM=;
+        b=jrtHBOj3ok1f/xowAmtE0Z0q/wl92RhCPkKm0zNzy3xyEh9KoBDXCQwtq+ffNwM/k0
+         xoJfQDV6ndJ/UBTJuyqMXa+z0K6MM5T3+N/+z1g+DGaU46uWvI1oiRcDvOEOMVgVc4KM
+         gg7XKnvGxbS9Gn8P9wYQeQnQ/t7kgrMlHgKyeFze4N91ZU5k8y2eLRCuvzHVSE5uqcqa
+         o/i2fe+DLMrj7Z7iCtjRRi/q3L9YCgPNXe+necSyZ3DHkoo7NXRPgzpzit3YBFbzPmxD
+         fB4WvBLELDFtrpCjuv08DBKQoJNaqjAYVwuH1DD0atxRgZlM1ze5Wq/3HKJ1blmcTpOx
+         H40w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XFIS/ATJWf8i+rx5RZgt8pFQOptsz9ozO1zSHeC1TwM=;
+        b=gxueC7ugHyyR6iE0FNeYpVz//IiFc16KdipP1Lb2uQd51RGUn1pdU74cjYMP4wUMYa
+         6Gv/AaQsDcI1/wtyfcH/gLd3Z3j43irI71ygyjjN14v3+Yt9+vS9nz/XSi1nyOFobqlF
+         17/UxCWcjAhFU1x/2fLrGhfNTSLaeaw/xOKHR5yg2cdJ1p1hQ8l6cXrSg6i+apdthU0Q
+         NIFA3lYb21WiMPTvCpVxgSTqyuEi53SvxAo5GiOqdzCcGMB98UhT278QCAmpEIdHMtsw
+         ZNMlVfObT6UWl6XrbbFKtUBd7/7WW4jHA07uofUu0zn9bNUI+cgcAItlQ4WBEzW+swpM
+         aXNQ==
+X-Gm-Message-State: APjAAAUcHbOkv5ZuLT7BJbbzNsH4oCo2y8ixcayDcyhto2hCElBCktcW
+        KDk/aPRvMMoRRcJEEwXvNJU=
+X-Google-Smtp-Source: APXvYqw2EYd2FcvKbUNMNOciWItMzYs8P3TF+IEhZUZ3ULjwC7KuQfnSofumg0Xp/zG+s8Wy4IAb2g==
+X-Received: by 2002:a62:7a8e:: with SMTP id v136mr5940404pfc.208.1559255375149;
+        Thu, 30 May 2019 15:29:35 -0700 (PDT)
+Received: from kaby.cs.washington.edu ([2607:4000:200:15:61cb:56f1:2c08:844e])
+        by smtp.gmail.com with ESMTPSA id a5sm2310568pjo.29.2019.05.30.15.29.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 15:29:34 -0700 (PDT)
+From:   Luke Nelson <luke.r.nels@gmail.com>
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf v2] bpf, riscv: clear high 32 bits for ALU32 add/sub/neg/lsh/rsh/arsh
+Date:   Thu, 30 May 2019 15:29:22 -0700
+Message-Id: <20190530222922.4269-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-In-Reply-To: <20190530035339.hJr4GziBa%akpm@linux-foundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/19 8:53 PM, akpm@linux-foundation.org wrote:
-> The mm-of-the-moment snapshot 2019-05-29-20-52 has been uploaded to
-> 
->    http://www.ozlabs.org/~akpm/mmotm/
-> 
-> mmotm-readme.txt says
-> 
-> README for mm-of-the-moment:
-> 
-> http://www.ozlabs.org/~akpm/mmotm/
-> 
-> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> more than once a week.
-> 
-> You will need quilt to apply these patches to the latest Linus release (5.x
-> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> http://ozlabs.org/~akpm/mmotm/series
-> 
-> The file broken-out.tar.gz contains two datestamp files: .DATE and
-> .DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
-> followed by the base kernel version against which this patch series is to
-> be applied.
-> 
+In BPF, 32-bit ALU operations should zero-extend their results into
+the 64-bit registers.
 
-on i386 or x86_64:
+The current BPF JIT on RISC-V emits incorrect instructions that perform
+sign extension only (e.g., addw, subw) on 32-bit add, sub, lsh, rsh,
+arsh, and neg. This behavior diverges from the interpreter and JITs
+for other architectures.
 
-when CONFIG_PROC_SYSCTL is not set/enabled:
+This patch fixes the bugs by performing zero extension on the destination
+register of 32-bit ALU operations.
 
-ld: net/mpls/af_mpls.o: in function `mpls_platform_labels':
-af_mpls.c:(.text+0x162a): undefined reference to `sysctl_vals'
-ld: net/mpls/af_mpls.o:(.rodata+0x830): undefined reference to `sysctl_vals'
-ld: net/mpls/af_mpls.o:(.rodata+0x838): undefined reference to `sysctl_vals'
-ld: net/mpls/af_mpls.o:(.rodata+0x870): undefined reference to `sysctl_vals'
+Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+Cc: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+---
+The original patch is
+https://lkml.org/lkml/2019/5/30/1370
 
+This version is rebased against the bpf tree.
+---
+ arch/riscv/net/bpf_jit_comp.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-
+diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+index e5c8d675bd6e..426d5c33ea90 100644
+--- a/arch/riscv/net/bpf_jit_comp.c
++++ b/arch/riscv/net/bpf_jit_comp.c
+@@ -751,10 +751,14 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_ADD | BPF_X:
+ 	case BPF_ALU64 | BPF_ADD | BPF_X:
+ 		emit(is64 ? rv_add(rd, rd, rs) : rv_addw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_SUB | BPF_X:
+ 	case BPF_ALU64 | BPF_SUB | BPF_X:
+ 		emit(is64 ? rv_sub(rd, rd, rs) : rv_subw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_AND | BPF_X:
+ 	case BPF_ALU64 | BPF_AND | BPF_X:
+@@ -795,14 +799,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_LSH | BPF_X:
+ 	case BPF_ALU64 | BPF_LSH | BPF_X:
+ 		emit(is64 ? rv_sll(rd, rd, rs) : rv_sllw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_X:
+ 	case BPF_ALU64 | BPF_RSH | BPF_X:
+ 		emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_ARSH | BPF_X:
+ 	case BPF_ALU64 | BPF_ARSH | BPF_X:
+ 		emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* dst = -dst */
+@@ -810,6 +820,8 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU64 | BPF_NEG:
+ 		emit(is64 ? rv_sub(rd, RV_REG_ZERO, rd) :
+ 		     rv_subw(rd, RV_REG_ZERO, rd), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* dst = BSWAP##imm(dst) */
+@@ -964,14 +976,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_LSH | BPF_K:
+ 	case BPF_ALU64 | BPF_LSH | BPF_K:
+ 		emit(is64 ? rv_slli(rd, rd, imm) : rv_slliw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_K:
+ 	case BPF_ALU64 | BPF_RSH | BPF_K:
+ 		emit(is64 ? rv_srli(rd, rd, imm) : rv_srliw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_ARSH | BPF_K:
+ 	case BPF_ALU64 | BPF_ARSH | BPF_K:
+ 		emit(is64 ? rv_srai(rd, rd, imm) : rv_sraiw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* JUMP off */
 -- 
-~Randy
+2.19.1
+
