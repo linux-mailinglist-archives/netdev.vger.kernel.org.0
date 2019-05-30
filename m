@@ -2,202 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C452FB4A
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 13:59:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AE72FB5A
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 14:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfE3L7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 07:59:24 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56028 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726792AbfE3L7X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 07:59:23 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 05923308626C;
-        Thu, 30 May 2019 11:59:23 +0000 (UTC)
-Received: from [10.72.12.113] (ovpn-12-113.pek2.redhat.com [10.72.12.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C96AA19736;
-        Thu, 30 May 2019 11:59:15 +0000 (UTC)
-Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20190528105623.27983-1-sgarzare@redhat.com>
- <20190528105623.27983-4-sgarzare@redhat.com>
- <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
- <20190529105832.oz3sagbne5teq3nt@steredhat>
- <8c9998c8-1b9c-aac6-42eb-135fcb966187@redhat.com>
- <20190530101036.wnjphmajrz6nz6zc@steredhat.homenet.telecomitalia.it>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <4c881585-8fee-0a53-865c-05d41ffb8ed1@redhat.com>
-Date:   Thu, 30 May 2019 19:59:14 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190530101036.wnjphmajrz6nz6zc@steredhat.homenet.telecomitalia.it>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        id S1727059AbfE3MB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 08:01:27 -0400
+Received: from mail-eopbgr50043.outbound.protection.outlook.com ([40.107.5.43]:28571
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726997AbfE3MB1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 08:01:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=darbyshire-bryant.me.uk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bMzCp0apUdAXTtSr4avddEN1sqKahWfMp9L4dPAo4E0=;
+ b=hkIc8s1DYE2gOPLd9g4LnUtgPwcHZTwyKsUePxEzuO4CTVIZccVM9v7NCutcrgaJPF99TcsU3RNZR7pXO4vcChs/L7ZVwZuzOPm3wMQ4yoMbYiZU7pGyeJ/V0G7Rt2Voz1+LZCnU0mUn8Ve7cDoYImlPSwZLck25P79dwy1hdbo=
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
+ VI1PR0302MB2607.eurprd03.prod.outlook.com (10.171.104.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Thu, 30 May 2019 12:01:22 +0000
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Thu, 30 May 2019
+ 12:01:22 +0000
+From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Thread-Topic: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Thread-Index: AQHVFXdSefBuJXwkfU6scW4BRrDrCKaDGbSAgAB6J4A=
+Date:   Thu, 30 May 2019 12:01:22 +0000
+Message-ID: <7CB4D942-AB53-49B4-9630-B03B47683F50@darbyshire-bryant.me.uk>
+References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
+ <20190529.214409.2156776359120413200.davem@davemloft.net>
+In-Reply-To: <20190529.214409.2156776359120413200.davem@davemloft.net>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 30 May 2019 11:59:23 +0000 (UTC)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2a02:c7f:1268:6500::dc83]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 24c29766-1822-49ca-d7ea-08d6e4f688c3
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(2017052603328)(7193020);SRVR:VI1PR0302MB2607;
+x-ms-traffictypediagnostic: VI1PR0302MB2607:
+x-microsoft-antispam-prvs: <VI1PR0302MB26071C9B64DECB22BA9666F9C9180@VI1PR0302MB2607.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 00531FAC2C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(376002)(366004)(39830400003)(136003)(199004)(189003)(83716004)(2616005)(53546011)(102836004)(6506007)(476003)(8676002)(486006)(4326008)(81166006)(256004)(53936002)(25786009)(71200400001)(71190400001)(316002)(14444005)(36756003)(81156014)(8936002)(4744005)(99286004)(6246003)(5660300002)(86362001)(33656002)(186003)(68736007)(64756008)(66556008)(66476007)(66946007)(6436002)(76176011)(74482002)(2906002)(66446008)(6486002)(6116002)(6916009)(76116006)(446003)(11346002)(73956011)(14454004)(305945005)(6512007)(91956017)(7736002)(46003)(508600001)(82746002)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB2607;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
+ designate permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Ek3FWReRAuXjg/rKMzKprIj4YyRmQtGMUYOubGaJ3s+VEVsjaI1gtbizyvt1CfQ0tza+1hfcY70E8OgTPSc9OcriX9tq1Jpgln02NXPkDVwKOITGIF3sBWsNbZuLrkfYCDpJ2hwYtfFs67L9tUzORTWAp2wFNj2Sohmq5lFgTSIoXMC8l3FO+3j2AVL4sswf3z6X1q1BCiWALSmXFswbo8By/NfrHwC+dQoXZtJLL19CjxexoIH3yyAVUnc5X57yqeoMRP88fwumBy+HmJLuRxiAK0av+PV/OSU/FnePEUkoDaK8nuNYOzkuXFnK9KnLSnP8mK76pCVPAIVdUjDqSo8ECrkYM9PWgFEF7zRiSQmVqaEZbwjeAPigTozQYD/l8ZPEMdOpytpfnaRSqh5ckoDTnKWaPhBrHtOgsFI7b9k=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D2AFFE098024B44A81423A42534A734E@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: darbyshire-bryant.me.uk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24c29766-1822-49ca-d7ea-08d6e4f688c3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 12:01:22.6237
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB2607
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/5/30 下午6:10, Stefano Garzarella wrote:
-> On Thu, May 30, 2019 at 05:46:18PM +0800, Jason Wang wrote:
->> On 2019/5/29 下午6:58, Stefano Garzarella wrote:
->>> On Wed, May 29, 2019 at 11:22:40AM +0800, Jason Wang wrote:
->>>> On 2019/5/28 下午6:56, Stefano Garzarella wrote:
->>>>> We flush all pending works before to call vdev->config->reset(vdev),
->>>>> but other works can be queued before the vdev->config->del_vqs(vdev),
->>>>> so we add another flush after it, to avoid use after free.
->>>>>
->>>>> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
->>>>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->>>>> ---
->>>>>     net/vmw_vsock/virtio_transport.c | 23 +++++++++++++++++------
->>>>>     1 file changed, 17 insertions(+), 6 deletions(-)
->>>>>
->>>>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->>>>> index e694df10ab61..ad093ce96693 100644
->>>>> --- a/net/vmw_vsock/virtio_transport.c
->>>>> +++ b/net/vmw_vsock/virtio_transport.c
->>>>> @@ -660,6 +660,15 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
->>>>>     	return ret;
->>>>>     }
->>>>> +static void virtio_vsock_flush_works(struct virtio_vsock *vsock)
->>>>> +{
->>>>> +	flush_work(&vsock->loopback_work);
->>>>> +	flush_work(&vsock->rx_work);
->>>>> +	flush_work(&vsock->tx_work);
->>>>> +	flush_work(&vsock->event_work);
->>>>> +	flush_work(&vsock->send_pkt_work);
->>>>> +}
->>>>> +
->>>>>     static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>     {
->>>>>     	struct virtio_vsock *vsock = vdev->priv;
->>>>> @@ -668,12 +677,6 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>     	mutex_lock(&the_virtio_vsock_mutex);
->>>>>     	the_virtio_vsock = NULL;
->>>>> -	flush_work(&vsock->loopback_work);
->>>>> -	flush_work(&vsock->rx_work);
->>>>> -	flush_work(&vsock->tx_work);
->>>>> -	flush_work(&vsock->event_work);
->>>>> -	flush_work(&vsock->send_pkt_work);
->>>>> -
->>>>>     	/* Reset all connected sockets when the device disappear */
->>>>>     	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
->>>>> @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>     	vsock->event_run = false;
->>>>>     	mutex_unlock(&vsock->event_lock);
->>>>> +	/* Flush all pending works */
->>>>> +	virtio_vsock_flush_works(vsock);
->>>>> +
->>>>>     	/* Flush all device writes and interrupts, device will not use any
->>>>>     	 * more buffers.
->>>>>     	 */
->>>>> @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>     	/* Delete virtqueues and flush outstanding callbacks if any */
->>>>>     	vdev->config->del_vqs(vdev);
->>>>> +	/* Other works can be queued before 'config->del_vqs()', so we flush
->>>>> +	 * all works before to free the vsock object to avoid use after free.
->>>>> +	 */
->>>>> +	virtio_vsock_flush_works(vsock);
->>>> Some questions after a quick glance:
->>>>
->>>> 1) It looks to me that the work could be queued from the path of
->>>> vsock_transport_cancel_pkt() . Is that synchronized here?
->>>>
->>> Both virtio_transport_send_pkt() and vsock_transport_cancel_pkt() can
->>> queue work from the upper layer (socket).
->>>
->>> Setting the_virtio_vsock to NULL, should synchronize, but after a careful look
->>> a rare issue could happen:
->>> we are setting the_virtio_vsock to NULL at the start of .remove() and we
->>> are freeing the object pointed by it at the end of .remove(), so
->>> virtio_transport_send_pkt() or vsock_transport_cancel_pkt() may still be
->>> running, accessing the object that we are freed.
->>
->> Yes, that's my point.
->>
->>
->>> Should I use something like RCU to prevent this issue?
->>>
->>>       virtio_transport_send_pkt() and vsock_transport_cancel_pkt()
->>>       {
->>>           rcu_read_lock();
->>>           vsock = rcu_dereference(the_virtio_vsock_mutex);
->>
->> RCU is probably a way to go. (Like what vhost_transport_send_pkt() did).
->>
-> Okay, I'm going this way.
->
->>>           ...
->>>           rcu_read_unlock();
->>>       }
->>>
->>>       virtio_vsock_remove()
->>>       {
->>>           rcu_assign_pointer(the_virtio_vsock_mutex, NULL);
->>>           synchronize_rcu();
->>>
->>>           ...
->>>
->>>           free(vsock);
->>>       }
->>>
->>> Could there be a better approach?
->>>
->>>
->>>> 2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run still
->>>> needed? It looks to me we've already done except that we need flush rx_work
->>>> in the end since send_pkt_work can requeue rx_work.
->>> The main reason of tx_run/rx_run/event_run is to prevent that a worker
->>> function is running while we are calling config->reset().
->>>
->>> E.g. if an interrupt comes between virtio_vsock_flush_works() and
->>> config->reset(), it can queue new works that can access the device while
->>> we are in config->reset().
->>>
->>> IMHO they are still needed.
->>>
->>> What do you think?
->>
->> I mean could we simply do flush after reset once and without tx_rx/rx_run
->> tricks?
->>
->> rest();
->>
->> virtio_vsock_flush_work();
->>
->> virtio_vsock_free_buf();
-> My only doubt is:
-> is it safe to call config->reset() while a worker function could access
-> the device?
->
-> I had this doubt reading the Michael's advice[1] and looking at
-> virtnet_remove() where there are these lines before the config->reset():
->
-> 	/* Make sure no work handler is accessing the device. */
-> 	flush_work(&vi->config_work);
->
-> Thanks,
-> Stefano
->
-> [1] https://lore.kernel.org/netdev/20190521055650-mutt-send-email-mst@kernel.org
-
-
-Good point. Then I agree with you. But if we can use the RCU to detect 
-the detach of device from socket for these, it would be even better.
-
-Thanks
-
-
+DQoNCj4gT24gMzAgTWF5IDIwMTksIGF0IDA1OjQ0LCBEYXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVt
+bG9mdC5uZXQ+IHdyb3RlOg0KPiANCj4gRnJvbTogS2V2aW4gJ2xkaXInIERhcmJ5c2hpcmUtQnJ5
+YW50IDxsZGlyQGRhcmJ5c2hpcmUtYnJ5YW50Lm1lLnVrPg0KPiBEYXRlOiBUdWUsIDI4IE1heSAy
+MDE5IDE3OjAzOjUwICswMDAwDQo+IA0KPj4gY3RpbmZvIGlzIGEgbmV3IHRjIGZpbHRlciBhY3Rp
+b24gbW9kdWxlLiAgSXQgaXMgZGVzaWduZWQgdG8gcmVzdG9yZQ0KPj4gaW5mb3JtYXRpb24gY29u
+dGFpbmVkIGluIGZpcmV3YWxsIGNvbm50cmFjayBtYXJrcyB0byBvdGhlciBwYWNrZXQgZmllbGRz
+DQo+PiBhbmQgaXMgdHlwaWNhbGx5IHVzZWQgb24gcGFja2V0IGluZ3Jlc3MgcGF0aHMuICBBdCBw
+cmVzZW50IGl0IGhhcyB0d28NCj4+IGluZGVwZW5kZW50IHN1Yi1mdW5jdGlvbnMgb3Igb3BlcmF0
+aW5nIG1vZGVzLCBEU0NQIHJlc3RvcmF0aW9uIG1vZGUgJg0KPj4gc2tiIG1hcmsgcmVzdG9yYXRp
+b24gbW9kZS4NCj4gLi4uDQo+IA0KPiBBcHBsaWVkLCB0aGFuayB5b3UuDQoNClRoYW5rIHlvdS4g
+VGhhbmtzIHRvIFRva2UgJiBDb25nIGFsc28gZm9yIHRoZWlyIGVuY291cmFnZW1lbnQgZXZlbiBp
+ZiBJDQpkaWRu4oCZdCBzZWUgaXQgYXMgdGhhdCBhdCB0aGUgdGltZS4NCg0KQ2hlZXJzLA0KDQpL
+ZXZpbg==
