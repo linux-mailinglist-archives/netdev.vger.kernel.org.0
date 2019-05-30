@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6AFF30120
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:38:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B904630127
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbfE3Riw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:38:52 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38295 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3Riv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:38:51 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a186so3702344pfa.5
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:38:51 -0700 (PDT)
+        id S1726487AbfE3Rnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:43:49 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35253 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbfE3Rns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:43:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id t1so2437820pgc.2
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:43:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=o+ztwltOLvyQ8dR43nsGUJHsTLOapZh76LUWRPkownw=;
-        b=h08G804xSEfvQ3OV0oXOEj/zS0BwVdlQzEY6J78rcOifSWf1k15LGXOv1rBUBa4Q7U
-         X7ZTTimhVGBkfS6xsXVffAKfU0GvuaBpei+0b4R6qfEoi/ko9wo9D4dhaH78wBHIZOR7
-         EGbUDCfi5W5HAfYJ5a6ZY4wXasUf3B05RBR9l1wCGTxvo/54VmFMY4p7e2YyUkX4BNWe
-         Y8CwN+91KbbAVBey7xGh+0KWjsSZUm7dZdRLhGdzqeQDZQsbmD+FgQaw+bxYdra70AOn
-         hp4tibB7wCzLN73fjUPvtNkYx/OxoUZ9tXgb+SbP7M3Bh5MTLWvCTYtvCsN5BG96acfR
-         Jmqw==
+        bh=+Y0eaCb5imPLyD5iKhSXph2wjPVG0CCZNmdUwzYGmq4=;
+        b=mY8YJPH5a3TPMUSQSDLbcjj9uMeT/wyMJ2DaiBpoR3YVJJlQqe9mNQew4zq48JFQL+
+         iZgJqXxH5ORMr9Rab3m2JNnF+4xyYwEsRBTt533uvdm6R44NpBBRfM40kgVeIpDpaBVZ
+         PlSs3RiOZoxyqprej9cCLJrrmeDbrVJsGz9xaNXnOc8eM+n1+4bcK/rLRjPHw6aiAX4Z
+         dpq8e4IDs/gfEPB/uQCthRNUXQ20c0ExOf462WShfhRSfVRNtBvY+Cch2EvOYxAyTdvw
+         bVgOXlXM5pcf7O+srB10v29PYNoubfOj2WsYInaqOmqbp2kmvvz9tawmVa8j0xBEVY4n
+         O20Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=o+ztwltOLvyQ8dR43nsGUJHsTLOapZh76LUWRPkownw=;
-        b=FZVDIwmhnOHngTG2tZ8auJsFd1WVj0juBOqRLcbNQWQf6P9cZgUEzDtzSICMvtn0hK
-         8KwTv4IQjsvG0XI/8qktCd8R7TBzmJahp+FmpnJ86yhqflFNjhr61VvfOzoAuQi7mClw
-         CHXStxjo2HzEsZgOubJ/wQLRTibSaRbdwNwxVhvMNayZDdVPzhh9a8xQnL9tRhcqcPVt
-         eOK6rBshI0X2LRnYgbzRAjyq9tMEmWCunU5h6WmREsUUblcxI6fFroA1u2FPFpi4NAAf
-         suyYSsUf3cmAKSHeej9CFlu/I5wqxtx1WOAI7uCmzN7uzSlFCsCFfKczr3MiUEcVMAwL
-         xtPw==
-X-Gm-Message-State: APjAAAUHGQq/csvGNakNQJQLGkTVMmg8SYeFbADcgxhbXoyoPGqxOAtT
-        g6r0bCEn1pAEwWeA1W4TpnKnNe4ZuIc=
-X-Google-Smtp-Source: APXvYqwAqm6ENiXnuBk1/9gBFC18s1G6rENORNBAoc/xcYw/RHiVTarLUy8dHerNyN3DBTCD4gHv6A==
-X-Received: by 2002:a65:62cc:: with SMTP id m12mr4706293pgv.237.1559237930837;
-        Thu, 30 May 2019 10:38:50 -0700 (PDT)
+        bh=+Y0eaCb5imPLyD5iKhSXph2wjPVG0CCZNmdUwzYGmq4=;
+        b=eqippaDmT4BQt3EEAmdlQWG6E6o/HX8JGvRL1OtwR8IH96IhZhcOzCeUlHLyYZ3ZNt
+         YYzLxqZqIk9khOB8cJqKjrzN9p1o1EGlkUGcGt7rx00bl48w//e2Ng6CPEn94Oh8f7U2
+         j19cC0vtYLeFL9Qmszaz16ioJo7Te1CWwxPL8thOrVu7nhHjKb7s6yIdQXIPwIyXEIsR
+         QnRZzLJuqK0rq3IFQm0jzJSyvDOaElJwT5QDkh/yS6CLzb9OWAcYE+7sPDI5lpjO7VJv
+         Rkg8w/ni8oMwjMnN9nhBYHFUTVjJ9SFXZ8PQHaFlt6UkkR0OLF8sgaLxpQlUcKfu8T37
+         AJ9w==
+X-Gm-Message-State: APjAAAWgaZxCKpvPUFWwpPkRe1ausiRv2piAVrB7/31LV1TeNPwgUrto
+        T5S8rIstVb4aiVgr3hlTCxFuXw==
+X-Google-Smtp-Source: APXvYqzp4FLVc3M++ZF9nfdkc0bJEZUyjK5tpMEjSWLqtdx8HS57taTD8wfrx432kX75twhHyeXEBA==
+X-Received: by 2002:a17:90a:22a3:: with SMTP id s32mr4690360pjc.0.1559238227873;
+        Thu, 30 May 2019 10:43:47 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id k36sm3453349pjb.14.2019.05.30.10.38.50
+        by smtp.gmail.com with ESMTPSA id j8sm3416308pfi.148.2019.05.30.10.43.47
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 30 May 2019 10:38:50 -0700 (PDT)
-Date:   Thu, 30 May 2019 10:38:47 -0700
+        Thu, 30 May 2019 10:43:47 -0700 (PDT)
+Date:   Thu, 30 May 2019 10:43:45 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
-Message-ID: <20190530103847.36166cf4@hermes.lan>
-In-Reply-To: <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
-References: <20190530164246.17955-1-ldir@darbyshire-bryant.me.uk>
-        <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next 1/9] libnetlink: Set NLA_F_NESTED in
+ rta_nest
+Message-ID: <20190530104345.3598be4d@hermes.lan>
+In-Reply-To: <20190530031746.2040-2-dsahern@kernel.org>
+References: <20190530031746.2040-1-dsahern@kernel.org>
+        <20190530031746.2040-2-dsahern@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,66 +62,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 16:43:20 +0000
-Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> wrote:
+On Wed, 29 May 2019 20:17:38 -0700
+David Ahern <dsahern@kernel.org> wrote:
 
-> ctinfo is an action restoring data stored in conntrack marks to various
-> fields.  At present it has two independent modes of operation,
-> restoration of DSCP into IPv4/v6 diffserv and restoration of conntrack
-> marks into packet skb marks.
+> From: David Ahern <dsahern@gmail.com>
 > 
-> It understands a number of parameters specific to this action in
-> additional to the usual action syntax.  Each operating mode is
-> independent of the other so all options are err, optional, however not
-> specifying at least one mode is a bit pointless.
+> Kernel now requires NLA_F_NESTED to be set on new nested
+> attributes. Set NLA_F_NESTED in rta_nest.
 > 
-> Usage: ... ctinfo [dscp mask[/statemask]] [cpmark [mask]] [zone ZONE] [CONTROL] [index <INDEX>]\n"
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+> ---
+>  lib/libnetlink.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> DSCP mode
-> 
-> dscp enables copying of a DSCP store in the conntrack mark into the
-> ipv4/v6 diffserv field.  The mask is a 32bit field and specifies where
-> in the conntrack mark the DSCP value is stored.  It must be 6 contiguous
-> bits long, e.g. 0xfc000000 would restore the DSCP from the upper 6 bits
-> of the conntrack mark.
-> 
-> The DSCP copying may be optionally controlled by a statemask.  The
-> statemask is a 32bit field, usually with a single bit set and must not
-> overlap the dscp mask.  The DSCP restore operation will only take place
-> if the corresponding bit/s in conntrack mark yield a non zero result.
-> 
-> eg. dscp 0xfc000000/0x01000000 would retrieve the DSCP from the top 6
-> bits, whilst using bit 25 as a flag to do so.  Bit 26 is unused in this
-> example.
-> 
-> CPMARK mode
-> 
-> cpmark enables copying of the conntrack mark to the packet skb mark.  In
-> this mode it is completely equivalent to the existing act_connmark.
-> Additional functionality is provided by the optional mask parameter,
-> whereby the stored conntrack mark is logically anded with the cpmark
-> mask before being stored into skb mark.  This allows shared usage of the
-> conntrack mark between applications.
-> 
-> eg. cpmark 0x00ffffff would restore only the lower 24 bits of the
-> conntrack mark, thus may be useful in the event that the upper 8 bits
-> are used by the DSCP function.
-> 
-> Usage: ... ctinfo [dscp mask[/statemask]] [cpmark [mask]] [zone ZONE] [CONTROL] [index <INDEX>]
-> where :
-> 	dscp MASK is the bitmask to restore DSCP
-> 	     STATEMASK is the bitmask to determine conditional restoring
-> 	cpmark MASK mask applied to restored packet mark
-> 	ZONE is the conntrack zone
-> 	CONTROL := reclassify | pipe | drop | continue | ok | goto chain <CHAIN_INDEX>
-> 
-> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+> diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+> index 0d48a3d43cf0..6ae51a9dba14 100644
+> --- a/lib/libnetlink.c
+> +++ b/lib/libnetlink.c
+> @@ -1336,6 +1336,7 @@ struct rtattr *rta_nest(struct rtattr *rta, int maxlen, int type)
+>  	struct rtattr *nest = RTA_TAIL(rta);
+>  
+>  	rta_addattr_l(rta, maxlen, type, NULL, 0);
+> +	nest->rta_type |= NLA_F_NESTED;
+>  
+>  	return nest;
+>  }
 
+I assume older kernels ignore the attribute?
 
-Your patch is mangled by your mail system, it has DOS line endings etc.
-
-Run checkpatch please.
-
-
-
-
+Also, how is this opt-in for running iproute2-next on old kernels?
