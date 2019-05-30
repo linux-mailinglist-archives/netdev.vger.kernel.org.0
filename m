@@ -2,94 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE0430090
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09CAA300D0
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbfE3RKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:10:50 -0400
-Received: from mail-eopbgr20049.outbound.protection.outlook.com ([40.107.2.49]:22327
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726280AbfE3RKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 13:10:47 -0400
+        id S1726635AbfE3RRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:17:07 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42874 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfE3RRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:17:07 -0400
+Received: by mail-pg1-f196.google.com with SMTP id e6so1130575pgd.9;
+        Thu, 30 May 2019 10:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=darbyshire-bryant.me.uk; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w0G2Q0wmwG70hzM8qDOJl0xTfaihdIBP8Da9nmnwOA8=;
- b=CQzBQ6iau8JQIm8K/hkmqtyFgMr2wq29Kv6jFKMHHMA2rwWPhcrsHDi+f2yey8dZjPA8ctMujIvhO+37eYpr8hAWgIJxL/slu8kzHXi2LN0RW6jTLxf0IqadLzf4+gBxiCgPgUUJnTimGqzmKeLQxk1HVgsbY8w4hKwS8YMS+JQ=
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
- VI1PR0302MB3485.eurprd03.prod.outlook.com (52.134.14.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.19; Thu, 30 May 2019 17:10:43 +0000
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Thu, 30 May 2019
- 17:10:43 +0000
-From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Subject: [PATCH net-next] net: sched: act_ctinfo: minor size optimisation
-Thread-Topic: [PATCH net-next] net: sched: act_ctinfo: minor size optimisation
-Thread-Index: AQHVFwqdlSDYRw2lu0yEl9is22Zgcw==
-Date:   Thu, 30 May 2019 17:10:43 +0000
-Message-ID: <20190530170951.19250-1-ldir@darbyshire-bryant.me.uk>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM6PR0202CA0067.eurprd02.prod.outlook.com
- (2603:10a6:20b:3a::44) To VI1PR0302MB2750.eurprd03.prod.outlook.com
- (2603:10a6:800:e3::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1 (Apple Git-117)
-x-originating-ip: [2a02:c7f:1268:6500::dc83]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0bf9de2b-9498-4d9d-26f2-08d6e521bf86
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(2017052603328)(7193020);SRVR:VI1PR0302MB3485;
-x-ms-traffictypediagnostic: VI1PR0302MB3485:
-x-microsoft-antispam-prvs: <VI1PR0302MB34854302E75B29B0C48323E9C9180@VI1PR0302MB3485.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1107;
-x-forefront-prvs: 00531FAC2C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(396003)(39830400003)(346002)(376002)(199004)(189003)(73956011)(66946007)(6506007)(86362001)(386003)(64756008)(66476007)(66446008)(74482002)(53936002)(102836004)(305945005)(4744005)(107886003)(1076003)(8676002)(25786009)(71190400001)(71200400001)(7736002)(14444005)(2501003)(256004)(36756003)(5660300002)(476003)(52116002)(50226002)(6512007)(2616005)(6486002)(1730700003)(81166006)(5640700003)(68736007)(486006)(81156014)(14454004)(6916009)(186003)(6116002)(46003)(8936002)(2351001)(99286004)(6436002)(316002)(4326008)(2906002)(66556008)(508600001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB3485;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: h+C5Zb+MW4q/tAGqy6tqf/dq+vp3oe4t+hqS03o3yHr7AirS4qa7Xsv9LA5Wwsy5bv6LI3jeUiY8pM0+PLTERWEbx0ICIEADUwYPd15YtPCIQwKEikCkfQvohxVHa5f1OyBzpKNX44vD9JSCkNLPuKbpK3AdTYR/6FHlAGArvEwjcApH9ymcI86WdIONV4r0rJN6Qp3QPmrmR/p15yudb3C9UhtiavBpWnhESGaulE/LYZOgrpZjI+KPMYWFOnQj2sBSCVsMYYgFL6YBx7D+tYtAazZgGl1FjiwExKX6ht55p9CVkTP7KqBRTI4l3oV/ZWVLMKsoU+giqKlCuEvPuQExcVw7kZicgycrLO/m7PaNe1j0rn3Rgdo8RNt5kunJ7IVdacX1bnneqbb6MQwkqUI8skfKznePaBLoEQU6xJc=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=bNE39eRqZdSpT9RvxiKlg9hyxVS+PZXMDoR6uxMzz78=;
+        b=GPwDOuY6sotWaA5gMqPD2xoe9iaW5HBDmhFsFqf+W6weVeLDOPJxjF1/6HHDz8Hoo/
+         QMQDo2h5X/Y2jpS574nR2DtnBkji+LiwsrYrrF9fZY+2R0n8MURf8CCEeQerwhMnEQqN
+         bqdVblu4bg1T4GIlT3F+DHbrKv3P5zIk4QT/GJ7RYMQg451VwI5VeBBFUjry/wejtNl4
+         z7gAqcTtK2D63TQR45atYV2Pzd+KhQSZ5LTPGO1mZgwg5Xx2O5W0hG6sAGkjnJigFvdR
+         97FiI8jXM/qLRcLHNvJ0QKtc13Hw63H7XUsF6tFbOAN/dztUHtl3ECmwcbtQVAP+UJGx
+         x5+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bNE39eRqZdSpT9RvxiKlg9hyxVS+PZXMDoR6uxMzz78=;
+        b=tRXg9moId0z1Ite1yKO/wu8CXeLbdAB8huTUoQ1pzX/6IE4W6HZK9EcBAaOX0reez+
+         RfsIpaOkNVow/6nLurNC3dhUxn2b7NBBWGl3G5LYMqJ/kLHHCLMs4+bfsfpSC35VFYsu
+         WBomNKcRPMnYgoJOmyXBVBRvSew8KSWS9OxCThtJvvIsJ7PjFcfbxfrT9WO/zH/nvOfE
+         fARBnuWWSK8sGMcWCWQCuMVnAnYP4r/RNrafdp8LgOWQRYMMxxRJjaZ7tCS9l+3vGoG2
+         3yGRpukpZBi7+FPG83ciqlRfKXsiekbS55oGFNsJa+83PqdBoY9Z27+NEKn2j29IFPv5
+         LTHQ==
+X-Gm-Message-State: APjAAAVDiMcXiOVONQJ3+azSR+F0+wI4aiA1c0IMiEV8uHIeKBsSZar0
+        11Nz7f3WVRWaYH8NigZKYs4=
+X-Google-Smtp-Source: APXvYqxEXP+Kspht6JQWbLrrmS0S6zI44Bror6FHffDv+mgQvfVogDcCVZY4nUtvjc0dh/o2xVy9MA==
+X-Received: by 2002:aa7:8296:: with SMTP id s22mr4797826pfm.52.1559236626867;
+        Thu, 30 May 2019 10:17:06 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id p21sm3459080pfn.129.2019.05.30.10.17.05
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 10:17:05 -0700 (PDT)
+Subject: Re: [PATCH] ipv6: Prevent overrun when parsing v6 header options
+To:     Young Xiao <92siuyang@gmail.com>, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+References: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com>
+Date:   Thu, 30 May 2019 10:17:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: darbyshire-bryant.me.uk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bf9de2b-9498-4d9d-26f2-08d6e521bf86
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 17:10:43.3598
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB3485
+In-Reply-To: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-U2luY2UgdGhlIG5ldyBwYXJhbWV0ZXIgYmxvY2sgaXMgaW5pdGlhbGlzZWQgdG8gMCBieSBrem1h
-bGxvYyB3ZSBkb24ndA0KbmVlZCB0byBtYXNrICYgY2xlYXIgdW51c2VkIG9wZXJhdGlvbmFsIG1v
-ZGUgYml0cywgdGhleSBhcmUgYWxyZWFkeQ0KdW5zZXQuDQoNCkRyb3AgdGhlIHBvaW50bGVzcyBj
-b2RlLg0KDQpTaWduZWQtb2ZmLWJ5OiBLZXZpbiBEYXJieXNoaXJlLUJyeWFudCA8bGRpckBkYXJi
-eXNoaXJlLWJyeWFudC5tZS51az4NCi0tLQ0KIG5ldC9zY2hlZC9hY3RfY3RpbmZvLmMgfCA0IC0t
-LS0NCiAxIGZpbGUgY2hhbmdlZCwgNCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL25ldC9z
-Y2hlZC9hY3RfY3RpbmZvLmMgYi9uZXQvc2NoZWQvYWN0X2N0aW5mby5jDQppbmRleCA5MjYxMDkx
-MzlhODEuLmU3OGI2MGU0N2MwZiAxMDA2NDQNCi0tLSBhL25ldC9zY2hlZC9hY3RfY3RpbmZvLmMN
-CisrKyBiL25ldC9zY2hlZC9hY3RfY3RpbmZvLmMNCkBAIC0yMzEsMTYgKzIzMSwxMiBAQCBzdGF0
-aWMgaW50IHRjZl9jdGluZm9faW5pdChzdHJ1Y3QgbmV0ICpuZXQsIHN0cnVjdCBubGF0dHIgKm5s
-YSwNCiAJCWNwX25ldy0+ZHNjcG1hc2tzaGlmdCA9IGRzY3BtYXNrc2hpZnQ7DQogCQljcF9uZXct
-PmRzY3BzdGF0ZW1hc2sgPSBkc2Nwc3RhdGVtYXNrOw0KIAkJY3BfbmV3LT5tb2RlIHw9IENUSU5G
-T19NT0RFX0RTQ1A7DQotCX0gZWxzZSB7DQotCQljcF9uZXctPm1vZGUgJj0gfkNUSU5GT19NT0RF
-X0RTQ1A7DQogCX0NCiANCiAJaWYgKHRiW1RDQV9DVElORk9fUEFSTVNfQ1BNQVJLX01BU0tdKSB7
-DQogCQljcF9uZXctPmNwbWFya21hc2sgPQ0KIAkJCQlubGFfZ2V0X3UzMih0YltUQ0FfQ1RJTkZP
-X1BBUk1TX0NQTUFSS19NQVNLXSk7DQogCQljcF9uZXctPm1vZGUgfD0gQ1RJTkZPX01PREVfQ1BN
-QVJLOw0KLQl9IGVsc2Ugew0KLQkJY3BfbmV3LT5tb2RlICY9IH5DVElORk9fTU9ERV9DUE1BUks7
-DQogCX0NCiANCiAJc3Bpbl9sb2NrX2JoKCZjaS0+dGNmX2xvY2spOw0KLS0gDQoyLjIwLjEgKEFw
-cGxlIEdpdC0xMTcpDQoNCg==
+
+
+On 5/30/19 8:28 AM, Young Xiao wrote:
+> The fragmentation code tries to parse the header options in order
+> to figure out where to insert the fragment option.  Since nexthdr points
+> to an invalid option, the calculation of the size of the network header
+> can made to be much larger than the linear section of the skb and data
+> is read outside of it.
+> 
+> This vulnerability is similar to CVE-2017-9074.
+> 
+> Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> ---
+>  net/ipv6/mip6.c | 24 ++++++++++++++----------
+>  1 file changed, 14 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/ipv6/mip6.c b/net/ipv6/mip6.c
+> index 64f0f7b..30ed1c5 100644
+> --- a/net/ipv6/mip6.c
+> +++ b/net/ipv6/mip6.c
+> @@ -263,8 +263,6 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+>  			       u8 **nexthdr)
+>  {
+>  	u16 offset = sizeof(struct ipv6hdr);
+> -	struct ipv6_opt_hdr *exthdr =
+> -				   (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
+>  	const unsigned char *nh = skb_network_header(skb);
+>  	unsigned int packet_len = skb_tail_pointer(skb) -
+>  		skb_network_header(skb);
+> @@ -272,7 +270,8 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+>  
+>  	*nexthdr = &ipv6_hdr(skb)->nexthdr;
+>  
+> -	while (offset + 1 <= packet_len) {
+> +	while (offset <= packet_len) {
+> +		struct ipv6_opt_hdr *exthdr;
+>  
+>  		switch (**nexthdr) {
+>  		case NEXTHDR_HOP:
+> @@ -299,12 +298,15 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+>  			return offset;
+>  		}
+>  
+> +		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
+> +			return -EINVAL;
+> +
+> +		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+>  		offset += ipv6_optlen(exthdr);
+>  		*nexthdr = &exthdr->nexthdr;
+> -		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+>  	}
+>  
+> -	return offset;
+> +	return -EINVAL;
+>  }
+>
+
+
+Ok, but have you checked that callers have been fixed ?
+
+xfrm6_transport_output() seems buggy as well,
+unless the skbs are linearized before entering these functions ?
+
+Thanks.
+
+
+
