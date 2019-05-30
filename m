@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD61E2F87B
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:27:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4835F2F894
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:30:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726485AbfE3I1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 04:27:25 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34114 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725440AbfE3I1Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 04:27:24 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 82429AD7B;
-        Thu, 30 May 2019 08:27:23 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id B5F9EE0326; Thu, 30 May 2019 10:27:22 +0200 (CEST)
-Date:   Thu, 30 May 2019 10:27:22 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>, vivien.didelot@gmail.com,
-        linux-kernel@vger.kernel.org, kernel@savoirfairelinux.com,
-        linville@redhat.com, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next] ethtool: copy reglen to userspace
-Message-ID: <20190530082722.GB27401@unicorn.suse.cz>
-References: <20190528205848.21208-1-vivien.didelot@gmail.com>
- <20190529.221744.1136074795446305909.davem@davemloft.net>
- <20190530064848.GA27401@unicorn.suse.cz>
+        id S1726910AbfE3Iac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 04:30:32 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:43039 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbfE3IaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:30:25 -0400
+Received: by mail-oi1-f195.google.com with SMTP id t187so4286791oie.10
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 01:30:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vzcNV6SW+Xh9Ya8lDxl+0yI6Dw+WGyclNEKNTVCp8nU=;
+        b=R6+KBMb0MHd3+pjsrAVLinun9naTKHYUJ0MxZjxnPRQGZmo6z86wogO/FTLYGG/okH
+         KXEDlBj2GBvQ/JlCmT1KGrJTERkrRwmv83Qfjy0VE/qt5vVeyf39/zCF4NRW30B9InWa
+         KZD6wBZEaKHJgNhqkEWI+cF2y2H4o2vr6c/m23chdOJhW6xZoDiO5kmfFKKAMEHPsVvA
+         9/yK8yQvKUyPjFlc4Xy0M8wk58A4FkKdxixYNeHy1W/zF1D6dsJ1pDqh/e9ABVRg8riD
+         dc3grEm2VNWdC8N6FQxuF8Jnqvynn4zvFFI1UiDIklmBYuUagtNYvSpsicR0f1FMNix5
+         RE6g==
+X-Gm-Message-State: APjAAAXYtXW7wCT2aIokuSGekCNU2Cb5nUn8lhRdAv7qIjQsflkK8O9U
+        3LyYDrsmaxjfL1IjSFGiXBOIoGfIIBcDmyEUX72TFg==
+X-Google-Smtp-Source: APXvYqzTv07K7SADdE55dDI77M75/XjvtsqUSGRV/r+pWOj/1v586YQ0cf99vI+eQ/N2XWS6ZrVc5NOYVULd8c/HKfw=
+X-Received: by 2002:aca:e887:: with SMTP id f129mr1752282oih.156.1559205024714;
+ Thu, 30 May 2019 01:30:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190530064848.GA27401@unicorn.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190530080602.GA3600@zhanggen-UX430UQ>
+In-Reply-To: <20190530080602.GA3600@zhanggen-UX430UQ>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Thu, 30 May 2019 10:30:17 +0200
+Message-ID: <CAFqZXNtX1R1VDFxm7Jco3BZ=pVnNiHU3-C=d8MhCVV1XSUQ8bw@mail.gmail.com>
+Subject: Re: [PATCH] hooks: fix a missing-check bug in selinux_add_mnt_opt()
+To:     Gen Zhang <blackgod016574@gmail.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        Eric Paris <eparis@parisplace.org>, ccross@android.com,
+        selinux@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 08:48:48AM +0200, Michal Kubecek wrote:
-> On Wed, May 29, 2019 at 10:17:44PM -0700, David Miller wrote:
-> > From: Vivien Didelot <vivien.didelot@gmail.com>
-> > Date: Tue, 28 May 2019 16:58:48 -0400
-> > 
-> > > ethtool_get_regs() allocates a buffer of size reglen obtained from
-> > > ops->get_regs_len(), thus only this value must be used when copying
-> > > the buffer back to userspace. Also no need to check regbuf twice.
-> > > 
-> > > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> > 
-> > Hmmm, can't regs.len be modified by the driver potentially?
-> 
-> The driver certainly shouldn't raise it as that could result in kernel
-> writing past the buffer provided by userspace. (I'll check some drivers
-> to see if they truncate the dump or return an error if regs.len from
-> userspace is insufficient.) And lowering it would be also wrong as that
-> would mean dump would be shorter than what ops->get_regs_len() returned.
+On Thu, May 30, 2019 at 10:06 AM Gen Zhang <blackgod016574@gmail.com> wrote:
+> In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
+> NULL when fails. So 'val' should be checked.
+>
+> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
 
-I looked around a bit. First of all, the driver cannot actually return
-error as ethtool_ops::get_regs() returns void. Most drivers do not touch
-regs->len and only fill data and possibly regs->version which is fine.
+Please add a Fixes tag here, too:
 
-There are few drivers which modify regs->len:
+Fixes: 757cbe597fe8 ("LSM: new method: ->sb_add_mnt_opt()")
 
-  s2io_ethtool_gdrvinfo()	neterion/s2io
-  vxge_ethtool_gregs()		neterion/vxge
-  ixgb_get_regs()		intel/ixgb
-  emac_get_regs_len()		qualcomm/emac
-  ql_get_regs()			qlogic/qlge
-  axienet_ethtools_get_regs()	xilinx/axienet
+> ---
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index 3ec702c..4797c63 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
+>         if (token == Opt_error)
+>                 return -EINVAL;
+>
+> -       if (token != Opt_seclabel)
+> -               val = kmemdup_nul(val, len, GFP_KERNEL);
+> +       if (token != Opt_seclabel) {
+> +                       val = kmemdup_nul(val, len, GFP_KERNEL);
+> +                       if (!val)
+> +                               return -ENOMEM;
 
-All of these set regs->len to the same value as ->get_regs_len() returns
-(ixgb does it in rather fragile way). This means that if userspace
-passes insufficient buffer size, current code would write pass that
-buffer; but proposed patch would make things worse as with it, kernel
-would always write past the userspace buffer in such case.
+There is one extra tab character in the above three lines ^^^
 
-Note: ieee80211_get_regs() in net/mac80211/ethtool.c also sets regs->len
-but it always sets it to 0 which is also what ->get_regs_len() returns
-so that it does not actually modify the value.
+> +       }
+>         rc = selinux_add_opt(token, val, mnt_opts);
+>         if (unlikely(rc)) {
+>                 kfree(val);
 
-I believe this should be handled by ethtool_get_regs(), either by
-returning an error or by only copying data up to original regs.len
-passed by userspace. The former seems more correct but broken userspace
-software would suddenly start to fail where it "used to work". The
-latter would be closer to current behaviour but it would mean that
-broken userspace software might nerver notice there is something wrong.
+Thanks,
 
-Michal Kubecek
+--
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
