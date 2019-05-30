@@ -2,130 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2FC30366
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DD63037E
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726308AbfE3Umc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:42:32 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38835 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3Umb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:42:31 -0400
-Received: by mail-qt1-f193.google.com with SMTP id l3so8728145qtj.5;
-        Thu, 30 May 2019 13:42:31 -0700 (PDT)
+        id S1726489AbfE3Upn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 16:45:43 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:42533 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726668AbfE3Upm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:45:42 -0400
+Received: by mail-lf1-f67.google.com with SMTP id y13so6082547lfh.9
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 13:45:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/bCRFrux5pdwM/eQQyMv7GDdYYyVvQy7m6pFv34PkSY=;
-        b=F5ssoZwtzysXIDBPCSZplmgGEgEdxTreD3mjUqR/tk8jifXUNxqOH7nqNoImBps+et
-         w/pDreTA38EdIofSxVKXDPW5kM16497mLEzsPa+B2lLY9gbwpqVzFxQE8r4I2iYhq0iw
-         7oNYOS/5/sR4w2WsBREIvSnLRfC6ON0eSm3BCvoBY22+eYF7hzdLuE5y8S2qf8bIfp/5
-         SqYjpDvu2lqJcVfqKTiDEHNXGuQuYBoIutSGlyQVNpLouNBLL1w411E+mlLmgV0ioxCq
-         +qIWlDK1ITMIwKn/EZF45CaNCZVSLTtji12r2udJbifJ7uvKn2LItFU3zZNYR8M8PUbC
-         O5pw==
+        bh=EhDqOLrNL+Ls6g+jJlH1kHSTN+6mKWoVpwhK7g7g/0o=;
+        b=xlyV3ThJjdhKcZhreP5PbaxjF4yCg2iuc+K7UzQP6tLJWwrREj0I5yVvPo3B3jh7iK
+         jh1rsg4jyI3plqbkkIs9e7MgP53igOczr5L4MydDQ87MWflfgTeiR7tPUVxTFoKpmcm4
+         6sepnRi8IUd5YcXQYTYWT9BEkanR1k/eUovXIZ4CYEx4LttHAIlePcabZEyckUcOfwA+
+         ld4cKn0kM4Vfx29ADhSIicvea8BSndd/KrqWITOd8GFDTydQiWEJoSMQKugjZoDNrglv
+         RFE65J9Z1q+k0M/9D9082A8PAYYyDpKeO4/3eIRTiQyhsN5cVxluVIS5g72M/cFmB4vp
+         uEtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/bCRFrux5pdwM/eQQyMv7GDdYYyVvQy7m6pFv34PkSY=;
-        b=HRKbhmqM8gcS0b8kYivdO2Coho8GoYwpcYp+z0CsRn5MYUnhZBw1ldkgM7b1zpIC2p
-         4ioZxKRrUx7JauhYlaC3OhAieziNq0SsKWv0KOIghW43is1mUUzkCc2i3YTD4eZn2mPx
-         uEx6Zq+RkkDKglT3poL0Ufzb5j+HTkJfalfiEvqgI6XPNYGNJZ0RUj2gMitn1o+zSv1K
-         y05xCx4cYaGrZ8AIcOhGNJwzFe+IxYqRS48EHK6UxxwJHWvrG1IEHUhZFMXfPZAmYUeZ
-         DTGFUc21rHjL4n2D5YSlrvcpaXNqhq5t/z4oPrWhJKfK8y35JMZWeniJRu3IPj8/VChU
-         wTVg==
-X-Gm-Message-State: APjAAAUcAroYEH0kkiCuCtY7+dAcjv6qBF8yPWO3PSx918lpU4GdEVMa
-        Y+3VfU3F8NM0GKgN5eRliq3qvHLZlqGDqbiRZgw=
-X-Google-Smtp-Source: APXvYqwk8NCHl5RAh/VcYRlRcCqByVC90TiGWVR+pLTcOv+xInn2XgmLBt0pJePEan8OwWJ1+eeopkhVzX40HfFE6Ns=
-X-Received: by 2002:ac8:152:: with SMTP id f18mr5265664qtg.84.1559248950884;
- Thu, 30 May 2019 13:42:30 -0700 (PDT)
+        bh=EhDqOLrNL+Ls6g+jJlH1kHSTN+6mKWoVpwhK7g7g/0o=;
+        b=MpfQnZ5z5wgVv9iderdiBob6IzsndVjRX4oXJxdbbZT9b4Ww3xuU5Gp5AadiYc8pYU
+         5SRR4u5saw0FP4C7OKzShZc7pzAM8hhyme+sSpPM+vxibccVEEHKT226hXALLp1Z0GIi
+         kDuwmWoFzYuf98Sytubh1rgxH471S9Sp/zksaHE/ZUcutaNDuUFuu9DIPranrQJhL8sC
+         m+8R39bRO8Uf3kn7MmOp0d7anJ8BbEyiqRsam4OsKxTiZ9fLggqD8bezYSdWKIx1YQUm
+         Qq+h02tZewFOf3B0aWoYdMDKEIDS5EuSZ5clbnTr3KXpTHRgz+S9HfMgYGigvGrMRKxV
+         QsKg==
+X-Gm-Message-State: APjAAAWprVTm9Ixqlqc7fVx7S98QPkl+DwNO3KNgdRRjOi6SZVFycdcZ
+        kykVw6Vv/IRPEA5wzv+3zPZo0QiSFJoDGvIQ0pAu
+X-Google-Smtp-Source: APXvYqxCLcpJGQ9X7hllnM/E88Y7wiOxHiqGV+F77SwcvQq/KmkEMFzXAp+UwedDTn7SR4CSxAW2AxSMb9dduBaWcmQ=
+X-Received: by 2002:ac2:410a:: with SMTP id b10mr3157662lfi.175.1559249140261;
+ Thu, 30 May 2019 13:45:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <1559247798-4670-1-git-send-email-jiong.wang@netronome.com>
-In-Reply-To: <1559247798-4670-1-git-send-email-jiong.wang@netronome.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 30 May 2019 13:42:19 -0700
-Message-ID: <CAPhsuW7ycQWP3C-DSDznSLw6G9KY1iNq5Ms8AbvdF8Vk1TjVGQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] bpf: doc: update answer for 32-bit
- subregister question
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com
+References: <cover.1554732921.git.rgb@redhat.com> <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
+ <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com>
+ <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca> <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
+ <20190530203702.fibsrazabbiifjvf@madcap2.tricolour.ca>
+In-Reply-To: <20190530203702.fibsrazabbiifjvf@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 30 May 2019 16:45:28 -0400
+Message-ID: <CAHC9VhR6oqKer_p6Xsu6oO2j3bMZGPXWHnGchZOqUoMx9yJFwQ@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 1:23 PM Jiong Wang <jiong.wang@netronome.com> wrote:
+On Thu, May 30, 2019 at 4:37 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-05-30 10:34, Paul Moore wrote:
+> > On Thu, May 30, 2019 at 10:20 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > >
+> > > On 2019-05-29 18:16, Paul Moore wrote:
+> > > > On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > >
+> > > > > Implement audit container identifier filtering using the AUDIT_CONTID
+> > > > > field name to send an 8-character string representing a u64 since the
+> > > > > value field is only u32.
+> > > > >
+> > > > > Sending it as two u32 was considered, but gathering and comparing two
+> > > > > fields was more complex.
+> > > > >
+> > > > > The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
+> > > > >
+> > > > > Please see the github audit kernel issue for the contid filter feature:
+> > > > >   https://github.com/linux-audit/audit-kernel/issues/91
+> > > > > Please see the github audit userspace issue for filter additions:
+> > > > >   https://github.com/linux-audit/audit-userspace/issues/40
+> > > > > Please see the github audit testsuiite issue for the test case:
+> > > > >   https://github.com/linux-audit/audit-testsuite/issues/64
+> > > > > Please see the github audit wiki for the feature overview:
+> > > > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+> > > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > > Acked-by: Serge Hallyn <serge@hallyn.com>
+> > > > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > > > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > > > > ---
+> > > > >  include/linux/audit.h      |  1 +
+> > > > >  include/uapi/linux/audit.h |  5 ++++-
+> > > > >  kernel/audit.h             |  1 +
+> > > > >  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+> > > > >  kernel/auditsc.c           |  4 ++++
+> > > > >  5 files changed, 57 insertions(+), 1 deletion(-)
+> > > >
+> > > > ...
+> > > >
+> > > > > diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
+> > > > > index 63f8b3f26fab..407b5bb3b4c6 100644
+> > > > > --- a/kernel/auditfilter.c
+> > > > > +++ b/kernel/auditfilter.c
+> > > > > @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
+> > > > >         }
+> > > > >  }
+> > > > >
+> > > > > +int audit_comparator64(u64 left, u32 op, u64 right)
+> > > > > +{
+> > > > > +       switch (op) {
+> > > > > +       case Audit_equal:
+> > > > > +               return (left == right);
+> > > > > +       case Audit_not_equal:
+> > > > > +               return (left != right);
+> > > > > +       case Audit_lt:
+> > > > > +               return (left < right);
+> > > > > +       case Audit_le:
+> > > > > +               return (left <= right);
+> > > > > +       case Audit_gt:
+> > > > > +               return (left > right);
+> > > > > +       case Audit_ge:
+> > > > > +               return (left >= right);
+> > > > > +       case Audit_bitmask:
+> > > > > +               return (left & right);
+> > > > > +       case Audit_bittest:
+> > > > > +               return ((left & right) == right);
+> > > > > +       default:
+> > > > > +               BUG();
+> > > >
+> > > > A little birdy mentioned the BUG() here as a potential issue and while
+> > > > I had ignored it in earlier patches because this is likely a
+> > > > cut-n-paste from another audit comparator function, I took a closer
+> > > > look this time.  It appears as though we will never have an invalid op
+> > > > value as audit_data_to_entry()/audit_to_op() ensure that the op value
+> > > > is a a known good value.  Removing the BUG() from all the audit
+> > > > comparators is a separate issue, but I think it would be good to
+> > > > remove it from this newly added comparator; keeping it so that we
+> > > > return "0" in the default case seems reasoanble.
+> > >
+> > > Fair enough.  That BUG(); can be removed.
+> >
+> > Please send a fixup patch for this.
 >
-> There has been quite a few progress around the two steps mentioned in the
-> answer to the following question:
->
->   Q: BPF 32-bit subregister requirements
->
-> This patch updates the answer to reflect what has been done.
->
-> v2:
->  - Add missing full stop. (Song Liu)
->  - Minor tweak on one sentence. (Song Liu)
->
-> v1:
->  - Integrated rephrase from Quentin and Jakub
->
-> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+> The fixup patch is trivial.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Yes, I know.
 
-> ---
->  Documentation/bpf/bpf_design_QA.rst | 30 +++++++++++++++++++++++++-----
->  1 file changed, 25 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
-> index cb402c5..12a246f 100644
-> --- a/Documentation/bpf/bpf_design_QA.rst
-> +++ b/Documentation/bpf/bpf_design_QA.rst
-> @@ -172,11 +172,31 @@ registers which makes BPF inefficient virtual machine for 32-bit
->  CPU architectures and 32-bit HW accelerators. Can true 32-bit registers
->  be added to BPF in the future?
->
-> -A: NO. The first thing to improve performance on 32-bit archs is to teach
-> -LLVM to generate code that uses 32-bit subregisters. Then second step
-> -is to teach verifier to mark operations where zero-ing upper bits
-> -is unnecessary. Then JITs can take advantage of those markings and
-> -drastically reduce size of generated code and improve performance.
-> +A: NO.
-> +
-> +But some optimizations on zero-ing the upper 32 bits for BPF registers are
-> +available, and can be leveraged to improve the performance of JITed BPF
-> +programs for 32-bit architectures.
-> +
-> +Starting with version 7, LLVM is able to generate instructions that operate
-> +on 32-bit subregisters, provided the option -mattr=+alu32 is passed for
-> +compiling a program. Furthermore, the verifier can now mark the
-> +instructions for which zero-ing the upper bits of the destination register
-> +is required, and insert an explicit zero-extension (zext) instruction
-> +(a mov32 variant). This means that for architectures without zext hardware
-> +support, the JIT back-ends do not need to clear the upper bits for
-> +subregisters written by alu32 instructions or narrow loads. Instead, the
-> +back-ends simply need to support code generation for that mov32 variant,
-> +and to overwrite bpf_jit_needs_zext() to make it return "true" (in order to
-> +enable zext insertion in the verifier).
-> +
-> +Note that it is possible for a JIT back-end to have partial hardware
-> +support for zext. In that case, if verifier zext insertion is enabled,
-> +it could lead to the insertion of unnecessary zext instructions. Such
-> +instructions could be removed by creating a simple peephole inside the JIT
-> +back-end: if one instruction has hardware support for zext and if the next
-> +instruction is an explicit zext, then the latter can be skipped when doing
-> +the code generation.
->
->  Q: Does BPF have a stable ABI?
->  ------------------------------
-> --
-> 2.7.4
->
+> The rebase to v5.2-rc1 audit/next had merge
+> conflicts with four recent patchsets.  It may be simpler to submit a new
+> patchset and look at a diff of the two sets.  I'm testing the rebase
+> now.
+
+Great thanks.  Although you might want to hold off a bit on posting
+the next revision until we sort out the discussion which is happening
+in patch 02/10; unfortunately I fear we may need to change some of the
+logic.
+
+--
+paul moore
+www.paul-moore.com
