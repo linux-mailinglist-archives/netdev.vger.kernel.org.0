@@ -2,133 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F823058D
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 01:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D7330591
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 01:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfE3Xy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 19:54:58 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33314 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfE3Xy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 19:54:58 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 14so9320142qtf.0;
-        Thu, 30 May 2019 16:54:58 -0700 (PDT)
+        id S1726643AbfE3X4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 19:56:19 -0400
+Received: from mail-pf1-f182.google.com ([209.85.210.182]:44990 "EHLO
+        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfE3X4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 19:56:19 -0400
+Received: by mail-pf1-f182.google.com with SMTP id c9so1702380pfc.11;
+        Thu, 30 May 2019 16:56:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pbY7QCszbNfK/dSu1/5otH3SCdjboPhqqSUH03GB/EM=;
-        b=Ny1tjL62Yp/e+GaLKP/297tsrcWytC1zfKBHhaK8whtejfVXW+9A1kzpdKGUKbXuPu
-         r1zlSaWDIqaTKLurdjO7Jh8cB5vISfHfW+EqCZ1FtDsYd2Q/CX/tTI6x5ITQmtONxR+E
-         NUGUY8nXml4OMFbJtP1knoCgImmtmExDsSyNP6tMJXiw9TeMoQANay6FctL1OwSYP1dn
-         YNL8ECJGlSDaNOA3OxQauNaWNTrCy+f0enTC7f0VEI0p6gWDY2C1+yRr8J5XnqSUSzv1
-         c8joxknUf9XS59y6NYzlGZrevCvYMOEXuJD0PEnfkHyUdBNE7kebRg2hQLqe3WcS/3ct
-         BUGA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ci6z0DpBFa7HuJWAHxGdHuYnW8mClDBsdXXC0tted/Q=;
+        b=MD0KhmNl+8nPftm4tU/0uii3Fi1m2zcXy7+Nk+4Vae1qpwqaE7vkkZHlor8ZGrc7nF
+         KNvdGW3Bw65OsNoUFdE8pLIce3OzVcJW9+duoU+MsQ0AuQcKBOU2Ri4AjVDIU3kZyPw8
+         denkj6wnL0oIQKXoEO1qQEBNFqdRkLw41FGgzeo3Wv7CA85+y24KC1oLsT5zo1I/y/tV
+         R2+Qkfc6+E3Q4BM17qRSnkqQQNRFbfz95rmIIn+hkWtrSkPN7LtbaPEsrABp9+Y/6hjZ
+         R01C1RVlSZmJYdxl4o/RYMdu9FlKgjAaYIpmLTi2Cj4Sz0ILXXAbech9rQJLa9GSuvnF
+         yhRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=pbY7QCszbNfK/dSu1/5otH3SCdjboPhqqSUH03GB/EM=;
-        b=lmbtQDoOFOycHI+ctLw2dHUS02rFByusHFDEUrBdWYQJbOEaPj/Gg08CtVMCGXIwtK
-         XVfk2HDo3inlY7GxVhJe8hi+45gsLohVLwnL3PHKKlZTaF3b6c3XxNYhgv3p/qaB/rQ/
-         uHhAHtmzSec8tZ8GpNh3trVSYiGWE99viOxT2zhijXHT7U3TkBzc6rdpO6Kc38zkjRJ0
-         6PKzuW9XssymcyurIxLJEcyd+x5wyLQyd+MjbR5M5SR4hELiiqMWDwCKuyC2KDcW0FE9
-         VRH5OQLwd6QkVRQWIrVFff+RYdjNA7bhJrOfpGARia3vk5qlOB3XHw6sC5IQ1xY9v3fU
-         vgbg==
-X-Gm-Message-State: APjAAAX+aHaJK2kruh7n5A9a1xJSsen3i5qZ0viYR9JZD2BlYXHQKpWb
-        pDQiGwi7Q7EZCRGoB2C0oRyZduHVBKI=
-X-Google-Smtp-Source: APXvYqwC5aBJLO4OqocA65XZMTeIF8x0DraB85FMjCvPdDhwPzRxOvi5CPb3KhxvUWhB5cc83897SA==
-X-Received: by 2002:a0c:9d0e:: with SMTP id m14mr5891204qvf.121.1559260497562;
-        Thu, 30 May 2019 16:54:57 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id d23sm3671309qta.26.2019.05.30.16.54.56
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 30 May 2019 16:54:56 -0700 (PDT)
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>, linville@redhat.com,
-        f.fainelli@gmail.com
-Subject: [PATCH net-next] ethtool: do not use regs->len after ops->get_regs
-Date:   Thu, 30 May 2019 19:54:50 -0400
-Message-Id: <20190530235450.11824-1-vivien.didelot@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        bh=ci6z0DpBFa7HuJWAHxGdHuYnW8mClDBsdXXC0tted/Q=;
+        b=ifJuOwyBVCYdsRhBmV1Bmm1rvKxanOWQ8Oahe/LuyJ5rkzX6x1dujBOTxm8KjRFYRi
+         1YKAMb2hpb9qCyypi0IYqZg5qNMbKHOoC0iaI9Ie5c8bNUlzFXPCy3NxUDY2Syy+kwWP
+         Vtq+CTTMGdvIjBK5UXi3BSXQ7ya9+B/Qbu/cFBeKKRrkiYkbeVnkXBT5VVrRVUIAPdYZ
+         YWPTYmfhVLhX3bGJCyv2ZdWS57+BJGhfnAW3wVl1GCrcZxzWaPddwyrsFhiiwOwEkDY6
+         Q+d71ebOFomef7tZeAGTprO1EMh8qclqCXtInDdGiEDzHQsXDun0NP2E9zyDZX3lCfLX
+         iaXw==
+X-Gm-Message-State: APjAAAX1svgUMKZx8HLZLAtuh/usFEsLlCvDPr4HklqQDwkT4FKIsBeL
+        nSZc7TdCSNe94oJEHlB1foQJqJPu
+X-Google-Smtp-Source: APXvYqz8WkrdvsiTQenk5sYYRR2nwXJ5N2Xhb0SFlPDYaRQ6N2bxST9T1QkWN6c2DB31jNYNWR+x9Q==
+X-Received: by 2002:a63:18e:: with SMTP id 136mr5987289pgb.277.1559260578504;
+        Thu, 30 May 2019 16:56:18 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id 124sm4830985pfe.124.2019.05.30.16.56.16
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 16:56:17 -0700 (PDT)
+Subject: Re: Driver has suspect GRO implementation, TCP performance may be
+ compromised.
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <e070e241-fb65-a5b0-3155-7380a9203bcf@molgen.mpg.de>
+ <8627ea1e-8e51-c425-97f6-aeb57176e11a@gmail.com>
+ <eb730f01-0c6d-0589-36cc-7193d64c1ee8@molgen.mpg.de>
+ <CANn89i+VvwMaHy2Br-0CcC3gPQ+PmG3Urpn4KpqL0P7XBykmcw@mail.gmail.com>
+ <20190529093548.3df7ee73@hermes.lan>
+ <CAKgT0UdWmu3GjeMd9jmA=5FGQ=5cLnFb51arf+zkX7omc-G1fg@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <50261bc0-2732-5adb-1ff6-a4ac040e39b1@gmail.com>
+Date:   Thu, 30 May 2019 16:56:15 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKgT0UdWmu3GjeMd9jmA=5FGQ=5cLnFb51arf+zkX7omc-G1fg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel allocates a buffer of size ops->get_regs_len(), and pass
-it to the kernel driver via ops->get_regs() for filling.
 
-There is no restriction about what the kernel drivers can or cannot
-do with the regs->len member. Drivers usually ignore it or set
-the same size again. However, ethtool_get_regs() must not use this
-value when copying the buffer back to the user, because userspace may
-have allocated a smaller buffer. For instance ethtool does that when
-dumping the raw registers directly into a fixed-size file.
 
-Software may still make use of the regs->len value updated by the
-kernel driver, but ethtool_get_regs() must use the original regs->len
-given by userspace, up to ops->get_regs_len(), when copying the buffer.
+On 5/30/19 3:52 PM, Alexander Duyck wrote:
 
-Also no need to check regbuf twice.
+> Actually I think there are some parts that don't have any receive
+> limits that are supported by the e1000 part. What ends up happening is
+> that we only drop the packet if it spans more than one buffer if I
+> recall correctly, and buffer size is determined by MTU.
+> 
+> I always thought MTU only applied to transmit since it is kind of in
+> the name. As a result I am pretty sure igb and ixgbe will be able to
+> trigger this warning under certain circumstances as well. Also what
+> about the case where someone sets the MTU to less than 1500? I think
+> most NICs probably don't update their limits in such a case and
+> wouldn't it also trigger a similar error?
+> 
 
-Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
----
- net/core/ethtool.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-index 4a593853cbf2..8f95c7b7cafe 100644
---- a/net/core/ethtool.c
-+++ b/net/core/ethtool.c
-@@ -1338,38 +1338,40 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
- static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
- {
- 	struct ethtool_regs regs;
- 	const struct ethtool_ops *ops = dev->ethtool_ops;
- 	void *regbuf;
- 	int reglen, ret;
- 
- 	if (!ops->get_regs || !ops->get_regs_len)
- 		return -EOPNOTSUPP;
- 
- 	if (copy_from_user(&regs, useraddr, sizeof(regs)))
- 		return -EFAULT;
- 
- 	reglen = ops->get_regs_len(dev);
- 	if (reglen <= 0)
- 		return reglen;
- 
- 	if (regs.len > reglen)
- 		regs.len = reglen;
-+	else
-+		reglen = regs.len;
- 
- 	regbuf = vzalloc(reglen);
- 	if (!regbuf)
- 		return -ENOMEM;
- 
- 	ops->get_regs(dev, &regs, regbuf);
- 
- 	ret = -EFAULT;
- 	if (copy_to_user(useraddr, &regs, sizeof(regs)))
- 		goto out;
- 	useraddr += offsetof(struct ethtool_regs, data);
--	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
-+	if (copy_to_user(useraddr, regbuf, reglen))
- 		goto out;
- 	ret = 0;
- 
-  out:
- 	vfree(regbuf);
- 	return ret;
- }
--- 
-2.21.0
+Linux does not have a notion of MRU, mtu is used for both tx and rx.
+
+Most NIC drivers allocate skb of the maximal size (derived from netdev->mtu)
+and program the NIC to drop packets bigger than X bytes  (X also derived from netdev->mtu)
+
+Another interesting point is that Paul host is receiving big packets,
+that means that one host in his local network is overriding the 1500 MTU :)
+
+Eventually we could add a netdev->mru and allow few drivers to set
+their maximal mru, if bigger than netdev->mtu.
+
+e1000e would probably set netdev->mru to 2048 - sizeof(ethernet headers), if
+the driver is operating at MTU = 1500
 
