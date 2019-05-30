@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4692D3016E
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78A9030170
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbfE3SEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:04:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36000 "EHLO mx1.redhat.com"
+        id S1726701AbfE3SEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:04:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41296 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbfE3SEE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 14:04:04 -0400
+        id S1726485AbfE3SEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 14:04:13 -0400
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2BFFD30BC584;
-        Thu, 30 May 2019 18:04:04 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 31D5AC0AD2A9;
+        Thu, 30 May 2019 18:04:08 +0000 (UTC)
 Received: from localhost.localdomain.com (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 664B640EC1;
-        Thu, 30 May 2019 18:04:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 96FD019736;
+        Thu, 30 May 2019 18:04:05 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     Eric Dumazet <eric.dumazet@gmail.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -26,105 +26,94 @@ To:     Eric Dumazet <eric.dumazet@gmail.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
-Subject: [PATCH net v2 2/3] net/sched: act_pedit: fix 'ex munge' on network header in case of QinQ packet
-Date:   Thu, 30 May 2019 20:03:42 +0200
-Message-Id: <463743998f21850eaeee3df73ee8e60ee7d2dfe6.1559237173.git.dcaratti@redhat.com>
+Subject: [PATCH net v2 3/3] net/sched: act_skbedit: fix 'inheritdsfield' in case of QinQ packet
+Date:   Thu, 30 May 2019 20:03:43 +0200
+Message-Id: <18808392e6a833e2be7fb499f1c12f028fb3c9cb.1559237173.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1559237173.git.dcaratti@redhat.com>
 References: <cover.1559237173.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 30 May 2019 18:04:04 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Thu, 30 May 2019 18:04:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-like it has been done in commit 2ecba2d1e45b ("net: sched: act_csum: Fix
-csum calc for tagged packets"), also 'pedit' needs to adjust the network
-offset when multiple tags are present in the packets: otherwise wrong IP
-headers (but good checksums) can be observed with the following command:
+like it was previously done on TC 'csum' (see commit 2ecba2d1e45b ("net:
+sched: act_csum: Fix csum calc for tagged packets")), TC 'skbedit' might
+need to adjust the network offset, if the packet has unstripped/multiple
+tags: otherwise 'inheritdsfield' will just be skipped for QinQ packets.
 
- # tc filter add dev test0 parent ffff: protocol 802.1Q flower \
-   vlan_ethtype ipv4 action \
-   pedit ex munge ip ttl set 10 pipe \
-   csum ip and icmp pipe \
-   mirred egress redirect dev test1
-
-Fixes: d8b9605d2697 ("net: sched: fix skb->protocol use in case of accelerated vlan path")
-Reported-by: Li Shuang <shuali@redhat.com>
+Fixes: e7e3728bd776 ("net:sched: add action inheritdsfield to skbedit")
+CC: Li Shuang <shuali@redhat.com>
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- net/sched/act_pedit.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+ net/sched/act_skbedit.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index d790c02b9c6c..26e43d300160 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -277,9 +277,11 @@ static bool offset_valid(struct sk_buff *skb, int offset)
- }
- 
- static int pedit_skb_hdr_offset(struct sk_buff *skb,
--				enum pedit_header_type htype, int *hoffset)
-+				enum pedit_header_type htype, int *hoffset,
-+				unsigned int *vlan_hdr_count)
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index 7ec159b95364..693a4317de6e 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -39,6 +39,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
  {
- 	int ret = -EINVAL;
-+	__be16 protocol;
- 
- 	switch (htype) {
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_ETH:
-@@ -291,8 +293,18 @@ static int pedit_skb_hdr_offset(struct sk_buff *skb,
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK:
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP4:
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP6:
--		*hoffset = skb_network_offset(skb);
--		ret = 0;
-+		protocol = tc_skb_protocol(skb);
-+again:
-+		switch (protocol) {
-+		case cpu_to_be16(ETH_P_8021AD): /* fall through */
-+		case cpu_to_be16(ETH_P_8021Q):
-+			if (!tc_skb_pull_vlans(skb, vlan_hdr_count, &protocol))
-+				goto again;
-+			return ret;
-+		default:
-+			*hoffset = skb_network_offset(skb);
-+			ret = 0;
-+		}
- 		break;
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_TCP:
- 	case TCA_PEDIT_KEY_EX_HDR_TYPE_UDP:
-@@ -313,6 +325,7 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			 struct tcf_result *res)
- {
- 	struct tcf_pedit *p = to_pedit(a);
+ 	struct tcf_skbedit *d = to_skbedit(a);
+ 	struct tcf_skbedit_params *params;
 +	unsigned int vlan_hdr_count = 0;
- 	int i;
+ 	int action;
  
- 	if (skb_unclone(skb, GFP_ATOMIC))
-@@ -343,7 +356,8 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 				tkey_ex++;
- 			}
+ 	tcf_lastuse_update(&d->tcf_tm);
+@@ -50,9 +51,17 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 	if (params->flags & SKBEDIT_F_PRIORITY)
+ 		skb->priority = params->priority;
+ 	if (params->flags & SKBEDIT_F_INHERITDSFIELD) {
+-		int wlen = skb_network_offset(skb);
+-
+-		switch (tc_skb_protocol(skb)) {
++		__be16 proto = tc_skb_protocol(skb);
++		int wlen;
++
++again:
++		wlen = skb_network_offset(skb);
++		switch (proto) {
++		case htons(ETH_P_8021AD): /* Fall Through */
++		case htons(ETH_P_8021Q):
++			if (tc_skb_pull_vlans(skb, &vlan_hdr_count, &proto))
++				goto err;
++			goto again;
+ 		case htons(ETH_P_IP):
+ 			wlen += sizeof(struct iphdr);
+ 			if (!pskb_may_pull(skb, wlen))
+@@ -61,7 +70,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 			break;
  
--			rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
-+			rc = pedit_skb_hdr_offset(skb, htype, &hoffset,
-+						  &vlan_hdr_count);
- 			if (rc) {
- 				pr_info("tc action pedit bad header type specified (0x%x)\n",
- 					htype);
-@@ -407,6 +421,10 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- bad:
- 	p->tcf_qstats.overlimits++;
- done:
+ 		case htons(ETH_P_IPV6):
+-			wlen += sizeof(struct ipv6hdr);
++			wlen +=  sizeof(struct ipv6hdr);
+ 			if (!pskb_may_pull(skb, wlen))
+ 				goto err;
+ 			skb->priority = ipv6_get_dsfield(ipv6_hdr(skb)) >> 2;
+@@ -77,11 +86,18 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 	}
+ 	if (params->flags & SKBEDIT_F_PTYPE)
+ 		skb->pkt_type = params->ptype;
++
++out:
 +	while (vlan_hdr_count--) {
 +		skb_push(skb, VLAN_HLEN);
 +		skb_reset_network_header(skb);
 +	}
- 	bstats_update(&p->tcf_bstats, skb);
- 	spin_unlock(&p->tcf_lock);
- 	return p->tcf_action;
+ 	return action;
+ 
+ err:
+ 	qstats_drop_inc(this_cpu_ptr(d->common.cpu_qstats));
+-	return TC_ACT_SHOT;
++	action = TC_ACT_SHOT;
++	goto out;
+ }
+ 
+ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
 -- 
 2.20.1
 
