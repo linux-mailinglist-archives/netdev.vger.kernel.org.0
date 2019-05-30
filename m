@@ -2,147 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D0830115
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1763011B
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:32:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbfE3Rae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:30:34 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:44642 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3Rad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:30:33 -0400
-Received: by mail-qk1-f193.google.com with SMTP id w187so4361569qkb.11
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:30:33 -0700 (PDT)
+        id S1726688AbfE3Rc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:32:26 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:36475 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726423AbfE3RcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:32:23 -0400
+Received: by mail-pl1-f193.google.com with SMTP id d21so2849524plr.3
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:32:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pfVPiNXY8ivYIf9ydI8gxrNopcmG7baFrjkCuROxpf4=;
-        b=I0QIoNPADPbpXbFdTWE7TO+xpCdCiDtuX2/Q3uTezaT/UgpqhNvvP7uf2dEGfhYY4M
-         mQIcOI7E3etTGBhFmpCwQI5KXNHXDAmPdzCbRbx9EVmiEaVcQ/yKLoFrjgzLvOBWJiSc
-         wbkQbzHQTmTIZoE5oOHf1dCDZBbJVvsFcIpkiiHoDPbaq2dzyRlPgYA1ozR/YOrGtPl3
-         FzhtTvBN7TgJ67IpyPHZrRnXaecgIlFTdXg6HD+ojjod2X2MNaoE8HI92UmLpGxNxx1M
-         v68TdtTFU36eQKXb6cMUVNpW6ZdqyUp3BYtBATIS8CKEwG2+2Y8QrXDlx1QSKiLoBgIk
-         Eavw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LhxifK8xasEWnbFFnTXMwCyoLy9ibJpitW1E7bHtvu0=;
+        b=Prx5Q5humckgCTW5K6BFasRyLQyDf1ZKWmrcKxSQtXHHyDPL//qsUi3vKv3OArk9du
+         Mbuj0UdqqicP+A0uwARJg8DJgMHySGTr3KXYhukg/hmisGTHu8nC3uqlulEGFZNbOQQx
+         mRftqvifFUhAI/MJU/5JcnIEc23kPqUnh27avuPFrZoPXfZ2m869NZ6CZl4g0qByme/l
+         qngCL75aNOc3wRQjaDYorF2nTMqC8+uHLc6UfojzsLn9J8IZQaYZs1Yvw9V4vYxX53bN
+         aZDUZhAOo4tct/6c4eDcgY4ioVQOrhVADts9j49QQDZcvF5XlWKxLciBdEXPV1XVCmQi
+         F/Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pfVPiNXY8ivYIf9ydI8gxrNopcmG7baFrjkCuROxpf4=;
-        b=foczetH0uqNkgpD3Dnw4Y5spjWxylUGp0Eo7AJVvfHB4dywrwJ8RAf3+1KwY4lFR2T
-         l9kCczHcnLdpGLjXZgwxvFq9EPS3YnHcHU1ekBZHmoEPT3Nq0OpIosp5Vdp0roqsT7V8
-         ygYv0ljBpQ6kav9LII7ePwS8u+xfOBoGgeqkMYQ+hn8KGKbNaM8t0icVbUWi1fPm2omf
-         Vj0kMMe5QSaW1lqhcP2GgOWYoAE6hVZeTcjRtrxsjm3j3W5HQk6QEMkbCHw4nHEqHdaX
-         xMUNuUv9NBcnq3echC2GWMBhHxVbpUhZa5wtTdySa7SUcKXmFlhwqF5bogkUGGLaZxd6
-         2uEg==
-X-Gm-Message-State: APjAAAV8UQBAprDfrLFWkmuNfyIVavgRMnf0s7LJ664rRSlVcMYHNHG5
-        ta28nsorMnSR8POkEn7dvjBUUb3vV9MMPnunI74=
-X-Google-Smtp-Source: APXvYqzKpiTf+5XEZ65jntFSwLb6pKXblpKGYdqMStkkKwo1ydT5ZJ2Pkhr+aYIQf4GlgvRu9Pg0eQ0KwjLWNyybHR8=
-X-Received: by 2002:a37:670e:: with SMTP id b14mr4224284qkc.216.1559237432621;
- Thu, 30 May 2019 10:30:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LhxifK8xasEWnbFFnTXMwCyoLy9ibJpitW1E7bHtvu0=;
+        b=HUJTgkKLqTFNjo39+wMWE6SJTZSJM0Rx3R34YzCgHkDmMgaVCTrbR/XNbtp2xEwy6o
+         pxuCRFHdZ7MaBH7fRlSFC7fwe6QGxBFf2sM+fcNMqXsi5pnnq77YH0fjtgjlBWdQO/ae
+         ar4e32L6xJipL8DXWLMMgQD0bim7nCQwzLUWPpZ/8y4AtpHOldss4pzUHKoAUf1mOnKw
+         LnDP5fjW8rWcW1FjNVATn7a+CL39+j35GRH2IVQ9FfrA1/eYtQbO2AGhA8+x0cn0uXxe
+         cVS5MVEx78H9hjl8NsTsNuQ//yNIyjN5hZX2KWKrpx9XBN6bWTfK72uXkOpVE+qrNHYz
+         yG1Q==
+X-Gm-Message-State: APjAAAVvyNANPoxGR4jpANFu5OvHfSxUnfU+Hi/Odfumhy7/I376L52L
+        U7rGU+fkBremruotMnIuU3BFozIR8oc=
+X-Google-Smtp-Source: APXvYqypgyhBvV3Tvf/yomdQVuSP3HKMIy3/tg7S2TzCj27V7MF3QbvsHg5QEV1Ms1IPuyA+74OPRA==
+X-Received: by 2002:a17:902:a708:: with SMTP id w8mr4503781plq.162.1559237543157;
+        Thu, 30 May 2019 10:32:23 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id h8sm709674pgq.85.2019.05.30.10.32.22
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 30 May 2019 10:32:23 -0700 (PDT)
+Date:   Thu, 30 May 2019 10:32:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
+Message-ID: <20190530103219.048b4674@hermes.lan>
+In-Reply-To: <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
+References: <20190530164246.17955-1-ldir@darbyshire-bryant.me.uk>
+        <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
 MIME-Version: 1.0
-References: <1559235580-31747-1-git-send-email-u9012063@gmail.com> <c96c083d-61be-ee68-0304-bfbdf78ca444@gmail.com>
-In-Reply-To: <c96c083d-61be-ee68-0304-bfbdf78ca444@gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Thu, 30 May 2019 10:29:53 -0700
-Message-ID: <CALDO+SZU6Nw3e_2OPhzvjr0d4jgm5x9s9gaDYrU92hq7htqdYw@mail.gmail.com>
-Subject: Re: [PATCHv2 net] net: ip6_gre: access skb data after skb_cow_head()
-To:     Gregory Rose <gvrose8192@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please ignore this patch and allow me to investigate more.
+On Thu, 30 May 2019 16:43:20 +0000
+Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> wrote:
 
-On Thu, May 30, 2019 at 10:23 AM Gregory Rose <gvrose8192@gmail.com> wrote:
->
->
-> On 5/30/2019 9:59 AM, William Tu wrote:
-> > When increases the headroom, skb's data pointer might get re-allocated.
-> > As a result, the skb->data before the skb_cow_head becomes a dangling p=
-ointer,
-> > and dereferences to daddr causes general protection fault at the follow=
-ing
-> > line in __gre6_xmit():
-> >
-> >    if (dev->header_ops && dev->type =3D=3D ARPHRD_IP6GRE)
-> >        fl6->daddr =3D ((struct ipv6hdr *)skb->data)->daddr;
-> >
+> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+> index 51a0496f..b0c6a49a 100644
+> --- a/include/uapi/linux/pkt_cls.h
+> +++ b/include/uapi/linux/pkt_cls.h
+> @@ -105,7 +105,8 @@ enum tca_id {
+>  	TCA_ID_IFE = TCA_ACT_IFE,
+>  	TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
+>  	/* other actions go here */
+> -	__TCA_ID_MAX = 255
+> +	TCA_ID_CTINFO,
+> +	__TCA_ID_MAX=255
+>  };
 
-Look again Dave's comment that
-The fl6->daddr assignments are object copies, not pointer assignments.
-So this shouldn't cause any problem after skb_cow_head.
-
-I will work on the right fix.
-Thanks,
-William
-
-> > general protection fault: 0000 [#1] SMP PTI
-> > OE 4.15.0-43-generic #146-Ubuntu
-> > Hardware name: VMware, Inc. VMware Virtual Platform 440BX Desktop Refer=
-ence
-> > Platform, BIOS 6.00 07/03/2018
-> > RIP: 0010: __gre6_xmit+0x11f/0x2c0 [openvswitch]
-> > RSP: 0018:ffffb8d5c44df6a8 EFLAGS: 00010286
-> > RAX: 00000000ffffffea RBX: ffff8b1528a0000 RCX: 0000000000000036
-> > RDX: ffff000000000000 RSI: 0000000000000000 RDI: ffff8db267829200
-> > RBP: ffffb8d5c44df 700 R08: 0000000000005865 R=C3=989: ffffb8d5c44df724
-> > R10: 0000000000000002 R11: 0000000000000000 R12: ffff8db267829200
-> > R13: 0000000000000000 R14: ffffb8d5c44df 728 R15: 00000000ffffffff
-> > FS: 00007f8744df 2700(0000) GS:ffff8db27fc0000000000) knlGS:00000000000=
-00000
-> > CS: 0910 DS: 0000 ES: 9000 CRO: 0000000080050033
-> > CR2: 00007f893ef92148 CR3: 0000000400462003 CR4: 00000000001626f8
-> > Call Trace:
-> > ip6gre_tunnel_xmit+0x1cc/0x530 [openvswitch]
-> > ? skb_clone+0x58/0xc0
-> > __ip6gre_tunnel_xmit+0x12/0x20 [openvswitch]
-> > ovs_vport_send +0xd4/0x170 [openvswitch]
-> > do_output+0x53/0x160 [openvswitch]
-> > do_execute_actions+0x9a1/0x1880 [openvswitch]
-> >
-> > Fix it by moving skb_cow_head before accessing the skb->data pointer.
-> >
-> > Fixes: 01b8d064d58b4 ("net: ip6_gre: Request headroom in __gre6_xmit()"=
-)
-> > Reported-by: Haichao Ma <haichaom@vmware.com>
-> > Signed-off-by: William Tu <u9012063@gmail.com>
-> > ---
-> > v1-v2: add more details in commit message.
-> > ---
-> >   net/ipv6/ip6_gre.c | 6 +++---
-> >   1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-> > index 655e46b227f9..90b2b129b105 100644
-> > --- a/net/ipv6/ip6_gre.c
-> > +++ b/net/ipv6/ip6_gre.c
-> > @@ -714,6 +714,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
-> >       struct ip6_tnl *tunnel =3D netdev_priv(dev);
-> >       __be16 protocol;
-> >
-> > +     if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
-> > +             return -ENOMEM;
-> > +
-> >       if (dev->type =3D=3D ARPHRD_ETHER)
-> >               IPCB(skb)->flags =3D 0;
-> >
-> > @@ -722,9 +725,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
-> >       else
-> >               fl6->daddr =3D tunnel->parms.raddr;
-> >
-> > -     if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
-> > -             return -ENOMEM;
-> > -
-> >       /* Push GRE header. */
-> >       protocol =3D (dev->type =3D=3D ARPHRD_ETHER) ? htons(ETH_P_TEB) :=
- proto;
-> >
->
-> Tested-by: Greg Rose <gvrose8192@gmail.com>
-> Reviewed-by: Greg Rose <gvrose8192@gmail.com>
->
+This version of the file does not match upstream (the whitespace is different).
