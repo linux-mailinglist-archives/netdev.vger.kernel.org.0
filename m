@@ -2,117 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD91F2F809
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 09:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FABC2F83F
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbfE3Ho5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 03:44:57 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43393 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726027AbfE3Ho4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 03:44:56 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l17so3448752wrm.10
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 00:44:55 -0700 (PDT)
+        id S1727920AbfE3IGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 04:06:16 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:32874 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbfE3IGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:06:16 -0400
+Received: by mail-pf1-f193.google.com with SMTP id z28so3470652pfk.0;
+        Thu, 30 May 2019 01:06:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZPN60tHW+fkN7QhWRO4Pw+Ht0a4svKocBgd17LlVcuk=;
-        b=ql6rd6yKVcz/rf1KXPSgKGesdv0ZREW2Tk4eJ8MQ7OIPaT2ANJfNhrSIFTsrpIvGz8
-         XqYICZewmULQzP6iWLEaNI4S8DbKiS1P4ml7hwP4JIrOPCY5pULsSjVijj55cqrDhQQL
-         IA97rxnBU7cM0Ir4YOghvg/XsjmG8DjZ4piUYyAWCQYRMgwJu9w8ycCuCS9QJTFy9PRj
-         W9LK8FXUIpu0Z/q6r5vEbSrbuGWj1Wa+25VcsUc6TFobFauMLYFXfSOKhprf5ja0Dyl7
-         lmLscXdHplID/Nzq0Nx3t45HrZ/sGw+f7MOIesptNlsS2h7CrypE3dnolO6OkrvNfT0a
-         KPRQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=dmxH8nCXC6gew7umBGLpr9b8q0p2yrRmO5r/LI2MlsI=;
+        b=cH79pGEoPjeUd3cqBNWIUrNpLt+motW/jO41ztMuuj7NLJDf7oLvFWizrvo2R+Sn6D
+         /sg3HuSYb69+snkJuZQhvZD59djGWBaTI9Sk3NmMOtZZKUgitunUvwkp9YNLeZAD4nbj
+         OMm/oLy5DAmE3xOQbOmOTwS/HUZGEmG8mZvU4iEKmBs+JloEQRNU9YUPO900b9TEk1JQ
+         FCJCdrl9fQncvMkV0EH9DXQN9/az/dHgNXxdddbD59tT47Km6LLKsXoctecwUpPJKls3
+         Z/PIRyoogssp9c0PN+xrQEfz3lBZufIhtLGKzhfjZvgFEukEphGEX/pAuZkRKlXBusd/
+         Bhug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ZPN60tHW+fkN7QhWRO4Pw+Ht0a4svKocBgd17LlVcuk=;
-        b=QFfK3R5Eizj1iR9u8UGVwfyURDI2o7LALFmiBJW86vODhis+mSj8x8zsD5oTdrSToE
-         vg0QsJRS0wFoOVa2T5DIHwE5ODaJBeuK1XvN/j7zfwv6LkiIyqgvppkwkU5BCFCPyUKC
-         2c+LQzpyFw3wwLvQ/gak4GYgfGHb4V5/QZXCvYt9I8/ol5xtFchWGdKkhWAFa1J61U+m
-         c6lBFujU9PPA7rE2bl0Qu0B4tfgUaoGUbof6rmzZ2aipOvGtNyrtMFuJ4uVLky5Lhjul
-         sJ7X80w6Vuu2+Pe1iXcnziTEd1wronIa6rnlrzS7AwfMcSvdB/rorqr7Yf10o9Uhf8Cl
-         LriA==
-X-Gm-Message-State: APjAAAWeW+F4eL1Bn+uPqjT5iqWMu7J+2Agbm5ImSf0C4nsHcpxRTOur
-        Je7fjpOpL9xQ0qcS5OsqH8HzOqb1tWc=
-X-Google-Smtp-Source: APXvYqw5ml6KXwvVIJOtulj/uLhJjCv/pOs6e+ZBjd+xQjftmb9aTPWWLAqtlBq8awPa2eZjJX32Qg==
-X-Received: by 2002:adf:f04d:: with SMTP id t13mr1552728wro.36.1559202294613;
-        Thu, 30 May 2019 00:44:54 -0700 (PDT)
-Received: from cbtest28.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id w2sm1544001wru.16.2019.05.30.00.44.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 30 May 2019 00:44:53 -0700 (PDT)
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH bpf-next] bpf: doc: update answer for 32-bit subregister question
-Date:   Thu, 30 May 2019 08:44:47 +0100
-Message-Id: <1559202287-15553-1-git-send-email-jiong.wang@netronome.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=dmxH8nCXC6gew7umBGLpr9b8q0p2yrRmO5r/LI2MlsI=;
+        b=OV1LhIpUvyga+IAMvhG56OxZAmTduJltt5rLebJp/MF1iyX7tCCxUlqhHwTPtqijqz
+         3jQzt66Ac64KxyCLLaKeE0uLXQHWLRXiqoPZnproDF78vGqr2TpJenpP6z7iI0rINDrk
+         auEPPNCrcEqn+J7+uhM2MRxli5CSMgjm+JTXON68O0vsyjWJH3RuS5GP/PMNiiRk7t8P
+         BJ0a21ppHYnsaRButKhvVDfkATV/IL3nJPECoU/+Q5ZKGijbv7GpXYGh3Tc4tmrH0PV2
+         Fl+uw/8ReITZBE7PzAtgz8IvdV4iUL8erNeRuHy8w/hnQs7H5Z2I2NGpmGGixwu9tm7n
+         umJg==
+X-Gm-Message-State: APjAAAVOFD/fT9hzSDQbr1eQDrSWMrPTkHPBqSlLXdc8aILDcL/syEnv
+        EN7jCJ595DlwJHJebpuwI13lL4Iy1VI=
+X-Google-Smtp-Source: APXvYqxTBwW62pEtoOAsKQv9PHm/YPadNbpvsPcnlwTRngWDOvtvN/tEj3XHn6yPiGkOah+WcYlabw==
+X-Received: by 2002:a63:1622:: with SMTP id w34mr2579127pgl.45.1559203575735;
+        Thu, 30 May 2019 01:06:15 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id x16sm1928024pff.30.2019.05.30.01.06.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 01:06:15 -0700 (PDT)
+Date:   Thu, 30 May 2019 16:06:02 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     paul@paul-moore.com, sds@tycho.nsa.gov, eparis@parisplace.org,
+        ccross@android.com
+Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] hooks: fix a missing-check bug in selinux_add_mnt_opt()
+Message-ID: <20190530080602.GA3600@zhanggen-UX430UQ>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There has been quite a few progress around the two steps mentioned in the
-answer to the following question:
+In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
+NULL when fails. So 'val' should be checked.
 
-  Q: BPF 32-bit subregister requirements
-
-This patch updates the answer to reflect what has been done.
-
-v1:
- - Integrated rephrase from Quentin and Jakub.
-
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
 ---
- Documentation/bpf/bpf_design_QA.rst | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
-index cb402c5..5092a2a 100644
---- a/Documentation/bpf/bpf_design_QA.rst
-+++ b/Documentation/bpf/bpf_design_QA.rst
-@@ -172,11 +172,31 @@ registers which makes BPF inefficient virtual machine for 32-bit
- CPU architectures and 32-bit HW accelerators. Can true 32-bit registers
- be added to BPF in the future?
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 3ec702c..4797c63 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
+ 	if (token == Opt_error)
+ 		return -EINVAL;
  
--A: NO. The first thing to improve performance on 32-bit archs is to teach
--LLVM to generate code that uses 32-bit subregisters. Then second step
--is to teach verifier to mark operations where zero-ing upper bits
--is unnecessary. Then JITs can take advantage of those markings and
--drastically reduce size of generated code and improve performance.
-+A: NO
-+
-+But some optimizations on zero-ing the upper 32 bits for BPF registers are
-+available, and can be leveraged to improve the performance of JIT compilers
-+for 32-bit architectures.
-+
-+Starting with version 7, LLVM is able to generate instructions that operate
-+on 32-bit subregisters, provided the option -mattr=+alu32 is passed for
-+compiling a program. Furthermore, the verifier can now mark the
-+instructions for which zero-ing the upper bits of the destination register
-+is required, and insert an explicit zero-extension (zext) instruction
-+(a mov32 variant). This means that for architectures without zext hardware
-+support, the JIT back-ends do not need to clear the upper bits for
-+subregisters written by alu32 instructions or narrow loads. Instead, the
-+back-ends simply need to support code generation for that mov32 variant,
-+and to overwrite bpf_jit_needs_zext() to make it return "true" (in order to
-+enable zext insertion in the verifier).
-+
-+Note that it is possible for a JIT back-end to have partial hardware
-+support for zext. In that case, if verifier zext insertion is enabled,
-+it could lead to the insertion of unnecessary zext instructions. Such
-+instructions could be removed by creating a simple peephole inside the JIT
-+back-end: if one instruction has hardware support for zext and if the next
-+instruction is an explicit zext, then the latter can be skipped when doing
-+the code generation.
- 
- Q: Does BPF have a stable ABI?
- ------------------------------
--- 
-2.7.4
-
+-	if (token != Opt_seclabel)
+-		val = kmemdup_nul(val, len, GFP_KERNEL);
++	if (token != Opt_seclabel) {
++			val = kmemdup_nul(val, len, GFP_KERNEL);
++			if (!val)
++				return -ENOMEM;
++	}
+ 	rc = selinux_add_opt(token, val, mnt_opts);
+ 	if (unlikely(rc)) {
+ 		kfree(val);
