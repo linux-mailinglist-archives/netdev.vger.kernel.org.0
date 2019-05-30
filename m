@@ -2,196 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E6030396
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A3D303DB
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfE3UxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:53:19 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:33610 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbfE3UxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:53:19 -0400
-Received: by mail-qk1-f194.google.com with SMTP id p18so4890706qkk.0;
-        Thu, 30 May 2019 13:53:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z9CARR2sdyz0TzlZx5C1Y/HG1L1GZ/YQxjW8n3dkDtY=;
-        b=O9b/bK8EMj6Z/Aes6GvEEWWgQoaqgWaPkCaZ7cbWL42OrKuP7jCn08XnPqAmy2p306
-         8zhO25gwMO64WxuBI2gHUQlS/hvtoy5Caw3oUFl2PIjzGa0bYZkNqSLyaIzi2b1TeyUj
-         FF37jgA4vO32nO0WZtIk8qPAYjFw6a6a31YkeqEMWj6cA75nwjX6K+fNkXOSWkeNm8gG
-         IDAzymM/tDnhTeMvFQclwaOUNj9WlNGj9jdXrDTHK6nOYN4rb37VYFg2BOXyFCdWVDEX
-         3VX2YfBwDDiSgLEeBrbXF0Aaery1wJ4oqbzlGKl7kczZOsWjWFvMpf9Wln7u02PN41Hv
-         SoUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z9CARR2sdyz0TzlZx5C1Y/HG1L1GZ/YQxjW8n3dkDtY=;
-        b=svapGs1oKeMGqBlnffuFnXrQKXBdtui7HHL8QVPEEPx4t22/p8xva3OS3CN84NjKEL
-         HBN8mEOhrbObI3yoYBheq1PgJ+ErQU8CDTXWCLs90lwaIFx7+8lpDz5RR3Y5iwAi8/55
-         q5E1TDEf3exzj2Pst2hzKM158nKVg8tkUiqfS+d403HSCl6IIi6wR15cWi+6peWDZnAQ
-         VJodwbvw+M5nya623hOSXG/vLgULFGFaJpQ9d6VHokJoqt2NnalzLRiX1lqFllaDb5vM
-         i5Q6SLuhWeoqu6CyD8EU8Q8voXlFNQvb1yXbbhT0ujpN06OekkgYtpvPu4afMVPkFTl7
-         VdTA==
-X-Gm-Message-State: APjAAAXw+M2SQgC40kxqJ95Bdlybe5gia5EN0i7jmsU9qMpg5+6aauC7
-        MYabNBWRKDEjerfgQrLL2qbwofnx95egX//82OY=
-X-Google-Smtp-Source: APXvYqwWhPLets6g5KL70GsN0a/SBVH9vdVhMDcuBw1NjRTLVGKTPlYj7q6szJQZYwKJTGwxrKqHl3zy1Vgg7W+OTbs=
-X-Received: by 2002:a05:620a:12f8:: with SMTP id f24mr5129490qkl.202.1559249597898;
- Thu, 30 May 2019 13:53:17 -0700 (PDT)
+        id S1726640AbfE3VKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 17:10:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59820 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726079AbfE3VKa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 17:10:30 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3C37983F44;
+        Thu, 30 May 2019 21:10:29 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2649A410A;
+        Thu, 30 May 2019 21:10:18 +0000 (UTC)
+Date:   Thu, 30 May 2019 17:10:11 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
+Message-ID: <20190530211011.clcwyedz3swh3pfz@madcap2.tricolour.ca>
+References: <cover.1554732921.git.rgb@redhat.com>
+ <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
+ <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com>
+ <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca>
+ <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
+ <20190530203702.fibsrazabbiifjvf@madcap2.tricolour.ca>
+ <CAHC9VhR6oqKer_p6Xsu6oO2j3bMZGPXWHnGchZOqUoMx9yJFwQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190530190800.7633-1-luke.r.nels@gmail.com>
-In-Reply-To: <20190530190800.7633-1-luke.r.nels@gmail.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 30 May 2019 13:53:06 -0700
-Message-ID: <CAPhsuW4kMBSjpATqHrEhTmuqje=XZNGOrMyNur8f6K0RNQP=yw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] bpf, riscv: fix bugs in JIT for 32-bit ALU operations
-To:     Luke Nelson <luke.r.nels@gmail.com>
-Cc:     Xi Wang <xi.wang@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        linux-riscv@lists.infradead.org, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhR6oqKer_p6Xsu6oO2j3bMZGPXWHnGchZOqUoMx9yJFwQ@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Thu, 30 May 2019 21:10:29 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 12:09 PM Luke Nelson <luke.r.nels@gmail.com> wrote:
->
-> In BPF, 32-bit ALU operations should zero-extend their results into
-> the 64-bit registers.  The current BPF JIT on RISC-V emits incorrect
-> instructions that perform either sign extension only (e.g., addw/subw)
-> or no extension on 32-bit add, sub, and, or, xor, lsh, rsh, arsh,
-> and neg.  This behavior diverges from the interpreter and JITs for
-> other architectures.
->
-> This patch fixes the bugs by performing zero extension on the destination
-> register of 32-bit ALU operations.
->
-> Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
-> Cc: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+On 2019-05-30 16:45, Paul Moore wrote:
+> On Thu, May 30, 2019 at 4:37 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2019-05-30 10:34, Paul Moore wrote:
+> > > On Thu, May 30, 2019 at 10:20 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > >
+> > > > On 2019-05-29 18:16, Paul Moore wrote:
+> > > > > On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > >
+> > > > > > Implement audit container identifier filtering using the AUDIT_CONTID
+> > > > > > field name to send an 8-character string representing a u64 since the
+> > > > > > value field is only u32.
+> > > > > >
+> > > > > > Sending it as two u32 was considered, but gathering and comparing two
+> > > > > > fields was more complex.
+> > > > > >
+> > > > > > The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
+> > > > > >
+> > > > > > Please see the github audit kernel issue for the contid filter feature:
+> > > > > >   https://github.com/linux-audit/audit-kernel/issues/91
+> > > > > > Please see the github audit userspace issue for filter additions:
+> > > > > >   https://github.com/linux-audit/audit-userspace/issues/40
+> > > > > > Please see the github audit testsuiite issue for the test case:
+> > > > > >   https://github.com/linux-audit/audit-testsuite/issues/64
+> > > > > > Please see the github audit wiki for the feature overview:
+> > > > > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+> > > > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > > > Acked-by: Serge Hallyn <serge@hallyn.com>
+> > > > > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > > > > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > > > > > ---
+> > > > > >  include/linux/audit.h      |  1 +
+> > > > > >  include/uapi/linux/audit.h |  5 ++++-
+> > > > > >  kernel/audit.h             |  1 +
+> > > > > >  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+> > > > > >  kernel/auditsc.c           |  4 ++++
+> > > > > >  5 files changed, 57 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > ...
+> > > > >
+> > > > > > diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
+> > > > > > index 63f8b3f26fab..407b5bb3b4c6 100644
+> > > > > > --- a/kernel/auditfilter.c
+> > > > > > +++ b/kernel/auditfilter.c
+> > > > > > @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
+> > > > > >         }
+> > > > > >  }
+> > > > > >
+> > > > > > +int audit_comparator64(u64 left, u32 op, u64 right)
+> > > > > > +{
+> > > > > > +       switch (op) {
+> > > > > > +       case Audit_equal:
+> > > > > > +               return (left == right);
+> > > > > > +       case Audit_not_equal:
+> > > > > > +               return (left != right);
+> > > > > > +       case Audit_lt:
+> > > > > > +               return (left < right);
+> > > > > > +       case Audit_le:
+> > > > > > +               return (left <= right);
+> > > > > > +       case Audit_gt:
+> > > > > > +               return (left > right);
+> > > > > > +       case Audit_ge:
+> > > > > > +               return (left >= right);
+> > > > > > +       case Audit_bitmask:
+> > > > > > +               return (left & right);
+> > > > > > +       case Audit_bittest:
+> > > > > > +               return ((left & right) == right);
+> > > > > > +       default:
+> > > > > > +               BUG();
+> > > > >
+> > > > > A little birdy mentioned the BUG() here as a potential issue and while
+> > > > > I had ignored it in earlier patches because this is likely a
+> > > > > cut-n-paste from another audit comparator function, I took a closer
+> > > > > look this time.  It appears as though we will never have an invalid op
+> > > > > value as audit_data_to_entry()/audit_to_op() ensure that the op value
+> > > > > is a a known good value.  Removing the BUG() from all the audit
+> > > > > comparators is a separate issue, but I think it would be good to
+> > > > > remove it from this newly added comparator; keeping it so that we
+> > > > > return "0" in the default case seems reasoanble.
+> > > >
+> > > > Fair enough.  That BUG(); can be removed.
+> > >
+> > > Please send a fixup patch for this.
+> >
+> > The fixup patch is trivial.
+> 
+> Yes, I know.
+> 
+> > The rebase to v5.2-rc1 audit/next had merge
+> > conflicts with four recent patchsets.  It may be simpler to submit a new
+> > patchset and look at a diff of the two sets.  I'm testing the rebase
+> > now.
+> 
+> Great thanks.  Although you might want to hold off a bit on posting
+> the next revision until we sort out the discussion which is happening
+> in patch 02/10; unfortunately I fear we may need to change some of the
+> logic.
 
-This is a little messy. How about we introduce some helper function
-like:
+I'm watching...  I have no immediate ideas on how to address that
+discussion yet.  I'm optimistic it can be adjusted after the initial
+commit without changing the API.
 
-/* please find a better name... */
-emit_32_or_64(bool is64, const u32 insn_32, const u32 inst_64, struct
-rv_jit_context *ctx)
-{
-       if (is64)
-            emit(insn_64, ctx);
-       else {
-            emit(insn_32, ctx);
-           rd = xxxx;
-           emit_zext_32(rd, ctx);
-       }
-}
+> paul moore www.paul-moore.com
 
-Thanks,
-Song
+- RGB
 
-> ---
->  arch/riscv/net/bpf_jit_comp.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->
-> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-> index 80b12aa5e10d..426d5c33ea90 100644
-> --- a/arch/riscv/net/bpf_jit_comp.c
-> +++ b/arch/riscv/net/bpf_jit_comp.c
-> @@ -751,22 +751,32 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->         case BPF_ALU | BPF_ADD | BPF_X:
->         case BPF_ALU64 | BPF_ADD | BPF_X:
->                 emit(is64 ? rv_add(rd, rd, rs) : rv_addw(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_SUB | BPF_X:
->         case BPF_ALU64 | BPF_SUB | BPF_X:
->                 emit(is64 ? rv_sub(rd, rd, rs) : rv_subw(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_AND | BPF_X:
->         case BPF_ALU64 | BPF_AND | BPF_X:
->                 emit(rv_and(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_OR | BPF_X:
->         case BPF_ALU64 | BPF_OR | BPF_X:
->                 emit(rv_or(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_XOR | BPF_X:
->         case BPF_ALU64 | BPF_XOR | BPF_X:
->                 emit(rv_xor(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_MUL | BPF_X:
->         case BPF_ALU64 | BPF_MUL | BPF_X:
-> @@ -789,14 +799,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->         case BPF_ALU | BPF_LSH | BPF_X:
->         case BPF_ALU64 | BPF_LSH | BPF_X:
->                 emit(is64 ? rv_sll(rd, rd, rs) : rv_sllw(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_RSH | BPF_X:
->         case BPF_ALU64 | BPF_RSH | BPF_X:
->                 emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_ARSH | BPF_X:
->         case BPF_ALU64 | BPF_ARSH | BPF_X:
->                 emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->
->         /* dst = -dst */
-> @@ -804,6 +820,8 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->         case BPF_ALU64 | BPF_NEG:
->                 emit(is64 ? rv_sub(rd, RV_REG_ZERO, rd) :
->                      rv_subw(rd, RV_REG_ZERO, rd), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->
->         /* dst = BSWAP##imm(dst) */
-> @@ -958,14 +976,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->         case BPF_ALU | BPF_LSH | BPF_K:
->         case BPF_ALU64 | BPF_LSH | BPF_K:
->                 emit(is64 ? rv_slli(rd, rd, imm) : rv_slliw(rd, rd, imm), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_RSH | BPF_K:
->         case BPF_ALU64 | BPF_RSH | BPF_K:
->                 emit(is64 ? rv_srli(rd, rd, imm) : rv_srliw(rd, rd, imm), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->         case BPF_ALU | BPF_ARSH | BPF_K:
->         case BPF_ALU64 | BPF_ARSH | BPF_K:
->                 emit(is64 ? rv_srai(rd, rd, imm) : rv_sraiw(rd, rd, imm), ctx);
-> +               if (!is64)
-> +                       emit_zext_32(rd, ctx);
->                 break;
->
->         /* JUMP off */
-> --
-> 2.19.1
->
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
