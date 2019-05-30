@@ -2,143 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7FA2EAB6
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 04:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 466B82EAC5
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 04:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbfE3CcW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 May 2019 22:32:22 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:37548 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbfE3CcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 22:32:21 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x4U2W8mC004450, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtitcas12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x4U2W8mC004450
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 30 May 2019 10:32:08 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Thu, 30 May
- 2019 10:32:08 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     YueHaibing <yuehaibing@huawei.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: RE: [PATCH] rtw88: Remove set but not used variable 'ip_sel' and 'orig'
-Thread-Topic: [PATCH] rtw88: Remove set but not used variable 'ip_sel' and
- 'orig'
-Thread-Index: AQHVFi7tVKme6Dla+EywC8esuGtTIaaC8s0g
-Date:   Thu, 30 May 2019 02:32:08 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D17FABE0@RTITMBSVM04.realtek.com.tw>
-References: <20190529145740.22804-1-yuehaibing@huawei.com>
-In-Reply-To: <20190529145740.22804-1-yuehaibing@huawei.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1726547AbfE3Cme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 22:42:34 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33238 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726308AbfE3Cme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 22:42:34 -0400
+Received: by mail-pf1-f193.google.com with SMTP id z28so2945716pfk.0
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 19:42:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=KpcFXbFBwLxCGyy/Jk49fis3KZuLGYD4HsSFk6V42fk=;
+        b=jD/JMHXcojG8mjE7nXIsxmxwsErMKVuXszEnw9hZZdd6M0qCLQwe00t3p4QTFdjFSW
+         6EPwWoh5tWI/Sb1z1ZLkmC/NM6i8ewhEUHf6NGyvG5IqRgbQ6iDtKd3yXuCc+J3/IwQg
+         lOA3TNslbdxSov1564Tf45CL6HhJr18NQ6XUgG4HX22m8dVOnmpmicltJtWpIQcUZDEy
+         qnPVtZ1UdkNOiL1nzkfooChGeQOJSO6FXvSTCHCQX6YtnBg5TiupZgsS12T7TB17Rv5g
+         KLU+1wvyifjFM9d9EIWKzkfp7TPtzuqG8oJmLNdxSaPuOiqRjhwtQEMyEEfqneoYQcpM
+         9N9A==
+X-Gm-Message-State: APjAAAW0t3PPRgJS9yd2SZQLjcsHIFyTJ+qNLjOq7Q5tLeHKhsdHj8za
+        H2GvFf9xzeoiGPViHLdbzpn5Xg==
+X-Google-Smtp-Source: APXvYqyMgSr8zbcysyqaP52vbPviSt9ykqRZ6sLQ4REBy1M6NY8HNtd2bruAoXR44eoyah/GzDNUJA==
+X-Received: by 2002:a62:ea0a:: with SMTP id t10mr1228321pfh.236.1559184153533;
+        Wed, 29 May 2019 19:42:33 -0700 (PDT)
+Received: from localhost ([12.206.222.5])
+        by smtp.gmail.com with ESMTPSA id b90sm363054pjc.0.2019.05.29.19.42.32
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 May 2019 19:42:32 -0700 (PDT)
+Date:   Wed, 29 May 2019 19:42:32 -0700 (PDT)
+X-Google-Original-Date: Wed, 29 May 2019 19:42:12 PDT (-0700)
+Subject:     Re: [PATCH 2/2] net: macb: Add support for SiFive FU540-C000
+In-Reply-To: <20190524134847.GF2979@lunn.ch>
+CC:     yash.shah@sifive.com, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, aou@eecs.berkeley.edu,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        nicolas.ferre@microchip.com,
+        Sachin Ghadi <sachin.ghadi@sifive.com>, robh+dt@kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>, ynezz@true.cz,
+        linux-riscv@lists.infradead.org, davem@davemloft.net
+From:   Palmer Dabbelt <palmer@sifive.com>
+To:     andrew@lunn.ch
+Message-ID: <mhng-c7fba225-8035-4808-bdd6-bc05da5d2674@palmer-si-x1e>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 24 May 2019 06:48:47 PDT (-0700), andrew@lunn.ch wrote:
+> On Fri, May 24, 2019 at 10:22:06AM +0530, Yash Shah wrote:
+>> On Thu, May 23, 2019 at 8:24 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>> >
+>> > > +static int fu540_macb_tx_set_rate(struct clk_hw *hw, unsigned long rate,
+>> > > +                               unsigned long parent_rate)
+>> > > +{
+>> > > +     rate = fu540_macb_tx_round_rate(hw, rate, &parent_rate);
+>> > > +     iowrite32(rate != 125000000, mgmt->reg);
+>> >
+>> > That looks odd. Writing the result of a comparison to a register?
+>>
+>> The idea was to write "1" to the register if the value of rate is
+>> anything else than 125000000.
+>
+> I'm not a language lawyer. Is it guaranteed that an expression like
+> this returns 1? Any value !0 is true, so maybe it actually returns 42?
 
+From Stack Overflow: https://stackoverflow.com/questions/18097922/return-value-of-operator-in-c
 
-> -----Original Message-----
-> From: YueHaibing [mailto:yuehaibing@huawei.com]
-> Sent: Wednesday, May 29, 2019 10:58 PM
-> To: Tony Chuang; kvalo@codeaurora.org; davem@davemloft.net
-> Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
-> linux-wireless@vger.kernel.org; YueHaibing
-> Subject: [PATCH] rtw88: Remove set but not used variable 'ip_sel' and 'orig'
-> 
-> Fixes gcc '-Wunused-but-set-variable' warnings:
-> 
-> drivers/net/wireless/realtek/rtw88/pci.c: In function rtw_pci_phy_cfg:
-> drivers/net/wireless/realtek/rtw88/pci.c:978:6: warning: variable ip_sel set
-> but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/realtek/rtw88/phy.c: In function
-> phy_tx_power_limit_config:
-> drivers/net/wireless/realtek/rtw88/phy.c:1607:11: warning: variable orig set
-> but not used [-Wunused-but-set-variable]
-> 
-> They are never used, so can be removed.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/pci.c | 3 ---
->  drivers/net/wireless/realtek/rtw88/phy.c | 3 +--
->  2 files changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
-> b/drivers/net/wireless/realtek/rtw88/pci.c
-> index 353871c27779..8329f4e447b7 100644
-> --- a/drivers/net/wireless/realtek/rtw88/pci.c
-> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
-> @@ -977,7 +977,6 @@ static void rtw_pci_phy_cfg(struct rtw_dev *rtwdev)
->  	u16 cut;
->  	u16 value;
->  	u16 offset;
-> -	u16 ip_sel;
->  	int i;
-> 
->  	cut = BIT(0) << rtwdev->hal.cut_version;
-> @@ -990,7 +989,6 @@ static void rtw_pci_phy_cfg(struct rtw_dev *rtwdev)
->  			break;
->  		offset = para->offset;
->  		value = para->value;
-> -		ip_sel = para->ip_sel;
->  		if (para->ip_sel == RTW_IP_SEL_PHY)
->  			rtw_mdio_write(rtwdev, offset, value, true);
->  		else
-> @@ -1005,7 +1003,6 @@ static void rtw_pci_phy_cfg(struct rtw_dev
-> *rtwdev)
->  			break;
->  		offset = para->offset;
->  		value = para->value;
-> -		ip_sel = para->ip_sel;
->  		if (para->ip_sel == RTW_IP_SEL_PHY)
->  			rtw_mdio_write(rtwdev, offset, value, false);
->  		else
-> diff --git a/drivers/net/wireless/realtek/rtw88/phy.c
-> b/drivers/net/wireless/realtek/rtw88/phy.c
-> index 404d89432c96..c3e75ffe27b5 100644
-> --- a/drivers/net/wireless/realtek/rtw88/phy.c
-> +++ b/drivers/net/wireless/realtek/rtw88/phy.c
-> @@ -1604,12 +1604,11 @@ void rtw_phy_tx_power_by_rate_config(struct
-> rtw_hal *hal)
->  static void
->  phy_tx_power_limit_config(struct rtw_hal *hal, u8 regd, u8 bw, u8 rs)
->  {
-> -	s8 base, orig;
-> +	s8 base;
->  	u8 ch;
-> 
->  	for (ch = 0; ch < RTW_MAX_CHANNEL_NUM_2G; ch++) {
->  		base = hal->tx_pwr_by_rate_base_2g[0][rs];
-> -		orig = hal->tx_pwr_limit_2g[regd][bw][rs][ch];
->  		hal->tx_pwr_limit_2g[regd][bw][rs][ch] -= base;
->  	}
-> 
+"C11(ISO/IEC 9899:201x) §6.5.8 Relational operators
 
+Each of the operators < (less than), > (greater than), <= (less than or equal
+to), and >= (greater than or equal to) shall yield 1 if the specified relation
+is true and 0 if it is false. The result has type int."
 
-Hi Haibing
-
-I have submitted a patch fix the unused variable in phy.c
-Which is,
-
-> drivers/net/wireless/realtek/rtw88/phy.c: In function
-> phy_tx_power_limit_config:
-> drivers/net/wireless/realtek/rtw88/phy.c:1607:11: warning: variable orig set
-> but not used [-Wunused-but-set-variable]
-
-Can you drop the changes in phy.c and remain the changes in pci.c?
-Thanks.
-
-Yan-Hsuan
+>> To make it easier to read, I will change this to below:
+>>     - iowrite32(rate != 125000000, mgmt->reg);
+>>     + if (rate != 125000000)
+>>     +     iowrite32(1, mgmt->reg);
+>>     + else
+>>     +     iowrite32(0, mgmt->reg);
+>>
+>> Hope that's fine. Thanks for your comment
+>
+> Yes, that is good.
+>
+>      Andrew
