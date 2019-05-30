@@ -2,104 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F68030235
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EC330239
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:50:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfE3SuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:50:05 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:37507 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3SuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:50:05 -0400
-Received: by mail-oi1-f195.google.com with SMTP id i4so5393019oih.4;
-        Thu, 30 May 2019 11:50:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ce2QS3RaYP3t12+eJA77KiPxw6iF0JqafgY8edP/dg4=;
-        b=G7HSSszzgsZ7kMPqLK8cM+CY5UsKu62Ea/q7i+LyTDA4xrhkFUNRs+jCjsnhF9H+oU
-         CzIhFI6Rcur/hSUwBimnINlrG2je6NUBdofvj6hfb4z6egCHEv+AIHf28mnAdj9uNEhA
-         cONMmB3oqiGlJ2Iqskv+17F9rYvLreUVbLnR1KgQihbs0P4SwmYdS1v2qaaTh2QfJzwY
-         W0NESuOMiDPDeCnWMarQ4I9gaoKhiohJ/jZm2BHXqxzHU+PGo8it4UrXd4eKFrmidCN1
-         8X3PAvd3aWeV+OMWl+GmhXOsnp4gtRWyMWrmDja7TOBCjzxshVxpy/vn80AkEjUbALkZ
-         iWkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ce2QS3RaYP3t12+eJA77KiPxw6iF0JqafgY8edP/dg4=;
-        b=JUOhY1p547lXMycBNF3ee4AVPpsR9lpm8ffh+n6xwoZEOoIFRxT0afWoFj98JGt/ia
-         dlLKR5xFl2CV3WL4plY1qupKo73RP3UU5/5q3Ss3RipUZOMecdtVnxLc/gud0KZ92khv
-         42wixF96BXtSew1Mn+w4oqK5pPyI51k8bG4zHTH/J6hmlhR7cVAQkafMa6boykXSqaK9
-         UqhhU5Ib4KLSMTU+M+nZnZhm8Tc6rOUcuy4NaLhgGLcShbGFRcTjmCEQzarPvGVTi4h8
-         9wdDkcTdUfpeO3eFirxkgAHbNrDysD7vqeElkSfvObIEH7oqvjLRQkN+XnDiHbsCF7sT
-         EqCw==
-X-Gm-Message-State: APjAAAXNQVryk2LUfbSeiegD3lvl7PyR07y1o3XejVhgZt8L3zpTSv+4
-        6IAHfamg3qRBJi1amW/XKPGTxE2+
-X-Google-Smtp-Source: APXvYqx6B3eEw5o1YxwFS//iW2ShUftFt8HYlMd2e7NAQMOnB00Ilq+mSvSonEh+Jc9QZafJO2EnOA==
-X-Received: by 2002:a05:6808:603:: with SMTP id y3mr51487oih.74.1559242204523;
-        Thu, 30 May 2019 11:50:04 -0700 (PDT)
-Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id k83sm1254259oia.10.2019.05.30.11.50.02
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 11:50:03 -0700 (PDT)
-Subject: Re: [PATCH] rtlwifi: remove redundant assignment to variable
- badworden
-To:     Colin King <colin.king@canonical.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190530184044.8479-1-colin.king@canonical.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <da50d69f-0117-3911-e15f-cf7731300886@lwfinger.net>
-Date:   Thu, 30 May 2019 13:50:01 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726531AbfE3Suf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:50:35 -0400
+Received: from mga04.intel.com ([192.55.52.120]:30427 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726125AbfE3Suf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 14:50:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 May 2019 11:50:35 -0700
+X-ExtLoop1: 1
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga007.fm.intel.com with ESMTP; 30 May 2019 11:50:35 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2019-05-30
+Date:   Thu, 30 May 2019 11:50:30 -0700
+Message-Id: <20190530185045.3886-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190530184044.8479-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/30/19 1:40 PM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The variable badworden is assigned with a value that is never read and
-> it is re-assigned a new value immediately afterwards.  The assignment is
-> redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
+This series contains updates to ice driver only.
 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Brett continues his work with interrupt handling by fixing an issue
+where were writing to the incorrect register to disable all VF
+interrupts.
 
-Thanks,
+Tony consolidates the unicast and multicast MAC filters into a single
+new function.
 
-Larry
+Anirudh adds support for virtual channel vector mapping to receive and
+transmit queues.  This uses a bitmap to associate indicated queues with
+the specified vector.  Makes several cosmetic code cleanups, as well as
+update the driver to align with the current specification for managing
+MAC operation codes (opcodes).
 
->   drivers/net/wireless/realtek/rtlwifi/efuse.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/efuse.c b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> index e68340dfd980..37ab582a8afb 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> @@ -986,7 +986,6 @@ static int efuse_pg_packet_write(struct ieee80211_hw *hw,
->   		} else if (write_state == PG_STATE_DATA) {
->   			RTPRINT(rtlpriv, FEEPROM, EFUSE_PG,
->   				"efuse PG_STATE_DATA\n");
-> -			badworden = 0x0f;
->   			badworden =
->   			    enable_efuse_data_write(hw, efuse_addr + 1,
->   						    target_pkt.word_en,
-> 
+Paul adds support for Forward Error Correction (FEC) and also adds the
+ethtool get and set handlers to modify FEC parameters.
+
+Bruce cleans up the driver code to fix a number of issues, such as,
+reducing the scope of some local variables, reduce the number of
+de-references by changing a local variable and reorder the code to
+remove unnecessary "goto's".
+
+Dave adds switch rules to be able to handle LLDP packets and in the
+process, fix a couple of issues found, like stop treating DCBx state of
+"not started" as an error and stop hard coding the filter information
+flag to transmit.
+
+Jacob updates the driver to allow for more granular debugging by
+developers by using a distinct separate bit for dumping firmware logs.
+
+The following are changes since commit 517f4c49aafce3d2c3ac54ae0bb36f2c76e57fe8:
+  net: phy: tja11xx: Switch to HWMON_CHANNEL_INFO()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Akeem G Abodunrin (1):
+  ice: Use right type for ice_cfg_vsi_lan return
+
+Anirudh Venkataramanan (7):
+  ice: Add support for virtchnl_vector_map.[rxq|txq]_map
+  ice: Use continue instead of an else block
+  ice: Align to updated AQ command formats
+  ice: Move define for ICE_AQC_DRIVER_UNLOADING
+  ice: Update function header
+  ice: Recognize higher speeds
+  ice: Trivial cosmetic changes
+
+Brett Creeley (1):
+  ice: Use GLINT_DYN_CTL to disable VF's interrupts
+
+Bruce Allan (1):
+  ice: Cleanup ice_update_link_info
+
+Dave Ertman (1):
+  ice: Add switch rules to handle LLDP packets
+
+Jacob Keller (1):
+  ice: Use a different ICE_DBG bit for firmware log messages
+
+Paul Greenwalt (1):
+  ice: Add support for Forward Error Correction (FEC)
+
+Preethi Banala (1):
+  ice: Change minimum descriptor count value for Tx/Rx rings
+
+Tony Nguyen (1):
+  ice: Introduce ice_init_mac_fltr and move ice_napi_del
+
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  25 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 121 +++++++--
+ drivers/net/ethernet/intel/ice/ice_common.h   |   6 +-
+ drivers/net/ethernet/intel/ice/ice_controlq.c |   2 +-
+ drivers/net/ethernet/intel/ice/ice_controlq.h |   2 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |  14 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  24 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 229 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 216 +++++++++++++----
+ drivers/net/ethernet/intel/ice/ice_lib.h      |  12 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 199 ++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   5 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   8 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |  12 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  95 ++++----
+ 16 files changed, 754 insertions(+), 218 deletions(-)
+
+-- 
+2.21.0
 
