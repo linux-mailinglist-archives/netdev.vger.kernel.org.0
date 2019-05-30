@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D822D3023A
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 714DA30244
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfE3Sui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:50:38 -0400
-Received: from mga04.intel.com ([192.55.52.120]:30427 "EHLO mga04.intel.com"
+        id S1726800AbfE3Su6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:50:58 -0400
+Received: from mga04.intel.com ([192.55.52.120]:30429 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbfE3Sug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 14:50:36 -0400
+        id S1726617AbfE3Suh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 14:50:37 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
@@ -20,13 +20,14 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 30 May 2019 11:50:35 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 03/15] ice: Add support for virtchnl_vector_map.[rxq|txq]_map
-Date:   Thu, 30 May 2019 11:50:33 -0700
-Message-Id: <20190530185045.3886-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 04/15] ice: Add support for Forward Error Correction (FEC)
+Date:   Thu, 30 May 2019 11:50:34 -0700
+Message-Id: <20190530185045.3886-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190530185045.3886-1-jeffrey.t.kirsher@intel.com>
 References: <20190530185045.3886-1-jeffrey.t.kirsher@intel.com>
@@ -37,292 +38,506 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+From: Paul Greenwalt <paul.greenwalt@intel.com>
 
-Add support for virtchnl_vector_map.[rxq|txq]_map to use bitmap to
-associate indicated queues with the specified vector. This support is
-needed since the Windows AVF driver calls VIRTCHNL_OP_CONFIG_IRQ_MAP for
-each vector and used the bitmap to indicate the associated queues.
+This patch adds driver support for Forward Error Correction (FEC)
+and ethtool handlers to set/get FEC params.
 
-Updated ice_vc_dis_qs_msg to not subtract one from
-virtchnl_irq_map_info.num_vectors, and changed the VSI vector index to
-the vector id. This change supports the Windows AVF driver which maps
-one vector at a time and sets num_vectors to one. Using vectors_id to
-index the vector array .
-
-Add check for vector_id zero, and return VIRTCHNL_STATUS_ERR_PARAM
-if vector_id is zero and there are rings associated with that vector.
-Vector_id zero is for the OICR.
-
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c      | 108 ++++++++++++------
- drivers/net/ethernet/intel/ice/ice_lib.h      |   8 ++
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  43 +++++--
- 3 files changed, 115 insertions(+), 44 deletions(-)
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  70 ++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |   6 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 216 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_main.c     |  47 +++-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   9 +
+ 6 files changed, 349 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 230f733817d0..a21b817642ad 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -321,10 +321,10 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
- 		vsi->alloc_rxq = vf->num_vf_qs;
- 		/* pf->num_vf_msix includes (VF miscellaneous vector +
- 		 * data queue interrupts). Since vsi->num_q_vectors is number
--		 * of queues vectors, subtract 1 from the original vector
--		 * count
-+		 * of queues vectors, subtract 1 (ICE_NONQ_VECS_VF) from the
-+		 * original vector count
- 		 */
--		vsi->num_q_vectors = pf->num_vf_msix - 1;
-+		vsi->num_q_vectors = pf->num_vf_msix - ICE_NONQ_VECS_VF;
- 		break;
- 	case ICE_VSI_LB:
- 		vsi->alloc_txq = 1;
-@@ -1835,9 +1835,74 @@ ice_cfg_itr(struct ice_hw *hw, struct ice_q_vector *q_vector)
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 8680ee2ffa1b..b233f6ca8f0f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -920,6 +920,8 @@ struct ice_aqc_get_phy_caps_data {
+ #define ICE_AQC_PHY_EN_LINK				BIT(3)
+ #define ICE_AQC_PHY_AN_MODE				BIT(4)
+ #define ICE_AQC_GET_PHY_EN_MOD_QUAL			BIT(5)
++#define ICE_AQC_PHY_EN_AUTO_FEC				BIT(7)
++#define ICE_AQC_PHY_CAPS_MASK				ICE_M(0xff, 0)
+ 	u8 low_power_ctrl;
+ #define ICE_AQC_PHY_EN_D3COLD_LOW_POWER_AUTONEG		BIT(0)
+ 	__le16 eee_cap;
+@@ -940,6 +942,7 @@ struct ice_aqc_get_phy_caps_data {
+ #define ICE_AQC_PHY_FEC_25G_RS_544_REQ			BIT(4)
+ #define ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN		BIT(6)
+ #define ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN		BIT(7)
++#define ICE_AQC_PHY_FEC_MASK				ICE_M(0xdf, 0)
+ 	u8 extended_compliance_code;
+ #define ICE_MODULE_TYPE_TOTAL_BYTE			3
+ 	u8 module_type[ICE_MODULE_TYPE_TOTAL_BYTE];
+@@ -1062,6 +1065,7 @@ struct ice_aqc_get_link_status_data {
+ #define ICE_AQ_LINK_25G_KR_FEC_EN	BIT(0)
+ #define ICE_AQ_LINK_25G_RS_528_FEC_EN	BIT(1)
+ #define ICE_AQ_LINK_25G_RS_544_FEC_EN	BIT(2)
++#define ICE_AQ_FEC_MASK			ICE_M(0x7, 0)
+ 	/* Pacing Config */
+ #define ICE_AQ_CFG_PACING_S		3
+ #define ICE_AQ_CFG_PACING_M		(0xF << ICE_AQ_CFG_PACING_S)
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 16c694a1b076..c24dc9969858 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -304,6 +304,8 @@ ice_aq_get_link_info(struct ice_port_info *pi, bool ena_lse,
+ 	hw_link_info->an_info = link_data.an_info;
+ 	hw_link_info->ext_info = link_data.ext_info;
+ 	hw_link_info->max_frame_size = le16_to_cpu(link_data.max_frame_size);
++	hw_link_info->fec_info = link_data.cfg & ICE_AQ_FEC_MASK;
++	hw_link_info->topo_media_conflict = link_data.topo_media_conflict;
+ 	hw_link_info->pacing = link_data.cfg & ICE_AQ_CFG_PACING_M;
+ 
+ 	/* update fc info */
+@@ -2129,6 +2131,74 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
+ 	return status;
  }
  
 +/**
-+ * ice_cfg_txq_interrupt - configure interrupt on Tx queue
-+ * @vsi: the VSI being configured
-+ * @txq: Tx queue being mapped to MSI-X vector
-+ * @msix_idx: MSI-X vector index within the function
-+ * @itr_idx: ITR index of the interrupt cause
++ * ice_copy_phy_caps_to_cfg - Copy PHY ability data to configuration data
++ * @caps: PHY ability structure to copy date from
++ * @cfg: PHY configuration structure to copy data to
 + *
-+ * Configure interrupt on Tx queue by associating Tx queue to MSI-X vector
-+ * within the function space.
++ * Helper function to copy AQC PHY get ability data to PHY set configuration
++ * data structure
 + */
-+#ifdef CONFIG_PCI_IOV
 +void
-+ice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx)
-+#else
-+static void
-+ice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx)
-+#endif /* CONFIG_PCI_IOV */
++ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
++			 struct ice_aqc_set_phy_cfg_data *cfg)
 +{
-+	struct ice_pf *pf = vsi->back;
-+	struct ice_hw *hw = &pf->hw;
-+	u32 val;
++	if (!caps || !cfg)
++		return;
 +
-+	itr_idx = (itr_idx << QINT_TQCTL_ITR_INDX_S) & QINT_TQCTL_ITR_INDX_M;
-+
-+	val = QINT_TQCTL_CAUSE_ENA_M | itr_idx |
-+	      ((msix_idx << QINT_TQCTL_MSIX_INDX_S) & QINT_TQCTL_MSIX_INDX_M);
-+
-+	wr32(hw, QINT_TQCTL(vsi->txq_map[txq]), val);
++	cfg->phy_type_low = caps->phy_type_low;
++	cfg->phy_type_high = caps->phy_type_high;
++	cfg->caps = caps->caps;
++	cfg->low_power_ctrl = caps->low_power_ctrl;
++	cfg->eee_cap = caps->eee_cap;
++	cfg->eeer_value = caps->eeer_value;
++	cfg->link_fec_opt = caps->link_fec_options;
 +}
 +
 +/**
-+ * ice_cfg_rxq_interrupt - configure interrupt on Rx queue
-+ * @vsi: the VSI being configured
-+ * @rxq: Rx queue being mapped to MSI-X vector
-+ * @msix_idx: MSI-X vector index within the function
-+ * @itr_idx: ITR index of the interrupt cause
++ * ice_cfg_phy_fec - Configure PHY FEC data based on FEC mode
++ * @cfg: PHY configuration data to set FEC mode
++ * @fec: FEC mode to configure
 + *
-+ * Configure interrupt on Rx queue by associating Rx queue to MSI-X vector
-+ * within the function space.
++ * Caller should copy ice_aqc_get_phy_caps_data.caps ICE_AQC_PHY_EN_AUTO_FEC
++ * (bit 7) and ice_aqc_get_phy_caps_data.link_fec_options to cfg.caps
++ * ICE_AQ_PHY_ENA_AUTO_FEC (bit 7) and cfg.link_fec_options before calling.
 + */
-+#ifdef CONFIG_PCI_IOV
 +void
-+ice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx)
-+#else
-+static void
-+ice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx)
-+#endif /* CONFIG_PCI_IOV */
++ice_cfg_phy_fec(struct ice_aqc_set_phy_cfg_data *cfg, enum ice_fec_mode fec)
 +{
-+	struct ice_pf *pf = vsi->back;
-+	struct ice_hw *hw = &pf->hw;
-+	u32 val;
-+
-+	itr_idx = (itr_idx << QINT_RQCTL_ITR_INDX_S) & QINT_RQCTL_ITR_INDX_M;
-+
-+	val = QINT_RQCTL_CAUSE_ENA_M | itr_idx |
-+	      ((msix_idx << QINT_RQCTL_MSIX_INDX_S) & QINT_RQCTL_MSIX_INDX_M);
-+
-+	wr32(hw, QINT_RQCTL(vsi->rxq_map[rxq]), val);
-+
-+	ice_flush(hw);
-+}
-+
- /**
-  * ice_vsi_cfg_msix - MSIX mode Interrupt Config in the HW
-  * @vsi: the VSI being configured
-+ *
-+ * This configures MSIX mode interrupts for the PF VSI, and should not be used
-+ * for the VF VSI.
-  */
- void ice_vsi_cfg_msix(struct ice_vsi *vsi)
- {
-@@ -1850,8 +1915,7 @@ void ice_vsi_cfg_msix(struct ice_vsi *vsi)
- 		struct ice_q_vector *q_vector = vsi->q_vectors[i];
- 		u16 reg_idx = q_vector->reg_idx;
- 
--		if (vsi->type != ICE_VSI_VF)
--			ice_cfg_itr(hw, q_vector);
-+		ice_cfg_itr(hw, q_vector);
- 
- 		wr32(hw, GLINT_RATE(reg_idx),
- 		     ice_intrl_usec_to_reg(q_vector->intrl, hw->intrl_gran));
-@@ -1868,43 +1932,17 @@ void ice_vsi_cfg_msix(struct ice_vsi *vsi)
- 		 * tracked for this PF.
- 		 */
- 		for (q = 0; q < q_vector->num_ring_tx; q++) {
--			int itr_idx = (q_vector->tx.itr_idx <<
--				       QINT_TQCTL_ITR_INDX_S) &
--				QINT_TQCTL_ITR_INDX_M;
--			u32 val;
--
--			if (vsi->type == ICE_VSI_VF)
--				val = QINT_TQCTL_CAUSE_ENA_M | itr_idx |
--				      (((i + 1) << QINT_TQCTL_MSIX_INDX_S) &
--				       QINT_TQCTL_MSIX_INDX_M);
--			else
--				val = QINT_TQCTL_CAUSE_ENA_M | itr_idx |
--				      ((reg_idx << QINT_TQCTL_MSIX_INDX_S) &
--				       QINT_TQCTL_MSIX_INDX_M);
--			wr32(hw, QINT_TQCTL(vsi->txq_map[txq]), val);
-+			ice_cfg_txq_interrupt(vsi, txq, reg_idx,
-+					      q_vector->tx.itr_idx);
- 			txq++;
- 		}
- 
- 		for (q = 0; q < q_vector->num_ring_rx; q++) {
--			int itr_idx = (q_vector->rx.itr_idx <<
--				       QINT_RQCTL_ITR_INDX_S) &
--				QINT_RQCTL_ITR_INDX_M;
--			u32 val;
--
--			if (vsi->type == ICE_VSI_VF)
--				val = QINT_RQCTL_CAUSE_ENA_M | itr_idx |
--					(((i + 1) << QINT_RQCTL_MSIX_INDX_S) &
--					 QINT_RQCTL_MSIX_INDX_M);
--			else
--				val = QINT_RQCTL_CAUSE_ENA_M | itr_idx |
--					((reg_idx << QINT_RQCTL_MSIX_INDX_S) &
--					 QINT_RQCTL_MSIX_INDX_M);
--			wr32(hw, QINT_RQCTL(vsi->rxq_map[rxq]), val);
-+			ice_cfg_rxq_interrupt(vsi, rxq, reg_idx,
-+					      q_vector->rx.itr_idx);
- 			rxq++;
- 		}
- 	}
--
--	ice_flush(hw);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index e223767755cb..2acae3215f5f 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -19,6 +19,14 @@ int ice_vsi_cfg_lan_txqs(struct ice_vsi *vsi);
- 
- void ice_vsi_cfg_msix(struct ice_vsi *vsi);
- 
-+#ifdef CONFIG_PCI_IOV
-+void
-+ice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx);
-+
-+void
-+ice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx);
-+#endif /* CONFIG_PCI_IOV */
-+
- int ice_vsi_add_vlan(struct ice_vsi *vsi, u16 vid);
- 
- int ice_vsi_kill_vlan(struct ice_vsi *vsi, u16 vid);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 9c6d9c95f4f6..ecbf447e558a 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1955,24 +1955,33 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
- 	u16 vsi_id, vsi_q_id, vector_id;
- 	struct virtchnl_vector_map *map;
- 	struct ice_pf *pf = vf->pf;
-+	u16 num_q_vectors_mapped;
- 	struct ice_vsi *vsi;
- 	unsigned long qmap;
--	u16 num_q_vectors;
- 	int i;
- 
- 	irqmap_info = (struct virtchnl_irq_map_info *)msg;
--	num_q_vectors = irqmap_info->num_vectors - ICE_NONQ_VECS_VF;
-+	num_q_vectors_mapped = irqmap_info->num_vectors;
-+
- 	vsi = pf->vsi[vf->lan_vsi_idx];
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
-+	}
- 
-+	/* Check to make sure number of VF vectors mapped is not greater than
-+	 * number of VF vectors originally allocated, and check that
-+	 * there is actually at least a single VF queue vector mapped
-+	 */
- 	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states) ||
--	    !vsi || vsi->num_q_vectors < num_q_vectors ||
--	    irqmap_info->num_vectors == 0) {
-+	    pf->num_vf_msix < num_q_vectors_mapped ||
-+	    !irqmap_info->num_vectors) {
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 		goto error_param;
- 	}
- 
--	for (i = 0; i < num_q_vectors; i++) {
--		struct ice_q_vector *q_vector = vsi->q_vectors[i];
-+	for (i = 0; i < num_q_vectors_mapped; i++) {
-+		struct ice_q_vector *q_vector;
- 
- 		map = &irqmap_info->vecmap[i];
- 
-@@ -1980,7 +1989,21 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
- 		vsi_id = map->vsi_id;
- 		/* validate msg params */
- 		if (!(vector_id < pf->hw.func_caps.common_cap
--		    .num_msix_vectors) || !ice_vc_isvalid_vsi_id(vf, vsi_id)) {
-+		    .num_msix_vectors) || !ice_vc_isvalid_vsi_id(vf, vsi_id) ||
-+		    (!vector_id && (map->rxq_map || map->txq_map))) {
-+			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+			goto error_param;
-+		}
-+
-+		/* No need to map VF miscellaneous or rogue vector */
-+		if (!vector_id)
-+			continue;
-+
-+		/* Subtract non queue vector from vector_id passed by VF
-+		 * to get actual number of VSI queue vector array index
++	switch (fec) {
++	case ICE_FEC_BASER:
++		/* Clear auto FEC and RS bits, and AND BASE-R ability
++		 * bits and OR request bits.
 +		 */
-+		q_vector = vsi->q_vectors[vector_id - ICE_NONQ_VECS_VF];
-+		if (!q_vector) {
- 			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 			goto error_param;
- 		}
-@@ -1996,6 +2019,8 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
- 			q_vector->num_ring_rx++;
- 			q_vector->rx.itr_idx = map->rxitr_idx;
- 			vsi->rx_rings[vsi_q_id]->q_vector = q_vector;
-+			ice_cfg_rxq_interrupt(vsi, vsi_q_id, vector_id,
-+					      q_vector->rx.itr_idx);
- 		}
++		cfg->caps &= ~ICE_AQC_PHY_EN_AUTO_FEC;
++		cfg->link_fec_opt &= ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN |
++				     ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN;
++		cfg->link_fec_opt |= ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ |
++				     ICE_AQC_PHY_FEC_25G_KR_REQ;
++		break;
++	case ICE_FEC_RS:
++		/* Clear auto FEC and BASE-R bits, and AND RS ability
++		 * bits and OR request bits.
++		 */
++		cfg->caps &= ~ICE_AQC_PHY_EN_AUTO_FEC;
++		cfg->link_fec_opt &= ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN;
++		cfg->link_fec_opt |= ICE_AQC_PHY_FEC_25G_RS_528_REQ |
++				     ICE_AQC_PHY_FEC_25G_RS_544_REQ;
++		break;
++	case ICE_FEC_NONE:
++		/* Clear auto FEC and all FEC option bits. */
++		cfg->caps &= ~ICE_AQC_PHY_EN_AUTO_FEC;
++		cfg->link_fec_opt &= ~ICE_AQC_PHY_FEC_MASK;
++		break;
++	case ICE_FEC_AUTO:
++		/* AND auto FEC bit, and all caps bits. */
++		cfg->caps &= ICE_AQC_PHY_CAPS_MASK;
++		break;
++	}
++}
++
+ /**
+  * ice_get_link_status - get status of the HW network link
+  * @pi: port information structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 9773d7b2e9c9..d1f8353fe6bb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -86,7 +86,11 @@ ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
+ enum ice_status
+ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures,
+ 	   bool ena_auto_link_update);
+-
++void
++ice_cfg_phy_fec(struct ice_aqc_set_phy_cfg_data *cfg, enum ice_fec_mode fec);
++void
++ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
++			 struct ice_aqc_set_phy_cfg_data *cfg);
+ enum ice_status
+ ice_aq_set_link_restart_an(struct ice_port_info *pi, bool ena_link,
+ 			   struct ice_sq_cd *cd);
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 9dde6dd78643..2da83847b9dc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -959,6 +959,185 @@ ice_set_phys_id(struct net_device *netdev, enum ethtool_phys_id_state state)
+ 	return 0;
+ }
  
- 		qmap = map->txq_map;
-@@ -2008,11 +2033,11 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
- 			q_vector->num_ring_tx++;
- 			q_vector->tx.itr_idx = map->txitr_idx;
- 			vsi->tx_rings[vsi_q_id]->q_vector = q_vector;
-+			ice_cfg_txq_interrupt(vsi, vsi_q_id, vector_id,
-+					      q_vector->tx.itr_idx);
- 		}
++/**
++ * ice_set_fec_cfg - Set link FEC options
++ * @netdev: network interface device structure
++ * @req_fec: FEC mode to configure
++ */
++static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_aqc_set_phy_cfg_data config = { 0 };
++	struct ice_aqc_get_phy_caps_data *caps;
++	struct ice_vsi *vsi = np->vsi;
++	u8 sw_cfg_caps, sw_cfg_fec;
++	struct ice_port_info *pi;
++	enum ice_status status;
++	int err = 0;
++
++	pi = vsi->port_info;
++	if (!pi)
++		return -EOPNOTSUPP;
++
++	/* Changing the FEC parameters is not supported if not the PF VSI */
++	if (vsi->type != ICE_VSI_PF) {
++		netdev_info(netdev, "Changing FEC parameters only supported for PF VSI\n");
++		return -EOPNOTSUPP;
++	}
++
++	/* Get last SW configuration */
++	caps = devm_kzalloc(&vsi->back->pdev->dev, sizeof(*caps), GFP_KERNEL);
++	if (!caps)
++		return -ENOMEM;
++
++	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG,
++				     caps, NULL);
++	if (status) {
++		err = -EAGAIN;
++		goto done;
++	}
++
++	/* Copy SW configuration returned from PHY caps to PHY config */
++	ice_copy_phy_caps_to_cfg(caps, &config);
++	sw_cfg_caps = caps->caps;
++	sw_cfg_fec = caps->link_fec_options;
++
++	/* Get toloplogy caps, then copy PHY FEC topoloy caps to PHY config */
++	memset(caps, 0, sizeof(*caps));
++
++	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP,
++				     caps, NULL);
++	if (status) {
++		err = -EAGAIN;
++		goto done;
++	}
++
++	config.caps |= (caps->caps & ICE_AQC_PHY_EN_AUTO_FEC);
++	config.link_fec_opt = caps->link_fec_options;
++
++	ice_cfg_phy_fec(&config, req_fec);
++
++	/* If FEC mode has changed, then set PHY configuration and enable AN. */
++	if ((config.caps & ICE_AQ_PHY_ENA_AUTO_FEC) !=
++	    (sw_cfg_caps & ICE_AQC_PHY_EN_AUTO_FEC) ||
++	    config.link_fec_opt != sw_cfg_fec) {
++		if (caps->caps & ICE_AQC_PHY_AN_MODE)
++			config.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
++
++		status = ice_aq_set_phy_cfg(pi->hw, pi->lport, &config, NULL);
++
++		if (status)
++			err = -EAGAIN;
++	}
++
++done:
++	devm_kfree(&vsi->back->pdev->dev, caps);
++	return err;
++}
++
++/**
++ * ice_set_fecparam - Set FEC link options
++ * @netdev: network interface device structure
++ * @fecparam: Ethtool structure to retrieve FEC parameters
++ */
++static int
++ice_set_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_vsi *vsi = np->vsi;
++	enum ice_fec_mode fec;
++
++	switch (fecparam->fec) {
++	case ETHTOOL_FEC_AUTO:
++		fec = ICE_FEC_AUTO;
++		break;
++	case ETHTOOL_FEC_RS:
++		fec = ICE_FEC_RS;
++		break;
++	case ETHTOOL_FEC_BASER:
++		fec = ICE_FEC_BASER;
++		break;
++	case ETHTOOL_FEC_OFF:
++	case ETHTOOL_FEC_NONE:
++		fec = ICE_FEC_NONE;
++		break;
++	default:
++		dev_warn(&vsi->back->pdev->dev, "Unsupported FEC mode: %d\n",
++			 fecparam->fec);
++		return -EINVAL;
++	}
++
++	return ice_set_fec_cfg(netdev, fec);
++}
++
++/**
++ * ice_get_fecparam - Get link FEC options
++ * @netdev: network interface device structure
++ * @fecparam: Ethtool structure to retrieve FEC parameters
++ */
++static int
++ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_aqc_get_phy_caps_data *caps;
++	struct ice_link_status *link_info;
++	struct ice_vsi *vsi = np->vsi;
++	struct ice_port_info *pi;
++	enum ice_status status;
++	int err = 0;
++
++	pi = vsi->port_info;
++
++	if (!pi)
++		return -EOPNOTSUPP;
++	link_info = &pi->phy.link_info;
++
++	/* Set FEC mode based on negotiated link info */
++	switch (link_info->fec_info) {
++	case ICE_AQ_LINK_25G_KR_FEC_EN:
++		fecparam->active_fec = ETHTOOL_FEC_BASER;
++		break;
++	case ICE_AQ_LINK_25G_RS_528_FEC_EN:
++		/* fall through */
++	case ICE_AQ_LINK_25G_RS_544_FEC_EN:
++		fecparam->active_fec = ETHTOOL_FEC_RS;
++		break;
++	default:
++		fecparam->active_fec = ETHTOOL_FEC_OFF;
++		break;
++	}
++
++	caps = devm_kzalloc(&vsi->back->pdev->dev, sizeof(*caps), GFP_KERNEL);
++	if (!caps)
++		return -ENOMEM;
++
++	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP,
++				     caps, NULL);
++	if (status) {
++		err = -EAGAIN;
++		goto done;
++	}
++
++	/* Set supported/configured FEC modes based on PHY capability */
++	if (caps->caps & ICE_AQC_PHY_EN_AUTO_FEC)
++		fecparam->fec |= ETHTOOL_FEC_AUTO;
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_KR_REQ)
++		fecparam->fec |= ETHTOOL_FEC_BASER;
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_528_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_544_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN)
++		fecparam->fec |= ETHTOOL_FEC_RS;
++	if (caps->link_fec_options == 0)
++		fecparam->fec |= ETHTOOL_FEC_OFF;
++
++done:
++	devm_kfree(&vsi->back->pdev->dev, caps);
++	return err;
++}
++
+ /**
+  * ice_get_priv_flags - report device private flags
+  * @netdev: network interface device structure
+@@ -1885,6 +2064,7 @@ ice_get_link_ksettings(struct net_device *netdev,
+ 		       struct ethtool_link_ksettings *ks)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_aqc_get_phy_caps_data *caps;
+ 	struct ice_link_status *hw_link_info;
+ 	struct ice_vsi *vsi = np->vsi;
+ 
+@@ -1955,6 +2135,40 @@ ice_get_link_ksettings(struct net_device *netdev,
+ 		break;
  	}
  
--	if (vsi)
--		ice_vsi_cfg_msix(vsi);
- error_param:
- 	/* send the response to the VF */
- 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_IRQ_MAP, v_ret,
++	caps = devm_kzalloc(&vsi->back->pdev->dev, sizeof(*caps), GFP_KERNEL);
++	if (!caps)
++		goto done;
++
++	if (ice_aq_get_phy_caps(vsi->port_info, false, ICE_AQC_REPORT_TOPO_CAP,
++				caps, NULL))
++		netdev_info(netdev, "Get phy capability failed.\n");
++
++	/* Set supported FEC modes based on PHY capability */
++	ethtool_link_ksettings_add_link_mode(ks, supported, FEC_NONE);
++
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN)
++		ethtool_link_ksettings_add_link_mode(ks, supported, FEC_BASER);
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN)
++		ethtool_link_ksettings_add_link_mode(ks, supported, FEC_RS);
++
++	if (ice_aq_get_phy_caps(vsi->port_info, false, ICE_AQC_REPORT_SW_CFG,
++				caps, NULL))
++		netdev_info(netdev, "Get phy capability failed.\n");
++
++	/* Set advertised FEC modes based on PHY capability */
++	ethtool_link_ksettings_add_link_mode(ks, advertising, FEC_NONE);
++
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_KR_REQ)
++		ethtool_link_ksettings_add_link_mode(ks, advertising,
++						     FEC_BASER);
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_528_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_544_REQ)
++		ethtool_link_ksettings_add_link_mode(ks, advertising, FEC_RS);
++
++done:
++	devm_kfree(&vsi->back->pdev->dev, caps);
+ 	return 0;
+ }
+ 
+@@ -3167,6 +3381,8 @@ static const struct ethtool_ops ice_ethtool_ops = {
+ 	.get_ts_info		= ethtool_op_get_ts_info,
+ 	.get_per_queue_coalesce = ice_get_per_q_coalesce,
+ 	.set_per_queue_coalesce = ice_set_per_q_coalesce,
++	.get_fecparam		= ice_get_fecparam,
++	.set_fecparam		= ice_set_fecparam,
+ };
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index da62a901b355..c8cf2c35ecbb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -624,7 +624,11 @@ static void ice_reset_subtask(struct ice_pf *pf)
+  */
+ void ice_print_link_msg(struct ice_vsi *vsi, bool isup)
+ {
++	struct ice_aqc_get_phy_caps_data *caps;
++	enum ice_status status;
++	const char *fec_req;
+ 	const char *speed;
++	const char *fec;
+ 	const char *fc;
+ 
+ 	if (!vsi)
+@@ -688,8 +692,47 @@ void ice_print_link_msg(struct ice_vsi *vsi, bool isup)
+ 		break;
+ 	}
+ 
+-	netdev_info(vsi->netdev, "NIC Link is up %sbps, Flow Control: %s\n",
+-		    speed, fc);
++	/* Get FEC mode based on negotiated link info */
++	switch (vsi->port_info->phy.link_info.fec_info) {
++	case ICE_AQ_LINK_25G_RS_528_FEC_EN:
++		/* fall through */
++	case ICE_AQ_LINK_25G_RS_544_FEC_EN:
++		fec = "RS-FEC";
++		break;
++	case ICE_AQ_LINK_25G_KR_FEC_EN:
++		fec = "FC-FEC/BASE-R";
++		break;
++	default:
++		fec = "NONE";
++		break;
++	}
++
++	/* Get FEC mode requested based on PHY caps last SW configuration */
++	caps = devm_kzalloc(&vsi->back->pdev->dev, sizeof(*caps), GFP_KERNEL);
++	if (!caps) {
++		fec_req = "Unknown";
++		goto done;
++	}
++
++	status = ice_aq_get_phy_caps(vsi->port_info, false,
++				     ICE_AQC_REPORT_SW_CFG, caps, NULL);
++	if (status)
++		netdev_info(vsi->netdev, "Get phy capability failed.\n");
++
++	if (caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_528_REQ ||
++	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_544_REQ)
++		fec_req = "RS-FEC";
++	else if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ ||
++		 caps->link_fec_options & ICE_AQC_PHY_FEC_25G_KR_REQ)
++		fec_req = "FC-FEC/BASE-R";
++	else
++		fec_req = "NONE";
++
++	devm_kfree(&vsi->back->pdev->dev, caps);
++
++done:
++	netdev_info(vsi->netdev, "NIC Link is up %sbps, Requested FEC: %s, FEC: %s, Flow Control: %s\n",
++		    speed, fec_req, fec, fc);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 0a0fa30a85bb..b6d0399f49b9 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -61,6 +61,13 @@ enum ice_fc_mode {
+ 	ICE_FC_DFLT
+ };
+ 
++enum ice_fec_mode {
++	ICE_FEC_NONE = 0,
++	ICE_FEC_RS,
++	ICE_FEC_BASER,
++	ICE_FEC_AUTO
++};
++
+ enum ice_set_fc_aq_failures {
+ 	ICE_SET_FC_AQ_FAIL_NONE = 0,
+ 	ICE_SET_FC_AQ_FAIL_GET,
+@@ -93,6 +100,7 @@ struct ice_link_status {
+ 	/* Refer to ice_aq_phy_type for bits definition */
+ 	u64 phy_type_low;
+ 	u64 phy_type_high;
++	u8 topo_media_conflict;
+ 	u16 max_frame_size;
+ 	u16 link_speed;
+ 	u16 req_speeds;
+@@ -100,6 +108,7 @@ struct ice_link_status {
+ 	u8 link_info;
+ 	u8 an_info;
+ 	u8 ext_info;
++	u8 fec_info;
+ 	u8 pacing;
+ 	/* Refer to #define from module_type[ICE_MODULE_TYPE_TOTAL_BYTE] of
+ 	 * ice_aqc_get_phy_caps structure
 -- 
 2.21.0
 
