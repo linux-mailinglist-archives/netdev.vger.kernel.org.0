@@ -2,55 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1552A3046F
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7040E30443
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbfE3V6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 17:58:52 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:60932 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726859AbfE3V6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 17:58:50 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E3D3314DB7824;
-        Thu, 30 May 2019 14:53:22 -0700 (PDT)
-Date:   Thu, 30 May 2019 14:53:22 -0700 (PDT)
-Message-Id: <20190530.145322.336585862282292373.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        syzkaller@googlegroups.com
-Subject: Re: [PATCH net] net-gro: fix use-after-free read in
- napi_gro_frags()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190529223610.141253-1-edumazet@google.com>
-References: <20190529223610.141253-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 14:53:23 -0700 (PDT)
+        id S1727051AbfE3Vyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 17:54:50 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:42391 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726965AbfE3Vyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 17:54:44 -0400
+Received: by mail-ed1-f66.google.com with SMTP id g24so1633304eds.9
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 14:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sY2NlxkL9fH7yCO3DS8waNQq+wC2vGb4FJKSdPV+3y4=;
+        b=a0zmmlYfQ5Geyhvg9t/bh7d8ULvmTAwEAtnDvmhrkmmNAyD1gfuWkoeJBFk9O8FF2t
+         f44K8qxcv0OKjbIqw0pdO3UnUfcPs1s4WwtAaeBbpy8JUehacX4t4oxsE++XYWeDo3up
+         +MgLw2nwyKs2dPc6p/hGCAepHTSDEYzBTYFydV56UuJBQhLk+kT6QMuxwYWPe3zDuLee
+         9oEdFK0bAntyFb5wRQ0U5BxfmzQremqJYflosAI6w/kOEb53qPOw+6dYkx6WM7PjAUGg
+         paizhTOJOqG1TGVZPgbnSgo2SKaLf4F9MTBCm6Odgd3aHSvtcKnp6Y9yjnlxxGYYqGka
+         3+2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sY2NlxkL9fH7yCO3DS8waNQq+wC2vGb4FJKSdPV+3y4=;
+        b=NQYWYgcBsO/E9mXxOucPmoIVpIv+S54/EEW2ETe9T8NHqPypNf8ZAP4oC3xo3rD5YI
+         EIukEo2UygmRbWxFqpOLVv8zUm3lGC8L5gBiWw37AllwgidfSj/LjuLqODoCZuETwNdq
+         8uM8qQxmXg3bYLZWLFTAAbP2CDcMW0Nv2gsi1uzxOM/w6mUvkkuq/JEVa4E9BfbdbZCA
+         Ber+XWc55b2yHeGlRH1ykDhqU4jBW2ceR6/Aj1NJ+YBpz9MTYi8TBrGLHY8PsY/i4Hce
+         HiQteDc9mfXLr5lihZuazLFZfhbob0sSWNEPkpOD2uY6zxTGGticmlt+4H1atymWixje
+         OJJQ==
+X-Gm-Message-State: APjAAAXSpoo01/+1npp2Lt1/I8c9rUJ4CNOQhnzNBiGcozr5iAWQLp2H
+        2/VpMwPTjQ4/qnHI9YPHSayJtCZUfHB16FhfBG0=
+X-Google-Smtp-Source: APXvYqwdRVT18XDY4s/WNat0ynM2Lgb3BGK70THMHAaAZ1s4CAKYD68K6HXq5WXQMyJ7zI3vqMzOxf4LKN7Ezo6PqRA=
+X-Received: by 2002:aa7:c645:: with SMTP id z5mr7361575edr.43.1559253283012;
+ Thu, 30 May 2019 14:54:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190529193357.73457-1-willemdebruijn.kernel@gmail.com> <20190530.144442.1709791688381360238.davem@davemloft.net>
+In-Reply-To: <20190530.144442.1709791688381360238.davem@davemloft.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 30 May 2019 17:54:06 -0400
+Message-ID: <CAF=yD-+t_BXbAk1NAF+Nr4dV0WFBvjdd=scUtb_FoM1JuNC7OQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: correct zerocopy refcnt with udp MSG_MORE
+To:     David Miller <davem@davemloft.net>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 29 May 2019 15:36:10 -0700
+On Thu, May 30, 2019 at 5:44 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Date: Wed, 29 May 2019 15:33:57 -0400
+>
+> > Fixes: 52900d22288ed ("udp: elide zerocopy operation in hot path")
+>
+> This is not a valid commit ID.
 
-> If a network driver provides to napi_gro_frags() an
-> skb with a page fragment of exactly 14 bytes, the call
-> to gro_pull_from_frag0() will 'consume' the fragment
-> by calling skb_frag_unref(skb, 0), and the page might
-> be freed and reused.
-> 
-> Reading eth->h_proto at the end of napi_frags_skb() might
-> read mangled data, or crash under specific debugging features.
- ...
-> Fixes: a50e233c50db ("net-gro: restore frag0 optimization")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+Typo in the last character, sorry.  Should be
 
-Applied and queued up for -stable, thanks.
+52900d22288e7 ("udp: elide zerocopy operation in hot path")
+
+Will send a v2.
