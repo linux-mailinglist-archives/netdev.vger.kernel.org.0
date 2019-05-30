@@ -2,89 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4835F2F894
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 664D72F8F8
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 11:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbfE3Iac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 04:30:32 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:43039 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbfE3IaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:30:25 -0400
-Received: by mail-oi1-f195.google.com with SMTP id t187so4286791oie.10
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 01:30:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vzcNV6SW+Xh9Ya8lDxl+0yI6Dw+WGyclNEKNTVCp8nU=;
-        b=R6+KBMb0MHd3+pjsrAVLinun9naTKHYUJ0MxZjxnPRQGZmo6z86wogO/FTLYGG/okH
-         KXEDlBj2GBvQ/JlCmT1KGrJTERkrRwmv83Qfjy0VE/qt5vVeyf39/zCF4NRW30B9InWa
-         KZD6wBZEaKHJgNhqkEWI+cF2y2H4o2vr6c/m23chdOJhW6xZoDiO5kmfFKKAMEHPsVvA
-         9/yK8yQvKUyPjFlc4Xy0M8wk58A4FkKdxixYNeHy1W/zF1D6dsJ1pDqh/e9ABVRg8riD
-         dc3grEm2VNWdC8N6FQxuF8Jnqvynn4zvFFI1UiDIklmBYuUagtNYvSpsicR0f1FMNix5
-         RE6g==
-X-Gm-Message-State: APjAAAXYtXW7wCT2aIokuSGekCNU2Cb5nUn8lhRdAv7qIjQsflkK8O9U
-        3LyYDrsmaxjfL1IjSFGiXBOIoGfIIBcDmyEUX72TFg==
-X-Google-Smtp-Source: APXvYqzTv07K7SADdE55dDI77M75/XjvtsqUSGRV/r+pWOj/1v586YQ0cf99vI+eQ/N2XWS6ZrVc5NOYVULd8c/HKfw=
-X-Received: by 2002:aca:e887:: with SMTP id f129mr1752282oih.156.1559205024714;
- Thu, 30 May 2019 01:30:24 -0700 (PDT)
+        id S1726682AbfE3JHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 05:07:16 -0400
+Received: from cassarossa.samfundet.no ([193.35.52.29]:40103 "EHLO
+        cassarossa.samfundet.no" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726442AbfE3JHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 05:07:15 -0400
+X-Greylist: delayed 1924 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 May 2019 05:07:15 EDT
+Received: from pannekake.samfundet.no ([2001:67c:29f4::50])
+        by cassarossa.samfundet.no with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <sesse@samfundet.no>)
+        id 1hWGWi-00037R-Gc; Thu, 30 May 2019 10:35:08 +0200
+Received: from sesse by pannekake.samfundet.no with local (Exim 4.92)
+        (envelope-from <sesse@samfundet.no>)
+        id 1hWGWi-0002dZ-Cj; Thu, 30 May 2019 10:35:08 +0200
+Date:   Thu, 30 May 2019 10:35:08 +0200
+From:   "Steinar H. Gunderson" <steinar+kernel@gunderson.no>
+To:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc:     netdev@vger.kernel.org
+Subject: EoGRE sends undersized frames without padding
+Message-ID: <20190530083508.i52z5u25f2o7yigu@sesse.net>
 MIME-Version: 1.0
-References: <20190530080602.GA3600@zhanggen-UX430UQ>
-In-Reply-To: <20190530080602.GA3600@zhanggen-UX430UQ>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Thu, 30 May 2019 10:30:17 +0200
-Message-ID: <CAFqZXNtX1R1VDFxm7Jco3BZ=pVnNiHU3-C=d8MhCVV1XSUQ8bw@mail.gmail.com>
-Subject: Re: [PATCH] hooks: fix a missing-check bug in selinux_add_mnt_opt()
-To:     Gen Zhang <blackgod016574@gmail.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        Eric Paris <eparis@parisplace.org>, ccross@android.com,
-        selinux@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-Operating-System: Linux 5.1.2 on a x86_64
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 10:06 AM Gen Zhang <blackgod016574@gmail.com> wrote:
-> In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
-> NULL when fails. So 'val' should be checked.
->
-> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Hi,
 
-Please add a Fixes tag here, too:
+I'm trying to connect some VMs over EoGRE (using gretap on my side):
 
-Fixes: 757cbe597fe8 ("LSM: new method: ->sb_add_mnt_opt()")
+  ip link add foo type gretap remote <remote> local <local>
 
-> ---
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index 3ec702c..4797c63 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
->         if (token == Opt_error)
->                 return -EINVAL;
->
-> -       if (token != Opt_seclabel)
-> -               val = kmemdup_nul(val, len, GFP_KERNEL);
-> +       if (token != Opt_seclabel) {
-> +                       val = kmemdup_nul(val, len, GFP_KERNEL);
-> +                       if (!val)
-> +                               return -ENOMEM;
+This works fine for large packets, but the system in the other end
+drops smaller packets, such as ARP requests and small ICMP pings.
 
-There is one extra tab character in the above three lines ^^^
+After looking at the GRE packets in Wireshark, it turns out the Ethernet
+packets within the EoGRE packet is undersized (under 60 bytes), and Linux
+doesn't pad them. I haven't found anything in RFC 7637 that says anything
+about padding, so I would assume it should conform to the usual Ethernet
+padding rules, ie., pad to at least ETH_ZLEN. However, nothing in Linux' IP
+stack seems to actually do this, which means that when the packet is
+decapsulated in the other end and put on the (potentially virtual) wire,
+it gets dropped. The other system properly pads its small frames when sending
+them.
 
-> +       }
->         rc = selinux_add_opt(token, val, mnt_opts);
->         if (unlikely(rc)) {
->                 kfree(val);
+Is there a way to get around this, short of looping the packets out through a
+physical wire to get the padding? Is it simply a bug? I've been testing with
+4.19.28, but it doesn't look like git master has any changes in this area.
 
-Thanks,
-
---
-Ondrej Mosnacek <omosnace at redhat dot com>
-Software Engineer, Security Technologies
-Red Hat, Inc.
+/* Steinar */
+-- 
+Homepage: https://www.sesse.net/
