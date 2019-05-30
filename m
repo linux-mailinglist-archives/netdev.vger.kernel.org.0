@@ -2,110 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5259E2FBF8
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 15:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98BF12FC01
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 15:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbfE3NIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 09:08:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38660 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726382AbfE3NIk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 09:08:40 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8FD0B30C120A;
-        Thu, 30 May 2019 13:08:34 +0000 (UTC)
-Received: from x2.localnet (ovpn-122-132.rdu2.redhat.com [10.10.122.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 437A15F9BA;
-        Thu, 30 May 2019 13:08:25 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCH ghak90 V6 00/10] audit: implement container identifier
-Date:   Thu, 30 May 2019 09:08:22 -0400
-Message-ID: <1674888.6UpDe63hFX@x2>
-Organization: Red Hat
-In-Reply-To: <CAHC9VhTQ0gDZoWUh1QB4b7h3AgbpkhS40jrPVpCfJb11GT_FzQ@mail.gmail.com>
-References: <cover.1554732921.git.rgb@redhat.com> <CAHC9VhQYPF2ma_W+hySbQtfTztf=K1LTFnxnyVK0y9VYxj-K=w@mail.gmail.com> <CAHC9VhTQ0gDZoWUh1QB4b7h3AgbpkhS40jrPVpCfJb11GT_FzQ@mail.gmail.com>
+        id S1726169AbfE3NLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 09:11:21 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43120 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbfE3NLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 09:11:21 -0400
+Received: by mail-wr1-f66.google.com with SMTP id l17so4167545wrm.10
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 06:11:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=scYQ0YPJ1/xbxQ2frmme5VZ7khF5LrWnZLb953uibc4=;
+        b=i3b871214h7UHV+wurAiegDAhm6uq4FBUY3NnYr7jG1Z8ucNQOwoYjd5NBdKnhmpL6
+         hi4qCmiAzlePbrdnfyQE5CYFcN1Dlx8A7Hk41usnifk4DnVnZ7NUnZKgjbQ8omNAFc0t
+         En9/gbQkhHOVZ3UEX0HTOxWuSu7iDus2kn78sDNO76cEWlr6TMc++K/DeDw7UfSzbcn2
+         fVhcYFyTBZQHP7e11QaYbJ2rHVN21STqgB5JqhA8vcQF5DCPt4DyNGlnzSee2WRaF/BL
+         JyhOEFnRhDzlJYqxDY7DQ5XFi7hJYcQ2jtU9TJXBoBx5Ayb6uGw5X0a2HmzIoHoKc1g1
+         pfkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=scYQ0YPJ1/xbxQ2frmme5VZ7khF5LrWnZLb953uibc4=;
+        b=uj/FBz4E3xcoBWuDnk40CEOREFQhhe4iz2oTwlES51g5Q78aQZ21IlXqXU4XiitDHB
+         fTvuTzfw+oNZuRfBqbu8t1AUDWTG0eoGpxMSny4si95xW9JCXBuM+M8n6neP7hU6u1yw
+         /SG9KSsndJkLrKYeS5MnDoVIRn/vCXsozTLH5ngwJlV/ATy/gtLD8mnym2FPd95cn0gQ
+         9EMM/Fss3lC7GHmbYZEtiFBVTwCtI7CouDz7L7n99QDSwFrWKXTkjqPWQr+mrCeRcmcz
+         Jc9gfo4q/oDZvZMkvK0b2TA91iSx9uqHy8IN0LR0iXtIXCjB26vovT1OfUcrjwwGCCVY
+         Nbyw==
+X-Gm-Message-State: APjAAAUb5/dK4mHxH0RDC9VmPbARE1KbWFdvygkzOExN5aQgo2yho+Bl
+        iYaBGB92iOeBW0uayZFZjOIAx4dq
+X-Google-Smtp-Source: APXvYqwq7nsntsMQpkfSmnn/lG/EIgQ2ACF/5lZL1qhZfOpSGsWGV9aUKJKHP9FVu4Vaeg84fDu1zA==
+X-Received: by 2002:a5d:4f0a:: with SMTP id c10mr2596714wru.180.1559221878900;
+        Thu, 30 May 2019 06:11:18 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:7d95:5542:24c5:5635? (p200300EA8BF3BD007D95554224C55635.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:7d95:5542:24c5:5635])
+        by smtp.googlemail.com with ESMTPSA id u9sm7031947wme.48.2019.05.30.06.11.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 06:11:18 -0700 (PDT)
+Subject: [PATCH net-next v2 1/3] net: phy: enable interrupts when PHY is
+ attached already
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <52f1a566-9c1d-2a3d-ce7b-e9284eed65cb@gmail.com>
+Message-ID: <883a0161-0c16-d538-464e-ee35348c9970@gmail.com>
+Date:   Thu, 30 May 2019 15:09:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 30 May 2019 13:08:40 +0000 (UTC)
+In-Reply-To: <52f1a566-9c1d-2a3d-ce7b-e9284eed65cb@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, May 29, 2019 6:26:12 PM EDT Paul Moore wrote:
-> On Mon, Apr 22, 2019 at 9:49 AM Paul Moore <paul@paul-moore.com> wrote:
-> > On Mon, Apr 22, 2019 at 7:38 AM Neil Horman <nhorman@tuxdriver.com> 
-wrote:
-> > > On Mon, Apr 08, 2019 at 11:39:07PM -0400, Richard Guy Briggs wrote:
-> > > > Implement kernel audit container identifier.
-> > > 
-> > > I'm sorry, I've lost track of this, where have we landed on it? Are we
-> > > good for inclusion?
-> > 
-> > I haven't finished going through this latest revision, but unless
-> > Richard made any significant changes outside of the feedback from the
-> > v5 patchset I'm guessing we are "close".
-> > 
-> > Based on discussions Richard and I had some time ago, I have always
-> > envisioned the plan as being get the kernel patchset, tests, docs
-> > ready (which Richard has been doing) and then run the actual
-> > implemented API by the userland container folks, e.g. cri-o/lxc/etc.,
-> > to make sure the actual implementation is sane from their perspective.
-> > They've already seen the design, so I'm not expecting any real
-> > surprises here, but sometimes opinions change when they have actual
-> > code in front of them to play with and review.
-> > 
-> > Beyond that, while the cri-o/lxc/etc. folks are looking it over,
-> > whatever additional testing we can do would be a big win.  I'm
-> > thinking I'll pull it into a separate branch in the audit tree
-> > (audit/working-container ?) and include that in my secnext kernels
-> > that I build/test on a regular basis; this is also a handy way to keep
-> > it based against the current audit/next branch.  If any changes are
-> > needed Richard can either chose to base those changes on audit/next or
-> > the separate audit container ID branch; that's up to him.  I've done
-> > this with other big changes in other trees, e.g. SELinux, and it has
-> > worked well to get some extra testing in and keep the patchset "merge
-> > ready" while others outside the subsystem look things over.
-> 
-> I just sent my feedback on the v6 patchset, and it's small: basically
-> three patches with "one-liner" changes needed.
-> 
-> Richard, it's your call on how you want to proceed from here.  You can
-> post a v7 incorporating the feedback, or since the tweaks are so
-> minor, you can post fixup patches; the former being more
-> comprehensive, the later being quicker to review and digest.
-> Regardless of that, while we are waiting on a prototype from the
-> container folks, I think it would be good to pull this into a working
-> branch in the audit repo (as mentioned above), unless you would prefer
-> to keep it as a patchset on the mailing list?
+This patch is a step towards allowing PHY drivers to handle more
+interrupt sources than just link change. E.g. several PHY's have
+built-in temperature monitoring and can raise an interrupt if a
+temperature threshold is exceeded. We may be interested in such
+interrupts also if the phylib state machine isn't started.
+Therefore move enabling interrupts to phy_request_interrupt().
 
-Personally, I'd like to see this on a branch so that it's easier to build a 
-kernel locally for testing.
+v2:
+- patch added to series
 
--Steve
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/phy.c        | 36 ++++++++++++++++++++++--------------
+ drivers/net/phy/phy_device.c |  2 +-
+ include/linux/phy.h          |  1 +
+ 3 files changed, 24 insertions(+), 15 deletions(-)
 
-
-> If you want to go with
-> the working branch approach, I'll keep the branch fresh and (re)based
-> against audit/next and if we notice any problems you can just submit
-> fixes against that branch (depending on the issue they can be fixup
-> patches, or proper patches).  My hope is that this will enable the
-> process to move quicker as we get near the finish line.
-
-
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e88854292..d90d9863e 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -799,10 +799,10 @@ static int phy_enable_interrupts(struct phy_device *phydev)
+ }
+ 
+ /**
+- * phy_request_interrupt - request interrupt for a PHY device
++ * phy_request_interrupt - request and enable interrupt for a PHY device
+  * @phydev: target phy_device struct
+  *
+- * Description: Request the interrupt for the given PHY.
++ * Description: Request and enable the interrupt for the given PHY.
+  *   If this fails, then we set irq to PHY_POLL.
+  *   This should only be called with a valid IRQ number.
+  */
+@@ -817,10 +817,30 @@ void phy_request_interrupt(struct phy_device *phydev)
+ 		phydev_warn(phydev, "Error %d requesting IRQ %d, falling back to polling\n",
+ 			    err, phydev->irq);
+ 		phydev->irq = PHY_POLL;
++	} else {
++		if (phy_enable_interrupts(phydev)) {
++			phydev_warn(phydev, "Can't enable interrupt, falling back to polling\n");
++			phy_free_interrupt(phydev);
++			phydev->irq = PHY_POLL;
++		}
+ 	}
+ }
+ EXPORT_SYMBOL(phy_request_interrupt);
+ 
++/**
++ * phy_free_interrupt - disable and free interrupt for a PHY device
++ * @phydev: target phy_device struct
++ *
++ * Description: Disable and free the interrupt for the given PHY.
++ *   This should only be called with a valid IRQ number.
++ */
++void phy_free_interrupt(struct phy_device *phydev)
++{
++	phy_disable_interrupts(phydev);
++	free_irq(phydev->irq, phydev);
++}
++EXPORT_SYMBOL(phy_free_interrupt);
++
+ /**
+  * phy_stop - Bring down the PHY link, and stop checking the status
+  * @phydev: target phy_device struct
+@@ -835,9 +855,6 @@ void phy_stop(struct phy_device *phydev)
+ 
+ 	mutex_lock(&phydev->lock);
+ 
+-	if (phy_interrupt_is_valid(phydev))
+-		phy_disable_interrupts(phydev);
+-
+ 	phydev->state = PHY_HALTED;
+ 
+ 	mutex_unlock(&phydev->lock);
+@@ -864,8 +881,6 @@ EXPORT_SYMBOL(phy_stop);
+  */
+ void phy_start(struct phy_device *phydev)
+ {
+-	int err;
+-
+ 	mutex_lock(&phydev->lock);
+ 
+ 	if (phydev->state != PHY_READY && phydev->state != PHY_HALTED) {
+@@ -877,13 +892,6 @@ void phy_start(struct phy_device *phydev)
+ 	/* if phy was suspended, bring the physical link up again */
+ 	__phy_resume(phydev);
+ 
+-	/* make sure interrupts are enabled for the PHY */
+-	if (phy_interrupt_is_valid(phydev)) {
+-		err = phy_enable_interrupts(phydev);
+-		if (err < 0)
+-			goto out;
+-	}
+-
+ 	phydev->state = PHY_UP;
+ 
+ 	phy_start_machine(phydev);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 5d288da9a..d71b3ed52 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1013,7 +1013,7 @@ void phy_disconnect(struct phy_device *phydev)
+ 		phy_stop(phydev);
+ 
+ 	if (phy_interrupt_is_valid(phydev))
+-		free_irq(phydev->irq, phydev);
++		phy_free_interrupt(phydev);
+ 
+ 	phydev->adjust_link = NULL;
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 7180b1d1e..72e1196f9 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1147,6 +1147,7 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+ 			      const struct ethtool_link_ksettings *cmd);
+ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd);
+ void phy_request_interrupt(struct phy_device *phydev);
++void phy_free_interrupt(struct phy_device *phydev);
+ void phy_print_status(struct phy_device *phydev);
+ int phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
+ void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
+-- 
+2.21.0
 
 
