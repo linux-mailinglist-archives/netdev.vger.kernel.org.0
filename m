@@ -2,147 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4D72FDF1
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:35:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83EE12FE07
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727013AbfE3OfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 10:35:03 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:33305 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726973AbfE3OfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 10:35:02 -0400
-Received: by mail-lf1-f67.google.com with SMTP id y17so5233082lfe.0
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 07:35:01 -0700 (PDT)
+        id S1727100AbfE3Okd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 10:40:33 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41268 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726079AbfE3Okd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 10:40:33 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q17so4102744pfq.8;
+        Thu, 30 May 2019 07:40:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BnDbzkkNEs3+qCAYM6PlcBSJ9muruAbc6zh0yrmMscI=;
-        b=GWJCSp8Ea5nLSw4PQsmUexLPU9ilEqisyppKzq55gGe0EXTU1gK81I2OupZcNpEfBp
-         FEt6cP3ID92EWi+7AOnBYGA0Ks7kMMHmIwuCOXSTnoWyt9G0QUg/qPKTyCr++U1Vj81z
-         OBD9bVbRccfpHrJSutlT+QxN7HGtO6iu7CDa5SLnoPR89ac3mi2LAiNOoxPv0PDN/hp4
-         l40+0DaiA/QQzBIUYu0FZHnaSsQni3VmtD1j1Ni4uJrquQC2ecy5KN+HQxdP9IoLrIqB
-         NQaPK9NrzK6KSr1mQCUVyOMXunHba1wxDCzenzD+grV8InLlZw+DV7yqW3qc0uFM5f2z
-         aTnQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=kTJ8ArZPwoTe/kc7tRSB1MJFUVvoMiPQO4L8f7dIrOQ=;
+        b=bod9phgBa5JtqUmKiyoDSFx3HrcoPp763LLeiGf5nIvNkt44bgVAX74OFWaqYtgzjh
+         Exn7fgHzMEQMa9tGabi9N7dnmaBfRUXP5TUfQcZLsSpm1H1TEL+XzCPODmB/DOzubsGY
+         4Hp7H7t7UKHY+6FRIgUGAxkpZ1FXk85WwTRiAXITeguxejLc+W/wDoY/CtaYCUrr+RzU
+         k/A486Lw+4GCNjvouEwV7wP1WEYtdZFO9fGrEr2UPjsL39HlgXtGhN/AkjzcKc8yzvbw
+         /vIvC7iQApcrwkJZGsPcZwlKWudmXaxE7m3hdN4GcoGrQKhjXCJnjW30HCbBiRMKXWWl
+         IL0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BnDbzkkNEs3+qCAYM6PlcBSJ9muruAbc6zh0yrmMscI=;
-        b=l2Fp5CxiH3O9jAAQURkuufU3Pv0kEj98VfA8fz6fAHB46623QdI9LU7pFPG5SW5D8R
-         j+ZvC/2MEHE1UX9CwOb2Scsjh9Tfi9CTWfEHQshT1nGCqSj71372/EFUvx+uaaREkvWC
-         QenJY8TTwRcEh1hl6AtLzzJbkeNB7nPvJ0RUnk/9JZbry+tkizRnE5eSUtEhGC9r6D5H
-         NpKLtEpeeA3PeDvAfD0+hgOhaE/yPrpyiYr0VCY25HntPQPpKGpt9CvPcZnkTQa2mDQ6
-         /DhLCOhyoBV9TPVg+C5xZTNgjyZqztB2vkd/G4jDz1zNQa72WOIWyyybHWWmLc7hteX+
-         OWyA==
-X-Gm-Message-State: APjAAAXR7oeq4oezT8m6i/Ea3Xr28L/jfmDXNMVq83ZUeMZB+7cGYq95
-        ZtJjrEKwlnyPeLqzfMUdseMqWFU484ggg3a68OK3
-X-Google-Smtp-Source: APXvYqwHC8RbjMH6lxvVIhsAzDm3HE9/Eadxhwf+Gs4Sub/2cYfUPJHXYxbbG9TWyQTvzlhVlUcV6s1iN4J/NfvvlRg=
-X-Received: by 2002:ac2:410a:: with SMTP id b10mr2250887lfi.175.1559226900658;
- Thu, 30 May 2019 07:35:00 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=kTJ8ArZPwoTe/kc7tRSB1MJFUVvoMiPQO4L8f7dIrOQ=;
+        b=q3cNdSvXpV+AuI7yFQ0rBvA4af5NpoDfcFsYWfQ+C8y38L78Loj5FnInDBl7rv2DHb
+         AIrea1yoeL7ShoCmli2LxwJIIIatCn0nsIVFmlZfJc9CsqkAlblrzFIeMbEMX54CCbA8
+         aP/MvPc1X+cULL9NLcfI9d9jYDn3zcyf3L5YnqL3WvOxQa2IFZNPhLkxgRU5iwnjlmip
+         aJ4c4UMUdG+QWt/S+ygvWmrJWBJadQ24u4sCSbGQFP/Lr7NyAsEIwQvlFB9UVa2VZGaI
+         CeiBeGkhat2x5x6+3lXAAKc1eR2t8QZDPl1eXAFbkBVTCVSt1k02Ue3D3WhQ7+GWOIcg
+         /uRA==
+X-Gm-Message-State: APjAAAVoIH2U3gPiUnXllyj3cAT1AWzvGxwe+cXCr2oNlofsOwalX4BI
+        6Cgc9EYxNZurFTEDCeSny8ve9Kz2
+X-Google-Smtp-Source: APXvYqy+jGwyjdT7xv3z4MeNxisnvbzp/p+LwQXtxYIeSPxt+RBiZpFYgDCtTyzGSlETNENf/kPR/A==
+X-Received: by 2002:aa7:9dc9:: with SMTP id g9mr4081079pfq.228.1559227232508;
+        Thu, 30 May 2019 07:40:32 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id j7sm3192837pfa.184.2019.05.30.07.40.31
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 30 May 2019 07:40:31 -0700 (PDT)
+Date:   Thu, 30 May 2019 07:40:29 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/5] net: dsa: mv88e6xxx: Let taggers specify a
+ can_timestamp function
+Message-ID: <20190530144029.r7ziskwqq7vurf43@localhost>
+References: <20190528235627.1315-1-olteanv@gmail.com>
+ <20190528235627.1315-4-olteanv@gmail.com>
+ <20190529044912.cyg44rqvdo73oeiu@localhost>
+ <CA+h21hoNrhcpAONTvJra5Ekk+yJ6xP0VAaPSygaLOw31qsGPTg@mail.gmail.com>
+ <20190530035112.qbn3nnoxrgum7anz@localhost>
+ <CA+h21hqko57LB0BB2TSGSr4p9_czPM-g9krO+wnU7PgvaMdSDA@mail.gmail.com>
+ <20190530142356.vxkhsjalxfytvx2c@localhost>
 MIME-Version: 1.0
-References: <cover.1554732921.git.rgb@redhat.com> <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
- <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com> <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca>
-In-Reply-To: <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 30 May 2019 10:34:49 -0400
-Message-ID: <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190530142356.vxkhsjalxfytvx2c@localhost>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 10:20 AM Richard Guy Briggs <rgb@redhat.com> wrote:
->
-> On 2019-05-29 18:16, Paul Moore wrote:
-> > On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > >
-> > > Implement audit container identifier filtering using the AUDIT_CONTID
-> > > field name to send an 8-character string representing a u64 since the
-> > > value field is only u32.
-> > >
-> > > Sending it as two u32 was considered, but gathering and comparing two
-> > > fields was more complex.
-> > >
-> > > The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
-> > >
-> > > Please see the github audit kernel issue for the contid filter feature:
-> > >   https://github.com/linux-audit/audit-kernel/issues/91
-> > > Please see the github audit userspace issue for filter additions:
-> > >   https://github.com/linux-audit/audit-userspace/issues/40
-> > > Please see the github audit testsuiite issue for the test case:
-> > >   https://github.com/linux-audit/audit-testsuite/issues/64
-> > > Please see the github audit wiki for the feature overview:
-> > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > Acked-by: Serge Hallyn <serge@hallyn.com>
-> > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > > ---
-> > >  include/linux/audit.h      |  1 +
-> > >  include/uapi/linux/audit.h |  5 ++++-
-> > >  kernel/audit.h             |  1 +
-> > >  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
-> > >  kernel/auditsc.c           |  4 ++++
-> > >  5 files changed, 57 insertions(+), 1 deletion(-)
-> >
-> > ...
-> >
-> > > diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
-> > > index 63f8b3f26fab..407b5bb3b4c6 100644
-> > > --- a/kernel/auditfilter.c
-> > > +++ b/kernel/auditfilter.c
-> > > @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
-> > >         }
-> > >  }
-> > >
-> > > +int audit_comparator64(u64 left, u32 op, u64 right)
-> > > +{
-> > > +       switch (op) {
-> > > +       case Audit_equal:
-> > > +               return (left == right);
-> > > +       case Audit_not_equal:
-> > > +               return (left != right);
-> > > +       case Audit_lt:
-> > > +               return (left < right);
-> > > +       case Audit_le:
-> > > +               return (left <= right);
-> > > +       case Audit_gt:
-> > > +               return (left > right);
-> > > +       case Audit_ge:
-> > > +               return (left >= right);
-> > > +       case Audit_bitmask:
-> > > +               return (left & right);
-> > > +       case Audit_bittest:
-> > > +               return ((left & right) == right);
-> > > +       default:
-> > > +               BUG();
-> >
-> > A little birdy mentioned the BUG() here as a potential issue and while
-> > I had ignored it in earlier patches because this is likely a
-> > cut-n-paste from another audit comparator function, I took a closer
-> > look this time.  It appears as though we will never have an invalid op
-> > value as audit_data_to_entry()/audit_to_op() ensure that the op value
-> > is a a known good value.  Removing the BUG() from all the audit
-> > comparators is a separate issue, but I think it would be good to
-> > remove it from this newly added comparator; keeping it so that we
-> > return "0" in the default case seems reasoanble.
->
-> Fair enough.  That BUG(); can be removed.
+On Thu, May 30, 2019 at 07:23:56AM -0700, Richard Cochran wrote:
+> I recommend forgetting about these meta frames.  Instead, read out the
+> time stamps over MDIO.
 
-Please send a fixup patch for this.
-
--- 
-paul moore
-www.paul-moore.com
+Or SPI.  It appears you use that for Tx time stamps already.
+ 
+Thanks,
+Richard
