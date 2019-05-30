@@ -2,1081 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D569A3028E
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC5030290
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbfE3TGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 15:06:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51444 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbfE3TGk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 15:06:40 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 867232605D;
-        Thu, 30 May 2019 19:06:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559243197;
-        bh=J6rkF29ngszCDGwS1VMVlDMqpOqGDtg5im6cFPw/OvQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jjO1l1x9CIeR7B+cD+Sljsq0b5g2ZNoOa9qDdUxf+RvmTRqhVEC2Kb4tbgtrqyLWa
-         qWktVhuxv3yZQjLsVwqm0GYjflOoHEptfJs66WbpXWaZwYrcMW+VUDWlkcxi8nc9my
-         9kjXbpwPaiNWTZJXLIrxisARG3wFBoon6IidVn/g=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] selftests: Add test cases for nexthop objects
-Date:   Thu, 30 May 2019 12:06:36 -0700
-Message-Id: <20190530190636.31664-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1726446AbfE3TIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 15:08:16 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34911 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbfE3TIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:08:15 -0400
+Received: by mail-pf1-f196.google.com with SMTP id d126so4567711pfd.2;
+        Thu, 30 May 2019 12:08:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Aw1+sSYubK2kKTOgJMDkRGNmYcY/5tKHyrYGQqz2ZTA=;
+        b=nLT9x3U8ygNPGsLe8NupTDwL4qRw/wJoLtkJo4u0VKNY3v9PwehT9s7PvINtSL1Fr9
+         Y0zpNr5QxSXK6ECOHsA6BHFHengti/s8GVotb1wtmw04jP+wbRDnog8CGl7+BPCtpCpy
+         rPDlXC6uAHWTqmaaYuxT/YbkELVIxEAB8nSMn0i0PoHql24c3esGeMK8LW8cKlRi5LEv
+         /k8WNoyzjlpFX7B7wXOU7nEpZ4wzmQ/+YOO8ANPoJRhcwVNHUWx6le+XNBVhB/jZ/rp8
+         1u8Grduyq7q3syrhcSImKA8Sxr4GTQFKMtYx7loWUsOI0+O/QdZRDNQY45g6uzvoCnkB
+         vUTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Aw1+sSYubK2kKTOgJMDkRGNmYcY/5tKHyrYGQqz2ZTA=;
+        b=nYunsc9ste3/b2vGzNnJNAJQZczvkybIxDKPBTXrIYc6CEy5QMM6odf9hTU8pT+Se4
+         7hGGQRU20d9/JChRaae6kx1/bjoliKUEYm2AJHB3nBMDKAbxCXrG9ppCg/5kV+WDo4PV
+         wylj8CV2knfjvVghBs7TeDS7g7GqWm/OPkcxWJmHqfdntqAWijO25wHfrNh9meh1U3yh
+         UZBI0ZFHgfr9K7o0s2LaKCzmaJZLCpp/Rd1OVJ8Drp9VW6iboQ8uadJP0VWeZv3Ljwim
+         klF03mBp2HWO8P6zDX3sTL8ocMPMM+g3hO0vAmqaiOpAA5viz4HaLGgypnio+i2/awwl
+         D0cg==
+X-Gm-Message-State: APjAAAVxXEaOcyqri1itKXxfQoVLMXskCluN3y8C96mh1DJUo2iREPFk
+        7kyQjFK/BRiwIsh8mt9c8zc=
+X-Google-Smtp-Source: APXvYqzSZhkQQcByjfuiX46oTYnBxfrMioBh7hahe5g9syL49KzcKXNe8X+WlpMhgB0TBdXGbfVYdQ==
+X-Received: by 2002:a17:90a:2ec9:: with SMTP id h9mr5284774pjs.130.1559243295138;
+        Thu, 30 May 2019 12:08:15 -0700 (PDT)
+Received: from kaby.cs.washington.edu ([2607:4000:200:15:61cb:56f1:2c08:844e])
+        by smtp.gmail.com with ESMTPSA id a8sm3927617pfk.14.2019.05.30.12.08.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 12:08:09 -0700 (PDT)
+From:   Luke Nelson <luke.r.nels@gmail.com>
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] bpf, riscv: fix bugs in JIT for 32-bit ALU operations
+Date:   Thu, 30 May 2019 12:07:59 -0700
+Message-Id: <20190530190800.7633-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.19.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+In BPF, 32-bit ALU operations should zero-extend their results into
+the 64-bit registers.  The current BPF JIT on RISC-V emits incorrect
+instructions that perform either sign extension only (e.g., addw/subw)
+or no extension on 32-bit add, sub, and, or, xor, lsh, rsh, arsh,
+and neg.  This behavior diverges from the interpreter and JITs for
+other architectures.
 
-Add functional test cases for nexthop objects.
+This patch fixes the bugs by performing zero extension on the destination
+register of 32-bit ALU operations.
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
+Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+Cc: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 ---
- tools/testing/selftests/net/fib_nexthops.sh | 1026 +++++++++++++++++++++++++++
- 1 file changed, 1026 insertions(+)
- create mode 100755 tools/testing/selftests/net/fib_nexthops.sh
+ arch/riscv/net/bpf_jit_comp.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-new file mode 100755
-index 000000000000..c5c93d5fb3ad
---- /dev/null
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -0,0 +1,1026 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# ns: me               | ns: peer              | ns: remote
-+#   2001:db8:91::1     |       2001:db8:91::2  |
-+#   172.16.1.1         |       172.16.1.2      |
-+#            veth1 <---|---> veth2             |
-+#                      |              veth5 <--|--> veth6  172.16.101.1
-+#            veth3 <---|---> veth4             |           2001:db8:101::1
-+#   172.16.2.1         |       172.16.2.2      |
-+#   2001:db8:92::1     |       2001:db8:92::2  |
-+#
-+# This test is for checking IPv4 and IPv6 FIB behavior with nexthop
-+# objects. Device reference counts and network namespace cleanup tested
-+# by use of network namespace for peer.
-+
-+ret=0
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+# all tests in this script. Can be overridden with -t option
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime"
-+
-+ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
-+TESTS="${ALL_TESTS}"
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+PAUSE=no
-+
-+nsid=100
-+
-+################################################################################
-+# utilities
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "$VERBOSE" = "1" ]; then
-+			echo "    rc=$rc, expected $expected"
-+		fi
-+
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+		echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+
-+	if [ "${PAUSE}" = "yes" ]; then
-+		echo
-+		echo "hit enter to continue, 'q' to quit"
-+		read a
-+		[ "$a" = "q" ] && exit 1
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+}
-+
-+run_cmd()
-+{
-+	local cmd="$1"
-+	local out
-+	local stderr="2>/dev/null"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "COMMAND: $cmd\n"
-+		stderr=
-+	fi
-+
-+	out=$(eval $cmd $stderr)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
-+		echo "    $out"
-+	fi
-+
-+	return $rc
-+}
-+
-+get_linklocal()
-+{
-+	local dev=$1
-+	local ns
-+	local addr
-+
-+	[ -n "$2" ] && ns="-netns $2"
-+	addr=$(ip $ns -6 -br addr show dev ${dev} | \
-+	awk '{
-+		for (i = 3; i <= NF; ++i) {
-+			if ($i ~ /^fe80/)
-+				print $i
-+		}
-+	}'
-+	)
-+	addr=${addr/\/*}
-+
-+	[ -z "$addr" ] && return 1
-+
-+	echo $addr
-+
-+	return 0
-+}
-+
-+create_ns()
-+{
-+	local n=${1}
-+
-+	ip netns del ${n} 2>/dev/null
-+
-+	set -e
-+	ip netns add ${n}
-+	ip netns set ${n} $((nsid++))
-+	ip -netns ${n} addr add 127.0.0.1/8 dev lo
-+	ip -netns ${n} link set lo up
-+
-+	ip netns exec ${n} sysctl -qw net.ipv4.ip_forward=1
-+	ip netns exec ${n} sysctl -qw net.ipv4.fib_multipath_use_neigh=1
-+	ip netns exec ${n} sysctl -qw net.ipv4.conf.default.ignore_routes_with_linkdown=1
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.all.forwarding=1
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.default.forwarding=1
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.default.ignore_routes_with_linkdown=1
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${n} sysctl -qw net.ipv6.conf.default.accept_dad=0
-+
-+	set +e
-+}
-+
-+setup()
-+{
-+	cleanup
-+
-+	create_ns me
-+	create_ns peer
-+	create_ns remote
-+
-+	IP="ip -netns me"
-+	set -e
-+	$IP li add veth1 type veth peer name veth2
-+	$IP li set veth1 up
-+	$IP addr add 172.16.1.1/24 dev veth1
-+	$IP -6 addr add 2001:db8:91::1/64 dev veth1
-+
-+	$IP li add veth3 type veth peer name veth4
-+	$IP li set veth3 up
-+	$IP addr add 172.16.2.1/24 dev veth3
-+	$IP -6 addr add 2001:db8:92::1/64 dev veth3
-+
-+	$IP li set veth2 netns peer up
-+	ip -netns peer addr add 172.16.1.2/24 dev veth2
-+	ip -netns peer -6 addr add 2001:db8:91::2/64 dev veth2
-+
-+	$IP li set veth4 netns peer up
-+	ip -netns peer addr add 172.16.2.2/24 dev veth4
-+	ip -netns peer -6 addr add 2001:db8:92::2/64 dev veth4
-+
-+	ip -netns remote li add veth5 type veth peer name veth6
-+	ip -netns remote li set veth5 up
-+	ip -netns remote addr add dev veth5 172.16.101.1/24
-+	ip -netns remote addr add dev veth5 2001:db8:101::1/64
-+	ip -netns remote ro add 172.16.0.0/22 via 172.16.101.2
-+	ip -netns remote -6 ro add 2001:db8:90::/40 via 2001:db8:101::2
-+
-+	ip -netns remote li set veth6 netns peer up
-+	ip -netns peer addr add dev veth6 172.16.101.2/24
-+	ip -netns peer addr add dev veth6 2001:db8:101::2/64
-+	set +e
-+}
-+
-+cleanup()
-+{
-+	local ns
-+
-+	for ns in me peer remote; do
-+		ip netns del ${ns} 2>/dev/null
-+	done
-+}
-+
-+check_output()
-+{
-+	local out="$1"
-+	local expected="$2"
-+	local rc=0
-+
-+	[ "${out}" = "${expected}" ] && return 0
-+
-+	if [ -z "${out}" ]; then
-+		if [ "$VERBOSE" = "1" ]; then
-+			printf "\nNo entry found\n"
-+			printf "Expected:\n"
-+			printf "    ${expected}\n"
-+		fi
-+		return 1
-+	fi
-+
-+	out=$(echo ${out})
-+	if [ "${out}" != "${expected}" ]; then
-+		rc=1
-+		if [ "${VERBOSE}" = "1" ]; then
-+			printf "    Unexpected entry. Have:\n"
-+			printf "        ${out}\n"
-+			printf "    Expected:\n"
-+			printf "        ${expected}\n\n"
-+		fi
-+	fi
-+
-+	return $rc
-+}
-+
-+check_nexthop()
-+{
-+	local nharg="$1"
-+	local expected="$2"
-+	local out
-+
-+	out=$($IP nexthop ls ${nharg} 2>/dev/null)
-+
-+	check_output "${out}" "${expected}"
-+}
-+
-+check_route()
-+{
-+	local pfx="$1"
-+	local expected="$2"
-+	local out
-+
-+	out=$($IP route ls match ${pfx} 2>/dev/null)
-+
-+	check_output "${out}" "${expected}"
-+}
-+
-+check_route6()
-+{
-+	local pfx="$1"
-+	local expected="$2"
-+	local out
-+
-+	out=$($IP -6 route ls match ${pfx} 2>/dev/null)
-+
-+	check_output "${out}" "${expected}"
-+}
-+
-+################################################################################
-+# basic operations (add, delete, replace) on nexthops and nexthop groups
-+#
-+# IPv6
-+
-+ipv6_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6"
-+	echo "----------------------"
-+
-+	run_cmd "$IP nexthop add id 52 via 2001:db8:91::2 dev veth1"
-+	rc=$?
-+	log_test $rc 0 "Create nexthop with id, gw, dev"
-+	if [ $rc -ne 0 ]; then
-+		echo "Basic IPv6 create fails; can not continue"
-+		return 1
-+	fi
-+
-+	run_cmd "$IP nexthop get id 52"
-+	log_test $? 0 "Get nexthop by id"
-+	check_nexthop "id 52" "id 52 via 2001:db8:91::2 dev veth1"
-+
-+	run_cmd "$IP nexthop del id 52"
-+	log_test $? 0 "Delete nexthop by id"
-+	check_nexthop "id 52" ""
-+
-+	#
-+	# gw, device spec
-+	#
-+	# gw validation, no device - fails since dev required
-+	run_cmd "$IP nexthop add id 52 via 2001:db8:92::3"
-+	log_test $? 2 "Create nexthop - gw only"
-+
-+	# gw is not reachable throught given dev
-+	run_cmd "$IP nexthop add id 53 via 2001:db8:3::3 dev veth1"
-+	log_test $? 2 "Create nexthop - invalid gw+dev combination"
-+
-+	# onlink arg overrides gw+dev lookup
-+	run_cmd "$IP nexthop add id 53 via 2001:db8:3::3 dev veth1 onlink"
-+	log_test $? 0 "Create nexthop - gw+dev and onlink"
-+
-+	# admin down should delete nexthops
-+	set -e
-+	run_cmd "$IP -6 nexthop add id 55 via 2001:db8:91::3 dev veth1"
-+	run_cmd "$IP nexthop add id 56 via 2001:db8:91::4 dev veth1"
-+	run_cmd "$IP nexthop add id 57 via 2001:db8:91::5 dev veth1"
-+	run_cmd "$IP li set dev veth1 down"
-+	set +e
-+	check_nexthop "dev veth1" ""
-+	log_test $? 0 "Nexthops removed on admin down"
-+}
-+
-+ipv6_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 groups functional"
-+	echo "----------------------"
-+
-+	# basic functionality: create a nexthop group, default weight
-+	run_cmd "$IP nexthop add id 61 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 101 group 61"
-+	log_test $? 0 "Create nexthop group with single nexthop"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 101"
-+	log_test $? 0 "Get nexthop group by id"
-+	check_nexthop "id 101" "id 101 group 61"
-+
-+	# delete nexthop group
-+	run_cmd "$IP nexthop del id 101"
-+	log_test $? 0 "Delete nexthop group by id"
-+	check_nexthop "id 101" ""
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+	check_nexthop "id 101" ""
-+
-+	#
-+	# create group with multiple nexthops - mix of gw and dev only
-+	#
-+	run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
-+	run_cmd "$IP nexthop add id 64 via 2001:db8:91::4 dev veth1"
-+	run_cmd "$IP nexthop add id 65 dev veth1"
-+	run_cmd "$IP nexthop add id 102 group 62/63/64/65"
-+	log_test $? 0 "Nexthop group with multiple nexthops"
-+	check_nexthop "id 102" "id 102 group 62/63/64/65"
-+
-+	# Delete nexthop in a group and group is updated
-+	run_cmd "$IP nexthop del id 63"
-+	check_nexthop "id 102" "id 102 group 62/64/65"
-+	log_test $? 0 "Nexthop group updated when entry is deleted"
-+
-+	# create group with multiple weighted nexthops
-+	run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
-+	run_cmd "$IP nexthop add id 103 group 62/63,2/64,3/65,4"
-+	log_test $? 0 "Nexthop group with weighted nexthops"
-+	check_nexthop "id 103" "id 103 group 62/63,2/64,3/65,4"
-+
-+	# Delete nexthop in a weighted group and group is updated
-+	run_cmd "$IP nexthop del id 63"
-+	check_nexthop "id 103" "id 103 group 62/64,3/65,4"
-+	log_test $? 0 "Weighted nexthop group updated when entry is deleted"
-+
-+	# admin down - nexthop is removed from group
-+	run_cmd "$IP li set dev veth1 down"
-+	check_nexthop "dev veth1" ""
-+	log_test $? 0 "Nexthops in groups removed on admin down"
-+
-+	# expect groups to have been deleted as well
-+	check_nexthop "" ""
-+
-+	run_cmd "$IP li set dev veth1 up"
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+
-+	# group with nexthops using different devices
-+	set -e
-+	run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
-+	run_cmd "$IP nexthop add id 64 via 2001:db8:91::4 dev veth1"
-+	run_cmd "$IP nexthop add id 65 via 2001:db8:91::5 dev veth1"
-+
-+	run_cmd "$IP nexthop add id 72 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP nexthop add id 73 via 2001:db8:92::3 dev veth3"
-+	run_cmd "$IP nexthop add id 74 via 2001:db8:92::4 dev veth3"
-+	run_cmd "$IP nexthop add id 75 via 2001:db8:92::5 dev veth3"
-+	set +e
-+
-+	# multiple groups with same nexthop
-+	run_cmd "$IP nexthop add id 104 group 62"
-+	run_cmd "$IP nexthop add id 105 group 62"
-+	check_nexthop "group" "id 104 group 62 id 105 group 62"
-+	log_test $? 0 "Multiple groups with same nexthop"
-+
-+	run_cmd "$IP nexthop flush groups"
-+	[ $? -ne 0 ] && return 1
-+
-+	# on admin down of veth1, it should be removed from the group
-+	run_cmd "$IP nexthop add id 105 group 62/63/72/73/64"
-+	run_cmd "$IP li set veth1 down"
-+	check_nexthop "id 105" "id 105 group 72/73"
-+	log_test $? 0 "Nexthops in group removed on admin down - mixed group"
-+
-+	run_cmd "$IP nexthop add id 106 group 105/74"
-+	log_test $? 2 "Nexthop group can not have a group as an entry"
-+
-+	# a group can have a blackhole entry only if it is the only
-+	# nexthop in the group. Needed for atomic replace with an
-+	# actual nexthop group
-+	run_cmd "$IP -6 nexthop add id 31 blackhole"
-+	run_cmd "$IP nexthop add id 107 group 31"
-+	log_test $? 0 "Nexthop group with a blackhole entry"
-+
-+	run_cmd "$IP nexthop add id 108 group 31/24"
-+	log_test $? 2 "Nexthop group can not have a blackhole and another nexthop"
-+}
-+
-+ipv6_fcnal_runtime()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 functional runtime"
-+	echo "-----------------------"
-+
-+	sleep 5
-+
-+	#
-+	# IPv6 - the basics
-+	#
-+	run_cmd "$IP nexthop add id 81 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 81"
-+	log_test $? 0 "Route add"
-+
-+	run_cmd "$IP ro delete 2001:db8:101::1/128 nhid 81"
-+	log_test $? 0 "Route delete"
-+
-+	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 81"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "Ping with nexthop"
-+
-+	run_cmd "$IP nexthop add id 82 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP nexthop add id 122 group 81/82"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 122"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "Ping - multipath"
-+
-+	#
-+	# IPv6 with blackhole nexthops
-+	#
-+	run_cmd "$IP -6 nexthop add id 83 blackhole"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 83"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 2 "Ping - blackhole"
-+
-+	run_cmd "$IP nexthop replace id 83 via 2001:db8:91::2 dev veth1"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "Ping - blackhole replaced with gateway"
-+
-+	run_cmd "$IP -6 nexthop replace id 83 blackhole"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 2 "Ping - gateway replaced by blackhole"
-+
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 122"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	if [ $? -eq 0 ]; then
-+		run_cmd "$IP nexthop replace id 122 group 83"
-+		run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+		log_test $? 2 "Ping - group with blackhole"
-+
-+		run_cmd "$IP nexthop replace id 122 group 81/82"
-+		run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+		log_test $? 0 "Ping - group blackhole replaced with gateways"
-+	else
-+		log_test 2 0 "Ping - multipath failed"
-+	fi
-+
-+	#
-+	# device only and gw + dev only mix
-+	#
-+	run_cmd "$IP -6 nexthop add id 85 dev veth1"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 85"
-+	log_test $? 0 "IPv6 route with device only nexthop"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1"
-+
-+	run_cmd "$IP nexthop add id 123 group 81/85"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 123"
-+	log_test $? 0 "IPv6 multipath route with nexthop mix - dev only + gw"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 nexthop via 2001:db8:91::2 dev veth1 nexthop dev veth1"
-+
-+	#
-+	# IPv6 route with v4 nexthop - not allowed
-+	#
-+	run_cmd "$IP ro delete 2001:db8:101::1/128"
-+	run_cmd "$IP nexthop add id 84 via 172.16.1.1 dev veth1"
-+	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 84"
-+	log_test $? 2 "IPv6 route can not have a v4 gateway"
-+
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 81"
-+	run_cmd "$IP nexthop replace id 81 via 172.16.1.1 dev veth1"
-+	log_test $? 2 "Nexthop replace - v6 route, v4 nexthop"
-+
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 122"
-+	run_cmd "$IP nexthop replace id 81 via 172.16.1.1 dev veth1"
-+	log_test $? 2 "Nexthop replace of group entry - v6 route, v4 nexthop"
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+
-+	#
-+	# weird IPv6 cases
-+	#
-+	run_cmd "$IP nexthop add id 86 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 81"
-+
-+	# TO-DO:
-+	# existing route with old nexthop; append route with new nexthop
-+	# existing route with old nexthop; replace route with new
-+	# existing route with new nexthop; replace route with old
-+	# route with src address and using nexthop - not allowed
-+}
-+
-+ipv4_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 functional"
-+	echo "----------------------"
-+
-+	#
-+	# basic IPv4 ops - add, get, delete
-+	#
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 dev veth1"
-+	rc=$?
-+	log_test $rc 0 "Create nexthop with id, gw, dev"
-+	if [ $rc -ne 0 ]; then
-+		echo "Basic IPv4 create fails; can not continue"
-+		return 1
-+	fi
-+
-+	run_cmd "$IP nexthop get id 12"
-+	log_test $? 0 "Get nexthop by id"
-+	check_nexthop "id 12" "id 12 via 172.16.1.2 src 172.16.1.1 dev veth1 scope link"
-+
-+	run_cmd "$IP nexthop del id 12"
-+	log_test $? 0 "Delete nexthop by id"
-+	check_nexthop "id 52" ""
-+
-+	#
-+	# gw, device spec
-+	#
-+	# gw validation, no device - fails since dev is required
-+	run_cmd "$IP nexthop add id 12 via 172.16.2.3"
-+	log_test $? 2 "Create nexthop - gw only"
-+
-+	# gw not reachable through given dev
-+	run_cmd "$IP nexthop add id 13 via 172.16.3.2 dev veth1"
-+	log_test $? 2 "Create nexthop - invalid gw+dev combination"
-+
-+	# onlink flag overrides gw+dev lookup
-+	run_cmd "$IP nexthop add id 13 via 172.16.3.2 dev veth1 onlink"
-+	log_test $? 0 "Create nexthop - gw+dev and onlink"
-+
-+	# admin down should delete nexthops
-+	set -e
-+	run_cmd "$IP nexthop add id 15 via 172.16.1.3 dev veth1"
-+	run_cmd "$IP nexthop add id 16 via 172.16.1.4 dev veth1"
-+	run_cmd "$IP nexthop add id 17 via 172.16.1.5 dev veth1"
-+	run_cmd "$IP li set dev veth1 down"
-+	set +e
-+	check_nexthop "dev veth1" ""
-+	log_test $? 0 "Nexthops removed on admin down"
-+}
-+
-+ipv4_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 groups functional"
-+	echo "----------------------"
-+
-+	# basic functionality: create a nexthop group, default weight
-+	run_cmd "$IP nexthop add id 11 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 101 group 11"
-+	log_test $? 0 "Create nexthop group with single nexthop"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 101"
-+	log_test $? 0 "Get nexthop group by id"
-+	check_nexthop "id 101" "id 101 group 11"
-+
-+	# delete nexthop group
-+	run_cmd "$IP nexthop del id 101"
-+	log_test $? 0 "Delete nexthop group by id"
-+	check_nexthop "id 101" ""
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+
-+	#
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 dev veth1"
-+	run_cmd "$IP nexthop add id 14 via 172.16.1.4 dev veth1"
-+	run_cmd "$IP nexthop add id 15 via 172.16.1.5 dev veth1"
-+	run_cmd "$IP nexthop add id 102 group 12/13/14/15"
-+	log_test $? 0 "Nexthop group with multiple nexthops"
-+	check_nexthop "id 102" "id 102 group 12/13/14/15"
-+
-+	# Delete nexthop in a group and group is updated
-+	run_cmd "$IP nexthop del id 13"
-+	check_nexthop "id 102" "id 102 group 12/14/15"
-+	log_test $? 0 "Nexthop group updated when entry is deleted"
-+
-+	# create group with multiple weighted nexthops
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 dev veth1"
-+	run_cmd "$IP nexthop add id 103 group 12/13,2/14,3/15,4"
-+	log_test $? 0 "Nexthop group with weighted nexthops"
-+	check_nexthop "id 103" "id 103 group 12/13,2/14,3/15,4"
-+
-+	# Delete nexthop in a weighted group and group is updated
-+	run_cmd "$IP nexthop del id 13"
-+	check_nexthop "id 103" "id 103 group 12/14,3/15,4"
-+	log_test $? 0 "Weighted nexthop group updated when entry is deleted"
-+
-+	# admin down - nexthop is removed from group
-+	run_cmd "$IP li set dev veth1 down"
-+	check_nexthop "dev veth1" ""
-+	log_test $? 0 "Nexthops in groups removed on admin down"
-+
-+	# expect groups to have been deleted as well
-+	check_nexthop "" ""
-+
-+	run_cmd "$IP li set dev veth1 up"
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+
-+	# group with nexthops using different devices
-+	set -e
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 dev veth1"
-+	run_cmd "$IP nexthop add id 14 via 172.16.1.4 dev veth1"
-+	run_cmd "$IP nexthop add id 15 via 172.16.1.5 dev veth1"
-+
-+	run_cmd "$IP nexthop add id 22 via 172.16.2.2 dev veth3"
-+	run_cmd "$IP nexthop add id 23 via 172.16.2.3 dev veth3"
-+	run_cmd "$IP nexthop add id 24 via 172.16.2.4 dev veth3"
-+	run_cmd "$IP nexthop add id 25 via 172.16.2.5 dev veth3"
-+	set +e
-+
-+	# multiple groups with same nexthop
-+	run_cmd "$IP nexthop add id 104 group 12"
-+	run_cmd "$IP nexthop add id 105 group 12"
-+	check_nexthop "group" "id 104 group 12 id 105 group 12"
-+	log_test $? 0 "Multiple groups with same nexthop"
-+
-+	run_cmd "$IP nexthop flush groups"
-+	[ $? -ne 0 ] && return 1
-+
-+	# on admin down of veth1, it should be removed from the group
-+	run_cmd "$IP nexthop add id 105 group 12/13/22/23/14"
-+	run_cmd "$IP li set veth1 down"
-+	check_nexthop "id 105" "id 105 group 22/23"
-+	log_test $? 0 "Nexthops in group removed on admin down - mixed group"
-+
-+	run_cmd "$IP nexthop add id 106 group 105/24"
-+	log_test $? 2 "Nexthop group can not have a group as an entry"
-+
-+	# a group can have a blackhole entry only if it is the only
-+	# nexthop in the group. Needed for atomic replace with an
-+	# actual nexthop group
-+	run_cmd "$IP nexthop add id 31 blackhole"
-+	run_cmd "$IP nexthop add id 107 group 31"
-+	log_test $? 0 "Nexthop group with a blackhole entry"
-+
-+	run_cmd "$IP nexthop add id 108 group 31/24"
-+	log_test $? 2 "Nexthop group can not have a blackhole and another nexthop"
-+}
-+
-+ipv4_withv6_fcnal()
-+{
-+	local lladdr
-+
-+	set -e
-+	lladdr=$(get_linklocal veth2 peer)
-+	run_cmd "$IP nexthop add id 11 via ${lladdr} dev veth1"
-+	set +e
-+	run_cmd "$IP ro add 172.16.101.1/32 nhid 11"
-+	log_test $? 0 "IPv6 nexthop with IPv4 route"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 11 via ${lladdr} dev veth1"
-+
-+	set -e
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 101 group 11/12"
-+	set +e
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 101"
-+	log_test $? 0 "IPv6 nexthop with IPv4 route"
-+
-+	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
-+
-+	run_cmd "$IP ro replace 172.16.101.1/32 via inet6 ${lladdr} dev veth1"
-+	log_test $? 0 "IPv4 route with IPv6 gateway"
-+	check_route "172.16.101.1" "172.16.101.1 via ${lladdr} dev veth1"
-+
-+	run_cmd "$IP ro replace 172.16.101.1/32 via inet6 2001:db8:50::1 dev veth1"
-+	log_test $? 2 "IPv4 route with invalid IPv6 gateway"
-+}
-+
-+ipv4_fcnal_runtime()
-+{
-+	local lladdr
-+	local rc
-+
-+	echo
-+	echo "IPv4 functional runtime"
-+	echo "-----------------------"
-+
-+	run_cmd "$IP nexthop add id 21 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP ro add 172.16.101.1/32 nhid 21"
-+	log_test $? 0 "Route add"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 21 via 172.16.1.2 dev veth1"
-+
-+	run_cmd "$IP ro delete 172.16.101.1/32 nhid 21"
-+	log_test $? 0 "Route delete"
-+
-+	#
-+	# scope mismatch
-+	#
-+	run_cmd "$IP nexthop add id 22 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP ro add 172.16.101.1/32 nhid 22 scope host"
-+	log_test $? 2 "Route add - scope conflict with nexthop"
-+
-+	run_cmd "$IP nexthop replace id 22 dev veth3"
-+	run_cmd "$IP ro add 172.16.101.1/32 nhid 22 scope host"
-+	run_cmd "$IP nexthop replace id 22 via 172.16.2.2 dev veth3"
-+	log_test $? 2 "Nexthop replace with invalid scope for existing route"
-+
-+	#
-+	# add route with nexthop and check traffic
-+	#
-+	run_cmd "$IP nexthop replace id 21 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 21"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "Basic ping"
-+
-+	run_cmd "$IP nexthop replace id 22 via 172.16.2.2 dev veth3"
-+	run_cmd "$IP nexthop add id 122 group 21/22"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 122"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "Ping - multipath"
-+
-+	#
-+	# IPv4 with blackhole nexthops
-+	#
-+	run_cmd "$IP nexthop add id 23 blackhole"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 23"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 2 "Ping - blackhole"
-+
-+	run_cmd "$IP nexthop replace id 23 via 172.16.1.2 dev veth1"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "Ping - blackhole replaced with gateway"
-+
-+	run_cmd "$IP nexthop replace id 23 blackhole"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 2 "Ping - gateway replaced by blackhole"
-+
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 122"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	if [ $? -eq 0 ]; then
-+		run_cmd "$IP nexthop replace id 122 group 23"
-+		run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+		log_test $? 2 "Ping - group with blackhole"
-+
-+		run_cmd "$IP nexthop replace id 122 group 21/22"
-+		run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+		log_test $? 0 "Ping - group blackhole replaced with gateways"
-+	else
-+		log_test 2 0 "Ping - multipath failed"
-+	fi
-+
-+	#
-+	# device only and gw + dev only mix
-+	#
-+	run_cmd "$IP nexthop add id 85 dev veth1"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 85"
-+	log_test $? 0 "IPv4 route with device only nexthop"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 85 dev veth1"
-+
-+	run_cmd "$IP nexthop add id 122 group 21/85"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 122"
-+	log_test $? 0 "IPv4 multipath route with nexthop mix - dev only + gw"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 85 nexthop via 172.16.1.2 dev veth1 nexthop dev veth1"
-+
-+	#
-+	# IPv4 with IPv6
-+	#
-+	set -e
-+	lladdr=$(get_linklocal veth2 peer)
-+	run_cmd "$IP nexthop add id 24 via ${lladdr} dev veth1"
-+	set +e
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 24"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "IPv6 nexthop with IPv4 route"
-+
-+	$IP neigh sh | grep -q "${lladdr} dev veth1"
-+	if [ $? -eq 1 ]; then
-+		echo "    WARNING: Neigh entry missing for ${lladdr}"
-+		$IP neigh sh | grep 'dev veth1'
-+	fi
-+
-+	$IP neigh sh | grep -q "172.16.101.1 dev eth1"
-+	if [ $? -eq 0 ]; then
-+		echo "    WARNING: Neigh entry exists for 172.16.101.1"
-+		$IP neigh sh | grep 'dev veth1'
-+	fi
-+
-+	set -e
-+	run_cmd "$IP nexthop add id 25 via 172.16.1.2 dev veth1"
-+	run_cmd "$IP nexthop add id 101 group 24/25"
-+	set +e
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 101"
-+	log_test $? 0 "IPv4 route with mixed v4-v6 multipath route"
-+
-+	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
-+
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "IPv6 nexthop with IPv4 route"
-+
-+	run_cmd "$IP ro replace 172.16.101.1/32 via inet6 ${lladdr} dev veth1"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "IPv4 route with IPv6 gateway"
-+
-+	$IP neigh sh | grep -q "${lladdr} dev veth1"
-+	if [ $? -eq 1 ]; then
-+		echo "    WARNING: Neigh entry missing for ${lladdr}"
-+		$IP neigh sh | grep 'dev veth1'
-+	fi
-+
-+	$IP neigh sh | grep -q "172.16.101.1 dev eth1"
-+	if [ $? -eq 0 ]; then
-+		echo "    WARNING: Neigh entry exists for 172.16.101.1"
-+		$IP neigh sh | grep 'dev veth1'
-+	fi
-+
-+	#
-+	# MPLS as an example of LWT encap
-+	#
-+	run_cmd "$IP nexthop add id 51 encap mpls 101 via 172.16.1.2 dev veth1"
-+	log_test $? 0 "IPv4 route with MPLS encap"
-+	check_nexthop "id 51" "id 51 encap mpls 101 via 172.16.1.2 dev veth1 scope link"
-+	log_test $? 0 "IPv4 route with MPLS encap - check"
-+
-+	run_cmd "$IP nexthop add id 52 encap mpls 102 via inet6 2001:db8:91::2 dev veth1"
-+	log_test $? 0 "IPv4 route with MPLS encap and v6 gateway"
-+	check_nexthop "id 52" "id 52 encap mpls 102 via 2001:db8:91::2 dev veth1 scope link"
-+	log_test $? 0 "IPv4 route with MPLS encap, v6 gw - check"
-+}
-+
-+basic()
-+{
-+	echo
-+	echo "Basic functional tests"
-+	echo "----------------------"
-+	run_cmd "$IP nexthop ls"
-+	log_test $? 0 "List with nothing defined"
-+
-+	run_cmd "$IP nexthop get id 1"
-+	log_test $? 2 "Nexthop get on non-existent id"
-+
-+	# attempt to create nh without a device or gw - fails
-+	run_cmd "$IP nexthop add id 1"
-+	log_test $? 2 "Nexthop with no device or gateway"
-+
-+	# attempt to create nh with down device - fails
-+	$IP li set veth1 down
-+	run_cmd "$IP nexthop add id 1 dev veth1"
-+	log_test $? 2 "Nexthop with down device"
-+
-+	# create nh with linkdown device - fails
-+	$IP li set veth1 up
-+	ip -netns peer li set veth2 down
-+	run_cmd "$IP nexthop add id 1 dev veth1"
-+	log_test $? 2 "Nexthop with device that is linkdown"
-+	ip -netns peer li set veth2 up
-+
-+	# device only
-+	run_cmd "$IP nexthop add id 1 dev veth1"
-+	log_test $? 0 "Nexthop with device only"
-+
-+	# create nh with duplicate id
-+	run_cmd "$IP nexthop add id 1 dev veth3"
-+	log_test $? 2 "Nexthop with duplicate id"
-+
-+	# blackhole nexthop
-+	run_cmd "$IP nexthop add id 2 blackhole"
-+	log_test $? 0 "Blackhole nexthop"
-+
-+	# blackhole nexthop can not have other specs
-+	run_cmd "$IP nexthop replace id 2 blackhole dev veth1"
-+	log_test $? 2 "Blackhole nexthop with other attributes"
-+
-+	#
-+	# groups
-+	#
-+
-+	run_cmd "$IP nexthop add id 101 group 1"
-+	log_test $? 0 "Create group"
-+
-+	run_cmd "$IP nexthop add id 102 group 2"
-+	log_test $? 0 "Create group with blackhole nexthop"
-+
-+	# multipath group can not have a blackhole as 1 path
-+	run_cmd "$IP nexthop add id 103 group 1/2"
-+	log_test $? 2 "Create multipath group where 1 path is a blackhole"
-+
-+	# multipath group can not have a member replaced by a blackhole
-+	run_cmd "$IP nexthop replace id 2 dev veth3"
-+	run_cmd "$IP nexthop replace id 102 group 1/2"
-+	run_cmd "$IP nexthop replace id 2 blackhole"
-+	log_test $? 2 "Multipath group can not have a member replaced by blackhole"
-+
-+	# attempt to create group with non-existent nexthop
-+	run_cmd "$IP nexthop add id 103 group 12"
-+	log_test $? 2 "Create group with non-existent nexthop"
-+
-+	# attempt to create group with same nexthop
-+	run_cmd "$IP nexthop add id 103 group 1/1"
-+	log_test $? 2 "Create group with same nexthop multiple times"
-+
-+	# replace nexthop with a group - fails
-+	run_cmd "$IP nexthop replace id 2 group 1"
-+	log_test $? 2 "Replace nexthop with nexthop group"
-+
-+	# replace nexthop group with a nexthop - fails
-+	run_cmd "$IP nexthop replace id 101 dev veth1"
-+	log_test $? 2 "Replace nexthop group with nexthop"
-+
-+	# nexthop group with other attributes fail
-+	run_cmd "$IP nexthop add id 104 group 1 dev veth1"
-+	log_test $? 2 "Nexthop group and device"
-+
-+	run_cmd "$IP nexthop add id 104 group 1 blackhole"
-+	log_test $? 2 "Nexthop group and blackhole"
-+
-+	$IP nexthop flush >/dev/null 2>&1
-+}
-+
-+################################################################################
-+# usage
-+
-+usage()
-+{
-+	cat <<EOF
-+usage: ${0##*/} OPTS
-+
-+        -t <test>   Test(s) to run (default: all)
-+                    (options: $ALL_TESTS)
-+        -4          IPv4 tests only
-+        -6          IPv6 tests only
-+        -p          Pause on fail
-+        -P          Pause after each test before cleanup
-+        -v          verbose mode (show commands and output)
-+
-+    Runtime test
-+	-n num	    Number of nexthops to target
-+	-N    	    Use new style to install routes in DUT
-+
-+done
-+EOF
-+}
-+
-+################################################################################
-+# main
-+
-+while getopts :t:pP46hv o
-+do
-+	case $o in
-+		t) TESTS=$OPTARG;;
-+		4) TESTS=${IPV4_TESTS};;
-+		6) TESTS=${IPV6_TESTS};;
-+		p) PAUSE_ON_FAIL=yes;;
-+		P) PAUSE=yes;;
-+		v) VERBOSE=$(($VERBOSE + 1));;
-+		h) usage; exit 0;;
-+		*) usage; exit 1;;
-+	esac
-+done
-+
-+# make sure we don't pause twice
-+[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit $ksft_skip;
-+fi
-+
-+if [ ! -x "$(command -v ip)" ]; then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+
-+ip help 2>&1 | grep -q nexthop
-+if [ $? -ne 0 ]; then
-+	echo "SKIP: iproute2 too old, missing nexthop command"
-+	exit $ksft_skip
-+fi
-+
-+out=$(ip nexthop ls 2>&1 | grep -q "Operation not supported")
-+if [ $? -eq 0 ]; then
-+	echo "SKIP: kernel lacks nexthop support"
-+	exit $ksft_skip
-+fi
-+
-+for t in $TESTS
-+do
-+	case $t in
-+	none) IP="ip -netns peer"; setup; exit 0;;
-+	*) setup; $t; cleanup;;
-+	esac
-+done
-+
-+if [ "$TESTS" != "none" ]; then
-+	printf "\nTests passed: %3d\n" ${nsuccess}
-+	printf "Tests failed: %3d\n"   ${nfail}
-+fi
-+
-+exit $ret
+diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+index 80b12aa5e10d..426d5c33ea90 100644
+--- a/arch/riscv/net/bpf_jit_comp.c
++++ b/arch/riscv/net/bpf_jit_comp.c
+@@ -751,22 +751,32 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_ADD | BPF_X:
+ 	case BPF_ALU64 | BPF_ADD | BPF_X:
+ 		emit(is64 ? rv_add(rd, rd, rs) : rv_addw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_SUB | BPF_X:
+ 	case BPF_ALU64 | BPF_SUB | BPF_X:
+ 		emit(is64 ? rv_sub(rd, rd, rs) : rv_subw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_AND | BPF_X:
+ 	case BPF_ALU64 | BPF_AND | BPF_X:
+ 		emit(rv_and(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_OR | BPF_X:
+ 	case BPF_ALU64 | BPF_OR | BPF_X:
+ 		emit(rv_or(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_XOR | BPF_X:
+ 	case BPF_ALU64 | BPF_XOR | BPF_X:
+ 		emit(rv_xor(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_MUL | BPF_X:
+ 	case BPF_ALU64 | BPF_MUL | BPF_X:
+@@ -789,14 +799,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_LSH | BPF_X:
+ 	case BPF_ALU64 | BPF_LSH | BPF_X:
+ 		emit(is64 ? rv_sll(rd, rd, rs) : rv_sllw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_X:
+ 	case BPF_ALU64 | BPF_RSH | BPF_X:
+ 		emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_ARSH | BPF_X:
+ 	case BPF_ALU64 | BPF_ARSH | BPF_X:
+ 		emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* dst = -dst */
+@@ -804,6 +820,8 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU64 | BPF_NEG:
+ 		emit(is64 ? rv_sub(rd, RV_REG_ZERO, rd) :
+ 		     rv_subw(rd, RV_REG_ZERO, rd), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* dst = BSWAP##imm(dst) */
+@@ -958,14 +976,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+ 	case BPF_ALU | BPF_LSH | BPF_K:
+ 	case BPF_ALU64 | BPF_LSH | BPF_K:
+ 		emit(is64 ? rv_slli(rd, rd, imm) : rv_slliw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_K:
+ 	case BPF_ALU64 | BPF_RSH | BPF_K:
+ 		emit(is64 ? rv_srli(rd, rd, imm) : rv_srliw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 	case BPF_ALU | BPF_ARSH | BPF_K:
+ 	case BPF_ALU64 | BPF_ARSH | BPF_K:
+ 		emit(is64 ? rv_srai(rd, rd, imm) : rv_sraiw(rd, rd, imm), ctx);
++		if (!is64)
++			emit_zext_32(rd, ctx);
+ 		break;
+ 
+ 	/* JUMP off */
 -- 
-2.11.0
+2.19.1
 
