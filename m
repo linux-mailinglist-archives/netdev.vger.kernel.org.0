@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D8A301CA
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F6F301C1
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbfE3SV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:21:28 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46425 "EHLO
+        id S1726843AbfE3SVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:21:01 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40301 "EHLO
         mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbfE3SU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:20:58 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m15so6974600ljg.13
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:20:57 -0700 (PDT)
+        with ESMTP id S1726803AbfE3SVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:21:00 -0400
+Received: by mail-lj1-f196.google.com with SMTP id q62so7008500ljq.7
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:20:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ExBErmLKvAHAcEzB9N5VayIpTNJEe2yiC9dz/BkkizE=;
-        b=DcysaYWnCA1gnUMQaWDrdM5fQsKXmvdSPN7uBZWkhioCiDLFa/PZca+gwzO2ODZUGu
-         BeqQ+XolNN1zZDMTBmlKogUA2ykS1A4uAec4bRAsZhEtEMqU59dDLFjPagim1uxmY0lL
-         mYZK46TUMEvcTcJPNwOjwXTifyAGBy+Sf6AWebORVwLTh5xL5ZEd8YUB1gdlmYUz/HUN
-         hrG5hxWv80I9c88FHZtuPOuKMIQY+GL7Pf5NNtewzWkmUTEa/0ufXtD0h/glN9glpD6N
-         KvdKGzssnzlj4lACSGsq3eQP9WVFBfMKqdFZIwUMep/1p/kimoUqfozrxCBUHF9SNaD+
-         WadQ==
+        bh=VwtitAHrkRTmSXybjYU2tYI3XhcpB8SZvJGlF0k7LR8=;
+        b=BDljY3oUWcpSunX+BtsT3CUu8PlMz94C8FclzAwWRJkbl78QD3AXsjwE75dUI2Dqyg
+         npYb2IV6svaRmO83F/ZPNySqRcy7YvA2+rlK2mI1mNNnH8+G4yara9URDlhWf+vqC+vS
+         fZpWNJgofl1agt//ekdfueAUnvx9u3YirGyFAg1D1qzOkX9cz2Mi/b8IAdfAIt388pmL
+         zDKPYy7xDfR6YPvMmWx32IPsyEo1ATPjq3neS6BAUd9+05qBGraq5mYLanHSBrHCWPXP
+         33Nz7aHrB08n9cDUEE4Q6usnwQZKe9aXG0iVSrmMsTlNoKL/ds+J9OcxxafkW3bc7JOo
+         Fe0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ExBErmLKvAHAcEzB9N5VayIpTNJEe2yiC9dz/BkkizE=;
-        b=bVuu6GdIft8YOMev7qdHnR6gKHyaEchLSrunPYweo0kUcdHtTLGUsH/Etn8ghansB3
-         iDUfEAyzv3SqG8I3zE55Hgg+lbGS8vgqI9VUfdf+6Se6fQLe2yXAQbelI9UcEkslKCAJ
-         nwD58IHJoUggLk9FMPhFNwv+9nQiJl2fwTcgQPTtqSYhyCm1eEkk1sLHza7t0TQna9uR
-         vs1Szj809mBQm+1J5AoioybE3o9b9VflyXqdkleYVZsIo0BYyf1brOA/3LwfvKYt1L0S
-         dOQJY5MHZLyew5em97dGj1sJEzLBxzcCSqQ5PoMnf42ID6I75nCHBZwITlsz8feRISf1
-         bk6w==
-X-Gm-Message-State: APjAAAXqEfESyh3czn4q4YPDba0k5M6jDnLZOLy0Y8Rtq+bAZRP2Bzdp
-        NmdbtPinNhVLstR67fIWGaPA0g==
-X-Google-Smtp-Source: APXvYqybCMzLDu/j6u6rw70BPBf8lJXbao7SvLBHv4ExBZ/aAFxGO8ulZf+NzRyoc28S/5OHUWX0yg==
-X-Received: by 2002:a2e:8555:: with SMTP id u21mr2920911ljj.133.1559240456396;
-        Thu, 30 May 2019 11:20:56 -0700 (PDT)
+        bh=VwtitAHrkRTmSXybjYU2tYI3XhcpB8SZvJGlF0k7LR8=;
+        b=T1Nho+jdy9u/p3rFHTUdWR9AgCu+s8oEw0UCsUrxaSv9VmVHd6xfu+KluIp991og51
+         70yF5cz/RPPJeMjYWrRCmNZKwrzzgOv37t0uDzeXYGwFLCFL3ksNJSrZEZJ9IIE1zviH
+         ee2iYw3/Bj+GxIWPFgjsSuJjmdvaZC/kQAClCv6DNKles5eObX8/xgayRr2jHwb2PeKz
+         iXFT5T/lhD9I2quJeM6A9Y/7x1ZenidD7tRTVNsgOx9FFsbnZCounTlVdMlieg6nJpJc
+         ZWNPHvxS6A5W9pjCnhpTtK58f50KVUh76QEcuidJ3M/+5KoFfI1UUfBi5jcBFPyrxona
+         /7xQ==
+X-Gm-Message-State: APjAAAXOn/FxC2SNrz4ntrA0nbYw7vG7ThwboRV1eZc6otvl92sbsSVU
+        qHXrV3bYobzAbrzzeKzNeEop4w==
+X-Google-Smtp-Source: APXvYqzfAktHqEgChn6MQOcHJmJcQV53y0dNuo1ujinr8fruawSyO7qQhcDlqMAkH3MmHLTKJxnZaA==
+X-Received: by 2002:a2e:9bc5:: with SMTP id w5mr3077209ljj.87.1559240457629;
+        Thu, 30 May 2019 11:20:57 -0700 (PDT)
 Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id v7sm388946lfe.11.2019.05.30.11.20.55
+        by smtp.gmail.com with ESMTPSA id v7sm388946lfe.11.2019.05.30.11.20.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 11:20:55 -0700 (PDT)
+        Thu, 30 May 2019 11:20:57 -0700 (PDT)
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net
 Cc:     ast@kernel.org, linux-kernel@vger.kernel.org,
@@ -51,9 +51,9 @@ Cc:     ast@kernel.org, linux-kernel@vger.kernel.org,
         daniel@iogearbox.net, jakub.kicinski@netronome.com,
         john.fastabend@gmail.com,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v2 net-next 5/7] net: ethernet: ti: davinci_cpdma: add dma mapped submit
-Date:   Thu, 30 May 2019 21:20:37 +0300
-Message-Id: <20190530182039.4945-6-ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v2 net-next 6/7] net: ethernet: ti: davinci_cpdma: return handler status
+Date:   Thu, 30 May 2019 21:20:38 +0300
+Message-Id: <20190530182039.4945-7-ivan.khoronzhuk@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
 References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
@@ -62,176 +62,339 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case if dma mapped packet needs to be sent, like with XDP
-page pool, the "mapped" submit can be used. This patch adds dma
-mapped submit based on regular one.
+This change is needed to return flush status of rx handler for
+flushing redirected xdp frames after processing channel packets.
+Do it as separate patch for simplicity.
 
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- drivers/net/ethernet/ti/davinci_cpdma.c | 88 ++++++++++++++++++++-----
- drivers/net/ethernet/ti/davinci_cpdma.h |  2 +
- 2 files changed, 75 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/ti/cpsw.c          | 23 +++++++++++------
+ drivers/net/ethernet/ti/cpsw_ethtool.c  |  2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h     |  2 +-
+ drivers/net/ethernet/ti/davinci_cpdma.c | 34 +++++++++++++++----------
+ drivers/net/ethernet/ti/davinci_cpdma.h |  4 +--
+ drivers/net/ethernet/ti/davinci_emac.c  | 18 ++++++++-----
+ 6 files changed, 50 insertions(+), 33 deletions(-)
 
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 3430503e1053..d89ad428315c 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -337,7 +337,7 @@ void cpsw_intr_disable(struct cpsw_common *cpsw)
+ 	return;
+ }
+ 
+-void cpsw_tx_handler(void *token, int len, int status)
++int cpsw_tx_handler(void *token, int len, int status)
+ {
+ 	struct netdev_queue	*txq;
+ 	struct sk_buff		*skb = token;
+@@ -355,6 +355,7 @@ void cpsw_tx_handler(void *token, int len, int status)
+ 	ndev->stats.tx_packets++;
+ 	ndev->stats.tx_bytes += len;
+ 	dev_kfree_skb_any(skb);
++	return 0;
+ }
+ 
+ static void cpsw_rx_vlan_encap(struct sk_buff *skb)
+@@ -400,7 +401,7 @@ static void cpsw_rx_vlan_encap(struct sk_buff *skb)
+ 	}
+ }
+ 
+-static void cpsw_rx_handler(void *token, int len, int status)
++static int cpsw_rx_handler(void *token, int len, int status)
+ {
+ 	struct cpdma_chan	*ch;
+ 	struct sk_buff		*skb = token;
+@@ -434,7 +435,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 
+ 		/* the interface is going down, skbs are purged */
+ 		dev_kfree_skb_any(skb);
+-		return;
++		return 0;
+ 	}
+ 
+ 	new_skb = netdev_alloc_skb_ip_align(ndev, cpsw->rx_packet_max);
+@@ -459,7 +460,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ requeue:
+ 	if (netif_dormant(ndev)) {
+ 		dev_kfree_skb_any(new_skb);
+-		return;
++		return 0;
+ 	}
+ 
+ 	ch = cpsw->rxv[skb_get_queue_mapping(new_skb)].ch;
+@@ -467,6 +468,8 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 				skb_tailroom(new_skb), 0);
+ 	if (WARN_ON(ret < 0))
+ 		dev_kfree_skb_any(new_skb);
++
++	return 0;
+ }
+ 
+ void cpsw_split_res(struct cpsw_common *cpsw)
+@@ -605,7 +608,8 @@ static int cpsw_tx_mq_poll(struct napi_struct *napi_tx, int budget)
+ 		else
+ 			cur_budget = txv->budget;
+ 
+-		num_tx += cpdma_chan_process(txv->ch, cur_budget);
++		cpdma_chan_process(txv->ch, &cur_budget);
++		num_tx += cur_budget;
+ 		if (num_tx >= budget)
+ 			break;
+ 	}
+@@ -623,7 +627,8 @@ static int cpsw_tx_poll(struct napi_struct *napi_tx, int budget)
+ 	struct cpsw_common *cpsw = napi_to_cpsw(napi_tx);
+ 	int num_tx;
+ 
+-	num_tx = cpdma_chan_process(cpsw->txv[0].ch, budget);
++	num_tx = budget;
++	cpdma_chan_process(cpsw->txv[0].ch, &num_tx);
+ 	if (num_tx < budget) {
+ 		napi_complete(napi_tx);
+ 		writel(0xff, &cpsw->wr_regs->tx_en);
+@@ -655,7 +660,8 @@ static int cpsw_rx_mq_poll(struct napi_struct *napi_rx, int budget)
+ 		else
+ 			cur_budget = rxv->budget;
+ 
+-		num_rx += cpdma_chan_process(rxv->ch, cur_budget);
++		cpdma_chan_process(rxv->ch, &cur_budget);
++		num_rx += cur_budget;
+ 		if (num_rx >= budget)
+ 			break;
+ 	}
+@@ -673,7 +679,8 @@ static int cpsw_rx_poll(struct napi_struct *napi_rx, int budget)
+ 	struct cpsw_common *cpsw = napi_to_cpsw(napi_rx);
+ 	int num_rx;
+ 
+-	num_rx = cpdma_chan_process(cpsw->rxv[0].ch, budget);
++	num_rx = budget;
++	cpdma_chan_process(cpsw->rxv[0].ch, &num_rx);
+ 	if (num_rx < budget) {
+ 		napi_complete_done(napi_rx, num_rx);
+ 		writel(0xff, &cpsw->wr_regs->rx_en);
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index c260bb32aacf..1a7c4818c890 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -538,8 +538,8 @@ static int cpsw_update_channels_res(struct cpsw_priv *priv, int ch_num, int rx,
+ 				    cpdma_handler_fn rx_handler)
+ {
+ 	struct cpsw_common *cpsw = priv->cpsw;
+-	void (*handler)(void *, int, int);
+ 	struct netdev_queue *queue;
++	cpdma_handler_fn handler;
+ 	struct cpsw_vector *vec;
+ 	int ret, *ch, vch;
+ 
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
+index 04795b97ee71..2ecb3af59fe9 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.h
++++ b/drivers/net/ethernet/ti/cpsw_priv.h
+@@ -390,7 +390,7 @@ void cpsw_split_res(struct cpsw_common *cpsw);
+ int cpsw_fill_rx_channels(struct cpsw_priv *priv);
+ void cpsw_intr_enable(struct cpsw_common *cpsw);
+ void cpsw_intr_disable(struct cpsw_common *cpsw);
+-void cpsw_tx_handler(void *token, int len, int status);
++int cpsw_tx_handler(void *token, int len, int status);
+ 
+ /* ethtool */
+ u32 cpsw_get_msglevel(struct net_device *ndev);
 diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
-index 35bf14d8e7af..7f89b2299f05 100644
+index 7f89b2299f05..a59011d315d5 100644
 --- a/drivers/net/ethernet/ti/davinci_cpdma.c
 +++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -125,6 +125,15 @@ struct cpdma_chan {
- 	u32				rate;
- };
- 
-+struct submit_info {
-+	struct cpdma_chan *chan;
-+	int directed;
-+	void *token;
-+	void *data;
-+	int flags;
-+	int len;
-+};
-+
- struct cpdma_control_info {
- 	u32		reg;
- 	u32		shift, mask;
-@@ -176,6 +185,8 @@ static struct cpdma_control_info controls[] = {
- 				 (directed << CPDMA_TO_PORT_SHIFT));	\
- 	} while (0)
- 
-+#define CPDMA_DMA_EXT_MAP		BIT(16)
-+
- static void cpdma_desc_pool_destroy(struct cpdma_ctlr *ctlr)
- {
- 	struct cpdma_desc_pool *pool = ctlr->pool;
-@@ -1002,10 +1013,12 @@ static void __cpdma_chan_submit(struct cpdma_chan *chan,
- 	}
+@@ -1137,15 +1137,16 @@ bool cpdma_check_free_tx_desc(struct cpdma_chan *chan)
+ 	return free_tx_desc;
  }
  
--int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
--		      int len, int directed)
-+static int cpdma_chan_submit_si(struct submit_info *si)
+-static void __cpdma_chan_free(struct cpdma_chan *chan,
+-			      struct cpdma_desc __iomem *desc,
+-			      int outlen, int status)
++static int __cpdma_chan_free(struct cpdma_chan *chan,
++			     struct cpdma_desc __iomem *desc, int outlen,
++			     int status)
  {
-+	struct cpdma_chan		*chan = si->chan;
  	struct cpdma_ctlr		*ctlr = chan->ctlr;
-+	int				len = si->len;
-+	int				swlen = len;
- 	struct cpdma_desc __iomem	*desc;
- 	dma_addr_t			buffer;
- 	unsigned long			flags;
-@@ -1037,16 +1050,22 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- 		chan->stats.runt_transmit_buff++;
- 	}
- 
--	buffer = dma_map_single(ctlr->dev, data, len, chan->dir);
--	ret = dma_mapping_error(ctlr->dev, buffer);
--	if (ret) {
--		cpdma_desc_free(ctlr->pool, desc, 1);
--		ret = -EINVAL;
--		goto unlock_ret;
--	}
--
- 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
--	cpdma_desc_to_port(chan, mode, directed);
-+	cpdma_desc_to_port(chan, mode, si->directed);
-+
-+	if (si->flags & CPDMA_DMA_EXT_MAP) {
-+		buffer = (dma_addr_t)si->data;
-+		dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
-+		swlen |= CPDMA_DMA_EXT_MAP;
-+	} else {
-+		buffer = dma_map_single(ctlr->dev, si->data, len, chan->dir);
-+		ret = dma_mapping_error(ctlr->dev, buffer);
-+		if (ret) {
-+			cpdma_desc_free(ctlr->pool, desc, 1);
-+			ret = -EINVAL;
-+			goto unlock_ret;
-+		}
-+	}
- 
- 	/* Relaxed IO accessors can be used here as there is read barrier
- 	 * at the end of write sequence.
-@@ -1055,9 +1074,9 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- 	writel_relaxed(buffer, &desc->hw_buffer);
- 	writel_relaxed(len, &desc->hw_len);
- 	writel_relaxed(mode | len, &desc->hw_mode);
--	writel_relaxed((uintptr_t)token, &desc->sw_token);
-+	writel_relaxed((uintptr_t)si->token, &desc->sw_token);
- 	writel_relaxed(buffer, &desc->sw_buffer);
--	writel_relaxed(len, &desc->sw_len);
-+	writel_relaxed(swlen, &desc->sw_len);
- 	desc_read(desc, sw_len);
- 
- 	__cpdma_chan_submit(chan, desc);
-@@ -1072,6 +1091,38 @@ int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
- 	return ret;
- }
- 
-+int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data, int len,
-+		      int directed)
-+{
-+	struct submit_info si;
-+
-+	si.chan = chan;
-+	si.token = token;
-+	si.data = data;
-+	si.len = len;
-+	si.directed = directed;
-+	si.flags = 0;
-+
-+	return cpdma_chan_submit_si(&si);
-+}
-+EXPORT_SYMBOL_GPL(cpdma_chan_submit);
-+
-+int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
-+			     dma_addr_t data, int len, int directed)
-+{
-+	struct submit_info si;
-+
-+	si.chan = chan;
-+	si.token = token;
-+	si.data = (void *)data;
-+	si.len = len;
-+	si.directed = directed;
-+	si.flags = CPDMA_DMA_EXT_MAP;
-+
-+	return cpdma_chan_submit_si(&si);
-+}
-+EXPORT_SYMBOL_GPL(cpdma_chan_submit_mapped);
-+
- bool cpdma_check_free_tx_desc(struct cpdma_chan *chan)
- {
- 	struct cpdma_ctlr	*ctlr = chan->ctlr;
-@@ -1097,10 +1148,17 @@ static void __cpdma_chan_free(struct cpdma_chan *chan,
+ 	struct cpdma_desc_pool		*pool = ctlr->pool;
+ 	dma_addr_t			buff_dma;
+ 	int				origlen;
  	uintptr_t			token;
++	int				ret;
  
  	token      = desc_read(desc, sw_token);
--	buff_dma   = desc_read(desc, sw_buffer);
  	origlen    = desc_read(desc, sw_len);
+@@ -1160,14 +1161,16 @@ static void __cpdma_chan_free(struct cpdma_chan *chan,
+ 	}
  
--	dma_unmap_single(ctlr->dev, buff_dma, origlen, chan->dir);
-+	buff_dma   = desc_read(desc, sw_buffer);
-+	if (origlen & CPDMA_DMA_EXT_MAP) {
-+		origlen &= ~CPDMA_DMA_EXT_MAP;
-+		dma_sync_single_for_cpu(ctlr->dev, buff_dma, origlen,
-+					chan->dir);
-+	} else {
-+		dma_unmap_single(ctlr->dev, buff_dma, origlen, chan->dir);
-+	}
-+
  	cpdma_desc_free(pool, desc, 1);
- 	(*chan->handler)((void *)token, outlen, status);
+-	(*chan->handler)((void *)token, outlen, status);
++	ret = (*chan->handler)((void *)token, outlen, status);
++
++	return ret;
  }
+ 
+ static int __cpdma_chan_process(struct cpdma_chan *chan)
+ {
++	int				status, outlen, ret;
+ 	struct cpdma_ctlr		*ctlr = chan->ctlr;
+ 	struct cpdma_desc __iomem	*desc;
+-	int				status, outlen;
+ 	int				cb_status = 0;
+ 	struct cpdma_desc_pool		*pool = ctlr->pool;
+ 	dma_addr_t			desc_dma;
+@@ -1178,7 +1181,7 @@ static int __cpdma_chan_process(struct cpdma_chan *chan)
+ 	desc = chan->head;
+ 	if (!desc) {
+ 		chan->stats.empty_dequeue++;
+-		status = -ENOENT;
++		ret = -ENOENT;
+ 		goto unlock_ret;
+ 	}
+ 	desc_dma = desc_phys(pool, desc);
+@@ -1187,7 +1190,7 @@ static int __cpdma_chan_process(struct cpdma_chan *chan)
+ 	outlen	= status & 0x7ff;
+ 	if (status & CPDMA_DESC_OWNER) {
+ 		chan->stats.busy_dequeue++;
+-		status = -EBUSY;
++		ret = -EBUSY;
+ 		goto unlock_ret;
+ 	}
+ 
+@@ -1213,28 +1216,31 @@ static int __cpdma_chan_process(struct cpdma_chan *chan)
+ 	else
+ 		cb_status = status;
+ 
+-	__cpdma_chan_free(chan, desc, outlen, cb_status);
+-	return status;
++	ret = __cpdma_chan_free(chan, desc, outlen, cb_status);
++	return ret;
+ 
+ unlock_ret:
+ 	spin_unlock_irqrestore(&chan->lock, flags);
+-	return status;
++	return ret;
+ }
+ 
+-int cpdma_chan_process(struct cpdma_chan *chan, int quota)
++int cpdma_chan_process(struct cpdma_chan *chan, int *quota)
+ {
+-	int used = 0, ret = 0;
++	int used = 0, ret = 0, res = 0;
+ 
+ 	if (chan->state != CPDMA_STATE_ACTIVE)
+ 		return -EINVAL;
+ 
+-	while (used < quota) {
++	while (used < *quota) {
+ 		ret = __cpdma_chan_process(chan);
+ 		if (ret < 0)
+ 			break;
++		res |= ret;
+ 		used++;
+ 	}
+-	return used;
++
++	*quota = used;
++	return res;
+ }
+ 
+ int cpdma_chan_start(struct cpdma_chan *chan)
 diff --git a/drivers/net/ethernet/ti/davinci_cpdma.h b/drivers/net/ethernet/ti/davinci_cpdma.h
-index 10376062dafa..8f6f27185c63 100644
+index 8f6f27185c63..56543d375923 100644
 --- a/drivers/net/ethernet/ti/davinci_cpdma.h
 +++ b/drivers/net/ethernet/ti/davinci_cpdma.h
-@@ -77,6 +77,8 @@ int cpdma_chan_stop(struct cpdma_chan *chan);
+@@ -61,7 +61,7 @@ struct cpdma_chan_stats {
+ struct cpdma_ctlr;
+ struct cpdma_chan;
  
- int cpdma_chan_get_stats(struct cpdma_chan *chan,
- 			 struct cpdma_chan_stats *stats);
-+int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
-+			     dma_addr_t data, int len, int directed);
+-typedef void (*cpdma_handler_fn)(void *token, int len, int status);
++typedef int (*cpdma_handler_fn)(void *token, int len, int status);
+ 
+ struct cpdma_ctlr *cpdma_ctlr_create(struct cpdma_params *params);
+ int cpdma_ctlr_destroy(struct cpdma_ctlr *ctlr);
+@@ -81,7 +81,7 @@ int cpdma_chan_submit_mapped(struct cpdma_chan *chan, void *token,
+ 			     dma_addr_t data, int len, int directed);
  int cpdma_chan_submit(struct cpdma_chan *chan, void *token, void *data,
  		      int len, int directed);
- int cpdma_chan_process(struct cpdma_chan *chan, int quota);
+-int cpdma_chan_process(struct cpdma_chan *chan, int quota);
++int cpdma_chan_process(struct cpdma_chan *chan, int *quota);
+ 
+ int cpdma_ctlr_int_ctrl(struct cpdma_ctlr *ctlr, bool enable);
+ void cpdma_ctlr_eoi(struct cpdma_ctlr *ctlr, u32 value);
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 4bf65cab79e6..3592690b8dd8 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -860,7 +860,7 @@ static struct sk_buff *emac_rx_alloc(struct emac_priv *priv)
+ 	return skb;
+ }
+ 
+-static void emac_rx_handler(void *token, int len, int status)
++static int emac_rx_handler(void *token, int len, int status)
+ {
+ 	struct sk_buff		*skb = token;
+ 	struct net_device	*ndev = skb->dev;
+@@ -871,7 +871,7 @@ static void emac_rx_handler(void *token, int len, int status)
+ 	/* free and bail if we are shutting down */
+ 	if (unlikely(!netif_running(ndev))) {
+ 		dev_kfree_skb_any(skb);
+-		return;
++		return 0;
+ 	}
+ 
+ 	/* recycle on receive error */
+@@ -892,7 +892,7 @@ static void emac_rx_handler(void *token, int len, int status)
+ 	if (!skb) {
+ 		if (netif_msg_rx_err(priv) && net_ratelimit())
+ 			dev_err(emac_dev, "failed rx buffer alloc\n");
+-		return;
++		return 0;
+ 	}
+ 
+ recycle:
+@@ -902,9 +902,11 @@ static void emac_rx_handler(void *token, int len, int status)
+ 	WARN_ON(ret == -ENOMEM);
+ 	if (unlikely(ret < 0))
+ 		dev_kfree_skb_any(skb);
++
++	return 0;
+ }
+ 
+-static void emac_tx_handler(void *token, int len, int status)
++static int emac_tx_handler(void *token, int len, int status)
+ {
+ 	struct sk_buff		*skb = token;
+ 	struct net_device	*ndev = skb->dev;
+@@ -917,6 +919,7 @@ static void emac_tx_handler(void *token, int len, int status)
+ 	ndev->stats.tx_packets++;
+ 	ndev->stats.tx_bytes += len;
+ 	dev_kfree_skb_any(skb);
++	return 0;
+ }
+ 
+ /**
+@@ -1237,8 +1240,8 @@ static int emac_poll(struct napi_struct *napi, int budget)
+ 		mask = EMAC_DM646X_MAC_IN_VECTOR_TX_INT_VEC;
+ 
+ 	if (status & mask) {
+-		num_tx_pkts = cpdma_chan_process(priv->txchan,
+-					      EMAC_DEF_TX_MAX_SERVICE);
++		num_tx_pkts = EMAC_DEF_TX_MAX_SERVICE;
++		cpdma_chan_process(priv->txchan, &num_tx_pkts);
+ 	} /* TX processing */
+ 
+ 	mask = EMAC_DM644X_MAC_IN_VECTOR_RX_INT_VEC;
+@@ -1247,7 +1250,8 @@ static int emac_poll(struct napi_struct *napi, int budget)
+ 		mask = EMAC_DM646X_MAC_IN_VECTOR_RX_INT_VEC;
+ 
+ 	if (status & mask) {
+-		num_rx_pkts = cpdma_chan_process(priv->rxchan, budget);
++		num_rx_pkts = budget;
++		cpdma_chan_process(priv->rxchan, &num_rx_pkts);
+ 	} /* RX processing */
+ 
+ 	mask = EMAC_DM644X_MAC_IN_VECTOR_HOST_INT;
 -- 
 2.17.1
 
