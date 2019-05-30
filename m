@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9CB2F07A
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B94812F078
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388020AbfE3EEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 00:04:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48276 "EHLO mail.kernel.org"
+        id S1731273AbfE3EE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 00:04:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731289AbfE3DRv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731296AbfE3DRv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 29 May 2019 23:17:51 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7D6724718;
+        by mail.kernel.org (Postfix) with ESMTPSA id DA9702472C;
         Thu, 30 May 2019 03:17:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559186270;
-        bh=QwG3ZJppL2g5avXanItwvvXBW0RsH5H0/GmNgisSARE=;
+        s=default; t=1559186271;
+        bh=q4XWgk94DHiQSOHFmy9YG86ewVtVksqDQpele2P0ixQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VynfEerpG9jX03Z/CklKvjCTw7IWw2d+cnFFahuXYj1MNJuECY9V8ZfeofnI7G2sm
-         fBK8wDvAdP8IPjc8NdNGWjwDRYPBLQTcRi45kbUEx11M2y91+jypng0J0gcmRg81yI
-         T9CxzRY+zy8Ml5lrocZHVh1VBVG2tznSesheFxP4=
+        b=UGI3fwQjezdHRGFwPyzqHc+ibHdxfWSktv/ucZRfWvdzy47lsxwxcpMF7khUEs49Z
+         23Kt2h0QwIeXE0xazoLl468lCkE1WvM3EuAMQycakC80MNC8HCfq6JjGVDqX3p1h1+
+         GSnvcTILpUAGeAPrKjErUVb9ykQfrVzyQeubCd3M=
 From:   David Ahern <dsahern@kernel.org>
 To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next 8/9] ip route: Add option to use nexthop objects
-Date:   Wed, 29 May 2019 20:17:45 -0700
-Message-Id: <20190530031746.2040-9-dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsa@cumulusnetworks.com>
+Subject: [PATCH iproute2-next 9/9] ipmonitor: Add nexthop option to monitor
+Date:   Wed, 29 May 2019 20:17:46 -0700
+Message-Id: <20190530031746.2040-10-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190530031746.2040-1-dsahern@kernel.org>
 References: <20190530031746.2040-1-dsahern@kernel.org>
@@ -37,68 +37,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: David Ahern <dsa@cumulusnetworks.com>
 
-Add nhid option for routes to use nexthop objects by id.
+Add capability to ip-monitor to listen and dump nexthop messages
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: David Ahern <dsa@cumulusnetworks.com>
 ---
- ip/iproute.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ ip/ipmonitor.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/ip/iproute.c b/ip/iproute.c
-index c5a473704d95..68f7f75f2336 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -80,7 +80,7 @@ static void usage(void)
- 		"             [ table TABLE_ID ] [ proto RTPROTO ]\n"
- 		"             [ scope SCOPE ] [ metric METRIC ]\n"
- 		"             [ ttl-propagate { enabled | disabled } ]\n"
--		"INFO_SPEC := NH OPTIONS FLAGS [ nexthop NH ]...\n"
-+		"INFO_SPEC := { NH | nhid ID } OPTIONS FLAGS [ nexthop NH ]...\n"
- 		"NH := [ encap ENCAPTYPE ENCAPHDR ] [ via [ FAMILY ] ADDRESS ]\n"
- 		"	    [ dev STRING ] [ weight NUMBER ] NHFLAGS\n"
- 		"FAMILY := [ inet | inet6 | mpls | bridge | link ]\n"
-@@ -809,6 +809,10 @@ int print_route(struct nlmsghdr *n, void *arg)
- 		print_string(PRINT_ANY, "src", "from %s ", b1);
- 	}
- 
-+	if (tb[RTA_NH_ID])
-+		print_uint(PRINT_ANY, "nhid", "nhid %u ",
-+			   rta_getattr_u32(tb[RTA_NH_ID]));
-+
- 	if (tb[RTA_NEWDST])
- 		print_rta_newdst(fp, r, tb[RTA_NEWDST]);
- 
-@@ -1080,6 +1084,7 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	int table_ok = 0;
- 	int raw = 0;
- 	int type_ok = 0;
-+	__u32 nhid = 0;
- 
- 	if (cmd != RTM_DELROUTE) {
- 		req.r.rtm_protocol = RTPROT_BOOT;
-@@ -1358,6 +1363,11 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		} else if (strcmp(*argv, "nexthop") == 0) {
- 			nhs_ok = 1;
- 			break;
-+		} else if (!strcmp(*argv, "nhid")) {
-+			NEXT_ARG();
-+			if (get_u32(&nhid, *argv, 0))
-+				invarg("\"id\" value is invalid\n", *argv);
-+			addattr32(&req.n, sizeof(req), RTA_NH_ID, nhid);
- 		} else if (matches(*argv, "protocol") == 0) {
- 			__u32 prot;
- 
-@@ -1520,7 +1530,7 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 			 req.r.rtm_type == RTN_UNSPEC) {
- 			if (cmd == RTM_DELROUTE)
- 				req.r.rtm_scope = RT_SCOPE_NOWHERE;
--			else if (!gw_ok && !nhs_ok)
-+			else if (!gw_ok && !nhs_ok && !nhid)
- 				req.r.rtm_scope = RT_SCOPE_LINK;
+diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
+index 9ecc7fd2011a..5da1256450b3 100644
+--- a/ip/ipmonitor.c
++++ b/ip/ipmonitor.c
+@@ -84,6 +84,12 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
  		}
  	}
+ 
++	case RTM_NEWNEXTHOP:
++	case RTM_DELNEXTHOP:
++		print_headers(fp, "[NEXTHOP]", ctrl);
++		print_nexthop(n, arg);
++		return 0;
++
+ 	case RTM_NEWLINK:
+ 	case RTM_DELLINK:
+ 		ll_remember_index(n, NULL);
+@@ -173,6 +179,7 @@ int do_ipmonitor(int argc, char **argv)
+ 	int lrule = 0;
+ 	int lnsid = 0;
+ 	int ifindex = 0;
++	int lnexthop = 1;
+ 
+ 	groups |= nl_mgrp(RTNLGRP_LINK);
+ 	groups |= nl_mgrp(RTNLGRP_IPV4_IFADDR);
+@@ -202,30 +209,42 @@ int do_ipmonitor(int argc, char **argv)
+ 		} else if (matches(*argv, "link") == 0) {
+ 			llink = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "address") == 0) {
+ 			laddr = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "route") == 0) {
+ 			lroute = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "mroute") == 0) {
+ 			lmroute = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "prefix") == 0) {
+ 			lprefix = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "neigh") == 0) {
+ 			lneigh = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "netconf") == 0) {
+ 			lnetconf = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "rule") == 0) {
+ 			lrule = 1;
+ 			groups = 0;
++			lnexthop = 0;
+ 		} else if (matches(*argv, "nsid") == 0) {
+ 			lnsid = 1;
+ 			groups = 0;
++			lnexthop = 0;
++		} else if (matches(*argv, "nexthop") == 0) {
++			groups = 0;
++			lnexthop = 1;
+ 		} else if (strcmp(*argv, "all") == 0) {
+ 			prefix_banner = 1;
+ 		} else if (matches(*argv, "all-nsid") == 0) {
+@@ -313,6 +332,11 @@ int do_ipmonitor(int argc, char **argv)
+ 
+ 	if (rtnl_open(&rth, groups) < 0)
+ 		exit(1);
++	if (lnexthop && rtnl_add_nl_group(&rth, RTNLGRP_NEXTHOP) < 0) {
++		fprintf(stderr, "Failed to add nexthop group to list\n");
++		exit(1);
++	}
++
+ 	if (listen_all_nsid && rtnl_listen_all_nsid(&rth) < 0)
+ 		exit(1);
+ 
 -- 
 2.11.0
 
