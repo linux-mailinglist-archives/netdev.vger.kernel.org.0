@@ -2,101 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA06730132
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 616FE3013A
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfE3RqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:46:14 -0400
-Received: from mail-eopbgr50075.outbound.protection.outlook.com ([40.107.5.75]:33351
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725961AbfE3RqN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 13:46:13 -0400
+        id S1726446AbfE3RvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:51:03 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42415 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbfE3RvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:51:02 -0400
+Received: by mail-pl1-f195.google.com with SMTP id go2so2843988plb.9
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:51:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=darbyshire-bryant.me.uk; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hI4U9Q9hLXS8H1NyY2xudjZU6gbFkgNCeI1zhItFZuk=;
- b=n4Pl41TAj9J/w+f60iRhLGjARvACh/mDCLl87rPjOfhNoCzwNe36fArVN/vIjWU4xwhaZQKiZ8bFPomihF1Cm3y1cPwgH2LXHrbT8N+WaybFc3+igoy3ReGp8xTNnHTOM1L0HmtA6lTDLK6H65lrqgm1vIFwJ+Bh95Gyx4Af/YI=
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
- VI1PR0302MB3328.eurprd03.prod.outlook.com (52.134.13.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Thu, 30 May 2019 17:46:09 +0000
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Thu, 30 May 2019
- 17:46:09 +0000
-From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fLnZj75qO8uroZ27x9UjILoLPCbi18YujXciK45P7yg=;
+        b=QbMtD4l4+zQl+KXXVGe7G1cq7yYzkDy0mwWmg+M0qkkMrXk3G52rlhADE1tHGpwtq/
+         WGLmyyPvB4ZVe/4PHrWHefkjL8aIBu64SjaTpP4BXsQfQtkx/jcJHf70jiY213JK+3b3
+         ZdyZ2YKZe75Ul71A8laf/AdyOj757o+aZ6JG+C8Z2XiiBeFP0ykPyxqnG8VU2tsHQa+H
+         C/AWJV0UYfE6LLkM2edZDBZu1Vc741pf9oXceLnmdDqZDO8XraVLzLS7v+5XPeqE4wDL
+         2RFXBWIRJB0+DLZrbNWFSikJ6Griv+A3TjMScwNlsp8WZW9x90n+eMZMyZDByT6BLCUD
+         u/7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fLnZj75qO8uroZ27x9UjILoLPCbi18YujXciK45P7yg=;
+        b=lf0UfO8GE5FlxhKOAD9rjofOmw5bro243x1K91hSa3we7s5DQlCKg3qkdQtUmVcCYN
+         0Br61NrMuxob5/8bxwWbbHyI0UFYw92COWHnRs3dQ1b0jqFwc1z4AWnzaBhUJGRueA3N
+         QKHU634nyrRzcWIvL2kb1/7YsttIzm6aD4nHAqK/BMMCY0rOnRcM8FdugToVjtYkwVA2
+         5PgIZG84luHTPZI9dw6xKZ/zRu0Qgrz2cD3vpXzWNtkD4ioBp0RpgM5KtNRLa7DX7xk+
+         ctYSSaGy7k0u/gMKSmKnE83WBZKae3SscGC6ow/pakJX7dGQSbUNcpZUTb7j+XVKikur
+         Bp+g==
+X-Gm-Message-State: APjAAAUCtDKnpQ5UgdJ6+qLk9BKEBIBXirSk+RtpiJ7HQelxRgT2qDwA
+        Ze1T+deiCJXx11lOFCzs24W061X3GBc=
+X-Google-Smtp-Source: APXvYqxN2Il+QuujUBpP3TdycIdV/NTz2rzqepuKaLNYfx3lbBhcNDDI+FcLRxB0ZZ0C6lmGCgXVyQ==
+X-Received: by 2002:a17:902:f212:: with SMTP id gn18mr4915501plb.106.1559238662017;
+        Thu, 30 May 2019 10:51:02 -0700 (PDT)
+Received: from [172.27.227.250] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id z7sm8035604pfr.23.2019.05.30.10.51.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 10:51:01 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 1/9] libnetlink: Set NLA_F_NESTED in
+ rta_nest
 To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
-Thread-Topic: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
-Thread-Index: AQHVFwbJ/p/rOXTiw0SyKMktH1aCdKaD7TWAgAAD3AA=
-Date:   Thu, 30 May 2019 17:46:09 +0000
-Message-ID: <26B0B7FA-51E8-472C-8A54-A872C816B260@darbyshire-bryant.me.uk>
-References: <20190530164246.17955-1-ldir@darbyshire-bryant.me.uk>
- <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
- <20190530103219.048b4674@hermes.lan>
-In-Reply-To: <20190530103219.048b4674@hermes.lan>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2a02:c7f:1268:6500::dc83]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ec5c2243-e128-48f3-b32c-08d6e526b346
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR0302MB3328;
-x-ms-traffictypediagnostic: VI1PR0302MB3328:
-x-microsoft-antispam-prvs: <VI1PR0302MB332845CC4C829F42F92C94F4C9180@VI1PR0302MB3328.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 00531FAC2C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39830400003)(396003)(346002)(376002)(136003)(366004)(199004)(189003)(6512007)(83716004)(81166006)(256004)(446003)(33656002)(486006)(36756003)(6916009)(81156014)(186003)(6436002)(8676002)(476003)(82746002)(53936002)(508600001)(68736007)(11346002)(229853002)(74482002)(7736002)(2906002)(2616005)(6116002)(46003)(71190400001)(66446008)(4744005)(76116006)(71200400001)(86362001)(66946007)(14454004)(4326008)(53546011)(66556008)(99286004)(76176011)(5660300002)(25786009)(6506007)(8936002)(6486002)(6246003)(73956011)(66476007)(91956017)(102836004)(305945005)(316002)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB3328;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ypg/hMAXafduFGrbePCZLy5vFb4VijDAze7KK/wVZef2hiaYQ5VS+2vbx9JfsQDo8PtVEEm8A/S1Pcu8qtDWBj5BXOAtmeq4v16sHqkk0Icmxu5x/8C396tEjJM4J5p9rnYDgaC8gym0mLG2cFibvBWngWTzxZWWoxKC6Xlt46D9adS7zjItU9dmmZwmBCXoDflK3NoMG8hY22mbU3myKCG5upqb2EJ+gF4zQIRU/dSQafduGye6oR3hTmIud2SXYwCNDcEiyw1aPNf42AgWvXLweaFZW26o3jykco7qpgzxUtWOMImwXVISCwgAWSdiz2tkkqee8UH4DtBKtxLptxGz/WXhmJSDs7jsJYFIrYfjO1H6+wS1aps6idvRumlX7/HETveQ2Z9ZWObmHed/0dpLC3tmuzWinei73ofXHc8=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <FAFB90280CAF3348A527A0F3566CC0C2@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Cc:     netdev@vger.kernel.org
+References: <20190530031746.2040-1-dsahern@kernel.org>
+ <20190530031746.2040-2-dsahern@kernel.org>
+ <20190530104345.3598be4d@hermes.lan>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <22198e57-c573-abe6-16f7-92796daf7025@gmail.com>
+Date:   Thu, 30 May 2019 11:50:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: darbyshire-bryant.me.uk
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec5c2243-e128-48f3-b32c-08d6e526b346
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 17:46:09.7305
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB3328
+In-Reply-To: <20190530104345.3598be4d@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 5/30/19 11:43 AM, Stephen Hemminger wrote:
+> 
+> I assume older kernels ignore the attribute?
+> 
+> Also, how is this opt-in for running iproute2-next on old kernels?
+> 
 
-
-> On 30 May 2019, at 18:32, Stephen Hemminger <stephen@networkplumber.org> =
-wrote:
->=20
-> On Thu, 30 May 2019 16:43:20 +0000
-> Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> wrote:
->=20
->> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
->> index 51a0496f..b0c6a49a 100644
->> --- a/include/uapi/linux/pkt_cls.h
->> +++ b/include/uapi/linux/pkt_cls.h
->> @@ -105,7 +105,8 @@ enum tca_id {
->> 	TCA_ID_IFE =3D TCA_ACT_IFE,
->> 	TCA_ID_SAMPLE =3D TCA_ACT_SAMPLE,
->> 	/* other actions go here */
->> -	__TCA_ID_MAX =3D 255
->> +	TCA_ID_CTINFO,
->> +	__TCA_ID_MAX=3D255
->> };
->=20
-> This version of the file does not match upstream (the whitespace is diffe=
-rent).
-
-Ooops.  Fixed.  Will send a v2 at some point=
+from what I can see older kernel added the flag when generating a nest
+(users of nla_nest_start), but did not pay attention to the flag for
+messages received from userspace.
