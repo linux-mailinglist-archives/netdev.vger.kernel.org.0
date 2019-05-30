@@ -2,115 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E352FCF9
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA2522FD48
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfE3OM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 10:12:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41606 "EHLO vps0.lunn.ch"
+        id S1727413AbfE3OQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 10:16:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58472 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbfE3OM0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 10:12:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+H86mRokP/tfN99hKLpy0hFhxWu5/m0TZIPQ9gaX55s=; b=Ox81I2ND1JgW9utJ4zVhQoj8LA
-        9YZXin3hsONeLPSMHCRu6+XBGvsMHIWIzJ8jd2wDuTFClr1FWTLiRwK+k8KdrOZa79plPfoqe0ph7
-        ubTaLocpruZfiZ6pR8g4UwKIJNnd4EpDanKlHaWAsgdl8KwL2wZ+vxkEWaGrtLSc4cf4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWLn2-0007Ai-ES; Thu, 30 May 2019 16:12:20 +0200
-Date:   Thu, 30 May 2019 16:12:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell10g: report if the PHY fails to boot
- firmware
-Message-ID: <20190530141220.GG18059@lunn.ch>
-References: <E1hVYVG-0005D8-8w@rmk-PC.armlinux.org.uk>
- <20190528154238.ifudfslyofk22xoe@shell.armlinux.org.uk>
- <20190528161139.GQ18059@lunn.ch>
- <20190528162356.xjq53h4z7edvr3gl@shell.armlinux.org.uk>
- <20190529110315.uw4a24avp4czhcru@shell.armlinux.org.uk>
+        id S1727394AbfE3OQT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 10:16:19 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 56DA73082A98;
+        Thu, 30 May 2019 14:16:09 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3DE937AB52;
+        Thu, 30 May 2019 14:15:58 +0000 (UTC)
+Date:   Thu, 30 May 2019 10:15:55 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Subject: Re: [PATCH ghak90 V6 09/10] audit: add support for containerid to
+ network namespaces
+Message-ID: <20190530141555.qqcbasvyp7eokwjz@madcap2.tricolour.ca>
+References: <cover.1554732921.git.rgb@redhat.com>
+ <423ed5e5c5e4ed7c3e26ac7d2bd7c267aaae777c.1554732921.git.rgb@redhat.com>
+ <CAHC9VhQ9t-mvJGNCzArjg+MTGNXcZbVrWV4=RUD5ML_bHqua1Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190529110315.uw4a24avp4czhcru@shell.armlinux.org.uk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <CAHC9VhQ9t-mvJGNCzArjg+MTGNXcZbVrWV4=RUD5ML_bHqua1Q@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 30 May 2019 14:16:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Here's the fuller patch for what I'm suggesting:
+On 2019-05-29 18:17, Paul Moore wrote:
+> On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >
+> > Audit events could happen in a network namespace outside of a task
+> > context due to packets received from the net that trigger an auditing
+> > rule prior to being associated with a running task.  The network
+> > namespace could be in use by multiple containers by association to the
+> > tasks in that network namespace.  We still want a way to attribute
+> > these events to any potential containers.  Keep a list per network
+> > namespace to track these audit container identifiiers.
+> >
+> > Add/increment the audit container identifier on:
+> > - initial setting of the audit container identifier via /proc
+> > - clone/fork call that inherits an audit container identifier
+> > - unshare call that inherits an audit container identifier
+> > - setns call that inherits an audit container identifier
+> > Delete/decrement the audit container identifier on:
+> > - an inherited audit container identifier dropped when child set
+> > - process exit
+> > - unshare call that drops a net namespace
+> > - setns call that drops a net namespace
+> >
+> > Please see the github audit kernel issue for contid net support:
+> >   https://github.com/linux-audit/audit-kernel/issues/92
+> > Please see the github audit testsuiite issue for the test case:
+> >   https://github.com/linux-audit/audit-testsuite/issues/64
+> > Please see the github audit wiki for the feature overview:
+> >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > ---
+> >  include/linux/audit.h | 19 +++++++++++
+> >  kernel/audit.c        | 88 +++++++++++++++++++++++++++++++++++++++++++++++++--
+> >  kernel/nsproxy.c      |  4 +++
+> >  3 files changed, 108 insertions(+), 3 deletions(-)
 > 
->  drivers/net/phy/marvell10g.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
+> ...
 > 
-> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-> index 754cde873dde..86333d98b384 100644
-> --- a/drivers/net/phy/marvell10g.c
-> +++ b/drivers/net/phy/marvell10g.c
-> @@ -60,6 +60,8 @@ enum {
->  };
->  
->  struct mv3310_priv {
-> +	bool firmware_failed;
-> +
->  	struct device *hwmon_dev;
->  	char *hwmon_name;
->  };
-> @@ -214,6 +216,10 @@ static int mv3310_probe(struct phy_device *phydev)
->  	    (phydev->c45_ids.devices_in_package & mmd_mask) != mmd_mask)
->  		return -ENODEV;
->  
-> +	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
->  	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT);
->  	if (ret < 0)
->  		return ret;
-> @@ -221,13 +227,9 @@ static int mv3310_probe(struct phy_device *phydev)
->  	if (ret & MV_PMA_BOOT_FATAL) {
->  		dev_warn(&phydev->mdio.dev,
->  			 "PHY failed to boot firmware, status=%04x\n", ret);
-> -		return -ENODEV;
-> +		priv->firmware_failed = true;
->  	}
->  
-> -	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-> -	if (!priv)
-> -		return -ENOMEM;
-> -
->  	dev_set_drvdata(&phydev->mdio.dev, priv);
->  
->  	ret = mv3310_hwmon_probe(phydev);
-> @@ -247,6 +249,19 @@ static int mv3310_resume(struct phy_device *phydev)
->  	return mv3310_hwmon_config(phydev, true);
->  }
->  
-> +static void mv3310_link_change_notify(struct phy_device *phydev)
-> +{
-> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-> +	enum phy_state state = phydev->state;
-> +
-> +	if (priv->firmware_failed &&
-> +	    (state == PHY_UP || state == PHY_RESUMING)) {
-> +		dev_warn(&phydev->mdio.dev,
-> +			 "PHY firmware failure: link forced down");
-> +		phydev->state = state = PHY_HALTED;
-> +	}
-> +}
+> > diff --git a/kernel/audit.c b/kernel/audit.c
+> > index 6c742da66b32..996213591617 100644
+> > --- a/kernel/audit.c
+> > +++ b/kernel/audit.c
+> > @@ -376,6 +384,75 @@ static struct sock *audit_get_sk(const struct net *net)
+> >         return aunet->sk;
+> >  }
+> >
+> > +void audit_netns_contid_add(struct net *net, u64 contid)
+> > +{
+> > +       struct audit_net *aunet;
+> > +       struct list_head *contid_list;
+> > +       struct audit_contid *cont;
+> > +
+> > +       if (!net)
+> > +               return;
+> > +       if (!audit_contid_valid(contid))
+> > +               return;
+> > +       aunet = net_generic(net, audit_net_id);
+> > +       if (!aunet)
+> > +               return;
+> > +       contid_list = &aunet->contid_list;
+> > +       spin_lock(&aunet->contid_list_lock);
+> > +       list_for_each_entry_rcu(cont, contid_list, list)
+> > +               if (cont->id == contid) {
+> > +                       refcount_inc(&cont->refcount);
+> > +                       goto out;
+> > +               }
+> > +       cont = kmalloc(sizeof(struct audit_contid), GFP_ATOMIC);
+> > +       if (cont) {
+> > +               INIT_LIST_HEAD(&cont->list);
+> 
+> I thought you were going to get rid of this INIT_LIST_HEAD() call?
 
-Hi Russell
+I was intending to, and then Neil weighed in with this opinion:
 
-This looks good.
+	https://www.redhat.com/archives/linux-audit/2019-April/msg00014.html
 
-     Andrew
+If you feel that isn't important, please remove it.
+
+> > +               cont->id = contid;
+> > +               refcount_set(&cont->refcount, 1);
+> > +               list_add_rcu(&cont->list, contid_list);
+> > +       }
+> > +out:
+> > +       spin_unlock(&aunet->contid_list_lock);
+> > +}
+> 
+> --
+> paul moore
+> www.paul-moore.com
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
