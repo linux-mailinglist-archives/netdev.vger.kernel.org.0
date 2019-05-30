@@ -2,166 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E302FD77
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFDDD2FD8D
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727277AbfE3OUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 10:20:03 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:47314 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727019AbfE3OT7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 10:19:59 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 45B6F2005FF;
-        Thu, 30 May 2019 16:19:57 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 380D12002A0;
-        Thu, 30 May 2019 16:19:57 +0200 (CEST)
-Received: from fsr-ub1864-101.ea.freescale.net (fsr-ub1864-101.ea.freescale.net [10.171.82.13])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id A3E7F2062D;
-        Thu, 30 May 2019 16:19:56 +0200 (CEST)
-From:   laurentiu.tudor@nxp.com
-To:     netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
-        camelia.groza@nxp.com, leoyang.li@nxp.com
-Cc:     Joakim.Tjernlund@infinera.com, davem@davemloft.net,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: [PATCH v3 6/6] dpaa_eth: fix iova handling for sg frames
-Date:   Thu, 30 May 2019 17:19:51 +0300
-Message-Id: <20190530141951.6704-7-laurentiu.tudor@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
-References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727445AbfE3OUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 10:20:46 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:37906 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726678AbfE3OUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 10:20:45 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hWLv4-0007yH-Bt; Thu, 30 May 2019 10:20:40 -0400
+Date:   Thu, 30 May 2019 10:20:11 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: memory leak in sctp_process_init
+Message-ID: <20190530142011.GC1966@hmswarspite.think-freely.org>
+References: <00000000000097abb90589e804fd@google.com>
+ <20190528013600.GM5506@localhost.localdomain>
+ <20190528111550.GA4658@hmswarspite.think-freely.org>
+ <20190529190709.GE31099@hmswarspite.think-freely.org>
+ <20190529233757.GC3713@localhost.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190529233757.GC3713@localhost.localdomain>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+On Wed, May 29, 2019 at 08:37:57PM -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, May 29, 2019 at 03:07:09PM -0400, Neil Horman wrote:
+> > --- a/net/sctp/sm_make_chunk.c
+> > +++ b/net/sctp/sm_make_chunk.c
+> > @@ -2419,9 +2419,12 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+> >  	/* Copy cookie in case we need to resend COOKIE-ECHO. */
+> >  	cookie = asoc->peer.cookie;
+> >  	if (cookie) {
+> > +		if (asoc->peer.cookie_allocated)
+> > +			kfree(cookie);
+> >  		asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
+> >  		if (!asoc->peer.cookie)
+> >  			goto clean_up;
+> > +		asoc->peer.cookie_allocated=1;
+> >  	}
+> >  
+> >  	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
+> 
+> What if we kmemdup directly at sctp_process_param(), as it's done for
+> others already? Like SCTP_PARAM_RANDOM and SCTP_PARAM_HMAC_ALGO. I
+> don't see a reason for SCTP_PARAM_STATE_COOKIE to be different
+> here. This way it would be always allocated, and ready to be kfreed.
+> 
+> We still need to free it after the handshake, btw.
+> 
+>   Marcelo
+> 
 
-The driver relies on the no longer valid assumption that dma addresses
-(iovas) are identical to physical addressees and uses phys_to_virt() to
-make iova -> vaddr conversions. Fix this also for scatter-gather frames
-using the iova -> phys conversion function added in the previous patch.
-While at it, clean-up a redundant dpaa_bpid2pool() and pass the bp
-as parameter.
+Still untested, but something like this?
 
-Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
----
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 40 +++++++++++--------
- 1 file changed, 23 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 46194a04617a..7d978a93dffd 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1641,14 +1641,17 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index d2c7d0d2abc1..718b9917844e 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -393,6 +393,7 @@ void sctp_association_free(struct sctp_association *asoc)
+ 	kfree(asoc->peer.peer_random);
+ 	kfree(asoc->peer.peer_chunks);
+ 	kfree(asoc->peer.peer_hmacs);
++	kfree(asoc->peer.cookie);
  
- 	if (unlikely(qm_fd_get_format(fd) == qm_fd_sg)) {
- 		nr_frags = skb_shinfo(skb)->nr_frags;
--		dma_unmap_single(dev, addr,
--				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
--				 dma_dir);
+ 	/* Release the transport structures. */
+ 	list_for_each_safe(pos, temp, &asoc->peer.transport_addr_list) {
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 72e74503f9fc..ff365f22a3c1 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2431,14 +2431,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+ 	/* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
+ 	asoc->peer.rwnd = asoc->peer.i.a_rwnd;
  
- 		/* The sgt buffer has been allocated with netdev_alloc_frag(),
- 		 * it's from lowmem.
- 		 */
--		sgt = phys_to_virt(addr + qm_fd_get_offset(fd));
-+		sgt = phys_to_virt(dpaa_iova_to_phys(priv,
-+						     addr +
-+						     qm_fd_get_offset(fd)));
-+
-+		dma_unmap_single(dev, addr,
-+				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
-+				 dma_dir);
+-	/* Copy cookie in case we need to resend COOKIE-ECHO. */
+-	cookie = asoc->peer.cookie;
+-	if (cookie) {
+-		asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
+-		if (!asoc->peer.cookie)
+-			goto clean_up;
+-	}
+-
+ 	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
+ 	 * high (for example, implementations MAY use the size of the receiver
+ 	 * advertised window).
+@@ -2607,7 +2599,9 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 	case SCTP_PARAM_STATE_COOKIE:
+ 		asoc->peer.cookie_len =
+ 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
+-		asoc->peer.cookie = param.cookie->body;
++		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
++		if (!asoc->peer.cookie)
++			retval = 0;
+ 		break;
  
- 		/* sgt[0] is from lowmem, was dma_map_single()-ed */
- 		dma_unmap_single(dev, qm_sg_addr(&sgt[0]),
-@@ -1663,7 +1666,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 		}
- 
- 		/* Free the page frag that we allocated on Tx */
--		skb_free_frag(phys_to_virt(addr));
-+		skb_free_frag(skbh);
- 	} else {
- 		dma_unmap_single(dev, addr,
- 				 skb_tail_pointer(skb) - (u8 *)skbh, dma_dir);
-@@ -1724,14 +1727,14 @@ static struct sk_buff *contig_fd_to_skb(const struct dpaa_priv *priv,
-  * The page fragment holding the S/G Table is recycled here.
-  */
- static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
--				    const struct qm_fd *fd)
-+				    const struct qm_fd *fd,
-+				    struct dpaa_bp *dpaa_bp,
-+				    void *vaddr)
- {
- 	ssize_t fd_off = qm_fd_get_offset(fd);
--	dma_addr_t addr = qm_fd_addr(fd);
- 	const struct qm_sg_entry *sgt;
- 	struct page *page, *head_page;
--	struct dpaa_bp *dpaa_bp;
--	void *vaddr, *sg_vaddr;
-+	void *sg_vaddr;
- 	int frag_off, frag_len;
- 	struct sk_buff *skb;
- 	dma_addr_t sg_addr;
-@@ -1740,7 +1743,6 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
- 	int *count_ptr;
- 	int i;
- 
--	vaddr = phys_to_virt(addr);
- 	WARN_ON(!IS_ALIGNED((unsigned long)vaddr, SMP_CACHE_BYTES));
- 
- 	/* Iterate through the SGT entries and add data buffers to the skb */
-@@ -1751,14 +1753,17 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
- 		WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
- 
- 		sg_addr = qm_sg_addr(&sgt[i]);
--		sg_vaddr = phys_to_virt(sg_addr);
--		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
--				    SMP_CACHE_BYTES));
- 
- 		/* We may use multiple Rx pools */
- 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
--		if (!dpaa_bp)
-+		if (!dpaa_bp) {
-+			pr_info("%s: fail to get dpaa_bp for sg bpid %d\n",
-+				__func__, sgt[i].bpid);
- 			goto free_buffers;
-+		}
-+		sg_vaddr = phys_to_virt(dpaa_iova_to_phys(priv, sg_addr));
-+		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
-+				    SMP_CACHE_BYTES));
- 
- 		count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
- 		dma_unmap_single(dpaa_bp->dev, sg_addr, dpaa_bp->size,
-@@ -1830,10 +1835,11 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
- 	/* free all the SG entries */
- 	for (i = 0; i < DPAA_SGT_MAX_ENTRIES ; i++) {
- 		sg_addr = qm_sg_addr(&sgt[i]);
--		sg_vaddr = phys_to_virt(sg_addr);
--		skb_free_frag(sg_vaddr);
- 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
- 		if (dpaa_bp) {
-+			sg_addr = dpaa_iova_to_phys(priv, sg_addr);
-+			sg_vaddr = phys_to_virt(sg_addr);
-+			skb_free_frag(sg_vaddr);
- 			count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
- 			(*count_ptr)--;
- 		}
-@@ -2326,7 +2332,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
- 	if (likely(fd_format == qm_fd_contig))
- 		skb = contig_fd_to_skb(priv, fd, dpaa_bp, vaddr);
- 	else
--		skb = sg_fd_to_skb(priv, fd);
-+		skb = sg_fd_to_skb(priv, fd, dpaa_bp, vaddr);
- 	if (!skb)
- 		return qman_cb_dqrr_consume;
- 
--- 
-2.17.1
-
+ 	case SCTP_PARAM_HEARTBEAT_INFO:
