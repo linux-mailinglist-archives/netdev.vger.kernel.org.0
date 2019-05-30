@@ -2,84 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D04D630198
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC8B0301A1
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfE3SNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:13:33 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46722 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3SNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:13:32 -0400
-Received: by mail-qt1-f196.google.com with SMTP id z19so8081856qtz.13
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:13:32 -0700 (PDT)
+        id S1726735AbfE3SQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:16:17 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:43901 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726125AbfE3SQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:16:17 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m14so4503791qka.10;
+        Thu, 30 May 2019 11:16:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HXX4EV/8xNoU9Sdh27c4Np9iv/07yW+jWe7HUpYM8MU=;
+        b=gNJ5gKkejhZZwHb37QvMpiRNfbPBNK+sECH4rO87bFg4f+BncL0TcRQu4lJoAn2ZIg
+         zne+t8QSbAxpfUrDqncR8c4AZTx3FCTD1KnTe5ejtdn8e3evs7QAu0lgBlH0TFYZL3KH
+         MaoCJS+FuWwDDEaxkv49u7YBr+UuU/MQm7bg0KXmZqH8dHn+bmOgMxpogO9j2ppnToeh
+         kVUeMo2NWIuoM898FsPAjv39ZlcsU11WDraAMnuGK8j2g8zWedgO7XbV2mZlzPG+n91e
+         qAg49cDJa9HfxqhPVa+bwR5HDSY300oC0v+w4L3tcQnJKt1ymZz83d+yW0sGEfvHup7Y
+         wxsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=swUKp54FsABaRx/HQxckmg32aK739BKT6ewItuokNDk=;
-        b=b8eCgtO1H4D46inJJ91UlgtdYsJ3SzhiekGfNkAsX0dDoXU4gvj2hPKu+lkP15PtvU
-         9svm0GOtJg9kYqyiWIiVIzd7lEqsNLllbKC+19iteuCFh+PEmjvJWX62vRc/6i3Un6rS
-         53WAD2u6GmccXHxBNpDbL4YX82wWtVZcjfrTPycrvFZTj1wKhgYCa8hnOM22Ge0/I+QN
-         RXTZACblLN8s2BUUX84/OBZ+JkKHDbv/4wrg2Yrb66JCVODenIBs8X0bLjMjtYchN6Nj
-         LeQRdnyZoevfwQSKaqHvKRp1tqSG9lyVR7UC8qPJIIMuU1uzFmR6+9z9dbhXHLc7VcCM
-         PfJw==
-X-Gm-Message-State: APjAAAVaoHMqah6Z0RmLByhHlxTaV/9i614NRNPvmxhWt5XgE2Zjnc0q
-        8TkoSxIs0cvFcxtfYk9h3migjQ==
-X-Google-Smtp-Source: APXvYqyndgU/JBNxGTz081BydLXYPXGN+1/yzyTBopwAP5jF6DEPVUhyIlMc188XrJEeCGJfnA2k0g==
-X-Received: by 2002:aed:2494:: with SMTP id t20mr4813376qtc.135.1559240011968;
-        Thu, 30 May 2019 11:13:31 -0700 (PDT)
-Received: from redhat.com (pool-100-0-197-103.bstnma.fios.verizon.net. [100.0.197.103])
-        by smtp.gmail.com with ESMTPSA id k9sm1894099qki.20.2019.05.30.11.13.30
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 30 May 2019 11:13:31 -0700 (PDT)
-Date:   Thu, 30 May 2019 14:13:28 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, peterx@redhat.com,
-        James.Bottomley@hansenpartnership.com, hch@infradead.org,
-        jglisse@redhat.com, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-        christophe.de.dinechin@gmail.com, jrdr.linux@gmail.com
-Subject: Re: [PATCH net-next 0/6] vhost: accelerate metadata access
-Message-ID: <20190530141243-mutt-send-email-mst@kernel.org>
-References: <20190524081218.2502-1-jasowang@redhat.com>
- <20190530.110730.2064393163616673523.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HXX4EV/8xNoU9Sdh27c4Np9iv/07yW+jWe7HUpYM8MU=;
+        b=KGX2zE4qM8ue63VjCBb3k/IEaCbY2LChTeuG6HDiRV4SNyto0MpmxqXQ9PS9NdFEnX
+         9eSWuSwqaYb+dwEhcTvzSKIPAy4sVYlrfWP8dpsFE0rQM7H0ww8m8JdPPsqFBCeslBRO
+         +ptIWlDRzvP+zCrnjcQZkN2Utg2CYVA9dDzFxVQZE9Jh3ghPhDk3iW1IVTEQlO5arMny
+         QONxHYj0TJm7opXzHnyZVvOcD6/wUONgeMF72n++2QGs+dsttAZ5h53DWc3+4ajUZQQO
+         nOysOa3RXbmNU3PrTcCK/TaqGWIH4L0lKYcP4NeTv4n07gOseIZ3lMdfzRKjxSRFiP4T
+         DUcQ==
+X-Gm-Message-State: APjAAAWuVKQVWgX3d+buXubSc70SK51QJa+Yb775iEL7EOrt83pRdJgz
+        DSa7+6yk180tuRJakM7M/FE8xAbGnWpgYHrHk+4=
+X-Google-Smtp-Source: APXvYqyiywQfVs1X2jbbr3hG7cR8I0d2CJVhb+OpCTeKdzIChJFJ/PwFcpDoUzAGk2idaTiRB0DgeVp1fJRN5HD1u+w=
+X-Received: by 2002:ae9:ee0b:: with SMTP id i11mr4080848qkg.96.1559240176366;
+ Thu, 30 May 2019 11:16:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190530.110730.2064393163616673523.davem@davemloft.net>
+References: <1559202287-15553-1-git-send-email-jiong.wang@netronome.com>
+In-Reply-To: <1559202287-15553-1-git-send-email-jiong.wang@netronome.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Thu, 30 May 2019 11:16:04 -0700
+Message-ID: <CAPhsuW4cFacLYAF1=8sG3gxu-g+Rzz6ySaFeBmL-sttxLZZLHw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: doc: update answer for 32-bit subregister question
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 11:07:30AM -0700, David Miller wrote:
-> From: Jason Wang <jasowang@redhat.com>
-> Date: Fri, 24 May 2019 04:12:12 -0400
-> 
-> > This series tries to access virtqueue metadata through kernel virtual
-> > address instead of copy_user() friends since they had too much
-> > overheads like checks, spec barriers or even hardware feature
-> > toggling like SMAP. This is done through setup kernel address through
-> > direct mapping and co-opreate VM management with MMU notifiers.
-> > 
-> > Test shows about 23% improvement on TX PPS. TCP_STREAM doesn't see
-> > obvious improvement.
-> 
-> I'm still waiting for some review from mst.
-> 
-> If I don't see any review soon I will just wipe these changes from
-> patchwork as it serves no purpose to just let them rot there.
-> 
-> Thank you.
+On Thu, May 30, 2019 at 12:46 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+>
+> There has been quite a few progress around the two steps mentioned in the
+> answer to the following question:
+>
+>   Q: BPF 32-bit subregister requirements
+>
+> This patch updates the answer to reflect what has been done.
+>
+> v1:
+>  - Integrated rephrase from Quentin and Jakub.
+>
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+> ---
+>  Documentation/bpf/bpf_design_QA.rst | 30 +++++++++++++++++++++++++-----
+>  1 file changed, 25 insertions(+), 5 deletions(-)
+>
+> diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
+> index cb402c5..5092a2a 100644
+> --- a/Documentation/bpf/bpf_design_QA.rst
+> +++ b/Documentation/bpf/bpf_design_QA.rst
+> @@ -172,11 +172,31 @@ registers which makes BPF inefficient virtual machine for 32-bit
+>  CPU architectures and 32-bit HW accelerators. Can true 32-bit registers
+>  be added to BPF in the future?
+>
+> -A: NO. The first thing to improve performance on 32-bit archs is to teach
+> -LLVM to generate code that uses 32-bit subregisters. Then second step
+> -is to teach verifier to mark operations where zero-ing upper bits
+> -is unnecessary. Then JITs can take advantage of those markings and
+> -drastically reduce size of generated code and improve performance.
+> +A: NO
 
-I thought we agreed I'm merging this through my tree, not net-next.
-So you can safely wipe it.
+Add period "."?
 
-Thanks!
+> +
+> +But some optimizations on zero-ing the upper 32 bits for BPF registers are
+> +available, and can be leveraged to improve the performance of JIT compilers
+> +for 32-bit architectures.
 
--- 
-MST
+I guess it should be "improve the performance of JITed BPF programs for 32-bit
+architectures"?
+
+Thanks,
+Song
+
+> +
+> +Starting with version 7, LLVM is able to generate instructions that operate
+> +on 32-bit subregisters, provided the option -mattr=+alu32 is passed for
+> +compiling a program. Furthermore, the verifier can now mark the
+> +instructions for which zero-ing the upper bits of the destination register
+> +is required, and insert an explicit zero-extension (zext) instruction
+> +(a mov32 variant). This means that for architectures without zext hardware
+> +support, the JIT back-ends do not need to clear the upper bits for
+> +subregisters written by alu32 instructions or narrow loads. Instead, the
+> +back-ends simply need to support code generation for that mov32 variant,
+> +and to overwrite bpf_jit_needs_zext() to make it return "true" (in order to
+> +enable zext insertion in the verifier).
+> +
+> +Note that it is possible for a JIT back-end to have partial hardware
+> +support for zext. In that case, if verifier zext insertion is enabled,
+> +it could lead to the insertion of unnecessary zext instructions. Such
+> +instructions could be removed by creating a simple peephole inside the JIT
+> +back-end: if one instruction has hardware support for zext and if the next
+> +instruction is an explicit zext, then the latter can be skipped when doing
+> +the code generation.
+>
+>  Q: Does BPF have a stable ABI?
+>  ------------------------------
+> --
+> 2.7.4
+>
