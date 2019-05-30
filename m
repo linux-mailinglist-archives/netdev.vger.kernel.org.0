@@ -2,185 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD30E302DC
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17821302DF
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:37:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbfE3Tgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 15:36:39 -0400
-Received: from mail-eopbgr130041.outbound.protection.outlook.com ([40.107.13.41]:61775
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725440AbfE3Tgj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 15:36:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7WfGKyIjyBgUax6O8JWInYDL0GaVCSz42gkN7iPVDUM=;
- b=LWdtoM3G0c9aVxoEfKDu5hLsmQrZsTgkL8kSOe5ANf8nuHRiTWUMB4PAgseEbtvcNfolDP2rfBIJH7bSufPdNvpJt6r3CWWgyyktK39oRKPQr0snQ9rPcL/u6eBF5cYVJbYLBhB6QFFa1pJ2j/M021pVGSUh8CNyLejmdA6x4so=
-Received: from VI1PR05MB5902.eurprd05.prod.outlook.com (20.178.125.223) by
- VI1PR05MB6606.eurprd05.prod.outlook.com (20.178.205.95) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.17; Thu, 30 May 2019 19:36:32 +0000
-Received: from VI1PR05MB5902.eurprd05.prod.outlook.com
- ([fe80::dd31:2532:9adf:9b38]) by VI1PR05MB5902.eurprd05.prod.outlook.com
- ([fe80::dd31:2532:9adf:9b38%6]) with mapi id 15.20.1922.021; Thu, 30 May 2019
- 19:36:32 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Roi Dayan <roid@mellanox.com>,
-        "xiangxia.m.yue@gmail.com" <xiangxia.m.yue@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5e: Allow matching only enc_key_id/enc_dst_port
- for decapsulation action
-Thread-Topic: [PATCH] net/mlx5e: Allow matching only enc_key_id/enc_dst_port
- for decapsulation action
-Thread-Index: AQHVBYRbOldYs/M930mTRgSMdkZgw6ZnOV2AgBL5soCACf/cgA==
-Date:   Thu, 30 May 2019 19:36:32 +0000
-Message-ID: <2347558ec8e71dde14b05ae30048b2bfc6f32134.camel@mellanox.com>
-References: <1557167317-50202-1-git-send-email-xiangxia.m.yue@gmail.com>
-         <d7bd1535-c56d-5d8c-a44f-611a4fcea9b4@mellanox.com>
-         <CAMDZJNVTNBypD8sMG86RqMZ2b=sxqk8NDxGDu2zv3VW8XVaPcQ@mail.gmail.com>
-In-Reply-To: <CAMDZJNVTNBypD8sMG86RqMZ2b=sxqk8NDxGDu2zv3VW8XVaPcQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f25abfec-2b24-4982-c3ce-08d6e5361ee9
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6606;
-x-ms-traffictypediagnostic: VI1PR05MB6606:
-x-microsoft-antispam-prvs: <VI1PR05MB66061FB6B45B4D3EF915A10EBE180@VI1PR05MB6606.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 00531FAC2C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(346002)(396003)(376002)(366004)(136003)(199004)(189003)(86362001)(229853002)(66946007)(8676002)(53936002)(99286004)(66476007)(81166006)(6246003)(5660300002)(8936002)(73956011)(26005)(25786009)(71200400001)(446003)(256004)(110136005)(64756008)(66556008)(66446008)(71190400001)(81156014)(2501003)(486006)(58126008)(4326008)(2616005)(476003)(14454004)(316002)(68736007)(66066001)(11346002)(102836004)(6506007)(2906002)(36756003)(7736002)(76176011)(6486002)(305945005)(6512007)(6436002)(478600001)(91956017)(53546011)(118296001)(6116002)(76116006)(186003)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6606;H:VI1PR05MB5902.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: S8jxkgRJjzPMtyBnixINrO1j0yfedD9wRQ/VRUE0eVJHQ+nGN4vNI1rSHKaUIPTNVA+WSeeIEpaUdT7HW0AGh4s5cjG0rRXbVAX2+zAqXGZcC6VYPi031OmEKbnDw47JhBJtji31gH8kMTKRiP4A5MIj3kEDwt6xNTckVFgFZOtXdEMxng39QuQJmZ1iWAcHLactcG/RLN3Les912AxDaPTNJX9IblxmlakZmpdyt0QBsZHoWwqj4Xcra7c9G0nE4sjQUE/WmcV56D/L/9QkQ7xYxw3SSicmoVShDJAp75C8LY3SHwUGnFOMHDruo+CTcevbGyKb0ozPQSCGIat5VUnQLWxDdsTJ+Gy9jLtbLcsHhCNouLEVkD38uvgBzqXgtnMVsKtM2wl4sZYOe/34SyNOHxH3Uve8yae76eciZZo=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B3CA372F8A06E64FA21414A2A5BE6356@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f25abfec-2b24-4982-c3ce-08d6e5361ee9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 19:36:32.7685
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6606
+        id S1726550AbfE3Tg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 15:36:56 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58942 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726307AbfE3Tgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:36:55 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3E6AA14DA893D;
+        Thu, 30 May 2019 12:36:55 -0700 (PDT)
+Date:   Thu, 30 May 2019 12:36:54 -0700 (PDT)
+Message-Id: <20190530.123654.773645789138003217.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, vadimp@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/8] mlxsw: Hardware monitoring enhancements
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190529084722.22719-1-idosch@idosch.org>
+References: <20190529084722.22719-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 12:36:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTA1LTI0IGF0IDE4OjU0ICswODAwLCBUb25naGFvIFpoYW5nIHdyb3RlOg0K
-PiBPbiBTdW4sIE1heSAxMiwgMjAxOSBhdCA1OjA4IFBNIFJvaSBEYXlhbiA8cm9pZEBtZWxsYW5v
-eC5jb20+IHdyb3RlOg0KPiA+IA0KPiA+IA0KPiA+IE9uIDA2LzA1LzIwMTkgMjE6MjgsIHhpYW5n
-eGlhLm0ueXVlQGdtYWlsLmNvbSB3cm90ZToNCj4gPiA+IEZyb206IFRvbmdoYW8gWmhhbmcgPHhp
-YW5neGlhLm0ueXVlQGdtYWlsLmNvbT4NCj4gPiA+IA0KPiA+ID4gSW4gc29tZSBjYXNlLCB3ZSBk
-b24ndCBjYXJlIHRoZSBlbmNfc3JjX2lwIGFuZCBlbmNfZHN0X2lwLCBhbmQNCj4gPiA+IGlmIHdl
-IGRvbid0IG1hdGNoIHRoZSBmaWVsZCBlbmNfc3JjX2lwIGFuZCBlbmNfZHN0X2lwLCB3ZSBjYW4g
-dXNlDQo+ID4gPiBmZXdlciBmbG93cyBpbiBoYXJkd2FyZSB3aGVuIHJldmljZSB0aGUgdHVubmVs
-IHBhY2tldHMuIEZvcg0KPiA+ID4gZXhhbXBsZSwNCj4gPiA+IHRoZSB0dW5uZWwgcGFja2V0cyBt
-YXkgYmUgc2VudCBmcm9tIGRpZmZlcmVudCBob3N0cywgd2UgbXVzdA0KPiA+ID4gb2ZmbG9hZA0K
-PiA+ID4gb25lIHJ1bGUgZm9yIGVhY2ggaG9zdC4NCj4gPiA+IA0KPiA+ID4gICAgICAgJCB0YyBm
-aWx0ZXIgYWRkIGRldiB2eGxhbjAgcHJvdG9jb2wgaXAgcGFyZW50IGZmZmY6IHByaW8gMQ0KPiA+
-ID4gXA0KPiA+ID4gICAgICAgICAgICAgICBmbG93ZXIgZHN0X21hYyAwMDoxMToyMjozMzo0NDow
-MCBcDQo+ID4gPiAgICAgICAgICAgICAgIGVuY19zcmNfaXAgSG9zdDBfSVAgZW5jX2RzdF9pcCAy
-LjIuMi4xMDAgXA0KPiA+ID4gICAgICAgICAgICAgICBlbmNfZHN0X3BvcnQgNDc4OSBlbmNfa2V5
-X2lkIDEwMCBcDQo+ID4gPiAgICAgICAgICAgICAgIGFjdGlvbiB0dW5uZWxfa2V5IHVuc2V0IGFj
-dGlvbiBtaXJyZWQgZWdyZXNzDQo+ID4gPiByZWRpcmVjdCBkZXYgZXRoMF8xDQo+ID4gPiANCj4g
-PiA+ICAgICAgICQgdGMgZmlsdGVyIGFkZCBkZXYgdnhsYW4wIHByb3RvY29sIGlwIHBhcmVudCBm
-ZmZmOiBwcmlvIDENCj4gPiA+IFwNCj4gPiA+ICAgICAgICAgICAgICAgZmxvd2VyIGRzdF9tYWMg
-MDA6MTE6MjI6MzM6NDQ6MDAgXA0KPiA+ID4gICAgICAgICAgICAgICBlbmNfc3JjX2lwIEhvc3Qx
-X0lQIGVuY19kc3RfaXAgMi4yLjIuMTAwIFwNCj4gPiA+ICAgICAgICAgICAgICAgZW5jX2RzdF9w
-b3J0IDQ3ODkgZW5jX2tleV9pZCAxMDAgXA0KPiA+ID4gICAgICAgICAgICAgICBhY3Rpb24gdHVu
-bmVsX2tleSB1bnNldCBhY3Rpb24gbWlycmVkIGVncmVzcw0KPiA+ID4gcmVkaXJlY3QgZGV2IGV0
-aDBfMQ0KPiA+ID4gDQo+ID4gPiBJZiB3ZSBzdXBwb3J0IGZsb3dzIHdoaWNoIG9ubHkgbWF0Y2gg
-dGhlIGVuY19rZXlfaWQgYW5kDQo+ID4gPiBlbmNfZHN0X3BvcnQsDQo+ID4gPiBhIGZsb3cgY2Fu
-IHByb2Nlc3MgdGhlIHBhY2tldHMgc2VudCB0byBWTSB3aGljaCAobWFjDQo+ID4gPiAwMDoxMToy
-MjozMzo0NDowMCkuDQo+ID4gPiANCj4gPiA+ICAgICAgICQgdGMgZmlsdGVyIGFkZCBkZXYgdnhs
-YW4wIHByb3RvY29sIGlwIHBhcmVudCBmZmZmOiBwcmlvIDENCj4gPiA+IFwNCj4gPiA+ICAgICAg
-ICAgICAgICAgZmxvd2VyIGRzdF9tYWMgMDA6MTE6MjI6MzM6NDQ6MDAgXA0KPiA+ID4gICAgICAg
-ICAgICAgICBlbmNfZHN0X3BvcnQgNDc4OSBlbmNfa2V5X2lkIDEwMCBcDQo+ID4gPiAgICAgICAg
-ICAgICAgIGFjdGlvbiB0dW5uZWxfa2V5IHVuc2V0IGFjdGlvbiBtaXJyZWQgZWdyZXNzDQo+ID4g
-PiByZWRpcmVjdCBkZXYgZXRoMF8xDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFRvbmdo
-YW8gWmhhbmcgPHhpYW5neGlhLm0ueXVlQGdtYWlsLmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gIGRy
-aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90Yy5jIHwgMjcgKysrKysr
-Ky0tDQo+ID4gPiAtLS0tLS0tLS0tLS0tLS0tDQo+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5z
-ZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPiA+ID4gYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPiA+ID4gaW5k
-ZXggMTIyZjQ1Ny4uOTFlNGRiMSAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVy
-bmV0L21lbGxhbm94L21seDUvY29yZS9lbl90Yy5jDQo+ID4gPiArKysgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYw0KPiA+ID4gQEAgLTEzMzksNyArMTMz
-OSw2IEBAIHN0YXRpYyBpbnQgcGFyc2VfdHVubmVsX2F0dHIoc3RydWN0DQo+ID4gPiBtbHg1ZV9w
-cml2ICpwcml2LA0KPiA+ID4gICAgICAgdm9pZCAqaGVhZGVyc192ID0gTUxYNV9BRERSX09GKGZ0
-ZV9tYXRjaF9wYXJhbSwgc3BlYy0NCj4gPiA+ID5tYXRjaF92YWx1ZSwNCj4gPiA+ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBvdXRlcl9oZWFkZXJzKTsNCj4gPiA+ICAgICAg
-IHN0cnVjdCBmbG93X3J1bGUgKnJ1bGUgPQ0KPiA+ID4gdGNfY2xzX2Zsb3dlcl9vZmZsb2FkX2Zs
-b3dfcnVsZShmKTsNCj4gPiA+IC0gICAgIHN0cnVjdCBmbG93X21hdGNoX2NvbnRyb2wgZW5jX2Nv
-bnRyb2w7DQo+ID4gPiAgICAgICBpbnQgZXJyOw0KPiA+ID4gDQo+ID4gPiAgICAgICBlcnIgPSBt
-bHg1ZV90Y190dW5fcGFyc2UoZmlsdGVyX2RldiwgcHJpdiwgc3BlYywgZiwNCj4gPiA+IEBAIC0x
-MzUwLDkgKzEzNDksNyBAQCBzdGF0aWMgaW50IHBhcnNlX3R1bm5lbF9hdHRyKHN0cnVjdA0KPiA+
-ID4gbWx4NWVfcHJpdiAqcHJpdiwNCj4gPiA+ICAgICAgICAgICAgICAgcmV0dXJuIGVycjsNCj4g
-PiA+ICAgICAgIH0NCj4gPiA+IA0KPiA+ID4gLSAgICAgZmxvd19ydWxlX21hdGNoX2VuY19jb250
-cm9sKHJ1bGUsICZlbmNfY29udHJvbCk7DQo+ID4gPiAtDQo+ID4gPiAtICAgICBpZiAoZW5jX2Nv
-bnRyb2wua2V5LT5hZGRyX3R5cGUgPT0NCj4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9JUFY0X0FE
-RFJTKSB7DQo+ID4gPiArICAgICBpZiAoZmxvd19ydWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4g
-RkxPV19ESVNTRUNUT1JfS0VZX0VOQ19JUFY0X0FERFJTKSkgew0KPiA+ID4gICAgICAgICAgICAg
-ICBzdHJ1Y3QgZmxvd19tYXRjaF9pcHY0X2FkZHJzIG1hdGNoOw0KPiA+ID4gDQo+ID4gPiAgICAg
-ICAgICAgICAgIGZsb3dfcnVsZV9tYXRjaF9lbmNfaXB2NF9hZGRycyhydWxlLCAmbWF0Y2gpOw0K
-PiA+ID4gQEAgLTEzNzIsNyArMTM2OSw3IEBAIHN0YXRpYyBpbnQgcGFyc2VfdHVubmVsX2F0dHIo
-c3RydWN0DQo+ID4gPiBtbHg1ZV9wcml2ICpwcml2LA0KPiA+ID4gDQo+ID4gPiAgICAgICAgICAg
-ICAgIE1MWDVfU0VUX1RPX09ORVMoZnRlX21hdGNoX3NldF9seXJfMl80LCBoZWFkZXJzX2MsDQo+
-ID4gPiBldGhlcnR5cGUpOw0KPiA+ID4gICAgICAgICAgICAgICBNTFg1X1NFVChmdGVfbWF0Y2hf
-c2V0X2x5cl8yXzQsIGhlYWRlcnNfdiwNCj4gPiA+IGV0aGVydHlwZSwgRVRIX1BfSVApOw0KPiA+
-ID4gLSAgICAgfSBlbHNlIGlmIChlbmNfY29udHJvbC5rZXktPmFkZHJfdHlwZSA9PQ0KPiA+ID4g
-RkxPV19ESVNTRUNUT1JfS0VZX0lQVjZfQUREUlMpIHsNCj4gPiA+ICsgICAgIH0gZWxzZSBpZiAo
-Zmxvd19ydWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4gRkxPV19ESVNTRUNUT1JfS0VZX0VOQ19J
-UFY2X0FERFJTKSkgew0KPiA+ID4gICAgICAgICAgICAgICBzdHJ1Y3QgZmxvd19tYXRjaF9pcHY2
-X2FkZHJzIG1hdGNoOw0KPiA+ID4gDQo+ID4gPiAgICAgICAgICAgICAgIGZsb3dfcnVsZV9tYXRj
-aF9lbmNfaXB2Nl9hZGRycyhydWxlLCAmbWF0Y2gpOw0KPiA+ID4gQEAgLTE1MDQsMjIgKzE1MDEs
-MTIgQEAgc3RhdGljIGludCBfX3BhcnNlX2Nsc19mbG93ZXIoc3RydWN0DQo+ID4gPiBtbHg1ZV9w
-cml2ICpwcml2LA0KPiA+ID4gICAgICAgICAgICAgICByZXR1cm4gLUVPUE5PVFNVUFA7DQo+ID4g
-PiAgICAgICB9DQo+ID4gPiANCj4gPiA+IC0gICAgIGlmICgoZmxvd19ydWxlX21hdGNoX2tleShy
-dWxlLA0KPiA+ID4gRkxPV19ESVNTRUNUT1JfS0VZX0VOQ19JUFY0X0FERFJTKSB8fA0KPiA+ID4g
-LSAgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+ID4gPiBGTE9XX0RJU1NFQ1RP
-Ul9LRVlfRU5DX0tFWUlEKSB8fA0KPiA+ID4gLSAgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5
-KHJ1bGUsDQo+ID4gPiBGTE9XX0RJU1NFQ1RPUl9LRVlfRU5DX1BPUlRTKSkgJiYNCj4gPiA+IC0g
-ICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+ID4gPiBGTE9XX0RJU1NFQ1RPUl9L
-RVlfRU5DX0NPTlRST0wpKSB7DQo+ID4gPiAtICAgICAgICAgICAgIHN0cnVjdCBmbG93X21hdGNo
-X2NvbnRyb2wgbWF0Y2g7DQo+ID4gPiAtDQo+ID4gPiAtICAgICAgICAgICAgIGZsb3dfcnVsZV9t
-YXRjaF9lbmNfY29udHJvbChydWxlLCAmbWF0Y2gpOw0KPiA+ID4gLSAgICAgICAgICAgICBzd2l0
-Y2ggKG1hdGNoLmtleS0+YWRkcl90eXBlKSB7DQo+ID4gPiAtICAgICAgICAgICAgIGNhc2UgRkxP
-V19ESVNTRUNUT1JfS0VZX0lQVjRfQUREUlM6DQo+ID4gPiAtICAgICAgICAgICAgIGNhc2UgRkxP
-V19ESVNTRUNUT1JfS0VZX0lQVjZfQUREUlM6DQo+ID4gPiAtICAgICAgICAgICAgICAgICAgICAg
-aWYgKHBhcnNlX3R1bm5lbF9hdHRyKHByaXYsIHNwZWMsIGYsDQo+ID4gPiBmaWx0ZXJfZGV2LCB0
-dW5uZWxfbWF0Y2hfbGV2ZWwpKQ0KPiA+ID4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-cmV0dXJuIC1FT1BOT1RTVVBQOw0KPiA+ID4gLSAgICAgICAgICAgICAgICAgICAgIGJyZWFrOw0K
-PiA+ID4gLSAgICAgICAgICAgICBkZWZhdWx0Og0KPiA+ID4gKyAgICAgaWYgKGZsb3dfcnVsZV9t
-YXRjaF9rZXkocnVsZSwNCj4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9FTkNfSVBWNF9BRERSUykg
-fHwNCj4gPiA+ICsgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+ID4gPiBGTE9X
-X0RJU1NFQ1RPUl9LRVlfRU5DX0lQVjZfQUREUlMpIHx8DQo+ID4gPiArICAgICAgICAgZmxvd19y
-dWxlX21hdGNoX2tleShydWxlLCBGTE9XX0RJU1NFQ1RPUl9LRVlfRU5DX0tFWUlEKQ0KPiA+ID4g
-fHwNCj4gPiA+ICsgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+ID4gPiBGTE9X
-X0RJU1NFQ1RPUl9LRVlfRU5DX1BPUlRTKSkgew0KPiA+ID4gKyAgICAgICAgICAgICBpZiAocGFy
-c2VfdHVubmVsX2F0dHIocHJpdiwgc3BlYywgZiwgZmlsdGVyX2RldiwNCj4gPiA+IHR1bm5lbF9t
-YXRjaF9sZXZlbCkpDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FT1BOT1RT
-VVBQOw0KPiA+ID4gLSAgICAgICAgICAgICB9DQo+ID4gPiANCj4gPiA+ICAgICAgICAgICAgICAg
-LyogSW4gZGVjYXAgZmxvdywgaGVhZGVyIHBvaW50ZXJzIHNob3VsZCBwb2ludCB0bw0KPiA+ID4g
-dGhlIGlubmVyDQo+ID4gPiAgICAgICAgICAgICAgICAqIGhlYWRlcnMsIG91dGVyIGhlYWRlciB3
-ZXJlIGFscmVhZHkgc2V0IGJ5DQo+ID4gPiBwYXJzZV90dW5uZWxfYXR0cg0KPiA+ID4gDQo+ID4g
-DQo+ID4gUmV2aWV3ZWQtYnk6IFJvaSBEYXlhbiA8cm9pZEBtZWxsYW5veC5jb20+DQo+IEhpIFNh
-ZWVkLA0KPiB0aGlzIHBhdGNoIGlzIHJlYWR5LCB3aWxsIGJlIGFwcGxpZWQgPw0KDQpIaSBUb25n
-aGFvLA0Kc29ycnkgZm9yIHRoZSBkZWxheSwgdGhlcmUgaXMgc29tZSBjb25mbGljdCB3aXRoIGFu
-IGludGVybmFsIHBhdGNoIGluDQpteSB0cmVlLg0KSSB3aWxsIHJlc29sdmUgaXQgc29vbiBhbmQg
-YXBwbHkgeW91ciBwYXRjaCwgd2lsbCBsZXQgeW91IGtub3cuDQoNClRoYW5rcywNClNhZWVkLg0K
-DQo=
+From: Ido Schimmel <idosch@idosch.org>
+Date: Wed, 29 May 2019 11:47:14 +0300
+
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> This patchset from Vadim provides various hardware monitoring related
+> improvements for mlxsw.
+> 
+> Patch #1 allows querying firmware version from the switch driver when
+> the underlying bus is I2C. This is useful for baseboard management
+> controller (BMC) systems that communicate with the ASIC over I2C.
+> 
+> Patch #2 improves driver's performance over I2C by utilizing larger
+> transactions sizes, if possible.
+> 
+> Patch #3 re-orders driver's initialization sequence to enforce a
+> specific firmware version before new firmware features are utilized.
+> This is a prerequisite for patches #4-#6.
+> 
+> Patches #4-#6 expose the temperature of inter-connect devices
+> (gearboxes) that are present in Mellanox SN3800 systems and split
+> 2x50Gb/s lanes to 4x25Gb/s lanes.
+> 
+> Patches #7-#8 reduce the transaction size when reading SFP modules
+> temperatures, which is crucial when working over I2C.
+
+Series applied, thanks.
