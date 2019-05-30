@@ -2,146 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 141BD30358
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5104330363
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbfE3Uhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:37:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47968 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbfE3Uhc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 16:37:32 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E6910FA8C6;
-        Thu, 30 May 2019 20:37:17 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F87A7E329;
-        Thu, 30 May 2019 20:37:04 +0000 (UTC)
-Date:   Thu, 30 May 2019 16:37:02 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
-Message-ID: <20190530203702.fibsrazabbiifjvf@madcap2.tricolour.ca>
-References: <cover.1554732921.git.rgb@redhat.com>
- <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
- <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com>
- <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca>
- <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
+        id S1726308AbfE3UlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 16:41:23 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37026 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726079AbfE3UlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:41:22 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d15so4851100qkl.4
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 13:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=f5E0mA5EJgN67XjHcWSoimcwtGSg4IIi6lDpuHoTf3A=;
+        b=VnKcVxjYZkufLSXo1mQwurs8pn/4FCkyQ0vGBFkGv1IZrARf5Jm9s0v6giq65h8/x6
+         5pbSNgiRsEYkGbuxQSNjs+JnFABotZ3P+QESihl7yx5J4mn9wm7ugjS90dyXzdGUmigd
+         +ick3x8X/c3HpUrZx9ogoTOYK35ZZk6s9kK+qWu8+SLtz70WL3qRV8X8ED5ieIXHga2r
+         0nONmLMtCBZi267IWB6AOyXJa7hCO2Mrd0xtqU4TpOVlIrfWU+Pts79BPRYpEoVVtrKQ
+         /fyZ+bK6HVy0bLS+hIX2Ac2lZx7L1OFSC0iXanWx0dffcJkV1Zo3sA44E/j8226OA0dp
+         XS8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=f5E0mA5EJgN67XjHcWSoimcwtGSg4IIi6lDpuHoTf3A=;
+        b=s3Jg1/nJmbpHTaxCNAvzYUHPsT4WHslxINTv+oUTBfcBRn9K7+XaFxwopxkLatQboz
+         pkg/iva0IVeD+ntN6xWQmxq1wqxEz7cIxGDAb7D4oiUw35ZzufUjRMEzebZEui4lnUDd
+         EdX/aYo6fjb8GnomTDJ8NmA3zGKQ/Pk1a46HK/AhF+xThQ5klVfpCbDY1prJEoZUQVWA
+         60qgwdp7HOdXcp/VKLYeCE7zN2is/87wKamL/OP8b4ObrhTg0SfkAp01THAxT3LF5jCj
+         /l+g0wRjyqX0TKMPQElJkgH/Xr2Dks0OJdQ9h24KiZcJAVbuUD/Wukmmd19wPL00LgiM
+         m4Mw==
+X-Gm-Message-State: APjAAAUg04xdPaQ8Ir/yn1KLl2fViO147CXpyDacrWuxHpLHZwoL8tHR
+        vC2CXQ+BFExjLObyabKzq+jbuQ==
+X-Google-Smtp-Source: APXvYqzxEUVPph26eeKVeACUsWd/jmLha5zO0+5SbjUPvatAIj8u4pwF7Ljv8oB1l7zJefBKZ/MoNQ==
+X-Received: by 2002:a37:640f:: with SMTP id y15mr5025019qkb.79.1559248881371;
+        Thu, 30 May 2019 13:41:21 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a64sm1712514qkd.73.2019.05.30.13.41.19
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 30 May 2019 13:41:20 -0700 (PDT)
+Date:   Thu, 30 May 2019 13:41:15 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Patel, Vedang" <vedang.patel@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>
+Subject: Re: [PATCH net-next v1 3/7] taprio: Add the skeleton to enable
+ hardware offloading
+Message-ID: <20190530134115.36f13bb5@cakuba.netronome.com>
+In-Reply-To: <861F87D1-6A0B-438D-BBD5-6A15BDA398F7@intel.com>
+References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
+        <1559065608-27888-4-git-send-email-vedang.patel@intel.com>
+        <20190528154510.41b50723@cakuba.netronome.com>
+        <62E2DD49-AC21-46DE-8E5B-EBC67230FA7D@intel.com>
+        <20190529121440.46c40967@cakuba.netronome.com>
+        <A9D05E0B-FC24-4904-B3E5-1E069C92A3DA@intel.com>
+        <20190529140620.68fa8e64@cakuba.netronome.com>
+        <861F87D1-6A0B-438D-BBD5-6A15BDA398F7@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 30 May 2019 20:37:32 +0000 (UTC)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-30 10:34, Paul Moore wrote:
-> On Thu, May 30, 2019 at 10:20 AM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > On 2019-05-29 18:16, Paul Moore wrote:
-> > > On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > >
-> > > > Implement audit container identifier filtering using the AUDIT_CONTID
-> > > > field name to send an 8-character string representing a u64 since the
-> > > > value field is only u32.
-> > > >
-> > > > Sending it as two u32 was considered, but gathering and comparing two
-> > > > fields was more complex.
-> > > >
-> > > > The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
-> > > >
-> > > > Please see the github audit kernel issue for the contid filter feature:
-> > > >   https://github.com/linux-audit/audit-kernel/issues/91
-> > > > Please see the github audit userspace issue for filter additions:
-> > > >   https://github.com/linux-audit/audit-userspace/issues/40
-> > > > Please see the github audit testsuiite issue for the test case:
-> > > >   https://github.com/linux-audit/audit-testsuite/issues/64
-> > > > Please see the github audit wiki for the feature overview:
-> > > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > > Acked-by: Serge Hallyn <serge@hallyn.com>
-> > > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> > > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > > > ---
-> > > >  include/linux/audit.h      |  1 +
-> > > >  include/uapi/linux/audit.h |  5 ++++-
-> > > >  kernel/audit.h             |  1 +
-> > > >  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
-> > > >  kernel/auditsc.c           |  4 ++++
-> > > >  5 files changed, 57 insertions(+), 1 deletion(-)
-> > >
-> > > ...
-> > >
-> > > > diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
-> > > > index 63f8b3f26fab..407b5bb3b4c6 100644
-> > > > --- a/kernel/auditfilter.c
-> > > > +++ b/kernel/auditfilter.c
-> > > > @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
-> > > >         }
-> > > >  }
-> > > >
-> > > > +int audit_comparator64(u64 left, u32 op, u64 right)
-> > > > +{
-> > > > +       switch (op) {
-> > > > +       case Audit_equal:
-> > > > +               return (left == right);
-> > > > +       case Audit_not_equal:
-> > > > +               return (left != right);
-> > > > +       case Audit_lt:
-> > > > +               return (left < right);
-> > > > +       case Audit_le:
-> > > > +               return (left <= right);
-> > > > +       case Audit_gt:
-> > > > +               return (left > right);
-> > > > +       case Audit_ge:
-> > > > +               return (left >= right);
-> > > > +       case Audit_bitmask:
-> > > > +               return (left & right);
-> > > > +       case Audit_bittest:
-> > > > +               return ((left & right) == right);
-> > > > +       default:
-> > > > +               BUG();
-> > >
-> > > A little birdy mentioned the BUG() here as a potential issue and while
-> > > I had ignored it in earlier patches because this is likely a
-> > > cut-n-paste from another audit comparator function, I took a closer
-> > > look this time.  It appears as though we will never have an invalid op
-> > > value as audit_data_to_entry()/audit_to_op() ensure that the op value
-> > > is a a known good value.  Removing the BUG() from all the audit
-> > > comparators is a separate issue, but I think it would be good to
-> > > remove it from this newly added comparator; keeping it so that we
-> > > return "0" in the default case seems reasoanble.
-> >
-> > Fair enough.  That BUG(); can be removed.
-> 
-> Please send a fixup patch for this.
+On Thu, 30 May 2019 00:21:39 +0000, Patel, Vedang wrote:
+> > On May 29, 2019, at 2:06 PM, Jakub Kicinski <jakub.kicinski@netronome.c=
+om> wrote:
+> > On Wed, 29 May 2019 20:05:16 +0000, Patel, Vedang wrote: =20
+> >> [Sending the email again since the last one was rejected by netdev bec=
+ause it was html.]
+> >>  =20
+> >>> On May 29, 2019, at 12:14 PM, Jakub Kicinski <jakub.kicinski@netronom=
+e.com> wrote:
+> >>>=20
+> >>> On Wed, 29 May 2019 17:06:49 +0000, Patel, Vedang wrote:   =20
+> >>>>> On May 28, 2019, at 3:45 PM, Jakub Kicinski <jakub.kicinski@netrono=
+me.com> wrote:
+> >>>>> On Tue, 28 May 2019 10:46:44 -0700, Vedang Patel wrote:     =20
+> >>>>>> From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> >>>>>>=20
+> >>>>>> This adds the UAPI and the core bits necessary for userspace to
+> >>>>>> request hardware offloading to be enabled.
+> >>>>>>=20
+> >>>>>> The future commits will enable hybrid or full offloading for tapri=
+o. This
+> >>>>>> commit sets up the infrastructure to enable it via the netlink int=
+erface.
+> >>>>>>=20
+> >>>>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> >>>>>> Signed-off-by: Vedang Patel <vedang.patel@intel.com>     =20
+> >>>>>=20
+> >>>>> Other qdiscs offload by default, this offload-level selection here =
+is a
+> >>>>> little bit inconsistent with that :(
+> >>>>>  =20
+> >>>> There are 2 different offload modes introduced in this patch.
+> >>>>=20
+> >>>> 1. Txtime offload mode: This mode depends on skip_sock_check flag be=
+ing set in the etf qdisc. Also, it requires some manual configuration which=
+ might be specific to the network adapter card. For example, for the i210 c=
+ard, the user will have to route all the traffic to the highest priority qu=
+eue and install etf qdisc with offload enabled on that queue. So, I don=E2=
+=80=99t think this mode should be enabled by default.   =20
+> >>>=20
+> >>> Excellent, it looks like there will be driver patches necessary for
+> >>> this offload to function, also it seems your offload enable function
+> >>> still contains this after the series:
+> >>>=20
+> >>> 	/* FIXME: enable offloading */
+> >>>=20
+> >>> Please only post offload infrastructure when fully fleshed out and wi=
+th
+> >>> driver patches making use of it. =20
+> >>=20
+> >> The above comment refers to the full offload mode described below. It
+> >> is not needed for txtime offload mode. Txtime offload mode is
+> >> essentially setting the transmit time for each packet  depending on
+> >> what interval it is going to be transmitted instead of relying on the
+> >> hrtimers to open gates and send packets. More details about why
+> >> exactly this is done is mentioned in patch #5[1] of this series. =20
+> >=20
+> > From looking at this set it looks like I can add that qdisc to any
+> > netdev now *with* offload, and as long as the driver has _any_
+> > ndo_setup_tc implementation taprio will not return an error.=20
+> >=20
+> > Perhaps this mode of operation should not be called offload?  Can't=20
+> > the ETF qdisc underneath run in software mode?
+> >  =20
+> Yeah, it doesn=E2=80=99t make much sense to run ETF in software mode but =
+it
+> can be done. What about naming it txtime-assist instead?
 
-The fixup patch is trivial.  The rebase to v5.2-rc1 audit/next had merge
-conflicts with four recent patchsets.  It may be simpler to submit a new
-patchset and look at a diff of the two sets.  I'm testing the rebase
-now.
+Sounds good!  txtime.* works for me.
 
-> paul moore www.paul-moore.com
+> >> What we can do is just add the txtime offload related flag and add
+> >> the full offload flag whenever the driver bits are ready. Does that
+> >> address your concern? =20
+> >=20
+> > That would be a step in the right direction.  And please remove all the
+> > other unused code from the series.  AFAICT this is what the enable
+> > offload function looks like after your set - what's the point of the
+> > 'err' variable?
+> >  =20
+> Yes. This patch seems to have a few really silly mistakes. I
+> apologize for that. I willl clean it up and send another version of
+> the series. There is no unused code anywhere else in the series.
 
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+Thanks!
