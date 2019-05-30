@@ -2,356 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F02F30348
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141BD30358
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfE3Uam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:30:42 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37511 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbfE3Uam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:30:42 -0400
-Received: by mail-wr1-f68.google.com with SMTP id h1so5040134wro.4
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 13:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:message-id:in-reply-to
-         :date:mime-version;
-        bh=HSteFUKF52rWVzt3NjcoHxXLBvXNbvyEYXBsHNUqUF0=;
-        b=wuaFUP1Ozlt+4+MWLG6fRYDs6aSrPIgbEmXi3tSSC6W/7egGZLIS272b1Qheh5JU5P
-         Oq9csJMPH8Wywm1a4U60VCgOQa48Mrk4ffhhYNDADsbPNnxg3nPWusMMHDatHMZPgLh6
-         S+fNEkjVPZqJ+sbUADzBEOh/azCtNVzI8Lv0x4pRr8ltsnNkeJqrjxnu+cTAblZKpSSr
-         mhjzCvGsBkx1x+qxeK1RRLbjGe0WMF6Jwt0JuMjeOiAlmSFhO2awU+QZJ+JOvnMhqqHk
-         IWb/jMFbRDHMXFigziw/39/xe8Kn6eQ/PZAfEMVg9G41H/U3UEfYFM0oKvmMbG68BX1G
-         Bv6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :message-id:in-reply-to:date:mime-version;
-        bh=HSteFUKF52rWVzt3NjcoHxXLBvXNbvyEYXBsHNUqUF0=;
-        b=Uf8LZfwT3iqG5gqog8v/EIikKQTt/f05wQ7G1OofUFJkKnJpIerjxUc61KZuDnIvDt
-         ybskNOpC2n689NIBsj+eWkh/NFd6lXKIoqcsPkyJRDcKUTLVCuhoMYuvWYi+cyb/oSj8
-         wDtDzstLZhgx1rE8ob7m71ccsAmsa0PdtoF4ca+xkaCaKrp5nyx8AEcPO1E7HB9xRuE+
-         DvbfIjB/P1d+/EP5Ha5c5sKH3wPxbp5/GDH5ue8UNzkr8twgUecjM5eGt8NvShCgMBDy
-         OrlIGS8Mpeen0pkLPd1TlOlijjzfjEQr/TUbEXM79DSA6bdw9Y48dzqsQUNtnWuMzHO8
-         GJ5w==
-X-Gm-Message-State: APjAAAUyhwUx1P2OD9CRB6A8CGCSI4mrXB/XkOi2N7k6kcJnz8AUI0WQ
-        1Ktu8Bv1zqdR0LCM0x4Z1yhM4g==
-X-Google-Smtp-Source: APXvYqxGLUZbjBbciy7kuigIoFOTAYX5bbCb2hDNu9emCUTJfNI7h9Yf8US1rv/g8abXrsSbSEaO8g==
-X-Received: by 2002:adf:e845:: with SMTP id d5mr3859527wrn.154.1559248239296;
-        Thu, 30 May 2019 13:30:39 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
-        by smtp.gmail.com with ESMTPSA id 8sm3262857wmf.18.2019.05.30.13.30.37
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 30 May 2019 13:30:37 -0700 (PDT)
-References: <20190530190800.7633-1-luke.r.nels@gmail.com> <20190530190800.7633-2-luke.r.nels@gmail.com>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Luke Nelson <luke.r.nels@gmail.com>
-Cc:     Xi Wang <xi.wang@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] bpf: test_bpf: add tests for upper bits of 32-bit operations
-Message-ID: <87lfyn4rdy.fsf@netronome.com>
-In-reply-to: <20190530190800.7633-2-luke.r.nels@gmail.com>
-Date:   Thu, 30 May 2019 21:30:33 +0100
+        id S1726550AbfE3Uhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 16:37:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47968 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725961AbfE3Uhc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 16:37:32 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E6910FA8C6;
+        Thu, 30 May 2019 20:37:17 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F87A7E329;
+        Thu, 30 May 2019 20:37:04 +0000 (UTC)
+Date:   Thu, 30 May 2019 16:37:02 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Subject: Re: [PATCH ghak90 V6 08/10] audit: add containerid filtering
+Message-ID: <20190530203702.fibsrazabbiifjvf@madcap2.tricolour.ca>
+References: <cover.1554732921.git.rgb@redhat.com>
+ <0785ee2644804f3ec6af1243cc0dcf89709c1fd4.1554732921.git.rgb@redhat.com>
+ <CAHC9VhRV-0LSEcRvPO1uXtKdpEQsaLZnBV3T=zcMTZPN5ugz5w@mail.gmail.com>
+ <20190530141951.iofimovrndap4npq@madcap2.tricolour.ca>
+ <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhQhkzCtVOXhPL7BzaqvF0y+8gBQwhOo1EQDS2OUyZbV5g@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 30 May 2019 20:37:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2019-05-30 10:34, Paul Moore wrote:
+> On Thu, May 30, 2019 at 10:20 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >
+> > On 2019-05-29 18:16, Paul Moore wrote:
+> > > On Mon, Apr 8, 2019 at 11:41 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > >
+> > > > Implement audit container identifier filtering using the AUDIT_CONTID
+> > > > field name to send an 8-character string representing a u64 since the
+> > > > value field is only u32.
+> > > >
+> > > > Sending it as two u32 was considered, but gathering and comparing two
+> > > > fields was more complex.
+> > > >
+> > > > The feature indicator is AUDIT_FEATURE_BITMAP_CONTAINERID.
+> > > >
+> > > > Please see the github audit kernel issue for the contid filter feature:
+> > > >   https://github.com/linux-audit/audit-kernel/issues/91
+> > > > Please see the github audit userspace issue for filter additions:
+> > > >   https://github.com/linux-audit/audit-userspace/issues/40
+> > > > Please see the github audit testsuiite issue for the test case:
+> > > >   https://github.com/linux-audit/audit-testsuite/issues/64
+> > > > Please see the github audit wiki for the feature overview:
+> > > >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+> > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > Acked-by: Serge Hallyn <serge@hallyn.com>
+> > > > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > > > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > > > ---
+> > > >  include/linux/audit.h      |  1 +
+> > > >  include/uapi/linux/audit.h |  5 ++++-
+> > > >  kernel/audit.h             |  1 +
+> > > >  kernel/auditfilter.c       | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  kernel/auditsc.c           |  4 ++++
+> > > >  5 files changed, 57 insertions(+), 1 deletion(-)
+> > >
+> > > ...
+> > >
+> > > > diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
+> > > > index 63f8b3f26fab..407b5bb3b4c6 100644
+> > > > --- a/kernel/auditfilter.c
+> > > > +++ b/kernel/auditfilter.c
+> > > > @@ -1206,6 +1224,31 @@ int audit_comparator(u32 left, u32 op, u32 right)
+> > > >         }
+> > > >  }
+> > > >
+> > > > +int audit_comparator64(u64 left, u32 op, u64 right)
+> > > > +{
+> > > > +       switch (op) {
+> > > > +       case Audit_equal:
+> > > > +               return (left == right);
+> > > > +       case Audit_not_equal:
+> > > > +               return (left != right);
+> > > > +       case Audit_lt:
+> > > > +               return (left < right);
+> > > > +       case Audit_le:
+> > > > +               return (left <= right);
+> > > > +       case Audit_gt:
+> > > > +               return (left > right);
+> > > > +       case Audit_ge:
+> > > > +               return (left >= right);
+> > > > +       case Audit_bitmask:
+> > > > +               return (left & right);
+> > > > +       case Audit_bittest:
+> > > > +               return ((left & right) == right);
+> > > > +       default:
+> > > > +               BUG();
+> > >
+> > > A little birdy mentioned the BUG() here as a potential issue and while
+> > > I had ignored it in earlier patches because this is likely a
+> > > cut-n-paste from another audit comparator function, I took a closer
+> > > look this time.  It appears as though we will never have an invalid op
+> > > value as audit_data_to_entry()/audit_to_op() ensure that the op value
+> > > is a a known good value.  Removing the BUG() from all the audit
+> > > comparators is a separate issue, but I think it would be good to
+> > > remove it from this newly added comparator; keeping it so that we
+> > > return "0" in the default case seems reasoanble.
+> >
+> > Fair enough.  That BUG(); can be removed.
+> 
+> Please send a fixup patch for this.
 
-Luke Nelson writes:
+The fixup patch is trivial.  The rebase to v5.2-rc1 audit/next had merge
+conflicts with four recent patchsets.  It may be simpler to submit a new
+patchset and look at a diff of the two sets.  I'm testing the rebase
+now.
 
-> This commit introduces tests that validate the upper 32 bits
-> of the result of 32-bit BPF ALU operations.
->
-> The existing tests for 32-bit operations do not check the upper 32
-> bits of results because the exit instruction truncates the result.
-> These tests perform a 32-bit ALU operation followed by a right shift.
-> These tests can catch subtle bugs in the extension behavior of JITed
-> instructions, including several bugs in the RISC-V BPF JIT, fixed in
-> another patch.
+> paul moore www.paul-moore.com
 
-Hi Luke,
+- RGB
 
-  Have you seen the following?
-
-    https://www.spinics.net/lists/netdev/msg573355.html
-
-  it has been merged to bpf tree and should have full test coverage of all
-  bpf insns that could write to sub-register and are exposed to JIT
-  back-end.
-
-  And AFAIK, we add new unit tests to test_verifier which is a userspace
-  test infrastructure which offers more test functionality plus tests will
-  go through verifier.
-
-Regards,
-Jiong
-
-> The added tests pass the JIT and interpreter on x86, as well as the
-> JIT and interpreter of RISC-V once the zero extension bugs were fixed.
->
-> Cc: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
-> ---
->  lib/test_bpf.c | 164 +++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 164 insertions(+)
->
-> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-> index 0845f635f404..4580dc0220f1 100644
-> --- a/lib/test_bpf.c
-> +++ b/lib/test_bpf.c
-> @@ -2461,6 +2461,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 1 } },
->  	},
-> +	{
-> +		"ALU_ADD_X: (1 + 4294967294) >> 32 + 4294967294 = 4294967294",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 1U),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 4294967294U),
-> +			BPF_ALU32_REG(BPF_ADD, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_REG(BPF_ADD, R0, R1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 4294967294U } },
-> +	},
->  	{
->  		"ALU64_ADD_X: 1 + 2 = 3",
->  		.u.insns_int = {
-> @@ -2812,6 +2826,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 1 } },
->  	},
-> +	{
-> +		"ALU_SUB_X: (4294967295 - 1) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 4294967295U),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 1U),
-> +			BPF_ALU32_REG(BPF_SUB, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_REG(BPF_ADD, R0, R1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_SUB_X: 3 - 1 = 2",
->  		.u.insns_int = {
-> @@ -3391,6 +3419,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 0xffffffff } },
->  	},
-> +	{
-> +		"ALU_AND_X: (-1 & -1) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, -1UL),
-> +			BPF_LD_IMM64(R1, -1UL),
-> +			BPF_ALU32_REG(BPF_AND, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_AND_X: 3 & 2 = 2",
->  		.u.insns_int = {
-> @@ -3533,6 +3575,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 0xffffffff } },
->  	},
-> +	{
-> +		"ALU_OR_X: (0 & -1) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0),
-> +			BPF_LD_IMM64(R1, -1UL),
-> +			BPF_ALU32_REG(BPF_OR, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_OR_X: 1 | 2 = 3",
->  		.u.insns_int = {
-> @@ -3675,6 +3731,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 0xfffffffe } },
->  	},
-> +	{
-> +		"ALU_XOR_X: (0 ^ -1) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0),
-> +			BPF_LD_IMM64(R1, -1UL),
-> +			BPF_ALU32_REG(BPF_XOR, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_XOR_X: 5 ^ 6 = 3",
->  		.u.insns_int = {
-> @@ -3817,6 +3887,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 0x80000000 } },
->  	},
-> +	{
-> +		"ALU_LSH_X: (1 << 31) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 31),
-> +			BPF_ALU32_REG(BPF_LSH, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_LSH_X: 1 << 1 = 2",
->  		.u.insns_int = {
-> @@ -3842,6 +3926,19 @@ static struct bpf_test tests[] = {
->  		{ { 0, 0x80000000 } },
->  	},
->  	/* BPF_ALU | BPF_LSH | BPF_K */
-> +	{
-> +		"ALU_LSH_K: (1 << 31) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 1),
-> +			BPF_ALU32_IMM(BPF_LSH, R0, 31),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU_LSH_K: 1 << 1 = 2",
->  		.u.insns_int = {
-> @@ -3911,6 +4008,20 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 1 } },
->  	},
-> +	{
-> +		"ALU_RSH_X: (0x80000000 >> 0) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0x80000000),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0),
-> +			BPF_ALU32_REG(BPF_RSH, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_RSH_X: 2 >> 1 = 1",
->  		.u.insns_int = {
-> @@ -3936,6 +4047,19 @@ static struct bpf_test tests[] = {
->  		{ { 0, 1 } },
->  	},
->  	/* BPF_ALU | BPF_RSH | BPF_K */
-> +	{
-> +		"ALU_RSH_K: (0x80000000 >> 0) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0x80000000),
-> +			BPF_ALU32_IMM(BPF_RSH, R0, 0),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU_RSH_K: 2 >> 1 = 1",
->  		.u.insns_int = {
-> @@ -3993,7 +4117,34 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 0xffff00ff } },
->  	},
-> +	{
-> +		"ALU_ARSH_X: (0x80000000 >> 0) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0x80000000),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0),
-> +			BPF_ALU32_REG(BPF_ARSH, R0, R1),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	/* BPF_ALU | BPF_ARSH | BPF_K */
-> +	{
-> +		"ALU_ARSH_K: (0x80000000 >> 0) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_LD_IMM64(R0, 0x80000000),
-> +			BPF_ALU32_IMM(BPF_ARSH, R0, 0),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU_ARSH_K: 0xff00ff0000000000 >> 40 = 0xffffffffffff00ff",
->  		.u.insns_int = {
-> @@ -4028,6 +4179,19 @@ static struct bpf_test tests[] = {
->  		{ },
->  		{ { 0, 3 } },
->  	},
-> +	{
-> +		"ALU_NEG: -(1) >> 32 + 1 = 1",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 1),
-> +			BPF_ALU32_IMM(BPF_NEG, R0, 0),
-> +			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-> +			BPF_ALU64_IMM(BPF_ADD, R0, 1),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 1 } },
-> +	},
->  	{
->  		"ALU64_NEG: -(3) = -3",
->  		.u.insns_int = {
-
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
