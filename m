@@ -2,62 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB8B30214
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F46430225
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbfE3Skv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:40:51 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54523 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfE3Skv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:40:51 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hWPym-000383-FS; Thu, 30 May 2019 18:40:44 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rtlwifi: remove redundant assignment to variable badworden
-Date:   Thu, 30 May 2019 19:40:44 +0100
-Message-Id: <20190530184044.8479-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S1726386AbfE3SpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:45:18 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56986 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726100AbfE3SpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:45:18 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CE53314D99A83;
+        Thu, 30 May 2019 11:45:17 -0700 (PDT)
+Date:   Thu, 30 May 2019 11:45:17 -0700 (PDT)
+Message-Id: <20190530.114517.2038537000773947362.davem@davemloft.net>
+To:     92siuyang@gmail.com
+Cc:     ecree@solarflare.com, mhabets@solarflare.com, fw@strlen.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] falcon: pass valid pointer from ef4_enqueue_unwind.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1559096139-25698-1-git-send-email-92siuyang@gmail.com>
+References: <1559096139-25698-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 11:45:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Young Xiao <92siuyang@gmail.com>
+Date: Wed, 29 May 2019 10:15:39 +0800
 
-The variable badworden is assigned with a value that is never read and
-it is re-assigned a new value immediately afterwards.  The assignment is
-redundant and can be removed.
+> The bytes_compl and pkts_compl pointers passed to ef4_dequeue_buffers
+> cannot be NULL. Add a paranoid warning to check this condition and fix
+> the one case where they were NULL.
+> 
+> Signed-off-by: Young Xiao <92siuyang@gmail.com>
 
-Addresses-Coverity: ("Unused value")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/realtek/rtlwifi/efuse.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/efuse.c b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-index e68340dfd980..37ab582a8afb 100644
---- a/drivers/net/wireless/realtek/rtlwifi/efuse.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-@@ -986,7 +986,6 @@ static int efuse_pg_packet_write(struct ieee80211_hw *hw,
- 		} else if (write_state == PG_STATE_DATA) {
- 			RTPRINT(rtlpriv, FEEPROM, EFUSE_PG,
- 				"efuse PG_STATE_DATA\n");
--			badworden = 0x0f;
- 			badworden =
- 			    enable_efuse_data_write(hw, efuse_addr + 1,
- 						    target_pkt.word_en,
--- 
-2.20.1
-
+EF4_TX_BUF_SKB will be clear in this situation, so your patch is not
+necessary.
