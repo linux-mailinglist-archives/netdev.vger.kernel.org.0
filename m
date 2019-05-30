@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D29B130459
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFFE130454
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbfE3V5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 17:57:18 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35193 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbfE3V5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 17:57:17 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t1so2787114pgc.2
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 14:57:16 -0700 (PDT)
+        id S1726604AbfE3V4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 17:56:35 -0400
+Received: from mail-it1-f174.google.com ([209.85.166.174]:32886 "EHLO
+        mail-it1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726308AbfE3V4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 17:56:35 -0400
+Received: by mail-it1-f174.google.com with SMTP id j17so9262836itk.0
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 14:56:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jwOSziE1g6AU7/BuCW88qP0z6DOdF+tBLJid5htJoJU=;
-        b=BZOSUFsVCUlejFacyO7dckanzc4FRhj9XLumuDKVjkSl15JywsbmdqjbwerxnWorHZ
-         TCtUox7gELVyKvglBF7puZBKrVzpiB6S9GaJ6ip0ZlUah0FEz5RBdCpoyvex/9FHIPLs
-         0TSfPJy4fHTkBwE5j0jZiiq0fBWR5SK5glkl4AyN0Vtm7nzk7Un/lcW24Jx+nUxHCg+p
-         mzS9O4W633SLCMGUWbC7yED0RsXvkwJ/AfWOtqIcfDfn/qPJeoM0ivBFmTmY+kouj5Os
-         Dy8mTTxMqijldu8q+1fXs3DSfJIy6gkCFsJcre54yINL6Zn61dgw5Nwy0fyH2kxocNf9
-         aK6Q==
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=MhJz/1UwyHbWUoknAE0o4TRG5L0JDlOm2mEcnXU7Js0=;
+        b=tGxSWJ0VRh21atJSSlg819/I67rrPL3U8oDpYUSfr8qd3vD9UjT86aC37wLUlkaRRS
+         1faYGwIob9pTYfDkZq0iXD7QUyuf+dNxI5+0IhUKTzR4Q6X/NZE/x3HQnEG2DCOq7K5m
+         TFCg/bIyjqsTeqCpYRzLHtUyI9Q4TEstnP/W29amL4xE1tPTW6EUVRK7FdxAdftB1CJ2
+         D/LX/NshHTKbhRa+sxVbUHpYlIAmkaj1xIzWtEEu+nTlyz0VbZwBzSRRiQCHu4/asJ1d
+         yMCiB8mBXer3jqmBXkcWV6Idr2+96vYaPbP3KouIvdvOhM5R/8jsSld1zOOJ+bKeMPvQ
+         UUpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jwOSziE1g6AU7/BuCW88qP0z6DOdF+tBLJid5htJoJU=;
-        b=Ef9auqUvCy75w4r9GkXWwTOB2sOyLCrdsDJ+q5hCntH8KrD/Ldczi+jlwmY+RfaLl2
-         h6kZIFQLlMvTkp9Ya2OTv1QayT00Igyp7at2S+cxCz/mN9ySIVzBeFVLJlMubB+SIs96
-         a/WwpJQPMs2LWm/2JFD5DC2dScFJOt4Y9nzTHNTRO+QBBRsRz0ONB4b/KyEET/VSyLei
-         GasDSmUBCfA9nY7ag9sDuWIlkJ6b8XeyKS8nPahMN4HSPGQHaK+g/7Q5z8ynU9t6w+dq
-         NTiDed0VjIf14nkq5LeQljWBQlm8izZbz0VNcW1e6MhyoVNx4WJ4LBPytYU6R2Yzbzuy
-         alow==
-X-Gm-Message-State: APjAAAWYbjtkxG1xDVXDRmpM6o39fv2Co80C6AXyZkRuuMNg+sYIXQMF
-        NjHUR1fgm6FZe39odt+80JfVQsIT0yo=
-X-Google-Smtp-Source: APXvYqz4krn32cAtH8AhNR38q5ZxbvJkF4/y0my9QdDBqv1rN389GH1SvytElpeMY5iEEkPJX7iDTQ==
-X-Received: by 2002:a17:90a:9385:: with SMTP id q5mr5323301pjo.126.1559253012454;
-        Thu, 30 May 2019 14:50:12 -0700 (PDT)
-Received: from [172.27.227.250] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id b90sm4564269pjc.0.2019.05.30.14.50.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 14:50:11 -0700 (PDT)
-Subject: Re: [PATCH net-next] vrf: local route leaking
-To:     George Wilkie <gwilkie@vyatta.att-mail.com>
-Cc:     Shrijeet Mukherjee <shrijeet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-References: <20190524080551.754-1-gwilkie@vyatta.att-mail.com>
- <0d920356-8d12-b0b5-c14b-3600e54e9390@gmail.com>
- <20190525070924.GA1184@debian10.local>
- <47e25c7c-1dd4-25ee-1d7b-f8c4c0783573@gmail.com>
- <20190527083402.GA7269@gwilkie-Precision-7520>
- <1f761acd-80eb-0e80-1cf4-181f8b327bd5@gmail.com>
- <20190530205250.GA7379@gwilkie-Precision-7520>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f0f4b5c8-0beb-6c97-34c8-f5b73ea426b8@gmail.com>
-Date:   Thu, 30 May 2019 15:50:09 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190530205250.GA7379@gwilkie-Precision-7520>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MhJz/1UwyHbWUoknAE0o4TRG5L0JDlOm2mEcnXU7Js0=;
+        b=T2epVSwDcK5SQzvPkYSntSBJKPRTFa7e7LY9pOgCxZYRqjkLiTjpnY74S/MpVrm23G
+         DsQYeEWWJ24yBzGtJzMVvYe9NXLqeASZRS05JKDKuPUJTPZfzE3GquALzy+8JbHfNbSl
+         SNMuMDpCFhYVpUnVdJ+TJCbiq3TW296OhC7UJtilyYKFaFIYxSWe1O0WqC53fmrc5j6/
+         QRHCKuojUHqnkO1f4DkQTwAp+XGaFJzvYmQ5Lmt5kw8uNl7fIC+LzSuxhSLHYqiLRJs6
+         O+qZuw9ys2fYcBLfFgb2MI4B7+9WpvH0Sr3d3ugu+ejwoW816q2bKT+gNC9EfAZ83r47
+         Fe0w==
+X-Gm-Message-State: APjAAAVbmXvg3Pfv85o4JOHzmHSgvCtH90RgRg4JkTRI/8vOS0LbJhZt
+        Qs/xos1C5PkvsU8Cb6tQTRdrcg==
+X-Google-Smtp-Source: APXvYqz9Jku3ffdu+qdNkeouc0IZHFLCbvvVj0a00LXSniVzMmRZEx+UxyMhkHh+Y2qHLwbx8C077A==
+X-Received: by 2002:a24:9ac7:: with SMTP id l190mr3642301ite.100.1559253042262;
+        Thu, 30 May 2019 14:50:42 -0700 (PDT)
+Received: from localhost.localdomain (107-0-94-194-ip-static.hfc.comcastbusiness.net. [107.0.94.194])
+        by smtp.gmail.com with ESMTPSA id j125sm1662391itb.27.2019.05.30.14.50.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 30 May 2019 14:50:41 -0700 (PDT)
+From:   Tom Herbert <tom@herbertland.com>
+X-Google-Original-From: Tom Herbert <tom@quantonium.net>
+To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com
+Cc:     Tom Herbert <tom@quantonium.net>
+Subject: [PATCH net-next 0/6] seg6: Segment routing fixes
+Date:   Thu, 30 May 2019 14:50:15 -0700
+Message-Id: <1559253021-16772-1-git-send-email-tom@quantonium.net>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/30/19 2:52 PM, George Wilkie wrote:
-> This doesn't work for me (again, not using namespaces).
-> For traffic coming in on vrf-b to a destination on 10.200.2.0,
-> I see ARPs going out for the destination on xvrf2/in on xvrf1,
-> but nothing replies to it.
+A few bug fixes, code clean up, and minor enhancements to segment
+routing.
 
-Is rp_filter set?
+Changes include:
+  - Fix SRH TLV definitions
+  - Implement a TLV parsing loop
+  - Eliminate the HMAC flag
+  - Support to rearrange segment routing header for AH ICV
+    calculation
+
+Tom Herbert (6):
+  seg6: Fix TLV definitions
+  seg6: Implement a TLV parsing loop
+  seg6: Remove HMAC flag and implement seg6_find_hmac_tlv
+  ah6: Create function __zero_out_mutable_opts
+  ah6: Be explicit about which routing types are processed.
+  seg6: Add support to rearrange SRH for AH ICV calculation
+
+ include/net/seg6.h        | 16 +++++++++
+ include/uapi/linux/seg6.h |  9 ++---
+ net/ipv6/ah6.c            | 90 +++++++++++++++++++++++++++++++++++------------
+ net/ipv6/exthdrs.c        |  2 +-
+ net/ipv6/seg6.c           | 68 +++++++++++++++++++++--------------
+ net/ipv6/seg6_hmac.c      |  8 ++---
+ net/ipv6/seg6_iptunnel.c  |  4 +--
+ 7 files changed, 134 insertions(+), 63 deletions(-)
+
+-- 
+2.7.4
+
