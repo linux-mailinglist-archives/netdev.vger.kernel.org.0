@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 776A22F9B4
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 11:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F36802F9B0
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 11:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727724AbfE3Jng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 05:43:36 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:4271 "EHLO
+        id S1727832AbfE3Jnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 05:43:40 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:10671 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727311AbfE3Jne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 05:43:34 -0400
-X-UUID: 34c1b09971504a898fb02dea42d2fcf6-20190530
-X-UUID: 34c1b09971504a898fb02dea42d2fcf6-20190530
-Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by mailgw02.mediatek.com
+        with ESMTP id S1726985AbfE3Jni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 05:43:38 -0400
+X-UUID: 2d465abed295480c91b1b2242b92c38f-20190530
+X-UUID: 2d465abed295480c91b1b2242b92c38f-20190530
+Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by mailgw02.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 2029886013; Thu, 30 May 2019 17:43:29 +0800
+        with ESMTP id 1882135354; Thu, 30 May 2019 17:43:29 +0800
 Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 30 May 2019 17:43:27 +0800
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Thu, 30 May 2019 17:43:28 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Thu, 30 May 2019 17:43:26 +0800
+ Transport; Thu, 30 May 2019 17:43:27 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>
 CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -36,42 +36,57 @@ CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
         <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.com>,
         <boon.leong.ong@intel.com>, <andrew@lunn.ch>
-Subject: [RESEND, PATCH 2/4] net: stmmac: dwmac-mediatek: disable rx watchdog
-Date:   Thu, 30 May 2019 17:43:16 +0800
-Message-ID: <1559209398-3607-3-git-send-email-biao.huang@mediatek.com>
+Subject: [RESEND, PATCH 3/4] net: stmmac: modify default value of tx-frames
+Date:   Thu, 30 May 2019 17:43:17 +0800
+Message-ID: <1559209398-3607-4-git-send-email-biao.huang@mediatek.com>
 X-Mailer: git-send-email 1.7.9.5
 In-Reply-To: <1559209398-3607-1-git-send-email-biao.huang@mediatek.com>
 References: <1559209398-3607-1-git-send-email-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-TM-SNTS-SMTP: FF02FF3E28C90F7B4A400DA5EA20CF77D529F50EAA269A1FE346A2132AB260232000:8
 X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-disable rx watchdog for dwmac-mediatek, then the hw will
-issue a rx interrupt once receiving a packet, so the responding time
-for rx path will be reduced.
+the default value of tx-frames is 25, it's too late when
+passing tstamp to stack, then the ptp4l will fail:
+
+ptp4l -i eth0 -f gPTP.cfg -m
+ptp4l: selected /dev/ptp0 as PTP clock
+ptp4l: port 1: INITIALIZING to LISTENING on INITIALIZE
+ptp4l: port 0: INITIALIZING to LISTENING on INITIALIZE
+ptp4l: port 1: link up
+ptp4l: timed out while polling for tx timestamp
+ptp4l: increasing tx_timestamp_timeout may correct this issue,
+       but it is likely caused by a driver bug
+ptp4l: port 1: send peer delay response failed
+ptp4l: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+
+ptp4l tests pass when changing the tx-frames from 25 to 1 with
+ethtool -C option.
+It should be fine to set tx-frames default value to 1, so ptp4l will pass
+by default.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-mediatek.c   |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/stmicro/stmmac/common.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 3c7a60f..38cd054 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -356,6 +356,7 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->has_gmac4 = 1;
- 	plat_dat->has_gmac = 0;
- 	plat_dat->pmt = 0;
-+	plat_dat->riwt_off = 1;
- 	plat_dat->maxmtu = ETH_DATA_LEN;
- 	plat_dat->bsp_priv = priv_plat;
- 	plat_dat->init = mediatek_dwmac_init;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 26bbcd8..6a08cec 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -261,7 +261,7 @@ struct stmmac_safety_stats {
+ #define STMMAC_COAL_TX_TIMER	1000
+ #define STMMAC_MAX_COAL_TX_TICK	100000
+ #define STMMAC_TX_MAX_FRAMES	256
+-#define STMMAC_TX_FRAMES	25
++#define STMMAC_TX_FRAMES	1
+ 
+ /* Packets types */
+ enum packets_types {
 -- 
 1.7.9.5
 
