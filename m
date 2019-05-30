@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 466B82EAC5
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 04:42:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 464832EAF7
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 05:08:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfE3Cme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 22:42:34 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33238 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbfE3Cme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 22:42:34 -0400
-Received: by mail-pf1-f193.google.com with SMTP id z28so2945716pfk.0
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 19:42:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=KpcFXbFBwLxCGyy/Jk49fis3KZuLGYD4HsSFk6V42fk=;
-        b=jD/JMHXcojG8mjE7nXIsxmxwsErMKVuXszEnw9hZZdd6M0qCLQwe00t3p4QTFdjFSW
-         6EPwWoh5tWI/Sb1z1ZLkmC/NM6i8ewhEUHf6NGyvG5IqRgbQ6iDtKd3yXuCc+J3/IwQg
-         lOA3TNslbdxSov1564Tf45CL6HhJr18NQ6XUgG4HX22m8dVOnmpmicltJtWpIQcUZDEy
-         qnPVtZ1UdkNOiL1nzkfooChGeQOJSO6FXvSTCHCQX6YtnBg5TiupZgsS12T7TB17Rv5g
-         KLU+1wvyifjFM9d9EIWKzkfp7TPtzuqG8oJmLNdxSaPuOiqRjhwtQEMyEEfqneoYQcpM
-         9N9A==
-X-Gm-Message-State: APjAAAW0t3PPRgJS9yd2SZQLjcsHIFyTJ+qNLjOq7Q5tLeHKhsdHj8za
-        H2GvFf9xzeoiGPViHLdbzpn5Xg==
-X-Google-Smtp-Source: APXvYqyMgSr8zbcysyqaP52vbPviSt9ykqRZ6sLQ4REBy1M6NY8HNtd2bruAoXR44eoyah/GzDNUJA==
-X-Received: by 2002:a62:ea0a:: with SMTP id t10mr1228321pfh.236.1559184153533;
-        Wed, 29 May 2019 19:42:33 -0700 (PDT)
-Received: from localhost ([12.206.222.5])
-        by smtp.gmail.com with ESMTPSA id b90sm363054pjc.0.2019.05.29.19.42.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 19:42:32 -0700 (PDT)
-Date:   Wed, 29 May 2019 19:42:32 -0700 (PDT)
-X-Google-Original-Date: Wed, 29 May 2019 19:42:12 PDT (-0700)
-Subject:     Re: [PATCH 2/2] net: macb: Add support for SiFive FU540-C000
-In-Reply-To: <20190524134847.GF2979@lunn.ch>
-CC:     yash.shah@sifive.com, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, aou@eecs.berkeley.edu,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        nicolas.ferre@microchip.com,
-        Sachin Ghadi <sachin.ghadi@sifive.com>, robh+dt@kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>, ynezz@true.cz,
-        linux-riscv@lists.infradead.org, davem@davemloft.net
-From:   Palmer Dabbelt <palmer@sifive.com>
-To:     andrew@lunn.ch
-Message-ID: <mhng-c7fba225-8035-4808-bdd6-bc05da5d2674@palmer-si-x1e>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        id S1726743AbfE3DID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 23:08:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726376AbfE3DID (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 23:08:03 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A8872445E;
+        Thu, 30 May 2019 03:08:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559185682;
+        bh=I6iBhHCoNIs+av/r4AiJBeA2NYQJ7DO+F9Mqjrcdp+o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CjxI0DYvF8ODSjsksdjhAXmCJaXE6zl0Xwamjp6DjIGlLPSlz0/0YYrRz2PyPnFU+
+         28ffh3ctrFe/95ridbgImmALc+TGccKkVHBs11QM7mF/ojXDqCd3kRPdJKh/biW4GI
+         VhZtVJv+TteDm7T9R9tF0kaChGIyBmPGnd77OSQU=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, saeedm@mellanox.com, kafai@fb.com,
+        weiwan@google.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next 0/7] net: add struct nexthop to fib{6}_info
+Date:   Wed, 29 May 2019 20:07:53 -0700
+Message-Id: <20190530030800.1683-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 06:48:47 PDT (-0700), andrew@lunn.ch wrote:
-> On Fri, May 24, 2019 at 10:22:06AM +0530, Yash Shah wrote:
->> On Thu, May 23, 2019 at 8:24 PM Andrew Lunn <andrew@lunn.ch> wrote:
->> >
->> > > +static int fu540_macb_tx_set_rate(struct clk_hw *hw, unsigned long rate,
->> > > +                               unsigned long parent_rate)
->> > > +{
->> > > +     rate = fu540_macb_tx_round_rate(hw, rate, &parent_rate);
->> > > +     iowrite32(rate != 125000000, mgmt->reg);
->> >
->> > That looks odd. Writing the result of a comparison to a register?
->>
->> The idea was to write "1" to the register if the value of rate is
->> anything else than 125000000.
->
-> I'm not a language lawyer. Is it guaranteed that an expression like
-> this returns 1? Any value !0 is true, so maybe it actually returns 42?
+From: David Ahern <dsahern@gmail.com>
 
-From Stack Overflow: https://stackoverflow.com/questions/18097922/return-value-of-operator-in-c
+This sets adds 'struct nexthop' to fib_info and fib6_info. IPv4
+already handles multiple fib_nh entries in a single fib_info, so
+the conversion to use a nexthop struct is fairly mechanical. IPv6
+using a nexthop struct with a fib6_info impacts a lot of core logic
+which is built around the assumption of a single, builtin fib6_nh
+per fib6_info. To make this easier to review, this set adds
+nexthop to fib6_info and adds checks in most places fib6_info is
+used. The next set finishes the IPv6 conversion, walking through
+the places that need to consider all fib6_nh within a nexthop struct.
 
-"C11(ISO/IEC 9899:201x) §6.5.8 Relational operators
+Offload drivers - mlx5, mlxsw and rocker - are changed to fail FIB
+entries using nexthop objects. That limitation can be removed once
+the drivers are updated to properly support separate nexthops.
 
-Each of the operators < (less than), > (greater than), <= (less than or equal
-to), and >= (greater than or equal to) shall yield 1 if the specified relation
-is true and 0 if it is false. The result has type int."
+This set starts by adding accessors for fib_nh and fib_nhs in a
+fib_info. This makes it easier to extract the number of nexthops
+in the fib entry and a specific fib_nh once the entry references
+a struct nexthop. Patch 2 converts more of IPv4 code to use
+fib_nh_common allowing a struct nexthop to use a fib6_nh with an
+IPv4 entry.
 
->> To make it easier to read, I will change this to below:
->>     - iowrite32(rate != 125000000, mgmt->reg);
->>     + if (rate != 125000000)
->>     +     iowrite32(1, mgmt->reg);
->>     + else
->>     +     iowrite32(0, mgmt->reg);
->>
->> Hope that's fine. Thanks for your comment
->
-> Yes, that is good.
->
->      Andrew
+Patches 3 and 4 add 'struct nexthop' to fib{6}_info and update
+references to both take a different path when it is set. New
+exported functions are added to the nexthop code to validate a
+nexthop struct when configured for use with a fib entry. IPv4
+is allowed to use a nexthop with either v4 or v6 entries. IPv6
+is limited to v6 entries only. In both cases list_heads track
+the fib entries using a nexthop struct for fast correlation on
+events (e.g., device events or nexthop events like delete or
+replace).
+
+The last 3 patches add hooks to drivers listening for FIB 
+notificationas. All 3 of them reject the routes as unsupported,
+returning an error message to the user via extack. For mlxsw
+at least this is a stop gap measure until the driver is updated for
+proper support.
+
+David Ahern (7):
+  ipv4: Use accessors for fib_info nexthop data
+  ipv4: Prepare for fib6_nh from a nexthop object
+  ipv4: Plumb support for nexthop object in a fib_info
+  ipv6: Plumb support for nexthop object in a fib6_info
+  mlxsw: Fail attempts to use routes with nexthop objects
+  mlx5: Fail attempts to use routes with nexthop objects
+  rocker: Fail attempts to use routes with nexthop objects
+
+ drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c   |  33 ++-
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c  |  33 ++-
+ drivers/net/ethernet/rocker/rocker_main.c          |   4 +
+ drivers/net/ethernet/rocker/rocker_ofdpa.c         |  25 +-
+ include/net/ip6_fib.h                              |  11 +-
+ include/net/ip6_route.h                            |  13 +-
+ include/net/ip_fib.h                               |  25 +-
+ include/net/nexthop.h                              | 113 +++++++++
+ net/core/filter.c                                  |   3 +-
+ net/ipv4/fib_frontend.c                            |  15 +-
+ net/ipv4/fib_lookup.h                              |   1 +
+ net/ipv4/fib_rules.c                               |   8 +-
+ net/ipv4/fib_semantics.c                           | 257 ++++++++++++++-------
+ net/ipv4/fib_trie.c                                |  38 ++-
+ net/ipv4/nexthop.c                                 | 111 ++++++++-
+ net/ipv4/route.c                                   |   5 +-
+ net/ipv6/addrconf.c                                |   5 +
+ net/ipv6/ip6_fib.c                                 |  22 +-
+ net/ipv6/ndisc.c                                   |   3 +-
+ net/ipv6/route.c                                   | 156 +++++++++++--
+ 20 files changed, 706 insertions(+), 175 deletions(-)
+
+-- 
+2.11.0
+
