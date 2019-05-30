@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FABC2F83F
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE222F853
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbfE3IGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 04:06:16 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32874 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbfE3IGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:06:16 -0400
-Received: by mail-pf1-f193.google.com with SMTP id z28so3470652pfk.0;
-        Thu, 30 May 2019 01:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=dmxH8nCXC6gew7umBGLpr9b8q0p2yrRmO5r/LI2MlsI=;
-        b=cH79pGEoPjeUd3cqBNWIUrNpLt+motW/jO41ztMuuj7NLJDf7oLvFWizrvo2R+Sn6D
-         /sg3HuSYb69+snkJuZQhvZD59djGWBaTI9Sk3NmMOtZZKUgitunUvwkp9YNLeZAD4nbj
-         OMm/oLy5DAmE3xOQbOmOTwS/HUZGEmG8mZvU4iEKmBs+JloEQRNU9YUPO900b9TEk1JQ
-         FCJCdrl9fQncvMkV0EH9DXQN9/az/dHgNXxdddbD59tT47Km6LLKsXoctecwUpPJKls3
-         Z/PIRyoogssp9c0PN+xrQEfz3lBZufIhtLGKzhfjZvgFEukEphGEX/pAuZkRKlXBusd/
-         Bhug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=dmxH8nCXC6gew7umBGLpr9b8q0p2yrRmO5r/LI2MlsI=;
-        b=OV1LhIpUvyga+IAMvhG56OxZAmTduJltt5rLebJp/MF1iyX7tCCxUlqhHwTPtqijqz
-         3jQzt66Ac64KxyCLLaKeE0uLXQHWLRXiqoPZnproDF78vGqr2TpJenpP6z7iI0rINDrk
-         auEPPNCrcEqn+J7+uhM2MRxli5CSMgjm+JTXON68O0vsyjWJH3RuS5GP/PMNiiRk7t8P
-         BJ0a21ppHYnsaRButKhvVDfkATV/IL3nJPECoU/+Q5ZKGijbv7GpXYGh3Tc4tmrH0PV2
-         Fl+uw/8ReITZBE7PzAtgz8IvdV4iUL8erNeRuHy8w/hnQs7H5Z2I2NGpmGGixwu9tm7n
-         umJg==
-X-Gm-Message-State: APjAAAVOFD/fT9hzSDQbr1eQDrSWMrPTkHPBqSlLXdc8aILDcL/syEnv
-        EN7jCJ595DlwJHJebpuwI13lL4Iy1VI=
-X-Google-Smtp-Source: APXvYqxTBwW62pEtoOAsKQv9PHm/YPadNbpvsPcnlwTRngWDOvtvN/tEj3XHn6yPiGkOah+WcYlabw==
-X-Received: by 2002:a63:1622:: with SMTP id w34mr2579127pgl.45.1559203575735;
-        Thu, 30 May 2019 01:06:15 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id x16sm1928024pff.30.2019.05.30.01.06.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 01:06:15 -0700 (PDT)
-Date:   Thu, 30 May 2019 16:06:02 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     paul@paul-moore.com, sds@tycho.nsa.gov, eparis@parisplace.org,
-        ccross@android.com
-Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] hooks: fix a missing-check bug in selinux_add_mnt_opt()
-Message-ID: <20190530080602.GA3600@zhanggen-UX430UQ>
+        id S1728049AbfE3IK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 04:10:29 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:47595 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727330AbfE3IK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:10:29 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0D517221B2;
+        Thu, 30 May 2019 04:10:28 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 30 May 2019 04:10:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CbDfGe
+        MVPd2/37JgdRvt0z0VONEnxstESL+ma2+ZpnY=; b=6u06bRiNTgjHMWRXYrSja5
+        BpXG+CEjgSa5dNg6AYUtMbsxRHGMz39D5wqsVx1Sz9JoEf60eBrszywuiFoZoN9P
+        kI4QkGBumFiDXiPZtycJ/DSPnNjOEmITeK9H3P/G8A9XvxpO8Df2hpmWCt77VBW4
+        7Fdu0CzqYn1btBglCwP+i5E4zpXg2WIqVgONXc3KcgucK3NpSJrGjmUljqwLXyws
+        1VOjyNPkGAZigCHQyPiLXHpxwSfKUfDntwqkRqVd0d1O9q8TlpOpQVj18fozBgd1
+        xGSmCk2IDPS0q3LsGmodRbIcDnROUyEwadUCKIyrBQtYIiZWqugfkgR6NZOHT1pw
+        ==
+X-ME-Sender: <xms:84_vXCD8PJ4_ttklzFrGod1-7W8NmK4IkiNRFHH-zYgFcMq4E3vORg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvlecutefuodetggdotefrodftvfcurf
+    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfutghh
+    ihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfedrge
+    ejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihgu
+    ohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:84_vXL89Y3MaMn33bXHdgcZ0xo5-YDIjAwz4JGnkkGYONm0IcX5bFQ>
+    <xmx:84_vXGrp-WwAFaDn2vkxLjVwoq_06uzjWcqdH3Kv2Y6-CgFbUu7IvA>
+    <xmx:84_vXFERgDtAaNyVJAv_VEUiS9QPxmbf8f4RS-FKR1nUb9XY9RMbrg>
+    <xmx:9I_vXK4SgPFw6eeiqsGb8iK3rktLTXv9hXXvcl6_Rv33t3-EkyL5aQ>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1F42380059;
+        Thu, 30 May 2019 04:10:26 -0400 (EDT)
+Date:   Thu, 30 May 2019 11:10:25 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, idosch@mellanox.com,
+        saeedm@mellanox.com, kafai@fb.com, weiwan@google.com,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next 5/7] mlxsw: Fail attempts to use routes with
+ nexthop objects
+Message-ID: <20190530081025.GA16276@splinter>
+References: <20190530030800.1683-1-dsahern@kernel.org>
+ <20190530030800.1683-6-dsahern@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20190530030800.1683-6-dsahern@kernel.org>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
-NULL when fails. So 'val' should be checked.
+On Wed, May 29, 2019 at 08:07:58PM -0700, David Ahern wrote:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> Fail attempts to use nexthop objects with routes until support can be
+> properly added.
+> 
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
-Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
----
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 3ec702c..4797c63 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
- 	if (token == Opt_error)
- 		return -EINVAL;
- 
--	if (token != Opt_seclabel)
--		val = kmemdup_nul(val, len, GFP_KERNEL);
-+	if (token != Opt_seclabel) {
-+			val = kmemdup_nul(val, len, GFP_KERNEL);
-+			if (!val)
-+				return -ENOMEM;
-+	}
- 	rc = selinux_add_opt(token, val, mnt_opts);
- 	if (unlikely(rc)) {
- 		kfree(val);
+Reviewed-by: Ido Schimmel <idosch@mellanox.com>
