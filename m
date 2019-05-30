@@ -2,92 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C9E2F8D6
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3D7F2F8DB
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 10:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727289AbfE3IzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 04:55:15 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44648 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726653AbfE3IzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:55:13 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c5so2274871pll.11;
-        Thu, 30 May 2019 01:55:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KvjM4bsTfrcq2cHYj0Oc8PDr1CJFW5mpcAz8/WiY3E0=;
-        b=PJIRhFYa2F4McFzf+xGE3gUTho75opN9ktQ1NXCUdCcGydnK/sgVU70hxfve2x1Om4
-         y7lXw5PIyHReB38bZ9+AUHhktIyjgnChQ1AXedGWj9Iwsd4CH+wIcTPLIovd3faUjsFP
-         1/NFvpt8TeW6wPHTiPHSQftQHiNxAGSVvR0mn2DfIEfNNIc5LcWfkblavemxfWL+ETP+
-         mT7HFpTnW3wrY5Re/8uPNraDblHqA3cuWX1OYHHYuH7ferAoRnqP7p3DhZjOVoy7eu3R
-         qjwSINqsn2QOGRvm48tJuDzLp18JlNJja60GkZ5u3oe8eyI6/jP2dnLtGMuypw8YhldW
-         ITMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KvjM4bsTfrcq2cHYj0Oc8PDr1CJFW5mpcAz8/WiY3E0=;
-        b=mFuPBaZ8Bvl/S7hzfUnehpx6k667wUS6GWFsx4H5ouyUEB+lTEZYeL9+TCP1m7FO5g
-         xRvdGsJepV1hhCs3dz/J3VRoEc4wDj2LpKbN075XbsQbUZ7ylHoGlbZ01ZwL7mPcwAnf
-         CQJH4R1ExeFnZby+T7HWq075czI9ElY1xCcSzxa4qaAxmY2kvdC7lHpjz1bO75esSkl0
-         eJA6WkwSb5HmsL+HZ8V4qWUuP3IeS7lFHM+LqzicwUMwlNArhi9RhNxnMsX9rEzEGwUu
-         yUDvB/iEOBhUYG4TcHohiDyDz50SFT7I9P2ORC9IOZ5HQ76M8OTD8eoWfQ5G1K3c/qDm
-         BnbQ==
-X-Gm-Message-State: APjAAAWTk9j5tVC1j/ZMIV1UwjwhY0b7S3yyBFM/OppUzLevj0OzQYu2
-        zZGmmmvjLZs4j5dd08sXy8M=
-X-Google-Smtp-Source: APXvYqyXQwgtIekLk3xQBUwVq8/Hu5IaSkI+omKRnrbiDa6+jwZFpuFkY3MoIYdDQJrZpNi5kKmOkg==
-X-Received: by 2002:a17:902:324:: with SMTP id 33mr2735283pld.284.1559206513206;
-        Thu, 30 May 2019 01:55:13 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id o15sm921189pfh.53.2019.05.30.01.54.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 01:55:12 -0700 (PDT)
-Date:   Thu, 30 May 2019 16:54:38 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        Eric Paris <eparis@parisplace.org>, ccross@android.com,
-        selinux@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Subject: [PATCH v2] hooks: fix a missing-check bug in selinux_add_mnt_opt()
-Message-ID: <20190530085438.GA2862@zhanggen-UX430UQ>
-References: <20190530080602.GA3600@zhanggen-UX430UQ>
- <CAFqZXNtX1R1VDFxm7Jco3BZ=pVnNiHU3-C=d8MhCVV1XSUQ8bw@mail.gmail.com>
+        id S1727041AbfE3Iyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 04:54:54 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:49434 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726653AbfE3Iyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 04:54:54 -0400
+X-UUID: 103c82195f7c44c9a4702e2814d086a6-20190530
+X-UUID: 103c82195f7c44c9a4702e2814d086a6-20190530
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mhqrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 367789544; Thu, 30 May 2019 16:54:48 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Thu, 30 May 2019 16:54:47 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Thu, 30 May 2019 16:54:46 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Jose Abreu <joabreu@synopsys.com>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
+        <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.com>,
+        <boon.leong.ong@intel.com>, <andrew@lunn.ch>
+Subject: [PATCH 0/4] complete dwmac-mediatek driver and fix flow control issue
+Date:   Thu, 30 May 2019 16:54:40 +0800
+Message-ID: <1559206484-1825-1-git-send-email-biao.huang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFqZXNtX1R1VDFxm7Jco3BZ=pVnNiHU3-C=d8MhCVV1XSUQ8bw@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
-NULL when fails. So 'val' should be checked.
+This series mainly complete dwmac-mediatek driver:                              
+        1. add power on/off operations for dwmac-mediatek.                      
+        2. disable rx watchdog to reduce rx path reponding time.                
+        3. change the default value of tx-frames from 25 to 1, so               
+           ptp4l will test pass by default.                                     
+                                                                                
+and also fix the issue that flow control won't be disabled any more             
+once being enabled.                                                               
+                                                                                
+Biao Huang (4):                                                                 
+  net: stmmac: dwmac-mediatek: enable Ethernet power domain                     
+  net: stmmac: dwmac-mediatek: disable rx watchdog                              
+  net: stmmac: modify default value of tx-frames                                
+  net: stmmac: dwmac4: fix flow control issue                                   
+                                                                                
+ drivers/net/ethernet/stmicro/stmmac/common.h       |    2 +-                   
+ .../net/ethernet/stmicro/stmmac/dwmac-mediatek.c   |   19 ++++++++++++++++++-  
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |    8 ++++++--             
+ 3 files changed, 25 insertions(+), 4 deletions(-)                              
+                                                                                
+--                                                                              
+1.7.9.5
 
-Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
-Fixes: 757cbe597fe8 ("LSM: new method: ->sb_add_mnt_opt()")
----
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 3ec702c..4797c63 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
- 	if (token == Opt_error)
- 		return -EINVAL;
- 
--	if (token != Opt_seclabel)
--		val = kmemdup_nul(val, len, GFP_KERNEL);
-+	if (token != Opt_seclabel) {
-+			val = kmemdup_nul(val, len, GFP_KERNEL);
-+			if (!val)
-+				return -ENOMEM;
-+	}
- 	rc = selinux_add_opt(token, val, mnt_opts);
- 	if (unlikely(rc)) {
- 		kfree(val);
