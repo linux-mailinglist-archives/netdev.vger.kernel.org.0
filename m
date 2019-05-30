@@ -2,163 +2,711 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CABE30317
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBF0C30318
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726080AbfE3UBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:01:34 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34932 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfE3UBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:01:34 -0400
-Received: by mail-lj1-f193.google.com with SMTP id h11so7325802ljb.2
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 13:01:32 -0700 (PDT)
+        id S1726285AbfE3UBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 16:01:43 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44478 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbfE3UBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:01:43 -0400
+Received: by mail-ed1-f65.google.com with SMTP id b8so10784396edm.11
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 13:01:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xHTu5Y/36MEqwnN11ZHruwFNlA0FJURgmDJt7FE/4y8=;
-        b=JyjfewCxqs9P6zucEu3lR5OQLMDl8lqLZgiC9dHbKBne8tGSzHmvrmwCLCxvJvaNwa
-         G04i9ZmkkgGeJrsl37oRhSxRcdJPVkpX/rHCi5ore/XuRwJyUGgpIx9q+uZdfd8VZSO4
-         ClGoF0K2EdIsqxtOhpctRB3wN2WurHvJqKpnWMvWK7kFFmJ5++QlMuD49nxxLFVDpjZR
-         NxbBQsY0RzoP5ac+4UShUrbM0RX5PbggY3uILY1IlwtBGtCyf7ol9eYEoRZREdR+8Ie2
-         Zt/QTkS75grE54hVk7lOCL85TRb08uUk+AgVe7aSVRG8oZuuV48OclvR8Lk/poo9/svP
-         qLyA==
+        bh=V8D/xDAPqf3zw/csY7E6mtrMC+eoy3ZEu47ZrzlgmEc=;
+        b=PLd6nSkvTGXq05ff7IwS/intX/Ujhq0Tx1GrryqKktjYCUIF30lT9kgz+/3zQ0kNn4
+         4fI+QLeFyPRUq8utTrXwCK0Bdz8xdCz1HiuerXn5GeO7c8Cmilr9l4WIecIGLKBxn4TE
+         psmnijL4h5DOSxXVxihDgZUbXQd+pTxDO2PPI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xHTu5Y/36MEqwnN11ZHruwFNlA0FJURgmDJt7FE/4y8=;
-        b=G3+gZ7DHtf9d5Ajc29GMIDRwx81EvGshw1BnYK9NKfw50PjwbMJoZ6Ml6sO3CTRlj6
-         oH8repVPcabFg6SNROcLUYoraJb8nRqp1WdH8wQo3SRa2dnqXAnwzw7YEYkgjvaR5avg
-         Z+vykzsKsYPthK58/B/wc2+Zaovts6G8VtDLsk/vHFzT4YX0NZSv+MyxVZS64LYoEXea
-         HIJzCq3yFOmZDCtqjMIevxgPt2mH3mhS9+uxx6I6/G4ltrDCc7spt/T5E+msR/mnysAZ
-         tahf6nmkKGOTwDdwqLpuRtHKn39dr9kxtBlI+Fi4scHqgx9Z0VX8JFF4yC+1XJm/ViSp
-         SUZw==
-X-Gm-Message-State: APjAAAU0FiAsRlu4Oh4zAQynOMZ655MeWoNSIxwtW6kRzzT54pxQ0PU0
-        aFOYEAvqzHWUYn32PaNV9XE21E0364Zg7OcV3G8=
-X-Google-Smtp-Source: APXvYqw/HMVxgAfrqpkMzU2KY+rHAW/J/GmQNfjdSltZ+2r30bpCiTGKguLiH7M9D3FO+P+/PKSuOjKkXF6Ah37Mbtw=
-X-Received: by 2002:a2e:994:: with SMTP id 142mr3298618ljj.192.1559246491844;
- Thu, 30 May 2019 13:01:31 -0700 (PDT)
+        bh=V8D/xDAPqf3zw/csY7E6mtrMC+eoy3ZEu47ZrzlgmEc=;
+        b=hYL3G5jn9DLe9NDINZu+ME885VADRxKmemCLYO0b2vZ776BN99Y/djfCmGRG/oKaXP
+         xtPQOudqRyWzagXmE6IH77LvjX6yEw0S0nMUMxaQnqZaaTUGZja+w8sQyZb8/VJYW8tc
+         IhIqG6EyktzQHXiQPEhKM9s80/jYEXFGqNv72jcvyYsH/skqcwmvg5H2nELU2D0YvcPy
+         yMgKeiRn506zdDGrRHnbWKaoraWJPpU0o5nqw2CBgthZYNYHHTbUAiA3PXCjrbRmLfs3
+         5X0fOQgdL7BOln702jQF9j0Pb4qWn6SRWimVu+mYb30wCR69TQbmgI2fNow5o/+Fjg88
+         j1lA==
+X-Gm-Message-State: APjAAAWbGAl3HYl/XVAigBncfu5YfVffiuuwSJHNnY12NfwUJJh7CtOb
+        jOnECdQYesY0ymn8CqFwaS6jQSPPSYqnkQGa2XaX/uHbLXs=
+X-Google-Smtp-Source: APXvYqzWXmBpH2YyMmq7z6rD9Va6vtyuw+W3wGPFJw2RKxtK+dSYwc+rAE7quWpnyN0Xt5Ps9ctosTleSl9GvfFulBI=
+X-Received: by 2002:aa7:cb57:: with SMTP id w23mr6953676edt.291.1559246500782;
+ Thu, 30 May 2019 13:01:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAADnVQ+nHXrFOutkdGfD9HxMfRYQuUJwK8UMPGtbrMQBNH4Ddg@mail.gmail.com>
- <d110441b-8d69-0d11-207f-96716d7bc725@gmail.com> <CAADnVQJ-aBTFC1BeMiNRD=42qcdw83D_t0zDVzEX+OfFvt7K0g@mail.gmail.com>
- <20190530.110149.956896317988019526.davem@davemloft.net> <CAADnVQJT8UJntO=pSYGN-eokuWGP_6jEeLkFgm2rmVvxmGtUCg@mail.gmail.com>
- <65320e39-8ea2-29d8-b5f9-2de0c0c7e689@gmail.com>
-In-Reply-To: <65320e39-8ea2-29d8-b5f9-2de0c0c7e689@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 30 May 2019 13:01:19 -0700
-Message-ID: <CAADnVQ+KqC0XCgKSBcCHB8hgQroCq=JH7Pi5NN4B9hN3xtUvYw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/7] net: add struct nexthop to fib{6}_info
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>
+References: <20190530031746.2040-1-dsahern@kernel.org> <20190530031746.2040-8-dsahern@kernel.org>
+In-Reply-To: <20190530031746.2040-8-dsahern@kernel.org>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Thu, 30 May 2019 13:01:29 -0700
+Message-ID: <CAJieiUhjnhPsXBkGHaDhZXX-eoNGePfiz7fWMdMZZvN5hf8rLw@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 7/9] Add support for nexthop objects
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 11:52 AM David Ahern <dsahern@gmail.com> wrote:
+On Wed, May 29, 2019 at 9:04 PM David Ahern <dsahern@kernel.org> wrote:
 >
-> On 5/30/19 12:27 PM, Alexei Starovoitov wrote:
-> > On Thu, May 30, 2019 at 11:01 AM David Miller <davem@davemloft.net> wrote:
-> >>
-> >> From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> >> Date: Thu, 30 May 2019 08:18:10 -0700
-> >>
-> >>> On Thu, May 30, 2019 at 8:16 AM David Ahern <dsahern@gmail.com> wrote:
-> >>>>
-> >>>> On 5/30/19 9:06 AM, Alexei Starovoitov wrote:
-> >>>>> Huge number of core changes and zero tests.
-> >>>>
-> >>>> As mentioned in a past response, there are a number of tests under
-> >>>> selftests that exercise the code paths affected by this change.
-> >>>
-> >>> I see zero new tests added.
-> >>
-> >> If the existing tests give sufficient coverage, your objections are not
-> >> reasonable Alexei.
-> >
-> > I completely disagree. Existing tests are not sufficient.
-> > It is a new feature for the kernel with corresponding iproute2 new features,
-> > yet there are zero tests.
-> >
+> From: David Ahern <dsahern@gmail.com>
 >
-> Your objection was based on changes to core code ("Huge number of core
-> changes and zero tests"), not new code paths.
+> Add nexthop subcommand to ip. Implement basic commands for creating,
+> deleting and dumping nexthop objects. Syntax follows 'nexthop' syntax
+> from existing 'ip route' command.
 >
-> The nexthop code paths are not live yet. More changes are needed before
-> that can happen. I have been sending the patches in small, reviewable
-> increments to be kind to reviewers than a single 27 patch set with
-> everything (the remaining set which is over the limit BTW).
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+
+If you are re-spinning, request you to pls add a usage example in the
+commit msg...or in the man-page.
+
+
+> ---
+>  ip/Makefile    |   3 +-
+>  ip/ip.c        |   3 +-
+>  ip/ip_common.h |   2 +
+>  ip/ipnexthop.c | 571 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 577 insertions(+), 2 deletions(-)
+>  create mode 100644 ip/ipnexthop.c
 >
-> Once iproute2 has the nexthop command (patches sent to the list) AND the
-> RTA_NHID patches are in, I have this as the final set:
+> diff --git a/ip/Makefile b/ip/Makefile
+> index 7ce6e91a528c..5ab78d7d3b84 100644
+> --- a/ip/Makefile
+> +++ b/ip/Makefile
+> @@ -10,7 +10,8 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+>      link_iptnl.o link_gre6.o iplink_bond.o iplink_bond_slave.o iplink_hsr.o \
+>      iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
+>      iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+> -    ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o
+> +    ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+> +    ipnexthop.o
 >
-> 8c0b06b9813e selftests: Add test cases for nexthop objects
-> ea5c19e4dc7c selftests: Add nexthop objects to router_multipath.sh
-> 3be7b15d1e56 selftests: pmtu: Move running of test into a new function
-> a896b2206ea5 selftests: pmtu: Move route installs to a new function
-> cfa48193d0b8 selftests: pmtu: Add support for routing via nexthop objects
-> 3d09a79208b9 selftests: icmp_redirect: Add support for routing via
-> nexthop objects
-
-cool. that's exactly what I was asking about.
-Could you please post them to the mailing list as RFC or some
-not-yet-to-be-merged tag?
-And in the main patch set, just say in cover letter:
-"here look at this set posted separately, because of such and such"
-
-> As always, my patches can be viewed by anyone:
->     https://github.com/dsahern/linux
-
-sure, but it's counter to the standard code review procedure we have.
-Pointing a link to your tree doesn't make them reviewable on the
-public mailing list.
-I very much prefer to do code reviews by looking at the tests first.
-It gives me a better idea on api, use cases, etc.
-
-> That includes:
-> 1. a test script doing functional validation of the nexthop code
-> (net/ipv4/nexthop.c), along with stack integration (e.g., v6 nexthop
-> with v4 routes) and traffic (ping).
+>  RTMONOBJ=rtmon.o
 >
-> 2. updates to existing exception tests (pmtu and redirect) with the
-> nexthop obects used for routing
+> diff --git a/ip/ip.c b/ip/ip.c
+> index b71ae816e24d..b46fd8dd056c 100644
+> --- a/ip/ip.c
+> +++ b/ip/ip.c
+> @@ -50,7 +50,7 @@ static void usage(void)
+>                 "where  OBJECT := { link | address | addrlabel | route | rule | neigh | ntable |\n"
+>                 "                   tunnel | tuntap | maddress | mroute | mrule | monitor | xfrm |\n"
+>                 "                   netns | l2tp | fou | macsec | tcp_metrics | token | netconf | ila |\n"
+> -               "                   vrf | sr }\n"
+> +               "                   vrf | sr | nexthop }\n"
+>                 "       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |\n"
+>                 "                    -h[uman-readable] | -iec | -j[son] | -p[retty] |\n"
+>                 "                    -f[amily] { inet | inet6 | mpls | bridge | link } |\n"
+> @@ -100,6 +100,7 @@ static const struct cmd {
+>         { "netconf",    do_ipnetconf },
+>         { "vrf",        do_ipvrf},
+>         { "sr",         do_seg6 },
+> +       { "nexthop",    do_ipnh },
+>         { "help",       do_help },
+>         { 0 }
+>  };
+> diff --git a/ip/ip_common.h b/ip/ip_common.h
+> index 1c90770be548..5f73247ac488 100644
+> --- a/ip/ip_common.h
+> +++ b/ip/ip_common.h
+> @@ -47,6 +47,7 @@ int print_prefix(struct nlmsghdr *n, void *arg);
+>  int print_rule(struct nlmsghdr *n, void *arg);
+>  int print_netconf(struct rtnl_ctrl_data *ctrl,
+>                   struct nlmsghdr *n, void *arg);
+> +int print_nexthop(struct nlmsghdr *n, void *arg);
+>  void netns_map_init(void);
+>  void netns_nsid_socket_init(void);
+>  int print_nsid(struct nlmsghdr *n, void *arg);
+> @@ -80,6 +81,7 @@ int do_ipvrf(int argc, char **argv);
+>  void vrf_reset(void);
+>  int netns_identify_pid(const char *pidstr, char *name, int len);
+>  int do_seg6(int argc, char **argv);
+> +int do_ipnh(int argc, char **argv);
 >
-> 3. updates to the existing router_multipath script with the nexthop
-> obects used for routing and validating balanced selection in paths.
-
-great.
-
+>  int iplink_get(char *name, __u32 filt_mask);
+>  int iplink_ifla_xstats(int argc, char **argv);
+> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
+> new file mode 100644
+> index 000000000000..84c2f01d7309
+> --- /dev/null
+> +++ b/ip/ipnexthop.c
+> @@ -0,0 +1,571 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * ip nexthop
+> + *
+> + * Copyright (c) 2017-19 Cumulus Networks
+> + * Copyright (c) 2017-19 David Ahern <dsahern@gmail.com>
+> + */
+> +
+> +#include <linux/nexthop.h>
+> +#include <stdio.h>
+> +#include <string.h>
+> +#include <rt_names.h>
+> +#include <errno.h>
+> +
+> +#include "utils.h"
+> +#include "ip_common.h"
+> +
+> +static struct
+> +{
+> +       unsigned int flushed;
+> +       unsigned int groups;
+> +       unsigned int ifindex;
+> +       unsigned int master;
+> +       char *flushb;
+> +       int flushp;
+> +       int flushe;
+> +} filter;
+> +
+> +enum {
+> +       IPNH_LIST,
+> +       IPNH_FLUSH,
+> +};
+> +
+> +#define RTM_NHA(h)  ((struct rtattr *)(((char *)(h)) + \
+> +                       NLMSG_ALIGN(sizeof(struct nhmsg))))
+> +
+> +static void usage(void) __attribute__((noreturn));
+> +
+> +static void usage(void)
+> +{
+> +       fprintf(stderr,
+> +               "Usage: ip nexthop { list | flush } SELECTOR\n"
+> +               "       ip nexthop get id ID\n"
+> +               "       ip nexthop { add | replace } NH\n"
+> +               "       ip nexthop del id ID\n"
+> +               "SELECTOR := [ id ID ] [ dev DEV ] [ vrf NAME ] [ master DEV ] [ groups ]\n"
+> +               "NH := [ id ID ] [ via [ FAMILY ] ADDRESS ] [ dev DEV ]\n"
+> +               "      [ group <id[,weight]>[/<id[,weight]>/...] ] [ NHFLAGS ]\n"
+> +               "      [ encap ENCAPTYPE ENCAPHDR ]\n"
+> +               "NHFLAGS := [ onlink ]\n");
+> +       exit(-1);
+> +}
+> +
+> +static int nh_dump_filter(struct nlmsghdr *nlh, int reqlen)
+> +{
+> +       int err;
+> +
+> +       if (filter.ifindex) {
+> +               err = addattr32(nlh, reqlen, NHA_OIF, filter.ifindex);
+> +               if (err)
+> +                       return err;
+> +       }
+> +
+> +       if (filter.groups) {
+> +               addattr_l(nlh, reqlen, NHA_GROUPS, NULL, 0);
+> +               if (err)
+> +                       return err;
+> +       }
+> +
+> +       if (filter.master) {
+> +               addattr32(nlh, reqlen, NHA_MASTER, filter.master);
+> +               if (err)
+> +                       return err;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +struct rtnl_handle rth_del = { .fd = -1 };
+> +
+> +static int delete_nexthop(__u32 id)
+> +{
+> +       struct {
+> +               struct nlmsghdr n;
+> +               struct nhmsg    nhm;
+> +               char            buf[64];
+> +       } req = {
+> +               .n.nlmsg_len = NLMSG_LENGTH(sizeof(struct nhmsg)),
+> +               .n.nlmsg_flags = NLM_F_REQUEST,
+> +               .n.nlmsg_type = RTM_DELNEXTHOP,
+> +               .nhm.nh_family = AF_UNSPEC,
+> +       };
+> +
+> +       req.n.nlmsg_seq = ++rth_del.seq;
+> +
+> +       addattr32(&req.n, sizeof(req), NHA_ID, id);
+> +
+> +       if (rtnl_talk(&rth_del, &req.n, NULL) < 0)
+> +               return -1;
+> +       return 0;
+> +}
+> +
+> +static int flush_nexthop(struct nlmsghdr *nlh, void *arg)
+> +{
+> +       struct nhmsg *nhm = NLMSG_DATA(nlh);
+> +       struct rtattr *tb[NHA_MAX+1];
+> +       __u32 id = 0;
+> +       int len;
+> +
+> +       len = nlh->nlmsg_len - NLMSG_SPACE(sizeof(*nhm));
+> +       if (len < 0) {
+> +               fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
+> +               return -1;
+> +       }
+> +
+> +       parse_rtattr(tb, NHA_MAX, RTM_NHA(nhm), len);
+> +       if (tb[NHA_ID])
+> +               id = rta_getattr_u32(tb[NHA_ID]);
+> +
+> +       if (id && !delete_nexthop(id))
+> +               filter.flushed++;
+> +
+> +       return 0;
+> +}
+> +
+> +static int ipnh_flush(unsigned int all)
+> +{
+> +       int rc = -2;
+> +
+> +       if (all) {
+> +               filter.groups = 1;
+> +               filter.ifindex = 0;
+> +               filter.master = 0;
+> +       }
+> +
+> +       if (rtnl_open(&rth_del, 0) < 0) {
+> +               fprintf(stderr, "Cannot open rtnetlink\n");
+> +               return EXIT_FAILURE;
+> +       }
+> +again:
+> +       if (rtnl_nexthopdump_req(&rth, preferred_family, nh_dump_filter) < 0) {
+> +               perror("Cannot send dump request");
+> +               goto out;
+> +       }
+> +
+> +       if (rtnl_dump_filter(&rth, flush_nexthop, stdout) < 0) {
+> +               fprintf(stderr, "Dump terminated\n");
+> +               goto out;
+> +       }
+> +
+> +       /* if deleting all, then remove groups first */
+> +       if (all && filter.groups) {
+> +               filter.groups = 0;
+> +               goto again;
+> +       }
+> +
+> +       rc = 0;
+> +out:
+> +       rtnl_close(&rth_del);
+> +       if (!filter.flushed)
+> +               printf("Nothing to flush\n");
+> +       else
+> +               printf("Flushed %d nexthops\n", filter.flushed);
+> +
+> +       return rc;
+> +}
+> +
+> +static void print_nh_group(FILE *fp, const struct rtattr *grps_attr)
+> +{
+> +       struct nexthop_grp *nhg = RTA_DATA(grps_attr);
+> +       int num = RTA_PAYLOAD(grps_attr) / sizeof(*nhg);
+> +       int i;
+> +
+> +       if (!num || num * sizeof(*nhg) != RTA_PAYLOAD(grps_attr)) {
+> +               fprintf(fp, "<invalid nexthop group>");
+> +               return;
+> +       }
+> +
+> +       open_json_array(PRINT_JSON, "group");
+> +       print_string(PRINT_FP, NULL, "%s", "group ");
+> +       for (i = 0; i < num; ++i) {
+> +               open_json_object(NULL);
+> +
+> +               if (i)
+> +                       print_string(PRINT_FP, NULL, "%s", "/");
+> +
+> +               print_uint(PRINT_ANY, "id", "%u", nhg[i].id);
+> +               if (nhg[i].weight)
+> +                       print_uint(PRINT_ANY, "weight", ",%u", nhg[i].weight);
+> +
+> +               close_json_object();
+> +       }
+> +       close_json_array(PRINT_JSON, NULL);
+> +}
+> +
+> +static void print_nh_gateway(FILE *fp, const struct nhmsg *nhm,
+> +                             const struct rtattr *rta)
+> +{
+> +       const char *gateway = format_host_rta(nhm->nh_family, rta);
+> +
+> +       if (is_json_context())
+> +               print_string(PRINT_JSON, "gateway", NULL, gateway);
+> +       else {
+> +               fprintf(fp, "via ");
+> +               print_color_string(PRINT_FP, ifa_family_color(nhm->nh_family),
+> +                                 NULL, "%s ", gateway);
+> +       }
+> +}
+> +
+> +int print_nexthop(struct nlmsghdr *n, void *arg)
+> +{
+> +       struct nhmsg *nhm = NLMSG_DATA(n);
+> +       struct rtattr *tb[NHA_MAX+1];
+> +       FILE *fp = (FILE *)arg;
+> +       int len;
+> +
+> +       SPRINT_BUF(b1);
+> +
+> +       if (n->nlmsg_type != RTM_DELNEXTHOP &&
+> +           n->nlmsg_type != RTM_NEWNEXTHOP) {
+> +               fprintf(stderr, "Not a nexthop: %08x %08x %08x\n",
+> +                       n->nlmsg_len, n->nlmsg_type, n->nlmsg_flags);
+> +               return -1;
+> +       }
+> +
+> +       len = n->nlmsg_len - NLMSG_SPACE(sizeof(*nhm));
+> +       if (len < 0) {
+> +               close_json_object();
+> +               fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
+> +               return -1;
+> +       }
+> +
+> +       parse_rtattr(tb, NHA_MAX, RTM_NHA(nhm), len);
+> +
+> +       open_json_object(NULL);
+> +
+> +       if (n->nlmsg_type == RTM_DELROUTE)
+> +               print_bool(PRINT_ANY, "deleted", "Deleted ", true);
+> +
+> +       if (tb[NHA_ID])
+> +               print_uint(PRINT_ANY, "id", "id %u ",
+> +                          rta_getattr_u32(tb[NHA_ID]));
+> +
+> +       if (tb[NHA_GROUP])
+> +               print_nh_group(fp, tb[NHA_GROUP]);
+> +
+> +       if (tb[NHA_ENCAP])
+> +               lwt_print_encap(fp, tb[NHA_ENCAP_TYPE], tb[NHA_ENCAP]);
+> +
+> +       if (tb[NHA_GATEWAY])
+> +               print_nh_gateway(fp, nhm, tb[NHA_GATEWAY]);
+> +
+> +       if (tb[NHA_OIF])
+> +               print_rta_if(fp, tb[NHA_OIF], "dev");
+> +
+> +       if (nhm->nh_scope != RT_SCOPE_UNIVERSE || show_details > 0) {
+> +               print_string(PRINT_ANY, "scope", "scope %s ",
+> +                            rtnl_rtscope_n2a(nhm->nh_scope, b1, sizeof(b1)));
+> +       }
+> +
+> +       if (tb[NHA_BLACKHOLE])
+> +               print_null(PRINT_ANY, "blackhole", "blackhole", NULL);
+> +
+> +       if (nhm->nh_protocol != RTPROT_UNSPEC || show_details > 0) {
+> +               print_string(PRINT_ANY, "protocol", "proto %s ",
+> +                            rtnl_rtprot_n2a(nhm->nh_protocol, b1, sizeof(b1)));
+> +       }
+> +
+> +       if (tb[NHA_OIF])
+> +               print_rt_flags(fp, nhm->nh_flags);
+> +
+> +       print_string(PRINT_FP, NULL, "%s", "\n");
+> +       close_json_object();
+> +       fflush(fp);
+> +
+> +       return 0;
+> +}
+> +
+> +static int add_nh_group_attr(struct nlmsghdr *n, int maxlen, char *argv)
+> +{
+> +       struct nexthop_grp *grps;
+> +       int count = 0, i;
+> +       char *sep, *wsep;
+> +
+> +       if (*argv != '\0')
+> +               count = 1;
+> +
+> +       /* separator is '/' */
+> +       sep = strchr(argv, '/');
+> +       while (sep) {
+> +               count++;
+> +               sep = strchr(sep + 1, '/');
+> +       }
+> +
+> +       if (count == 0)
+> +               return -1;
+> +
+> +       grps = calloc(count, sizeof(*grps));
+> +       if (!grps)
+> +               return -1;
+> +
+> +       for (i = 0; i < count; ++i) {
+> +               sep = strchr(argv, '/');
+> +               if (sep)
+> +                       *sep = '\0';
+> +
+> +               wsep = strchr(argv, ',');
+> +               if (wsep)
+> +                       *wsep = '\0';
+> +
+> +               if (get_unsigned(&grps[i].id, argv, 0))
+> +                       return -1;
+> +               if (wsep) {
+> +                       unsigned int tmp;
+> +
+> +                       wsep++;
+> +                       if (get_unsigned(&tmp, wsep, 0))
+> +                               return -1;
+> +                       if (tmp > 254)
+> +                               return -1;
+> +                       grps[i].weight = tmp;
+> +               }
+> +
+> +               if (!sep)
+> +                       break;
+> +
+> +               argv = sep + 1;
+> +       }
+> +
+> +       return addattr_l(n, maxlen, NHA_GROUP, grps, count * sizeof(*grps));
+> +}
+> +
+> +static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
+> +{
+> +       struct {
+> +               struct nlmsghdr n;
+> +               struct nhmsg    nhm;
+> +               char            buf[1024];
+> +       } req = {
+> +               .n.nlmsg_len = NLMSG_LENGTH(sizeof(struct nhmsg)),
+> +               .n.nlmsg_flags = NLM_F_REQUEST | flags,
+> +               .n.nlmsg_type = cmd,
+> +               .nhm.nh_family = preferred_family,
+> +       };
+> +       __u32 nh_flags = 0;
+> +
+> +       while (argc > 0) {
+> +               if (!strcmp(*argv, "id")) {
+> +                       __u32 id;
+> +
+> +                       NEXT_ARG();
+> +                       if (get_unsigned(&id, *argv, 0))
+> +                               invarg("invalid id value", *argv);
+> +                       addattr32(&req.n, sizeof(req), NHA_ID, id);
+> +               } else if (!strcmp(*argv, "dev")) {
+> +                       int ifindex;
+> +
+> +                       NEXT_ARG();
+> +                       ifindex = ll_name_to_index(*argv);
+> +                       if (!ifindex)
+> +                               invarg("Device does not exist\n", *argv);
+> +                       addattr32(&req.n, sizeof(req), NHA_OIF, ifindex);
+> +                       if (req.nhm.nh_family == AF_UNSPEC)
+> +                               req.nhm.nh_family = AF_INET;
+> +               } else if (strcmp(*argv, "via") == 0) {
+> +                       inet_prefix addr;
+> +                       int family;
+> +
+> +                       NEXT_ARG();
+> +                       family = read_family(*argv);
+> +                       if (family == AF_UNSPEC)
+> +                               family = req.nhm.nh_family;
+> +                       else
+> +                               NEXT_ARG();
+> +                       get_addr(&addr, *argv, family);
+> +                       if (req.nhm.nh_family == AF_UNSPEC)
+> +                               req.nhm.nh_family = addr.family;
+> +                       else if (req.nhm.nh_family != addr.family)
+> +                               invarg("address family mismatch\n", *argv);
+> +                       addattr_l(&req.n, sizeof(req), NHA_GATEWAY,
+> +                                 &addr.data, addr.bytelen);
+> +               } else if (strcmp(*argv, "encap") == 0) {
+> +                       char buf[1024];
+> +                       struct rtattr *rta = (void *)buf;
+> +
+> +                       rta->rta_type = NHA_ENCAP;
+> +                       rta->rta_len = RTA_LENGTH(0);
+> +
+> +                       lwt_parse_encap(rta, sizeof(buf), &argc, &argv,
+> +                                       NHA_ENCAP, NHA_ENCAP_TYPE);
+> +
+> +                       if (rta->rta_len > RTA_LENGTH(0)) {
+> +                               addraw_l(&req.n, 1024, RTA_DATA(rta),
+> +                                        RTA_PAYLOAD(rta));
+> +                       }
+> +               } else if (!strcmp(*argv, "blackhole")) {
+> +                       addattr_l(&req.n, sizeof(req), NHA_BLACKHOLE, NULL, 0);
+> +                       if (req.nhm.nh_family == AF_UNSPEC)
+> +                               req.nhm.nh_family = AF_INET;
+> +               } else if (!strcmp(*argv, "onlink")) {
+> +                       nh_flags |= RTNH_F_ONLINK;
+> +               } else if (!strcmp(*argv, "group")) {
+> +                       NEXT_ARG();
+> +
+> +                       if (add_nh_group_attr(&req.n, sizeof(req), *argv))
+> +                               invarg("\"group\" value is invalid\n", *argv);
+> +               } else if (strcmp(*argv, "help") == 0) {
+> +                       usage();
+> +               } else {
+> +                       invarg("", *argv);
+> +               }
+> +               argc--; argv++;
+> +       }
+> +
+> +       req.nhm.nh_flags = nh_flags;
+> +
+> +       if (rtnl_talk(&rth, &req.n, NULL) < 0)
+> +               return -2;
+> +
+> +       return 0;
+> +}
+> +
+> +static int ipnh_get_id(__u32 id)
+> +{
+> +       struct {
+> +               struct nlmsghdr n;
+> +               struct nhmsg    nhm;
+> +               char            buf[1024];
+> +       } req = {
+> +               .n.nlmsg_len = NLMSG_LENGTH(sizeof(struct nhmsg)),
+> +               .n.nlmsg_flags = NLM_F_REQUEST,
+> +               .n.nlmsg_type  = RTM_GETNEXTHOP,
+> +               .nhm.nh_family = preferred_family,
+> +       };
+> +       struct nlmsghdr *answer;
+> +
+> +       addattr32(&req.n, sizeof(req), NHA_ID, id);
+> +
+> +       if (rtnl_talk(&rth, &req.n, &answer) < 0)
+> +               return -2;
+> +
+> +       new_json_obj(json);
+> +
+> +       if (print_nexthop(answer, (void *)stdout) < 0) {
+> +               free(answer);
+> +               return -1;
+> +       }
+> +
+> +       delete_json_obj();
+> +       fflush(stdout);
+> +
+> +       free(answer);
+> +
+> +       return 0;
+> +}
+> +
+> +static int ipnh_list_flush(int argc, char **argv, int action)
+> +{
+> +       unsigned int all = (argc == 0);
+> +
+> +       while (argc > 0) {
+> +               if (!matches(*argv, "dev")) {
+> +                       NEXT_ARG();
+> +                       filter.ifindex = ll_name_to_index(*argv);
+> +                       if (!filter.ifindex)
+> +                               invarg("Device does not exist\n", *argv);
+> +               } else if (!matches(*argv, "groups")) {
+> +                       filter.groups = 1;
+> +               } else if (!matches(*argv, "master")) {
+> +                       NEXT_ARG();
+> +                       filter.master = ll_name_to_index(*argv);
+> +                       if (!filter.master)
+> +                               invarg("Device does not exist\n", *argv);
+> +               } else if (matches(*argv, "vrf") == 0) {
+> +                       NEXT_ARG();
+> +                       if (!name_is_vrf(*argv))
+> +                               invarg("Invalid VRF\n", *argv);
+> +                       filter.master = ll_name_to_index(*argv);
+> +                       if (!filter.master)
+> +                               invarg("VRF does not exist\n", *argv);
+> +               } else if (!strcmp(*argv, "id")) {
+> +                       __u32 id;
+> +
+> +                       NEXT_ARG();
+> +                       if (get_unsigned(&id, *argv, 0))
+> +                               invarg("invalid id value", *argv);
+> +                       return ipnh_get_id(id);
+> +               } else if (matches(*argv, "help") == 0) {
+> +                       usage();
+> +               } else {
+> +                       invarg("", *argv);
+> +               }
+> +               argc--; argv++;
+> +       }
+> +
+> +       if (action == IPNH_FLUSH)
+> +               return ipnh_flush(all);
+> +
+> +       if (rtnl_nexthopdump_req(&rth, preferred_family, nh_dump_filter) < 0) {
+> +               perror("Cannot send dump request");
+> +               return -2;
+> +       }
+> +
+> +       new_json_obj(json);
+> +
+> +       if (rtnl_dump_filter(&rth, print_nexthop, stdout) < 0) {
+> +               fprintf(stderr, "Dump terminated\n");
+> +               return -2;
+> +       }
+> +
+> +       delete_json_obj();
+> +       fflush(stdout);
+> +
+> +       return 0;
+> +}
+> +
+> +static int ipnh_get(int argc, char **argv)
+> +{
+> +       __u32 id = 0;
+> +
+> +       while (argc > 0) {
+> +               if (!strcmp(*argv, "id")) {
+> +                       NEXT_ARG();
+> +                       if (get_unsigned(&id, *argv, 0))
+> +                               invarg("invalid id value", *argv);
+> +               } else  {
+> +                       usage();
+> +               }
+> +               argc--; argv++;
+> +       }
+> +
+> +       if (!id) {
+> +               usage();
+> +               return -1;
+> +       }
+> +
+> +       return ipnh_get_id(id);
+> +}
+> +
+> +int do_ipnh(int argc, char **argv)
+> +{
+> +       if (argc < 1)
+> +               return ipnh_list_flush(0, NULL, IPNH_LIST);
+> +
+> +       if (!matches(*argv, "add"))
+> +               return ipnh_modify(RTM_NEWNEXTHOP, NLM_F_CREATE|NLM_F_EXCL,
+> +                                  argc-1, argv+1);
+> +       if (!matches(*argv, "replace"))
+> +               return ipnh_modify(RTM_NEWNEXTHOP, NLM_F_CREATE|NLM_F_REPLACE,
+> +                                  argc-1, argv+1);
+> +       if (!matches(*argv, "delete"))
+> +               return ipnh_modify(RTM_DELNEXTHOP, 0, argc-1, argv+1);
+> +
+> +       if (!matches(*argv, "list") ||
+> +           !matches(*argv, "show") ||
+> +           !matches(*argv, "lst"))
+> +               return ipnh_list_flush(argc-1, argv+1, IPNH_LIST);
+> +
+> +       if (!matches(*argv, "get"))
+> +               return ipnh_get(argc-1, argv+1);
+> +
+> +       if (!matches(*argv, "flush"))
+> +               return ipnh_list_flush(argc-1, argv+1, IPNH_FLUSH);
+> +
+> +       if (!matches(*argv, "help"))
+> +               usage();
+> +
+> +       fprintf(stderr,
+> +               "Command \"%s\" is unknown, try \"ip nexthop help\".\n", *argv);
+> +       exit(-1);
+> +}
+> --
+> 2.11.0
 >
-> Latest branch is:
->    https://github.com/dsahern/linux/tree/5.2-next-nexthops-v14
->
-> In addition to the functional and runtime tests listed above:
-> 1. I have all kinds of MPLS and network functional tests that I run. I
-> have already committed to sending those for inclusion, it is a matter of
-> time.
-
-cool. first time I hear.
-
-> 2. The FRR team has had a kernel with these patches for 5+ months adding
-> support for nexthops to FRR. They have their own test suites used for
-> their development.
-
-what is FRR team? First time I hear about them as well.
-
-> 3. The patches are included in our 4.19 kernel and subjected to our
-> suite of smoke and validation tests.
-
-it's also great to hear, but your kernel tree is not a substitute
-for netdev community with many companies contributing and running
-those kernels, syzbots, buildbots, etc.
-I have no doubt that you test your patches, but these patches also touch
-the very core of networking that we all are care deeply about.
-Hence we want to be able to run all those tests on our kernels too.
