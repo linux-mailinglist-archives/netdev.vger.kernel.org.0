@@ -2,55 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D1AA3020D
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB8B30214
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbfE3Sif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:38:35 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56886 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfE3Sif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:38:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CCEC814D97253;
-        Thu, 30 May 2019 11:38:34 -0700 (PDT)
-Date:   Thu, 30 May 2019 11:38:34 -0700 (PDT)
-Message-Id: <20190530.113834.1375315944928930917.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [pull request][net 0/6] Mellanox, mlx5 fixes 2019-05-28
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190529020737.4172-1-saeedm@mellanox.com>
-References: <20190529020737.4172-1-saeedm@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 11:38:34 -0700 (PDT)
+        id S1726548AbfE3Skv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:40:51 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54523 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfE3Skv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:40:51 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hWPym-000383-FS; Thu, 30 May 2019 18:40:44 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rtlwifi: remove redundant assignment to variable badworden
+Date:   Thu, 30 May 2019 19:40:44 +0100
+Message-Id: <20190530184044.8479-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Wed, 29 May 2019 02:07:57 +0000
+From: Colin Ian King <colin.king@canonical.com>
 
-> This series introduces some fixes to mlx5 driver.
-> 
-> Please pull and let me know if there is any problem.
+The variable badworden is assigned with a value that is never read and
+it is re-assigned a new value immediately afterwards.  The assignment is
+redundant and can be removed.
 
-Pulled.
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/efuse.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> For -stable v4.13:
-> ('net/mlx5: Allocate root ns memory using kzalloc to match kfree')
-> 
-> For -stable v4.16:
-> ('net/mlx5: Avoid double free in fs init error unwinding path')
-> 
-> For -stable v4.18:
-> ('net/mlx5e: Disable rxhash when CQE compress is enabled')
+diff --git a/drivers/net/wireless/realtek/rtlwifi/efuse.c b/drivers/net/wireless/realtek/rtlwifi/efuse.c
+index e68340dfd980..37ab582a8afb 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/efuse.c
++++ b/drivers/net/wireless/realtek/rtlwifi/efuse.c
+@@ -986,7 +986,6 @@ static int efuse_pg_packet_write(struct ieee80211_hw *hw,
+ 		} else if (write_state == PG_STATE_DATA) {
+ 			RTPRINT(rtlpriv, FEEPROM, EFUSE_PG,
+ 				"efuse PG_STATE_DATA\n");
+-			badworden = 0x0f;
+ 			badworden =
+ 			    enable_efuse_data_write(hw, efuse_addr + 1,
+ 						    target_pkt.word_en,
+-- 
+2.20.1
 
-Queued up.
