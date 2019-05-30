@@ -2,130 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B2B30466
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 23:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B24A43047D
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 00:02:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbfE3V6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 17:58:45 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:51023 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726535AbfE3V6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 17:58:45 -0400
-Received: by mail-it1-f194.google.com with SMTP id a186so12566455itg.0
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 14:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3fARnAA4saHrsr4JO3DkGH7joPaWQTWPgsS0UFtWefI=;
-        b=eWLAcZ9oj5H7z1SChhhz+Q4J+v0AXhPw7NjyM40/fIs9hfEQ40lJOk/P1rdSIB4KyP
-         Lu8eHvPjQ85xOhDIUXRbRNKyvW1kxDoWtbrUFUTt06pvcsQPWfH0NHx5R5OL8+bLzqMn
-         uPfvP3W+yJg9R04N/sANwOmkDk3+Jxyx26nnmkvjKWRhOPCVGOEMou0DcQdsp98YkRns
-         U82D/Zl0KnuXmD6zyoeWsaDgUCWIlGU4jU4+NTmQawAO0nYpC8BDA6mgnhATV+zIGj+/
-         quHq1ueBLp19LUxQPpyfrKFB5bchTC7KcRQcseHzkxvz0d64+3MkbGY5k5bCnUY2/mBF
-         B4cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=3fARnAA4saHrsr4JO3DkGH7joPaWQTWPgsS0UFtWefI=;
-        b=mcMXh25LVvLt57yJbdqm00Ire5b2IxQeOjnU/UhZ2KddwWULcKoec8uGAUIjKAWHVS
-         mllGsfAMwzBqOrO/qE+KCZEf3qaeI/3mNRpzalfMW+mNPjRnoOmU3gWxk9UvnptXor9e
-         Y2Bcxpzj2e6ZVUNGQSQdGbsoTZSdfg2WB7KMSmBscKulaMkDORysBOlX5tX53BoWE78C
-         hHyNtE69wMi12+Go3ObfMn14DUZ7QNZtKngPiZd90M45G4KlJWLoJI/LRLvjKBj9lU6x
-         Zlv/Ddg7tuOAKizv0gulHwO3LrRr3ouO8hbd6yf/ZNJegieNLbCviEyaTpw5iUdT/uJC
-         0Iyg==
-X-Gm-Message-State: APjAAAWOw3hik8GuIVkiNH2u0NafQ+PCw4yMtISyxeilGS4Z69FzlFh9
-        lZCQUAfLs3TjhzrcMHlKO6n66A==
-X-Google-Smtp-Source: APXvYqxrgcBfueAgzxmKvNIXqoe5R667v9x553hrmNxLGI1Q7oOOEpbQ80sfJhfbnNPrXz1Iyz7kZw==
-X-Received: by 2002:a24:764e:: with SMTP id z75mr4499342itb.52.1559253061762;
-        Thu, 30 May 2019 14:51:01 -0700 (PDT)
-Received: from localhost.localdomain (107-0-94-194-ip-static.hfc.comcastbusiness.net. [107.0.94.194])
-        by smtp.gmail.com with ESMTPSA id j125sm1662391itb.27.2019.05.30.14.51.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 30 May 2019 14:51:01 -0700 (PDT)
-From:   Tom Herbert <tom@herbertland.com>
-X-Google-Original-From: Tom Herbert <tom@quantonium.net>
-To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com
-Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH net-next 6/6] seg6: Add support to rearrange SRH for AH ICV calculation
-Date:   Thu, 30 May 2019 14:50:21 -0700
-Message-Id: <1559253021-16772-7-git-send-email-tom@quantonium.net>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1559253021-16772-1-git-send-email-tom@quantonium.net>
-References: <1559253021-16772-1-git-send-email-tom@quantonium.net>
+        id S1726808AbfE3WB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 18:01:58 -0400
+Received: from ozlabs.org ([203.11.71.1]:57473 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726576AbfE3WB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 18:01:58 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45FLsl1nFVz9s4Y;
+        Fri, 31 May 2019 07:52:42 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1559253163;
+        bh=gOBTgmZaBjxqpDUeDB6t2pE2Hbw5l3eOipRGnzHP7pY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=vI/yXlJ9Kg2gUNdSiinuIHNmEvmSkpTp3/pZuQBUx72Lj5c2/lRxR37AUTv/wlZCd
+         CgacJXRf0cfNQ57AaXcUf+an8tk0Js8H/SBK+kHfJ6ILwubtosii3uhGm+mkNfwSh0
+         l+DZce03wE21SVbFQPGmmZLHvIC/6PahnBtLnoBqdHCnq2lkEIbgLd/icrRVr9R8dL
+         /5ILl0P987A6lbjzzZk4R10ejU4OQGvcwvtNYkDOllGZAIhtQjqH6GYEV+h9eDA3mz
+         olag97kuov6+H5ary9uK0D60SbYvD+3+/05hW4C54Mmaw+Cg1ebnDbbc5DegjSQuP2
+         WcYrSAUI/e/vA==
+Date:   Fri, 31 May 2019 07:52:41 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20190531075241.63c45a9a@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/APS2ye.u3t/PPPabyavOeAO"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mutable fields related to segment routing are: destination address,
-segments left, and modifiable TLVs (those whose high order bit is set).
+--Sig_/APS2ye.u3t/PPPabyavOeAO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Add support to rearrange a segment routing (type 4) routing header to
-handle these mutability requirements. This is described in
-draft-herbert-ipv6-srh-ah-00.
+Hi all,
 
-Signed-off-by: Tom Herbert <tom@quantonium.net>
----
- net/ipv6/ah6.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+In commit
 
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 032491c..0c5ca29 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -27,6 +27,7 @@
- #include <net/icmp.h>
- #include <net/ipv6.h>
- #include <net/protocol.h>
-+#include <net/seg6.h>
- #include <net/xfrm.h>
- 
- #define IPV6HDR_BASELEN 8
-@@ -141,6 +142,13 @@ static bool zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr)
- 	return __zero_out_mutable_opts(opthdr, 2, 0x20, IPV6_TLV_PAD1);
- }
- 
-+static bool zero_out_mutable_srh_opts(struct ipv6_sr_hdr *srh)
-+{
-+	return __zero_out_mutable_opts((struct ipv6_opt_hdr *)srh,
-+				       seg6_tlv_offset(srh), 0x80,
-+				       SR6_TLV_PAD1);
-+}
-+
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
- /**
-  *	ipv6_rearrange_destopt - rearrange IPv6 destination options header
-@@ -243,6 +251,20 @@ static bool ipv6_rearrange_type0_rthdr(struct ipv6hdr *iph,
- 	return true;
- }
- 
-+static bool ipv6_rearrange_type4_rthdr(struct ipv6hdr *iph,
-+				       struct ipv6_rt_hdr *rthdr)
-+{
-+	struct ipv6_sr_hdr *srh = (struct ipv6_sr_hdr *)rthdr;
-+
-+	if (!zero_out_mutable_srh_opts(srh))
-+		return false;
-+
-+	rthdr->segments_left = 0;
-+	iph->daddr = srh->segments[0];
-+
-+	return true;
-+}
-+
- static bool ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
- {
- 	switch (rthdr->type) {
-@@ -251,6 +273,8 @@ static bool ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
- 		/* fallthrough */
- 	case IPV6_SRCRT_TYPE_0: /* Deprecated */
- 		return ipv6_rearrange_type0_rthdr(iph, rthdr);
-+	case IPV6_SRCRT_TYPE_4:
-+		return ipv6_rearrange_type4_rthdr(iph, rthdr);
- 	default:
- 		/* Bad or unidentified routing header, we don't know how
- 		 * to fix this header for security purposes. Return failure.
--- 
-2.7.4
+  9414277a5df3 ("net/mlx5: Avoid double free in fs init error unwinding pat=
+h")
 
+Fixes tag
+
+  Fixes: 40c3eebb49e51 ("net/mlx5: Add support in RDMA RX steering")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Did you mean
+
+Fixes: 905f6bd30bb6 ("net/mlx5: Avoid double free of root ns in the error f=
+low path")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/APS2ye.u3t/PPPabyavOeAO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzwUKkACgkQAVBC80lX
+0Gwb6Qf/WbXbNdJOvEKybT0z9SB+Ts6v8F2pQ3rKuW3RpXSwxg1qKSHfJc7To/rg
+VEdinIe7DURap+dkR5LzWHl/nN28iAENzCSPSXaAlGoMl3Rag3XDG94H7TEF8s9G
+vPQ4YX98Yl2GySnO60gMPxcPRVj6AKMBk/MNtwE/0kXKy9xeUwf/bd9F7FOcQoCv
+eWZv8MreB8o4CA/dYYalShE4hx+UyB8O39nv5uYa3hUZ+jjc8Hc/mQEJTIID9JVl
+Qd4F85ZmdO/Cknvd4K75TRdIKjd3r8xINQez6727buS4yH4HxLEJhy9F7mOylVGe
+KYBKrJM/J2fi1F7UpGkb0NudTzZRxQ==
+=Iy6v
+-----END PGP SIGNATURE-----
+
+--Sig_/APS2ye.u3t/PPPabyavOeAO--
