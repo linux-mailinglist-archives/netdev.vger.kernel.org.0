@@ -2,128 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBDA30081
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 199753008A
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727716AbfE3RAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:00:16 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38615 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726684AbfE3RAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 13:00:16 -0400
-Received: by mail-pf1-f195.google.com with SMTP id a186so3642414pfa.5
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 10:00:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LzUjzhIXGjVbF8+LVF2BCE7V8md5OpBES44x2OTXInQ=;
-        b=S/N6XSGc/owogajUNgwzGdQhUrSkvyuW0GsPCfePBvxGLrdJc+B6NSuXsEj0nCIIwx
-         Gnpf9x7REAbcuhB+8H10wu0AgWAiCg+fFhKrL4eUO1gKo18MP9Mfhz+9gA0r5jfVPSV8
-         Mr0allou9wcNfygy9dSzXKZYqk1FY8KL7HBBkoP8wH9sTNqTaKuqqtj7o6T/cRc1Rl+i
-         M76s6cAARKqSM5mqHY8+ZH4DzOIT5278PWQ3Bs8+3V7JjrP6JlEs1Ola5vLw8WwEeeZH
-         zYfqS4FGB6uOowT6MQWmhLdyF4ARtHVAgFSqpQ6ZvWa7b9UbqAKRAT7vGByKBv/siT2d
-         5ucQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LzUjzhIXGjVbF8+LVF2BCE7V8md5OpBES44x2OTXInQ=;
-        b=uLrvZ6rLQ2D5ipbnG3OGhVVMvf3iw7b89mWukU2ZeEU6unyjwLJV4vkSVuM+CjPdnA
-         ZOPAaZIUHIyP9m7Qy+KkbCN7zVomFrPGtitCdxS3PZ1V1wNl5oqSb7thNWeWMDZ0TsRk
-         n2EiVe5keLHmFJwA1NHue5UC7T5pqf9XiiuIdACdlsba1wscTb3N/l58LO1x3bGXNMID
-         7gIM2nWM3YzVJs915R7dH7qYa4dJITn7dl/+LltpDt636gADtZedkK/WoCMO/mU/DqEe
-         DBqPxQLppM1ZgpgqjSaF0MiTHg1DuTGc8ADyV9rjdWSPM4daqGiRwyq9M0A52lGtd3Uj
-         U5hQ==
-X-Gm-Message-State: APjAAAUtCahLQbJvhhN2hHTa5v8x8P0tohoKI5AfymDHrC1yus39HsJi
-        CQ1bwDZwfAoUxH/CykdA9TmAJzgH
-X-Google-Smtp-Source: APXvYqxIn2UEOWslBnNFnsG2/qYsB+2DMX+zUVpf95zQ6sKa9HFirCz50plaOkoWoqvWYGMLMkoReg==
-X-Received: by 2002:a63:130d:: with SMTP id i13mr4509593pgl.396.1559235615223;
-        Thu, 30 May 2019 10:00:15 -0700 (PDT)
-Received: from sc9-mailhost2.vmware.com ([66.170.99.2])
-        by smtp.gmail.com with ESMTPSA id t124sm3296872pfb.80.2019.05.30.10.00.14
-        for <netdev@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 30 May 2019 10:00:14 -0700 (PDT)
-From:   William Tu <u9012063@gmail.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCHv2 net] net: ip6_gre: access skb data after skb_cow_head()
-Date:   Thu, 30 May 2019 09:59:40 -0700
-Message-Id: <1559235580-31747-1-git-send-email-u9012063@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727557AbfE3RJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:09:17 -0400
+Received: from mail.hallyn.com ([178.63.66.53]:50574 "EHLO mail.hallyn.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725961AbfE3RJR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 13:09:17 -0400
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 3568262D; Thu, 30 May 2019 12:09:13 -0500 (CDT)
+Date:   Thu, 30 May 2019 12:09:13 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Tycho Andersen <tycho@tycho.ws>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+Message-ID: <20190530170913.GA16722@mail.hallyn.com>
+References: <cover.1554732921.git.rgb@redhat.com>
+ <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
+ <20190529145742.GA8959@cisco>
+ <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190529153427.GB8959@cisco>
+ <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+ <20190529222835.GD8959@cisco>
+ <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When increases the headroom, skb's data pointer might get re-allocated.
-As a result, the skb->data before the skb_cow_head becomes a dangling pointer,
-and dereferences to daddr causes general protection fault at the following
-line in __gre6_xmit():
+On Wed, May 29, 2019 at 06:39:48PM -0400, Paul Moore wrote:
+> On Wed, May 29, 2019 at 6:28 PM Tycho Andersen <tycho@tycho.ws> wrote:
+> > On Wed, May 29, 2019 at 12:03:58PM -0400, Paul Moore wrote:
+> > > On Wed, May 29, 2019 at 11:34 AM Tycho Andersen <tycho@tycho.ws> wrote:
+> > > >
+> > > > On Wed, May 29, 2019 at 11:29:05AM -0400, Paul Moore wrote:
+> > > > > On Wed, May 29, 2019 at 10:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
+> > > > > >
+> > > > > > On Mon, Apr 08, 2019 at 11:39:09PM -0400, Richard Guy Briggs wrote:
+> > > > > > > It is not permitted to unset the audit container identifier.
+> > > > > > > A child inherits its parent's audit container identifier.
+> > > > > >
+> > > > > > ...
+> > > > > >
+> > > > > > >  /**
+> > > > > > > + * audit_set_contid - set current task's audit contid
+> > > > > > > + * @contid: contid value
+> > > > > > > + *
+> > > > > > > + * Returns 0 on success, -EPERM on permission failure.
+> > > > > > > + *
+> > > > > > > + * Called (set) from fs/proc/base.c::proc_contid_write().
+> > > > > > > + */
+> > > > > > > +int audit_set_contid(struct task_struct *task, u64 contid)
+> > > > > > > +{
+> > > > > > > +     u64 oldcontid;
+> > > > > > > +     int rc = 0;
+> > > > > > > +     struct audit_buffer *ab;
+> > > > > > > +     uid_t uid;
+> > > > > > > +     struct tty_struct *tty;
+> > > > > > > +     char comm[sizeof(current->comm)];
+> > > > > > > +
+> > > > > > > +     task_lock(task);
+> > > > > > > +     /* Can't set if audit disabled */
+> > > > > > > +     if (!task->audit) {
+> > > > > > > +             task_unlock(task);
+> > > > > > > +             return -ENOPROTOOPT;
+> > > > > > > +     }
+> > > > > > > +     oldcontid = audit_get_contid(task);
+> > > > > > > +     read_lock(&tasklist_lock);
+> > > > > > > +     /* Don't allow the audit containerid to be unset */
+> > > > > > > +     if (!audit_contid_valid(contid))
+> > > > > > > +             rc = -EINVAL;
+> > > > > > > +     /* if we don't have caps, reject */
+> > > > > > > +     else if (!capable(CAP_AUDIT_CONTROL))
+> > > > > > > +             rc = -EPERM;
+> > > > > > > +     /* if task has children or is not single-threaded, deny */
+> > > > > > > +     else if (!list_empty(&task->children))
+> > > > > > > +             rc = -EBUSY;
+> > > > > > > +     else if (!(thread_group_leader(task) && thread_group_empty(task)))
+> > > > > > > +             rc = -EALREADY;
+> > > > > > > +     read_unlock(&tasklist_lock);
+> > > > > > > +     if (!rc)
+> > > > > > > +             task->audit->contid = contid;
+> > > > > > > +     task_unlock(task);
+> > > > > > > +
+> > > > > > > +     if (!audit_enabled)
+> > > > > > > +             return rc;
+> > > > > >
+> > > > > > ...but it is allowed to change it (assuming
+> > > > > > capable(CAP_AUDIT_CONTROL), of course)? Seems like this might be more
+> > > > > > immediately useful since we still live in the world of majority
+> > > > > > privileged containers if we didn't allow changing it, in addition to
+> > > > > > un-setting it.
+> > > > >
+> > > > > The idea is that only container orchestrators should be able to
+> > > > > set/modify the audit container ID, and since setting the audit
+> > > > > container ID can have a significant effect on the records captured
+> > > > > (and their routing to multiple daemons when we get there) modifying
+> > > > > the audit container ID is akin to modifying the audit configuration
+> > > > > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
+> > > > > is that you would only change the audit container ID from one
+> > > > > set/inherited value to another if you were nesting containers, in
+> > > > > which case the nested container orchestrator would need to be granted
+> > > > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
+> > > > > compromise).
+> > > >
+> > > > But then don't you want some kind of ns_capable() instead (probably
+> > > > not the obvious one, though...)? With capable(), you can't really nest
+> > > > using the audit-id and user namespaces together.
+> > >
+> > > You want capable() and not ns_capable() because you want to ensure
+> > > that the orchestrator has the rights in the init_ns as changes to the
+> > > audit container ID could have an auditing impact that spans the entire
+> > > system.
+> >
+> > Ok but,
+> >
+> > > > > The current thinking
+> > > > > is that you would only change the audit container ID from one
+> > > > > set/inherited value to another if you were nesting containers, in
+> > > > > which case the nested container orchestrator would need to be granted
+> > > > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
+> > > > > compromise).
+> >
+> > won't work in user namespaced containers, because they will never be
+> > capable(CAP_AUDIT_CONTROL); so I don't think this will work for
+> > nesting as is. But maybe nobody cares :)
+> 
+> That's fun :)
+> 
+> To be honest, I've never been a big fan of supporting nested
+> containers from an audit perspective, so I'm not really too upset
+> about this.  The k8s/cri-o folks seem okay with this, or at least I
+> haven't heard any objections; lxc folks, what do you have to say?
 
-  if (dev->header_ops && dev->type == ARPHRD_IP6GRE)                      
-      fl6->daddr = ((struct ipv6hdr *)skb->data)->daddr;
+I actually thought the answer to this (when last I looked, "some time" ago)
+was that userspace should track an audit message saying "task X in
+container Y is changing its auditid to Z", and then decide to also track Z.
+This should be doable, but a lot of extra work in userspace.
 
-general protection fault: 0000 [#1] SMP PTI
-OE 4.15.0-43-generic #146-Ubuntu 
-Hardware name: VMware, Inc. VMware Virtual Platform 440BX Desktop Reference
-Platform, BIOS 6.00 07/03/2018 
-RIP: 0010: __gre6_xmit+0x11f/0x2c0 [openvswitch] 
-RSP: 0018:ffffb8d5c44df6a8 EFLAGS: 00010286
-RAX: 00000000ffffffea RBX: ffff8b1528a0000 RCX: 0000000000000036 
-RDX: ffff000000000000 RSI: 0000000000000000 RDI: ffff8db267829200
-RBP: ffffb8d5c44df 700 R08: 0000000000005865 RØ9: ffffb8d5c44df724
-R10: 0000000000000002 R11: 0000000000000000 R12: ffff8db267829200
-R13: 0000000000000000 R14: ffffb8d5c44df 728 R15: 00000000ffffffff
-FS: 00007f8744df 2700(0000) GS:ffff8db27fc0000000000) knlGS:0000000000000000 
-CS: 0910 DS: 0000 ES: 9000 CRO: 0000000080050033 
-CR2: 00007f893ef92148 CR3: 0000000400462003 CR4: 00000000001626f8
-Call Trace: 
-ip6gre_tunnel_xmit+0x1cc/0x530 [openvswitch]
-? skb_clone+0x58/0xc0 
-__ip6gre_tunnel_xmit+0x12/0x20 [openvswitch]
-ovs_vport_send +0xd4/0x170 [openvswitch] 
-do_output+0x53/0x160 [openvswitch]
-do_execute_actions+0x9a1/0x1880 [openvswitch]
+Per-userns containerids would also work.  So task X1 is in containerid
+1 on the host and creates a new task Y in new userns;  it continues to
+be reported in init_user_ns as containerid 1 forever;  but in its own
+userns it can request to be known as some other containerid.  Audit
+socks would be per-userns, allowing root in a container to watch for
+audit events in its own (and descendent) namespaces.
 
-Fix it by moving skb_cow_head before accessing the skb->data pointer.
+But again I'm sure we've gone over all this in the last few years.
 
-Fixes: 01b8d064d58b4 ("net: ip6_gre: Request headroom in __gre6_xmit()")
-Reported-by: Haichao Ma <haichaom@vmware.com>
-Signed-off-by: William Tu <u9012063@gmail.com>
----
-v1-v2: add more details in commit message.
----
- net/ipv6/ip6_gre.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I suppose we can look at this as a "first step", and talk about
+making it user-ns-nestable later.  But agreed it's not useful in a
+lot of situations as is.
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 655e46b227f9..90b2b129b105 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -714,6 +714,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	struct ip6_tnl *tunnel = netdev_priv(dev);
- 	__be16 protocol;
- 
-+	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
-+		return -ENOMEM;
-+
- 	if (dev->type == ARPHRD_ETHER)
- 		IPCB(skb)->flags = 0;
- 
-@@ -722,9 +725,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	else
- 		fl6->daddr = tunnel->parms.raddr;
- 
--	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
--		return -ENOMEM;
--
- 	/* Push GRE header. */
- 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
- 
--- 
-2.7.4
-
+-serge
