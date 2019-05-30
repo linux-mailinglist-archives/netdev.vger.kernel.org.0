@@ -2,134 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A583D30309
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:57:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C92D30311
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbfE3T5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 15:57:07 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38059 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfE3T5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:57:07 -0400
-Received: by mail-ed1-f66.google.com with SMTP id g13so10811475edu.5
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 12:57:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sqQgNcqFZySjAPmekC69cdPorwQrCLLU9gQX96lOKoU=;
-        b=IYPDEL2JsQcDXAz0Rq6zN/Wi78w91Br9z3IDDDsqARAZpFCjr0XmGWqoGOXMPh8isl
-         tPkPhhEi7DzY9//jhJDIC41cnUhHxrRQBsGE1yuHmrmIcn+EfAbJFN6fzRW+PC6Pnstx
-         2gkD39EqmmQ5bPk6hkxlreWYmTa6hLekV/l9Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sqQgNcqFZySjAPmekC69cdPorwQrCLLU9gQX96lOKoU=;
-        b=qCZb5FuLx287KaJ65xi2Lo2lnTazUwUqX/6jNK9Sf+Gmpd+YO6LMITSNNZv9O4otIm
-         pt1Np6iJP+OxDBDayWMf8VoW+jg1ig/b39+9SHVnLa/RGgNitorZbbNUjKlk5Yj3p68t
-         P2+jemZP44Ee6HH8vc14fkC+xx+LDhxUmMEK6uMgbuUYalGI8DM129A34hjP23ycMfQX
-         MEvhWifAdTw5CkXgYIOHO2uLbqXKLapZbxdYRdk7AcTPYRP/wSh3StjyoxCaqbfeNuoN
-         04+Di3Moj3MIPbDzS5M8O/R5ni6JhU9skaYiqk2MV7Z4eyM50sbj8qA0iOtBpEGbM8Sz
-         oZwA==
-X-Gm-Message-State: APjAAAVVPvFYpEud+54k0t8Q6t7Tblyp/uAK555pJDT3UWR/rYwOw8Gx
-        zN/1he4a7kCGAf9Dbv8EBRhkhR1rvSwMkZlM0rUcmw==
-X-Google-Smtp-Source: APXvYqx28p77P6Z8suZSg9YQHxITszU/yX0X1zmA/l7toYK9P9XE66adUZQ++uY/sz84X6mCxNmHwmlRzlgXUtJ91Qw=
-X-Received: by 2002:a50:94a1:: with SMTP id s30mr6771682eda.4.1559246225601;
- Thu, 30 May 2019 12:57:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190530031746.2040-1-dsahern@kernel.org> <20190530031746.2040-6-dsahern@kernel.org>
-In-Reply-To: <20190530031746.2040-6-dsahern@kernel.org>
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-Date:   Thu, 30 May 2019 12:56:54 -0700
-Message-ID: <CAJieiUjM5-4up5RU5KV=yJALH67+MReqBZ2DymoeDz0YzNN=dA@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next 5/9] libnetlink: Add helper to create
- nexthop dump request
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726446AbfE3T6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 15:58:35 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:59346 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbfE3T6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:58:34 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CB63714DAB306;
+        Thu, 30 May 2019 12:58:33 -0700 (PDT)
+Date:   Thu, 30 May 2019 12:58:33 -0700 (PDT)
+Message-Id: <20190530.125833.1049383711116106790.davem@davemloft.net>
+To:     richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, jacob.e.keller@intel.com,
+        mark.rutland@arm.com, mlichvar@redhat.com, robh+dt@kernel.org,
+        willemb@google.com
+Subject: Re: [PATCH V4 net-next 0/6] Peer to Peer One-Step time stamping
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190530.115507.1344606945620280103.davem@davemloft.net>
+References: <cover.1559109076.git.richardcochran@gmail.com>
+        <20190530.115507.1344606945620280103.davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 12:58:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 9:04 PM David Ahern <dsahern@kernel.org> wrote:
->
-> From: David Ahern <dsahern@gmail.com>
->
-> Add rtnl_nexthopdump_req to initiate a dump request of nexthop objects.
->
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  include/libnetlink.h |  4 ++++
->  lib/libnetlink.c     | 27 +++++++++++++++++++++++++++
->  2 files changed, 31 insertions(+)
->
-> diff --git a/include/libnetlink.h b/include/libnetlink.h
-> index 599b2c592f68..1ddba8dcd220 100644
-> --- a/include/libnetlink.h
-> +++ b/include/libnetlink.h
-> @@ -93,6 +93,10 @@ int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req,
->  int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
->         __attribute__((warn_unused_result));
->
-> +int rtnl_nexthopdump_req(struct rtnl_handle *rth, int family,
-> +                        req_filter_fn_t filter_fn)
-> +       __attribute__((warn_unused_result));
-> +
->  struct rtnl_ctrl_data {
->         int     nsid;
->  };
-> diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-> index eb85bbdf01ee..c1cdda3b8d4e 100644
-> --- a/lib/libnetlink.c
-> +++ b/lib/libnetlink.c
-> @@ -25,6 +25,7 @@
->  #include <linux/fib_rules.h>
->  #include <linux/if_addrlabel.h>
->  #include <linux/if_bridge.h>
-> +#include <linux/nexthop.h>
->
->  #include "libnetlink.h"
->
-> @@ -252,6 +253,32 @@ int rtnl_open(struct rtnl_handle *rth, unsigned int subscriptions)
->         return rtnl_open_byproto(rth, subscriptions, NETLINK_ROUTE);
->  }
->
-> +int rtnl_nexthopdump_req(struct rtnl_handle *rth, int family,
-> +                        req_filter_fn_t filter_fn)
-> +{
-> +       struct {
-> +               struct nlmsghdr nlh;
-> +               struct nhmsg nhm;
-> +               char buf[128];
-> +       } req = {
-> +               .nlh.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg)),
-
-sizeof(struct nhmsg) ?
-
-
-> +               .nlh.nlmsg_type = RTM_GETNEXTHOP,
-> +               .nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST,
-> +               .nlh.nlmsg_seq = rth->dump = ++rth->seq,
-> +               .nhm.nh_family = family,
-> +       };
-> +
-> +       if (filter_fn) {
-> +               int err;
-> +
-> +               err = filter_fn(&req.nlh, sizeof(req));
-> +               if (err)
-> +                       return err;
-> +       }
-> +
-> +       return send(rth->fd, &req, sizeof(req), 0);
-> +}
-> +
->  int rtnl_addrdump_req(struct rtnl_handle *rth, int family,
->                       req_filter_fn_t filter_fn)
->  {
-> --
-> 2.11.0
->
+RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogVGh1LCAzMCBN
+YXkgMjAxOSAxMTo1NTowNyAtMDcwMCAoUERUKQ0KDQo+IFNlcmllcyBhcHBsaWVkLCB0aGFua3Mg
+UmljaGFyZC4NCg0KSSBoYWQgdG8gcmV2ZXJ0LCB0aGlzIGRvZXNuJ3QgYnVpbGQuDQoNCmRyaXZl
+cnMvcHRwL3B0cF9pbmVzLmM6IEluIGZ1bmN0aW9uIKFpbmVzX3R4dHN0YW1wojoNCmRyaXZlcnMv
+cHRwL3B0cF9pbmVzLmM6Njc0OjM6IHdhcm5pbmc6IKFvbGRfc2tioiBtYXkgYmUgdXNlZCB1bmlu
+aXRpYWxpemVkIGluIHRoaXMgZnVuY3Rpb24gWy1XbWF5YmUtdW5pbml0aWFsaXplZF0NCiAgIGtm
+cmVlX3NrYihvbGRfc2tiKTsNCiAgIF5+fn5+fn5+fn5+fn5+fn5+fg0KZHJpdmVycy9uZXQvbWFj
+dmxhbi5jOiBJbiBmdW5jdGlvbiChbWFjdmxhbl9ldGh0b29sX2dldF90c19pbmZvojoNCmRyaXZl
+cnMvbmV0L21hY3ZsYW4uYzoxMDU5OjQyOiBlcnJvcjogoXN0cnVjdCBwaHlfZHJpdmVyoiBoYXMg
+bm8gbWVtYmVyIG5hbWVkIKF0c19pbmZvog0KICBpZiAocGh5ZGV2ICYmIHBoeWRldi0+ZHJ2ICYm
+IHBoeWRldi0+ZHJ2LT50c19pbmZvKSB7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBefg0KZHJpdmVycy9uZXQvbWFjdmxhbi5jOjEwNjA6MjI6IGVycm9yOiChc3Ry
+dWN0IHBoeV9kcml2ZXKiIGhhcyBubyBtZW1iZXIgbmFtZWQgoXRzX2luZm+iDQogICAgcmV0dXJu
+IHBoeWRldi0+ZHJ2LT50c19pbmZvKHBoeWRldiwgaW5mbyk7DQogICAgICAgICAgICAgICAgICAg
+ICAgXn4NCg==
