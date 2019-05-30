@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4149E2FE61
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9164C2FEAE
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 16:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbfE3OsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 10:48:09 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:38372 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfE3OsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 10:48:08 -0400
-Received: by mail-ed1-f68.google.com with SMTP id g13so9509678edu.5;
-        Thu, 30 May 2019 07:48:07 -0700 (PDT)
+        id S1726476AbfE3O5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 10:57:43 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:41539 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbfE3O5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 10:57:42 -0400
+Received: by mail-ed1-f66.google.com with SMTP id y15so3573069edo.8;
+        Thu, 30 May 2019 07:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=C9E51ZhwTVP2YDkKNnHyBwrwMch4rhjQofN8cIkB4Wk=;
-        b=rflj/enlljMqqWL5Fspgm/IFob3rkrZIcEFvxHqEO1GO8OoyGwHQlbM788bklcYMkD
-         yfDX9H1WXd7dtD0biy5Maaumln3ywPLCa1NUJDvq1V40EVmeg4CIX2B6Lxp/tkrueZXr
-         QpeD1Sdp7S7oPmgwWADz1VkUBA74XY/5H7hPikSFfEIw6Oa8TjSewUN/q0snPYuUP2di
-         R59LNpF2R7Pl8fUsGebhbchrImCuEyO38JQWj+50rhWwdUcv0sdH6807dTrA6yB2keTW
-         EM6BjegcWMACoE9vkFo0ILBjjd71mnP1ssz2Bj38NtQq2nAl1GG/ar2qb1i5416nH62t
-         zCBg==
+        bh=gUcLhVuM4u8ThLlgb5AD/BxYretrvQweG0sh8Y6YVsQ=;
+        b=ap3UfpQYhfSmX+EQxxFZ+Ou73eB0So1oqkh7kGnfO3ROYDmxqk8AJGTDTYaMT8Lk5+
+         89eB/zKGk0Be9WjtaEX76sLZmDM2lVx983WR7sjnnXCCzlj6hjjV+DijOgNJRIx+WaUs
+         250X4RBksnDnyT1DJ+PmPUrYqtPpCPA74QfJQRDyhMt8Jift6YD/s3YScFjcifvPQJ1h
+         dsfDBsgkiBAUoflJCLhb1/YuZq6oDNWvJvOtqaKbQ2Dwvxgr/rpesdnp1Q7ibWfeQOOJ
+         0Z+OcfWY0rkzemEnGjJ97tvwIz2d/7ORe9DNe8itb4Xn0TjSTcUmDvH+Qb25BLNiOSoy
+         8YRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=C9E51ZhwTVP2YDkKNnHyBwrwMch4rhjQofN8cIkB4Wk=;
-        b=kBzvILv0MDb23Ob83IzOILT9eqOD9n1kR6pUxt+iEae+4uim5UN7pgjOIHsKaBN7yM
-         IyIJ20f/wJPOXk4QS2mavW3WhWTeW+mCJ7LDMYS0BkLtH4WCpXIqcUSF/MOsfEC8n49C
-         Vj2CNUxYaFetEegqCu78qesDwy3qBxaQL14lcODP1zBw5p7SKv+1VfP4XDTP+i/8GOyj
-         EGtPL8sKAX6eC+vAevZJ/lH8MzI3N3fOQTvVxs3L9GaYrv2LRf3h/btnnRTsdLkmakew
-         lTWQsSzMXPDsQ1nDnBSWVGW90RyzKUR4s2cb1rEKMx1ebpupEx33yJojJsZhM6InkhEz
-         OUcg==
-X-Gm-Message-State: APjAAAXTZm1XkbEGZawf2fvsSBj/ipKYnGBFdB3PN/rK74uiLF8DVtGf
-        rGW7bC0qb47wfy1aP2LFZCYzlw038dluk9/s7Ow=
-X-Google-Smtp-Source: APXvYqwGgVx8dH1DO0bkYjO/Mjf0Bdl50l/INQBcBiPlW8sHmh9iDs4hd6EHSw/TBd5FH+hBST3PqZKxt4PRDLJ1ri0=
-X-Received: by 2002:a17:906:5855:: with SMTP id h21mr3907379ejs.15.1559227686918;
- Thu, 30 May 2019 07:48:06 -0700 (PDT)
+        bh=gUcLhVuM4u8ThLlgb5AD/BxYretrvQweG0sh8Y6YVsQ=;
+        b=AejEfjXu4HW8r5guDqxl0QMiFeIY+iQoC3dCrM5ePaUzB8nBem+fDRTYX2YlSrK+OS
+         mH8HrsE+cUQQm8yG1/wf+LPoE0VRQOSEBzuX7qzDa/MB7emrnlV+utoMEUvuMklSfJXP
+         6pxBAdaMPQl27Xlnq9D0AWClhFy7C9XOGkFV5pHOosMLxejHWgsQUXi0lw4A3Zqxjgad
+         fRDyfbjTI2IZLT/foufB7DyvSBIFOvbmNODRGcLBIJXfp7GwUWOaPHrXW5Vh8fGxpLnD
+         cXuoZSTG8ugZCRhb0fLvoTMdoMpy0MrsadHCyGkPLBPuBQWtSZxEDJmXGXiu4iFYlkY+
+         vnzQ==
+X-Gm-Message-State: APjAAAUpKwJ4jLUePVtzv3YXtMywHj7mrRDoXxgwKD14SE9LEo9vvROV
+        6yih7rgOmEjGRkSXcdwLKiYjYbVeXHmhiT6F62w=
+X-Google-Smtp-Source: APXvYqw7zpObGQB3C2POA85DrkRu6dZnPLYfC0oGlSNSGn3E+DbA6SQ1FgUNoticBxJCGrQrET23jX26Bbmbi2WgUjw=
+X-Received: by 2002:aa7:c402:: with SMTP id j2mr5159229edq.165.1559228261213;
+ Thu, 30 May 2019 07:57:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190528235627.1315-1-olteanv@gmail.com> <20190528235627.1315-4-olteanv@gmail.com>
- <20190529044912.cyg44rqvdo73oeiu@localhost> <CA+h21hoNrhcpAONTvJra5Ekk+yJ6xP0VAaPSygaLOw31qsGPTg@mail.gmail.com>
- <20190530035112.qbn3nnoxrgum7anz@localhost> <CA+h21hqko57LB0BB2TSGSr4p9_czPM-g9krO+wnU7PgvaMdSDA@mail.gmail.com>
- <20190530142356.vxkhsjalxfytvx2c@localhost>
-In-Reply-To: <20190530142356.vxkhsjalxfytvx2c@localhost>
+References: <20190528235627.1315-1-olteanv@gmail.com> <20190529045207.fzvhuu6d6jf5p65t@localhost>
+ <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com> <20190530034555.wv35efen3igwwzjq@localhost>
+ <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com> <20190530143037.iky5kk3h4ssmec3f@localhost>
+In-Reply-To: <20190530143037.iky5kk3h4ssmec3f@localhost>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 30 May 2019 17:47:55 +0300
-Message-ID: <CA+h21hqqO2RYv_zG3gW17c_NBJR80ag8PSVVan66douQN+MQpw@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/5] net: dsa: mv88e6xxx: Let taggers specify a
- can_timestamp function
+Date:   Thu, 30 May 2019 17:57:30 +0300
+Message-ID: <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -67,44 +65,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 at 17:24, Richard Cochran <richardcochran@gmail.com> wrote:
+On Thu, 30 May 2019 at 17:30, Richard Cochran <richardcochran@gmail.com> wrote:
 >
-> On Thu, May 30, 2019 at 10:42:41AM +0300, Vladimir Oltean wrote:
-> > The meta frames generated by the SJA1105 do not contain any seqid.
+> On Thu, May 30, 2019 at 12:01:23PM +0300, Vladimir Oltean wrote:
+> > In fact that's why it doesn't work: because linuxptp adds ptp_dst_mac
+> > (01-1B-19-00-00-00) and (01-80-C2-00-00-0E) to the MAC's multicast
+> > filter, but the switch in its great wisdom mangles bytes
+> > 01-1B-19-xx-xx-00 of the DMAC to place the switch id and source port
+> > there (a rudimentary tagging mechanism). So the frames are no longer
+> > accepted by this multicast MAC filter on the DSA master port unless
+> > it's put in ALLMULTI or PROMISC.
 >
-> So this cannot ever work...
->
-> > They contain:
-> > * A globally programmable DMAC
-> > * A globally programmable SMAC
->
-> Don't know what these are, but doesn't sound like they uniquely
-> identify the original frame.
->
-> > * The 0x8 EtherType
-> > * A partial (24-bit or 32-bit) RX timestamp
-> > * Two bytes from the initial (pre follow-up) frame's DMAC, before the
-> > switch mangled those with the source port and switch id. The driver is
-> > supposed to patch these bytes from the follow-up back into the initial
-> > frame before passing them up the stack.
-> > * The source port that generated the meta frame
-> > * The switch id that generated the meta frame
->
-> None of these match to the original frame uniquely.  Looks like this
-> is a dead end.
+> IOW, it is not linuxptp's choice to use these modes, but rather this
+> is caused by a limitation of your device.
 >
 
-Yes, they don't identify the original frame.
-The hardware's line of thinking seems to be "The meta frame is sent
-immediately after the trapped frame that triggered the action." (quote
-from https://www.nxp.com/docs/en/user-guide/UM10944.pdf).
+Didn't want to suggest otherwise. I'll see how I'm going to address that.
 
-> I recommend forgetting about these meta frames.  Instead, read out the
-> time stamps over MDIO.
+> > If the meta frames weren't associated with the correct link-local
+> > frame, then the whole expect_meta -> SJA1105_STATE_META_ARRIVED
+> > mechanism would go haywire, but it doesn't.
+>
+> Not necessarily.  If two frames that arrive at nearly the same time
+> get their timestamps mixed up, that would be enough to break the time
+> values but without breaking your state machine.
 >
 
-If there was any other way to retrieve RX timestamps I would have done
-it already.
+This doesn't exactly sound like the type of thing I can check for.
+The RX and TX timestamps *are* monotonically increasing with time for
+all frames when I'm printing them in the {rx,tx}tstamp callbacks.
 
+> > I was actually thinking it has something to do with the fact that I
+> > shouldn't apply frequency corrections on timestamps of PTP delay
+> > messages. Does that make any sense?
+>
+> What do you mean by that?  Is the driver altering PTP message fields?
+
+No.
+The driver returns free-running timestamps altered with a timecounter
+frequency set by adjfine and offset set by adjtime.
+I was wondering out loud if there's any value in identifying delay
+messages in order to not apply this frequency adjustment for their
+timestamps.
+
+-Vladimir
+
+>
 > Thanks,
 > Richard
