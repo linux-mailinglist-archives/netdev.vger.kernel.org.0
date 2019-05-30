@@ -2,147 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D45303AC
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E6030396
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 22:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbfE3U7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 16:59:13 -0400
-Received: from mx0b-00191d01.pphosted.com ([67.231.157.136]:41172 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726100AbfE3U7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:59:12 -0400
-Received: from pps.filterd (m0049463.ppops.net [127.0.0.1])
-        by m0049463.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x4UKnano004230;
+        id S1726518AbfE3UxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 30 May 2019 16:53:19 -0400
-Received: from alpi155.enaf.aldc.att.com (sbcsmtp7.sbc.com [144.160.229.24])
-        by m0049463.ppops.net-00191d01. with ESMTP id 2stpj6r2es-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 May 2019 16:53:18 -0400
-Received: from enaf.aldc.att.com (localhost [127.0.0.1])
-        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x4UKrANv028175;
-        Thu, 30 May 2019 16:53:11 -0400
-Received: from zlp27129.vci.att.com (zlp27129.vci.att.com [135.66.87.42])
-        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x4UKr8P6028126
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 30 May 2019 16:53:09 -0400
-Received: from zlp27129.vci.att.com (zlp27129.vci.att.com [127.0.0.1])
-        by zlp27129.vci.att.com (Service) with ESMTP id 9C32140392B7;
-        Thu, 30 May 2019 20:53:08 +0000 (GMT)
-Received: from mlpi432.sfdc.sbc.com (unknown [144.151.223.11])
-        by zlp27129.vci.att.com (Service) with ESMTP id 7D12F403929C;
-        Thu, 30 May 2019 20:53:08 +0000 (GMT)
-Received: from sfdc.sbc.com (localhost [127.0.0.1])
-        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x4UKr8Ow008700;
-        Thu, 30 May 2019 16:53:08 -0400
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x4UKr1iS008441;
-        Thu, 30 May 2019 16:53:01 -0400
-Received: from gwilkie-Precision-7520 (unknown [10.156.17.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.eng.vyatta.net (Postfix) with ESMTPSA id AF683360060;
-        Thu, 30 May 2019 13:52:58 -0700 (PDT)
-Date:   Thu, 30 May 2019 21:52:50 +0100
-From:   George Wilkie <gwilkie@vyatta.att-mail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Shrijeet Mukherjee <shrijeet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] vrf: local route leaking
-Message-ID: <20190530205250.GA7379@gwilkie-Precision-7520>
-References: <20190524080551.754-1-gwilkie@vyatta.att-mail.com>
- <0d920356-8d12-b0b5-c14b-3600e54e9390@gmail.com>
- <20190525070924.GA1184@debian10.local>
- <47e25c7c-1dd4-25ee-1d7b-f8c4c0783573@gmail.com>
- <20190527083402.GA7269@gwilkie-Precision-7520>
- <1f761acd-80eb-0e80-1cf4-181f8b327bd5@gmail.com>
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:33610 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfE3UxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 16:53:19 -0400
+Received: by mail-qk1-f194.google.com with SMTP id p18so4890706qkk.0;
+        Thu, 30 May 2019 13:53:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z9CARR2sdyz0TzlZx5C1Y/HG1L1GZ/YQxjW8n3dkDtY=;
+        b=O9b/bK8EMj6Z/Aes6GvEEWWgQoaqgWaPkCaZ7cbWL42OrKuP7jCn08XnPqAmy2p306
+         8zhO25gwMO64WxuBI2gHUQlS/hvtoy5Caw3oUFl2PIjzGa0bYZkNqSLyaIzi2b1TeyUj
+         FF37jgA4vO32nO0WZtIk8qPAYjFw6a6a31YkeqEMWj6cA75nwjX6K+fNkXOSWkeNm8gG
+         IDAzymM/tDnhTeMvFQclwaOUNj9WlNGj9jdXrDTHK6nOYN4rb37VYFg2BOXyFCdWVDEX
+         3VX2YfBwDDiSgLEeBrbXF0Aaery1wJ4oqbzlGKl7kczZOsWjWFvMpf9Wln7u02PN41Hv
+         SoUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z9CARR2sdyz0TzlZx5C1Y/HG1L1GZ/YQxjW8n3dkDtY=;
+        b=svapGs1oKeMGqBlnffuFnXrQKXBdtui7HHL8QVPEEPx4t22/p8xva3OS3CN84NjKEL
+         HBN8mEOhrbObI3yoYBheq1PgJ+ErQU8CDTXWCLs90lwaIFx7+8lpDz5RR3Y5iwAi8/55
+         q5E1TDEf3exzj2Pst2hzKM158nKVg8tkUiqfS+d403HSCl6IIi6wR15cWi+6peWDZnAQ
+         VJodwbvw+M5nya623hOSXG/vLgULFGFaJpQ9d6VHokJoqt2NnalzLRiX1lqFllaDb5vM
+         i5Q6SLuhWeoqu6CyD8EU8Q8voXlFNQvb1yXbbhT0ujpN06OekkgYtpvPu4afMVPkFTl7
+         VdTA==
+X-Gm-Message-State: APjAAAXw+M2SQgC40kxqJ95Bdlybe5gia5EN0i7jmsU9qMpg5+6aauC7
+        MYabNBWRKDEjerfgQrLL2qbwofnx95egX//82OY=
+X-Google-Smtp-Source: APXvYqwWhPLets6g5KL70GsN0a/SBVH9vdVhMDcuBw1NjRTLVGKTPlYj7q6szJQZYwKJTGwxrKqHl3zy1Vgg7W+OTbs=
+X-Received: by 2002:a05:620a:12f8:: with SMTP id f24mr5129490qkl.202.1559249597898;
+ Thu, 30 May 2019 13:53:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f761acd-80eb-0e80-1cf4-181f8b327bd5@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-30_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905300147
+References: <20190530190800.7633-1-luke.r.nels@gmail.com>
+In-Reply-To: <20190530190800.7633-1-luke.r.nels@gmail.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Thu, 30 May 2019 13:53:06 -0700
+Message-ID: <CAPhsuW4kMBSjpATqHrEhTmuqje=XZNGOrMyNur8f6K0RNQP=yw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] bpf, riscv: fix bugs in JIT for 32-bit ALU operations
+To:     Luke Nelson <luke.r.nels@gmail.com>
+Cc:     Xi Wang <xi.wang@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        linux-riscv@lists.infradead.org, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 09:29:22PM -0600, David Ahern wrote:
-> you are correct that use of loopback here for default VRF does not work
-> -- the lookup code gets confused because it is a forward path (as
-> opposed to MPLS which is a local input). I found a couple of solutions
-> that work for default VRF.
-> 
-> Again, using namespaces to demonstrate within a single node. This is the
-> base setup:
-> 
->  ip li add vrf-b up type vrf table 2
->  ip route add vrf vrf-b unreachable default
->  ip ru add pref 32765 from all lookup local
->  ip ru del pref 0
-> 
->  ip netns add foo
->  ip li add veth1 type veth peer name veth11 netns foo
->  ip addr add dev veth1 10.200.1.1/24
->  ip li set veth1 vrf vrf-b up
->  ip -netns foo li set veth11 up
->  ip -netns foo addr add dev veth11 10.200.1.11/24
->  ip -netns foo ro add 10.200.2.0/24 via 10.200.1.1
-> 
->  ip netns add bar
->  ip li add veth2 type veth peer name veth12 netns bar
->  ip li set veth2 up
->  ip addr add dev veth2 10.200.2.1/24
->  ip -netns bar li set veth12 up
->  ip -netns bar addr add dev veth12 10.200.2.12/24
-> 
-> Cross VRF routing can be done with a veth pair, without addresses:
-> 
->  ip li add xvrf1 type veth peer name xvrf2
->  ip li set xvrf1 up
->  ip li set xvrf2 master vrf-b up
-> 
->  ip ro add vrf vrf-b 10.200.2.0/24 dev xvrf2
->  ip ro add 10.200.1.0/24 dev vrf-b
+On Thu, May 30, 2019 at 12:09 PM Luke Nelson <luke.r.nels@gmail.com> wrote:
+>
+> In BPF, 32-bit ALU operations should zero-extend their results into
+> the 64-bit registers.  The current BPF JIT on RISC-V emits incorrect
+> instructions that perform either sign extension only (e.g., addw/subw)
+> or no extension on 32-bit add, sub, and, or, xor, lsh, rsh, arsh,
+> and neg.  This behavior diverges from the interpreter and JITs for
+> other architectures.
+>
+> This patch fixes the bugs by performing zero extension on the destination
+> register of 32-bit ALU operations.
+>
+> Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+> Cc: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 
+This is a little messy. How about we introduce some helper function
+like:
 
-This doesn't work for me (again, not using namespaces).
-For traffic coming in on vrf-b to a destination on 10.200.2.0,
-I see ARPs going out for the destination on xvrf2/in on xvrf1,
-but nothing replies to it.
+/* please find a better name... */
+emit_32_or_64(bool is64, const u32 insn_32, const u32 inst_64, struct
+rv_jit_context *ctx)
+{
+       if (is64)
+            emit(insn_64, ctx);
+       else {
+            emit(insn_32, ctx);
+           rd = xxxx;
+           emit_zext_32(rd, ctx);
+       }
+}
 
-> 
-> or with addresses:
-> 
->  ip li add xvrf1 type veth peer name xvrf2
->  ip li set xvrf1 up
->  ip addr add dev xvrf1 10.200.3.1/30
->  ip li set xvrf2 master vrf-b up
->  ip addr add dev xvrf2 10.200.3.2/30
-> 
->  ip ro add vrf vrf-b 10.200.2.0/24 via 10.200.3.1 dev xvrf2
->  ip ro add 10.200.1.0/24 via 10.200.3.2 dev xvrf1
+Thanks,
+Song
 
-Having to use additional addresses is not ideal.
-
-However, there does seem to be an alternative approach which works.
-If I create another vrf "vrfdefault" and associate it with table "local"
-and use that to leak routes from global into a vrf, then it seems to
-work for both v4 and v6.
-Can reach both local and remote destinations
-(which was somewhat surprising to me anyway).
-
- ip link add vrfdefault type vrf table local
- ip route add 10.10.4.0/24 vrf vrfA dev vrfdefault
- ip -6 route add 10:10:4::/64 vrf vrfA dev vrfdefault
-
-Do you see any issue with relying on that?
-Thx.
+> ---
+>  arch/riscv/net/bpf_jit_comp.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>
+> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+> index 80b12aa5e10d..426d5c33ea90 100644
+> --- a/arch/riscv/net/bpf_jit_comp.c
+> +++ b/arch/riscv/net/bpf_jit_comp.c
+> @@ -751,22 +751,32 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>         case BPF_ALU | BPF_ADD | BPF_X:
+>         case BPF_ALU64 | BPF_ADD | BPF_X:
+>                 emit(is64 ? rv_add(rd, rd, rs) : rv_addw(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_SUB | BPF_X:
+>         case BPF_ALU64 | BPF_SUB | BPF_X:
+>                 emit(is64 ? rv_sub(rd, rd, rs) : rv_subw(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_AND | BPF_X:
+>         case BPF_ALU64 | BPF_AND | BPF_X:
+>                 emit(rv_and(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_OR | BPF_X:
+>         case BPF_ALU64 | BPF_OR | BPF_X:
+>                 emit(rv_or(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_XOR | BPF_X:
+>         case BPF_ALU64 | BPF_XOR | BPF_X:
+>                 emit(rv_xor(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_MUL | BPF_X:
+>         case BPF_ALU64 | BPF_MUL | BPF_X:
+> @@ -789,14 +799,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>         case BPF_ALU | BPF_LSH | BPF_X:
+>         case BPF_ALU64 | BPF_LSH | BPF_X:
+>                 emit(is64 ? rv_sll(rd, rd, rs) : rv_sllw(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_RSH | BPF_X:
+>         case BPF_ALU64 | BPF_RSH | BPF_X:
+>                 emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_ARSH | BPF_X:
+>         case BPF_ALU64 | BPF_ARSH | BPF_X:
+>                 emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>
+>         /* dst = -dst */
+> @@ -804,6 +820,8 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>         case BPF_ALU64 | BPF_NEG:
+>                 emit(is64 ? rv_sub(rd, RV_REG_ZERO, rd) :
+>                      rv_subw(rd, RV_REG_ZERO, rd), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>
+>         /* dst = BSWAP##imm(dst) */
+> @@ -958,14 +976,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>         case BPF_ALU | BPF_LSH | BPF_K:
+>         case BPF_ALU64 | BPF_LSH | BPF_K:
+>                 emit(is64 ? rv_slli(rd, rd, imm) : rv_slliw(rd, rd, imm), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_RSH | BPF_K:
+>         case BPF_ALU64 | BPF_RSH | BPF_K:
+>                 emit(is64 ? rv_srli(rd, rd, imm) : rv_srliw(rd, rd, imm), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>         case BPF_ALU | BPF_ARSH | BPF_K:
+>         case BPF_ALU64 | BPF_ARSH | BPF_K:
+>                 emit(is64 ? rv_srai(rd, rd, imm) : rv_sraiw(rd, rd, imm), ctx);
+> +               if (!is64)
+> +                       emit_zext_32(rd, ctx);
+>                 break;
+>
+>         /* JUMP off */
+> --
+> 2.19.1
+>
