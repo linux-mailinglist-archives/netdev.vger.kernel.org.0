@@ -2,116 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF6902F75B
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 08:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71B352F760
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 08:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727223AbfE3GBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 02:01:51 -0400
-Received: from mail-eopbgr50085.outbound.protection.outlook.com ([40.107.5.85]:37925
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726287AbfE3GBv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 02:01:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pSPGBN0Yv6OkEVjb9D2kumR4wP3mV5UesWdMLw604V0=;
- b=e1bjv39n7nJALrtRMMttwCkpBHcPvHCLPPsYjAhhWfY/B09MGCwVUIz1EyVjQ5raQMyqdrrQQcxwwDAqMpQ7MB3HGFVaSmCjfEKkuswPHin6/qUdIcIFCY00ZGjiupyBCgHrespDDlYIX9dMKcWfmPO8OrJALptNY/mWhMXYCGw=
-Received: from AM0PR05MB4147.eurprd05.prod.outlook.com (52.134.124.140) by
- AM0PR05MB5170.eurprd05.prod.outlook.com (20.178.18.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.17; Thu, 30 May 2019 06:01:46 +0000
-Received: from AM0PR05MB4147.eurprd05.prod.outlook.com
- ([fe80::f099:9287:8470:5b72]) by AM0PR05MB4147.eurprd05.prod.outlook.com
- ([fe80::f099:9287:8470:5b72%7]) with mapi id 15.20.1922.021; Thu, 30 May 2019
- 06:01:46 +0000
-From:   Mark Zhang <markz@mellanox.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v2 13/17] RDMA/core: Get sum value of all
- counters when perform a sysfs stat read
-Thread-Topic: [PATCH rdma-next v2 13/17] RDMA/core: Get sum value of all
- counters when perform a sysfs stat read
-Thread-Index: AQHU/maJo6zXY95FBkWR7IjH/etEzqZ3ijYAgAqV0ACAAE4FAIAA722A
-Date:   Thu, 30 May 2019 06:01:46 +0000
-Message-ID: <6e0b034c-b647-749f-fba7-2ac51a12d327@mellanox.com>
-References: <20190429083453.16654-1-leon@kernel.org>
- <20190429083453.16654-14-leon@kernel.org> <20190522172636.GF15023@ziepe.ca>
- <20190529110524.GU4633@mtr-leonro.mtl.com> <20190529154438.GB8567@ziepe.ca>
-In-Reply-To: <20190529154438.GB8567@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM5PR0202CA0013.eurprd02.prod.outlook.com
- (2603:10a6:203:69::23) To AM0PR05MB4147.eurprd05.prod.outlook.com
- (2603:10a6:208:63::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=markz@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [115.195.218.239]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a86eed97-875c-4d13-b97c-08d6e4c44c26
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM0PR05MB5170;
-x-ms-traffictypediagnostic: AM0PR05MB5170:
-x-microsoft-antispam-prvs: <AM0PR05MB51705EE57D30329B0CAD85E3CA180@AM0PR05MB5170.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 00531FAC2C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(396003)(346002)(39860400002)(366004)(376002)(189003)(199004)(71190400001)(316002)(71200400001)(54906003)(110136005)(66946007)(3846002)(229853002)(81156014)(81166006)(6116002)(31686004)(8676002)(66066001)(73956011)(6486002)(68736007)(36756003)(6512007)(305945005)(8936002)(2906002)(6436002)(5660300002)(256004)(186003)(52116002)(6506007)(4326008)(25786009)(6246003)(7736002)(66556008)(66476007)(64756008)(66446008)(2616005)(14454004)(478600001)(486006)(386003)(446003)(102836004)(86362001)(99286004)(476003)(26005)(31696002)(11346002)(53936002)(76176011)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5170;H:AM0PR05MB4147.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: BbxheWyvE75CELJspvsf/ozKUEXiOqp9XBx3z2v7oa8hdoE5MptiodLchXhb1ZioIV5vurpza/CWPnlCPhB8KJS6zNHNQhk8nTlzCLevbzCjNqnaTLkSqA05Osj1mnOsWsMamzOJi7gJR23dEQYgCNDwLBG4dBi00C8Y/eTuvB/mpe8zKstGQgKpa4RlSXKYaclI1mLyVQ5HQQ3wLO+oA/bUYLJxWXgqknvnS4r9P2xZqPaZzP3KtJU9Shvw26eddL1qz55lTr9DuXnt21Y42IN7BMMwQG+Zle6vUCxgL49266AGUQcM5QS5BGfGYeOnC3rrVxu61bhNrdwFUi9ZhGFZVnYF3DP+L6RVs9GbYncZTOOvxRzhIzc3+0AxM2U+UynOkIxnpb9IUfNoR+r6qYuiFCagv+LX46JPakl3fz0=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <733024340E9E054FBFD09B1E79D98316@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a86eed97-875c-4d13-b97c-08d6e4c44c26
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 06:01:46.6420
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: markz@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5170
+        id S1727123AbfE3GJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 02:09:19 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:59394 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725961AbfE3GJT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 02:09:19 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1B73A1A0639;
+        Thu, 30 May 2019 08:09:17 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0E9561A0633;
+        Thu, 30 May 2019 08:09:17 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 933AD2026B;
+        Thu, 30 May 2019 08:09:16 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, maxime.chevallier@bootlin.com,
+        olteanv@gmail.com, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next] net: dsa: Add error path handling in dsa_tree_setup()
+Date:   Thu, 30 May 2019 09:09:07 +0300
+Message-Id: <1559196547-17917-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNS8yOS8yMDE5IDExOjQ0IFBNLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6DQo+IE9uIFdlZCwg
-TWF5IDI5LCAyMDE5IGF0IDAyOjA1OjI0UE0gKzAzMDAsIExlb24gUm9tYW5vdnNreSB3cm90ZToN
-Cj4+IE9uIFdlZCwgTWF5IDIyLCAyMDE5IGF0IDAyOjI2OjM2UE0gLTAzMDAsIEphc29uIEd1bnRo
-b3JwZSB3cm90ZToNCj4+PiBPbiBNb24sIEFwciAyOSwgMjAxOSBhdCAxMTozNDo0OUFNICswMzAw
-LCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6DQo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2luZmlu
-aWJhbmQvY29yZS9kZXZpY2UuYyBiL2RyaXZlcnMvaW5maW5pYmFuZC9jb3JlL2RldmljZS5jDQo+
-Pj4+IGluZGV4IGM1NmZmYzYxYWIxZS4uOGFlNDkwNmE2MGU3IDEwMDY0NA0KPj4+PiArKysgYi9k
-cml2ZXJzL2luZmluaWJhbmQvY29yZS9kZXZpY2UuYw0KPj4+PiBAQCAtMTI1NSw3ICsxMjU1LDEx
-IEBAIGludCBpYl9yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IGliX2RldmljZSAqZGV2aWNlLCBjb25z
-dCBjaGFyICpuYW1lKQ0KPj4+PiAgIAkJZ290byBkZXZfY2xlYW51cDsNCj4+Pj4gICAJfQ0KPj4+
-Pg0KPj4+PiAtCXJkbWFfY291bnRlcl9pbml0KGRldmljZSk7DQo+Pj4+ICsJcmV0ID0gcmRtYV9j
-b3VudGVyX2luaXQoZGV2aWNlKTsNCj4+Pj4gKwlpZiAocmV0KSB7DQo+Pj4+ICsJCWRldl93YXJu
-KCZkZXZpY2UtPmRldiwgIkNvdWxkbid0IGluaXRpYWxpemUgY291bnRlclxuIik7DQo+Pj4+ICsJ
-CWdvdG8gc3lzZnNfY2xlYW51cDsNCj4+Pj4gKwl9DQo+Pj4NCj4+PiBEb24ndCBwdXQgdGhpcyB0
-aGluZ3MgcmFuZG9tbHksIGlmIHRoZXJlIGlzIHNvbWUgcmVhc29uIGl0IHNob3VsZCBiZQ0KPj4+
-IGFmdGVyIHN5c2ZzIGl0IG5lZWRzIGEgY29tbWVudCwgb3RoZXJ3aXNlIGlmIGl0IGlzIGp1c3Qg
-YWxsb2NhdGluZw0KPj4+IG1lbW9yeSBpdCBiZWxvbmdzIGVhcmxpZXIsIGFuZCB0aGUgdW53aW5k
-IHNob3VsZCBiZSBkb25lIGluIHJlbGVhc2UuDQo+Pj4NCj4+PiBJIGFsc28gdGhpbmsgaXQgaXMg
-dmVyeSBzdHJhbmdlL3dyb25nIHRoYXQgYm90aCBzeXNmcyBhbmQgY291bnRlcnMgYXJlDQo+Pj4g
-YWxsb2NhdGluZyB0aGUgc2FtZSBhbGxvY19od19zdGF0cyBvYmplY3QNCj4+Pg0KPj4+IFdoeSBj
-YW4ndCB0aGV5IHNoYXJlPw0KPj4NCj4+IFRoZXkgY2FuLCBidXQgd2Ugd2FudGVkIHRvIHNlcGFy
-YXRlICJsZWdhY3kiIGNvdW50ZXJzIHdoaWNoIHdlcmUgZXhwb3NlZA0KPj4gdGhyb3VnaCBzeXNm
-cyBhbmQgIm5ldyIgY291bnRlcnMgd2hpY2ggY2FuIGJlIGVuYWJsZWQvZGlzYWJsZSBhdXRvbWF0
-aWNhbGx5Lg0KPiANCj4gSXMgdGhlcmUgYW55IGNyb3NzIGNvbnRhbWluYXRpb24gdGhyb3VnaCB0
-aGUgaHdfc3RhdHM/IElmIG5vIHRoZXkNCj4gc2hvdWxkIGp1c3Qgc2hhcmUuID4NCg0Kc3lzZnMg
-aHdfc3RhdHMgaG9sZHMgdGhlIHBvcnQgY291bnRlciwgd2hpbGUgdGhpcyBvbmUgaG9sZHMgdGhl
-DQpoaXN0b3J5IHZhbHVlIG9mIGFsbCBkeW5hbWljYWxseSBhbGxvY2F0ZWQgY291bnRlcnMuIFRo
-ZXkgY2FuIG5vdCBzaGFyZS4NCnBvcnRfY291bnRlciA9DQogICBkZWZhdWx0X2NvdW50ZXIgKyBy
-dW5uaW5nX2R5bmFtaWNfY291bnRlciArIGhpc3RvcnlfZHluYW1pY19jb3VudGVyDQoNCj4gSmFz
-b24NCj4gDQoNCg==
+In case a call to dsa_tree_setup() fails, an attempt to cleanup is made
+by calling dsa_tree_remove_switch(), which should take care of
+removing/unregistering any resources previously allocated. This does not
+happen because it is conditioned by dst->setup being true, which is set
+only after _all_ setup steps were performed successfully.
+
+This is especially interesting when the internal MDIO bus is registered
+but afterwards, a port setup fails and the mdiobus_unregister() is never
+called. This leads to a BUG_ON() complaining about the fact that it's
+trying to free an MDIO bus that's still registered.
+
+Add proper error handling in all functions branching from
+dsa_tree_setup().
+
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+---
+
+Sorry for sending this again but the first time I mistyped the netdev list
+address.
+
+ net/dsa/dsa2.c | 89 +++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 66 insertions(+), 23 deletions(-)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 3b5f434cad3f..b70befe8a3c8 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -261,7 +261,7 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 	enum devlink_port_flavour flavour;
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_switch_tree *dst = ds->dst;
+-	int err;
++	int err = 0;
+ 
+ 	if (dp->type == DSA_PORT_TYPE_UNUSED)
+ 		return 0;
+@@ -299,19 +299,15 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 		break;
+ 	case DSA_PORT_TYPE_CPU:
+ 		err = dsa_port_link_register_of(dp);
+-		if (err) {
++		if (err)
+ 			dev_err(ds->dev, "failed to setup link for port %d.%d\n",
+ 				ds->index, dp->index);
+-			return err;
+-		}
+ 		break;
+ 	case DSA_PORT_TYPE_DSA:
+ 		err = dsa_port_link_register_of(dp);
+-		if (err) {
++		if (err)
+ 			dev_err(ds->dev, "failed to setup link for port %d.%d\n",
+ 				ds->index, dp->index);
+-			return err;
+-		}
+ 		break;
+ 	case DSA_PORT_TYPE_USER:
+ 		err = dsa_slave_create(dp);
+@@ -323,7 +319,10 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 		break;
+ 	}
+ 
+-	return 0;
++	if (err)
++		devlink_port_unregister(&dp->devlink_port);
++
++	return err;
+ }
+ 
+ static void dsa_port_teardown(struct dsa_port *dp)
+@@ -351,7 +350,7 @@ static void dsa_port_teardown(struct dsa_port *dp)
+ 
+ static int dsa_switch_setup(struct dsa_switch *ds)
+ {
+-	int err;
++	int err = 0;
+ 
+ 	/* Initialize ds->phys_mii_mask before registering the slave MDIO bus
+ 	 * driver and before ops->setup() has run, since the switch drivers and
+@@ -369,29 +368,41 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+ 
+ 	err = devlink_register(ds->devlink, ds->dev);
+ 	if (err)
+-		return err;
++		goto free_devlink;
+ 
+ 	err = dsa_switch_register_notifier(ds);
+ 	if (err)
+-		return err;
++		goto unregister_devlink;
+ 
+ 	err = ds->ops->setup(ds);
+ 	if (err < 0)
+-		return err;
++		goto unregister_notifier;
+ 
+ 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
+ 		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
+-		if (!ds->slave_mii_bus)
+-			return -ENOMEM;
++		if (!ds->slave_mii_bus) {
++			err = -ENOMEM;
++			goto unregister_notifier;
++		}
+ 
+ 		dsa_slave_mii_bus_init(ds);
+ 
+ 		err = mdiobus_register(ds->slave_mii_bus);
+ 		if (err < 0)
+-			return err;
++			goto unregister_notifier;
+ 	}
+ 
+ 	return 0;
++
++unregister_notifier:
++	dsa_switch_unregister_notifier(ds);
++unregister_devlink:
++	devlink_unregister(ds->devlink);
++free_devlink:
++	devlink_free(ds->devlink);
++	ds->devlink = NULL;
++
++	return err;
+ }
+ 
+ static void dsa_switch_teardown(struct dsa_switch *ds)
+@@ -413,8 +424,8 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ {
+ 	struct dsa_switch *ds;
+ 	struct dsa_port *dp;
+-	int device, port;
+-	int err;
++	int device, port, i;
++	int err = 0;
+ 
+ 	for (device = 0; device < DSA_MAX_SWITCHES; device++) {
+ 		ds = dst->ds[device];
+@@ -423,18 +434,41 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ 
+ 		err = dsa_switch_setup(ds);
+ 		if (err)
+-			return err;
++			goto switch_teardown;
+ 
+ 		for (port = 0; port < ds->num_ports; port++) {
+ 			dp = &ds->ports[port];
+ 
+ 			err = dsa_port_setup(dp);
+ 			if (err)
+-				return err;
++				goto ports_teardown;
+ 		}
+ 	}
+ 
+ 	return 0;
++
++ports_teardown:
++	for (i = 0; i < port; i++)
++		dsa_port_teardown(&ds->ports[i]);
++
++	dsa_switch_teardown(ds);
++
++switch_teardown:
++	for (i = 0; i < device; i++) {
++		ds = dst->ds[i];
++		if (!ds)
++			continue;
++
++		for (port = 0; port < ds->num_ports; port++) {
++			dp = &ds->ports[port];
++
++			dsa_port_teardown(dp);
++		}
++
++		dsa_switch_teardown(ds);
++	}
++
++	return err;
+ }
+ 
+ static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
+@@ -496,17 +530,24 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
+ 
+ 	err = dsa_tree_setup_switches(dst);
+ 	if (err)
+-		return err;
++		goto teardown_default_cpu;
+ 
+ 	err = dsa_tree_setup_master(dst);
+ 	if (err)
+-		return err;
++		goto teardown_switches;
+ 
+ 	dst->setup = true;
+ 
+ 	pr_info("DSA: tree %d setup\n", dst->index);
+ 
+ 	return 0;
++
++teardown_switches:
++	dsa_tree_teardown_switches(dst);
++teardown_default_cpu:
++	dsa_tree_teardown_default_cpu(dst);
++
++	return err;
+ }
+ 
+ static void dsa_tree_teardown(struct dsa_switch_tree *dst)
+@@ -547,8 +588,10 @@ static int dsa_tree_add_switch(struct dsa_switch_tree *dst,
+ 	dst->ds[index] = ds;
+ 
+ 	err = dsa_tree_setup(dst);
+-	if (err)
+-		dsa_tree_remove_switch(dst, index);
++	if (err) {
++		dst->ds[index] = NULL;
++		dsa_tree_put(dst);
++	}
+ 
+ 	return err;
+ }
+-- 
+2.21.0
+
