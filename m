@@ -2,105 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2F172FF5A
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 17:23:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E54B72FF66
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 17:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727105AbfE3PXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 11:23:22 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:41460 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbfE3PXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 11:23:22 -0400
-Received: by mail-ed1-f65.google.com with SMTP id y15so3692176edo.8;
-        Thu, 30 May 2019 08:23:21 -0700 (PDT)
+        id S1726837AbfE3P10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 11:27:26 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46598 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726015AbfE3P1Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 11:27:25 -0400
+Received: by mail-pg1-f195.google.com with SMTP id v9so2202834pgr.13;
+        Thu, 30 May 2019 08:27:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RCDLlGYJgL0buQMnh0bUr8c4NmNRLG9BRcbGN/X5h/Q=;
-        b=k6nQK2dzl0iWLlYN8CYEqKZE4VFAL46E1jtyi1SUqMGSVtsBy9PB6QAh437YVWIPic
-         YURsvfCP5gmmpvZh0xEw3lOUE1RGzJPVwMPFSIdB0RAvMFYIk6M5pmdgKYoMJF8E3CpN
-         WSIWRxIiOyScLZvJyQNwRC3tg81OCBGRk9PDisQhJA6aRGu38WUNsTG4JppPVBkvPjIV
-         kG5lhKWIIUktk4MzDk7uKLbkCjPwdzhm/jpn55NrVf4RrRC4cGy231AxEDQTmQFEntiF
-         KsZlAAkmYYTvUugUAa7kAk4yiM57MLsOjQG5geiy3mDx+23L1dnL4SElNWqMu8CnvdqX
-         wrVw==
+        h=from:to:cc:subject:date:message-id;
+        bh=/Pn5l7Gl3fvih/5a8ecI7LW5krUKtJRfsuSUzHjs23s=;
+        b=gpP2jFgtCJLEB0MnQDyz47dV/7gnyYt1BYPZpOKP9dg6hZigrNid6HaEfleX8rBhDT
+         2CMbnqRfJSPZU49ILILmeW18onoEXeSLtwwUgj14BpokFfGihmaEgN1O84ORiKN5g7AU
+         rSjVJZGa1KyvV5SoV6BMW7GQJwfsfw+f9xGQZPws4NCbe7OyU5qm2lhndbFGJAASQCJd
+         GONqeXBIkUhBF8bXKRP5HQVoPTcHAXr/Xa7pGfKov1ZrDlzKxpwMOMuNMXNOxvsebNFm
+         WXgy3x4rlvFU//rUsD8CoYwPyg0aLzvgBb5aFcfFgu6FeSFEk/6yr5SzRtXeyZgLbcVs
+         0Mpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RCDLlGYJgL0buQMnh0bUr8c4NmNRLG9BRcbGN/X5h/Q=;
-        b=MeOZLx+llBeCXRGg/E86mAVwXjPbysZNsG2NXP4B6jX8tgHN2WsG2OwsfUO52IZS3g
-         PJj+O5scQsfuq0yfwTaQbqBSAg6ceA+JJyPbvffs2gDeqZpx9vzhreoTJlCeaHiXBiPA
-         Qy4KpzcaeDw19fSOyawgxcIBs+Fv/gVoVfLgR+36n+AbJZt5x3Of0NWoMaFKQe8A1TeH
-         5Skzqw724JyGL/RiMl+2VSFV/AWZ4yU8pivAUQGgKjvHOKynu9ND/sEaPOfZ87cTiDRB
-         PlGeRj6S9cFZ1IMR6Vo3RMdYqzMjOaM23G7dYSdkx/OE4Ogz71ZWcGcGSCwX/O08sHMW
-         +Wgg==
-X-Gm-Message-State: APjAAAVHhSt6y9DlHz9SiaUu9kwVsaa4j5r384MgstNknok7gVLL+xel
-        h6gjLHlyZYKT6luS1/7r/9FWoDMYgpHlrN6k3EE=
-X-Google-Smtp-Source: APXvYqx3aJN/bOOORxGjvfzJUASMDGRGn7cpzALSAmSFcD4ex0V1B0UmE02xxaVGaMkibPxnihjvE3sVUi8INMdkZso=
-X-Received: by 2002:aa7:ca47:: with SMTP id j7mr2711085edt.36.1559229800607;
- Thu, 30 May 2019 08:23:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190528235627.1315-1-olteanv@gmail.com> <20190529045207.fzvhuu6d6jf5p65t@localhost>
- <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com> <20190530034555.wv35efen3igwwzjq@localhost>
- <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com>
- <20190530143037.iky5kk3h4ssmec3f@localhost> <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
- <20190530150557.iur7fruhyf5bs3qw@localhost>
-In-Reply-To: <20190530150557.iur7fruhyf5bs3qw@localhost>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 30 May 2019 18:23:09 +0300
-Message-ID: <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/Pn5l7Gl3fvih/5a8ecI7LW5krUKtJRfsuSUzHjs23s=;
+        b=o41NbF4V6onCplPqdHA7MHanCVath9pVyugj2xCZyj9lW2OoFwyx8j714KBPznrE1S
+         1BDmF71mx8ewWdlqaKsmdPWYdoslUlvTkERixluO0bIiweQ6RxfZP0Mk0yCtUJg4UByG
+         NNskUjua2tuNutKKS68xw0BcMHkldoFNLVM0ac6B7WjuwcifWp88mbz0xomfrPfgroSi
+         kmI0TGR0gvR+VUtrBsp6DjKv/CRrQZp30qhE39XlUe+NUNCQud2skX9dRk28F0yl9SQa
+         jlChXxoIhV1Y+qDL1jio6CkssLoWk06a1wFm6UPOw4YLokUs2Z9hlskyQ61sRDZmuY03
+         qWww==
+X-Gm-Message-State: APjAAAW+Ezj3RJNT5ZL2eJx155F0VZGciCORxlw0WNGJ5EdH4ntomAXX
+        fWzR2cNXb9rJzGa3L7+bSdU=
+X-Google-Smtp-Source: APXvYqwJ7xSLFQLOkGndSn8SMMOb04mrm4o41TpHVluzE92VccrJo04wRYcNI3pBU0fXADZ0SYcZAw==
+X-Received: by 2002:a17:90a:6505:: with SMTP id i5mr2443651pjj.13.1559230045287;
+        Thu, 30 May 2019 08:27:25 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id s28sm2750518pgl.88.2019.05.30.08.27.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 30 May 2019 08:27:24 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] ipv6: Prevent overrun when parsing v6 header options
+Date:   Thu, 30 May 2019 23:28:18 +0800
+Message-Id: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 at 18:06, Richard Cochran <richardcochran@gmail.com> wrote:
->
-> On Thu, May 30, 2019 at 05:57:30PM +0300, Vladimir Oltean wrote:
-> > On Thu, 30 May 2019 at 17:30, Richard Cochran <richardcochran@gmail.com> wrote:
-> > >
-> > > Not necessarily.  If two frames that arrive at nearly the same time
-> > > get their timestamps mixed up, that would be enough to break the time
-> > > values but without breaking your state machine.
-> > >
-> >
-> > This doesn't exactly sound like the type of thing I can check for.
->
-> And that is why it cannot work.
->
-> > The RX and TX timestamps *are* monotonically increasing with time for
-> > all frames when I'm printing them in the {rx,tx}tstamp callbacks.
->
-> But are the frames received in the same order?  What happens your MAC
-> drops a frame?
->
+The fragmentation code tries to parse the header options in order
+to figure out where to insert the fragment option.  Since nexthdr points
+to an invalid option, the calculation of the size of the network header
+can made to be much larger than the linear section of the skb and data
+is read outside of it.
 
-If it drops a normal frame, it carries on.
-If it drops a meta frame, it prints "Expected meta frame", resets the
-state machine and carries on.
-If it drops a timestampable frame, it prints "Unexpected meta frame",
-resets the state machine and carries on.
-This doesn't happen under correct runtime conditions though.
+This vulnerability is similar to CVE-2017-9074.
 
--Vladimir
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+---
+ net/ipv6/mip6.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-> > The driver returns free-running timestamps altered with a timecounter
-> > frequency set by adjfine and offset set by adjtime.
->
-> That should be correct.
->
-> Thanks,
-> Richard
+diff --git a/net/ipv6/mip6.c b/net/ipv6/mip6.c
+index 64f0f7b..30ed1c5 100644
+--- a/net/ipv6/mip6.c
++++ b/net/ipv6/mip6.c
+@@ -263,8 +263,6 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			       u8 **nexthdr)
+ {
+ 	u16 offset = sizeof(struct ipv6hdr);
+-	struct ipv6_opt_hdr *exthdr =
+-				   (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	unsigned int packet_len = skb_tail_pointer(skb) -
+ 		skb_network_header(skb);
+@@ -272,7 +270,8 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 
+ 	*nexthdr = &ipv6_hdr(skb)->nexthdr;
+ 
+-	while (offset + 1 <= packet_len) {
++	while (offset <= packet_len) {
++		struct ipv6_opt_hdr *exthdr;
+ 
+ 		switch (**nexthdr) {
+ 		case NEXTHDR_HOP:
+@@ -299,12 +298,15 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			return offset;
+ 		}
+ 
++		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
++			return -EINVAL;
++
++		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 		offset += ipv6_optlen(exthdr);
+ 		*nexthdr = &exthdr->nexthdr;
+-		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 	}
+ 
+-	return offset;
++	return -EINVAL;
+ }
+ 
+ static int mip6_destopt_init_state(struct xfrm_state *x)
+@@ -399,8 +401,6 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			     u8 **nexthdr)
+ {
+ 	u16 offset = sizeof(struct ipv6hdr);
+-	struct ipv6_opt_hdr *exthdr =
+-				   (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	unsigned int packet_len = skb_tail_pointer(skb) -
+ 		skb_network_header(skb);
+@@ -408,7 +408,8 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 
+ 	*nexthdr = &ipv6_hdr(skb)->nexthdr;
+ 
+-	while (offset + 1 <= packet_len) {
++	while (offset <= packet_len) {
++		struct ipv6_opt_hdr *exthdr;
+ 
+ 		switch (**nexthdr) {
+ 		case NEXTHDR_HOP:
+@@ -434,12 +435,15 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			return offset;
+ 		}
+ 
++		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
++			return -EINVAL;
++
++		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 		offset += ipv6_optlen(exthdr);
+ 		*nexthdr = &exthdr->nexthdr;
+-		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 	}
+ 
+-	return offset;
++	return -EINVAL;
+ }
+ 
+ static int mip6_rthdr_init_state(struct xfrm_state *x)
+-- 
+2.7.4
+
