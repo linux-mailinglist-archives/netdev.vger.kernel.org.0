@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB0E2F086
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:05:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB372F07D
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfE3EE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 00:04:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48276 "EHLO mail.kernel.org"
+        id S1731293AbfE3DRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 23:17:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48304 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731270AbfE3DRt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 23:17:49 -0400
+        id S1731273AbfE3DRu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 May 2019 23:17:50 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DA7C24729;
+        by mail.kernel.org (Postfix) with ESMTPSA id 90B5E24726;
         Thu, 30 May 2019 03:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1559186269;
-        bh=wh63PGozm3piZl4WOI2F2hGTXJdzE6fSQuzQ+CdKI5E=;
+        bh=n8IBK3dCAN27MQYAkoLRDxbNXvETLAbr5HekssFqeRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDl2Je04I3olNJsp3yWH/Cuv6qNOqfO8doPzi24kiKhYbZlx0ax1ndMRn9YRoW+Y4
-         xIMSdFYKvqtKtZDlQ5helwNLGM0CB8txizPJ0Y+5hKtd/EUHcZGG062VRH/1XLfTM/
-         sXFImxOvjHwCQAeP1rxQYyec2rMSNzpS09WfxBNA=
+        b=2ajVrI/xMrOv+ogUPFSLE7NjA0mBQmlJpz/X3dITvn3AfESilBISXXEalrrFBMRl+
+         KmieEP2ZUWGOnL8FJWloX9m7bjoH/D8sXadYkdINk0aUiPAMzheiJ2EqzfrDhy6HQD
+         2wd7qi1itKhByoyxGPM1UWZUtZiTRE/ducoXwVlY=
 From:   David Ahern <dsahern@kernel.org>
 To:     stephen@networkplumber.org
 Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next 2/9] lwtunnel: Pass encap and encap_type attributes to lwt_parse_encap
-Date:   Wed, 29 May 2019 20:17:39 -0700
-Message-Id: <20190530031746.2040-3-dsahern@kernel.org>
+Subject: [PATCH iproute2-next 3/9] libnetlink: Add helper to add a group via setsockopt
+Date:   Wed, 29 May 2019 20:17:40 -0700
+Message-Id: <20190530031746.2040-4-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190530031746.2040-1-dsahern@kernel.org>
 References: <20190530031746.2040-1-dsahern@kernel.org>
@@ -39,88 +39,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-lwt_parse_encap currently assumes the encap attribute is RTA_ENCAP
-and the type is RTA_ENCAP_TYPE. Change lwt_parse_encap to take these
-as input arguments for reuse by nexthop code which has the attributes
-as NHA_ENCAP and NHA_ENCAP_TYPE.
+groups > 31 have to be joined using the setsockopt. Since the nexthop
+group is 32, add a helper to allow 'ip monitor' to listen for nexthop
+messages.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- ip/ip_common.h        | 3 ++-
- ip/iproute.c          | 6 ++++--
- ip/iproute_lwtunnel.c | 7 ++++---
- 3 files changed, 10 insertions(+), 6 deletions(-)
+ include/libnetlink.h | 3 ++-
+ lib/libnetlink.c     | 6 ++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/ip/ip_common.h b/ip/ip_common.h
-index b4aa34a70c92..df279e4f7b9a 100644
---- a/ip/ip_common.h
-+++ b/ip/ip_common.h
-@@ -134,7 +134,8 @@ int bond_parse_xstats(struct link_util *lu, int argc, char **argv);
- int bond_print_xstats(struct nlmsghdr *n, void *arg);
+diff --git a/include/libnetlink.h b/include/libnetlink.h
+index 503b3ec11bb6..599b2c592f68 100644
+--- a/include/libnetlink.h
++++ b/include/libnetlink.h
+@@ -45,7 +45,8 @@ int rtnl_open(struct rtnl_handle *rth, unsigned int subscriptions)
+ int rtnl_open_byproto(struct rtnl_handle *rth, unsigned int subscriptions,
+ 			     int protocol)
+ 	__attribute__((warn_unused_result));
+-
++int rtnl_add_nl_group(struct rtnl_handle *rth, unsigned int group)
++	__attribute__((warn_unused_result));
+ void rtnl_close(struct rtnl_handle *rth);
+ void rtnl_set_strict_dump(struct rtnl_handle *rth);
  
- /* iproute_lwtunnel.c */
--int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp);
-+int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
-+		    int encap_attr, int encap_type_attr);
- void lwt_print_encap(FILE *fp, struct rtattr *encap_type, struct rtattr *encap);
- 
- /* iplink_xdp.c */
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 2b3dcc5dbd53..440b1fc8b413 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -997,7 +997,8 @@ static int parse_one_nh(struct nlmsghdr *n, struct rtmsg *r,
- 		} else if (strcmp(*argv, "encap") == 0) {
- 			int old_len = rta->rta_len;
- 
--			if (lwt_parse_encap(rta, len, &argc, &argv))
-+			if (lwt_parse_encap(rta, len, &argc, &argv,
-+					    RTA_ENCAP, RTA_ENCAP_TYPE))
- 				return -1;
- 			rtnh->rtnh_len += rta->rta_len - old_len;
- 		} else if (strcmp(*argv, "as") == 0) {
-@@ -1416,7 +1417,8 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 			rta->rta_type = RTA_ENCAP;
- 			rta->rta_len = RTA_LENGTH(0);
- 
--			lwt_parse_encap(rta, sizeof(buf), &argc, &argv);
-+			lwt_parse_encap(rta, sizeof(buf), &argc, &argv,
-+					RTA_ENCAP, RTA_ENCAP_TYPE);
- 
- 			if (rta->rta_len > RTA_LENGTH(0))
- 				addraw_l(&req.n, 1024
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index 03217b8f08f8..60f34a32a6e5 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -1111,7 +1111,8 @@ static int parse_encap_bpf(struct rtattr *rta, size_t len, int *argcp,
- 	return 0;
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index 6ae51a9dba14..eb85bbdf01ee 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -173,6 +173,12 @@ void rtnl_set_strict_dump(struct rtnl_handle *rth)
+ 	rth->flags |= RTNL_HANDLE_F_STRICT_CHK;
  }
  
--int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp)
-+int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
-+		    int encap_attr, int encap_type_attr)
++int rtnl_add_nl_group(struct rtnl_handle *rth, unsigned int group)
++{
++	return setsockopt(rth->fd, SOL_NETLINK, NETLINK_ADD_MEMBERSHIP,
++			  &group, sizeof(group));
++}
++
+ void rtnl_close(struct rtnl_handle *rth)
  {
- 	struct rtattr *nest;
- 	int argc = *argcp;
-@@ -1131,7 +1132,7 @@ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp)
- 		exit(-1);
- 	}
- 
--	nest = rta_nest(rta, len, RTA_ENCAP);
-+	nest = rta_nest(rta, len, encap_attr);
- 	switch (type) {
- 	case LWTUNNEL_ENCAP_MPLS:
- 		ret = parse_encap_mpls(rta, len, &argc, &argv);
-@@ -1164,7 +1165,7 @@ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp)
- 
- 	rta_nest_end(rta, nest);
- 
--	ret = rta_addattr16(rta, len, RTA_ENCAP_TYPE, type);
-+	ret = rta_addattr16(rta, len, encap_type_attr, type);
- 
- 	*argcp = argc;
- 	*argvp = argv;
+ 	if (rth->fd >= 0) {
 -- 
 2.11.0
 
