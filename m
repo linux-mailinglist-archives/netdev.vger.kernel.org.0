@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3F23023F
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC76130242
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbfE3Suk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726716AbfE3Suk (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 30 May 2019 14:50:40 -0400
-Received: from mga04.intel.com ([192.55.52.120]:30429 "EHLO mga04.intel.com"
+Received: from mga04.intel.com ([192.55.52.120]:30432 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbfE3Suj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726684AbfE3Suj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 May 2019 14:50:39 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,14 +20,13 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 30 May 2019 11:50:36 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Preethi Banala <preethi.banala@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 08/15] ice: Change minimum descriptor count value for Tx/Rx rings
-Date:   Thu, 30 May 2019 11:50:38 -0700
-Message-Id: <20190530185045.3886-9-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 09/15] ice: Use continue instead of an else block
+Date:   Thu, 30 May 2019 11:50:39 -0700
+Message-Id: <20190530185045.3886-10-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190530185045.3886-1-jeffrey.t.kirsher@intel.com>
 References: <20190530185045.3886-1-jeffrey.t.kirsher@intel.com>
@@ -38,32 +37,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Preethi Banala <preethi.banala@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Change minimum number of descriptor count from 32 to 64. This is to have
-a feature parity with previous Intel NIC drivers.
+For style consistency, use continue instead of an else block in
+ice_pf_dcb_recfg.
 
-Signed-off-by: Preethi Banala <preethi.banala@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index c1e4dd7357b4..9ee6b55553c0 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -44,7 +44,7 @@
- extern const char ice_drv_ver[];
- #define ICE_BAR0		0
- #define ICE_REQ_DESC_MULTIPLE	32
--#define ICE_MIN_NUM_DESC	ICE_REQ_DESC_MULTIPLE
-+#define ICE_MIN_NUM_DESC	64
- #define ICE_MAX_NUM_DESC	8160
- #define ICE_DFLT_MIN_RX_DESC	512
- /* if the default number of Rx descriptors between ICE_MAX_NUM_DESC and the
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+index e6a4ef6a2565..e4174a14aa44 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+@@ -120,12 +120,14 @@ static void ice_pf_dcb_recfg(struct ice_pf *pf)
+ 			tc_map = ICE_DFLT_TRAFFIC_CLASS;
+ 
+ 		ret = ice_vsi_cfg_tc(pf->vsi[v], tc_map);
+-		if (ret)
++		if (ret) {
+ 			dev_err(&pf->pdev->dev,
+ 				"Failed to config TC for VSI index: %d\n",
+ 				pf->vsi[v]->idx);
+-		else
+-			ice_vsi_map_rings_to_vectors(pf->vsi[v]);
++			continue;
++		}
++
++		ice_vsi_map_rings_to_vectors(pf->vsi[v]);
+ 	}
+ }
+ 
 -- 
 2.21.0
 
