@@ -2,115 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DD122F8ED
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 11:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F58B2F90A
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 11:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbfE3JBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 05:01:37 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39619 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726897AbfE3JBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 05:01:37 -0400
-Received: by mail-ed1-f68.google.com with SMTP id e24so8071766edq.6;
-        Thu, 30 May 2019 02:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hAvTxaltXYO/lyeicRERVDVuI1Ynh76x4sPUvK3WH+0=;
-        b=c9wvPeNKmf1N2IwhyWnleJp2nETmlAMOZQNzJQXiYsFpP0DPOsQhTegaIFZ3J3lUrI
-         lQTZCedqVxdZi7wxPGQmBOB4wgyutM2m1KqT08J+nWUZsXDcHixV3LawU9oSBaUB2vl6
-         CRjt1gyF29uB8exwDmzEu7Ni1PTPAVZbLOIouDLDvfWtL/CeLZ9sLqFyVA2aGVRVSuf8
-         fLXRvv1LsFDpZ0ESEAD3lDD0d5neLPOchIRGWSnJ0oYd+AOTAptV+E90jL+lSNOak3qG
-         hNw3/uXkE0JbC5RCtz0p7Jt8RqCjVrCZRzO1CcaVZ2Z04dPeKmcryYoVA1qYWM7KmNpy
-         ki6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hAvTxaltXYO/lyeicRERVDVuI1Ynh76x4sPUvK3WH+0=;
-        b=eKmQeBwK6J8TE3KW2waqum5S2T0oAzPCPqP0zWXiRIcWzp905GpVd8c8rUcfBllMFs
-         o+cSIM9joTsbalGouSUvvjwPKDrkRbbX3T+I2ftmEGbLc8xwbNxfp24xZ0fuI3FC73V0
-         J9ja2ydRc4rZ24zWnZRuat/zSLHxw6t27QGZNSb7wMPdzfuT2dJOBPAgMbdaPBeTtkKz
-         kCCc16OET+ZWOOdvlRE+IOAVdbefAhDsqrDPY5QwR976zXe8xgvuiDT8FYyvvnCE49AL
-         3pN1aD74evXYg7onZFJOTcbYXM+6Cb2QWQ6x3DPrsyJCf5EG75KXHl020hrpCpUDXxb6
-         sF5w==
-X-Gm-Message-State: APjAAAVf3fE3DCzZ0znYRAz0bvYdBmSbFSeC+OgQjmJFLWL8CjoMipJi
-        9OJzICBA+Hu5lX+0vBw3sA+yV78rv5bylC8Q9dk=
-X-Google-Smtp-Source: APXvYqx8KYaMEsLueVj1BIkNrm2+mxAT1HJLHo0bQGvs+WBaD5AjevtcfVIq9CjQucuNoBSl4pBzpc5ooRBrFQYAlZ4=
-X-Received: by 2002:a17:906:5a42:: with SMTP id l2mr2370579ejs.47.1559206894995;
- Thu, 30 May 2019 02:01:34 -0700 (PDT)
+        id S1726831AbfE3JLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 05:11:33 -0400
+Received: from mout.web.de ([212.227.17.11]:47575 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725913AbfE3JLd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 05:11:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1559207486;
+        bh=mhWdBvAm70EzVnomZihjH1xuc8nngI6HhLWHshUr+NI=;
+        h=X-UI-Sender-Class:To:Cc:References:Subject:From:Date:In-Reply-To;
+        b=sk0thWvptHZtjnTQp/iZ4ibkR2H8y0VDhAffTMJy94yVHYx5SxNrslCWrc+qwfWqX
+         Gs8WYEajeiA68rUo/wuS82pA/+5pyf0sDSLw4DtN99QvXvTHyZgfKZb+0zDFJjZO70
+         IW0ijxqGXFGEmQLVmoRwxMEC4xOl7nYNzzDMIVFk=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.4] ([78.48.143.243]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0Mb90x-1hBi6Q3rZL-00Kixd; Thu, 30
+ May 2019 11:11:26 +0200
+To:     Josh Hunt <johunt@akamai.com>, David Ahern <dsahern@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <1556674718-5081-1-git-send-email-johunt@akamai.com>
+Subject: Re: [PATCH v2] ss: add option to print socket information on one line
+From:   Markus Elfring <Markus.Elfring@web.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <86d8b203-69bd-e466-715d-959368685839@web.de>
+Date:   Thu, 30 May 2019 11:11:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190528235627.1315-1-olteanv@gmail.com> <20190529045207.fzvhuu6d6jf5p65t@localhost>
- <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com> <20190530034555.wv35efen3igwwzjq@localhost>
-In-Reply-To: <20190530034555.wv35efen3igwwzjq@localhost>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 30 May 2019 12:01:23 +0300
-Message-ID: <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1556674718-5081-1-git-send-email-johunt@akamai.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:JtyYEaodFcAKwncmrE0Jq2jxHF6/9JhY4M6QHv9XCBm/7qdBshn
+ KjCO+i9rwpCp1TbcVeAxlb6Kr1aCxpvG53B2akpaeTKuUNDPndhoYOd4k6ULjRaX6Xa9iZq
+ PF60wkkheY9SZ6uwQ8MIKnF4nUkmNg5YtXsAh7P5NKrAj8bh2IaSHpsoMry1ujYslBimQmA
+ tlml39SQVx4QVlko9Bwfw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:WTlLPHc4dDE=:yHZI2I8SaX/+3KN7EPi240
+ PKwVpdHpRDGziNCbCOhEeIxjt1ZIsJwXyOFcQi9jJx8lDKBnDid/jNLvWz3u2CWAY5kk1nA85
+ MaLO3Haj2fZ+DkA0de/z9webp+grGupJhxxqXbzZrIIaNAAjKvUDigs1ye4Fg8on4UYXKQ5yN
+ QUezCXKnwI6Wkfv9sEm8ObBegYnvQWz2JG9xMupqsWPgOFxbgfzU7rK9YrQm+aayXWVq0giKP
+ 4pYkavog9/MXs29yhxk0uQ+R+vw3IzxGOERln/OgaFvgUePfC80cin5NIGdXTXuzHTMFARwgz
+ YfDkBVL90by1M8zlJkoN9qGt7kW9ccxi0w8ZKtHw6Ti1RTMmeRPUuE9NICxj8DMQUcTnkUD/S
+ 88qcAZ8/E/rMZsFnq/hzO7YpLFyhw9qocAYW/o142FFGBlic3xJ63Bwni5zWyXUqu9rpEGcge
+ HQL3Ekg0Mj+P9wGrHIQJ4T/x1uQeTJ3/CyV08xU908QIWG8I99E9nx8fyBiHfxu3ZZ4gGUvCs
+ GOiYJBjPHO2IAf0fe/UN9yS8lbAv9XJOc61TRP/D8wUFt+U/wSg0uheflsOxI0f/+V82KxvQn
+ WJxT6uHrqpj2FVS3DIqm6qX6YDFkhq9xZ6QGmgkyeVDSAJWFofNtAhrpWcnC8ZqrHKDm+wZ5c
+ GYY3hpi31BenAToxTM3kptAUucTM2CI/3CphbWHY1mSE1wZDgsmquBnInrPeGBr3EggElYFaJ
+ HrGkYWeONMwR9g04ZQ2buIlQTooBMGuYBItxtQ40KAW1HJlBOuIfDaPpKb7VjXnEp3Yevgw4y
+ BKdrZevGV1/OKK76b2ikPrddnLm7kt5NBHfJ+YboYpBkszFk76QLsdBdrPPs8r2p64MTkakOg
+ KF87BRSS051Q5Wdf1K+kYNCeXdM7wulJUnPPGWF6JxGEfYlk2b4kg65RUh3TYkE29csWIEGSr
+ 7j84Ty9QDyLhrCRQf2uVkNB865ANhFu24DwTa2fGXH1oZtqG6EoG4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 at 06:45, Richard Cochran <richardcochran@gmail.com> wrote:
->
-> On Wed, May 29, 2019 at 11:41:22PM +0300, Vladimir Oltean wrote:
-> > I'm sorry, then what does this code from raw.c do?
->
-> It is a fallback for HW that doesn't support multicast filtering.
->
-> Care to look a few lines above?  If you did, you would have seen this:
->
->         memset(&mreq, 0, sizeof(mreq));
->         mreq.mr_ifindex = index;
->         mreq.mr_type = PACKET_MR_MULTICAST;
->         mreq.mr_alen = MAC_LEN;
->         memcpy(mreq.mr_address, addr1, MAC_LEN);
->
->         err1 = setsockopt(fd, SOL_PACKET, option, &mreq, sizeof(mreq));
->
+This software update caught also my development attention a moment ago.
 
-You're right.
-In fact that's why it doesn't work: because linuxptp adds ptp_dst_mac
-(01-1B-19-00-00-00) and (01-80-C2-00-00-0E) to the MAC's multicast
-filter, but the switch in its great wisdom mangles bytes
-01-1B-19-xx-xx-00 of the DMAC to place the switch id and source port
-there (a rudimentary tagging mechanism). So the frames are no longer
-accepted by this multicast MAC filter on the DSA master port unless
-it's put in ALLMULTI or PROMISC.
 
-> > > No.  The root cause is the time stamps delivered by the hardware or
-> > > your driver.  That needs to be addressed before going forward.
-> > >
-> >
-> > How can I check that the timestamps are valid?
+> +++ b/misc/ss.c
+> @@ -3973,7 +3975,10 @@ static int packet_show_sock(struct nlmsghdr *nlh,=
+ void *arg)
 >
-> Well, you can see that there is something wrong.  Perhaps you are not
-> matching the meta frames to the received packets.  That is one
-> possible explanation, but you'll have to figure out what is happening.
->
+>  	if (show_details) {
+>  		if (pinfo) {
+> -			out("\n\tver:%d", pinfo->pdi_version);
+> +			if (oneline)
+> +				out(" ver:%d", pinfo->pdi_version);
+> +			else
+> +				out("\n\tver:%d", pinfo->pdi_version);
+>  			out(" cpy_thresh:%d", pinfo->pdi_copy_thresh);
+>  			out(" flags( ");
+>  			if (pinfo->pdi_flags & PDI_RUNNING)
 
-If the meta frames weren't associated with the correct link-local
-frame, then the whole expect_meta -> SJA1105_STATE_META_ARRIVED
-mechanism would go haywire, but it doesn't.
-I was actually thinking it has something to do with the fact that I
-shouldn't apply frequency corrections on timestamps of PTP delay
-messages. Does that make any sense?
+I would find it nicer to use the ternary operator here.
+
++			out(oneline ? " ver:%d" : "\n\tver:%d",
++			    pinfo->pdi_version);
+
+
+How do you think about to use more succinct statement variants?
 
 Regards,
--Vladimir
-
-> Thanks,
-> Richard
+Markus
