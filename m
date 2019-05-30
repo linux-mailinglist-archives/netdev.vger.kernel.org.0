@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 659DC30278
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13C930277
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:57:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbfE3S5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:57:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47988 "EHLO
+        id S1726676AbfE3S5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:57:14 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47972 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725961AbfE3S5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:57:15 -0400
+        by vger.kernel.org with ESMTP id S1725961AbfE3S5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:57:13 -0400
 Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4UImb8u003303
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:57:13 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4UImb8r003303
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:57:12 -0700
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2stj1c8pe1-6
+        by mx0a-00082601.pphosted.com with ESMTP id 2stj1c8pe1-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:57:13 -0700
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:57:12 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 30 May 2019 11:57:11 -0700
+ 15.1.1713.5; Thu, 30 May 2019 11:57:10 -0700
 Received: by devvm34215.prn1.facebook.com (Postfix, from userid 172786)
-        id 4343F22E52723; Thu, 30 May 2019 11:57:09 -0700 (PDT)
+        id 45AB122E52725; Thu, 30 May 2019 11:57:09 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 Smtp-Origin-Hostname: devvm34215.prn1.facebook.com
@@ -31,19 +31,21 @@ To:     <netdev@vger.kernel.org>, <bjorn.topel@intel.com>,
         <magnus.karlsson@intel.com>
 CC:     <kernel-team@fb.com>
 Smtp-Origin-Cluster: prn1c35
-Subject: [PATCH v2 bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
-Date:   Thu, 30 May 2019 11:57:08 -0700
-Message-ID: <20190530185709.1861867-1-jonathan.lemon@gmail.com>
+Subject: [PATCH v2 bpf-next 2/2] libbpf: remove qidconf and better support external bpf programs.
+Date:   Thu, 30 May 2019 11:57:09 -0700
+Message-ID: <20190530185709.1861867-2-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190530185709.1861867-1-jonathan.lemon@gmail.com>
+References: <20190530185709.1861867-1-jonathan.lemon@gmail.com>
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-30_11:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=988 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905300132
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -51,102 +53,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the AF_XDP code uses a separate map in order to
-determine if an xsk is bound to a queue.  Instead of doing this,
-have bpf_map_lookup_elem() return the queue_id, as a way of
-indicating that there is a valid entry at the map index.
+Use the recent change to XSKMAP bpf_map_lookup_elem() to test if
+there is a xsk present in the map instead of duplicating the work
+with qidconf.
 
-Rearrange some xdp_sock members to eliminate structure holes.
+Fix things so callers using XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD
+bypass any internal bpf maps, so xsk_socket__{create|delete} works
+properly.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- include/net/xdp_sock.h                            |  6 +++---
- kernel/bpf/verifier.c                             |  6 +++++-
- kernel/bpf/xskmap.c                               |  4 +++-
- .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 ---------------
- 4 files changed, 11 insertions(+), 20 deletions(-)
+ tools/lib/bpf/xsk.c | 79 +++++++++------------------------------------
+ 1 file changed, 16 insertions(+), 63 deletions(-)
 
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index d074b6d60f8a..7d84b1da43d2 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -57,12 +57,12 @@ struct xdp_sock {
- 	struct net_device *dev;
- 	struct xdp_umem *umem;
- 	struct list_head flush_node;
--	u16 queue_id;
--	struct xsk_queue *tx ____cacheline_aligned_in_smp;
--	struct list_head list;
-+	u32 queue_id;
- 	bool zc;
- 	/* Protects multiple processes in the control path */
- 	struct mutex mutex;
-+	struct xsk_queue *tx ____cacheline_aligned_in_smp;
-+	struct list_head list;
- 	/* Mutual exclusion of NAPI TX thread and sendmsg error paths
- 	 * in the SKB destructor callback.
- 	 */
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2778417e6e0c..91c730f85e92 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -2905,10 +2905,14 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 	 * appear.
- 	 */
- 	case BPF_MAP_TYPE_CPUMAP:
--	case BPF_MAP_TYPE_XSKMAP:
- 		if (func_id != BPF_FUNC_redirect_map)
- 			goto error;
- 		break;
-+	case BPF_MAP_TYPE_XSKMAP:
-+		if (func_id != BPF_FUNC_redirect_map &&
-+		    func_id != BPF_FUNC_map_lookup_elem)
-+			goto error;
-+		break;
- 	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
- 	case BPF_MAP_TYPE_HASH_OF_MAPS:
- 		if (func_id != BPF_FUNC_map_lookup_elem)
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index 686d244e798d..249b22089014 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -154,7 +154,9 @@ void __xsk_map_flush(struct bpf_map *map)
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 38667b62f1fe..a150493d51ec 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -60,10 +60,8 @@ struct xsk_socket {
+ 	struct xsk_umem *umem;
+ 	struct xsk_socket_config config;
+ 	int fd;
+-	int xsks_map;
+ 	int ifindex;
+ 	int prog_fd;
+-	int qidconf_map_fd;
+ 	int xsks_map_fd;
+ 	__u32 queue_id;
+ 	char ifname[IFNAMSIZ];
+@@ -265,15 +263,11 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 	/* This is the C-program:
+ 	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+ 	 * {
+-	 *     int *qidconf, index = ctx->rx_queue_index;
++	 *     int index = ctx->rx_queue_index;
+ 	 *
+ 	 *     // A set entry here means that the correspnding queue_id
+ 	 *     // has an active AF_XDP socket bound to it.
+-	 *     qidconf = bpf_map_lookup_elem(&qidconf_map, &index);
+-	 *     if (!qidconf)
+-	 *         return XDP_ABORTED;
+-	 *
+-	 *     if (*qidconf)
++	 *     if (bpf_map_lookup_elem(&xsks_map, &index))
+ 	 *         return bpf_redirect_map(&xsks_map, index, 0);
+ 	 *
+ 	 *     return XDP_PASS;
+@@ -286,15 +280,10 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_1, -4),
+ 		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+ 		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
+-		BPF_LD_MAP_FD(BPF_REG_1, xsk->qidconf_map_fd),
++		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
+ 		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+ 		BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
+-		BPF_MOV32_IMM(BPF_REG_0, 0),
+-		/* if r1 == 0 goto +8 */
+-		BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 8),
+ 		BPF_MOV32_IMM(BPF_REG_0, 2),
+-		/* r1 = *(u32 *)(r1 + 0) */
+-		BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
+ 		/* if r1 == 0 goto +5 */
+ 		BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 5),
+ 		/* r2 = *(u32 *)(r10 - 4) */
+@@ -366,18 +355,11 @@ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+ 	if (max_queues < 0)
+ 		return max_queues;
  
- static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
+-	fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "qidconf_map",
++	fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "xsks_map",
+ 				 sizeof(int), sizeof(int), max_queues, 0);
+ 	if (fd < 0)
+ 		return fd;
+-	xsk->qidconf_map_fd = fd;
+ 
+-	fd = bpf_create_map_name(BPF_MAP_TYPE_XSKMAP, "xsks_map",
+-				 sizeof(int), sizeof(int), max_queues, 0);
+-	if (fd < 0) {
+-		close(xsk->qidconf_map_fd);
+-		return fd;
+-	}
+ 	xsk->xsks_map_fd = fd;
+ 
+ 	return 0;
+@@ -385,10 +367,8 @@ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+ 
+ static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
  {
--	return ERR_PTR(-EOPNOTSUPP);
-+	struct xdp_sock *xs = __xsk_map_lookup_elem(map, *(u32 *)key);
-+
-+	return xs ? &xs->queue_id : NULL;
+-	close(xsk->qidconf_map_fd);
++	bpf_map_delete_elem(xsk->xsks_map_fd, &xsk->queue_id);
+ 	close(xsk->xsks_map_fd);
+-	xsk->qidconf_map_fd = -1;
+-	xsk->xsks_map_fd = -1;
  }
  
- static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
-diff --git a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-index bbdba990fefb..da7a4b37cb98 100644
---- a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-+++ b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-@@ -28,21 +28,6 @@
- 	.errstr = "cannot pass map_type 18 into func bpf_map_lookup_elem",
- 	.prog_type = BPF_PROG_TYPE_SOCK_OPS,
- },
+ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+@@ -417,10 +397,9 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 	if (err)
+ 		goto out_map_ids;
+ 
+-	for (i = 0; i < prog_info.nr_map_ids; i++) {
+-		if (xsk->qidconf_map_fd != -1 && xsk->xsks_map_fd != -1)
+-			break;
++	xsk->xsks_map_fd = -1;
+ 
++	for (i = 0; i < prog_info.nr_map_ids; i++) {
+ 		fd = bpf_map_get_fd_by_id(map_ids[i]);
+ 		if (fd < 0)
+ 			continue;
+@@ -431,11 +410,6 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 			continue;
+ 		}
+ 
+-		if (!strcmp(map_info.name, "qidconf_map")) {
+-			xsk->qidconf_map_fd = fd;
+-			continue;
+-		}
+-
+ 		if (!strcmp(map_info.name, "xsks_map")) {
+ 			xsk->xsks_map_fd = fd;
+ 			continue;
+@@ -445,40 +419,18 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 	}
+ 
+ 	err = 0;
+-	if (xsk->qidconf_map_fd < 0 || xsk->xsks_map_fd < 0) {
++	if (xsk->xsks_map_fd == -1)
+ 		err = -ENOENT;
+-		xsk_delete_bpf_maps(xsk);
+-	}
+ 
+ out_map_ids:
+ 	free(map_ids);
+ 	return err;
+ }
+ 
+-static void xsk_clear_bpf_maps(struct xsk_socket *xsk)
 -{
--	"prevent map lookup in xskmap",
--	.insns = {
--	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
--	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
--	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
--	BPF_LD_MAP_FD(BPF_REG_1, 0),
--	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
--	BPF_EXIT_INSN(),
--	},
--	.fixup_map_xskmap = { 3 },
--	.result = REJECT,
--	.errstr = "cannot pass map_type 17 into func bpf_map_lookup_elem",
--	.prog_type = BPF_PROG_TYPE_XDP,
--},
+-	int qid = false;
+-
+-	bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
+-	bpf_map_delete_elem(xsk->xsks_map_fd, &xsk->queue_id);
+-}
+-
+ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
  {
- 	"prevent map lookup in stack trace",
- 	.insns = {
+-	int qid = true, fd = xsk->fd, err;
+-
+-	err = bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
+-	if (err)
+-		goto out;
+-
+-	err = bpf_map_update_elem(xsk->xsks_map_fd, &xsk->queue_id, &fd, 0);
+-	if (err)
+-		goto out;
+-
+-	return 0;
+-out:
+-	xsk_clear_bpf_maps(xsk);
+-	return err;
++	return bpf_map_update_elem(xsk->xsks_map_fd, &xsk->queue_id,
++				   &xsk->fd, 0);
+ }
+ 
+ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+@@ -514,6 +466,7 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+ 
+ out_load:
+ 	close(xsk->prog_fd);
++	xsk->prog_fd = -1;
+ out_maps:
+ 	xsk_delete_bpf_maps(xsk);
+ 	return err;
+@@ -643,9 +596,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		goto out_mmap_tx;
+ 	}
+ 
+-	xsk->qidconf_map_fd = -1;
+-	xsk->xsks_map_fd = -1;
+-
++	xsk->prog_fd = -1;
+ 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+ 		err = xsk_setup_xdp_prog(xsk);
+ 		if (err)
+@@ -708,8 +659,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ 	if (!xsk)
+ 		return;
+ 
+-	xsk_clear_bpf_maps(xsk);
+-	xsk_delete_bpf_maps(xsk);
++	if (xsk->prog_fd != -1) {
++		xsk_delete_bpf_maps(xsk);
++		close(xsk->prog_fd);
++	}
+ 
+ 	optlen = sizeof(off);
+ 	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
 -- 
 2.17.1
 
