@@ -2,88 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91AC82EA43
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 03:37:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079DA2EA4C
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 03:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727368AbfE3Bgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 21:36:35 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39166 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726527AbfE3Bgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 21:36:35 -0400
-Received: by mail-io1-f68.google.com with SMTP id r185so3647675iod.6;
-        Wed, 29 May 2019 18:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=irinaYFfplFObiKBsJmYaHsEQZ1KpbKkCxIEwRZjjFU=;
-        b=dfwSc+GQ97vXQ4CPM8w9u3zBgDStVgkR4cYi/l38n7V9JAcOjEMpZGh17nBvNE92Xj
-         tbOdVyFvyTuniYSvb754RZCwEbOo5Tg+x4px3o42M+2seL0kttLN9GJm5MTXsz8a/3ce
-         4JvEVfHt5R+nOmXnhwAorvBvGm9UIjworiSoskPSQ+NvfENMVWck5GB4/nmlKeu53Nrw
-         DREledL/9HcJsiv9wn/aR7PNRyk9U6aTt1gDpHAbRhUAz1m2ENj6CPzlZPmKm+NuPnrr
-         iPRqfWKLFQveWvW/ZCnG9Q+BCG4pAwosVnSzEbBAcR/tQeALyi3Y/3+OId43hUViZb7O
-         KEZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=irinaYFfplFObiKBsJmYaHsEQZ1KpbKkCxIEwRZjjFU=;
-        b=pC7BpfdjgF/IVdr5INTiPIodSD0pxKBNWSh/hDAZBpO7BPpSMLkK7nF8og23PdM1j4
-         NprHky9GUB5tDuekwB1NFKbfZyp5mwqcCk0B2blMeokK7wZ2AXTdtQhiPmWenhcv0uG3
-         ilv3XoP1bSZYQTFCIz+K3loNPAWWFuMIH/OMiZKr6hoYf4BTMdKeeQzC94Wp47qakLxT
-         YiOeNlJLJ9mGfxwBcqQjeaBtRzDaU+EO8RDmryucIn0WAhaJnSzsPCrHsrjf0NSwCPjI
-         PcJDYMB+eQDQqEz4W+FLUu4EqtSuT5hFMhcMCZ/l9kxm/H2XVswmlaU2qQBVOaQbtsdW
-         ohrg==
-X-Gm-Message-State: APjAAAVmloIcG9BRRVZA47zTsnI5bYW24QOopG7AUHyw//8JCwWosIaj
-        BPa51zhbnmXDe8e23x86pmugSNVKD2JkDMM6kug=
-X-Google-Smtp-Source: APXvYqwXXniw3DxiQ8rgN/3mjrxf/rcx98ATwOCFDpnhwot08KfekceL08J5gQJndET8qP3ifU8BiJzZgaMNKRrR1IU=
-X-Received: by 2002:a6b:8dcf:: with SMTP id p198mr1028939iod.46.1559180194549;
- Wed, 29 May 2019 18:36:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190529130656.23979-1-tonylu@linux.alibaba.com> <20190529130656.23979-4-tonylu@linux.alibaba.com>
-In-Reply-To: <20190529130656.23979-4-tonylu@linux.alibaba.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Thu, 30 May 2019 09:35:57 +0800
-Message-ID: <CALOAHbAghVKLKE2Y0A--cTUgheA=-HzF_kSmsBeNUguLFTT_Xg@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/3] tcp: remove redundant new line from tcp_event_sk_skb
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Song Liu <songliubraving@fb.com>
+        id S1727392AbfE3BjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 21:39:19 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:8208 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726527AbfE3BjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 21:39:18 -0400
+X-UUID: eb0d16995d464ece951d8d337d91a496-20190530
+X-UUID: eb0d16995d464ece951d8d337d91a496-20190530
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLS)
+        with ESMTP id 1220763986; Thu, 30 May 2019 09:39:13 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
+ (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 30 May
+ 2019 09:39:11 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Thu, 30 May 2019 09:39:10 +0800
+Message-ID: <1559180349.24897.72.camel@mhfsdcap03>
+Subject: RE: [v5, PATCH] net: stmmac: add support for hash table size
+ 128/256 in dwmac4
+From:   biao huang <biao.huang@mediatek.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.com" <jianguo.zhang@mediatek.com>,
+        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Date:   Thu, 30 May 2019 09:39:09 +0800
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9334CE@DE02WEMBXB.internal.synopsys.com>
+References: <1559122268-22545-1-git-send-email-biao.huang@mediatek.com>
+         <1559122268-22545-2-git-send-email-biao.huang@mediatek.com>
+         <78EB27739596EE489E55E81C33FEC33A0B9334CE@DE02WEMBXB.internal.synopsys.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 9:08 PM Tony Lu <tonylu@linux.alibaba.com> wrote:
->
-> This removes '\n' from trace event class tcp_event_sk_skb to avoid
-> redundant new blank line and make output compact.
->
-> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Hi Jose,
+	Flow control is disabled in v5 commit.
 
-Acked-by: Yafang Shao <laoar.shao@gmail.com>
+	I tried "insmod stmmac flow_ctrl=1", and the output log shows self test
+pass:
+	ethtool -t eth0                                    
+	The test result is PASS
+ 	The test extra info:
+ 	 1. MAC Loopback                 0
+ 	 2. PHY Loopback                 -95
+ 	 3. MMC Counters                 0
+ 	 4. EEE                          -95
+ 	 5. Hash Filter MC               0
+ 	 6. Perfect Filter UC            0
+ 	 7. MC Filter                    0
+ 	 8. UC Filter                    0
+	 9. Flow Control                 0
 
-> ---
->  include/trace/events/tcp.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-> index 2bc9960a31aa..cf97f6339acb 100644
-> --- a/include/trace/events/tcp.h
-> +++ b/include/trace/events/tcp.h
-> @@ -86,7 +86,7 @@ DECLARE_EVENT_CLASS(tcp_event_sk_skb,
->                               sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
->         ),
->
-> -       TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s\n",
-> +       TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s",
->                   __entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
->                   __entry->saddr_v6, __entry->daddr_v6,
->                   show_tcp_state_name(__entry->state))
-> --
-> 2.21.0
->
+	Is v5 OK? Should I resend a v6?
+
+On Wed, 2019-05-29 at 10:30 +0000, Jose Abreu wrote:
+> From: Biao Huang <biao.huang@mediatek.com>
+> Date: Wed, May 29, 2019 at 10:31:08
+> 
+> > 1. get hash table size in hw feature reigster, and add support
+> > for taller hash table(128/256) in dwmac4.
+> > 2. only clear GMAC_PACKET_FILTER bits used in this function,
+> > to avoid side effect to functions of other bits.
+> > 
+> > stmmac selftests output log:
+> > 	ethtool -t eth0
+> > 	The test result is FAIL
+> > 	The test extra info:
+> > 	 1. MAC Loopback                 0
+> > 	 2. PHY Loopback                 -95
+> > 	 3. MMC Counters                 0
+> > 	 4. EEE                          -95
+> > 	 5. Hash Filter MC               0
+> > 	 6. Perfect Filter UC            0
+> > 	 7. MC Filter                    0
+> > 	 8. UC Filter                    0
+> > 	 9. Flow Control                 1
+> 
+> Thanks for testing, this patch looks good to me.
+> 
+> Do you want to check why Flow Control selftest is failing ?
+> 
+> 
+> Thanks,
+> Jose Miguel Abreu
+
+Thanks,
+Biao
+
+
