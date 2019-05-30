@@ -2,338 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A284330296
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFC17302B2
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbfE3TIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 15:08:22 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42481 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbfE3TIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:08:21 -0400
-Received: by mail-pf1-f195.google.com with SMTP id r22so4538698pfh.9;
-        Thu, 30 May 2019 12:08:20 -0700 (PDT)
+        id S1726566AbfE3TR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 15:17:58 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39431 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726031AbfE3TR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:17:58 -0400
+Received: by mail-ed1-f66.google.com with SMTP id e24so10641035edq.6;
+        Thu, 30 May 2019 12:17:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7H9dDYfkG5aoCexFiQp3mrYF6mxJsKXlL4736u8wxiY=;
-        b=fZcXJqowIrB3tNk9j2Vs6zQMB9vhzOEhXiXoNOT3C2SZUI/keXl5CUnUzXEOmdSdM5
-         w0m8w4++FRlx5nmKHK+bxr5j4dQ1EyWaji8MJy8dKDfUl8eRWdKqTHJF+z3qw0Uuwa7y
-         +NbvRl8AteuHJDxgBDqv0Zf6NPBNpNTkiZsLXP2k5JvcBuAIEhXrVRuBbQ/F0RyvCI8m
-         l6VmoKO/75H1hmPw7JgQ1D/eaTBD+HQrL1veyMvOgi0dNM70EPDRwjlxZtK/chMvzYvR
-         b0E0jLCRFaga/bnV3BCHwDCKF5M+XHO7AhVYOpH+/n7qiSgMMKXYKhDESgGA5iDqp8H2
-         goNA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HW3dpChuW0VqGcfns2DNgGB3hG0bQH+HsGf5JJist6Q=;
+        b=k7y11l3yE6l+5m9EKPBTcgr75u9xJfKMrVZqGAKoywOieq5CwPApyPzRtBxP/zCWJz
+         +1MuZjhbUqyRijNeUlnFnhOJGTO3DbsupMjmB7vpG3RjmQSU1suuiE8l9tXX+dPh2VEy
+         44xACzctJky8I9ejqQueeZZ8lUwJGJDgqcFEkqkca78PC/wXNeIRf3mLlH503odX2mUn
+         iViCbLgN5ohGOSGEqpbHx48/XUSMG47AG0nVQG1ELh8iCr5rm3LIbhlZr9aTG687Zi2Q
+         kHlQ0xebIyYf6nuH9xzKtRn8Ozj5zU2HWv36Udf/75s2CTGUEIqaKKLVKZFku8QhZNs9
+         vKww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7H9dDYfkG5aoCexFiQp3mrYF6mxJsKXlL4736u8wxiY=;
-        b=WFg2/ovv7iz0o5uVAHuxSEaPDn/mZ+GG8VkBYhuOKuf+2CEYGBPe3TJZSRFhAuanna
-         84KJANMd7DCc6Gurn1Dj0xjFZdH0vdFzcxi71mCmEMdvYSjP5SodpdhAYKB1BTKioA1w
-         jBVSe1opfHJUQMZYOj/fKlYigGrq6fXPwK4AV7NYiSj1Ruml1osCsC/6kiDNAwx3mGoA
-         wS48Pgsfu1xePMLIvcsXnaxVI2Kedjl0NYWOH0QcYXLI3WHIara8736slKT4s+GMu4fo
-         k6PNV0Xtpmr4rQ3v7Fi2BX8pGq1UjgfbcynGPkBfUjRqU2OqBqsuw91308kQRLiJdY51
-         /SyQ==
-X-Gm-Message-State: APjAAAW0gcUpEBeSFnuCfmosJ8HVexncGZjGzY2l81CAxCQEedHr+ANb
-        tv72u/O2wY0uM+B2IqUE5kQxNqyF/X8=
-X-Google-Smtp-Source: APXvYqzw9JIF9TxBbFnD1DrZeGTUNq7drJnRoJjCnUUex5bRISoa/9IXRlVtRwwyYFDC9m7+TUscDg==
-X-Received: by 2002:a62:e718:: with SMTP id s24mr5189745pfh.247.1559243300157;
-        Thu, 30 May 2019 12:08:20 -0700 (PDT)
-Received: from kaby.cs.washington.edu ([2607:4000:200:15:61cb:56f1:2c08:844e])
-        by smtp.gmail.com with ESMTPSA id a8sm3927617pfk.14.2019.05.30.12.08.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 12:08:17 -0700 (PDT)
-From:   Luke Nelson <luke.r.nels@gmail.com>
-Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] bpf: test_bpf: add tests for upper bits of 32-bit operations
-Date:   Thu, 30 May 2019 12:08:00 -0700
-Message-Id: <20190530190800.7633-2-luke.r.nels@gmail.com>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190530190800.7633-1-luke.r.nels@gmail.com>
-References: <20190530190800.7633-1-luke.r.nels@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HW3dpChuW0VqGcfns2DNgGB3hG0bQH+HsGf5JJist6Q=;
+        b=F0d7xIhBGK0Re1noOhepsXG5nPDPjbFsDq/pZSdqO6AKy7R/0euYP6tSOf/MgihdHP
+         5S7GDYhW7yO//88wHysUPp7XPDTVQ2MPugn4M8BUFxfa7vN7NkNiRoFp+g7tFewB33OV
+         vS5oDmkjDbml8fvB/xHIbCMw/LMJVJE8HSPZ2JC/XVOcw+NxaUiScR/4uRZ1vOQ8ftwU
+         y2VvDQtNKmy2ylIELkDTbRefTbnCS/+nITH+nCNI25Zlp+QRCyBIWPs3hPEFaVsB3bOF
+         LviPxddWzuYd9fwnIBMyrRA5qMWrlyszfb/hGSaW8KEDOeU7DIUPiS91A4Xtk7MKXtc7
+         UbBg==
+X-Gm-Message-State: APjAAAVhArCrR8ugpJJ9m9P6Rs9UfW04cyh+FAJM7UI1aGdIcTCX9j0Y
+        ny95HaQC6QwrIGsB4Dd68JJf7FD0GZMgMboeiW4=
+X-Google-Smtp-Source: APXvYqwg8TgkuFLjdNp+D3qZoIhiEoCt9bRsOWm4dKWBGf8sr4f2GHLv9t+Z77guXkDhUJJSCkvmJvt4nEb9+9IIC20=
+X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr5191784eje.31.1559243876891;
+ Thu, 30 May 2019 12:17:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20190528184415.16020-1-fklassen@appneta.com> <20190528184415.16020-2-fklassen@appneta.com>
+ <CAF=yD-JvNFdWCBJ6w1_XWSHu1CDiG_QimrUT8ZCxw=U+OVvBMA@mail.gmail.com> <8A1636C9-7476-43B2-BAE0-B03675B3920E@appneta.com>
+In-Reply-To: <8A1636C9-7476-43B2-BAE0-B03675B3920E@appneta.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 30 May 2019 15:17:20 -0400
+Message-ID: <CAF=yD-JW1ZA-LA6iJ0X83UMJxmNLh7VfmUK7B=7LbYMY--wO6w@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 1/1] net/udp_gso: Allow TX timestamp with UDP GSO
+To:     Fred Klassen <fklassen@appneta.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces tests that validate the upper 32 bits
-of the result of 32-bit BPF ALU operations.
+> > Asked elsewhere, but best answered here: given that xmit_more delays
+> > delivery to the NIC until the last segment in a train, is the first
+> > segment in your opinion still the best to attach the timestamp request
+> > to?
+> >
+> > To reiterate, we do not want to need a follow-up patch to disable
+> > xmit_more when timestamps are requested.
+> >
+>
+> I think it would be worthwhile. I was playing with this patch =E2=80=A6
+>
+> +               /* software TX timeststamps are sent immediately */
+> +               if (tsflags & SKBTX_SW_TSTAMP)
+> +                       seg->xmit_more =3D 0;
+>
+> =E2=80=A6 which attempts to address this issue. I believe that the patch
+> should be applied for software timestamps only.
 
-The existing tests for 32-bit operations do not check the upper 32
-bits of results because the exit instruction truncates the result.
-These tests perform a 32-bit ALU operation followed by a right shift.
-These tests can catch subtle bugs in the extension behavior of JITed
-instructions, including several bugs in the RISC-V BPF JIT, fixed in
-another patch.
+Disagree, sorry.
 
-The added tests pass the JIT and interpreter on x86, as well as the
-JIT and interpreter of RISC-V once the zero extension bugs were fixed.
+Timestamped packets should take the same path as non-timestamped, so
+that sampled timestamps are representative of the overall workload.
 
-Cc: Xi Wang <xi.wang@gmail.com>
-Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
----
- lib/test_bpf.c | 164 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 164 insertions(+)
+Moreover, due to how xmit_more works, applying the timestamp request
+to the last segment will give you exactly the behavior that you are
+looking for (bar requeue events): a timestamp before the NIC starts
+working on any byte in the request. And that approach will be useful
+for measuring host latency as well, unlike timestamping the first
+segment.
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 0845f635f404..4580dc0220f1 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -2461,6 +2461,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 1 } },
- 	},
-+	{
-+		"ALU_ADD_X: (1 + 4294967294) >> 32 + 4294967294 = 4294967294",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 1U),
-+			BPF_ALU32_IMM(BPF_MOV, R1, 4294967294U),
-+			BPF_ALU32_REG(BPF_ADD, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_REG(BPF_ADD, R0, R1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 4294967294U } },
-+	},
- 	{
- 		"ALU64_ADD_X: 1 + 2 = 3",
- 		.u.insns_int = {
-@@ -2812,6 +2826,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 1 } },
- 	},
-+	{
-+		"ALU_SUB_X: (4294967295 - 1) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 4294967295U),
-+			BPF_ALU32_IMM(BPF_MOV, R1, 1U),
-+			BPF_ALU32_REG(BPF_SUB, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_REG(BPF_ADD, R0, R1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_SUB_X: 3 - 1 = 2",
- 		.u.insns_int = {
-@@ -3391,6 +3419,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0xffffffff } },
- 	},
-+	{
-+		"ALU_AND_X: (-1 & -1) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, -1UL),
-+			BPF_LD_IMM64(R1, -1UL),
-+			BPF_ALU32_REG(BPF_AND, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_AND_X: 3 & 2 = 2",
- 		.u.insns_int = {
-@@ -3533,6 +3575,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0xffffffff } },
- 	},
-+	{
-+		"ALU_OR_X: (0 & -1) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0),
-+			BPF_LD_IMM64(R1, -1UL),
-+			BPF_ALU32_REG(BPF_OR, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_OR_X: 1 | 2 = 3",
- 		.u.insns_int = {
-@@ -3675,6 +3731,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0xfffffffe } },
- 	},
-+	{
-+		"ALU_XOR_X: (0 ^ -1) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0),
-+			BPF_LD_IMM64(R1, -1UL),
-+			BPF_ALU32_REG(BPF_XOR, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1U),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_XOR_X: 5 ^ 6 = 3",
- 		.u.insns_int = {
-@@ -3817,6 +3887,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0x80000000 } },
- 	},
-+	{
-+		"ALU_LSH_X: (1 << 31) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 1),
-+			BPF_ALU32_IMM(BPF_MOV, R1, 31),
-+			BPF_ALU32_REG(BPF_LSH, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_LSH_X: 1 << 1 = 2",
- 		.u.insns_int = {
-@@ -3842,6 +3926,19 @@ static struct bpf_test tests[] = {
- 		{ { 0, 0x80000000 } },
- 	},
- 	/* BPF_ALU | BPF_LSH | BPF_K */
-+	{
-+		"ALU_LSH_K: (1 << 31) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 1),
-+			BPF_ALU32_IMM(BPF_LSH, R0, 31),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU_LSH_K: 1 << 1 = 2",
- 		.u.insns_int = {
-@@ -3911,6 +4008,20 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 1 } },
- 	},
-+	{
-+		"ALU_RSH_X: (0x80000000 >> 0) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0x80000000),
-+			BPF_ALU32_IMM(BPF_MOV, R1, 0),
-+			BPF_ALU32_REG(BPF_RSH, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_RSH_X: 2 >> 1 = 1",
- 		.u.insns_int = {
-@@ -3936,6 +4047,19 @@ static struct bpf_test tests[] = {
- 		{ { 0, 1 } },
- 	},
- 	/* BPF_ALU | BPF_RSH | BPF_K */
-+	{
-+		"ALU_RSH_K: (0x80000000 >> 0) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0x80000000),
-+			BPF_ALU32_IMM(BPF_RSH, R0, 0),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU_RSH_K: 2 >> 1 = 1",
- 		.u.insns_int = {
-@@ -3993,7 +4117,34 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 0xffff00ff } },
- 	},
-+	{
-+		"ALU_ARSH_X: (0x80000000 >> 0) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0x80000000),
-+			BPF_ALU32_IMM(BPF_MOV, R1, 0),
-+			BPF_ALU32_REG(BPF_ARSH, R0, R1),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	/* BPF_ALU | BPF_ARSH | BPF_K */
-+	{
-+		"ALU_ARSH_K: (0x80000000 >> 0) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0x80000000),
-+			BPF_ALU32_IMM(BPF_ARSH, R0, 0),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU_ARSH_K: 0xff00ff0000000000 >> 40 = 0xffffffffffff00ff",
- 		.u.insns_int = {
-@@ -4028,6 +4179,19 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 3 } },
- 	},
-+	{
-+		"ALU_NEG: -(1) >> 32 + 1 = 1",
-+		.u.insns_int = {
-+			BPF_ALU32_IMM(BPF_MOV, R0, 1),
-+			BPF_ALU32_IMM(BPF_NEG, R0, 0),
-+			BPF_ALU64_IMM(BPF_RSH, R0, 32),
-+			BPF_ALU64_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+		{ { 0, 1 } },
-+	},
- 	{
- 		"ALU64_NEG: -(3) = -3",
- 		.u.insns_int = {
--- 
-2.19.1
+Timestamping the first, then arguing that it is not useful as is and
+requires more changes is the wrong path imho.
 
+Perhaps it is easiest to just not split off a segment from the GSO
+train when timestamp that independently. That works today.
+
+> However when
+> I applied in net-next I got the following compile error, which suggests
+> there is more investigation needed, and therefore requires a separate
+> patch.
+>
+> net/ipv4/udp_offload.c: In function =E2=80=98__udp_gso_segment=E2=80=99:
+> net/ipv4/udp_offload.c:251:7: error: =E2=80=98struct sk_buff=E2=80=99 has=
+ no member named =E2=80=98xmit_more=E2=80=99
+>     seg->xmit_more =3D 0;
+
+Yes, this has been moved to a percpu variable.
