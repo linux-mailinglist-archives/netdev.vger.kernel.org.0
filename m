@@ -2,171 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 199753008A
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:09:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE0430090
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 19:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727557AbfE3RJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 13:09:17 -0400
-Received: from mail.hallyn.com ([178.63.66.53]:50574 "EHLO mail.hallyn.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbfE3RJR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 13:09:17 -0400
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 3568262D; Thu, 30 May 2019 12:09:13 -0500 (CDT)
-Date:   Thu, 30 May 2019 12:09:13 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Tycho Andersen <tycho@tycho.ws>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-Message-ID: <20190530170913.GA16722@mail.hallyn.com>
-References: <cover.1554732921.git.rgb@redhat.com>
- <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
- <20190529145742.GA8959@cisco>
- <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
- <20190529153427.GB8959@cisco>
- <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
- <20190529222835.GD8959@cisco>
- <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+        id S1726984AbfE3RKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 13:10:50 -0400
+Received: from mail-eopbgr20049.outbound.protection.outlook.com ([40.107.2.49]:22327
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726280AbfE3RKr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 13:10:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=darbyshire-bryant.me.uk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w0G2Q0wmwG70hzM8qDOJl0xTfaihdIBP8Da9nmnwOA8=;
+ b=CQzBQ6iau8JQIm8K/hkmqtyFgMr2wq29Kv6jFKMHHMA2rwWPhcrsHDi+f2yey8dZjPA8ctMujIvhO+37eYpr8hAWgIJxL/slu8kzHXi2LN0RW6jTLxf0IqadLzf4+gBxiCgPgUUJnTimGqzmKeLQxk1HVgsbY8w4hKwS8YMS+JQ=
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
+ VI1PR0302MB3485.eurprd03.prod.outlook.com (52.134.14.33) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.19; Thu, 30 May 2019 17:10:43 +0000
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Thu, 30 May 2019
+ 17:10:43 +0000
+From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Subject: [PATCH net-next] net: sched: act_ctinfo: minor size optimisation
+Thread-Topic: [PATCH net-next] net: sched: act_ctinfo: minor size optimisation
+Thread-Index: AQHVFwqdlSDYRw2lu0yEl9is22Zgcw==
+Date:   Thu, 30 May 2019 17:10:43 +0000
+Message-ID: <20190530170951.19250-1-ldir@darbyshire-bryant.me.uk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6PR0202CA0067.eurprd02.prod.outlook.com
+ (2603:10a6:20b:3a::44) To VI1PR0302MB2750.eurprd03.prod.outlook.com
+ (2603:10a6:800:e3::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.20.1 (Apple Git-117)
+x-originating-ip: [2a02:c7f:1268:6500::dc83]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0bf9de2b-9498-4d9d-26f2-08d6e521bf86
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(2017052603328)(7193020);SRVR:VI1PR0302MB3485;
+x-ms-traffictypediagnostic: VI1PR0302MB3485:
+x-microsoft-antispam-prvs: <VI1PR0302MB34854302E75B29B0C48323E9C9180@VI1PR0302MB3485.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1107;
+x-forefront-prvs: 00531FAC2C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(396003)(39830400003)(346002)(376002)(199004)(189003)(73956011)(66946007)(6506007)(86362001)(386003)(64756008)(66476007)(66446008)(74482002)(53936002)(102836004)(305945005)(4744005)(107886003)(1076003)(8676002)(25786009)(71190400001)(71200400001)(7736002)(14444005)(2501003)(256004)(36756003)(5660300002)(476003)(52116002)(50226002)(6512007)(2616005)(6486002)(1730700003)(81166006)(5640700003)(68736007)(486006)(81156014)(14454004)(6916009)(186003)(6116002)(46003)(8936002)(2351001)(99286004)(6436002)(316002)(4326008)(2906002)(66556008)(508600001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB3485;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
+ designate permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: h+C5Zb+MW4q/tAGqy6tqf/dq+vp3oe4t+hqS03o3yHr7AirS4qa7Xsv9LA5Wwsy5bv6LI3jeUiY8pM0+PLTERWEbx0ICIEADUwYPd15YtPCIQwKEikCkfQvohxVHa5f1OyBzpKNX44vD9JSCkNLPuKbpK3AdTYR/6FHlAGArvEwjcApH9ymcI86WdIONV4r0rJN6Qp3QPmrmR/p15yudb3C9UhtiavBpWnhESGaulE/LYZOgrpZjI+KPMYWFOnQj2sBSCVsMYYgFL6YBx7D+tYtAazZgGl1FjiwExKX6ht55p9CVkTP7KqBRTI4l3oV/ZWVLMKsoU+giqKlCuEvPuQExcVw7kZicgycrLO/m7PaNe1j0rn3Rgdo8RNt5kunJ7IVdacX1bnneqbb6MQwkqUI8skfKznePaBLoEQU6xJc=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: darbyshire-bryant.me.uk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bf9de2b-9498-4d9d-26f2-08d6e521bf86
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 May 2019 17:10:43.3598
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB3485
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 06:39:48PM -0400, Paul Moore wrote:
-> On Wed, May 29, 2019 at 6:28 PM Tycho Andersen <tycho@tycho.ws> wrote:
-> > On Wed, May 29, 2019 at 12:03:58PM -0400, Paul Moore wrote:
-> > > On Wed, May 29, 2019 at 11:34 AM Tycho Andersen <tycho@tycho.ws> wrote:
-> > > >
-> > > > On Wed, May 29, 2019 at 11:29:05AM -0400, Paul Moore wrote:
-> > > > > On Wed, May 29, 2019 at 10:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
-> > > > > >
-> > > > > > On Mon, Apr 08, 2019 at 11:39:09PM -0400, Richard Guy Briggs wrote:
-> > > > > > > It is not permitted to unset the audit container identifier.
-> > > > > > > A child inherits its parent's audit container identifier.
-> > > > > >
-> > > > > > ...
-> > > > > >
-> > > > > > >  /**
-> > > > > > > + * audit_set_contid - set current task's audit contid
-> > > > > > > + * @contid: contid value
-> > > > > > > + *
-> > > > > > > + * Returns 0 on success, -EPERM on permission failure.
-> > > > > > > + *
-> > > > > > > + * Called (set) from fs/proc/base.c::proc_contid_write().
-> > > > > > > + */
-> > > > > > > +int audit_set_contid(struct task_struct *task, u64 contid)
-> > > > > > > +{
-> > > > > > > +     u64 oldcontid;
-> > > > > > > +     int rc = 0;
-> > > > > > > +     struct audit_buffer *ab;
-> > > > > > > +     uid_t uid;
-> > > > > > > +     struct tty_struct *tty;
-> > > > > > > +     char comm[sizeof(current->comm)];
-> > > > > > > +
-> > > > > > > +     task_lock(task);
-> > > > > > > +     /* Can't set if audit disabled */
-> > > > > > > +     if (!task->audit) {
-> > > > > > > +             task_unlock(task);
-> > > > > > > +             return -ENOPROTOOPT;
-> > > > > > > +     }
-> > > > > > > +     oldcontid = audit_get_contid(task);
-> > > > > > > +     read_lock(&tasklist_lock);
-> > > > > > > +     /* Don't allow the audit containerid to be unset */
-> > > > > > > +     if (!audit_contid_valid(contid))
-> > > > > > > +             rc = -EINVAL;
-> > > > > > > +     /* if we don't have caps, reject */
-> > > > > > > +     else if (!capable(CAP_AUDIT_CONTROL))
-> > > > > > > +             rc = -EPERM;
-> > > > > > > +     /* if task has children or is not single-threaded, deny */
-> > > > > > > +     else if (!list_empty(&task->children))
-> > > > > > > +             rc = -EBUSY;
-> > > > > > > +     else if (!(thread_group_leader(task) && thread_group_empty(task)))
-> > > > > > > +             rc = -EALREADY;
-> > > > > > > +     read_unlock(&tasklist_lock);
-> > > > > > > +     if (!rc)
-> > > > > > > +             task->audit->contid = contid;
-> > > > > > > +     task_unlock(task);
-> > > > > > > +
-> > > > > > > +     if (!audit_enabled)
-> > > > > > > +             return rc;
-> > > > > >
-> > > > > > ...but it is allowed to change it (assuming
-> > > > > > capable(CAP_AUDIT_CONTROL), of course)? Seems like this might be more
-> > > > > > immediately useful since we still live in the world of majority
-> > > > > > privileged containers if we didn't allow changing it, in addition to
-> > > > > > un-setting it.
-> > > > >
-> > > > > The idea is that only container orchestrators should be able to
-> > > > > set/modify the audit container ID, and since setting the audit
-> > > > > container ID can have a significant effect on the records captured
-> > > > > (and their routing to multiple daemons when we get there) modifying
-> > > > > the audit container ID is akin to modifying the audit configuration
-> > > > > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
-> > > > > is that you would only change the audit container ID from one
-> > > > > set/inherited value to another if you were nesting containers, in
-> > > > > which case the nested container orchestrator would need to be granted
-> > > > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> > > > > compromise).
-> > > >
-> > > > But then don't you want some kind of ns_capable() instead (probably
-> > > > not the obvious one, though...)? With capable(), you can't really nest
-> > > > using the audit-id and user namespaces together.
-> > >
-> > > You want capable() and not ns_capable() because you want to ensure
-> > > that the orchestrator has the rights in the init_ns as changes to the
-> > > audit container ID could have an auditing impact that spans the entire
-> > > system.
-> >
-> > Ok but,
-> >
-> > > > > The current thinking
-> > > > > is that you would only change the audit container ID from one
-> > > > > set/inherited value to another if you were nesting containers, in
-> > > > > which case the nested container orchestrator would need to be granted
-> > > > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> > > > > compromise).
-> >
-> > won't work in user namespaced containers, because they will never be
-> > capable(CAP_AUDIT_CONTROL); so I don't think this will work for
-> > nesting as is. But maybe nobody cares :)
-> 
-> That's fun :)
-> 
-> To be honest, I've never been a big fan of supporting nested
-> containers from an audit perspective, so I'm not really too upset
-> about this.  The k8s/cri-o folks seem okay with this, or at least I
-> haven't heard any objections; lxc folks, what do you have to say?
-
-I actually thought the answer to this (when last I looked, "some time" ago)
-was that userspace should track an audit message saying "task X in
-container Y is changing its auditid to Z", and then decide to also track Z.
-This should be doable, but a lot of extra work in userspace.
-
-Per-userns containerids would also work.  So task X1 is in containerid
-1 on the host and creates a new task Y in new userns;  it continues to
-be reported in init_user_ns as containerid 1 forever;  but in its own
-userns it can request to be known as some other containerid.  Audit
-socks would be per-userns, allowing root in a container to watch for
-audit events in its own (and descendent) namespaces.
-
-But again I'm sure we've gone over all this in the last few years.
-
-I suppose we can look at this as a "first step", and talk about
-making it user-ns-nestable later.  But agreed it's not useful in a
-lot of situations as is.
-
--serge
+U2luY2UgdGhlIG5ldyBwYXJhbWV0ZXIgYmxvY2sgaXMgaW5pdGlhbGlzZWQgdG8gMCBieSBrem1h
+bGxvYyB3ZSBkb24ndA0KbmVlZCB0byBtYXNrICYgY2xlYXIgdW51c2VkIG9wZXJhdGlvbmFsIG1v
+ZGUgYml0cywgdGhleSBhcmUgYWxyZWFkeQ0KdW5zZXQuDQoNCkRyb3AgdGhlIHBvaW50bGVzcyBj
+b2RlLg0KDQpTaWduZWQtb2ZmLWJ5OiBLZXZpbiBEYXJieXNoaXJlLUJyeWFudCA8bGRpckBkYXJi
+eXNoaXJlLWJyeWFudC5tZS51az4NCi0tLQ0KIG5ldC9zY2hlZC9hY3RfY3RpbmZvLmMgfCA0IC0t
+LS0NCiAxIGZpbGUgY2hhbmdlZCwgNCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL25ldC9z
+Y2hlZC9hY3RfY3RpbmZvLmMgYi9uZXQvc2NoZWQvYWN0X2N0aW5mby5jDQppbmRleCA5MjYxMDkx
+MzlhODEuLmU3OGI2MGU0N2MwZiAxMDA2NDQNCi0tLSBhL25ldC9zY2hlZC9hY3RfY3RpbmZvLmMN
+CisrKyBiL25ldC9zY2hlZC9hY3RfY3RpbmZvLmMNCkBAIC0yMzEsMTYgKzIzMSwxMiBAQCBzdGF0
+aWMgaW50IHRjZl9jdGluZm9faW5pdChzdHJ1Y3QgbmV0ICpuZXQsIHN0cnVjdCBubGF0dHIgKm5s
+YSwNCiAJCWNwX25ldy0+ZHNjcG1hc2tzaGlmdCA9IGRzY3BtYXNrc2hpZnQ7DQogCQljcF9uZXct
+PmRzY3BzdGF0ZW1hc2sgPSBkc2Nwc3RhdGVtYXNrOw0KIAkJY3BfbmV3LT5tb2RlIHw9IENUSU5G
+T19NT0RFX0RTQ1A7DQotCX0gZWxzZSB7DQotCQljcF9uZXctPm1vZGUgJj0gfkNUSU5GT19NT0RF
+X0RTQ1A7DQogCX0NCiANCiAJaWYgKHRiW1RDQV9DVElORk9fUEFSTVNfQ1BNQVJLX01BU0tdKSB7
+DQogCQljcF9uZXctPmNwbWFya21hc2sgPQ0KIAkJCQlubGFfZ2V0X3UzMih0YltUQ0FfQ1RJTkZP
+X1BBUk1TX0NQTUFSS19NQVNLXSk7DQogCQljcF9uZXctPm1vZGUgfD0gQ1RJTkZPX01PREVfQ1BN
+QVJLOw0KLQl9IGVsc2Ugew0KLQkJY3BfbmV3LT5tb2RlICY9IH5DVElORk9fTU9ERV9DUE1BUks7
+DQogCX0NCiANCiAJc3Bpbl9sb2NrX2JoKCZjaS0+dGNmX2xvY2spOw0KLS0gDQoyLjIwLjEgKEFw
+cGxlIEdpdC0xMTcpDQoNCg==
