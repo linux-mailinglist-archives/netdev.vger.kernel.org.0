@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7A430300
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0967530303
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 21:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726275AbfE3Tw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 15:52:28 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59248 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfE3Tw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 15:52:28 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2211E14DA9761;
-        Thu, 30 May 2019 12:52:27 -0700 (PDT)
-Date:   Thu, 30 May 2019 12:52:26 -0700 (PDT)
-Message-Id: <20190530.125226.748439790590538564.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, robh+dt@kernel.org,
-        mark.rutland@arm.com, ralf@linux-mips.org, paul.burton@mips.com,
-        jhogan@kernel.org, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/2] net: mscc: ocelot: Hardware ofload for
- tc flower filter
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190529151802.19aa82a2@cakuba.netronome.com>
-References: <1559125580-6375-1-git-send-email-horatiu.vultur@microchip.com>
-        <1559125580-6375-3-git-send-email-horatiu.vultur@microchip.com>
-        <20190529151802.19aa82a2@cakuba.netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 May 2019 12:52:27 -0700 (PDT)
+        id S1726557AbfE3TxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 15:53:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42548 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725897AbfE3TxF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 May 2019 15:53:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uXhdYIlvEH5G60+3PCmXX7ytiSiAS57Pw5gDIZeK/io=; b=52VCIWO/Vd8E1uGigO/aQo9rBZ
+        9OvM4hBooYiVdYxvPCWcuhEFLGwfjesbIh2DNQ/OjouM4WLQcC0dx8iJicaxbgIOptcr/j0wGJCwC
+        8YykSbbKT2JWRzL8W/e4nPhgmdzoFzH17KAtBfyvZQBRDydSrcu6pw7mYPAirTxA3uTE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hWR6f-0001D0-AG; Thu, 30 May 2019 21:52:57 +0200
+Date:   Thu, 30 May 2019 21:52:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/3] net: phy: enable interrupts when PHY is
+ attached already
+Message-ID: <20190530195257.GB1561@lunn.ch>
+References: <52f1a566-9c1d-2a3d-ce7b-e9284eed65cb@gmail.com>
+ <883a0161-0c16-d538-464e-ee35348c9970@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <883a0161-0c16-d538-464e-ee35348c9970@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Wed, 29 May 2019 15:18:44 -0700
-
-> On Wed, 29 May 2019 12:26:20 +0200, Horatiu Vultur wrote:
->> +static int ocelot_flower_replace(struct tc_cls_flower_offload *f,
->> +				 struct ocelot_port_block *port_block)
->> +{
->> +	struct ocelot_ace_rule *rule;
->> +	int ret;
->> +
->> +	if (port_block->port->tc.block_shared)
->> +		return -EOPNOTSUPP;
+On Thu, May 30, 2019 at 03:09:15PM +0200, Heiner Kallweit wrote:
+> This patch is a step towards allowing PHY drivers to handle more
+> interrupt sources than just link change. E.g. several PHY's have
+> built-in temperature monitoring and can raise an interrupt if a
+> temperature threshold is exceeded. We may be interested in such
+> interrupts also if the phylib state machine isn't started.
+> Therefore move enabling interrupts to phy_request_interrupt().
 > 
-> FWIW since you only support TRAP and DROP actions here (AFAICT) you
-> should actually be okay with shared blocks.  The problems with shared
-> blocks start when the action is stateful (like act_police), because we
-> can't share that state between devices.  But for most actions which just
-> maintain statistics, it's fine to allow shared blocks.  HTH
+> v2:
+> - patch added to series
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Please update to remove this test Horatiu, thanks.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
