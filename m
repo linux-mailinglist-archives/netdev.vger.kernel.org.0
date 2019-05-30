@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 217BC2F601
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1873F2F6B2
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 06:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbfE3EwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 00:52:00 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41272 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728265AbfE3EwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 00:52:00 -0400
-Received: by mail-qk1-f193.google.com with SMTP id m18so3036705qki.8
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 21:51:59 -0700 (PDT)
+        id S1730923AbfE3E6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 00:58:31 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41226 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389157AbfE3E6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 00:58:30 -0400
+Received: by mail-qt1-f195.google.com with SMTP id s57so5480596qte.8
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 21:58:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=endlessm-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sHOf1/WDs1TjZmoF3swY2gMBdaFm4kQJB8zDdbqYUtY=;
-        b=f825F3Seg4ieVRUakmG+2nGqhhygBqwqBaEc1iOc0MaaO0sTSgNmD0hr/deWGkkk8D
-         oSBHHzB7EF7mqP05QR1/t5lDvwyi/eGEyhi4RZ0QM2XtWegAbglgw2jrHuJxJtGEE+U9
-         VnJmOLG9LhCt2JYLoUxhPWPUkW3FUk81O7cn3GOxPEAw18lba1Uv+HZVT2yS5fqk0gPm
-         jFk18XIsCuviYZzfzpUXg5AH9TqFYqgcps9uvKOir++7jxxwIY/nuYgf5ONNA4hBYvl3
-         1KlZphriIqtMRf/ZEXrcrdiDzkzZi/lXz4lIkn2ZlRqLkse/MEEdkcMY3XsfRpUhX9bW
-         0tjA==
+        bh=rLmgEjHoFbZEgDIpNdCHV3eTKhj4yByl9zF5X6YEDyU=;
+        b=RPnZUCBgRQHtYNK14mI5pN632nIxFQ9nLcYN1I5h78/zyx3v50ePjNHdlKRtRu/G3C
+         hWbB0se/iWL0ROpD9gWbN28s4bBolC9R9WmpJRKZC2D8eoPKqSvW0def9L5GLi1i/Wry
+         /pDU7Y8f9zQecUtCv0HO2QRN3jWQE9FmsnMbyQOFm7EnrJeXK4zBTV7Hn3MZXpoe51Kq
+         iXtMHowwtmYgFLmJ7S19FxXG5pOdjdcZ/Is90S8cWSvOKjbufCIYwRFwMViwfBAhxYg0
+         Yt+jtrrJdpuLDcqwyEaSLafp6AHzuWRI7L9f2qdZE+jVHczQoWI41SvYEzs+Bx/Nuat3
+         gadg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sHOf1/WDs1TjZmoF3swY2gMBdaFm4kQJB8zDdbqYUtY=;
-        b=bJPHsCePIi+MUJjZIX8araAxaROzEA9C7sk454KjYJ2j6xR2vccBBhvnG7rpBDN0NO
-         rBZl/yeQIG0Y4Q+qsb1Fdqw7WPF2aqIWFH0KduIitLHpnOZJr+Y4GsBrvasSZrfkORBb
-         Lz9pLDBU78AnaPg4RAT5nz7eZAWdlOMX5mANAwjnFFMwpOMG6i4N2vKUG5x8AaIN3R4C
-         MNyzHKxB0hchkmicD6Yvvk0OhVAQwlc5kCUow5Vdv/LG23YWroMhpxx75yEuk8Cr7kXu
-         GOSIMBWoZwjQHlzioqjIr2yxbVB7+AHiAkHBVAn2T1GyIcZDrF5sPSNoSCF63yNTnyxJ
-         sdUg==
-X-Gm-Message-State: APjAAAV+UxOBnK6RzQq2dn0aAAEVdZs20pFrvbbgqRlpKVmZ0n5s7c5R
-        z99u554/kKCd/nlTH77UxjzWlaGEWEEjWy+EsIvPBQ==
-X-Google-Smtp-Source: APXvYqwJqY9emE8P8Vz0UaW1tHbFbmoM/x5fzvRbbHX2yA78QWUp92wyAA0LNjazNuKGR/CZ3jZwhs+os92Tr1JE+Ug=
-X-Received: by 2002:a37:48c4:: with SMTP id v187mr1318465qka.314.1559191919082;
- Wed, 29 May 2019 21:51:59 -0700 (PDT)
+        bh=rLmgEjHoFbZEgDIpNdCHV3eTKhj4yByl9zF5X6YEDyU=;
+        b=kIrYreNvYU7i6tJko8YYZ28O4b+K7gcE2yceR9Ed9op7u2uuc0eB+a/tIhlKGliET1
+         zFVRc7lZNaU2x81TrCwn9dcNrROXRRW6mWtl/mb7qTPPqtnSgpoO62H5Z2BSgdo3vNpo
+         XaY20l9jmk9vXpGz/Fu/xInROEBTpgJqekOp5pioWGuJo+0T6WI1JptG56lJg6FpWETO
+         ju5oeoe8QPbJuw/0PUIlJotU+5Vm9thQKSSC+qkMgYUeIP1ib/L0byNYrmYQ5P8rWLOn
+         7ofjXLjlS1m+CNbR3FFFrcWbYjCkPNb/WGM1ZPxSVSOVBmwtYqgqlZjtiOj6d3QK86zT
+         qWEA==
+X-Gm-Message-State: APjAAAUEr5RPIkKudgkjUQBo2SbK0N4yTk+wH1RuznheiNxmCIE8Xdtu
+        394uMERd6jGzrfGIUOfIVdLHaen4sd3KVCh0YbQwrA==
+X-Google-Smtp-Source: APXvYqykJVzyUNjoIJTxPOCOl5J357hUfTlOmm8qycXoUfA80/eqCZBpMHgAh/kbPPhBE08WD9UbtmZTxYfSv0n8FEA=
+X-Received: by 2002:a0c:be87:: with SMTP id n7mr1524590qvi.65.1559192309628;
+ Wed, 29 May 2019 21:58:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190529050335.72061-1-chiu@endlessm.com> <CAD8Lp46on32VgWtCe7WsGHXp3Jk16qTh6saf0Vj0Y4Ry5z1n7g@mail.gmail.com>
-In-Reply-To: <CAD8Lp46on32VgWtCe7WsGHXp3Jk16qTh6saf0Vj0Y4Ry5z1n7g@mail.gmail.com>
+References: <20190529050335.72061-1-chiu@endlessm.com> <5f5e262d-aadb-cca0-8576-879735366a73@lwfinger.net>
+In-Reply-To: <5f5e262d-aadb-cca0-8576-879735366a73@lwfinger.net>
 From:   Chris Chiu <chiu@endlessm.com>
-Date:   Thu, 30 May 2019 12:51:47 +0800
-Message-ID: <CAB4CAwfVDfphWNAN5L1f9BCT9Oo3AQwL19BOUTNJNFM=QR7rjQ@mail.gmail.com>
+Date:   Thu, 30 May 2019 12:58:18 +0800
+Message-ID: <CAB4CAwdB_8f-JZWWpXdYDghaGQv+Kc4H=G4UUrEK-_xbNg4Ctw@mail.gmail.com>
 Subject: Re: [RFC PATCH v3] rtl8xxxu: Improve TX performance of RTL8723BU on
  rtl8xxxu driver
-To:     Daniel Drake <drake@endlessm.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>
 Cc:     Jes Sorensen <jes.sorensen@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         David Miller <davem@davemloft.net>,
@@ -62,69 +62,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 2:12 AM Daniel Drake <drake@endlessm.com> wrote:
+On Thu, May 30, 2019 at 2:22 AM Larry Finger <Larry.Finger@lwfinger.net> wrote:
 >
-> Hi Chris,
+> On 5/29/19 12:03 AM, Chris Chiu wrote:
+> > We have 3 laptops which connect the wifi by the same RTL8723BU.
+> > The PCI VID/PID of the wifi chip is 10EC:B720 which is supported.
+> > They have the same problem with the in-kernel rtl8xxxu driver, the
+> > iperf (as a client to an ethernet-connected server) gets ~1Mbps.
+> > Nevertheless, the signal strength is reported as around -40dBm,
+> > which is quite good. From the wireshark capture, the tx rate for each
+> > data and qos data packet is only 1Mbps. Compare to the driver from
+> > https://github.com/lwfinger/rtl8723bu, the same iperf test gets ~12
+> > Mbps or more. The signal strength is reported similarly around
+> > -40dBm. That's why we want to improve.
 >
-> On Tue, May 28, 2019 at 11:03 PM Chris Chiu <chiu@endlessm.com> wrote:
-> > +       /*
-> > +        * Single virtual interface permitted since the driver supports STATION
-> > +        * mode only.
->
-> I think you can be a bit more explicit by saying e.g.:
->
-> Only one virtual interface permitted because only STA mode is
-> supported and no iface_combinations are provided.
->
-> > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > index 039e5ca9d2e4..2d612c2df5b2 100644
-> > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > @@ -4345,7 +4345,7 @@ void rtl8xxxu_gen2_update_rate_mask(struct rtl8xxxu_priv *priv,
-> >         h2c.b_macid_cfg.ramask3 = (ramask >> 24) & 0xff;
-> >
-> >         h2c.ramask.arg = 0x80;
-> > -       h2c.b_macid_cfg.data1 = 0;
-> > +       h2c.b_macid_cfg.data1 = priv->ratr_index;
->
-> I think ratr_index can be moved to be a function parameter of the
-> update_rate_mask function. It looks like all callsites already know
-> which value they want to set. Then you don't have to store it in the
-> priv structure.
->
+> The driver at GitHub was written by Realtek. I only published it in a prominent
+> location, and fix it for kernel API changes. I would say "the Realtek driver at
+> https://...", and every mention of "Larry's driver" should say "Realtek's
+> driver". That attribution is more correct.
 
-You mean moving the ratr_index to be the 4th function parameter of
-update_rate_mask which has 2 candidates rtl8xxxu_update_rate_mask
-and rtl8xxxu_gen2_update_rate_mask? I was planning to keep the
-rtl8xxxu_update_rate_mask the same because old chips seems don't
-need the rate index when invoking H2C command to change rate mask.
-And rate index is not a common phrase/term for rate adaptive. Theoretically
-we just need packet error rate, sgi and other factors to determine the rate
-mask. This rate index seems to be only specific to newer Realtek drivers
-or firmware for rate adaptive algorithm.  I'd like to keep this for gen2 but
-I admit it's ugly to put it in the priv structure. Any suggestion is
-appreciated.
-Thanks
+Thanks. I'll modify this in next revision.
 
-> > @@ -5471,6 +5509,10 @@ static int rtl8xxxu_add_interface(struct ieee80211_hw *hw,
 > >
-> >         switch (vif->type) {
-> >         case NL80211_IFTYPE_STATION:
-> > +               if (!priv->vif)
-> > +                       priv->vif = vif;
-> > +               else
-> > +                       return -EOPNOTSUPP;
-> >                 rtl8xxxu_stop_tx_beacon(priv);
->
-> rtl8xxxu_remove_interface should also set priv->vif back to NULL.
->
-> > @@ -6183,6 +6259,8 @@ static void rtl8xxxu_disconnect(struct usb_interface *interface)
-> >         mutex_destroy(&priv->usb_buf_mutex);
-> >         mutex_destroy(&priv->h2c_mutex);
+> > After reading the source code of the rtl8xxxu driver and Larry's, the
+> > major difference is that Larry's driver has a watchdog which will keep
+> > monitoring the signal quality and updating the rate mask just like the
+> > rtl8xxxu_gen2_update_rate_mask() does if signal quality changes.
+> > And this kind of watchdog also exists in rtlwifi driver of some specific
+> > chips, ex rtl8192ee, rtl8188ee, rtl8723ae, rtl8821ae...etc. They have
+> > the same member function named dm_watchdog and will invoke the
+> > corresponding dm_refresh_rate_adaptive_mask to adjust the tx rate
+> > mask.
 > >
-> > +       cancel_delayed_work_sync(&priv->ra_watchdog);
+> > With this commit, the tx rate of each data and qos data packet will
+> > be 39Mbps (MCS4) with the 0xF00000 as the tx rate mask. The 20th bit
+> > to 23th bit means MCS4 to MCS7. It means that the firmware still picks
+> > the lowest rate from the rate mask and explains why the tx rate of
+> > data and qos data is always lowest 1Mbps because the default rate mask
+> > passed is always 0xFFFFFFF ranges from the basic CCK rate, OFDM rate,
+> > and MCS rate. However, with Larry's driver, the tx rate observed from
+> > wireshark under the same condition is almost 65Mbps or 72Mbps.
+> >
+> > I believe the firmware of RTL8723BU may need fix. And I think we
+> > can still bring in the dm_watchdog as rtlwifi to improve from the
+> > driver side. Please leave precious comments for my commits and
+> > suggest what I can do better. Or suggest if there's any better idea
+> > to fix this. Thanks.
+> >
+> > Signed-off-by: Chris Chiu <chiu@endlessm.com>
 >
-> Given that the work was started in rtl8xxxu_start, I think it should
-> be cancelled in rtl8xxxu_stop() instead.
+> I have not tested this patch, but I plan to soon.
 >
-> Daniel
+> Larry
+>
+>
