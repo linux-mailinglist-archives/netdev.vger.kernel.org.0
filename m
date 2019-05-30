@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5540630184
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAAC830186
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 20:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbfE3SIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 14:08:22 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36736 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbfE3SIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:08:21 -0400
-Received: by mail-qt1-f194.google.com with SMTP id u12so8120120qth.3;
-        Thu, 30 May 2019 11:08:21 -0700 (PDT)
+        id S1726446AbfE3SIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 14:08:43 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42698 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbfE3SIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 14:08:43 -0400
+Received: by mail-pl1-f196.google.com with SMTP id go2so2865122plb.9
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 11:08:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uBh8frPBklj3PAGNxGo58zhsB+Wp0GYqDmO+TlNLHb4=;
-        b=PSCQw9shmXX7hlCnO9U9xGXJV2sYFdQGNyCBdUuUa/l3mnlJFLBbC/R9dO8coJ7KQK
-         uSkhT/QZjbHUNLMGnSrhfIS5EB7TBjkd3EKTwIQoL2jx4Y1HRJy+x2P0XyuKfJkLFiWr
-         kOOH6Zgm9RaJolfR7n+wpeCNprzuof6A5pDd8vZaRIbHfcb3wplUb077cAEldMm0aKi4
-         4y59CAYA05IALYlBFqgBO66SO9I00jxiXM9pJquIHViY1jPKULRBte6nn6Xdc1KGem17
-         3b/gLWwXQhUzCOLE05Hs9c1smxrC65+il0n6WzjIYLvKjDacuYo0ZLBVMTh6UAzsnASS
-         nzQw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YNPTvz4BB+El8+FfCuqPjz+lxh9rxe3Q6i3SW+1sDzg=;
+        b=1wrWpUmGV1LaPM63sUzAhYnbuyOykbV6I1uE+02IYK5FZORkA2zeoD0KaDTmwLMx8m
+         ZmSv2HcBBnVX+y4CMlNMd7FUxrg/tok++ZHoAek5LebH6LhFuGWB1DHItvvGppK2uoCP
+         d4WT8c59T7L1aX8g/+QtHMwlu7jscwfuZ5OL25cG5xqpLzqOctlEVSE6HclaxEoKzqFn
+         xT4SRWkruvRTxj4TWanPIkosF+0zzkcSxQsFGc3aQnEjiv7GuWEtDvLpzldQr6FyrfNo
+         H2vcp4bjfXhPeM73bQgwte8RkMEuUJhLb0hR55dN8hak0DRXDgbAmlsjhoPpZbHS3HPD
+         lHgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uBh8frPBklj3PAGNxGo58zhsB+Wp0GYqDmO+TlNLHb4=;
-        b=trXg6ySMivBEqrxYjBdy8d2Y7UlizJryArPhLpPHjIO71PKEbORvg3S9rGrHGkPq+C
-         QqFaDxtX3gP7Awtf6tCiLSDKIvAApoRsx/Z5lDCMzZhb0wxfVW9sZYaiKB941ttYFhnZ
-         991gz3f3U32S+sqGmFvKvC8AbNd7B3/YLgEfTTgBa8y4duxmHugPAOJdKvsD58vj9e5s
-         VtTPsqIk1BAwEdbgzaK+HB+6KvzQHJyE0h5ySKRRSevF37Ckm49hrByFPE44y5JnJxFT
-         4eHloxEsXLWmG5HMb+4SIuscRWkwtfwwDjjKCRtxtS0AvSJaT5UdA8ht+YIsMJmVRxGG
-         q20w==
-X-Gm-Message-State: APjAAAW/Yl+wmHnNcuwmpAmpDgUzIIfBNu2/GXACPXijSR85k9ekN0eF
-        zEqCFMTBCNrk608uI9ZSsn2NJ4amgBNlRGP2Am0=
-X-Google-Smtp-Source: APXvYqztZ5XPqFPZILkHDxcksjVQdRXGu0rSKUzB3EbR+JMHWyoaPnoI/6/aw1RV2DhRDXRoLNXbUn6tY50Hei/EO5g=
-X-Received: by 2002:ac8:2af4:: with SMTP id c49mr4598934qta.83.1559239700683;
- Thu, 30 May 2019 11:08:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YNPTvz4BB+El8+FfCuqPjz+lxh9rxe3Q6i3SW+1sDzg=;
+        b=IMUxiXg4rPgbIiKYe75HEQR/emc4c7VdUJ3c6sN0RGLF5a6MMJy037rdCul7jGHUwt
+         bymseA/EuB/JwY/QNUhuiu3ufEtM04YpmOO+SqKqnUAJsiRjffKeNLhdXeShTRkBSkAY
+         R/pPYC+91/B9CsCNtWLirZSrk5PXo0asiHIIQQ+KQTipuwqiqTedmC7GP8aFcVPZTKGF
+         SSlVz6Cfq2gJhyeBzx3h5ynyk4+UKWK8Vs0O5zEUkdpgU9qSH2TnACRAbrlnKeW0/LIK
+         YXPoIws4N+3fVgTYMTpHZSKmg6gjrZnWgTbqlxbjZXuR9WKJ2zLtvJf1U7dX5Y6wCD4X
+         ctvA==
+X-Gm-Message-State: APjAAAXUy7cWEgkpKgjLlm740WTOZAHnsXilRkgyrYMYkDvr4qZcMZ8B
+        WFhJ8fAWdGuX2cLIJCD9B0WPdQ==
+X-Google-Smtp-Source: APXvYqynwN5fl+ov9fSgyBAYYlk5vTvMgyM2xsE8i+bK6tEWfCa7XxGZLjmgc3MJl9UgC1R0n3n19w==
+X-Received: by 2002:a17:902:7581:: with SMTP id j1mr4868812pll.23.1559239722398;
+        Thu, 30 May 2019 11:08:42 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id x66sm3699704pfx.139.2019.05.30.11.08.41
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 30 May 2019 11:08:42 -0700 (PDT)
+Date:   Thu, 30 May 2019 11:08:40 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
+Subject: Re: [PATCH net v2 1/3] net/sched: act_csum: pull all VLAN headers
+ before checksumming
+Message-ID: <20190530110840.794ba98b@hermes.lan>
+In-Reply-To: <655b6508443c52f04be2b2fe9a6a7f2470b47ad1.1559237173.git.dcaratti@redhat.com>
+References: <cover.1559237173.git.dcaratti@redhat.com>
+        <655b6508443c52f04be2b2fe9a6a7f2470b47ad1.1559237173.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-References: <cover.1559171394.git.mchehab+samsung@kernel.org> <f2f40f306acbd3d834746fe9acb607052e82a1ee.1559171394.git.mchehab+samsung@kernel.org>
-In-Reply-To: <f2f40f306acbd3d834746fe9acb607052e82a1ee.1559171394.git.mchehab+samsung@kernel.org>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 30 May 2019 11:08:08 -0700
-Message-ID: <CAPhsuW7J-KWsWhODKLJu3H8VvZ7nZ+O0Prni4M-tCt_inko9zA@mail.gmail.com>
-Subject: Re: [PATCH 08/22] docs: bpf: get rid of two warnings
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 4:25 PM Mauro Carvalho Chehab
-<mchehab+samsung@kernel.org> wrote:
->
-> Documentation/bpf/btf.rst:154: WARNING: Unexpected indentation.
-> Documentation/bpf/btf.rst:163: WARNING: Unexpected indentation.
->
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+On Thu, 30 May 2019 20:03:41 +0200
+Davide Caratti <dcaratti@redhat.com> wrote:
 
-Acked-by: Song Liu <songliubraving@fb.com>
+>  
+> +static inline int tc_skb_pull_vlans(struct sk_buff *skb,
+> +				    unsigned int *hdr_count,
+> +				    __be16 *proto)
+> +{
+> +	if (skb_vlan_tag_present(skb))
+> +		*proto = skb->protocol;
+> +
+> +	while (eth_type_vlan(*proto)) {
+> +		struct vlan_hdr *vlan;
+> +
+> +		if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
+> +			return -ENOMEM;
+> +
+> +		vlan = (struct vlan_hdr *)skb->data;
+> +		*proto = vlan->h_vlan_encapsulated_proto;
+> +		skb_pull(skb, VLAN_HLEN);
+> +		skb_reset_network_header(skb);
+> +		(*hdr_count)++;
+> +	}
+> +	return 0;
+> +}
 
-> ---
->  Documentation/bpf/btf.rst | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/bpf/btf.rst b/Documentation/bpf/btf.rst
-> index 8820360d00da..4ae022d274ab 100644
-> --- a/Documentation/bpf/btf.rst
-> +++ b/Documentation/bpf/btf.rst
-> @@ -151,6 +151,7 @@ for the type. The maximum value of ``BTF_INT_BITS()`` is 128.
->
->  The ``BTF_INT_OFFSET()`` specifies the starting bit offset to calculate values
->  for this int. For example, a bitfield struct member has:
-> +
->   * btf member bit offset 100 from the start of the structure,
->   * btf member pointing to an int type,
->   * the int type has ``BTF_INT_OFFSET() = 2`` and ``BTF_INT_BITS() = 4``
-> @@ -160,6 +161,7 @@ from bits ``100 + 2 = 102``.
->
->  Alternatively, the bitfield struct member can be the following to access the
->  same bits as the above:
-> +
->   * btf member bit offset 102,
->   * btf member pointing to an int type,
->   * the int type has ``BTF_INT_OFFSET() = 0`` and ``BTF_INT_BITS() = 4``
-> --
-> 2.21.0
->
+Does this really need to be an inline, or could it just be
+part of the sched_api?
