@@ -2,141 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66CA9315FA
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1D331605
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbfEaUSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 16:18:30 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37012 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727147AbfEaUSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:18:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=IHVk8lHfhdHV8HI5ibdUhORSoFUaved/s+yIc4Q/1to=; b=Vxyffvh5Ypx8VjUA8MplnOdrt
-        M+ZdQIYnDlfT12LkjMjiS48oAu9uogigJp982z5GgXnVvwfr54jsdVPDp7OTqs7UjhqfNrP7syVuH
-        43zuPfW/n2+Jsnazh4VieKAbOZtecEO+sWmxj+Uuhx3b9WTpmufBo0FukCFsAozBGJMUYGy9jzS+r
-        Eras2+X1VIyRm7dqhyaAGXYXWu+SOT51sCunuko6hwgWIn7cxOZxX5ru8rx6A9lwv6N8ec/7TDlpW
-        I24VWxLyW1GJSDiKH61H0hMW/LSO/YGMnSMerXyrYqvbOVfo4CmdydzTKS+PjCsgEXhbgLFIgA6my
-        8ba3fjzpA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52776)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hWnyt-0002ua-9a; Fri, 31 May 2019 21:18:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hWnys-0006cy-ME; Fri, 31 May 2019 21:18:26 +0100
-Date:   Fri, 31 May 2019 21:18:26 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: phylink: add fallback from SGMII to
- 1000BaseX
-Message-ID: <20190531201826.2qo57l2phommgpm2@shell.armlinux.org.uk>
-References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
- <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
+        id S1727405AbfEaUVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 16:21:44 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60362 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727287AbfEaUVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:21:44 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4VKIAv6028010
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 13:21:42 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=P1V9cJKlNhLZkDxQNgJFzwuvBEI04YhLlqY4xdB8FL4=;
+ b=gzTf3Mtxl/CG9BeQmFpB/yuUd+85BhiFjrZ5z2scmWDjCZA8a9MFhbsQU1fxbjZb1GP7
+ LJJ2IAetjhpbXOsFEWnvQ9vx/04ufnE2m7O36MMl4hzXN+yySP2gj6N4gyd4DDSgIobL
+ uWdHcZGR78KzkJM8wS4ZPjsKXjg1b1Xg1SA= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2suaucr34d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 13:21:42 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 31 May 2019 13:21:41 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 70280861799; Fri, 31 May 2019 13:21:41 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [RFC PATCH bpf-next 0/8] BTF-defined BPF map definitions
+Date:   Fri, 31 May 2019 13:21:24 -0700
+Message-ID: <20190531202132.379386-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905310123
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 01:18:04PM -0600, Robert Hancock wrote:
-> Some copper SFP modules support both SGMII and 1000BaseX,
+This patch set implements initial version (as discussed at LSF/MM2019
+conference) of a new way to specify BPF maps, relying on BTF type information,
+which allows for easy extensibility, preserving forward and backward
+compatibility. See details and examples in description for patch #6.
 
-The situation is way worse than that.  Some copper SFP modules are
-programmed to support SGMII only.  Others are programmed to support
-1000baseX only.  There is no way to tell from the EEPROM how they
-are configured, and there is no way to auto-probe the format of the
-control word (which is the difference between the two.)
+Patch #1 centralizes commonly used min/max macro in libbpf_internal.h.
+Patch #2 extracts .BTF and .BTF.ext loading loging from elf_collect().
+Patch #3 refactors map initialization logic into user-provided maps and global
+data maps, in preparation to adding another way (BTF-defined maps).
+Patch #4 adds support for map definitions in multiple ELF sections and
+deprecates bpf_object__find_map_by_offset() API which doesn't appear to be
+used anymore and makes assumption that all map definitions reside in single
+ELF section.
+Patch #5 splits BTF intialization from sanitization/loading into kernel to
+preserve original BTF at the time of map initialization.
+Patch #6 adds support for BTF-defined maps.
+Patch #7 adds new test for BTF-defined map definition.
+Patch #8 converts test BPF map definitions to use BTF way.
 
-> but some
-> drivers/devices only support the 1000BaseX mode. Currently SGMII mode is
-> always being selected as the desired mode for such modules, and this
-> fails if the controller doesn't support SGMII. Add a fallback for this
-> case by trying 1000BaseX instead if the controller rejects SGMII mode.
+Andrii Nakryiko (8):
+  libbpf: add common min/max macro to libbpf_internal.h
+  libbpf: extract BTF loading and simplify ELF parsing logic
+  libbpf: refactor map initialization
+  libbpf: identify maps by section index in addition to offset
+  libbpf: split initialization and loading of BTF
+  libbpf: allow specifying map definitions using BTF
+  selftests/bpf: add test for BTF-defined maps
+  selftests/bpf: switch tests to BTF-defined map definitions
 
-So, what happens when a controller supports both SGMII and 1000base-X
-modes (such as the Marvell devices) but the module is setup for
-1000base-X mode?
-
-> 
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
-> ---
->  drivers/net/phy/phylink.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 68d0a89..4fd72c2 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -1626,6 +1626,7 @@ static int phylink_sfp_module_insert(void *upstream,
->  {
->  	struct phylink *pl = upstream;
->  	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(orig_support) = { 0, };
->  	struct phylink_link_state config;
->  	phy_interface_t iface;
->  	int ret = 0;
-> @@ -1635,6 +1636,7 @@ static int phylink_sfp_module_insert(void *upstream,
->  	ASSERT_RTNL();
->  
->  	sfp_parse_support(pl->sfp_bus, id, support);
-> +	linkmode_copy(orig_support, support);
->  	port = sfp_parse_port(pl->sfp_bus, id, support);
->  
->  	memset(&config, 0, sizeof(config));
-> @@ -1663,6 +1665,25 @@ static int phylink_sfp_module_insert(void *upstream,
->  
->  	config.interface = iface;
->  	ret = phylink_validate(pl, support, &config);
-> +
-> +	if (ret && iface == PHY_INTERFACE_MODE_SGMII &&
-> +	    phylink_test(orig_support, 1000baseX_Full)) {
-> +		/* Copper modules may select SGMII but the interface may not
-> +		 * support that mode, try 1000BaseX if supported.
-> +		 */
-
-Here, you are talking about what the module itself supports, but this
-code is determining what it should do based on what the _network
-controller_ supports.
-
-If the SFP module is programmed for SGMII, and the network controller
-supports 1000base-X, then it isn't going to work very well - the
-sender of the control word will be sending one format, and the
-receiver will be interpreting the bits wrongly.
-
-> +
-> +		netdev_warn(pl->netdev, "validation of %s/%s with support %*pb "
-> +			    "failed: %d, trying 1000BaseX\n",
-> +			    phylink_an_mode_str(MLO_AN_INBAND),
-> +			    phy_modes(config.interface),
-> +			    __ETHTOOL_LINK_MODE_MASK_NBITS, orig_support, ret);
-> +		iface = PHY_INTERFACE_MODE_1000BASEX;
-> +		config.interface = iface;
-> +		linkmode_copy(config.advertising, orig_support);
-> +		linkmode_copy(support, orig_support);
-> +		ret = phylink_validate(pl, support, &config);
-> +	}
-> +
->  	if (ret) {
->  		phylink_err(pl, "validation of %s/%s with support %*pb failed: %d\n",
->  			    phylink_an_mode_str(MLO_AN_INBAND),
-> -- 
-> 1.8.3.1
-> 
-> 
+ tools/lib/bpf/bpf.c                           |   7 +-
+ tools/lib/bpf/bpf_prog_linfo.c                |   5 +-
+ tools/lib/bpf/btf.c                           |   3 -
+ tools/lib/bpf/btf.h                           |   1 +
+ tools/lib/bpf/btf_dump.c                      |   3 -
+ tools/lib/bpf/libbpf.c                        | 762 +++++++++++++-----
+ tools/lib/bpf/libbpf_internal.h               |   7 +
+ tools/testing/selftests/bpf/progs/bpf_flow.c  |  18 +-
+ .../selftests/bpf/progs/get_cgroup_id_kern.c  |  18 +-
+ .../testing/selftests/bpf/progs/netcnt_prog.c |  22 +-
+ .../selftests/bpf/progs/sample_map_ret0.c     |  18 +-
+ .../selftests/bpf/progs/socket_cookie_prog.c  |   9 +-
+ .../bpf/progs/sockmap_verdict_prog.c          |  36 +-
+ .../selftests/bpf/progs/test_btf_newkv.c      |  73 ++
+ .../bpf/progs/test_get_stack_rawtp.c          |  27 +-
+ .../selftests/bpf/progs/test_global_data.c    |  27 +-
+ tools/testing/selftests/bpf/progs/test_l4lb.c |  45 +-
+ .../selftests/bpf/progs/test_l4lb_noinline.c  |  45 +-
+ .../selftests/bpf/progs/test_map_in_map.c     |  20 +-
+ .../selftests/bpf/progs/test_map_lock.c       |  22 +-
+ .../testing/selftests/bpf/progs/test_obj_id.c |   9 +-
+ .../bpf/progs/test_select_reuseport_kern.c    |  45 +-
+ .../bpf/progs/test_send_signal_kern.c         |  22 +-
+ .../bpf/progs/test_skb_cgroup_id_kern.c       |   9 +-
+ .../bpf/progs/test_sock_fields_kern.c         |  60 +-
+ .../selftests/bpf/progs/test_spin_lock.c      |  33 +-
+ .../bpf/progs/test_stacktrace_build_id.c      |  44 +-
+ .../selftests/bpf/progs/test_stacktrace_map.c |  40 +-
+ .../testing/selftests/bpf/progs/test_tc_edt.c |   9 +-
+ .../bpf/progs/test_tcp_check_syncookie_kern.c |   9 +-
+ .../selftests/bpf/progs/test_tcp_estats.c     |   9 +-
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    |  18 +-
+ .../selftests/bpf/progs/test_tcpnotify_kern.c |  18 +-
+ tools/testing/selftests/bpf/progs/test_xdp.c  |  18 +-
+ .../selftests/bpf/progs/test_xdp_noinline.c   |  60 +-
+ tools/testing/selftests/bpf/test_btf.c        |  10 +-
+ .../selftests/bpf/test_queue_stack_map.h      |  20 +-
+ .../testing/selftests/bpf/test_sockmap_kern.h |  72 +-
+ 38 files changed, 1182 insertions(+), 491 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_btf_newkv.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.17.1
+
