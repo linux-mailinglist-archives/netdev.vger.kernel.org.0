@@ -2,93 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9609D315F6
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CA9315FA
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727550AbfEaUPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 16:15:34 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42677 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727282AbfEaUPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:15:34 -0400
-Received: by mail-qt1-f193.google.com with SMTP id s15so2431385qtk.9;
-        Fri, 31 May 2019 13:15:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=7YiaoU+6Y9gzcq2vBYFLQx0zIwtw9YAbbdSl0rNCg2M=;
-        b=g+EArgwU7pOQMCYAGsyXpcwc98DQ/tqCpUVrBOAY1+cFw/pFWdq/iSTpswQe5hKCyO
-         Vigqj+LtA8vpdxhu71aPfCxHHKkCRTPeXN/+IEGcwBKWDN0En+oYQWJsqwARpSsFSIWD
-         wWGSDgmUJ7c4SFo0LSTKWK3x4ZO94agxZKGLsfP2bXclFSo+/eFu6g5/95rFkoFBWdiv
-         EnIgTWCU6kDnhxQK3sF6Ss0H1WOfsgI9lVCiJ5u21bAdnLqPSPxN14c1blJE6FCaSrKJ
-         xFD77UaAejfFcPaxgz7+Esu8gNLODVkFNhGW+5UEwpWPLkLAt1L8NaPL2442y+Tq8xOr
-         iyGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=7YiaoU+6Y9gzcq2vBYFLQx0zIwtw9YAbbdSl0rNCg2M=;
-        b=ueq6QjqxPz2LR5Je/5VKRUQI3R9yBsv6oAzElN2/ijGkDUPjc1GfZpyPuWcoPuFIqo
-         ivToPBUmeybcQCfSdCweGc5tmgnE99OctqJdO2PoE7yZzoKnixox3y1uh8B7mphwAQUg
-         AYnv7ZulI4ZcLELLEQl1fVR7RtJWHMAf2h80LWBTSOBkDDbrZRggmmqovzCUXX3ipCl1
-         NNbmLgJUlGYHFu13qYWwtGQVphpX97LL1dakxDJwTjFn3lQ8gzZ6dn5x+nSrFKuawHyB
-         jw9n0r8ZJzoQonLEsnHbkhDE2Mt1Prl3EFCDztS2BkgMVn/nAmjDXyzUKGuypjVawaQJ
-         EG/A==
-X-Gm-Message-State: APjAAAWFXL4ROYuOOuWYSO/on6Ve0tjwH4maKZhMfgFFHNh2dnK7+6NZ
-        a+jH+bfODMFwleEDgtDqvNE=
-X-Google-Smtp-Source: APXvYqxVJOaLlxGiq0S4z/F/gpkkYLOMrO0iaoJVD7Rda/MUJBekJ5TA48N6U8lru1+AYQsJSeom6A==
-X-Received: by 2002:a0c:9934:: with SMTP id h49mr10703909qvd.146.1559333733226;
-        Fri, 31 May 2019 13:15:33 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c16sm3982118qkb.15.2019.05.31.13.15.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 31 May 2019 13:15:32 -0700 (PDT)
-Date:   Fri, 31 May 2019 16:15:32 -0400
-Message-ID: <20190531161532.GE20464@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Healy <cphealy@gmail.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from
- VLAN 0
-In-Reply-To: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
-References: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
+        id S1727382AbfEaUSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 16:18:30 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:37012 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727147AbfEaUSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:18:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IHVk8lHfhdHV8HI5ibdUhORSoFUaved/s+yIc4Q/1to=; b=Vxyffvh5Ypx8VjUA8MplnOdrt
+        M+ZdQIYnDlfT12LkjMjiS48oAu9uogigJp982z5GgXnVvwfr54jsdVPDp7OTqs7UjhqfNrP7syVuH
+        43zuPfW/n2+Jsnazh4VieKAbOZtecEO+sWmxj+Uuhx3b9WTpmufBo0FukCFsAozBGJMUYGy9jzS+r
+        Eras2+X1VIyRm7dqhyaAGXYXWu+SOT51sCunuko6hwgWIn7cxOZxX5ru8rx6A9lwv6N8ec/7TDlpW
+        I24VWxLyW1GJSDiKH61H0hMW/LSO/YGMnSMerXyrYqvbOVfo4CmdydzTKS+PjCsgEXhbgLFIgA6my
+        8ba3fjzpA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52776)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hWnyt-0002ua-9a; Fri, 31 May 2019 21:18:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hWnys-0006cy-ME; Fri, 31 May 2019 21:18:26 +0100
+Date:   Fri, 31 May 2019 21:18:26 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Robert Hancock <hancock@sedsystems.ca>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: phylink: add fallback from SGMII to
+ 1000BaseX
+Message-ID: <20190531201826.2qo57l2phommgpm2@shell.armlinux.org.uk>
+References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
+ <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 May 2019 10:35:14 +0300, Nikita Yushchenko <nikita.yoush@cogentembedded.com> wrote:
-> When non-bridged, non-vlan'ed mv88e6xxx port is moving down, error
-> message is logged:
-> 
-> failed to kill vid 0081/0 for device eth_cu_1000_4
-> 
-> This is caused by call from __vlan_vid_del() with vin set to zero, over
-> call chain this results into _mv88e6xxx_port_vlan_del() called with
-> vid=0, and mv88e6xxx_vtu_get() called from there returns -EINVAL.
-> 
-> On symmetric path moving port up, call goes through
-> mv88e6xxx_port_vlan_prepare() that calls mv88e6xxx_port_check_hw_vlan()
-> that returns -EOPNOTSUPP for zero vid.
-> 
-> This patch changes mv88e6xxx_vtu_get() to also return -EOPNOTSUPP for
-> zero vid, then this error code is explicitly cleared in
-> dsa_slave_vlan_rx_kill_vid() and error message is no longer logged.
-> 
-> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+On Fri, May 31, 2019 at 01:18:04PM -0600, Robert Hancock wrote:
+> Some copper SFP modules support both SGMII and 1000BaseX,
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+The situation is way worse than that.  Some copper SFP modules are
+programmed to support SGMII only.  Others are programmed to support
+1000baseX only.  There is no way to tell from the EEPROM how they
+are configured, and there is no way to auto-probe the format of the
+control word (which is the difference between the two.)
+
+> but some
+> drivers/devices only support the 1000BaseX mode. Currently SGMII mode is
+> always being selected as the desired mode for such modules, and this
+> fails if the controller doesn't support SGMII. Add a fallback for this
+> case by trying 1000BaseX instead if the controller rejects SGMII mode.
+
+So, what happens when a controller supports both SGMII and 1000base-X
+modes (such as the Marvell devices) but the module is setup for
+1000base-X mode?
+
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> ---
+>  drivers/net/phy/phylink.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 68d0a89..4fd72c2 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -1626,6 +1626,7 @@ static int phylink_sfp_module_insert(void *upstream,
+>  {
+>  	struct phylink *pl = upstream;
+>  	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(orig_support) = { 0, };
+>  	struct phylink_link_state config;
+>  	phy_interface_t iface;
+>  	int ret = 0;
+> @@ -1635,6 +1636,7 @@ static int phylink_sfp_module_insert(void *upstream,
+>  	ASSERT_RTNL();
+>  
+>  	sfp_parse_support(pl->sfp_bus, id, support);
+> +	linkmode_copy(orig_support, support);
+>  	port = sfp_parse_port(pl->sfp_bus, id, support);
+>  
+>  	memset(&config, 0, sizeof(config));
+> @@ -1663,6 +1665,25 @@ static int phylink_sfp_module_insert(void *upstream,
+>  
+>  	config.interface = iface;
+>  	ret = phylink_validate(pl, support, &config);
+> +
+> +	if (ret && iface == PHY_INTERFACE_MODE_SGMII &&
+> +	    phylink_test(orig_support, 1000baseX_Full)) {
+> +		/* Copper modules may select SGMII but the interface may not
+> +		 * support that mode, try 1000BaseX if supported.
+> +		 */
+
+Here, you are talking about what the module itself supports, but this
+code is determining what it should do based on what the _network
+controller_ supports.
+
+If the SFP module is programmed for SGMII, and the network controller
+supports 1000base-X, then it isn't going to work very well - the
+sender of the control word will be sending one format, and the
+receiver will be interpreting the bits wrongly.
+
+> +
+> +		netdev_warn(pl->netdev, "validation of %s/%s with support %*pb "
+> +			    "failed: %d, trying 1000BaseX\n",
+> +			    phylink_an_mode_str(MLO_AN_INBAND),
+> +			    phy_modes(config.interface),
+> +			    __ETHTOOL_LINK_MODE_MASK_NBITS, orig_support, ret);
+> +		iface = PHY_INTERFACE_MODE_1000BASEX;
+> +		config.interface = iface;
+> +		linkmode_copy(config.advertising, orig_support);
+> +		linkmode_copy(support, orig_support);
+> +		ret = phylink_validate(pl, support, &config);
+> +	}
+> +
+>  	if (ret) {
+>  		phylink_err(pl, "validation of %s/%s with support %*pb failed: %d\n",
+>  			    phylink_an_mode_str(MLO_AN_INBAND),
+> -- 
+> 1.8.3.1
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
