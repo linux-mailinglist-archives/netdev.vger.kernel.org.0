@@ -2,113 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8891D30FA2
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A1530FBB
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbfEaOIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 10:08:45 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45514 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaOIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:08:45 -0400
-Received: by mail-pg1-f194.google.com with SMTP id w34so4100793pga.12;
-        Fri, 31 May 2019 07:08:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WCYPGRHtk4nDgd7aDMAHWcLe9ARejuOtDU+i3zRXCIw=;
-        b=aWgGiNy/HLKgfAhinVo71aSeq4fHfBMEQv1ECNcrAiJRN/9MJCZ0SDPT4sFEfbPySD
-         exbAOUfCfV17WAoxapwG6JlWC9JRXSqtGoKqDpwgiGBVM1SyQhOOGmEBuXrJFzFRkeDK
-         grWEj9FiuQ4nRl8ToScZG9y/spyvuNAB4YoB1EiDQqLFJvlzl0D/dnvNJXR+eRlOMhFY
-         58l7rS2o5kc9U1DFd7SSzmTPNxegJNy9d1Og2xatZOetFrIfpihQHyI6CMGgax16K3vt
-         wNDL0EVPJINps4Y5WtHbzb7i5ItF1djycmr0rdd2hoohMgFbm6ovTpJh+9Y/TMuJewA2
-         s+2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WCYPGRHtk4nDgd7aDMAHWcLe9ARejuOtDU+i3zRXCIw=;
-        b=On8GRI+0OJhxwRjJT9rLgFHeU/DqI9qPbBDjw9YMBlWlMPyrvxdTSLIYbcte9MuUWl
-         JhGp6nP5808f0fl5B8oJTMFZ47mIWesK0lnBT6z7pScpRMhvyBmb3kBqA8GLDi03MxqX
-         UxeITpUQOivCBMuSUUd21j6Kpqvy2R+zop643qw14JINltExqw5rTYtbX4FO7xdpTwV3
-         V/9QOsFoK2V0MM28XEgaIF4NbsMfWqfAo3V/T/me3fMkCc09M/yf73F8nYjMaS2WKFED
-         6tKwUykq7HnEGJjeb1ePYE0pAEop+QOcBI2MjtaWxkRmqrWRo6tmD+Dapsy/CoXdE/VI
-         qgow==
-X-Gm-Message-State: APjAAAXwHAGrPEj4s6Sp/5kvR0X/QSlqIl5ecUfLM2rSF+u2HT6jkg9X
-        M8ycBq2xrLknu3+aUacc2OI=
-X-Google-Smtp-Source: APXvYqyVYnKObn0Yo6WNXMyOkwCtyqQYUyWocDPape0gkXWWzVv3ZSk5Am/RuDxTed3taruC/lxAqA==
-X-Received: by 2002:aa7:9dc9:: with SMTP id g9mr10280250pfq.228.1559311724900;
-        Fri, 31 May 2019 07:08:44 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id 127sm6313018pfc.159.2019.05.31.07.08.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 31 May 2019 07:08:43 -0700 (PDT)
-Date:   Fri, 31 May 2019 07:08:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-Message-ID: <20190531140841.j4f72rlojmaayqr5@localhost>
-References: <20190529045207.fzvhuu6d6jf5p65t@localhost>
- <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com>
- <20190530034555.wv35efen3igwwzjq@localhost>
- <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com>
- <20190530143037.iky5kk3h4ssmec3f@localhost>
- <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
- <20190530150557.iur7fruhyf5bs3qw@localhost>
- <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
- <20190531043417.6phscbpmo6krvxam@localhost>
- <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
+        id S1726701AbfEaOOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:14:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44738 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726037AbfEaOOf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 10:14:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lQ/kbfhYvDZZPBwmLwZieU5H7NxDWSHEMyqN5A9/ir0=; b=sDh0Te3JJY58duHLHfjcHd6tYB
+        x91CLNMhNV866aKk1fwqb2vadMt5bnFloCs0wURWTxTnX9F91uj1k4ZGjRbXnSov42pTZr6qJ4MBe
+        dkwb8lBCwoirtD3XKfy0lxLRbuUvN2z//HCVfW+IP7sLpMxuKGiJ+h+o91bZyB0zNrh0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hWiIN-0006Mk-Qx; Fri, 31 May 2019 16:14:11 +0200
+Date:   Fri, 31 May 2019 16:14:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Decreasing time to get link up to below 3 s
+Message-ID: <20190531141411.GA23821@lunn.ch>
+References: <87cb341b-1c32-04be-9309-489354ef8065@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87cb341b-1c32-04be-9309-489354ef8065@molgen.mpg.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 04:23:24PM +0300, Vladimir Oltean wrote:
-> The switch has internal logic to not send any other frame to the CPU
-> between a link-local and a meta frame.
+On Fri, May 31, 2019 at 03:19:20PM +0200, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> On several systems with different network devices and drivers (e1000e, r8169, tg3)
+> it looks like getting the link up takes over three seconds.
+> 
+> ### e1000e ###
+> 
+> [    1.999678] e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+> [    2.000374] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> [    2.001206] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+> [    2.412096] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+> [    2.495295] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 64:00:6a:2c:10:c1
+> [    2.496204] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+> [    2.497024] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: FFFFFF-0FF
+> [   15.614031] e1000e 0000:00:1f.6 net00: renamed from eth0
+> [   18.679325] e1000e: net00 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
 
-So this is guarantied by the switch?  What happens when multiple PTP
-frames arrive at the same time on different ports?  Does the switch
-buffer them and ensure strict ordering at the CPU port?
+Hi Paul
 
-In any case, the switch's guarantee is an important fact to state
-clearly in your series!
+All the Intel drivers do there own PHY handling, so i cannot speak for them.
 
-> Hence, if the MAC of the DSA master drops some of these frames, it
-> does not "spoil any chance" except if, out of the sequence LL n ->
-> META n -> LL n+1 -> META n+1, it persistently drops only META n and LL
-> n+1.
+> 
+> ### r8169 ###
+> 
+> [   33.433103] r8169 0000:18:00.0: enabling device (0000 -> 0003)
+> [   33.453834] libphy: r8169: probed
+> [   33.456629] r8169 0000:18:00.0 eth0: RTL8168h/8111h, 30:9c:23:04:d6:98, XID 541, IRQ 52
+> [   33.456631] r8169 0000:18:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
+> [   33.607384] r8169 0000:18:00.0 enp24s0: renamed from eth0
+> [   34.134035] Generic Realtek PHY r8169-1800:00: attached PHY driver [Generic Realtek PHY] (mii_bus:phy_addr=r8169-1800:00, irq=IGNORE)
+> [   34.215244] r8169 0000:18:00.0 enp24s0: Link is Down
+> [   37.822536] r8169 0000:18:00.0 enp24s0: Link is Up - 1Gbps/Full - flow control rx/tx
 
-LL = link layer?
+This is using the generic PHY framework and drivers.
 
-> So I'd like to re-state the problem towards what should be done to
-> prevent LL and META frames getting reordered in the DSA master driver
-> on multi-queue/multi-core systems.
+You can see here irq=IGNORE. This implies interrupts are not being
+used. So it will poll the PHY once per second. If you can get
+interrupts working, you can save 1/2 second on average.
 
-Ok.
 
-> At the most basic level, there
-> should exist a rule that makes only a single core process these
-> frames.
+> ### tg3 ###
+> 
+> [    2.015604] tg3.c:v3.137 (May 11, 2014)
+> [    2.025613] tg3 0000:04:00.0 eth0: Tigon3 [partno(BCM95762) rev 5762100] (PCI Express) MAC address 54:bf:64:70:a5:f9
+> [    2.026955] tg3 0000:04:00.0 eth0: attached PHY is 5762C (10/100/1000Base-T Ethernet) (WireSpeed[1], EEE[1])
+> [    2.028252] tg3 0000:04:00.0 eth0: RXcsums[1] LinkChgREG[0] MIirq[0] ASF[1] TSOcap[1]
+> [    2.029462] tg3 0000:04:00.0 eth0: dma_rwctrl[00000001] dma_mask[64-bit]
+> [    6.376904] tg3 0000:04:00.0 net00: renamed from eth0
+> [   10.240411] tg3 0000:04:00.0 net00: Link is up at 1000 Mbps, full duplex
+> [   10.240412] tg3 0000:04:00.0 net00: Flow control is on for TX and on for RX
+> [   10.240413] tg3 0000:04:00.0 net00: EEE is disabled
+> 
 
-This can be done simply using a data structure in the driver with an
-appropriate locking mechanism.  Then you don't have to worry which
-core the driver code runs on.
+Another MAC driver which does not use the generic framework.
 
-Thanks,
-Richard
+> If the time cannot be decreased, are there alternative strategies to get a link
+> up as fast as possible? For fast boot systems, it’d be interesting if first
+> a slower speed could be negotiated and later it would be changed.
+
+You can use ethtool to set the modes it will offer for auto-neg. So
+you could offer 10/half and see if that comes up faster.
+
+ethtool -s eth0 advertise 0x001
+
+But you are still going to have to wait the longer time when you
+decide it is time to swap to the full bandwidth.
+
+       Andrew
