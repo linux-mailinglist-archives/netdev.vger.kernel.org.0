@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D23A430831
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 07:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C8430832
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 07:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbfEaF4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 01:56:38 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40806 "EHLO
+        id S1726798AbfEaF4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 01:56:37 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35793 "EHLO
         mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbfEaF4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 01:56:35 -0400
-Received: by mail-pf1-f193.google.com with SMTP id u17so5489662pfn.7;
-        Thu, 30 May 2019 22:56:35 -0700 (PDT)
+        with ESMTP id S1726779AbfEaF4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 01:56:36 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d126so5512217pfd.2;
+        Thu, 30 May 2019 22:56:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Gqoy5TZzBBGMENH1KBlvfihB+rmyEhkB3t2QMsDk7ug=;
-        b=Ky4xio3xjCsa4X5gslc45UaciB3CJg6XUhpO3fdF8A7wIihWWa9NQ1VvcULMCzAtJ7
-         RAm4uYr3FlBv40gGPN6ct2oskP//orzda/9CZ1c2VtHZAS2AcMY+hB9qkjjL+U759eEO
-         8iSV8RaUqmb4x69s6mFNP6dszztfAVJyn7sqn+s16bay7TA7eGIs/LxShu+MbfNFVhm/
-         W2mOLGcJEryYEVrdOQiRbaTvmqSCdgTQt4ufui7MgK7PY7yzMtwzsjzhIHQ03oroc3fF
-         88vSRLGzOSFpp2TPK8se+Fd9Ro/OV2EqYnOc+d1R3gPKPc3QkwT6JbpRJ/ME6itB9yRn
-         tJDg==
+        bh=UEEj1N/0dSQSstX0EbQLzyc84JuhIAmWzwjh/N3OiY0=;
+        b=QaudX2ZdvnUkf2S+RxlUrekkdyZ5yVZ3iDozmDqxhERgER007qvWPEDL6PdvoI2oJM
+         vAmb/CXIgvneF/3CgCEf+xIkwk9GDhEsuSQCm+Z+DZyqMDZuqDs56Qr09ywqJurqgQTP
+         4crm6IY76M0jlJXLB84x1qeo7c+ShFjGg2b+Rq5yCAwHWhJd5GjUxPyOGnHd8P78Xqb/
+         6Fh9DTtQc8BzTyZw0TF6CgJDMYUb3nF5P3gUvvGsISIdHgMYP1cvVUWWqlsnFgpRRskQ
+         EZypVRlSG0GczT04J6RpoNt9V8mvns3iPRZIH+5YMZIxAwhQ+tpil2cXHG8oy8axsM4E
+         V7tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Gqoy5TZzBBGMENH1KBlvfihB+rmyEhkB3t2QMsDk7ug=;
-        b=QPHnm3SrFfYs1QcP9Q5izj9wH+A67rFi+x5GgsjxMhO7l+c7+8iun7mCrt0q3NA/me
-         VpuCoAPm6C7VhVbcxnPsDx2MU1m+QKxQdb3vlgrAQSVjdj+4fYJcuwsFu092flMTOISv
-         CS/ukBGl9TcEsMX6PaNFZfmfUFHJjSMptAM3VwTrk0Z4DlHrH4Gy8zGrF9E1E6MLc2GN
-         wqFo6GFHQRwfwwDzwWzhZ/eMscVM3qsdnOqrjLtSsyKj5h2rOtnOucq1DGlvcAQVW5K3
-         Xsy2Ah8anYHCsuslwl3HEnAAZV5ari4mcYFc+QeQUzbNp6b+aBFrOHr9+3o3EzYYRzol
-         Jlow==
-X-Gm-Message-State: APjAAAWhhQk57olvOgU+QtMd9Kgtbs1xoXzt/8fu/yMzIjnpor4M2e9Y
-        0r0y+BcNXbTLd/M2xS3lW8HdiOxt
-X-Google-Smtp-Source: APXvYqyhh/SED85FZgPWzlkX8TUUDSrgztkMYNenV6UWG+2JzuNLk/QcgJTucoVXe0moVBEvJvwuaA==
-X-Received: by 2002:a62:ea0a:: with SMTP id t10mr7645178pfh.236.1559282194401;
-        Thu, 30 May 2019 22:56:34 -0700 (PDT)
+        bh=UEEj1N/0dSQSstX0EbQLzyc84JuhIAmWzwjh/N3OiY0=;
+        b=jMd3CEN2e/r1ouMb1bp6Zlhz3P8/T0vFlQdzhNMartMZmJpwLpUXWVsdnVgDNfwCf0
+         lo5jgdPFlN9Nmgj/+jE1gQO8yPnR4Gn2B5KEws9/tbtCy75IECyPb8weptZ79crgixoU
+         3/sOR18hkUYjuiMhfwiGRRFXyH1Rz7Ckqtkea0iqWcc20yohFiMzvKRi+mAdHTUD3Ekv
+         2/zZVAf9wKVAWYuSmpQbhbMUTkELzOxEvE7m/5e2CNYxhqTiXULD7LyM+vyb27IEM8O4
+         qF2BUGz4ywNmUhS4LognZ/axu/5HRuwvzTlQGcsd/ouRJX+jIPKugmpdg6sYEK5uxLI5
+         gVAg==
+X-Gm-Message-State: APjAAAWsf21bUjje4oCksOB+hfqAIpKMdT4qX87Qnn020b7qjy/fN7jN
+        FNj19DUbCubSVO+PuQ6ip3unHc5k
+X-Google-Smtp-Source: APXvYqyIbqearZckdiEMeUvWtPxva3ApBM+LX427N2dtOxJJyIqOQJyzliKwad+LIs3rJEtH/k0w+w==
+X-Received: by 2002:a17:90a:a790:: with SMTP id f16mr7168411pjq.27.1559282195823;
+        Thu, 30 May 2019 22:56:35 -0700 (PDT)
 Received: from localhost.localdomain (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id u2sm4554184pjv.30.2019.05.30.22.56.33
+        by smtp.gmail.com with ESMTPSA id u2sm4554184pjv.30.2019.05.30.22.56.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 22:56:33 -0700 (PDT)
+        Thu, 30 May 2019 22:56:35 -0700 (PDT)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Miroslav Lichvar <mlichvar@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH V5 net-next 4/6] dt-bindings: ptp: Introduce MII time stamping devices.
-Date:   Thu, 30 May 2019 22:56:24 -0700
-Message-Id: <d786656435c64160d50014beb3d3d9d1aaf6f22d.1559281985.git.richardcochran@gmail.com>
+Subject: [PATCH V5 net-next 5/6] net: mdio: of: Register discovered MII time stampers.
+Date:   Thu, 30 May 2019 22:56:25 -0700
+Message-Id: <a375c2b73288184fe86155707ba150daaf946943.1559281985.git.richardcochran@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <cover.1559281985.git.richardcochran@gmail.com>
 References: <cover.1559281985.git.richardcochran@gmail.com>
@@ -64,107 +64,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a new binding that allows non-PHY MII time stamping
-devices to find their buses.  The new documentation covers both the
-generic binding and one upcoming user.
+When parsing a PHY node, register its time stamper, if any, and attach
+the instance to the PHY device.
 
 Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Documentation/devicetree/bindings/ptp/ptp-ines.txt | 35 ++++++++++++++++++
- .../devicetree/bindings/ptp/timestamper.txt        | 41 ++++++++++++++++++++++
- 2 files changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/ptp/ptp-ines.txt
- create mode 100644 Documentation/devicetree/bindings/ptp/timestamper.txt
+ drivers/net/phy/phy_device.c |  3 +++
+ drivers/of/of_mdio.c         | 30 +++++++++++++++++++++++++++++-
+ 2 files changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/ptp/ptp-ines.txt b/Documentation/devicetree/bindings/ptp/ptp-ines.txt
-new file mode 100644
-index 000000000000..4dee9eb89455
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ptp/ptp-ines.txt
-@@ -0,0 +1,35 @@
-+ZHAW InES PTP time stamping IP core
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 055087654b2c..aa06ef33df79 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -877,6 +877,9 @@ EXPORT_SYMBOL(phy_device_register);
+  */
+ void phy_device_remove(struct phy_device *phydev)
+ {
++	if (phydev->mii_ts)
++		unregister_mii_timestamper(phydev->mii_ts);
 +
-+The IP core needs two different kinds of nodes.  The control node
-+lives somewhere in the memory map and specifies the address of the
-+control registers.  There can be up to three port handles placed as
-+attributes of PHY nodes.  These associate a particular MII bus with a
-+port index within the IP core.
+ 	device_del(&phydev->mdio.dev);
+ 
+ 	/* Assert the reset signal */
+diff --git a/drivers/of/of_mdio.c b/drivers/of/of_mdio.c
+index fcf25e32b1ed..98f2516ec3ba 100644
+--- a/drivers/of/of_mdio.c
++++ b/drivers/of/of_mdio.c
+@@ -43,14 +43,37 @@ static int of_get_phy_id(struct device_node *device, u32 *phy_id)
+ 	return -EINVAL;
+ }
+ 
++struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
++{
++	struct of_phandle_args arg;
++	int err;
 +
-+Required properties of the control node:
++	err = of_parse_phandle_with_fixed_args(node, "timestamper", 1, 0, &arg);
 +
-+- compatible:		"ines,ptp-ctrl"
-+- reg:			physical address and size of the register bank
++	if (err == -ENOENT)
++		return NULL;
++	else if (err)
++		return ERR_PTR(err);
 +
-+Required format of the port handle within the PHY node:
++	if (arg.args_count != 1)
++		return ERR_PTR(-EINVAL);
 +
-+- timestamper:		provides control node reference and
-+			the port channel within the IP core
++	return register_mii_timestamper(arg.np, arg.args[0]);
++}
 +
-+Example:
+ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 				    struct device_node *child, u32 addr)
+ {
++	struct mii_timestamper *mii_ts;
+ 	struct phy_device *phy;
+ 	bool is_c45;
+ 	int rc;
+ 	u32 phy_id;
+ 
++	mii_ts = of_find_mii_timestamper(child);
++	if (IS_ERR(mii_ts))
++		return PTR_ERR(mii_ts);
 +
-+	tstamper: timestamper@60000000 {
-+		compatible = "ines,ptp-ctrl";
-+		reg = <0x60000000 0x80>;
-+	};
-+
-+	ethernet@80000000 {
-+		...
-+		mdio {
-+			...
-+			phy@3 {
-+				...
-+				timestamper = <&tstamper 0>;
-+			};
-+		};
-+	};
-diff --git a/Documentation/devicetree/bindings/ptp/timestamper.txt b/Documentation/devicetree/bindings/ptp/timestamper.txt
-new file mode 100644
-index 000000000000..88ea0bc7d662
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ptp/timestamper.txt
-@@ -0,0 +1,41 @@
-+Time stamps from MII bus snooping devices
-+
-+This binding supports non-PHY devices that snoop the MII bus and
-+provide time stamps.  In contrast to PHY time stamping drivers (which
-+can simply attach their interface directly to the PHY instance), stand
-+alone MII time stamping drivers use this binding to specify the
-+connection between the snooping device and a given network interface.
-+
-+Non-PHY MII time stamping drivers typically talk to the control
-+interface over another bus like I2C, SPI, UART, or via a memory mapped
-+peripheral.  This controller device is associated with one or more
-+time stamping channels, each of which snoops on a MII bus.
-+
-+The "timestamper" property lives in a phy node and links a time
-+stamping channel from the controller device to that phy's MII bus.
-+
-+Example:
-+
-+	tstamper: timestamper@10000000 {
-+		compatible = "bigcorp,ts-ctrl";
-+	};
-+
-+	ethernet@20000000 {
-+		mdio {
-+			phy@1 {
-+				timestamper = <&tstamper 0>;
-+			};
-+		};
-+	};
-+
-+	ethernet@30000000 {
-+		mdio {
-+			phy@2 {
-+				timestamper = <&tstamper 1>;
-+			};
-+		};
-+	};
-+
-+In this example, time stamps from the MII bus attached to phy@1 will
-+appear on time stamp channel 0 (zero), and those from phy@2 appear on
-+channel 1.
+ 	is_c45 = of_device_is_compatible(child,
+ 					 "ethernet-phy-ieee802.3-c45");
+ 
+@@ -58,11 +81,14 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 		phy = phy_device_create(mdio, addr, phy_id, 0, NULL);
+ 	else
+ 		phy = get_phy_device(mdio, addr, is_c45);
+-	if (IS_ERR(phy))
++	if (IS_ERR(phy)) {
++		unregister_mii_timestamper(mii_ts);
+ 		return PTR_ERR(phy);
++	}
+ 
+ 	rc = of_irq_get(child, 0);
+ 	if (rc == -EPROBE_DEFER) {
++		unregister_mii_timestamper(mii_ts);
+ 		phy_device_free(phy);
+ 		return rc;
+ 	}
+@@ -91,10 +117,12 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 	 * register it */
+ 	rc = phy_device_register(phy);
+ 	if (rc) {
++		unregister_mii_timestamper(mii_ts);
+ 		phy_device_free(phy);
+ 		of_node_put(child);
+ 		return rc;
+ 	}
++	phy->mii_ts = mii_ts;
+ 
+ 	dev_dbg(&mdio->dev, "registered phy %pOFn at address %i\n",
+ 		child, addr);
 -- 
 2.11.0
 
