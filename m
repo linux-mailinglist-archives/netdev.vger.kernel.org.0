@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A65230B8B
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F0630BB1
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbfEaJae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 05:30:34 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33358 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726232AbfEaJae (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 05:30:34 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 072ACAFE2;
-        Fri, 31 May 2019 09:30:32 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id C2E3CE00E3; Fri, 31 May 2019 11:30:29 +0200 (CEST)
-Date:   Fri, 31 May 2019 11:30:29 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, linville@redhat.com
-Subject: Re: [PATCH 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
-Message-ID: <20190531093029.GD15954@unicorn.suse.cz>
-References: <20190530180616.1418-1-andrew@lunn.ch>
- <20190530180616.1418-3-andrew@lunn.ch>
+        id S1726386AbfEaJfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 05:35:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39112 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726233AbfEaJfV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 05:35:21 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0560E6EB9A;
+        Fri, 31 May 2019 09:35:21 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EE3885D719;
+        Fri, 31 May 2019 09:35:19 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     aclaudi@redhat.com, marcelo.leitner@gmail.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH iproute2] tc: simple: don't hardcode the control action
+Date:   Fri, 31 May 2019 11:34:46 +0200
+Message-Id: <25d2af8d9fc5af184ad1694c2963403753aef53e.1559294588.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190530180616.1418-3-andrew@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Fri, 31 May 2019 09:35:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 08:06:16PM +0200, Andrew Lunn wrote:
-> The kernel can now indicate if the PHY supports operating over a
-> single pair at 100Mbps or 1000Mbps.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  ethtool.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/ethtool.c b/ethtool.c
-> index 66a907edd97b..35158939e04c 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -494,8 +494,10 @@ static void init_global_link_mode_masks(void)
->  		ETHTOOL_LINK_MODE_10baseT_Full_BIT,
->  		ETHTOOL_LINK_MODE_100baseT_Half_BIT,
->  		ETHTOOL_LINK_MODE_100baseT_Full_BIT,
-> +		ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
->  		ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
->  		ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-> +		ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
->  		ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
->  		ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
->  		ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
+don't hardcode the 'pipe' control action, so that the following TDC test
 
-The only place where the all_advertised_modes_bits[] array is used is
+ b776 - Replace simple action with invalid goto chain control
 
-	ethtool_link_mode_zero(all_advertised_modes);
-	ethtool_link_mode_zero(all_advertised_flags);
-	for (i = 0; i < ARRAY_SIZE(all_advertised_modes_bits); ++i) {
-		ethtool_link_mode_set_bit(all_advertised_modes_bits[i],
-					  all_advertised_modes);
-		ethtool_link_mode_set_bit(all_advertised_modes_bits[i],
-					  all_advertised_flags);
-	}
+can detect kernels that correctly validate 'goto chain' control action.
 
-so the order does not really matter. I would prefer to have the elements
-ordered the same way as in enum ethtool_link_mode_bit_indices so that
-it's easier to check if something is missing.
+CC: Andrea Claudi <aclaudi@redhat.com>
+CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ tc/m_simple.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> @@ -634,10 +636,14 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
->  		  "100baseT/Half" },
->  		{ 1, ETHTOOL_LINK_MODE_100baseT_Full_BIT,
->  		  "100baseT/Full" },
-> +		{ 1, ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
-> +		  "100baseT1/Full" },
->  		{ 0, ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
->  		  "1000baseT/Half" },
->  		{ 1, ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
->  		  "1000baseT/Full" },
-> +		{ 1, ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
-> +		  "1000baseT1/Full" },
->  		{ 0, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
->  		  "1000baseKX/Full" },
->  		{ 0, ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+diff --git a/tc/m_simple.c b/tc/m_simple.c
+index 886606f9f8b4..e3c8a60ff64a 100644
+--- a/tc/m_simple.c
++++ b/tc/m_simple.c
+@@ -119,6 +119,9 @@ parse_simple(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
+ 		}
+ 	}
+ 
++	parse_action_control_dflt(&argc, &argv, &sel.action, false,
++				  TC_ACT_PIPE);
++
+ 	if (argc) {
+ 		if (matches(*argv, "index") == 0) {
+ 			NEXT_ARG();
+@@ -144,8 +147,6 @@ parse_simple(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
+ 		return -1;
+ 	}
+ 
+-	sel.action = TC_ACT_PIPE;
+-
+ 	tail = addattr_nest(n, MAX_MSG, tca_id);
+ 	addattr_l(n, MAX_MSG, TCA_DEF_PARMS, &sel, sizeof(sel));
+ 	if (simpdata)
+-- 
+2.20.1
 
-Does it mean that we could end up with lines like
-
-                                100baseT/Half 100baseT/Full 100baseT1/Full
-                                1000baseT/Full 1000baseT1/Full
-
-if there is a NIC supporting both T and T1? (I'm not sure if it's
-possible - but if not, there is no need for setting same_line.) It would
-be probably confusing for users as modes on the same line always were
-half/full duplex variants of the same.
-
-You should also add the new modes to ethtool.8.in.
-
-Michal
