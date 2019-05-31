@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3305631441
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DED0031442
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:55:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfEaRzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 13:55:20 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39708 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbfEaRzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:55:20 -0400
-Received: by mail-wr1-f66.google.com with SMTP id x4so7078802wrt.6
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:55:18 -0700 (PDT)
+        id S1726992AbfEaRzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 13:55:23 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38307 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfEaRzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:55:21 -0400
+Received: by mail-wr1-f67.google.com with SMTP id d18so7069722wrs.5
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:55:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0GS4LMwezPgy2DzGEuqFbf0lz+SXLOMwav/zMSAZjO8=;
-        b=KxflmlXHmw+OfSWgzqmur0MPYPFibsVAqfdqW4IxsTGcHhGUexnrnxY81dnsCxGwYU
-         P8pRGunPWs5kRJhLqTxAqyEBVZjDmDsPbduHQLu/gaGQQpS0gppAuDzmhlkQ5Ci9xKMM
-         m22ljGTllRd4YZQZ4u/uaLlDgjqgwDAzX6eXd3zR4rnrwoJ5Tqc5CbYyglrIErOZDKm8
-         1j7rRlOY5T2mWjQ0WE3rzw+A8p14Jyi+otnsENRw4RRqA8VU7roZb7gQE+Jo5RY17xKE
-         7WZdsLJEN8KmaYq9YqzCPCORXAyIjFNS815bWJBgTN13tW1Rsu1Hji7ZRd875dkjvRjf
-         Nc1A==
+        bh=GbiuSmQzffHigthf/AQCpBxGe91ttl1QTpYiMWUAxhg=;
+        b=K3m3TIfkafEk0A7zQI9vk4q5gdHzeHXqlZQPaCtwlKm+4SI/WNhk6xoZ2IGmesdTli
+         MyQ2D21/bjUhA5HOd1BagSW5TXMTuQ4lPAfc+NR5muCZk0zypl6lsSso769Qwb5+sTjA
+         i8hUoBwMcBhB7d7Ft20QMAyEXpePfFSJE23S8VAX4C+9RE/11H4TOh2DNYaXGOn/3jV+
+         YJssU0vYK76A4g2HDTsG9RYt19QM5PO8fW6rFHyBEREFJRVos7KrS2ZJJaRHZYGHkNmr
+         lV7DzhlGbumexBOzsYwPjXaZBnww2cXJmKpHmrTYpSmSV1olprKAidmzppNkls7tcpms
+         qhOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0GS4LMwezPgy2DzGEuqFbf0lz+SXLOMwav/zMSAZjO8=;
-        b=uTBkfUq1ibMAfV1eCDnA63GIDHG+SBviPvwEhvPdSc4Yj+PBYpe4puwmyt0/MdREUx
-         VhLv5pZ6d30zvlQIugFYY0gNWEesEnMUEW6kljYO76ldL6R7iVYmJGKipi5GuSX6GUum
-         uix22ommDi9vtc4/03FlaDjH0AiBN01ioCsUvuMYak1WftjlPuEl+ua4Wq7U+CUGYMxQ
-         wahdhE5u00Bd4wM6hrPFz2nHxC5eyDTED8m+1diPNe10wi1GNDWThgwGB9EKCQGJYsMu
-         Vgfz5jO9yyV9QMiMPJdumy0sJ9D7lcLjeI9UGoZPS0Hpoe+tvWXK/jvG9v02Vwb28PY7
-         XH+w==
-X-Gm-Message-State: APjAAAVQxgLpvv9/qg14PbOa0/cS73CVVzDgdIl7Lwp2XL9PWqkSQodr
-        q06C4pkTTo7760O0O4D1hmiTmT18
-X-Google-Smtp-Source: APXvYqxTiUyOmYUFJVJKltSQbHAMSRUBA8Z7P0th8CIGLAVt3CCs+dNfl4udFOf4L9QYEk6MV9lDcA==
-X-Received: by 2002:adf:dc04:: with SMTP id t4mr7872325wri.126.1559325317897;
-        Fri, 31 May 2019 10:55:17 -0700 (PDT)
+        bh=GbiuSmQzffHigthf/AQCpBxGe91ttl1QTpYiMWUAxhg=;
+        b=piF097kFDXbKcntORKtfdWlec76RuSYFhhYc8T3fMIBTHRk2mxBwTmoeio6iszj0Oy
+         t3rGU3TzmF8n7yoSP/2jdagwSfu1yvCwLn6eom24vEjIDzL5tRTo34wEuDVSwnkX6iXg
+         C0tkw9bVcvHos4f1KmPpcjEeuTHr75jMJUMy+b7u73v/IQaUjOKUKTXfP3F+/EfdT5TK
+         mn1ppCTX45pVvsLpwrHNWcLLGVV0DjuWAM3k7FjGxBDNvmL46ZRM3/WUAlGUdf2H8sux
+         mpLOGBx22TFmAYXE+Do2cEvsc7wZ1qLiZ11DRpBFHQAeo+xAfGIZzw147VJ3588el+Ee
+         j8oQ==
+X-Gm-Message-State: APjAAAXU2VUee4y/TqlsNPAM9w4fPal4yNAMqyCNXmuTcAWGAyHSoEyK
+        kFtwwpJiEzK6O8wnBqTXt1X0jiNs
+X-Google-Smtp-Source: APXvYqx17uSjTYJz/h5NXO1KxoX4NEJLBWP3gb7KAbbcx12ASsJW0iI1/x43XBGNRQJ7L6gGs+AJUA==
+X-Received: by 2002:a5d:65c9:: with SMTP id e9mr7504589wrw.348.1559325319321;
+        Fri, 31 May 2019 10:55:19 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bf3:bd00:2026:7a0b:4d8d:d1ce? (p200300EA8BF3BD0020267A0B4D8DD1CE.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:2026:7a0b:4d8d:d1ce])
-        by smtp.googlemail.com with ESMTPSA id n1sm5202263wrx.39.2019.05.31.10.55.16
+        by smtp.googlemail.com with ESMTPSA id n4sm1759652wmk.41.2019.05.31.10.55.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 10:55:17 -0700 (PDT)
-Subject: [PATCH net-next 2/3] r8169: remove struct jumbo_ops
+        Fri, 31 May 2019 10:55:18 -0700 (PDT)
+Subject: [PATCH net-next 3/3] r8169: avoid tso csum function indirection
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <1e17bf2f-93a9-03ff-7101-7f680665f4a7@gmail.com>
-Message-ID: <23c562d6-4594-02ec-e60e-3f0295929f45@gmail.com>
-Date:   Fri, 31 May 2019 19:54:03 +0200
+Message-ID: <2d7d8add-39e6-3102-c3e7-9249e3764c0f@gmail.com>
+Date:   Fri, 31 May 2019 19:55:11 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
@@ -65,156 +65,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The jumbo_ops are used in just one place, so we can simplify the code
-and avoid the penalty of indirect calls in times of retpoline.
+Replace indirect call to tso_csum with direct calls. To do this we have
+to move rtl_chip_supports_csum_v2().
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169.c | 96 +++++++++++-----------------
- 1 file changed, 36 insertions(+), 60 deletions(-)
+ drivers/net/ethernet/realtek/r8169.c | 46 +++++++++++++---------------
+ 1 file changed, 21 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index 3472eef75..fc58f89be 100644
+index fc58f89be..2705eb510 100644
 --- a/drivers/net/ethernet/realtek/r8169.c
 +++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -655,11 +655,6 @@ struct rtl8169_private {
- 	const struct rtl_coalesce_info *coalesce_info;
+@@ -656,7 +656,6 @@ struct rtl8169_private {
  	struct clk *clk;
  
--	struct jumbo_ops {
--		void (*enable)(struct rtl8169_private *);
--		void (*disable)(struct rtl8169_private *);
--	} jumbo_ops;
--
  	void (*hw_start)(struct rtl8169_private *tp);
- 	bool (*tso_csum)(struct rtl8169_private *, struct sk_buff *, u32 *);
+-	bool (*tso_csum)(struct rtl8169_private *, struct sk_buff *, u32 *);
  
-@@ -4196,24 +4191,6 @@ static void rtl8169_init_ring_indexes(struct rtl8169_private *tp)
- 	tp->dirty_tx = tp->cur_tx = tp->cur_rx = 0;
+ 	struct {
+ 		DECLARE_BITMAP(flags, RTL_FLAG_MAX);
+@@ -5780,8 +5779,7 @@ static int msdn_giant_send_check(struct sk_buff *skb)
+ 	return ret;
  }
  
--static void rtl_hw_jumbo_enable(struct rtl8169_private *tp)
--{
--	if (tp->jumbo_ops.enable) {
--		rtl_unlock_config_regs(tp);
--		tp->jumbo_ops.enable(tp);
--		rtl_lock_config_regs(tp);
--	}
--}
--
--static void rtl_hw_jumbo_disable(struct rtl8169_private *tp)
--{
--	if (tp->jumbo_ops.disable) {
--		rtl_unlock_config_regs(tp);
--		tp->jumbo_ops.disable(tp);
--		rtl_lock_config_regs(tp);
--	}
--}
--
- static void r8168c_hw_jumbo_enable(struct rtl8169_private *tp)
+-static bool rtl8169_tso_csum_v1(struct rtl8169_private *tp,
+-				struct sk_buff *skb, u32 *opts)
++static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
  {
- 	RTL_W8(tp, Config3, RTL_R8(tp, Config3) | Jumbo_En0);
-@@ -4280,55 +4257,56 @@ static void r8168b_1_hw_jumbo_disable(struct rtl8169_private *tp)
- 	RTL_W8(tp, Config4, RTL_R8(tp, Config4) & ~(1 << 0));
- }
+ 	u32 mss = skb_shinfo(skb)->gso_size;
  
--static void rtl_init_jumbo_ops(struct rtl8169_private *tp)
-+static void rtl_hw_jumbo_enable(struct rtl8169_private *tp)
- {
--	struct jumbo_ops *ops = &tp->jumbo_ops;
--
-+	rtl_unlock_config_regs(tp);
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_11:
--		ops->disable	= r8168b_0_hw_jumbo_disable;
--		ops->enable	= r8168b_0_hw_jumbo_enable;
-+		r8168b_0_hw_jumbo_enable(tp);
- 		break;
- 	case RTL_GIGA_MAC_VER_12:
- 	case RTL_GIGA_MAC_VER_17:
--		ops->disable	= r8168b_1_hw_jumbo_disable;
--		ops->enable	= r8168b_1_hw_jumbo_enable;
-+		r8168b_1_hw_jumbo_enable(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_18: /* Wild guess. Needs info from Realtek. */
--	case RTL_GIGA_MAC_VER_19:
--	case RTL_GIGA_MAC_VER_20:
--	case RTL_GIGA_MAC_VER_21: /* Wild guess. Needs info from Realtek. */
--	case RTL_GIGA_MAC_VER_22:
--	case RTL_GIGA_MAC_VER_23:
--	case RTL_GIGA_MAC_VER_24:
--	case RTL_GIGA_MAC_VER_25:
--	case RTL_GIGA_MAC_VER_26:
--		ops->disable	= r8168c_hw_jumbo_disable;
--		ops->enable	= r8168c_hw_jumbo_enable;
-+	case RTL_GIGA_MAC_VER_18 ... RTL_GIGA_MAC_VER_26:
-+		r8168c_hw_jumbo_enable(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_27:
--	case RTL_GIGA_MAC_VER_28:
--		ops->disable	= r8168dp_hw_jumbo_disable;
--		ops->enable	= r8168dp_hw_jumbo_enable;
-+	case RTL_GIGA_MAC_VER_27 ... RTL_GIGA_MAC_VER_28:
-+		r8168dp_hw_jumbo_enable(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_31: /* Wild guess. Needs info from Realtek. */
--	case RTL_GIGA_MAC_VER_32:
--	case RTL_GIGA_MAC_VER_33:
--	case RTL_GIGA_MAC_VER_34:
--		ops->disable	= r8168e_hw_jumbo_disable;
--		ops->enable	= r8168e_hw_jumbo_enable;
-+	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_34:
-+		r8168e_hw_jumbo_enable(tp);
-+		break;
-+	default:
- 		break;
-+	}
-+	rtl_lock_config_regs(tp);
-+}
- 
--	/*
--	 * No action needed for jumbo frames with 8169.
--	 * No jumbo for 810x at all.
--	 */
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
-+static void rtl_hw_jumbo_disable(struct rtl8169_private *tp)
-+{
-+	rtl_unlock_config_regs(tp);
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_11:
-+		r8168b_0_hw_jumbo_disable(tp);
-+		break;
-+	case RTL_GIGA_MAC_VER_12:
-+	case RTL_GIGA_MAC_VER_17:
-+		r8168b_1_hw_jumbo_disable(tp);
-+		break;
-+	case RTL_GIGA_MAC_VER_18 ... RTL_GIGA_MAC_VER_26:
-+		r8168c_hw_jumbo_disable(tp);
-+		break;
-+	case RTL_GIGA_MAC_VER_27 ... RTL_GIGA_MAC_VER_28:
-+		r8168dp_hw_jumbo_disable(tp);
-+		break;
-+	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_34:
-+		r8168e_hw_jumbo_disable(tp);
-+		break;
- 	default:
--		ops->disable	= NULL;
--		ops->enable	= NULL;
- 		break;
+@@ -5798,8 +5796,6 @@ static bool rtl8169_tso_csum_v1(struct rtl8169_private *tp,
+ 		else
+ 			WARN_ON_ONCE(1);
  	}
-+	rtl_lock_config_regs(tp);
+-
+-	return true;
  }
  
- DECLARE_RTL_COND(rtl_chipcmd_cond)
-@@ -7130,8 +7108,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+@@ -5889,6 +5885,18 @@ static bool rtl_tx_slots_avail(struct rtl8169_private *tp,
+ 	return slots_avail > nr_frags;
+ }
  
- 	pci_set_master(pdev);
++/* Versions RTL8102e and from RTL8168c onwards support csum_v2 */
++static bool rtl_chip_supports_csum_v2(struct rtl8169_private *tp)
++{
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
++	case RTL_GIGA_MAC_VER_10 ... RTL_GIGA_MAC_VER_17:
++		return false;
++	default:
++		return true;
++	}
++}
++
+ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 				      struct net_device *dev)
+ {
+@@ -5911,9 +5919,13 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 	opts[1] = cpu_to_le32(rtl8169_tx_vlan_tag(skb));
+ 	opts[0] = DescOwn;
  
--	rtl_init_jumbo_ops(tp);
+-	if (!tp->tso_csum(tp, skb, opts)) {
+-		r8169_csum_workaround(tp, skb);
+-		return NETDEV_TX_OK;
++	if (rtl_chip_supports_csum_v2(tp)) {
++		if (!rtl8169_tso_csum_v2(tp, skb, opts)) {
++			r8169_csum_workaround(tp, skb);
++			return NETDEV_TX_OK;
++		}
++	} else {
++		rtl8169_tso_csum_v1(skb, opts);
+ 	}
+ 
+ 	len = skb_headlen(skb);
+@@ -6951,18 +6963,6 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
+ 	}
+ }
+ 
+-/* Versions RTL8102e and from RTL8168c onwards support csum_v2 */
+-static bool rtl_chip_supports_csum_v2(struct rtl8169_private *tp)
+-{
+-	switch (tp->mac_version) {
+-	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
+-	case RTL_GIGA_MAC_VER_10 ... RTL_GIGA_MAC_VER_17:
+-		return false;
+-	default:
+-		return true;
+-	}
+-}
 -
- 	chipset = tp->mac_version;
+ static int rtl_jumbo_max(struct rtl8169_private *tp)
+ {
+ 	/* Non-GBit versions don't support jumbo frames */
+@@ -7158,12 +7158,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		/* Disallow toggling */
+ 		dev->hw_features &= ~NETIF_F_HW_VLAN_CTAG_RX;
  
- 	rc = rtl_alloc_irq(tp);
+-	if (rtl_chip_supports_csum_v2(tp)) {
+-		tp->tso_csum = rtl8169_tso_csum_v2;
++	if (rtl_chip_supports_csum_v2(tp))
+ 		dev->hw_features |= NETIF_F_IPV6_CSUM | NETIF_F_TSO6;
+-	} else {
+-		tp->tso_csum = rtl8169_tso_csum_v1;
+-	}
+ 
+ 	dev->hw_features |= NETIF_F_RXALL;
+ 	dev->hw_features |= NETIF_F_RXFCS;
 -- 
 2.21.0
 
