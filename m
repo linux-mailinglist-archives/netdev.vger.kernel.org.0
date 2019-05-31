@@ -2,95 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A63931384
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A6A31383
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbfEaRLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 13:11:46 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:35928 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbfEaRLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:11:45 -0400
-Received: by mail-yb1-f193.google.com with SMTP id y2so3823438ybo.3
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QOZqg+HYN41MGcZXnbzu+lG/2AcgsNtdxfeqPjWSGV8=;
-        b=SkidUbfOAynW/t7qWQDQab/hmWZQ7HdAKVBhpwpqOXMBBV5cRhd2EF84wyIpkDhr3D
-         6yCE+K+edBc0Xifv563al13LpyJnHdIzW1XlLT70yI4vuW8BGy18u1yi5NXE5Uya6D9S
-         yT7D1ZGVzN9pbIUyCBGgOfjbvzdRzsApScvpwubzNjaiakT4XPfrhseepiWlcF+VsCXL
-         5P4p0Fsy5mwXVEYb4T/bW6HHxVrao7DN0md2JzjB8kHAU51BRoJ0npu3ihBPxlzBdpg5
-         yN4qNNuhsYQUvtYB9+odIe4Qr/JETJ3+ybMlTr2Wj0z717tR9ijStgO42i2gePm5GSJQ
-         Q6ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QOZqg+HYN41MGcZXnbzu+lG/2AcgsNtdxfeqPjWSGV8=;
-        b=EptYFPWV4i4SBFT8HlIr3MgDgXUrJ+SMeKkEI8TP6/yrMo8rfUCtb7t5MajCUFGjvD
-         JIl8tsWpXCMpMmj6Tj35b4sneyRbeN7ERF4W2/1qey/dw3YoSr2ufM1HD0X+u2TV0HHk
-         WffFnrdGBNVChbAhH5CPdIllAHtRVlGCZh1OJsbStD4Py+DiepO0d0Ve3HgTiaEAyCLa
-         oqvatjVlLsqJTAiHx3Zxt4xzNPGSYSyv5xLD8UTIs9nuQmX/6MMmZMef+TihY7/FGCUd
-         lN4xrQj73a+kGEJxHQqq8x+ufkBeIs5fxsuYqHubc1K7azj8aRMJ6ZuZIm1Oamep9hwO
-         Qr9w==
-X-Gm-Message-State: APjAAAXGwwIscdbfbPRS0p1oQhIF94JoHksVU7hxp6TYHEqHK1CSZ+K6
-        wKqoqkKNb1GD8mwVWdGcrNC4uhPlaXwjX+423DbqdA==
-X-Google-Smtp-Source: APXvYqznKYsxhMM9Y0s7/vDSX3G7w48wD6bLlgv8dJwHmXezOEM9n38X8kReauKwtiO6U0Vj+z3AS4lCbrx1D8/GiG8=
-X-Received: by 2002:a25:bf83:: with SMTP id l3mr5595836ybk.446.1559322704544;
- Fri, 31 May 2019 10:11:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190524160340.169521-12-edumazet@google.com> <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
- <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
- <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au> <CACT4Y+Y39u9VL+C27PVpfVZbNP_U8yFG35yLy6_KaxK2+Z9Gyw@mail.gmail.com>
- <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au> <CACT4Y+ZuHhAwNZ31+W2Hth90qA9mDk7YmZFq49DmjXCUa_gF1g@mail.gmail.com>
- <20190531144549.uiyht5hcy7lfgoge@gondor.apana.org.au> <4e2f7f20-5b7f-131f-4d8b-09cfc6e087d4@gmail.com>
- <20190531162945.GA600@andrea>
-In-Reply-To: <20190531162945.GA600@andrea>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 31 May 2019 10:11:32 -0700
-Message-ID: <CANn89iLJAM8kB8ySk2hDReewbL3AqrcEZb8Zf64=mj-cda=onA@mail.gmail.com>
-Subject: Re: [PATCH] inet: frags: Remove unnecessary smp_store_release/READ_ONCE
-To:     Andrea Parri <andrea.parri@amarulasolutions.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S1726825AbfEaRLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 13:11:42 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60680 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726652AbfEaRLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:11:42 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4VGqs9u067994
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 13:11:40 -0400
+Received: from e13.ny.us.ibm.com (e13.ny.us.ibm.com [129.33.205.203])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2su6k6vnh3-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 13:11:40 -0400
+Received: from localhost
+        by e13.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+        Fri, 31 May 2019 18:11:39 +0100
+Received: from b01cxnp23034.gho.pok.ibm.com (9.57.198.29)
+        by e13.ny.us.ibm.com (146.89.104.200) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 31 May 2019 18:11:35 +0100
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x4VHBYk938142336
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 May 2019 17:11:34 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7098BB2068;
+        Fri, 31 May 2019 17:11:34 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 536BDB2067;
+        Fri, 31 May 2019 17:11:34 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.70.82.216])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 31 May 2019 17:11:34 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id A21C416C37A7; Fri, 31 May 2019 10:11:35 -0700 (PDT)
+Date:   Fri, 31 May 2019 10:11:35 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
         Alan Stern <stern@rowland.harvard.edu>,
+        Eric Dumazet <edumazet@google.com>,
         David Miller <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] inet: frags: Remove unnecessary
+ smp_store_release/READ_ONCE
+Reply-To: paulmck@linux.ibm.com
+References: <20190524160340.169521-12-edumazet@google.com>
+ <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
+ <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
+ <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au>
+ <CACT4Y+Y39u9VL+C27PVpfVZbNP_U8yFG35yLy6_KaxK2+Z9Gyw@mail.gmail.com>
+ <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au>
+ <CACT4Y+ZuHhAwNZ31+W2Hth90qA9mDk7YmZFq49DmjXCUa_gF1g@mail.gmail.com>
+ <20190531144549.uiyht5hcy7lfgoge@gondor.apana.org.au>
+ <4e2f7f20-5b7f-131f-4d8b-09cfc6e087d4@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4e2f7f20-5b7f-131f-4d8b-09cfc6e087d4@gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19053117-0064-0000-0000-000003E82A5B
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011191; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01211307; UDB=6.00636472; IPR=6.00992344;
+ MB=3.00027134; MTD=3.00000008; XFM=3.00000015; UTC=2019-05-31 17:11:38
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19053117-0065-0000-0000-00003DAEF887
+Message-Id: <20190531171135.GM28207@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_11:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905310104
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 9:29 AM Andrea Parri
-<andrea.parri@amarulasolutions.com> wrote:
->
-> On Fri, May 31, 2019 at 08:45:47AM -0700, Eric Dumazet wrote:
-> > On 5/31/19 7:45 AM, Herbert Xu wrote:
->
-> > > In this case the code doesn't need them because an implicit
-> > > barrier() (which is *stronger* than READ_ONCE/WRITE_ONCE) already
-> > > exists in both places.
->
->
-> > I have already explained that the READ_ONCE() was a leftover of the first version
-> > of the patch, that I refined later, adding correct (and slightly more complex) RCU
-> > barriers and rules.
->
-> AFAICT, neither barrier() nor RCU synchronization can be used as
-> a replacement for {READ,WRITE}_ONCE() here (and in tons of other
-> different situations).  IOW, you might want to try harder.  ;-)
+On Fri, May 31, 2019 at 08:45:47AM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 5/31/19 7:45 AM, Herbert Xu wrote:
+> > On Fri, May 31, 2019 at 10:24:08AM +0200, Dmitry Vyukov wrote:
+> >>
+> >> OK, let's call it barrier. But we need more than a barrier here then.
+> > 
+> > READ_ONCE/WRITE_ONCE is not some magical dust that you sprinkle
+> > around in your code to make it work without locks.  You need to
+> > understand exactly why you need them and why the code would be
+> > buggy if you don't use them.
+> > 
+> > In this case the code doesn't need them because an implicit
+> > barrier() (which is *stronger* than READ_ONCE/WRITE_ONCE) already
+> > exists in both places.
+> >
+> 
+> More over, adding READ_ONCE() while not really needed prevents some compiler
+> optimizations.
+> 
+> ( Not in this particular case, since fqdir->dead is read exactly once, but we could
+> have had a loop )
+> 
+> I have already explained that the READ_ONCE() was a leftover of the first version
+> of the patch, that I refined later, adding correct (and slightly more complex) RCU
+> barriers and rules.
+> 
+> Dmitry, the self-documentation argument is perfectly good, but Herbert
+> put much nicer ad hoc comments.
 
-At least the writer side is using queue_rcu_work() which implies many
-full memory barriers,
-it is not equivalent to a compiler barrier() :/
+I don't see all the code, but let me see if I understand based on the
+pieces that I do see...
 
-David, Herbert, I really do not care, I want to move on fixing real
-bugs, not arguing with memory barriers experts.
+o	fqdir_exit() does a store-release to ->dead, then arranges
+	for fqdir_rwork_fn() to be called from workqueue context
+	after a grace period has elapsed.
 
-Lets add back the READ_ONCE() and be happy.
+o	If inet_frag_kill() is invoked only from fqdir_rwork_fn(),
+	and if they are using the same fqdir, then inet_frag_kill()
+	would always see fqdir->dead==true.
+
+	But then it would not be necessary to check it, so this seems
+	unlikely.
+
+o	If fqdir_exit() does store-releases to a number of ->dead
+	fields under rcu_read_lock(), and if the next fqdir_exit()
+	won't happen until after all the callbacks complete
+	(combination of flushing workqueues and rcu_barrier(), for
+	example), then ->dead would be stable when inet_frag_kill()
+	is invoked, and might be true or not.  (This again requires
+	inet_frag_kill() be only invoked from fqdir_rwork_fn().)
+
+So I can imagine cases where this would in fact work.  But did I get
+it right or is something else happening?
+
+							Thanx, Paul
+
