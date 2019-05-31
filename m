@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6869C31289
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:37:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB23312A2
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726888AbfEaQh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:37:28 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42011 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726601AbfEaQh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:37:28 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s15so1585599qtk.9
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:37:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IB1CcVLA+id0oymPNYSnxcg3RQcynEpEXSg5YSOWCjQ=;
-        b=BAR+b0mXCFX+FZAnJ8bZA1gO2ghV0MOYxbk434kcuGIa0pcC7EGf3ADNTnzQG4E4d8
-         fh5Wh3/sHR77pOQQKCs5tFuoAVgIpoIBFsIje+cc4nxNnkWHYrSMfgErfHppQOk3lGmT
-         z+BUwwqzU0h5cn247MffaXoKxjTK8oCdEs0gtw05fIGPPjo1xOb8qXJyh7M6QaOUYZgc
-         QM/1kdyCSE2NNyuDdCOPKWmkekv7TRMryznlhEpqDwT8tTR796KcmCKrjpPkVTzMOOkP
-         fl/+Rre/Vmjq+tu+ivDGVosSjk9Iy0W+vN7qg8UQqAndknrYupP1zZ5RWvOGmsj7SJep
-         ws+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IB1CcVLA+id0oymPNYSnxcg3RQcynEpEXSg5YSOWCjQ=;
-        b=bi2+fl6bCWDX73ESbmw3Lcn1jlL1LoAhpYs0hGDoKwvWt1r5mQ3idayYSwH1ejvuTT
-         YSzcFEBHvliJL3N8Mooz+RQvLWij7x3HRP5xtYSfhIjt8SytMvLzhxHeaPxvdcwvzGQr
-         0QCSsEV/3DIlFYsGAEJmprC70gO+ol2M5vUFgHusz671UV8kkWCJ+fUpCWKbLoCsijOM
-         kPaep5HNgYDJJby7kh/X5S9IsFpWF3cjvhUCiG5w5QeKJmFsoOl4gvg2Vr2eVvvYKmt8
-         uKGAt/y6tx89vGd5RbRWi8nCwro8Awpmkjm72iDyNHh/R1Ylj/Qb2baaOaTk4ESBSr1O
-         twkg==
-X-Gm-Message-State: APjAAAWRkYBTskdJPkx0qjfM3Ia/9mesiQqNhyiY9gmnQrywESBzaizT
-        FJ5ED/jq9ZCZyIkhWlCVkIOd9UxR
-X-Google-Smtp-Source: APXvYqzNhSfro+KcV6t/AaF69tvGxl/jd/TRYWCGrO4wHBxQFfDAuPGEYm5xsv0IG+pMGZKdFuIMYA==
-X-Received: by 2002:aed:3a45:: with SMTP id n63mr9892240qte.109.1559320646570;
-        Fri, 31 May 2019 09:37:26 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id 1sm3204933qtg.11.2019.05.31.09.37.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 09:37:25 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Subject: [PATCH net] packet: unconditionally free po->rollover
-Date:   Fri, 31 May 2019 12:37:23 -0400
-Message-Id: <20190531163723.191617-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
+        id S1726888AbfEaQoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:44:00 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:49748 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726531AbfEaQn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:43:59 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hWkd8-0003pv-Az; Fri, 31 May 2019 12:43:52 -0400
+Date:   Fri, 31 May 2019 12:43:19 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: memory leak in sctp_process_init
+Message-ID: <20190531164319.GB3828@hmswarspite.think-freely.org>
+References: <00000000000097abb90589e804fd@google.com>
+ <20190528013600.GM5506@localhost.localdomain>
+ <20190528111550.GA4658@hmswarspite.think-freely.org>
+ <20190529190709.GE31099@hmswarspite.think-freely.org>
+ <20190529233757.GC3713@localhost.localdomain>
+ <20190530142011.GC1966@hmswarspite.think-freely.org>
+ <20190530151705.GD3713@localhost.localdomain>
+ <20190530195634.GD1966@hmswarspite.think-freely.org>
+ <20190531124242.GE3713@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190531124242.GE3713@localhost.localdomain>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Fri, May 31, 2019 at 09:42:42AM -0300, Marcelo Ricardo Leitner wrote:
+> On Thu, May 30, 2019 at 03:56:34PM -0400, Neil Horman wrote:
+> > On Thu, May 30, 2019 at 12:17:05PM -0300, Marcelo Ricardo Leitner wrote:
+> ...
+> > > --- a/net/sctp/sm_sideeffect.c
+> > > +++ b/net/sctp/sm_sideeffect.c
+> > > @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
+> > >  						asoc->rto_initial;
+> > >  	}
+> > >  
+> > > +	if (sctp_state(asoc, ESTABLISHED)) {
+> > > +		kfree(asoc->peer.cookie);
+> > > +		asoc->peer.cookie = NULL;
+> > > +	}
+> > > +
+> > Not sure I follow why this is needed.  It doesn't hurt anything of course, but
+> > if we're freeing in sctp_association_free, we don't need to duplicate the
+> > operation here, do we?
+> 
+> This one would be to avoid storing the cookie throughout the entire
+> association lifetime, as the cookie is only needed during the
+> handshake.
+> While the free in sctp_association_free will handle the freeing in
+> case the association never enters established state.
+> 
 
-Rollover used to use a complex RCU mechanism for assignment, which had
-a race condition. The below patch fixed the bug and greatly simplified
-the logic.
+Ok, I see we do that with the peer_random and other allocated values as well
+when they are no longer needed, but ew, I hate freeing in multiple places like
+that.  I'll fix this up on monday, but I wonder if we can't consolidate that
+somehow
 
-The feature depends on fanout, but the state is private to the socket.
-Fanout_release returns f only when the last member leaves and the
-fanout struct is to be freed.
+Neil
 
-Destroy rollover unconditionally, regardless of fanout state.
-
-Fixes: 57f015f5eccf2 ("packet: fix crash in fanout_demux_rollover()")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Diagnosed-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/packet/af_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index fbc775fbf7128..d4889bf7248e1 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -3014,8 +3014,8 @@ static int packet_release(struct socket *sock)
- 
- 	synchronize_net();
- 
-+	kfree(po->rollover);
- 	if (f) {
--		kfree(po->rollover);
- 		fanout_release_data(f);
- 		kfree(f);
- 	}
--- 
-2.22.0.rc1.257.g3120a18244-goog
-
+> > >  	if (sctp_state(asoc, ESTABLISHED) ||
+> > >  	    sctp_state(asoc, CLOSED) ||
+> > >  	    sctp_state(asoc, SHUTDOWN_RECEIVED)) {
+> > > 
+> > > Also untested, just sharing the idea.
+> > > 
+> > >   Marcelo
+> > > 
+> 
