@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B074030F69
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:58:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F34130F9C
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbfEaN6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 09:58:43 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44684 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726386AbfEaN6n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 09:58:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CtGXzIswEZcMsfKi3FX3ncQPxxc/qDLfdACtjnnjE/0=; b=qF1yNWYUOI2N2DyiDhc6t8aApe
-        n4Y6zgq2D0XaGIq1HFQ0p/y0k9sxUVScc77lM/A9s37YwdaekGfMYR09YZ4ToY6aZ376+Jfx9qH2N
-        D2G6FJ4T/v7fd9yWCznPxuG1FoDFLJiboMAXW+olA2h9qlZvezmTHsKAvzU0iuxvqmqE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWi3F-0006Bs-K4; Fri, 31 May 2019 15:58:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     linville@redhat.com
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v2 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
-Date:   Fri, 31 May 2019 15:57:48 +0200
-Message-Id: <20190531135748.23740-3-andrew@lunn.ch>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190531135748.23740-1-andrew@lunn.ch>
-References: <20190531135748.23740-1-andrew@lunn.ch>
+        id S1726719AbfEaOFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:05:39 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:51772 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfEaOFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:05:38 -0400
+Received: by mail-wm1-f68.google.com with SMTP id f10so6157256wmb.1
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:05:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UmNVHSUFcwKieLoDgVxZZ6h5wY64iIjCWDKB455Gdsk=;
+        b=CcuEzc5aqSSKNO2PQOJj8mdppWKokLEoitOFAaqAsNOhA5YCdWilKx9LTP/oxcd0dU
+         iTMFmr9yknRzmq4zkArnH3aAfgYlysDknVJE1LRFgpR+jXy7akXAXTg/SrvxPrbhjaWE
+         YjHrUZIARJ0ihploRiFBi1F15FWFEhgyVnolcyN5x612F2b/iJdR/nGDJmEzwAbSxP2a
+         tfU9FgXT8BcdC0Jqj63b+dB4dc1CC/gqTxfgLVowINE2E6JXXWbg7k2nhP249BIqvgM5
+         wCBqCdmlulM2UC4OF8fNnBpKARvo4Lsxh4t9tYXKKe1URsnF0fmoB9KXekstBJGCkxwg
+         7g2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UmNVHSUFcwKieLoDgVxZZ6h5wY64iIjCWDKB455Gdsk=;
+        b=c845j7lqJyHmETBVLCHYUIPEhkoKmrVTMJY7d+fhJCLq4p5SbrL2Fpy+17PawusGvU
+         ZFMewZ6wjk7c3wTzU8fthxUQ96ogFicB+0onjeurmy1o/QekbAuRapdFOs38ZAGuaJRg
+         YaE6guQPX0h/NInGJNyAcDX8pm7EpQhgoPJ6/lfXFFY7II5P6CZcon/+WivDdKVSurpT
+         oeutixQrAkgH+d49/Vdma1aqH+xFX1xjhhaSrkJKEIa9qK6MPEsjp7OP3AVDSwRvhH5o
+         Z2x499o3LJdCNWiDo/N0viyn9C/xrQnEYd3tMPIA8WHVFcRTA6HUbblvcOKj5RLJryGG
+         kO4w==
+X-Gm-Message-State: APjAAAUR9jIq3SbskeoeYRzhLavGxuoKd+M4XWRXHHsscJVhPu+bCdZ6
+        oe4ZVhmfO1B4SWdqzRR5L18=
+X-Google-Smtp-Source: APXvYqz/CvJjgpFekb6P5YDKWjiid37tH1P45AcIU4eKwfKipeM40tdnnlMfNiy/Ifjpc4HQRU9cBQ==
+X-Received: by 2002:a1c:7408:: with SMTP id p8mr5695563wmc.161.1559311537019;
+        Fri, 31 May 2019 07:05:37 -0700 (PDT)
+Received: from AHABDELS-M-J3JG ([192.135.27.139])
+        by smtp.gmail.com with ESMTPSA id k2sm9886034wrg.41.2019.05.31.07.05.36
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Fri, 31 May 2019 07:05:36 -0700 (PDT)
+Date:   Fri, 31 May 2019 16:05:35 +0200
+From:   Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com,
+        Tom Herbert <tom@quantonium.net>
+Subject: Re: [PATCH net-next 6/6] seg6: Add support to rearrange SRH for AH
+ ICV calculation
+Message-Id: <20190531160535.519fdef1067aa9d681669d29@gmail.com>
+In-Reply-To: <1559253021-16772-7-git-send-email-tom@quantonium.net>
+References: <1559253021-16772-1-git-send-email-tom@quantonium.net>
+        <1559253021-16772-7-git-send-email-tom@quantonium.net>
+X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel can now indicate if the PHY supports operating over a
-single pair at 100Mbps or 1000Mbps.
+On Thu, 30 May 2019 14:50:21 -0700
+Tom Herbert <tom@herbertland.com> wrote:
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- ethtool.8.in | 2 ++
- ethtool.c    | 6 ++++++
- 2 files changed, 8 insertions(+)
+> Mutable fields related to segment routing are: destination address,
+> segments left, and modifiable TLVs (those whose high order bit is set).
+> 
+> Add support to rearrange a segment routing (type 4) routing header to
+> handle these mutability requirements. This is described in
+> draft-herbert-ipv6-srh-ah-00.
+> 
 
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 430d11b915af..6af63455c636 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -639,8 +639,10 @@ lB	l	lB.
- 0x002	10baseT Full
- 0x004	100baseT Half
- 0x008	100baseT Full
-+0x80000000000000000	100baseT1 Full
- 0x010	1000baseT Half	(not supported by IEEE standards)
- 0x020	1000baseT Full
-+0x100000000000000000	1000baseT1 Full
- 0x20000	1000baseKX Full
- 0x20000000000	1000baseX Full
- 0x800000000000	2500baseT Full
-diff --git a/ethtool.c b/ethtool.c
-index 66a907edd97b..05fe05a080cd 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -545,6 +545,8 @@ static void init_global_link_mode_masks(void)
- 		ETHTOOL_LINK_MODE_200000baseLR4_ER4_FR4_Full_BIT,
- 		ETHTOOL_LINK_MODE_200000baseDR4_Full_BIT,
- 		ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT,
-+		ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
-+		ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
- 	};
- 	static const enum ethtool_link_mode_bit_indices
- 		additional_advertised_flags_bits[] = {
-@@ -634,10 +636,14 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
- 		  "100baseT/Half" },
- 		{ 1, ETHTOOL_LINK_MODE_100baseT_Full_BIT,
- 		  "100baseT/Full" },
-+		{ 0, ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
-+		  "100baseT1/Full" },
- 		{ 0, ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
- 		  "1000baseT/Half" },
- 		{ 1, ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
- 		  "1000baseT/Full" },
-+		{ 0, ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
-+		  "1000baseT1/Full" },
- 		{ 0, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
- 		  "1000baseKX/Full" },
- 		{ 0, ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+Hi Tom, David,
+I think it is very early to have such implementation in the mainline of the Linux kernel.
+The draft (draft-herbert-ipv6-srh-ah-00) has been submitted to IETF draft couple of days ago. 
+We should give the IETF community the time to review and reach a consensus on this draft.
+Thanks, 
+Ahmed
+
 -- 
-2.20.1
-
+Ahmed Abdelsalam <ahabdels.dev@gmail.com>
