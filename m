@@ -2,139 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E965315EF
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EFC315F4
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727508AbfEaUNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 16:13:45 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:36944 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727287AbfEaUNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:13:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=wIylVf3jkiJAX6D8EYgS89slrfft1UhSYMxY+tqkH3g=; b=BLN4ViPmHxkC0MfATTk+vfukb
-        ZqvHh1+n2S+ibEB1GB6hfbkaFaF6+FPgGS1910PCLvpuL/yCCxpn27Tp2is2sUBSL35gfgx31vHs5
-        deUVLPFHpzbC/7ucwbM2uYa7JomP2VvH4NzP1ujT/9h+rqC7FDyaPhdq4oBK022uH2RyMlkY9FAXd
-        0jxWVqW7q2xRivfOMxBi5c/zisxFbArHsp1cszbT/DV7pVeLNhUOjHTBT5QOfhNj6Ap1qSrOTz8FY
-        usRse0z2sWhab6+aq6hSr1JPofgzUpJ18qaxXsHy2Nx8pHsP6FSs/iVRs7OnMY4evV3jL0gC+eHwy
-        l556x1Alw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38430)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hWnuI-0002tB-Ju; Fri, 31 May 2019 21:13:42 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hWnuI-0006cn-06; Fri, 31 May 2019 21:13:42 +0100
-Date:   Fri, 31 May 2019 21:13:41 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: sfp: Use smaller chunk size when reading
- I2C data
-Message-ID: <20190531201341.syriememelbklhvo@shell.armlinux.org.uk>
-References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
- <1559330285-30246-3-git-send-email-hancock@sedsystems.ca>
+        id S1727395AbfEaUOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 16:14:55 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34186 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727282AbfEaUOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 16:14:55 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h1so2492744qtp.1;
+        Fri, 31 May 2019 13:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=SrFrfsFx1qakMW9D7wpc85uiqQlKUf3C8E4XcNEoPmc=;
+        b=l0uJ75nGyJKjmtLWNYsS0VZObEvCGwf+J9e4r/jXY6r91rlwYgvvhJzc40BdKgRmey
+         vREsUGni4pvspThS7IhDvb2GRbwh8ao1t7sFhXj7t/taMVAAP+bTIrighTsiyaZcIiFq
+         uZE8n7mSOElvcY9g+Vr5cYBJzAdEJ8Z9i1pqcH2nnm730QTptgq/DlQsf6516EReRRbF
+         C4tEX7KPix6t3qoyxaHeY9rmCHNnTO9xUVIRbcrM5Ra3vUy5KHHVKAF5PoIvWscG6SL3
+         MAf/VOI+tslGHWqIGRIab5b5lrCUqKEW2wcYzAxV2dEUGyZulSzKIE+E2LqZ+svM8FZ0
+         L8Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=SrFrfsFx1qakMW9D7wpc85uiqQlKUf3C8E4XcNEoPmc=;
+        b=SHcZkaR4oZ9DPyvcjOHBHjVxqQLhwiol1ezcz/05QksoCtZSF9+ycozYM97VOyA++u
+         1p03FOy+iCLRBwjc/ZjylAAOHKxtIRejP/Q0Htb+9aX8jKBVpTK+DVan9+2UJlfIoCub
+         Q9gafeayuPw9S/LH9JMEmcT3/g2979PzyUaLqr4bM8pjC/p1fRZRWpKEN4/wPArrwU+m
+         Ydr1EvMvNQTQ5Mrv5Jw7anHXPBOPNLhV4ZwNsDhh0u/yh43zWk0Mf0qaslE8NTWY3tOx
+         RD8LsYCdnhpGfN4UtV9sba8Yd2U9NKkl/UErOfqi73BAMU8J0KJ1PmwXrq+tP4/OKVk3
+         jn5g==
+X-Gm-Message-State: APjAAAXtbiKKLMFQsNZ/mxMO5E08j6e3O1Pkf4yXPWR8Mb4BFcHewGWm
+        UNpxFKzE1aHkHExgounxQvBKPq+NyMQ=
+X-Google-Smtp-Source: APXvYqxOA2p1hfPCt2uQJfEPlXITmRyCED7cNtZ+sqro3Afvm0k+FlTIPAjsFh5vWXBLVc3c9EgoaA==
+X-Received: by 2002:ac8:45d2:: with SMTP id e18mr8896076qto.258.1559333694299;
+        Fri, 31 May 2019 13:14:54 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id d23sm5836221qta.26.2019.05.31.13.14.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 31 May 2019 13:14:53 -0700 (PDT)
+Date:   Fri, 31 May 2019 16:14:53 -0400
+Message-ID: <20190531161453.GC20464@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from
+ VLAN 0
+In-Reply-To: <1814b2e2-1a89-89f8-9699-f13df5e826b2@gmail.com>
+References: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
+ <20190531103105.GE23464@t480s.localdomain> <20190531143758.GB23821@lunn.ch>
+ <1814b2e2-1a89-89f8-9699-f13df5e826b2@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1559330285-30246-3-git-send-email-hancock@sedsystems.ca>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 01:18:03PM -0600, Robert Hancock wrote:
-> The SFP driver was reading up to 256 bytes of I2C data from the SFP
-> module in a single chunk. However, some I2C controllers do not support
-> reading that many bytes in a single transaction. Change to use a more
-> compatible 16-byte chunk size, since this is not performance critical.
+Hi Florian,
 
-This is the wrong place to fix the problem.  We still end up reading
-more than 16 bytes with this approach.  I already have a patch fixing
-this the right way, which is in the queue to be sent.
+On Fri, 31 May 2019 09:34:03 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> On 5/31/19 7:37 AM, Andrew Lunn wrote:
+> >> I'm not sure that I like the semantic of it, because the driver can actually
+> >> support VID 0 per-se, only the kernel does not use VLAN 0. Thus I would avoid
+> >> calling the port_vlan_del() ops for VID 0, directly into the upper DSA layer.
+> >>
+> >> Florian, Andrew, wouldn't the following patch be more adequate?
+> >>
+> >>     diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> >>     index 1e2ae9d59b88..80f228258a92 100644
+> >>     --- a/net/dsa/slave.c
+> >>     +++ b/net/dsa/slave.c
+> >>     @@ -1063,6 +1063,10 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+> >>             struct bridge_vlan_info info;
+> >>             int ret;
+> >>      
+> >>     +       /* VID 0 has a special meaning and is never programmed in hardware */
+> >>     +       if (!vid)
+> >>     +               return 0;
+> >>     +
+> >>             /* Check for a possible bridge VLAN entry now since there is no
+> >>              * need to emulate the switchdev prepare + commit phase.
+> >>              */
+> >  
+> > Hi Vivien
+> > 
+> > If we put this in rx_kill_vid, we should probably have something
+> > similar in rx_add_vid, just in case the kernel does start using VID 0.
+> 
+> We use the prepare/commit model in the rx_add_vid() path so we deal with
+> -EOPNOTSUPP, that was caught fairly early on by Heiner when I added
+> programming of VLAN filtering through rx_{add,kill}_vid.
+> 
+> Nikita's patcha s it stands is correct and would make both
+> mv88e6xxx_port_check_hw_vlan() and mv88e6xxx_vtu_get() consistent.
 
-> 
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
-> ---
->  drivers/net/phy/sfp.c | 38 ++++++++++++++++++++++++--------------
->  1 file changed, 24 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 6b6c83d..23a40a7 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -1651,7 +1651,7 @@ static int sfp_module_info(struct sfp *sfp, struct ethtool_modinfo *modinfo)
->  static int sfp_module_eeprom(struct sfp *sfp, struct ethtool_eeprom *ee,
->  			     u8 *data)
->  {
-> -	unsigned int first, last, len;
-> +	unsigned int first, last;
->  	int ret;
->  
->  	if (ee->len == 0)
-> @@ -1659,26 +1659,36 @@ static int sfp_module_eeprom(struct sfp *sfp, struct ethtool_eeprom *ee,
->  
->  	first = ee->offset;
->  	last = ee->offset + ee->len;
-> -	if (first < ETH_MODULE_SFF_8079_LEN) {
-> -		len = min_t(unsigned int, last, ETH_MODULE_SFF_8079_LEN);
-> -		len -= first;
->  
-> -		ret = sfp_read(sfp, false, first, data, len);
-> +	while (first < last) {
-> +		bool a2;
-> +		unsigned int this_addr, len;
-> +
-> +		if (first < ETH_MODULE_SFF_8079_LEN) {
-> +			len = min_t(unsigned int, last,
-> +				    ETH_MODULE_SFF_8079_LEN);
-> +			len -= first;
-> +			a2 = false;
-> +			this_addr = first;
-> +		} else {
-> +			len = min_t(unsigned int, last,
-> +				    ETH_MODULE_SFF_8472_LEN);
-> +			len -= first;
-> +			a2 = true;
-> +			this_addr = first - ETH_MODULE_SFF_8079_LEN;
-> +		}
-> +		/* Some I2C adapters cannot read 256 bytes in a single read.
-> +		 * Use a smaller chunk size to ensure we are within limits.
-> +		 */
-> +		len = min_t(unsigned int, len, 16);
-> +
-> +		ret = sfp_read(sfp, a2, this_addr, data, len);
->  		if (ret < 0)
->  			return ret;
->  
->  		first += len;
->  		data += len;
->  	}
-> -	if (first < ETH_MODULE_SFF_8472_LEN && last > ETH_MODULE_SFF_8079_LEN) {
-> -		len = min_t(unsigned int, last, ETH_MODULE_SFF_8472_LEN);
-> -		len -= first;
-> -		first -= ETH_MODULE_SFF_8079_LEN;
-> -
-> -		ret = sfp_read(sfp, true, first, data, len);
-> -		if (ret < 0)
-> -			return ret;
-> -	}
->  	return 0;
->  }
->  
-> -- 
-> 1.8.3.1
-> 
-> 
+OK, I'll double check if I can simplify the management of VID 0 in mv88e6xxx to
+match what other switches do. In the meantime, Nikita's approach is consistent.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Thank you,
+Vivien
