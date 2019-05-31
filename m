@@ -2,156 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75224310B2
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95016310B4
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfEaO6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726697AbfEaO6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 31 May 2019 10:58:07 -0400
-Received: from mail-it1-f197.google.com ([209.85.166.197]:54016 "EHLO
+Received: from mail-it1-f197.google.com ([209.85.166.197]:40717 "EHLO
         mail-it1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726501AbfEaO6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:58:07 -0400
-Received: by mail-it1-f197.google.com with SMTP id p19so3886881itm.3
+        with ESMTP id S1726546AbfEaO6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:58:06 -0400
+Received: by mail-it1-f197.google.com with SMTP id u10so8375812itb.5
         for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:58:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=VAWNQSWXRFPjqWqvcnCxEWc2vR3xbR4pd4DDjFUHobY=;
-        b=RosZ+pQwbgaGeqobNR5Z7F3XBwMDT7t4TJb57tCfDfdm6sSooYOKSQHcVAdHw03d/6
-         n7m559XeO44cgB3X+rP+/mnWSeAKfbNdg0LwXGmAsTKwZ1L1mqsM3+KAT60vOSaBtlcj
-         s47JDAW77+FOXncTlCBXKupeFODKNZzA6Tjrv0W2tQD9J1vuRGlkbKvgXHatmEQUc3+n
-         LU5qiLRwTMd7LxfdN/skXN7oH7MJE6TSV4k1zoMl+mmG3VUa+wBYoJUEbnKUNCNKSd8Y
-         B26LGy+p1rB09x9nIAQbasO+2373z1jMDXGzo3ojAFf2wBhc0ctMMFbv1vQW9p+e1jhg
-         qEUQ==
-X-Gm-Message-State: APjAAAXLJ8tg0yLqAhdG9sLXP1uHHZoXM6Nb/FgAdsOa4oD7WOpA7d50
-        4p46TUOVFGce8CNi+2LhEyQf8i+dKF8osr1Ii8coU06fwClK
-X-Google-Smtp-Source: APXvYqy2LGeUvc5Dv4FGMjjqAoqP0NyUOjJt4CyFzayeTo7kbBilfa4tIw/mJKkyGhkh2Se+kWhGagFiaeOjWEqSVURBSe8Ui2Fy
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-transfer-encoding;
+        bh=K/ofCxOPUpmE2L+U1S33uS/mcJVaDnKhwP6YIHRjApE=;
+        b=M0B2W2M2XRYEIiD+PzDhHoalFPqMy8uylzWkeB4C/aen7GlVmTak9CZTLbRoHynvM2
+         X+kaOo79cDPW4MQGcKOqMKM2fmXB0NYNQrVAHBQpS5+Rfx3g7pKJel2u162CS5AsSRwM
+         2VPOQrCfZY2vuehxYGJxH4wcLBvzwC7LbBWHY75srOxQTI7t2BfnhG9Idb8tRHlAWiX9
+         PuMgc8ybBhhe66+4K2yodUcgYxCMpoVH09Ky0Ze46H4rCY8ooFEW65eBpgZBjOqSyTik
+         IG+fk2/AXGvjXcpZ6Vglm8EASnC+jf+ZqXlKKJojHr/urvyLoiHfbn/tvNWZr3v12MJ/
+         tsJw==
+X-Gm-Message-State: APjAAAWmUnRzAPDJetpOxupbWkKRyav8PJu1mb9+L/2GbD+PzYi0A6Vy
+        e08Qp6uVs5IU0E1EscLYQoEX1qHATOCnbfRqrxRr73xJW76N
+X-Google-Smtp-Source: APXvYqyyhZl/P7lwZyrsmvKiEyyw0lKV2CmGfhAT3WZKG9HXBfayf7Yq5uk1y2kIusKXTh0GcO1yRKM0PshEKmRswLB5yQHXAwtj
 MIME-Version: 1.0
-X-Received: by 2002:a05:660c:444:: with SMTP id d4mr7089633itl.158.1559314685827;
- Fri, 31 May 2019 07:58:05 -0700 (PDT)
-Date:   Fri, 31 May 2019 07:58:05 -0700
+X-Received: by 2002:a05:660c:143:: with SMTP id r3mr7459566itk.84.1559314686097;
+ Fri, 31 May 2019 07:58:06 -0700 (PDT)
+Date:   Fri, 31 May 2019 07:58:06 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f122ab058a303d94@google.com>
-Subject: memory leak in sctp_stream_init_ext
-From:   syzbot <syzbot+7f3b6b106be8dcdcdeec@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Message-ID: <000000000000f53c90058a303d80@google.com>
+Subject: net-next build error (2)
+From:   syzbot <syzbot+21456e3ef58cde16e0fa@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    bec7550c Merge tag 'docs-5.2-fixes2' of git://git.lwn.net/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=152a0916a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
-dashboard link: https://syzkaller.appspot.com/bug?extid=7f3b6b106be8dcdcdeec
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1142cd4ca00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f81d72a00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+7f3b6b106be8dcdcdeec@syzkaller.appspotmail.com
-
-executing program
-executing program
-executing program
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff8881114f5d80 (size 96):
-   comm "syz-executor934", pid 7160, jiffies 4294993058 (age 31.950s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000ce7a1326>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<00000000ce7a1326>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<00000000ce7a1326>] slab_alloc mm/slab.c:3326 [inline]
-     [<00000000ce7a1326>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<000000007abb7ac9>] kmalloc include/linux/slab.h:547 [inline]
-     [<000000007abb7ac9>] kzalloc include/linux/slab.h:742 [inline]
-     [<000000007abb7ac9>] sctp_stream_init_ext+0x2b/0xa0  
-net/sctp/stream.c:157
-     [<0000000048ecb9c1>] sctp_sendmsg_to_asoc+0x946/0xa00  
-net/sctp/socket.c:1882
-     [<000000004483ca2b>] sctp_sendmsg+0x2a8/0x990 net/sctp/socket.c:2102
-     [<0000000094bdc32e>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
-     [<0000000022d1c2a5>] sock_sendmsg_nosec net/socket.c:652 [inline]
-     [<0000000022d1c2a5>] sock_sendmsg+0x54/0x70 net/socket.c:671
-     [<000000006ab53119>] sock_write_iter+0xb6/0x130 net/socket.c:1000
-     [<00000000973772ef>] call_write_iter include/linux/fs.h:1872 [inline]
-     [<00000000973772ef>] new_sync_write+0x1ad/0x260 fs/read_write.c:483
-     [<0000000033f2491b>] __vfs_write+0x87/0xa0 fs/read_write.c:496
-     [<00000000372fbd56>] vfs_write fs/read_write.c:558 [inline]
-     [<00000000372fbd56>] vfs_write+0xee/0x210 fs/read_write.c:542
-     [<000000007ccb2ea5>] ksys_write+0x7c/0x130 fs/read_write.c:611
-     [<000000001c29b8c7>] __do_sys_write fs/read_write.c:623 [inline]
-     [<000000001c29b8c7>] __se_sys_write fs/read_write.c:620 [inline]
-     [<000000001c29b8c7>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-     [<0000000014d9243b>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<0000000059f6e9a8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881114f5d80 (size 96):
-   comm "syz-executor934", pid 7160, jiffies 4294993058 (age 33.160s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000ce7a1326>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<00000000ce7a1326>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<00000000ce7a1326>] slab_alloc mm/slab.c:3326 [inline]
-     [<00000000ce7a1326>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<000000007abb7ac9>] kmalloc include/linux/slab.h:547 [inline]
-     [<000000007abb7ac9>] kzalloc include/linux/slab.h:742 [inline]
-     [<000000007abb7ac9>] sctp_stream_init_ext+0x2b/0xa0  
-net/sctp/stream.c:157
-     [<0000000048ecb9c1>] sctp_sendmsg_to_asoc+0x946/0xa00  
-net/sctp/socket.c:1882
-     [<000000004483ca2b>] sctp_sendmsg+0x2a8/0x990 net/sctp/socket.c:2102
-     [<0000000094bdc32e>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
-     [<0000000022d1c2a5>] sock_sendmsg_nosec net/socket.c:652 [inline]
-     [<0000000022d1c2a5>] sock_sendmsg+0x54/0x70 net/socket.c:671
-     [<000000006ab53119>] sock_write_iter+0xb6/0x130 net/socket.c:1000
-     [<00000000973772ef>] call_write_iter include/linux/fs.h:1872 [inline]
-     [<00000000973772ef>] new_sync_write+0x1ad/0x260 fs/read_write.c:483
-     [<0000000033f2491b>] __vfs_write+0x87/0xa0 fs/read_write.c:496
-     [<00000000372fbd56>] vfs_write fs/read_write.c:558 [inline]
-     [<00000000372fbd56>] vfs_write+0xee/0x210 fs/read_write.c:542
-     [<000000007ccb2ea5>] ksys_write+0x7c/0x130 fs/read_write.c:611
-     [<000000001c29b8c7>] __do_sys_write fs/read_write.c:623 [inline]
-     [<000000001c29b8c7>] __se_sys_write fs/read_write.c:620 [inline]
-     [<000000001c29b8c7>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-     [<0000000014d9243b>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<0000000059f6e9a8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-executing program
-executing program
-executing program
-executing program
-executing program
-executing program
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+SGVsbG8sDQoNCnN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGNyYXNoIG9uOg0KDQpIRUFEIGNv
+bW1pdDogICAgN2IzZWQyYTEgTWVyZ2UgYnJhbmNoICcxMDBHYkUnIG9mIGdpdDovL2dpdC5rZXJu
+ZWwub3JnL3B1Yi4uDQpnaXQgdHJlZTogICAgICAgbmV0LW5leHQNCmNvbnNvbGUgb3V0cHV0OiBo
+dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50eHQ/eD0xN2JmOGZkOGEwMDAwMA0K
+a2VybmVsIGNvbmZpZzogIGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvLmNvbmZpZz94
+PTE4MmFiNmVmMzgxMzQ1MDINCmRhc2hib2FyZCBsaW5rOiBodHRwczovL3N5emthbGxlci5hcHBz
+cG90LmNvbS9idWc/ZXh0aWQ9MjE0NTZlM2VmNThjZGUxNmUwZmENCmNvbXBpbGVyOiAgICAgICBn
+Y2MgKEdDQykgOS4wLjAgMjAxODEyMzEgKGV4cGVyaW1lbnRhbCkNCg0KVW5mb3J0dW5hdGVseSwg
+SSBkb24ndCBoYXZlIGFueSByZXByb2R1Y2VyIGZvciB0aGlzIGNyYXNoIHlldC4NCg0KSU1QT1JU
+QU5UOiBpZiB5b3UgZml4IHRoZSBidWcsIHBsZWFzZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8g
+dGhlIGNvbW1pdDoNClJlcG9ydGVkLWJ5OiBzeXpib3QrMjE0NTZlM2VmNThjZGUxNmUwZmFAc3l6
+a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQ0KDQouL2luY2x1ZGUvbGludXgvbmV0ZmlsdGVyX2lwdjYu
+aDoxMTA6OTogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mICANCmZ1bmN0aW9uIOKAmG5m
+X2N0X2ZyYWc2X2dhdGhlcuKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlv
+bl0NCg0KLS0tDQpUaGlzIGJ1ZyBpcyBnZW5lcmF0ZWQgYnkgYSBib3QuIEl0IG1heSBjb250YWlu
+IGVycm9ycy4NClNlZSBodHRwczovL2dvby5nbC90cHNtRUogZm9yIG1vcmUgaW5mb3JtYXRpb24g
+YWJvdXQgc3l6Ym90Lg0Kc3l6Ym90IGVuZ2luZWVycyBjYW4gYmUgcmVhY2hlZCBhdCBzeXprYWxs
+ZXJAZ29vZ2xlZ3JvdXBzLmNvbS4NCg0Kc3l6Ym90IHdpbGwga2VlcCB0cmFjayBvZiB0aGlzIGJ1
+ZyByZXBvcnQuIFNlZToNCmh0dHBzOi8vZ29vLmdsL3Rwc21FSiNzdGF0dXMgZm9yIGhvdyB0byBj
+b21tdW5pY2F0ZSB3aXRoIHN5emJvdC4NCg==
