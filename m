@@ -2,86 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC4330DE3
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B711E30DFD
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfEaMMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:12:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46946 "EHLO mx1.redhat.com"
+        id S1727112AbfEaMVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:21:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44446 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726233AbfEaMMi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 08:12:38 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 086F13154860;
-        Fri, 31 May 2019 12:12:33 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EB31C5DA34;
-        Fri, 31 May 2019 12:12:31 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Cc:     aclaudi@redhat.com, Qiaobin Fu <qiaobinf@bu.edu>
-Subject: [PATCH iproute2] man: tc-skbedit.8: document 'inheritdsfield'
-Date:   Fri, 31 May 2019 14:12:15 +0200
-Message-Id: <7d450cb1d7bc1cde70b530930e0a5d73e39f4fdf.1559304622.git.dcaratti@redhat.com>
+        id S1726331AbfEaMVC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 08:21:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=OICwzJUG9ru3GANBUzmVbH105fpmRRWmaVDgmJDGPbs=; b=dCWXbd/Mb8MzX3pnUtUoZmyYwD
+        eFsswQtjy7JSX/9I/S3CGod0PyKv/5n7QW+KVhgmi3cdQsoec6775cL9C6FUoL3QLbtCie35BtfGd
+        hlK8l3yuNmSsU7ok3bsIlA+sVrHra9CJ2EO0B/3Ps7z1AY8scoNnTlXt8FPali1OrDAk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hWgWn-0005Ax-JY; Fri, 31 May 2019 14:20:57 +0200
+Date:   Fri, 31 May 2019 14:20:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH] net: phy: support C45 phys in SIOCGMIIREG/SIOCSMIIREG
+ ioctls
+Message-ID: <20190531122057.GA19572@lunn.ch>
+References: <20190531074727.3257-1-nikita.yoush@cogentembedded.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 31 May 2019 12:12:38 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190531074727.3257-1-nikita.yoush@cogentembedded.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-while at it, fix missing square bracket near 'ptype' and a typo in the
-action description (it's -> its).
+On Fri, May 31, 2019 at 10:47:27AM +0300, Nikita Yushchenko wrote:
+> This change allows phytool [1] and similar tools to read and write C45 phy
+> registers from userspace.
+> 
+> This is useful for debugging and for porting vendor phy diagnostics tools.
+> 
+> [1] https://github.com/wkz/phytool
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- man/man8/tc-skbedit.8 | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+Hi Nikita
 
-diff --git a/man/man8/tc-skbedit.8 b/man/man8/tc-skbedit.8
-index 003f05c93f7c..2459198261e6 100644
---- a/man/man8/tc-skbedit.8
-+++ b/man/man8/tc-skbedit.8
-@@ -10,9 +10,10 @@ skbedit - SKB editing action
- .B priority
- .IR PRIORITY " ] ["
- .B mark
--.IR MARK " ]"
-+.IR MARK " ] ["
- .B ptype
--.IR PTYPE " ]"
-+.IR PTYPE " ] ["
-+.BR inheritdsfield " ]"
- .SH DESCRIPTION
- The
- .B skbedit
-@@ -22,7 +23,7 @@ action, which in turn allows to change parts of the packet data itself.
- 
- The most unique feature of
- .B skbedit
--is it's ability to decide over which queue of an interface with multiple
-+is its ability to decide over which queue of an interface with multiple
- transmit queues the packet is to be sent out. The number of available transmit
- queues is reflected by sysfs entries within
- .I /sys/class/net/<interface>/queues
-@@ -61,6 +62,12 @@ needing to allow ingressing packets with the wrong MAC address but
- correct IP address.
- .I PTYPE
- is one of: host, otherhost, broadcast, multicast
-+.TP
-+.BI inheritdsfield
-+Override the packet classification decision, and any value specified with
-+.BR priority ", "
-+using the information stored in the Differentiated Services Field of the
-+IPv6/IPv4 header (RFC2474).
- .SH SEE ALSO
- .BR tc (8),
- .BR tc-pedit (8)
--- 
-2.20.1
+Russell King submitted a similar patch a couple of days ago.
 
+https://patchwork.ozlabs.org/patch/1102091/
+
+Since he was first, we should probably take his, once he respins the
+series.
+
+Florian: Could you take a second look at
+[net-next,1/4] net: phylink: support for link gpio interrupt
+https://patchwork.ozlabs.org/patch/1102090/
+
+Everything else in that patchset is good to go.
+
+	Thanks
+	   Andrew
