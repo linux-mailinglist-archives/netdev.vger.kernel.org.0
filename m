@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C06B430E1F
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF01730E21
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727314AbfEaM3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:29:44 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:60492 "EHLO
+        id S1727328AbfEaM3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:29:48 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:60496 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727106AbfEaM3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:29:44 -0400
+        by vger.kernel.org with ESMTP id S1727106AbfEaM3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:29:46 -0400
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
         (envelope-from <fw@breakpoint.cc>)
-        id 1hWgfF-0004Ju-Kt; Fri, 31 May 2019 14:29:41 +0200
+        id 1hWgfG-0004K3-VO; Fri, 31 May 2019 14:29:43 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next v2 5/7] net: use new in_dev_ifa iterators
-Date:   Fri, 31 May 2019 14:22:12 +0200
-Message-Id: <20190531122214.18616-6-fw@strlen.de>
+Subject: [PATCH net-next v2 6/7] drivers: use in_dev_for_each_ifa_rtnl/rcu
+Date:   Fri, 31 May 2019 14:22:13 +0200
+Message-Id: <20190531122214.18616-7-fw@strlen.de>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190531122214.18616-1-fw@strlen.de>
 References: <20190531122214.18616-1-fw@strlen.de>
@@ -30,185 +30,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use in_dev_for_each_ifa_rcu/rtnl instead.
-This prevents sparse warnings once proper __rcu annotations are added.
+Like previous patches, use the new iterator macros to avoid sparse
+warnings once proper __rcu annotations are added.
+
+Compile tested only.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
-
-t di# Last commands done (6 commands done):
 ---
- net/ipv4/fib_frontend.c | 24 +++++++++++++++++-------
- net/ipv4/igmp.c         |  5 +++--
- net/ipv6/addrconf.c     |  4 +---
- net/sctp/protocol.c     |  2 +-
- net/smc/smc_clc.c       | 11 +++++++----
- 5 files changed, 29 insertions(+), 17 deletions(-)
+ drivers/infiniband/core/roce_gid_mgmt.c              |  5 +++--
+ drivers/infiniband/hw/cxgb4/cm.c                     |  9 +++++++--
+ drivers/infiniband/hw/i40iw/i40iw_cm.c               |  7 +++++--
+ drivers/infiniband/hw/i40iw/i40iw_main.c             |  6 ++++--
+ drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c |  8 +++++---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c     |  5 +++--
+ drivers/net/wan/hdlc_cisco.c                         | 11 +++++------
+ 7 files changed, 32 insertions(+), 19 deletions(-)
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 76055c66326a..c7cdb8d0d164 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -540,14 +540,22 @@ static int rtentry_to_fib_config(struct net *net, int cmd, struct rtentry *rt,
- 		cfg->fc_oif = dev->ifindex;
- 		cfg->fc_table = l3mdev_fib_table(dev);
- 		if (colon) {
--			struct in_ifaddr *ifa;
--			struct in_device *in_dev = __in_dev_get_rtnl(dev);
-+			const struct in_ifaddr *ifa;
-+			struct in_device *in_dev;
-+
-+			in_dev = __in_dev_get_rtnl(dev);
- 			if (!in_dev)
- 				return -ENODEV;
-+
- 			*colon = ':';
--			for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next)
-+
-+			rcu_read_lock();
-+			in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 				if (strcmp(ifa->ifa_label, devname) == 0)
- 					break;
-+			}
-+			rcu_read_unlock();
-+
- 			if (!ifa)
- 				return -ENODEV;
- 			cfg->fc_prefsrc = ifa->ifa_local;
-@@ -1177,8 +1185,8 @@ void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
- 	 *
- 	 * Scan address list to be sure that addresses are really gone.
- 	 */
--
--	for (ifa1 = in_dev->ifa_list; ifa1; ifa1 = ifa1->ifa_next) {
-+	rcu_read_lock();
-+	in_dev_for_each_ifa_rcu(ifa1, in_dev) {
- 		if (ifa1 == ifa) {
- 			/* promotion, keep the IP */
- 			gone = 0;
-@@ -1246,6 +1254,7 @@ void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
- 			}
- 		}
- 	}
-+	rcu_read_unlock();
- 
- no_promotions:
- 	if (!(ok & BRD_OK))
-@@ -1415,6 +1424,7 @@ static int fib_netdev_event(struct notifier_block *this, unsigned long event, vo
- 	struct netdev_notifier_info_ext *info_ext = ptr;
- 	struct in_device *in_dev;
- 	struct net *net = dev_net(dev);
-+	struct in_ifaddr *ifa;
- 	unsigned int flags;
- 
- 	if (event == NETDEV_UNREGISTER) {
-@@ -1429,9 +1439,9 @@ static int fib_netdev_event(struct notifier_block *this, unsigned long event, vo
- 
- 	switch (event) {
- 	case NETDEV_UP:
--		for_ifa(in_dev) {
-+		in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 			fib_add_ifaddr(ifa);
--		} endfor_ifa(in_dev);
-+		}
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- 		fib_sync_up(dev, RTNH_F_DEAD);
- #endif
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 6c2febc39dca..719bd8e4eea4 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -325,14 +325,15 @@ static __be32 igmpv3_get_srcaddr(struct net_device *dev,
- 				 const struct flowi4 *fl4)
+diff --git a/drivers/infiniband/core/roce_gid_mgmt.c b/drivers/infiniband/core/roce_gid_mgmt.c
+index 558de0b9895c..2860def84f4d 100644
+--- a/drivers/infiniband/core/roce_gid_mgmt.c
++++ b/drivers/infiniband/core/roce_gid_mgmt.c
+@@ -330,6 +330,7 @@ static void bond_delete_netdev_default_gids(struct ib_device *ib_dev,
+ static void enum_netdev_ipv4_ips(struct ib_device *ib_dev,
+ 				 u8 port, struct net_device *ndev)
  {
- 	struct in_device *in_dev = __in_dev_get_rcu(dev);
 +	const struct in_ifaddr *ifa;
- 
- 	if (!in_dev)
- 		return htonl(INADDR_ANY);
- 
--	for_ifa(in_dev) {
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		if (fl4->saddr == ifa->ifa_local)
- 			return fl4->saddr;
--	} endfor_ifa(in_dev);
-+	}
- 
- 	return htonl(INADDR_ANY);
- }
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 683613e7355b..40b154d45ab4 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3127,11 +3127,9 @@ static void sit_add_v4_addrs(struct inet6_dev *idev)
- 		struct in_device *in_dev = __in_dev_get_rtnl(dev);
- 		if (in_dev && (dev->flags & IFF_UP)) {
- 			struct in_ifaddr *ifa;
--
- 			int flag = scope;
- 
--			for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next) {
--
-+			in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 				addr.s6_addr32[3] = ifa->ifa_local;
- 
- 				if (ifa->ifa_scope == RT_SCOPE_LINK)
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index f0631bf486b6..e29cf27cb633 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -96,7 +96,7 @@ static void sctp_v4_copy_addrlist(struct list_head *addrlist,
+ 	struct in_device *in_dev;
+ 	struct sin_list {
+ 		struct list_head	list;
+@@ -349,7 +350,7 @@ static void enum_netdev_ipv4_ips(struct ib_device *ib_dev,
  		return;
  	}
  
--	for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next) {
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		/* Add the address to the local list.  */
- 		addr = kzalloc(sizeof(*addr), GFP_ATOMIC);
- 		if (addr) {
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 745afd82f281..49bcebff6378 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -97,17 +97,19 @@ static int smc_clc_prfx_set4_rcu(struct dst_entry *dst, __be32 ipv4,
- 				 struct smc_clc_msg_proposal_prefix *prop)
- {
- 	struct in_device *in_dev = __in_dev_get_rcu(dst->dev);
-+	const struct in_ifaddr *ifa;
- 
- 	if (!in_dev)
- 		return -ENODEV;
 -	for_ifa(in_dev) {
++	in_dev_for_each_ifa_rcu(ifa, in_dev) {
+ 		struct sin_list *entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
+ 
+ 		if (!entry)
+@@ -359,7 +360,7 @@ static void enum_netdev_ipv4_ips(struct ib_device *ib_dev,
+ 		entry->ip.sin_addr.s_addr = ifa->ifa_address;
+ 		list_add_tail(&entry->list, &sin_list);
+ 	}
+-	endfor_ifa(in_dev);
 +
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		if (!inet_ifa_match(ipv4, ifa))
- 			continue;
- 		prop->prefix_len = inet_mask_len(ifa->ifa_mask);
- 		prop->outgoing_subnet = ifa->ifa_address & ifa->ifa_mask;
- 		/* prop->ipv6_prefixes_cnt = 0; already done by memset before */
- 		return 0;
--	} endfor_ifa(in_dev);
-+	}
- 	return -ENOENT;
- }
+ 	rcu_read_unlock();
  
-@@ -190,14 +192,15 @@ static int smc_clc_prfx_match4_rcu(struct net_device *dev,
- 				   struct smc_clc_msg_proposal_prefix *prop)
- {
- 	struct in_device *in_dev = __in_dev_get_rcu(dev);
+ 	list_for_each_entry_safe(sin_iter, sin_temp, &sin_list, list) {
+diff --git a/drivers/infiniband/hw/cxgb4/cm.c b/drivers/infiniband/hw/cxgb4/cm.c
+index 0f3b1193d5f8..09fcfc9e052d 100644
+--- a/drivers/infiniband/hw/cxgb4/cm.c
++++ b/drivers/infiniband/hw/cxgb4/cm.c
+@@ -3230,17 +3230,22 @@ static int pick_local_ipaddrs(struct c4iw_dev *dev, struct iw_cm_id *cm_id)
+ 	int found = 0;
+ 	struct sockaddr_in *laddr = (struct sockaddr_in *)&cm_id->m_local_addr;
+ 	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->m_remote_addr;
 +	const struct in_ifaddr *ifa;
  
- 	if (!in_dev)
- 		return -ENODEV;
--	for_ifa(in_dev) {
-+	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		if (prop->prefix_len == inet_mask_len(ifa->ifa_mask) &&
- 		    inet_ifa_match(prop->outgoing_subnet, ifa))
- 			return 0;
--	} endfor_ifa(in_dev);
+ 	ind = in_dev_get(dev->rdev.lldi.ports[0]);
+ 	if (!ind)
+ 		return -EADDRNOTAVAIL;
+-	for_primary_ifa(ind) {
++	rcu_read_lock();
++	in_dev_for_each_ifa_rcu(ifa, ind) {
++		if (ifa->ifa_flags & IFA_F_SECONDARY)
++			continue;
+ 		laddr->sin_addr.s_addr = ifa->ifa_address;
+ 		raddr->sin_addr.s_addr = ifa->ifa_address;
+ 		found = 1;
+ 		break;
+ 	}
+-	endfor_ifa(ind);
++	rcu_read_unlock();
++
+ 	in_dev_put(ind);
+ 	return found ? 0 : -EADDRNOTAVAIL;
+ }
+diff --git a/drivers/infiniband/hw/i40iw/i40iw_cm.c b/drivers/infiniband/hw/i40iw/i40iw_cm.c
+index 8233f5a4e623..700a5d06b60c 100644
+--- a/drivers/infiniband/hw/i40iw/i40iw_cm.c
++++ b/drivers/infiniband/hw/i40iw/i40iw_cm.c
+@@ -1773,8 +1773,11 @@ static enum i40iw_status_code i40iw_add_mqh_4(
+ 		if ((((rdma_vlan_dev_vlan_id(dev) < I40IW_NO_VLAN) &&
+ 		      (rdma_vlan_dev_real_dev(dev) == iwdev->netdev)) ||
+ 		    (dev == iwdev->netdev)) && (dev->flags & IFF_UP)) {
++			const struct in_ifaddr *ifa;
++
+ 			idev = in_dev_get(dev);
+-			for_ifa(idev) {
++
++			in_dev_for_each_ifa_rtnl(ifa, idev) {
+ 				i40iw_debug(&iwdev->sc_dev,
+ 					    I40IW_DEBUG_CM,
+ 					    "Allocating child CM Listener forIP=%pI4, vlan_id=%d, MAC=%pM\n",
+@@ -1819,7 +1822,7 @@ static enum i40iw_status_code i40iw_add_mqh_4(
+ 					cm_parent_listen_node->cm_core->stats_listen_nodes_created--;
+ 				}
+ 			}
+-			endfor_ifa(idev);
++
+ 			in_dev_put(idev);
+ 		}
+ 	}
+diff --git a/drivers/infiniband/hw/i40iw/i40iw_main.c b/drivers/infiniband/hw/i40iw/i40iw_main.c
+index 10932baee279..d44cf33df81a 100644
+--- a/drivers/infiniband/hw/i40iw/i40iw_main.c
++++ b/drivers/infiniband/hw/i40iw/i40iw_main.c
+@@ -1222,8 +1222,10 @@ static void i40iw_add_ipv4_addr(struct i40iw_device *iwdev)
+ 		if ((((rdma_vlan_dev_vlan_id(dev) < 0xFFFF) &&
+ 		      (rdma_vlan_dev_real_dev(dev) == iwdev->netdev)) ||
+ 		    (dev == iwdev->netdev)) && (dev->flags & IFF_UP)) {
++			const struct in_ifaddr *ifa;
++
+ 			idev = in_dev_get(dev);
+-			for_ifa(idev) {
++			in_dev_for_each_ifa_rtnl(ifa, idev) {
+ 				i40iw_debug(&iwdev->sc_dev, I40IW_DEBUG_CM,
+ 					    "IP=%pI4, vlan_id=%d, MAC=%pM\n", &ifa->ifa_address,
+ 					     rdma_vlan_dev_vlan_id(dev), dev->dev_addr);
+@@ -1235,7 +1237,7 @@ static void i40iw_add_ipv4_addr(struct i40iw_device *iwdev)
+ 						       true,
+ 						       I40IW_ARP_ADD);
+ 			}
+-			endfor_ifa(idev);
++
+ 			in_dev_put(idev);
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
+index 84cb62434556..58e2eaf77014 100644
+--- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
++++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
+@@ -3248,6 +3248,7 @@ netxen_config_indev_addr(struct netxen_adapter *adapter,
+ 		struct net_device *dev, unsigned long event)
+ {
+ 	struct in_device *indev;
++	struct in_ifaddr *ifa;
+ 
+ 	if (!netxen_destip_supported(adapter))
+ 		return;
+@@ -3256,7 +3257,8 @@ netxen_config_indev_addr(struct netxen_adapter *adapter,
+ 	if (!indev)
+ 		return;
+ 
+-	for_ifa(indev) {
++	rcu_read_lock();
++	in_dev_for_each_ifa_rcu(ifa, indev) {
+ 		switch (event) {
+ 		case NETDEV_UP:
+ 			netxen_list_config_ip(adapter, ifa, NX_IP_UP);
+@@ -3267,8 +3269,8 @@ netxen_config_indev_addr(struct netxen_adapter *adapter,
+ 		default:
+ 			break;
+ 		}
+-	} endfor_ifa(indev);
+-
++	}
++	rcu_read_unlock();
+ 	in_dev_put(indev);
+ }
+ 
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+index 7a873002e626..c07438db30ba 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+@@ -4119,13 +4119,14 @@ static void
+ qlcnic_config_indev_addr(struct qlcnic_adapter *adapter,
+ 			struct net_device *dev, unsigned long event)
+ {
++	const struct in_ifaddr *ifa;
+ 	struct in_device *indev;
+ 
+ 	indev = in_dev_get(dev);
+ 	if (!indev)
+ 		return;
+ 
+-	for_ifa(indev) {
++	in_dev_for_each_ifa_rtnl(ifa, indev) {
+ 		switch (event) {
+ 		case NETDEV_UP:
+ 			qlcnic_config_ipaddr(adapter,
+@@ -4138,7 +4139,7 @@ qlcnic_config_indev_addr(struct qlcnic_adapter *adapter,
+ 		default:
+ 			break;
+ 		}
+-	} endfor_ifa(indev);
 +	}
  
- 	return -ENOENT;
+ 	in_dev_put(indev);
  }
+diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
+index 320039d329c7..4976ca3f30c7 100644
+--- a/drivers/net/wan/hdlc_cisco.c
++++ b/drivers/net/wan/hdlc_cisco.c
+@@ -196,16 +196,15 @@ static int cisco_rx(struct sk_buff *skb)
+ 			mask = ~cpu_to_be32(0); /* is the mask correct? */
+ 
+ 			if (in_dev != NULL) {
+-				struct in_ifaddr **ifap = &in_dev->ifa_list;
++				const struct in_ifaddr *ifa;
+ 
+-				while (*ifap != NULL) {
++				in_dev_for_each_ifa_rcu(ifa, in_dev) {
+ 					if (strcmp(dev->name,
+-						   (*ifap)->ifa_label) == 0) {
+-						addr = (*ifap)->ifa_local;
+-						mask = (*ifap)->ifa_mask;
++						   ifa->ifa_label) == 0) {
++						addr = ifa->ifa_local;
++						mask = ifa->ifa_mask;
+ 						break;
+ 					}
+-					ifap = &(*ifap)->ifa_next;
+ 				}
+ 
+ 				cisco_keepalive_send(dev, CISCO_ADDR_REPLY,
 -- 
 2.21.0
 
