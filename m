@@ -2,70 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E21BC30DCA
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC4330DE3
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbfEaMF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:05:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44412 "EHLO vps0.lunn.ch"
+        id S1727112AbfEaMMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:12:38 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46946 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726330AbfEaMF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 08:05:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=dF5nDtOk5abJZYFCMF9oMzGBnnpEB+On3dIj6UU9HrI=; b=dhKb75OC9urPoYj9NjRoQRCs01
-        fTFpJ2yOKnBZhFp6C6DzmaZUfvfEHp/ThHVZd2uxGQFTVq2erArnAqSikhmgtEdxtjc21eKHYQ5JM
-        UhjiWDkNAKaaOXQQI6iXbir+1t//Gs1390CesDZBobO6pyexY0xBLVq3erq4yVgmfslo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWgHZ-000528-Es; Fri, 31 May 2019 14:05:13 +0200
-Date:   Fri, 31 May 2019 14:05:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wolfram Sang <wsa@the-dreams.de>
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [net-next,v4 0/2] Enable SFP on ACPI based systems
-Message-ID: <20190531120513.GB18608@lunn.ch>
-References: <20190528230233.26772-1-ruslan@babayev.com>
- <20190529094818.GF2781@lahna.fi.intel.com>
- <20190529155132.GZ18059@lunn.ch>
- <20190531062740.GQ2781@lahna.fi.intel.com>
- <20190531064842.GA1058@kunai>
+        id S1726233AbfEaMMi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 08:12:38 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 086F13154860;
+        Fri, 31 May 2019 12:12:33 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB31C5DA34;
+        Fri, 31 May 2019 12:12:31 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     aclaudi@redhat.com, Qiaobin Fu <qiaobinf@bu.edu>
+Subject: [PATCH iproute2] man: tc-skbedit.8: document 'inheritdsfield'
+Date:   Fri, 31 May 2019 14:12:15 +0200
+Message-Id: <7d450cb1d7bc1cde70b530930e0a5d73e39f4fdf.1559304622.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190531064842.GA1058@kunai>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 31 May 2019 12:12:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 08:48:42AM +0200, Wolfram Sang wrote:
-> 
-> > > Are you happy for the i2c patch to be merged via net-next?
-> > 
-> > Yes, that's fine my me.
-> > 
-> > Wolfram do you have any objections?
-> 
-> That's fine with me, I'd like an immutable branch, though. There are
-> likely other changes to i2c.h coming and that would avoid merge
-> conflicts.
+while at it, fix missing square bracket near 'ptype' and a typo in the
+action description (it's -> its).
 
-Hi Wolfram
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ man/man8/tc-skbedit.8 | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-Davids Millers net-next is immutable, but large.
-
-Maybe he can create a smaller immutable branch for you.
-
-      Andrew
-
+diff --git a/man/man8/tc-skbedit.8 b/man/man8/tc-skbedit.8
+index 003f05c93f7c..2459198261e6 100644
+--- a/man/man8/tc-skbedit.8
++++ b/man/man8/tc-skbedit.8
+@@ -10,9 +10,10 @@ skbedit - SKB editing action
+ .B priority
+ .IR PRIORITY " ] ["
+ .B mark
+-.IR MARK " ]"
++.IR MARK " ] ["
+ .B ptype
+-.IR PTYPE " ]"
++.IR PTYPE " ] ["
++.BR inheritdsfield " ]"
+ .SH DESCRIPTION
+ The
+ .B skbedit
+@@ -22,7 +23,7 @@ action, which in turn allows to change parts of the packet data itself.
+ 
+ The most unique feature of
+ .B skbedit
+-is it's ability to decide over which queue of an interface with multiple
++is its ability to decide over which queue of an interface with multiple
+ transmit queues the packet is to be sent out. The number of available transmit
+ queues is reflected by sysfs entries within
+ .I /sys/class/net/<interface>/queues
+@@ -61,6 +62,12 @@ needing to allow ingressing packets with the wrong MAC address but
+ correct IP address.
+ .I PTYPE
+ is one of: host, otherhost, broadcast, multicast
++.TP
++.BI inheritdsfield
++Override the packet classification decision, and any value specified with
++.BR priority ", "
++using the information stored in the Differentiated Services Field of the
++IPv6/IPv4 header (RFC2474).
+ .SH SEE ALSO
+ .BR tc (8),
+ .BR tc-pedit (8)
+-- 
+2.20.1
 
