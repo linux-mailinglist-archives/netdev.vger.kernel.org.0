@@ -2,101 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B5F310AF
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75224310B2
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbfEaO4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 10:56:13 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40463 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726501AbfEaO4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:56:12 -0400
-Received: by mail-pf1-f196.google.com with SMTP id u17so6360702pfn.7
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:56:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=XKYEbc4g3xx5Kespd2rSqwj6hjN41j8NXsg5PsoK/zc=;
-        b=OmgbsuxQQb7QGFaagUtR3GO/1FgQJQwveae/3nS8I5TDH9LDvJLDwOwaSX9KNYSJAD
-         P7+u0WH58s+ZJPf1pJAZYs5ImZGM9NDCaVrSKljYwvuntl7evtHy/Ekm2J8YL/mKHWEV
-         gEDnp3Wwr/sYGHobYQEwuTLWW5m++A76OM1YbM5z9+zMvhm2QQ//P8jsfTgq5M2Oy6PP
-         0lulUASGPUfRrPLL7Vlpr7OUjc6EW00wfs4+Ktrd4bvkLJ2SSvRCzuRPA6SgLuwK0duO
-         zxaJlzW8AHZ2eE0SC5e5xXtNUy5dmZoKqVsKl+KYLPTVqje8Vk/tL3FdA1e1iQ+sD8ud
-         xXtA==
+        id S1726531AbfEaO6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:58:07 -0400
+Received: from mail-it1-f197.google.com ([209.85.166.197]:54016 "EHLO
+        mail-it1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbfEaO6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:58:07 -0400
+Received: by mail-it1-f197.google.com with SMTP id p19so3886881itm.3
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:58:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XKYEbc4g3xx5Kespd2rSqwj6hjN41j8NXsg5PsoK/zc=;
-        b=I1Rkw3MtB3DlSEPcZu7L/wjAD1ROje77EodnC6eP4TFdhmWSIdFYhqAX1qwnwjOmqi
-         a+QYWOEaE6XSyr5ZEsUWBtmvpovdVn9TZkWVslwgbJYT3Nq9bO0BmZ8wmbthAuNNI0xF
-         sICqrl7Ln/05SQjrffQqiL2peC+9jeJ3jj6ne8yRXSpKAbw4cVaClJl4wQYi9kGlSmt4
-         NzrZ9A87HU8FrfAAjCqbyO58trqq6m8Lq78yEoJdOWeg53zPmRJXRRrF+DW12+6Zt+Fw
-         I20ZjyQITLCo6HN7OCtLObPn+XLBJ/hUrzJYJY49sdqrsrRM97oIIosVgQ5GLLSKzITn
-         Dl+g==
-X-Gm-Message-State: APjAAAWr9sXnuqBxx2dvq4bUu9rn6ojdIeiT0Cv+tf+Z2E6SafrmHLcg
-        AvXkvFD4LBm5UWh4g9fSd3bee4Ye
-X-Google-Smtp-Source: APXvYqxLxEDFjkAbhyU5yv8zA1huwzbv2U2LD23ERx1MWyinZ9cqfFXHrW/o8RimfY0YVZOdcwmpwQ==
-X-Received: by 2002:a62:1a51:: with SMTP id a78mr10728579pfa.39.1559314571852;
-        Fri, 31 May 2019 07:56:11 -0700 (PDT)
-Received: from [192.168.84.42] (8.100.247.35.bc.googleusercontent.com. [35.247.100.8])
-        by smtp.gmail.com with ESMTPSA id u4sm6400186pfu.26.2019.05.31.07.56.10
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 07:56:11 -0700 (PDT)
-Subject: Re: [PATCH] net/neighbour: fix potential null pointer deference
-To:     Young Xiao <92siuyang@gmail.com>, davem@davemloft.net,
-        dsahern@gmail.com, roopa@cumulusnetworks.com, christian@brauner.io,
-        khlebnikov@yandex-team.ru, netdev@vger.kernel.org
-References: <1559291383-5814-1-git-send-email-92siuyang@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <15960edf-b5b7-ea53-c48a-e459280547a6@gmail.com>
-Date:   Fri, 31 May 2019 07:56:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=VAWNQSWXRFPjqWqvcnCxEWc2vR3xbR4pd4DDjFUHobY=;
+        b=RosZ+pQwbgaGeqobNR5Z7F3XBwMDT7t4TJb57tCfDfdm6sSooYOKSQHcVAdHw03d/6
+         n7m559XeO44cgB3X+rP+/mnWSeAKfbNdg0LwXGmAsTKwZ1L1mqsM3+KAT60vOSaBtlcj
+         s47JDAW77+FOXncTlCBXKupeFODKNZzA6Tjrv0W2tQD9J1vuRGlkbKvgXHatmEQUc3+n
+         LU5qiLRwTMd7LxfdN/skXN7oH7MJE6TSV4k1zoMl+mmG3VUa+wBYoJUEbnKUNCNKSd8Y
+         B26LGy+p1rB09x9nIAQbasO+2373z1jMDXGzo3ojAFf2wBhc0ctMMFbv1vQW9p+e1jhg
+         qEUQ==
+X-Gm-Message-State: APjAAAXLJ8tg0yLqAhdG9sLXP1uHHZoXM6Nb/FgAdsOa4oD7WOpA7d50
+        4p46TUOVFGce8CNi+2LhEyQf8i+dKF8osr1Ii8coU06fwClK
+X-Google-Smtp-Source: APXvYqy2LGeUvc5Dv4FGMjjqAoqP0NyUOjJt4CyFzayeTo7kbBilfa4tIw/mJKkyGhkh2Se+kWhGagFiaeOjWEqSVURBSe8Ui2Fy
 MIME-Version: 1.0
-In-Reply-To: <1559291383-5814-1-git-send-email-92siuyang@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:660c:444:: with SMTP id d4mr7089633itl.158.1559314685827;
+ Fri, 31 May 2019 07:58:05 -0700 (PDT)
+Date:   Fri, 31 May 2019 07:58:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f122ab058a303d94@google.com>
+Subject: memory leak in sctp_stream_init_ext
+From:   syzbot <syzbot+7f3b6b106be8dcdcdeec@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    bec7550c Merge tag 'docs-5.2-fixes2' of git://git.lwn.net/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=152a0916a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
+dashboard link: https://syzkaller.appspot.com/bug?extid=7f3b6b106be8dcdcdeec
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1142cd4ca00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f81d72a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+7f3b6b106be8dcdcdeec@syzkaller.appspotmail.com
+
+executing program
+executing program
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff8881114f5d80 (size 96):
+   comm "syz-executor934", pid 7160, jiffies 4294993058 (age 31.950s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<00000000ce7a1326>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:55 [inline]
+     [<00000000ce7a1326>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000ce7a1326>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000ce7a1326>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+     [<000000007abb7ac9>] kmalloc include/linux/slab.h:547 [inline]
+     [<000000007abb7ac9>] kzalloc include/linux/slab.h:742 [inline]
+     [<000000007abb7ac9>] sctp_stream_init_ext+0x2b/0xa0  
+net/sctp/stream.c:157
+     [<0000000048ecb9c1>] sctp_sendmsg_to_asoc+0x946/0xa00  
+net/sctp/socket.c:1882
+     [<000000004483ca2b>] sctp_sendmsg+0x2a8/0x990 net/sctp/socket.c:2102
+     [<0000000094bdc32e>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
+     [<0000000022d1c2a5>] sock_sendmsg_nosec net/socket.c:652 [inline]
+     [<0000000022d1c2a5>] sock_sendmsg+0x54/0x70 net/socket.c:671
+     [<000000006ab53119>] sock_write_iter+0xb6/0x130 net/socket.c:1000
+     [<00000000973772ef>] call_write_iter include/linux/fs.h:1872 [inline]
+     [<00000000973772ef>] new_sync_write+0x1ad/0x260 fs/read_write.c:483
+     [<0000000033f2491b>] __vfs_write+0x87/0xa0 fs/read_write.c:496
+     [<00000000372fbd56>] vfs_write fs/read_write.c:558 [inline]
+     [<00000000372fbd56>] vfs_write+0xee/0x210 fs/read_write.c:542
+     [<000000007ccb2ea5>] ksys_write+0x7c/0x130 fs/read_write.c:611
+     [<000000001c29b8c7>] __do_sys_write fs/read_write.c:623 [inline]
+     [<000000001c29b8c7>] __se_sys_write fs/read_write.c:620 [inline]
+     [<000000001c29b8c7>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
+     [<0000000014d9243b>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<0000000059f6e9a8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff8881114f5d80 (size 96):
+   comm "syz-executor934", pid 7160, jiffies 4294993058 (age 33.160s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<00000000ce7a1326>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:55 [inline]
+     [<00000000ce7a1326>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000ce7a1326>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000ce7a1326>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+     [<000000007abb7ac9>] kmalloc include/linux/slab.h:547 [inline]
+     [<000000007abb7ac9>] kzalloc include/linux/slab.h:742 [inline]
+     [<000000007abb7ac9>] sctp_stream_init_ext+0x2b/0xa0  
+net/sctp/stream.c:157
+     [<0000000048ecb9c1>] sctp_sendmsg_to_asoc+0x946/0xa00  
+net/sctp/socket.c:1882
+     [<000000004483ca2b>] sctp_sendmsg+0x2a8/0x990 net/sctp/socket.c:2102
+     [<0000000094bdc32e>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
+     [<0000000022d1c2a5>] sock_sendmsg_nosec net/socket.c:652 [inline]
+     [<0000000022d1c2a5>] sock_sendmsg+0x54/0x70 net/socket.c:671
+     [<000000006ab53119>] sock_write_iter+0xb6/0x130 net/socket.c:1000
+     [<00000000973772ef>] call_write_iter include/linux/fs.h:1872 [inline]
+     [<00000000973772ef>] new_sync_write+0x1ad/0x260 fs/read_write.c:483
+     [<0000000033f2491b>] __vfs_write+0x87/0xa0 fs/read_write.c:496
+     [<00000000372fbd56>] vfs_write fs/read_write.c:558 [inline]
+     [<00000000372fbd56>] vfs_write+0xee/0x210 fs/read_write.c:542
+     [<000000007ccb2ea5>] ksys_write+0x7c/0x130 fs/read_write.c:611
+     [<000000001c29b8c7>] __do_sys_write fs/read_write.c:623 [inline]
+     [<000000001c29b8c7>] __se_sys_write fs/read_write.c:620 [inline]
+     [<000000001c29b8c7>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
+     [<0000000014d9243b>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<0000000059f6e9a8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+executing program
+executing program
+executing program
+executing program
+executing program
+executing program
 
 
-On 5/31/19 1:29 AM, Young Xiao wrote:
-> There is a possible null pointer deference bugs in neigh_fill_info(),
-> which is similar to the bug which was fixed in commit 6adc5fd6a142
-> ("net/neighbour: fix crash at dumping device-agnostic proxy entries").
-> 
-> Signed-off-by: Young Xiao <92siuyang@gmail.com>
-> ---
->  net/core/neighbour.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index dfa8710..33c3ff1 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -2440,7 +2440,7 @@ static int neigh_fill_info(struct sk_buff *skb, struct neighbour *neigh,
->  	ndm->ndm_pad2    = 0;
->  	ndm->ndm_flags	 = neigh->flags;
->  	ndm->ndm_type	 = neigh->type;
-> -	ndm->ndm_ifindex = neigh->dev->ifindex;
-> +	ndm->ndm_ifindex = neigh->dev ? neigh->dev->ifindex : 0;
->  
->  	if (nla_put(skb, NDA_DST, neigh->tbl->key_len, neigh->primary_key))
->  		goto nla_put_failure;
-> 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-When was the bug added exactly ?
-
-Hint : We want a Fixes: tag, so that we can fully understand the issue and make sure the
-fix is complete.
-
-Otherwise, your patch might very well have been randomly generated by a bot.
-
-Thank you.
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
