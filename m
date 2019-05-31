@@ -2,129 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F0A316EE
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1505316F5
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:08:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726711AbfEaWII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:08:08 -0400
-Received: from mail-eopbgr20048.outbound.protection.outlook.com ([40.107.2.48]:18629
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725913AbfEaWII (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 18:08:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h5V+TA2g1B8eh+38pPceqToeMVIeshpl4Jz6CyfAw/w=;
- b=m3xUf+F8JB+8Sq1j9UX1ufTZMN0N4wlwcgJp2BiCVhpm8aGIAl+uncLU7W6ITAL07P0HD6f9ekbDRIVV6QjydLhRD7Un5RK4XxwaubhNzcnRNbLnfr5TV1L7/MZvoJByIDghPv5NcvTmywePZ2F3AtWHes1fGrYfUmCiesllyIs=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6091.eurprd05.prod.outlook.com (20.179.9.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.19; Fri, 31 May 2019 22:08:03 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1943.018; Fri, 31 May 2019
- 22:08:03 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP support
-Thread-Topic: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP support
-Thread-Index: AQHVFxR3RzUKWjjKSU24ene/DovDe6aFYe2AgAAKzwCAAAIJgIAACKCAgABVEYA=
-Date:   Fri, 31 May 2019 22:08:03 +0000
-Message-ID: <a65de3a257ab5ebec83e817c092f074b58b9ae47.camel@mellanox.com>
-References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
-         <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
-         <20190531174643.4be8b27f@carbon> <20190531162523.GA3694@khorivan>
-         <20190531183241.255293bc@carbon> <20190531170332.GB3694@khorivan>
-In-Reply-To: <20190531170332.GB3694@khorivan>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2ab187e3-8158-4e18-8462-08d6e61473e5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6091;
-x-ms-traffictypediagnostic: DB8PR05MB6091:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <DB8PR05MB6091A12C78605D692EC48407BE190@DB8PR05MB6091.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 00540983E2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(136003)(346002)(396003)(376002)(189003)(199004)(7736002)(14444005)(305945005)(6486002)(81156014)(7416002)(256004)(118296001)(26005)(66066001)(99286004)(6246003)(6512007)(14454004)(2501003)(8936002)(36756003)(6306002)(6436002)(8676002)(229853002)(66556008)(4326008)(66446008)(66476007)(446003)(478600001)(71190400001)(76116006)(486006)(11346002)(2616005)(71200400001)(25786009)(316002)(66946007)(68736007)(966005)(476003)(5660300002)(64756008)(6116002)(58126008)(110136005)(53936002)(3846002)(186003)(2906002)(73956011)(6506007)(86362001)(91956017)(76176011)(102836004)(54906003)(45080400002)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6091;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Z94977NzkD48HS/yRVlq/s8b856kHPOheVVux6a13MTZMzq1ueGuWZTqcosg68D/W/ap8KQOsBWekXotTIMYUKAHxCUR4SDBtTM3kRshzNlsYSfO6ANNUjHkL0AInLZjMfpjLfRjOtTcUsDL39901daiCJSxDUEXNlUdtbSNaNqrNCX5qDfsPgqbNcgQFkf347iGFWruVWXQT2nVXqkECfaYe+RYCtbTUJWRPhX1WC+ITOIZ5S8vN7ByMOiJWOfZVpfGN92NwgZbDJLnlRk9R/Q3L8gp9JXr0FIx80ZMmkYXz+TWzrFNo4qO+34U6DdhVd66e7+fSTidpk9oJnIfujrOW9ek5T4DMJny+vEOv6jKfBQWVnH4NGj8Fi3nwlgpr7JmYICEXV6mZk66QFULxqOF0VxHMMj8c6cRoQeN4rk=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <53B36BEEBA016349819171CA9F2B689F@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726816AbfEaWIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 18:08:44 -0400
+Received: from mail-it1-f194.google.com ([209.85.166.194]:32789 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726798AbfEaWIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:08:44 -0400
+Received: by mail-it1-f194.google.com with SMTP id j17so11969326itk.0
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:08:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rk8vi2GT1Kz6DVRVbKN7nB2fCQvo4oUTFPvog4etFog=;
+        b=RoAJZNVM9UNtsbDZIxdhytc/h/nYGp4cX/w7asLBFt+LL3YGdpSFVdLJ/u8wre27ep
+         Zc72jhZEh9jdHPOl1iKQZqxVWeScamm/sKR1VLGzQx1nnXuZI+0MZf4kU+I8mYs+b6aU
+         0reiCICEaCdyO23EgeaBnKv2ESrzeKJv8FFJmVeneKkyZKYZjb41UYFYC3JxzhU0ZMM7
+         mLAEUPHlWqUQcTH3HrhRi39Dwvdc2zpwscy8iKNdbA6tJrTqOdtBEbVvoizFMbfRjwcl
+         RcsfdbcOMjq7AKJqPUOpZehjtHVamaPcM26USwWACHuapHEqvJjFXNLfN3dULvKiJkcX
+         SNdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rk8vi2GT1Kz6DVRVbKN7nB2fCQvo4oUTFPvog4etFog=;
+        b=gBS8Ulv5joUT5SiQCwHsHx0FGEciOKJiU2RWO+N3jJmIwwOpveG3A/e41ewUkVbA4T
+         DFqTygn68T/AIqFHDAOwOM4uZpwN8Len8RjRrSc0BnUIzxUr333POPqLsnd5d8QfPIS5
+         jqeGZ4Hw0GvA1/bmJA8Zf+9zRin3u61hc7QaKbEZVyfRHRLpWjtXQpgvfHiA4kuZnbzr
+         OUCmKoGh5FBxhQQ5QI4hmJJdE7An02DnkhRQIFiylf5NMiNcXIiLtCl210RTYL6Y+jta
+         e8kMwLLaLxRQqHbp5N5p3tyWRQNlZZOMKEUq68itQ6sixxyZJ1Eu+a9xyzld2J1Wj2MJ
+         QlWA==
+X-Gm-Message-State: APjAAAUHsffcGigMasNWyAxMhe2zNC/LfT7jNqwP+mioZ3/3Rqk+aviO
+        miPALRqDehu2NFNQG6mDpvaXug==
+X-Google-Smtp-Source: APXvYqzH+EMg6SX+BlsymH4Hq994bzynu2+kAA7hlzRr88AMlhERcDm6qIxgsjuFesiRwjur1MEYsA==
+X-Received: by 2002:a02:b817:: with SMTP id o23mr8340150jam.134.1559340522683;
+        Fri, 31 May 2019 15:08:42 -0700 (PDT)
+Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
+        by smtp.googlemail.com with ESMTPSA id p11sm3398687itc.2.2019.05.31.15.08.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 15:08:42 -0700 (PDT)
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Dan Williams <dcbw@redhat.com>, David Miller <davem@davemloft.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        evgreen@chromium.org, Ben Chan <benchan@google.com>,
+        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        abhishek.esse@gmail.com, Networking <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org
+References: <20190531035348.7194-1-elder@linaro.org>
+ <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+ <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org>
+ <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
+ <a28c5e13-59bc-144d-4153-9d104cfa9188@linaro.org>
+ <CAK8P3a2rkQd3t-yNdNGePW8E7rhObjAvUpW6Ga9AM6rJJ27BOw@mail.gmail.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <5ebccdbe-479d-2b7d-693c-0c412060d687@linaro.org>
+Date:   Fri, 31 May 2019 17:08:40 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ab187e3-8158-4e18-8462-08d6e61473e5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 22:08:03.7000
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6091
+In-Reply-To: <CAK8P3a2rkQd3t-yNdNGePW8E7rhObjAvUpW6Ga9AM6rJJ27BOw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTA1LTMxIGF0IDIwOjAzICswMzAwLCBJdmFuIEtob3JvbnpodWsgd3JvdGU6
-DQo+IE9uIEZyaSwgTWF5IDMxLCAyMDE5IGF0IDA2OjMyOjQxUE0gKzAyMDAsIEplc3BlciBEYW5n
-YWFyZCBCcm91ZXINCj4gd3JvdGU6DQo+ID4gT24gRnJpLCAzMSBNYXkgMjAxOSAxOToyNToyNCAr
-MDMwMCBJdmFuIEtob3JvbnpodWsgPA0KPiA+IGl2YW4ua2hvcm9uemh1a0BsaW5hcm8ub3JnPiB3
-cm90ZToNCj4gPiANCj4gPiA+IE9uIEZyaSwgTWF5IDMxLCAyMDE5IGF0IDA1OjQ2OjQzUE0gKzAy
-MDAsIEplc3BlciBEYW5nYWFyZCBCcm91ZXINCj4gPiA+IHdyb3RlOg0KPiA+ID4gPiBGcm9tIGJl
-bG93IGNvZGUgc25pcHBldHMsIGl0IGxvb2tzIGxpa2UgeW91IG9ubHkgYWxsb2NhdGVkIDENCj4g
-PiA+ID4gcGFnZV9wb29sDQo+ID4gPiA+IGFuZCBzaGFyaW5nIGl0IHdpdGggc2V2ZXJhbCBSWC1x
-dWV1ZXMsIGFzIEkgZG9uJ3QgaGF2ZSB0aGUgZnVsbA0KPiA+ID4gPiBjb250ZXh0DQo+ID4gPiA+
-IGFuZCBkb24ndCBrbm93IHRoaXMgZHJpdmVyLCBJIG1pZ2h0IGJlIHdyb25nPw0KPiA+ID4gPiAN
-Cj4gPiA+ID4gVG8gYmUgY2xlYXIsIGEgcGFnZV9wb29sIG9iamVjdCBpcyBuZWVkZWQgcGVyIFJY
-LXF1ZXVlLCBhcyBpdA0KPiA+ID4gPiBpcw0KPiA+ID4gPiBhY2Nlc3NpbmcgYSBzbWFsbCBSWCBw
-YWdlIGNhY2hlICh3aGljaCBwcm90ZWN0ZWQgYnkNCj4gPiA+ID4gTkFQSS9zb2Z0aXJxKS4NCj4g
-PiA+IA0KPiA+ID4gVGhlcmUgaXMgb25lIFJYIGludGVycnVwdCBhbmQgb25lIFJYIE5BUEkgZm9y
-IGFsbCByeCBjaGFubmVscy4NCj4gPiANCj4gPiBTbywgd2hhdCBhcmUgeW91IHNheWluZz8NCj4g
-PiANCj4gPiBZb3UgX2FyZV8gc2hhcmluZyB0aGUgcGFnZV9wb29sIGJldHdlZW4gc2V2ZXJhbCBS
-WC1jaGFubmVscywgYnV0IGl0DQo+ID4gaXMNCj4gPiBzYWZlIGJlY2F1c2UgdGhpcyBoYXJkd2Fy
-ZSBvbmx5IGhhdmUgb25lIFJYIGludGVycnVwdCArIE5BUEkNCj4gPiBpbnN0YW5jZT8/DQo+IA0K
-PiBJIGNhbiBtaXNzIHNtdGggYnV0IGluIGNhc2Ugb2YgY3BzdyB0ZWNobmljYWxseSBpdCBtZWFu
-czoNCj4gMSkgUlggaW50ZXJydXB0cyBhcmUgZGlzYWJsZWQgd2hpbGUgTkFQSSBpcyBzY2hlZHVs
-ZWQsDQo+ICAgIG5vdCBmb3IgcGFydGljdWxhciBDUFUgb3IgY2hhbm5lbCwgYnV0IGF0IGFsbCwg
-Zm9yIHdob2xlIGNwc3cNCj4gbW9kdWxlLg0KPiAyKSBSWCBjaGFubmVscyBhcmUgaGFuZGxlZCBv
-bmUgYnkgb25lIGJ5IHByaW9yaXR5Lg0KDQpIaSBJdmFuLCBJIGdvdCBhIHNpbGx5IHF1ZXN0aW9u
-Li4gDQoNCldoYXQgaXMgdGhlIHJlYXNvbiBiZWhpbmQgaGF2aW5nIG11bHRpcGxlIFJYIHJpbmdz
-IGFuZCBvbmUgQ1BVL05BUEkNCmhhbmRsaW5nIGFsbCBvZiB0aGVtID8gcHJpb3JpdHkgPyBob3cg
-ZG8geW91IHByaW9yaXRpZXMgPw0KDQo+IDMpIEFmdGVyIGFsbCBvZiB0aGVtIGhhbmRsZWQgYW5k
-IG5vIG1vcmUgaW4gYnVkZ2V0IC0gaW50ZXJydXB0cyBhcmUNCj4gZW5hYmxlZC4NCj4gNCkgSWYg
-cGFnZSBpcyByZXR1cm5lZCB0byB0aGUgcG9vbCwgYW5kIGl0J3Mgd2l0aGluIE5BUEksIG5vIHJh
-Y2VzIGFzDQo+IGl0J3MNCj4gICAgcmV0dXJuZWQgcHJvdGVjdGVkIGJ5IHNvZnRpcnEuIElmIGl0
-J3MgcmV0dXJuZWQgbm90IGluIHNvZnRpcnENCj4gaXQncyBwcm90ZWN0ZWQgDQo+ICAgIGJ5IHBy
-b2R1Y2VyIGxvY2sgb2YgdGhlIHJpbmcuDQo+IA0KPiBQcm9iYWJseSBpdCdzIG5vdCBnb29kIGV4
-YW1wbGUgZm9yIG90aGVycyBob3cgaXQgc2hvdWxkIGJlIHVzZWQsIG5vdA0KPiBhIGJpZw0KPiBw
-cm9ibGVtIHRvIG1vdmUgaXQgdG8gc2VwYXJhdGUgcG9vbHMuLiwgZXZlbiBkb24ndCByZW1lbWJl
-ciB3aHkgSQ0KPiBkZWNpZGVkIHRvDQo+IHVzZSBzaGFyZWQgcG9vbCwgdGhlcmUgd2FzIHNvbWUg
-bW9yZSByZWFzb25zLi4uIG5lZWQgc2VhcmNoIGluDQo+IGhpc3RvcnkuDQo+IA0KPiA+IC0tIA0K
-PiA+IEJlc3QgcmVnYXJkcywNCj4gPiAgSmVzcGVyIERhbmdhYXJkIEJyb3Vlcg0KPiA+ICBNU2Mu
-Q1MsIFByaW5jaXBhbCBLZXJuZWwgRW5naW5lZXIgYXQgUmVkIEhhdA0KPiA+ICBMaW5rZWRJbjog
-aHR0cDovL3d3dy5saW5rZWRpbi5jb20vaW4vYnJvdWVyDQo=
+On 5/31/19 4:12 PM, Arnd Bergmann wrote:
+> On Fri, May 31, 2019 at 10:47 PM Alex Elder <elder@linaro.org> wrote:
+>> On 5/31/19 2:19 PM, Arnd Bergmann wrote:
+>>> On Fri, May 31, 2019 at 6:36 PM Alex Elder <elder@linaro.org> wrote:
+>>>> On 5/31/19 9:58 AM, Dan Williams wrote:
+>>>>> On Thu, 2019-05-30 at 22:53 -0500, Alex Elder wrote:
+>>>
+>>> Does this mean that IPA can only be used to back rmnet, and rmnet
+>>> can only be used on top of IPA, or can or both of them be combined
+>>> with another driver to talk to instead?
+>>
+>> No it does not mean that.
+>>
+>> As I understand it, one reason for the rmnet layer was to abstract
+>> the back end, which would allow using a modem, or using something
+>> else (a LAN?), without exposing certain details of the hardware.
+>> (Perhaps to support multiplexing, etc. without duplicating that
+>> logic in two "back-end" drivers?)
+>>
+>> To be perfectly honest, at first I thought having IPA use rmnet
+>> was a cargo cult thing like Dan suggested, because I didn't see
+>> the benefit.  I now see why one would use that pass-through layer
+>> to handle the QMAP features.
+>>
+>> But back to your question.  The other thing is that I see no
+>> reason the IPA couldn't present a "normal" (non QMAP) interface
+>> for a modem.  It's something I'd really like to be able to do,
+>> but I can't do it without having the modem firmware change its
+>> configuration for these endpoints.  My access to the people who
+>> implement the modem firmware has been very limited (something
+>> I hope to improve), and unless and until I can get corresponding
+>> changes on the modem side to implement connections that don't
+>> use QMAP, I can't implement such a thing.
+> 
+> Why would that require firmware changes? What I was thinking
+> here is to turn the bits of the rmnet driver that actually do anything
+> interesting on the headers into a library module (or a header file
+> with inline functions) that can be called directly by the ipa driver,
+> keeping the protocol unchanged.
+
+You know, it's possible you're right about not needing
+firmware changes.  But it has always been my impression
+they would be needed.  Here's why.
+
+It looks like this:
+
+           GSI Channel   GSI Channel
+               |             |         
+  ----------   v   -------   v   -------------
+  | AP (ep)|=======| IPA |=======|(ep) Modem |
+  ----------       -------       -------------
+
+The AP and Modem each have IPA endpoints (ep), which use GSI channels,
+to communicate with the IPA. Each endpoint has configuration options
+(such as checksum offload).  I *thought* that the configurations of
+the two endpoints need to be compatible (e.g., they need to agree on
+whether they're aggregating).  But with your questioning I now think
+you may be right, that only the local endpoint's configuration matters.
+
+I will inquire further on this.  I *know* that the AP and modem
+exchange some information about IPA configuration, but looking more
+closely that looks like it's all about the configuration of shared
+IPA resources, not endpoints.
+
+That said, the broader design (including the user space code)
+surely assumes rmnet, and I don't have any sense of what impact
+changing that would make.  I am sure that changing it would not
+be well received.
+
+					-Alex
+
+>>> Always passing data from one netdev to another both ways
+>>> sounds like it introduces both direct CPU overhead, and
+>>> problems with flow control when data gets buffered inbetween.
+>>
+>> My impression is the rmnet driver is a pretty thin layer,
+>> so the CPU overhead is probably not that great (though
+>> deaggregating a message is expensive).  I agree with you
+>> on the flow control.
+> 
+> The CPU overhead I mean is not from executing code in the
+> rmnet driver, but from passing packets through the network
+> stack between the two drivers, i.e. adding each frame to
+> a queue and taking it back out. I'm not sure how this ends
+> up working in reality but from a first look it seems like
+> we might bounce in an out of the softirq handler inbetween.
+> 
+>           Arnd
+> 
+
