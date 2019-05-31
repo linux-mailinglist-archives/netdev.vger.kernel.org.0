@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 516D6316BA
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 23:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CAA316C7
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 23:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfEaVr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 17:47:28 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45262 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725934AbfEaVr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 17:47:28 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 46036480059;
-        Fri, 31 May 2019 21:47:27 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 31 May
- 2019 14:47:23 -0700
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next] flow_offload: include linux/kernel.h from
- flow_offload.h
-To:     David Miller <davem@davemloft.net>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Cong Wang" <xiyou.wangcong@gmail.com>
-Message-ID: <c7da964b-72ba-964a-5adf-c7b33b32c737@solarflare.com>
-Date:   Fri, 31 May 2019 22:47:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+        id S1726653AbfEaVuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 17:50:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:51114 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfEaVuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 17:50:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2BEDE15015E90;
+        Fri, 31 May 2019 14:50:06 -0700 (PDT)
+Date:   Fri, 31 May 2019 14:50:05 -0700 (PDT)
+Message-Id: <20190531.145005.798440469894507477.davem@davemloft.net>
+To:     elder@linaro.org
+Cc:     arnd@arndb.de, bjorn.andersson@linaro.org,
+        ilias.apalodimas@linaro.org, evgreen@chromium.org,
+        benchan@google.com, ejcaruso@google.com, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, subashab@codeaurora.org,
+        abhishek.esse@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 03/17] soc: qcom: ipa: main code
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190531035348.7194-4-elder@linaro.org>
+References: <20190531035348.7194-1-elder@linaro.org>
+        <20190531035348.7194-4-elder@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24648.005
-X-TM-AS-Result: No-1.606200-4.000000-10
-X-TMASE-MatchedRID: xeF2JCuG660uQK2tsehFmmhCG8qMW+Ky9e5am3m57X0d0WOKRkwsh0Ac
-        6DyoS2rICNLuPteRDHeGDu7ShAWPZxgHZ8655DOPOX/V8P8ail2cIZLVZAQa0IwZVlv5NpEAUEh
-        Wy9W70AFYF3qW3Je6+z9ZilJtYlDDsoQk03GIzlwSY7ecXl4wFgPQXz5y+3164AI1n6c9Dz9Ol/
-        NQkuCg/TgpiscYAwVkT7ywttmULMoG76l3NxGiSzHCqV7rv9Y1QDMFuK2P9FjtoWavEW7HRE3Z8
-        jKJCdR04mqLFh5vfmx+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.606200-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24648.005
-X-MDID: 1559339248-xp7aDDq4KY90
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 31 May 2019 14:50:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-flow_stats_update() uses max_t, so ensure we have that defined.
+From: Alex Elder <elder@linaro.org>
+Date: Thu, 30 May 2019 22:53:34 -0500
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- include/net/flow_offload.h | 1 +
- 1 file changed, 1 insertion(+)
+> +	void *route_virt;
+ ...
+> +	void *filter_virt;
+ ...
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index ae7cf27cd5e3..7554e88581d2 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -1,6 +1,7 @@
- #ifndef _NET_FLOW_OFFLOAD_H
- #define _NET_FLOW_OFFLOAD_H
- 
-+#include <linux/kernel.h>
- #include <net/flow_dissector.h>
- 
- struct flow_match {
+If these are arrays of u64's, please declare them as "u64 *" instead of
+the opaque "void *".
