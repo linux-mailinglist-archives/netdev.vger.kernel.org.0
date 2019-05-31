@@ -2,204 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F0E30DAC
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 13:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27158315E0
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 22:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727418AbfEaL6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 07:58:07 -0400
-Received: from mga04.intel.com ([192.55.52.120]:9963 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727405AbfEaL6F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 07:58:05 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 May 2019 04:58:05 -0700
-X-ExtLoop1: 1
-Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
-  by orsmga003.jf.intel.com with ESMTP; 31 May 2019 04:58:01 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [PATCH net-next v5 5/5] net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
-Date:   Sat,  1 Jun 2019 03:58:14 +0800
-Message-Id: <1559332694-6354-6-git-send-email-weifeng.voon@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1559332694-6354-1-git-send-email-weifeng.voon@intel.com>
-References: <1559332694-6354-1-git-send-email-weifeng.voon@intel.com>
+        id S1727503AbfEaUKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 16:10:05 -0400
+Received: from mail-eopbgr60041.outbound.protection.outlook.com ([40.107.6.41]:7493
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727282AbfEaUKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 16:10:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ueWAg8up5fjCQJgl6ezkDg+02muWBx+vcAHiDXnF1fA=;
+ b=A7hpEzpNHcj9Hj1i2+RFq4Ua6Sod9OrybWjEBpwk8fYok4MOHPeRi0/Y/ikvW+6XyHdR9rGOVYJ6n/lILgzmItAiuI42xJgl9uroWDVHmUNEV2Oh6icDAztrmi0t8FUyeL44JtXN251eA/COYDZPZ9cXNJXentE5JICQmRgR5os=
+Received: from VI1PR05MB5902.eurprd05.prod.outlook.com (20.178.125.223) by
+ VI1PR05MB5600.eurprd05.prod.outlook.com (20.177.203.32) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Fri, 31 May 2019 20:09:19 +0000
+Received: from VI1PR05MB5902.eurprd05.prod.outlook.com
+ ([fe80::dd31:2532:9adf:9b38]) by VI1PR05MB5902.eurprd05.prod.outlook.com
+ ([fe80::dd31:2532:9adf:9b38%6]) with mapi id 15.20.1922.021; Fri, 31 May 2019
+ 20:09:19 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 0/9] Mellanox, mlx5 updates 2019-05-31
+Thread-Topic: [pull request][net-next 0/9] Mellanox, mlx5 updates 2019-05-31
+Thread-Index: AQHVF+y6ty7PAUewv0yTRYIhHMtB5g==
+Date:   Fri, 31 May 2019 20:09:19 +0000
+Message-ID: <20190531200838.25184-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR07CA0086.namprd07.prod.outlook.com
+ (2603:10b6:a03:12b::27) To VI1PR05MB5902.eurprd05.prod.outlook.com
+ (2603:10a6:803:df::31)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 89cdcc36-94a9-4cd7-7a74-08d6e603dd49
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR05MB5600;
+x-ms-traffictypediagnostic: VI1PR05MB5600:
+x-microsoft-antispam-prvs: <VI1PR05MB5600741D840CCC638D6C3AA8BE190@VI1PR05MB5600.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 00540983E2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(376002)(366004)(136003)(396003)(346002)(189003)(199004)(99286004)(52116002)(2616005)(6116002)(6512007)(14444005)(107886003)(486006)(54906003)(386003)(476003)(186003)(26005)(3846002)(305945005)(81166006)(66066001)(256004)(6506007)(4326008)(25786009)(15650500001)(6486002)(102836004)(6436002)(66946007)(8936002)(64756008)(7736002)(8676002)(53936002)(66476007)(73956011)(66556008)(81156014)(66446008)(6916009)(1076003)(68736007)(2906002)(86362001)(71190400001)(14454004)(5660300002)(316002)(508600001)(36756003)(50226002)(71200400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5600;H:VI1PR05MB5902.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: eJcL00Zdk8fjx+qzsxHihzUwm++NJNo1n4OaDMNbOP/oasNgcIdm0szcqfJa5h5yWGMyF+nir6H58ecQKrdp8boqqaHvbYykF01SlRJgXUh2UaAiEpffkcyiw4sqZiOr/iIgi7pqcyM6tMlI20ca6CJTFpVZz+gQl8vjFxgtDwchdhY/MckdQ+OFklulLrxtm4zVdRY5Yu5/NzbztTT+h4+PDwQBqGb2aGpppyDGbt2rdzAi5DFrxVSVA6bB3FVftMe6WpBkfJjkODInhK6njhaLANo3DIzvdmZSUaJgIRAFd4CYXnv+zDQbegzvRUi9j7Tb6Wyi7c1sygjyRKmhopF3CnbWQ5LnVfi4k5wgdjdCsHPC83eO2O3w0XivX/6K6NV3DEBlm8JYMYN+/OlRO9ADI21tUY4D1t7V19sFtXQ=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E89820C695DDDA4689812CE2EC2C9435@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89cdcc36-94a9-4cd7-7a74-08d6e603dd49
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 20:09:19.7940
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5600
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added EHL SGMII 1Gbps PCI ID. Different MII and speed will have
-different PCI ID.
-
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 111 +++++++++++++++++++++++
- 1 file changed, 111 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 7cbc01f316fa..1bdf716bfcbb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -23,6 +23,7 @@
- #include <linux/dmi.h>
- 
- #include "stmmac.h"
-+#include "dwxpcs.h"
- 
- /*
-  * This struct is used to associate PCI Function of MAC controller on a board,
-@@ -118,6 +119,113 @@ static int stmmac_default_data(struct pci_dev *pdev,
- 	.setup = stmmac_default_data,
- };
- 
-+static int ehl_common_data(struct pci_dev *pdev,
-+			   struct plat_stmmacenet_data *plat)
-+{
-+	int i;
-+
-+	plat->bus_id = 1;
-+	plat->phy_addr = 0;
-+	plat->clk_csr = 5;
-+	plat->has_gmac = 0;
-+	plat->has_gmac4 = 1;
-+	plat->xpcs_phy_addr = 0x16;
-+	plat->pcs_mode = AN_CTRL_PCS_MD_C37_SGMII;
-+	plat->force_sf_dma_mode = 0;
-+	plat->tso_en = 1;
-+
-+	plat->rx_queues_to_use = 8;
-+	plat->tx_queues_to_use = 8;
-+	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
-+
-+	for (i = 0; i < plat->rx_queues_to_use; i++) {
-+		plat->rx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+		plat->rx_queues_cfg[i].chan = i;
-+
-+		/* Disable Priority config by default */
-+		plat->rx_queues_cfg[i].use_prio = false;
-+
-+		/* Disable RX queues routing by default */
-+		plat->rx_queues_cfg[i].pkt_route = 0x0;
-+	}
-+
-+	for (i = 0; i < plat->tx_queues_to_use; i++) {
-+		plat->tx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+
-+		/* Disable Priority config by default */
-+		plat->tx_queues_cfg[i].use_prio = false;
-+	}
-+
-+	plat->tx_sched_algorithm = MTL_TX_ALGORITHM_WRR;
-+	plat->tx_queues_cfg[0].weight = 0x09;
-+	plat->tx_queues_cfg[1].weight = 0x0A;
-+	plat->tx_queues_cfg[2].weight = 0x0B;
-+	plat->tx_queues_cfg[3].weight = 0x0C;
-+	plat->tx_queues_cfg[4].weight = 0x0D;
-+	plat->tx_queues_cfg[5].weight = 0x0E;
-+	plat->tx_queues_cfg[6].weight = 0x0F;
-+	plat->tx_queues_cfg[7].weight = 0x10;
-+
-+	plat->mdio_bus_data->phy_reset = NULL;
-+	plat->mdio_bus_data->phy_mask = 0;
-+
-+	plat->dma_cfg->pbl = 32;
-+	plat->dma_cfg->pblx8 = true;
-+	plat->dma_cfg->fixed_burst = 0;
-+	plat->dma_cfg->mixed_burst = 0;
-+	plat->dma_cfg->aal = 0;
-+
-+	plat->axi = devm_kzalloc(&pdev->dev, sizeof(*plat->axi),
-+				 GFP_KERNEL);
-+	if (!plat->axi)
-+		return -ENOMEM;
-+
-+	plat->axi->axi_lpi_en = 0;
-+	plat->axi->axi_xit_frm = 0;
-+	plat->axi->axi_wr_osr_lmt = 1;
-+	plat->axi->axi_rd_osr_lmt = 1;
-+	plat->axi->axi_blen[0] = 4;
-+	plat->axi->axi_blen[1] = 8;
-+	plat->axi->axi_blen[2] = 16;
-+
-+	/* Set default value for multicast hash bins */
-+	plat->multicast_filter_bins = HASH_TABLE_SIZE;
-+
-+	/* Set default value for unicast filter entries */
-+	plat->unicast_filter_entries = 1;
-+
-+	/* Set the maxmtu to a default of JUMBO_LEN */
-+	plat->maxmtu = JUMBO_LEN;
-+
-+	/* Set 32KB fifo size as the advertised fifo size in
-+	 * the HW features is not the same as the HW implementation
-+	 */
-+	plat->tx_fifo_size = 32768;
-+	plat->rx_fifo_size = 32768;
-+
-+	return 0;
-+}
-+
-+static int ehl_sgmii1g_data(struct pci_dev *pdev,
-+			    struct plat_stmmacenet_data *plat)
-+{
-+	int ret;
-+
-+	/* Set common default data first */
-+	ret = ehl_common_data(pdev, plat);
-+	if (ret)
-+		return ret;
-+
-+	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->has_xpcs = 1;
-+
-+	return 0;
-+}
-+
-+static struct stmmac_pci_info ehl_sgmii1g_pci_info = {
-+	.setup = ehl_sgmii1g_data,
-+};
-+
- static const struct stmmac_pci_func_data galileo_stmmac_func_data[] = {
- 	{
- 		.func = 6,
-@@ -290,6 +398,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 	res.addr = pcim_iomap_table(pdev)[i];
- 	res.wol_irq = pdev->irq;
- 	res.irq = pdev->irq;
-+	res.xpcs_irq = 0;
- 
- 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
- }
-@@ -359,6 +468,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 
- #define STMMAC_QUARK_ID  0x0937
- #define STMMAC_DEVICE_ID 0x1108
-+#define STMMAC_EHL_SGMII1G_ID   0x4b31
- 
- #define STMMAC_DEVICE(vendor_id, dev_id, info)	{	\
- 	PCI_VDEVICE(vendor_id, dev_id),			\
-@@ -369,6 +479,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 	STMMAC_DEVICE(STMMAC, STMMAC_DEVICE_ID, stmmac_pci_info),
- 	STMMAC_DEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_MAC, stmmac_pci_info),
- 	STMMAC_DEVICE(INTEL, STMMAC_QUARK_ID, quark_pci_info),
-+	STMMAC_DEVICE(INTEL, STMMAC_EHL_SGMII1G_ID, ehl_sgmii1g_pci_info),
- 	{}
- };
- 
--- 
-1.9.1
-
+SGkgRGF2ZSwNCg0KVGhpcyBzZXJpZXMgYWRkcyBtaXNjIHVwZGF0ZXMgdG8gbWx4NSBkcml2ZXIu
+DQpGb3IgbW9yZSBpbmZvcm1hdGlvbiBwbGVhc2Ugc2VlIHRhZyBsb2cgYmVsb3cuDQoNClBsZWFz
+ZSBwdWxsIGFuZCBsZXQgbWUga25vdyBpZiB0aGVyZSBpcyBhbnkgcHJvYmxlbS4NCg0KUGxlYXNl
+IG5vdGUgdGhhdCB0aGUgc2VyaWVzIHN0YXJ0cyB3aXRoIGEgbWVyZ2Ugb2YgbWx4NS1uZXh0IGJy
+YW5jaCwNCnRvIHJlc29sdmUgYW5kIGF2b2lkIGRlcGVuZGVuY3kgd2l0aCByZG1hIHRyZWUuDQoN
+ClRoYW5rcywNClNhZWVkLg0KDQotLS0NClRoZSBmb2xsb3dpbmcgY2hhbmdlcyBzaW5jZSBjb21t
+aXQgN2ZlNGQ0M2VjY2RlMGRjODMxMzFhY2EyMDZlMDdlMDA2NzNmNDNhYToNCg0KICBNZXJnZSBi
+cmFuY2ggJ21seDUtbmV4dCcgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9r
+ZXJuZWwvZ2l0L21lbGxhbm94L2xpbnV4ICgyMDE5LTA1LTMxIDEzOjA0OjA2IC0wNzAwKQ0KDQph
+cmUgYXZhaWxhYmxlIGluIHRoZSBHaXQgcmVwb3NpdG9yeSBhdDoNCg0KICBnaXQ6Ly9naXQua2Vy
+bmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvc2FlZWQvbGludXguZ2l0IHRhZ3MvbWx4
+NS11cGRhdGVzLTIwMTktMDUtMzENCg0KZm9yIHlvdSB0byBmZXRjaCBjaGFuZ2VzIHVwIHRvIGNh
+NmM3ZGYwMGE4OTIwNmYxNDIzNjUwOTFjNjg5MDU5ZmMwYjY3YmY6DQoNCiAgbmV0L21seDVlOiBU
+WCwgSW1wcm92ZSBwZXJmb3JtYW5jZSB1bmRlciBHU08gd29ya2xvYWQgKDIwMTktMDUtMzEgMTM6
+MDQ6MjYgLTA3MDApDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCm1seDUtdXBkYXRlcy0yMDE5LTA1LTMxDQoNClRoaXMg
+c2VyaWVzIHByb3ZpZGVzIHNvbWUgdXBkYXRlcyB0byBtbHg1IGNvcmUgYW5kIG5ldGRldmljZSBk
+cml2ZXIuDQoNCjEpIHVzZSBfX25ldGRldl90eF9zZW50X3F1ZXVlKCkgdG8gaW1wcm92ZSBwZXJm
+b3JtYW5jZSB1bmRlciBHU08gd29ya2xvYWQNCg0KMikgQWxsb3cgbWF0Y2hpbmcgb25seSBlbmNf
+a2V5X2lkL2VuY19kc3RfcG9ydCBmb3IgZGVjYXBzdWxhdGlvbiBhY3Rpb24NCg0KMykgR2VuZXZl
+IHN1cHBvcnQ6DQpUaGlzIHBhdGNoc2V0IGFkZHMgc3VwcG9ydCBmb3IgR0VORVZFIHR1bm5lbCBl
+bmNhcC9kZWNhcCBmbG93cyBvZmZsb2FkOg0KZW5jYXBzdWxhdGluZyBsYXllciAyIEV0aGVybmV0
+IGZyYW1lcyB3aXRoaW4gbGF5ZXIgNCBVRFAgZGF0YWdyYW1zLg0KVGhlIGRyaXZlciBzdXBwb3J0
+cyA2MDgxIGRlc3RpbmF0aW9uIFVEUCBwb3J0IG51bWJlciwgd2hpY2ggaXMgdGhlDQpkZWZhdWx0
+IElBTkEtYXNzaWduZWQgcG9ydC4NCg0KRW5jYXA6DQogIENvbm5lY3RYLTUgaW5zZXJ0cyB0aGUg
+aGVhZGVyICh3LyBvciB3L28gR2VuZXZlIFRMViBvcHRpb25zKSB0aGF0IGlzDQogIHByb3ZpZGVk
+IGJ5IHRoZSBtbHg1IGRyaXZlciB0byB0aGUgb3V0Z29pbmcgcGFja2V0Lg0KDQpEZWNhcDoNCiAg
+R2VuZXZlIGhlYWRlciBpcyBtYXRjaGVkIGFuZCB0aGUgcGFja2V0IGlzIGRlY2Fwc3VsYXRlZC4N
+CiAgTm90ZXMgYWJvdXQgZGVjYXAgZmxvd3Mgd2l0aCBHZW5ldmUgVExWIE9wdGlvbnM6DQogICAt
+IFN1cHBvcnQgb2ZmbG9hZGluZyBvZiAzMi1iaXQgb3B0aW9ucyBkYXRhIG9ubHkNCiAgIC0gQXQg
+YW55IGdpdmVuIHRpbWUsIG9ubHkgb25lIGNvbWJpbmF0aW9uIG9mIGNsYXNzL3R5cGUgcGFyYW1l
+dGVycw0KICAgICBjYW4gYmUgb2ZmbG9hZGVkLCBidXQgdGhlIHNhbWUgY2xhc3MvdHlwZSBjb21i
+aW5hdGlvbiBjYW4gaGF2ZQ0KICAgICBtYW55IGRpZmZlcmVudCBmbG93cyBvZmZsb2FkZWQgd2l0
+aCBkaWZmZXJlbnQgMzItYml0IG9wdGlvbiBkYXRhDQogICAtIE9wdGlvbnMgd2l0aCB2YWx1ZSBv
+ZiAwIGNhbid0IGJlIG9mZmxvYWRlZA0KDQpNYW5hZ2luZyBHZW5ldmUgVExWIG9wdGlvbnM6DQog
+IE1hdGNoaW5nIChvbiByZWNlaXZlKSBpcyBkb25lIGJ5IENvbm5lY3RYLTUgZmxleCBwYXJzZXIu
+DQogIEdlbmV2ZSBUTFYgb3B0aW9ucyBhcmUgbWFuYWdlZCB1c2luZyBHZW5lcmFsIE9iamVjdCBv
+ZiB0eXBlDQogIOKAnEdlbmV2ZSBUTFYgT3B0aW9uc+KAnS4NCg0KICBXaGVuIHRoZSBmaXJzdCBm
+bG93IHdpdGggYSBjZXJ0YWluIGNsYXNzL3R5cGUgdmFsdWVzIGlzIHJlcXVlc3RlZA0KICB0byBi
+ZSBvZmZsb2FkZWQsIHRoZSBkcml2ZXIgY3JlYXRlcyBhIEZXIG9iamVjdCB3aXRoIEZXIGNvbW1h
+bmQNCiAgKEdlbmV2ZSBUTFYgT3B0aW9ucyBnZW5lcmFsIG9iamVjdCkgYW5kIHN0YXJ0cyBjb3Vu
+dGluZyB0aGUgbnVtYmVyDQogIG9mIGZsb3dzIHVzaW5nIHRoaXMgb2JqZWN0Lg0KDQogIER1cmlu
+ZyB0aGlzIHRpbWUsIGFueSByZXF1ZXN0IHdpdGggYSBkaWZmZXJlbnQgY2xhc3MvdHlwZSB2YWx1
+ZXMNCiAgd2lsbCBmYWlsIHRvIGJlIG9mZmxvYWRlZC4NCiAgT25jZSB0aGUgcmVmY291bnQgcmVh
+Y2hlcyAwLCB0aGUgZHJpdmVyIGRlc3Ryb3lzIHRoZSBUTFYgb3B0aW9ucw0KICBnZW5lcmFsIG9i
+amVjdCwgYW5kIGNhbiBub3cgb2ZmbG9hZCBhIGZsb3cgd2l0aCBhbnkgY2xhc3MvdHlwZSBwYXJh
+bWV0ZXJzLg0KDQogIEdlbmV2ZSBUTFYgT3B0aW9ucyBvYmplY3QgaXMgYWRkZWQgdG8gY29yZSBk
+ZXZpY2UuDQogIEl0IGlzIGN1cnJlbnRseSB1c2VkIHRvIG1hbmFnZSBHZW5ldmUgVExWIG9wdGlv
+bnMgZ2VuZXJhbA0KICBvYmplY3QgYWxsb2NhdGlvbiBpbiBGVyBhbmQgaXRzIHJlZmVyZW5jZSBj
+b3VudGluZyBvbmx5Lg0KDQogIEluIHRoZSBmdXR1cmUgaXQgd2lsbCBhbHNvIGJlIHVzZWQgZm9y
+IG1hbmFnaW5nIGdlbmV2ZSBwb3J0cw0KICBieSByZWdpc3RlcmluZyBjYWxsYmFja3MgZm9yIG5k
+b191ZHBfdHVubmVsX2FkZC9kZWwuDQoNClRDIHR1bm5lbCBjb2RlIHJlZmFjdG9yaW5nOg0KICBB
+cyBhIHByZXBhcmF0aW9uIGZvciBHZW5ldmUgY29kZSwgdGhlIFRDIHR1bm5lbCBjb2RlIGluIG1s
+eDUNCiAgd2FzIHJlYXJyYW5nZWQgaW4gYSBtb2R1bGFyIHdheSwgc28gdGhhdCBpdCB3b3VsZCBi
+ZSBlYXNpZXINCiAgdG8gYWRkIGZ1dHVyZSB0dW5uZWxzOg0KICAgLSBEZWZpbmVkIHRjIHR1bm5l
+bCBvYmplY3Qgd2l0aCB0aGUgZmllbGRzIGFuZCBjYWxsYmFja3MgdGhhdA0KICAgICBhbnkgdHVu
+bmVsIG11c3QgaW1wbGVtZW50Lg0KICAgLSBEZWZpbmUgdGMgVURQIHR1bm5lbCBvYmplY3QgZm9y
+IFVEUCB0dW5uZWxzLCBzdWNoIGFzIFZYTEFODQogICAtIE1vdmUgZWFjaCB0dW5uZWwgY29kZSAo
+R1JFLCBWWExBTikgdG8gaXRzIG93biBzZXBhcmF0ZSBmaWxlDQogICAtIFJld3JpdGUgdGMgdHVu
+bmVsIGltcGxlbWVudGF0aW9uIGluIGEgZ2VuZXJhbCB3YXkg4oCTIHVzaW5nDQogICAgIG9ubHkg
+dGhlIG9iamVjdHMgYW5kIHRoZWlyIGNhbGxiYWNrcy4NCg0KNCkgVGVybWluYXRpb24gdGFibGVz
+Og0KQWN0aW9ucyBpbiB0YWJsZXMgc2V0IHdpdGggdGhlIHRlcm1pbmF0aW9uIGZsYWcgYXJlIGd1
+YXJhbnRlZWQgdG8gdGVybWluYXRlDQp0aGUgYWN0aW9uIGxpc3QuIFRodXMsIHBvdGVudGlhbCBs
+b29waW5nIGZ1bmN0aW9uYWxpdHkgKGUuZy4gaGFyaXBpbikgY2FuIHNhZmVseSBiZQ0KZXhlY3V0
+ZWQgd2l0aG91dCBwb3RlbnRpYWwgbG9vcHMuDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCkVyZXogQWxmYXNpICgxKToN
+CiAgICAgIG5ldC9tbHg1ZTogVFgsIEltcHJvdmUgcGVyZm9ybWFuY2UgdW5kZXIgR1NPIHdvcmts
+b2FkDQoNCk96IFNobG9tbyAoMSk6DQogICAgICBuZXQvbWx4NWU6IFVzZSB0ZXJtaW5hdGlvbiB0
+YWJsZSBmb3IgVkxBTiBwdXNoIGFjdGlvbnMNCg0KVG9uZ2hhbyBaaGFuZyAoMSk6DQogICAgICBu
+ZXQvbWx4NWU6IEFsbG93IG1hdGNoaW5nIG9ubHkgZW5jX2tleV9pZC9lbmNfZHN0X3BvcnQgZm9y
+IGRlY2Fwc3VsYXRpb24gYWN0aW9uDQoNClZ1IFBoYW0gKDEpOg0KICAgICAgbmV0L21seDVlOiBH
+ZW5lcmFsaXplIHZwb3J0IHR5cGUgaW4gdnBvcnQgcmVwcmVzZW50b3INCg0KWWV2Z2VueSBLbGl0
+ZXluaWsgKDUpOg0KICAgICAgbmV0L21seDVlOiBFbmFibGUgc2V0dGluZyBtdWx0aXBsZSBtYXRj
+aCBjcml0ZXJpYSBmb3IgZmxvdyBncm91cA0KICAgICAgbmV0L21seDU6IEdlbmV2ZSwgTWFuYWdl
+IEdlbmV2ZSBUTFYgb3B0aW9ucw0KICAgICAgbmV0L21seDVlOiBHZW5ldmUsIEtlZXAgdHVubmVs
+IGluZm8gYXMgcG9pbnRlciB0byB0aGUgb3JpZ2luYWwgc3RydWN0DQogICAgICBuZXQvbWx4NWU6
+IFJlYXJyYW5nZSB0YyB0dW5uZWwgY29kZSBpbiBhIG1vZHVsYXIgd2F5DQogICAgICBuZXQvbWx4
+NWU6IEdlbmV2ZSwgQWRkIHN1cHBvcnQgZm9yIGVuY2FwL2RlY2FwIGZsb3dzIG9mZmxvYWQNCg0K
+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9NYWtlZmlsZSAgIHwgICA3
+ICstDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vdGNfdHVuLmMgICAg
+fCAyODcgKysrKysrLS0tLS0tLS0tLS0tDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZW4vdGNfdHVuLmggICAgfCAgNDEgKystDQogLi4uL2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9lbi90Y190dW5fZ2VuZXZlLmMgfCAzMzUgKysrKysrKysrKysrKysrKysrKysrDQog
+Li4uL2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi90Y190dW5fZ3JlLmMgICAgfCAgOTUg
+KysrKysrDQogLi4uL2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi90Y190dW5fdnhsYW4u
+YyAgfCAxNTEgKysrKysrKysrKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUv
+Y29yZS9lbl9yZXAuYyAgIHwgIDUyICsrLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvZW5fcmVwLmggICB8ICAgNSArLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21l
+bGxhbm94L21seDUvY29yZS9lbl90Yy5jICAgIHwgIDc0ICsrLS0tDQogZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3R4LmMgICAgfCAgIDcgKy0NCiBkcml2ZXJzL25l
+dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaC5oICB8ICAyMiArKw0KIC4uLi9l
+dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jIHwgIDIzICstDQog
+Li4uL21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzX3Rlcm10YmwuYyAgfCAyNzcg
+KysrKysrKysrKysrKysrKysNCiAuLi4vbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9s
+aWIvZ2VuZXZlLmMgICB8IDE1NyArKysrKysrKysrDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvbGliL2dlbmV2ZS5oICAgfCAgMzMgKysNCiBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9tZWxsYW5veC9tbHg1L2NvcmUvbWFpbi5jICAgICB8ICAgNCArDQogaW5jbHVkZS9saW51eC9t
+bHg1L2RyaXZlci5oICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDIgKw0KIDE3IGZpbGVzIGNo
+YW5nZWQsIDEyOTMgaW5zZXJ0aW9ucygrKSwgMjc5IGRlbGV0aW9ucygtKQ0KIGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vdGNfdHVu
+X2dlbmV2ZS5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
+bm94L21seDUvY29yZS9lbi90Y190dW5fZ3JlLmMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3RjX3R1bl92eGxhbi5jDQogY3Jl
+YXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9l
+c3dpdGNoX29mZmxvYWRzX3Rlcm10YmwuYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25l
+dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2dlbmV2ZS5jDQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9saWIvZ2VuZXZl
+LmgNCg==
