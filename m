@@ -2,73 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 161F330E02
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8DD430E1B
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbfEaMVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:21:50 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:45585 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbfEaMVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:21:50 -0400
-Received: from kresse.hi.pengutronix.de ([2001:67c:670:100:1d::2a])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.89)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1hWgXa-00084d-Q2; Fri, 31 May 2019 14:21:46 +0200
-Message-ID: <1559305305.2557.3.camel@pengutronix.de>
-Subject: Re: [PATCH 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, linville@redhat.com
-Date:   Fri, 31 May 2019 14:21:45 +0200
-In-Reply-To: <20190531115928.GA18608@lunn.ch>
-References: <20190530180616.1418-1-andrew@lunn.ch>
-         <20190530180616.1418-3-andrew@lunn.ch>
-         <20190531093029.GD15954@unicorn.suse.cz> <20190531115928.GA18608@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.22.6-1+deb9u1 
-Mime-Version: 1.0
+        id S1726798AbfEaM3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:29:31 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:60472 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726386AbfEaM3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:29:30 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1hWgf2-0004J3-8t; Fri, 31 May 2019 14:29:28 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Subject: [PATCH net-next v2 0/7] net: add rcu annotations for ifa_list
+Date:   Fri, 31 May 2019 14:22:07 +0200
+Message-Id: <20190531122214.18616-1-fw@strlen.de>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::2a
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Freitag, den 31.05.2019, 13:59 +0200 schrieb Andrew Lunn:
-> > > @@ -634,10 +636,14 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
-> > > > > >  		  "100baseT/Half" },
-> > > > > >  		{ 1, ETHTOOL_LINK_MODE_100baseT_Full_BIT,
-> > > > > >  		  "100baseT/Full" },
-> > > > > > +		{ 1, ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
-> > > > > > +		  "100baseT1/Full" },
-> > > > > >  		{ 0, ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
-> > > > > >  		  "1000baseT/Half" },
-> > > > > >  		{ 1, ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-> > > > > >  		  "1000baseT/Full" },
-> > > > > > +		{ 1, ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
-> > > > > > +		  "1000baseT1/Full" },
-> > > > > >  		{ 0, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
-> > > > > >  		  "1000baseKX/Full" },
-> > >  		{ 0, ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
-> > 
-> > Does it mean that we could end up with lines like
-> > 
-> >                                 100baseT/Half 100baseT/Full 100baseT1/Full
-> >                                 1000baseT/Full 1000baseT1/Full
-> > 
-> > if there is a NIC supporting both T and T1?
-> 
-> Hi Michal
-> 
-> In theory, it is possible for a PHY to support both plain T and
-> T1.
+v2:
+ - remove ifa_list iteration in afs instead of conversion
+ All other patches are unchanged.
 
-That's not just theory. The Broadcom BCM54811 PHY supports both
-100/1000baseT, as well as 100baseT1.
+Eric Dumazet reported following problem:
 
-Regards,
-Lucas
+  It looks that unless RTNL is held, accessing ifa_list needs proper RCU
+  protection.  indev->ifa_list can be changed under us by another cpu
+  (which owns RTNL) [..]
+
+  A proper rcu_dereference() with an happy sparse support would require
+  adding __rcu attribute.
+
+This patch series does that: add __rcu to the ifa_list pointers.
+That makes sparse complain, so the series also adds the required
+rcu_assign_pointer/dereference helpers where needed.
+
+All patches except the last one are preparation work.
+Two new macros are introduced for in_ifaddr walks.
+
+Last patch adds the __rcu annotations and the assign_pointer/dereference
+helper calls.
+
+This patch is a bit large, but I found no better way -- other
+approaches (annotate-first or add helpers-first) all result in
+mid-series sparse warnings.
+
+This series is submitted vs. net-next rather than net for several
+reasons:
+
+1. Its (mostly) compile-tested only
+2. 3rd patch changes behaviour wrt. secondary addresses
+   (see changelog)
+3. The problem exists for a very long time (2004), so it doesn't
+   seem to be urgent to fix this -- rcu use to free ifa_list
+   predates the git era.
+
+Florian Westphal (7):
+      afs: do not send list of client addresses
+      net: inetdevice: provide replacement iterators for in_ifaddr walk
+      devinet: use in_dev_for_each_ifa_rcu in more places
+      netfilter: use in_dev_for_each_ifa_rcu
+      net: use new in_dev_ifa iterators
+      drivers: use in_dev_for_each_ifa_rtnl/rcu
+      net: ipv4: provide __rcu annotation for ifa_list
+
+ drivers/infiniband/core/roce_gid_mgmt.c              |    5 
+ drivers/infiniband/hw/cxgb4/cm.c                     |    9 -
+ drivers/infiniband/hw/i40iw/i40iw_cm.c               |    7 
+ drivers/infiniband/hw/i40iw/i40iw_main.c             |    6 
+ drivers/infiniband/hw/i40iw/i40iw_utils.c            |   12 -
+ drivers/infiniband/hw/nes/nes.c                      |    8 
+ drivers/infiniband/hw/usnic/usnic_ib_main.c          |   15 +
+ drivers/isdn/hysdn/hysdn_net.c                       |    6 
+ drivers/isdn/i4l/isdn_net.c                          |   20 +-
+ drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c |    8 
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c     |    5 
+ drivers/net/ethernet/via/via-velocity.h              |    2 
+ drivers/net/plip/plip.c                              |    4 
+ drivers/net/vmxnet3/vmxnet3_drv.c                    |   19 +-
+ drivers/net/wan/hdlc_cisco.c                         |   11 -
+ drivers/net/wireless/ath/ath6kl/cfg80211.c           |    4 
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c      |    2 
+ fs/afs/Makefile                                      |    1 
+ fs/afs/cmservice.c                                   |   24 --
+ fs/afs/internal.h                                    |   15 -
+ fs/afs/netdevices.c                                  |   48 -----
+ include/linux/inetdevice.h                           |   19 +-
+ net/core/netpoll.c                                   |   10 -
+ net/core/pktgen.c                                    |    8 
+ net/ipv4/devinet.c                                   |  146 ++++++++++-------
+ net/ipv4/fib_frontend.c                              |   24 +-
+ net/ipv4/igmp.c                                      |    5 
+ net/ipv4/netfilter/nf_tproxy_ipv4.c                  |    9 -
+ net/ipv6/addrconf.c                                  |    4 
+ net/mac80211/main.c                                  |    4 
+ net/netfilter/nf_conntrack_broadcast.c               |    9 -
+ net/netfilter/nf_nat_redirect.c                      |   12 -
+ net/netfilter/nfnetlink_osf.c                        |    5 
+ net/sctp/protocol.c                                  |    2 
+ net/smc/smc_clc.c                                    |   11 -
+ 35 files changed, 266 insertions(+), 233 deletions(-)
+
+
