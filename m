@@ -2,162 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE5030A17
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B96F30A33
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbfEaITE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:19:04 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48640 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726485AbfEaITE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 04:19:04 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 9D6C3AF0A;
-        Fri, 31 May 2019 08:19:02 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 79CB9E00E3; Fri, 31 May 2019 10:19:01 +0200 (CEST)
-Date:   Fri, 31 May 2019 10:19:01 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     sameehj@amazon.com, davem@davemloft.net,
-        Arthur Kiyanovski <akiyano@amazon.com>, dwmw@amazon.com,
-        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
-        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
-        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
-        benh@amazon.com
-Subject: Re: [PATCH V1 net-next 02/11] net: ena: ethtool: add extra
- properties retrieval via get_priv_flags
-Message-ID: <20190531081901.GC15954@unicorn.suse.cz>
-References: <20190529095004.13341-1-sameehj@amazon.com>
- <20190529095004.13341-3-sameehj@amazon.com>
+        id S1726922AbfEaIYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:24:22 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:33170 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbfEaIYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 04:24:22 -0400
+Received: by mail-it1-f193.google.com with SMTP id j17so10331258itk.0
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 01:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YyOvQlBwBfyT4dQcy6Ql02p1RNK4xtCznQNR/OE+OXo=;
+        b=YGrjxb+OdJJY2Y3NTtCfg2gWpMLqGbMTB5DSeaFRSBlz2E7Rpz/dZ4hbkEm5+ndGIp
+         2YZFySr1E4oLpMXpm+TqkfUCAQR9OdXxFF6BteTchF3BajJuEDqZvC7ikcnNcg59t0Ws
+         0XXOzDGXZvTYVCBaNNl70XNZ/R9s1LZJH37YNMLh8/OggGDSjvY696P5xxL9Tvca4jkd
+         r37TVzH/sPS+dFma5oBrDWPRbXFvayR3P4/9h7sfmNm7AY0oB25uG1HzFhVOD/gDVlEu
+         UM+qo59Zaocs7Z9rlvRDWEZBNNisQ0HRCoZiS62t5e74rdXo2G2f2x8Csljixz6TgTM6
+         teGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YyOvQlBwBfyT4dQcy6Ql02p1RNK4xtCznQNR/OE+OXo=;
+        b=UEmwqI3VqK6QVwGHKdbi7+C9gDAKIcu04kjVOBUEUCz9tDBPMWZLC0abUHkItYAFmM
+         HKPTc0CyZZShvvyFmSwsMKSdMN//f4oBlYhBJpLnjbRyo6l7GHphfZ065pCjlWy8dIVU
+         6eKVTj+guWHw+MEwDCw6sPbG5C2STGEVb7JDtK+lVFIiDjz7XS822Tl5oQvbjtXiQ8o3
+         wIJkaoArKYK2CeYLCz6VGR2k51mGCqn/7SCbppGK6NNohTS1qZWGqkC2/AM8hSCR8rfM
+         iHSpnlSIAOSdDtiZYrGV8e6jP4eWpQKc6irUDTRc8wu4H4PpfcZn8kLhHgRlBTh3uax2
+         BUaQ==
+X-Gm-Message-State: APjAAAV7ogH+MvYwYbugK/QMOq5gg/XEP40drh406WSIXR+6+4NtF9eG
+        V7iDNPVxV8JglqIIDUi45LtwZXE9jTD6K7BcazjZ9A==
+X-Google-Smtp-Source: APXvYqwL1lRJB5GvBymOPhjDdoQBldCtq9tIq71bu2iYf0fGDlTYUi1jjLXldLi+CutPqDjvtA3YEzBDSVProCIgkgI=
+X-Received: by 2002:a02:1384:: with SMTP id 126mr5303492jaz.72.1559291060657;
+ Fri, 31 May 2019 01:24:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190529095004.13341-3-sameehj@amazon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190524160340.169521-12-edumazet@google.com> <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
+ <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
+ <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au> <CACT4Y+Y39u9VL+C27PVpfVZbNP_U8yFG35yLy6_KaxK2+Z9Gyw@mail.gmail.com>
+ <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au>
+In-Reply-To: <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 31 May 2019 10:24:08 +0200
+Message-ID: <CACT4Y+ZuHhAwNZ31+W2Hth90qA9mDk7YmZFq49DmjXCUa_gF1g@mail.gmail.com>
+Subject: Re: [PATCH] inet: frags: Remove unnecessary smp_store_release/READ_ONCE
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        Alan Stern <stern@rowland.harvard.edu>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 12:49:55PM +0300, sameehj@amazon.com wrote:
-> From: Arthur Kiyanovski <akiyano@amazon.com>
-> 
-> This commit adds a mechanism for exposing different driver
-> properties via ethtool's priv_flags.
-> 
-> In this commit we:
-> 
-> Add commands, structs and defines necessary for handling
-> extra properties
-> 
-> Add functions for:
-> Allocation/destruction of a buffer for extra properties strings.
-> Retreival of extra properties strings and flags from the network device.
-> 
-> Handle the allocation of a buffer for extra properties strings.
-> 
-> * Initialize buffer with extra properties strings from the
->   network device at driver startup.
-> 
-> Use ethtool's get_priv_flags to expose extra properties of
-> the ENA device
-> 
-> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-> Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-> ---
-...
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-> index bd0d785b2..935e8fa8d 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_com.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-> @@ -1877,6 +1877,62 @@ int ena_com_get_link_params(struct ena_com_dev *ena_dev,
->  	return ena_com_get_feature(ena_dev, resp, ENA_ADMIN_LINK_CONFIG);
->  }
->  
-> +int ena_com_extra_properties_strings_init(struct ena_com_dev *ena_dev)
-> +{
-> +	struct ena_admin_get_feat_resp resp;
-> +	struct ena_extra_properties_strings *extra_properties_strings =
-> +			&ena_dev->extra_properties_strings;
-> +	u32 rc;
-> +
-> +	extra_properties_strings->size = ENA_ADMIN_EXTRA_PROPERTIES_COUNT *
-> +		ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN;
-> +
-> +	extra_properties_strings->virt_addr =
-> +		dma_alloc_coherent(ena_dev->dmadev,
-> +				   extra_properties_strings->size,
-> +				   &extra_properties_strings->dma_addr,
-> +				   GFP_KERNEL);
+On Wed, May 29, 2019 at 7:48 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Wed, May 29, 2019 at 07:43:51AM +0200, Dmitry Vyukov wrote:
+> >
+> > If fqdir->dead read/write are concurrent, then this still needs to be
+> > READ_ONCE/WRITE_ONCE. Ordering is orthogonal to atomicity.
+>
+> No they do not.  READ_ONCE/WRITE_ONCE are basically a more fine-tuned
+> version of barrier().  In this case we already have an implicit
+> barrier() call due to the memory barrier semantics so this is simply
+> unnecessary.
+>
+> It's the same reason you don't need READ_ONCE/WRITE_ONCE when you do:
+>
+> CPU1                            CPU2
+> ----                            ----
+> spin_lock
+> shared_var = 1                  spin_lock
+> spin_unlock                     if (shared_var == 1)
+>                                         ...
+>                                 spin_unlock
 
-Do you need to fetch the private flag names on each ETHTOOL_GSTRING
-request? I suppose they could change e.g. on a firmware update but then
-even the count could change which you do not seem to handle. Is there
-a reason not to fetch the names once on init rather then accessing the
-device memory each time?
++Paul, Andrea, Alan
 
-My point is that ethtool_ops::get_strings() does not return a value
-which indicates that it's supposed to be a trivial operation which
-cannot fail, usually a simple copy within kernel memory.
+OK, let's call it barrier. But we need more than a barrier here then.
 
-> +	if (unlikely(!extra_properties_strings->virt_addr)) {
-> +		pr_err("Failed to allocate extra properties strings\n");
-> +		return 0;
-> +	}
-> +
-> +	rc = ena_com_get_feature_ex(ena_dev, &resp,
-> +				    ENA_ADMIN_EXTRA_PROPERTIES_STRINGS,
-> +				    extra_properties_strings->dma_addr,
-> +				    extra_properties_strings->size);
-> +	if (rc) {
-> +		pr_debug("Failed to get extra properties strings\n");
-> +		goto err;
-> +	}
-> +
-> +	return resp.u.extra_properties_strings.count;
-> +err:
-> +	ena_com_delete_extra_properties_strings(ena_dev);
-> +	return 0;
-> +}
-...
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> index fe596bc30..65bc5a2b2 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-...
-> +static void get_private_flags_strings(struct ena_adapter *adapter, u8 *data)
-> +{
-> +	struct ena_com_dev *ena_dev = adapter->ena_dev;
-> +	u8 *strings = ena_dev->extra_properties_strings.virt_addr;
-> +	int i;
-> +
-> +	if (unlikely(!strings)) {
-> +		adapter->ena_extra_properties_count = 0;
-> +		netif_err(adapter, drv, adapter->netdev,
-> +			  "Failed to allocate extra properties strings\n");
-> +		return;
-> +	}
+1. The C standard is very clear here -- this new code causes undefined
+behavior of kernel. Regardless of what one might think about the C
+standard, it's still the current contract between us and compiler
+writers and nobody created any better replacement.
 
-This is a bit confusing, IMHO. I'm aware we shouldn't really get here as
-with strings null, count would be zero and ethtool_get_strings()
-wouldn't call the ->get_strings() callback. But if we ever do, it makes
-little sense to complain about failed allocation (which happened once on
-init) each time userspace makes ETHTOOL_GSTRINGS request for private
-flags.
+2. Then Documentation/memory-barriers.txt (which one can't say is not
+relevant here) effectively says the same:
 
-> +
-> +	for (i = 0; i < adapter->ena_extra_properties_count; i++) {
-> +		snprintf(data, ETH_GSTRING_LEN, "%s",
-> +			 strings + ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN * i);
+ (*) It _must_not_ be assumed that the compiler will do what you want
+     with memory references that are not protected by READ_ONCE() and
+     WRITE_ONCE().  Without them, the compiler is within its rights to
+     do all sorts of "creative" transformations, which are covered in
+     the COMPILER BARRIER section.
 
-snprintf() is a bit overkill here, what you are doing is rather
-strlcpy() or strscpy(). Or maybe strncpy() as strings returned by
-->get_strings() do not have to be null terminated.
+3. The code is only correct under the naive execution (all code is
+executed literally as written). But we don't want compiler to execute
+code in such way, we want them to all employ all possible optimization
+tricks to make it faster. As the result compiler can break this code.
+It can reload the condition multiple times, including within the same
+branch, it can use variables as scratch storage and do other things
+that you and me can't think of now. Some of these optimizations are
+reasonable, some are not reasonable but still legal and just a result
+complex compiler logic giving surprising result on a corner case. Also
+if current implementation details of rhashtable_remove_fast change,
+surprising things can happen, e.g. executing just refcount_dec but not
+rhashtable_remove_fast.
+"Proving" impossibility of any of unexpected transformations it's just
+not what we should be spending time on again and again. E.g. a hundred
+of times people will skim through this code in future chasing some
+bug.
 
-> +		data += ETH_GSTRING_LEN;
-> +	}
-> +}
+4. Then READ_ONCE()/WRITE_ONCE() improve code self-documentation.
+There is huge difference between a plain load and inter-thread
+synchronization algorithms. This needs to be clearly visible in the
+code. Especially when one hunts a racy memory corruption in large base
+of code (which happens with kernel all the time).
 
-Michal Kubecek
+5. Marking all shared access is required to enable data race detection
+tooling. Which is an absolute must for kernel taking into account
+amount and complexity of tricky multi-threaded code. We need this.
+
+6. We need marking of all shared memory accesses for the kernel memory
+model effort. There is no way the model can be defined without that.
+
+7. This is very different from spin_lock example. spin_lock is a
+synchronization primitive that effectively makes code inside of the
+critical section single-threaded. But in this case read/write to dead
+execute concurrently.
+
+So what are the reasons to give up all these nice things and go into
+the rabbit hole of "proving" that we don't see how compiler could
+screw up things?
+If there are no significant reasons that outweigh all of these points,
+please use READ_ONCE()/WRITE_ONCE() for all shared accesses. Many will
+say thank you.
