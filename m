@@ -2,147 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B96F30A33
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDE830A49
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:29:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbfEaIYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:24:22 -0400
-Received: from mail-it1-f193.google.com ([209.85.166.193]:33170 "EHLO
-        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbfEaIYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 04:24:22 -0400
-Received: by mail-it1-f193.google.com with SMTP id j17so10331258itk.0
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 01:24:21 -0700 (PDT)
+        id S1726617AbfEaI3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:29:42 -0400
+Received: from mail-eopbgr50066.outbound.protection.outlook.com ([40.107.5.66]:8166
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725963AbfEaI3m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 04:29:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YyOvQlBwBfyT4dQcy6Ql02p1RNK4xtCznQNR/OE+OXo=;
-        b=YGrjxb+OdJJY2Y3NTtCfg2gWpMLqGbMTB5DSeaFRSBlz2E7Rpz/dZ4hbkEm5+ndGIp
-         2YZFySr1E4oLpMXpm+TqkfUCAQR9OdXxFF6BteTchF3BajJuEDqZvC7ikcnNcg59t0Ws
-         0XXOzDGXZvTYVCBaNNl70XNZ/R9s1LZJH37YNMLh8/OggGDSjvY696P5xxL9Tvca4jkd
-         r37TVzH/sPS+dFma5oBrDWPRbXFvayR3P4/9h7sfmNm7AY0oB25uG1HzFhVOD/gDVlEu
-         UM+qo59Zaocs7Z9rlvRDWEZBNNisQ0HRCoZiS62t5e74rdXo2G2f2x8Csljixz6TgTM6
-         teGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YyOvQlBwBfyT4dQcy6Ql02p1RNK4xtCznQNR/OE+OXo=;
-        b=UEmwqI3VqK6QVwGHKdbi7+C9gDAKIcu04kjVOBUEUCz9tDBPMWZLC0abUHkItYAFmM
-         HKPTc0CyZZShvvyFmSwsMKSdMN//f4oBlYhBJpLnjbRyo6l7GHphfZ065pCjlWy8dIVU
-         6eKVTj+guWHw+MEwDCw6sPbG5C2STGEVb7JDtK+lVFIiDjz7XS822Tl5oQvbjtXiQ8o3
-         wIJkaoArKYK2CeYLCz6VGR2k51mGCqn/7SCbppGK6NNohTS1qZWGqkC2/AM8hSCR8rfM
-         iHSpnlSIAOSdDtiZYrGV8e6jP4eWpQKc6irUDTRc8wu4H4PpfcZn8kLhHgRlBTh3uax2
-         BUaQ==
-X-Gm-Message-State: APjAAAV7ogH+MvYwYbugK/QMOq5gg/XEP40drh406WSIXR+6+4NtF9eG
-        V7iDNPVxV8JglqIIDUi45LtwZXE9jTD6K7BcazjZ9A==
-X-Google-Smtp-Source: APXvYqwL1lRJB5GvBymOPhjDdoQBldCtq9tIq71bu2iYf0fGDlTYUi1jjLXldLi+CutPqDjvtA3YEzBDSVProCIgkgI=
-X-Received: by 2002:a02:1384:: with SMTP id 126mr5303492jaz.72.1559291060657;
- Fri, 31 May 2019 01:24:20 -0700 (PDT)
+ d=darbyshire-bryant.me.uk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e/QhO0fv4KnqTvEGvqxQpl63AsWGXbHvqBRZFdYdCqs=;
+ b=uNfk9a09t8wSEBGV3y7KYz/3HbR8ArNFBPMkm50a88ElDi48q0Q4g25IB46S/833az98rjh8AT5qoN1bQNmFLMWCp7iWGWH2UIXpgghBJJh0UaTIBw1bthZQ2wIxux77Yj7qnoL58DdsnABGjMyjRXM7beozzErNFSHkhcoxgig=
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
+ VI1PR0302MB2654.eurprd03.prod.outlook.com (10.171.104.139) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.17; Fri, 31 May 2019 08:29:38 +0000
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Fri, 31 May 2019
+ 08:29:38 +0000
+From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
+Thread-Topic: [RFC PATCH iproute2-next 1/1] tc: add support for act ctinfo
+Thread-Index: AQHVFwbJ/p/rOXTiw0SyKMktH1aCdKaEFjUAgADRtIA=
+Date:   Fri, 31 May 2019 08:29:38 +0000
+Message-ID: <4C720F7E-5EA6-489F-8631-2DF2A4C55A01@darbyshire-bryant.me.uk>
+References: <20190530164246.17955-1-ldir@darbyshire-bryant.me.uk>
+ <20190530164246.17955-2-ldir@darbyshire-bryant.me.uk>
+ <20190530125904.713e72b1@hermes.lan>
+In-Reply-To: <20190530125904.713e72b1@hermes.lan>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2a02:c7f:1268:6500::dc83]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a7075698-4a63-4e19-29ff-08d6e5a21ea3
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR0302MB2654;
+x-ms-traffictypediagnostic: VI1PR0302MB2654:
+x-microsoft-antispam-prvs: <VI1PR0302MB265459E9331A54EEAD0EEB04C9190@VI1PR0302MB2654.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 00540983E2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(376002)(396003)(366004)(39830400003)(199004)(189003)(52314003)(76176011)(68736007)(305945005)(99286004)(8936002)(8676002)(4326008)(6916009)(81166006)(508600001)(45080400002)(71190400001)(33656002)(81156014)(7736002)(83716004)(25786009)(71200400001)(6116002)(6486002)(446003)(73956011)(86362001)(486006)(74482002)(46003)(76116006)(4744005)(256004)(11346002)(6436002)(91956017)(14454004)(66476007)(66556008)(6246003)(6512007)(82746002)(64756008)(5660300002)(186003)(66946007)(316002)(229853002)(66446008)(53546011)(2906002)(2616005)(36756003)(6506007)(476003)(53936002)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB2654;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
+ designate permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: bUo7YS087uyqjsJVHLHydCnC8xvbmBWlFru+5uvUdUaM0g2YkuFHxWbAXAsRtvVr/ATRyL68D4FUb+JHxz59ucSogT1bIo3f5c/qw1y3Lhs3oVRy3EsaClm3IKJJrrAmH3fshLYAfnIfOHCEtt9rljspwHlWQF7lRNlT9stJRKmFdQN+eJq2rJrrjSiIn1rn2i5Gpwl/IdDfBAxuZ0C1xOkAHVQ+YdH+9pjyS9Rgxyu74t/b5hch0Pom31EhxLirp1LKw0vk9dZfpyA9CtM1OeEwUgz+xSRJyBxVEpgBUUUW3zGfGpZi6VAaO9lBQgNJbC5JQsMMdEw9d9Z/m3YwHYjV0PIP/B86mrdMmeTEzjblVu0yLKt6lV03jbqWeUe94Ok/2D+7UIAEh6L8MXPFtTSJzf1C+ykDWHRt8s+dE7k=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EDA0C1321E965E48810CBC6415B4D273@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190524160340.169521-12-edumazet@google.com> <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
- <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
- <20190529054026.fwcyhzt33dshma4h@gondor.apana.org.au> <CACT4Y+Y39u9VL+C27PVpfVZbNP_U8yFG35yLy6_KaxK2+Z9Gyw@mail.gmail.com>
- <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au>
-In-Reply-To: <20190529054759.qrw7h73g62mnbica@gondor.apana.org.au>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 31 May 2019 10:24:08 +0200
-Message-ID: <CACT4Y+ZuHhAwNZ31+W2Hth90qA9mDk7YmZFq49DmjXCUa_gF1g@mail.gmail.com>
-Subject: Re: [PATCH] inet: frags: Remove unnecessary smp_store_release/READ_ONCE
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Alan Stern <stern@rowland.harvard.edu>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: darbyshire-bryant.me.uk
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7075698-4a63-4e19-29ff-08d6e5a21ea3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 08:29:38.0245
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB2654
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 7:48 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Wed, May 29, 2019 at 07:43:51AM +0200, Dmitry Vyukov wrote:
-> >
-> > If fqdir->dead read/write are concurrent, then this still needs to be
-> > READ_ONCE/WRITE_ONCE. Ordering is orthogonal to atomicity.
->
-> No they do not.  READ_ONCE/WRITE_ONCE are basically a more fine-tuned
-> version of barrier().  In this case we already have an implicit
-> barrier() call due to the memory barrier semantics so this is simply
-> unnecessary.
->
-> It's the same reason you don't need READ_ONCE/WRITE_ONCE when you do:
->
-> CPU1                            CPU2
-> ----                            ----
-> spin_lock
-> shared_var = 1                  spin_lock
-> spin_unlock                     if (shared_var == 1)
->                                         ...
->                                 spin_unlock
-
-+Paul, Andrea, Alan
-
-OK, let's call it barrier. But we need more than a barrier here then.
-
-1. The C standard is very clear here -- this new code causes undefined
-behavior of kernel. Regardless of what one might think about the C
-standard, it's still the current contract between us and compiler
-writers and nobody created any better replacement.
-
-2. Then Documentation/memory-barriers.txt (which one can't say is not
-relevant here) effectively says the same:
-
- (*) It _must_not_ be assumed that the compiler will do what you want
-     with memory references that are not protected by READ_ONCE() and
-     WRITE_ONCE().  Without them, the compiler is within its rights to
-     do all sorts of "creative" transformations, which are covered in
-     the COMPILER BARRIER section.
-
-3. The code is only correct under the naive execution (all code is
-executed literally as written). But we don't want compiler to execute
-code in such way, we want them to all employ all possible optimization
-tricks to make it faster. As the result compiler can break this code.
-It can reload the condition multiple times, including within the same
-branch, it can use variables as scratch storage and do other things
-that you and me can't think of now. Some of these optimizations are
-reasonable, some are not reasonable but still legal and just a result
-complex compiler logic giving surprising result on a corner case. Also
-if current implementation details of rhashtable_remove_fast change,
-surprising things can happen, e.g. executing just refcount_dec but not
-rhashtable_remove_fast.
-"Proving" impossibility of any of unexpected transformations it's just
-not what we should be spending time on again and again. E.g. a hundred
-of times people will skim through this code in future chasing some
-bug.
-
-4. Then READ_ONCE()/WRITE_ONCE() improve code self-documentation.
-There is huge difference between a plain load and inter-thread
-synchronization algorithms. This needs to be clearly visible in the
-code. Especially when one hunts a racy memory corruption in large base
-of code (which happens with kernel all the time).
-
-5. Marking all shared access is required to enable data race detection
-tooling. Which is an absolute must for kernel taking into account
-amount and complexity of tricky multi-threaded code. We need this.
-
-6. We need marking of all shared memory accesses for the kernel memory
-model effort. There is no way the model can be defined without that.
-
-7. This is very different from spin_lock example. spin_lock is a
-synchronization primitive that effectively makes code inside of the
-critical section single-threaded. But in this case read/write to dead
-execute concurrently.
-
-So what are the reasons to give up all these nice things and go into
-the rabbit hole of "proving" that we don't see how compiler could
-screw up things?
-If there are no significant reasons that outweigh all of these points,
-please use READ_ONCE()/WRITE_ONCE() for all shared accesses. Many will
-say thank you.
+DQoNCj4gT24gMzAgTWF5IDIwMTksIGF0IDIwOjU5LCBTdGVwaGVuIEhlbW1pbmdlciA8c3RlcGhl
+bkBuZXR3b3JrcGx1bWJlci5vcmc+IHdyb3RlOg0KPiANCj4gT24gVGh1LCAzMCBNYXkgMjAxOSAx
+Njo0MzoyMCArMDAwMA0KPiBLZXZpbiAnbGRpcicgRGFyYnlzaGlyZS1CcnlhbnQgPGxkaXJAZGFy
+YnlzaGlyZS1icnlhbnQubWUudWs+IHdyb3RlOg0KPiANCj4gUGxlYXNlIGRvbid0IHVzZSBIVE1M
+IGVuY29kZWQgbWFpbC4gSS5lIG5vdCBleGNoYW5nZS4NCg0KQXMgZmFyIGFzIEkga25vdyBJ4oCZ
+bSBub3Qgc2VuZGluZyBIVE1MIGVtYWlscywgb3IgSeKAmW0gdHJ5aW5nIGhhcmQgdG8gc2VuZA0K
+cGxhaW4gdGV4dCBmcm9tIG1hYyBtYWlsLCBhbmQgdXNpbmcgZ2l0IHNlbmQtZW1haWwgdG8gc2Vu
+ZCBwYXRjaGVzLg0KVGhlIG9mZmljZTM2NSBzbXRwIHNlcnZlciBhcHBlYXJzIHRvIGJlIG1hbmds
+aW5nIHBhdGNoZXMgaW4gc29tZSB3YXksDQpzZW5kaW5nIHVzaW5nIGdpdCBzZW5kLWVtYWlsIHZp
+YSBpY2xvdWQgdiBvZmZpY2UzNjUgcHJvZHVjZXMgZGlmZmVyZW50DQpyZXN1bHRzIGRlc3BpdGUg
+c2V0dGluZyA4Yml0IGVuY29kaW5nIHJhdGhlciB0aGFuIGJhc2U2NC4gIFNvIEkgcmVtYWluDQpj
+b25mdXNlZC4NCg0KQW55d2F5LCBoYXZlIHNlbnQgYSB2MiB2aWEgYW4gaWNsb3VkIHNtdHAgc2Vy
+dmVyIGFmdGVyIHlvdXIgYWR2aWNlICYNCmNoZWNrcGF0Y2ggZXRjIGV0Yy4gIEhvcGVmdWxseSBp
+bXByb3ZlZC4NCg0KDQo+IA0KPj4gKw0KPj4gKwlpZiAoYXJnYykgew0KPj4gKwkJaWYgKG1hdGNo
+ZXMoKmFyZ3YsICJkc2NwIikgPT0gMCkgew0KPj4gKwkJCU5FWFRfQVJHKCk7DQo+PiArCQkJY2hh
+ciAqc2xhc2g7DQo+PiArCQkJaWYgKChzbGFzaCA9IHN0cmNocigqYXJndiwgJy8nKSkpDQo+PiAr
+CQkJCSpzbGFzaCA9ICdcMCc7DQo+IA0KPiBEb24ndCBtaXggYXNzaWdubWVudCBhbmQgY29uZGl0
+aW9uYWwgb24gc2FtZSBsaW5lDQoNCkNoZWNrcGF0Y2ggZm91bmQgdGhhdCB0b28gOi0pDQoNCg==
