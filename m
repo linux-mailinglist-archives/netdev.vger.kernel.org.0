@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC99E309CD
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C940309FE
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbfEaIDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:03:09 -0400
-Received: from mail.us.es ([193.147.175.20]:38980 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726884AbfEaIDE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 04:03:04 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5ABEABAEA3
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:03:01 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 381C4DA79D
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:03:01 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 94374DA7F3; Fri, 31 May 2019 10:03:00 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 21354DA705;
-        Fri, 31 May 2019 10:02:58 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 31 May 2019 10:02:58 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E74284265A32;
-        Fri, 31 May 2019 10:02:57 +0200 (CEST)
-Date:   Fri, 31 May 2019 10:02:57 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Yuehaibing <yuehaibing@huawei.com>
-Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de,
-        linux-kernel@vger.kernel.org, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] netfilter: nf_conntrack_bridge: Fix build error
- without IPV6
-Message-ID: <20190531080257.62mfimdlwuv42bk3@salvia>
-References: <20190531024643.3840-1-yuehaibing@huawei.com>
- <19095cab-fbc5-f200-a40c-cb4c1a12fbc6@huawei.com>
+        id S1726799AbfEaIQm convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 31 May 2019 04:16:42 -0400
+Received: from esa6.hc3370-68.iphmx.com ([216.71.155.175]:49899 "EHLO
+        esa6.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726002AbfEaIQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 04:16:42 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 04:16:42 EDT
+Authentication-Results: esa6.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=Paul.Durrant@citrix.com; spf=Pass smtp.mailfrom=Paul.Durrant@citrix.com; spf=None smtp.helo=postmaster@MIAPEX02MSOL01.citrite.net
+Received-SPF: None (esa6.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  Paul.Durrant@citrix.com) identity=pra;
+  client-ip=23.29.105.83; receiver=esa6.hc3370-68.iphmx.com;
+  envelope-from="Paul.Durrant@citrix.com";
+  x-sender="Paul.Durrant@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa6.hc3370-68.iphmx.com: domain of
+  Paul.Durrant@citrix.com designates 23.29.105.83 as permitted
+  sender) identity=mailfrom; client-ip=23.29.105.83;
+  receiver=esa6.hc3370-68.iphmx.com;
+  envelope-from="Paul.Durrant@citrix.com";
+  x-sender="Paul.Durrant@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:23.29.105.83 ip4:162.221.156.50 ~all"
+Received-SPF: None (esa6.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@MIAPEX02MSOL01.citrite.net) identity=helo;
+  client-ip=23.29.105.83; receiver=esa6.hc3370-68.iphmx.com;
+  envelope-from="Paul.Durrant@citrix.com";
+  x-sender="postmaster@MIAPEX02MSOL01.citrite.net";
+  x-conformance=sidf_compatible
+IronPort-SDR: MuFDzrJnaA4RhYJ96ED2uey0fkt9GUZ9QvgjXsm4lQ3MCgXuwE1tUgqnhxr8RX3blU5cMZ0qAq
+ +L/7Omh/Mek4+wVc9cdH+iZHvg3O2+Vh/vk4sLoHwnS47H9HpH+jYkXQfb3wKWZ5lGZ3s2jJfx
+ 2I0ZVXZiC1BQ9bijpZA+prpr6J83fTGga2C0IXEeUFsBABgtWSPB8lZYcs3xbZz7QVo3bze2ns
+ mJCzaWCo7xa0TYZx2PZycCqXhMmWMcPYi5G8zryECCfdFyplCo2DaBhrq9lJ8aepD+AAv3slrd
+ IEw=
+X-SBRS: 2.7
+X-MesageID: 1118491
+X-Ironport-Server: esa6.hc3370-68.iphmx.com
+X-Remote-IP: 23.29.105.83
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.60,534,1549947600"; 
+   d="scan'208";a="1118491"
+From:   Paul Durrant <Paul.Durrant@citrix.com>
+To:     Wei Liu <wei.liu2@citrix.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Xen-devel <xen-devel@lists.xenproject.org>,
+        David Miller <davem@davemloft.net>,
+        Wei Liu <wei.liu2@citrix.com>
+Subject: RE: [PATCH net-next] Update my email address
+Thread-Topic: [PATCH net-next] Update my email address
+Thread-Index: AQHVF4LOwmQKDAbmA0WtXQmNdTyAy6aE4S7A
+Date:   Fri, 31 May 2019 08:09:34 +0000
+Message-ID: <619c8073a46446ce819addd44bd03756@AMSPEX02CL03.citrite.net>
+References: <20190531073102.5334-1-wei.liu2@citrix.com>
+In-Reply-To: <20190531073102.5334-1-wei.liu2@citrix.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="mledociainyopav3"
-Content-Disposition: inline
-In-Reply-To: <19095cab-fbc5-f200-a40c-cb4c1a12fbc6@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---mledociainyopav3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, May 31, 2019 at 11:06:49AM +0800, Yuehaibing wrote:
-> +cc netdev
+> -----Original Message-----
+> From: Wei Liu [mailto:wei.liu2@citrix.com]
+> Sent: 31 May 2019 08:31
+> To: netdev@vger.kernel.org
+> Cc: Xen-devel <xen-devel@lists.xenproject.org>; Paul Durrant <Paul.Durrant@citrix.com>; David Miller
+> <davem@davemloft.net>; Wei Liu <wei.liu2@citrix.com>
+> Subject: [PATCH net-next] Update my email address
 > 
-> On 2019/5/31 10:46, YueHaibing wrote:
-> > Fix gcc build error while CONFIG_IPV6 is not set
-> > 
-> > In file included from net/netfilter/core.c:19:0:
-> > ./include/linux/netfilter_ipv6.h: In function 'nf_ipv6_br_defrag':
-> > ./include/linux/netfilter_ipv6.h:110:9: error: implicit declaration of function 'nf_ct_frag6_gather' [-Werror=implicit-function-declaration]
-> > 
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Fixes: 764dd163ac92 ("netfilter: nf_conntrack_bridge: add support for IPv6")
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> > ---
-> >  include/linux/netfilter_ipv6.h | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
-> > index a21b8c9..4ea97fd 100644
-> > --- a/include/linux/netfilter_ipv6.h
-> > +++ b/include/linux/netfilter_ipv6.h
-> > @@ -96,6 +96,8 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
-> >  #endif
-> >  }
-> >  
-> > +int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user);
-> > +
+> Signed-off-by: Wei Liu <wei.liu2@citrix.com>
 
-This is already defined in:
+Acked-by: Paul Durrant <paul.durrant@citrix.com>
 
-include/net/netfilter/ipv6/nf_defrag_ipv6.h
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 0c55b0fedbe2..e212c6a42ddf 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17295,7 +17295,7 @@ F:	Documentation/ABI/stable/sysfs-hypervisor-xen
+>  F:	Documentation/ABI/testing/sysfs-hypervisor-xen
+> 
+>  XEN NETWORK BACKEND DRIVER
+> -M:	Wei Liu <wei.liu2@citrix.com>
+> +M:	Wei Liu <wei.liu@kernel.org>
+>  M:	Paul Durrant <paul.durrant@citrix.com>
+>  L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+>  L:	netdev@vger.kernel.org
+> --
+> 2.20.1
 
-Probably this?
-
---mledociainyopav3
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="x.patch"
-
-diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
-index a21b8c9623ee..3a3dc4b1f0e7 100644
---- a/include/linux/netfilter_ipv6.h
-+++ b/include/linux/netfilter_ipv6.h
-@@ -96,6 +96,8 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
- #endif
- }
- 
-+#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
-+
- static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
- 				    u32 user)
- {
-
---mledociainyopav3--
