@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E36930BDF
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F6030BE1
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:42:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbfEaJmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 05:42:42 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40247 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726233AbfEaJmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 05:42:42 -0400
-Received: by mail-pf1-f196.google.com with SMTP id u17so5869277pfn.7;
-        Fri, 31 May 2019 02:42:41 -0700 (PDT)
+        id S1727075AbfEaJmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 05:42:47 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43643 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726233AbfEaJmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 05:42:46 -0400
+Received: by mail-pg1-f196.google.com with SMTP id f25so3737848pgv.10;
+        Fri, 31 May 2019 02:42:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OvbZawIVIOw9CYIB+EjLedlu7feQ8aAD9o5KEagAico=;
-        b=cWnnl6Dxv/I5A9osxhxTpDrRb0kd+FZYe3deQ7drqf/muvUqzyB3vrIQJbktIE6Wq0
-         VlhjwXt6kYT2Iwba398lZe5mdKBvlL2x3OxduSMEa0fSeyYUVe5v/nwBIt2f1YDFnpUl
-         ZUw7hFbOikDWYpbG4JUz9pujrSHGhwAV+yOAl4hO0jEoHYJrHGLNR7lN7Ah6oCHHZS86
-         LfQ24sLB02PBdCehiSbV/dqxLrATgbgKhOspnERIlThmAUP/H0Q3Sv1slgmKvZo73VUp
-         JOY7woUUHNlp4D3VzgGCCsp3jfOI2F41CL1XK3Mq5oCEKRRD7GLf3VxxbywtgkvlShj6
-         pTRw==
+        bh=kXJOH3Cm6EKvZO8FcrV3aeGY0NdTg7P6rABE1jV5iqY=;
+        b=bD/1srZW2BloBuIFmzpwxLSwJEtH9/c4m5aWMGNbchmEL4vbwl0kUUZSZDB+K2pdtu
+         uBfoDmDR4CmU0b7oDr4ahHHq4QPAF4r9XpQSjO6BPeKW5hOg72XcWeENuT3QpRmOKGGh
+         m3WYoWkM4vIVsrA+6zQCy07+Jwefr8sWRmTOBuQeUsPjAn/By0WcQ0jsbS8TEe3PdKRr
+         HDe5TWC0pl14C1ycFn7q5qFD0qBLIj3QjzhO4zb7CbDhAFoYjgK1bhAZcKFyfaiUuqRS
+         35jyUVQCx+cSlr5+BKFc6NZwgsv/aQ4aSe2Ep5iW3t84kWyyf+HeFoyOssoRXHD62Prt
+         QgBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OvbZawIVIOw9CYIB+EjLedlu7feQ8aAD9o5KEagAico=;
-        b=rlH26GxYXsM63IUQTKgkS+BgpPE610dYHQVhnVYhxeYaXjPEhy79j8D6mB/uT9eHGr
-         pifjWcDkK8Tt8QVkiK3tQFM9K5fv0+sKYv/YjQMu+TwqYuoYJmmcW2Vfym0OnjHwnEjE
-         7Y4QiVO0jNt2paDlHtPWbgC4bZvZsIYkFy1l/metZab4+6IAN5hB2Qrd5dAycu80w0dt
-         8/n3JUQ9FkOk2uulOxo7Mu0BJ2iJKYZf3fE6vC7eMDrxggv8xmoobN7rNA+/1buBy23E
-         2CMpYxEnrdkNIQRC2gLYdehEsZbc71Ys3xOLKJeagqUdRAK81pJ7UQNgfh2PV/i8BTJf
-         Z9JQ==
-X-Gm-Message-State: APjAAAUKbkDJsgGV0JQXek/HxPoUJ7eCjNfZnUMaDgyV1WEz2aElyo9B
-        7AaoRKyYwn7Ai0geJ/wyWQY=
-X-Google-Smtp-Source: APXvYqxtCrSREqR1o+9tJeNndVvCQG8y+agK2uEy8YD+bJmHGWg73hkwodESF+d844JfHorYAQdx5w==
-X-Received: by 2002:a63:fb05:: with SMTP id o5mr8161716pgh.203.1559295761316;
-        Fri, 31 May 2019 02:42:41 -0700 (PDT)
+        bh=kXJOH3Cm6EKvZO8FcrV3aeGY0NdTg7P6rABE1jV5iqY=;
+        b=Zdo7OAeAcWQz40vkeA9xMWTc3JgRCB8TaKjud4Ohylp1wde12uRc99bSBlrJzuktY4
+         gtnDzSQct6KZ1k0rATV4H7ozIsw+E8lI0ikEyBPHvdOQQuYxjVWrlms0y1QqHjhM5GHi
+         OM35vbIYfnfbUybq3UcK+gVigfhFVKZrCW0nvk9JUkmNAHzmiXEyIhZEXjwuSB8Dv21i
+         ZUz4eTfXkc4gSH6lh8bVnQN4+7dqlbLQ6suz5/rD8mzniV5Zs/Z2C5ggZSXE4GpkunXw
+         CRrsyV4SXDrd+3UD4G+wix/1gkwzS2DuHq981opPogl86fz8MmXap32uQWIKQV3rccIx
+         Smxg==
+X-Gm-Message-State: APjAAAXPxOPQiGpn9EaSYDgnhRimnUZepDcU/OguTFru8Bps1hfBzaJW
+        /YTTnAJYymqSNS97zdpZ8nk=
+X-Google-Smtp-Source: APXvYqwBZ1Fzb1sGDWIpSzw5VTWt8cAj3ODpDDVLFAjGK0mdaxSdVGHs59gvFq+jW193jgYppqSmZA==
+X-Received: by 2002:a17:90a:658b:: with SMTP id k11mr7996744pjj.44.1559295765856;
+        Fri, 31 May 2019 02:42:45 -0700 (PDT)
 Received: from btopel-mobl.isw.intel.com ([192.55.54.43])
-        by smtp.gmail.com with ESMTPSA id e4sm4887936pgi.80.2019.05.31.02.42.36
+        by smtp.gmail.com with ESMTPSA id e4sm4887936pgi.80.2019.05.31.02.42.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 02:42:40 -0700 (PDT)
+        Fri, 31 May 2019 02:42:45 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     toke@redhat.com, ast@kernel.org, daniel@iogearbox.net,
         netdev@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, brouer@redhat.com, bpf@vger.kernel.org,
         jakub.kicinski@netronome.com, saeedm@mellanox.com
-Subject: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW} to netdev
-Date:   Fri, 31 May 2019 11:42:14 +0200
-Message-Id: <20190531094215.3729-2-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 2/2] net: xdp: remove XDP_QUERY_PROG{,_HW}
+Date:   Fri, 31 May 2019 11:42:15 +0200
+Message-Id: <20190531094215.3729-3-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190531094215.3729-1-bjorn.topel@gmail.com>
 References: <20190531094215.3729-1-bjorn.topel@gmail.com>
@@ -66,429 +66,420 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-All XDP capable drivers need to implement the XDP_QUERY_PROG{,_HW}
-command of ndo_bpf. The query code is fairly generic. This commit
-refactors the query code up from the drivers to the netdev level.
-
-The struct net_device has gained two new members: xdp_prog_hw and
-xdp_flags. The former is the offloaded XDP program, if any, and the
-latter tracks the flags that the supplied when attaching the XDP
-program. The flags only apply to SKB_MODE or DRV_MODE, not HW_MODE.
-
-The xdp_prog member, previously only used for SKB_MODE, is shared with
-DRV_MODE. This is OK, due to the fact that SKB_MODE and DRV_MODE are
-mutually exclusive. To differentiate between the two modes, a new
-internal flag is introduced as well.
-
-The program query operations is all done under the rtnl lock. However,
-the xdp_prog member is __rcu annotated, and used in a lock-less manner
-for the SKB_MODE. Now that xdp_prog member is shared from a query
-program perspective, RCU read and assignments functions are still used
-when altering xdp_prog, even when only for queries in DRV_MODE. This
-is for sparse/lockdep correctness.
+Remove all use of XDP_QUERY_PROG{,_HW}, since it was moved to the
+generic code path.
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/linux/netdevice.h |  15 +++--
- include/net/xdp.h         |   4 ++
- net/core/dev.c            | 138 ++++++++++++++++++++++++--------------
- net/core/rtnetlink.c      |  53 +++++++--------
- net/core/xdp.c            |  17 +++--
- 5 files changed, 139 insertions(+), 88 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  4 ----
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |  3 ---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  3 ---
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  3 ---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  4 ----
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  4 ----
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 24 -------------------
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 18 --------------
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  4 ----
+ .../net/ethernet/qlogic/qede/qede_filter.c    |  3 ---
+ drivers/net/netdevsim/bpf.c                   |  4 ----
+ drivers/net/netdevsim/netdevsim.h             |  2 +-
+ drivers/net/tun.c                             | 15 ------------
+ drivers/net/veth.c                            | 15 ------------
+ drivers/net/virtio_net.c                      | 17 -------------
+ include/linux/netdevice.h                     |  8 -------
+ include/net/xdp.h                             |  2 --
+ net/core/dev.c                                |  5 ----
+ net/core/xdp.c                                |  9 -------
+ 19 files changed, 1 insertion(+), 146 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 44b47e9df94a..f3a875a52c6c 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1940,6 +1940,9 @@ struct net_device {
- #endif
- 	struct hlist_node	index_hlist;
- 
-+	struct bpf_prog		*xdp_prog_hw;
-+	u32			xdp_flags;
-+
- /*
-  * Cache lines mostly used on transmit path
-  */
-@@ -2043,11 +2046,14 @@ struct net_device {
- };
- #define to_net_dev(d) container_of(d, struct net_device, dev)
- 
-+/* Reusing the XDP flags space for kernel internal flag */
-+#define XDP_FLAGS_KERN_GENERIC (1U << 4)
-+static_assert(!(XDP_FLAGS_KERN_GENERIC & XDP_FLAGS_MASK));
-+
- static inline bool netif_elide_gro(const struct net_device *dev)
- {
--	if (!(dev->features & NETIF_F_GRO) || dev->xdp_prog)
--		return true;
--	return false;
-+	return !(dev->features & NETIF_F_GRO) ||
-+		dev->xdp_flags & XDP_FLAGS_KERN_GENERIC;
- }
- 
- #define	NETDEV_ALIGN		32
-@@ -3684,8 +3690,7 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
- typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
- int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		      int fd, u32 flags);
--u32 __dev_xdp_query(struct net_device *dev, bpf_op_t xdp_op,
--		    enum bpf_netdev_command cmd);
-+u32 dev_xdp_query(struct net_device *dev, unsigned int mode);
- int xdp_umem_query(struct net_device *dev, u16 queue_id);
- 
- int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 0f25b3675c5c..3691280c8fc1 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -51,6 +51,7 @@ struct xdp_mem_info {
- };
- 
- struct page_pool;
-+struct netlink_ext_ack;
- 
- struct zero_copy_allocator {
- 	void (*free)(struct zero_copy_allocator *zca, unsigned long handle);
-@@ -166,4 +167,7 @@ bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
- void xdp_attachment_setup(struct xdp_attachment_info *info,
- 			  struct netdev_bpf *bpf);
- 
-+bool xdp_prog_flags_ok(u32 old_flags, u32 new_flags,
-+		       struct netlink_ext_ack *extack);
-+
- #endif /* __LINUX_NET_XDP_H__ */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b6b8505cfb3e..1a9da508149a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8005,21 +8005,43 @@ int dev_change_proto_down_generic(struct net_device *dev, bool proto_down)
- }
- EXPORT_SYMBOL(dev_change_proto_down_generic);
- 
--u32 __dev_xdp_query(struct net_device *dev, bpf_op_t bpf_op,
--		    enum bpf_netdev_command cmd)
-+static u32 dev_xdp_query_generic(struct net_device *dev)
- {
--	struct netdev_bpf xdp;
-+	struct bpf_prog *prog = rtnl_dereference(dev->xdp_prog);
- 
--	if (!bpf_op)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index 0184ef6f05a7..8b1e77522e18 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -217,10 +217,6 @@ int bnxt_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ 	case XDP_SETUP_PROG:
+ 		rc = bnxt_xdp_set(bp, xdp->prog);
+ 		break;
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = bp->xdp_prog ? bp->xdp_prog->aux->id : 0;
+-		rc = 0;
+-		break;
+ 	default:
+ 		rc = -EINVAL;
+ 		break;
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+index c032bef1b776..14c079538cb5 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+@@ -1914,9 +1914,6 @@ static int nicvf_xdp(struct net_device *netdev, struct netdev_bpf *xdp)
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return nicvf_xdp_setup(nic, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = nic->xdp_prog ? nic->xdp_prog->aux->id : 0;
 -		return 0;
-+	return prog && dev->xdp_flags & XDP_FLAGS_KERN_GENERIC ?
-+		prog->aux->id : 0;
-+}
- 
--	memset(&xdp, 0, sizeof(xdp));
--	xdp.command = cmd;
-+static u32 dev_xdp_query_drv(struct net_device *dev)
-+{
-+	struct bpf_prog *prog = rtnl_dereference(dev->xdp_prog);
-+
-+	return prog && !(dev->xdp_flags & XDP_FLAGS_KERN_GENERIC) ?
-+		prog->aux->id : 0;
-+}
-+
-+static u32 dev_xdp_current_mode(struct net_device *dev)
-+{
-+	struct bpf_prog *prog = rtnl_dereference(dev->xdp_prog);
- 
--	/* Query must always succeed. */
--	WARN_ON(bpf_op(dev, &xdp) < 0 && cmd == XDP_QUERY_PROG);
-+	if (prog)
-+		return dev_xdp_query_generic(dev) ? XDP_FLAGS_SKB_MODE :
-+			XDP_FLAGS_DRV_MODE;
-+	return 0;
-+}
- 
--	return xdp.prog_id;
-+u32 dev_xdp_query(struct net_device *dev, unsigned int mode)
-+{
-+	switch (mode) {
-+	case XDP_FLAGS_DRV_MODE:
-+		return dev_xdp_query_drv(dev);
-+	case XDP_FLAGS_SKB_MODE:
-+		return dev_xdp_query_generic(dev);
-+	case XDP_FLAGS_HW_MODE:
-+		return dev->xdp_prog_hw ? dev->xdp_prog_hw->aux->id : 0;
-+	}
-+	return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 63b1ecc18c26..a00cf674b8c8 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -1763,9 +1763,6 @@ static int dpaa2_eth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return setup_xdp(dev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = priv->xdp_prog ? priv->xdp_prog->aux->id : 0;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 320562b39686..3dd591068591 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -12302,9 +12302,6 @@ static int i40e_xdp(struct net_device *dev,
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return i40e_xdp_setup(vsi, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = vsi->xdp_prog ? vsi->xdp_prog->aux->id : 0;
+-		return 0;
+ 	case XDP_SETUP_XSK_UMEM:
+ 		return i40e_xsk_umem_setup(vsi, xdp->xsk.umem,
+ 					   xdp->xsk.queue_id);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 57fd9ee6de66..59dc82c71f9c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -10284,10 +10284,6 @@ static int ixgbe_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return ixgbe_xdp_setup(dev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = adapter->xdp_prog ?
+-			adapter->xdp_prog->aux->id : 0;
+-		return 0;
+ 	case XDP_SETUP_XSK_UMEM:
+ 		return ixgbe_xsk_umem_setup(adapter, xdp->xsk.umem,
+ 					    xdp->xsk.queue_id);
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index d189ed247665..80a22d638734 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -4485,10 +4485,6 @@ static int ixgbevf_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return ixgbevf_xdp_setup(dev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = adapter->xdp_prog ?
+-			       adapter->xdp_prog->aux->id : 0;
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index c1438ae52a11..8850fc35510a 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -2883,35 +2883,11 @@ static int mlx4_xdp_set(struct net_device *dev, struct bpf_prog *prog)
+ 	return err;
  }
  
- static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
-@@ -8027,45 +8049,47 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 			   struct bpf_prog *prog)
+-static u32 mlx4_xdp_query(struct net_device *dev)
+-{
+-	struct mlx4_en_priv *priv = netdev_priv(dev);
+-	struct mlx4_en_dev *mdev = priv->mdev;
+-	const struct bpf_prog *xdp_prog;
+-	u32 prog_id = 0;
+-
+-	if (!priv->tx_ring_num[TX_XDP])
+-		return prog_id;
+-
+-	mutex_lock(&mdev->state_lock);
+-	xdp_prog = rcu_dereference_protected(
+-		priv->rx_ring[0]->xdp_prog,
+-		lockdep_is_held(&mdev->state_lock));
+-	if (xdp_prog)
+-		prog_id = xdp_prog->aux->id;
+-	mutex_unlock(&mdev->state_lock);
+-
+-	return prog_id;
+-}
+-
+ static int mlx4_xdp(struct net_device *dev, struct netdev_bpf *xdp)
  {
- 	struct netdev_bpf xdp;
-+	int err;
- 
- 	memset(&xdp, 0, sizeof(xdp));
--	if (flags & XDP_FLAGS_HW_MODE)
-+	if (flags & XDP_FLAGS_HW_MODE) {
- 		xdp.command = XDP_SETUP_PROG_HW;
--	else
-+		xdp.flags = XDP_FLAGS_HW_MODE;
-+	} else {
- 		xdp.command = XDP_SETUP_PROG;
-+		xdp.flags = flags;
-+	}
- 	xdp.extack = extack;
--	xdp.flags = flags;
- 	xdp.prog = prog;
- 
--	return bpf_op(dev, &xdp);
-+	err = bpf_op(dev, &xdp);
-+	if (err)
-+		return err;
-+
-+	if (flags & XDP_FLAGS_HW_MODE) {
-+		dev->xdp_prog_hw = prog;
-+		return 0;
-+	}
-+
-+	rcu_assign_pointer(dev->xdp_prog, prog);
-+	dev->xdp_flags = prog ? flags : 0;
-+	return 0;
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return mlx4_xdp_set(dev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = mlx4_xdp_query(dev);
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 457cc39423f2..f1b80c1d9ca2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4237,29 +4237,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
+ 	return err;
  }
  
- static void dev_xdp_uninstall(struct net_device *dev)
+-static u32 mlx5e_xdp_query(struct net_device *dev)
+-{
+-	struct mlx5e_priv *priv = netdev_priv(dev);
+-	const struct bpf_prog *xdp_prog;
+-	u32 prog_id = 0;
+-
+-	mutex_lock(&priv->state_lock);
+-	xdp_prog = priv->channels.params.xdp_prog;
+-	if (xdp_prog)
+-		prog_id = xdp_prog->aux->id;
+-	mutex_unlock(&priv->state_lock);
+-
+-	return prog_id;
+-}
+-
+ static int mlx5e_xdp(struct net_device *dev, struct netdev_bpf *xdp)
  {
--	struct netdev_bpf xdp;
--	bpf_op_t ndo_bpf;
--
--	/* Remove generic XDP */
--	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL));
--
--	/* Remove from the driver */
--	ndo_bpf = dev->netdev_ops->ndo_bpf;
--	if (!ndo_bpf)
--		return;
--
--	memset(&xdp, 0, sizeof(xdp));
--	xdp.command = XDP_QUERY_PROG;
--	WARN_ON(ndo_bpf(dev, &xdp));
--	if (xdp.prog_id)
--		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
--					NULL));
-+	struct bpf_prog *prog = rtnl_dereference(dev->xdp_prog);
-+	bpf_op_t bpf_op;
- 
--	/* Remove HW offload */
--	memset(&xdp, 0, sizeof(xdp));
--	xdp.command = XDP_QUERY_PROG_HW;
--	if (!ndo_bpf(dev, &xdp) && xdp.prog_id)
--		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
-+	if (prog) {
-+		bpf_op = dev_xdp_query_generic(dev) ?
-+			 generic_xdp_install : dev->netdev_ops->ndo_bpf;
-+		WARN_ON(dev_xdp_install(dev, bpf_op, NULL, dev->xdp_flags,
- 					NULL));
-+	}
-+	if (dev_xdp_query(dev, XDP_FLAGS_HW_MODE))
-+		WARN_ON(dev_xdp_install(dev, dev->netdev_ops->ndo_bpf,
-+					NULL, XDP_FLAGS_HW_MODE, NULL));
- }
- 
- /**
-@@ -8080,41 +8104,49 @@ static void dev_xdp_uninstall(struct net_device *dev)
- int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		      int fd, u32 flags)
- {
--	const struct net_device_ops *ops = dev->netdev_ops;
--	enum bpf_netdev_command query;
- 	struct bpf_prog *prog = NULL;
--	bpf_op_t bpf_op, bpf_chk;
-+	u32 mode, curr_mode;
-+	bpf_op_t bpf_op;
- 	bool offload;
- 	int err;
- 
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return mlx5e_xdp_set(dev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = mlx5e_xdp_query(dev);
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index b82b684f52ce..2a9683db54e5 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -3548,10 +3548,6 @@ static int nfp_net_xdp(struct net_device *netdev, struct netdev_bpf *xdp)
+ 		return nfp_net_xdp_setup_drv(nn, xdp);
+ 	case XDP_SETUP_PROG_HW:
+ 		return nfp_net_xdp_setup_hw(nn, xdp);
+-	case XDP_QUERY_PROG:
+-		return xdp_attachment_query(&nn->xdp, xdp);
+-	case XDP_QUERY_PROG_HW:
+-		return xdp_attachment_query(&nn->xdp_hw, xdp);
+ 	default:
+ 		return nfp_app_bpf(nn->app, nn, xdp);
+ 	}
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index add922b93d2c..69f4e7d37d01 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -1118,9 +1118,6 @@ int qede_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return qede_xdp_set(edev, xdp->prog);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = edev->xdp_prog ? edev->xdp_prog->aux->id : 0;
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
+index 2b74425822ab..d03d31721e38 100644
+--- a/drivers/net/netdevsim/bpf.c
++++ b/drivers/net/netdevsim/bpf.c
+@@ -549,10 +549,6 @@ int nsim_bpf(struct net_device *dev, struct netdev_bpf *bpf)
  	ASSERT_RTNL();
  
- 	offload = flags & XDP_FLAGS_HW_MODE;
--	query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
-+	mode = offload ? XDP_FLAGS_HW_MODE : XDP_FLAGS_DRV_MODE;
+ 	switch (bpf->command) {
+-	case XDP_QUERY_PROG:
+-		return xdp_attachment_query(&ns->xdp, bpf);
+-	case XDP_QUERY_PROG_HW:
+-		return xdp_attachment_query(&ns->xdp_hw, bpf);
+ 	case XDP_SETUP_PROG:
+ 		err = nsim_setup_prog_checks(ns, bpf);
+ 		if (err)
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 3f398797c2bc..3f75f50b3250 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -108,7 +108,7 @@ static inline void nsim_bpf_uninit(struct netdevsim *ns)
  
--	bpf_op = bpf_chk = ops->ndo_bpf;
-+	bpf_op = dev->netdev_ops->ndo_bpf;
- 	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
- 		NL_SET_ERR_MSG(extack, "underlying driver does not support XDP in native mode");
- 		return -EOPNOTSUPP;
- 	}
--	if (!bpf_op || (flags & XDP_FLAGS_SKB_MODE))
--		bpf_op = generic_xdp_install;
--	if (bpf_op == bpf_chk)
--		bpf_chk = generic_xdp_install;
+ static inline int nsim_bpf(struct net_device *dev, struct netdev_bpf *bpf)
+ {
+-	return bpf->command == XDP_QUERY_PROG ? 0 : -EOPNOTSUPP;
++	return -EOPNOTSUPP;
+ }
  
--	if (fd >= 0) {
--		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
-+	if (!bpf_op || flags & XDP_FLAGS_SKB_MODE)
-+		mode = XDP_FLAGS_SKB_MODE;
-+
-+	curr_mode = dev_xdp_current_mode(dev);
-+
-+	if (!offload && curr_mode && (mode ^ curr_mode) &
-+	    (XDP_FLAGS_DRV_MODE | XDP_FLAGS_SKB_MODE)) {
-+		if (fd >= 0) {
- 			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the same time");
- 			return -EEXIST;
- 		}
--		if ((flags & XDP_FLAGS_UPDATE_IF_NOEXIST) &&
--		    __dev_xdp_query(dev, bpf_op, query)) {
-+		return 0;
-+	}
-+
-+	if (!offload && dev_xdp_query(dev, mode) &&
-+	    !xdp_prog_flags_ok(dev->xdp_flags, flags, extack))
-+		return -EBUSY;
-+
-+	if (fd >= 0) {
-+		if (flags & XDP_FLAGS_UPDATE_IF_NOEXIST &&
-+		    dev_xdp_query(dev, mode)) {
- 			NL_SET_ERR_MSG(extack, "XDP program already attached");
- 			return -EBUSY;
- 		}
- 
--		prog = bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP,
--					     bpf_op == ops->ndo_bpf);
-+		prog = bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP, !!bpf_op);
- 		if (IS_ERR(prog))
- 			return PTR_ERR(prog);
- 
-@@ -8125,6 +8157,10 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		}
- 	}
- 
-+	if (mode == XDP_FLAGS_SKB_MODE) {
-+		bpf_op = generic_xdp_install;
-+		flags |= XDP_FLAGS_KERN_GENERIC;
-+	}
- 	err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
- 	if (err < 0 && prog)
- 		bpf_prog_put(prog);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index adcc045952c2..5e396fd01d8b 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1360,42 +1360,44 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
+ static inline int nsim_bpf_disable_tc(struct netdevsim *ns)
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index abae165dcca5..dbf115aa5c11 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1236,26 +1236,11 @@ static int tun_xdp_set(struct net_device *dev, struct bpf_prog *prog,
  	return 0;
  }
  
--static u32 rtnl_xdp_prog_skb(struct net_device *dev)
-+static unsigned int rtnl_xdp_mode_to_flag(u8 tgt_mode)
- {
--	const struct bpf_prog *generic_xdp_prog;
+-static u32 tun_xdp_query(struct net_device *dev)
+-{
+-	struct tun_struct *tun = netdev_priv(dev);
+-	const struct bpf_prog *xdp_prog;
 -
--	ASSERT_RTNL();
+-	xdp_prog = rtnl_dereference(tun->xdp_prog);
+-	if (xdp_prog)
+-		return xdp_prog->aux->id;
 -
--	generic_xdp_prog = rtnl_dereference(dev->xdp_prog);
--	if (!generic_xdp_prog)
--		return 0;
--	return generic_xdp_prog->aux->id;
+-	return 0;
 -}
 -
--static u32 rtnl_xdp_prog_drv(struct net_device *dev)
+ static int tun_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ {
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return tun_xdp_set(dev, xdp->prog, xdp->extack);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = tun_xdp_query(dev);
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 52110e54e621..27b93e8b844d 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1097,26 +1097,11 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	return err;
+ }
+ 
+-static u32 veth_xdp_query(struct net_device *dev)
 -{
--	return __dev_xdp_query(dev, dev->netdev_ops->ndo_bpf, XDP_QUERY_PROG);
-+	switch (tgt_mode) {
-+	case XDP_ATTACHED_DRV:
-+		return XDP_FLAGS_DRV_MODE;
-+	case XDP_ATTACHED_SKB:
-+		return XDP_FLAGS_SKB_MODE;
-+	case XDP_ATTACHED_HW:
-+		return XDP_FLAGS_HW_MODE;
-+	}
-+	return 0;
+-	struct veth_priv *priv = netdev_priv(dev);
+-	const struct bpf_prog *xdp_prog;
+-
+-	xdp_prog = priv->_xdp_prog;
+-	if (xdp_prog)
+-		return xdp_prog->aux->id;
+-
+-	return 0;
+-}
+-
+ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ {
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return veth_xdp_set(dev, xdp->prog, xdp->extack);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = veth_xdp_query(dev);
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0d4115c9e20b..2517bd5c74b4 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2513,28 +2513,11 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	return err;
  }
  
--static u32 rtnl_xdp_prog_hw(struct net_device *dev)
-+static u32 rtnl_xdp_mode_to_attr(u8 tgt_mode)
+-static u32 virtnet_xdp_query(struct net_device *dev)
+-{
+-	struct virtnet_info *vi = netdev_priv(dev);
+-	const struct bpf_prog *xdp_prog;
+-	int i;
+-
+-	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		xdp_prog = rtnl_dereference(vi->rq[i].xdp_prog);
+-		if (xdp_prog)
+-			return xdp_prog->aux->id;
+-	}
+-	return 0;
+-}
+-
+ static int virtnet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
  {
--	return __dev_xdp_query(dev, dev->netdev_ops->ndo_bpf,
--			       XDP_QUERY_PROG_HW);
-+	switch (tgt_mode) {
-+	case XDP_ATTACHED_DRV:
-+		return IFLA_XDP_DRV_PROG_ID;
-+	case XDP_ATTACHED_SKB:
-+		return IFLA_XDP_SKB_PROG_ID;
-+	case XDP_ATTACHED_HW:
-+		return IFLA_XDP_HW_PROG_ID;
-+	}
-+	return 0;
- }
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return virtnet_xdp_set(dev, xdp->prog, xdp->extack);
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = virtnet_xdp_query(dev);
+-		return 0;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index f3a875a52c6c..83236af25590 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -864,8 +864,6 @@ enum bpf_netdev_command {
+ 	 */
+ 	XDP_SETUP_PROG,
+ 	XDP_SETUP_PROG_HW,
+-	XDP_QUERY_PROG,
+-	XDP_QUERY_PROG_HW,
+ 	/* BPF program for offload callbacks, invoked at program load time. */
+ 	BPF_OFFLOAD_MAP_ALLOC,
+ 	BPF_OFFLOAD_MAP_FREE,
+@@ -885,12 +883,6 @@ struct netdev_bpf {
+ 			struct bpf_prog *prog;
+ 			struct netlink_ext_ack *extack;
+ 		};
+-		/* XDP_QUERY_PROG, XDP_QUERY_PROG_HW */
+-		struct {
+-			u32 prog_id;
+-			/* flags with which program was installed */
+-			u32 prog_flags;
+-		};
+ 		/* BPF_OFFLOAD_MAP_ALLOC, BPF_OFFLOAD_MAP_FREE */
+ 		struct {
+ 			struct bpf_offloaded_map *offmap;
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 3691280c8fc1..abcd86a31c0f 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -160,8 +160,6 @@ struct xdp_attachment_info {
+ };
  
- static int rtnl_xdp_report_one(struct sk_buff *skb, struct net_device *dev,
--			       u32 *prog_id, u8 *mode, u8 tgt_mode, u32 attr,
--			       u32 (*get_prog_id)(struct net_device *dev))
-+			       u32 *prog_id, u8 *mode, u8 tgt_mode)
- {
- 	u32 curr_id;
- 	int err;
- 
--	curr_id = get_prog_id(dev);
-+	curr_id = dev_xdp_query(dev, rtnl_xdp_mode_to_flag(tgt_mode));
- 	if (!curr_id)
- 		return 0;
- 
- 	*prog_id = curr_id;
--	err = nla_put_u32(skb, attr, curr_id);
-+	err = nla_put_u32(skb, rtnl_xdp_mode_to_attr(tgt_mode), curr_id);
- 	if (err)
- 		return err;
- 
-@@ -1420,16 +1422,13 @@ static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev)
- 
- 	prog_id = 0;
- 	mode = XDP_ATTACHED_NONE;
--	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_SKB,
--				  IFLA_XDP_SKB_PROG_ID, rtnl_xdp_prog_skb);
-+	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_SKB);
- 	if (err)
- 		goto err_cancel;
--	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_DRV,
--				  IFLA_XDP_DRV_PROG_ID, rtnl_xdp_prog_drv);
-+	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_DRV);
- 	if (err)
- 		goto err_cancel;
--	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_HW,
--				  IFLA_XDP_HW_PROG_ID, rtnl_xdp_prog_hw);
-+	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_HW);
- 	if (err)
- 		goto err_cancel;
- 
+ struct netdev_bpf;
+-int xdp_attachment_query(struct xdp_attachment_info *info,
+-			 struct netdev_bpf *bpf);
+ bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
+ 			     struct netdev_bpf *bpf);
+ void xdp_attachment_setup(struct xdp_attachment_info *info,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1a9da508149a..4e7c81a76400 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5156,11 +5156,6 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
+ 			dev_disable_gro_hw(dev);
+ 		}
+ 		break;
+-
+-	case XDP_QUERY_PROG:
+-		xdp->prog_id = old ? old->aux->id : 0;
+-		break;
+-
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
 diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 4b2b194f4f1f..af92c04a58d8 100644
+index af92c04a58d8..295b4d4fd259 100644
 --- a/net/core/xdp.c
 +++ b/net/core/xdp.c
-@@ -388,16 +388,23 @@ int xdp_attachment_query(struct xdp_attachment_info *info,
+@@ -379,15 +379,6 @@ void xdp_return_buff(struct xdp_buff *xdp)
  }
- EXPORT_SYMBOL_GPL(xdp_attachment_query);
+ EXPORT_SYMBOL_GPL(xdp_return_buff);
  
--bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
--			     struct netdev_bpf *bpf)
-+bool xdp_prog_flags_ok(u32 old_flags, u32 new_flags,
-+		       struct netlink_ext_ack *extack)
+-int xdp_attachment_query(struct xdp_attachment_info *info,
+-			 struct netdev_bpf *bpf)
+-{
+-	bpf->prog_id = info->prog ? info->prog->aux->id : 0;
+-	bpf->prog_flags = info->prog ? info->flags : 0;
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(xdp_attachment_query);
+-
+ bool xdp_prog_flags_ok(u32 old_flags, u32 new_flags,
+ 		       struct netlink_ext_ack *extack)
  {
--	if (info->prog && (bpf->flags ^ info->flags) & XDP_FLAGS_MODES) {
--		NL_SET_ERR_MSG(bpf->extack,
--			       "program loaded with different flags");
-+	if ((new_flags ^ old_flags) & XDP_FLAGS_MODES) {
-+		NL_SET_ERR_MSG(extack, "program loaded with different flags");
- 		return false;
- 	}
- 	return true;
- }
-+
-+bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
-+			     struct netdev_bpf *bpf)
-+{
-+	if (info->prog)
-+		return xdp_prog_flags_ok(bpf->flags, info->flags, bpf->extack);
-+	return true;
-+}
- EXPORT_SYMBOL_GPL(xdp_attachment_flags_ok);
- 
- void xdp_attachment_setup(struct xdp_attachment_info *info,
 -- 
 2.20.1
 
