@@ -2,66 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95016310B4
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A83310C0
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbfEaO6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 10:58:07 -0400
-Received: from mail-it1-f197.google.com ([209.85.166.197]:40717 "EHLO
-        mail-it1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfEaO6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:58:06 -0400
-Received: by mail-it1-f197.google.com with SMTP id u10so8375812itb.5
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:58:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
-         :content-transfer-encoding;
-        bh=K/ofCxOPUpmE2L+U1S33uS/mcJVaDnKhwP6YIHRjApE=;
-        b=M0B2W2M2XRYEIiD+PzDhHoalFPqMy8uylzWkeB4C/aen7GlVmTak9CZTLbRoHynvM2
-         X+kaOo79cDPW4MQGcKOqMKM2fmXB0NYNQrVAHBQpS5+Rfx3g7pKJel2u162CS5AsSRwM
-         2VPOQrCfZY2vuehxYGJxH4wcLBvzwC7LbBWHY75srOxQTI7t2BfnhG9Idb8tRHlAWiX9
-         PuMgc8ybBhhe66+4K2yodUcgYxCMpoVH09Ky0Ze46H4rCY8ooFEW65eBpgZBjOqSyTik
-         IG+fk2/AXGvjXcpZ6Vglm8EASnC+jf+ZqXlKKJojHr/urvyLoiHfbn/tvNWZr3v12MJ/
-         tsJw==
-X-Gm-Message-State: APjAAAWmUnRzAPDJetpOxupbWkKRyav8PJu1mb9+L/2GbD+PzYi0A6Vy
-        e08Qp6uVs5IU0E1EscLYQoEX1qHATOCnbfRqrxRr73xJW76N
-X-Google-Smtp-Source: APXvYqyyhZl/P7lwZyrsmvKiEyyw0lKV2CmGfhAT3WZKG9HXBfayf7Yq5uk1y2kIusKXTh0GcO1yRKM0PshEKmRswLB5yQHXAwtj
+        id S1726845AbfEaO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:59:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39442 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726515AbfEaO7O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 10:59:14 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 57F013078AAE;
+        Fri, 31 May 2019 14:59:10 +0000 (UTC)
+Received: from ovpn-112-17.rdu2.redhat.com (ovpn-112-17.rdu2.redhat.com [10.10.112.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D8202891B0;
+        Fri, 31 May 2019 14:58:59 +0000 (UTC)
+Message-ID: <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Alex Elder <elder@linaro.org>, davem@davemloft.net, arnd@arndb.de,
+        bjorn.andersson@linaro.org, ilias.apalodimas@linaro.org
+Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
+        cpratapa@codeaurora.org, syadagir@codeaurora.org,
+        subashab@codeaurora.org, abhishek.esse@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Date:   Fri, 31 May 2019 09:58:58 -0500
+In-Reply-To: <20190531035348.7194-1-elder@linaro.org>
+References: <20190531035348.7194-1-elder@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-X-Received: by 2002:a05:660c:143:: with SMTP id r3mr7459566itk.84.1559314686097;
- Fri, 31 May 2019 07:58:06 -0700 (PDT)
-Date:   Fri, 31 May 2019 07:58:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f53c90058a303d80@google.com>
-Subject: net-next build error (2)
-From:   syzbot <syzbot+21456e3ef58cde16e0fa@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 31 May 2019 14:59:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCnN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGNyYXNoIG9uOg0KDQpIRUFEIGNv
-bW1pdDogICAgN2IzZWQyYTEgTWVyZ2UgYnJhbmNoICcxMDBHYkUnIG9mIGdpdDovL2dpdC5rZXJu
-ZWwub3JnL3B1Yi4uDQpnaXQgdHJlZTogICAgICAgbmV0LW5leHQNCmNvbnNvbGUgb3V0cHV0OiBo
-dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50eHQ/eD0xN2JmOGZkOGEwMDAwMA0K
-a2VybmVsIGNvbmZpZzogIGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvLmNvbmZpZz94
-PTE4MmFiNmVmMzgxMzQ1MDINCmRhc2hib2FyZCBsaW5rOiBodHRwczovL3N5emthbGxlci5hcHBz
-cG90LmNvbS9idWc/ZXh0aWQ9MjE0NTZlM2VmNThjZGUxNmUwZmENCmNvbXBpbGVyOiAgICAgICBn
-Y2MgKEdDQykgOS4wLjAgMjAxODEyMzEgKGV4cGVyaW1lbnRhbCkNCg0KVW5mb3J0dW5hdGVseSwg
-SSBkb24ndCBoYXZlIGFueSByZXByb2R1Y2VyIGZvciB0aGlzIGNyYXNoIHlldC4NCg0KSU1QT1JU
-QU5UOiBpZiB5b3UgZml4IHRoZSBidWcsIHBsZWFzZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8g
-dGhlIGNvbW1pdDoNClJlcG9ydGVkLWJ5OiBzeXpib3QrMjE0NTZlM2VmNThjZGUxNmUwZmFAc3l6
-a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQ0KDQouL2luY2x1ZGUvbGludXgvbmV0ZmlsdGVyX2lwdjYu
-aDoxMTA6OTogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mICANCmZ1bmN0aW9uIOKAmG5m
-X2N0X2ZyYWc2X2dhdGhlcuKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlv
-bl0NCg0KLS0tDQpUaGlzIGJ1ZyBpcyBnZW5lcmF0ZWQgYnkgYSBib3QuIEl0IG1heSBjb250YWlu
-IGVycm9ycy4NClNlZSBodHRwczovL2dvby5nbC90cHNtRUogZm9yIG1vcmUgaW5mb3JtYXRpb24g
-YWJvdXQgc3l6Ym90Lg0Kc3l6Ym90IGVuZ2luZWVycyBjYW4gYmUgcmVhY2hlZCBhdCBzeXprYWxs
-ZXJAZ29vZ2xlZ3JvdXBzLmNvbS4NCg0Kc3l6Ym90IHdpbGwga2VlcCB0cmFjayBvZiB0aGlzIGJ1
-ZyByZXBvcnQuIFNlZToNCmh0dHBzOi8vZ29vLmdsL3Rwc21FSiNzdGF0dXMgZm9yIGhvdyB0byBj
-b21tdW5pY2F0ZSB3aXRoIHN5emJvdC4NCg==
+On Thu, 2019-05-30 at 22:53 -0500, Alex Elder wrote:
+> This series presents the driver for the Qualcomm IP Accelerator
+> (IPA).
+> 
+> This is version 2 of the series.  This version has addressed almost
+> all of the feedback received in the first version:
+>   
+> https://lore.kernel.org/lkml/20190512012508.10608-1-elder@linaro.org/
+> More detail is included in the individual patches, but here is a
+> high-level summary of what's changed since then:
+>   - Two spinlocks have been removed.
+>       - The code for enabling and disabling endpoint interrupts has
+>         been simplified considerably, and the spinlock is no longer
+> 	required
+>       - A spinlock used when updating ring buffer pointers is no
+>         longer needed.  Integers indexing the ring are used instead
+> 	(and they don't even have to be atomic).
+>   - One spinlock remains to protect list updates, but it is always
+>     acquired using spin_lock_bh() (no more irqsave).
+>   - Information about the queueing and completion of messages is now
+>     supplied to the network stack in batches rather than one at a
+>     time.
+>   - I/O completion handling has been simplified, with the IRQ
+>     handler now consisting mainly of disabling the interrupt and
+>     calling napi_schedule().
+>   - Some comments have been updated and improved througout.
+> 
+> What follows is the introduction supplied with v1 of the series.
+> 
+> -----
+> 
+> The IPA is a component present in some Qualcomm SoCs that allows
+> network functions such as aggregation, filtering, routing, and NAT
+> to be performed without active involvement of the main application
+> processor (AP).
+> 
+> Initially, these advanced features are disabled; the IPA driver
+> simply provides a network interface that makes the modem's LTE
+> network available to the AP.  In addition, only support for the
+> IPA found in the Qualcomm SDM845 SoC is provided.
+
+My question from the Nov 2018 IPA rmnet driver still stands; how does
+this relate to net/ethernet/qualcomm/rmnet/ if at all? And if this is
+really just a netdev talking to the IPA itself and unrelated to
+net/ethernet/qualcomm/rmnet, let's call it "ipa%d" and stop cargo-
+culting rmnet around just because it happens to be a net driver for a
+QC SoC.
+
+Is the firmware that the driver loads already in linux-firmware or
+going to be there soon?
+
+How does the driver support multiple PDNs (eg PDP or EPS contexts) that
+are enabled through the control plane via QMI messages? I couldn't
+quite find that out.
+
+Thanks,
+Dan
+
+> This code is derived from a driver developed internally by Qualcomm.
+> A version of the original source can be seen here:
+>   https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree
+> in the "drivers/platform/msm/ipa" directory.  Many were involved in
+> developing this, but the following individuals deserve explicit
+> acknowledgement for their substantial contributions:
+> 
+>     Abhishek Choubey
+>     Ady Abraham
+>     Chaitanya Pratapa
+>     David Arinzon
+>     Ghanim Fodi
+>     Gidon Studinski
+>     Ravi Gummadidala
+>     Shihuan Liu
+>     Skylar Chang
+> 
+> A version of this code was posted in November 2018 as an RFC.
+>   
+> https://lore.kernel.org/lkml/20181107003250.5832-1-elder@linaro.org/
+> All feedback received was addressed.  The code has undergone
+> considerable further rework since that time, and most of the
+> "future work" described then has now been completed.
+> 
+> This code is available in buildable form here, based on kernel
+> v5.2-rc1:
+>   remote: ssh://git@git.linaro.org/people/alex.elder/linux.git
+>   branch: ipa-v2_kernel-v5.2-rc2
+>     75adf2ac1266 arm64: defconfig: enable build of IPA code
+> 
+> The branch depends on a commit now found in in net-next.  It has
+> been cherry-picked, and (in this branch) has this commit ID:
+>   13c627b5a078 net: qualcomm: rmnet: Move common struct definitions
+> to include
+> by 
+> 
+> 					-Alex
+> 
+> Alex Elder (17):
+>   bitfield.h: add FIELD_MAX() and field_max()
+>   dt-bindings: soc: qcom: add IPA bindings
+>   soc: qcom: ipa: main code
+>   soc: qcom: ipa: configuration data
+>   soc: qcom: ipa: clocking, interrupts, and memory
+>   soc: qcom: ipa: GSI headers
+>   soc: qcom: ipa: the generic software interface
+>   soc: qcom: ipa: GSI transactions
+>   soc: qcom: ipa: IPA interface to GSI
+>   soc: qcom: ipa: IPA endpoints
+>   soc: qcom: ipa: immediate commands
+>   soc: qcom: ipa: IPA network device and microcontroller
+>   soc: qcom: ipa: AP/modem communications
+>   soc: qcom: ipa: support build of IPA code
+>   MAINTAINERS: add entry for the Qualcomm IPA driver
+>   arm64: dts: sdm845: add IPA information
+>   arm64: defconfig: enable build of IPA code
+> 
+>  .../devicetree/bindings/net/qcom,ipa.yaml     |  180 ++
+>  MAINTAINERS                                   |    6 +
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi          |   51 +
+>  arch/arm64/configs/defconfig                  |    1 +
+>  drivers/net/Kconfig                           |    2 +
+>  drivers/net/Makefile                          |    1 +
+>  drivers/net/ipa/Kconfig                       |   16 +
+>  drivers/net/ipa/Makefile                      |    7 +
+>  drivers/net/ipa/gsi.c                         | 1635
+> +++++++++++++++++
+>  drivers/net/ipa/gsi.h                         |  246 +++
+>  drivers/net/ipa/gsi_private.h                 |  148 ++
+>  drivers/net/ipa/gsi_reg.h                     |  376 ++++
+>  drivers/net/ipa/gsi_trans.c                   |  624 +++++++
+>  drivers/net/ipa/gsi_trans.h                   |  116 ++
+>  drivers/net/ipa/ipa.h                         |  131 ++
+>  drivers/net/ipa/ipa_clock.c                   |  297 +++
+>  drivers/net/ipa/ipa_clock.h                   |   52 +
+>  drivers/net/ipa/ipa_cmd.c                     |  377 ++++
+>  drivers/net/ipa/ipa_cmd.h                     |  116 ++
+>  drivers/net/ipa/ipa_data-sdm845.c             |  245 +++
+>  drivers/net/ipa/ipa_data.h                    |  267 +++
+>  drivers/net/ipa/ipa_endpoint.c                | 1283 +++++++++++++
+>  drivers/net/ipa/ipa_endpoint.h                |   97 +
+>  drivers/net/ipa/ipa_gsi.c                     |   48 +
+>  drivers/net/ipa/ipa_gsi.h                     |   49 +
+>  drivers/net/ipa/ipa_interrupt.c               |  279 +++
+>  drivers/net/ipa/ipa_interrupt.h               |   53 +
+>  drivers/net/ipa/ipa_main.c                    |  921 ++++++++++
+>  drivers/net/ipa/ipa_mem.c                     |  234 +++
+>  drivers/net/ipa/ipa_mem.h                     |   83 +
+>  drivers/net/ipa/ipa_netdev.c                  |  251 +++
+>  drivers/net/ipa/ipa_netdev.h                  |   24 +
+>  drivers/net/ipa/ipa_qmi.c                     |  402 ++++
+>  drivers/net/ipa/ipa_qmi.h                     |   35 +
+>  drivers/net/ipa/ipa_qmi_msg.c                 |  583 ++++++
+>  drivers/net/ipa/ipa_qmi_msg.h                 |  238 +++
+>  drivers/net/ipa/ipa_reg.h                     |  279 +++
+>  drivers/net/ipa/ipa_smp2p.c                   |  304 +++
+>  drivers/net/ipa/ipa_smp2p.h                   |   47 +
+>  drivers/net/ipa/ipa_uc.c                      |  208 +++
+>  drivers/net/ipa/ipa_uc.h                      |   32 +
+>  include/linux/bitfield.h                      |   14 +
+>  42 files changed, 10358 insertions(+)
+>  create mode 100644
+> Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>  create mode 100644 drivers/net/ipa/Kconfig
+>  create mode 100644 drivers/net/ipa/Makefile
+>  create mode 100644 drivers/net/ipa/gsi.c
+>  create mode 100644 drivers/net/ipa/gsi.h
+>  create mode 100644 drivers/net/ipa/gsi_private.h
+>  create mode 100644 drivers/net/ipa/gsi_reg.h
+>  create mode 100644 drivers/net/ipa/gsi_trans.c
+>  create mode 100644 drivers/net/ipa/gsi_trans.h
+>  create mode 100644 drivers/net/ipa/ipa.h
+>  create mode 100644 drivers/net/ipa/ipa_clock.c
+>  create mode 100644 drivers/net/ipa/ipa_clock.h
+>  create mode 100644 drivers/net/ipa/ipa_cmd.c
+>  create mode 100644 drivers/net/ipa/ipa_cmd.h
+>  create mode 100644 drivers/net/ipa/ipa_data-sdm845.c
+>  create mode 100644 drivers/net/ipa/ipa_data.h
+>  create mode 100644 drivers/net/ipa/ipa_endpoint.c
+>  create mode 100644 drivers/net/ipa/ipa_endpoint.h
+>  create mode 100644 drivers/net/ipa/ipa_gsi.c
+>  create mode 100644 drivers/net/ipa/ipa_gsi.h
+>  create mode 100644 drivers/net/ipa/ipa_interrupt.c
+>  create mode 100644 drivers/net/ipa/ipa_interrupt.h
+>  create mode 100644 drivers/net/ipa/ipa_main.c
+>  create mode 100644 drivers/net/ipa/ipa_mem.c
+>  create mode 100644 drivers/net/ipa/ipa_mem.h
+>  create mode 100644 drivers/net/ipa/ipa_netdev.c
+>  create mode 100644 drivers/net/ipa/ipa_netdev.h
+>  create mode 100644 drivers/net/ipa/ipa_qmi.c
+>  create mode 100644 drivers/net/ipa/ipa_qmi.h
+>  create mode 100644 drivers/net/ipa/ipa_qmi_msg.c
+>  create mode 100644 drivers/net/ipa/ipa_qmi_msg.h
+>  create mode 100644 drivers/net/ipa/ipa_reg.h
+>  create mode 100644 drivers/net/ipa/ipa_smp2p.c
+>  create mode 100644 drivers/net/ipa/ipa_smp2p.h
+>  create mode 100644 drivers/net/ipa/ipa_uc.c
+>  create mode 100644 drivers/net/ipa/ipa_uc.h
+> 
+
