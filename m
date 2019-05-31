@@ -2,130 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 468903118D
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 17:47:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 964BF31196
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 17:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726787AbfEaPrE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 31 May 2019 11:47:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46594 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726518AbfEaPrE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 11:47:04 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 39EB3B2DE9;
-        Fri, 31 May 2019 15:46:52 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 51B3460BF7;
-        Fri, 31 May 2019 15:46:45 +0000 (UTC)
-Date:   Fri, 31 May 2019 17:46:43 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP
- support
-Message-ID: <20190531174643.4be8b27f@carbon>
-In-Reply-To: <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
-References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
-        <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
+        id S1726683AbfEaPuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 11:50:11 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48622 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726037AbfEaPuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 11:50:10 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 46C2DAF79;
+        Fri, 31 May 2019 15:50:09 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 9E8CAE00E3; Fri, 31 May 2019 17:50:07 +0200 (CEST)
+Date:   Fri, 31 May 2019 17:50:07 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, linville@redhat.com
+Subject: Re: [PATCH v2 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
+Message-ID: <20190531155007.GF15954@unicorn.suse.cz>
+References: <20190531135748.23740-1-andrew@lunn.ch>
+ <20190531135748.23740-3-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Fri, 31 May 2019 15:47:04 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190531135748.23740-3-andrew@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 31, 2019 at 03:57:48PM +0200, Andrew Lunn wrote:
+> The kernel can now indicate if the PHY supports operating over a
+> single pair at 100Mbps or 1000Mbps.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
 
-Hi Ivan,
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
-From below code snippets, it looks like you only allocated 1 page_pool
-and sharing it with several RX-queues, as I don't have the full context
-and don't know this driver, I might be wrong?
+>  ethtool.8.in | 2 ++
+>  ethtool.c    | 6 ++++++
+>  2 files changed, 8 insertions(+)
+> 
+> diff --git a/ethtool.8.in b/ethtool.8.in
+> index 430d11b915af..6af63455c636 100644
+> --- a/ethtool.8.in
+> +++ b/ethtool.8.in
+> @@ -639,8 +639,10 @@ lB	l	lB.
+>  0x002	10baseT Full
+>  0x004	100baseT Half
+>  0x008	100baseT Full
+> +0x80000000000000000	100baseT1 Full
+>  0x010	1000baseT Half	(not supported by IEEE standards)
+>  0x020	1000baseT Full
+> +0x100000000000000000	1000baseT1 Full
+>  0x20000	1000baseKX Full
+>  0x20000000000	1000baseX Full
+>  0x800000000000	2500baseT Full
 
-To be clear, a page_pool object is needed per RX-queue, as it is
-accessing a small RX page cache (which protected by NAPI/softirq).
+This reminds me the earlier discussion about which syntax extension
+would be more useful:
 
-On Thu, 30 May 2019 21:20:39 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+  ethtool -s <dev> advertise 100baseT1/Full 1000baseT1/Full
 
-> @@ -1404,6 +1711,14 @@ static int cpsw_ndo_open(struct net_device *ndev)
->  			enable_irq(cpsw->irqs_table[0]);
->  		}
->  
-> +		pool_size = cpdma_get_num_rx_descs(cpsw->dma);
-> +		cpsw->page_pool = cpsw_create_page_pool(cpsw, pool_size);
-> +		if (IS_ERR(cpsw->page_pool)) {
-> +			ret = PTR_ERR(cpsw->page_pool);
-> +			cpsw->page_pool = NULL;
-> +			goto err_cleanup;
-> +		}
+(listing modes to be advertised) or
 
-On Thu, 30 May 2019 21:20:39 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+  ethtool -s <dev> advertise 100baseT1/Full off 1000baseT1/Full on
 
-> @@ -675,10 +742,33 @@ int cpsw_set_ringparam(struct net_device *ndev,
->  	if (cpsw->usage_count)
->  		cpdma_chan_split_pool(cpsw->dma);
->  
-> +	for (i = 0; i < cpsw->data.slaves; i++) {
-> +		struct net_device *ndev = cpsw->slaves[i].ndev;
-> +
-> +		if (!(ndev && netif_running(ndev)))
-> +			continue;
-> +
-> +		cpsw_xdp_unreg_rxqs(netdev_priv(ndev));
-> +	}
-> +
-> +	page_pool_destroy(cpsw->page_pool);
-> +	cpsw->page_pool = pool;
-> +
+(enabling/disabling selected modes). But maybe we could support both;
+after all, it's unlikely there would ever be a link mode named "on" or
+"off".
 
-On Thu, 30 May 2019 21:20:39 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
-
-> +void cpsw_xdp_unreg_rxqs(struct cpsw_priv *priv)
-> +{
-> +	struct cpsw_common *cpsw = priv->cpsw;
-> +	int i;
-> +
-> +	for (i = 0; i < cpsw->rx_ch_num; i++)
-> +		xdp_rxq_info_unreg(&priv->xdp_rxq[i]);
-> +}
-
-
-On Thu, 30 May 2019 21:20:39 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
-
-> +int cpsw_xdp_reg_rxq(struct cpsw_priv *priv, int ch)
-> +{
-> +	struct xdp_rxq_info *xdp_rxq = &priv->xdp_rxq[ch];
-> +	struct cpsw_common *cpsw = priv->cpsw;
-> +	int ret;
-> +
-> +	ret = xdp_rxq_info_reg(xdp_rxq, priv->ndev, ch);
-> +	if (ret)
-> +		goto err_cleanup;
-> +
-> +	ret = xdp_rxq_info_reg_mem_model(xdp_rxq, MEM_TYPE_PAGE_POOL,
-> +					 cpsw->page_pool);
-> +	if (ret)
-> +		goto err_cleanup;
-> +
-> +	return 0;
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Michal
