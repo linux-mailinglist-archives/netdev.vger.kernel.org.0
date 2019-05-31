@@ -2,168 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A8A31762
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 135A83176C
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfEaXAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 19:00:16 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:38887 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbfEaXAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 19:00:16 -0400
-Received: by mail-lj1-f194.google.com with SMTP id o13so11083792lji.5
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 16:00:14 -0700 (PDT)
+        id S1726798AbfEaXGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 19:06:20 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43526 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726450AbfEaXGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 19:06:20 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c6so7047265pfa.10
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 16:06:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R6AakFEfT07RKGQjtU57G+Mi06fjxrW46LtUHEWscX4=;
-        b=UdqZ6v0xW/ZPZI7rfZNyoQWpFuu/Dvj8IN2xtnDAPTX97Ifm9GE29ZZGLxyqa/iYZ4
-         rcW2doIiMnJjEYD8YHPZeBmeYw+/pF+7ufxy43Ajo6/T1K3jr+2pVZMH3vAfYHucEpi5
-         8KaToYGMYAnolAxiqpavrhqxAujTLEgOy5wYLdGxZU6GLfatAVHJQ2Tg01q8q0X6qGNd
-         cvMdOyIrYD4kp5dHSVPpHRvmnPayZKvtxCSI1aZfKMsjl1X/eLrDLMuyr0pSD8N/+0W1
-         /DJb6GKmvK2DjPvRgAoWeRBJylaxDlUW6HBWawCb3DzMx8wad8MxyX9f6zHog+XwZFvd
-         oQtQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=LhMyW6roH1+ZlH0tbUdU2TUBe388AYVLW0Cl+6EuvAM=;
+        b=HBjYc3CBix0G6BLM4kDJHsY6Thy7pBbS5CSWK6VrWY+XMswqJXWYgRfJQZd62vKt+3
+         oJgbagz35j9l9QJVe/gFbMTrZc2ZCiU2WQDIvHGew1Z+Lk44Ww7GTQerF/9Njujg6C6d
+         rWfYNuwpHwSowbrV1+qelZdjOqQ8AlnLjYkFMVGFW+sTsNX4rdtwlogkVOnh4hy/rahd
+         aB1viuPtDrrraDYTIB2fVx1TUaf+S+xDGZhK+QnjMK9Z+1LX4eY/ypKHAesX574uhELq
+         d+Wobf7PGtWFxAXfPVc/Onvgmj0TF/xkOVfy9Z2m9jn4Kc7icPav/DrcVKKR/AA7sgDM
+         Xrkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=R6AakFEfT07RKGQjtU57G+Mi06fjxrW46LtUHEWscX4=;
-        b=D58V1TnM9IdF/4Lemf+f+MtnMghmTsEDGVC1qWyY0l3N9bozqzWy6gYe+LO8xYoUML
-         Gwi2SyOlH1WG/vTYTiW5VOsfVEGwDCdxj2/mCnoOgWl1Xk9Wx9r0xEuhgrzA1Yi5F1MG
-         fVEFlUOzQ/MkTXUl2//rgPanakgSz9SrKQzXellLVgotlUXu+BTA2b1JbOCDQ0nBN7Fc
-         vmdkhcSnoCXQTRxVBwc0zfmyutTRENRbuIuMPTKAYQAHHbiOgBIU3KAjAsoPkE7etJDq
-         tM52Nngv0YeoWv8ujM1Tm6WePHQJdJG1Xzha5JRee+qK/TniSln92pX++NBhh7S0RD4Y
-         SgTQ==
-X-Gm-Message-State: APjAAAVtAF7ivuhbeLMYjQanE12srV8uN4MCfijVqT5fuv35DjxcdKMn
-        uWT0QAKBeYATDrpqpacstmVB8w==
-X-Google-Smtp-Source: APXvYqwADy+ePnz+6LSmTnDgiozSJUl6IJ2AdwyOS/QcPm0Gp1mY0/Eivedv8uAM3H8DjK98nJn7WQ==
-X-Received: by 2002:a2e:2b8d:: with SMTP id r13mr7429874ljr.162.1559343613223;
-        Fri, 31 May 2019 16:00:13 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id r14sm1468168lff.44.2019.05.31.16.00.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 31 May 2019 16:00:12 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 02:00:10 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "brouer@redhat.com" <brouer@redhat.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190531230008.GA15675@khorivan>
-Mail-Followup-To: Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
- <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
- <20190531174643.4be8b27f@carbon>
- <20190531162523.GA3694@khorivan>
- <20190531183241.255293bc@carbon>
- <20190531170332.GB3694@khorivan>
- <a65de3a257ab5ebec83e817c092f074b58b9ae47.camel@mellanox.com>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LhMyW6roH1+ZlH0tbUdU2TUBe388AYVLW0Cl+6EuvAM=;
+        b=pxQIrq2zfdXYn5AuwqQBzzEGynyJtYX5/Z+jjJkWGG7vYLyv0RS0/oTZluS25sIeal
+         wa/q+KojM9eXSm4ahkAD9gsFBxqLLQ1e6cm94AAt/V8iTZGShfsFIF4MLEe6r5EAUpYF
+         /UCn43JukTNYKum+luqur49O7ZUwS6QQKTFkUfpe5w6NX2EE+pajwA//JdszPsLXbPzy
+         rtHfv5spoDAyYr78So2y25OWVkgLm0yly9H/C1Ba2CyNGHZZ9ijt9QO+M8HPQ10p2lv7
+         EtBz/T+WkPLvG8RbEZ+eDRTxyWOK2lScllpbXbYDySvzHnZjTEdALPPD1crFS6CBFMxp
+         ajCw==
+X-Gm-Message-State: APjAAAXtSFxqiNmNMmyIqXaeTGvMdG0CdigTGDAZ4auE690eETdX++3+
+        siZTlJhKmtiZFzRnwdFClZHfQMneARQ=
+X-Google-Smtp-Source: APXvYqw+17oWohuim3pyav4HfbDZMPLmSIvwc/Cxz3viq6e+sh5Nhda7RdhX1Nyf9cLDzlTdGUXFtQ==
+X-Received: by 2002:aa7:824b:: with SMTP id e11mr11366663pfn.33.1559343979073;
+        Fri, 31 May 2019 16:06:19 -0700 (PDT)
+Received: from [172.27.227.252] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id z125sm9433085pfb.75.2019.05.31.16.06.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 16:06:18 -0700 (PDT)
+Subject: Re: [PATCH net] vrf: Increment Icmp6InMsgs on the original netdev
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
+References: <20190530050815.20352-1-ssuryaextr@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c438f6b0-bb3c-7568-005e-68d7fcd406c3@gmail.com>
+Date:   Fri, 31 May 2019 17:06:16 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <a65de3a257ab5ebec83e817c092f074b58b9ae47.camel@mellanox.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20190530050815.20352-1-ssuryaextr@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 10:08:03PM +0000, Saeed Mahameed wrote:
->On Fri, 2019-05-31 at 20:03 +0300, Ivan Khoronzhuk wrote:
->> On Fri, May 31, 2019 at 06:32:41PM +0200, Jesper Dangaard Brouer
->> wrote:
->> > On Fri, 31 May 2019 19:25:24 +0300 Ivan Khoronzhuk <
->> > ivan.khoronzhuk@linaro.org> wrote:
->> >
->> > > On Fri, May 31, 2019 at 05:46:43PM +0200, Jesper Dangaard Brouer
->> > > wrote:
->> > > > From below code snippets, it looks like you only allocated 1
->> > > > page_pool
->> > > > and sharing it with several RX-queues, as I don't have the full
->> > > > context
->> > > > and don't know this driver, I might be wrong?
->> > > >
->> > > > To be clear, a page_pool object is needed per RX-queue, as it
->> > > > is
->> > > > accessing a small RX page cache (which protected by
->> > > > NAPI/softirq).
->> > >
->> > > There is one RX interrupt and one RX NAPI for all rx channels.
->> >
->> > So, what are you saying?
->> >
->> > You _are_ sharing the page_pool between several RX-channels, but it
->> > is
->> > safe because this hardware only have one RX interrupt + NAPI
->> > instance??
->>
->> I can miss smth but in case of cpsw technically it means:
->> 1) RX interrupts are disabled while NAPI is scheduled,
->>    not for particular CPU or channel, but at all, for whole cpsw
->> module.
->> 2) RX channels are handled one by one by priority.
->
->Hi Ivan, I got a silly question..
->
->What is the reason behind having multiple RX rings and one CPU/NAPI
->handling all of them ? priority ? how do you priorities ?
-Several.
-One of the reason, from what I know, it can handle for several cpus/napi but
-because of errata on some SoCs or for all of them it was discarded, but idea was
-it can. Second it uses same davinci_cpdma API as tx channels that can be rate
-limited, and it's used not only by cpsw but also by other driver, so can't be
-modified easily and no reason. And third one, h/w has ability to steer some
-filtered traffic to rx queues and can be potentially configured with ethtool
-ntuples or so, but it's not implemented....yet.
+On 5/29/19 11:08 PM, Stephen Suryaputra wrote:
+> diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+> index 1a832f5e190b..9b365c345c34 100644
+> --- a/net/ipv6/reassembly.c
+> +++ b/net/ipv6/reassembly.c
+> @@ -260,6 +260,9 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
+>  	int payload_len;
+>  	u8 ecn;
+>  
+> +	if (netif_is_l3_master(dev))
+> +		dev = dev_get_by_index_rcu(net, inet6_iif(skb));
+> +
+>  	inet_frag_kill(&fq->q);
+>  
+>  	ecn = ip_frag_ecn_table[fq->ecn];
+> 
 
->
->> 3) After all of them handled and no more in budget - interrupts are
->> enabled.
->> 4) If page is returned to the pool, and it's within NAPI, no races as
->> it's
->>    returned protected by softirq. If it's returned not in softirq
->> it's protected
->>    by producer lock of the ring.
->>
->> Probably it's not good example for others how it should be used, not
->> a big
->> problem to move it to separate pools.., even don't remember why I
->> decided to
->> use shared pool, there was some more reasons... need search in
->> history.
->>
->> > --
->> > Best regards,
->> >  Jesper Dangaard Brouer
->> >  MSc.CS, Principal Kernel Engineer at Red Hat
->> >  LinkedIn: http://www.linkedin.com/in/brouer
-
--- 
-Regards,
-Ivan Khoronzhuk
+this part changes skb->dev. Seems like it has an unintended effect if
+the packet is delivered locally.
