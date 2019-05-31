@@ -2,24 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D03193124F
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2005E31250
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfEaQ1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:27:19 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:33354 "EHLO
+        id S1726858AbfEaQ1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:27:23 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:33358 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726652AbfEaQ1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:19 -0400
+        by vger.kernel.org with ESMTP id S1726748AbfEaQ1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:23 -0400
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
         (envelope-from <fw@breakpoint.cc>)
-        id 1hWkNA-0005fp-TE; Fri, 31 May 2019 18:27:16 +0200
+        id 1hWkNE-0005fz-GK; Fri, 31 May 2019 18:27:20 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
-Subject: [PATCH net-next v3] net: add rcu annotations for ifa_list
-Date:   Fri, 31 May 2019 18:27:02 +0200
-Message-Id: <20190531162709.9895-1-fw@strlen.de>
+Cc:     Florian Westphal <fw@strlen.de>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org
+Subject: [PATCH net-next v3 1/7] afs: do not send list of client addresses
+Date:   Fri, 31 May 2019 18:27:03 +0200
+Message-Id: <20190531162709.9895-2-fw@strlen.de>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190531162709.9895-1-fw@strlen.de>
+References: <20190531162709.9895-1-fw@strlen.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -27,87 +32,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v3: fix typo in patch1 commit message
-    All other patches are unchanged.
-v2: remove ifa_list iteration in afs instead of conversion
+David Howells says:
+  I'm told that there's not really any point populating the list.
+  Current OpenAFS ignores it, as does AuriStor - and IBM AFS 3.6 will
+  do the right thing.
+  The list is actually useless as it's the client's view of the world,
+  not the servers, so if there's any NAT in the way its contents are
+  invalid.  Further, it doesn't support IPv6 addresses.
 
-Eric Dumazet reported following problem:
+  On that basis, feel free to make it an empty list and remove all the
+  interface enumeration.
 
-  It looks that unless RTNL is held, accessing ifa_list needs proper RCU
-  protection.  indev->ifa_list can be changed under us by another cpu
-  (which owns RTNL) [..]
+V1 of this patch reworked the function to use a new helper for the
+ifa_list iteration to avoid sparse warnings once the proper __rcu
+annotations get added in struct in_device later.
 
-  A proper rcu_dereference() with an happy sparse support would require
-  adding __rcu attribute.
+But, in light of the above, just remove afs_get_ipv4_interfaces.
 
-This patch series does that: add __rcu to the ifa_list pointers.
-That makes sparse complain, so the series also adds the required
-rcu_assign_pointer/dereference helpers where needed.
+Compile tested only.
 
-All patches except the last one are preparation work.
-Two new macros are introduced for in_ifaddr walks.
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-afs@lists.infradead.org
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Tested-by: David Howells <dhowells@redhat.com>
+---
+ fs/afs/Makefile     |  1 -
+ fs/afs/cmservice.c  | 24 +----------------------
+ fs/afs/internal.h   | 15 --------------
+ fs/afs/netdevices.c | 48 ---------------------------------------------
+ 4 files changed, 1 insertion(+), 87 deletions(-)
+ delete mode 100644 fs/afs/netdevices.c
 
-Last patch adds the __rcu annotations and the assign_pointer/dereference
-helper calls.
-
-This patch is a bit large, but I found no better way -- other
-approaches (annotate-first or add helpers-first) all result in
-mid-series sparse warnings.
-
-This series is submitted vs. net-next rather than net for several
-reasons:
-
-1. Its (mostly) compile-tested only
-2. 3rd patch changes behaviour wrt. secondary addresses
-   (see changelog)
-3. The problem exists for a very long time (2004), so it doesn't
-   seem to be urgent to fix this -- rcu use to free ifa_list
-   predates the git era.
-
-Florian Westphal (7):
-      afs: do not send list of client addresses
-      net: inetdevice: provide replacement iterators for in_ifaddr walk
-      devinet: use in_dev_for_each_ifa_rcu in more places
-      netfilter: use in_dev_for_each_ifa_rcu
-      net: use new in_dev_ifa iterators
-      drivers: use in_dev_for_each_ifa_rtnl/rcu
-      net: ipv4: provide __rcu annotation for ifa_list
-
-drivers/infiniband/core/roce_gid_mgmt.c              |    5 
-drivers/infiniband/hw/cxgb4/cm.c                     |    9 -
-drivers/infiniband/hw/i40iw/i40iw_cm.c               |    7 
-drivers/infiniband/hw/i40iw/i40iw_main.c             |    6 
-drivers/infiniband/hw/i40iw/i40iw_utils.c            |   12 -
-drivers/infiniband/hw/nes/nes.c                      |    8 
-drivers/infiniband/hw/usnic/usnic_ib_main.c          |   15 +
-drivers/isdn/hysdn/hysdn_net.c                       |    6 
-drivers/isdn/i4l/isdn_net.c                          |   20 +-
-drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c |    8 
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c     |    5 
-drivers/net/ethernet/via/via-velocity.h              |    2 
-drivers/net/plip/plip.c                              |    4 
-drivers/net/vmxnet3/vmxnet3_drv.c                    |   19 +-
-drivers/net/wan/hdlc_cisco.c                         |   11 -
-drivers/net/wireless/ath/ath6kl/cfg80211.c           |    4 
-drivers/net/wireless/marvell/mwifiex/cfg80211.c      |    2 
-fs/afs/Makefile                                      |    1 
-fs/afs/cmservice.c                                   |   24 --
-fs/afs/internal.h                                    |   15 -
-fs/afs/netdevices.c                                  |   48 -----
-include/linux/inetdevice.h                           |   19 +-
-net/core/netpoll.c                                   |   10 -
-net/core/pktgen.c                                    |    8 
-net/ipv4/devinet.c                                   |  146 ++++++++++-------
-net/ipv4/fib_frontend.c                              |   24 +-
-net/ipv4/igmp.c                                      |    5 
-net/ipv4/netfilter/nf_tproxy_ipv4.c                  |    9 -
-net/ipv6/addrconf.c                                  |    4 
-net/mac80211/main.c                                  |    4 
-net/netfilter/nf_conntrack_broadcast.c               |    9 -
-net/netfilter/nf_nat_redirect.c                      |   12 -
-net/netfilter/nfnetlink_osf.c                        |    5 
-net/sctp/protocol.c                                  |    2 
-net/smc/smc_clc.c                                    |   11 -
- 35 files changed, 266 insertions(+), 233 deletions(-)
-
+diff --git a/fs/afs/Makefile b/fs/afs/Makefile
+index cbf31f6cd177..10359bea7070 100644
+--- a/fs/afs/Makefile
++++ b/fs/afs/Makefile
+@@ -29,7 +29,6 @@ kafs-y := \
+ 	server.o \
+ 	server_list.o \
+ 	super.o \
+-	netdevices.o \
+ 	vlclient.o \
+ 	vl_list.o \
+ 	vl_probe.o \
+diff --git a/fs/afs/cmservice.c b/fs/afs/cmservice.c
+index 01437cfe5432..a61d2058c468 100644
+--- a/fs/afs/cmservice.c
++++ b/fs/afs/cmservice.c
+@@ -584,9 +584,8 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call)
+  */
+ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
+ {
+-	struct afs_interface *ifs;
+ 	struct afs_call *call = container_of(work, struct afs_call, work);
+-	int loop, nifs;
++	int loop;
+ 
+ 	struct {
+ 		struct /* InterfaceAddr */ {
+@@ -604,19 +603,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
+ 
+ 	_enter("");
+ 
+-	nifs = 0;
+-	ifs = kcalloc(32, sizeof(*ifs), GFP_KERNEL);
+-	if (ifs) {
+-		nifs = afs_get_ipv4_interfaces(call->net, ifs, 32, false);
+-		if (nifs < 0) {
+-			kfree(ifs);
+-			ifs = NULL;
+-			nifs = 0;
+-		}
+-	}
+-
+ 	memset(&reply, 0, sizeof(reply));
+-	reply.ia.nifs = htonl(nifs);
+ 
+ 	reply.ia.uuid[0] = call->net->uuid.time_low;
+ 	reply.ia.uuid[1] = htonl(ntohs(call->net->uuid.time_mid));
+@@ -626,15 +613,6 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
+ 	for (loop = 0; loop < 6; loop++)
+ 		reply.ia.uuid[loop + 5] = htonl((s8) call->net->uuid.node[loop]);
+ 
+-	if (ifs) {
+-		for (loop = 0; loop < nifs; loop++) {
+-			reply.ia.ifaddr[loop] = ifs[loop].address.s_addr;
+-			reply.ia.netmask[loop] = ifs[loop].netmask.s_addr;
+-			reply.ia.mtu[loop] = htonl(ifs[loop].mtu);
+-		}
+-		kfree(ifs);
+-	}
+-
+ 	reply.cap.capcount = htonl(1);
+ 	reply.cap.caps[0] = htonl(AFS_CAP_ERROR_TRANSLATION);
+ 	afs_send_simple_reply(call, &reply, sizeof(reply));
+diff --git a/fs/afs/internal.h b/fs/afs/internal.h
+index 2073c1a3ab4b..a22fa3b77b3c 100644
+--- a/fs/afs/internal.h
++++ b/fs/afs/internal.h
+@@ -724,15 +724,6 @@ struct afs_permits {
+ 	struct afs_permit	permits[];	/* List of permits sorted by key pointer */
+ };
+ 
+-/*
+- * record of one of a system's set of network interfaces
+- */
+-struct afs_interface {
+-	struct in_addr	address;	/* IPv4 address bound to interface */
+-	struct in_addr	netmask;	/* netmask applied to address */
+-	unsigned	mtu;		/* MTU of interface */
+-};
+-
+ /*
+  * Error prioritisation and accumulation.
+  */
+@@ -1095,12 +1086,6 @@ extern const struct file_operations afs_mntpt_file_operations;
+ extern struct vfsmount *afs_d_automount(struct path *);
+ extern void afs_mntpt_kill_timer(void);
+ 
+-/*
+- * netdevices.c
+- */
+-extern int afs_get_ipv4_interfaces(struct afs_net *, struct afs_interface *,
+-				   size_t, bool);
+-
+ /*
+  * proc.c
+  */
+diff --git a/fs/afs/netdevices.c b/fs/afs/netdevices.c
+deleted file mode 100644
+index 2a009d1939d7..000000000000
+--- a/fs/afs/netdevices.c
++++ /dev/null
+@@ -1,48 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/* AFS network device helpers
+- *
+- * Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
+- */
+-
+-#include <linux/string.h>
+-#include <linux/rtnetlink.h>
+-#include <linux/inetdevice.h>
+-#include <linux/netdevice.h>
+-#include <linux/if_arp.h>
+-#include <net/net_namespace.h>
+-#include "internal.h"
+-
+-/*
+- * get a list of this system's interface IPv4 addresses, netmasks and MTUs
+- * - maxbufs must be at least 1
+- * - returns the number of interface records in the buffer
+- */
+-int afs_get_ipv4_interfaces(struct afs_net *net, struct afs_interface *bufs,
+-			    size_t maxbufs, bool wantloopback)
+-{
+-	struct net_device *dev;
+-	struct in_device *idev;
+-	int n = 0;
+-
+-	ASSERT(maxbufs > 0);
+-
+-	rtnl_lock();
+-	for_each_netdev(net->net, dev) {
+-		if (dev->type == ARPHRD_LOOPBACK && !wantloopback)
+-			continue;
+-		idev = __in_dev_get_rtnl(dev);
+-		if (!idev)
+-			continue;
+-		for_primary_ifa(idev) {
+-			bufs[n].address.s_addr = ifa->ifa_address;
+-			bufs[n].netmask.s_addr = ifa->ifa_mask;
+-			bufs[n].mtu = dev->mtu;
+-			n++;
+-			if (n >= maxbufs)
+-				goto out;
+-		} endfor_ifa(idev);
+-	}
+-out:
+-	rtnl_unlock();
+-	return n;
+-}
+-- 
+2.21.0
 
