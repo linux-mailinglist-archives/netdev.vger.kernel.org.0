@@ -2,83 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABED630DAE
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 13:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21BC30DCA
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfEaL7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 07:59:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44372 "EHLO vps0.lunn.ch"
+        id S1727254AbfEaMF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:05:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44412 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726442AbfEaL7a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 07:59:30 -0400
+        id S1726330AbfEaMF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 08:05:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=N+YQAv+JDAfDBNAmFyjywDkye+Ulq8gkff+04qV3ZBo=; b=kmFKQgn4IzJN7DrfpYJbKY/HOY
-        J3NcU7rn35RjmwZEi6fOXoFhNr/JOnClM3KWnTreTTPUgrIdxIqsx7EeT/HjK+jz8Bc2MZh3vuMVr
-        RKfQtv+JwHhtwq75gqYb9p0W/Ypn9+0LlWqJ3xWFbiZreH6m9/rR6z1WmNqjDLTDArN8=;
+        bh=dF5nDtOk5abJZYFCMF9oMzGBnnpEB+On3dIj6UU9HrI=; b=dhKb75OC9urPoYj9NjRoQRCs01
+        fTFpJ2yOKnBZhFp6C6DzmaZUfvfEHp/ThHVZd2uxGQFTVq2erArnAqSikhmgtEdxtjc21eKHYQ5JM
+        UhjiWDkNAKaaOXQQI6iXbir+1t//Gs1390CesDZBobO6pyexY0xBLVq3erq4yVgmfslo=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hWgC0-0004uh-Dc; Fri, 31 May 2019 13:59:28 +0200
-Date:   Fri, 31 May 2019 13:59:28 +0200
+        id 1hWgHZ-000528-Es; Fri, 31 May 2019 14:05:13 +0200
+Date:   Fri, 31 May 2019 14:05:13 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, linville@redhat.com
-Subject: Re: [PATCH 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
-Message-ID: <20190531115928.GA18608@lunn.ch>
-References: <20190530180616.1418-1-andrew@lunn.ch>
- <20190530180616.1418-3-andrew@lunn.ch>
- <20190531093029.GD15954@unicorn.suse.cz>
+To:     Wolfram Sang <wsa@the-dreams.de>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [net-next,v4 0/2] Enable SFP on ACPI based systems
+Message-ID: <20190531120513.GB18608@lunn.ch>
+References: <20190528230233.26772-1-ruslan@babayev.com>
+ <20190529094818.GF2781@lahna.fi.intel.com>
+ <20190529155132.GZ18059@lunn.ch>
+ <20190531062740.GQ2781@lahna.fi.intel.com>
+ <20190531064842.GA1058@kunai>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190531093029.GD15954@unicorn.suse.cz>
+In-Reply-To: <20190531064842.GA1058@kunai>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > @@ -634,10 +636,14 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
-> >  		  "100baseT/Half" },
-> >  		{ 1, ETHTOOL_LINK_MODE_100baseT_Full_BIT,
-> >  		  "100baseT/Full" },
-> > +		{ 1, ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
-> > +		  "100baseT1/Full" },
-> >  		{ 0, ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
-> >  		  "1000baseT/Half" },
-> >  		{ 1, ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-> >  		  "1000baseT/Full" },
-> > +		{ 1, ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
-> > +		  "1000baseT1/Full" },
-> >  		{ 0, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
-> >  		  "1000baseKX/Full" },
-> >  		{ 0, ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+On Fri, May 31, 2019 at 08:48:42AM +0200, Wolfram Sang wrote:
 > 
-> Does it mean that we could end up with lines like
+> > > Are you happy for the i2c patch to be merged via net-next?
+> > 
+> > Yes, that's fine my me.
+> > 
+> > Wolfram do you have any objections?
 > 
->                                 100baseT/Half 100baseT/Full 100baseT1/Full
->                                 1000baseT/Full 1000baseT1/Full
-> 
-> if there is a NIC supporting both T and T1?
+> That's fine with me, I'd like an immutable branch, though. There are
+> likely other changes to i2c.h coming and that would avoid merge
+> conflicts.
 
-Hi Michal
+Hi Wolfram
 
-In theory, it is possible for a PHY to support both plain T and
-T1. And a 1000BaseT could also implement 1000BaseT2 and 1000BaseT1.
-I've not yet seen an actual PHY which does this though.
+Davids Millers net-next is immutable, but large.
 
-> It would
-> be probably confusing for users as modes on the same line always were
-> half/full duplex variants of the same.
+Maybe he can create a smaller immutable branch for you.
 
-I can clear the same_line flag.
- 
-> You should also add the new modes to ethtool.8.in.
+      Andrew
 
-Yes, will do.
 
-     Andrew
