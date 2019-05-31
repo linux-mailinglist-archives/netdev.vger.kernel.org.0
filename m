@@ -2,84 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D59F8314D2
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 413BA314D6
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727087AbfEaSho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:37:44 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44124 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbfEaSho (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:37:44 -0400
-Received: by mail-pf1-f196.google.com with SMTP id x3so1184579pff.11;
-        Fri, 31 May 2019 11:37:44 -0700 (PDT)
+        id S1727129AbfEaSiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:38:54 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41917 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726640AbfEaSiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:38:54 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q17so6709440pfq.8
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 11:38:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PHwU//Edg6CtCnygiexXNCP1ikg8FtWsJLc/VqorU9g=;
-        b=hPrC9kRMavWG49Lgc6A2uejCIX5/APNvkA89CQ7u8fl8CuH3xImjME1i4m62qxTOk4
-         AbOHIUTBu8g1D+eizGjUiRzWlhKLEh32Omtu7dzXJXkgLjvuml2IULCaUyxAzTncvnVS
-         ljSejqIEbI+UDHMMCbkB+Z2dxfp5OCJj2wGH3t2G9QwFaBj8HdnDWN5PDH49y4ihqBxz
-         3JzyqVzoeRL0AcFvHbB8HqlYypq06LfaaJAqRmMagyqn9oUFF8OMpxYasqkZd9nUFlwu
-         3xaGCZJEi5PIWmQK5Ym+SqOnso8YaTeqnCO1209I2whZAuuWHEZXO0UzwDmxqzd9zyFp
-         sbvA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ozTqVFQntp4n5Wt/pyD4VEsaqR1R7tPWNcOmKDfhyFA=;
+        b=fks+/tpC1luckRVcC5tDhRTfHxquyukNkTdwg+qnyqX5jXrd8GW/z9sxxSvmXsaLJR
+         MrjYEON3rfSd9/D1C2BOvQxqE/rfWib0aFy/iLmLF2fclPYSRY2t4ClvungJ0rm4RWhk
+         y3GGEXZppSvxQP9RmGQwxm0PSzXjeYxCzJopmqsphWk676rW0eP/GcLlhHLJ7eAn4l2+
+         6Gfzr6FSw/hnmzDYJ/uu/FFVxoofbtghXh2Sd1epkiiAZjyUNbuzolBWllI/1TrpLYkU
+         Due/AmkMlNEUENRhQ/2JszsEauwgdIQMYrzzP/S15ekbeOBu3s5D7zXPUj9abAJp6O3M
+         q+Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PHwU//Edg6CtCnygiexXNCP1ikg8FtWsJLc/VqorU9g=;
-        b=UoB1e4xYbpRmSRR3y7+VETUidQGCBXZtfYtoc5zEd5OPUVx+y7tsKz4qafL8ZQZJQ4
-         pAC25dZz0LLaSJxAxAg1lTlC7SF8xHM8QKB/5T2CslSgv/GcLBRNGP6IrVv6DJNPJOGa
-         9gOL6IFqYUPUzuA7QiBisncu2hK+vxRiQplVeVjeXDnCVJ64tfOS3okwWYfx+p2OQjxR
-         XlektR595guCnvzJA4jUlcwOyM8cVjrAmvUaQG88QTr1yP/mjSc+XhIEqjFYSM/Kac0S
-         gznmdpSXDAlVp/7xEhIT6PopaOWaeMh8iMXHQsK44Rxtih8VcaYMgdwgcMZz5XLoCOv7
-         Vq5w==
-X-Gm-Message-State: APjAAAVs0GSGcnUx7UGcsSXQ0HfjeYh/uXxBnP1IoEJ2znZeiE8oHk3U
-        TN12kKf9Q99P4oRpVYr5NzDvq/yTg8g=
-X-Google-Smtp-Source: APXvYqyKOWLYq3gW6N5AH7W0jowEQvskaY+7SBoKB5fR0ej0gZyRf5wRZmvg9aKPNigzpgmU5awvHA==
-X-Received: by 2002:a17:90a:ad8b:: with SMTP id s11mr11510069pjq.48.1559327863485;
-        Fri, 31 May 2019 11:37:43 -0700 (PDT)
-Received: from [172.27.227.252] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id c85sm1786973pfc.149.2019.05.31.11.37.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 11:37:42 -0700 (PDT)
-Subject: Re: [PATCH][next] nexthop: remove redundant assignment to err
-To:     Colin King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190530155754.31634-1-colin.king@canonical.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <27d7fdc8-f2ef-6940-ec93-736c95e82cfa@gmail.com>
-Date:   Fri, 31 May 2019 12:37:40 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ozTqVFQntp4n5Wt/pyD4VEsaqR1R7tPWNcOmKDfhyFA=;
+        b=BuM9J69FFom08aX0qxAHLPfXS+eT0DhXOo6Kzgu6fSa0PTxzZVROmsKIFpKPsvPk2P
+         W8DYyC/m4XwvZ9CLaY8FnGhDARGHyrsI7JnA/R82QXvoVqA6Ro6WUVDEnncKVfC2qWAc
+         bpgqGjF3pX6C4k14tZwsQi8TSpLvMo6qkxRcCltQVBF5C/Sp+/f7amvui7kA6N95aHaF
+         Ej3iaJkwuaHa3DC427MVdSBhjwfWG3OtD3APGT3RClFyoNMOFZ/4GAm4SxRELMm6UQ1J
+         0924gu2fgLfoSh7ZmgfpvlmXwFZVsTGH7FFIvaJBjKUXzPauDv8zt9Aqutt8oTlQ/Im6
+         QdWg==
+X-Gm-Message-State: APjAAAXc0hVrtfq/0RNqd8plC9Dk8u3TrTVvIVYvAWhSiFHYoHEZQ1W6
+        kj17laVhy3kYf2UF3ExlQXHSWNlFYtQgH2b6F+E=
+X-Google-Smtp-Source: APXvYqyNQfYELr0ihDAFUZ5UkA5xzDjI1iCoMKPjstO6kab1bx6f8SF3P1P+cCYEigvtzjcOKlZ2v6hkS+pOh5p6H1A=
+X-Received: by 2002:a63:6f8e:: with SMTP id k136mr10946678pgc.104.1559327933825;
+ Fri, 31 May 2019 11:38:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190530155754.31634-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1559322531.git.dcaratti@redhat.com> <a773fd1d70707d03861be674f7692a0148f6bb40.1559322531.git.dcaratti@redhat.com>
+In-Reply-To: <a773fd1d70707d03861be674f7692a0148f6bb40.1559322531.git.dcaratti@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 31 May 2019 11:38:41 -0700
+Message-ID: <CAM_iQpW68XR3Y6gyb0zyd3qooCwPHBM1Fm+THcS=migSNsHMzA@mail.gmail.com>
+Subject: Re: [PATCH net v3 1/3] net/sched: act_csum: pull all VLAN headers
+ before checksumming
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Shuang Li <shuali@redhat.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/30/19 9:57 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The variable err is initialized with a value that is never read
-> and err is reassigned a few statements later. This initialization
-> is redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  net/ipv4/nexthop.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+On Fri, May 31, 2019 at 10:26 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> diff --git a/net/sched/act_csum.c b/net/sched/act_csum.c
+> index 14bb525e355e..e8308ddcae9d 100644
+> --- a/net/sched/act_csum.c
+> +++ b/net/sched/act_csum.c
+> @@ -574,7 +574,6 @@ static int tcf_csum_act(struct sk_buff *skb, const struct tc_action *a,
+>                         struct tcf_result *res)
+>  {
+>         struct tcf_csum *p = to_tcf_csum(a);
+> -       bool orig_vlan_tag_present = false;
+>         unsigned int vlan_hdr_count = 0;
+>         struct tcf_csum_params *params;
+>         u32 update_flags;
+> @@ -604,17 +603,8 @@ static int tcf_csum_act(struct sk_buff *skb, const struct tc_action *a,
+>                 break;
+>         case cpu_to_be16(ETH_P_8021AD): /* fall through */
+>         case cpu_to_be16(ETH_P_8021Q):
+> -               if (skb_vlan_tag_present(skb) && !orig_vlan_tag_present) {
+> -                       protocol = skb->protocol;
+> -                       orig_vlan_tag_present = true;
+> -               } else {
+> -                       struct vlan_hdr *vlan = (struct vlan_hdr *)skb->data;
+> -
+> -                       protocol = vlan->h_vlan_encapsulated_proto;
+> -                       skb_pull(skb, VLAN_HLEN);
+> -                       skb_reset_network_header(skb);
+> -                       vlan_hdr_count++;
+> -               }
+> +               if (tc_skb_pull_vlans(skb, &vlan_hdr_count, &protocol))
+> +                       goto drop;
+>                 goto again;
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Why do you still need to loop here? tc_skb_pull_vlans() already
+contains a loop to pop all vlan tags?
+
+
+
+>         }
+>
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index d4699156974a..382ee69fb1a5 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -3300,6 +3300,28 @@ unsigned int tcf_exts_num_actions(struct tcf_exts *exts)
+>  }
+>  EXPORT_SYMBOL(tcf_exts_num_actions);
+>
+> +int tc_skb_pull_vlans(struct sk_buff *skb, unsigned int *hdr_count,
+> +                     __be16 *proto)
+
+
+It looks like this function fits better in net/core/skbuff.c, because
+I don't see anything TC specific.
+
+
+> +{
+> +       if (skb_vlan_tag_present(skb))
+> +               *proto = skb->protocol;
+> +
+> +       while (eth_type_vlan(*proto)) {
+> +               struct vlan_hdr *vlan;
+> +
+> +               if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
+> +                       return -ENOMEM;
+> +
+> +               vlan = (struct vlan_hdr *)skb->data;
+> +               *proto = vlan->h_vlan_encapsulated_proto;
+> +               skb_pull(skb, VLAN_HLEN);
+> +               skb_reset_network_header(skb);
+
+Any reason not to call __skb_vlan_pop() directly?
+
+
+> +               (*hdr_count)++;
+> +       }
+> +       return 0;
+> +}
+
+
+Thanks.
