@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7491F30759
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 05:56:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DC030756
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 05:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbfEaDzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 23:55:01 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34211 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726941AbfEaDyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 23:54:11 -0400
-Received: by mail-io1-f66.google.com with SMTP id k8so7051067iot.1
-        for <netdev@vger.kernel.org>; Thu, 30 May 2019 20:54:11 -0700 (PDT)
+        id S1727119AbfEaDyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 23:54:53 -0400
+Received: from mail-it1-f196.google.com ([209.85.166.196]:39687 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726952AbfEaDyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 23:54:13 -0400
+Received: by mail-it1-f196.google.com with SMTP id j204so7724032ite.4
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 20:54:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=n9vDD3Jfc66TNCOaDCzcBm5exj2keDdJZBnw5RzUKQQ=;
-        b=BR9ktqiycYFlSF34OpURC2Dc8hB357FeqpzW4RYV68ZQS3SGcwHzd3JRrs+vhYRY3I
-         pm8WXGB1L4RnEh+l4UCP6vm5oC/kbSB+KBr7JTX8HA/QoryLYpFrYRNOiGTYsllgD95A
-         46a8x5KCYY2KneCZW2Lc7EuHfYT4mudIdh6YLBFl4GyPc9UvPsCJuQ68XzLKRHUZmVGA
-         knm+ljF9qiUvUbjyybjsUGmWzVC7+Y3E/wmo8YrEWMEB/ou2ZAZl7qHnDP5fWZWJRQdb
-         gMHmNxH+9N2Uo7WwUMYyABOcSYlnNaRqr6tD+jo4JaDW85xLOpz5vURZxXtommdH9R2r
-         dNdg==
+        bh=aKNmhoCuw/eCc7wd53pD7Lrwug+Yfz2FeaJH4e2wTqA=;
+        b=tDmMop7pS/Jx2ovpSkXLmS4AZMBK4I02veODFx6Oic0oGU/s5Gg6/sXkjoVn0icAns
+         sEHHieQF3cTNrmm8f/nKb/X5cIL3RmqZjMZeYCrAUxeprVgKeRjjkog0rV/lCMWj5Vbu
+         EPNj0WE3ZbAhA9e0pIWQ5FUwb69ayx+SU7Z6/OBnhY4a+umf+W7E+gFOp45E1dqXBCzW
+         MVXEcxZHtYo+KdPV9qye+ZOTTNLD572iR5m3jCzkt55XZqU5h4fuGovqEJ4LeWFNHC/y
+         Ch86qcwExxwZvIGs1K7pB9sygEm6WRZClhZyMWcH/t8AIkNN4/qV9I4CydGBrNKktH6H
+         j1CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n9vDD3Jfc66TNCOaDCzcBm5exj2keDdJZBnw5RzUKQQ=;
-        b=g/GLEjBTEZEozWV/UhuCm51CZ+cOCriZpsntwpJ3scTNXeoorbclV/1opQd045KMPN
-         KTjg8xbzr9nkp45+rEOgYqq0s7aRmyv1C8jf4+TBTXYwlS2mbMGrmA/5GYNkIEJ3UO0e
-         mc6hCbZD0tqvVt/KZKH/pfU6djsO0stIJgeXyaQaGKcGd/0Iylr9ldKBai32x0yLPTyq
-         +h2jeZDKDzGIndD8wFmA0YJqOzEw5DmV8YV8LJzv4wSsUcORHUXKX8EJpmNMApMUHvBn
-         89rh/BrSXpDnLzqhUqPrByrR6V00ZodybgowlWl0Dhu3hkpnl07dwCsOH62N79kwKhdT
-         rgKg==
-X-Gm-Message-State: APjAAAVJGMECT5/+Zq0XAAmvx/u4BwM5bgfHNevPs9G9PD2ABAE1KOSU
-        17OIbsnJNjnm30EI65TcNMp3ZQ==
-X-Google-Smtp-Source: APXvYqwXTdW2ZfmvzR3xAkDbew9bxIw1ENi559vd+t6+3VzNVdO/UH4T9xuIpoC8IiDI1dNvbjr9UQ==
-X-Received: by 2002:a05:6602:44:: with SMTP id z4mr4495779ioz.180.1559274850612;
-        Thu, 30 May 2019 20:54:10 -0700 (PDT)
+        bh=aKNmhoCuw/eCc7wd53pD7Lrwug+Yfz2FeaJH4e2wTqA=;
+        b=cCG3PxEoTXlir6NLs9u6XWKUBY+/9I6+ZG9Mq1KiNcahbTrud928NvvxKkxQUzkc3r
+         7o20Dt6vM0cWhoRSMrprVH5bTNCcPuobqIC9GSubnGgxHMIKkIgIV0sVFVE9vfpecGhl
+         f+INgxq3luYF28MVVqBI7XUJuW1RfqW+j+z3vikKZmFRvH6n7Ym3ymKyYOW3t01esgMB
+         H9EO+/7fUXUv6Xd+oT7q4Z+jtFjHdZx27pW3BY1toSuJUhBPI9o7NscB7hJbsixbpnmb
+         LbkacU2UHuiO35KzBDgSS3hwai07CjANhmV6xDsZM74DU8J29cR0koxRo+hI+LGmyskn
+         glyg==
+X-Gm-Message-State: APjAAAXaUAEAcFpbQdrUn+hnghjt/xilxe6RfnNOho0hUYD3JcRu/MUr
+        I5dSv+OdP+e+QvZDriKCWguLNw==
+X-Google-Smtp-Source: APXvYqzNh5Gt73/UDcYSjOKcN0N786csRFOLEdAJmG94j2xowlQ5VKuNP+ftJScbqqkCiVapc7lkYQ==
+X-Received: by 2002:a02:950a:: with SMTP id y10mr5357447jah.26.1559274851907;
+        Thu, 30 May 2019 20:54:11 -0700 (PDT)
 Received: from localhost.localdomain (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.gmail.com with ESMTPSA id q15sm1626947ioi.15.2019.05.30.20.54.09
+        by smtp.gmail.com with ESMTPSA id q15sm1626947ioi.15.2019.05.30.20.54.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 May 2019 20:54:10 -0700 (PDT)
+        Thu, 30 May 2019 20:54:11 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, arnd@arndb.de, bjorn.andersson@linaro.org,
         ilias.apalodimas@linaro.org
@@ -53,9 +53,9 @@ Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 11/17] soc: qcom: ipa: immediate commands
-Date:   Thu, 30 May 2019 22:53:42 -0500
-Message-Id: <20190531035348.7194-12-elder@linaro.org>
+Subject: [PATCH v2 12/17] soc: qcom: ipa: IPA network device and microcontroller
+Date:   Thu, 30 May 2019 22:53:43 -0500
+Message-Id: <20190531035348.7194-13-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190531035348.7194-1-elder@linaro.org>
 References: <20190531035348.7194-1-elder@linaro.org>
@@ -66,530 +66,572 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One TX endpoint (per EE) is used for issuing immediate commands to
-the IPA.  These commands request activites beyond simple data
-transfers to be done by the IPA hardware.  For example, the IPA is
-able to manage routing packets among endpoints, and immediate commands
-are used to configure tables used for that routing.
+This patch includes the code that implements a Linux network device,
+using one TX and one RX IPA endpoint.  It is used to implement the
+network device representing the modem and its connection to wireless
+networks.  There are only a few things that are really modem-specific
+though, and they aren't clearly called out here.  Such distinctions
+will be made clearer if we wish to support a network device for
+anything other than the modem.
 
-Immediate commands are built on top of GSI transactions.  They are
-different from normal transfers (in that they use a special endpoint,
-and their "payload" is interpreted differently), so separate functions
-are used to issue immediate command transactions.
+Sort of unrelated, this patch also includes the code supporting the
+microcontroller CPU present on the IPA.  The microcontroller can be
+used to implement special handling of packets, but at this time we
+don't support that.  Still, it is a component that needs to be
+initialized, and in the event of a crash we need to do some
+synchronization between the AP and the microcontroller.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_cmd.c | 377 ++++++++++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_cmd.h | 116 ++++++++++++
- 2 files changed, 493 insertions(+)
- create mode 100644 drivers/net/ipa/ipa_cmd.c
- create mode 100644 drivers/net/ipa/ipa_cmd.h
+ drivers/net/ipa/ipa_netdev.c | 251 +++++++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_netdev.h |  24 ++++
+ drivers/net/ipa/ipa_uc.c     | 208 +++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_uc.h     |  32 +++++
+ 4 files changed, 515 insertions(+)
+ create mode 100644 drivers/net/ipa/ipa_netdev.c
+ create mode 100644 drivers/net/ipa/ipa_netdev.h
+ create mode 100644 drivers/net/ipa/ipa_uc.c
+ create mode 100644 drivers/net/ipa/ipa_uc.h
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+diff --git a/drivers/net/ipa/ipa_netdev.c b/drivers/net/ipa/ipa_netdev.c
 new file mode 100644
-index 000000000000..32b11941436d
+index 000000000000..19c73c4da02b
 --- /dev/null
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -0,0 +1,377 @@
++++ b/drivers/net/ipa/ipa_netdev.c
+@@ -0,0 +1,251 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
-+/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (C) 2019 Linaro Ltd.
++/* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2019 Linaro Ltd.
 + */
 +
-+#include <linux/types.h>
-+#include <linux/device.h>
-+#include <linux/slab.h>
-+#include <linux/bitfield.h>
++/* Modem Transport Network Driver. */
 +
-+#include "gsi.h"
-+#include "gsi_trans.h"
++#include <linux/errno.h>
++#include <linux/if_arp.h>
++#include <linux/netdevice.h>
++#include <linux/skbuff.h>
++#include <linux/if_rmnet.h>
++
 +#include "ipa.h"
++#include "ipa_data.h"
 +#include "ipa_endpoint.h"
-+#include "ipa_cmd.h"
 +#include "ipa_mem.h"
++#include "ipa_netdev.h"
++#include "ipa_qmi.h"
 +
-+/**
-+ * DOC:  IPA Immediate Commands
-+ *
-+ * The AP command TX endpoint is used to issue immediate commands to the IPA.
-+ * An immediate command is generally used to request the IPA do something
-+ * other than data transfer to another endpoint.
-+ *
-+ * Immediate commands are represented by GSI transactions just like other
-+ * transfer requests, represented by a single GSI TRE.  Each immediate
-+ * command has a well-defined format, having a payload of a known length.
-+ * This allows the transfer element's length field to be used to hold an
-+ * immediate command's opcode.  The payload for a command resides in DRAM
-+ * and is described by a single scatterlist entry in its transaction.
-+ * Commands do not require a transaction completion callback.  To commit
-+ * an immediate command transaction, either gsi_trans_commit_command() or
-+ * gsi_trans_commit_command_timeout() is used.
-+ */
++#define IPA_NETDEV_NAME		"rmnet_ipa%d"
 +
-+#define IPA_GSI_DMA_TASK_TIMEOUT	15	/* milliseconds */
++#define TAILROOM		0	/* for padding by mux layer */
 +
-+/**
-+ * __ipa_cmd_timeout() - Send an immediate command with timeout
-+ * @ipa:	IPA structure
-+ * @opcode:	Immediate command opcode (must not be IPA_CMD_NONE)
-+ * @payload:	Pointer to command payload
-+ * @size:	Size of payload
-+ * @timeout:	Milliseconds to wait for completion (0 waits indefinitely)
-+ *
-+ * This common function implements ipa_cmd() and ipa_cmd_timeout().  It
-+ * allocates, initializes, and commits a transaction for the immediate
-+ * command.  The transaction is committed using gsi_trans_commit_command(),
-+ * or if a non-zero timeout is supplied, gsi_trans_commit_command_timeout().
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ */
-+static int __ipa_cmd_timeout(struct ipa *ipa, enum ipa_cmd_opcode opcode,
-+			     void *payload, size_t size, u32 timeout)
++#define IPA_NETDEV_TIMEOUT	10	/* seconds */
++
++/** struct ipa_priv - IPA network device private data */
++struct ipa_priv {
++	struct ipa_endpoint *tx_endpoint;
++	struct ipa_endpoint *rx_endpoint;
++};
++
++/** ipa_netdev_open() - Opens the modem network interface */
++static int ipa_netdev_open(struct net_device *netdev)
 +{
-+	struct ipa_endpoint *endpoint = ipa->command_endpoint;
-+	struct gsi_trans *trans;
++	struct ipa_priv *priv = netdev_priv(netdev);
 +	int ret;
 +
-+	/* assert(opcode != IPA_CMD_NONE) */
-+	trans = gsi_channel_trans_alloc(&ipa->gsi, endpoint->channel_id, 1);
-+	if (!trans)
-+		return -EBUSY;
-+
-+	sg_init_one(trans->sgl, payload, size);
-+
-+	if (timeout)
-+		ret = gsi_trans_commit_command_timeout(trans, opcode, timeout);
-+	else
-+		ret = gsi_trans_commit_command(trans, opcode);
++	ret = ipa_endpoint_enable_one(priv->tx_endpoint);
 +	if (ret)
-+		goto err_trans_free;
++		return ret;
++	ret = ipa_endpoint_enable_one(priv->rx_endpoint);
++	if (ret)
++		goto err_disable_tx;
++
++	netif_start_queue(netdev);
 +
 +	return 0;
 +
-+err_trans_free:
-+	gsi_trans_free(trans);
++err_disable_tx:
++	ipa_endpoint_disable_one(priv->tx_endpoint);
 +
 +	return ret;
 +}
 +
-+static int
-+ipa_cmd(struct ipa *ipa, enum ipa_cmd_opcode opcode, void *payload, size_t size)
++/** ipa_netdev_stop() - Stops the modem network interface. */
++static int ipa_netdev_stop(struct net_device *netdev)
 +{
-+	return __ipa_cmd_timeout(ipa, opcode, payload, size, 0);
++	struct ipa_priv *priv = netdev_priv(netdev);
++
++	netif_stop_queue(netdev);
++
++	ipa_endpoint_disable_one(priv->rx_endpoint);
++	ipa_endpoint_disable_one(priv->tx_endpoint);
++
++	return 0;
 +}
 +
-+static int ipa_cmd_timeout(struct ipa *ipa, enum ipa_cmd_opcode opcode,
-+			   void *payload, size_t size)
++/** ipa_netdev_xmit() - Transmits an skb.
++ * @skb: skb to be transmitted
++ * @dev: network device
++ *
++ * Return codes:
++ * NETDEV_TX_OK: Success
++ * NETDEV_TX_BUSY: Error while transmitting the skb. Try again later
++ */
++static int ipa_netdev_xmit(struct sk_buff *skb, struct net_device *netdev)
 +{
-+	return __ipa_cmd_timeout(ipa, opcode, payload, size,
-+				 IPA_GSI_DMA_TASK_TIMEOUT);
++	struct net_device_stats *stats = &netdev->stats;
++	struct ipa_priv *priv = netdev_priv(netdev);
++	struct ipa_endpoint *endpoint;
++	u32 skb_len = skb->len;
++
++	if (!skb_len)
++		goto err_drop;
++
++	endpoint = priv->tx_endpoint;
++	if (endpoint->data->config.qmap && skb->protocol != htons(ETH_P_MAP))
++		goto err_drop;
++
++	if (ipa_endpoint_skb_tx(endpoint, skb))
++		return NETDEV_TX_BUSY;
++
++	stats->tx_packets++;
++	stats->tx_bytes += skb_len;
++
++	return NETDEV_TX_OK;
++
++err_drop:
++	dev_kfree_skb_any(skb);
++	stats->tx_dropped++;
++
++	return NETDEV_TX_OK;
 +}
 +
-+/* Field masks for ipa_imm_cmd_hw_hdr_init_local structure fields */
-+#define IPA_CMD_HDR_INIT_FLAGS_TABLE_SIZE_FMASK	GENMASK(11, 0)
-+#define IPA_CMD_HDR_INIT_FLAGS_HDR_ADDR_FMASK	GENMASK(27, 12)
-+#define IPA_CMD_HDR_INIT_FLAGS_RESERVED_FMASK	GENMASK(28, 31)
++void ipa_netdev_skb_rx(struct net_device *netdev, struct sk_buff *skb)
++{
++	struct net_device_stats *stats = &netdev->stats;
 +
-+struct ipa_imm_cmd_hw_hdr_init_local {
-+	u64 hdr_table_addr;
-+	u32 flags;
-+	u32 reserved;
++	if (skb) {
++		skb->dev = netdev;
++		skb->protocol = htons(ETH_P_MAP);
++		stats->rx_packets++;
++		stats->rx_bytes += skb->len;
++
++		(void)netif_receive_skb(skb);
++	} else {
++		stats->rx_dropped++;
++	}
++}
++
++static const struct net_device_ops ipa_netdev_ops = {
++	.ndo_open	= ipa_netdev_open,
++	.ndo_stop	= ipa_netdev_stop,
++	.ndo_start_xmit	= ipa_netdev_xmit,
 +};
 +
-+/* Initialize header space in IPA-local memory */
-+int ipa_cmd_hdr_init_local(struct ipa *ipa, u32 offset, u32 size)
++/** netdev_setup() - netdev setup function  */
++static void netdev_setup(struct net_device *netdev)
 +{
-+	struct ipa_imm_cmd_hw_hdr_init_local *payload;
-+	struct device *dev = &ipa->pdev->dev;
-+	dma_addr_t addr;
-+	void *virt;
-+	u32 flags;
-+	u32 max;
++	netdev->netdev_ops = &ipa_netdev_ops;
++	ether_setup(netdev);
++	/* No header ops (override value set by ether_setup()) */
++	netdev->header_ops = NULL;
++	netdev->type = ARPHRD_RAWIP;
++	netdev->hard_header_len = 0;
++	netdev->max_mtu = IPA_MTU;
++	netdev->mtu = netdev->max_mtu;
++	netdev->addr_len = 0;
++	netdev->flags &= ~(IFF_BROADCAST | IFF_MULTICAST);
++	/* The endpoint is configured for QMAP */
++	netdev->needed_headroom = sizeof(struct rmnet_map_header);
++	netdev->needed_tailroom = TAILROOM;
++	netdev->watchdog_timeo = IPA_NETDEV_TIMEOUT * HZ;
++	netdev->hw_features = NETIF_F_SG;
++}
++
++/** ipa_netdev_suspend() - suspend callback for runtime_pm
++ * @dev: pointer to device
++ *
++ * This callback will be invoked by the runtime_pm framework when an AP suspend
++ * operation is invoked, usually by pressing a suspend button.
++ *
++ * Returns -EAGAIN to runtime_pm framework in case there are pending packets
++ * in the Tx queue. This will postpone the suspend operation until all the
++ * pending packets will be transmitted.
++ *
++ * In case there are no packets to send, releases the WWAN0_PROD entity.
++ * As an outcome, the number of IPA active clients should be decremented
++ * until IPA clocks can be gated.
++ */
++void ipa_netdev_suspend(struct net_device *netdev)
++{
++	struct ipa_priv *priv = netdev_priv(netdev);
++
++	netif_stop_queue(netdev);
++
++	ipa_endpoint_suspend(priv->tx_endpoint);
++	ipa_endpoint_suspend(priv->rx_endpoint);
++}
++
++/** ipa_netdev_resume() - resume callback for runtime_pm
++ * @dev: pointer to device
++ *
++ * This callback will be invoked by the runtime_pm framework when an AP resume
++ * operation is invoked.
++ *
++ * Enables the network interface queue and returns success to the
++ * runtime_pm framework.
++ */
++void ipa_netdev_resume(struct net_device *netdev)
++{
++	struct ipa_priv *priv = netdev_priv(netdev);
++
++	ipa_endpoint_resume(priv->rx_endpoint);
++	ipa_endpoint_resume(priv->tx_endpoint);
++
++	netif_wake_queue(netdev);
++}
++
++struct net_device *ipa_netdev_setup(struct ipa *ipa,
++				    struct ipa_endpoint *rx_endpoint,
++				    struct ipa_endpoint *tx_endpoint)
++{
++	struct net_device *netdev;
++	struct ipa_priv *priv;
 +	int ret;
 +
-+	if (size > field_max(IPA_CMD_HDR_INIT_FLAGS_TABLE_SIZE_FMASK))
-+		return -EINVAL;
++	/* Zero modem shared memory before we begin */
++	ret = ipa_smem_zero_modem(ipa);
++	if (ret)
++		return ERR_PTR(ret);
 +
-+	max = field_max(IPA_CMD_HDR_INIT_FLAGS_HDR_ADDR_FMASK);
-+	if (offset > max || ipa->shared_offset > max - offset)
-+		return -EINVAL;
-+	offset += ipa->shared_offset;
++	/* Start QMI communication with the modem */
++	ret = ipa_qmi_setup(ipa);
++	if (ret)
++		return ERR_PTR(ret);
 +
-+	/* With this command we tell the IPA where in its local memory the
-+	 * header tables reside.  We also supply a (host) buffer whose
-+	 * content is copied via DMA into that table space.  We just want
-+	 * to zero fill it, so a zeroed DMA buffer is all that's required
-+	 * The IPA owns the table, but the AP must initialize it.
-+	 */
-+	virt = dma_alloc_coherent(dev, size, &addr, GFP_KERNEL);
-+	if (!virt)
-+		return -ENOMEM;
-+
-+	payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+	if (!payload) {
++	netdev = alloc_netdev(sizeof(struct ipa_priv), IPA_NETDEV_NAME,
++			      NET_NAME_UNKNOWN, netdev_setup);
++	if (!netdev) {
 +		ret = -ENOMEM;
-+		goto out_dma_free;
++		goto err_qmi_exit;
 +	}
 +
-+	payload->hdr_table_addr = addr;
-+	flags = u32_encode_bits(size, IPA_CMD_HDR_INIT_FLAGS_TABLE_SIZE_FMASK);
-+	flags |= u32_encode_bits(offset, IPA_CMD_HDR_INIT_FLAGS_HDR_ADDR_FMASK);
-+	payload->flags = flags;
++	rx_endpoint->netdev = netdev;
++	tx_endpoint->netdev = netdev;
 +
-+	ret = ipa_cmd(ipa, IPA_CMD_HDR_INIT_LOCAL, payload, sizeof(*payload));
++	priv = netdev_priv(netdev);
++	priv->tx_endpoint = tx_endpoint;
++	priv->rx_endpoint = rx_endpoint;
 +
-+	kfree(payload);
-+out_dma_free:
-+	dma_free_coherent(dev, size, virt, addr);
++	ret = register_netdev(netdev);
++	if (ret)
++		goto err_free_netdev;
 +
-+	return ret;
++	return netdev;
++
++err_free_netdev:
++	free_netdev(netdev);
++err_qmi_exit:
++	ipa_qmi_teardown(ipa);
++
++	return ERR_PTR(ret);
 +}
 +
-+enum ipahal_pipeline_clear_option {
-+	IPAHAL_HPS_CLEAR		= 0,
-+	IPAHAL_SRC_GRP_CLEAR		= 1,
-+	IPAHAL_FULL_PIPELINE_CLEAR	= 2,
-+};
-+
-+/* Field masks for ipa_imm_cmd_hw_dma_shared_mem structure fields */
-+#define IPA_CMD_DMA_SHARED_FLAGS_DIRECTION_FMASK	GENMASK(0, 0)
-+#define IPA_CMD_DMA_SHARED_FLAGS_SKIP_CLEAR_FMASK	GENMASK(1, 1)
-+#define IPA_CMD_DMA_SHARED_FLAGS_CLEAR_OPTIONS_FMASK	GENMASK(3, 2)
-+
-+struct ipa_imm_cmd_hw_dma_shared_mem {
-+	u16 sw_reserved;
-+	u16 size;
-+	u16 local_addr;
-+	u16 flags;
-+	u64 system_addr;
-+};
-+
-+/* Use a DMA command to zero a block of memory */
-+int ipa_cmd_smem_dma_zero(struct ipa *ipa, u32 offset, u32 size)
++void ipa_netdev_teardown(struct net_device *netdev)
 +{
-+	struct ipa_imm_cmd_hw_dma_shared_mem *payload;
-+	struct device *dev = &ipa->pdev->dev;
-+	dma_addr_t addr;
-+	void *virt;
-+	u32 val;
-+	int ret;
++	struct ipa_priv *priv = netdev_priv(netdev);
++	struct ipa *ipa = priv->tx_endpoint->ipa;
 +
-+	/* size must be non-zero, and must fit in a 16 bit field */
-+	if (!size || size > U16_MAX)
-+		return -EINVAL;
++	if (!netif_queue_stopped(netdev))
++		(void)ipa_netdev_stop(netdev);
 +
-+	/* offset must fit in a 16 bit local_addr field */
-+	if (offset > U16_MAX || ipa->shared_offset > U16_MAX - offset)
-+		return -EINVAL;
-+	offset += ipa->shared_offset;
++	unregister_netdev(netdev);
 +
-+	/* A zero-filled buffer of the right size is all that's required */
-+	virt = dma_alloc_coherent(dev, size, &addr, GFP_KERNEL);
-+	if (!virt)
-+		return -ENOMEM;
++	free_netdev(netdev);
 +
-+	payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+	if (!payload) {
-+		ret = -ENOMEM;
-+		goto out_dma_free;
-+	}
-+
-+	payload->size = size;
-+	payload->local_addr = offset;
-+	/* direction: 0 = write to IPA; skip clear: 0 = don't wait */
-+	val = u16_encode_bits(IPAHAL_HPS_CLEAR,
-+			      IPA_CMD_DMA_SHARED_FLAGS_CLEAR_OPTIONS_FMASK);
-+	payload->flags = val;
-+	payload->system_addr = addr;
-+
-+	ret = ipa_cmd(ipa, IPA_CMD_DMA_SHARED_MEM, payload, sizeof(*payload));
-+
-+	kfree(payload);
-+out_dma_free:
-+	dma_free_coherent(dev, size, virt, addr);
-+
-+	return ret;
++	ipa_qmi_teardown(ipa);
 +}
-+
-+/* Field masks for ipa_imm_cmd_hw_ip_fltrt_init structure fields */
-+#define IPA_CMD_IP_FLTRT_FLAGS_HASH_SIZE_FMASK	GENMASK_ULL(11, 0)
-+#define IPA_CMD_IP_FLTRT_FLAGS_HASH_ADDR_FMASK	GENMASK_ULL(27, 12)
-+#define IPA_CMD_IP_FLTRT_FLAGS_NHASH_SIZE_FMASK	GENMASK_ULL(39, 28)
-+#define IPA_CMD_IP_FLTRT_FLAGS_NHASH_ADDR_FMASK	GENMASK_ULL(55, 40)
-+
-+struct ipa_imm_cmd_hw_ip_fltrt_init {
-+	u64 hash_rules_addr;
-+	u64 flags;
-+	u64 nhash_rules_addr;
-+};
-+
-+/* Configure a routing or filter table, for IPv4 or IPv6 */
-+static int ipa_cmd_table_config(struct ipa *ipa, enum ipa_cmd_opcode opcode,
-+				dma_addr_t addr, size_t size, u32 hash_offset,
-+				u32 nhash_offset)
-+{
-+	struct ipa_imm_cmd_hw_ip_fltrt_init *payload;
-+	u64 val;
-+	u32 max;
-+	int ret;
-+
-+	if (size > field_max(IPA_CMD_IP_FLTRT_FLAGS_HASH_SIZE_FMASK))
-+		return -EINVAL;
-+	if (size > field_max(IPA_CMD_IP_FLTRT_FLAGS_NHASH_SIZE_FMASK))
-+		return -EINVAL;
-+
-+	max = field_max(IPA_CMD_IP_FLTRT_FLAGS_HASH_ADDR_FMASK);
-+	if (hash_offset > max || ipa->shared_offset > max - hash_offset)
-+		return -EINVAL;
-+	hash_offset += ipa->shared_offset;
-+
-+	max = field_max(IPA_CMD_IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	if (nhash_offset > max || ipa->shared_offset > max - nhash_offset)
-+		return -EINVAL;
-+	nhash_offset += ipa->shared_offset;
-+
-+	payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+	if (!payload)
-+		return -ENOMEM;
-+
-+	payload->hash_rules_addr = addr;
-+	val = u64_encode_bits(size, IPA_CMD_IP_FLTRT_FLAGS_HASH_SIZE_FMASK);
-+	val |= u64_encode_bits(hash_offset,
-+			       IPA_CMD_IP_FLTRT_FLAGS_HASH_ADDR_FMASK);
-+	val |= u64_encode_bits(size, IPA_CMD_IP_FLTRT_FLAGS_NHASH_SIZE_FMASK);
-+	val |= u64_encode_bits(nhash_offset,
-+			       IPA_CMD_IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	payload->flags = val;
-+	payload->nhash_rules_addr = addr;
-+
-+	ret = ipa_cmd(ipa, opcode, payload, sizeof(*payload));
-+
-+	kfree(payload);
-+
-+	return ret;
-+}
-+
-+/* Configure IPv4 routing table */
-+int ipa_cmd_route_config_ipv4(struct ipa *ipa, size_t size)
-+{
-+	enum ipa_cmd_opcode opcode = IPA_CMD_IP_V4_ROUTING_INIT;
-+	u32 nhash_offset = IPA_SMEM_V4_RT_NHASH_OFFSET;
-+	u32 hash_offset = IPA_SMEM_V4_RT_HASH_OFFSET;
-+	dma_addr_t addr = ipa->route_addr;
-+
-+	return ipa_cmd_table_config(ipa, opcode, addr, size, hash_offset,
-+				    nhash_offset);
-+}
-+
-+/* Configure IPv6 routing table */
-+int ipa_cmd_route_config_ipv6(struct ipa *ipa, size_t size)
-+{
-+	enum ipa_cmd_opcode opcode = IPA_CMD_IP_V6_ROUTING_INIT;
-+	u32 nhash_offset = IPA_SMEM_V6_RT_NHASH_OFFSET;
-+	u32 hash_offset = IPA_SMEM_V6_RT_HASH_OFFSET;
-+	dma_addr_t addr = ipa->route_addr;
-+
-+	return ipa_cmd_table_config(ipa, opcode, addr, size, hash_offset,
-+				    nhash_offset);
-+}
-+
-+/* Configure IPv4 filter table */
-+int ipa_cmd_filter_config_ipv4(struct ipa *ipa, size_t size)
-+{
-+	enum ipa_cmd_opcode opcode = IPA_CMD_IP_V4_FILTER_INIT;
-+	u32 nhash_offset = IPA_SMEM_V4_FLT_NHASH_OFFSET;
-+	u32 hash_offset = IPA_SMEM_V4_FLT_HASH_OFFSET;
-+	dma_addr_t addr = ipa->filter_addr;
-+
-+	return ipa_cmd_table_config(ipa, opcode, addr, size, hash_offset,
-+				    nhash_offset);
-+}
-+
-+/* Configure IPv6 filter table */
-+int ipa_cmd_filter_config_ipv6(struct ipa *ipa, size_t size)
-+{
-+	enum ipa_cmd_opcode opcode = IPA_CMD_IP_V6_FILTER_INIT;
-+	u32 nhash_offset = IPA_SMEM_V6_FLT_NHASH_OFFSET;
-+	u32 hash_offset = IPA_SMEM_V6_FLT_HASH_OFFSET;
-+	dma_addr_t addr = ipa->filter_addr;
-+
-+	return ipa_cmd_table_config(ipa, opcode, addr, size, hash_offset,
-+				    nhash_offset);
-+}
-+
-+/* Field masks for ipa_imm_cmd_hw_dma_task_32b_addr structure fields */
-+#define IPA_CMD_DMA32_TASK_SW_RSVD_FMASK	GENMASK(10, 0)
-+#define IPA_CMD_DMA32_TASK_CMPLT_FMASK		GENMASK(11, 11)
-+#define IPA_CMD_DMA32_TASK_EOF_FMASK		GENMASK(12, 12)
-+#define IPA_CMD_DMA32_TASK_FLSH_FMASK		GENMASK(13, 13)
-+#define IPA_CMD_DMA32_TASK_LOCK_FMASK		GENMASK(14, 14)
-+#define IPA_CMD_DMA32_TASK_UNLOCK_FMASK		GENMASK(15, 15)
-+#define IPA_CMD_DMA32_SIZE1_FMASK		GENMASK(31, 16)
-+#define IPA_CMD_DMA32_PACKET_SIZE_FMASK		GENMASK(15, 0)
-+
-+struct ipa_imm_cmd_hw_dma_task_32b_addr {
-+	u32 size1_flags;
-+	u32 addr1;
-+	u32 packet_size;
-+	u32 reserved;
-+};
-+
-+/* Use a 32-bit DMA command to zero a block of memory */
-+int ipa_cmd_dma_task_32(struct ipa *ipa, size_t size, dma_addr_t addr)
-+{
-+	struct ipa_imm_cmd_hw_dma_task_32b_addr *payload;
-+	u32 size1_flags;
-+	int ret;
-+
-+	if (size > field_max(IPA_CMD_DMA32_SIZE1_FMASK))
-+		return -EINVAL;
-+	if (size > field_max(IPA_CMD_DMA32_PACKET_SIZE_FMASK))
-+		return -EINVAL;
-+
-+	payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+	if (!payload)
-+		return -ENOMEM;
-+
-+	/* complete: 0 = don't interrupt; eof: 0 = don't assert eot */
-+	size1_flags = IPA_CMD_DMA32_TASK_FLSH_FMASK;
-+	/* lock: 0 = don't lock endpoint; unlock: 0 = don't unlock */
-+	size1_flags |= u32_encode_bits(size, IPA_CMD_DMA32_SIZE1_FMASK);
-+
-+	payload->size1_flags = size1_flags;
-+	payload->addr1 = addr;
-+	payload->packet_size =
-+			u32_encode_bits(size, IPA_CMD_DMA32_PACKET_SIZE_FMASK);
-+
-+	ret = ipa_cmd_timeout(ipa, IPA_CMD_DMA_TASK_32B_ADDR, payload,
-+			      sizeof(payload));
-+
-+	kfree(payload);
-+
-+	return ret;
-+}
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
+diff --git a/drivers/net/ipa/ipa_netdev.h b/drivers/net/ipa/ipa_netdev.h
 new file mode 100644
-index 000000000000..f69d2eaddd53
+index 000000000000..8ab1e8ea0b4a
 --- /dev/null
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -0,0 +1,116 @@
++++ b/drivers/net/ipa/ipa_netdev.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2019 Linaro Ltd.
++ */
++#ifndef _IPA_NETDEV_H_
++#define _IPA_NETDEV_H_
++
++struct ipa;
++struct ipa_endpoint;
++struct net_device;
++struct sk_buff;
++
++struct net_device *ipa_netdev_setup(struct ipa *ipa,
++				    struct ipa_endpoint *rx_endpoint,
++				    struct ipa_endpoint *tx_endpoint);
++void ipa_netdev_teardown(struct net_device *netdev);
++
++void ipa_netdev_skb_rx(struct net_device *netdev, struct sk_buff *skb);
++
++void ipa_netdev_suspend(struct net_device *netdev);
++void ipa_netdev_resume(struct net_device *netdev);
++
++#endif /* _IPA_NETDEV_H_ */
+diff --git a/drivers/net/ipa/ipa_uc.c b/drivers/net/ipa/ipa_uc.c
+new file mode 100644
+index 000000000000..57256d1c3b90
+--- /dev/null
++++ b/drivers/net/ipa/ipa_uc.c
+@@ -0,0 +1,208 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2019 Linaro Ltd.
++ */
++
++#include <linux/types.h>
++#include <linux/io.h>
++#include <linux/delay.h>
++
++#include "ipa.h"
++#include "ipa_clock.h"
++#include "ipa_uc.h"
++
++/**
++ * DOC:  The IPA embedded microcontroller
++ *
++ * The IPA incorporates a microcontroller that is able to do some additional
++ * handling/offloading of network activity.  The current code makes
++ * essentially no use of the microcontroller, but it still requires some
++ * initialization.  It needs to be notified in the event the AP crashes.
++ *
++ * The microcontroller can generate two interrupts to the AP.  One interrupt
++ * is used to indicate that a response to a request from the AP is available.
++ * The other is used to notify the AP of the occurrence of an event.  In
++ * addition, the AP can interrupt the microcontroller by writing a register.
++ *
++ * A 128 byte block of structured memory within the IPA SRAM is used together
++ * with these interrupts to implement the communication interface between the
++ * AP and the IPA microcontroller.  Each side writes data to the shared area
++ * before interrupting its peer, which will read the written data in response
++ * to the interrupt.  Some information found in the shared area is currently
++ * unused.  All remaining space in the shared area is reserved, and must not
++ * be read or written by the AP.
++ */
++/* Supports hardware interface version 0x2000 */
++
++/* Offset relative to the base of the IPA shared address space of the
++ * shared region used for communication with the microcontroller.  The
++ * region is 128 bytes in size, but only the first 40 bytes are used.
++ */
++#define IPA_SMEM_UC_OFFSET	0x0000
++
++/* Delay to allow a the microcontroller to save state when crashing */
++#define IPA_SEND_DELAY		100	/* microseconds */
++
++/**
++ * struct ipa_uc_shared_area - AP/microcontroller shared memory area
++ * @command:		command code (AP->microcontroller)
++ * @command_param:	low 32 bits of command parameter (AP->microcontroller)
++ * @command_param_hi:	high 32 bits of command parameter (AP->microcontroller)
++ *
++ * @response:		response code (microcontroller->AP)
++ * @response_param:	response parameter (microcontroller->AP)
++ *
++ * @event:		event code (microcontroller->AP)
++ * @event_param:	event parameter (microcontroller->AP)
++ *
++ * @first_error_address: address of first error-source on SNOC
++ * @hw_state:		state of hardware (including error type information)
++ * @warning_counter:	counter of non-fatal hardware errors
++ * @interface_version:	hardware-reported interface version
++ */
++struct ipa_uc_shared_area {
++	u8 command;		/* enum ipa_uc_command */
++	u8 reserved0[3];
++	__le32 command_param;
++	__le32 command_param_hi;
++	u8 response;		/* enum ipa_uc_response */
++	u8 reserved1[3];
++	__le32 response_param;
++	u8 event;		/* enum ipa_uc_event */
++	u8 reserved2[3];
++
++	__le32 event_param;
++	__le32 first_error_address;
++	u8 hw_state;
++	u8 warning_counter;
++	__le16 reserved3;
++	__le16 interface_version;
++	__le16 reserved4;
++};
++
++/** enum ipa_uc_command - commands from the AP to the microcontroller */
++enum ipa_uc_command {
++	IPA_UC_COMMAND_NO_OP		= 0,
++	IPA_UC_COMMAND_UPDATE_FLAGS	= 1,
++	IPA_UC_COMMAND_DEBUG_RUN_TEST	= 2,
++	IPA_UC_COMMAND_DEBUG_GET_INFO	= 3,
++	IPA_UC_COMMAND_ERR_FATAL	= 4,
++	IPA_UC_COMMAND_CLK_GATE		= 5,
++	IPA_UC_COMMAND_CLK_UNGATE	= 6,
++	IPA_UC_COMMAND_MEMCPY		= 7,
++	IPA_UC_COMMAND_RESET_PIPE	= 8,
++	IPA_UC_COMMAND_REG_WRITE	= 9,
++	IPA_UC_COMMAND_GSI_CH_EMPTY	= 10,
++};
++
++/** enum ipa_uc_response - microcontroller response codes */
++enum ipa_uc_response {
++	IPA_UC_RESPONSE_NO_OP		= 0,
++	IPA_UC_RESPONSE_INIT_COMPLETED	= 1,
++	IPA_UC_RESPONSE_CMD_COMPLETED	= 2,
++	IPA_UC_RESPONSE_DEBUG_GET_INFO	= 3,
++};
++
++/** enum ipa_uc_event - common cpu events reported by the microcontroller */
++enum ipa_uc_event {
++	IPA_UC_EVENT_NO_OP     = 0,
++	IPA_UC_EVENT_ERROR     = 1,
++	IPA_UC_EVENT_LOG_INFO  = 2,
++};
++
++/* Microcontroller event IPA interrupt handler */
++static void ipa_uc_event_handler(struct ipa *ipa,
++				 enum ipa_interrupt_id interrupt_id)
++{
++	struct ipa_uc_shared_area *shared;
++
++	shared = ipa->shared_virt + IPA_SMEM_UC_OFFSET;
++	dev_err(&ipa->pdev->dev, "unsupported microcontroller event %hhu\n",
++		shared->event);
++	WARN_ON(shared->event == IPA_UC_EVENT_ERROR);
++}
++
++/* Microcontroller response IPA interrupt handler */
++static void ipa_uc_response_hdlr(struct ipa *ipa,
++				 enum ipa_interrupt_id interrupt_id)
++{
++	struct ipa_uc_shared_area *shared;
++
++	/* An INIT_COMPLETED response message is sent to the AP by the
++	 * microcontroller when it is operational.  Other than this, the AP
++	 * should only receive responses from the microntroller when it has
++	 * sent it a request message.
++	 *
++	 * We can drop the clock reference taken in ipa_uc_init() once we
++	 * know the microcontroller has finished its initialization.
++	 */
++	shared = ipa->shared_virt + IPA_SMEM_UC_OFFSET;
++	switch (shared->response) {
++	case IPA_UC_RESPONSE_INIT_COMPLETED:
++		ipa->uc_loaded = 1;
++		ipa_clock_put(ipa->clock);
++		break;
++	default:
++		dev_warn(&ipa->pdev->dev,
++			 "unsupported microcontroller response %hhu\n",
++			 shared->response);
++		break;
++	}
++}
++
++/* ipa_uc_setup() - Set up the microcontroller */
++void ipa_uc_setup(struct ipa *ipa)
++{
++	/* The microcontroller needs the IPA clock running until it has
++	 * completed its initialization.  It signals this by sending an
++	 * INIT_COMPLETED response message to the AP.  This could occur after
++	 * we have finished doing the rest of the IPA initialization, so we
++	 * need to take an extra "proxy" reference, and hold it until we've
++	 * received that signal.  (This reference is dropped in
++	 * ipa_uc_response_hdlr(), above.)
++	 */
++	ipa_clock_get(ipa->clock);
++
++	ipa->uc_loaded = 0;
++	ipa_interrupt_add(ipa->interrupt, IPA_INTERRUPT_UC_0,
++			  ipa_uc_event_handler);
++	ipa_interrupt_add(ipa->interrupt, IPA_INTERRUPT_UC_1,
++			  ipa_uc_response_hdlr);
++}
++
++/* Inverse of ipa_uc_setup() */
++void ipa_uc_teardown(struct ipa *ipa)
++{
++	ipa_interrupt_remove(ipa->interrupt, IPA_INTERRUPT_UC_1);
++	ipa_interrupt_remove(ipa->interrupt, IPA_INTERRUPT_UC_0);
++	if (!ipa->uc_loaded)
++		ipa_clock_put(ipa->clock);
++}
++
++/* Send a command to the microcontroller */
++static void send_uc_command(struct ipa *ipa, u32 command, u32 command_param)
++{
++	struct ipa_uc_shared_area *shared;
++
++	shared = ipa->shared_virt + IPA_SMEM_UC_OFFSET;
++	shared->command = command;
++	shared->command_param = cpu_to_le32(command_param);
++	shared->command_param_hi = 0;
++	shared->response = 0;
++	shared->response_param = 0;
++
++	iowrite32(1, ipa->reg_virt + IPA_REG_IRQ_UC_OFFSET);
++}
++
++/* Tell the microcontroller the AP is shutting down */
++void ipa_uc_panic_notifier(struct ipa *ipa)
++{
++	if (!ipa->uc_loaded)
++		return;
++
++	send_uc_command(ipa, IPA_UC_COMMAND_ERR_FATAL, 0);
++
++	/* give uc enough time to save state */
++	udelay(IPA_SEND_DELAY);
++}
+diff --git a/drivers/net/ipa/ipa_uc.h b/drivers/net/ipa/ipa_uc.h
+new file mode 100644
+index 000000000000..c258cb6e1161
+--- /dev/null
++++ b/drivers/net/ipa/ipa_uc.h
+@@ -0,0 +1,32 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +
 +/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
 + * Copyright (C) 2019 Linaro Ltd.
 + */
-+#ifndef _IPA_CMD_H_
-+#define _IPA_CMD_H_
-+
-+#include <linux/types.h>
-+
-+struct sk_buff;
++#ifndef _IPA_UC_H_
++#define _IPA_UC_H_
 +
 +struct ipa;
 +
 +/**
-+ * enum ipa_cmd_opcode:	IPA immediate commands
-+ *
-+ * All immediate commands are issued using the AP command TX endpoint.
-+ * The numeric values here are the opcodes for IPA v3.5.1 hardware.
-+ *
-+ * IPA_CMD_NONE is a special (invalid) value that's used to indicate
-+ * a request is *not* an immediate command.
++ * ipa_uc_setup() - set up the IPA microcontroller subsystem
++ * @ipa:	IPA pointer
 + */
-+enum ipa_cmd_opcode {
-+	IPA_CMD_NONE			= 0,
-+	IPA_CMD_IP_V4_FILTER_INIT	= 3,
-+	IPA_CMD_IP_V6_FILTER_INIT	= 4,
-+	IPA_CMD_IP_V4_ROUTING_INIT	= 7,
-+	IPA_CMD_IP_V6_ROUTING_INIT	= 8,
-+	IPA_CMD_HDR_INIT_LOCAL		= 9,
-+	IPA_CMD_DMA_TASK_32B_ADDR	= 17,
-+	IPA_CMD_DMA_SHARED_MEM		= 19,
-+};
++void ipa_uc_setup(struct ipa *ipa);
 +
 +/**
-+ * ipa_cmd_hdr_init_local() - Initialize header space in IPA-local memory
-+ * @ipa:	IPA structure
-+ * @offset:	Offset of memory to be initialized
-+ * @size:	Size of memory to be initialized
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ *
-+ * Defines the location of a block of local memory to use for
-+ * headers and fills it with zeroes.
++ * ipa_uc_teardown() - inverse of ipa_uc_setup()
++ * @ipa:	IPA pointer
 + */
-+int ipa_cmd_hdr_init_local(struct ipa *ipa, u32 offset, u32 size);
++void ipa_uc_teardown(struct ipa *ipa);
 +
 +/**
-+ * ipa_cmd_smem_dma_zero() - Use a DMA command to zero a block of memory
-+ * @ipa:	IPA structure
-+ * @offset:	Offset of memory to be zeroed
-+ * @size:	Size in bytes of memory to be zeroed
++ * ipa_uc_panic_notifier()
++ * @ipa:	IPA pointer
 + *
-+ * @Return:	0 if successful, or a negative error code
++ * Notifier function called when the system crashes, to inform the
++ * microcontroller of the event.
 + */
-+int ipa_cmd_smem_dma_zero(struct ipa *ipa, u32 offset, u32 size);
++void ipa_uc_panic_notifier(struct ipa *ipa);
 +
-+/**
-+ * ipa_cmd_route_config_ipv4() - Configure IPv4 routing table
-+ * @ipa:	IPA structure
-+ * @size:	Size in bytes of table
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ *
-+ * Defines the location and size of the IPv4 routing table and
-+ * zeroes its content.
-+ */
-+int ipa_cmd_route_config_ipv4(struct ipa *ipa, size_t size);
-+
-+/**
-+ * ipa_cmd_route_config_ipv6() - Configure IPv6 routing table
-+ * @ipa:	IPA structure
-+ * @size:	Size in bytes of table
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ *
-+ * Defines the location and size of the IPv6 routing table and
-+ * zeroes its content.
-+ */
-+int ipa_cmd_route_config_ipv6(struct ipa *ipa, size_t size);
-+
-+/**
-+ * ipa_cmd_filter_config_ipv4() - Configure IPv4 filter table
-+ * @ipa:	IPA structure
-+ * @size:	Size in bytes of table
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ *
-+ * Defines the location and size of the IPv4 filter table and
-+ * zeroes its content.
-+ */
-+int ipa_cmd_filter_config_ipv4(struct ipa *ipa, size_t size);
-+
-+/**
-+ * ipa_cmd_filter_config_ipv6() - Configure IPv6 filter table
-+ * @ipa:	IPA structure
-+ * @size:	Size in bytes of table
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ *
-+ * Defines the location and size of the IPv6 filter table and
-+ * zeroes its content.
-+ */
-+int ipa_cmd_filter_config_ipv6(struct ipa *ipa, size_t size);
-+
-+/**
-+ * ipa_cmd_dma_task_32() - Use a 32-bit DMA command to zero a block of memory
-+ * @ipa:	IPA structure
-+ * @size:	Size of memory to be zeroed
-+ * @addr:	DMA address defining start of range to be zeroed
-+ *
-+ * @Return:	0 if successful, or a negative error code
-+ */
-+int ipa_cmd_dma_task_32(struct ipa *ipa, size_t size, dma_addr_t addr);
-+
-+#endif /* _IPA_CMD_H_ */
++#endif /* _IPA_UC_H_ */
 -- 
 2.20.1
 
