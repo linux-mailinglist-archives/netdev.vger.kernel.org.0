@@ -2,70 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B118E30F18
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9F4230F3F
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfEaNkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 09:40:35 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:1158 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726917AbfEaNk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 09:40:29 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 18D2B9FFE8;
-        Fri, 31 May 2019 13:40:29 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-117-15.ams2.redhat.com [10.36.117.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 16BEC5D719;
-        Fri, 31 May 2019 13:40:25 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH v3 5/5] vsock/virtio: change the maximum packet size allowed
-Date:   Fri, 31 May 2019 15:39:54 +0200
-Message-Id: <20190531133954.122567-6-sgarzare@redhat.com>
-In-Reply-To: <20190531133954.122567-1-sgarzare@redhat.com>
-References: <20190531133954.122567-1-sgarzare@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Fri, 31 May 2019 13:40:29 +0000 (UTC)
+        id S1726722AbfEaNrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 09:47:32 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46493 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726701AbfEaNrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 09:47:31 -0400
+Received: by mail-lf1-f66.google.com with SMTP id l26so7928161lfh.13
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 06:47:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=DiLJ6JnRCJJ3neCk5RdmZrESJ3I9QLujeCJngur/rJE=;
+        b=sHCqvooDv0728QzeNQ1TedqmihQUeuFTkHyBB6ZslHvYDAeqSvTbKX7zsghL88Sz5r
+         CXmKtLjoM+fsXBob4SGzSK9wKa9V9mo1gY3Bemb2T3r2q3zubXW18qQRRE1lH5rl5jRT
+         IWSk7/hkb/UgSvczaG4qG1J70uBFM/w4kXU+WM6kNN+yvAjNV+N/S9GyGuaH4bihmDU1
+         uzA/0uI9Qkk6lCTUJA1tEg3ocjLfox5qpAhXMhzcJqjCFCEflgCK0DJrjavwTkE/IQx7
+         IlaIDGkNutbTyTrzLklrfkYdcF1+vAmuCv+hSoAF9ezEr0XR5cGr8rpvOX7RwlaN5ucV
+         1YqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DiLJ6JnRCJJ3neCk5RdmZrESJ3I9QLujeCJngur/rJE=;
+        b=e28PE4C2IYZggEDNkYBPsD82ByneL61SNzPyyAH+Je20gH66KMzDLFOwXUDkeeNqh8
+         4aJKtyriz/X16QgFJI4tVLzLILrGB/kHHdAo4zPRyU1W4OfML/Ns9EBl+99vBoHSgz4X
+         9KcBa4LFcMRrEZxcCGTQtSjFVw7go1xVt90GOB7imPSW+6Y36RsGjlkcguHn/3E3n1wq
+         km6A4fnjSAe+nY0nHt+G72PFLlGOrj9JMq1tgUaxNPcwOrY6i30nVfH8WbO8qBKvJtQj
+         YfIeNVIkDfTuPbIartzhhgVNReRtCkEWUPgVYpF7C7xtgb6pihM77hhmONla6QniGZN2
+         Mbtw==
+X-Gm-Message-State: APjAAAVWyEsuqYARz7btAJbco2DbyhjknQ19YBMcJgpVATtvJJMybqET
+        KoMuhDUm6ckHJe+UYl6BuNGl+Q==
+X-Google-Smtp-Source: APXvYqwC1pymNebqSNI5Xz7H904bYIZfvu4+23N51FSzNZ2bfFeqLsCF8jO7esorxvBZxziQI2RVjA==
+X-Received: by 2002:a19:3f16:: with SMTP id m22mr5601760lfa.104.1559310449908;
+        Fri, 31 May 2019 06:47:29 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id s20sm763312lfb.95.2019.05.31.06.47.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 06:47:29 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     grygorii.strashko@ti.com, davem@davemloft.net
+Cc:     linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v2] net: ethernet: ti: cpsw_ethtool: fix ethtool ring param set
+Date:   Fri, 31 May 2019 16:47:25 +0300
+Message-Id: <20190531134725.2054-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since now we are able to split packets, we can avoid limiting
-their sizes to VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE.
-Instead, we can use VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max
-packet size.
+Fix ability to set RX descriptor number, the reason - initially
+"tx_max_pending" was set incorrectly, but the issue appears after
+adding sanity check, so fix is for "sanity" patch.
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: 37e2d99b59c476 ("ethtool: Ensure new ring parameters are within bounds during SRINGPARAM")
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- net/vmw_vsock/virtio_transport_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Based on net/master
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index d192cb91cf25..b6ec6f81018b 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -182,8 +182,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	vvs = vsk->trans;
+ drivers/net/ethernet/ti/cpsw_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index a4a7ec0d2531..6d1c9ebae7cc 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -643,7 +643,7 @@ void cpsw_get_ringparam(struct net_device *ndev,
+ 	struct cpsw_common *cpsw = priv->cpsw;
  
- 	/* we can send less than pkt_len bytes */
--	if (pkt_len > VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE)
--		pkt_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-+	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
-+		pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
- 
- 	/* virtio_transport_get_credit might return less than pkt_len credit */
- 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
+ 	/* not supported */
+-	ering->tx_max_pending = 0;
++	ering->tx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
+ 	ering->tx_pending = cpdma_get_num_tx_descs(cpsw->dma);
+ 	ering->rx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
+ 	ering->rx_pending = cpdma_get_num_rx_descs(cpsw->dma);
 -- 
-2.20.1
+2.17.1
 
