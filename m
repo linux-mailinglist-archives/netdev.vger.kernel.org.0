@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DBFD312FF
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C3731300
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbfEaQt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:49:57 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36931 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaQt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:49:56 -0400
-Received: by mail-pf1-f196.google.com with SMTP id a23so6558571pff.4
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:49:56 -0700 (PDT)
+        id S1726774AbfEaQuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:50:03 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35147 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfEaQuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:50:03 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t1so829922pgc.2
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:50:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=nklwlkZvOx2XNuT8kpyBFGDGH37/DjuKDKVwAfvTUu4=;
-        b=UpQ6SoDNAq2re3jlNtZ6bWaCWGUe1byFeuYlPDP0NuKKBFqmT31UBcmshjHC/6dLCC
-         YjkWfA3N1opFnQ5cqQsJsg4PFwxiuwKPs9xIsm80+cWWAKPneb42WtOfyEYedxqJdKdP
-         25TY//in+ieABx/r2FDEQLvAVrMTVO+sQa5APqhgAprlKn34ibw4PQQUzpamYu4P0ekE
-         MIUwef7hUyibqAKYyMsXJixu/KFLEksEonNWHr5QMkZ/DPL025pyda4XPIIS4WYz86L8
-         nQiIZFcGiSOZ5Z/Y5BBTWzwXZfzAlGquXRWHgoba3BsHXyb2JaJKkP4jni1+HBPyTMH7
-         W/Yw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=HzedBuG3ixQbGHcMrcC/7vEC3Tt14CDLtTMgPmW4+aY=;
+        b=JqLNyMOBfXNUlz+CdgDYi7wevt/96lC8CNOma67I77zy2qH7Q5TvTXND2+MG7C4V+w
+         0W8zoBhQV3uBm7iRMsZ0MPxu+TVGLw8LCMgtD2A7bDb/zk3NTa52roQNGIMe1vwJYzjT
+         PHPLT9dvlyjBRPhbqY0ZkkUEl+NWbM1rpO8RHWQbUg1mNoMvEiMqmhzy+5Ro+PTRDnlR
+         B3aY0zfiQI+KXftSE6CTSMOLMlX0Ow6lDI1pgEjRs20SEvxNReH3rgnSBNDUCO4zw9Hi
+         6I6bSGfbuTK3ivr8b5j+O0ICoeKU+rXAuyv1RqpuBpflmb1DPd0UVsYviTEeSN+0LurC
+         HaHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=nklwlkZvOx2XNuT8kpyBFGDGH37/DjuKDKVwAfvTUu4=;
-        b=JZcKBaqY5fKHLdXtCGlrqDK41G6V3r34zb/cOpAg5yWaAcW6jYezMmGwsKLFhCvZAR
-         muIJqgyfSkofnCyewZoxEdX4yTlCD5qZAKxQ2CgP1MIDiYqGbsekXgT0n335q+jabR5c
-         ZM3rwD+MH/vV1rEhYHjgJD5epGdqMbe9F95eAx7TPJdk14NCvw96jhMsfRzfLwdrhqC3
-         SK909rDcJcIyz77pDAmoDbswkByia+xuaoHSeoJPXceaeVX0Ik8AFSTjERlqRxZHLyBB
-         BjBi28wcE4yOFl0sDJFq5eOteWQ+rxOQLyZ1LEB9EoQ5mMgtrcHxIhN7rhALlTMm+v3X
-         +S9A==
-X-Gm-Message-State: APjAAAXyhxdjGEZnoTLbBcIgXCtSYR0RXBNtc7Gv58SSgBXLF9d4Svjp
-        zWidqOq5esm1kdzXgdMQx9DdSw==
-X-Google-Smtp-Source: APXvYqxkd/FzLdrwDNgnu2b81AJEGqJbsE0KA5If/XKvEpnTtsbtbgNbqG5CsSvmNE/oNUg1Z7Opnw==
-X-Received: by 2002:a63:d416:: with SMTP id a22mr10430589pgh.218.1559321396066;
-        Fri, 31 May 2019 09:49:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=HzedBuG3ixQbGHcMrcC/7vEC3Tt14CDLtTMgPmW4+aY=;
+        b=suCEAw1K28ol1vF5C0zUtebAt5YujJkoypVD/Wd5NCeHn28FfJxxdUYwc4qHW/P4QT
+         GPOQ4JlI9rL2pSBE6Ee/3YkT7jHGq8DCnYXfFd9ncuDrHMNdvd3Tg+ZPyDM/VFEdPJot
+         ZPrvN4pevfx2ntGu1pp6MCKc0r+yQKYIh4ucbJAs7+xMKt9p7H2s6rUw/iBjRYLtMZwW
+         DO937GqsRZVYHpR0sB80dm2T19JFFhgItfwQvfqa0RKxl1PdfbmSGU2wqMDOwje7rCds
+         IHq7Mje7woqypXMNwQYSWfWuKRFJ1zTKiDF/W6i4x/krDxzoLcJuzp0FEZwcYpJ6LwgL
+         nF/g==
+X-Gm-Message-State: APjAAAX5fKP8Nl9ERqXX2/hMGFhnVCQ0xVWQAec5zdgCQv7iArX1ACEe
+        UMzbAQOuz81R9rs+046LQfpJH8lxnfA=
+X-Google-Smtp-Source: APXvYqyktH9q2FdBRv2CelSH7Y1+umVpQKZFtb2mfpow/uXS8vSoE3JEz/yrW4DmIYSbr83fEIPakA==
+X-Received: by 2002:a63:7009:: with SMTP id l9mr1198942pgc.228.1559321402577;
+        Fri, 31 May 2019 09:50:02 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id e66sm8696835pfe.50.2019.05.31.09.49.55
+        by smtp.gmail.com with ESMTPSA id e66sm8696835pfe.50.2019.05.31.09.50.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 31 May 2019 09:49:55 -0700 (PDT)
+        Fri, 31 May 2019 09:50:02 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com,
         ahabdels.dev@gmail.com
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [RFC PATCH 0/6] seg6: Segment routing fixes
-Date:   Fri, 31 May 2019 09:48:34 -0700
-Message-Id: <1559321320-9444-1-git-send-email-tom@quantonium.net>
+Subject: [RFC PATCH 1/6] seg6: Fix TLV definitions
+Date:   Fri, 31 May 2019 09:48:35 -0700
+Message-Id: <1559321320-9444-2-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1559321320-9444-1-git-send-email-tom@quantonium.net>
+References: <1559321320-9444-1-git-send-email-tom@quantonium.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A few bug fixes, code clean up, and minor enhancements to segment
-routing.
+The definitions of TLVs in uapi/linux/seg6.h are incorrect and
+incomplete. Fix this.
 
-Changes include:
-  - Fix SRH TLV and flag definitions (some of them are now obsolete)
-  - Implement a TLV parsing loop
-  - Add function to parse and return HMAC TLV in an SRH
-  - Support to rearrange segment routing header for AH ICV
-    calculation
+TLV constants are defined for PAD1, PADN, and HMAC (the three defined in
+draft-ietf-6man-segment-routing-header-19). The other TLV are unused and
+and are marked as obsoleted.
 
-Set as RFC to let experts on segment routing implemenation evaluate
-which of the patches are needed.
+Signed-off-by: Tom Herbert <tom@quantonium.net>
+---
+ include/uapi/linux/seg6.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Tom Herbert (6):
-  seg6: Fix TLV definitions
-  seg6: Implement a TLV parsing loop
-  seg6: Obsolete unused SRH flags
-  ah6: Create function __zero_out_mutable_opts
-  ah6: Be explicit about which routing types are processed.
-  seg6: Add support to rearrange SRH for AH ICV calculation
-
- include/net/seg6.h        | 16 +++++++++
- include/uapi/linux/seg6.h | 60 +++++++++++++++++++++++++------
- net/ipv6/ah6.c            | 90 +++++++++++++++++++++++++++++++++++------------
- net/ipv6/exthdrs.c        |  2 +-
- net/ipv6/seg6.c           | 68 +++++++++++++++++++++--------------
- net/ipv6/seg6_hmac.c      |  8 ++---
- net/ipv6/seg6_iptunnel.c  |  4 +--
- 7 files changed, 181 insertions(+), 67 deletions(-)
-
+diff --git a/include/uapi/linux/seg6.h b/include/uapi/linux/seg6.h
+index 286e8d6..9117113 100644
+--- a/include/uapi/linux/seg6.h
++++ b/include/uapi/linux/seg6.h
+@@ -38,10 +38,13 @@ struct ipv6_sr_hdr {
+ #define SR6_FLAG1_ALERT		(1 << 4)
+ #define SR6_FLAG1_HMAC		(1 << 3)
+ 
+-#define SR6_TLV_INGRESS		1
+-#define SR6_TLV_EGRESS		2
+-#define SR6_TLV_OPAQUE		3
+-#define SR6_TLV_PADDING		4
++
++#define SR6_TLV_INGRESS		1	/* obsoleted */
++#define SR6_TLV_EGRESS		2	/* obsoleted */
++#define SR6_TLV_OPAQUE		3	/* obsoleted */
++
++#define SR6_TLV_PAD1		0
++#define SR6_TLV_PADDING		1
+ #define SR6_TLV_HMAC		5
+ 
+ #define sr_has_hmac(srh) ((srh)->flags & SR6_FLAG1_HMAC)
 -- 
 2.7.4
 
