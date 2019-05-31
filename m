@@ -2,105 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7BCF30650
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 03:47:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BD5306D9
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 05:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726852AbfEaBq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 21:46:56 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:9264 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726372AbfEaBq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 21:46:56 -0400
-X-UUID: 05a641429e3146f69f07f2838f987952-20190531
-X-UUID: 05a641429e3146f69f07f2838f987952-20190531
-Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLS)
-        with ESMTP id 578061618; Fri, 31 May 2019 09:46:50 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 31 May
- 2019 09:46:47 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Fri, 31 May 2019 09:46:44 +0800
-Message-ID: <1559267203.24897.101.camel@mhfsdcap03>
-Subject: Re: [PATCH 3/4] net: stmmac: modify default value of tx-frames
-From:   biao huang <biao.huang@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Jose Abreu <joabreu@synopsys.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <jianguo.zhang@mediatek.com>, <boon.leong.ong@intel.com>
-Date:   Fri, 31 May 2019 09:46:43 +0800
-In-Reply-To: <20190530125832.GB22727@lunn.ch>
-References: <1559206484-1825-1-git-send-email-biao.huang@mediatek.com>
-         <1559206484-1825-4-git-send-email-biao.huang@mediatek.com>
-         <20190530125832.GB22727@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
-Content-Transfer-Encoding: 7bit
+        id S1726581AbfEaDFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 23:05:08 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:40394 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726487AbfEaDFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 23:05:07 -0400
+Received: by mail-vs1-f68.google.com with SMTP id c24so5782886vsp.7;
+        Thu, 30 May 2019 20:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Tw6MfE3P1bGwhttusOX/dvsaJqtQKxURFmXarqN8Wk=;
+        b=dkhdpTV768kkp6B70tjzxMcFbZIA1qkLLrYjL4RMf8a3fMP1pJQAV/EVPTzSNNtRYV
+         FUWPb7etlnoUShlILHe5PsYv8oULi7U2zG+aIlAceqOi0Z/mMZKTJFs4qPMNIfcX+rzo
+         ob5XwpUnHizhWxqTmRlqcwe/wBnzJc94gVvnHWylSwNfpoJ4Lt+Ck9otZpgdbXF8dewW
+         3tZMdngZx4eAMJrXkZxgIAA9NTyA5narqpOkzH/dFpeiW/BwC21IHx9uVp1DYV7Ai/wV
+         Xe3MZHPwDIiDjMC7lSBwpFgxXLKuuOa9+YDuCMrbd3l4L1JuZHS2F3vTyk/P3dm1unbB
+         N/7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Tw6MfE3P1bGwhttusOX/dvsaJqtQKxURFmXarqN8Wk=;
+        b=TQ4hccSjXlk4ZIIY3aERzOf1AdEzwMvueza1QRDPXXXoihw/+atsj5W8xuXHiitbt+
+         53LmgUkr+Pi1q9tLeIqzJJ0gvFwTUgTWgfuLf45wapAHeKaF6o3zA9cRnEfuX+x2ZYT1
+         57nfW+0omWahce/HOg9EifIMDGfiiEoqKbTepPL3NRdrPTN56Ipza1LqlIwEOIv0DyHj
+         el8oJZ1ttjnfGHD7ivHryZJp/9mkd7jVxIiUI4yx8ztnHuPy9zlqfB7/ph2Ni/X0mINF
+         B2zI9xaT8IrYbml6SzfVCVK0uV88aN/eSTYqZKQ4WZEtnqDe928ppbIqqGw6i2ID3E2u
+         JpSA==
+X-Gm-Message-State: APjAAAU4flBgZ1JttPeU25DJv7KEbHqHCmdRFhYdDIlN5mpwS1SkB3gI
+        YgeE0g/ZSDr/vpkcDsohpbopCYnCXra9KTVTbLk=
+X-Google-Smtp-Source: APXvYqzHV1lKMwk+FNM7dfPB5Sz5hARr3Ws8DrzHmkVGhE5KL1j7TfX0wr0G1wdCZo7XKBNHhRdZkGJkonEozHZfCVM=
+X-Received: by 2002:a67:d68e:: with SMTP id o14mr4444883vsj.140.1559271906887;
+ Thu, 30 May 2019 20:05:06 -0700 (PDT)
 MIME-Version: 1.0
-X-MTK:  N
+References: <1559230098-1543-1-git-send-email-92siuyang@gmail.com> <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com>
+In-Reply-To: <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com>
+From:   Yang Xiao <92siuyang@gmail.com>
+Date:   Fri, 31 May 2019 11:04:22 +0800
+Message-ID: <CAKgHYH1=aqmOEsbH-OuSjK4CJ=9FmocjuOg6tsyJNPLEOWVB-g@mail.gmail.com>
+Subject: Re: [PATCH] ipv6: Prevent overrun when parsing v6 header options
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Fri, May 31, 2019 at 1:17 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 5/30/19 8:28 AM, Young Xiao wrote:
+> > The fragmentation code tries to parse the header options in order
+> > to figure out where to insert the fragment option.  Since nexthdr points
+> > to an invalid option, the calculation of the size of the network header
+> > can made to be much larger than the linear section of the skb and data
+> > is read outside of it.
+> >
+> > This vulnerability is similar to CVE-2017-9074.
+> >
+> > Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> > ---
+> >  net/ipv6/mip6.c | 24 ++++++++++++++----------
+> >  1 file changed, 14 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/net/ipv6/mip6.c b/net/ipv6/mip6.c
+> > index 64f0f7b..30ed1c5 100644
+> > --- a/net/ipv6/mip6.c
+> > +++ b/net/ipv6/mip6.c
+> > @@ -263,8 +263,6 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+> >                              u8 **nexthdr)
+> >  {
+> >       u16 offset = sizeof(struct ipv6hdr);
+> > -     struct ipv6_opt_hdr *exthdr =
+> > -                                (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
+> >       const unsigned char *nh = skb_network_header(skb);
+> >       unsigned int packet_len = skb_tail_pointer(skb) -
+> >               skb_network_header(skb);
+> > @@ -272,7 +270,8 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+> >
+> >       *nexthdr = &ipv6_hdr(skb)->nexthdr;
+> >
+> > -     while (offset + 1 <= packet_len) {
+> > +     while (offset <= packet_len) {
+> > +             struct ipv6_opt_hdr *exthdr;
+> >
+> >               switch (**nexthdr) {
+> >               case NEXTHDR_HOP:
+> > @@ -299,12 +298,15 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+> >                       return offset;
+> >               }
+> >
+> > +             if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
+> > +                     return -EINVAL;
+> > +
+> > +             exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+> >               offset += ipv6_optlen(exthdr);
+> >               *nexthdr = &exthdr->nexthdr;
+> > -             exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+> >       }
+> >
+> > -     return offset;
+> > +     return -EINVAL;
+> >  }
+> >
+>
+>
+> Ok, but have you checked that callers have been fixed ?
 
-On Thu, 2019-05-30 at 14:58 +0200, Andrew Lunn wrote:
-> On Thu, May 30, 2019 at 04:54:43PM +0800, Biao Huang wrote:
-> > the default value of tx-frames is 25, it's too late when
-> > passing tstamp to stack, then the ptp4l will fail:
-> > 
-> > ptp4l -i eth0 -f gPTP.cfg -m
-> > ptp4l: selected /dev/ptp0 as PTP clock
-> > ptp4l: port 1: INITIALIZING to LISTENING on INITIALIZE
-> > ptp4l: port 0: INITIALIZING to LISTENING on INITIALIZE
-> > ptp4l: port 1: link up
-> > ptp4l: timed out while polling for tx timestamp
-> > ptp4l: increasing tx_timestamp_timeout may correct this issue,
-> >        but it is likely caused by a driver bug
-> > ptp4l: port 1: send peer delay response failed
-> > ptp4l: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
-> > 
-> > ptp4l tests pass when changing the tx-frames from 25 to 1 with
-> > ethtool -C option.
-> > It should be fine to set tx-frames default value to 1, so ptp4l will pass
-> > by default.
-> 
-> Hi Biao
-> 
-> What does this do to the number of interrupts? Do we get 25 times more
-> interrupts? Have you done any performance tests to see if this causes
-> performance regressions?
-Yes, it seems tx-frames=25 can reduce interrupts.
-But the tx interrupt is handled in napi now, which will disable/enable
-tx interrupts at the beginning/ending of napi flow.
+I've checked the callers. There are two callers:
+xfrm6_transport_output() and xfrm6_ro_output(). There are checks in
+both function.
 
-Here is the test result on our platform:
-		tx-frames=1		tx-frames=25		
-irq number	478514			393750	
-performance	904Mbits/sec		902Mbits/sec
+------------------------------------------------------------------------------
+        hdr_len = x->type->hdr_offset(x, skb, &prevhdr);
+        if (hdr_len < 0)
+                return hdr_len;
+------------------------------------------------------------------------------
+>
+> xfrm6_transport_output() seems buggy as well,
+> unless the skbs are linearized before entering these functions ?
+I can not understand what you mean about this comment.
+Could you explain it in more detail.
 
-commands for test:
-	"cat /proc/interrupts | grep eth0"
-	"iperf3 -c ipaddress -w 256K -t 60"
-
-Thanks to napi, the interrupts will not grow 25 times more(almost the
-same level), and no obvious performance degradation.
-
-Is there anybody can double check the performance with tx-frames = 0 or
-25?
-> 
-> 	    Andrew
-Thanks.
-Biao
-
-
+>
+> Thanks.
+>
+>
+>
