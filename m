@@ -2,106 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C5230E3D
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53A730E45
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbfEaMms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:42:48 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:46188 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbfEaMmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:42:47 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z19so566673qtz.13;
-        Fri, 31 May 2019 05:42:47 -0700 (PDT)
+        id S1727237AbfEaMpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:45:01 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36884 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfEaMpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:45:00 -0400
+Received: by mail-lj1-f193.google.com with SMTP id h19so9483272ljj.4
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 05:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=geKl/13b2BVq2WZuH+jtOS2GrdFzU8dWzNHM7JMs9Fs=;
-        b=KJJG6JstMzDKdPrLJ9ax5XAiPXVeC9mUtrk0dl5dqUITIboQr66+88OY0XE+H4xwTc
-         sIGfGlFbb458vliPv/yttt8TCJ128hOWeAvCcY58Bnnxe5pxG+2qfkXNNCx1BWquvGtl
-         uz+zy8p7Vyz/kGo7nKGZkfH+Uops7DNy1tF43V57wpeLN6EPltCmfxH89ImXFz1ne0Qo
-         v/q+IdhOwKpD/Vg0ouG5+0CB8sZHvJ13Bb9WjVCw/Fs3BDRLHoEyj7RatP1bBw3e40Gx
-         xePs4/FueO6YsqdbLl4+jHpDJ7/om+dnuSiJoXH/LFXbSYwFaQ5uGsSL4FnvS2SaCI/x
-         vkPQ==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZXDOKwkAEMBmiYSeMHCXxPtDvLwnxyJqoeUB0a+jAg8=;
+        b=Oh5evWeBS0FQ5+SDSVIYDoDosmFdUraAVQSeP13wAG0FfkUCyvKQpzKYfoQx/Fc9jG
+         lSaXqIOqwzoUzI3o8vBwZqtrK4OfHuaXvwJgEezHSUYUzDIRs8JkI5NH1zlR4cxWyQme
+         Jfit8Diw2UqqiuTc+FH74c11TZCrrrdmpj/o5+9/QDcaiVnDEyYq21nnWSIA465u/MU4
+         +qSUnOUm6rmASeEsGsXm0RP0/aMO/Wsm45X36MGxa7H5G8PkA5ZCJKY5x4qvxmWuxnO8
+         Qn1PWZvVAf7u20A+XXfB5qKWG2QcdBuOAtm661NoEzPCdGshFZqYQtHFr/60ieylKxGT
+         GHFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=geKl/13b2BVq2WZuH+jtOS2GrdFzU8dWzNHM7JMs9Fs=;
-        b=QJZUPk5ZTTztXTlZQRTHTvWIKsMsWD5JjieNRCNHMy5vdxVr4o6UNQxMUPwPNy3dLa
-         QzQvv2pUHBFzsv2Irxvh0oqjeeFF9BI697EahFS7Wqa0JdAb6VRbVx/acoJqqbKTYmGV
-         VG9+n6z7TsTvVGKMeZtymDPsbCKav8odg/8wPYhvP2GNiGpqexi8i7i7CmY22sqGKOTJ
-         hDZNVaHLPLz6UTMtEP6fCWtfqpNEJ1O3DICM/41X3BeuOMWqwcy4Y3yYfkH44aX9+IIw
-         VJ538WmJLZE1XxwPIPFILSqDiRrJF4S0Z+3b5JwdZG6OKrMvDVKq2U0fh2Pr6EXn6Wm+
-         AkSg==
-X-Gm-Message-State: APjAAAUhGiHIqbgV6rc+fqeokDe8HOT+ahscuGLawYRD9ORw7vnR/wTe
-        JIY32a/tGIA9xVJx4hfq6CM8XC14dtk=
-X-Google-Smtp-Source: APXvYqxqBl45Ss9D1ff4GpE8LtsRAB09vITnennPVNYNDky66pmdjU0thOlIUFl8fkwkLhnd6BTarA==
-X-Received: by 2002:ac8:3fb3:: with SMTP id d48mr8986621qtk.290.1559306566509;
-        Fri, 31 May 2019 05:42:46 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:d534:113c:6e5f:4426:2d54])
-        by smtp.gmail.com with ESMTPSA id c9sm4414125qtc.39.2019.05.31.05.42.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 31 May 2019 05:42:45 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 54983C085E; Fri, 31 May 2019 09:42:42 -0300 (-03)
-Date:   Fri, 31 May 2019 09:42:42 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>,
-        davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Subject: Re: memory leak in sctp_process_init
-Message-ID: <20190531124242.GE3713@localhost.localdomain>
-References: <00000000000097abb90589e804fd@google.com>
- <20190528013600.GM5506@localhost.localdomain>
- <20190528111550.GA4658@hmswarspite.think-freely.org>
- <20190529190709.GE31099@hmswarspite.think-freely.org>
- <20190529233757.GC3713@localhost.localdomain>
- <20190530142011.GC1966@hmswarspite.think-freely.org>
- <20190530151705.GD3713@localhost.localdomain>
- <20190530195634.GD1966@hmswarspite.think-freely.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZXDOKwkAEMBmiYSeMHCXxPtDvLwnxyJqoeUB0a+jAg8=;
+        b=HcoLIQDmiyeaInc56CFtttGj3xgfgWKOUTJreXNy+1fCn/Fkj6y2A+6XkRHJRUy8ly
+         McfbkBZa2dibBUNMVBwfkf98jvf6SRpeum0WSE0D2RYH3ssNAHzT53Dqo/v830m67XWd
+         sx0J+AzVvnrinnb8hgHjWoGjYCg77S+XoZDPqq1t48NB5oarRXywcSAqrFpq9Ruw+XE6
+         uE6cqae7aBOOOOM9gw10JUsv+A7kR7s/lcWbv428gKQfJLS4BcSs+O40703d/rqoz9cA
+         5bNv+Kvp1XajGCfiBLmFSkgo1wSZTfnAROezdL+iYdzFn4axYY8vaducXh1+NM6rAbGc
+         lSGA==
+X-Gm-Message-State: APjAAAWC/Zt8ksa17J2dK+cchW1dtrAUXLD212Hw75BX9pRUumd+GS1A
+        vJeslP1AzocDMuih4ipKkU/FcZMD9u6sdZjHp6ON
+X-Google-Smtp-Source: APXvYqwRVVnGpDVdSGCj6R4r22cAjZvnCnlNYusSiD/sCSGkEdAyXXFr+krFA2m6K8I0tlJghON4fRG9yXZG4071sxQ=
+X-Received: by 2002:a2e:3e14:: with SMTP id l20mr5891599lja.40.1559306696964;
+ Fri, 31 May 2019 05:44:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190530195634.GD1966@hmswarspite.think-freely.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190529145742.GA8959@cisco> <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
+ <20190529153427.GB8959@cisco> <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
+ <20190529222835.GD8959@cisco> <CAHC9VhRS66VGtug3fq3RTGHDvfGmBJG6yRJ+iMxm3cxnNF-zJw@mail.gmail.com>
+ <20190530170913.GA16722@mail.hallyn.com> <CAHC9VhThLiQzGYRUWmSuVfOC6QCDmA75BDB7Eg7V8HX4x7ymQg@mail.gmail.com>
+ <20190530212900.GC5739@cisco> <CAHC9VhT5HPt9rCJoDutdvA3r1Y1GOHfpXe2eJ54atNC1=Vd8LA@mail.gmail.com>
+ <20190531002058.tsddah4edcazkuzs@madcap2.tricolour.ca>
+In-Reply-To: <20190531002058.tsddah4edcazkuzs@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 31 May 2019 08:44:45 -0400
+Message-ID: <CAHC9VhTrM1op_EH=YAn9pU8dMOr=jB-Ph4SxFeqGFskwLmFnCA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     Tycho Andersen <tycho@tycho.ws>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        ebiederm@xmission.com, nhorman@tuxdriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 03:56:34PM -0400, Neil Horman wrote:
-> On Thu, May 30, 2019 at 12:17:05PM -0300, Marcelo Ricardo Leitner wrote:
-...
-> > --- a/net/sctp/sm_sideeffect.c
-> > +++ b/net/sctp/sm_sideeffect.c
-> > @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
-> >  						asoc->rto_initial;
-> >  	}
-> >  
-> > +	if (sctp_state(asoc, ESTABLISHED)) {
-> > +		kfree(asoc->peer.cookie);
-> > +		asoc->peer.cookie = NULL;
-> > +	}
-> > +
-> Not sure I follow why this is needed.  It doesn't hurt anything of course, but
-> if we're freeing in sctp_association_free, we don't need to duplicate the
-> operation here, do we?
+On Thu, May 30, 2019 at 8:21 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-05-30 19:26, Paul Moore wrote:
+> > On Thu, May 30, 2019 at 5:29 PM Tycho Andersen <tycho@tycho.ws> wrote:
+> > > On Thu, May 30, 2019 at 03:29:32PM -0400, Paul Moore wrote:
+> > > >
+> > > > [REMINDER: It is an "*audit* container ID" and not a general
+> > > > "container ID" ;)  Smiley aside, I'm not kidding about that part.]
+> > >
+> > > This sort of seems like a distinction without a difference; presumably
+> > > audit is going to want to differentiate between everything that people
+> > > in userspace call a container. So you'll have to support all this
+> > > insanity anyway, even if it's "not a container ID".
+> >
+> > That's not quite right.  Audit doesn't care about what a container is,
+> > or is not, it also doesn't care if the "audit container ID" actually
+> > matches the ID used by the container engine in userspace and I think
+> > that is a very important line to draw.  Audit is simply given a value
+> > which it calls the "audit container ID", it ensures that the value is
+> > inherited appropriately (e.g. children inherit their parent's audit
+> > container ID), and it uses the value in audit records to provide some
+> > additional context for log analysis.  The distinction isn't limited to
+> > the value itself, but also to how it is used; it is an "audit
+> > container ID" and not a "container ID" because this value is
+> > exclusively for use by the audit subsystem.  We are very intentionally
+> > not adding a generic container ID to the kernel.  If the kernel does
+> > ever grow a general purpose container ID we will be one of the first
+> > ones in line to make use of it, but we are not going to be the ones to
+> > generically add containers to the kernel.  Enough people already hate
+> > audit ;)
+> >
+> > > > I'm not interested in supporting/merging something that isn't useful;
+> > > > if this doesn't work for your use case then we need to figure out what
+> > > > would work.  It sounds like nested containers are much more common in
+> > > > the lxc world, can you elaborate a bit more on this?
+> > > >
+> > > > As far as the possible solutions you mention above, I'm not sure I
+> > > > like the per-userns audit container IDs, I'd much rather just emit the
+> > > > necessary tracking information via the audit record stream and let the
+> > > > log analysis tools figure it out.  However, the bigger question is how
+> > > > to limit (re)setting the audit container ID when you are in a non-init
+> > > > userns.  For reasons already mentioned, using capable() is a non
+> > > > starter for everything but the initial userns, and using ns_capable()
+> > > > is equally poor as it essentially allows any userns the ability to
+> > > > munge it's audit container ID (obviously not good).  It appears we
+> > > > need a different method for controlling access to the audit container
+> > > > ID.
+> > >
+> > > One option would be to make it a string, and have it be append only.
+> > > That should be safe with no checks.
+> > >
+> > > I know there was a long thread about what type to make this thing. I
+> > > think you could accomplish the append-only-ness with a u64 if you had
+> > > some rule about only allowing setting lower order bits than those that
+> > > are already set. With 4 bits for simplicity:
+> > >
+> > > 1100         # initial container id
+> > > 1100 -> 1011 # not allowed
+> > > 1100 -> 1101 # allowed, but now 1101 is set in stone since there are
+> > >              # no lower order bits left
+> > >
+> > > There are probably fancier ways to do it if you actually understand
+> > > math :)
+> >
+> >  ;)
+> >
+> > > Since userns nesting is limited to 32 levels (right now, IIRC), and
+> > > you have 64 bits, this might be reasonable. You could just teach
+> > > container engines to use the first say N bits for themselves, with a 1
+> > > bit for the barrier at the end.
+> >
+> > I like the creativity, but I worry that at some point these
+> > limitations are going to be raised (limits have a funny way of doing
+> > that over time) and we will be in trouble.  I say "trouble" because I
+> > want to be able to quickly do an audit container ID comparison and
+> > we're going to pay a penalty for these larger values (we'll need this
+> > when we add multiple auditd support and the requisite record routing).
+> >
+> > Thinking about this makes me also realize we probably need to think a
+> > bit longer about audit container ID conflicts between orchestrators.
+> > Right now we just take the value that is given to us by the
+> > orchestrator, but if we want to allow multiple container orchestrators
+> > to work without some form of cooperation in userspace (I think we have
+> > to assume the orchestrators will not talk to each other) we likely
+> > need to have some way to block reuse of an audit container ID.  We
+> > would either need to prevent the orchestrator from explicitly setting
+> > an audit container ID to a currently in use value, or instead generate
+> > the audit container ID in the kernel upon an event triggered by the
+> > orchestrator (e.g. a write to a /proc file).  I suspect we should
+> > start looking at the idr code, I think we will need to make use of it.
+>
+> My first reaction to using the IDR code is that once an idr is given up,
+> it can be reused.  I suppose we request IDRs and then never give them up
+> to avoid reuse...
 
-This one would be to avoid storing the cookie throughout the entire
-association lifetime, as the cookie is only needed during the
-handshake.
-While the free in sctp_association_free will handle the freeing in
-case the association never enters established state.
+I'm not sure we ever what to guarantee that an audit container ID
+won't be reused during the lifetime of the system, it is a discrete
+integer after all.  What I think we do want to guarantee is that we
+won't allow an unintentional audit container ID collision between
+different orchestrators; if a single orchestrator wants to reuse an
+audit container ID then that is its choice.
 
-> >  	if (sctp_state(asoc, ESTABLISHED) ||
-> >  	    sctp_state(asoc, CLOSED) ||
-> >  	    sctp_state(asoc, SHUTDOWN_RECEIVED)) {
-> > 
-> > Also untested, just sharing the idea.
-> > 
-> >   Marcelo
-> > 
+> I already had some ideas of preventing an existing ID from being reused,
+
+Cool.  I only made the idr suggestion since it is used for PIDs and
+solves a very similar problem.
+
+> but that makes the practice of some container engines injecting
+> processes into existing containers difficult if not impossible.
+
+Yes, we'll need some provision to indicate which orchestrator
+"controls" that particular audit container ID, and allow that
+orchestrator to reuse that particular audit container ID (until all
+those containers disappear and the audit container ID is given back to
+the pool).
+
+-- 
+paul moore
+www.paul-moore.com
