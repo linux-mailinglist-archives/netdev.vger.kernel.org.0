@@ -2,182 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2DC30A14
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE5030A17
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbfEaISa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:18:30 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46187 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbfEaIS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 04:18:29 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n4so625410wrw.13
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 01:18:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=BIz1bv11HMjHB1Hu4xZnOc0yPIRdRCqcQguEpfnn82A=;
-        b=KrsKdgsU86iggHltJn5oln+yjtsSvgMOg+84lVtYy692BaJYjlUV7lXB9FzpzuIz9Z
-         JxLvDnqku2hp15FgInhyvtcYpFk7JAzcwIwKFVylp58pNMzgipBdRX2i1XXNrhC2z68l
-         yVhZs0tvyxpjbWJsXjHmog6M+liuyWdfggtjMrvCrC4cb9e77qVBp6YBe4/8bPOgEPx5
-         ZMdB5MxsjQ6vEp+pGde8S2tHrbVOA1/KviQDqkeX3IlyQ2O0q8K9dEwD20co5pBwwBHA
-         WEVsEwnZ+TjE2vwok61OcD4p53qshc9kmE6d9KHsAeDvQ9hLZN++ut1sTbmNSKWORhb4
-         wz9g==
-X-Gm-Message-State: APjAAAU0CA/AdkgCB4fGHyMKY6mOjaqggBo7D2bnBL7mscNSqLu55Mdf
-        oQhS8NMlyU+3p6fypAX5WEDXizGLgi0=
-X-Google-Smtp-Source: APXvYqye/QQLh7SIvvpoJvA/hOy1L+4fNdxw49tgzQO5LNakbcjr0yAiG43fF/BFitqAfrP4xKJycg==
-X-Received: by 2002:adf:ff88:: with SMTP id j8mr5685635wrr.317.1559290707447;
-        Fri, 31 May 2019 01:18:27 -0700 (PDT)
-Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
-        by smtp.gmail.com with ESMTPSA id n7sm3575495wrw.64.2019.05.31.01.18.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 31 May 2019 01:18:26 -0700 (PDT)
-Date:   Fri, 31 May 2019 10:18:24 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S . Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
-Message-ID: <20190531081824.p6ylsgvkrbckhqpx@steredhat>
-References: <20190528105623.27983-1-sgarzare@redhat.com>
- <20190528105623.27983-4-sgarzare@redhat.com>
- <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
- <20190529105832.oz3sagbne5teq3nt@steredhat>
- <8c9998c8-1b9c-aac6-42eb-135fcb966187@redhat.com>
- <20190530101036.wnjphmajrz6nz6zc@steredhat.homenet.telecomitalia.it>
- <4c881585-8fee-0a53-865c-05d41ffb8ed1@redhat.com>
+        id S1726910AbfEaITE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:19:04 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48640 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726485AbfEaITE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 04:19:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9D6C3AF0A;
+        Fri, 31 May 2019 08:19:02 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 79CB9E00E3; Fri, 31 May 2019 10:19:01 +0200 (CEST)
+Date:   Fri, 31 May 2019 10:19:01 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     sameehj@amazon.com, davem@davemloft.net,
+        Arthur Kiyanovski <akiyano@amazon.com>, dwmw@amazon.com,
+        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
+        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
+        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
+        benh@amazon.com
+Subject: Re: [PATCH V1 net-next 02/11] net: ena: ethtool: add extra
+ properties retrieval via get_priv_flags
+Message-ID: <20190531081901.GC15954@unicorn.suse.cz>
+References: <20190529095004.13341-1-sameehj@amazon.com>
+ <20190529095004.13341-3-sameehj@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4c881585-8fee-0a53-865c-05d41ffb8ed1@redhat.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190529095004.13341-3-sameehj@amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 07:59:14PM +0800, Jason Wang wrote:
+On Wed, May 29, 2019 at 12:49:55PM +0300, sameehj@amazon.com wrote:
+> From: Arthur Kiyanovski <akiyano@amazon.com>
 > 
-> On 2019/5/30 下午6:10, Stefano Garzarella wrote:
-> > On Thu, May 30, 2019 at 05:46:18PM +0800, Jason Wang wrote:
-> > > On 2019/5/29 下午6:58, Stefano Garzarella wrote:
-> > > > On Wed, May 29, 2019 at 11:22:40AM +0800, Jason Wang wrote:
-> > > > > On 2019/5/28 下午6:56, Stefano Garzarella wrote:
-> > > > > > @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> > > > > >     	vsock->event_run = false;
-> > > > > >     	mutex_unlock(&vsock->event_lock);
-> > > > > > +	/* Flush all pending works */
-> > > > > > +	virtio_vsock_flush_works(vsock);
-> > > > > > +
-> > > > > >     	/* Flush all device writes and interrupts, device will not use any
-> > > > > >     	 * more buffers.
-> > > > > >     	 */
-> > > > > > @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> > > > > >     	/* Delete virtqueues and flush outstanding callbacks if any */
-> > > > > >     	vdev->config->del_vqs(vdev);
-> > > > > > +	/* Other works can be queued before 'config->del_vqs()', so we flush
-> > > > > > +	 * all works before to free the vsock object to avoid use after free.
-> > > > > > +	 */
-> > > > > > +	virtio_vsock_flush_works(vsock);
-> > > > > Some questions after a quick glance:
-> > > > > 
-> > > > > 1) It looks to me that the work could be queued from the path of
-> > > > > vsock_transport_cancel_pkt() . Is that synchronized here?
-> > > > > 
-> > > > Both virtio_transport_send_pkt() and vsock_transport_cancel_pkt() can
-> > > > queue work from the upper layer (socket).
-> > > > 
-> > > > Setting the_virtio_vsock to NULL, should synchronize, but after a careful look
-> > > > a rare issue could happen:
-> > > > we are setting the_virtio_vsock to NULL at the start of .remove() and we
-> > > > are freeing the object pointed by it at the end of .remove(), so
-> > > > virtio_transport_send_pkt() or vsock_transport_cancel_pkt() may still be
-> > > > running, accessing the object that we are freed.
-> > > 
-> > > Yes, that's my point.
-> > > 
-> > > 
-> > > > Should I use something like RCU to prevent this issue?
-> > > > 
-> > > >       virtio_transport_send_pkt() and vsock_transport_cancel_pkt()
-> > > >       {
-> > > >           rcu_read_lock();
-> > > >           vsock = rcu_dereference(the_virtio_vsock_mutex);
-> > > 
-> > > RCU is probably a way to go. (Like what vhost_transport_send_pkt() did).
-> > > 
-> > Okay, I'm going this way.
-> > 
-> > > >           ...
-> > > >           rcu_read_unlock();
-> > > >       }
-> > > > 
-> > > >       virtio_vsock_remove()
-> > > >       {
-> > > >           rcu_assign_pointer(the_virtio_vsock_mutex, NULL);
-> > > >           synchronize_rcu();
-> > > > 
-> > > >           ...
-> > > > 
-> > > >           free(vsock);
-> > > >       }
-> > > > 
-> > > > Could there be a better approach?
-> > > > 
-> > > > 
-> > > > > 2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run still
-> > > > > needed? It looks to me we've already done except that we need flush rx_work
-> > > > > in the end since send_pkt_work can requeue rx_work.
-> > > > The main reason of tx_run/rx_run/event_run is to prevent that a worker
-> > > > function is running while we are calling config->reset().
-> > > > 
-> > > > E.g. if an interrupt comes between virtio_vsock_flush_works() and
-> > > > config->reset(), it can queue new works that can access the device while
-> > > > we are in config->reset().
-> > > > 
-> > > > IMHO they are still needed.
-> > > > 
-> > > > What do you think?
-> > > 
-> > > I mean could we simply do flush after reset once and without tx_rx/rx_run
-> > > tricks?
-> > > 
-> > > rest();
-> > > 
-> > > virtio_vsock_flush_work();
-> > > 
-> > > virtio_vsock_free_buf();
-> > My only doubt is:
-> > is it safe to call config->reset() while a worker function could access
-> > the device?
-> > 
-> > I had this doubt reading the Michael's advice[1] and looking at
-> > virtnet_remove() where there are these lines before the config->reset():
-> > 
-> > 	/* Make sure no work handler is accessing the device. */
-> > 	flush_work(&vi->config_work);
-> > 
-> > Thanks,
-> > Stefano
-> > 
-> > [1] https://lore.kernel.org/netdev/20190521055650-mutt-send-email-mst@kernel.org
+> This commit adds a mechanism for exposing different driver
+> properties via ethtool's priv_flags.
 > 
+> In this commit we:
 > 
-> Good point. Then I agree with you. But if we can use the RCU to detect the
-> detach of device from socket for these, it would be even better.
+> Add commands, structs and defines necessary for handling
+> extra properties
 > 
+> Add functions for:
+> Allocation/destruction of a buffer for extra properties strings.
+> Retreival of extra properties strings and flags from the network device.
+> 
+> Handle the allocation of a buffer for extra properties strings.
+> 
+> * Initialize buffer with extra properties strings from the
+>   network device at driver startup.
+> 
+> Use ethtool's get_priv_flags to expose extra properties of
+> the ENA device
+> 
+> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+> Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+> ---
+...
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+> index bd0d785b2..935e8fa8d 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_com.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+> @@ -1877,6 +1877,62 @@ int ena_com_get_link_params(struct ena_com_dev *ena_dev,
+>  	return ena_com_get_feature(ena_dev, resp, ENA_ADMIN_LINK_CONFIG);
+>  }
+>  
+> +int ena_com_extra_properties_strings_init(struct ena_com_dev *ena_dev)
+> +{
+> +	struct ena_admin_get_feat_resp resp;
+> +	struct ena_extra_properties_strings *extra_properties_strings =
+> +			&ena_dev->extra_properties_strings;
+> +	u32 rc;
+> +
+> +	extra_properties_strings->size = ENA_ADMIN_EXTRA_PROPERTIES_COUNT *
+> +		ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN;
+> +
+> +	extra_properties_strings->virt_addr =
+> +		dma_alloc_coherent(ena_dev->dmadev,
+> +				   extra_properties_strings->size,
+> +				   &extra_properties_strings->dma_addr,
+> +				   GFP_KERNEL);
 
-What about checking 'the_virtio_vsock' in the worker functions in a RCU
-critical section?
-In this way, I can remove the rx_run/tx_run/event_run.
+Do you need to fetch the private flag names on each ETHTOOL_GSTRING
+request? I suppose they could change e.g. on a firmware update but then
+even the count could change which you do not seem to handle. Is there
+a reason not to fetch the names once on init rather then accessing the
+device memory each time?
 
-Do you think it's cleaner?
+My point is that ethtool_ops::get_strings() does not return a value
+which indicates that it's supposed to be a trivial operation which
+cannot fail, usually a simple copy within kernel memory.
 
-Thank you very much,
-Stefano
+> +	if (unlikely(!extra_properties_strings->virt_addr)) {
+> +		pr_err("Failed to allocate extra properties strings\n");
+> +		return 0;
+> +	}
+> +
+> +	rc = ena_com_get_feature_ex(ena_dev, &resp,
+> +				    ENA_ADMIN_EXTRA_PROPERTIES_STRINGS,
+> +				    extra_properties_strings->dma_addr,
+> +				    extra_properties_strings->size);
+> +	if (rc) {
+> +		pr_debug("Failed to get extra properties strings\n");
+> +		goto err;
+> +	}
+> +
+> +	return resp.u.extra_properties_strings.count;
+> +err:
+> +	ena_com_delete_extra_properties_strings(ena_dev);
+> +	return 0;
+> +}
+...
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> index fe596bc30..65bc5a2b2 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+...
+> +static void get_private_flags_strings(struct ena_adapter *adapter, u8 *data)
+> +{
+> +	struct ena_com_dev *ena_dev = adapter->ena_dev;
+> +	u8 *strings = ena_dev->extra_properties_strings.virt_addr;
+> +	int i;
+> +
+> +	if (unlikely(!strings)) {
+> +		adapter->ena_extra_properties_count = 0;
+> +		netif_err(adapter, drv, adapter->netdev,
+> +			  "Failed to allocate extra properties strings\n");
+> +		return;
+> +	}
+
+This is a bit confusing, IMHO. I'm aware we shouldn't really get here as
+with strings null, count would be zero and ethtool_get_strings()
+wouldn't call the ->get_strings() callback. But if we ever do, it makes
+little sense to complain about failed allocation (which happened once on
+init) each time userspace makes ETHTOOL_GSTRINGS request for private
+flags.
+
+> +
+> +	for (i = 0; i < adapter->ena_extra_properties_count; i++) {
+> +		snprintf(data, ETH_GSTRING_LEN, "%s",
+> +			 strings + ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN * i);
+
+snprintf() is a bit overkill here, what you are doing is rather
+strlcpy() or strscpy(). Or maybe strncpy() as strings returned by
+->get_strings() do not have to be null terminated.
+
+> +		data += ETH_GSTRING_LEN;
+> +	}
+> +}
+
+Michal Kubecek
