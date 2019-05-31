@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEDD831251
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D16B31252
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfEaQ10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:27:26 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:33364 "EHLO
+        id S1726901AbfEaQ1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:27:30 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:33370 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726748AbfEaQ10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:26 -0400
+        by vger.kernel.org with ESMTP id S1726818AbfEaQ13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:29 -0400
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
         (envelope-from <fw@breakpoint.cc>)
-        id 1hWkNI-0005gH-3E; Fri, 31 May 2019 18:27:24 +0200
+        id 1hWkNL-0005gV-PE; Fri, 31 May 2019 18:27:27 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next v3 2/7] net: inetdevice: provide replacement iterators for in_ifaddr walk
-Date:   Fri, 31 May 2019 18:27:04 +0200
-Message-Id: <20190531162709.9895-3-fw@strlen.de>
+Subject: [PATCH net-next v3 3/7] devinet: use in_dev_for_each_ifa_rcu in more places
+Date:   Fri, 31 May 2019 18:27:05 +0200
+Message-Id: <20190531162709.9895-4-fw@strlen.de>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190531162709.9895-1-fw@strlen.de>
 References: <20190531162709.9895-1-fw@strlen.de>
@@ -30,153 +30,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ifa_list is protected either by rcu or rtnl lock, but the
-current iterators do not account for this.
+This also replaces spots that used for_primary_ifa().
 
-This adds two iterators as replacement, a later patch in
-the series will update them with the needed rcu/rtnl_dereference calls.
+for_primary_ifa() aborts the loop on the first secondary address seen.
 
-Its not done in this patch yet to avoid sparse warnings -- the fields
-lack the proper __rcu annotation.
+Replace it with either the rcu or rtnl variant of in_dev_for_each_ifa(),
+but two places will now also consider secondary addresses too:
+inet_addr_onlink() and inet_ifa_byprefix().
+
+I do not understand why they should ignore secondary addresses.
+
+Why would a secondary address not be considered 'on link'?
+When matching a prefix, why ignore a matching secondary address?
+
+Other places get converted as well, but gain "->flags & SECONDARY" check.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- include/linux/inetdevice.h | 10 +++++++++-
- net/ipv4/devinet.c         | 31 ++++++++++++++++---------------
- 2 files changed, 25 insertions(+), 16 deletions(-)
+ net/ipv4/devinet.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
-index 367dc2a0f84a..d5d05503a04b 100644
---- a/include/linux/inetdevice.h
-+++ b/include/linux/inetdevice.h
-@@ -186,7 +186,7 @@ __be32 inet_confirm_addr(struct net *net, struct in_device *in_dev, __be32 dst,
- struct in_ifaddr *inet_ifa_byprefix(struct in_device *in_dev, __be32 prefix,
- 				    __be32 mask);
- struct in_ifaddr *inet_lookup_ifaddr_rcu(struct net *net, __be32 addr);
--static __inline__ bool inet_ifa_match(__be32 addr, struct in_ifaddr *ifa)
-+static inline bool inet_ifa_match(__be32 addr, const struct in_ifaddr *ifa)
- {
- 	return !((addr^ifa->ifa_address)&ifa->ifa_mask);
- }
-@@ -215,6 +215,14 @@ static __inline__ bool bad_mask(__be32 mask, __be32 addr)
- 
- #define endfor_ifa(in_dev) }
- 
-+#define in_dev_for_each_ifa_rtnl(ifa, in_dev)			\
-+	for (ifa = (in_dev)->ifa_list; ifa;			\
-+	     ifa = ifa->ifa_next)
-+
-+#define in_dev_for_each_ifa_rcu(ifa, in_dev)			\
-+	for (ifa = (in_dev)->ifa_list; ifa;			\
-+	     ifa = ifa->ifa_next)
-+
- static inline struct in_device *__in_dev_get_rcu(const struct net_device *dev)
- {
- 	return rcu_dereference(dev->ip_ptr);
 diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 701c5d113a34..7803a4d2951c 100644
+index 7803a4d2951c..b45421b2b734 100644
 --- a/net/ipv4/devinet.c
 +++ b/net/ipv4/devinet.c
-@@ -873,13 +873,12 @@ static struct in_ifaddr *rtm_to_ifaddr(struct net *net, struct nlmsghdr *nlh,
- static struct in_ifaddr *find_matching_ifa(struct in_ifaddr *ifa)
- {
- 	struct in_device *in_dev = ifa->ifa_dev;
--	struct in_ifaddr *ifa1, **ifap;
-+	struct in_ifaddr *ifa1;
+@@ -327,15 +327,17 @@ static void inetdev_destroy(struct in_device *in_dev)
  
- 	if (!ifa->ifa_local)
- 		return NULL;
- 
--	for (ifap = &in_dev->ifa_list; (ifa1 = *ifap) != NULL;
--	     ifap = &ifa1->ifa_next) {
-+	in_dev_for_each_ifa_rtnl(ifa1, in_dev) {
- 		if (ifa1->ifa_mask == ifa->ifa_mask &&
- 		    inet_ifa_match(ifa1->ifa_address, ifa) &&
- 		    ifa1->ifa_local == ifa->ifa_local)
-@@ -1208,7 +1207,7 @@ int devinet_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr)
- static int inet_gifconf(struct net_device *dev, char __user *buf, int len, int size)
+ int inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b)
  {
- 	struct in_device *in_dev = __in_dev_get_rtnl(dev);
--	struct in_ifaddr *ifa;
 +	const struct in_ifaddr *ifa;
- 	struct ifreq ifr;
- 	int done = 0;
- 
-@@ -1218,7 +1217,7 @@ static int inet_gifconf(struct net_device *dev, char __user *buf, int len, int s
- 	if (!in_dev)
- 		goto out;
- 
--	for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next) {
-+	in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 		if (!buf) {
- 			done += size;
- 			continue;
-@@ -1321,10 +1320,11 @@ EXPORT_SYMBOL(inet_select_addr);
- static __be32 confirm_addr_indev(struct in_device *in_dev, __be32 dst,
- 			      __be32 local, int scope)
- {
--	int same = 0;
-+	const struct in_ifaddr *ifa;
- 	__be32 addr = 0;
-+	int same = 0;
- 
--	for_ifa(in_dev) {
++
+ 	rcu_read_lock();
+-	for_primary_ifa(in_dev) {
 +	in_dev_for_each_ifa_rcu(ifa, in_dev) {
- 		if (!addr &&
- 		    (local == ifa->ifa_local || !local) &&
- 		    ifa->ifa_scope <= scope) {
-@@ -1350,7 +1350,7 @@ static __be32 confirm_addr_indev(struct in_device *in_dev, __be32 dst,
- 				same = 0;
+ 		if (inet_ifa_match(a, ifa)) {
+ 			if (!b || inet_ifa_match(b, ifa)) {
+ 				rcu_read_unlock();
+ 				return 1;
  			}
  		}
 -	} endfor_ifa(in_dev);
 +	}
- 
- 	return same ? addr : 0;
+ 	rcu_read_unlock();
+ 	return 0;
  }
-@@ -1424,7 +1424,7 @@ static void inetdev_changename(struct net_device *dev, struct in_device *in_dev)
- 	struct in_ifaddr *ifa;
- 	int named = 0;
- 
--	for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next) {
-+	in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 		char old[IFNAMSIZ], *dot;
- 
- 		memcpy(old, ifa->ifa_label, IFNAMSIZ);
-@@ -1454,10 +1454,9 @@ static void inetdev_send_gratuitous_arp(struct net_device *dev,
- 					struct in_device *in_dev)
- 
+@@ -580,12 +582,14 @@ EXPORT_SYMBOL(inetdev_by_index);
+ struct in_ifaddr *inet_ifa_byprefix(struct in_device *in_dev, __be32 prefix,
+ 				    __be32 mask)
  {
--	struct in_ifaddr *ifa;
-+	const struct in_ifaddr *ifa;
++	struct in_ifaddr *ifa;
++
+ 	ASSERT_RTNL();
  
--	for (ifa = in_dev->ifa_list; ifa;
--	     ifa = ifa->ifa_next) {
+-	for_primary_ifa(in_dev) {
 +	in_dev_for_each_ifa_rtnl(ifa, in_dev) {
- 		arp_send(ARPOP_REQUEST, ETH_P_ARP,
- 			 ifa->ifa_local, dev,
- 			 ifa->ifa_local, NULL,
-@@ -1727,15 +1726,17 @@ static int in_dev_dump_addr(struct in_device *in_dev, struct sk_buff *skb,
- 	int ip_idx = 0;
- 	int err;
+ 		if (ifa->ifa_mask == mask && inet_ifa_match(prefix, ifa))
+ 			return ifa;
+-	} endfor_ifa(in_dev);
++	}
+ 	return NULL;
+ }
  
--	for (ifa = in_dev->ifa_list; ifa; ifa = ifa->ifa_next, ip_idx++) {
--		if (ip_idx < s_ip_idx)
+@@ -1245,17 +1249,22 @@ static int inet_gifconf(struct net_device *dev, char __user *buf, int len, int s
+ static __be32 in_dev_select_addr(const struct in_device *in_dev,
+ 				 int scope)
+ {
+-	for_primary_ifa(in_dev) {
++	const struct in_ifaddr *ifa;
++
 +	in_dev_for_each_ifa_rcu(ifa, in_dev) {
-+		if (ip_idx < s_ip_idx) {
-+			ip_idx++;
++		if (ifa->ifa_flags & IFA_F_SECONDARY)
++			continue;
+ 		if (ifa->ifa_scope != RT_SCOPE_LINK &&
+ 		    ifa->ifa_scope <= scope)
+ 			return ifa->ifa_local;
+-	} endfor_ifa(in_dev);
++	}
+ 
+ 	return 0;
+ }
+ 
+ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
+ {
++	const struct in_ifaddr *ifa;
+ 	__be32 addr = 0;
+ 	struct in_device *in_dev;
+ 	struct net *net = dev_net(dev);
+@@ -1266,7 +1275,9 @@ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
+ 	if (!in_dev)
+ 		goto no_in_dev;
+ 
+-	for_primary_ifa(in_dev) {
++	in_dev_for_each_ifa_rcu(ifa, in_dev) {
++		if (ifa->ifa_flags & IFA_F_SECONDARY)
++			continue;
+ 		if (ifa->ifa_scope > scope)
  			continue;
--
-+		}
- 		err = inet_fill_ifaddr(skb, ifa, fillargs);
- 		if (err < 0)
- 			goto done;
+ 		if (!dst || inet_ifa_match(dst, ifa)) {
+@@ -1275,7 +1286,7 @@ __be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope)
+ 		}
+ 		if (!addr)
+ 			addr = ifa->ifa_local;
+-	} endfor_ifa(in_dev);
++	}
  
- 		nl_dump_check_consistent(cb, nlmsg_hdr(skb));
-+		ip_idx++;
- 	}
- 	err = 0;
- 
+ 	if (addr)
+ 		goto out_unlock;
 -- 
 2.21.0
 
