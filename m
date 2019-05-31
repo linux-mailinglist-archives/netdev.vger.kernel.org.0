@@ -2,62 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E60C23120D
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:15:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8183E31211
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbfEaQP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:15:26 -0400
-Received: from mx2.suse.de ([195.135.220.15]:52352 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726579AbfEaQPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 12:15:25 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 6E218AE8D;
-        Fri, 31 May 2019 16:15:24 +0000 (UTC)
-Subject: Re: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
-To:     laurentiu.tudor@nxp.com
-Cc:     netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
-        camelia.groza@nxp.com, leoyang.li@nxp.com,
-        linux-kernel@vger.kernel.org, Joakim.Tjernlund@infinera.com,
-        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
-        Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
-References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Openpgp: preference=signencrypt
-Organization: SUSE Linux GmbH
-Message-ID: <d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
-Date:   Fri, 31 May 2019 18:15:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726817AbfEaQQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:16:32 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42486 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726579AbfEaQQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:16:32 -0400
+Received: by mail-ed1-f67.google.com with SMTP id g24so5697956eds.9;
+        Fri, 31 May 2019 09:16:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ppoLqKJDwMX/G3QhRlPCGM9RObcFV44Iy8KgicrJiXs=;
+        b=SpLk15XghWHHC7Bi5S3Uj5v4i/8WjSxU/ADXUgS2+JgBy2zYReu66dUfkDGSax9+S6
+         I0zYKj/KTJ4f+N6yq31qAeZpBbv3kkocg2y/+V2yG9BnV2WSCLy4w7jh+kkjsOrDhd2K
+         1S71iB8jk6cI8aUofw5p0eqGamNz36G39EA2uU7T3HzpJZvsBffqRkgurmjIu9l70Dyx
+         utoqiduKY9VXwsX21gyErybse9IcZNOC9gA8QmmdkXRRkhj7rvvNWMiaxJdr3UPZyyCe
+         S/kFdDQHQxbqFQbOG8++UHPHwfaUfFLswi1d385CfnK9q+3QzkQWU4G0/GwEPhoUouCQ
+         1zlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ppoLqKJDwMX/G3QhRlPCGM9RObcFV44Iy8KgicrJiXs=;
+        b=C3fkIM+vbKijOp3jrM7QzkMbbnAK6h0PdHWFfAOJ9D/AejBfKus/ip44mX605JtL2h
+         RUhBrFpK9TUO6o4Emx10m41e4vq4Lb25vJeIVT4m3fc4ByjIxc46COYaFqjAgUaWlB/I
+         DtsvE10Hi73YPc6OnzXS05qiMJtglZ3+IRoj8/CGUk5ltJYzsJQ33oCP1YXn904DVr7X
+         wpS4CpMk7Azzx2LMpdpwGTwndjxAbZYfNBIQvn9C+YG7yqm+lEDD8DZ+P+TKLB4DtDpl
+         +1jXDaKY9jtcnY39qi5yTa1keyoUmkKJORUjhyRAw1kP01Y1pm4vRtGJTyS2YVT6BvWu
+         vZEQ==
+X-Gm-Message-State: APjAAAUBJRK264nJAqzwKoW6mEHeUgBu5QKjbNwYRFGEeKiKVnGDdbjt
+        RUlOZezCmE3kFvDHtjx4Byj/yN5rVC0xHwI9xJs=
+X-Google-Smtp-Source: APXvYqxi6b0K6tTVfA1e0P5XeyJhKW3LdF7NuYrIjBe58v9itIap09JseWXs29+ym3u4i5kdCNQnCDnTjBdfDOxf3ws=
+X-Received: by 2002:a50:fd0a:: with SMTP id i10mr12161284eds.117.1559319389427;
+ Fri, 31 May 2019 09:16:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20190530143037.iky5kk3h4ssmec3f@localhost> <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
+ <20190530150557.iur7fruhyf5bs3qw@localhost> <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
+ <20190531043417.6phscbpmo6krvxam@localhost> <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
+ <20190531140841.j4f72rlojmaayqr5@localhost> <CA+h21hroywaij3gyO0u6v+GFVO2Fv_dP_a+L3oMGpQH8mQgJ5g@mail.gmail.com>
+ <20190531151151.k3a2wdf5f334qmqh@localhost> <CA+h21hpHKbTc8toPZf0iprW1b4v6ErnRaSM=C6vk-GCiXM8NvA@mail.gmail.com>
+ <20190531160909.jh43saqvichukv7p@localhost>
+In-Reply-To: <20190531160909.jh43saqvichukv7p@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 31 May 2019 19:16:17 +0300
+Message-ID: <CA+h21hpVrVNJTFj4DHHV+zphs2MjyRO-XZsM3D-STra+BYYHtw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Laurentiu,
+On Fri, 31 May 2019 at 19:09, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Fri, May 31, 2019 at 06:23:34PM +0300, Vladimir Oltean wrote:
+> > You mean to queue it and subvert DSA's own RX timestamping callback?
+>
+> No, use the callback.
+>
+> > Why would I do that? Just so as not to introduce my .can_timestamp
+> > callback?
+>
+> Right, the .can_timestamp is unneeded, AFAICT.
+>
+> > > Now I'm starting to understand your series.  I think it can be done in
+> > > simpler way...
+> > >
+> > > sja1105_rcv_meta_state_machine - can and should be at the driver level
+> > > and not at the port level.
+> > >
+> >
+> > Can: yes. Should: why?
+>
+> To keep it simple and robust.
+>
+> > One important aspect makes this need be a little bit more complicated:
+> > reconstructing these RX timestamps.
+> > You see, there is a mutex on the SPI bus, so in practice I do need the
+> > sja1105_port_rxtstamp_work for exactly this purpose - to read the
+> > timestamping clock over SPI.
+>
+> Sure.  But you schedule the work after a META frame.  And no busy
+> waiting is needed.
 
-Am 30.05.19 um 16:19 schrieb laurentiu.tudor@nxp.com:
-> This patch series contains several fixes in preparation for SMMU
-> support on NXP LS1043A and LS1046A chips. Once these get picked up,
-> I'll submit the actual SMMU enablement patches consisting in the
-> required device tree changes.
+Ok, I suppose this could work.
+But now comes the question on what to do on error cases - the meta
+frame didn't arrive. Should I just drop the skb waiting for it? Right
+now I "goto rcv_anyway" - which linuxptp doesn't like btw.
 
-Have you thought through what will happen if this patch ordering is not
-preserved? In particular, a user installing a future U-Boot update with
-the DTB bits but booting a stable kernel without this patch series -
-wouldn't that regress dpaa then for our customers?
-
-Regards,
-Andreas
-
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+>
+> Thanks,
+> Richard
