@@ -2,107 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4EE3124E
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A285731253
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:27:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbfEaQ1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:27:09 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42043 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaQ1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:09 -0400
-Received: by mail-pf1-f194.google.com with SMTP id r22so6498334pfh.9;
-        Fri, 31 May 2019 09:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5z7/0pNszPVIhFomXqZmyP9TIVQJErGRUKJ0k9x44PQ=;
-        b=sMW4jgMZppC9TgopFkPIgSv37t1JFvNITJclRlFPioq+77lVMTCppVoLz7uz+UmM6Y
-         153AV+893frJGLvOocQArfzjBQ2OGP2GQp12QD2JAA7T9UJel2/M95lhBBjT99tJR4gr
-         EnYm5yg5/PHQQP7Z3PltJ35DLaKtPaRNK0dAoHn3NhPxhdfIFq3Ko3kyFlIRhuPTRoVd
-         V3HEPWX+mdcWkbKs8AcKlTIXCGBnxFEmroZIznoOjMesViDt7daoCujubFYUMOQKvx4U
-         uDHc/YGOtq13MoIYxcUfw5Wv+v2ePrv6quJCPQwYDXZudPooJrlwpxsEZiQTkwkypqzx
-         o12A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5z7/0pNszPVIhFomXqZmyP9TIVQJErGRUKJ0k9x44PQ=;
-        b=eR09h+l8ixkeS/Fnv2Kyt/H9pq40SmagwWiEiEcAw3ATzYVGr8EptLWqtHZkBwvc6O
-         6xvc53MVwJJs293iCvgnYsQgLniZ9djrU9lDfPsyR6ROmzuSFDl9bxYuE1Vs+vPDCegv
-         Cxc/Xtq7WIdfGk0W4jy4NTzL9nAqWXG9C58/3cDp9B19/EGjqvRr5GEVn3mXdZNvBcwV
-         +DMVzzFUfN5K8c3xQojp9UeZvlR5F68HsOAUCPW5CRqg3axsGlnKi3IS0B0kZ2/GeJgD
-         CUH7i3FNIL/Tc9Mi1/actzQUu1/tWRdsMwABSBnsoL1jDv4v08rKtLtHBoSidMvEmQHJ
-         lZmg==
-X-Gm-Message-State: APjAAAXOWoS5UJcXAx9Y583gHNHBSEexQyTfOh9wavIy07rf25DWTAE8
-        D7QYGGyBPfaEPMQj0dE29oY=
-X-Google-Smtp-Source: APXvYqy3BSamUqerjdpmyW/SNw9DUMYaUi0od6VlzBdn4OHv0TA9dCoCFw3qmQuiUpqxmJg1iAPDFA==
-X-Received: by 2002:aa7:8a11:: with SMTP id m17mr11314805pfa.122.1559320028433;
-        Fri, 31 May 2019 09:27:08 -0700 (PDT)
-Received: from [172.26.115.243] ([2620:10d:c090:180::779])
-        by smtp.gmail.com with ESMTPSA id r7sm10008150pjb.8.2019.05.31.09.27.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 09:27:07 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        kernel-team@fb.com, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an
- xskmap
-Date:   Fri, 31 May 2019 09:27:06 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <4AC230DE-6529-4798-BE32-C0AD873855CB@gmail.com>
-In-Reply-To: <5fde46e3-1967-d802-d1db-f02d15d11aa4@intel.com>
-References: <20190530185709.1861867-1-jonathan.lemon@gmail.com>
- <5fde46e3-1967-d802-d1db-f02d15d11aa4@intel.com>
+        id S1726925AbfEaQ1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:27:33 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:33372 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726818AbfEaQ1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:27:33 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1hWkNP-0005gj-DO; Fri, 31 May 2019 18:27:31 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next v3 4/7] netfilter: use in_dev_for_each_ifa_rcu
+Date:   Fri, 31 May 2019 18:27:06 +0200
+Message-Id: <20190531162709.9895-5-fw@strlen.de>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190531162709.9895-1-fw@strlen.de>
+References: <20190531162709.9895-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31 May 2019, at 4:49, Björn Töpel wrote:
+Netfilter hooks are always running under rcu read lock, use
+the new iterator macro so sparse won't complain once we add
+proper __rcu annotations.
 
-> On 2019-05-30 20:57, Jonathan Lemon wrote:
->> Currently, the AF_XDP code uses a separate map in order to
->> determine if an xsk is bound to a queue.  Instead of doing this,
->> have bpf_map_lookup_elem() return the queue_id, as a way of
->> indicating that there is a valid entry at the map index.
->>
->> Rearrange some xdp_sock members to eliminate structure holes.
->>
->> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->> ---
->>   include/net/xdp_sock.h                            |  6 +++---
->>   kernel/bpf/verifier.c                             |  6 +++++-
->>   kernel/bpf/xskmap.c                               |  4 +++-
->>   .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 ---------------
->>   4 files changed, 11 insertions(+), 20 deletions(-)
->>
->> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
->> index d074b6d60f8a..7d84b1da43d2 100644
->> --- a/include/net/xdp_sock.h
->> +++ b/include/net/xdp_sock.h
->> @@ -57,12 +57,12 @@ struct xdp_sock {
->>   	struct net_device *dev;
->>   	struct xdp_umem *umem;
->>   	struct list_head flush_node;
->> -	u16 queue_id;
->> -	struct xsk_queue *tx ____cacheline_aligned_in_smp;
->> -	struct list_head list;
->> +	u32 queue_id;
->
-> Why the increase of size?
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/ipv4/netfilter/nf_tproxy_ipv4.c    | 9 +++++++--
+ net/netfilter/nf_conntrack_broadcast.c | 9 +++++++--
+ net/netfilter/nfnetlink_osf.c          | 5 ++---
+ 3 files changed, 16 insertions(+), 7 deletions(-)
 
-Currently xskmaps are defined as size=4, so the returned pointer for
-bpf must have that many bytes.  I was kicking around the idea of using
-a union and returning { qid, zc }, but Alexei pointed out that doesn't
-make a good API.
-
-Besides, queue_index in struct xdp_rxq_info is already a u32.
+diff --git a/net/ipv4/netfilter/nf_tproxy_ipv4.c b/net/ipv4/netfilter/nf_tproxy_ipv4.c
+index 164714104965..40c93b3bd731 100644
+--- a/net/ipv4/netfilter/nf_tproxy_ipv4.c
++++ b/net/ipv4/netfilter/nf_tproxy_ipv4.c
+@@ -53,6 +53,7 @@ EXPORT_SYMBOL_GPL(nf_tproxy_handle_time_wait4);
+ 
+ __be32 nf_tproxy_laddr4(struct sk_buff *skb, __be32 user_laddr, __be32 daddr)
+ {
++	const struct in_ifaddr *ifa;
+ 	struct in_device *indev;
+ 	__be32 laddr;
+ 
+@@ -61,10 +62,14 @@ __be32 nf_tproxy_laddr4(struct sk_buff *skb, __be32 user_laddr, __be32 daddr)
+ 
+ 	laddr = 0;
+ 	indev = __in_dev_get_rcu(skb->dev);
+-	for_primary_ifa(indev) {
++
++	in_dev_for_each_ifa_rcu(ifa, indev) {
++		if (ifa->ifa_flags & IFA_F_SECONDARY)
++			continue;
++
+ 		laddr = ifa->ifa_local;
+ 		break;
+-	} endfor_ifa(indev);
++	}
+ 
+ 	return laddr ? laddr : daddr;
+ }
+diff --git a/net/netfilter/nf_conntrack_broadcast.c b/net/netfilter/nf_conntrack_broadcast.c
+index 5423b197d98a..a5dbc3676a4f 100644
+--- a/net/netfilter/nf_conntrack_broadcast.c
++++ b/net/netfilter/nf_conntrack_broadcast.c
+@@ -41,12 +41,17 @@ int nf_conntrack_broadcast_help(struct sk_buff *skb,
+ 
+ 	in_dev = __in_dev_get_rcu(rt->dst.dev);
+ 	if (in_dev != NULL) {
+-		for_primary_ifa(in_dev) {
++		const struct in_ifaddr *ifa;
++
++		in_dev_for_each_ifa_rcu(ifa, in_dev) {
++			if (ifa->ifa_flags & IFA_F_SECONDARY)
++				continue;
++
+ 			if (ifa->ifa_broadcast == iph->daddr) {
+ 				mask = ifa->ifa_mask;
+ 				break;
+ 			}
+-		} endfor_ifa(in_dev);
++		}
+ 	}
+ 
+ 	if (mask == 0)
+diff --git a/net/netfilter/nfnetlink_osf.c b/net/netfilter/nfnetlink_osf.c
+index f42326b40d6f..9f5dea0064ea 100644
+--- a/net/netfilter/nfnetlink_osf.c
++++ b/net/netfilter/nfnetlink_osf.c
+@@ -33,6 +33,7 @@ static inline int nf_osf_ttl(const struct sk_buff *skb,
+ {
+ 	struct in_device *in_dev = __in_dev_get_rcu(skb->dev);
+ 	const struct iphdr *ip = ip_hdr(skb);
++	const struct in_ifaddr *ifa;
+ 	int ret = 0;
+ 
+ 	if (ttl_check == NF_OSF_TTL_TRUE)
+@@ -42,15 +43,13 @@ static inline int nf_osf_ttl(const struct sk_buff *skb,
+ 	else if (ip->ttl <= f_ttl)
+ 		return 1;
+ 
+-	for_ifa(in_dev) {
++	in_dev_for_each_ifa_rcu(ifa, in_dev) {
+ 		if (inet_ifa_match(ip->saddr, ifa)) {
+ 			ret = (ip->ttl == f_ttl);
+ 			break;
+ 		}
+ 	}
+ 
+-	endfor_ifa(in_dev);
+-
+ 	return ret;
+ }
+ 
 -- 
-Jonathan
+2.21.0
 
