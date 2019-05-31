@@ -2,73 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0CC30ECB
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D18D630ED7
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbfEaNZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 09:25:23 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:60290 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaNZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 09:25:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JNVjDJnWh24XETNeTTz0kr95SUG1MMZVr9hLM2Vjiuk=; b=hp4DjpLrUzF3KsPVsBuss1lXq
-        YdXw25+DNru59I/TwzY1bRODEhq3O4gGIewmT3NRU+spvmFe4sVu3DfWCjgSvwwto8tAZAe9sp61J
-        gzufr6tcpGvp0lxblOUBLSjOZsLCKV6eP2Mcgv6C8QX6h7EEaRu0aEDHoYES1vb5z+nA616NaertB
-        45Wr6t6mApmzoeQt87R2rbBYdQAX9PWqlXpyhOz5uCMOXko8eiWkwuGRkMEFxI2R1gwxyYyZkK6zQ
-        5zXWOnD/rGUyqCKc3B69iuutl+UdxKc99DVqexZdRQ++WfzUrapIEJTXJTUnUOBgK5Sr8dFlWuf3x
-        qcenWfiwQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52748)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hWhX4-0000zY-7p; Fri, 31 May 2019 14:25:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hWhX1-0006NN-Qh; Fri, 31 May 2019 14:25:15 +0100
-Date:   Fri, 31 May 2019 14:25:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phylink: ensure consistent phy interface mode
-Message-ID: <20190531132515.6hc4myubgg3svvrb@shell.armlinux.org.uk>
-References: <E1hVYO9-000584-J6@rmk-PC.armlinux.org.uk>
- <20190531130226.GE18608@lunn.ch>
+        id S1726682AbfEaN1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 09:27:44 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47264 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726386AbfEaN1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 09:27:43 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hWhZL-0006nj-74; Fri, 31 May 2019 13:27:39 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] qed: remove redundant assignment to rc
+Date:   Fri, 31 May 2019 14:27:38 +0100
+Message-Id: <20190531132738.17221-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190531130226.GE18608@lunn.ch>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 03:02:26PM +0200, Andrew Lunn wrote:
-> On Tue, May 28, 2019 at 10:27:21AM +0100, Russell King wrote:
-> > Ensure that we supply the same phy interface mode to mac_link_down() as
-> > we did for the corresponding mac_link_up() call.  This ensures that MAC
-> > drivers that use the phy interface mode in these methods can depend on
-> > mac_link_down() always corresponding to a mac_link_up() call for the
-> > same interface mode.
-> > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+From: Colin Ian King <colin.king@canonical.com>
 
-Hi Andrew,
+The variable rc is assigned with a value that is never read and
+it is re-assigned a new value later on.  The assignment is redundant
+and can be removed.
 
-davem already applied this patch a couple of days ago, since it is a
-dependency for other patches.
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_sp_commands.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+index 5a495fda9e9d..7e0b795230b2 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+@@ -588,7 +588,7 @@ int qed_sp_pf_update_stag(struct qed_hwfn *p_hwfn)
+ {
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EINVAL;
++	int rc;
+ 
+ 	/* Get SPQ entry */
+ 	memset(&init_data, 0, sizeof(init_data));
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
