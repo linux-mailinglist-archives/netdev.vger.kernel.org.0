@@ -2,90 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E52A930824
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 07:51:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D13B73082B
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 07:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbfEaFvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 01:51:36 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42905 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfEaFvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 01:51:36 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e6so2140966pgd.9;
-        Thu, 30 May 2019 22:51:36 -0700 (PDT)
+        id S1726548AbfEaF43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 01:56:29 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:39649 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbfEaF43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 01:56:29 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g9so3542916plm.6;
+        Thu, 30 May 2019 22:56:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=MYPRUYP3oA69esLexspX9AtoNHw46k56bcJTABkkFBI=;
-        b=mTgy1pHCOm1tPYRZVq1qiDAGtbY+RUvW6RZjOqsW1Ew6dpgvX4oyhILZuX+Z79B2xn
-         RF/KYBJr5h4xPvBUmQaVxgPok8ptZxdGp0d5FKq6/ylayxT+2sFCyv7GEFEDYQXbYTc8
-         ngC15hhxkFtNySHQkeGnqA9/1eXXBZ67p8jvABBD+ttCtPZmXxNLaXfFMd9/yvobEBBw
-         MaI695nR57S+UzJKHOciZHuHRFNqyWAXzK09paRVw///rF3r2ZJJLTc+RUnzXOVfaJcX
-         GcQ5bV1T0/ZfJhEJ0jpjkg7sw5bP2x/zSM095uvuNvmn7N9BXjD/8u/i+xle/bK70Ihv
-         y/Lg==
+        h=from:to:cc:subject:date:message-id;
+        bh=cQGRFNj2P1tBrqgD9mS7YGd2tFxDWtDGZgo5qOSp6Cw=;
+        b=Scj2G0cyFoJB9DCHpbEox9/Ye+jY//veBbKuwnsg2072IuSFKFvhoy1+tuE1T6CBp8
+         57xIQiJ1COCWew2ouUYteCOozH5LmYDs3/rCLD1hv2ru9GLnuoCn9/8cKcqi8bO1wQL4
+         HuCPUSbazF7zZM0kxKB8lWvRg5wvBpKG95YiZ6ntnYQTlr5xexwRG1aAHkAXEatSfhjK
+         XDEGPblm4tsh9mFEPhUd4dOIQVYg4afJ6Mz1qOG+8vo+jq0tWhUcxkSq9bxuQA07nql+
+         2QgtspdLv5ZT8bw4Mzaspgn4x5FxKNAmHFhWGCWus1swjIZBRm4Z2L0lt2wkWJBNgp6F
+         8FMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=MYPRUYP3oA69esLexspX9AtoNHw46k56bcJTABkkFBI=;
-        b=fJC2a6jpien5bJF9xC9UmK8Q1pbfzWj73e4pMCLaIgxQof4yHr1YpP/fMYTWdvWSUO
-         lTyNaRJfPRIEPgf52DV+uVL/Hdtj56ns7E5FSbbro6X6sX8/wAl9zQpSwEHtVPHMcDjL
-         naP1hncH3xTd5f3ekqWBzERYmgPw7ENSI/dZgUgcTTJsopIuWl5LNtH2wtEJaSJsuFOO
-         0jabnuZ5A/vH957YeAaiLicmHDpAfaWzNRmcHczXVvLEN6G80EMZKMbo7oV/u8mwBwJZ
-         BfPFLHpDMvAtapbgcur6Fv5R8VmzxpucTWlKwWOH1HqM6Z9WvPP52PFvhoUbtQSt4hIj
-         gJZQ==
-X-Gm-Message-State: APjAAAU220d4NIptD6O2RtU7+2s/o3A5GQCrBbbthiPSXjSyimg4Tk24
-        v8kP1fgzFL2ZqEzkZBlkiWE=
-X-Google-Smtp-Source: APXvYqwSBur997yXvEG2Vlf7EJ76X8k3avsZ1enlSrzADo4EdOSveBbR/gIK8f17lYJkl1yyQHJvGA==
-X-Received: by 2002:a17:90a:9602:: with SMTP id v2mr7185080pjo.59.1559281895654;
-        Thu, 30 May 2019 22:51:35 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id l63sm5044813pfl.181.2019.05.30.22.51.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 30 May 2019 22:51:34 -0700 (PDT)
-Date:   Thu, 30 May 2019 22:51:32 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=cQGRFNj2P1tBrqgD9mS7YGd2tFxDWtDGZgo5qOSp6Cw=;
+        b=pDuNGhlWWFbAXCdpB/g1Gtt18hPPTGYuwwTpcQsfGsESioPG6up3hAZZ4L2JiX+FDS
+         wFZzZ0L9rkdkuvVDhQyFKwprXT65CkfQP92e/YpL3PD4JetMNpNXj4l8y4v2e3SwTTDn
+         2uvUxkOzY3bPEjs1U1fy9I0V7Q3xD22knk5QCjBM54qfu73rE6lo8tjkOJuleasMQ0rj
+         0/vpRAgJvy2BKdvXY9rRVuIZV2VsogLiNRcQAECqGRt8J6/g5hjCm3Dg3UhTNUwOHEj/
+         F7HpxBP2YlEP6stCKjuX769OzJj/mcxETP33eP2SGPn1mWPuc3xCDiB7BjLg5ZDqVJht
+         EWEQ==
+X-Gm-Message-State: APjAAAXu8An3bTWKZD+zsSmlsbAoLbHKl7tQraxJT9vdjm9YhdJ3Hwb7
+        goz2PpM0yCy7OOE9gjB1iLvraomT
+X-Google-Smtp-Source: APXvYqyNwUOLqtsAGH8DQOlZ0upHw+cwJj+aOgOb0Ihlx+gQ/glypEabsE6Cy2oQxAzDVD8i+Ofoog==
+X-Received: by 2002:a17:902:a708:: with SMTP id w8mr6900141plq.162.1559282188531;
+        Thu, 30 May 2019 22:56:28 -0700 (PDT)
+Received: from localhost.localdomain (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id u2sm4554184pjv.30.2019.05.30.22.56.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 22:56:27 -0700 (PDT)
 From:   Richard Cochran <richardcochran@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, jacob.e.keller@intel.com,
-        mark.rutland@arm.com, mlichvar@redhat.com, robh+dt@kernel.org,
-        willemb@google.com
-Subject: Re: [PATCH V4 net-next 0/6] Peer to Peer One-Step time stamping
-Message-ID: <20190531055132.7qrjuqgtw6qw4mgh@localhost>
-References: <cover.1559109076.git.richardcochran@gmail.com>
- <20190530.115507.1344606945620280103.davem@davemloft.net>
- <20190530.125833.1049383711116106790.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190530.125833.1049383711116106790.davem@davemloft.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH V5 net-next 0/6] Peer to Peer One-Step time stamping
+Date:   Thu, 30 May 2019 22:56:20 -0700
+Message-Id: <cover.1559281985.git.richardcochran@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 12:58:33PM -0700, David Miller wrote:
-> I had to revert, this doesn't build.
+This series adds support for PTP (IEEE 1588) P2P one-step time
+stamping along with a driver for a hardware device that supports this.
 
-Sorry I missed macvlan, and thanks for the 'uninitialized' warning.
-It was a real latent bug.  I wonder why my linaro 7.4 gcc didn't flag
-that...
+If the hardware supports p2p one-step, it subtracts the ingress time
+stamp value from the Pdelay_Request correction field.  The user space
+software stack then simply copies the correction field into the
+Pdelay_Response, and on transmission the hardware adds the egress time
+stamp into the correction field.
 
-Anyhow, I rebased v5 of my series to latest net-next, and I'm getting
-a lot of these:
+This new functionality extends CONFIG_NETWORK_PHY_TIMESTAMPING to
+cover MII snooping devices, but it still depends on phylib, just as
+that option does.  Expanding beyond phylib is not within the scope of
+the this series.
 
-In file included from net/ipv6/af_inet6.c:45:0:
-./include/linux/netfilter_ipv6.h: In function ‘nf_ipv6_br_defrag’:
-./include/linux/netfilter_ipv6.h:110:9: error: implicit declaration of function ‘nf_ct_frag6_gather’; did you mean ‘nf_ct_attach’? [-Werror=implicit-function-declaration]
-  return nf_ct_frag6_gather(net, skb, user);
-         ^~~~~~~~~~~~~~~~~~
-         nf_ct_attach
+User space support is available in the current linuxptp master branch.
 
+- Patch 1 adds the new option.
+- Patches 2-5 add support for MII time stamping in non-PHY devices.
+- Patch 6 adds a driver implementing the new option.
 
 Thanks,
 Richard
+
+Changed in v5:
+~~~~~~~~~~~~~~
+
+- Fixed build failure in macvlan.
+- Fixed latent bug with its gcc warning in the driver.
+
+Changed in v4:
+~~~~~~~~~~~~~~
+
+- Correct error paths and PTR_ERR return values in the framework.
+- Expanded KernelDoc comments WRT PHY locking.
+- Pick up Andrew's review tag.
+
+Changed in v3:
+~~~~~~~~~~~~~~
+
+- Simplify the device tree binding and document the time stamping
+  phandle by itself.
+
+Changed in v2:
+~~~~~~~~~~~~~~
+
+- Per the v1 review, changed the modeling of MII time stamping
+  devices.  They are no longer a kind of mdio device.
+
+
+Richard Cochran (6):
+  net: Introduce peer to peer one step PTP time stamping.
+  net: Introduce a new MII time stamping interface.
+  net: Add a layer for non-PHY MII time stamping drivers.
+  dt-bindings: ptp: Introduce MII time stamping devices.
+  net: mdio: of: Register discovered MII time stampers.
+  ptp: Add a driver for InES time stamping IP core.
+
+ Documentation/devicetree/bindings/ptp/ptp-ines.txt |  35 +
+ .../devicetree/bindings/ptp/timestamper.txt        |  41 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |   1 +
+ drivers/net/macvlan.c                              |   4 +-
+ drivers/net/phy/Makefile                           |   2 +
+ drivers/net/phy/dp83640.c                          |  47 +-
+ drivers/net/phy/mii_timestamper.c                  | 121 +++
+ drivers/net/phy/phy.c                              |   4 +-
+ drivers/net/phy/phy_device.c                       |   5 +
+ drivers/of/of_mdio.c                               |  30 +-
+ drivers/ptp/Kconfig                                |  10 +
+ drivers/ptp/Makefile                               |   1 +
+ drivers/ptp/ptp_ines.c                             | 859 +++++++++++++++++++++
+ include/linux/mii_timestamper.h                    | 120 +++
+ include/linux/phy.h                                |  25 +-
+ include/uapi/linux/net_tstamp.h                    |   8 +
+ net/8021q/vlan_dev.c                               |   4 +-
+ net/Kconfig                                        |   7 +-
+ net/core/dev_ioctl.c                               |   1 +
+ net/core/ethtool.c                                 |   4 +-
+ net/core/timestamping.c                            |  20 +-
+ 21 files changed, 1289 insertions(+), 60 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/ptp/ptp-ines.txt
+ create mode 100644 Documentation/devicetree/bindings/ptp/timestamper.txt
+ create mode 100644 drivers/net/phy/mii_timestamper.c
+ create mode 100644 drivers/ptp/ptp_ines.c
+ create mode 100644 include/linux/mii_timestamper.h
+
+-- 
+2.11.0
+
