@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD37E31277
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5482831280
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:36:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbfEaQeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:34:18 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38843 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbfEaQeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:34:18 -0400
-Received: by mail-wm1-f67.google.com with SMTP id t5so6323283wmh.3;
-        Fri, 31 May 2019 09:34:15 -0700 (PDT)
+        id S1726678AbfEaQgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:36:32 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42855 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726531AbfEaQgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:36:31 -0400
+Received: by mail-pg1-f193.google.com with SMTP id e6so3076538pgd.9;
+        Fri, 31 May 2019 09:36:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FTB2NKgVdICLn8njHL99y9c+1LJk3zwP4lVhi6sGfig=;
-        b=J5lxEyoJPRE/ns2CXrVUrEAZLwC7wYzb5EaoLfKgY06ChFsvrKgkAfYihuC0brkKaG
-         IITEYHHN3/PkacgzUs1YUqIh98M3DSY1CuHUxb42eNMyAya2rnHAIssAcSOe/Uof2sf1
-         K2bylUOKAklImTn9y/l8rpuFC7MuKQxt9KlbX91qCZxzPcuAvyE6WgGNJzvHlsAqOeFr
-         Pl4b9dtQtNlMkPFx+lGRebrjqkfD6wlBfJDur+Xo4LTG/RwDhUOZQ43/Zznh2RE4HTFt
-         O8RDvOBH8zqG5IgyXiuYrlNMGapn81d3AyGUJ49YPypLgW3xp2mjohNIKZqk9S/LV1hB
-         HrMQ==
+        bh=3tzOLexHcMrooSCenmTLyKwfDBS6JJ3zJIi8d/CAsZ8=;
+        b=GueBvGAnyvQS7tqxY/ep/9VWXhGdfjle/8DpFYXLjgQ9LSSN5+0p0VGsdTiWlLnBjI
+         WFyjyMjKkofva9H/mYTm9HeVEDNW6dBOCYDoKy2pwG6i0GVUv6mEEJJvRSCzQoNbSuln
+         +mn5VWlCgyHSdBOLmpOR6AaLlyy9jo6ja2drpjMEEHSowT6toWCX3XovkEHXcjxpKKP+
+         2UAVFUXdTpd/aD7ObWdIe/xfSmj989TRLbrE3omKW6H/8xyUefhbq8nqj1ZjVqL+0Z3D
+         bG3pZlXlPIjrAlw3Ispiwt6jd3OOEhY4DR/qHwwKoJfUvOS9yxje6LmcdyftX1ejYg59
+         4zMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=FTB2NKgVdICLn8njHL99y9c+1LJk3zwP4lVhi6sGfig=;
-        b=JFWYT9sk+nIt6cdkjlq+NQwQZ+qrV/5f14zGaqYHWl4iryxDylS0pnhxVQFY84SaaB
-         SfmJaOgGwMgIQHSe9ONTneymC+IkMHJhd4IQd4BgmZzV6G+mIhj3qksljXlA8f09S7QZ
-         e304pzSrY69I96SrGRUW6hKF2CGB5W+I9TPmICYWt+KqRorhpRJFo5WlcVIo35KYPP19
-         RqiQ87A7DlomWhPwbbkcAlaTR+/6hvT0XdPaRmwn0YpuP0kFACB3JXJkpi9pb5WEt0eA
-         lmFnf6yJkfQ3Cbpg7WdRF57EeYoNYnfvjgxEwQ7qkIRSCXR15eIJ+/GFsd33OJGbfxCF
-         gjYw==
-X-Gm-Message-State: APjAAAU5SpT75j1LRWo163sdLT5GGsHOUrRrekRg8s1+zHMH3mxE1n9E
-        xRFN/3zRAjACrQZcGOmpKtF/NImz
-X-Google-Smtp-Source: APXvYqy8UDcBYLnijL5333o7A+ntw4xHVUkyZz9083lqwyd0Un/ogcWEIgYeQgL9c8JXW/WNWyWuiQ==
-X-Received: by 2002:a1c:f507:: with SMTP id t7mr6407981wmh.149.1559320454552;
-        Fri, 31 May 2019 09:34:14 -0700 (PDT)
+        bh=3tzOLexHcMrooSCenmTLyKwfDBS6JJ3zJIi8d/CAsZ8=;
+        b=lV2K0kt0PAzCcnyi6Nf7IgSMV2jjWAi2Jt+QvKz+3LscmC0+jIEmUfH2UStn6WMEs+
+         hPnpNK4LGNxAvOfqMA3U3s4QQSY/gwaK7v92FWnkSDv0vYHglkHinTY5qw2ErGKePK/1
+         QGBpp8BI2SmALDaeB/+IuGFJCgdsoAPlN9TZhn3sZYD6fvadtZTyLvBJsJSEaFZluD5D
+         FX8hT78O7KjFJkejIOFjSM9CZoSg2SS7xlM2Z149rv8dyrokYICT/H81jf61R9YFtgxC
+         V1u36SQTqDwefSC09cw0qfd2z+xp9o7tQiA3A7Sx0HTadHHIMEVyjH1fcD69IqrOiRlp
+         3odA==
+X-Gm-Message-State: APjAAAWxv5DyTZ0nK2+xr62Ld8My42Lx9CDlf0VBms2H3JX8/c8p5VXk
+        hW1nS1JNQ6Pjp620oE7RnOI=
+X-Google-Smtp-Source: APXvYqyV74XMGh8mpCBAGgPVOupb/zGAHgmCHvU8ZfZKSiXv6RWokgpeEE0DK7BkZFnsd5mO7tTlPg==
+X-Received: by 2002:a63:f410:: with SMTP id g16mr287275pgi.428.1559320590442;
+        Fri, 31 May 2019 09:36:30 -0700 (PDT)
 Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r8sm13217936wrr.63.2019.05.31.09.34.11
+        by smtp.googlemail.com with ESMTPSA id s24sm6599407pfe.57.2019.05.31.09.36.28
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 09:34:13 -0700 (PDT)
+        Fri, 31 May 2019 09:36:29 -0700 (PDT)
 Subject: Re: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from
  VLAN 0
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+To:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
@@ -59,6 +59,8 @@ Cc:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
         Chris Healy <cphealy@gmail.com>
 References: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
  <20190531103105.GE23464@t480s.localdomain> <20190531143758.GB23821@lunn.ch>
+ <422482dc-8887-0f92-c8c9-f9d639882c77@cogentembedded.com>
+ <20190531110017.GB2075@t480s.localdomain>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -115,55 +117,68 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1814b2e2-1a89-89f8-9699-f13df5e826b2@gmail.com>
-Date:   Fri, 31 May 2019 09:34:03 -0700
+Message-ID: <38a5dbac-a8e7-325a-225f-b97774f7bb81@gmail.com>
+Date:   Fri, 31 May 2019 09:36:13 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190531143758.GB23821@lunn.ch>
+In-Reply-To: <20190531110017.GB2075@t480s.localdomain>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/19 7:37 AM, Andrew Lunn wrote:
->> I'm not sure that I like the semantic of it, because the driver can actually
->> support VID 0 per-se, only the kernel does not use VLAN 0. Thus I would avoid
->> calling the port_vlan_del() ops for VID 0, directly into the upper DSA layer.
->>
->> Florian, Andrew, wouldn't the following patch be more adequate?
->>
->>     diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->>     index 1e2ae9d59b88..80f228258a92 100644
->>     --- a/net/dsa/slave.c
->>     +++ b/net/dsa/slave.c
->>     @@ -1063,6 +1063,10 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
->>             struct bridge_vlan_info info;
->>             int ret;
->>      
->>     +       /* VID 0 has a special meaning and is never programmed in hardware */
->>     +       if (!vid)
->>     +               return 0;
->>     +
->>             /* Check for a possible bridge VLAN entry now since there is no
->>              * need to emulate the switchdev prepare + commit phase.
->>              */
->  
-> Hi Vivien
+On 5/31/19 8:00 AM, Vivien Didelot wrote:
+> Hi Nikita,
 > 
-> If we put this in rx_kill_vid, we should probably have something
-> similar in rx_add_vid, just in case the kernel does start using VID 0.
+> On Fri, 31 May 2019 17:46:29 +0300, Nikita Yushchenko <nikita.yoush@cogentembedded.com> wrote:
+>>
+>>
+>> 31.05.2019 17:37, Andrew Lunn wrote:
+>>>> I'm not sure that I like the semantic of it, because the driver can actually
+>>>> support VID 0 per-se, only the kernel does not use VLAN 0. Thus I would avoid
+>>>> calling the port_vlan_del() ops for VID 0, directly into the upper DSA layer.
+>>>>
+>>>> Florian, Andrew, wouldn't the following patch be more adequate?
+>>>>
+>>>>     diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>>>>     index 1e2ae9d59b88..80f228258a92 100644
+>>>>     --- a/net/dsa/slave.c
+>>>>     +++ b/net/dsa/slave.c
+>>>>     @@ -1063,6 +1063,10 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+>>>>             struct bridge_vlan_info info;
+>>>>             int ret;
+>>>>      
+>>>>     +       /* VID 0 has a special meaning and is never programmed in hardware */
+>>>>     +       if (!vid)
+>>>>     +               return 0;
+>>>>     +
+>>>>             /* Check for a possible bridge VLAN entry now since there is no
+>>>>              * need to emulate the switchdev prepare + commit phase.
+>>>>              */
+>>>  
+>> Kernel currently does, but it is caught in
+>> mv88e6xxx_port_check_hw_vlan() and returns -ENOTSUPP from there.
+> 
+> But VID 0 has a special meaning for the kernel, it means the port's private
+> database (when it is isolated, non-bridged), it is not meant to be programmed
+> in the switch. That's why I would've put that knowledge into the DSA layer,
+> which job is to translate the kernel operations to the (dumb) DSA drivers.
+> 
+> I hope I'm seeing things correctly here.
 
-We use the prepare/commit model in the rx_add_vid() path so we deal with
--EOPNOTSUPP, that was caught fairly early on by Heiner when I added
-programming of VLAN filtering through rx_{add,kill}_vid.
+Your first part about the fact that it's the port private database is
+true, the fact that it is not programmed into the HW actually depends on
+what the switch is capable of doing. With mv88e6xxx you have per-port
+VLAN filtering controls, but other switches that do not have that
+capability need to program VID == 0 into the HW to continue maintaining
+VLAN filtering on a non bridged port while a bridge has enslaved other
+ports of the switch.
 
-Nikita's patcha s it stands is correct and would make both
-mv88e6xxx_port_check_hw_vlan() and mv88e6xxx_vtu_get() consistent.
-
-I will respond to other comments.
+AFAICT, mv88e6xx is the only driver that attempts to catch vid == 0 and
+return something to the upper layers about it.
 -- 
 Florian
