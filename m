@@ -2,97 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A0530AF0
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C12D30AF4
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbfEaJBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 05:01:35 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:18065 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726240AbfEaJBe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 05:01:34 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 22DB7808011AFE2CD3FA;
-        Fri, 31 May 2019 17:01:32 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.75) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 31 May 2019 17:01:25 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <hkallweit1@gmail.com>, <f.fainelli@gmail.com>,
-        <stephen@networkplumber.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: [PATCH v2 net-next] net: link_watch: prevent starvation when processing linkwatch wq
-Date:   Fri, 31 May 2019 17:00:33 +0800
-Message-ID: <1559293233-43017-1-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.8.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.212.75]
-X-CFilter-Loop: Reflected
+        id S1726768AbfEaJCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 05:02:24 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35988 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726275AbfEaJCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 05:02:24 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7539C308FC23;
+        Fri, 31 May 2019 09:02:19 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 838F5174A7;
+        Fri, 31 May 2019 09:02:14 +0000 (UTC)
+Message-ID: <5370208b08c9e25c05b6a7cc0e8dfae79721da4d.camel@redhat.com>
+Subject: Re: [PATCH net v2 1/3] net/sched: act_csum: pull all VLAN headers
+ before checksumming
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
+In-Reply-To: <20190530110840.794ba98b@hermes.lan>
+References: <cover.1559237173.git.dcaratti@redhat.com>
+         <655b6508443c52f04be2b2fe9a6a7f2470b47ad1.1559237173.git.dcaratti@redhat.com>
+         <20190530110840.794ba98b@hermes.lan>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 31 May 2019 11:02:13 +0200
+Mime-Version: 1.0
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Fri, 31 May 2019 09:02:24 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When user has configured a large number of virtual netdev, such
-as 4K vlans, the carrier on/off operation of the real netdev
-will also cause it's virtual netdev's link state to be processed
-in linkwatch. Currently, the processing is done in a work queue,
-which may cause cpu and rtnl locking starvation problem.
+On Thu, 2019-05-30 at 11:08 -0700, Stephen Hemminger wrote:
+> On Thu, 30 May 2019 20:03:41 +0200
+> Davide Caratti <dcaratti@redhat.com> wrote:
+> 
+> >  
+> > +static inline int tc_skb_pull_vlans(struct sk_buff *skb,
+> > +				    unsigned int *hdr_count,
+> > +				    __be16 *proto)
+> > +{
+> > +	if (skb_vlan_tag_present(skb))
+> > +		*proto = skb->protocol;
+> > +
+> > +	while (eth_type_vlan(*proto)) {
+> > +		struct vlan_hdr *vlan;
+> > +
+> > +		if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
+> > +			return -ENOMEM;
+> > +
+> > +		vlan = (struct vlan_hdr *)skb->data;
+> > +		*proto = vlan->h_vlan_encapsulated_proto;
+> > +		skb_pull(skb, VLAN_HLEN);
+> > +		skb_reset_network_header(skb);
+> > +		(*hdr_count)++;
+> > +	}
+> > +	return 0;
+> > +}
+> 
+> Does this really need to be an inline, or could it just be
+> part of the sched_api?
 
-This patch releases the cpu and rtnl lock when link watch worker
-has processed a fixed number of netdev' link watch event.
+yes, you are right: I will send a v3.
 
-Currently __linkwatch_run_queue is called with rtnl lock, so
-enfore it with ASSERT_RTNL();
-
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
-V2: use cond_resched and rtnl_unlock after processing a fixed
-    number of events
----
- net/core/link_watch.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index 7f51efb..07eebfb 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -168,9 +168,18 @@ static void linkwatch_do_dev(struct net_device *dev)
- 
- static void __linkwatch_run_queue(int urgent_only)
- {
-+#define MAX_DO_DEV_PER_LOOP	100
-+
-+	int do_dev = MAX_DO_DEV_PER_LOOP;
- 	struct net_device *dev;
- 	LIST_HEAD(wrk);
- 
-+	ASSERT_RTNL();
-+
-+	/* Give urgent case more budget */
-+	if (urgent_only)
-+		do_dev += MAX_DO_DEV_PER_LOOP;
-+
- 	/*
- 	 * Limit the number of linkwatch events to one
- 	 * per second so that a runaway driver does not
-@@ -200,6 +209,14 @@ static void __linkwatch_run_queue(int urgent_only)
- 		}
- 		spin_unlock_irq(&lweventlist_lock);
- 		linkwatch_do_dev(dev);
-+
-+		if (--do_dev < 0) {
-+			rtnl_unlock();
-+			cond_resched();
-+			do_dev = MAX_DO_DEV_PER_LOOP;
-+			rtnl_lock();
-+		}
-+
- 		spin_lock_irq(&lweventlist_lock);
- 	}
- 
+thanks,
 -- 
-2.8.1
+davide
+
 
