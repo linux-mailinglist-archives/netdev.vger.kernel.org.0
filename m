@@ -2,127 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5482831280
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E6431283
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbfEaQgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:36:32 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42855 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726531AbfEaQgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:36:31 -0400
-Received: by mail-pg1-f193.google.com with SMTP id e6so3076538pgd.9;
-        Fri, 31 May 2019 09:36:30 -0700 (PDT)
+        id S1726911AbfEaQgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:36:53 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:35394 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726832AbfEaQgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:36:52 -0400
+Received: by mail-io1-f68.google.com with SMTP id p2so8712861iol.2
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:36:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3tzOLexHcMrooSCenmTLyKwfDBS6JJ3zJIi8d/CAsZ8=;
-        b=GueBvGAnyvQS7tqxY/ep/9VWXhGdfjle/8DpFYXLjgQ9LSSN5+0p0VGsdTiWlLnBjI
-         WFyjyMjKkofva9H/mYTm9HeVEDNW6dBOCYDoKy2pwG6i0GVUv6mEEJJvRSCzQoNbSuln
-         +mn5VWlCgyHSdBOLmpOR6AaLlyy9jo6ja2drpjMEEHSowT6toWCX3XovkEHXcjxpKKP+
-         2UAVFUXdTpd/aD7ObWdIe/xfSmj989TRLbrE3omKW6H/8xyUefhbq8nqj1ZjVqL+0Z3D
-         bG3pZlXlPIjrAlw3Ispiwt6jd3OOEhY4DR/qHwwKoJfUvOS9yxje6LmcdyftX1ejYg59
-         4zMA==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sWH2fRj1Mi7gFEy1Vo3Yban4ZfrElYghc3kI9aR4+g4=;
+        b=EaG977szScW8r2vr4msPSESu7B0zum65EZBOErQAq2N32o9DBG6pFfG9P6qstZFi93
+         yPit22+S0RkamVcwb3yToQUOGJvx4Yw6B0Nt8/dowbd8OaE2/J0vz0rXzt5eLtlpsqcC
+         qhmMlPn7fhNXVeJY8gbtXhBPL1xjxwLZkQ6KWD4pYjrSxJmbm9plyNZ/gmlgkv37Yfgw
+         esCNaYzzX0vnPJQpM6V0dpfeGXL+Ic7NZ7ZcI8N16WBif9y+JV8wRyl4IEmWtCWN9R7T
+         QpiJdGOdFyWFW/LyaZDXnqz4yoin68RrQ7akFhEnTbfQYY35HzsBySFnhbIrMMBCNvLd
+         cVcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=3tzOLexHcMrooSCenmTLyKwfDBS6JJ3zJIi8d/CAsZ8=;
-        b=lV2K0kt0PAzCcnyi6Nf7IgSMV2jjWAi2Jt+QvKz+3LscmC0+jIEmUfH2UStn6WMEs+
-         hPnpNK4LGNxAvOfqMA3U3s4QQSY/gwaK7v92FWnkSDv0vYHglkHinTY5qw2ErGKePK/1
-         QGBpp8BI2SmALDaeB/+IuGFJCgdsoAPlN9TZhn3sZYD6fvadtZTyLvBJsJSEaFZluD5D
-         FX8hT78O7KjFJkejIOFjSM9CZoSg2SS7xlM2Z149rv8dyrokYICT/H81jf61R9YFtgxC
-         V1u36SQTqDwefSC09cw0qfd2z+xp9o7tQiA3A7Sx0HTadHHIMEVyjH1fcD69IqrOiRlp
-         3odA==
-X-Gm-Message-State: APjAAAWxv5DyTZ0nK2+xr62Ld8My42Lx9CDlf0VBms2H3JX8/c8p5VXk
-        hW1nS1JNQ6Pjp620oE7RnOI=
-X-Google-Smtp-Source: APXvYqyV74XMGh8mpCBAGgPVOupb/zGAHgmCHvU8ZfZKSiXv6RWokgpeEE0DK7BkZFnsd5mO7tTlPg==
-X-Received: by 2002:a63:f410:: with SMTP id g16mr287275pgi.428.1559320590442;
-        Fri, 31 May 2019 09:36:30 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id s24sm6599407pfe.57.2019.05.31.09.36.28
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sWH2fRj1Mi7gFEy1Vo3Yban4ZfrElYghc3kI9aR4+g4=;
+        b=Eawlye85f8R0MnaG7wxa49kAeAuaw0ytpqXzm9MSrYXDPL2ZPm0jwVEW6MA/7ov93B
+         vYA3Mzt0prSs8jcklOzoNrWJWD41fMxJSMw9g4XcRoBnT/OJAiXj44LHUJ55EAJrbAm/
+         aKvLFdgsds5xLcsLhNndvC08g56eDXTZf31lDHdeJ7df1aeJFbpYTaZ8Sc+sLSdBDuv4
+         3LFH3QJyCEkBCF4Yu/rrvm802MFgP7syxzUdopmoFME2rQvHhhApPrATXDsLfty69NKi
+         iBjE/py8MqgKiO5JaD1GcHVQv8RvBCHm7kv/fP26aQtMP6C3LYe7fFXixSm6XBJvifdI
+         X/MQ==
+X-Gm-Message-State: APjAAAXkv8sNoSutXJFJhr4GkynI82ShP+RmfDig8Uo8NrdQnLOW4me5
+        2BAh7aXkj4L5fzmfiuEouu19hw==
+X-Google-Smtp-Source: APXvYqwF1QelzFZK9OIIns6zH2PSZ2TasRMDIzTWOpJ7KwvscJ5avHLcUTTuC1V8jHgWrTx3FSJMFg==
+X-Received: by 2002:a6b:8b8b:: with SMTP id n133mr6924128iod.183.1559320611338;
+        Fri, 31 May 2019 09:36:51 -0700 (PDT)
+Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
+        by smtp.googlemail.com with ESMTPSA id j13sm1985761iog.78.2019.05.31.09.36.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 09:36:29 -0700 (PDT)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from
- VLAN 0
-To:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Healy <cphealy@gmail.com>
-References: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
- <20190531103105.GE23464@t480s.localdomain> <20190531143758.GB23821@lunn.ch>
- <422482dc-8887-0f92-c8c9-f9d639882c77@cogentembedded.com>
- <20190531110017.GB2075@t480s.localdomain>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <38a5dbac-a8e7-325a-225f-b97774f7bb81@gmail.com>
-Date:   Fri, 31 May 2019 09:36:13 -0700
+        Fri, 31 May 2019 09:36:50 -0700 (PDT)
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Dan Williams <dcbw@redhat.com>, davem@davemloft.net, arnd@arndb.de,
+        bjorn.andersson@linaro.org, ilias.apalodimas@linaro.org
+Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
+        cpratapa@codeaurora.org, syadagir@codeaurora.org,
+        subashab@codeaurora.org, abhishek.esse@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+References: <20190531035348.7194-1-elder@linaro.org>
+ <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org>
+Date:   Fri, 31 May 2019 11:36:48 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190531110017.GB2075@t480s.localdomain>
+In-Reply-To: <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,54 +71,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/19 8:00 AM, Vivien Didelot wrote:
-> Hi Nikita,
-> 
-> On Fri, 31 May 2019 17:46:29 +0300, Nikita Yushchenko <nikita.yoush@cogentembedded.com> wrote:
+On 5/31/19 9:58 AM, Dan Williams wrote:
+> On Thu, 2019-05-30 at 22:53 -0500, Alex Elder wrote:
+>> This series presents the driver for the Qualcomm IP Accelerator
+>> (IPA).
 >>
+>> This is version 2 of the series.  This version has addressed almost
+>> all of the feedback received in the first version:
+>>   
+>> https://lore.kernel.org/lkml/20190512012508.10608-1-elder@linaro.org/
+>> More detail is included in the individual patches, but here is a
+>> high-level summary of what's changed since then:
+>>   - Two spinlocks have been removed.
+>>       - The code for enabling and disabling endpoint interrupts has
+>>         been simplified considerably, and the spinlock is no longer
+>> 	required
+>>       - A spinlock used when updating ring buffer pointers is no
+>>         longer needed.  Integers indexing the ring are used instead
+>> 	(and they don't even have to be atomic).
+>>   - One spinlock remains to protect list updates, but it is always
+>>     acquired using spin_lock_bh() (no more irqsave).
+>>   - Information about the queueing and completion of messages is now
+>>     supplied to the network stack in batches rather than one at a
+>>     time.
+>>   - I/O completion handling has been simplified, with the IRQ
+>>     handler now consisting mainly of disabling the interrupt and
+>>     calling napi_schedule().
+>>   - Some comments have been updated and improved througout.
 >>
->> 31.05.2019 17:37, Andrew Lunn wrote:
->>>> I'm not sure that I like the semantic of it, because the driver can actually
->>>> support VID 0 per-se, only the kernel does not use VLAN 0. Thus I would avoid
->>>> calling the port_vlan_del() ops for VID 0, directly into the upper DSA layer.
->>>>
->>>> Florian, Andrew, wouldn't the following patch be more adequate?
->>>>
->>>>     diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->>>>     index 1e2ae9d59b88..80f228258a92 100644
->>>>     --- a/net/dsa/slave.c
->>>>     +++ b/net/dsa/slave.c
->>>>     @@ -1063,6 +1063,10 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
->>>>             struct bridge_vlan_info info;
->>>>             int ret;
->>>>      
->>>>     +       /* VID 0 has a special meaning and is never programmed in hardware */
->>>>     +       if (!vid)
->>>>     +               return 0;
->>>>     +
->>>>             /* Check for a possible bridge VLAN entry now since there is no
->>>>              * need to emulate the switchdev prepare + commit phase.
->>>>              */
->>>  
->> Kernel currently does, but it is caught in
->> mv88e6xxx_port_check_hw_vlan() and returns -ENOTSUPP from there.
+>> What follows is the introduction supplied with v1 of the series.
+>>
+>> -----
+>>
+>> The IPA is a component present in some Qualcomm SoCs that allows
+>> network functions such as aggregation, filtering, routing, and NAT
+>> to be performed without active involvement of the main application
+>> processor (AP).
+>>
+>> Initially, these advanced features are disabled; the IPA driver
+>> simply provides a network interface that makes the modem's LTE
+>> network available to the AP.  In addition, only support for the
+>> IPA found in the Qualcomm SDM845 SoC is provided.
 > 
-> But VID 0 has a special meaning for the kernel, it means the port's private
-> database (when it is isolated, non-bridged), it is not meant to be programmed
-> in the switch. That's why I would've put that knowledge into the DSA layer,
-> which job is to translate the kernel operations to the (dumb) DSA drivers.
+> My question from the Nov 2018 IPA rmnet driver still stands; how does
+> this relate to net/ethernet/qualcomm/rmnet/ if at all? And if this is
+> really just a netdev talking to the IPA itself and unrelated to
+> net/ethernet/qualcomm/rmnet, let's call it "ipa%d" and stop cargo-
+> culting rmnet around just because it happens to be a net driver for a
+> QC SoC.
+
+First, the relationship between the IPA driver and the rmnet driver
+is that the IPA driver is assumed to sit between the rmnet driver
+and the hardware.
+
+Currently the modem is assumed to use QMAP protocol.  This means
+each packet is prefixed by a (struct rmnet_map_header) structure
+that allows the IPA connection to be multiplexed for several logical
+connections.  The rmnet driver parses such messages and implements
+the multiplexed network interfaces.
+
+QMAP protocol can also be used for aggregating many small packets
+into a larger message.  The rmnet driver implements de-aggregation
+of such messages (and could probably aggregate them for TX as well).
+
+Finally, the IPA can support checksum offload, and the rmnet
+driver handles providing a prepended header (for TX) and
+interpreting the appended trailer (for RX) if these features
+are enabled.
+
+So basically, the purpose of the rmnet driver is to handle QMAP
+protocol connections, and right now that's what the modem
+provides.
+
+> Is the firmware that the driver loads already in linux-firmware or
+> going to be there soon?
+
+It is not right now, and I have no information on when it can be
+available.  The AP *can* load the firmware but right now we rely
+on the modem doing it (until we can make the firmware available).
+
+> How does the driver support multiple PDNs (eg PDP or EPS contexts) that
+> are enabled through the control plane via QMI messages? I couldn't
+> quite find that out.
+
+To be honest, I don't know the answer to this.  All of my work
+has been on this transport driver and I believe these things
+are handled by user space.  But I really don't know details.
+
+					-Alex
+
+> Thanks,
+> Dan
 > 
-> I hope I'm seeing things correctly here.
+>> This code is derived from a driver developed internally by Qualcomm.
+>> A version of the original source can be seen here:
+>>   https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree
+>> in the "drivers/platform/msm/ipa" directory.  Many were involved in
+>> developing this, but the following individuals deserve explicit
+>> acknowledgement for their substantial contributions:
+>>
+>>     Abhishek Choubey
+>>     Ady Abraham
+>>     Chaitanya Pratapa
+>>     David Arinzon
+>>     Ghanim Fodi
+>>     Gidon Studinski
+>>     Ravi Gummadidala
+>>     Shihuan Liu
+>>     Skylar Chang
+>>
+>> A version of this code was posted in November 2018 as an RFC.
+>>   
+>> https://lore.kernel.org/lkml/20181107003250.5832-1-elder@linaro.org/
+>> All feedback received was addressed.  The code has undergone
+>> considerable further rework since that time, and most of the
+>> "future work" described then has now been completed.
+>>
+>> This code is available in buildable form here, based on kernel
+>> v5.2-rc1:
+>>   remote: ssh://git@git.linaro.org/people/alex.elder/linux.git
+>>   branch: ipa-v2_kernel-v5.2-rc2
+>>     75adf2ac1266 arm64: defconfig: enable build of IPA code
+>>
+>> The branch depends on a commit now found in in net-next.  It has
+>> been cherry-picked, and (in this branch) has this commit ID:
+>>   13c627b5a078 net: qualcomm: rmnet: Move common struct definitions
+>> to include
+>> by 
+>>
+>> 					-Alex
+>>
+>> Alex Elder (17):
+>>   bitfield.h: add FIELD_MAX() and field_max()
+>>   dt-bindings: soc: qcom: add IPA bindings
+>>   soc: qcom: ipa: main code
+>>   soc: qcom: ipa: configuration data
+>>   soc: qcom: ipa: clocking, interrupts, and memory
+>>   soc: qcom: ipa: GSI headers
+>>   soc: qcom: ipa: the generic software interface
+>>   soc: qcom: ipa: GSI transactions
+>>   soc: qcom: ipa: IPA interface to GSI
+>>   soc: qcom: ipa: IPA endpoints
+>>   soc: qcom: ipa: immediate commands
+>>   soc: qcom: ipa: IPA network device and microcontroller
+>>   soc: qcom: ipa: AP/modem communications
+>>   soc: qcom: ipa: support build of IPA code
+>>   MAINTAINERS: add entry for the Qualcomm IPA driver
+>>   arm64: dts: sdm845: add IPA information
+>>   arm64: defconfig: enable build of IPA code
+>>
+>>  .../devicetree/bindings/net/qcom,ipa.yaml     |  180 ++
+>>  MAINTAINERS                                   |    6 +
+>>  arch/arm64/boot/dts/qcom/sdm845.dtsi          |   51 +
+>>  arch/arm64/configs/defconfig                  |    1 +
+>>  drivers/net/Kconfig                           |    2 +
+>>  drivers/net/Makefile                          |    1 +
+>>  drivers/net/ipa/Kconfig                       |   16 +
+>>  drivers/net/ipa/Makefile                      |    7 +
+>>  drivers/net/ipa/gsi.c                         | 1635
+>> +++++++++++++++++
+>>  drivers/net/ipa/gsi.h                         |  246 +++
+>>  drivers/net/ipa/gsi_private.h                 |  148 ++
+>>  drivers/net/ipa/gsi_reg.h                     |  376 ++++
+>>  drivers/net/ipa/gsi_trans.c                   |  624 +++++++
+>>  drivers/net/ipa/gsi_trans.h                   |  116 ++
+>>  drivers/net/ipa/ipa.h                         |  131 ++
+>>  drivers/net/ipa/ipa_clock.c                   |  297 +++
+>>  drivers/net/ipa/ipa_clock.h                   |   52 +
+>>  drivers/net/ipa/ipa_cmd.c                     |  377 ++++
+>>  drivers/net/ipa/ipa_cmd.h                     |  116 ++
+>>  drivers/net/ipa/ipa_data-sdm845.c             |  245 +++
+>>  drivers/net/ipa/ipa_data.h                    |  267 +++
+>>  drivers/net/ipa/ipa_endpoint.c                | 1283 +++++++++++++
+>>  drivers/net/ipa/ipa_endpoint.h                |   97 +
+>>  drivers/net/ipa/ipa_gsi.c                     |   48 +
+>>  drivers/net/ipa/ipa_gsi.h                     |   49 +
+>>  drivers/net/ipa/ipa_interrupt.c               |  279 +++
+>>  drivers/net/ipa/ipa_interrupt.h               |   53 +
+>>  drivers/net/ipa/ipa_main.c                    |  921 ++++++++++
+>>  drivers/net/ipa/ipa_mem.c                     |  234 +++
+>>  drivers/net/ipa/ipa_mem.h                     |   83 +
+>>  drivers/net/ipa/ipa_netdev.c                  |  251 +++
+>>  drivers/net/ipa/ipa_netdev.h                  |   24 +
+>>  drivers/net/ipa/ipa_qmi.c                     |  402 ++++
+>>  drivers/net/ipa/ipa_qmi.h                     |   35 +
+>>  drivers/net/ipa/ipa_qmi_msg.c                 |  583 ++++++
+>>  drivers/net/ipa/ipa_qmi_msg.h                 |  238 +++
+>>  drivers/net/ipa/ipa_reg.h                     |  279 +++
+>>  drivers/net/ipa/ipa_smp2p.c                   |  304 +++
+>>  drivers/net/ipa/ipa_smp2p.h                   |   47 +
+>>  drivers/net/ipa/ipa_uc.c                      |  208 +++
+>>  drivers/net/ipa/ipa_uc.h                      |   32 +
+>>  include/linux/bitfield.h                      |   14 +
+>>  42 files changed, 10358 insertions(+)
+>>  create mode 100644
+>> Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>>  create mode 100644 drivers/net/ipa/Kconfig
+>>  create mode 100644 drivers/net/ipa/Makefile
+>>  create mode 100644 drivers/net/ipa/gsi.c
+>>  create mode 100644 drivers/net/ipa/gsi.h
+>>  create mode 100644 drivers/net/ipa/gsi_private.h
+>>  create mode 100644 drivers/net/ipa/gsi_reg.h
+>>  create mode 100644 drivers/net/ipa/gsi_trans.c
+>>  create mode 100644 drivers/net/ipa/gsi_trans.h
+>>  create mode 100644 drivers/net/ipa/ipa.h
+>>  create mode 100644 drivers/net/ipa/ipa_clock.c
+>>  create mode 100644 drivers/net/ipa/ipa_clock.h
+>>  create mode 100644 drivers/net/ipa/ipa_cmd.c
+>>  create mode 100644 drivers/net/ipa/ipa_cmd.h
+>>  create mode 100644 drivers/net/ipa/ipa_data-sdm845.c
+>>  create mode 100644 drivers/net/ipa/ipa_data.h
+>>  create mode 100644 drivers/net/ipa/ipa_endpoint.c
+>>  create mode 100644 drivers/net/ipa/ipa_endpoint.h
+>>  create mode 100644 drivers/net/ipa/ipa_gsi.c
+>>  create mode 100644 drivers/net/ipa/ipa_gsi.h
+>>  create mode 100644 drivers/net/ipa/ipa_interrupt.c
+>>  create mode 100644 drivers/net/ipa/ipa_interrupt.h
+>>  create mode 100644 drivers/net/ipa/ipa_main.c
+>>  create mode 100644 drivers/net/ipa/ipa_mem.c
+>>  create mode 100644 drivers/net/ipa/ipa_mem.h
+>>  create mode 100644 drivers/net/ipa/ipa_netdev.c
+>>  create mode 100644 drivers/net/ipa/ipa_netdev.h
+>>  create mode 100644 drivers/net/ipa/ipa_qmi.c
+>>  create mode 100644 drivers/net/ipa/ipa_qmi.h
+>>  create mode 100644 drivers/net/ipa/ipa_qmi_msg.c
+>>  create mode 100644 drivers/net/ipa/ipa_qmi_msg.h
+>>  create mode 100644 drivers/net/ipa/ipa_reg.h
+>>  create mode 100644 drivers/net/ipa/ipa_smp2p.c
+>>  create mode 100644 drivers/net/ipa/ipa_smp2p.h
+>>  create mode 100644 drivers/net/ipa/ipa_uc.c
+>>  create mode 100644 drivers/net/ipa/ipa_uc.h
+>>
+> 
 
-Your first part about the fact that it's the port private database is
-true, the fact that it is not programmed into the HW actually depends on
-what the switch is capable of doing. With mv88e6xxx you have per-port
-VLAN filtering controls, but other switches that do not have that
-capability need to program VID == 0 into the HW to continue maintaining
-VLAN filtering on a non bridged port while a bridge has enslaved other
-ports of the switch.
-
-AFAICT, mv88e6xx is the only driver that attempts to catch vid == 0 and
-return something to the upper layers about it.
--- 
-Florian
