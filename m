@@ -2,137 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F5D3178F
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A2E317E6
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:27:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbfEaXMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 19:12:39 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:34866 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbfEaXMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 19:12:39 -0400
-Received: by mail-qk1-f194.google.com with SMTP id l128so7450049qke.2
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 16:12:39 -0700 (PDT)
+        id S1726616AbfEaX1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 19:27:33 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46346 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726535AbfEaX1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 19:27:33 -0400
+Received: by mail-lf1-f68.google.com with SMTP id l26so9193130lfh.13
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 16:27:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8jGpMxBDyOT7KerzGZ04QQZ3tNmxUEm8+RdxKKHJt78=;
-        b=EtxmoUI/MXZc1xoAYvvhygB5WtIP/HYEfEqmyB2ngK7nKbJPtA60SheJ7WGDHOthmA
-         klKNjn3aGTR0xQwwHhAorZ3+2TfAhnRikAsQV/fkN4X84HqfdlHO4Ztv3Pq1Ugxecupr
-         DM/5BWFEd1qfOoff1ZBEYmPdYVI/TRsb053DWBVWFgie50rvMy1As86KBNCF0czQG9LW
-         +H6pKO318XpicgJN021xZqZUBrUJNcGB4wFL+pP99hito7D2liadJyMjrn4O0/blRL7V
-         byTDg7YeEzml8SK5dPveFarH6JzvWH1Wfu5/xw//XTdcqHs60Y59c1IkVV8TKCzIhL5U
-         Ek9g==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/CnFI/Gplfb8sUNP8cdDqVeMfZ2XFe8YBzOqCLpB94A=;
+        b=zRB3kJXbFOYoNSwjaQOpmRSldudJn+Df4uOo0m22Btl5w47IUgSF1V3KT9/1YBYqT2
+         oQwMa8lZ8u1ftVKKwEjJSWoMnlGmoYsGw+g5M3W/zbFQvnxeX13U8hIMfcgwhGXYLtj3
+         a4x+sk4uvlBpZvKG4WRkc2vdpY+N/iVAFAMGFeBGW8bWww4AgMd6wECsZe/Vj+ClsQ94
+         LkRpa/iRwq3UCuhIW1BKIfW5E7Y6SE+Z+ibxlllm8+Lju9f67/TsPJ5y3DSY5dK0lK7Y
+         tdEXFDHpC3dWaDw2Z25AarWFlmKDxvgKg01+1gdBP7eMcTnSIwX7WL0QC7vwnc7xCKdz
+         xGDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8jGpMxBDyOT7KerzGZ04QQZ3tNmxUEm8+RdxKKHJt78=;
-        b=iYgY1ln+DqBxIgPnkjzzuYn4mt5TGq15iNOEay+5cQgT2YSyadYvbUOwpEjNUIsuFz
-         /7E9E7LOIGeW8AhZlEGy5G0FLF9W38YFTy6+eBq3OipLGcGdVYX8p5J+sR8xtQ9d8Rbs
-         f0ZjXtSWPUWFRVFPmpJuO1LpE463Dh7Lhg4qFbP5eNndpTtPLrL5I85+4iRU1ZABEya9
-         tWFNr+YmYZHLVbLMQeY1JZdiI1juYvnWhSqeVVNo+zOnL9sv79qXRJ86DTRs/zckOZAY
-         oPMiOxLzvEoH1yAAbyot87gvPvFdMGaaRNoBm0EIL7yo0c3vb+V98a8kgAJh/ZZoyEwn
-         B2dw==
-X-Gm-Message-State: APjAAAWmZDAeRdfWVnksjDRHCwEg9WKh28Y+qC8h6YtrQbZAzf9GcRDU
-        4dF0Z5YYaN3Cx5dU6OWAxMwJKEl9VeU=
-X-Google-Smtp-Source: APXvYqx/7XKSDajzjTjoxhLkoQQ5BPOOsX0dzBvyOeCfrm+ZMPPL1hsceDeLdNH3vPqzqQ+dJCMm5A==
-X-Received: by 2002:a37:b1c5:: with SMTP id a188mr10827972qkf.51.1559344358602;
-        Fri, 31 May 2019 16:12:38 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id f34sm4085089qta.19.2019.05.31.16.12.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=/CnFI/Gplfb8sUNP8cdDqVeMfZ2XFe8YBzOqCLpB94A=;
+        b=JxdN88ZAdMb4FOgl4la/VTuhieQWKbjgunW10qvqbh4TqFn6JdF8/hzH2OtUoMULxG
+         /g9MkWcojfLghAjIkOfNFymWPHvvxjULzCYd1sHl4/qwt6I76+/jmdbWQFr0zNDSNBkw
+         GtbGDJHhJfVCyByQpFCYqNg/KmNOmwJ92jBz65LUqEzEha1GNqR2SjXw8psarzSN9T95
+         TMSzLzh3Blgo3fNlPyh6vLuuY8xOSu2C0JDiH/SQ5er3ZSGr3R604PjNr6iq/lECnKQR
+         8RfS+r1P8E0h1ikZiw76LovstzJxI2m5dkQ0gDYHBperiGIUFrWFmF5AFs0hqRU3lG+X
+         lzLA==
+X-Gm-Message-State: APjAAAXgKL9lq5MZhG2gtkHy/kWIgua/mj+kNx9KhphBMYTW0rciLAEb
+        pk7E7ujaT8hpaVHQBoWvGpoOdQ==
+X-Google-Smtp-Source: APXvYqyW6MyVd0bvo1rYW8SDDxZBjY37O9w7HbIg7ST3VlduimXROlJPkxHLbG8bh/ASOk8YwdBEqw==
+X-Received: by 2002:a19:f806:: with SMTP id a6mr3164054lff.102.1559345251665;
+        Fri, 31 May 2019 16:27:31 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id y6sm1462951ljj.20.2019.05.31.16.27.30
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 31 May 2019 16:12:38 -0700 (PDT)
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>, linville@redhat.com,
-        f.fainelli@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net] ethtool: fix potential userspace buffer overflow
-Date:   Fri, 31 May 2019 19:12:21 -0400
-Message-Id: <20190531231221.29460-1-vivien.didelot@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        Fri, 31 May 2019 16:27:31 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 02:27:28 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP support
+Message-ID: <20190531232727.GB15675@khorivan>
+Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
+        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
+ <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
+ <20190531174643.4be8b27f@carbon>
+ <20190531162523.GA3694@khorivan>
+ <20190531183241.255293bc@carbon>
+ <20190531170332.GB3694@khorivan>
+ <20190601003736.65cb6a61@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190601003736.65cb6a61@carbon>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ethtool_get_regs() allocates a buffer of size ops->get_regs_len(),
-and pass it to the kernel driver via ops->get_regs() for filling.
+On Sat, Jun 01, 2019 at 12:37:36AM +0200, Jesper Dangaard Brouer wrote:
+>On Fri, 31 May 2019 20:03:33 +0300
+>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+>
+>> Probably it's not good example for others how it should be used, not
+>> a big problem to move it to separate pools.., even don't remember why
+>> I decided to use shared pool, there was some more reasons... need
+>> search in history.
+>
+>Using a shared pool is makes it a lot harder to solve the issue I'm
+>currently working on.  That is handling/waiting for in-flight frames to
+>complete, before removing the mem ID from the (r)hashtable lookup.  I
+>have working code, that basically remove page_pool_destroy() from
+>public API, and instead lets xdp_rxq_info_unreg() call it when
+>in-flight count reach zero (and delay fully removing the mem ID).
 
-There is no restriction about what the kernel drivers can or cannot do
-with the open ethtool_regs structure. They usually set regs->version
-and ignore regs->len or set it to the same size as ops->get_regs_len().
+Frankly, not see reason why it can block smth, it can be considered
+like not shared pool. But Ok, anyway it can look more logical and can be
+reused by another SoC. I will add it per channel not a problem,
+at least for now no blockers. Adding pool per channel will create more
+page_pool_destroy() calls, per each pool, that I can be dropped once
+you decided to remove it form the API.
 
-Userspace may actually allocate a smaller buffer for registers dump,
-for instance ethtool does that when dumping the raw registers directly
-into a fixed-size file.
+This API is called along with xdp_rxq_info_unreg(), and seems like not
+a problem to just remove page_pool_destroy(), except one case that
+worries me... cpsw has one interesting feature, share same h/w with 2
+network devices like dual mac, basically it's 3 port switch, but used
+as 2 separate interfaces. So that, both of them share same queues/channels/rings.
+XDP rxq requires network device to be set in rxq info, wich is used in the
+code as a pointer and is shared between xdp buffers, so can't be changed in
+flight. That's why each network interface has it's own instances of rxq, but
+page pools per each network device is common, so when I call
+xdp_rxq_info_unreg() per net device it doesn't mean I want to delete
+page pool....But seems I can avoid it calling xdp_rxq_info_unreg()
+for both when delete page pools...
 
-Because the current code uses the regs.len value potentially updated by
-the driver when copying the buffer back to userspace, we may actually
-cause a userspace buffer overflow in the final copy_to_user() call.
+>
+>-- 
+>Best regards,
+>  Jesper Dangaard Brouer
+>  MSc.CS, Principal Kernel Engineer at Red Hat
+>  LinkedIn: http://www.linkedin.com/in/brouer
 
-To fix this, make this case obvious and store regs.len before calling
-ops->get_regs(), to only copy as much data as requested by userspace,
-up to the value returned by ops->get_regs_len().
-
-While at it, remove the redundant check for non-null regbuf.
-
-Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
----
- net/core/ethtool.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-index 43e9add58340..1a0196fbb49c 100644
---- a/net/core/ethtool.c
-+++ b/net/core/ethtool.c
-@@ -1338,38 +1338,41 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
- static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
- {
- 	struct ethtool_regs regs;
- 	const struct ethtool_ops *ops = dev->ethtool_ops;
- 	void *regbuf;
- 	int reglen, ret;
- 
- 	if (!ops->get_regs || !ops->get_regs_len)
- 		return -EOPNOTSUPP;
- 
- 	if (copy_from_user(&regs, useraddr, sizeof(regs)))
- 		return -EFAULT;
- 
- 	reglen = ops->get_regs_len(dev);
- 	if (reglen <= 0)
- 		return reglen;
- 
- 	if (regs.len > reglen)
- 		regs.len = reglen;
- 
- 	regbuf = vzalloc(reglen);
- 	if (!regbuf)
- 		return -ENOMEM;
- 
-+	if (regs.len < reglen)
-+		reglen = regs.len;
-+
- 	ops->get_regs(dev, &regs, regbuf);
- 
- 	ret = -EFAULT;
- 	if (copy_to_user(useraddr, &regs, sizeof(regs)))
- 		goto out;
- 	useraddr += offsetof(struct ethtool_regs, data);
--	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
-+	if (copy_to_user(useraddr, regbuf, reglen))
- 		goto out;
- 	ret = 0;
- 
-  out:
- 	vfree(regbuf);
- 	return ret;
- }
 -- 
-2.21.0
-
+Regards,
+Ivan Khoronzhuk
