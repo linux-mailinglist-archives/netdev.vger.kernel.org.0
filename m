@@ -2,85 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC98B31730
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5119131736
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfEaW1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:27:05 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:46068 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbfEaW1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:27:05 -0400
-Received: by mail-qk1-f201.google.com with SMTP id u129so9154425qkd.12
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:27:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=q966+WsM0aWKcMLMoESqg9HP4rfdJz0al/h98xW2Jkw=;
-        b=f38RwaIge8wWaGhhSZPEjEYpisJ+qsel6GfpH8SJHQhdPAFL5NJLxg3HO2dYijUYlH
-         poYpEmxrxlOexNrJ57LMMP+wbk3lsilbSvCgC8+yr0BCUZU7EdCyXIi0t8FUhwVq9OLO
-         Mwch8npshmXYEZw60R+7LOXsURToMVofxS19zt1YAhMn3Oth2F+q8YXFn3/eq8/Vy8jB
-         kjJj2gpXGVx7xW9Ws77HrCZ3f82/JTqME56WosJfOEGisAwKAsTVrfmK2E+IY16FWU2f
-         n0/xd0MScn08GdSfnGt5IYGPIGnuvPwlG5Eh8+k1h/x0uUJtVx/A3mwnKisUVWnUCXlR
-         yIqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=q966+WsM0aWKcMLMoESqg9HP4rfdJz0al/h98xW2Jkw=;
-        b=osF56GUPOsg3EbPHBSANBwpJuMAfNypnhomG//HQSBfZYGM6dmgwLt7vB8YZFIl2Gq
-         DfKhLZGPdODeFdfZ0D8jiqysFOg++dkFI4fPdKCfl9NUZOotKBJLc9c+rgNJ2+lGskbc
-         R90At8CZ90I3sslD6CNj6Mef5RIGNXw7zOeDzvTz82ZX8MKpza4CXd3lWNl1cvBHOn9R
-         L8kqasC7tia3cr1yleXVNpfnliWILHfKef0KQSxLL4SKuyrlDHHO4divYGZLqsxy7zKv
-         vJojK+QYfCcEg+hEw7IPhxKFk2WH4BI11pxe0yVi55N9T5a4cS3nseX9KjEa0h75pjb0
-         7VOQ==
-X-Gm-Message-State: APjAAAUeGnk+HEMCRUL76mlYs0p7j8JoOJoFe7OK3ZW0JtRI+ctAt7/W
-        mydKlqV2VZH7A6BMmKvqydYquRw+3Sxpzw==
-X-Google-Smtp-Source: APXvYqwi3axQ7/78LaRzHmShU/ev46Btq0RC9Kx6orEtrpxDO1phsqnpop2ojHF7/8FjtJ0j57zfsXhEnxoFow==
-X-Received: by 2002:a05:620a:16c1:: with SMTP id a1mr10768037qkn.269.1559341624121;
- Fri, 31 May 2019 15:27:04 -0700 (PDT)
-Date:   Fri, 31 May 2019 15:27:00 -0700
-Message-Id: <20190531222700.252607-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
-Subject: [PATCH net-next] ipv6: icmp: use this_cpu_read() in icmpv6_sk()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726816AbfEaW3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 18:29:17 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56694 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726779AbfEaW3R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:29:17 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4VMOkEe001671
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:29:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=hf0iBmL+ZPzVVFEoCzjI/6lyyAyBGnjBbdBFpVUfY54=;
+ b=Krr+iT7NPj8l45hO/CK6kHncf4mbnfBQXRIH1Q1Bv0yzLuhwByjC7dFh8JS8TAqg2F1I
+ KmfnTC/5XTWpAlQ2eb+ZWHAW6nCVOM9m8h6jCTuJXU3cOy9ktkrqgoqrtwzd9M88bnRl
+ ClDOggpkLbQppA7enuw/4fMmelox10Tbt3Q= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2suad2ghrm-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:29:15 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 31 May 2019 15:29:12 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 409E62941A0E; Fri, 31 May 2019 15:29:10 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf 0/2] bpf: udp: A few reuseport's bpf_prog for udp lookup
+Date:   Fri, 31 May 2019 15:29:10 -0700
+Message-ID: <20190531222910.2499861-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_15:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=486 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905310138
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In general, this_cpu_read(*X) is faster than *this_cpu_ptr(X)
+This series has fixes when running reuseport's bpf_prog for udp lookup.
+If there is reuseport's bpf_prog, the common issue is the reuseport code
+path expects skb->data pointing to the transport header (udphdr here).
+A couple of commits broke this expectation.  The issue is specific
+to running bpf_prog, so bpf tag is used for this series.
 
-Also remove the inline attibute, totally useless.
+Please refer to the individual commit message for details.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- net/ipv6/icmp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Martin KaFai Lau (2):
+  bpf: udp: ipv6: Avoid running reuseport's bpf_prog from __udp6_lib_err
+  bpf: udp: Avoid calling reuseport's bpf_prog from udp_gro
 
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index afb915807cd0109e02df6e0858319c0ff78c33e8..d274f5b64afe0c5325d6f14c33842b7da61653e8 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -79,9 +79,9 @@
-  *
-  *	On SMP we have one ICMP socket per-cpu.
-  */
--static inline struct sock *icmpv6_sk(struct net *net)
-+static struct sock *icmpv6_sk(struct net *net)
- {
--	return *this_cpu_ptr(net->ipv6.icmp_sk);
-+	return this_cpu_read(*net->ipv6.icmp_sk);
- }
- 
- static int icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+ net/ipv4/udp.c | 6 +++++-
+ net/ipv6/udp.c | 4 ++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
 -- 
-2.22.0.rc1.257.g3120a18244-goog
+2.17.1
 
