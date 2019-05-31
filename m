@@ -2,69 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A86DF31742
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D0831747
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbfEaWhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:37:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52866 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726446AbfEaWhp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 18:37:45 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 248383082E4D;
-        Fri, 31 May 2019 22:37:45 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5181119C69;
-        Fri, 31 May 2019 22:37:38 +0000 (UTC)
-Date:   Sat, 1 Jun 2019 00:37:36 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP
- support
-Message-ID: <20190601003736.65cb6a61@carbon>
-In-Reply-To: <20190531170332.GB3694@khorivan>
-References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
-        <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
-        <20190531174643.4be8b27f@carbon>
-        <20190531162523.GA3694@khorivan>
-        <20190531183241.255293bc@carbon>
-        <20190531170332.GB3694@khorivan>
+        id S1726823AbfEaWic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 18:38:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42496 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726446AbfEaWib (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 18:38:31 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id CA030AD81;
+        Fri, 31 May 2019 22:38:29 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 1539AE00E3; Sat,  1 Jun 2019 00:38:29 +0200 (CEST)
+Date:   Sat, 1 Jun 2019 00:38:29 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Subject: Re: [PATCH V1 net-next 02/11] net: ena: ethtool: add extra
+ properties retrieval via get_priv_flags
+Message-ID: <20190531223829.GH15954@unicorn.suse.cz>
+References: <20190529095004.13341-1-sameehj@amazon.com>
+ <20190529095004.13341-3-sameehj@amazon.com>
+ <20190531081901.GC15954@unicorn.suse.cz>
+ <30FE74C2-429B-4837-84D5-E973F33AF35F@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 31 May 2019 22:37:45 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30FE74C2-429B-4837-84D5-E973F33AF35F@amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 May 2019 20:03:33 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+On Fri, May 31, 2019 at 09:57:51PM +0000, Machulsky, Zorik wrote:
+>     >  
+>     > +int ena_com_extra_properties_strings_init(struct ena_com_dev *ena_dev)
+>     > +{
+>     > +	struct ena_admin_get_feat_resp resp;
+>     > +	struct ena_extra_properties_strings *extra_properties_strings =
+>     > +			&ena_dev->extra_properties_strings;
+>     > +	u32 rc;
+>     > +
+>     > +	extra_properties_strings->size = ENA_ADMIN_EXTRA_PROPERTIES_COUNT *
+>     > +		ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN;
+>     > +
+>     > +	extra_properties_strings->virt_addr =
+>     > +		dma_alloc_coherent(ena_dev->dmadev,
+>     > +				   extra_properties_strings->size,
+>     > +				   &extra_properties_strings->dma_addr,
+>     > +				   GFP_KERNEL);
+>     
+>     Do you need to fetch the private flag names on each ETHTOOL_GSTRING
+>     request? I suppose they could change e.g. on a firmware update but then
+>     even the count could change which you do not seem to handle. Is there
+>     a reason not to fetch the names once on init rather then accessing the
+>     device memory each time?
+>     
+>     My point is that ethtool_ops::get_strings() does not return a value
+>     which indicates that it's supposed to be a trivial operation which
+>     cannot fail, usually a simple copy within kernel memory.
+> 
+> ena_com_extra_properties_strings_init() is called in probe() only, and not for every ETHTOOL_GSTRING
+> request. For the latter we use ena_get_strings(). And just to make sure we are on the same page, extra_properties_strings->virt_addr 
+> points to the host memory and not to the device memory. I believe this should answer your concern.
 
-> Probably it's not good example for others how it should be used, not
-> a big problem to move it to separate pools.., even don't remember why
-> I decided to use shared pool, there was some more reasons... need
-> search in history.
+That's what I misunderstood. Sorry for the noise then.
 
-Using a shared pool is makes it a lot harder to solve the issue I'm
-currently working on.  That is handling/waiting for in-flight frames to
-complete, before removing the mem ID from the (r)hashtable lookup.  I
-have working code, that basically remove page_pool_destroy() from
-public API, and instead lets xdp_rxq_info_unreg() call it when
-in-flight count reach zero (and delay fully removing the mem ID).
+>     > +static void get_private_flags_strings(struct ena_adapter *adapter, u8 *data)
+>     > +{
+>     > +	struct ena_com_dev *ena_dev = adapter->ena_dev;
+>     > +	u8 *strings = ena_dev->extra_properties_strings.virt_addr;
+>     > +	int i;
+>     > +
+>     > +	if (unlikely(!strings)) {
+>     > +		adapter->ena_extra_properties_count = 0;
+>     > +		netif_err(adapter, drv, adapter->netdev,
+>     > +			  "Failed to allocate extra properties strings\n");
+>     > +		return;
+>     > +	}
+>     
+>     This is a bit confusing, IMHO. I'm aware we shouldn't really get here as
+>     with strings null, count would be zero and ethtool_get_strings()
+>     wouldn't call the ->get_strings() callback. But if we ever do, it makes
+>     little sense to complain about failed allocation (which happened once on
+>     init) each time userspace makes ETHTOOL_GSTRINGS request for private
+>     flags.
+> 
+> I believe we still want to check validity of the strings pointer to keep the driver resilient, however I agree that 
+> the logged message is confusing. Let us rework this commit  
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Yes, I didn't question the check, only the error message.
+
+Michal
