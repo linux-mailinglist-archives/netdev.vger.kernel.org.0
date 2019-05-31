@@ -2,111 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3070431471
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF3631473
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbfEaSLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:11:52 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50540 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726725AbfEaSLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:11:52 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4VHrGiL025443;
-        Fri, 31 May 2019 11:11:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=f2417SouybzACeImhAlO/P1/nVnmXoIkxrUPfna6xg8=;
- b=Lx8yE3F4p6tRijQRmGvP3tkoBSwjoKD6p1ohEAxNiQ+M+L0m/X63pKFaeKDjbyAmBBKU
- LAMhMrf6qmLtFIUT9PWyh8crCTSOrNjTtYT1fi1ma2BOJCY/FNg6i2S0ivRJSYQCNNcq
- okYmVGIIYeF8ErSgSWU4oImGVC9phCWegXM= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2su8d9r6s3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 31 May 2019 11:11:31 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 31 May 2019 11:11:29 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 31 May 2019 11:11:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f2417SouybzACeImhAlO/P1/nVnmXoIkxrUPfna6xg8=;
- b=YkGITeeYPcI3fiF/8EiIAjAtrv0v6JYjphynqKWGcSBLmUraZVynXnvhoI5lKrnyKMpTH+4DQc5TUt2xJjAy7kEAtuL6d7G/ppLDxdl6SQkoURk9NDFHEdx7wqfujQRP4LFKi39bImw2rtKvpA0tAWhugug+5nW+p/XP2UPURwQ=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.255.19) by
- MWHPR15MB1181.namprd15.prod.outlook.com (10.175.2.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Fri, 31 May 2019 18:11:28 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::c1c6:4833:1762:cf29]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::c1c6:4833:1762:cf29%7]) with mapi id 15.20.1922.021; Fri, 31 May 2019
- 18:11:28 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Lawrence Brakmo <brakmo@fb.com>
-CC:     netdev <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v4 bpf-next 0/6] bpf: Propagate cn to TCP
-Thread-Topic: [PATCH v4 bpf-next 0/6] bpf: Propagate cn to TCP
-Thread-Index: AQHVFbF23rX5rLub4Ei2d8S9IkFwTKaFjR4A
-Date:   Fri, 31 May 2019 18:11:28 +0000
-Message-ID: <20190531181122.xx5h63bz3t3iwy2l@kafai-mbp.dhcp.thefacebook.com>
-References: <20190528235940.1452963-1-brakmo@fb.com>
-In-Reply-To: <20190528235940.1452963-1-brakmo@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR03CA0055.namprd03.prod.outlook.com
- (2603:10b6:301:3b::44) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:4e::19)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:c2df]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7bbd73e-6b3a-44e6-8402-08d6e5f366a3
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1181;
-x-ms-traffictypediagnostic: MWHPR15MB1181:
-x-microsoft-antispam-prvs: <MWHPR15MB1181850557C1FE30B8365644D5190@MWHPR15MB1181.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 00540983E2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(136003)(396003)(39860400002)(366004)(376002)(199004)(189003)(305945005)(476003)(6486002)(7736002)(14454004)(186003)(46003)(99286004)(446003)(4326008)(478600001)(76176011)(6862004)(64756008)(6636002)(54906003)(66476007)(25786009)(66556008)(229853002)(66946007)(73956011)(1076003)(66446008)(558084003)(86362001)(6116002)(6506007)(6246003)(386003)(81156014)(6436002)(52116002)(9686003)(81166006)(8676002)(8936002)(256004)(486006)(53936002)(102836004)(316002)(68736007)(2906002)(6512007)(5660300002)(71200400001)(11346002)(71190400001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1181;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UinmPVHXw5votJuRMmDID5RIbjopgHzBT2AvRhqGsOJ3YpzCOzLWjGeFngbOK5zsUO5nSEDNPgT2l8d4wP1UbqXU7LnP2VCGdut7Y3Pm668s51dcsqECz9vr0aKFAbMEir5BAc0fg+g1J8aLTM6WwzqtMC+n95jPVlcWJth72YfkMY3lODaI2AYDuNkkuwECai1ZQpx8hnOyCSLjxroleB9vOKKxoKOyqMjr/b5XHhfjWkEv6ms4wdzHWcppZcOKqGhyDxJXz/Z9Xfjbr12zov9z2TAothCPqGyM+saPf9bdCp4EVvZkqjwina4qo0q+X7k4kUiHDXPyikRjTcuSpPjDkRkxcOAA7okRRt7j9hXNLVJzBtTPu3khrge+XO4waJUEIBYwGRGx5dXs9Vig0RQv2AMTXbHSr7Nz3ayqK54=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E7C42A329C2A1F4AA3F43223AF18C1CB@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727019AbfEaSMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:12:16 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46374 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfEaSMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:12:16 -0400
+Received: by mail-ed1-f68.google.com with SMTP id h10so365661edi.13;
+        Fri, 31 May 2019 11:12:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BrIShjfSxGVT757Xsm3x/4ZEg8b0wChy310aBAra+AI=;
+        b=MrXdRVTio+B5pALqrLzQaClKZjUd/GeBNi5K9/Jfn/Ea7hhy5kJtUDqOkJlBUTyC7Q
+         uQCM5tFUy9Qs+UiIsTTwD6xfeZoLvC2KSbloV2TWKsSZ42kzD+hC55bE3x98ndEbPzAo
+         d5bbOcFSz4BKbmVK9uwITISYN5oYp8x/yq8uJF+bczqSgR4XJjsmitbyynaV856GXrlm
+         vZVbcegnkHvg3++hrz5PAm9d/vzPOcZFyQiovH1fzMCDgWoBtmSXHJSbZyD/G4era+0+
+         0SR1t5oXt1as7RLewFKM75I1rV+GU8T34DtSe7mBmJMkzXot/rsbIBcePzsOTJT1NbPv
+         DsjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BrIShjfSxGVT757Xsm3x/4ZEg8b0wChy310aBAra+AI=;
+        b=h0mp9EsRkDocnABeRgQ+4zqGu7tPFSyFP6xhqt6DaWlobFLDo6LGTYy3qztjLSV+W/
+         zHDKsi9S445A0fv7GLQ0swpWU2hz3xTlxXmLcQeggRIAFaT6acWNS0aJ/wCnHKhtWfDH
+         6D8XGEElikTs/UVNb5z12XMx0wBwEfq1OH69nQyTDoXBXzoHsFF6W1STbJYSNJwZFZvZ
+         N616g4kQUhj1UODRf44xmXrCdWaPNsyAfJSKQNvWd2dHH++dV3HzE7NRkRA1YadvJ7wG
+         rob6W6Cx6pwBSn0zcVch3chBfPW03bpWT+jwOAhspY0yejiM63WCysc2kfh02yKZ9Tgt
+         rJRw==
+X-Gm-Message-State: APjAAAVYDUnPESqjcsmaNV+I8NvsuYxRtYmYYJJoZh0eLeJdhEx0mobP
+        Xo/19kkqzKNX4h58ySM5Y+K0YZi2Mwti7APFh1g=
+X-Google-Smtp-Source: APXvYqykhwjqUioDCu0cqe39CqYT8A9qm9cvsCdP89/hmjOyKew9Gi6mfkKjUSgty6i8E0kwpshCSgmJ31p2pa1miQI=
+X-Received: by 2002:a17:906:4b12:: with SMTP id y18mr10514712eju.32.1559326334401;
+ Fri, 31 May 2019 11:12:14 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7bbd73e-6b3a-44e6-8402-08d6e5f366a3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 18:11:28.6143
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1181
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=473 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905310110
-X-FB-Internal: deliver
+References: <20190530143037.iky5kk3h4ssmec3f@localhost> <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
+ <20190530150557.iur7fruhyf5bs3qw@localhost> <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
+ <20190531043417.6phscbpmo6krvxam@localhost> <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
+ <20190531140841.j4f72rlojmaayqr5@localhost> <CA+h21hroywaij3gyO0u6v+GFVO2Fv_dP_a+L3oMGpQH8mQgJ5g@mail.gmail.com>
+ <20190531151151.k3a2wdf5f334qmqh@localhost> <CA+h21hpHKbTc8toPZf0iprW1b4v6ErnRaSM=C6vk-GCiXM8NvA@mail.gmail.com>
+ <20190531160909.jh43saqvichukv7p@localhost> <CA+h21hpVrVNJTFj4DHHV+zphs2MjyRO-XZsM3D-STra+BYYHtw@mail.gmail.com>
+In-Reply-To: <CA+h21hpVrVNJTFj4DHHV+zphs2MjyRO-XZsM3D-STra+BYYHtw@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 31 May 2019 21:12:03 +0300
+Message-ID: <CA+h21houLC7TGJYQ28LxiUxyBE7ju2ZiRcUd41aGo_=uAhgVgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 04:59:34PM -0700, brakmo wrote:
-> This patchset adds support for propagating congestion notifications (cn)
-> to TCP from cgroup inet skb egress BPF programs.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+On Fri, 31 May 2019 at 19:16, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Fri, 31 May 2019 at 19:09, Richard Cochran <richardcochran@gmail.com> wrote:
+> >
+> > On Fri, May 31, 2019 at 06:23:34PM +0300, Vladimir Oltean wrote:
+> > > You mean to queue it and subvert DSA's own RX timestamping callback?
+> >
+> > No, use the callback.
+> >
+> > > Why would I do that? Just so as not to introduce my .can_timestamp
+> > > callback?
+> >
+> > Right, the .can_timestamp is unneeded, AFAICT.
+> >
+> > > > Now I'm starting to understand your series.  I think it can be done in
+> > > > simpler way...
+> > > >
+> > > > sja1105_rcv_meta_state_machine - can and should be at the driver level
+> > > > and not at the port level.
+> > > >
+> > >
+> > > Can: yes. Should: why?
+> >
+> > To keep it simple and robust.
+> >
+> > > One important aspect makes this need be a little bit more complicated:
+> > > reconstructing these RX timestamps.
+> > > You see, there is a mutex on the SPI bus, so in practice I do need the
+> > > sja1105_port_rxtstamp_work for exactly this purpose - to read the
+> > > timestamping clock over SPI.
+> >
+> > Sure.  But you schedule the work after a META frame.  And no busy
+> > waiting is needed.
+>
+> Ok, I suppose this could work.
+> But now comes the question on what to do on error cases - the meta
+> frame didn't arrive. Should I just drop the skb waiting for it? Right
+> now I "goto rcv_anyway" - which linuxptp doesn't like btw.
+>
+
+Actually I've been there before, just forgot it.
+It won't work unless I make changes to dsa_switch_rcv.
+Right now taggers can only return a pointer to the skb, or NULL, case
+in which DSA will free it.
+I'd need a mechanism to signal DSA that I'm holding up the skb for a
+little bit more time, then re-engage the dsa_switch_rcv path once the
+meta frame arrived.
+
+> >
+> > Thanks,
+> > Richard
