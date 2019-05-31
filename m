@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EB9307C3
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 06:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 179C8307D1
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 06:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfEaEeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 00:34:21 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41318 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfEaEeV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 00:34:21 -0400
-Received: by mail-pg1-f193.google.com with SMTP id z3so3283420pgp.8;
-        Thu, 30 May 2019 21:34:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=k1lABvVv11G/1BGI9nFcE5F+PdE4XUoO5D323rtAKn8=;
-        b=VRx9M24f5WLDV7pO7VbGq3NnECZWZo49yn53ZDxxXzB6Ysaw+lGCHsM+IR+9GTI5JJ
-         qwRgmUyQy+w2hD3Nj+aonhpWWRn2Vz9kzXkg3LvI4orh0feiMftuokFoi1KQzvmyuMp1
-         eq0LY8z0BriZEDzd0DLsx/NXj4UA19KmY8pXoxTI4zttCh+4cknuUKTfl/I3yYo0o4C1
-         b0fxTiBGF8Dd0VOAOTxPay9cRjP13dUah6rI6sU9DYoyCpxsVyh7GDU3oJni+t+ukzWU
-         FyBRJBN+k0ZUXgMIgEJspxQOYkIjQ+EvPdSe+GNHXy4Iz5nBpoALaKvC5EFahSd4uezi
-         o80A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=k1lABvVv11G/1BGI9nFcE5F+PdE4XUoO5D323rtAKn8=;
-        b=rfFExN90A5cEGzuc4aH8VS0cztzrkXVHTCsXZ16HVAK98FvLLVO1oLtM6mbJzfwC9E
-         2K6EU13opjPFjiNXrxTjv+SUwz7eS2eK40kJVos37VQVNIP40HJm9x+Y0NFcSXOmARYa
-         SBKI/5TeifDq72a5Ne+K0ln7qyRqIGjsDlU6WS7LpgGLKAm3/LzR7+4a15FuWNxzw7dW
-         MJoXyoj4azfqp/eDd3e9LxS/Mr3YUH1yyDSAabG67BnntR0QN85LJOEckhfQhkxa3e+i
-         R55OdC7CLYdpJr6+UG+6+vftJ/ISTl4k0AQ41RKrb2ig0TdcCQC2eK18qrhiuV7XdDmS
-         FLuw==
-X-Gm-Message-State: APjAAAUSm0M+H4glDrTlYa55oG2sUn20NrdA2M2nlUw5CDbhotd3OZUX
-        6vQsVBW+irFA0SCOEEHHXK4=
-X-Google-Smtp-Source: APXvYqyvXcJpTbvqOxUrPR7uenuJD7LBPIw1igpdciEBKs6jKLMDddZZXtXSa7h14V7eU7WormWGzA==
-X-Received: by 2002:a63:eb55:: with SMTP id b21mr6749426pgk.67.1559277260515;
-        Thu, 30 May 2019 21:34:20 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id u11sm4303610pfh.130.2019.05.30.21.34.18
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 30 May 2019 21:34:19 -0700 (PDT)
-Date:   Thu, 30 May 2019 21:34:17 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-Message-ID: <20190531043417.6phscbpmo6krvxam@localhost>
-References: <20190528235627.1315-1-olteanv@gmail.com>
- <20190529045207.fzvhuu6d6jf5p65t@localhost>
- <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com>
- <20190530034555.wv35efen3igwwzjq@localhost>
- <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com>
- <20190530143037.iky5kk3h4ssmec3f@localhost>
- <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
- <20190530150557.iur7fruhyf5bs3qw@localhost>
- <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
+        id S1726550AbfEaEg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 00:36:27 -0400
+Received: from mga09.intel.com ([134.134.136.24]:62066 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725955AbfEaEg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 00:36:27 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 May 2019 21:36:26 -0700
+X-ExtLoop1: 1
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by orsmga006.jf.intel.com with ESMTP; 30 May 2019 21:36:26 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
+ ORSMSX110.amr.corp.intel.com ([169.254.10.7]) with mapi id 14.03.0415.000;
+ Thu, 30 May 2019 21:36:26 -0700
+From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mroos@linux.ee" <mroos@linux.ee>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "ard.biesheuvel@arm.com" <ard.biesheuvel@arm.com>,
+        "will.deacon@arm.com" <will.deacon@arm.com>,
+        "namit@vmware.com" <namit@vmware.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "Hansen, Dave" <dave.hansen@intel.com>
+Subject: Re: [PATCH] vmalloc: Don't use flush flag when no exec perm
+Thread-Topic: [PATCH] vmalloc: Don't use flush flag when no exec perm
+Thread-Index: AQHVFeKXsxy+QkOKqU23zfNpAWli4aaDgIiAgABAJ4CAAV2zgA==
+Date:   Fri, 31 May 2019 04:36:25 +0000
+Message-ID: <120f658d6f34c99a72e82c993ec380109f7aef2c.camel@intel.com>
+References: <20190529055104.6822-1-rick.p.edgecombe@intel.com>
+         <89d6dee949e4418f0cca4cc6c4c9b526c1a5c497.camel@intel.com>
+         <67241836-621c-6933-1278-f04aedcefcb3@linux.ee>
+In-Reply-To: <67241836-621c-6933-1278-f04aedcefcb3@linux.ee>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
+x-originating-ip: [10.252.134.167]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B1A8C0F763855B4D836A965D3C862A13@intel.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 06:23:09PM +0300, Vladimir Oltean wrote:
-> On Thu, 30 May 2019 at 18:06, Richard Cochran <richardcochran@gmail.com> wrote:
-> >
-> > But are the frames received in the same order?  What happens your MAC
-> > drops a frame?
-> >
-> 
-> If it drops a normal frame, it carries on.
-> If it drops a meta frame, it prints "Expected meta frame", resets the
-> state machine and carries on.
-> If it drops a timestampable frame, it prints "Unexpected meta frame",
-> resets the state machine and carries on.
-
-What I meant was, consider how dropped frames in the MAC will spoil
-any chance that the driver has to correctly match time stamps with
-frames.
-
-Thanks,
-Richard
+T24gVGh1LCAyMDE5LTA1LTMwIGF0IDEwOjQ0ICswMzAwLCBNZWVsaXMgUm9vcyB3cm90ZToNCj4g
+PiA+IFRoZSBhZGRpdGlvbiBvZiBWTV9GTFVTSF9SRVNFVF9QRVJNUyBmb3IgQlBGIEpJVCBhbGxv
+Y2F0aW9ucyB3YXMNCj4gPiA+IGJpc2VjdGVkIHRvIHByZXZlbnQgYm9vdCBvbiBhbiBVbHRyYVNw
+YXJjIElJSSBtYWNoaW5lLiBJdCB3YXMNCj4gPiA+IGZvdW5kDQo+ID4gPiB0aGF0DQo+ID4gPiBz
+b21ldGltZSBzaG9ydGx5IGFmdGVyIHRoZSBUTEIgZmx1c2ggdGhpcyBmbGFnIGRvZXMgb24gdmZy
+ZWUgb2YNCj4gPiA+IHRoZQ0KPiA+ID4gQlBGDQo+ID4gPiBwcm9ncmFtLCB0aGUgbWFjaGluZSBo
+dW5nLiBGdXJ0aGVyIGludmVzdGlnYXRpb24gc2hvd2VkIHRoYXQNCj4gPiA+IGJlZm9yZQ0KPiA+
+ID4gYW55IG9mDQo+ID4gPiB0aGUgY2hhbmdlcyBmb3IgdGhpcyBmbGFnIHdlcmUgaW50cm9kdWNl
+ZCwgd2l0aA0KPiA+ID4gQ09ORklHX0RFQlVHX1BBR0VBTExPQw0KPiA+ID4gY29uZmlndXJlZCAo
+d2hpY2ggZG9lcyBhIHNpbWlsYXIgVExCIGZsdXNoIG9mIHRoZSB2bWFsbG9jIHJhbmdlDQo+ID4g
+PiBvbg0KPiA+ID4gZXZlcnkgdmZyZWUpLCB0aGlzIG1hY2hpbmUgYWxzbyBodW5nIHNob3J0bHkg
+YWZ0ZXIgdGhlIGZpcnN0DQo+ID4gPiB2bWFsbG9jDQo+ID4gPiB1bm1hcC9mcmVlLg0KPiA+ID4g
+DQo+ID4gPiBTbyB0aGUgZXZpZGVuY2UgcG9pbnRzIHRvIHRoZXJlIGJlaW5nIHNvbWUgZXhpc3Rp
+bmcgaXNzdWUgd2l0aA0KPiA+ID4gdGhlDQo+ID4gPiB2bWFsbG9jIFRMQiBmbHVzaGVzLCBidXQg
+aXQncyBzdGlsbCB1bmtub3duIGV4YWN0bHkgd2h5IHRoZXNlDQo+ID4gPiBoYW5ncw0KPiA+ID4g
+YXJlDQo+ID4gPiBoYXBwZW5pbmcgb24gc3BhcmMuIEl0IGlzIGFsc28gdW5rbm93biB3aGVuIHNv
+bWVvbmUgd2l0aCB0aGlzDQo+ID4gPiBoYXJkd2FyZQ0KPiA+ID4gY291bGQgcmVzb2x2ZSB0aGlz
+LCBhbmQgaW4gdGhlIG1lYW50aW1lIHVzaW5nIHRoaXMgZmxhZyBvbiBpdA0KPiA+ID4gdHVybnMg
+YQ0KPiA+ID4gbHVya2luZyBiZWhhdmlvciBpbnRvIHNvbWV0aGluZyB0aGF0IHByZXZlbnRzIGJv
+b3QuDQo+ID4gDQo+ID4gVGhlIHNwYXJjIFRMQiBmbHVzaCBpc3N1ZSBoYXMgYmVlbiBiaXNlY3Rl
+ZCBhbmQgaXMgYmVpbmcgd29ya2VkIG9uDQo+ID4gbm93LA0KPiA+IHNvIGhvcGVmdWxseSB3ZSB3
+b24ndCBuZWVkIHRoaXMgcGF0Y2g6DQo+ID4gaHR0cHM6Ly9tYXJjLmluZm8vP2w9bGludXgtc3Bh
+cmMmbT0xNTU5MTU2OTQzMDQxMTgmdz0yDQo+IA0KPiBBbmQgdGhlIHNwYXJjNjQgcGF0Y2ggdGhh
+dCBmaXhlcyBDT05GSUdfREVCVUdfUEFHRUFMTE9DIGFsc28gZml4ZXMNCj4gYm9vdGluZw0KPiBv
+ZiB0aGUgbGF0ZXN0IGdpdCBrZXJuZWwgb24gU3VuIFY0NDUgd2hlcmUgbXkgcHJvYmxlbSBpbml0
+aWFsbHkNCj4gaGFwcGVuZWQuDQo+IA0KVGhhbmtzIE1lZWxpcy4gU28gdGhlIFRMQiBmbHVzaCBv
+biB0aGlzIHBsYXRmb3JtIHdpbGwgYmUgZml4ZWQgYW5kIHdlDQp3b24ndCBuZWVkIHRoaXMgcGF0
+Y2guDQo=
