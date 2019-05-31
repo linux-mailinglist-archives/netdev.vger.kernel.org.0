@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BCE3135A
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C22831370
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfEaRDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 13:03:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60434 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726678AbfEaRDu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 13:03:50 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 91664ACC4;
-        Fri, 31 May 2019 17:03:49 +0000 (UTC)
-Subject: Re: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
-To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        Roy Pledge <roy.pledge@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jocke@infinera.com" <joakim.tjernlund@infinera.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
-References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
- <d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
- <VI1PR04MB5134BFA391D8FF013762882FEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Openpgp: preference=signencrypt
-Organization: SUSE Linux GmbH
-Message-ID: <19cc3230-33b0-e465-6317-590780b33efa@suse.de>
-Date:   Fri, 31 May 2019 19:03:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <VI1PR04MB5134BFA391D8FF013762882FEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726874AbfEaRHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 13:07:08 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52287 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfEaRHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:07:07 -0400
+Received: by mail-wm1-f68.google.com with SMTP id y3so6478726wmm.2
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GfXn8X8Ct8unv5GGp5SMGW0fg12aNA3dWh90BHSPlq8=;
+        b=R7UsqMlfeH7yjPbe9P6ulligXL4fZZXxTbDWpj3C+34YKCbRJ0x7q+NCCys2wlDqFe
+         5ZN5PyLjVglYkIGzv2VGS5J4++MicnsRRioYo9fCQoHQpz3bmA7qzPn4gJm887L9MP1i
+         xaoUOafj39qWAjcXZXbdPgKTFngO4l24ulxdigsoJ5xcFU5N7hpxIiNuLoq/3FjhHmiY
+         9AN42dL0vrrMkl5mQywFdKH0rU7mjSpm3lFgjHi19B52C8ksWxI4W9K0chKdtAnrlVlC
+         ZK/uO/ouFYKg8YjfxorB/cOoj+soThuej9whTTtr91xMNsAEleoMihqw6pGage845hll
+         pssA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GfXn8X8Ct8unv5GGp5SMGW0fg12aNA3dWh90BHSPlq8=;
+        b=JyPMAa2Wuzfh5O3sC8Z81IQ4RrPsjVkdnF8Ex55EP3/uh2moky3n+5+FIPBoSabP3G
+         QRWsCpRJ24HBe/yKzbGn/Pz62w4T4UQM9mHvIDZ+t990d0lHT0Vh0LbVZsFp06VvXu+w
+         lnJ//TuJcmFo9qHfZLdggPrjQ/MVL++DGbsl3SCEcb07H6HYI6yvkhhqqAEHtJOUml5X
+         kLVA2vX8fEGS+M+3Th8u2Ql3tKq1ISs6KgVEgmnjBvYhZzl5HGo8jDEAVnbiE7qg6HpI
+         tcReBkCJr0pWNruZIU1c5/U+Od5YluxARYVLiiZsHsEt8TrUQi9wmOjKAXxXu5SaBJyc
+         R7gA==
+X-Gm-Message-State: APjAAAU7H6LEqlHM1w51MYY+1nordhd2KjxGFl7Vnx79RuZQxhZEF03Z
+        3Y+7mw7N9HDTxEHpKIeytVbmef61
+X-Google-Smtp-Source: APXvYqx/1hnIP8f+eJAIz1dCo7WQJVNpbX6QYRNwcDc4uStHQ9+PkrH7Su1ok1bnAcbFJqKkweJ5xw==
+X-Received: by 2002:a1c:f61a:: with SMTP id w26mr6394216wmc.47.1559322425664;
+        Fri, 31 May 2019 10:07:05 -0700 (PDT)
+Received: from AHABDELS-M-J3JG ([192.135.27.139])
+        by smtp.gmail.com with ESMTPSA id x187sm6565032wmg.11.2019.05.31.10.07.04
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Fri, 31 May 2019 10:07:05 -0700 (PDT)
+Date:   Fri, 31 May 2019 19:07:04 +0200
+From:   Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com,
+        Tom Herbert <tom@quantonium.net>
+Subject: Re: [RFC PATCH 6/6] seg6: Add support to rearrange SRH for AH ICV
+ calculation
+Message-Id: <20190531190704.07285053cb9a1d193f7b061d@gmail.com>
+In-Reply-To: <1559321320-9444-7-git-send-email-tom@quantonium.net>
+References: <1559321320-9444-1-git-send-email-tom@quantonium.net>
+        <1559321320-9444-7-git-send-email-tom@quantonium.net>
+X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Laurentiu,
+On Fri, 31 May 2019 09:48:40 -0700
+Tom Herbert <tom@herbertland.com> wrote:
 
-Am 31.05.19 um 18:46 schrieb Laurentiu Tudor:
->> -----Original Message-----
->> From: Andreas Färber <afaerber@suse.de>
->> Sent: Friday, May 31, 2019 7:15 PM
->>
->> Hi Laurentiu,
->>
->> Am 30.05.19 um 16:19 schrieb laurentiu.tudor@nxp.com:
->>> This patch series contains several fixes in preparation for SMMU
->>> support on NXP LS1043A and LS1046A chips. Once these get picked up,
->>> I'll submit the actual SMMU enablement patches consisting in the
->>> required device tree changes.
->>
->> Have you thought through what will happen if this patch ordering is not
->> preserved? In particular, a user installing a future U-Boot update with
->> the DTB bits but booting a stable kernel without this patch series -
->> wouldn't that regress dpaa then for our customers?
->>
+> Mutable fields related to segment routing are: destination address,
+> segments left, and modifiable TLVs (those whose high order bit is set).
 > 
-> These are fixes for issues that popped out after enabling SMMU. 
-> I do not expect them to break anything.
+> Add support to rearrange a segment routing (type 4) routing header to
+> handle these mutability requirements. This is described in
+> draft-herbert-ipv6-srh-ah-00.
 
-That was not my question! You're missing my point: All your patches are
-lacking a Fixes header in their commit message, for backporting them, to
-avoid _your DT patches_ breaking the driver on stable branches!
-
-Regards,
-Andreas
+Hi Tom, 
+Assuming that IETF process needs to be fixed, then, IMO, should not be on the cost of breaking the kernel process here. 
+Let us add to the kernel things that have been reviewed and reached some consensus.
+For new features that still need to be reviewed we can have them outside the kernel tree for community to use. 
+This way the community does not get blocked by IETF process but also keep the kernel tree stable.
+Thanks,
+Ahmed
 
 -- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+Ahmed Abdelsalam <ahabdels.dev@gmail.com>
