@@ -2,100 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E106130BB6
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E2A30BDC
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 11:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfEaJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 05:36:22 -0400
-Received: from m97188.mail.qiye.163.com ([220.181.97.188]:21683 "EHLO
-        m97188.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbfEaJgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 05:36:22 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m97188.mail.qiye.163.com (Hmail) with ESMTPA id A45779670D1;
-        Fri, 31 May 2019 17:36:16 +0800 (CST)
-Subject: Re: [PATCH net-next,v2] netfilter: nf_conntrack_bridge: fix
- CONFIG_IPV6=y
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-References: <20190531091526.1671-1-pablo@netfilter.org>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <73e16ff5-88b3-b856-ad08-dae2f600a8e5@ucloud.cn>
-Date:   Fri, 31 May 2019 17:36:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726683AbfEaJmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 05:42:37 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42774 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726233AbfEaJmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 05:42:37 -0400
+Received: by mail-pf1-f194.google.com with SMTP id r22so5861523pfh.9;
+        Fri, 31 May 2019 02:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u1q9TZNLu1Y4vVAKPL9nLxJ9PhZmOg6mX9+0aK52ux0=;
+        b=eA/LgEhX8JN3JWLd6aqHhxm6PJzfFUsrVgUZv/urb+RzVBnA2e+fDEptjyfMKEbrtG
+         Em/t9VZrfFcItqOd52m4TbltN2ELebBRKoMoUJYWrKMK3s87+g5936XvTFWgRovAkNHH
+         3hqoQ9THo19H3txepUBCeumwevn4vmGTb/DkeJuvp+BxLDCB16lB0ptsCqqKa+c96qHJ
+         8IGr6vu7T8YW49lEqIx7VEWRtTWaGX8VzGckbv9BjQB+jwQnVeDROXQbHdwRRdsQPYRM
+         M6vpb+q056oaYp52PLESljWd8N6C4U5rW4CU5BT4UQ9HSYARejscVKfRlOwGJsRW2BIA
+         hjEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u1q9TZNLu1Y4vVAKPL9nLxJ9PhZmOg6mX9+0aK52ux0=;
+        b=Ihux+Z17BwkO5UqXsUwch4UenYVetuBVNy4rtNK0NjHLDpdHy0WiR32rQWkO2HGMiW
+         BCoqC38F3UglWOh7kbR+zCC3yBXygHqe+3Vy1FzvAF5dDgdhPxqEuUV8StMIj7xL5Dyj
+         H6eeyHlEUz7LQK2lKNBzhHzIG7qpPmjz3EUXMY6kCWDSVcPFGhPzx8igzHiQF0alwSM1
+         XGBNgixE1GmytVPHlx9tUfczemnOL2Du32Az1yzZKp82wHISlo8hoTnxFxisRiON9KNv
+         tYgpWDgT6OHPjVqXh/4mTKN9IOcfxUNMGAnenoqEFRlK8/BrZs27O0crTdToiQCu+/Ue
+         GOHw==
+X-Gm-Message-State: APjAAAUak99dk2U6NW82idadQLgqqAcKxkTacTM36EYBFFd7xa6lRTzX
+        NPxQU8LZlplAHlYfwZTq2bVxX1xyHPHOIg==
+X-Google-Smtp-Source: APXvYqwH2eny7mBVI5q2mEA4y2nB0zY3VxgFjf4YayEppGGcinAaw3JGHTl4WfbPMguhdcwjkWDXQw==
+X-Received: by 2002:aa7:81ca:: with SMTP id c10mr8783734pfn.163.1559295756379;
+        Fri, 31 May 2019 02:42:36 -0700 (PDT)
+Received: from btopel-mobl.isw.intel.com ([192.55.54.43])
+        by smtp.gmail.com with ESMTPSA id e4sm4887936pgi.80.2019.05.31.02.42.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 02:42:35 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     toke@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        brouer@redhat.com, bpf@vger.kernel.org,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com
+Subject: [PATCH bpf-next v2 0/2] net: xdp: refactor the XDP_QUERY_PROG and XDP_QUERY_PROG_HW code
+Date:   Fri, 31 May 2019 11:42:13 +0200
+Message-Id: <20190531094215.3729-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190531091526.1671-1-pablo@netfilter.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kIGBQJHllBWVZKVU1KSEtLS0tITklDTkJOWVdZKFlBSUI3V1ktWUFJV1
-        kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PC46GDo6HzgyTSIRCBIVEjM6
-        STQaCi5VSlVKTk5CSUJOSExNQ0NOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBSE9ISTcG
-X-HM-Tid: 0a6b0d3f3da220bckuqya45779670d1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Here's yet another attempt tomove the XDP_QUERY_PROG{,_HW} code out
+from the drivers to generic netdev code.
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
+The first patch in the series move the XDP query functionality, and
+the second remove XDP_QUERY_PROG{,_HW} from all drivers.
 
-On 5/31/2019 5:15 PM, Pablo Neira Ayuso wrote:
-> This patch fixes a few problems with CONFIG_IPV6=y and
-> CONFIG_NF_CONNTRACK_BRIDGE=m:
->
-> In file included from net/netfilter/utils.c:5:
-> include/linux/netfilter_ipv6.h: In function 'nf_ipv6_br_defrag':
-> include/linux/netfilter_ipv6.h:110:9: error: implicit declaration of function 'nf_ct_frag6_gather'; did you mean 'nf_ct_attach'? [-Werror=implicit-function-declaration]
->
-> And these too:
->
-> net/ipv6/netfilter.c:242:2: error: unknown field 'br_defrag' specified in initializer
-> net/ipv6/netfilter.c:243:2: error: unknown field 'br_fragment' specified in initializer
->
-> This patch includes an original chunk from wenxu.
->
-> Fixes: 764dd163ac92 ("netfilter: nf_conntrack_bridge: add support for IPv6")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Reported-by: Yuehaibing <yuehaibing@huawei.com>
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Reported-by: wenxu <wenxu@ucloud.cn>
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> ---
-> v2: Forgot to include "net-next" and added Reported-by to all people that have
->     reported problems.
->
->  include/linux/netfilter_ipv6.h | 2 ++
->  net/ipv6/netfilter.c           | 2 +-
->  2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
-> index a21b8c9623ee..3a3dc4b1f0e7 100644
-> --- a/include/linux/netfilter_ipv6.h
-> +++ b/include/linux/netfilter_ipv6.h
-> @@ -96,6 +96,8 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
->  #endif
->  }
->  
-> +#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
-> +
->  static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
->  				    u32 user)
->  {
-> diff --git a/net/ipv6/netfilter.c b/net/ipv6/netfilter.c
-> index c6665382acb5..9530cc280953 100644
-> --- a/net/ipv6/netfilter.c
-> +++ b/net/ipv6/netfilter.c
-> @@ -238,7 +238,7 @@ static const struct nf_ipv6_ops ipv6ops = {
->  	.route_input		= ip6_route_input,
->  	.fragment		= ip6_fragment,
->  	.reroute		= nf_ip6_reroute,
-> -#if IS_MODULE(CONFIG_NF_CONNTRACK_BRIDGE)
-> +#if IS_MODULE(CONFIG_IPV6)
->  	.br_defrag		= nf_ct_frag6_gather,
->  	.br_fragment		= br_ip6_fragment,
->  #endif
+Please refer to the individual commit messages for more details.
+
+The patch passes test_offload.py from selftests. Thanks to Jakub for
+pointing this out.
+
+I, hopefully, addressed all comments from Jakub and Saeed, except one;
+I did not move the XDP struct net_device into a struct of its own.
+
+
+Thanks,
+Björn
+
+
+Björn Töpel (2):
+  net: xdp: refactor XDP_QUERY_PROG{,_HW} to netdev
+  net: xdp: remove XDP_QUERY_PROG{,_HW}
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   4 -
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   3 -
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   3 -
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   4 -
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   4 -
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  24 ---
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  18 ---
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   4 -
+ .../net/ethernet/qlogic/qede/qede_filter.c    |   3 -
+ drivers/net/netdevsim/bpf.c                   |   4 -
+ drivers/net/netdevsim/netdevsim.h             |   2 +-
+ drivers/net/tun.c                             |  15 --
+ drivers/net/veth.c                            |  15 --
+ drivers/net/virtio_net.c                      |  17 ---
+ include/linux/netdevice.h                     |  23 ++-
+ include/net/xdp.h                             |   6 +-
+ net/core/dev.c                                | 143 +++++++++++-------
+ net/core/rtnetlink.c                          |  53 ++++---
+ net/core/xdp.c                                |  20 ++-
+ 20 files changed, 137 insertions(+), 231 deletions(-)
+
+-- 
+2.20.1
+
