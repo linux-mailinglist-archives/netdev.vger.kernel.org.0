@@ -2,111 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4250311F9
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50E931209
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbfEaQJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:09:14 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37791 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726774AbfEaQJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:09:13 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a23so6492629pff.4;
-        Fri, 31 May 2019 09:09:13 -0700 (PDT)
+        id S1726749AbfEaQM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:12:56 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:34566 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfEaQM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:12:56 -0400
+Received: by mail-vs1-f67.google.com with SMTP id q64so7057461vsd.1;
+        Fri, 31 May 2019 09:12:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=z/RgCzJSEHMAir5ujFpg5rPcb9HWXDTiA2qf/D1dWKs=;
-        b=AgBCH0mF8vGGY3a4ElXuzBF5oJFQxIVCYpQKgewAzxF/VKnOJd4nHqAD6+WhZLHuUP
-         zFdIcjKkMai+c34XKv3eceJcR2fYf0m4wzLJTibA8LWyRkuXuovkSQYMHOB/Pot5HRKk
-         SPF+wqNgs+NyQsBon2j+Kw3/4WRp+NYQo3SEdoKanzQiUN0PiTQN2teFD0muUiZZQHPw
-         24pTEkxYBRgGZMxgzYCJA7/qmLtADPGQXcD2jSGhp/YA5NPULXWzh12t8yDd1a/PY92A
-         XmhluJYx6Wkt66KwzIAfph7d6p5AC2iU0gWtu3F50V+L30AAOyv6arEhaMam2e2BT5tM
-         IU0Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2FrzY2ydP6cRNV+r5FtjF3XxLGeE0yW0UZ3D62L58K8=;
+        b=S3GztADFEAoU+iw/DnAiHFJ3lrTsPcmRSrKsm/LzCege+lnNoRkyVn/FELbj4RaZuI
+         m1jwpfvPsd6GEv2I+N6KmXzxt7p59N5Yax/hj4JVDhA7OtPXVm1avoeqMZZXy8rKePup
+         fxPb+68HFJLF7c5/upjWaYPIGfg6BgVQfewJO6HIoBXRTpihL9NEJRE0WEpPBxjzRQ6Y
+         UGYbiORtjNwxie/uELHw9dOY06/YsERdaU/eaVhF4rA7C+Fpr1yFqJmRUPaSlwWBkaq9
+         Zv6sUldoUN9qmIclWOz12WHQOp4V65Jsz9DpvE0W6vg0d4ut+3TM4ftdhn4111umrPAr
+         MwxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=z/RgCzJSEHMAir5ujFpg5rPcb9HWXDTiA2qf/D1dWKs=;
-        b=V702skxRVusinHZN+L2Dz2NmJCNmYG/sycc6kS8oo0l9qUF1rdQMo0HMyjcOaKcYjB
-         CmbC0PeI6J0+L6lQl9kurGBPFvr61k3Xbc4e9QPQTXXUl4qtX93yXMCJ5F4+NJ9JMRSO
-         M701HAHfpOzrU2fH4DjkqY+8YFRraE3zV23FvNcHFwCtv12d59EdT+uWm8qzar469U34
-         3ZXJgriwvueevCeVSx9WBjJD52/WG76wzSIDwriiORi079cHnosOn6HOOKBmi9cRJN36
-         DxVqRKiZmKedOeqKKgzT0Jce1QCV726VmfPC9MrQNjVue9gVaFqXD0aSX0h887KBOeHm
-         VGtA==
-X-Gm-Message-State: APjAAAXmtcw3K6n8iVsL9STzdlyM2Ht88r2BZyjmAPUfAApGuOchtt/Y
-        ptNPepK8I3RYzemAHSBPg7g=
-X-Google-Smtp-Source: APXvYqw7B8ATADxnQAQTD6Z6CyqYTv+plBt1DoWcOXcq8ws+P7duyIFver5dQNrUF8Y9qFK5nymAlg==
-X-Received: by 2002:a63:205b:: with SMTP id r27mr10323216pgm.330.1559318953074;
-        Fri, 31 May 2019 09:09:13 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id x18sm7423076pfo.8.2019.05.31.09.09.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 31 May 2019 09:09:12 -0700 (PDT)
-Date:   Fri, 31 May 2019 09:09:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-Message-ID: <20190531160909.jh43saqvichukv7p@localhost>
-References: <20190530143037.iky5kk3h4ssmec3f@localhost>
- <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
- <20190530150557.iur7fruhyf5bs3qw@localhost>
- <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
- <20190531043417.6phscbpmo6krvxam@localhost>
- <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
- <20190531140841.j4f72rlojmaayqr5@localhost>
- <CA+h21hroywaij3gyO0u6v+GFVO2Fv_dP_a+L3oMGpQH8mQgJ5g@mail.gmail.com>
- <20190531151151.k3a2wdf5f334qmqh@localhost>
- <CA+h21hpHKbTc8toPZf0iprW1b4v6ErnRaSM=C6vk-GCiXM8NvA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2FrzY2ydP6cRNV+r5FtjF3XxLGeE0yW0UZ3D62L58K8=;
+        b=cqoEm2LePBt7guTkKjLnTnDCCIfYWGjMpNW5Ldkd7aWwFX/XEb28Q7zPA6j9+HSonP
+         GnQQtlKcEuEXMP8PJ72iVWv4KR4R9t72FcK0O/gHXrzpeZfsxm9u/kFmxNSGEHnwzuFY
+         vA9iPux0qLSFUq3GtQw2HN6sfqimlM7E0hQPXd0D9cPg4sW6entckxhhQHbYoMt2XrdT
+         rZpWPfr7FOUXqVo36qgeKv71i3OVmgRq4p3/wbVUK4B8Hq4OX5wQfobRJUVJOScx4nLe
+         LSs9Y5kphGRLwE0ONyGU4eTTNkCS77uf8BgQYpXMaECz/RLx+cUTirvlgk6+tgv1UxTo
+         4KEQ==
+X-Gm-Message-State: APjAAAUACi237cK9vJ4RoQRrLmAfk9e9D7pB98jZJf9hmMk0/baUQ/sY
+        ORxmBs/GG1O4+bTAyk5ITL9cIAdFjyGlQJfTNbE=
+X-Google-Smtp-Source: APXvYqzpClzX/KpZ2ht67YbTaKY+nKDPKhMXtzGMq+1rT3NpFl0F8uttTZW6AktbeDItrcpGTvJGLINAhxENtCRIxoY=
+X-Received: by 2002:a67:d68e:: with SMTP id o14mr6221973vsj.140.1559319175577;
+ Fri, 31 May 2019 09:12:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpHKbTc8toPZf0iprW1b4v6ErnRaSM=C6vk-GCiXM8NvA@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
+ <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com> <20190531062911.c6jusfbzgozqk2cu@gondor.apana.org.au>
+ <727c4b18-0d7b-b3c6-e0bb-41b3fe5902d3@gmail.com> <20190531145428.ngwrgbnk2a7us5cy@gondor.apana.org.au>
+ <56a41977-6f9e-08dd-e4e2-07207324d536@gmail.com>
+In-Reply-To: <56a41977-6f9e-08dd-e4e2-07207324d536@gmail.com>
+From:   Yang Xiao <92siuyang@gmail.com>
+Date:   Sat, 1 Jun 2019 00:12:19 +0800
+Message-ID: <CAKgHYH0nocPY5NBu-5Bmp8WMv2-mf-1Hj+_1=7ixzdGCm0XSqw@mail.gmail.com>
+Subject: Re: [PATCH] ipv6: Prevent overrun when parsing v6 header options
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 06:23:34PM +0300, Vladimir Oltean wrote:
-> You mean to queue it and subvert DSA's own RX timestamping callback?
-
-No, use the callback.
-
-> Why would I do that? Just so as not to introduce my .can_timestamp
-> callback?
-
-Right, the .can_timestamp is unneeded, AFAICT.
- 
-> > Now I'm starting to understand your series.  I think it can be done in
-> > simpler way...
+On Fri, May 31, 2019 at 11:57 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 5/31/19 7:54 AM, Herbert Xu wrote:
+> > On Fri, May 31, 2019 at 07:50:06AM -0700, Eric Dumazet wrote:
+> >>
+> >> What do you mean by should ?
+> >>
+> >> Are they currently already linearized before the function is called,
+> >> or is it missing and a bug needs to be fixed ?
 > >
-> > sja1105_rcv_meta_state_machine - can and should be at the driver level
-> > and not at the port level.
+> > AFAICS this is the code-path for locally generated outbound packets.
+> > Under what circumstances can the IPv6 header be not in the head?
 > >
-> 
-> Can: yes. Should: why?
+> >
+>
+> I guess this means we had yet another random submission from Young Xiao :/
 
-To keep it simple and robust.
- 
-> One important aspect makes this need be a little bit more complicated:
-> reconstructing these RX timestamps.
-> You see, there is a mutex on the SPI bus, so in practice I do need the
-> sja1105_port_rxtstamp_work for exactly this purpose - to read the
-> timestamping clock over SPI.
+Excuse me, what do you mean about random submission from Young?
+A month ago, I submitted the patch, and I was told that the format
+should be correct.
+Then, I resubmitted again.
 
-Sure.  But you schedule the work after a META frame.  And no busy
-waiting is needed.
- 
-Thanks,
-Richard
+
+>
+> Thanks.
+>
