@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7174931303
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C43D831304
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbfEaQuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:50:11 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46357 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaQuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:50:10 -0400
-Received: by mail-pg1-f195.google.com with SMTP id v9so4335552pgr.13
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:50:10 -0700 (PDT)
+        id S1726967AbfEaQuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:50:13 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33077 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfEaQuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:50:12 -0400
+Received: by mail-pg1-f193.google.com with SMTP id h17so4373816pgv.0
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 09:50:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=oFcvdmtXVUaKqxe4PEx9Avhamk6baJlnrhRipIuUu34=;
-        b=r/H+l9vWKTcXhjkPYtB9+uvQHt3rfYh+MKUmTglSSC82c0HMtUssv4Yjplje4yxAWN
-         YyL+e5ogUKFuqB4qaDrhsQ1ojul/kBskU3zQapDBCxX8cv6IlwB6KwXJJIC6oIjKLXT1
-         XtmCFy0j4PbR6Kw2Gv9YE2vVBqJyBeZn3hNpjpB1Ygacgljh55reJqa82/5WMrZmL+sI
-         tZCmz1FmKVzA8HibqU3B2Ic108So4hC6sBSAgoDj1OiLC+18w19951RbkTNIKz7NbCQW
-         ZRZW8UoumTuR5SQqWMEPpWUSgVIokJJ7LGfnaHPdounSDtbrAI8GZVkttkmPrQsM9bwl
-         cGHA==
+        bh=vpCDadP+lypEq2qDT0dWFaVIhZacvzoPNWNfggfQPmk=;
+        b=m34g5cKaekcZotfuEZ1MA04b5YwWQBHBjA+REf7/XN311W6O36ViTZ1RUWMG6zeKmH
+         IjwiESHBv5NidjHUaqzwU+yr8SrzwA6xfumpsJqAwe7Gt02oEzrlWyDFDTVJT39bjQ17
+         Cyt6M6c01c91V6yKF4bqsb8HgGp16aLscwQJ0g80+kkpxaTNG0ewQZd4utcthmnXk+Ft
+         5AkX5Xj16VN/b80FzeLNJd1PtVUXpUz1LYJ3Y29iXI0IAFqGqS7hPGB/SU367wj0dlrn
+         7Cvs5gsnjm5Y9GLdgb3aitmh9mHgc4dF0KlweHT9iF8wcndVqmk/i5Vq4RgsomFkL+yn
+         a/Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=oFcvdmtXVUaKqxe4PEx9Avhamk6baJlnrhRipIuUu34=;
-        b=lwK8fcc5FwvKZdkgqMnSG78L2KEgzFZb037z6uJAiZoIcGgDjwCdfWxXccqk09cQfT
-         tKQ4WP/jW9KerchI3N9ssCo4QVaM3xnAE4Qd0r6RHZZ+QEu6+wOgoTE53eJo95x0wcNA
-         lnuPWtJjtx+ZyrOnpFQqMMcazxsqGwgf6ANJLSk8wnGw1XFGMYBwFQxLQy8AkWITw7Gg
-         nWFHQehGUrF+AJaXakApu34Hh8NpBtMdxjs2opjM7iTP3InIrCCZGTXgk5fbdlWdzHL2
-         NQ2jEMwsitJGi9TIsue7Y1w3FDmP5s4CZ4cep2QyHtrJKr/0zwkMctivGUuSvxbeFDSr
-         hc/g==
-X-Gm-Message-State: APjAAAUVRCzVxtxjQUDxVt2/YPZxVHuKQz8HMbQCIPj3RDgXqwpPHVms
-        Nj/ewV4ofdr3Wf/1yvXE93qGYg==
-X-Google-Smtp-Source: APXvYqxujAre+G/8vddu9j55ms23Wp6DOo0YLth4UDRQtRcYUO3lYmuRYrmEHNSa9KJw8yivpeCRaw==
-X-Received: by 2002:aa7:9e51:: with SMTP id z17mr11595030pfq.212.1559321409659;
-        Fri, 31 May 2019 09:50:09 -0700 (PDT)
+        bh=vpCDadP+lypEq2qDT0dWFaVIhZacvzoPNWNfggfQPmk=;
+        b=X0jXnC/ahd7QvnUM2h29cVDrO+REjjSOuZm7L4UBzeIWephEGUxuEV+ozAsWqXdImM
+         5Jl7lD7gPgqw/ESn2bldBVoRyk74LMmxaZu8p5l1g9pM4mQKygBRP9rt/b5nGCaoVkVv
+         VyPUYUf3HBKN+9Jjba7fVG3nSZI3s63tXjp2ZRzZrvFtcHhXw01wS7INx9JcU68VgXhG
+         jBrdtIEfkBUBN81nnd8AtCuSDsKuyxn1Scvd9DuD18i5cQzsuPEjihFc5GeHuYrXsx00
+         Is78ZyJCh6aajhlaEBp7KJ7wKh/TEmpoOvIeu57YRPro4XJFVVgPDvEo4ftEHly2P0hB
+         62Vw==
+X-Gm-Message-State: APjAAAWv4YZI2ULSkW21qlJKvC67wbjchNBbjLh8fHvbkeX02r+qxg0e
+        IHeBAQdV0jwnlr3kOjasAekYjg==
+X-Google-Smtp-Source: APXvYqzg095K9eao8MVjfk1AX44tekMVeCFV8RoruRa5F72jche4aNZqs8QLi/0yV6PVgtAZR3EePQ==
+X-Received: by 2002:a62:3741:: with SMTP id e62mr11382064pfa.213.1559321411307;
+        Fri, 31 May 2019 09:50:11 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id e66sm8696835pfe.50.2019.05.31.09.50.08
+        by smtp.gmail.com with ESMTPSA id e66sm8696835pfe.50.2019.05.31.09.50.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 31 May 2019 09:50:09 -0700 (PDT)
+        Fri, 31 May 2019 09:50:10 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com,
         ahabdels.dev@gmail.com
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [RFC PATCH 4/6] ah6: Create function __zero_out_mutable_opts
-Date:   Fri, 31 May 2019 09:48:38 -0700
-Message-Id: <1559321320-9444-5-git-send-email-tom@quantonium.net>
+Subject: [RFC PATCH 5/6] ah6: Be explicit about which routing types are processed.
+Date:   Fri, 31 May 2019 09:48:39 -0700
+Message-Id: <1559321320-9444-6-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559321320-9444-1-git-send-email-tom@quantonium.net>
 References: <1559321320-9444-1-git-send-email-tom@quantonium.net>
@@ -59,80 +59,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an adaptation of zero_out_mutable_opts that takes three
-additional arguments: offset of the TLVs, a mask to locate the
-mutable bit in the TLV type, and the type value for single byte
-padding.
+The current code assumes that all routing headers can be processed
+as type 0 when rearranging the routing header for AH verification.
+Change this to be explicit. Type 0 and type 2 are supported and are
+processed the same way with regards to AH.
 
-zero_out_mutable_opts calls the new function and sets the arguments
-appropriate to Hop-by-Hop and Destination Options. The function will
-be used to support zeroing out mutable SRH TLVs' data with the
-appropriate arguments for SRH TLVs.
+Also check if rearranging routing header fails. Update reference
+in comment to more current RFC.
 
 Signed-off-by: Tom Herbert <tom@quantonium.net>
 ---
- net/ipv6/ah6.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+ net/ipv6/ah6.c | 37 +++++++++++++++++++++++++++++--------
+ 1 file changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 68b9e92..1e80157 100644
+index 1e80157..032491c 100644
 --- a/net/ipv6/ah6.c
 +++ b/net/ipv6/ah6.c
-@@ -102,32 +102,28 @@ static inline struct scatterlist *ah_req_sg(struct crypto_ahash *ahash,
- 			     __alignof__(struct scatterlist));
- }
- 
--static bool zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr)
-+static bool __zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr, int off,
-+				    unsigned char mut_bit, unsigned char pad1)
- {
- 	u8 *opt = (u8 *)opthdr;
- 	int len = ipv6_optlen(opthdr);
--	int off = 0;
- 	int optlen = 0;
- 
--	off += 2;
--	len -= 2;
-+	len -= off;
- 
- 	while (len > 0) {
--
--		switch (opt[off]) {
--
--		case IPV6_TLV_PAD1:
-+		if (opt[off] == pad1) {
- 			optlen = 1;
--			break;
--		default:
-+		} else {
- 			if (len < 2)
- 				goto bad;
--			optlen = opt[off+1]+2;
-+
-+			optlen = opt[off + 1] + 2;
- 			if (len < optlen)
- 				goto bad;
--			if (opt[off] & 0x20)
--				memset(&opt[off+2], 0, opt[off+1]);
--			break;
-+
-+			if (opt[off] & mut_bit)
-+				memset(&opt[off + 2], 0, opt[off + 1]);
- 		}
- 
- 		off += optlen;
-@@ -140,6 +136,11 @@ static bool zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr)
- 	return false;
- }
- 
-+static bool zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr)
-+{
-+	return __zero_out_mutable_opts(opthdr, 2, 0x20, IPV6_TLV_PAD1);
-+}
-+
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
+@@ -145,7 +145,7 @@ static bool zero_out_mutable_opts(struct ipv6_opt_hdr *opthdr)
  /**
   *	ipv6_rearrange_destopt - rearrange IPv6 destination options header
+  *	@iph: IPv6 header
+- *	@destopt: destionation options header
++ *	@destopt: destination options header
+  */
+ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *destopt)
+ {
+@@ -204,15 +204,16 @@ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *des
+ #endif
+ 
+ /**
+- *	ipv6_rearrange_rthdr - rearrange IPv6 routing header
++ *	ipv6_rearrange_type0_rthdr - rearrange type 0 IPv6 routing header
+  *	@iph: IPv6 header
+  *	@rthdr: routing header
+  *
+  *	Rearrange the destination address in @iph and the addresses in @rthdr
+  *	so that they appear in the order they will at the final destination.
+- *	See Appendix A2 of RFC 2402 for details.
++ *	See Appendix A2 of RFC 4302 for details.
+  */
+-static void ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
++static bool ipv6_rearrange_type0_rthdr(struct ipv6hdr *iph,
++				       struct ipv6_rt_hdr *rthdr)
+ {
+ 	int segments, segments_left;
+ 	struct in6_addr *addrs;
+@@ -220,15 +221,13 @@ static void ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
+ 
+ 	segments_left = rthdr->segments_left;
+ 	if (segments_left == 0)
+-		return;
++		return true;
+ 	rthdr->segments_left = 0;
+ 
+ 	/* The value of rthdr->hdrlen has been verified either by the system
+ 	 * call if it is locally generated, or by ipv6_rthdr_rcv() for incoming
+ 	 * packets.  So we can assume that it is even and that segments is
+ 	 * greater than or equal to segments_left.
+-	 *
+-	 * For the same reason we can assume that this option is of type 0.
+ 	 */
+ 	segments = rthdr->hdrlen >> 1;
+ 
+@@ -240,6 +239,24 @@ static void ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
+ 
+ 	addrs[0] = iph->daddr;
+ 	iph->daddr = final_addr;
++
++	return true;
++}
++
++static bool ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
++{
++	switch (rthdr->type) {
++	case IPV6_SRCRT_TYPE_2:
++		/* Simplified format of type 0 so same processing */
++		/* fallthrough */
++	case IPV6_SRCRT_TYPE_0: /* Deprecated */
++		return ipv6_rearrange_type0_rthdr(iph, rthdr);
++	default:
++		/* Bad or unidentified routing header, we don't know how
++		 * to fix this header for security purposes. Return failure.
++		 */
++		return false;
++	}
+ }
+ 
+ static int ipv6_clear_mutable_options(struct ipv6hdr *iph, int len, int dir)
+@@ -271,7 +288,11 @@ static int ipv6_clear_mutable_options(struct ipv6hdr *iph, int len, int dir)
+ 			break;
+ 
+ 		case NEXTHDR_ROUTING:
+-			ipv6_rearrange_rthdr(iph, exthdr.rth);
++			if (!ipv6_rearrange_rthdr(iph, exthdr.rth)) {
++				net_dbg_ratelimited("bad routing header\n");
++				return -EINVAL;
++			}
++
+ 			break;
+ 
+ 		default:
 -- 
 2.7.4
 
