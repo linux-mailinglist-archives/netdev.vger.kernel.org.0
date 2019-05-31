@@ -2,85 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F34130F9C
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:05:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8891D30FA2
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbfEaOFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 10:05:39 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51772 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726559AbfEaOFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:05:38 -0400
-Received: by mail-wm1-f68.google.com with SMTP id f10so6157256wmb.1
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:05:37 -0700 (PDT)
+        id S1726579AbfEaOIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:08:45 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45514 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfEaOIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:08:45 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w34so4100793pga.12;
+        Fri, 31 May 2019 07:08:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UmNVHSUFcwKieLoDgVxZZ6h5wY64iIjCWDKB455Gdsk=;
-        b=CcuEzc5aqSSKNO2PQOJj8mdppWKokLEoitOFAaqAsNOhA5YCdWilKx9LTP/oxcd0dU
-         iTMFmr9yknRzmq4zkArnH3aAfgYlysDknVJE1LRFgpR+jXy7akXAXTg/SrvxPrbhjaWE
-         YjHrUZIARJ0ihploRiFBi1F15FWFEhgyVnolcyN5x612F2b/iJdR/nGDJmEzwAbSxP2a
-         tfU9FgXT8BcdC0Jqj63b+dB4dc1CC/gqTxfgLVowINE2E6JXXWbg7k2nhP249BIqvgM5
-         wCBqCdmlulM2UC4OF8fNnBpKARvo4Lsxh4t9tYXKKe1URsnF0fmoB9KXekstBJGCkxwg
-         7g2g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WCYPGRHtk4nDgd7aDMAHWcLe9ARejuOtDU+i3zRXCIw=;
+        b=aWgGiNy/HLKgfAhinVo71aSeq4fHfBMEQv1ECNcrAiJRN/9MJCZ0SDPT4sFEfbPySD
+         exbAOUfCfV17WAoxapwG6JlWC9JRXSqtGoKqDpwgiGBVM1SyQhOOGmEBuXrJFzFRkeDK
+         grWEj9FiuQ4nRl8ToScZG9y/spyvuNAB4YoB1EiDQqLFJvlzl0D/dnvNJXR+eRlOMhFY
+         58l7rS2o5kc9U1DFd7SSzmTPNxegJNy9d1Og2xatZOetFrIfpihQHyI6CMGgax16K3vt
+         wNDL0EVPJINps4Y5WtHbzb7i5ItF1djycmr0rdd2hoohMgFbm6ovTpJh+9Y/TMuJewA2
+         s+2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UmNVHSUFcwKieLoDgVxZZ6h5wY64iIjCWDKB455Gdsk=;
-        b=c845j7lqJyHmETBVLCHYUIPEhkoKmrVTMJY7d+fhJCLq4p5SbrL2Fpy+17PawusGvU
-         ZFMewZ6wjk7c3wTzU8fthxUQ96ogFicB+0onjeurmy1o/QekbAuRapdFOs38ZAGuaJRg
-         YaE6guQPX0h/NInGJNyAcDX8pm7EpQhgoPJ6/lfXFFY7II5P6CZcon/+WivDdKVSurpT
-         oeutixQrAkgH+d49/Vdma1aqH+xFX1xjhhaSrkJKEIa9qK6MPEsjp7OP3AVDSwRvhH5o
-         Z2x499o3LJdCNWiDo/N0viyn9C/xrQnEYd3tMPIA8WHVFcRTA6HUbblvcOKj5RLJryGG
-         kO4w==
-X-Gm-Message-State: APjAAAUR9jIq3SbskeoeYRzhLavGxuoKd+M4XWRXHHsscJVhPu+bCdZ6
-        oe4ZVhmfO1B4SWdqzRR5L18=
-X-Google-Smtp-Source: APXvYqz/CvJjgpFekb6P5YDKWjiid37tH1P45AcIU4eKwfKipeM40tdnnlMfNiy/Ifjpc4HQRU9cBQ==
-X-Received: by 2002:a1c:7408:: with SMTP id p8mr5695563wmc.161.1559311537019;
-        Fri, 31 May 2019 07:05:37 -0700 (PDT)
-Received: from AHABDELS-M-J3JG ([192.135.27.139])
-        by smtp.gmail.com with ESMTPSA id k2sm9886034wrg.41.2019.05.31.07.05.36
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Fri, 31 May 2019 07:05:36 -0700 (PDT)
-Date:   Fri, 31 May 2019 16:05:35 +0200
-From:   Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com,
-        Tom Herbert <tom@quantonium.net>
-Subject: Re: [PATCH net-next 6/6] seg6: Add support to rearrange SRH for AH
- ICV calculation
-Message-Id: <20190531160535.519fdef1067aa9d681669d29@gmail.com>
-In-Reply-To: <1559253021-16772-7-git-send-email-tom@quantonium.net>
-References: <1559253021-16772-1-git-send-email-tom@quantonium.net>
-        <1559253021-16772-7-git-send-email-tom@quantonium.net>
-X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WCYPGRHtk4nDgd7aDMAHWcLe9ARejuOtDU+i3zRXCIw=;
+        b=On8GRI+0OJhxwRjJT9rLgFHeU/DqI9qPbBDjw9YMBlWlMPyrvxdTSLIYbcte9MuUWl
+         JhGp6nP5808f0fl5B8oJTMFZ47mIWesK0lnBT6z7pScpRMhvyBmb3kBqA8GLDi03MxqX
+         UxeITpUQOivCBMuSUUd21j6Kpqvy2R+zop643qw14JINltExqw5rTYtbX4FO7xdpTwV3
+         V/9QOsFoK2V0MM28XEgaIF4NbsMfWqfAo3V/T/me3fMkCc09M/yf73F8nYjMaS2WKFED
+         6tKwUykq7HnEGJjeb1ePYE0pAEop+QOcBI2MjtaWxkRmqrWRo6tmD+Dapsy/CoXdE/VI
+         qgow==
+X-Gm-Message-State: APjAAAXwHAGrPEj4s6Sp/5kvR0X/QSlqIl5ecUfLM2rSF+u2HT6jkg9X
+        M8ycBq2xrLknu3+aUacc2OI=
+X-Google-Smtp-Source: APXvYqyVYnKObn0Yo6WNXMyOkwCtyqQYUyWocDPape0gkXWWzVv3ZSk5Am/RuDxTed3taruC/lxAqA==
+X-Received: by 2002:aa7:9dc9:: with SMTP id g9mr10280250pfq.228.1559311724900;
+        Fri, 31 May 2019 07:08:44 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id 127sm6313018pfc.159.2019.05.31.07.08.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 31 May 2019 07:08:43 -0700 (PDT)
+Date:   Fri, 31 May 2019 07:08:41 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
+Message-ID: <20190531140841.j4f72rlojmaayqr5@localhost>
+References: <20190529045207.fzvhuu6d6jf5p65t@localhost>
+ <dbe0a38f-8b48-06dd-cc2c-676e92ba0e74@gmail.com>
+ <20190530034555.wv35efen3igwwzjq@localhost>
+ <CA+h21hpjsC=ie5G7Gx3EcPpazyxze6X_k+8eC+vw7JBvEO2zNg@mail.gmail.com>
+ <20190530143037.iky5kk3h4ssmec3f@localhost>
+ <CA+h21hpp68AEEykxr8bJB=uJ+b0tg881Z7Ao_OfbTAXNxS8WgQ@mail.gmail.com>
+ <20190530150557.iur7fruhyf5bs3qw@localhost>
+ <CA+h21hrBwR4Sow7q0_rS1u2md1M4bSAJt8FO5+VLFiu9UGnvjA@mail.gmail.com>
+ <20190531043417.6phscbpmo6krvxam@localhost>
+ <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hp9DfW3wFy4YbHMU31rBHyrnUTdF4kKwX36h9vHOW2COw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 May 2019 14:50:21 -0700
-Tom Herbert <tom@herbertland.com> wrote:
+On Fri, May 31, 2019 at 04:23:24PM +0300, Vladimir Oltean wrote:
+> The switch has internal logic to not send any other frame to the CPU
+> between a link-local and a meta frame.
 
-> Mutable fields related to segment routing are: destination address,
-> segments left, and modifiable TLVs (those whose high order bit is set).
-> 
-> Add support to rearrange a segment routing (type 4) routing header to
-> handle these mutability requirements. This is described in
-> draft-herbert-ipv6-srh-ah-00.
-> 
+So this is guarantied by the switch?  What happens when multiple PTP
+frames arrive at the same time on different ports?  Does the switch
+buffer them and ensure strict ordering at the CPU port?
 
-Hi Tom, David,
-I think it is very early to have such implementation in the mainline of the Linux kernel.
-The draft (draft-herbert-ipv6-srh-ah-00) has been submitted to IETF draft couple of days ago. 
-We should give the IETF community the time to review and reach a consensus on this draft.
-Thanks, 
-Ahmed
+In any case, the switch's guarantee is an important fact to state
+clearly in your series!
 
--- 
-Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+> Hence, if the MAC of the DSA master drops some of these frames, it
+> does not "spoil any chance" except if, out of the sequence LL n ->
+> META n -> LL n+1 -> META n+1, it persistently drops only META n and LL
+> n+1.
+
+LL = link layer?
+
+> So I'd like to re-state the problem towards what should be done to
+> prevent LL and META frames getting reordered in the DSA master driver
+> on multi-queue/multi-core systems.
+
+Ok.
+
+> At the most basic level, there
+> should exist a rule that makes only a single core process these
+> frames.
+
+This can be done simply using a data structure in the driver with an
+appropriate locking mechanism.  Then you don't have to worry which
+core the driver code runs on.
+
+Thanks,
+Richard
