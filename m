@@ -2,111 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9790B31737
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449823173A
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfEaW3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:29:19 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51440 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726807AbfEaW3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:29:18 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4VMOSox021941
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:29:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=UeYP0V9VYfVdhnHUlBAh6ZYekB7STWuJ6qgH5+rL3+0=;
- b=bN9i/OSLxCkdrgEYnPXOmurWS5tznlqrChpyHRRZcPKBzyQgYH1jfzE/VkX5AvCrzKSk
- 9/MNqXWacGOQ2zB3pY10FGfIYW9IWU9cxL9h4Fy5OZPSB81q5zAeWGQuUpclUe5Y2DtP
- BqgW7gV1XPvBnPs0pSgZBtD3j7Qlsqebghs= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2su6aa9gad-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:29:17 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 31 May 2019 15:29:16 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 9E1E72941A0E; Fri, 31 May 2019 15:29:13 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        Tom Herbert <tom@herbertland.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf 2/2] bpf: udp: Avoid calling reuseport's bpf_prog from udp_gro
-Date:   Fri, 31 May 2019 15:29:13 -0700
-Message-ID: <20190531222913.2500781-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190531222910.2499861-1-kafai@fb.com>
-References: <20190531222910.2499861-1-kafai@fb.com>
-X-FB-Internal: Safe
+        id S1726693AbfEaW37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 18:29:59 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:43313 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbfEaW37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:29:59 -0400
+Received: by mail-pl1-f194.google.com with SMTP id gn7so4526358plb.10
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aiQ5pjGX/M8+Woq5+sdXOH6S/bc4Oj85waYRZ1HqPvs=;
+        b=UStqJAa5ItRaaOybsmJvUO9LGEZP+MxsJpNEE7IoSmOAz/dqkdxAK2B89Rl1ijAKcW
+         57ywYzDzc1CORYtlvFGtGeyoC4vWnVpH8c/DKHY/BOy7UBfDey9SibQchZU/T/vXR12/
+         btUIxdO/dHyBKPJj9u+pEPhef1bzm84mI1g1eatGfuPgH8kJxtHpt3CFykSNBQa692hp
+         C/aq6St1BHQ5o4kaewEMRQIsMl1tRV6vYd86iJ0VRlJc6LG4czk2hqCHeQLLjy95eeYj
+         EEUInBguxFiywqCFkiH5hUQJmk+MT+pfV+Hmm0xVc4aR6DsiHvZaLCP6yetjSVXYofDH
+         zVpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aiQ5pjGX/M8+Woq5+sdXOH6S/bc4Oj85waYRZ1HqPvs=;
+        b=fl3o+kdI9QHYtYFSTQlAmx0qkwL8YWX0+jsf0ivBKyj2j2VlmC0khqTQ8qSKKupADG
+         iAmruW/g4Hou8++Ha6ZGqNW+CY4eiI5LDiV7nRC5pVEM1JzN+q/estPJe3S+WcS2fD5B
+         0uuupG/L8m9uP4owC9DkARIQGn6Z6eJ15cAi0YYaz5hUVCA09QhXBYa7q/PBFdXago8U
+         MdXDfdVu0XPn7mJlrWIoirLThuWEIWgeWXU+G4z00U3bJDFSXARYX9CuG1R7E28iXyLw
+         sznrXibvdiYCUvUIynPX0PS98NS7jwKgTbxmnF86S/ASSMYx9xV/saVLQMnb5c3fYw4T
+         G82g==
+X-Gm-Message-State: APjAAAUigsRpQv8qA1ROXkb4j0n4fQ+b5RCAy+4FWrDfcOmpTgmIFpKR
+        tvB8DgxVD/lR7QV/xGPq/RA1Xy0snn3muzV9oT4=
+X-Google-Smtp-Source: APXvYqxp874nSTX60iMK0uO/W21RKrVd/egjQBNpV+LL4dDLE09MUvfqhQ/8SMZOQJ0fnWzVSjwcg3chgZyAfD+Hubo=
+X-Received: by 2002:a17:902:5c2:: with SMTP id f60mr12343477plf.61.1559341798302;
+ Fri, 31 May 2019 15:29:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_15:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=778 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905310138
-X-FB-Internal: deliver
+References: <cover.1559322531.git.dcaratti@redhat.com> <CAM_iQpWir7R3AQ7KSeFA5QNXSPHGK-1Nc7WsRM1vhkFyxB5ekA@mail.gmail.com>
+ <739e0a292a31b852e32fb1096520bb7d771f8579.camel@redhat.com>
+In-Reply-To: <739e0a292a31b852e32fb1096520bb7d771f8579.camel@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 31 May 2019 15:29:46 -0700
+Message-ID: <CAM_iQpUmuHH8S35ERuJ-sFS=17aa-C8uHSWF-WF7toANX2edCQ@mail.gmail.com>
+Subject: Re: [PATCH net v3 0/3] net/sched: fix actions reading the network
+ header in case of QinQ packets
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Shuang Li <shuali@redhat.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the commit a6024562ffd7 ("udp: Add GRO functions to UDP socket")
-added udp[46]_lib_lookup_skb to the udp_gro code path, it broke
-the reuseport_select_sock() assumption that skb->data is pointing
-to the transport header.
+On Fri, May 31, 2019 at 3:01 PM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> On Fri, 2019-05-31 at 11:42 -0700, Cong Wang wrote:
+> > On Fri, May 31, 2019 at 10:26 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> > > 'act_csum' was recently fixed to mangle the IPv4/IPv6 header if a packet
+> > > having one or more VLAN headers was processed: patch #1 ensures that all
+> > > VLAN headers are in the linear area of the skb.
+> > > Other actions might read or mangle the IPv4/IPv6 header: patch #2 and #3
+> > > fix 'act_pedit' and 'act_skbedit' respectively.
+> >
+> > Maybe, just maybe, vlan tags are supposed to be handled by act_vlan?
+> > Which means maybe users have to pipe act_vlan to these actions.
+>
+> but it's not possible with the current act_vlan code.
+> Each 'vlan' action pushes or pops a single tag, so:
+>
+> 1) we don't know how many vlan tags there are in each packet, so I should
+> put an (enough) high number of "pop" operations to ensure that a 'pedit'
+> rule correctly mangles the TTL in a IPv4 packet having 1 or more 802.1Q
+> tags in the L2 header.
 
-This patch follows an earlier __udp6_lib_err() fix by
-passing a NULL skb to avoid calling the reuseport's bpf_prog.
+Not true, we do know whether the last vlan tag is pop'ed by checking
+the protocol. There was already a use case in netdev before:
 
-Fixes: a6024562ffd7 ("udp: Add GRO functions to UDP socket")
-Cc: Tom Herbert <tom@herbertland.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- net/ipv4/udp.c | 6 +++++-
- net/ipv6/udp.c | 2 +-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+tc filter add dev veth1 egress prio 100  protocol 802.1Q  matchall
+action vlan pop continue #reclassify
+tc filter add dev veth1 egress prio 200  protocol ip      u32 match ip
+src 192.168.1.0/24  action drop
+tc filter add dev veth1 egress prio 201  protocol ip      u32 match ip
+dst 192.168.100.0/24  action drop
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 8fb250ed53d4..85db0e3d7f3f 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -503,7 +503,11 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
- struct sock *udp4_lib_lookup_skb(struct sk_buff *skb,
- 				 __be16 sport, __be16 dport)
- {
--	return __udp4_lib_lookup_skb(skb, sport, dport, &udp_table);
-+	const struct iphdr *iph = ip_hdr(skb);
-+
-+	return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
-+				 iph->daddr, dport, inet_iif(skb),
-+				 inet_sdif(skb), &udp_table, NULL);
- }
- EXPORT_SYMBOL_GPL(udp4_lib_lookup_skb);
- 
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 133e6370f89c..4e52c37bb836 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -243,7 +243,7 @@ struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
- 
- 	return __udp6_lib_lookup(dev_net(skb->dev), &iph->saddr, sport,
- 				 &iph->daddr, dport, inet6_iif(skb),
--				 inet6_sdif(skb), &udp_table, skb);
-+				 inet6_sdif(skb), &udp_table, NULL);
- }
- EXPORT_SYMBOL_GPL(udp6_lib_lookup_skb);
- 
--- 
-2.17.1
+which is from a bug report.
 
+>
+> 2) after a vlan is popped with act_vlan, the kernel forgets about the VLAN
+> ID and the VLAN type. So, if I want to just mangle the TTL in a QinQ
+> packet, I need to reinject it in a place where both tags (including VLAN
+> type *and* VLAN id) are restored in the packet.
+
+It is forgotten by act_vlan only, the vlan info is still inside the
+packet header.
+Perhaps we just need some action to push it back.
+
+>
+> Clearly, act_vlan can't be used as is, because 'push' has hardcoded VLAN
+> ID and ethertype. Unless we change act_vlan code to enable rollback of
+> previous 'pop' operations, it's quite hard to pipe the correct sequence of
+> vlan 'pop' and 'push'.
+
+What about other encapsulations like VXLAN? What if I just want to
+mangle the inner TTL of a VXLAN packet? You know the answer is setting
+up TC filters and actions on VXLAN device instead of ethernet device.
+
+IOW, why QinQ is so special that we have to take care of inside TC action
+not the encapsulation endpoint?
+
+
+>
+> > From the code reuse perspective, you are adding TCA_VLAN_ACT_POP
+> > to each of them.
+>
+> No, these patches don't pop VLAN tags. All tags are restored after the
+> action completed his work, before returning a->tcfa_action.
+>
+> May I ask you to read it as a followup of commit 2ecba2d1e45b ("net:
+> sched: act_csum: Fix csum calc for tagged packets"), where the 'csum'
+> action was modified to mangle the checksum of IPv4 headers even when
+> multiple 802.1Q tags were present?
+
+Yes, I already read it and I think that commit should be reverted for the
+same reason as I already stated above.
+
+
+> With this series it becomes possible to mangle also the TTL field (with
+> pedit), and assign the diffserv bits to skb->priority (with skbedit).
+
+Sorry, I am not yet convinced why we should do it in TC.
+
+Thanks.
