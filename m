@@ -2,55 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6CF30E7A
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:02:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F8D30E83
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbfEaNCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 09:02:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44582 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726330AbfEaNCa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 09:02:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=C/iIbFXolCL7AMYPYEBLVId2W+wb3KNv/G2cBSTA9xc=; b=JVDtLGBO85JNnnnXzA/+nYQoQu
-        QJJa2HTMTINJoV9hyDFITTGwYahyPGzP+hDIwcHp6cwRk7vvxjx/kD3csSKjmBQtIBVSNH6vnOEEn
-        vVbMF4E8T8vPlL9yjWEXWQeWFunygDjQpSv3Jq+CYY5FQzeZEQUKuH/1riadopE4d7VI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWhAw-0005uH-Lo; Fri, 31 May 2019 15:02:26 +0200
-Date:   Fri, 31 May 2019 15:02:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phylink: ensure consistent phy interface mode
-Message-ID: <20190531130226.GE18608@lunn.ch>
-References: <E1hVYO9-000584-J6@rmk-PC.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1hVYO9-000584-J6@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1727350AbfEaNEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 09:04:39 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:47269 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbfEaNEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 09:04:38 -0400
+Received: from kresse.hi.pengutronix.de ([2001:67c:670:100:1d::2a])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.89)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1hWhD3-0003WO-9s; Fri, 31 May 2019 15:04:37 +0200
+Message-ID: <1559307876.2557.5.camel@pengutronix.de>
+Subject: Re: [PATCH 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        linville@redhat.com
+Date:   Fri, 31 May 2019 15:04:36 +0200
+In-Reply-To: <20190531123020.GC18608@lunn.ch>
+References: <20190530180616.1418-1-andrew@lunn.ch>
+         <20190530180616.1418-3-andrew@lunn.ch>
+         <20190531093029.GD15954@unicorn.suse.cz> <20190531115928.GA18608@lunn.ch>
+         <1559305305.2557.3.camel@pengutronix.de> <20190531123020.GC18608@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.22.6-1+deb9u1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::2a
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 10:27:21AM +0100, Russell King wrote:
-> Ensure that we supply the same phy interface mode to mac_link_down() as
-> we did for the corresponding mac_link_up() call.  This ensures that MAC
-> drivers that use the phy interface mode in these methods can depend on
-> mac_link_down() always corresponding to a mac_link_up() call for the
-> same interface mode.
+Am Freitag, den 31.05.2019, 14:30 +0200 schrieb Andrew Lunn:
+> > That's not just theory. The Broadcom BCM54811 PHY supports both
+> > 100/1000baseT, as well as 100baseT1.
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Hi Lucus
+> 
+> There does not appear to be a driver for it, which is why i've not
+> seen it, nor have we had this conversation before.
+> 
+> Do you have a driver to submit?
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+No, we've looked at this chip in the past for a project, but never
+ended up doing anything with it. But the datasheet is quite clear that
+the PHY supports both modes.
 
-    Andrew
+It was just a drive-by comment, as something clicked in my mind there.
+
+Regards,
+Lucas
