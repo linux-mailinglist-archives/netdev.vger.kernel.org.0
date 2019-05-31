@@ -2,412 +2,779 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6AC30817
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 07:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1420E30EF7
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 15:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbfEaF10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 01:27:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51882 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725988AbfEaF1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 01:27:25 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4V5N6XK002857;
-        Thu, 30 May 2019 22:26:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=HzMH3si2E5Ju3f0pVTehS0ZPRaLCQfQf3qHeKJmb9PY=;
- b=qvo5Kjd4oKeQcRwprUiFfSSUaNFtqpnaHTeb2yvoc9bgIkh36xNbeKGOAdlSnjPPz4OL
- bNtxc3+w/cPwrLl+9Tr/ikVy7qSlKLmJX3i2O4254P5oVjXi/cr+E1BKVPXHy1vH+ipD
- 1IjhF5dS1n841YIPJd3lJRNBuow94BWG/ko= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2stgkctnsd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 30 May 2019 22:26:34 -0700
-Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
- ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 30 May 2019 22:26:32 -0700
-Received: from NAM03-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 30 May 2019 22:26:32 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HzMH3si2E5Ju3f0pVTehS0ZPRaLCQfQf3qHeKJmb9PY=;
- b=pue3+m5g7MZxRmmHeRBmF8/qF7xgORX8z6+R8oJPf0MvHIvsbOwGLSebndKue8Vxkp79UYKL8JH8PffS14f5whM7AMdc7JiZcbR2hnm6DO7C9YkilNua7QlwDpi5oYd+oPcut9wFOFnPmZB7geWH8jGeb36XxDS+2dn6z4Imo4Y=
-Received: from BN6PR15MB1154.namprd15.prod.outlook.com (10.172.208.137) by
- BN6PR15MB1249.namprd15.prod.outlook.com (10.172.206.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Fri, 31 May 2019 05:26:30 +0000
-Received: from BN6PR15MB1154.namprd15.prod.outlook.com
- ([fe80::adc0:9bbf:9292:27bd]) by BN6PR15MB1154.namprd15.prod.outlook.com
- ([fe80::adc0:9bbf:9292:27bd%2]) with mapi id 15.20.1922.021; Fri, 31 May 2019
- 05:26:30 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Matt Mullins <mmullins@fb.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Andrew Hall <hall@fb.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf] bpf: preallocate a perf_sample_data per event fd
-Thread-Topic: [PATCH bpf] bpf: preallocate a perf_sample_data per event fd
-Thread-Index: AQHVFzrpDfHJAGsBvUevK1n6XjMoWqaEUD4AgAAJLACAAFrsgA==
-Date:   Fri, 31 May 2019 05:26:30 +0000
-Message-ID: <C9035893-C2C6-4051-BF19-9AC931D475ED@fb.com>
-References: <20190530225549.23014-1-mmullins@fb.com>
- <E5BC8108-4E9A-416C-B12C-945091E31B0A@fb.com>
- <e0adcdedab52521111c2aa157eca276ae838fdb8.camel@fb.com>
-In-Reply-To: <e0adcdedab52521111c2aa157eca276ae838fdb8.camel@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::c8b3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 64da1e5a-1e6c-456d-ad27-08d6e5888974
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN6PR15MB1249;
-x-ms-traffictypediagnostic: BN6PR15MB1249:
-x-microsoft-antispam-prvs: <BN6PR15MB1249600A9EF395BB931348FFB3190@BN6PR15MB1249.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 00540983E2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(136003)(396003)(366004)(376002)(199004)(189003)(186003)(2906002)(53936002)(83716004)(99286004)(6116002)(46003)(14454004)(11346002)(5660300002)(478600001)(53546011)(71200400001)(71190400001)(486006)(25786009)(305945005)(446003)(6636002)(33656002)(476003)(7736002)(6506007)(6246003)(102836004)(64756008)(66446008)(36756003)(6862004)(66556008)(57306001)(37006003)(6486002)(82746002)(91956017)(229853002)(316002)(14444005)(2616005)(5024004)(66946007)(68736007)(50226002)(54906003)(86362001)(81156014)(8936002)(76176011)(6512007)(76116006)(8676002)(66476007)(4326008)(81166006)(6436002)(256004)(73956011);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR15MB1249;H:BN6PR15MB1154.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: t8m5fwi39ZHNI6/5rZLkTZNaAC42YDa8RFpAgj5ZKUfmDOnDImq3acEBfpq1sEo1FxpoN1ASqzXwUZGJ3tRq6VXT95rD/bi2vRb1eXsR9A+iZuzv7XloAFCXY4+pAriLwb00BW9lTMW6HjYYxWSM52uFJcm/6ZWqIEv25O0wP51TF2Umyr65e+V3ZV+wEg0AHAEhtYtV3TTL1NTHuXHX2FCo9pMVcoNqTwRBw+0+GOCf9B8td1Z869iSzzCfSmRL1oigGLsAiG48X0yuHl4chbAsx06w1RMhj/lnZVcyeiGZBI7mzmd2nGsto830AlTxt6azGe8jd0NVO7y72l0B1xTpMF1zoPVKBHcpabia2JfD1ZjcjSxE1XCLTm9yuSCtjt4quIGz9CXxU8kwhwqIsxPE+TE6CfUlxKPHRFCLf8Y=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1A85942A183740438AA4BF50370BAE68@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726515AbfEaNiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 09:38:22 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17638 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726037AbfEaNiW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 09:38:22 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D505A632EA7C8E5E59E2;
+        Fri, 31 May 2019 21:38:18 +0800 (CST)
+Received: from localhost.localdomain (10.175.34.53) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 31 May 2019 21:38:09 +0800
+From:   Xue Chaojing <xuechaojing@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoshaokai@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <xuechaojing@huawei.com>, <chiqijun@huawei.com>,
+        <wulike1@huawei.com>
+Subject: [net-next v2] hinic: add LRO support
+Date:   Fri, 31 May 2019 05:47:30 +0000
+Message-ID: <20190531054730.2995-1-xuechaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64da1e5a-1e6c-456d-ad27-08d6e5888974
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 05:26:30.1800
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1249
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-31_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905310035
-X-FB-Internal: deliver
+Content-Type: text/plain
+X-Originating-IP: [10.175.34.53]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch adds LRO support for the HiNIC driver.
 
+Signed-off-by: Xue Chaojing <xuechaojing@huawei.com>
+---
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h |  14 ++-
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |   2 +
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |   8 +-
+ .../net/ethernet/huawei/hinic/hinic_hw_io.c   |  58 +++++++++
+ .../ethernet/huawei/hinic/hinic_hw_qp_ctxt.h  |   5 +
+ .../net/ethernet/huawei/hinic/hinic_hw_wqe.h  |  22 +++-
+ .../net/ethernet/huawei/hinic/hinic_main.c    | 101 ++++++++++++++++
+ .../net/ethernet/huawei/hinic/hinic_port.c    | 114 ++++++++++++++++++
+ .../net/ethernet/huawei/hinic/hinic_port.h    |  60 +++++++++
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  46 +++++--
+ drivers/net/ethernet/huawei/hinic/hinic_rx.h  |   2 +
+ 11 files changed, 419 insertions(+), 13 deletions(-)
 
-> On May 30, 2019, at 5:01 PM, Matt Mullins <mmullins@fb.com> wrote:
->=20
-> On Thu, 2019-05-30 at 23:28 +0000, Song Liu wrote:
->>> On May 30, 2019, at 3:55 PM, Matt Mullins <mmullins@fb.com> wrote:
->>>=20
->>> It is possible that a BPF program can be called while another BPF
->>> program is executing bpf_perf_event_output.  This has been observed wit=
-h
->>> I/O completion occurring as a result of an interrupt:
->>>=20
->>> 	bpf_prog_247fd1341cddaea4_trace_req_end+0x8d7/0x1000
->>> 	? trace_call_bpf+0x82/0x100
->>> 	? sch_direct_xmit+0xe2/0x230
->>> 	? blk_mq_end_request+0x1/0x100
->>> 	? blk_mq_end_request+0x5/0x100
->>> 	? kprobe_perf_func+0x19b/0x240
->>> 	? __qdisc_run+0x86/0x520
->>> 	? blk_mq_end_request+0x1/0x100
->>> 	? blk_mq_end_request+0x5/0x100
->>> 	? kprobe_ftrace_handler+0x90/0xf0
->>> 	? ftrace_ops_assist_func+0x6e/0xe0
->>> 	? ip6_input_finish+0xbf/0x460
->>> 	? 0xffffffffa01e80bf
->>> 	? nbd_dbg_flags_show+0xc0/0xc0 [nbd]
->>> 	? blkdev_issue_zeroout+0x200/0x200
->>> 	? blk_mq_end_request+0x1/0x100
->>> 	? blk_mq_end_request+0x5/0x100
->>> 	? flush_smp_call_function_queue+0x6c/0xe0
->>> 	? smp_call_function_single_interrupt+0x32/0xc0
->>> 	? call_function_single_interrupt+0xf/0x20
->>> 	? call_function_single_interrupt+0xa/0x20
->>> 	? swiotlb_map_page+0x140/0x140
->>> 	? refcount_sub_and_test+0x1a/0x50
->>> 	? tcp_wfree+0x20/0xf0
->>> 	? skb_release_head_state+0x62/0xc0
->>> 	? skb_release_all+0xe/0x30
->>> 	? napi_consume_skb+0xb5/0x100
->>> 	? mlx5e_poll_tx_cq+0x1df/0x4e0
->>> 	? mlx5e_poll_tx_cq+0x38c/0x4e0
->>> 	? mlx5e_napi_poll+0x58/0xc30
->>> 	? mlx5e_napi_poll+0x232/0xc30
->>> 	? net_rx_action+0x128/0x340
->>> 	? __do_softirq+0xd4/0x2ad
->>> 	? irq_exit+0xa5/0xb0
->>> 	? do_IRQ+0x7d/0xc0
->>> 	? common_interrupt+0xf/0xf
->>> 	</IRQ>
->>> 	? __rb_free_aux+0xf0/0xf0
->>> 	? perf_output_sample+0x28/0x7b0
->>> 	? perf_prepare_sample+0x54/0x4a0
->>> 	? perf_event_output+0x43/0x60
->>> 	? bpf_perf_event_output_raw_tp+0x15f/0x180
->>> 	? blk_mq_start_request+0x1/0x120
->>> 	? bpf_prog_411a64a706fc6044_should_trace+0xad4/0x1000
->>> 	? bpf_trace_run3+0x2c/0x80
->>> 	? nbd_send_cmd+0x4c2/0x690 [nbd]
->>>=20
->>> This also cannot be alleviated by further splitting the per-cpu
->>> perf_sample_data structs (as in commit 283ca526a9bd ("bpf: fix
->>> corruption on concurrent perf_event_output calls")), as a raw_tp could
->>> be attached to the block:block_rq_complete tracepoint and execute durin=
-g
->>> another raw_tp.  Instead, keep a pre-allocated perf_sample_data
->>> structure per perf_event_array element and fail a bpf_perf_event_output
->>> if that element is concurrently being used.
->>>=20
->>> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_=
-data")
->>> Signed-off-by: Matt Mullins <mmullins@fb.com>
->>> ---
->>> It felt a bit overkill, but I had to split bpf_event_entry into its own
->>> header file to break an include cycle from perf_event.h -> cgroup.h ->
->>> cgroup-defs.h -> bpf-cgroup.h -> bpf.h -> (potentially) perf_event.h.
->>>=20
->>> include/linux/bpf.h       |  7 -------
->>> include/linux/bpf_event.h | 20 ++++++++++++++++++++
->>> kernel/bpf/arraymap.c     |  2 ++
->>> kernel/trace/bpf_trace.c  | 30 +++++++++++++++++-------------
->>> 4 files changed, 39 insertions(+), 20 deletions(-)
->>> create mode 100644 include/linux/bpf_event.h
->>>=20
->>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
->>> index 4fb3aa2dc975..13b253a36402 100644
->>> --- a/include/linux/bpf.h
->>> +++ b/include/linux/bpf.h
->>> @@ -467,13 +467,6 @@ static inline bool bpf_map_flags_access_ok(u32 acc=
-ess_flags)
->>> 	       (BPF_F_RDONLY_PROG | BPF_F_WRONLY_PROG);
->>> }
->>>=20
->>=20
->> I think we can avoid the include cycle as:
->>=20
->> +struct perf_sample_data *sd;
->> struct bpf_event_entry {
->> 	struct perf_event *event;
->> 	struct file *perf_file;
->> 	struct file *map_file;
->> 	struct rcu_head rcu;
->> +	struct perf_sample_data *sd;
->> };
->=20
-> Yeah, that totally works.  I was mostly doing this so we had only one
-> kmalloc allocation, but I'm not too worried about having an extra
-> object in kmalloc-64 if it simplifies the code a lot.
-
-We can also do something like
-
-   ee =3D kzalloc(sizeof(struct bpf_event_entry) + sizeof(struct perf_sampl=
-e_data));
-   ee->sd =3D (void *)ee + sizeof(struct bpf_event_entry);
-
-Thanks,
-Song
-
->=20
->>=20
->>> -struct bpf_event_entry {
->>> -	struct perf_event *event;
->>> -	struct file *perf_file;
->>> -	struct file *map_file;
->>> -	struct rcu_head rcu;
->>> -};
->>> -
->>> bool bpf_prog_array_compatible(struct bpf_array *array, const struct bp=
-f_prog *fp);
->>> int bpf_prog_calc_tag(struct bpf_prog *fp);
->>>=20
->>> diff --git a/include/linux/bpf_event.h b/include/linux/bpf_event.h
->>> new file mode 100644
->>> index 000000000000..9f415990f921
->>> --- /dev/null
->>> +++ b/include/linux/bpf_event.h
->>> @@ -0,0 +1,20 @@
->>> +/* SPDX-License-Identifier: GPL-2.0 */
->>> +
->>> +#ifndef _LINUX_BPF_EVENT_H
->>> +#define _LINUX_BPF_EVENT_H
->>> +
->>> +#include <linux/perf_event.h>
->>> +#include <linux/types.h>
->>> +
->>> +struct file;
->>> +
->>> +struct bpf_event_entry {
->>> +	struct perf_event *event;
->>> +	struct file *perf_file;
->>> +	struct file *map_file;
->>> +	struct rcu_head rcu;
->>> +	struct perf_sample_data sd;
->>> +	atomic_t in_use;
->>> +};
->>> +
->>> +#endif /* _LINUX_BPF_EVENT_H */
->>> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
->>> index 584636c9e2eb..08e5e486d563 100644
->>> --- a/kernel/bpf/arraymap.c
->>> +++ b/kernel/bpf/arraymap.c
->>> @@ -11,6 +11,7 @@
->>> * General Public License for more details.
->>> */
->>> #include <linux/bpf.h>
->>> +#include <linux/bpf_event.h>
->>> #include <linux/btf.h>
->>> #include <linux/err.h>
->>> #include <linux/slab.h>
->>> @@ -659,6 +660,7 @@ static struct bpf_event_entry *bpf_event_entry_gen(=
-struct file *perf_file,
->>> 		ee->event =3D perf_file->private_data;
->>> 		ee->perf_file =3D perf_file;
->>> 		ee->map_file =3D map_file;
->>=20
->> And do the kzalloc() or some other trick here.=20
->>=20
->>> +		atomic_set(&ee->in_use, 0);
->>> 	}
->>>=20
->>> 	return ee;
->>> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
->>> index f92d6ad5e080..a03e29957698 100644
->>> --- a/kernel/trace/bpf_trace.c
->>> +++ b/kernel/trace/bpf_trace.c
->>> @@ -6,6 +6,7 @@
->>> #include <linux/types.h>
->>> #include <linux/slab.h>
->>> #include <linux/bpf.h>
->>> +#include <linux/bpf_event.h>
->>> #include <linux/bpf_perf_event.h>
->>> #include <linux/filter.h>
->>> #include <linux/uaccess.h>
->>> @@ -410,17 +411,17 @@ static const struct bpf_func_proto bpf_perf_event=
-_read_value_proto =3D {
->>> 	.arg4_type	=3D ARG_CONST_SIZE,
->>> };
->>>=20
->>> -static DEFINE_PER_CPU(struct perf_sample_data, bpf_trace_sd);
->>> -
->>> static __always_inline u64
->>> __bpf_perf_event_output(struct pt_regs *regs, struct bpf_map *map,
->>> -			u64 flags, struct perf_sample_data *sd)
->>> +			u64 flags, struct perf_raw_record *raw)
->>> {
->>> 	struct bpf_array *array =3D container_of(map, struct bpf_array, map);
->>> 	unsigned int cpu =3D smp_processor_id();
->>> 	u64 index =3D flags & BPF_F_INDEX_MASK;
->>> 	struct bpf_event_entry *ee;
->>> 	struct perf_event *event;
->>> +	struct perf_sample_data *sd;
->>> +	u64 ret;
->>>=20
->>> 	if (index =3D=3D BPF_F_CURRENT_CPU)
->>> 		index =3D cpu;
->>> @@ -439,13 +440,22 @@ __bpf_perf_event_output(struct pt_regs *regs, str=
-uct bpf_map *map,
->>> 	if (unlikely(event->oncpu !=3D cpu))
->>> 		return -EOPNOTSUPP;
->>>=20
->>> -	return perf_event_output(event, sd, regs);
->>> +	if (atomic_cmpxchg(&ee->in_use, 0, 1) !=3D 0)
->>> +		return -EBUSY;
->>=20
->> And we only need xchg() here, so we can eliminate in_use.=20
->>=20
->> Does this make sense?
->=20
-> You mean xchg a null-pointer or something in there while it's in-use,
-> then xchg the slab back?  Makes sense to me.  I'll try that and see
-> where it gets me.
->=20
->>=20
->> Thanks,
->> Song
->>=20
->>> +
->>> +	sd =3D &ee->sd;
->>> +	perf_sample_data_init(sd, 0, 0);
->>> +	sd->raw =3D raw;
->>> +
->>> +	ret =3D perf_event_output(event, sd, regs);
->>> +
->>> +	atomic_set(&ee->in_use, 0);
->>> +	return ret;
->>> }
->>>=20
->>> BPF_CALL_5(bpf_perf_event_output, struct pt_regs *, regs, struct bpf_ma=
-p *, map,
->>> 	   u64, flags, void *, data, u64, size)
->>> {
->>> -	struct perf_sample_data *sd =3D this_cpu_ptr(&bpf_trace_sd);
->>> 	struct perf_raw_record raw =3D {
->>> 		.frag =3D {
->>> 			.size =3D size,
->>> @@ -456,10 +466,8 @@ BPF_CALL_5(bpf_perf_event_output, struct pt_regs *=
-, regs, struct bpf_map *, map,
->>> 	if (unlikely(flags & ~(BPF_F_INDEX_MASK)))
->>> 		return -EINVAL;
->>>=20
->>> -	perf_sample_data_init(sd, 0, 0);
->>> -	sd->raw =3D &raw;
->>>=20
->>> -	return __bpf_perf_event_output(regs, map, flags, sd);
->>> +	return __bpf_perf_event_output(regs, map, flags, &raw);
->>> }
->>>=20
->>> static const struct bpf_func_proto bpf_perf_event_output_proto =3D {
->>> @@ -474,12 +482,10 @@ static const struct bpf_func_proto bpf_perf_event=
-_output_proto =3D {
->>> };
->>>=20
->>> static DEFINE_PER_CPU(struct pt_regs, bpf_pt_regs);
->>> -static DEFINE_PER_CPU(struct perf_sample_data, bpf_misc_sd);
->>>=20
->>> u64 bpf_event_output(struct bpf_map *map, u64 flags, void *meta, u64 me=
-ta_size,
->>> 		     void *ctx, u64 ctx_size, bpf_ctx_copy_t ctx_copy)
->>> {
->>> -	struct perf_sample_data *sd =3D this_cpu_ptr(&bpf_misc_sd);
->>> 	struct pt_regs *regs =3D this_cpu_ptr(&bpf_pt_regs);
->>> 	struct perf_raw_frag frag =3D {
->>> 		.copy		=3D ctx_copy,
->>> @@ -497,10 +503,8 @@ u64 bpf_event_output(struct bpf_map *map, u64 flag=
-s, void *meta, u64 meta_size,
->>> 	};
->>>=20
->>> 	perf_fetch_caller_regs(regs);
->>> -	perf_sample_data_init(sd, 0, 0);
->>> -	sd->raw =3D &raw;
->>>=20
->>> -	return __bpf_perf_event_output(regs, map, flags, sd);
->>> +	return __bpf_perf_event_output(regs, map, flags, &raw);
->>> }
->>>=20
->>> BPF_CALL_0(bpf_get_current_task)
->>> --=20
->>> 2.17.1
->>>=20
->>=20
->>=20
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+index 5186cc9023aa..84a0bfdfa5cd 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+@@ -38,6 +38,16 @@ struct hinic_rx_mode_work {
+ 	u32                     rx_mode;
+ };
+ 
++struct hinic_lro_cfg {
++	u32 enable;
++	u32 timer;
++	u32 buffer_size;
++};
++
++struct hinic_adaptive_cfg {
++	struct hinic_lro_cfg lro;
++};
++
+ struct hinic_dev {
+ 	struct net_device               *netdev;
+ 	struct hinic_hwdev              *hwdev;
+@@ -59,6 +69,8 @@ struct hinic_dev {
+ 
+ 	struct hinic_txq_stats          tx_stats;
+ 	struct hinic_rxq_stats          rx_stats;
+-};
+ 
++	struct hinic_adaptive_cfg	adaptive_cfg;
++	u32				lro_replenish_thld;
++};
+ #endif
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index 3875f39f43bb..756a7e3280bd 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -313,6 +313,8 @@ static int set_hw_ioctxt(struct hinic_hwdev *hwdev, unsigned int rq_depth,
+ 	hw_ioctxt.set_cmdq_depth = HW_IOCTXT_SET_CMDQ_DEPTH_DEFAULT;
+ 	hw_ioctxt.cmdq_depth = 0;
+ 
++	hw_ioctxt.lro_en = 1;
++
+ 	hw_ioctxt.rq_depth  = ilog2(rq_depth);
+ 
+ 	hw_ioctxt.rx_buf_sz_idx = HINIC_RX_BUF_SZ_IDX;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+index c9e621e19dd0..fba4fe82472a 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+@@ -50,6 +50,8 @@ enum hinic_port_cmd {
+ 
+ 	HINIC_PORT_CMD_GET_LINK_STATE   = 24,
+ 
++	HINIC_PORT_CMD_SET_LRO		= 25,
++
+ 	HINIC_PORT_CMD_SET_RX_CSUM	= 26,
+ 
+ 	HINIC_PORT_CMD_SET_PORT_STATE   = 41,
+@@ -62,7 +64,11 @@ enum hinic_port_cmd {
+ 
+ 	HINIC_PORT_CMD_SET_TSO          = 112,
+ 
++	HINIC_PORT_CMD_SET_RQ_IQ_MAP	= 115,
++
+ 	HINIC_PORT_CMD_GET_CAP          = 170,
++
++	HINIC_PORT_CMD_SET_LRO_TIMER	= 244,
+ };
+ 
+ enum hinic_mgmt_msg_cmd {
+@@ -106,7 +112,7 @@ struct hinic_cmd_hw_ioctxt {
+ 	u8      set_cmdq_depth;
+ 	u8      cmdq_depth;
+ 
+-	u8      rsvd2;
++	u8      lro_en;
+ 	u8      rsvd3;
+ 	u8      rsvd4;
+ 	u8      rsvd5;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.c
+index a322a22d9357..2904cc3ecb32 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.c
+@@ -45,6 +45,7 @@
+ 
+ enum io_cmd {
+ 	IO_CMD_MODIFY_QUEUE_CTXT = 0,
++	IO_CMD_CLEAN_QUEUE_CTXT,
+ };
+ 
+ static void init_db_area_idx(struct hinic_free_db_area *free_db_area)
+@@ -210,6 +211,57 @@ static int write_qp_ctxts(struct hinic_func_to_io *func_to_io, u16 base_qpn,
+ 		write_rq_ctxts(func_to_io, base_qpn, num_qps));
+ }
+ 
++static int clean_queue_offload_ctxt(struct hinic_func_to_io *func_to_io,
++				    enum hinic_qp_ctxt_type ctxt_type)
++{
++	struct hinic_hwif *hwif = func_to_io->hwif;
++	struct hinic_clean_queue_ctxt *ctxt_block;
++	struct pci_dev *pdev = hwif->pdev;
++	struct hinic_cmdq_buf cmdq_buf;
++	u64 out_param = 0;
++	int err;
++
++	err = hinic_alloc_cmdq_buf(&func_to_io->cmdqs, &cmdq_buf);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to allocate cmdq buf\n");
++		return err;
++	}
++
++	ctxt_block = cmdq_buf.buf;
++	ctxt_block->cmdq_hdr.num_queues = func_to_io->max_qps;
++	ctxt_block->cmdq_hdr.queue_type = ctxt_type;
++	ctxt_block->cmdq_hdr.addr_offset = 0;
++
++	/* TSO/LRO ctxt size: 0x0:0B; 0x1:160B; 0x2:200B; 0x3:240B */
++	ctxt_block->ctxt_size = 0x3;
++
++	hinic_cpu_to_be32(ctxt_block, sizeof(*ctxt_block));
++
++	cmdq_buf.size = sizeof(*ctxt_block);
++
++	err = hinic_cmdq_direct_resp(&func_to_io->cmdqs, HINIC_MOD_L2NIC,
++				     IO_CMD_CLEAN_QUEUE_CTXT,
++				     &cmdq_buf, &out_param);
++
++	if ((err) || (out_param)) {
++		dev_err(&pdev->dev, "Failed to clean queue offload ctxts, err: %d, out_param: 0x%llx\n",
++			err, out_param);
++
++		err = -EFAULT;
++	}
++
++	hinic_free_cmdq_buf(&func_to_io->cmdqs, &cmdq_buf);
++
++	return err;
++}
++
++static int clean_qp_offload_ctxt(struct hinic_func_to_io *func_to_io)
++{
++	/* clean LRO/TSO context space */
++	return (clean_queue_offload_ctxt(func_to_io, HINIC_QP_CTXT_TYPE_SQ) ||
++		clean_queue_offload_ctxt(func_to_io, HINIC_QP_CTXT_TYPE_RQ));
++}
++
+ /**
+  * init_qp - Initialize a Queue Pair
+  * @func_to_io: func to io channel that holds the IO components
+@@ -381,6 +433,12 @@ int hinic_io_create_qps(struct hinic_func_to_io *func_to_io,
+ 		goto err_write_qp_ctxts;
+ 	}
+ 
++	err = clean_qp_offload_ctxt(func_to_io);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to clean qp offload ctxts\n");
++		goto err_write_qp_ctxts;
++	}
++
+ 	return 0;
+ 
+ err_write_qp_ctxts:
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_qp_ctxt.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_qp_ctxt.h
+index 376abf00762b..01c41dd705cb 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_qp_ctxt.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_qp_ctxt.h
+@@ -201,6 +201,11 @@ struct hinic_rq_ctxt {
+ 	u32     wq_block_lo_pfn;
+ };
+ 
++struct hinic_clean_queue_ctxt {
++	struct hinic_qp_ctxt_header	cmdq_hdr;
++	u32				ctxt_size;
++};
++
+ struct hinic_sq_ctxt_block {
+ 	struct hinic_qp_ctxt_header hdr;
+ 	struct hinic_sq_ctxt sq_ctxt[HINIC_Q_CTXT_MAX];
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_wqe.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_wqe.h
+index 138941527872..ef852b7b57a3 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wqe.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wqe.h
+@@ -219,6 +219,26 @@
+ #define HINIC_MSS_DEFAULT		        0x3E00
+ #define HINIC_MSS_MIN		                0x50
+ 
++#define RQ_CQE_STATUS_NUM_LRO_SHIFT		16
++#define RQ_CQE_STATUS_NUM_LRO_MASK		0xFFU
++
++#define RQ_CQE_STATUS_GET(val, member)		(((val) >> \
++			RQ_CQE_STATUS_##member##_SHIFT) & \
++			RQ_CQE_STATUS_##member##_MASK)
++
++#define HINIC_GET_RX_NUM_LRO(status)	\
++		RQ_CQE_STATUS_GET(status, NUM_LRO)
++
++#define RQ_CQE_OFFOLAD_TYPE_PKT_TYPE_SHIFT		0
++#define RQ_CQE_OFFOLAD_TYPE_PKT_TYPE_MASK		0xFFFU
++
++#define RQ_CQE_OFFOLAD_TYPE_GET(val, member)		(((val) >> \
++				RQ_CQE_OFFOLAD_TYPE_##member##_SHIFT) & \
++				RQ_CQE_OFFOLAD_TYPE_##member##_MASK)
++
++#define HINIC_GET_RX_PKT_TYPE(offload_type)	\
++			RQ_CQE_OFFOLAD_TYPE_GET(offload_type, PKT_TYPE)
++
+ enum hinic_l4offload_type {
+ 	HINIC_L4_OFF_DISABLE            = 0,
+ 	HINIC_TCP_OFFLOAD_ENABLE        = 1,
+@@ -372,7 +392,7 @@ struct hinic_rq_cqe {
+ 	u32     status;
+ 	u32     len;
+ 
+-	u32     rsvd2;
++	u32     offload_type;
+ 	u32     rsvd3;
+ 	u32     rsvd4;
+ 	u32     rsvd5;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index cfd3f4232cac..1c2b3380dc58 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -51,6 +51,22 @@ static unsigned int rx_weight = 64;
+ module_param(rx_weight, uint, 0644);
+ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
+ 
++static unsigned int set_lro_timer = 16;
++module_param(set_lro_timer, uint, 0444);
++MODULE_PARM_DESC(set_lro_timer, "Set lro timer in micro second, valid range is 1 - 1024, default is 16");
++
++static unsigned char set_max_wqe_num = 8;
++module_param(set_max_wqe_num, byte, 0444);
++MODULE_PARM_DESC(set_max_wqe_num, "Set lro max wqe number, valid range is 1 - 32, default is 4(arm) / 8(x86)");
++
++static unsigned int lro_replenish_thld = 256;
++module_param(lro_replenish_thld, uint, 0444);
++MODULE_PARM_DESC(lro_replenish_thld, "Number wqe for lro replenish buffer (default=256)");
++
++static unsigned char lro_en_status = HINIC_LRO_STATUS_UNSET;
++module_param(lro_en_status, byte, 0444);
++MODULE_PARM_DESC(lro_en_status, "lro enable status. 0 - disable, 1 - enable, other - unset. (default unset)");
++
+ #define HINIC_DEV_ID_QUAD_PORT_25GE         0x1822
+ #define HINIC_DEV_ID_DUAL_PORT_100GE        0x0200
+ #define HINIC_DEV_ID_DUAL_PORT_100GE_MEZZ   0x0205
+@@ -372,6 +388,35 @@ static void free_rxqs(struct hinic_dev *nic_dev)
+ 	nic_dev->rxqs = NULL;
+ }
+ 
++int hinic_rx_configure(struct net_device *netdev)
++{
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	int err;
++
++	err = hinic_set_max_qnum(nic_dev, nic_dev->hwdev->nic_cap.max_qps);
++	if (err) {
++		netif_err(nic_dev, drv, nic_dev->netdev,
++			  "Failed - hinic rx configure\n");
++		return -EFAULT;
++	}
++
++	return 0;
++}
++
++static int hinic_configure(struct hinic_dev *nic_dev)
++{
++	struct net_device *netdev = nic_dev->netdev;
++	int err;
++
++	err = hinic_rx_configure(netdev);
++	if (err) {
++		netif_err(nic_dev, drv, netdev, "Failed to configure rx\n");
++		return err;
++	}
++
++	return 0;
++}
++
+ static int hinic_open(struct net_device *netdev)
+ {
+ 	struct hinic_dev *nic_dev = netdev_priv(netdev);
+@@ -401,6 +446,13 @@ static int hinic_open(struct net_device *netdev)
+ 		goto err_create_rxqs;
+ 	}
+ 
++	err = hinic_configure(nic_dev);
++	if (err) {
++		netif_err(nic_dev, drv, netdev,
++			  "Failed to hinic configure\n");
++		goto err_port_state;
++	}
++
+ 	num_qps = hinic_hwdev_num_qps(nic_dev->hwdev);
+ 	netif_set_real_num_tx_queues(netdev, num_qps);
+ 	netif_set_real_num_rx_queues(netdev, num_qps);
+@@ -803,12 +855,17 @@ static const struct net_device_ops hinic_netdev_ops = {
+ 
+ static void netdev_features_init(struct net_device *netdev)
+ {
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++
+ 	netdev->hw_features = NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
+ 			      NETIF_F_IPV6_CSUM | NETIF_F_TSO | NETIF_F_TSO6 |
+ 			      NETIF_F_RXCSUM;
+ 
+ 	netdev->vlan_features = netdev->hw_features;
+ 
++	if (nic_dev->adaptive_cfg.lro.enable)
++		netdev->hw_features |= NETIF_F_LRO;
++
+ 	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ }
+ 
+@@ -869,6 +926,8 @@ static int set_features(struct hinic_dev *nic_dev,
+ {
+ 	netdev_features_t changed = force_change ? ~0 : pre_features ^ features;
+ 	u32 csum_en = HINIC_RX_CSUM_OFFLOAD_EN;
++	u32 lro_buf_size = 0;
++	u32 lro_timer = 0;
+ 	int err = 0;
+ 
+ 	if (changed & NETIF_F_TSO)
+@@ -878,9 +937,48 @@ static int set_features(struct hinic_dev *nic_dev,
+ 	if (changed & NETIF_F_RXCSUM)
+ 		err = hinic_set_rx_csum_offload(nic_dev, csum_en);
+ 
++	if (changed & NETIF_F_LRO) {
++		lro_timer = nic_dev->adaptive_cfg.lro.timer;
++		lro_buf_size = nic_dev->adaptive_cfg.lro.buffer_size;
++
++		err = hinic_set_rx_lro_state(nic_dev,
++					     !!(features & NETIF_F_LRO),
++					     lro_timer,
++					     lro_buf_size /
++					     HINIC_RX_BUF_SZ);
++	}
++
+ 	return err;
+ }
+ 
++static void decide_lro_cfg(struct hinic_dev *nic_dev)
++{
++	struct hinic_lro_cfg *lro = &nic_dev->adaptive_cfg.lro;
++
++	if (lro_en_status < HINIC_LRO_STATUS_UNSET)
++		lro->enable = lro_en_status;
++	else
++		lro->enable = 0;
++
++	if (set_lro_timer >= HINIC_LRO_RX_TIMER_LOWER &&
++	    set_lro_timer <= HINIC_LRO_RX_TIMER_UPPER)
++		lro->timer = set_lro_timer;
++	else
++		lro->timer = HINIC_LRO_RX_TIMER_DEFAULT;
++
++	if (set_max_wqe_num <= HINIC_LRO_MAX_WQE_NUM_UPPER &&
++	    set_max_wqe_num >= HINIC_LRO_MAX_WQE_NUM_LOWER)
++		lro->buffer_size = set_max_wqe_num * HINIC_RX_BUF_SZ;
++	else
++		lro->buffer_size = HINIC_LRO_MAX_WQE_NUM_DEFAULT *
++				   HINIC_RX_BUF_SZ;
++}
++
++static void adaptive_configuration_init(struct hinic_dev *nic_dev)
++{
++	decide_lro_cfg(nic_dev);
++}
++
+ /**
+  * nic_dev_init - Initialize the NIC device
+  * @pdev: the NIC pci device
+@@ -930,6 +1028,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	nic_dev->rxqs = NULL;
+ 	nic_dev->tx_weight = tx_weight;
+ 	nic_dev->rx_weight = rx_weight;
++	nic_dev->lro_replenish_thld = lro_replenish_thld;
+ 
+ 	sema_init(&nic_dev->mgmt_lock, 1);
+ 
+@@ -939,6 +1038,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	u64_stats_init(&tx_stats->syncp);
+ 	u64_stats_init(&rx_stats->syncp);
+ 
++	adaptive_configuration_init(nic_dev);
++
+ 	nic_dev->vlan_bitmap = devm_kzalloc(&pdev->dev,
+ 					    VLAN_BITMAP_SIZE(nic_dev),
+ 					    GFP_KERNEL);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 122c93597268..c1947b2f4462 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -439,3 +439,117 @@ int hinic_set_rx_csum_offload(struct hinic_dev *nic_dev, u32 en)
+ 
+ 	return 0;
+ }
++
++int hinic_set_max_qnum(struct hinic_dev *nic_dev, u8 num_rqs)
++{
++	struct hinic_hwdev *hwdev = nic_dev->hwdev;
++	struct hinic_hwif *hwif = hwdev->hwif;
++	struct pci_dev *pdev = hwif->pdev;
++	struct hinic_rq_num rq_num = {0};
++	u16 out_size = sizeof(rq_num);
++	int err;
++
++	rq_num.func_id = HINIC_HWIF_FUNC_IDX(hwif);
++	rq_num.num_rqs = num_rqs;
++	rq_num.rq_depth = ilog2(HINIC_SQ_DEPTH);
++
++	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_RQ_IQ_MAP,
++				 &rq_num, sizeof(rq_num),
++				 &rq_num, &out_size);
++	if (err || !out_size || rq_num.status) {
++		dev_err(&pdev->dev,
++			"Failed to rxq number, ret = %d\n",
++			rq_num.status);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++int hinic_set_rx_lro(struct hinic_dev *nic_dev, u8 ipv4_en, u8 ipv6_en,
++		     u8 max_wqe_num)
++{
++	struct hinic_hwdev *hwdev = nic_dev->hwdev;
++	struct hinic_hwif *hwif = hwdev->hwif;
++	struct hinic_lro_config lro_cfg = {0};
++	struct pci_dev *pdev = hwif->pdev;
++	u16 out_size = sizeof(lro_cfg);
++	int err;
++
++	lro_cfg.func_id = HINIC_HWIF_FUNC_IDX(hwif);
++	lro_cfg.lro_ipv4_en = ipv4_en;
++	lro_cfg.lro_ipv6_en = ipv6_en;
++	lro_cfg.lro_max_wqe_num = max_wqe_num;
++
++	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_LRO,
++				 &lro_cfg, sizeof(lro_cfg),
++				 &lro_cfg, &out_size);
++	if (err || !out_size || lro_cfg.status) {
++		dev_err(&pdev->dev,
++			"Failed to set lro offload, ret = %d\n",
++			lro_cfg.status);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++int hinic_set_rx_lro_timer(struct hinic_dev *nic_dev, u32 timer_value)
++{
++	struct hinic_hwdev *hwdev = nic_dev->hwdev;
++	struct hinic_lro_timer lro_timer = {0};
++	struct hinic_hwif *hwif = hwdev->hwif;
++	struct pci_dev *pdev = hwif->pdev;
++	u16 out_size = sizeof(lro_timer);
++	int err;
++
++	lro_timer.status = 0;
++	lro_timer.type = 0;
++	lro_timer.enable = 1;
++	lro_timer.timer = timer_value;
++
++	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_LRO_TIMER,
++				 &lro_timer, sizeof(lro_timer),
++				 &lro_timer, &out_size);
++	if (lro_timer.status == 0xFF) {
++		/* For this case, we think status (0xFF) is OK */
++		lro_timer.status = 0;
++		dev_err(&pdev->dev,
++			"Set lro timer not supported by the current FW version, it will be 1ms default\n");
++	}
++
++	if (err || !out_size || lro_timer.status) {
++		dev_err(&pdev->dev,
++			"Failed to set lro timer, ret = %d\n",
++			lro_timer.status);
++
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++int hinic_set_rx_lro_state(struct hinic_dev *nic_dev, u8 lro_en,
++			   u32 lro_timer, u32 wqe_num)
++{
++	struct hinic_hwdev *hwdev = nic_dev->hwdev;
++	u8 ipv4_en = 0;
++	u8 ipv6_en = 0;
++	int err;
++
++	if (!hwdev)
++		return -EINVAL;
++
++	ipv4_en = lro_en ? 1 : 0;
++	ipv6_en = lro_en ? 1 : 0;
++
++	err = hinic_set_rx_lro(nic_dev, ipv4_en, ipv6_en, (u8)wqe_num);
++	if (err)
++		return err;
++
++	err = hinic_set_rx_lro_timer(nic_dev, lro_timer);
++	if (err)
++		return err;
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+index 02d896eed455..b9f6e8b13b6e 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+@@ -22,6 +22,14 @@
+ 
+ #include "hinic_dev.h"
+ 
++#define HINIC_LRO_MAX_WQE_NUM_UPPER	32
++#define HINIC_LRO_MAX_WQE_NUM_LOWER	1
++#define HINIC_LRO_MAX_WQE_NUM_DEFAULT     8
++
++#define HINIC_LRO_RX_TIMER_UPPER	1024
++#define HINIC_LRO_RX_TIMER_LOWER	1
++#define HINIC_LRO_RX_TIMER_DEFAULT	16
++
+ enum hinic_rx_mode {
+ 	HINIC_RX_MODE_UC        = BIT(0),
+ 	HINIC_RX_MODE_MC        = BIT(1),
+@@ -192,6 +200,53 @@ struct hinic_checksum_offload {
+ 	u16	rsvd1;
+ 	u32	rx_csum_offload;
+ };
++
++struct hinic_rq_num {
++	u8	status;
++	u8	version;
++	u8	rsvd0[6];
++
++	u16	func_id;
++	u16	rsvd1[33];
++	u32	num_rqs;
++	u32	rq_depth;
++};
++
++struct hinic_lro_config {
++	u8	status;
++	u8	version;
++	u8	rsvd0[6];
++
++	u16	func_id;
++	u16	rsvd1;
++	u8	lro_ipv4_en;
++	u8	lro_ipv6_en;
++	u8	lro_max_wqe_num;
++	u8	resv2[13];
++};
++
++struct hinic_lro_timer {
++	u8	status;
++	u8	version;
++	u8	rsvd0[6];
++
++	u8	type;   /* 0: set timer value, 1: get timer value */
++	u8	enable; /* when set lro time, enable should be 1 */
++	u16	rsvd1;
++	u32	timer;
++};
++
++enum hinic_lro_state {
++	HINIC_LRO_DISABLE       = 0,
++	HINIC_LRO_ENABLE        = 1,
++};
++
++enum hinic_lro_en_status {
++	HINIC_LRO_STATUS_DISABLE,
++	HINIC_LRO_STATUS_ENABLE,
++	HINIC_LRO_STATUS_UNSET,
++};
++
+ int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
+ 		       u16 vlan_id);
+ 
+@@ -220,7 +275,12 @@ int hinic_port_set_func_state(struct hinic_dev *nic_dev,
+ int hinic_port_get_cap(struct hinic_dev *nic_dev,
+ 		       struct hinic_port_cap *port_cap);
+ 
++int hinic_set_max_qnum(struct hinic_dev *nic_dev, u8 num_rqs);
++
+ int hinic_port_set_tso(struct hinic_dev *nic_dev, enum hinic_tso_state state);
+ 
+ int hinic_set_rx_csum_offload(struct hinic_dev *nic_dev, u32 en);
++
++int hinic_set_rx_lro_state(struct hinic_dev *nic_dev, u8 lro_en,
++			   u32 lro_timer, u32 wqe_num);
+ #endif
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+index b6d218768ec1..d57877d139ea 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+@@ -45,6 +45,14 @@
+ #define RX_IRQ_NO_RESEND_TIMER          0
+ #define HINIC_RX_BUFFER_WRITE           16
+ 
++#define HINIC_RX_IPV6_PKT		7
++#define LRO_PKT_HDR_LEN_IPV4		66
++#define LRO_PKT_HDR_LEN_IPV6		86
++
++#define LRO_PKT_HDR_LEN(cqe)		\
++	(HINIC_GET_RX_PKT_TYPE(be32_to_cpu((cqe)->offload_type)) == \
++	 HINIC_RX_IPV6_PKT ? LRO_PKT_HDR_LEN_IPV6 : LRO_PKT_HDR_LEN_IPV4)
++
+ /**
+  * hinic_rxq_clean_stats - Clean the statistics of specific queue
+  * @rxq: Logical Rx Queue
+@@ -90,18 +98,12 @@ static void rxq_stats_init(struct hinic_rxq *rxq)
+ 	hinic_rxq_clean_stats(rxq);
+ }
+ 
+-static void rx_csum(struct hinic_rxq *rxq, u16 cons_idx,
++static void rx_csum(struct hinic_rxq *rxq, u32 status,
+ 		    struct sk_buff *skb)
+ {
+ 	struct net_device *netdev = rxq->netdev;
+-	struct hinic_rq_cqe *cqe;
+-	struct hinic_rq *rq;
+ 	u32 csum_err;
+-	u32 status;
+ 
+-	rq = rxq->rq;
+-	cqe = rq->cqe[cons_idx];
+-	status = be32_to_cpu(cqe->status);
+ 	csum_err = HINIC_RQ_CQE_STATUS_GET(status, CSUM_ERR);
+ 
+ 	if (!(netdev->features & NETIF_F_RXCSUM))
+@@ -320,13 +322,18 @@ static int rx_recv_jumbo_pkt(struct hinic_rxq *rxq, struct sk_buff *head_skb,
+ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ {
+ 	struct hinic_qp *qp = container_of(rxq->rq, struct hinic_qp, rq);
++	struct hinic_dev *nic_dev = netdev_priv(rxq->netdev);
+ 	u64 pkt_len = 0, rx_bytes = 0;
++	struct hinic_rq *rq = rxq->rq;
+ 	struct hinic_rq_wqe *rq_wqe;
+ 	unsigned int free_wqebbs;
++	struct hinic_rq_cqe *cqe;
+ 	int num_wqes, pkts = 0;
+ 	struct hinic_sge sge;
++	unsigned int status;
+ 	struct sk_buff *skb;
+-	u16 ci;
++	u16 ci, num_lro;
++	u16 num_wqe = 0;
+ 
+ 	while (pkts < budget) {
+ 		num_wqes = 0;
+@@ -336,11 +343,13 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 		if (!rq_wqe)
+ 			break;
+ 
++		cqe = rq->cqe[ci];
++		status =  be32_to_cpu(cqe->status);
+ 		hinic_rq_get_sge(rxq->rq, rq_wqe, ci, &sge);
+ 
+ 		rx_unmap_skb(rxq, hinic_sge_to_dma(&sge));
+ 
+-		rx_csum(rxq, ci, skb);
++		rx_csum(rxq, status, skb);
+ 
+ 		prefetch(skb->data);
+ 
+@@ -354,7 +363,7 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 						     HINIC_RX_BUF_SZ, ci);
+ 		}
+ 
+-		hinic_rq_put_wqe(rxq->rq, ci,
++		hinic_rq_put_wqe(rq, ci,
+ 				 (num_wqes + 1) * HINIC_RQ_WQE_SIZE);
+ 
+ 		skb_record_rx_queue(skb, qp->q_id);
+@@ -364,6 +373,21 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
+ 
+ 		pkts++;
+ 		rx_bytes += pkt_len;
++
++		num_lro = HINIC_GET_RX_NUM_LRO(status);
++		if (num_lro) {
++			rx_bytes += ((num_lro - 1) *
++				     LRO_PKT_HDR_LEN(cqe));
++
++			num_wqe +=
++			(u16)(pkt_len >> rxq->rx_buff_shift) +
++			((pkt_len & (rxq->buf_len - 1)) ? 1 : 0);
++		}
++
++		cqe->status = 0;
++
++		if (num_wqe >= nic_dev->lro_replenish_thld)
++			break;
+ 	}
+ 
+ 	free_wqebbs = hinic_get_rq_free_wqebbs(rxq->rq);
+@@ -482,6 +506,8 @@ int hinic_init_rxq(struct hinic_rxq *rxq, struct hinic_rq *rq,
+ 
+ 	rxq->netdev = netdev;
+ 	rxq->rq = rq;
++	rxq->buf_len = HINIC_RX_BUF_SZ;
++	rxq->rx_buff_shift = ilog2(HINIC_RX_BUF_SZ);
+ 
+ 	rxq_stats_init(rxq);
+ 
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.h b/drivers/net/ethernet/huawei/hinic/hinic_rx.h
+index f8ed3fa6c8ee..08e7d88382cd 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_rx.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.h
+@@ -41,6 +41,8 @@ struct hinic_rxq {
+ 	struct hinic_rxq_stats  rxq_stats;
+ 
+ 	char                    *irq_name;
++	u16			buf_len;
++	u32			rx_buff_shift;
+ 
+ 	struct napi_struct      napi;
+ };
+-- 
+2.17.1
 
