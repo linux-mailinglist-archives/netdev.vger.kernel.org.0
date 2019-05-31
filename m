@@ -2,106 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F853174B
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:40:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D150D31758
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 00:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbfEaWka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:40:30 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:6958 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726446AbfEaWka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:40:30 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x4VMePgk000959
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 31 May 2019 16:40:25 -0600 (CST)
-Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x4VMeOxJ003484
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Fri, 31 May 2019 16:40:25 -0600
-Subject: Re: [PATCH net-next] net: sfp: Stop SFP polling during shutdown
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org
-References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
- <1559330285-30246-2-git-send-email-hancock@sedsystems.ca>
- <20190531201241.k7aqz3axhkpdro5e@shell.armlinux.org.uk>
-From:   Robert Hancock <hancock@sedsystems.ca>
-Openpgp: preference=signencrypt
-Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
- 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
-Organization: SED Systems
-Message-ID: <031aa595-473d-e021-6339-4adae45a2a29@sedsystems.ca>
-Date:   Fri, 31 May 2019 16:40:24 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726693AbfEaWu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 18:50:29 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41759 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfEaWu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:50:28 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q17so7037994pfq.8
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 15:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e8qngvV6VVOHufQJ5FrppX8r6UpZqAeMVmy8EPzAb+4=;
+        b=OPhky5OvMPNIHSfNQNC5upuJck8tk+9PGCQn/xvePZPt6eCdyJ1WkQsXnVU3BVbsNb
+         +bEfrWKVlYNqBUPGxOtABVtYSL2yml9cQSNZQaTrIT95TEzr85BroBk7vOuN1APGrM9s
+         Pe7GZEKfqo/9znysdfkoKfpf58eReQCv/PGwHEe1mOm3r/H0EFZTze6cf8zbSG7YvnQu
+         IE31Rs1sciX2XMAXNGHJuQ9za7BzisdNdpCAIjAjD2pBj2f2QbCbRERBtUhmk3T7u+qS
+         6CDAHv9Ti8vdf3zEmvv8gi/mdK2dhajtuneJuG+GjJz8KqhX7qd0vGBq4WosjGBA07GO
+         4s6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e8qngvV6VVOHufQJ5FrppX8r6UpZqAeMVmy8EPzAb+4=;
+        b=e3Q0UbDDz+YirOt70SbFaV1m+StHqHkrKECH4Z6QlXDVWgUUCZvnu3holoqu9XkAIs
+         9rjKXhdb9arbdPt1yvBshKCZOFf2Fkn4WrpXGzZXj4GCD5vXjg6jqW/BzGEvK/igCSUK
+         iom7CBmb5OPv9UEKTfmuw4yXeULDG49pJoB9Le9GxbiGhhV9X+RrqPZkcVi3Y/2aI/iU
+         BXmwYP62FOGGOz6nJ0dMM4T+l0XvgVcCPKcHNLAr3IpPztoN0J5ELhHzQhrg44FX//JM
+         WeHtHDjP4jWfBL7GJ7L0cDuNu7QfUqo+AhtcmcLcZqUbLin7OVIxg80rtGHFUopw7zx4
+         erbQ==
+X-Gm-Message-State: APjAAAVX/rEbhMh4K4Lmam0siIDqTChIpR420qxq9t2QObxLEY6WYr1Z
+        10TDdHIfzxt39PhIin32Qee84lPb8siJvKYCfec=
+X-Google-Smtp-Source: APXvYqzSP4OMcesdlxb/jBbdcohxctTvQ65UOrKrw+8Rc1If7JBT9gR/i+VeTUJ8xtOV+SqbDb8VfiGz7dqn+7KCZRU=
+X-Received: by 2002:a63:1d05:: with SMTP id d5mr11769082pgd.157.1559343028160;
+ Fri, 31 May 2019 15:50:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190531201241.k7aqz3axhkpdro5e@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+References: <cover.1559322531.git.dcaratti@redhat.com> <a773fd1d70707d03861be674f7692a0148f6bb40.1559322531.git.dcaratti@redhat.com>
+ <CAM_iQpW68XR3Y6gyb0zyd3qooCwPHBM1Fm+THcS=migSNsHMzA@mail.gmail.com> <e2e02404af5aea5663877db8f9d2e23501e818b8.camel@redhat.com>
+In-Reply-To: <e2e02404af5aea5663877db8f9d2e23501e818b8.camel@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 31 May 2019 15:50:16 -0700
+Message-ID: <CAM_iQpURD5Yvr1BwfbTBDbbJdATGSK5PWD7jfP4=NGdgTGnnJw@mail.gmail.com>
+Subject: Re: [PATCH net v3 1/3] net/sched: act_csum: pull all VLAN headers
+ before checksumming
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Shuang Li <shuali@redhat.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-31 2:12 p.m., Russell King - ARM Linux admin wrote:
-> On Fri, May 31, 2019 at 01:18:02PM -0600, Robert Hancock wrote:
->> SFP device polling can cause problems during the shutdown process if the
->> parent devices of the network controller have been shut down already.
->> This problem was seen on the iMX6 platform with PCIe devices, where
->> accessing the device after the bus is shut down causes a hang.
->>
->> Stop all delayed work in the SFP driver during the shutdown process to
->> avoid this problem.
-> 
-> What about interrupts?
+On Fri, May 31, 2019 at 3:01 PM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> Please note: this loop was here also before this patch (the 'goto again;'
+> line is only patch context). It has been introduced with commit
+> 2ecba2d1e45b ("net: sched: act_csum: Fix csum calc for tagged packets").
+>
 
-Indeed, missed that as the GPIO controller this was being used with
-didn't support interrupts. Will update the patch.
+This is exactly why I ask...
 
--- 
-Robert Hancock
-Senior Software Developer
-SED Systems, a division of Calian Ltd.
-Email: hancock@sedsystems.ca
+
+> > Why do you still need to loop here? tc_skb_pull_vlans() already
+> > contains a loop to pop all vlan tags?
+>
+> The reason why the loop is here is:
+> 1) in case there is a stripped vlan tag, it replaces tc_skb_protocol(skb)
+> with the inner ethertype (i.e. skb->protocol)
+>
+> 2) in case there is one or more unstripped VLAN tags, it pulls them. At
+> the last iteration, when it does:
+
+Let me ask it in another way:
+
+The original code, without your patch, has a loop (the "goto again") to
+pop all vlan tags.
+
+The code with your patch adds yet another loop (the while loop inside your
+tc_skb_pull_vlans()) to pop all vlan tags.
+
+So, after your patch, we have both loops. So, I am confused why we need
+these two nested loops to just pop all vlan tags? I think one is sufficient.
+
+
+>
+> >
+> > >         }
+> > >
+> > > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> > > index d4699156974a..382ee69fb1a5 100644
+> > > --- a/net/sched/cls_api.c
+> > > +++ b/net/sched/cls_api.c
+> > > @@ -3300,6 +3300,28 @@ unsigned int tcf_exts_num_actions(struct tcf_exts *exts)
+> > >  }
+> > >  EXPORT_SYMBOL(tcf_exts_num_actions);
+> > >
+> > > +int tc_skb_pull_vlans(struct sk_buff *skb, unsigned int *hdr_count,
+> > > +                     __be16 *proto)
+> >
+> > It looks like this function fits better in net/core/skbuff.c, because
+> > I don't see anything TC specific.
+>
+> Ok, I don't know if other parts of the kernel really need it. Its use
+> should be combined with tc_skb_protocol(), which is in pkt_sched.h.
+>
+> But i can move it to skbuff, or elsewhwere, unless somebody disagrees.
+>
+> >
+> > > +{
+> > > +       if (skb_vlan_tag_present(skb))
+> > > +               *proto = skb->protocol;
+> > > +
+> > > +       while (eth_type_vlan(*proto)) {
+> > > +               struct vlan_hdr *vlan;
+> > > +
+> > > +               if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
+> > > +                       return -ENOMEM;
+> > > +
+> > > +               vlan = (struct vlan_hdr *)skb->data;
+> > > +               *proto = vlan->h_vlan_encapsulated_proto;
+> > > +               skb_pull(skb, VLAN_HLEN);
+> > > +               skb_reset_network_header(skb);
+>
+> Again, this code was in act_csum.c also before. The only intention of this
+> patch is to ensure that pskb_may_pull() is called before skb_pull(), as
+> per Eric suggestion, and move this code out of act_csum to use it with
+> other TC actions.
+
+Sure, no one says the code before yours is more correct, right? :)
+
+>
+> > Any reason not to call __skb_vlan_pop() directly?
+>
+> I think we can't use __skb_vlan_pop(), because 'act_csum' needs to read
+> the innermost ethertype in the packet to understand if it's IPv4, IPv6 or
+> else (ARP, EAPOL, ...).
+>
+> If I well read __skb_vlan_pop(), it returns the VLAN ID, which is useless
+> here.
+>
+
+I am confused, this could be checked by eth_type_vlan(skb->protocol),
+right? So why it stops you from considering __skb_vlan_pop() or
+skb_vlan_pop()? They both should return error or zero, not vlan ID.
+
+Thanks.
