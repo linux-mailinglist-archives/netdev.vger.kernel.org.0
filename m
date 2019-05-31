@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B711E30DFD
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 161F330E02
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfEaMVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:21:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44446 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726331AbfEaMVC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 08:21:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=OICwzJUG9ru3GANBUzmVbH105fpmRRWmaVDgmJDGPbs=; b=dCWXbd/Mb8MzX3pnUtUoZmyYwD
-        eFsswQtjy7JSX/9I/S3CGod0PyKv/5n7QW+KVhgmi3cdQsoec6775cL9C6FUoL3QLbtCie35BtfGd
-        hlK8l3yuNmSsU7ok3bsIlA+sVrHra9CJ2EO0B/3Ps7z1AY8scoNnTlXt8FPali1OrDAk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWgWn-0005Ax-JY; Fri, 31 May 2019 14:20:57 +0200
-Date:   Fri, 31 May 2019 14:20:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH] net: phy: support C45 phys in SIOCGMIIREG/SIOCSMIIREG
- ioctls
-Message-ID: <20190531122057.GA19572@lunn.ch>
-References: <20190531074727.3257-1-nikita.yoush@cogentembedded.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190531074727.3257-1-nikita.yoush@cogentembedded.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1727357AbfEaMVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:21:50 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:45585 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbfEaMVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 08:21:50 -0400
+Received: from kresse.hi.pengutronix.de ([2001:67c:670:100:1d::2a])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.89)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1hWgXa-00084d-Q2; Fri, 31 May 2019 14:21:46 +0200
+Message-ID: <1559305305.2557.3.camel@pengutronix.de>
+Subject: Re: [PATCH 2/2] ethtool: Add 100BaseT1 and 1000BaseT1 link modes
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, linville@redhat.com
+Date:   Fri, 31 May 2019 14:21:45 +0200
+In-Reply-To: <20190531115928.GA18608@lunn.ch>
+References: <20190530180616.1418-1-andrew@lunn.ch>
+         <20190530180616.1418-3-andrew@lunn.ch>
+         <20190531093029.GD15954@unicorn.suse.cz> <20190531115928.GA18608@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.22.6-1+deb9u1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::2a
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 10:47:27AM +0300, Nikita Yushchenko wrote:
-> This change allows phytool [1] and similar tools to read and write C45 phy
-> registers from userspace.
+Am Freitag, den 31.05.2019, 13:59 +0200 schrieb Andrew Lunn:
+> > > @@ -634,10 +636,14 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
+> > > > > >  		  "100baseT/Half" },
+> > > > > >  		{ 1, ETHTOOL_LINK_MODE_100baseT_Full_BIT,
+> > > > > >  		  "100baseT/Full" },
+> > > > > > +		{ 1, ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
+> > > > > > +		  "100baseT1/Full" },
+> > > > > >  		{ 0, ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
+> > > > > >  		  "1000baseT/Half" },
+> > > > > >  		{ 1, ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+> > > > > >  		  "1000baseT/Full" },
+> > > > > > +		{ 1, ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
+> > > > > > +		  "1000baseT1/Full" },
+> > > > > >  		{ 0, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
+> > > > > >  		  "1000baseKX/Full" },
+> > >  		{ 0, ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+> > 
+> > Does it mean that we could end up with lines like
+> > 
+> >                                 100baseT/Half 100baseT/Full 100baseT1/Full
+> >                                 1000baseT/Full 1000baseT1/Full
+> > 
+> > if there is a NIC supporting both T and T1?
 > 
-> This is useful for debugging and for porting vendor phy diagnostics tools.
+> Hi Michal
 > 
-> [1] https://github.com/wkz/phytool
+> In theory, it is possible for a PHY to support both plain T and
+> T1.
 
-Hi Nikita
+That's not just theory. The Broadcom BCM54811 PHY supports both
+100/1000baseT, as well as 100baseT1.
 
-Russell King submitted a similar patch a couple of days ago.
-
-https://patchwork.ozlabs.org/patch/1102091/
-
-Since he was first, we should probably take his, once he respins the
-series.
-
-Florian: Could you take a second look at
-[net-next,1/4] net: phylink: support for link gpio interrupt
-https://patchwork.ozlabs.org/patch/1102090/
-
-Everything else in that patchset is good to go.
-
-	Thanks
-	   Andrew
+Regards,
+Lucas
