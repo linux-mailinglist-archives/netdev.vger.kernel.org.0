@@ -2,92 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35035305D7
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 02:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE313062C
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 03:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbfEaAfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 May 2019 20:35:14 -0400
-Received: from ozlabs.org ([203.11.71.1]:50461 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726128AbfEaAfN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 May 2019 20:35:13 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45FQT93dDjz9sB8;
-        Fri, 31 May 2019 10:35:09 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1559262910;
-        bh=vmnfdHJwUM1HVyyOa3wxblirRR6+i4b48iUJQ32CBwU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=jCIWjKq7ClNbTCzgsp5WvhuwAyqifAx8V/KS4CYaQWuRQMhYRbIIxOhzKN6MX3KQt
-         EOUoncS8GkvmphMmA2RplWMKzqOZh8E27lMmdbU0y1UOwdWVdOVwoRyOTH2oW9yN/r
-         VwImk8CTrD3IoD7SomPdJPrn9uC5GZpolfI1YJKY7oApHtC3Tlpi740gUMCQ3yotBy
-         KfZqSHvHd2ntrOIJOnEO2Ui/VXFOXtZESsbs7m0RKjCbPsRiT+u5OEowGzLina0do9
-         cC73G4hwfnHhMbjyZ5ci2gjekdxMbzDza6fqbKjLcvRBQzMaQ+icqMTeaT4uWCD2D0
-         IB/p5lhfcF7kA==
-Date:   Fri, 31 May 2019 10:35:08 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20190531103508.1bfc06db@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/W.Z4eGjR4oT3n1RNXpkMYJa"; protocol="application/pgp-signature"
+        id S1726849AbfEaBR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 May 2019 21:17:58 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33235 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfEaBR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 May 2019 21:17:58 -0400
+Received: by mail-pg1-f193.google.com with SMTP id h17so3043324pgv.0
+        for <netdev@vger.kernel.org>; Thu, 30 May 2019 18:17:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=lqXIB5VYrvs6jzaa1g5z58dzubUn6chXga4pIoclBMk=;
+        b=AXivDdUXnwZ3DRv77pdpJFBVOOGHV1N7WPHdh9KEJTOWB3mZHDRvAnvsgTK02YurLB
+         vnM1t3CvOCRY5Bk/K9EAvON7MrmcrcdjRV8WyVkSRwh1QVtmWXEbTPR/LuREG/7IRHNM
+         vizi3cLSebt1yXXSvgW3YrJmFYDVya3Pdf0EvelPlIUSvOX9dVqYrvRyiIGXkmqd1CEl
+         HtLEqvoVqfMhZrpIx/ReMAgY0822LS5+V6sOYtSSsfN/G2aviSY/y7laA2a/zM20uOwF
+         wnBVbIq4UFV22XROuPjXI1gQ20y+6FC1nBDuha4RERDo8jynH7+WXL4Dk6xvNWWmCvmL
+         zI6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lqXIB5VYrvs6jzaa1g5z58dzubUn6chXga4pIoclBMk=;
+        b=gea9DITTJX1wYjDdPuaJSUqZ1rmojBZ+zGq5ANenFvmXqS1xSQ7wQL9MZZSljXnZVR
+         awAGAhZf1hxhMg9m8m3uZSMkFq3m1IZD0brWi+uyBxSAQofm/dlpOrsCsZNs68044Au2
+         YWAfRuSOY1qf1Cp+DbxpDbGX53Dcp3fxsnGVRecx+CjJ9KdItPMox78yuiPrgQWOK++k
+         UdvSMTLeWVVEv3dzcQiAFMkCVsLQlNA07rze6RRdev5Dwk52PARudFnbB3kVSYfXdaSO
+         X9AXPQhMf5Hrk75boKhiFbVWNTj3wy6Xs1xgHysPl/5SHekPAImAmD3hdtkhJ1dsyxWF
+         swNg==
+X-Gm-Message-State: APjAAAURdkQtZqhyFvnnOKDHFhthbYLByUuOHOTp+SVJ0sg4X9Ye/F9B
+        oY5giDp3F6P81e4hG48IoviWZhreHYI=
+X-Google-Smtp-Source: APXvYqwhmKCBjnssnPJFBip10hmLkNMYYCUmPPrBrlyQG6qHzxD+sqJ+lptQQWwYUYt4XCmVMKfY/A==
+X-Received: by 2002:a63:ed16:: with SMTP id d22mr6374376pgi.35.1559265477220;
+        Thu, 30 May 2019 18:17:57 -0700 (PDT)
+Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id j20sm1819042pff.183.2019.05.30.18.17.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 May 2019 18:17:56 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Arun Kumar Neelakantam <aneela@codeaurora.org>,
+        Chris Lew <clew@codeaurora.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 0/5] QRTR flow control improvements
+Date:   Thu, 30 May 2019 18:17:48 -0700
+Message-Id: <20190531011753.11840-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.18.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/W.Z4eGjR4oT3n1RNXpkMYJa
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In order to prevent overconsumption of resources on the remote side QRTR
+implements a flow control mechanism.
 
-Hi all,
+Move the handling of the incoming confirm_rx to the receiving process to
+ensure incoming flow is controlled. Then implement outgoing flow
+control, using the recommended algorithm of counting outstanding
+non-confirmed messages and blocking when hitting a limit. The last three
+patches refactors the node assignment and port lookup, in order to
+remove the worker in the receive path.
 
-After merging the net-next tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
+Bjorn Andersson (5):
+  net: qrtr: Move resume-tx transmission to recvmsg
+  net: qrtr: Implement outgoing flow control
+  net: qrtr: Migrate node lookup tree to spinlock
+  net: qrtr: Make qrtr_port_lookup() use RCU
+  net: qrtr: Remove receive worker
 
-In file included from net/netfilter/utils.c:5:
-include/linux/netfilter_ipv6.h: In function 'nf_ipv6_br_defrag':
-include/linux/netfilter_ipv6.h:110:9: error: implicit declaration of functi=
-on 'nf_ct_frag6_gather'; did you mean 'nf_ct_attach'? [-Werror=3Dimplicit-f=
-unction-declaration]
-  return nf_ct_frag6_gather(net, skb, user);
-         ^~~~~~~~~~~~~~~~~~
-         nf_ct_attach
+ net/qrtr/qrtr.c | 308 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 239 insertions(+), 69 deletions(-)
 
-Caused by commit
+-- 
+2.18.0
 
-  764dd163ac92 ("netfilter: nf_conntrack_bridge: add support for IPv6")
-
-CONFIG_IPV6 is not set for this build.
-
-I have reverted that commit for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/W.Z4eGjR4oT3n1RNXpkMYJa
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzwdrwACgkQAVBC80lX
-0GymwQf/d4wXf91KoGIB7ydQiSpx7yRSRdw2moG9XUV0oidKP3RZF17p9wOjQXp7
-kGWuPdykRUIsJNNVzWUfQXRSKaYthcMVG3bJRoj/63GQLKfKR7rhocfihPMPc2uI
-YATaDoHCz1fAy5hOgOLY4fkpuW3Pynuo8eRMhcUVsHs0Dkw/r1iPRQ7Bc8vCYOod
-SUflPO3jWNMiKPd4965BkDQDMBPz75B/d9UbXSKtA9esqFW5J7VET7y27zVXPc2n
-DhM8j93WERysFLRJpn3ns9ZqLi0JBBSmdn3Kn7Xg8ORP7Ul4uynPA3gDWsn3EyMJ
-f0bnj9l4G7XN14FXVFzULgih62VUeA==
-=a/FF
------END PGP SIGNATURE-----
-
---Sig_/W.Z4eGjR4oT3n1RNXpkMYJa--
