@@ -2,93 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C50E931209
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E60C23120D
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbfEaQM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:12:56 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:34566 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfEaQM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:12:56 -0400
-Received: by mail-vs1-f67.google.com with SMTP id q64so7057461vsd.1;
-        Fri, 31 May 2019 09:12:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2FrzY2ydP6cRNV+r5FtjF3XxLGeE0yW0UZ3D62L58K8=;
-        b=S3GztADFEAoU+iw/DnAiHFJ3lrTsPcmRSrKsm/LzCege+lnNoRkyVn/FELbj4RaZuI
-         m1jwpfvPsd6GEv2I+N6KmXzxt7p59N5Yax/hj4JVDhA7OtPXVm1avoeqMZZXy8rKePup
-         fxPb+68HFJLF7c5/upjWaYPIGfg6BgVQfewJO6HIoBXRTpihL9NEJRE0WEpPBxjzRQ6Y
-         UGYbiORtjNwxie/uELHw9dOY06/YsERdaU/eaVhF4rA7C+Fpr1yFqJmRUPaSlwWBkaq9
-         Zv6sUldoUN9qmIclWOz12WHQOp4V65Jsz9DpvE0W6vg0d4ut+3TM4ftdhn4111umrPAr
-         MwxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2FrzY2ydP6cRNV+r5FtjF3XxLGeE0yW0UZ3D62L58K8=;
-        b=cqoEm2LePBt7guTkKjLnTnDCCIfYWGjMpNW5Ldkd7aWwFX/XEb28Q7zPA6j9+HSonP
-         GnQQtlKcEuEXMP8PJ72iVWv4KR4R9t72FcK0O/gHXrzpeZfsxm9u/kFmxNSGEHnwzuFY
-         vA9iPux0qLSFUq3GtQw2HN6sfqimlM7E0hQPXd0D9cPg4sW6entckxhhQHbYoMt2XrdT
-         rZpWPfr7FOUXqVo36qgeKv71i3OVmgRq4p3/wbVUK4B8Hq4OX5wQfobRJUVJOScx4nLe
-         LSs9Y5kphGRLwE0ONyGU4eTTNkCS77uf8BgQYpXMaECz/RLx+cUTirvlgk6+tgv1UxTo
-         4KEQ==
-X-Gm-Message-State: APjAAAUACi237cK9vJ4RoQRrLmAfk9e9D7pB98jZJf9hmMk0/baUQ/sY
-        ORxmBs/GG1O4+bTAyk5ITL9cIAdFjyGlQJfTNbE=
-X-Google-Smtp-Source: APXvYqzpClzX/KpZ2ht67YbTaKY+nKDPKhMXtzGMq+1rT3NpFl0F8uttTZW6AktbeDItrcpGTvJGLINAhxENtCRIxoY=
-X-Received: by 2002:a67:d68e:: with SMTP id o14mr6221973vsj.140.1559319175577;
- Fri, 31 May 2019 09:12:55 -0700 (PDT)
+        id S1726689AbfEaQP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:15:26 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52352 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726579AbfEaQPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 12:15:25 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 6E218AE8D;
+        Fri, 31 May 2019 16:15:24 +0000 (UTC)
+Subject: Re: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+To:     laurentiu.tudor@nxp.com
+Cc:     netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
+        camelia.groza@nxp.com, leoyang.li@nxp.com,
+        linux-kernel@vger.kernel.org, Joakim.Tjernlund@infinera.com,
+        iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
+References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
+From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Openpgp: preference=signencrypt
+Organization: SUSE Linux GmbH
+Message-ID: <d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
+Date:   Fri, 31 May 2019 18:15:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
- <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com> <20190531062911.c6jusfbzgozqk2cu@gondor.apana.org.au>
- <727c4b18-0d7b-b3c6-e0bb-41b3fe5902d3@gmail.com> <20190531145428.ngwrgbnk2a7us5cy@gondor.apana.org.au>
- <56a41977-6f9e-08dd-e4e2-07207324d536@gmail.com>
-In-Reply-To: <56a41977-6f9e-08dd-e4e2-07207324d536@gmail.com>
-From:   Yang Xiao <92siuyang@gmail.com>
-Date:   Sat, 1 Jun 2019 00:12:19 +0800
-Message-ID: <CAKgHYH0nocPY5NBu-5Bmp8WMv2-mf-1Hj+_1=7ixzdGCm0XSqw@mail.gmail.com>
-Subject: Re: [PATCH] ipv6: Prevent overrun when parsing v6 header options
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 11:57 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 5/31/19 7:54 AM, Herbert Xu wrote:
-> > On Fri, May 31, 2019 at 07:50:06AM -0700, Eric Dumazet wrote:
-> >>
-> >> What do you mean by should ?
-> >>
-> >> Are they currently already linearized before the function is called,
-> >> or is it missing and a bug needs to be fixed ?
-> >
-> > AFAICS this is the code-path for locally generated outbound packets.
-> > Under what circumstances can the IPv6 header be not in the head?
-> >
-> >
->
-> I guess this means we had yet another random submission from Young Xiao :/
+Hi Laurentiu,
 
-Excuse me, what do you mean about random submission from Young?
-A month ago, I submitted the patch, and I was told that the format
-should be correct.
-Then, I resubmitted again.
+Am 30.05.19 um 16:19 schrieb laurentiu.tudor@nxp.com:
+> This patch series contains several fixes in preparation for SMMU
+> support on NXP LS1043A and LS1046A chips. Once these get picked up,
+> I'll submit the actual SMMU enablement patches consisting in the
+> required device tree changes.
 
+Have you thought through what will happen if this patch ordering is not
+preserved? In particular, a user installing a future U-Boot update with
+the DTB bits but booting a stable kernel without this patch series -
+wouldn't that regress dpaa then for our customers?
 
->
-> Thanks.
->
+Regards,
+Andreas
+
+-- 
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
