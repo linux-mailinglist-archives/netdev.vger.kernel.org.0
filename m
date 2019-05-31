@@ -2,82 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26557314CC
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D59F8314D2
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:37:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbfEaSdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:33:33 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35834 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbfEaSdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:33:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=cxyxGt5CbpzmJbgYuOu9H6gwZqfOOb5mY7RU2Xn6T70=; b=Mt2gWKqgWGO3HF/mRZVecjwuv
-        Vapj7AlIa/3EMSBLLHm8fstjwZ9V6T1Kol5VBvyVQLgcvCpq+Ct0W8nPCYRFq+W7UJWwTooAJ8uap
-        nlS4PRogkiP9Nqtnk2neq33H4/iEZ7O+IsC/cndkGl5XnlpICY373ALi1e2PSWvizT4MqhLxWibXs
-        1GJEdBgvZDdSVRJ0/0pRBVCGfMWY174lm/0SSb1wWxA7ho2LiWRrQsbnszeTsKCL1b5PxahZcRFlw
-        hZJcQ3RF+9ikiG4vYNAUxc5soFdbwbT+qQVQdmIhA9bGhJI6pWdJJJtJM1MUwA93f60tvcqLUUzfG
-        vSjmr7rMw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52768)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hWmLE-0002R0-JD; Fri, 31 May 2019 19:33:24 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hWmLB-0006Ya-1G; Fri, 31 May 2019 19:33:21 +0100
-Date:   Fri, 31 May 2019 19:33:20 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     wsa@the-dreams.de, ruslan@babayev.com,
-        mika.westerberg@linux.intel.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: Re: [net-next,v4 0/2] Enable SFP on ACPI based systems
-Message-ID: <20190531183320.vrle32ps5jga37pn@shell.armlinux.org.uk>
-References: <20190528230233.26772-1-ruslan@babayev.com>
- <20190530.112759.2023290429676344968.davem@davemloft.net>
- <20190531125751.GB951@kunai>
- <20190531.112208.2148170988874389736.davem@davemloft.net>
+        id S1727087AbfEaSho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:37:44 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44124 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726640AbfEaSho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:37:44 -0400
+Received: by mail-pf1-f196.google.com with SMTP id x3so1184579pff.11;
+        Fri, 31 May 2019 11:37:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PHwU//Edg6CtCnygiexXNCP1ikg8FtWsJLc/VqorU9g=;
+        b=hPrC9kRMavWG49Lgc6A2uejCIX5/APNvkA89CQ7u8fl8CuH3xImjME1i4m62qxTOk4
+         AbOHIUTBu8g1D+eizGjUiRzWlhKLEh32Omtu7dzXJXkgLjvuml2IULCaUyxAzTncvnVS
+         ljSejqIEbI+UDHMMCbkB+Z2dxfp5OCJj2wGH3t2G9QwFaBj8HdnDWN5PDH49y4ihqBxz
+         3JzyqVzoeRL0AcFvHbB8HqlYypq06LfaaJAqRmMagyqn9oUFF8OMpxYasqkZd9nUFlwu
+         3xaGCZJEi5PIWmQK5Ym+SqOnso8YaTeqnCO1209I2whZAuuWHEZXO0UzwDmxqzd9zyFp
+         sbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PHwU//Edg6CtCnygiexXNCP1ikg8FtWsJLc/VqorU9g=;
+        b=UoB1e4xYbpRmSRR3y7+VETUidQGCBXZtfYtoc5zEd5OPUVx+y7tsKz4qafL8ZQZJQ4
+         pAC25dZz0LLaSJxAxAg1lTlC7SF8xHM8QKB/5T2CslSgv/GcLBRNGP6IrVv6DJNPJOGa
+         9gOL6IFqYUPUzuA7QiBisncu2hK+vxRiQplVeVjeXDnCVJ64tfOS3okwWYfx+p2OQjxR
+         XlektR595guCnvzJA4jUlcwOyM8cVjrAmvUaQG88QTr1yP/mjSc+XhIEqjFYSM/Kac0S
+         gznmdpSXDAlVp/7xEhIT6PopaOWaeMh8iMXHQsK44Rxtih8VcaYMgdwgcMZz5XLoCOv7
+         Vq5w==
+X-Gm-Message-State: APjAAAVs0GSGcnUx7UGcsSXQ0HfjeYh/uXxBnP1IoEJ2znZeiE8oHk3U
+        TN12kKf9Q99P4oRpVYr5NzDvq/yTg8g=
+X-Google-Smtp-Source: APXvYqyKOWLYq3gW6N5AH7W0jowEQvskaY+7SBoKB5fR0ej0gZyRf5wRZmvg9aKPNigzpgmU5awvHA==
+X-Received: by 2002:a17:90a:ad8b:: with SMTP id s11mr11510069pjq.48.1559327863485;
+        Fri, 31 May 2019 11:37:43 -0700 (PDT)
+Received: from [172.27.227.252] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id c85sm1786973pfc.149.2019.05.31.11.37.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 11:37:42 -0700 (PDT)
+Subject: Re: [PATCH][next] nexthop: remove redundant assignment to err
+To:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190530155754.31634-1-colin.king@canonical.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <27d7fdc8-f2ef-6940-ec93-736c95e82cfa@gmail.com>
+Date:   Fri, 31 May 2019 12:37:40 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190531.112208.2148170988874389736.davem@davemloft.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190530155754.31634-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 11:22:08AM -0700, David Miller wrote:
-> From: Wolfram Sang <wsa@the-dreams.de>
-> Date: Fri, 31 May 2019 14:57:52 +0200
+On 5/30/19 9:57 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> >> Series applied.
-> > 
-> > Could you make a small immutable branch for me to pull into my I2C tree?
-> > I have some changes for i2c.h pending and want to minimize merge
-> > conflicts.
+> The variable err is initialized with a value that is never read
+> and err is reassigned a few statements later. This initialization
+> is redundant and can be removed.
 > 
-> I already put other changes into net-next and also just merged 'net'
-> into 'net-next' and pushed that out to git.kernel.org, so I don't know
-> how I can still do that for you.
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  net/ipv4/nexthop.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> If it's still possible I'm willing to learn just show me what to do :)
 
-i don't think it's possible - not with the changes having already
-been merged yesterday, and presumably published shortly thereafter.
-
-The tree contains 231 other changes wrt 5.2-rc2 up to the requested
-point, which I doubt Wolfram will want.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Reviewed-by: David Ahern <dsahern@gmail.com>
