@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B00D30956
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6063096C
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbfEaH2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 03:28:15 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45060 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbfEaH2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:28:14 -0400
-Received: by mail-wr1-f66.google.com with SMTP id b18so5725741wrq.12
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 00:28:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=349bO3eKWo36+YLW2izUvQ+NabomJ8/oiHBTBWo5iAw=;
-        b=mcpXksvNecWmEad6A9O9z6z4TbMSb38IaPy5U9xh/ChgB21Cn7Ccj8gUOXoFOHUIVr
-         8mNjkfFvOSL0xKKy7NQH8LCQa2sP7PeOiupRiyM38ynt6Y0bt4awXv+yW1K7Pj0ySX8C
-         cfSPhYYQ8mjrwUcIVOraaVm5DNxJdZjn+gsP9OkOJXYwVd1D+iAX+kvUz8bDglVqrIFb
-         ZFNBy0lMWFCbgNTyED0DxqosqhZy8WCPY5Yv1R0wL+H3IwC0W4w8cFhfcHUCtOQdcq9b
-         Vjx//oFgvMqrM1ziw3xjhK6qyHexSr1jfpbkVl/VkVhlR+gJ9eL1h8SZ19Hbns2KLNjK
-         ljQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=349bO3eKWo36+YLW2izUvQ+NabomJ8/oiHBTBWo5iAw=;
-        b=NYx5/MBIERUMO+cqjKSB06tsluM6I5olukItfTf1VuSHNyUeWvljLLFqsYqy16bNe3
-         6F8TP+us9etsukCRSeyWtQjZ2XG9NrWkkh4VPUN6d+dxPVHgDifVnQfysUqaQy/2HiSq
-         1e6XyTpaMqK+Hj6O/yGrkK4WAimShLHOXRdGKxArf2AjXsspVK+d7U0gmQnTKCF3OjKc
-         9hw7t61JpwyEhdHsbPZwBS9APo3tiVXw6uPt9F0igJMPr/akpyp3IoV2lmx9vH4d5EqT
-         OZI+6+bkx4ZG68lwhj5a/eukdq1zikAUulE/OiDpkKHdj99yBAEhP+krWa4T0H6ZRQeD
-         Qq3Q==
-X-Gm-Message-State: APjAAAU62DBbz8Xj0X0CiiWla7hNPimVb8zUCMJNSoRny08EuQg4J0N2
-        5BLqA8pr2T5U0/Ap+L7gZxK5dg==
-X-Google-Smtp-Source: APXvYqzRSlmRgkwS8ktZa2OrrW3pe+Ou5C7Zfpqnk9FCgMzvRD6oVAi63eIdPX6etNJnqABbaTVj5w==
-X-Received: by 2002:adf:e584:: with SMTP id l4mr5319382wrm.54.1559287693057;
-        Fri, 31 May 2019 00:28:13 -0700 (PDT)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id u9sm11324302wme.48.2019.05.31.00.28.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 00:28:12 -0700 (PDT)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Healy <cphealy@gmail.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from VLAN 0
-Date:   Fri, 31 May 2019 10:27:07 +0300
-Message-Id: <20190531072707.1755-1-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.11.0
+        id S1726824AbfEaHiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 03:38:12 -0400
+Received: from esa1.hc3370-68.iphmx.com ([216.71.145.142]:18509 "EHLO
+        esa1.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbfEaHiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:38:12 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 03:38:12 EDT
+Authentication-Results: esa1.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=wei.liu2@citrix.com; spf=Pass smtp.mailfrom=wei.liu2@citrix.com; spf=None smtp.helo=postmaster@MIAPEX02MSOL02.citrite.net
+Received-SPF: None (esa1.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  wei.liu2@citrix.com) identity=pra; client-ip=23.29.105.83;
+  receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="wei.liu2@citrix.com";
+  x-sender="wei.liu2@citrix.com"; x-conformance=sidf_compatible
+Received-SPF: Pass (esa1.hc3370-68.iphmx.com: domain of
+  wei.liu2@citrix.com designates 23.29.105.83 as permitted
+  sender) identity=mailfrom; client-ip=23.29.105.83;
+  receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="wei.liu2@citrix.com";
+  x-sender="wei.liu2@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:23.29.105.83 ip4:162.221.156.50 ~all"
+Received-SPF: None (esa1.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@MIAPEX02MSOL02.citrite.net) identity=helo;
+  client-ip=23.29.105.83; receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="wei.liu2@citrix.com";
+  x-sender="postmaster@MIAPEX02MSOL02.citrite.net";
+  x-conformance=sidf_compatible
+IronPort-SDR: lnooVlL8SkMYL7aPjFH0jxwqMqTKLbSrblMa8zyQNljsCXqWr5WsLeRsStI1tiqYlKtZhVPsuN
+ KUsYKtAhuC/Y8nB4rO7QrMNvbOHFRVGMDXlSI4ieqHGoWUrwEJq4B1hkIB+Nib73CorDkLXehy
+ 96W2DXAMm55/Mn7jGRa6JwxE1cWUVwdDp+ymOOYogGbNWCwvgElbIekg8pBjovVyrGhv2JLXga
+ nzf8zrqCokKxRQSD+kWFPjP5GU0BEsPoOjPmNjxyvMN1CjGgNy6agoTuO8utgOoEG9XnF+i+DD
+ xH0=
+X-SBRS: 2.7
+X-MesageID: 1145273
+X-Ironport-Server: esa1.hc3370-68.iphmx.com
+X-Remote-IP: 23.29.105.83
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.60,534,1549947600"; 
+   d="scan'208";a="1145273"
+From:   Wei Liu <wei.liu2@citrix.com>
+To:     <netdev@vger.kernel.org>
+CC:     Xen-devel <xen-devel@lists.xenproject.org>,
+        Paul Durrant <Paul.Durrant@citrix.com>,
+        David Miller <davem@davemloft.net>,
+        Wei Liu <wei.liu2@citrix.com>
+Subject: [PATCH net-next] Update my email address
+Date:   Fri, 31 May 2019 08:31:02 +0100
+Message-ID: <20190531073102.5334-1-wei.liu2@citrix.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When non-bridged, non-vlan'ed mv88e6xxx port is moving down, error
-message is logged:
-
-failed to kill vid 0081/0 for device eth_cu_1000_4
-
-This is caused by call from __vlan_vid_del() with vin set to zero, over
-call chain this results into _mv88e6xxx_port_vlan_del() called with
-vid=0, and mv88e6xxx_vtu_get() called from there returns -EINVAL.
-
-On symmetric path moving port up, call goes through
-mv88e6xxx_port_vlan_prepare() that calls mv88e6xxx_port_check_hw_vlan()
-that returns -EOPNOTSUPP for zero vid.
-
-This patch changes mv88e6xxx_vtu_get() to also return -EOPNOTSUPP for
-zero vid, then this error code is explicitly cleared in
-dsa_slave_vlan_rx_kill_vid() and error message is no longer logged.
+Signed-off-by: Wei Liu <wei.liu2@citrix.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 2 +-
+ MAINTAINERS | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 28414db979b0..6b77fde5f0e4 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1392,7 +1392,7 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
- 	int err;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0c55b0fedbe2..e212c6a42ddf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17295,7 +17295,7 @@ F:	Documentation/ABI/stable/sysfs-hypervisor-xen
+ F:	Documentation/ABI/testing/sysfs-hypervisor-xen
  
- 	if (!vid)
--		return -EINVAL;
-+		return -EOPNOTSUPP;
- 
- 	entry->vid = vid - 1;
- 	entry->valid = false;
+ XEN NETWORK BACKEND DRIVER
+-M:	Wei Liu <wei.liu2@citrix.com>
++M:	Wei Liu <wei.liu@kernel.org>
+ M:	Paul Durrant <paul.durrant@citrix.com>
+ L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+ L:	netdev@vger.kernel.org
 -- 
-2.11.0
+2.20.1
 
