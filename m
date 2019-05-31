@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F5C314B1
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC5F314AE
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbfEaSai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:30:38 -0400
+        id S1727187AbfEaSac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:30:32 -0400
 Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:25532 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727173AbfEaSab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:30:31 -0400
+        with ESMTP id S1727163AbfEaSac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:30:32 -0400
 X-Greylist: delayed 854 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 14:30:19 EDT
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x4VIGBCj002567
+        by sed198n136.sedsystems.ca  with ESMTP id x4VIGDsD027607
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 31 May 2019 12:16:11 -0600 (CST)
+        Fri, 31 May 2019 12:16:13 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x4VIG5Dj043766
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x4VIG5Dk043766
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 31 May 2019 12:16:11 -0600
+        Fri, 31 May 2019 12:16:12 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 01/13] net: axienet: Fixed 64-bit compile, enable build on X86 and ARM
-Date:   Fri, 31 May 2019 12:15:33 -0600
-Message-Id: <1559326545-28825-2-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next 02/13] net: axienet: clean up MDIO handling
+Date:   Fri, 31 May 2019 12:15:34 -0600
+Message-Id: <1559326545-28825-3-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
 References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
@@ -36,278 +36,359 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed some 64-bit issues in this driver, such as casting skb pointers to
-32-bit values. Also changed the way the MDIO bus name was constructed so
-that it works in all cases.
+-Allow specifying the MDIO clock divisor explicitly in the device tree,
+rather than always detecting it from the CPU clock which only works on
+the MicroBlaze platform.
+
+-Centralize all MDIO handling in xilinx_axienet_mdio.c
+
+-Ensure that MDIO clock divisor is always re-set after resetting the
+device, since it will be cleared.
+
+-Fixed ordering of MDIO teardown vs. netdev teardown
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 ---
- drivers/net/ethernet/xilinx/Kconfig               |  4 +--
- drivers/net/ethernet/xilinx/xilinx_axienet.h      | 25 +++++++++------
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 39 +++++++++++++++--------
- drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c | 11 +++----
- 4 files changed, 47 insertions(+), 32 deletions(-)
+ .../devicetree/bindings/net/xilinx_axienet.txt     |   4 +
+ drivers/net/ethernet/xilinx/xilinx_axienet.h       |   8 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  |  36 ++---
+ drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c  | 160 ++++++++++++---------
+ 4 files changed, 117 insertions(+), 91 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-index af96e05..f0b6896 100644
---- a/drivers/net/ethernet/xilinx/Kconfig
-+++ b/drivers/net/ethernet/xilinx/Kconfig
-@@ -6,7 +6,7 @@
- config NET_VENDOR_XILINX
- 	bool "Xilinx devices"
- 	default y
--	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || COMPILE_TEST
-+	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
- 	---help---
- 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index 38f9ec0..708722e 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -31,6 +31,10 @@ Optional properties:
+ 		  1 to enable partial TX checksum offload,
+ 		  2 to enable full TX checksum offload
+ - xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum offload
++- xlnx,mdio-clock-divisor: Explicitly set clock divisor from AXI bus clock
++                           to MDIO bus. If not specified, it is auto-detected
++                           from the CPU clock (but only on platforms where this
++                           is possible).
  
-@@ -26,7 +26,7 @@ config XILINX_EMACLITE
- 
- config XILINX_AXI_EMAC
- 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
--	depends on MICROBLAZE
-+	depends on MICROBLAZE || X86 || ARM
- 	select PHYLIB
- 	---help---
- 	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
+ Example:
+ 	axi_ethernet_eth: ethernet@40c00000 {
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 011adae..0d89ebc 100644
+index 0d89ebc..dfe0e4c 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -356,9 +356,6 @@
-  * @app2:         MM2S/S2MM User Application Field 2.
-  * @app3:         MM2S/S2MM User Application Field 3.
-  * @app4:         MM2S/S2MM User Application Field 4.
-- * @sw_id_offset: MM2S/S2MM Sw ID
-- * @reserved5:    Reserved and not used
-- * @reserved6:    Reserved and not used
-  */
- struct axidma_bd {
- 	u32 next;	/* Physical address of next buffer descriptor */
-@@ -373,11 +370,9 @@ struct axidma_bd {
- 	u32 app1;	/* TX start << 16 | insert */
- 	u32 app2;	/* TX csum seed */
- 	u32 app3;
--	u32 app4;
--	u32 sw_id_offset;
--	u32 reserved5;
--	u32 reserved6;
--};
-+	u32 app4;   /* Last field used by HW */
-+	struct sk_buff *skb;
-+} __aligned(XAXIDMA_BD_MINIMUM_ALIGNMENT);
+@@ -418,6 +418,9 @@ struct axienet_local {
+ 	/* Connection to PHY device */
+ 	struct device_node *phy_node;
  
- /**
-  * struct axienet_local - axienet private per device data
-@@ -385,6 +380,7 @@ struct axidma_bd {
-  * @dev:	Pointer to device structure
-  * @phy_node:	Pointer to device node structure
-  * @mii_bus:	Pointer to MII bus structure
-+ * @regs_start: Resource start for axienet device addresses
-  * @regs:	Base address for the axienet_local device address space
-  * @dma_regs:	Base address for the axidma device address space
-  * @dma_err_tasklet: Tasklet structure to process Axi DMA errors
-@@ -426,6 +422,7 @@ struct axienet_local {
++	/* MDIO clock divisor (0=detected from CPU clock) */
++	u32 mdio_clock_divisor;
++
+ 	/* MDIO bus data */
  	struct mii_bus *mii_bus;	/* MII bus reference */
  
- 	/* IO registers, dma functions and IRQs */
-+	resource_size_t regs_start;
- 	void __iomem *regs;
- 	void __iomem *dma_regs;
- 
-@@ -481,7 +478,11 @@ struct axienet_option {
-  */
- static inline u32 axienet_ior(struct axienet_local *lp, off_t offset)
- {
--	return in_be32(lp->regs + offset);
-+#ifdef CONFIG_MICROBLAZE
-+	return __raw_readl(lp->regs + offset);
-+#else
-+	return ioread32(lp->regs + offset);
-+#endif
- }
- 
- static inline u32 axinet_ior_read_mcr(struct axienet_local *lp)
-@@ -501,7 +502,11 @@ static inline u32 axinet_ior_read_mcr(struct axienet_local *lp)
- static inline void axienet_iow(struct axienet_local *lp, off_t offset,
- 			       u32 value)
- {
--	out_be32((lp->regs + offset), value);
-+#ifdef CONFIG_MICROBLAZE
-+	__raw_writel(value, lp->regs + offset);
-+#else
-+	iowrite32(value, lp->regs + offset);
-+#endif
+@@ -510,8 +513,9 @@ static inline void axienet_iow(struct axienet_local *lp, off_t offset,
  }
  
  /* Function prototypes visible in xilinx_axienet_mdio.c for other files */
+-int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np);
+-int axienet_mdio_wait_until_ready(struct axienet_local *lp);
++int axienet_mdio_enable(struct axienet_local *lp);
++void axienet_mdio_disable(struct axienet_local *lp);
++int axienet_mdio_setup(struct axienet_local *lp);
+ void axienet_mdio_teardown(struct axienet_local *lp);
+ 
+ #endif /* XILINX_AXI_ENET_H */
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 831967f..c0a8861 100644
+index c0a8861..2e69755 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -125,7 +125,11 @@
+@@ -921,27 +921,20 @@ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
   */
- static inline u32 axienet_dma_in32(struct axienet_local *lp, off_t reg)
+ static int axienet_open(struct net_device *ndev)
  {
--	return in_be32(lp->dma_regs + reg);
-+#ifdef CONFIG_MICROBLAZE
-+	return __raw_readl(lp->dma_regs + reg);
-+#else
-+	return ioread32(lp->dma_regs + reg);
-+#endif
- }
+-	int ret, mdio_mcreg;
++	int ret;
+ 	struct axienet_local *lp = netdev_priv(ndev);
+ 	struct phy_device *phydev = NULL;
  
- /**
-@@ -140,7 +144,11 @@ static inline u32 axienet_dma_in32(struct axienet_local *lp, off_t reg)
- static inline void axienet_dma_out32(struct axienet_local *lp,
- 				     off_t reg, u32 value)
+ 	dev_dbg(&ndev->dev, "axienet_open()\n");
+ 
+-	mdio_mcreg = axienet_ior(lp, XAE_MDIO_MC_OFFSET);
+-	ret = axienet_mdio_wait_until_ready(lp);
+-	if (ret < 0)
+-		return ret;
+ 	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
+ 	 * When we do an Axi Ethernet reset, it resets the complete core
+ 	 * including the MDIO. If MDIO is not disabled when the reset
+ 	 * process is started, MDIO will be broken afterwards.
+ 	 */
+-	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
+-		    (mdio_mcreg & (~XAE_MDIO_MC_MDIOEN_MASK)));
++	axienet_mdio_disable(lp);
+ 	axienet_device_reset(ndev);
+-	/* Enable the MDIO */
+-	axienet_iow(lp, XAE_MDIO_MC_OFFSET, mdio_mcreg);
+-	ret = axienet_mdio_wait_until_ready(lp);
++	ret = axienet_mdio_enable(lp);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1323,28 +1316,21 @@ static void axienet_dma_err_handler(unsigned long data)
  {
--	out_be32((lp->dma_regs + reg), value);
-+#ifdef CONFIG_MICROBLAZE
-+	__raw_writel(value, lp->dma_regs + reg);
-+#else
-+	iowrite32(value, lp->dma_regs + reg);
-+#endif
- }
+ 	u32 axienet_status;
+ 	u32 cr, i;
+-	int mdio_mcreg;
+ 	struct axienet_local *lp = (struct axienet_local *) data;
+ 	struct net_device *ndev = lp->ndev;
+ 	struct axidma_bd *cur_p;
  
- /**
-@@ -159,8 +167,7 @@ static void axienet_dma_bd_release(struct net_device *ndev)
- 	for (i = 0; i < RX_BD_NUM; i++) {
- 		dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
- 				 lp->max_frm_size, DMA_FROM_DEVICE);
--		dev_kfree_skb((struct sk_buff *)
--			      (lp->rx_bd_v[i].sw_id_offset));
-+		dev_kfree_skb(lp->rx_bd_v[i].skb);
- 	}
+ 	axienet_setoptions(ndev, lp->options &
+ 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
+-	mdio_mcreg = axienet_ior(lp, XAE_MDIO_MC_OFFSET);
+-	axienet_mdio_wait_until_ready(lp);
+ 	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
+ 	 * When we do an Axi Ethernet reset, it resets the complete core
+ 	 * including the MDIO. So if MDIO is not disabled when the reset
+ 	 * process is started, MDIO will be broken afterwards.
+ 	 */
+-	axienet_iow(lp, XAE_MDIO_MC_OFFSET, (mdio_mcreg &
+-		    ~XAE_MDIO_MC_MDIOEN_MASK));
+-
++	axienet_mdio_disable(lp);
+ 	__axienet_device_reset(lp, XAXIDMA_TX_CR_OFFSET);
+ 	__axienet_device_reset(lp, XAXIDMA_RX_CR_OFFSET);
+-
+-	axienet_iow(lp, XAE_MDIO_MC_OFFSET, mdio_mcreg);
+-	axienet_mdio_wait_until_ready(lp);
++	axienet_mdio_enable(lp);
  
- 	if (lp->rx_bd_v) {
-@@ -227,7 +234,7 @@ static int axienet_dma_bd_init(struct net_device *ndev)
- 		if (!skb)
- 			goto out;
+ 	for (i = 0; i < TX_BD_NUM; i++) {
+ 		cur_p = &lp->tx_bd_v[i];
+@@ -1619,9 +1605,15 @@ static int axienet_probe(struct platform_device *pdev)
  
--		lp->rx_bd_v[i].sw_id_offset = (u32) skb;
-+		lp->rx_bd_v[i].skb = skb;
- 		lp->rx_bd_v[i].phys = dma_map_single(ndev->dev.parent,
- 						     skb->data,
- 						     lp->max_frm_size,
-@@ -595,14 +602,15 @@ static void axienet_start_xmit_done(struct net_device *ndev)
- 		dma_unmap_single(ndev->dev.parent, cur_p->phys,
- 				(cur_p->cntrl & XAXIDMA_BD_CTRL_LENGTH_MASK),
- 				DMA_TO_DEVICE);
--		if (cur_p->app4)
--			dev_consume_skb_irq((struct sk_buff *)cur_p->app4);
-+		if (cur_p->skb)
-+			dev_consume_skb_irq(cur_p->skb);
- 		/*cur_p->phys = 0;*/
- 		cur_p->app0 = 0;
- 		cur_p->app1 = 0;
- 		cur_p->app2 = 0;
- 		cur_p->app4 = 0;
- 		cur_p->status = 0;
-+		cur_p->skb = NULL;
- 
- 		size += status & XAXIDMA_BD_STS_ACTUAL_LEN_MASK;
- 		packets++;
-@@ -707,7 +715,7 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
- 	}
- 
- 	cur_p->cntrl |= XAXIDMA_BD_CTRL_TXEOF_MASK;
--	cur_p->app4 = (unsigned long)skb;
-+	cur_p->skb = skb;
- 
- 	tail_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
- 	/* Start the transfer */
-@@ -742,13 +750,15 @@ static void axienet_recv(struct net_device *ndev)
- 
- 	while ((cur_p->status & XAXIDMA_BD_STS_COMPLETE_MASK)) {
- 		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
--		skb = (struct sk_buff *) (cur_p->sw_id_offset);
--		length = cur_p->app4 & 0x0000FFFF;
- 
- 		dma_unmap_single(ndev->dev.parent, cur_p->phys,
- 				 lp->max_frm_size,
- 				 DMA_FROM_DEVICE);
- 
-+		skb = cur_p->skb;
-+		cur_p->skb = NULL;
-+		length = cur_p->app4 & 0x0000FFFF;
+ 	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 	if (lp->phy_node) {
+-		ret = axienet_mdio_setup(lp, pdev->dev.of_node);
++		/* Defaults to 0 if not present */
++		of_property_read_u32(pdev->dev.of_node,
++				     "xlnx,mdio-clock-divisor",
++				     &lp->mdio_clock_divisor);
 +
- 		skb_put(skb, length);
- 		skb->protocol = eth_type_trans(skb, ndev);
- 		/*skb_checksum_none_assert(skb);*/
-@@ -783,7 +793,7 @@ static void axienet_recv(struct net_device *ndev)
- 					     DMA_FROM_DEVICE);
- 		cur_p->cntrl = lp->max_frm_size;
- 		cur_p->status = 0;
--		cur_p->sw_id_offset = (u32) new_skb;
-+		cur_p->skb = new_skb;
- 
- 		++lp->rx_bd_ci;
- 		lp->rx_bd_ci %= RX_BD_NUM;
-@@ -1343,8 +1353,8 @@ static void axienet_dma_err_handler(unsigned long data)
- 					 (cur_p->cntrl &
- 					  XAXIDMA_BD_CTRL_LENGTH_MASK),
- 					 DMA_TO_DEVICE);
--		if (cur_p->app4)
--			dev_kfree_skb_irq((struct sk_buff *) cur_p->app4);
-+		if (cur_p->skb)
-+			dev_kfree_skb_irq(cur_p->skb);
- 		cur_p->phys = 0;
- 		cur_p->cntrl = 0;
- 		cur_p->status = 0;
-@@ -1353,7 +1363,7 @@ static void axienet_dma_err_handler(unsigned long data)
- 		cur_p->app2 = 0;
- 		cur_p->app3 = 0;
- 		cur_p->app4 = 0;
--		cur_p->sw_id_offset = 0;
-+		cur_p->skb = NULL;
++		ret = axienet_mdio_setup(lp);
+ 		if (ret)
+-			dev_warn(&pdev->dev, "error registering MDIO bus\n");
++			dev_warn(&pdev->dev,
++				 "error registering MDIO bus: %d\n", ret);
  	}
  
- 	for (i = 0; i < RX_BD_NUM; i++) {
-@@ -1478,6 +1488,7 @@ static int axienet_probe(struct platform_device *pdev)
- 	lp->options = XAE_OPTION_DEFAULTS;
- 	/* Map device registers */
- 	ethres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	lp->regs_start = ethres->start;
- 	lp->regs = devm_ioremap_resource(&pdev->dev, ethres);
- 	if (IS_ERR(lp->regs)) {
- 		dev_err(&pdev->dev, "could not map Axi Ethernet regs.\n");
+ 	ret = register_netdev(lp->ndev);
+@@ -1643,8 +1635,8 @@ static int axienet_remove(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct axienet_local *lp = netdev_priv(ndev);
+ 
+-	axienet_mdio_teardown(lp);
+ 	unregister_netdev(ndev);
++	axienet_mdio_teardown(lp);
+ 
+ 	of_node_put(lp->phy_node);
+ 	lp->phy_node = NULL;
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-index 704babd..665ae1d 100644
+index 665ae1d..662e005 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-@@ -127,7 +127,7 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
+@@ -5,6 +5,7 @@
+  * Copyright (c) 2009 Secret Lab Technologies, Ltd.
+  * Copyright (c) 2010 - 2011 Michal Simek <monstr@monstr.eu>
+  * Copyright (c) 2010 - 2011 PetaLogix
++ * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
+  * Copyright (c) 2010 - 2012 Xilinx, Inc. All rights reserved.
+  */
+ 
+@@ -19,7 +20,7 @@
+ #define DEFAULT_CLOCK_DIVISOR	XAE_MDIO_DIV_DFT
+ 
+ /* Wait till MDIO interface is ready to accept a new transaction.*/
+-int axienet_mdio_wait_until_ready(struct axienet_local *lp)
++static int axienet_mdio_wait_until_ready(struct axienet_local *lp)
+ {
+ 	u32 val;
+ 
+@@ -112,9 +113,97 @@ static int axienet_mdio_write(struct mii_bus *bus, int phy_id, int reg,
+ }
+ 
+ /**
++ * axienet_mdio_enable - MDIO hardware setup function
++ * @lp:		Pointer to axienet local data structure.
++ *
++ * Return:	0 on success, -ETIMEDOUT on a timeout.
++ *
++ * Sets up the MDIO interface by initializing the MDIO clock and enabling the
++ * MDIO interface in hardware.
++ **/
++int axienet_mdio_enable(struct axienet_local *lp)
++{
++	u32 clk_div = lp->mdio_clock_divisor, host_clock;
++
++	if (!clk_div) {
++		/* clk_div can be calculated by deriving it from the equation:
++		 * fMDIO = fHOST / ((1 + clk_div) * 2)
++		 *
++		 * Where fMDIO <= 2500000, so we get:
++		 * fHOST / ((1 + clk_div) * 2) <= 2500000
++		 *
++		 * Then we get:
++		 * 1 / ((1 + clk_div) * 2) <= (2500000 / fHOST)
++		 *
++		 * Then we get:
++		 * 1 / (1 + clk_div) <= ((2500000 * 2) / fHOST)
++		 *
++		 * Then we get:
++		 * 1 / (1 + clk_div) <= (5000000 / fHOST)
++		 *
++		 * So:
++		 * (1 + clk_div) >= (fHOST / 5000000)
++		 *
++		 * And finally:
++		 * clk_div >= (fHOST / 5000000) - 1
++		 *
++		 * fHOST can be read from the flattened device tree as property
++		 * "clock-frequency" from the CPU
++		 */
++		struct device_node *np1 = of_find_node_by_name(NULL, "cpu");
++
++		if (!np1) {
++			netdev_warn(lp->ndev, "Could not find CPU device node.\n");
++			netdev_warn(lp->ndev,
++				    "Setting MDIO clock divisor to default %d\n",
++				    DEFAULT_CLOCK_DIVISOR);
++			clk_div = DEFAULT_CLOCK_DIVISOR;
++			goto issue;
++		}
++		if (of_property_read_u32(np1, "clock-frequency", &host_clock)) {
++			netdev_warn(lp->ndev, "clock-frequency property not found.\n");
++			netdev_warn(lp->ndev,
++				    "Setting MDIO clock divisor to default %d\n",
++				    DEFAULT_CLOCK_DIVISOR);
++			clk_div = DEFAULT_CLOCK_DIVISOR;
++			of_node_put(np1);
++			goto issue;
++		}
++
++		clk_div = (host_clock / (MAX_MDIO_FREQ * 2)) - 1;
++		/* If there is any remainder from the division of
++		 * fHOST / (MAX_MDIO_FREQ * 2), then we need to add
++		 * 1 to the clock divisor or we will surely be above 2.5 MHz
++		 */
++		if (host_clock % (MAX_MDIO_FREQ * 2))
++			clk_div++;
++
++		netdev_dbg(lp->ndev,
++			   "Setting MDIO clock divisor to %u/%u Hz host clock.\n",
++			   clk_div, host_clock);
++
++		of_node_put(np1);
++	}
++issue:
++	axienet_iow(lp, XAE_MDIO_MC_OFFSET, clk_div | XAE_MDIO_MC_MDIOEN_MASK);
++
++	return axienet_mdio_wait_until_ready(lp);
++}
++
++/**
++ * axienet_mdio_disable - MDIO hardware disable function
++ * @lp:		Pointer to axienet local data structure.
++ *
++ * Disable the MDIO interface in hardware.
++ **/
++void axienet_mdio_disable(struct axienet_local *lp)
++{
++	axienet_iow(lp, XAE_MDIO_MC_OFFSET, 0);
++}
++
++/**
+  * axienet_mdio_setup - MDIO setup function
+  * @lp:		Pointer to axienet local data structure.
+- * @np:		Pointer to device node
+  *
+  * Return:	0 on success, -ETIMEDOUT on a timeout, -ENOMEM when
+  *		mdiobus_alloc (to allocate memory for mii bus structure) fails.
+@@ -122,76 +211,13 @@ static int axienet_mdio_write(struct mii_bus *bus, int phy_id, int reg,
+  * Sets up the MDIO interface by initializing the MDIO clock and enabling the
+  * MDIO interface in hardware. Register the MDIO interface.
+  **/
+-int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
++int axienet_mdio_setup(struct axienet_local *lp)
+ {
  	int ret;
- 	u32 clk_div, host_clock;
+-	u32 clk_div, host_clock;
  	struct mii_bus *bus;
--	struct resource res;
-+	struct device_node *mdio_node;
- 	struct device_node *np1;
+ 	struct device_node *mdio_node;
+-	struct device_node *np1;
+-
+-	/* clk_div can be calculated by deriving it from the equation:
+-	 * fMDIO = fHOST / ((1 + clk_div) * 2)
+-	 *
+-	 * Where fMDIO <= 2500000, so we get:
+-	 * fHOST / ((1 + clk_div) * 2) <= 2500000
+-	 *
+-	 * Then we get:
+-	 * 1 / ((1 + clk_div) * 2) <= (2500000 / fHOST)
+-	 *
+-	 * Then we get:
+-	 * 1 / (1 + clk_div) <= ((2500000 * 2) / fHOST)
+-	 *
+-	 * Then we get:
+-	 * 1 / (1 + clk_div) <= (5000000 / fHOST)
+-	 *
+-	 * So:
+-	 * (1 + clk_div) >= (fHOST / 5000000)
+-	 *
+-	 * And finally:
+-	 * clk_div >= (fHOST / 5000000) - 1
+-	 *
+-	 * fHOST can be read from the flattened device tree as property
+-	 * "clock-frequency" from the CPU
+-	 */
+-
+-	np1 = of_find_node_by_name(NULL, "cpu");
+-	if (!np1) {
+-		netdev_warn(lp->ndev, "Could not find CPU device node.\n");
+-		netdev_warn(lp->ndev,
+-			    "Setting MDIO clock divisor to default %d\n",
+-			    DEFAULT_CLOCK_DIVISOR);
+-		clk_div = DEFAULT_CLOCK_DIVISOR;
+-		goto issue;
+-	}
+-	if (of_property_read_u32(np1, "clock-frequency", &host_clock)) {
+-		netdev_warn(lp->ndev, "clock-frequency property not found.\n");
+-		netdev_warn(lp->ndev,
+-			    "Setting MDIO clock divisor to default %d\n",
+-			    DEFAULT_CLOCK_DIVISOR);
+-		clk_div = DEFAULT_CLOCK_DIVISOR;
+-		of_node_put(np1);
+-		goto issue;
+-	}
+-
+-	clk_div = (host_clock / (MAX_MDIO_FREQ * 2)) - 1;
+-	/* If there is any remainder from the division of
+-	 * fHOST / (MAX_MDIO_FREQ * 2), then we need to add
+-	 * 1 to the clock divisor or we will surely be above 2.5 MHz
+-	 */
+-	if (host_clock % (MAX_MDIO_FREQ * 2))
+-		clk_div++;
  
- 	/* clk_div can be calculated by deriving it from the equation:
-@@ -199,10 +199,9 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
- 	if (!bus)
- 		return -ENOMEM;
+-	netdev_dbg(lp->ndev,
+-		   "Setting MDIO clock divisor to %u/%u Hz host clock.\n",
+-		   clk_div, host_clock);
+-
+-	of_node_put(np1);
+-issue:
+-	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
+-		    (((u32) clk_div) | XAE_MDIO_MC_MDIOEN_MASK));
+-
+-	ret = axienet_mdio_wait_until_ready(lp);
++	ret = axienet_mdio_enable(lp);
+ 	if (ret < 0)
+ 		return ret;
  
--	np1 = of_get_parent(lp->phy_node);
--	of_address_to_resource(np1, 0, &res);
--	snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
--		 (unsigned long long) res.start);
-+	mdio_node = of_get_parent(lp->phy_node);
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "axienet-%.8llx",
-+		 (unsigned long long)lp->regs_start);
- 
- 	bus->priv = lp;
- 	bus->name = "Xilinx Axi Ethernet MDIO";
-@@ -211,7 +210,7 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
- 	bus->parent = lp->dev;
- 	lp->mii_bus = bus;
- 
--	ret = of_mdiobus_register(bus, np1);
-+	ret = of_mdiobus_register(bus, mdio_node);
- 	if (ret) {
- 		mdiobus_free(bus);
- 		lp->mii_bus = NULL;
 -- 
 1.8.3.1
 
