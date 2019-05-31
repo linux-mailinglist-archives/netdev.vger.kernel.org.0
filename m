@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0617F309ED
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F75F309F0
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbfEaIPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:15:15 -0400
+        id S1727048AbfEaIPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:15:21 -0400
 Received: from mga01.intel.com ([192.55.52.88]:64476 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726958AbfEaIPM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 04:15:12 -0400
+        id S1726980AbfEaIPN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 04:15:13 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
@@ -24,9 +24,9 @@ Cc:     Alice Michael <alice.michael@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 10/13] iavf: rename iavf_client.h defines to match driver name
-Date:   Fri, 31 May 2019 01:15:15 -0700
-Message-Id: <20190531081518.16430-11-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 11/13] iavf: change remaining i40e defines to be iavf
+Date:   Fri, 31 May 2019 01:15:16 -0700
+Message-Id: <20190531081518.16430-12-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190531081518.16430-1-jeffrey.t.kirsher@intel.com>
 References: <20190531081518.16430-1-jeffrey.t.kirsher@intel.com>
@@ -39,510 +39,400 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alice Michael <alice.michael@intel.com>
 
-The defines in iavf_client.h were still vastly i40e, and they
-should be iavf.
+There were a couple of erroneously missed i40e names to
+update to iavf left after the larger chunks.  Updated them
+separately so now they should all be aligned as iavf.
 
 Signed-off-by: Alice Michael <alice.michael@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h        |   2 +-
- drivers/net/ethernet/intel/iavf/iavf_client.c |  84 +++++++-------
- drivers/net/ethernet/intel/iavf/iavf_client.h | 104 +++++++++---------
- 3 files changed, 95 insertions(+), 95 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_adminq.c | 96 +++++++++----------
+ drivers/net/ethernet/intel/iavf/iavf_adminq.h |  4 +-
+ drivers/net/ethernet/intel/iavf/iavf_type.h   |  2 +-
+ 3 files changed, 51 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 42118f63f4f0..5a537d57a531 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -244,7 +244,7 @@ struct iavf_adapter {
- 	int num_iwarp_msix;
- 	int iwarp_base_vector;
- 	u32 client_pending;
--	struct i40e_client_instance *cinst;
-+	struct iavf_client_instance *cinst;
- 	struct msix_entry *msix_entries;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.c b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
+index a764eb9838d1..9fa3fa99b4c2 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_adminq.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
+@@ -29,10 +29,10 @@ static void iavf_adminq_init_regs(struct iavf_hw *hw)
+ }
  
- 	u32 flags;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_client.c b/drivers/net/ethernet/intel/iavf/iavf_client.c
-index 196ce7324ea4..83d7dd267aa8 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_client.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_client.c
-@@ -10,19 +10,19 @@
- 
- static
- const char iavf_client_interface_version_str[] = IAVF_CLIENT_VERSION_STR;
--static struct i40e_client *vf_registered_client;
-+static struct iavf_client *vf_registered_client;
- static LIST_HEAD(i40e_devices);
- static DEFINE_MUTEX(iavf_device_mutex);
- 
--static u32 iavf_client_virtchnl_send(struct i40e_info *ldev,
--				     struct i40e_client *client,
-+static u32 iavf_client_virtchnl_send(struct iavf_info *ldev,
-+				     struct iavf_client *client,
- 				     u8 *msg, u16 len);
- 
--static int iavf_client_setup_qvlist(struct i40e_info *ldev,
--				    struct i40e_client *client,
--				    struct i40e_qvlist_info *qvlist_info);
-+static int iavf_client_setup_qvlist(struct iavf_info *ldev,
-+				    struct iavf_client *client,
-+				    struct iavf_qvlist_info *qvlist_info);
- 
--static struct i40e_ops iavf_lan_ops = {
-+static struct iavf_ops iavf_lan_ops = {
- 	.virtchnl_send = iavf_client_virtchnl_send,
- 	.setup_qvlist = iavf_client_setup_qvlist,
- };
-@@ -33,11 +33,11 @@ static struct i40e_ops iavf_lan_ops = {
-  * @params: client param struct
+ /**
+- *  i40e_alloc_adminq_asq_ring - Allocate Admin Queue send rings
++ *  iavf_alloc_adminq_asq_ring - Allocate Admin Queue send rings
+  *  @hw: pointer to the hardware structure
   **/
- static
--void iavf_client_get_params(struct iavf_vsi *vsi, struct i40e_params *params)
-+void iavf_client_get_params(struct iavf_vsi *vsi, struct iavf_params *params)
+-static enum iavf_status i40e_alloc_adminq_asq_ring(struct iavf_hw *hw)
++static enum iavf_status iavf_alloc_adminq_asq_ring(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code;
+ 
+@@ -56,10 +56,10 @@ static enum iavf_status i40e_alloc_adminq_asq_ring(struct iavf_hw *hw)
+ }
+ 
+ /**
+- *  i40e_alloc_adminq_arq_ring - Allocate Admin Queue receive rings
++ *  iavf_alloc_adminq_arq_ring - Allocate Admin Queue receive rings
+  *  @hw: pointer to the hardware structure
+  **/
+-static enum iavf_status i40e_alloc_adminq_arq_ring(struct iavf_hw *hw)
++static enum iavf_status iavf_alloc_adminq_arq_ring(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code;
+ 
+@@ -73,34 +73,34 @@ static enum iavf_status i40e_alloc_adminq_arq_ring(struct iavf_hw *hw)
+ }
+ 
+ /**
+- *  i40e_free_adminq_asq - Free Admin Queue send rings
++ *  iavf_free_adminq_asq - Free Admin Queue send rings
+  *  @hw: pointer to the hardware structure
+  *
+  *  This assumes the posted send buffers have already been cleaned
+  *  and de-allocated
+  **/
+-static void i40e_free_adminq_asq(struct iavf_hw *hw)
++static void iavf_free_adminq_asq(struct iavf_hw *hw)
+ {
+ 	iavf_free_dma_mem(hw, &hw->aq.asq.desc_buf);
+ }
+ 
+ /**
+- *  i40e_free_adminq_arq - Free Admin Queue receive rings
++ *  iavf_free_adminq_arq - Free Admin Queue receive rings
+  *  @hw: pointer to the hardware structure
+  *
+  *  This assumes the posted receive buffers have already been cleaned
+  *  and de-allocated
+  **/
+-static void i40e_free_adminq_arq(struct iavf_hw *hw)
++static void iavf_free_adminq_arq(struct iavf_hw *hw)
+ {
+ 	iavf_free_dma_mem(hw, &hw->aq.arq.desc_buf);
+ }
+ 
+ /**
+- *  i40e_alloc_arq_bufs - Allocate pre-posted buffers for the receive queue
++ *  iavf_alloc_arq_bufs - Allocate pre-posted buffers for the receive queue
+  *  @hw: pointer to the hardware structure
+  **/
+-static enum iavf_status i40e_alloc_arq_bufs(struct iavf_hw *hw)
++static enum iavf_status iavf_alloc_arq_bufs(struct iavf_hw *hw)
+ {
+ 	struct iavf_aq_desc *desc;
+ 	struct iavf_dma_mem *bi;
+@@ -165,10 +165,10 @@ static enum iavf_status i40e_alloc_arq_bufs(struct iavf_hw *hw)
+ }
+ 
+ /**
+- *  i40e_alloc_asq_bufs - Allocate empty buffer structs for the send queue
++ *  iavf_alloc_asq_bufs - Allocate empty buffer structs for the send queue
+  *  @hw: pointer to the hardware structure
+  **/
+-static enum iavf_status i40e_alloc_asq_bufs(struct iavf_hw *hw)
++static enum iavf_status iavf_alloc_asq_bufs(struct iavf_hw *hw)
+ {
+ 	struct iavf_dma_mem *bi;
+ 	enum iavf_status ret_code;
+@@ -206,10 +206,10 @@ static enum iavf_status i40e_alloc_asq_bufs(struct iavf_hw *hw)
+ }
+ 
+ /**
+- *  i40e_free_arq_bufs - Free receive queue buffer info elements
++ *  iavf_free_arq_bufs - Free receive queue buffer info elements
+  *  @hw: pointer to the hardware structure
+  **/
+-static void i40e_free_arq_bufs(struct iavf_hw *hw)
++static void iavf_free_arq_bufs(struct iavf_hw *hw)
  {
  	int i;
  
--	memset(params, 0, sizeof(struct i40e_params));
-+	memset(params, 0, sizeof(struct iavf_params));
- 	params->mtu = vsi->netdev->mtu;
- 	params->link_up = vsi->back->link_up;
- 
-@@ -57,7 +57,7 @@ void iavf_client_get_params(struct iavf_vsi *vsi, struct i40e_params *params)
-  **/
- void iavf_notify_client_message(struct iavf_vsi *vsi, u8 *msg, u16 len)
- {
--	struct i40e_client_instance *cinst;
-+	struct iavf_client_instance *cinst;
- 
- 	if (!vsi)
- 		return;
-@@ -81,8 +81,8 @@ void iavf_notify_client_message(struct iavf_vsi *vsi, u8 *msg, u16 len)
-  **/
- void iavf_notify_client_l2_params(struct iavf_vsi *vsi)
- {
--	struct i40e_client_instance *cinst;
--	struct i40e_params params;
-+	struct iavf_client_instance *cinst;
-+	struct iavf_params params;
- 
- 	if (!vsi)
- 		return;
-@@ -110,7 +110,7 @@ void iavf_notify_client_l2_params(struct iavf_vsi *vsi)
- void iavf_notify_client_open(struct iavf_vsi *vsi)
- {
- 	struct iavf_adapter *adapter = vsi->back;
--	struct i40e_client_instance *cinst = adapter->cinst;
-+	struct iavf_client_instance *cinst = adapter->cinst;
- 	int ret;
- 
- 	if (!cinst || !cinst->client || !cinst->client->ops ||
-@@ -119,10 +119,10 @@ void iavf_notify_client_open(struct iavf_vsi *vsi)
- 			"Cannot locate client instance open function\n");
- 		return;
- 	}
--	if (!(test_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state))) {
-+	if (!(test_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state))) {
- 		ret = cinst->client->ops->open(&cinst->lan_info, cinst->client);
- 		if (!ret)
--			set_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state);
-+			set_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state);
- 	}
- }
- 
-@@ -132,7 +132,7 @@ void iavf_notify_client_open(struct iavf_vsi *vsi)
-  *
-  * Return 0 on success or < 0 on error
-  **/
--static int iavf_client_release_qvlist(struct i40e_info *ldev)
-+static int iavf_client_release_qvlist(struct iavf_info *ldev)
- {
- 	struct iavf_adapter *adapter = ldev->vf;
- 	enum iavf_status err;
-@@ -162,7 +162,7 @@ static int iavf_client_release_qvlist(struct i40e_info *ldev)
- void iavf_notify_client_close(struct iavf_vsi *vsi, bool reset)
- {
- 	struct iavf_adapter *adapter = vsi->back;
--	struct i40e_client_instance *cinst = adapter->cinst;
-+	struct iavf_client_instance *cinst = adapter->cinst;
- 
- 	if (!cinst || !cinst->client || !cinst->client->ops ||
- 	    !cinst->client->ops->close) {
-@@ -172,7 +172,7 @@ void iavf_notify_client_close(struct iavf_vsi *vsi, bool reset)
- 	}
- 	cinst->client->ops->close(&cinst->lan_info, cinst->client, reset);
- 	iavf_client_release_qvlist(&cinst->lan_info);
--	clear_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state);
-+	clear_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state);
+@@ -225,10 +225,10 @@ static void i40e_free_arq_bufs(struct iavf_hw *hw)
  }
  
  /**
-@@ -181,13 +181,13 @@ void iavf_notify_client_close(struct iavf_vsi *vsi, bool reset)
-  *
-  * Returns cinst ptr on success, NULL on failure
+- *  i40e_free_asq_bufs - Free send queue buffer info elements
++ *  iavf_free_asq_bufs - Free send queue buffer info elements
+  *  @hw: pointer to the hardware structure
   **/
--static struct i40e_client_instance *
-+static struct iavf_client_instance *
- iavf_client_add_instance(struct iavf_adapter *adapter)
+-static void i40e_free_asq_bufs(struct iavf_hw *hw)
++static void iavf_free_asq_bufs(struct iavf_hw *hw)
  {
--	struct i40e_client_instance *cinst = NULL;
-+	struct iavf_client_instance *cinst = NULL;
- 	struct iavf_vsi *vsi = &adapter->vsi;
- 	struct netdev_hw_addr *mac = NULL;
--	struct i40e_params params;
-+	struct iavf_params params;
+ 	int i;
  
- 	if (!vf_registered_client)
- 		goto out;
-@@ -205,7 +205,7 @@ iavf_client_add_instance(struct iavf_adapter *adapter)
- 	cinst->lan_info.netdev = vsi->netdev;
- 	cinst->lan_info.pcidev = adapter->pdev;
- 	cinst->lan_info.fid = 0;
--	cinst->lan_info.ftype = I40E_CLIENT_FTYPE_VF;
-+	cinst->lan_info.ftype = IAVF_CLIENT_FTYPE_VF;
- 	cinst->lan_info.hw_addr = adapter->hw.hw_addr;
- 	cinst->lan_info.ops = &iavf_lan_ops;
- 	cinst->lan_info.version.major = IAVF_CLIENT_VERSION_MAJOR;
-@@ -213,7 +213,7 @@ iavf_client_add_instance(struct iavf_adapter *adapter)
- 	cinst->lan_info.version.build = IAVF_CLIENT_VERSION_BUILD;
- 	iavf_client_get_params(vsi, &params);
- 	cinst->lan_info.params = params;
--	set_bit(__I40E_CLIENT_INSTANCE_NONE, &cinst->state);
-+	set_bit(__IAVF_CLIENT_INSTANCE_NONE, &cinst->state);
- 
- 	cinst->lan_info.msix_count = adapter->num_iwarp_msix;
- 	cinst->lan_info.msix_entries =
-@@ -250,8 +250,8 @@ void iavf_client_del_instance(struct iavf_adapter *adapter)
-  **/
- void iavf_client_subtask(struct iavf_adapter *adapter)
- {
--	struct i40e_client *client = vf_registered_client;
--	struct i40e_client_instance *cinst;
-+	struct iavf_client *client = vf_registered_client;
-+	struct iavf_client_instance *cinst;
- 	int ret = 0;
- 
- 	if (adapter->state < __IAVF_DOWN)
-@@ -269,13 +269,13 @@ void iavf_client_subtask(struct iavf_adapter *adapter)
- 	dev_info(&adapter->pdev->dev, "Added instance of Client %s\n",
- 		 client->name);
- 
--	if (!test_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state)) {
-+	if (!test_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state)) {
- 		/* Send an Open request to the client */
- 
- 		if (client->ops && client->ops->open)
- 			ret = client->ops->open(&cinst->lan_info, client);
- 		if (!ret)
--			set_bit(__I40E_CLIENT_INSTANCE_OPENED,
-+			set_bit(__IAVF_CLIENT_INSTANCE_OPENED,
- 				&cinst->state);
- 		else
- 			/* remove client instance */
-@@ -357,9 +357,9 @@ int iavf_lan_del_device(struct iavf_adapter *adapter)
-  * @client: pointer to the registered client
-  *
-  **/
--static void iavf_client_release(struct i40e_client *client)
-+static void iavf_client_release(struct iavf_client *client)
- {
--	struct i40e_client_instance *cinst;
-+	struct iavf_client_instance *cinst;
- 	struct i40e_device *ldev;
- 	struct iavf_adapter *adapter;
- 
-@@ -369,12 +369,12 @@ static void iavf_client_release(struct i40e_client *client)
- 		cinst = adapter->cinst;
- 		if (!cinst)
- 			continue;
--		if (test_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state)) {
-+		if (test_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state)) {
- 			if (client->ops && client->ops->close)
- 				client->ops->close(&cinst->lan_info, client,
- 						   false);
- 			iavf_client_release_qvlist(&cinst->lan_info);
--			clear_bit(__I40E_CLIENT_INSTANCE_OPENED, &cinst->state);
-+			clear_bit(__IAVF_CLIENT_INSTANCE_OPENED, &cinst->state);
- 
- 			dev_warn(&adapter->pdev->dev,
- 				 "Client %s instance closed\n", client->name);
-@@ -392,7 +392,7 @@ static void iavf_client_release(struct i40e_client *client)
-  * @client: pointer to the registered client
-  *
-  **/
--static void iavf_client_prepare(struct i40e_client *client)
-+static void iavf_client_prepare(struct iavf_client *client)
- {
- 	struct i40e_device *ldev;
- 	struct iavf_adapter *adapter;
-@@ -415,8 +415,8 @@ static void iavf_client_prepare(struct i40e_client *client)
-  *
-  * Return 0 on success or < 0 on error
-  **/
--static u32 iavf_client_virtchnl_send(struct i40e_info *ldev,
--				     struct i40e_client *client,
-+static u32 iavf_client_virtchnl_send(struct iavf_info *ldev,
-+				     struct iavf_client *client,
- 				     u8 *msg, u16 len)
- {
- 	struct iavf_adapter *adapter = ldev->vf;
-@@ -442,13 +442,13 @@ static u32 iavf_client_virtchnl_send(struct i40e_info *ldev,
-  *
-  * Return 0 on success or < 0 on error
-  **/
--static int iavf_client_setup_qvlist(struct i40e_info *ldev,
--				    struct i40e_client *client,
--				    struct i40e_qvlist_info *qvlist_info)
-+static int iavf_client_setup_qvlist(struct iavf_info *ldev,
-+				    struct iavf_client *client,
-+				    struct iavf_qvlist_info *qvlist_info)
- {
- 	struct virtchnl_iwarp_qvlist_info *v_qvlist_info;
- 	struct iavf_adapter *adapter = ldev->vf;
--	struct i40e_qv_info *qv_info;
-+	struct iavf_qv_info *qv_info;
- 	enum iavf_status err;
- 	u32 v_idx, i;
- 	size_t msg_size;
-@@ -499,11 +499,11 @@ static int iavf_client_setup_qvlist(struct i40e_info *ldev,
+@@ -248,12 +248,12 @@ static void i40e_free_asq_bufs(struct iavf_hw *hw)
+ }
  
  /**
-  * iavf_register_client - Register a i40e client driver with the L2 driver
-- * @client: pointer to the i40e_client struct
-+ * @client: pointer to the iavf_client struct
+- *  i40e_config_asq_regs - configure ASQ registers
++ *  iavf_config_asq_regs - configure ASQ registers
+  *  @hw: pointer to the hardware structure
   *
-  * Returns 0 on success or non-0 on error
+  *  Configure base address and length registers for the transmit queue
   **/
--int iavf_register_client(struct i40e_client *client)
-+int iavf_register_client(struct iavf_client *client)
+-static enum iavf_status i40e_config_asq_regs(struct iavf_hw *hw)
++static enum iavf_status iavf_config_asq_regs(struct iavf_hw *hw)
  {
- 	int ret = 0;
- 
-@@ -550,11 +550,11 @@ EXPORT_SYMBOL(iavf_register_client);
+ 	enum iavf_status ret_code = 0;
+ 	u32 reg = 0;
+@@ -277,12 +277,12 @@ static enum iavf_status i40e_config_asq_regs(struct iavf_hw *hw)
+ }
  
  /**
-  * iavf_unregister_client - Unregister a i40e client driver with the L2 driver
-- * @client: pointer to the i40e_client struct
-+ * @client: pointer to the iavf_client struct
+- *  i40e_config_arq_regs - ARQ register configuration
++ *  iavf_config_arq_regs - ARQ register configuration
+  *  @hw: pointer to the hardware structure
   *
-  * Returns 0 on success or non-0 on error
+  * Configure base address and length registers for the receive (event queue)
   **/
--int iavf_unregister_client(struct i40e_client *client)
-+int iavf_unregister_client(struct iavf_client *client)
+-static enum iavf_status i40e_config_arq_regs(struct iavf_hw *hw)
++static enum iavf_status iavf_config_arq_regs(struct iavf_hw *hw)
  {
- 	int ret = 0;
+ 	enum iavf_status ret_code = 0;
+ 	u32 reg = 0;
+@@ -309,7 +309,7 @@ static enum iavf_status i40e_config_arq_regs(struct iavf_hw *hw)
+ }
  
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_client.h b/drivers/net/ethernet/intel/iavf/iavf_client.h
-index e216fc9dfd81..9a7cf39ea75a 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_client.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_client.h
-@@ -17,86 +17,86 @@
- 	__stringify(IAVF_CLIENT_VERSION_MINOR) "." \
- 	__stringify(IAVF_CLIENT_VERSION_BUILD)
+ /**
+- *  i40e_init_asq - main initialization routine for ASQ
++ *  iavf_init_asq - main initialization routine for ASQ
+  *  @hw: pointer to the hardware structure
+  *
+  *  This is the main initialization routine for the Admin Send Queue
+@@ -321,7 +321,7 @@ static enum iavf_status i40e_config_arq_regs(struct iavf_hw *hw)
+  *  Do *NOT* hold the lock when calling this as the memory allocation routines
+  *  called are not going to be atomic context safe
+  **/
+-static enum iavf_status i40e_init_asq(struct iavf_hw *hw)
++static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
  
--struct i40e_client_version {
-+struct iavf_client_version {
- 	u8 major;
- 	u8 minor;
- 	u8 build;
- 	u8 rsvd;
- };
+@@ -342,17 +342,17 @@ static enum iavf_status i40e_init_asq(struct iavf_hw *hw)
+ 	hw->aq.asq.next_to_clean = 0;
  
--enum i40e_client_state {
--	__I40E_CLIENT_NULL,
--	__I40E_CLIENT_REGISTERED
-+enum iavf_client_state {
-+	__IAVF_CLIENT_NULL,
-+	__IAVF_CLIENT_REGISTERED
- };
+ 	/* allocate the ring memory */
+-	ret_code = i40e_alloc_adminq_asq_ring(hw);
++	ret_code = iavf_alloc_adminq_asq_ring(hw);
+ 	if (ret_code)
+ 		goto init_adminq_exit;
  
--enum i40e_client_instance_state {
--	__I40E_CLIENT_INSTANCE_NONE,
--	__I40E_CLIENT_INSTANCE_OPENED,
-+enum iavf_client_instance_state {
-+	__IAVF_CLIENT_INSTANCE_NONE,
-+	__IAVF_CLIENT_INSTANCE_OPENED,
- };
+ 	/* allocate buffers in the rings */
+-	ret_code = i40e_alloc_asq_bufs(hw);
++	ret_code = iavf_alloc_asq_bufs(hw);
+ 	if (ret_code)
+ 		goto init_adminq_free_rings;
  
--struct i40e_ops;
--struct i40e_client;
-+struct iavf_ops;
-+struct iavf_client;
+ 	/* initialize base registers */
+-	ret_code = i40e_config_asq_regs(hw);
++	ret_code = iavf_config_asq_regs(hw);
+ 	if (ret_code)
+ 		goto init_adminq_free_rings;
  
- /* HW does not define a type value for AEQ; only for RX/TX and CEQ.
-  * In order for us to keep the interface simple, SW will define a
-  * unique type value for AEQ.
-  */
--#define I40E_QUEUE_TYPE_PE_AEQ  0x80
--#define I40E_QUEUE_INVALID_IDX	0xFFFF
-+#define IAVF_QUEUE_TYPE_PE_AEQ	0x80
-+#define IAVF_QUEUE_INVALID_IDX	0xFFFF
+@@ -361,14 +361,14 @@ static enum iavf_status i40e_init_asq(struct iavf_hw *hw)
+ 	goto init_adminq_exit;
  
--struct i40e_qv_info {
-+struct iavf_qv_info {
- 	u32 v_idx; /* msix_vector */
- 	u16 ceq_idx;
- 	u16 aeq_idx;
- 	u8 itr_idx;
- };
+ init_adminq_free_rings:
+-	i40e_free_adminq_asq(hw);
++	iavf_free_adminq_asq(hw);
  
--struct i40e_qvlist_info {
-+struct iavf_qvlist_info {
- 	u32 num_vectors;
--	struct i40e_qv_info qv_info[1];
-+	struct iavf_qv_info qv_info[1];
- };
+ init_adminq_exit:
+ 	return ret_code;
+ }
  
--#define I40E_CLIENT_MSIX_ALL 0xFFFFFFFF
-+#define IAVF_CLIENT_MSIX_ALL 0xFFFFFFFF
+ /**
+- *  i40e_init_arq - initialize ARQ
++ *  iavf_init_arq - initialize ARQ
+  *  @hw: pointer to the hardware structure
+  *
+  *  The main initialization routine for the Admin Receive (Event) Queue.
+@@ -380,7 +380,7 @@ static enum iavf_status i40e_init_asq(struct iavf_hw *hw)
+  *  Do *NOT* hold the lock when calling this as the memory allocation routines
+  *  called are not going to be atomic context safe
+  **/
+-static enum iavf_status i40e_init_arq(struct iavf_hw *hw)
++static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
  
- /* set of LAN parameters useful for clients managed by LAN */
+@@ -401,17 +401,17 @@ static enum iavf_status i40e_init_arq(struct iavf_hw *hw)
+ 	hw->aq.arq.next_to_clean = 0;
  
- /* Struct to hold per priority info */
--struct i40e_prio_qos_params {
-+struct iavf_prio_qos_params {
- 	u16 qs_handle; /* qs handle for prio */
- 	u8 tc; /* TC mapped to prio */
- 	u8 reserved;
- };
+ 	/* allocate the ring memory */
+-	ret_code = i40e_alloc_adminq_arq_ring(hw);
++	ret_code = iavf_alloc_adminq_arq_ring(hw);
+ 	if (ret_code)
+ 		goto init_adminq_exit;
  
--#define I40E_CLIENT_MAX_USER_PRIORITY        8
-+#define IAVF_CLIENT_MAX_USER_PRIORITY	8
- /* Struct to hold Client QoS */
--struct i40e_qos_params {
--	struct i40e_prio_qos_params prio_qos[I40E_CLIENT_MAX_USER_PRIORITY];
-+struct iavf_qos_params {
-+	struct iavf_prio_qos_params prio_qos[IAVF_CLIENT_MAX_USER_PRIORITY];
- };
+ 	/* allocate buffers in the rings */
+-	ret_code = i40e_alloc_arq_bufs(hw);
++	ret_code = iavf_alloc_arq_bufs(hw);
+ 	if (ret_code)
+ 		goto init_adminq_free_rings;
  
--struct i40e_params {
--	struct i40e_qos_params qos;
-+struct iavf_params {
-+	struct iavf_qos_params qos;
- 	u16 mtu;
- 	u16 link_up; /* boolean */
- };
+ 	/* initialize base registers */
+-	ret_code = i40e_config_arq_regs(hw);
++	ret_code = iavf_config_arq_regs(hw);
+ 	if (ret_code)
+ 		goto init_adminq_free_rings;
  
- /* Structure to hold LAN device info for a client device */
--struct i40e_info {
--	struct i40e_client_version version;
-+struct iavf_info {
-+	struct iavf_client_version version;
- 	u8 lanmac[6];
- 	struct net_device *netdev;
- 	struct pci_dev *pcidev;
- 	u8 __iomem *hw_addr;
- 	u8 fid;	/* function id, PF id or VF id */
--#define I40E_CLIENT_FTYPE_PF 0
--#define I40E_CLIENT_FTYPE_VF 1
-+#define IAVF_CLIENT_FTYPE_PF 0
-+#define IAVF_CLIENT_FTYPE_VF 1
- 	u8 ftype; /* function type, PF or VF */
- 	void *vf; /* cast to iavf_adapter */
+@@ -420,19 +420,19 @@ static enum iavf_status i40e_init_arq(struct iavf_hw *hw)
+ 	goto init_adminq_exit;
  
- 	/* All L2 params that could change during the life span of the device
- 	 * and needs to be communicated to the client when they change
+ init_adminq_free_rings:
+-	i40e_free_adminq_arq(hw);
++	iavf_free_adminq_arq(hw);
+ 
+ init_adminq_exit:
+ 	return ret_code;
+ }
+ 
+ /**
+- *  i40e_shutdown_asq - shutdown the ASQ
++ *  iavf_shutdown_asq - shutdown the ASQ
+  *  @hw: pointer to the hardware structure
+  *
+  *  The main shutdown routine for the Admin Send Queue
+  **/
+-static enum iavf_status i40e_shutdown_asq(struct iavf_hw *hw)
++static enum iavf_status iavf_shutdown_asq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
+ 
+@@ -453,7 +453,7 @@ static enum iavf_status i40e_shutdown_asq(struct iavf_hw *hw)
+ 	hw->aq.asq.count = 0; /* to indicate uninitialized queue */
+ 
+ 	/* free ring buffers */
+-	i40e_free_asq_bufs(hw);
++	iavf_free_asq_bufs(hw);
+ 
+ shutdown_asq_out:
+ 	mutex_unlock(&hw->aq.asq_mutex);
+@@ -461,12 +461,12 @@ static enum iavf_status i40e_shutdown_asq(struct iavf_hw *hw)
+ }
+ 
+ /**
+- *  i40e_shutdown_arq - shutdown ARQ
++ *  iavf_shutdown_arq - shutdown ARQ
+  *  @hw: pointer to the hardware structure
+  *
+  *  The main shutdown routine for the Admin Receive Queue
+  **/
+-static enum iavf_status i40e_shutdown_arq(struct iavf_hw *hw)
++static enum iavf_status iavf_shutdown_arq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
+ 
+@@ -487,7 +487,7 @@ static enum iavf_status i40e_shutdown_arq(struct iavf_hw *hw)
+ 	hw->aq.arq.count = 0; /* to indicate uninitialized queue */
+ 
+ 	/* free ring buffers */
+-	i40e_free_arq_bufs(hw);
++	iavf_free_arq_bufs(hw);
+ 
+ shutdown_arq_out:
+ 	mutex_unlock(&hw->aq.arq_mutex);
+@@ -525,12 +525,12 @@ enum iavf_status iavf_init_adminq(struct iavf_hw *hw)
+ 	hw->aq.asq_cmd_timeout = IAVF_ASQ_CMD_TIMEOUT;
+ 
+ 	/* allocate the ASQ */
+-	ret_code = i40e_init_asq(hw);
++	ret_code = iavf_init_asq(hw);
+ 	if (ret_code)
+ 		goto init_adminq_destroy_locks;
+ 
+ 	/* allocate the ARQ */
+-	ret_code = i40e_init_arq(hw);
++	ret_code = iavf_init_arq(hw);
+ 	if (ret_code)
+ 		goto init_adminq_free_asq;
+ 
+@@ -538,7 +538,7 @@ enum iavf_status iavf_init_adminq(struct iavf_hw *hw)
+ 	goto init_adminq_exit;
+ 
+ init_adminq_free_asq:
+-	i40e_shutdown_asq(hw);
++	iavf_shutdown_asq(hw);
+ init_adminq_destroy_locks:
+ 
+ init_adminq_exit:
+@@ -556,19 +556,19 @@ enum iavf_status iavf_shutdown_adminq(struct iavf_hw *hw)
+ 	if (iavf_check_asq_alive(hw))
+ 		iavf_aq_queue_shutdown(hw, true);
+ 
+-	i40e_shutdown_asq(hw);
+-	i40e_shutdown_arq(hw);
++	iavf_shutdown_asq(hw);
++	iavf_shutdown_arq(hw);
+ 
+ 	return ret_code;
+ }
+ 
+ /**
+- *  i40e_clean_asq - cleans Admin send queue
++ *  iavf_clean_asq - cleans Admin send queue
+  *  @hw: pointer to the hardware structure
+  *
+  *  returns the number of free desc
+  **/
+-static u16 i40e_clean_asq(struct iavf_hw *hw)
++static u16 iavf_clean_asq(struct iavf_hw *hw)
+ {
+ 	struct iavf_adminq_ring *asq = &hw->aq.asq;
+ 	struct iavf_asq_cmd_details *details;
+@@ -583,8 +583,8 @@ static u16 i40e_clean_asq(struct iavf_hw *hw)
+ 			   "ntc %d head %d.\n", ntc, rd32(hw, hw->aq.asq.head));
+ 
+ 		if (details->callback) {
+-			I40E_ADMINQ_CALLBACK cb_func =
+-					(I40E_ADMINQ_CALLBACK)details->callback;
++			IAVF_ADMINQ_CALLBACK cb_func =
++					(IAVF_ADMINQ_CALLBACK)details->callback;
+ 			desc_cb = *desc;
+ 			cb_func(hw, &desc_cb);
+ 		}
+@@ -708,7 +708,7 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
+ 	/* the clean function called here could be called in a separate thread
+ 	 * in case of asynchronous completions
  	 */
--	struct i40e_params params;
--	struct i40e_ops *ops;
-+	struct iavf_params params;
-+	struct iavf_ops *ops;
- 
- 	u16 msix_count;	 /* number of msix vectors*/
- 	/* Array down below will be dynamically allocated based on msix_count */
-@@ -104,66 +104,66 @@ struct i40e_info {
- 	u16 itr_index; /* Which ITR index the PE driver is suppose to use */
+-	if (i40e_clean_asq(hw) == 0) {
++	if (iavf_clean_asq(hw) == 0) {
+ 		iavf_debug(hw,
+ 			   IAVF_DEBUG_AQ_MESSAGE,
+ 			   "AQTX: Error queue is full.\n");
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.h b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+index 300320e034d2..baf2fe26f302 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
++++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+@@ -84,11 +84,11 @@ struct iavf_adminq_info {
  };
  
--struct i40e_ops {
-+struct iavf_ops {
- 	/* setup_q_vector_list enables queues with a particular vector */
--	int (*setup_qvlist)(struct i40e_info *ldev, struct i40e_client *client,
--			    struct i40e_qvlist_info *qv_info);
-+	int (*setup_qvlist)(struct iavf_info *ldev, struct iavf_client *client,
-+			    struct iavf_qvlist_info *qv_info);
+ /**
+- * i40e_aq_rc_to_posix - convert errors to user-land codes
++ * iavf_aq_rc_to_posix - convert errors to user-land codes
+  * aq_ret: AdminQ handler error code can override aq_rc
+  * aq_rc: AdminQ firmware error code to convert
+  **/
+-static inline int i40e_aq_rc_to_posix(int aq_ret, int aq_rc)
++static inline int iavf_aq_rc_to_posix(int aq_ret, int aq_rc)
+ {
+ 	int aq_to_posix[] = {
+ 		0,           /* IAVF_AQ_RC_OK */
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_type.h b/drivers/net/ethernet/intel/iavf/iavf_type.h
+index 4bc05d2837d7..7190a40c540c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_type.h
++++ b/drivers/net/ethernet/intel/iavf/iavf_type.h
+@@ -21,7 +21,7 @@
  
--	u32 (*virtchnl_send)(struct i40e_info *ldev, struct i40e_client *client,
-+	u32 (*virtchnl_send)(struct iavf_info *ldev, struct iavf_client *client,
- 			     u8 *msg, u16 len);
+ /* forward declaration */
+ struct iavf_hw;
+-typedef void (*I40E_ADMINQ_CALLBACK)(struct iavf_hw *, struct iavf_aq_desc *);
++typedef void (*IAVF_ADMINQ_CALLBACK)(struct iavf_hw *, struct iavf_aq_desc *);
  
- 	/* If the PE Engine is unresponsive, RDMA driver can request a reset.*/
--	void (*request_reset)(struct i40e_info *ldev,
--			      struct i40e_client *client);
-+	void (*request_reset)(struct iavf_info *ldev,
-+			      struct iavf_client *client);
- };
+ /* Data type manipulation macros. */
  
--struct i40e_client_ops {
-+struct iavf_client_ops {
- 	/* Should be called from register_client() or whenever the driver is
- 	 * ready to create a specific client instance.
- 	 */
--	int (*open)(struct i40e_info *ldev, struct i40e_client *client);
-+	int (*open)(struct iavf_info *ldev, struct iavf_client *client);
- 
- 	/* Should be closed when netdev is unavailable or when unregister
- 	 * call comes in. If the close happens due to a reset, set the reset
- 	 * bit to true.
- 	 */
--	void (*close)(struct i40e_info *ldev, struct i40e_client *client,
-+	void (*close)(struct iavf_info *ldev, struct iavf_client *client,
- 		      bool reset);
- 
- 	/* called when some l2 managed parameters changes - mss */
--	void (*l2_param_change)(struct i40e_info *ldev,
--				struct i40e_client *client,
--				struct i40e_params *params);
-+	void (*l2_param_change)(struct iavf_info *ldev,
-+				struct iavf_client *client,
-+				struct iavf_params *params);
- 
- 	/* called when a message is received from the PF */
--	int (*virtchnl_receive)(struct i40e_info *ldev,
--				struct i40e_client *client,
-+	int (*virtchnl_receive)(struct iavf_info *ldev,
-+				struct iavf_client *client,
- 				u8 *msg, u16 len);
- };
- 
- /* Client device */
--struct i40e_client_instance {
-+struct iavf_client_instance {
- 	struct list_head list;
--	struct i40e_info lan_info;
--	struct i40e_client *client;
-+	struct iavf_info lan_info;
-+	struct iavf_client *client;
- 	unsigned long  state;
- };
- 
--struct i40e_client {
-+struct iavf_client {
- 	struct list_head list;		/* list of registered clients */
- 	char name[IAVF_CLIENT_STR_LENGTH];
--	struct i40e_client_version version;
-+	struct iavf_client_version version;
- 	unsigned long state;		/* client state */
- 	atomic_t ref_cnt;  /* Count of all the client devices of this kind */
- 	u32 flags;
--#define I40E_CLIENT_FLAGS_LAUNCH_ON_PROBE	BIT(0)
--#define I40E_TX_FLAGS_NOTIFY_OTHER_EVENTS	BIT(2)
-+#define IAVF_CLIENT_FLAGS_LAUNCH_ON_PROBE	BIT(0)
-+#define IAVF_TX_FLAGS_NOTIFY_OTHER_EVENTS	BIT(2)
- 	u8 type;
--#define I40E_CLIENT_IWARP 0
--	struct i40e_client_ops *ops;	/* client ops provided by the client */
-+#define IAVF_CLIENT_IWARP 0
-+	struct iavf_client_ops *ops;	/* client ops provided by the client */
- };
- 
- /* used by clients */
--int iavf_register_client(struct i40e_client *client);
--int iavf_unregister_client(struct i40e_client *client);
-+int iavf_register_client(struct iavf_client *client);
-+int iavf_unregister_client(struct iavf_client *client);
- #endif /* _IAVF_CLIENT_H_ */
 -- 
 2.21.0
 
