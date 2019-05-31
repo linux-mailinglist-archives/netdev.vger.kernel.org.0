@@ -2,66 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A0E3166C
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 23:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACFFB3166D
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 23:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbfEaVKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 17:10:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46424 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726676AbfEaVKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 17:10:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=GaQCzB0wZgr4EV7KlO1Sm7eUbwlLBvCSgorIdOKC9Ic=; b=pTB+0gsq7hbKgb0so1oxtsW2Ol
-        YJCFbIWalxM1+o4JQa7iILYFsFTv9GXwUFzs0bSQzrAYK433uOuRfA+rSGkdoCeykO/LCkHQzc2Jm
-        5LpTRd67ajUnsEmAn0drqnh/bFSwFQEqkJOTMLGe98STMHyCuJoG9JCA1UYGjuM7s+NA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWonT-0001TU-HE; Fri, 31 May 2019 23:10:43 +0200
-Date:   Fri, 31 May 2019 23:10:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
-Subject: Re: [PATCH net-next 01/13] net: axienet: Fixed 64-bit compile,
- enable build on X86 and ARM
-Message-ID: <20190531211043.GD3154@lunn.ch>
-References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
- <1559326545-28825-2-git-send-email-hancock@sedsystems.ca>
+        id S1727608AbfEaVLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 17:11:34 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52593 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727005AbfEaVLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 17:11:33 -0400
+Received: by mail-wm1-f68.google.com with SMTP id y3so6821339wmm.2
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 14:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Xpg67RRqYOuogZfCYztLVQJAnSu80hNw8RFtQGBEAiE=;
+        b=nyE1uoSF2rG80WgZwzqwpUEsBxjn30Mtb9Fb3PGXxjbqMy5IUaVuz87V/0Boz2p5/I
+         tL5/xnEqjixWMX5uhpTzGnkkRC7sLYwm8Yye8v28gspNvXwrnWkhvN1e5QOVIWTJ502w
+         Rmew9jIX/jUatdMajF5hrAHyJuYyxbzWfxPF5OKe60FyIXap5Etl9Q64MRB0FNfNHk9b
+         uuVRy8E0WN/KOyDf8jB1+H6Eyu1cz2eruGoyGbj25RaWoad4TuCDtont6p2u1K/kilwx
+         TpJj8S0JJCDUG40Dkg6ZFMlIpxPJZc/tJy7LZQdnQJH3dZisBR9Bo/Dl6uDDSBWFRzdu
+         SS5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Xpg67RRqYOuogZfCYztLVQJAnSu80hNw8RFtQGBEAiE=;
+        b=ccUrA5lZMWRbPF0R9l0HC5xX3GAa87/XsYBhT1z3cAESR/4PqUwJboQfCTdBwNEM5i
+         kQ53M4CThO/McRGPhU4VaQXB3NJjzIDqtFO9/MtqQUe2vIOBnsha9im1l6v7TNWrjvvv
+         FQSoEuJ4SxASMUWlZ6hWQ2O+oasIXPkab29l6Cc5T4RmE9xOqg21XB2x/xOigEFxDHv0
+         sGAeuamcN0ssQEhJwitWnhTqsu3UWC4YyjgdDgewwS9jPbBAcmf8rq1ss/+70UNdo12o
+         9vAoMoxdHnY8+Z5th+GNLJNhovdRZr9EMdaLS/etBLDlJWZuMpDOkbj3jm1FzfjGQIoI
+         qGnQ==
+X-Gm-Message-State: APjAAAVhM5VTTDDGdQBoPBbqLwWCGHIsGZU1G0Ci0jZAzaJhQeBaPcIe
+        tTfCdkznmXgkCzR4EqTfA1Y=
+X-Google-Smtp-Source: APXvYqwfsgmsOFESSeNT0eYxiLEy/qEcuDpjW0fFNiqn/IJ/pDaNHCl2lhsDPzUa5qeBl7IumETvSA==
+X-Received: by 2002:a7b:cc0d:: with SMTP id f13mr7269250wmh.1.1559337090340;
+        Fri, 31 May 2019 14:11:30 -0700 (PDT)
+Received: from [10.67.49.123] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id e15sm5143825wme.0.2019.05.31.14.11.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 14:11:29 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: xilinx: add Xilinx PHY driver
+To:     Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <1559330150-30099-1-git-send-email-hancock@sedsystems.ca>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <a03619fb-95f3-e663-f219-a219744c73ef@gmail.com>
+Date:   Fri, 31 May 2019 14:11:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559326545-28825-2-git-send-email-hancock@sedsystems.ca>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1559330150-30099-1-git-send-email-hancock@sedsystems.ca>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Robert
+On 5/31/19 12:15 PM, Robert Hancock wrote:
+> This adds a driver for the PHY device implemented in the Xilinx PCS/PMA
+> Core logic. Aside from being a generic gigabit PHY, it includes an
+> important register setting to disable the PHY isolation bit, which is
+> required for the PHY to operate in 1000BaseX mode.
+> 
+> This version is a simplified version of the GPL 2+ version from the
+> Xilinx kernel tree.
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> ---
+>  drivers/net/phy/Kconfig      |  6 +++++
+>  drivers/net/phy/Makefile     |  1 +
+>  drivers/net/phy/xilinx_phy.c | 60 ++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 67 insertions(+)
+>  create mode 100644 drivers/net/phy/xilinx_phy.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index db5645b..101c794 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -462,6 +462,12 @@ config VITESSE_PHY
+>  	---help---
+>  	  Currently supports the vsc8244
+>  
+> +config XILINX_PHY
+> +	tristate "Drivers for Xilinx PHYs"
+> +	help
+> +	  This module provides a driver for the PHY implemented in the
+> +	  Xilinx PCS/PMA Core.
+> +
+>  config XILINX_GMII2RGMII
+>  	tristate "Xilinx GMII2RGMII converter driver"
+>  	---help---
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index bac339e..f71359d 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -92,3 +92,4 @@ obj-$(CONFIG_STE10XP)		+= ste10Xp.o
+>  obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
+>  obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
+>  obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
+> +obj-$(CONFIG_XILINX_PHY)	+= xilinx_phy.o
+> diff --git a/drivers/net/phy/xilinx_phy.c b/drivers/net/phy/xilinx_phy.c
+> new file mode 100644
+> index 0000000..2d468c7
+> --- /dev/null
+> +++ b/drivers/net/phy/xilinx_phy.c
+> @@ -0,0 +1,60 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/* Xilinx PCS/PMA Core phy driver
+> + *
+> + * Copyright (C) 2019 SED Systems, a division of Calian Ltd.
+> + *
+> + * Based upon Xilinx version of this driver:
+> + * Copyright (C) 2015 Xilinx, Inc.
+> + *
+> + * Description:
+> + * This driver is developed for PCS/PMA Core.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/mii.h>
+> +#include <linux/phy.h>
+> +
+> +/* Mask used for ID comparisons */
+> +#define XILINX_PHY_ID_MASK		0xfffffff0
+> +
+> +/* Known PHY IDs */
+> +#define XILINX_PHY_ID			0x01740c00
+> +
+> +#define XPCSPMA_PHY_CTRL_ISOLATE_DISABLE 0xFBFF
+> +
+> +static int xilinxphy_config_init(struct phy_device *phydev)
+> +{
+> +	int temp;
+> +
+> +	temp = phy_read(phydev, MII_BMCR);
+> +	temp &= XPCSPMA_PHY_CTRL_ISOLATE_DISABLE;
+> +	phy_write(phydev, MII_BMCR, temp);
 
-I think you can split this into three patches, in order to make it
-easier to review:
-
-IO accessors
-skb in the control block
-MDIO changes.
-
->  static inline u32 axienet_ior(struct axienet_local *lp, off_t offset)
->  {
-> -	return in_be32(lp->regs + offset);
-> +#ifdef CONFIG_MICROBLAZE
-> +	return __raw_readl(lp->regs + offset);
-> +#else
-> +	return ioread32(lp->regs + offset);
-> +#endif
->  }
-
-Please dig deeper into the available accessor functions. There should
-be a set which works without this #defery. 
-
-   Andrew
+The PHY library takes care of clearing the BMCR_ISOLATE bit, is not that
+working for you?
+-- 
+Florian
