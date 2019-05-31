@@ -2,114 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA8F6313D4
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71439313E3
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 19:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbfEaR3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 13:29:15 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35156 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbfEaR3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 13:29:15 -0400
-Received: by mail-ot1-f67.google.com with SMTP id n14so9971875otk.2;
-        Fri, 31 May 2019 10:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+iyqTcaxt908BOdR/nmvy7fBX5IAvraUTsrYyfpy9lM=;
-        b=UoBFbazk3bF/rwQHpGBuPllAqZAXvZsjxgtdmcBwMPvgO42L4cdQH3h72o4TlQyRru
-         tM0IIF7ewnRRTYgkPDh2P3kn3spIaz2gLe9v2/ISK8fvbM+/QWEAPUyYw5bxAaW2GY5G
-         RiFZ8zjaLVK+shs+jkA5voWmN560eZqheSvuhP9kirDBqFvRNGcrhyCNw7WylKooPjQc
-         0aLg+LJsI93LEveN5rnFKmCdY10L6SoB6EmRE1EeceEtH1UGjQ1ZVWyq8BK3LwIUPOaq
-         4ZKttkXP4rjP63mcuCeTjmvQIcMLhK5jzEpONK/Ul5o63ECKblmyXKupkhY1HXlUL8s0
-         o6Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+iyqTcaxt908BOdR/nmvy7fBX5IAvraUTsrYyfpy9lM=;
-        b=DIOVRJpl5FDK6FsB7GmjuwbtFOkFGJc+khpkMCRGyidGd3dK8ZBDEZwR+Jo+e9aUBf
-         k3CbatI9yzZF349CYcDqA5dCVt6v1XIpOJhLVk3PiAIoRopbTJkcZ+b+GZADssm86saa
-         OmhOb4On/1oDxy4kXN1nwN//kWzH1DC2fBJbhicfiFFhPsI1XCP38wCklMes4GM3onuG
-         8B31FTchcuW+Hzs/g6dAkRXxlJZEkOwDv13CPy/hoEq6W9oMKUs1tixGV6VQOe2c57TJ
-         brWHD5WD4kXflZmFxnJitRXIxTCN4djIqNYXIk5Oe37PlwRjLDqtBE6QDp/Ki19b3VDP
-         pR6w==
-X-Gm-Message-State: APjAAAWZyGVkcsHcOqWCkS0UanWxslYum/0e7b7vCZPEJRTQRmCcqHH7
-        6j00fQAiFSyW4GDCAH6Y/pqOP/rU
-X-Google-Smtp-Source: APXvYqzkAHmyyxrH7D112NjIZLyafOEDSWW854tF2Umsok58KvfnyV7z58ZtX5EZoQoIdN8g1+GjJg==
-X-Received: by 2002:a9d:3d76:: with SMTP id a109mr2645090otc.212.1559323754602;
-        Fri, 31 May 2019 10:29:14 -0700 (PDT)
-Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id a15sm2194992otl.20.2019.05.31.10.29.12
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 10:29:13 -0700 (PDT)
-Subject: Re: [PATCH] rtlwifi: remove redundant assignment to variable k
-To:     Colin King <colin.king@canonical.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190531141412.18632-1-colin.king@canonical.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <14372bed-6522-d81c-7d68-04adc0d71193@lwfinger.net>
-Date:   Fri, 31 May 2019 12:29:12 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190531141412.18632-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1726674AbfEaRdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 13:33:04 -0400
+Received: from mail-eopbgr30066.outbound.protection.outlook.com ([40.107.3.66]:6272
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726604AbfEaRdE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 13:33:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hIceLZiHcHCG593X2VSQBK/nRcQ4vWVFkq8qzqbr1V4=;
+ b=d1aec/yzcBBBrZiyjZu6yPNF9l0v3XObvP6AmBLDfjXks4qRtrcJYP0JAifEgMeD06vGYzuUsOXFt/M0xaukChiHS1bUphpPCQPMJdIqxOsz9UoKnwqNnu8ABXQZnK3itDc3lNJ91Z7qfxI0ZQZ7A8NkuBDRkUmxV+lPadjO/EM=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.50.159) by
+ VI1SPR01MB0371.eurprd04.prod.outlook.com (20.178.125.78) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Fri, 31 May 2019 17:32:58 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+ ([fe80::8d0e:de86:9b49:b40]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+ ([fe80::8d0e:de86:9b49:b40%7]) with mapi id 15.20.1922.024; Fri, 31 May 2019
+ 17:32:58 +0000
+From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To:     =?utf-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
+        Roy Pledge <roy.pledge@nxp.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jocke@infinera.com" <joakim.tjernlund@infinera.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
+Subject: RE: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+Thread-Topic: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+Thread-Index: AQHVFvLAUsVmmx2jaE2ZHLZY1pGN66aFajIAgAAH5dCAAAWjAIAABkSw
+Date:   Fri, 31 May 2019 17:32:58 +0000
+Message-ID: <VI1PR04MB5134E4DA6EA052BEBB3C26EFEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
+ <d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
+ <VI1PR04MB5134BFA391D8FF013762882FEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+ <19cc3230-33b0-e465-6317-590780b33efa@suse.de>
+In-Reply-To: <19cc3230-33b0-e465-6317-590780b33efa@suse.de>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-originating-ip: [192.88.166.1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cd6528e5-3fc5-4774-3ca7-08d6e5ee062a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1SPR01MB0371;
+x-ms-traffictypediagnostic: VI1SPR01MB0371:
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-microsoft-antispam-prvs: <VI1SPR01MB0371351011C47BC791317F3EEC190@VI1SPR01MB0371.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 00540983E2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(346002)(366004)(136003)(396003)(376002)(13464003)(189003)(199004)(66556008)(76116006)(52536014)(66446008)(64756008)(66946007)(102836004)(25786009)(71190400001)(53936002)(305945005)(73956011)(66574012)(81156014)(74316002)(5660300002)(76176011)(33656002)(6246003)(68736007)(256004)(7736002)(71200400001)(7696005)(26005)(66476007)(54906003)(6506007)(14444005)(55016002)(476003)(81166006)(446003)(229853002)(9686003)(11346002)(8676002)(14454004)(316002)(86362001)(44832011)(478600001)(6916009)(486006)(8936002)(99286004)(4326008)(66066001)(6436002)(186003)(2906002)(6116002)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB0371;H:VI1PR04MB5134.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: txJoEvoxShin5Wd059+uxffnfOSdoKxsHX3t2fgGJNpNaeS+SjqSKazODDrwkoAYvhFk800Mpidc8Q0ZVGOCFtXzBNPdSOA1bbl5DIA+4S6eBE+jXSSQp3CbtmUXY2l0pcfGbkxMl8cPpp9abQSdc4nybJcJ1KH6FZa/dfkLoSj7ZwfRpjGQj+LhttjhTTb7SQzz+WZvJ46hN/iFLE/gb8NIKQ3WatqzkWTYojIw4x3mE3xmhbAbZc5e2zYAqVXgzLxuYggZHJUOixGVQrklfbY7aERuM/OqswlcgoiSagF6P9/N6bKe2ySUpDt7Ws7BMtt2ttcS7TPNcmgca5KY7prB9tYRtvJj7aQv7Divf7h+Y4Ezzobk5LDAiUnQ/EOJg7nrcfcVp07W6D7vyhLfIqDGWgFPPPZI+dCwLW6cb2k=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd6528e5-3fc5-4774-3ca7-08d6e5ee062a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 17:32:58.6553
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: laurentiu.tudor@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB0371
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/19 9:14 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The assignment of 0 to variable k is never read once we break out of
-> the loop, so the assignment is redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->   drivers/net/wireless/realtek/rtlwifi/efuse.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/efuse.c b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> index e68340dfd980..83e5318ca04f 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/efuse.c
-> @@ -117,10 +117,8 @@ u8 efuse_read_1byte(struct ieee80211_hw *hw, u16 address)
->   						 rtlpriv->cfg->
->   						 maps[EFUSE_CTRL] + 3);
->   			k++;
-> -			if (k == 1000) {
-> -				k = 0;
-> +			if (k == 1000)
->   				break;
-> -			}
->   		}
->   		data = rtl_read_byte(rtlpriv, rtlpriv->cfg->maps[EFUSE_CTRL]);
->   		return data;
-
-Colin,
-
-Your patch is not wrong, but it fails to address a basic deficiency of this code 
-snippet - when an error is detected, there is no attempt to either fix the 
-problem or report it upstream. As the data returned will be garbage if this 
-condition happens, we might as well replace the "break" with "return 0xFF", as 
-well as deleting the "k = 0" line. Most of the callers of efuse_read_1byte() 
-ignore the returned result when bits 0 and 4 are set, thus returning all 8 bits 
-is not a bad fixup.
-
-My suspicion is that this test is in the code merely to prevent an potential 
-unterminated "while" loop, and that this condition is extremely unlikely to happen.
-
-Larry
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmRyZWFzIEbDpHJiZXIgPGFm
+YWVyYmVyQHN1c2UuZGU+DQo+IFNlbnQ6IEZyaWRheSwgTWF5IDMxLCAyMDE5IDg6MDQgUE0NCj4g
+DQo+IEhlbGxvIExhdXJlbnRpdSwNCj4gDQo+IEFtIDMxLjA1LjE5IHVtIDE4OjQ2IHNjaHJpZWIg
+TGF1cmVudGl1IFR1ZG9yOg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBG
+cm9tOiBBbmRyZWFzIEbDpHJiZXIgPGFmYWVyYmVyQHN1c2UuZGU+DQo+ID4+IFNlbnQ6IEZyaWRh
+eSwgTWF5IDMxLCAyMDE5IDc6MTUgUE0NCj4gPj4NCj4gPj4gSGkgTGF1cmVudGl1LA0KPiA+Pg0K
+PiA+PiBBbSAzMC4wNS4xOSB1bSAxNjoxOSBzY2hyaWViIGxhdXJlbnRpdS50dWRvckBueHAuY29t
+Og0KPiA+Pj4gVGhpcyBwYXRjaCBzZXJpZXMgY29udGFpbnMgc2V2ZXJhbCBmaXhlcyBpbiBwcmVw
+YXJhdGlvbiBmb3IgU01NVQ0KPiA+Pj4gc3VwcG9ydCBvbiBOWFAgTFMxMDQzQSBhbmQgTFMxMDQ2
+QSBjaGlwcy4gT25jZSB0aGVzZSBnZXQgcGlja2VkIHVwLA0KPiA+Pj4gSSdsbCBzdWJtaXQgdGhl
+IGFjdHVhbCBTTU1VIGVuYWJsZW1lbnQgcGF0Y2hlcyBjb25zaXN0aW5nIGluIHRoZQ0KPiA+Pj4g
+cmVxdWlyZWQgZGV2aWNlIHRyZWUgY2hhbmdlcy4NCj4gPj4NCj4gPj4gSGF2ZSB5b3UgdGhvdWdo
+dCB0aHJvdWdoIHdoYXQgd2lsbCBoYXBwZW4gaWYgdGhpcyBwYXRjaCBvcmRlcmluZyBpcyBub3QN
+Cj4gPj4gcHJlc2VydmVkPyBJbiBwYXJ0aWN1bGFyLCBhIHVzZXIgaW5zdGFsbGluZyBhIGZ1dHVy
+ZSBVLUJvb3QgdXBkYXRlIHdpdGgNCj4gPj4gdGhlIERUQiBiaXRzIGJ1dCBib290aW5nIGEgc3Rh
+YmxlIGtlcm5lbCB3aXRob3V0IHRoaXMgcGF0Y2ggc2VyaWVzIC0NCj4gPj4gd291bGRuJ3QgdGhh
+dCByZWdyZXNzIGRwYWEgdGhlbiBmb3Igb3VyIGN1c3RvbWVycz8NCj4gPj4NCj4gPg0KPiA+IFRo
+ZXNlIGFyZSBmaXhlcyBmb3IgaXNzdWVzIHRoYXQgcG9wcGVkIG91dCBhZnRlciBlbmFibGluZyBT
+TU1VLg0KPiA+IEkgZG8gbm90IGV4cGVjdCB0aGVtIHRvIGJyZWFrIGFueXRoaW5nLg0KPiANCj4g
+VGhhdCB3YXMgbm90IG15IHF1ZXN0aW9uISBZb3UncmUgbWlzc2luZyBteSBwb2ludDogQWxsIHlv
+dXIgcGF0Y2hlcyBhcmUNCj4gbGFja2luZyBhIEZpeGVzIGhlYWRlciBpbiB0aGVpciBjb21taXQg
+bWVzc2FnZSwgZm9yIGJhY2twb3J0aW5nIHRoZW0sIHRvDQo+IGF2b2lkIF95b3VyIERUIHBhdGNo
+ZXNfIGJyZWFraW5nIHRoZSBkcml2ZXIgb24gc3RhYmxlIGJyYW5jaGVzIQ0KDQpJdCBkb2VzIGFw
+cGVhciB0aGF0IEknbSBtaXNzaW5nIHlvdXIgcG9pbnQuIEZvciBzdXJlLCB0aGUgRFQgdXBkYXRl
+cyBzb2xlbHkgd2lsbA0KYnJlYWsgdGhlIGtlcm5lbCB3aXRob3V0IHRoZXNlIGZpeGVzIGJ1dCBJ
+J20gbm90IHN1cmUgSSB1bmRlcnN0YW5kIGhvdyB0aGlzDQpjb3VsZCBoYXBwZW4uIE15IHBsYW4g
+d2FzIHRvIHNoYXJlIHRoZSBrZXJuZWwgZHRzIHBhdGNoZXMgc29tZXRpbWUgYWZ0ZXIgdGhpcyBz
+ZXJpZXMNCm1ha2VzIGl0IHRocm91Z2guDQoNCi0tLQ0KQmVzdCBSZWdhcmRzLCBMYXVyZW50aXUN
+Cg==
