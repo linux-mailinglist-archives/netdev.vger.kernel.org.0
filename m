@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF2930ADA
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC1830ADC
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727219AbfEaI44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 04:56:56 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:39636 "EHLO huawei.com"
+        id S1727243AbfEaI5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:57:07 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:39622 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726973AbfEaI4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 04:56:43 -0400
+        id S1727137AbfEaI4l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 04:56:41 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 55B1AA5C9911FA6616C6;
+        by Forcepoint Email with ESMTP id 4C4FD9F9D2F233FEB8F4;
         Fri, 31 May 2019 16:56:37 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 31 May 2019 16:56:28 +0800
+ 14.3.439.0; Fri, 31 May 2019 16:56:29 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Shiju Jose <shiju.jose@huawei.com>,
+        <linuxarm@huawei.com>, Weihang Li <liweihang@hisilicon.com>,
         Peng Li <lipeng321@huawei.com>,
-        "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 11/12] net: hns3: fix avoid unnecessary resetting for the H/W errors which do not require reset
-Date:   Fri, 31 May 2019 16:54:57 +0800
-Message-ID: <1559292898-64090-12-git-send-email-tanhuazhong@huawei.com>
+        Huazhong tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 12/12] net: hns3: delay and separate enabling of NIC and ROCE HW errors
+Date:   Fri, 31 May 2019 16:54:58 +0800
+Message-ID: <1559292898-64090-13-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559292898-64090-1-git-send-email-tanhuazhong@huawei.com>
 References: <1559292898-64090-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,456 +39,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiju Jose <shiju.jose@huawei.com>
+From: Weihang Li <liweihang@hisilicon.com>
 
-HNS3 does not need to be reset when errors occur in some bits.
-However presently the HNAE3_FUNC_RESET is set in this case and
-as a result the default_reset is done when these errors are reported.
+All RAS and MSI-X should be enabled just in the final stage of HNS3
+initialization. It means that they should be enabled in
+hclge_init_xxx_client_instance instead of hclge_ae_dev(). Especially
+MSI-X, if it is enabled before opening vector0 IRQ, there are some
+chances that a MSI-X error will cause failure on initialization of
+ NIC client instane. So this patch delays enabling of HW errors.
+Otherwise, we also separate enabling of ROCE RAS from NIC, because
+it's not reasonable to enable ROCE RAS if we even don't have a ROCE
+driver.
 
-This patch fixes this issue. Also patch does some optimization
-in setting the reset level for the error recovery.
-
-Reported-by: Weihang Li <liweihang@hisilicon.com>
-Signed-off-by: Shiju Jose <shiju.jose@huawei.com>
+Signed-off-by: Weihang Li <liweihang@hisilicon.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Huazhong tan <tanhuazhong@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 280 ++++++++-------------
- 1 file changed, 109 insertions(+), 171 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |  9 +----
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |  3 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 45 +++++++++++++++-------
+ 3 files changed, 36 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index ea97dda..e9c6038 100644
+index e9c6038..a0a29a6 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -631,29 +631,20 @@ static const struct hclge_hw_error hclge_rocee_qmm_ovf_err_int[] = {
+@@ -1433,7 +1433,7 @@ hclge_log_and_clear_rocee_ras_error(struct hclge_dev *hdev)
+ 	return reset_type;
+ }
+ 
+-static int hclge_config_rocee_ras_interrupt(struct hclge_dev *hdev, bool en)
++int hclge_config_rocee_ras_interrupt(struct hclge_dev *hdev, bool en)
+ {
+ 	struct device *dev = &hdev->pdev->dev;
+ 	struct hclge_desc desc;
+@@ -1506,10 +1506,9 @@ static const struct hclge_hw_blk hw_blk[] = {
  	{ /* sentinel */ }
  };
  
--static enum hnae3_reset_type hclge_log_error(struct device *dev, char *reg,
--					     const struct hclge_hw_error *err,
--					     u32 err_sts)
-+static void hclge_log_error(struct device *dev, char *reg,
-+			    const struct hclge_hw_error *err,
-+			    u32 err_sts, unsigned long *reset_requests)
+-int hclge_hw_error_set_state(struct hclge_dev *hdev, bool state)
++int hclge_config_nic_hw_error(struct hclge_dev *hdev, bool state)
  {
--	enum hnae3_reset_type reset_level = HNAE3_FUNC_RESET;
--	bool need_reset = false;
--
- 	while (err->msg) {
- 		if (err->int_msk & err_sts) {
- 			dev_warn(dev, "%s %s found [error status=0x%x]\n",
- 				 reg, err->msg, err_sts);
--			if (err->reset_level != HNAE3_NONE_RESET &&
--			    err->reset_level >= reset_level) {
--				reset_level = err->reset_level;
--				need_reset = true;
--			}
-+			if (err->reset_level &&
-+			    err->reset_level != HNAE3_NONE_RESET)
-+				set_bit(err->reset_level, reset_requests);
- 		}
- 		err++;
+ 	const struct hclge_hw_blk *module = hw_blk;
+-	struct device *dev = &hdev->pdev->dev;
+ 	int ret = 0;
+ 
+ 	while (module->name) {
+@@ -1521,10 +1520,6 @@ int hclge_hw_error_set_state(struct hclge_dev *hdev, bool state)
+ 		module++;
  	}
--	if (need_reset)
--		return reset_level;
--	else
--		return HNAE3_NONE_RESET;
+ 
+-	ret = hclge_config_rocee_ras_interrupt(hdev, state);
+-	if (ret)
+-		dev_err(dev, "fail(%d) to configure ROCEE err int\n", ret);
+-
+ 	return ret;
  }
  
- /* hclge_cmd_query_error: read the error information
-@@ -1082,7 +1073,6 @@ static int hclge_handle_mpf_ras_error(struct hclge_dev *hdev,
- 				      int num)
- {
- 	struct hnae3_ae_dev *ae_dev = hdev->ae_dev;
--	enum hnae3_reset_type reset_level;
- 	struct device *dev = &hdev->pdev->dev;
- 	__le32 *desc_data;
- 	u32 status;
-@@ -1099,49 +1089,39 @@ static int hclge_handle_mpf_ras_error(struct hclge_dev *hdev,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+index c56b11e..81d115a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+@@ -119,7 +119,8 @@ struct hclge_hw_error {
+ };
  
- 	/* log HNS common errors */
- 	status = le32_to_cpu(desc[0].data[0]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "IMP_TCM_ECC_INT_STS",
--					      &hclge_imp_tcm_ecc_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "IMP_TCM_ECC_INT_STS",
-+				&hclge_imp_tcm_ecc_int[0], status,
-+				&ae_dev->hw_err_reset_req);
+ int hclge_config_mac_tnl_int(struct hclge_dev *hdev, bool en);
+-int hclge_hw_error_set_state(struct hclge_dev *hdev, bool state);
++int hclge_config_nic_hw_error(struct hclge_dev *hdev, bool state);
++int hclge_config_rocee_ras_interrupt(struct hclge_dev *hdev, bool en);
+ pci_ers_result_t hclge_handle_hw_ras_error(struct hnae3_ae_dev *ae_dev);
+ int hclge_handle_hw_msix_error(struct hclge_dev *hdev,
+ 			       unsigned long *reset_requests);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 7976660..ee5ef00 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -8210,10 +8210,16 @@ static int hclge_init_nic_client_instance(struct hnae3_ae_dev *ae_dev,
+ 	set_bit(HCLGE_STATE_NIC_REGISTERED, &hdev->state);
+ 	hnae3_set_client_init_flag(client, ae_dev, 1);
  
- 	status = le32_to_cpu(desc[0].data[1]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "CMDQ_MEM_ECC_INT_STS",
--					      &hclge_cmdq_nic_mem_ecc_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "CMDQ_MEM_ECC_INT_STS",
-+				&hclge_cmdq_nic_mem_ecc_int[0], status,
-+				&ae_dev->hw_err_reset_req);
++	/* Enable nic hw error interrupts */
++	ret = hclge_config_nic_hw_error(hdev, true);
++	if (ret)
++		dev_err(&ae_dev->pdev->dev,
++			"fail(%d) to enable hw error interrupts\n", ret);
++
+ 	if (netif_msg_drv(&hdev->vport->nic))
+ 		hclge_info_show(hdev);
  
- 	if ((le32_to_cpu(desc[0].data[2])) & BIT(0))
- 		dev_warn(dev, "imp_rd_data_poison_err found\n");
+-	return 0;
++	return ret;
+ }
  
- 	status = le32_to_cpu(desc[0].data[3]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "TQP_INT_ECC_INT_STS",
--					      &hclge_tqp_int_ecc_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "TQP_INT_ECC_INT_STS",
-+				&hclge_tqp_int_ecc_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(desc[0].data[4]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "MSIX_ECC_INT_STS",
--					      &hclge_msix_sram_ecc_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "MSIX_ECC_INT_STS",
-+				&hclge_msix_sram_ecc_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log SSU(Storage Switch Unit) errors */
- 	desc_data = (__le32 *)&desc[2];
- 	status = le32_to_cpu(*(desc_data + 2));
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_ECC_MULTI_BIT_INT_0",
--					      &hclge_ssu_mem_ecc_err_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_ECC_MULTI_BIT_INT_0",
-+				&hclge_ssu_mem_ecc_err_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(*(desc_data + 3)) & BIT(0);
- 	if (status) {
-@@ -1151,41 +1131,32 @@ static int hclge_handle_mpf_ras_error(struct hclge_dev *hdev,
+ static int hclge_init_roce_client_instance(struct hnae3_ae_dev *ae_dev,
+@@ -8293,7 +8299,13 @@ static int hclge_init_client_instance(struct hnae3_client *client,
+ 		}
  	}
  
- 	status = le32_to_cpu(*(desc_data + 4)) & HCLGE_SSU_COMMON_ERR_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_COMMON_ERR_INT",
--					      &hclge_ssu_com_err_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_COMMON_ERR_INT",
-+				&hclge_ssu_com_err_int[0], status,
-+				&ae_dev->hw_err_reset_req);
+-	return 0;
++	/* Enable roce ras interrupts */
++	ret = hclge_config_rocee_ras_interrupt(hdev, true);
++	if (ret)
++		dev_err(&ae_dev->pdev->dev,
++			"fail(%d) to enable roce ras interrupts\n", ret);
++
++	return ret;
  
- 	/* log IGU(Ingress Unit) errors */
- 	desc_data = (__le32 *)&desc[3];
- 	status = le32_to_cpu(*desc_data) & HCLGE_IGU_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "IGU_INT_STS",
--					      &hclge_igu_int[0], status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "IGU_INT_STS",
-+				&hclge_igu_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log PPP(Programmable Packet Process) errors */
- 	desc_data = (__le32 *)&desc[4];
- 	status = le32_to_cpu(*(desc_data + 1));
--	if (status) {
--		reset_level =
--			hclge_log_error(dev, "PPP_MPF_ABNORMAL_INT_ST1",
--					&hclge_ppp_mpf_abnormal_int_st1[0],
--					status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPP_MPF_ABNORMAL_INT_ST1",
-+				&hclge_ppp_mpf_abnormal_int_st1[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(*(desc_data + 3)) & HCLGE_PPP_MPF_INT_ST3_MASK;
--	if (status) {
--		reset_level =
--			hclge_log_error(dev, "PPP_MPF_ABNORMAL_INT_ST3",
--					&hclge_ppp_mpf_abnormal_int_st3[0],
--					status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPP_MPF_ABNORMAL_INT_ST3",
-+				&hclge_ppp_mpf_abnormal_int_st3[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log PPU(RCB) errors */
- 	desc_data = (__le32 *)&desc[5];
-@@ -1197,57 +1168,46 @@ static int hclge_handle_mpf_ras_error(struct hclge_dev *hdev,
+ clear_nic:
+ 	hdev->nic_client = NULL;
+@@ -8597,13 +8609,6 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 		goto err_mdiobus_unreg;
  	}
  
- 	status = le32_to_cpu(*(desc_data + 2));
--	if (status) {
--		reset_level =
--			hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST2",
--					&hclge_ppu_mpf_abnormal_int_st2[0],
--					status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
+-	ret = hclge_hw_error_set_state(hdev, true);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"fail(%d) to enable hw error interrupts\n", ret);
+-		goto err_mdiobus_unreg;
 -	}
-+	if (status)
-+		hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST2",
-+				&hclge_ppu_mpf_abnormal_int_st2[0], status,
-+				&ae_dev->hw_err_reset_req);
+-
+ 	INIT_KFIFO(hdev->mac_tnl_log);
  
- 	status = le32_to_cpu(*(desc_data + 3)) & HCLGE_PPU_MPF_INT_ST3_MASK;
--	if (status) {
--		reset_level =
--			hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST3",
--					&hclge_ppu_mpf_abnormal_int_st3[0],
--					status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST3",
-+				&hclge_ppu_mpf_abnormal_int_st3[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log TM(Traffic Manager) errors */
- 	desc_data = (__le32 *)&desc[6];
- 	status = le32_to_cpu(*desc_data);
--	if (status) {
--		reset_level = hclge_log_error(dev, "TM_SCH_RINT",
--					      &hclge_tm_sch_rint[0], status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "TM_SCH_RINT",
-+				&hclge_tm_sch_rint[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log QCN(Quantized Congestion Control) errors */
- 	desc_data = (__le32 *)&desc[7];
- 	status = le32_to_cpu(*desc_data) & HCLGE_QCN_FIFO_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "QCN_FIFO_RINT",
--					      &hclge_qcn_fifo_rint[0], status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "QCN_FIFO_RINT",
-+				&hclge_qcn_fifo_rint[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(*(desc_data + 1)) & HCLGE_QCN_ECC_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "QCN_ECC_RINT",
--					      &hclge_qcn_ecc_rint[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "QCN_ECC_RINT",
-+				&hclge_qcn_ecc_rint[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log NCSI errors */
- 	desc_data = (__le32 *)&desc[9];
- 	status = le32_to_cpu(*desc_data) & HCLGE_NCSI_ECC_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "NCSI_ECC_INT_RPT",
--					      &hclge_ncsi_err_int[0], status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "NCSI_ECC_INT_RPT",
-+				&hclge_ncsi_err_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* clear all main PF RAS errors */
- 	hclge_cmd_reuse_desc(&desc[0], false);
-@@ -1272,7 +1232,6 @@ static int hclge_handle_pf_ras_error(struct hclge_dev *hdev,
- {
- 	struct hnae3_ae_dev *ae_dev = hdev->ae_dev;
- 	struct device *dev = &hdev->pdev->dev;
--	enum hnae3_reset_type reset_level;
- 	__le32 *desc_data;
- 	u32 status;
- 	int ret;
-@@ -1288,48 +1247,38 @@ static int hclge_handle_pf_ras_error(struct hclge_dev *hdev,
- 
- 	/* log SSU(Storage Switch Unit) errors */
- 	status = le32_to_cpu(desc[0].data[0]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_PORT_BASED_ERR_INT",
--					      &hclge_ssu_port_based_err_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_PORT_BASED_ERR_INT",
-+				&hclge_ssu_port_based_err_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(desc[0].data[1]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_FIFO_OVERFLOW_INT",
--					      &hclge_ssu_fifo_overflow_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_FIFO_OVERFLOW_INT",
-+				&hclge_ssu_fifo_overflow_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	status = le32_to_cpu(desc[0].data[2]);
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_ETS_TCG_INT",
--					      &hclge_ssu_ets_tcg_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_ETS_TCG_INT",
-+				&hclge_ssu_ets_tcg_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log IGU(Ingress Unit) EGU(Egress Unit) TNL errors */
- 	desc_data = (__le32 *)&desc[1];
- 	status = le32_to_cpu(*desc_data) & HCLGE_IGU_EGU_TNL_INT_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "IGU_EGU_TNL_INT_STS",
--					      &hclge_igu_egu_tnl_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "IGU_EGU_TNL_INT_STS",
-+				&hclge_igu_egu_tnl_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* log PPU(RCB) errors */
- 	desc_data = (__le32 *)&desc[3];
- 	status = le32_to_cpu(*desc_data) & HCLGE_PPU_PF_INT_RAS_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "PPU_PF_ABNORMAL_INT_ST0",
--					      &hclge_ppu_pf_abnormal_int[0],
--					      status);
--		set_bit(reset_level, &ae_dev->hw_err_reset_req);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPU_PF_ABNORMAL_INT_ST0",
-+				&hclge_ppu_pf_abnormal_int[0], status,
-+				&ae_dev->hw_err_reset_req);
- 
- 	/* clear all PF RAS errors */
- 	hclge_cmd_reuse_desc(&desc[0], false);
-@@ -1610,8 +1559,9 @@ pci_ers_result_t hclge_handle_hw_ras_error(struct hnae3_ae_dev *ae_dev)
- 		hclge_handle_rocee_ras_error(ae_dev);
+ 	hclge_dcb_ops_set(hdev);
+@@ -8727,15 +8732,26 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
  	}
  
--	if (status & HCLGE_RAS_REG_NFE_MASK ||
--	    status & HCLGE_RAS_REG_ROCEE_ERR_MASK) {
-+	if ((status & HCLGE_RAS_REG_NFE_MASK ||
-+	     status & HCLGE_RAS_REG_ROCEE_ERR_MASK) &&
-+	     ae_dev->hw_err_reset_req) {
- 		ae_dev->override_pci_need_reset = 0;
- 		return PCI_ERS_RESULT_NEED_RESET;
+ 	/* Re-enable the hw error interrupts because
+-	 * the interrupts get disabled on core/global reset.
++	 * the interrupts get disabled on global reset.
+ 	 */
+-	ret = hclge_hw_error_set_state(hdev, true);
++	ret = hclge_config_nic_hw_error(hdev, true);
+ 	if (ret) {
+ 		dev_err(&pdev->dev,
+-			"fail(%d) to re-enable HNS hw error interrupts\n", ret);
++			"fail(%d) to re-enable NIC hw error interrupts\n",
++			ret);
+ 		return ret;
  	}
-@@ -1626,7 +1576,6 @@ int hclge_handle_hw_msix_error(struct hclge_dev *hdev,
- 	struct hclge_mac_tnl_stats mac_tnl_stats;
- 	struct device *dev = &hdev->pdev->dev;
- 	u32 mpf_bd_num, pf_bd_num, bd_num;
--	enum hnae3_reset_type reset_level;
- 	struct hclge_desc desc_bd;
- 	struct hclge_desc *desc;
- 	__le32 *desc_data;
-@@ -1664,24 +1613,19 @@ int hclge_handle_hw_msix_error(struct hclge_dev *hdev,
- 	/* log MAC errors */
- 	desc_data = (__le32 *)&desc[1];
- 	status = le32_to_cpu(*desc_data);
--	if (status) {
--		reset_level = hclge_log_error(dev, "MAC_AFIFO_TNL_INT_R",
--					      &hclge_mac_afifo_tnl_int[0],
--					      status);
--		set_bit(reset_level, reset_requests);
--	}
-+	if (status)
-+		hclge_log_error(dev, "MAC_AFIFO_TNL_INT_R",
-+				&hclge_mac_afifo_tnl_int[0], status,
-+				reset_requests);
  
- 	/* log PPU(RCB) MPF errors */
- 	desc_data = (__le32 *)&desc[5];
- 	status = le32_to_cpu(*(desc_data + 2)) &
- 			HCLGE_PPU_MPF_INT_ST2_MSIX_MASK;
--	if (status) {
--		reset_level =
--			hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST2",
--					&hclge_ppu_mpf_abnormal_int_st2[0],
--					status);
--		set_bit(reset_level, reset_requests);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPU_MPF_ABNORMAL_INT_ST2",
-+				&hclge_ppu_mpf_abnormal_int_st2[0],
-+				status, reset_requests);
++	if (hdev->roce_client) {
++		ret = hclge_config_rocee_ras_interrupt(hdev, true);
++		if (ret) {
++			dev_err(&pdev->dev,
++				"fail(%d) to re-enable roce ras interrupts\n",
++				ret);
++			return ret;
++		}
++	}
++
+ 	hclge_reset_vport_state(hdev);
  
- 	/* clear all main PF MSIx errors */
- 	hclge_cmd_reuse_desc(&desc[0], false);
-@@ -1705,32 +1649,26 @@ int hclge_handle_hw_msix_error(struct hclge_dev *hdev,
+ 	dev_info(&pdev->dev, "Reset done, %s driver initialization finished.\n",
+@@ -8760,8 +8776,11 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	hclge_enable_vector(&hdev->misc_vector, false);
+ 	synchronize_irq(hdev->misc_vector.vector_irq);
  
- 	/* log SSU PF errors */
- 	status = le32_to_cpu(desc[0].data[0]) & HCLGE_SSU_PORT_INT_MSIX_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "SSU_PORT_BASED_ERR_INT",
--					      &hclge_ssu_port_based_pf_int[0],
--					      status);
--		set_bit(reset_level, reset_requests);
--	}
-+	if (status)
-+		hclge_log_error(dev, "SSU_PORT_BASED_ERR_INT",
-+				&hclge_ssu_port_based_pf_int[0],
-+				status, reset_requests);
- 
- 	/* read and log PPP PF errors */
- 	desc_data = (__le32 *)&desc[2];
- 	status = le32_to_cpu(*desc_data);
--	if (status) {
--		reset_level = hclge_log_error(dev, "PPP_PF_ABNORMAL_INT_ST0",
--					      &hclge_ppp_pf_abnormal_int[0],
--					      status);
--		set_bit(reset_level, reset_requests);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPP_PF_ABNORMAL_INT_ST0",
-+				&hclge_ppp_pf_abnormal_int[0],
-+				status, reset_requests);
- 
- 	/* log PPU(RCB) PF errors */
- 	desc_data = (__le32 *)&desc[3];
- 	status = le32_to_cpu(*desc_data) & HCLGE_PPU_PF_INT_MSIX_MASK;
--	if (status) {
--		reset_level = hclge_log_error(dev, "PPU_PF_ABNORMAL_INT_ST",
--					      &hclge_ppu_pf_abnormal_int[0],
--					      status);
--		set_bit(reset_level, reset_requests);
--	}
-+	if (status)
-+		hclge_log_error(dev, "PPU_PF_ABNORMAL_INT_ST",
-+				&hclge_ppu_pf_abnormal_int[0],
-+				status, reset_requests);
- 
- 	/* clear all PF MSIx errors */
- 	hclge_cmd_reuse_desc(&desc[0], false);
++	/* Disable all hw interrupts */
+ 	hclge_config_mac_tnl_int(hdev, false);
+-	hclge_hw_error_set_state(hdev, false);
++	hclge_config_nic_hw_error(hdev, false);
++	hclge_config_rocee_ras_interrupt(hdev, false);
++
+ 	hclge_cmd_uninit(hdev);
+ 	hclge_misc_irq_uninit(hdev);
+ 	hclge_pci_uninit(hdev);
 -- 
 2.7.4
 
