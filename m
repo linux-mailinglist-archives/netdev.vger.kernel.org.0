@@ -2,115 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E27309A9
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:47:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC99E309CD
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 10:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726941AbfEaHrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 03:47:45 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45291 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726485AbfEaHrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:47:45 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b18so5765561wrq.12
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 00:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=dzpfityjiyVjBLgLIDdS7jy7fuGuzY8jJendAr5fdaU=;
-        b=hZaEcrWuUar2mSp1ulSSIeJ12sn8rUP1OAZf+IIRLpBbnKhQSP9vi0gQXR0j1ER0LX
-         ltI4MssBF2CzGdisONdQnG4gD88VboWQpwTL4trObnfDYR3Sl/QFjKXn9dby4LOS043X
-         3Rops2zaYBopA+JOQ7ZNXWXkJsaNcBwiOE/9T0nsnPbNUxOwEAvapWcICHZuH3or8+mt
-         8ZX1Pgan+DnhKlHYud7azYM+juhUDqlDTTbFLwWum0uUKv/+cLO6k9tuvm6x+605IMli
-         yWW9EQXOgkBgS7mI9g53fdyB525QQpsuP4QZcJVDgLZkUqMELDZVpMazCy6hyuS6Ffg1
-         +64Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dzpfityjiyVjBLgLIDdS7jy7fuGuzY8jJendAr5fdaU=;
-        b=jQa1/ImJElCVZOGTZWvWaaxkYRctgHbzZy1KbEXC5xfzMI4dpqvlaxuhj5qJrys6HJ
-         ZY7tTVacfBeRNCskvI4qsrUDVBUSTfCexxYexjPjTO37pC8NK5Ofd7dcjFkNmfNkSUvU
-         8pBxlGS10OsgPV+CHXO/EpU4+bwfXMGUW5VMRKQJntkrwKbnYGQPOXtYeJvTmMTmB93J
-         iKPTw5KoksJNIieS4LI5QOgHElKlFZgCfU8UZv2I07ur2UC66Z98V29xfcoeTvYB75l7
-         HEBOh3c9EdXUOiK7FBs58dCWYyy2tZ1ZFdOE/6ZyCcXXa1zxEooAkXrN8PO9+sQLgCMD
-         3ksA==
-X-Gm-Message-State: APjAAAWGo60BW7oU8QGtbX1uUFLkxgBgEFrtYw7exnsayY17e0iUwR6g
-        aoAleKEPD9N1JYc7avmj3LZ/HA==
-X-Google-Smtp-Source: APXvYqyOtIS/CRng6RAf7TVt12TGYUminrxW7vT1l9v+5dGgwHi0wPivDQp+dRnsatvgBKL/P8MrvQ==
-X-Received: by 2002:a5d:6709:: with SMTP id o9mr5380589wru.301.1559288863582;
-        Fri, 31 May 2019 00:47:43 -0700 (PDT)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id a4sm11022778wrf.78.2019.05.31.00.47.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 00:47:43 -0700 (PDT)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chris Healy <cphealy@gmail.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH] net: phy: support C45 phys in SIOCGMIIREG/SIOCSMIIREG ioctls
-Date:   Fri, 31 May 2019 10:47:27 +0300
-Message-Id: <20190531074727.3257-1-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.11.0
+        id S1726970AbfEaIDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 04:03:09 -0400
+Received: from mail.us.es ([193.147.175.20]:38980 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726884AbfEaIDE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 04:03:04 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 5ABEABAEA3
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:03:01 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 381C4DA79D
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 10:03:01 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 94374DA7F3; Fri, 31 May 2019 10:03:00 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 21354DA705;
+        Fri, 31 May 2019 10:02:58 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 31 May 2019 10:02:58 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id E74284265A32;
+        Fri, 31 May 2019 10:02:57 +0200 (CEST)
+Date:   Fri, 31 May 2019 10:02:57 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Yuehaibing <yuehaibing@huawei.com>
+Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de,
+        linux-kernel@vger.kernel.org, coreteam@netfilter.org,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] netfilter: nf_conntrack_bridge: Fix build error
+ without IPV6
+Message-ID: <20190531080257.62mfimdlwuv42bk3@salvia>
+References: <20190531024643.3840-1-yuehaibing@huawei.com>
+ <19095cab-fbc5-f200-a40c-cb4c1a12fbc6@huawei.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="mledociainyopav3"
+Content-Disposition: inline
+In-Reply-To: <19095cab-fbc5-f200-a40c-cb4c1a12fbc6@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change allows phytool [1] and similar tools to read and write C45 phy
-registers from userspace.
 
-This is useful for debugging and for porting vendor phy diagnostics tools.
+--mledociainyopav3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-[1] https://github.com/wkz/phytool
+On Fri, May 31, 2019 at 11:06:49AM +0800, Yuehaibing wrote:
+> +cc netdev
+> 
+> On 2019/5/31 10:46, YueHaibing wrote:
+> > Fix gcc build error while CONFIG_IPV6 is not set
+> > 
+> > In file included from net/netfilter/core.c:19:0:
+> > ./include/linux/netfilter_ipv6.h: In function 'nf_ipv6_br_defrag':
+> > ./include/linux/netfilter_ipv6.h:110:9: error: implicit declaration of function 'nf_ct_frag6_gather' [-Werror=implicit-function-declaration]
+> > 
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Fixes: 764dd163ac92 ("netfilter: nf_conntrack_bridge: add support for IPv6")
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+> >  include/linux/netfilter_ipv6.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
+> > index a21b8c9..4ea97fd 100644
+> > --- a/include/linux/netfilter_ipv6.h
+> > +++ b/include/linux/netfilter_ipv6.h
+> > @@ -96,6 +96,8 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
+> >  #endif
+> >  }
+> >  
+> > +int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user);
+> > +
 
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
----
- drivers/net/phy/phy.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+This is already defined in:
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index e8885429293a..3d991958bde0 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -407,6 +407,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
- 	struct mii_ioctl_data *mii_data = if_mii(ifr);
- 	u16 val = mii_data->val_in;
- 	bool change_autoneg = false;
-+	int ret;
+include/net/netfilter/ipv6/nf_defrag_ipv6.h
+
+Probably this?
+
+--mledociainyopav3
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
+index a21b8c9623ee..3a3dc4b1f0e7 100644
+--- a/include/linux/netfilter_ipv6.h
++++ b/include/linux/netfilter_ipv6.h
+@@ -96,6 +96,8 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
+ #endif
+ }
  
- 	switch (cmd) {
- 	case SIOCGMIIPHY:
-@@ -414,12 +415,28 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
- 		/* fall through */
- 
- 	case SIOCGMIIREG:
-+		if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-+			ret = phy_read_mmd(phydev,
-+					   mdio_phy_id_devad(mii_data->phy_id),
-+					   mii_data->reg_num);
-+			if (ret < 0)
-+				return ret;
-+			mii_data->val_out = ret;
-+			return 0;
-+		}
- 		mii_data->val_out = mdiobus_read(phydev->mdio.bus,
- 						 mii_data->phy_id,
- 						 mii_data->reg_num);
- 		return 0;
- 
- 	case SIOCSMIIREG:
-+		if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-+			ret = phy_write_mmd(phydev,
-+					    mdio_phy_id_devad(mii_data->phy_id),
-+					    mii_data->reg_num,
-+					    mii_data->val_in);
-+			return ret;
-+		}
- 		if (mii_data->phy_id == phydev->mdio.addr) {
- 			switch (mii_data->reg_num) {
- 			case MII_BMCR:
--- 
-2.11.0
++#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
++
+ static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
+ 				    u32 user)
+ {
 
+--mledociainyopav3--
