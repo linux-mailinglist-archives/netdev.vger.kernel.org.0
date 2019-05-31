@@ -2,206 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 595593175F
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A8A31762
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 01:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfEaW6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 18:58:54 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33766 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbfEaW6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 18:58:53 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 14so2957066qtf.0;
-        Fri, 31 May 2019 15:58:52 -0700 (PDT)
+        id S1726674AbfEaXAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 19:00:16 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:38887 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbfEaXAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 19:00:16 -0400
+Received: by mail-lj1-f194.google.com with SMTP id o13so11083792lji.5
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 16:00:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hXo/NUkkt5nfAJu1D+/vqXTpXKSSAE8fC+tUkqH9kYo=;
-        b=FVOktVdwQrjLAspeRivD5vJbEC3/5NCig7VRLrMEdbP0eEhc0SNi9IywWgJfJD6awI
-         o5aPDld3MVfrnO8Q5DTgXqZ1NAxa3I8PGZS+/2tIAJikjyi0nhiNxAbVWRya7gnDeyRJ
-         Pn0HnbJ+DgnEeYu4ksGmWSdqWyXC0Y7WcM+1GpyTazpY46+UK9r7wN7CsWV+FuymNzPa
-         2z/bEqS7oHXCMMWhhxxzBtgQRKA3c8Nd5Wj7ebryBFhrlEWlgYiZdhHwJZKcSQhYUW28
-         +bEWeruO8yFWCe2jMrZXizHN8OCxTOh2AI+48eW9l2clnrqDBsWQmInPVNZHpEy7mtmY
-         ILXg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=R6AakFEfT07RKGQjtU57G+Mi06fjxrW46LtUHEWscX4=;
+        b=UdqZ6v0xW/ZPZI7rfZNyoQWpFuu/Dvj8IN2xtnDAPTX97Ifm9GE29ZZGLxyqa/iYZ4
+         rcW2doIiMnJjEYD8YHPZeBmeYw+/pF+7ufxy43Ajo6/T1K3jr+2pVZMH3vAfYHucEpi5
+         8KaToYGMYAnolAxiqpavrhqxAujTLEgOy5wYLdGxZU6GLfatAVHJQ2Tg01q8q0X6qGNd
+         cvMdOyIrYD4kp5dHSVPpHRvmnPayZKvtxCSI1aZfKMsjl1X/eLrDLMuyr0pSD8N/+0W1
+         /DJb6GKmvK2DjPvRgAoWeRBJylaxDlUW6HBWawCb3DzMx8wad8MxyX9f6zHog+XwZFvd
+         oQtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hXo/NUkkt5nfAJu1D+/vqXTpXKSSAE8fC+tUkqH9kYo=;
-        b=T4j906gc9mgcmesRIwkH/s6By7rWHb5U70xPMzhy4RhAKrmABHJ9FEQAjHJ+t4zTHd
-         olKF/MNHslPSNTs4mwcgl6kxrotq0MRz5LNE4pqcYBG7egdGnft/QA3vc//vkSFSR3xK
-         kgFvY4hx9jxycYledYQJmqLCVADx6pN5XDjbOuoF0jALu4NgTO4rCJo+IzToIQFbHGM9
-         uYCJYjGGTLF20u+/svjKlr9ulessaQjlrEEUc5EjqSUQe9qIKLzmAJva/2j5QMMnhNhV
-         2XVEmdTir6RnDfwNSQIPqGC89U7CUG4Fj/rS9E1fctP9w06gMETQLkfQx/ztbOI+6Zio
-         qj8g==
-X-Gm-Message-State: APjAAAV2FlmTcKp5tAuqBI0jNyeP+m0fgdRvcZzMvLJQuobOB4o3OgnA
-        V0boJ+A42brav5/WWnyoS5OuS+7yFxotsxn6xxnLZL2RGjA=
-X-Google-Smtp-Source: APXvYqxzEQfR0agDFmKUELL6wC7MtrYRtgfnYkcgiVMYAIFoaKJ6WFUO2J0+j/pWb6DLBdDBqpLm3+VGKc/axEOuS7Y=
-X-Received: by 2002:ac8:2a63:: with SMTP id l32mr11740650qtl.117.1559343532185;
- Fri, 31 May 2019 15:58:52 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=R6AakFEfT07RKGQjtU57G+Mi06fjxrW46LtUHEWscX4=;
+        b=D58V1TnM9IdF/4Lemf+f+MtnMghmTsEDGVC1qWyY0l3N9bozqzWy6gYe+LO8xYoUML
+         Gwi2SyOlH1WG/vTYTiW5VOsfVEGwDCdxj2/mCnoOgWl1Xk9Wx9r0xEuhgrzA1Yi5F1MG
+         fVEFlUOzQ/MkTXUl2//rgPanakgSz9SrKQzXellLVgotlUXu+BTA2b1JbOCDQ0nBN7Fc
+         vmdkhcSnoCXQTRxVBwc0zfmyutTRENRbuIuMPTKAYQAHHbiOgBIU3KAjAsoPkE7etJDq
+         tM52Nngv0YeoWv8ujM1Tm6WePHQJdJG1Xzha5JRee+qK/TniSln92pX++NBhh7S0RD4Y
+         SgTQ==
+X-Gm-Message-State: APjAAAVtAF7ivuhbeLMYjQanE12srV8uN4MCfijVqT5fuv35DjxcdKMn
+        uWT0QAKBeYATDrpqpacstmVB8w==
+X-Google-Smtp-Source: APXvYqwADy+ePnz+6LSmTnDgiozSJUl6IJ2AdwyOS/QcPm0Gp1mY0/Eivedv8uAM3H8DjK98nJn7WQ==
+X-Received: by 2002:a2e:2b8d:: with SMTP id r13mr7429874ljr.162.1559343613223;
+        Fri, 31 May 2019 16:00:13 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id r14sm1468168lff.44.2019.05.31.16.00.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 31 May 2019 16:00:12 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 02:00:10 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "brouer@redhat.com" <brouer@redhat.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH v2 net-next 7/7] net: ethernet: ti: cpsw: add XDP support
+Message-ID: <20190531230008.GA15675@khorivan>
+Mail-Followup-To: Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+References: <20190530182039.4945-1-ivan.khoronzhuk@linaro.org>
+ <20190530182039.4945-8-ivan.khoronzhuk@linaro.org>
+ <20190531174643.4be8b27f@carbon>
+ <20190531162523.GA3694@khorivan>
+ <20190531183241.255293bc@carbon>
+ <20190531170332.GB3694@khorivan>
+ <a65de3a257ab5ebec83e817c092f074b58b9ae47.camel@mellanox.com>
 MIME-Version: 1.0
-References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
- <20190531212835.GA31612@mini-arch>
-In-Reply-To: <20190531212835.GA31612@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 31 May 2019 15:58:41 -0700
-Message-ID: <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
- using BTF
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <a65de3a257ab5ebec83e817c092f074b58b9ae47.camel@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 2:28 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+On Fri, May 31, 2019 at 10:08:03PM +0000, Saeed Mahameed wrote:
+>On Fri, 2019-05-31 at 20:03 +0300, Ivan Khoronzhuk wrote:
+>> On Fri, May 31, 2019 at 06:32:41PM +0200, Jesper Dangaard Brouer
+>> wrote:
+>> > On Fri, 31 May 2019 19:25:24 +0300 Ivan Khoronzhuk <
+>> > ivan.khoronzhuk@linaro.org> wrote:
+>> >
+>> > > On Fri, May 31, 2019 at 05:46:43PM +0200, Jesper Dangaard Brouer
+>> > > wrote:
+>> > > > From below code snippets, it looks like you only allocated 1
+>> > > > page_pool
+>> > > > and sharing it with several RX-queues, as I don't have the full
+>> > > > context
+>> > > > and don't know this driver, I might be wrong?
+>> > > >
+>> > > > To be clear, a page_pool object is needed per RX-queue, as it
+>> > > > is
+>> > > > accessing a small RX page cache (which protected by
+>> > > > NAPI/softirq).
+>> > >
+>> > > There is one RX interrupt and one RX NAPI for all rx channels.
+>> >
+>> > So, what are you saying?
+>> >
+>> > You _are_ sharing the page_pool between several RX-channels, but it
+>> > is
+>> > safe because this hardware only have one RX interrupt + NAPI
+>> > instance??
+>>
+>> I can miss smth but in case of cpsw technically it means:
+>> 1) RX interrupts are disabled while NAPI is scheduled,
+>>    not for particular CPU or channel, but at all, for whole cpsw
+>> module.
+>> 2) RX channels are handled one by one by priority.
 >
-> On 05/31, Andrii Nakryiko wrote:
-> > This patch adds support for a new way to define BPF maps. It relies on
-> > BTF to describe mandatory and optional attributes of a map, as well as
-> > captures type information of key and value naturally. This eliminates
-> > the need for BPF_ANNOTATE_KV_PAIR hack and ensures key/value sizes are
-> > always in sync with the key/value type.
-> My 2c: this is too magical and relies on me knowing the expected fields.
-> (also, the compiler won't be able to help with the misspellings).
-
-I don't think it's really worse than current bpf_map_def approach. In
-typical scenario, there are only two fields you need to remember: type
-and max_entries (notice, they are called exactly the same as in
-bpf_map_def, so this knowledge is transferrable). Then you'll have
-key/value, using which you are describing both type (using field's
-type) and size (calculated from the type).
-
-I can relate a bit to that with bpf_map_def you can find definition
-and see all possible fields, but one can also find a lot of examples
-for new map definitions as well.
-
-One big advantage of this scheme, though, is that you get that type
-association automagically without using BPF_ANNOTATE_KV_PAIR hack,
-with no chance of having a mismatch, etc. This is less duplication (no
-need to do sizeof(struct my_struct) and struct my_struct as an arg to
-that macro) and there is no need to go and ping people to add those
-annotations to improve introspection of BPF maps.
-
+>Hi Ivan, I got a silly question..
 >
-> I don't know how others feel about it, but I'd be much more comfortable
-> with a simpler TLV-like approach. Have a new section where the format
-> is |4-byte size|struct bpf_map_def_extendable|. That would essentially
-> allow us to extend it the way we do with a syscall args.
-
-It would help with extensibility, sure, though even current
-bpf_map_def approach sort of can be extended already. But it won't
-solve the problem of having BTF types captured for key/value (see
-above). Also, you'd need another macro to lay everything out properly.
-
->
-> Also, (un)related: we don't currently use BTF internally, so if
-> you convert all tests, we'd be unable to run them :-(
-
-Not exactly sure what you mean "you'd be unable to run them". Do you
-mean that you use old Clang that doesn't emit BTF? If that's what you
-are saying, a lot of tests already rely on latest Clang, so those
-tests already don't work for you, probably. I'll leave it up to Daniel
-and Alexei to decide if we want to convert selftests right now or not.
-I did it mostly to prove that we can handle all existing cases (and
-found few gotchas and bugs along the way, both in my implementation
-and in kernel - fixes coming soon).
+>What is the reason behind having multiple RX rings and one CPU/NAPI
+>handling all of them ? priority ? how do you priorities ?
+Several.
+One of the reason, from what I know, it can handle for several cpus/napi but
+because of errata on some SoCs or for all of them it was discarded, but idea was
+it can. Second it uses same davinci_cpdma API as tx channels that can be rate
+limited, and it's used not only by cpsw but also by other driver, so can't be
+modified easily and no reason. And third one, h/w has ability to steer some
+filtered traffic to rx queues and can be potentially configured with ethtool
+ntuples or so, but it's not implemented....yet.
 
 >
-> > Relying on BTF, this approach allows for both forward and backward
-> > compatibility w.r.t. extending supported map definition features. Old
-> > libbpf implementation will ignore fields it doesn't recognize, while new
-> > implementations will parse and recognize new optional attributes.
-> I also don't know how to feel about old libbpf ignoring some attributes.
-> In the kernel we require that the unknown fields are zeroed.
-> We probably need to do something like that here? What do you think
-> would be a good example of an optional attribute?
+>> 3) After all of them handled and no more in budget - interrupts are
+>> enabled.
+>> 4) If page is returned to the pool, and it's within NAPI, no races as
+>> it's
+>>    returned protected by softirq. If it's returned not in softirq
+>> it's protected
+>>    by producer lock of the ring.
+>>
+>> Probably it's not good example for others how it should be used, not
+>> a big
+>> problem to move it to separate pools.., even don't remember why I
+>> decided to
+>> use shared pool, there was some more reasons... need search in
+>> history.
+>>
+>> > --
+>> > Best regards,
+>> >  Jesper Dangaard Brouer
+>> >  MSc.CS, Principal Kernel Engineer at Red Hat
+>> >  LinkedIn: http://www.linkedin.com/in/brouer
 
-Ignoring is required for forward-compatibility, where old libbpf will
-be used to load newer user BPF programs. We can decided not to do it,
-in that case it's just a question of erroring out on first unknown
-field. This RFC was posted exactly to discuss all these issues with
-more general community, as there is no single true way to do this.
-
-As for examples of when it can be used. It's any feature that can be
-considered optional or a hint, so if old libbpf doesn't do that, it's
-still not the end of the world (and we can live with that, or can
-correct using direct libbpf API calls).
-
->
-> > The outline of the new map definition (short, BTF-defined maps) is as follows:
-> > 1. All the maps should be defined in .maps ELF section. It's possible to
-> >    have both "legacy" map definitions in `maps` sections and BTF-defined
-> >    maps in .maps sections. Everything will still work transparently.
-> > 2. The map declaration and initialization is done through
-> >    a global/static variable of a struct type with few mandatory and
-> >    extra optional fields:
-> >    - type field is mandatory and specified type of BPF map;
-> >    - key/value fields are mandatory and capture key/value type/size information;
-> >    - max_entries attribute is optional; if max_entries is not specified or
-> >      initialized, it has to be provided in runtime through libbpf API
-> >      before loading bpf_object;
-> >    - map_flags is optional and if not defined, will be assumed to be 0.
-> > 3. Key/value fields should be **a pointer** to a type describing
-> >    key/value. The pointee type is assumed (and will be recorded as such
-> >    and used for size determination) to be a type describing key/value of
-> >    the map. This is done to save excessive amounts of space allocated in
-> >    corresponding ELF sections for key/value of big size.
-> > 4. As some maps disallow having BTF type ID associated with key/value,
-> >    it's possible to specify key/value size explicitly without
-> >    associating BTF type ID with it. Use key_size and value_size fields
-> >    to do that (see example below).
-> >
-> > Here's an example of simple ARRAY map defintion:
-> >
-> > struct my_value { int x, y, z; };
-> >
-> > struct {
-> >       int type;
-> >       int max_entries;
-> >       int *key;
-> >       struct my_value *value;
-> > } btf_map SEC(".maps") = {
-> >       .type = BPF_MAP_TYPE_ARRAY,
-> >       .max_entries = 16,
-> > };
-> >
-> > This will define BPF ARRAY map 'btf_map' with 16 elements. The key will
-> > be of type int and thus key size will be 4 bytes. The value is struct
-> > my_value of size 12 bytes. This map can be used from C code exactly the
-> > same as with existing maps defined through struct bpf_map_def.
-> >
-> > Here's an example of STACKMAP definition (which currently disallows BTF type
-> > IDs for key/value):
-> >
-> > struct {
-> >       __u32 type;
-> >       __u32 max_entries;
-> >       __u32 map_flags;
-> >       __u32 key_size;
-> >       __u32 value_size;
-> > } stackmap SEC(".maps") = {
-> >       .type = BPF_MAP_TYPE_STACK_TRACE,
-> >       .max_entries = 128,
-> >       .map_flags = BPF_F_STACK_BUILD_ID,
-> >       .key_size = sizeof(__u32),
-> >       .value_size = PERF_MAX_STACK_DEPTH * sizeof(struct bpf_stack_build_id),
-> > };
-> >
-> > This approach is naturally extended to support map-in-map, by making a value
-> > field to be another struct that describes inner map. This feature is not
-> > implemented yet. It's also possible to incrementally add features like pinning
-> > with full backwards and forward compatibility.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/lib/bpf/btf.h    |   1 +
-> >  tools/lib/bpf/libbpf.c | 333 +++++++++++++++++++++++++++++++++++++++--
-> >  2 files changed, 325 insertions(+), 9 deletions(-)
+-- 
+Regards,
+Ivan Khoronzhuk
