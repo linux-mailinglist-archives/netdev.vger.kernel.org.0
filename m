@@ -2,104 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 225DC30953
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220A230946
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbfEaH1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 03:27:15 -0400
-Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:40963 "EHLO
-        esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfEaH1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:27:15 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 03:27:14 EDT
-Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=wei.liu2@citrix.com; spf=Pass smtp.mailfrom=wei.liu2@citrix.com; spf=None smtp.helo=postmaster@MIAPEX02MSOL02.citrite.net
-Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  wei.liu2@citrix.com) identity=pra; client-ip=23.29.105.83;
-  receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="wei.liu2@citrix.com";
-  x-sender="wei.liu2@citrix.com"; x-conformance=sidf_compatible
-Received-SPF: Pass (esa4.hc3370-68.iphmx.com: domain of
-  wei.liu2@citrix.com designates 23.29.105.83 as permitted
-  sender) identity=mailfrom; client-ip=23.29.105.83;
-  receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="wei.liu2@citrix.com";
-  x-sender="wei.liu2@citrix.com";
-  x-conformance=sidf_compatible; x-record-type="v=spf1";
-  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
-  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
-  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
-  ip4:216.52.6.188 ip4:23.29.105.83 ip4:162.221.156.50 ~all"
-Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@MIAPEX02MSOL02.citrite.net) identity=helo;
-  client-ip=23.29.105.83; receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="wei.liu2@citrix.com";
-  x-sender="postmaster@MIAPEX02MSOL02.citrite.net";
-  x-conformance=sidf_compatible
-IronPort-SDR: vZ/vfl2aWL/s2CrBoteUwRYksEByaVfCVcKUAHL+r/L7L0C9LKwCME3Jfwyqimk5UyqNI9Uekg
- QyY+0MYrqMjTsS+HXDmX8Ig34gUCd/4+8YpKfoxWA9ZZLIeLbZEKqavso5sj5z/7yfTo3/U3nq
- f8EDO5tH1IOUpds654nQ3M9asmbrkTU9/32zOEidozr3I67zQ/Pg3ESHZ95IoEUq8PCp/wEqWb
- 22RcvvBK22nkB8FFw2j9Y3r9cgDfsq8dI/5VnfrwHVC2+LLZ4uKyXQN3hJcA6M1FCzW3hk2A91
- ZG8=
-X-SBRS: 2.7
-X-MesageID: 1142044
-X-Ironport-Server: esa4.hc3370-68.iphmx.com
-X-Remote-IP: 23.29.105.83
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.60,534,1549947600"; 
-   d="scan'208";a="1142044"
-Date:   Fri, 31 May 2019 08:20:05 +0100
-From:   Wei Liu <wei.liu2@citrix.com>
-To:     Colin King <colin.king@canonical.com>
-CC:     Wei Liu <wei.liu2@citrix.com>,
-        Paul Durrant <paul.durrant@citrix.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        <xen-devel@lists.xenproject.org>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] xen-netback: remove redundant assignment to err
-Message-ID: <20190531072005.GC25537@zion.uk.xensource.com>
-References: <20190530190438.9571-1-colin.king@canonical.com>
+        id S1726002AbfEaHWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 03:22:53 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:32885 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbfEaHWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:22:52 -0400
+Received: by mail-wm1-f66.google.com with SMTP id v19so7052096wmh.0
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 00:22:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=FU04xAR/6h4GqcGgE+2NWUuxq5FrKtSed1UqhDep54o=;
+        b=eeJoMp9B+3CUiDjzCQewpNM5ilfXaCzT/ghPtaG5Ck6HrGBJV9s9ZczKJw/NtzJPdO
+         7S1gIefCcFM4pZPgMB6f82Tvc/mF1tKoe5uQI+OZ2UETFek+Gk7KiNEDbh6cfSdUQ0v4
+         guUzuTpUsUHhBs5iSjQavC6RwG/JxRX/5+dsSAv7VZQlWWA+ubIca8ZlwbGGNrG3NSUM
+         8nSWcOhABep4I6s0gPveUTmp1yYvLflDZ84droGjHq/a5gLcZ5GEMaVjlg0MLAjNEEaq
+         dCtVG0GgEnJzOKR3BFm1g40CdC6X6JcTwxV4+1PcUU7k+IbpYFBDTw8Tni4aVoIczFgc
+         AzGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=FU04xAR/6h4GqcGgE+2NWUuxq5FrKtSed1UqhDep54o=;
+        b=XVZEQJTkDXc/hJZEUcK2k6cLINaIHwD6cCTbT72HAIT0n8uI3oTB/mslTyqaHnBXBr
+         kaQsSC+l21s6nFCrd34rql0bsaWGPYoCC5yMA+ll/ccEbMxTR6yag+rvRvVv0ziHZ7KT
+         OAiIbQ8wmOPYUFFgekFU/v5Z3w10iOZfMYlfYrGG6H0kZ5vJwXEzwLFCmVYRcc8rzEdQ
+         CePZlDq1r0czVTrCw+w28NwOmijdLEy+cVlUUer0/IJF6BCVit7ICd6s2zUedEaLFd/7
+         0kHiumheeAdZpZK89QiaC5XLbYR+o9qFQKx3vBhlJsm+kUnVyPwaA1DhiZCCUHh9yP/9
+         pD9A==
+X-Gm-Message-State: APjAAAVukpPUsye7IWvsk500dEIHuEKmhy+6mDqHYLYKGaei+oeTTyxm
+        oMhe3VSZdFHDlO+tpwJNbQHEDw==
+X-Google-Smtp-Source: APXvYqxPIRDWAk2ZHGMiEu7JvqNMZ/P1bKU8W5EPs76o972GvPxxd8Idq7dd+N0zwckXYzWuOdy59Q==
+X-Received: by 2002:a1c:2358:: with SMTP id j85mr4678026wmj.46.1559287371059;
+        Fri, 31 May 2019 00:22:51 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
+        by smtp.gmail.com with ESMTPSA id z65sm7566691wme.37.2019.05.31.00.22.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 31 May 2019 00:22:50 -0700 (PDT)
+References: <20190530190800.7633-1-luke.r.nels@gmail.com> <CAPhsuW4kMBSjpATqHrEhTmuqje=XZNGOrMyNur8f6K0RNQP=yw@mail.gmail.com> <CAB-e3NSidgz8gLRTL796A0DyRVePPjVDpSC6=gSA4hH8q6VqvQ@mail.gmail.com> <CAPhsuW7rOzyJTac7d9PPHeWW39Hu5pV6Mk0xJr8jyr0HH=-W2A@mail.gmail.com>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Luke Nelson <luke.r.nels@gmail.com>,
+        Song Liu <liu.song.a23@gmail.com>
+Cc:     Xi Wang <xi.wang@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        linux-riscv@lists.infradead.org, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] bpf, riscv: fix bugs in JIT for 32-bit ALU operations
+In-reply-to: <CAPhsuW7rOzyJTac7d9PPHeWW39Hu5pV6Mk0xJr8jyr0HH=-W2A@mail.gmail.com>
+Date:   Fri, 31 May 2019 08:22:45 +0100
+Message-ID: <87d0jzgkai.fsf@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20190530190438.9571-1-colin.king@canonical.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 08:04:38PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The variable err is assigned with the value -ENOMEM that is never
-> read and it is re-assigned a new value later on.  The assignment is
-> redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Acked-by: Wei Liu <wei.liu2@citrix.com>
+Song Liu writes:
 
+> On Thu, May 30, 2019 at 3:34 PM Luke Nelson <luke.r.nels@gmail.com> wrote:
+>>
+>> On Thu, May 30, 2019 at 1:53 PM Song Liu <liu.song.a23@gmail.com> wrote:
+>> >
+>> > This is a little messy. How about we introduce some helper function
+>> > like:
+>> >
+>> > /* please find a better name... */
+>> > emit_32_or_64(bool is64, const u32 insn_32, const u32 inst_64, struct
+>> > rv_jit_context *ctx)
+>> > {
+>> >        if (is64)
+>> >             emit(insn_64, ctx);
+>> >        else {
+>> >             emit(insn_32, ctx);
+>> >            rd = xxxx;
+>> >            emit_zext_32(rd, ctx);
+>> >        }
+>> > }
+>>
+>> This same check is used throughout the file, maybe clean it up in a
+>> separate patch?
 
-> ---
->  drivers/net/xen-netback/interface.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-> index 783198844dd7..240f762b3749 100644
-> --- a/drivers/net/xen-netback/interface.c
-> +++ b/drivers/net/xen-netback/interface.c
-> @@ -633,7 +633,7 @@ int xenvif_connect_data(struct xenvif_queue *queue,
->  			unsigned int rx_evtchn)
->  {
->  	struct task_struct *task;
-> -	int err = -ENOMEM;
-> +	int err;
->  
->  	BUG_ON(queue->tx_irq);
->  	BUG_ON(queue->task);
-> -- 
-> 2.20.1
-> 
+We also need to enable the recent 32-bit opt (on bpf-next) on these missing
+insns, like what has been done at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=66d0d5a854a6625974e7de4b874e7934988b0ef8
+
+Perhaps the best way is to wait this patch merged back to bpf-next, then we
+do two patches, the first one to enable the opt, the second one then do the
+re-factor. I guess this could avoid some code conflict.
+
+Regards,
+Jiong
+
+>
+> Yes, let's do follow up patch.
+>
+> Thanks,
+> Song
+
