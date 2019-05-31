@@ -2,492 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD404314AF
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8695931486
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbfEaSae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:30:34 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:25532 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727141AbfEaSad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:30:33 -0400
-X-Greylist: delayed 854 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 14:30:19 EDT
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x4VIGGO8003318
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 31 May 2019 12:16:16 -0600 (CST)
-Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x4VIG5Dv043766
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 31 May 2019 12:16:16 -0600
-From:   Robert Hancock <hancock@sedsystems.ca>
-To:     netdev@vger.kernel.org
-Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
-        Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 13/13] net: axienet: convert to phylink API
-Date:   Fri, 31 May 2019 12:15:45 -0600
-Message-Id: <1559326545-28825-14-git-send-email-hancock@sedsystems.ca>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
-References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+        id S1727016AbfEaSTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:19:16 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:34603 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726869AbfEaSTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:19:16 -0400
+Received: by mail-qt1-f193.google.com with SMTP id h1so2056907qtp.1;
+        Fri, 31 May 2019 11:19:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=TKc2cnZBuMVtSbHdM0Wpd2V3p1InwFaduQoNzQ9VIN0=;
+        b=I4Lvm4I+LbtJLFQaAb2ijuRWfxN+nPP6FZPqOloSKu4AVsldGV3VJKYlCzMWo1k/qy
+         wPIOJdnSjBq0kr5BwkqIwJEetcGKythEk4VcfoV+ENOl2qtdpMrL2E0gjRyxiqCa5hlZ
+         op/8N8Lr93Vvwzh0OAb6OPLI2VhNsTM5Znky7YD4h2bMUoqC5grDBiBDshXOv+BtL9CE
+         0l47vWAZ+CGPPQGGRkFWD79PXQYKjUaJzAESDCNFC9i5VF3LgDukSac7/4EuSZ85GYZ9
+         C/XqCn+LEZLkLdLfuPSYBYvB1/2+IoOqJZuJrr2Ezv2YpgRvjUVNCp7XKRQtomlBlq6n
+         eSzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=TKc2cnZBuMVtSbHdM0Wpd2V3p1InwFaduQoNzQ9VIN0=;
+        b=qt3jP9OKv5TFqvA1869HEpQjVXkD+pdHXuK4HfFK5Z+hlQph7guqAGScmYr0syMOfy
+         7lfEP4F3+ErDg6CRcy++5wUZIMdmNmPenG5wpEoZtMDARHCcQJRFRgXfoTWD8do2PPA+
+         BhlM+8XQUT72CBfAvO9FvdNoGutbD2NgBF5orCVhEZ/XRcPjnRoqb4wuUVeG32Ufjq21
+         0lA7EFRHGHQXX/0zSybgEgg9OK1xaNvC5bi7R5bXevn5Xu/MSWIDWwcAu98IXAeghwT9
+         ZjTDThKylkFNEf3Vw3nz8rnB+GsUWbRrrf0emQcBT3xGmq17XAKCYl1Wastp5xAanJcU
+         tqAg==
+X-Gm-Message-State: APjAAAUiC/4xfN4JA8JvW0TCICnbtPQByuCoF1mntmREB8tSeUQlz4rN
+        Hi9PuBSLkURioG0OEMqBZGI=
+X-Google-Smtp-Source: APXvYqx6Z7MtPE6aQkimbbe4vX3hWDeLvfXBOdJhbsPqZQ/POlQgQpxHIf8W22nts8BiLIPECzJI1g==
+X-Received: by 2002:ac8:28c2:: with SMTP id j2mr10348317qtj.103.1559326755427;
+        Fri, 31 May 2019 11:19:15 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id t187sm3475783qkh.10.2019.05.31.11.19.14
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 31 May 2019 11:19:14 -0700 (PDT)
+Date:   Fri, 31 May 2019 14:19:14 -0400
+Message-ID: <20190531141914.GB26582@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: avoid error message on remove from
+ VLAN 0
+In-Reply-To: <38a5dbac-a8e7-325a-225f-b97774f7bb81@gmail.com>
+References: <20190531073514.2171-1-nikita.yoush@cogentembedded.com>
+ <20190531103105.GE23464@t480s.localdomain> <20190531143758.GB23821@lunn.ch>
+ <422482dc-8887-0f92-c8c9-f9d639882c77@cogentembedded.com>
+ <20190531110017.GB2075@t480s.localdomain>
+ <38a5dbac-a8e7-325a-225f-b97774f7bb81@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert this driver to use the phylink API rather than the legacy PHY
-API. This allows for better support for SFP modules connected using a
-1000BaseX or SGMII interface.
+Hi Florian,
 
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
----
- drivers/net/ethernet/xilinx/Kconfig               |   2 +-
- drivers/net/ethernet/xilinx/xilinx_axienet.h      |   5 +-
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 284 ++++++++++++++--------
- 3 files changed, 190 insertions(+), 101 deletions(-)
+On Fri, 31 May 2019 09:36:13 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > But VID 0 has a special meaning for the kernel, it means the port's private
+> > database (when it is isolated, non-bridged), it is not meant to be programmed
+> > in the switch. That's why I would've put that knowledge into the DSA layer,
+> > which job is to translate the kernel operations to the (dumb) DSA drivers.
+> > 
+> > I hope I'm seeing things correctly here.
+> 
+> Your first part about the fact that it's the port private database is
+> true, the fact that it is not programmed into the HW actually depends on
+> what the switch is capable of doing. With mv88e6xxx you have per-port
+> VLAN filtering controls, but other switches that do not have that
+> capability need to program VID == 0 into the HW to continue maintaining
+> VLAN filtering on a non bridged port while a bridge has enslaved other
+> ports of the switch.
 
-diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-index f0b6896..de4eeda 100644
---- a/drivers/net/ethernet/xilinx/Kconfig
-+++ b/drivers/net/ethernet/xilinx/Kconfig
-@@ -27,7 +27,7 @@ config XILINX_EMACLITE
- config XILINX_AXI_EMAC
- 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
- 	depends on MICROBLAZE || X86 || ARM
--	select PHYLIB
-+	select PHYLINK
- 	---help---
- 	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
- 	  AXI bus interface used in Xilinx Virtex FPGAs.
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index e14a6e7..7963ffd 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -13,6 +13,7 @@
- #include <linux/spinlock.h>
- #include <linux/interrupt.h>
- #include <linux/if_vlan.h>
-+#include <linux/phylink.h>
- 
- /* Packet size info */
- #define XAE_HDR_SIZE			14 /* Size of Ethernet header */
-@@ -420,6 +421,9 @@ struct axienet_local {
- 	/* Connection to PHY device */
- 	struct device_node *phy_node;
- 
-+	struct phylink *phylink;
-+	struct phylink_config phylink_config;
-+
- 	/* MDIO clock divisor (0=detected from CPU clock) */
- 	u32 mdio_clock_divisor;
- 
-@@ -439,7 +443,6 @@ struct axienet_local {
- 	phy_interface_t phy_mode;
- 
- 	u32 options;			/* Current options word */
--	u32 last_link;
- 	u32 features;
- 
- 	/* Buffer descriptors */
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 82caf04..b7c7892 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -7,6 +7,7 @@
-  * Copyright (c) 2008-2009 Secret Lab Technologies Ltd.
-  * Copyright (c) 2010 - 2011 Michal Simek <monstr@monstr.eu>
-  * Copyright (c) 2010 - 2011 PetaLogix
-+ * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
-  * Copyright (c) 2010 - 2012 Xilinx, Inc. All rights reserved.
-  *
-  * This is a driver for the Xilinx Axi Ethernet which is used in the Virtex6
-@@ -527,63 +528,6 @@ static void axienet_device_reset(struct net_device *ndev)
- }
- 
- /**
-- * axienet_adjust_link - Adjust the PHY link speed/duplex.
-- * @ndev:	Pointer to the net_device structure
-- *
-- * This function is called to change the speed and duplex setting after
-- * auto negotiation is done by the PHY. This is the function that gets
-- * registered with the PHY interface through the "of_phy_connect" call.
-- */
--static void axienet_adjust_link(struct net_device *ndev)
--{
--	u32 emmc_reg;
--	u32 link_state;
--	u32 setspeed = 1;
--	struct axienet_local *lp = netdev_priv(ndev);
--	struct phy_device *phy = ndev->phydev;
--
--	link_state = phy->speed | (phy->duplex << 1) | phy->link;
--	if (lp->last_link != link_state) {
--		if ((phy->speed == SPEED_10) || (phy->speed == SPEED_100)) {
--			if (lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX)
--				setspeed = 0;
--		} else {
--			if ((phy->speed == SPEED_1000) &&
--			    (lp->phy_mode == PHY_INTERFACE_MODE_MII))
--				setspeed = 0;
--		}
--
--		if (setspeed == 1) {
--			emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
--			emmc_reg &= ~XAE_EMMC_LINKSPEED_MASK;
--
--			switch (phy->speed) {
--			case SPEED_1000:
--				emmc_reg |= XAE_EMMC_LINKSPD_1000;
--				break;
--			case SPEED_100:
--				emmc_reg |= XAE_EMMC_LINKSPD_100;
--				break;
--			case SPEED_10:
--				emmc_reg |= XAE_EMMC_LINKSPD_10;
--				break;
--			default:
--				dev_err(&ndev->dev, "Speed other than 10, 100 "
--					"or 1Gbps is not supported\n");
--				break;
--			}
--
--			axienet_iow(lp, XAE_EMMC_OFFSET, emmc_reg);
--			lp->last_link = link_state;
--			phy_print_status(phy);
--		} else {
--			netdev_err(ndev,
--				   "Error setting Axi Ethernet mac speed\n");
--		}
--	}
--}
--
--/**
-  * axienet_start_xmit_done - Invoked once a transmit is completed by the
-  * Axi DMA Tx channel.
-  * @ndev:	Pointer to the net_device structure
-@@ -963,7 +907,8 @@ static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
-  * Return: 0, on success.
-  *	    non-zero error value on failure
-  *
-- * This is the driver open routine. It calls phy_start to start the PHY device.
-+ * This is the driver open routine. It calls phylink_start to start the
-+ * PHY device.
-  * It also allocates interrupt service routines, enables the interrupt lines
-  * and ISR handling. Axi Ethernet core is reset through Axi DMA core. Buffer
-  * descriptors are initialized.
-@@ -972,7 +917,6 @@ static int axienet_open(struct net_device *ndev)
- {
- 	int ret;
- 	struct axienet_local *lp = netdev_priv(ndev);
--	struct phy_device *phydev = NULL;
- 
- 	dev_dbg(&ndev->dev, "axienet_open()\n");
- 
-@@ -987,16 +931,14 @@ static int axienet_open(struct net_device *ndev)
- 	if (ret < 0)
- 		return ret;
- 
--	if (lp->phy_node) {
--		phydev = of_phy_connect(lp->ndev, lp->phy_node,
--					axienet_adjust_link, 0, lp->phy_mode);
--
--		if (!phydev)
--			dev_err(lp->dev, "of_phy_connect() failed\n");
--		else
--			phy_start(phydev);
-+	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
-+	if (ret) {
-+		dev_err(lp->dev, "phylink_of_phy_connect() failed: %d\n", ret);
-+		return ret;
- 	}
- 
-+	phylink_start(lp->phylink);
-+
- 	/* Enable tasklets for Axi DMA error handling */
- 	tasklet_init(&lp->dma_err_tasklet, axienet_dma_err_handler,
- 		     (unsigned long) lp);
-@@ -1026,8 +968,8 @@ static int axienet_open(struct net_device *ndev)
- err_rx_irq:
- 	free_irq(lp->tx_irq, ndev);
- err_tx_irq:
--	if (phydev)
--		phy_disconnect(phydev);
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
- 	tasklet_kill(&lp->dma_err_tasklet);
- 	dev_err(lp->dev, "request_irq() failed\n");
- 	return ret;
-@@ -1039,7 +981,7 @@ static int axienet_open(struct net_device *ndev)
-  *
-  * Return: 0, on success.
-  *
-- * This is the driver stop routine. It calls phy_disconnect to stop the PHY
-+ * This is the driver stop routine. It calls phylink_disconnect to stop the PHY
-  * device. It also removes the interrupt handlers and disables the interrupts.
-  * The Axi DMA Tx/Rx BDs are released.
-  */
-@@ -1051,6 +993,9 @@ static int axienet_stop(struct net_device *ndev)
- 
- 	dev_dbg(&ndev->dev, "axienet_close()\n");
- 
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
-+
- 	axienet_setoptions(ndev, lp->options &
- 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
- 
-@@ -1087,9 +1032,6 @@ static int axienet_stop(struct net_device *ndev)
- 	free_irq(lp->tx_irq, ndev);
- 	free_irq(lp->rx_irq, ndev);
- 
--	if (ndev->phydev)
--		phy_disconnect(ndev->phydev);
--
- 	axienet_dma_bd_release(ndev);
- 	return 0;
- }
-@@ -1294,12 +1236,9 @@ static int axienet_ethtools_set_ringparam(struct net_device *ndev,
- axienet_ethtools_get_pauseparam(struct net_device *ndev,
- 				struct ethtool_pauseparam *epauseparm)
- {
--	u32 regval;
- 	struct axienet_local *lp = netdev_priv(ndev);
--	epauseparm->autoneg  = 0;
--	regval = axienet_ior(lp, XAE_FCC_OFFSET);
--	epauseparm->tx_pause = regval & XAE_FCC_FCTX_MASK;
--	epauseparm->rx_pause = regval & XAE_FCC_FCRX_MASK;
-+
-+	phylink_ethtool_get_pauseparam(lp->phylink, epauseparm);
- }
- 
- /**
-@@ -1318,27 +1257,9 @@ static int axienet_ethtools_set_ringparam(struct net_device *ndev,
- axienet_ethtools_set_pauseparam(struct net_device *ndev,
- 				struct ethtool_pauseparam *epauseparm)
- {
--	u32 regval = 0;
- 	struct axienet_local *lp = netdev_priv(ndev);
- 
--	if (netif_running(ndev)) {
--		netdev_err(ndev,
--			   "Please stop netif before applying configuration\n");
--		return -EFAULT;
--	}
--
--	regval = axienet_ior(lp, XAE_FCC_OFFSET);
--	if (epauseparm->tx_pause)
--		regval |= XAE_FCC_FCTX_MASK;
--	else
--		regval &= ~XAE_FCC_FCTX_MASK;
--	if (epauseparm->rx_pause)
--		regval |= XAE_FCC_FCRX_MASK;
--	else
--		regval &= ~XAE_FCC_FCRX_MASK;
--	axienet_iow(lp, XAE_FCC_OFFSET, regval);
--
--	return 0;
-+	return phylink_ethtool_set_pauseparam(lp->phylink, epauseparm);
- }
- 
- /**
-@@ -1417,6 +1338,24 @@ static int axienet_ethtools_set_coalesce(struct net_device *ndev,
- 	return 0;
- }
- 
-+static int
-+axienet_ethtools_get_link_ksettings(struct net_device *ndev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_get(lp->phylink, cmd);
-+}
-+
-+static int
-+axienet_ethtools_set_link_ksettings(struct net_device *ndev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_set(lp->phylink, cmd);
-+}
-+
- static const struct ethtool_ops axienet_ethtool_ops = {
- 	.get_drvinfo    = axienet_ethtools_get_drvinfo,
- 	.get_regs_len   = axienet_ethtools_get_regs_len,
-@@ -1428,8 +1367,141 @@ static int axienet_ethtools_set_coalesce(struct net_device *ndev,
- 	.set_pauseparam = axienet_ethtools_set_pauseparam,
- 	.get_coalesce   = axienet_ethtools_get_coalesce,
- 	.set_coalesce   = axienet_ethtools_set_coalesce,
--	.get_link_ksettings = phy_ethtool_get_link_ksettings,
--	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_link_ksettings = axienet_ethtools_get_link_ksettings,
-+	.set_link_ksettings = axienet_ethtools_set_link_ksettings,
-+};
-+
-+static void axienet_validate(struct phylink_config *config,
-+			     unsigned long *supported,
-+			     struct phylink_link_state *state)
-+{
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	/* Only support the mode we are configured for */
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != lp->phy_mode) {
-+		netdev_warn(ndev, "Cannot use PHY mode %s, supported: %s\n",
-+			    phy_modes(state->interface),
-+			    phy_modes(lp->phy_mode));
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	phylink_set(mask, Autoneg);
-+	phylink_set_port_modes(mask);
-+
-+	phylink_set(mask, Asym_Pause);
-+	phylink_set(mask, Pause);
-+	phylink_set(mask, 1000baseX_Full);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Full);
-+	phylink_set(mask, 1000baseT_Full);
-+
-+	bitmap_and(supported, supported, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static int axienet_mac_link_state(struct phylink_config *config,
-+				  struct phylink_link_state *state)
-+{
-+	u32 emmc_reg, fcc_reg;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	state->interface = lp->phy_mode;
-+
-+	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
-+	if (emmc_reg & XAE_EMMC_LINKSPD_1000)
-+		state->speed = SPEED_1000;
-+	else if (emmc_reg & XAE_EMMC_LINKSPD_100)
-+		state->speed = SPEED_100;
-+	else
-+		state->speed = SPEED_10;
-+
-+	state->pause = 0;
-+	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
-+	if (fcc_reg & XAE_FCC_FCTX_MASK)
-+		state->pause |= MLO_PAUSE_TX;
-+	if (fcc_reg & XAE_FCC_FCRX_MASK)
-+		state->pause |= MLO_PAUSE_RX;
-+
-+	state->an_complete = 0;
-+	state->duplex = 1;
-+
-+	return 1;
-+}
-+
-+static void axienet_mac_an_restart(struct phylink_config *config)
-+{
-+	/* Unsupported, do nothing */
-+}
-+
-+static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
-+			       const struct phylink_link_state *state)
-+{
-+	u32 emmc_reg, fcc_reg;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
-+	emmc_reg &= ~XAE_EMMC_LINKSPEED_MASK;
-+
-+	switch (state->speed) {
-+	case SPEED_1000:
-+		emmc_reg |= XAE_EMMC_LINKSPD_1000;
-+		break;
-+	case SPEED_100:
-+		emmc_reg |= XAE_EMMC_LINKSPD_100;
-+		break;
-+	case SPEED_10:
-+		emmc_reg |= XAE_EMMC_LINKSPD_10;
-+		break;
-+	default:
-+		dev_err(&ndev->dev,
-+			"Speed other than 10, 100 or 1Gbps is not supported\n");
-+		break;
-+	}
-+
-+	axienet_iow(lp, XAE_EMMC_OFFSET, emmc_reg);
-+
-+	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
-+	if (state->pause & MLO_PAUSE_TX)
-+		fcc_reg |= XAE_FCC_FCTX_MASK;
-+	else
-+		fcc_reg &= ~XAE_FCC_FCTX_MASK;
-+	if (state->pause & MLO_PAUSE_RX)
-+		fcc_reg |= XAE_FCC_FCRX_MASK;
-+	else
-+		fcc_reg &= ~XAE_FCC_FCRX_MASK;
-+	axienet_iow(lp, XAE_FCC_OFFSET, fcc_reg);
-+}
-+
-+static void axienet_mac_link_down(struct phylink_config *config,
-+				  unsigned int mode,
-+				  phy_interface_t interface)
-+{
-+	/* nothing meaningful to do */
-+}
-+
-+static void axienet_mac_link_up(struct phylink_config *config,
-+				unsigned int mode,
-+				phy_interface_t interface,
-+				struct phy_device *phy)
-+{
-+	/* nothing meaningful to do */
-+}
-+
-+static const struct phylink_mac_ops axienet_phylink_ops = {
-+	.validate = axienet_validate,
-+	.mac_link_state = axienet_mac_link_state,
-+	.mac_an_restart = axienet_mac_an_restart,
-+	.mac_config = axienet_mac_config,
-+	.mac_link_down = axienet_mac_link_down,
-+	.mac_link_up = axienet_mac_link_up,
- };
- 
- /**
-@@ -1763,6 +1835,18 @@ static int axienet_probe(struct platform_device *pdev)
- 				 "error registering MDIO bus: %d\n", ret);
- 	}
- 
-+	lp->phylink_config.dev = &ndev->dev;
-+	lp->phylink_config.type = PHYLINK_NETDEV;
-+
-+	lp->phylink = phylink_create(&lp->phylink_config, pdev->dev.fwnode,
-+				     lp->phy_mode,
-+				     &axienet_phylink_ops);
-+	if (IS_ERR(lp->phylink)) {
-+		ret = PTR_ERR(lp->phylink);
-+		dev_err(&pdev->dev, "phylink_create error (%i)\n", ret);
-+		goto free_netdev;
-+	}
-+
- 	ret = register_netdev(lp->ndev);
- 	if (ret) {
- 		dev_err(lp->dev, "register_netdev() error (%i)\n", ret);
-@@ -1785,6 +1869,8 @@ static int axienet_remove(struct platform_device *pdev)
- 	unregister_netdev(ndev);
- 	axienet_mdio_teardown(lp);
- 
-+	if (lp->phylink)
-+		phylink_destroy(lp->phylink);
- 	of_node_put(lp->phy_node);
- 	lp->phy_node = NULL;
- 
--- 
-1.8.3.1
+Are you saying that switches without per-port VLAN filtering controls
+will program VID 0, and thus put all non bridged ports into the same VLAN,
+allowing them to talk to each other?
 
+
+Thanks,
+Vivien
