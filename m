@@ -2,55 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C82D311E9
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:04:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E72311F6
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 18:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbfEaQER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 12:04:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45496 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726037AbfEaQER (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 12:04:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=phpxpkgLhwrmvrm93IZTqVz0bp7GNYg5AmBa1efA9PE=; b=u9ozawRBbaxvA9ej/S/15pgrKO
-        XuFmXBMunYcQ/O1s4Pnt/970mK7LcPRosQZYLA5jCMVtbWgHF8DXwQcnKOmAOC98oX9ylQFlBfYkL
-        XPRbQUypRCWVrYUvCPnDYyqO4KxMRpuFlBq18vSovFxsBcNHPaSR+AO5alLwgYDVUHXw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWk0t-0007KK-OH; Fri, 31 May 2019 18:04:15 +0200
-Date:   Fri, 31 May 2019 18:04:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, linville@redhat.com
-Subject: Re: [PATCH v2 1/2] ethtool: sync ethtool-copy.h with linux-next from
- 30/05/2019
-Message-ID: <20190531160415.GC23821@lunn.ch>
-References: <20190531135748.23740-1-andrew@lunn.ch>
- <20190531135748.23740-2-andrew@lunn.ch>
- <20190531155355.GG15954@unicorn.suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190531155355.GG15954@unicorn.suse.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726601AbfEaQI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 12:08:28 -0400
+Received: from smtprelay0084.hostedemail.com ([216.40.44.84]:33067 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726518AbfEaQI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 12:08:28 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id E252D837F24A;
+        Fri, 31 May 2019 16:08:26 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3872:4321:5007:7514:7576:10004:10400:10848:11026:11232:11657:11658:11914:12043:12296:12740:12760:12895:13069:13311:13357:13439:14181:14659:14721:21080:21433:21451:21627:30054:30055:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
+X-HE-Tag: brush01_83b97375ede34
+X-Filterd-Recvd-Size: 2238
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf05.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 31 May 2019 16:08:25 +0000 (UTC)
+Message-ID: <f46c916f9ffeb0fba04eb53c56ef0c9b0a586b01.camel@perches.com>
+Subject: Re: [net-next 01/13] iavf: Use printf instead of gnu_printf for
+ iavf_debug_d
+From:   Joe Perches <joe@perches.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Date:   Fri, 31 May 2019 09:08:23 -0700
+In-Reply-To: <20190531081518.16430-2-jeffrey.t.kirsher@intel.com>
+References: <20190531081518.16430-1-jeffrey.t.kirsher@intel.com>
+         <20190531081518.16430-2-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.1-1build1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-> 
-> BtW, this differs from the file "make headers_install" produces in
-> net-next but only in white space so that it doesn't really matter and it
-> gets sorted in a future sync.
+On Fri, 2019-05-31 at 01:15 -0700, Jeff Kirsher wrote:
+> From: Nathan Chancellor <natechancellor@gmail.com>
+> We can convert from gnu_printf to printf without any side effects
+[]
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
+[]
+> @@ -46,7 +46,7 @@ struct iavf_virt_mem {
+>  
+>  #define iavf_debug(h, m, s, ...)  iavf_debug_d(h, m, s, ##__VA_ARGS__)
+>  extern void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
+> -	__attribute__ ((format(gnu_printf, 3, 4)));
+> +	__printf(3, 4);
 
-Yes, there is something odd going on. It looks like two tabs have been
-converted to spaces in the ethtool copy. I left them alone, since i
-did not add them.
+This declaration and function likely have several defects:
 
-    Andrew
+void *hw should likely be struct iavf_hw *hw
+char *fmt_str should likely be const char *
+
+And the definition of the function should
+probably have the output at KERN_DEBUG and not
+KERN_INFO.  As well it should probably use %pV
+instead of a local automatic buffer.
+
+Perhaps a macro like:
+
+#define iavf_debug_d(hw, mask, fmt, ...)	\
+do {						\
+	if ((mask) & (hw)->debug_mask)		\
+		pr_debug(fmt, ##__VA_ARGS__);	\
+} while (0)
+
+would be better as it could allow dynamic debug
+for every use.
+
+
