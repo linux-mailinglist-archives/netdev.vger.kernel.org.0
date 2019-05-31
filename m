@@ -2,56 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC364310A5
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B5F310AF
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 16:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfEaOyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 10:54:38 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:49322 "EHLO deadmen.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726531AbfEaOyi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 10:54:38 -0400
-Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
-        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1hWivQ-0007Jr-Fx; Fri, 31 May 2019 22:54:32 +0800
-Received: from herbert by gondobar with local (Exim 4.89)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1hWivM-0007Cx-9H; Fri, 31 May 2019 22:54:28 +0800
-Date:   Fri, 31 May 2019 22:54:28 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Young Xiao <92siuyang@gmail.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH] ipv6: Prevent overrun when parsing v6 header options
-Message-ID: <20190531145428.ngwrgbnk2a7us5cy@gondor.apana.org.au>
-References: <1559230098-1543-1-git-send-email-92siuyang@gmail.com>
- <c83f8777-f6be-029b-980d-9f974b4e28ce@gmail.com>
- <20190531062911.c6jusfbzgozqk2cu@gondor.apana.org.au>
- <727c4b18-0d7b-b3c6-e0bb-41b3fe5902d3@gmail.com>
+        id S1726548AbfEaO4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 10:56:13 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40463 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbfEaO4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 10:56:12 -0400
+Received: by mail-pf1-f196.google.com with SMTP id u17so6360702pfn.7
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 07:56:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=XKYEbc4g3xx5Kespd2rSqwj6hjN41j8NXsg5PsoK/zc=;
+        b=OmgbsuxQQb7QGFaagUtR3GO/1FgQJQwveae/3nS8I5TDH9LDvJLDwOwaSX9KNYSJAD
+         P7+u0WH58s+ZJPf1pJAZYs5ImZGM9NDCaVrSKljYwvuntl7evtHy/Ekm2J8YL/mKHWEV
+         gEDnp3Wwr/sYGHobYQEwuTLWW5m++A76OM1YbM5z9+zMvhm2QQ//P8jsfTgq5M2Oy6PP
+         0lulUASGPUfRrPLL7Vlpr7OUjc6EW00wfs4+Ktrd4bvkLJ2SSvRCzuRPA6SgLuwK0duO
+         zxaJlzW8AHZ2eE0SC5e5xXtNUy5dmZoKqVsKl+KYLPTVqje8Vk/tL3FdA1e1iQ+sD8ud
+         xXtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XKYEbc4g3xx5Kespd2rSqwj6hjN41j8NXsg5PsoK/zc=;
+        b=I1Rkw3MtB3DlSEPcZu7L/wjAD1ROje77EodnC6eP4TFdhmWSIdFYhqAX1qwnwjOmqi
+         a+QYWOEaE6XSyr5ZEsUWBtmvpovdVn9TZkWVslwgbJYT3Nq9bO0BmZ8wmbthAuNNI0xF
+         sICqrl7Ln/05SQjrffQqiL2peC+9jeJ3jj6ne8yRXSpKAbw4cVaClJl4wQYi9kGlSmt4
+         NzrZ9A87HU8FrfAAjCqbyO58trqq6m8Lq78yEoJdOWeg53zPmRJXRRrF+DW12+6Zt+Fw
+         I20ZjyQITLCo6HN7OCtLObPn+XLBJ/hUrzJYJY49sdqrsrRM97oIIosVgQ5GLLSKzITn
+         Dl+g==
+X-Gm-Message-State: APjAAAWr9sXnuqBxx2dvq4bUu9rn6ojdIeiT0Cv+tf+Z2E6SafrmHLcg
+        AvXkvFD4LBm5UWh4g9fSd3bee4Ye
+X-Google-Smtp-Source: APXvYqxLxEDFjkAbhyU5yv8zA1huwzbv2U2LD23ERx1MWyinZ9cqfFXHrW/o8RimfY0YVZOdcwmpwQ==
+X-Received: by 2002:a62:1a51:: with SMTP id a78mr10728579pfa.39.1559314571852;
+        Fri, 31 May 2019 07:56:11 -0700 (PDT)
+Received: from [192.168.84.42] (8.100.247.35.bc.googleusercontent.com. [35.247.100.8])
+        by smtp.gmail.com with ESMTPSA id u4sm6400186pfu.26.2019.05.31.07.56.10
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 07:56:11 -0700 (PDT)
+Subject: Re: [PATCH] net/neighbour: fix potential null pointer deference
+To:     Young Xiao <92siuyang@gmail.com>, davem@davemloft.net,
+        dsahern@gmail.com, roopa@cumulusnetworks.com, christian@brauner.io,
+        khlebnikov@yandex-team.ru, netdev@vger.kernel.org
+References: <1559291383-5814-1-git-send-email-92siuyang@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <15960edf-b5b7-ea53-c48a-e459280547a6@gmail.com>
+Date:   Fri, 31 May 2019 07:56:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <727c4b18-0d7b-b3c6-e0bb-41b3fe5902d3@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <1559291383-5814-1-git-send-email-92siuyang@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 07:50:06AM -0700, Eric Dumazet wrote:
->
-> What do you mean by should ?
+
+
+On 5/31/19 1:29 AM, Young Xiao wrote:
+> There is a possible null pointer deference bugs in neigh_fill_info(),
+> which is similar to the bug which was fixed in commit 6adc5fd6a142
+> ("net/neighbour: fix crash at dumping device-agnostic proxy entries").
 > 
-> Are they currently already linearized before the function is called,
-> or is it missing and a bug needs to be fixed ?
+> Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> ---
+>  net/core/neighbour.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index dfa8710..33c3ff1 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -2440,7 +2440,7 @@ static int neigh_fill_info(struct sk_buff *skb, struct neighbour *neigh,
+>  	ndm->ndm_pad2    = 0;
+>  	ndm->ndm_flags	 = neigh->flags;
+>  	ndm->ndm_type	 = neigh->type;
+> -	ndm->ndm_ifindex = neigh->dev->ifindex;
+> +	ndm->ndm_ifindex = neigh->dev ? neigh->dev->ifindex : 0;
+>  
+>  	if (nla_put(skb, NDA_DST, neigh->tbl->key_len, neigh->primary_key))
+>  		goto nla_put_failure;
+> 
 
-AFAICS this is the code-path for locally generated outbound packets.
-Under what circumstances can the IPv6 header be not in the head?
+When was the bug added exactly ?
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Hint : We want a Fixes: tag, so that we can fully understand the issue and make sure the
+fix is complete.
+
+Otherwise, your patch might very well have been randomly generated by a bot.
+
+Thank you.
