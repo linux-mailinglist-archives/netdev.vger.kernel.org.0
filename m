@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2EF23119F
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 17:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F4124311A4
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 17:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfEaPx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 11:53:57 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49036 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726601AbfEaPx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 11:53:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 59C79B020;
-        Fri, 31 May 2019 15:53:56 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 089D5E00E3; Fri, 31 May 2019 17:53:56 +0200 (CEST)
-Date:   Fri, 31 May 2019 17:53:56 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, linville@redhat.com
-Subject: Re: [PATCH v2 1/2] ethtool: sync ethtool-copy.h with linux-next from
- 30/05/2019
-Message-ID: <20190531155355.GG15954@unicorn.suse.cz>
-References: <20190531135748.23740-1-andrew@lunn.ch>
- <20190531135748.23740-2-andrew@lunn.ch>
+        id S1726835AbfEaPyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 11:54:10 -0400
+Received: from mail.us.es ([193.147.175.20]:37614 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726818AbfEaPyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 11:54:10 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2FA5281A10
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 17:54:08 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1CE8FDA706
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 17:54:08 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 049A8DA70C; Fri, 31 May 2019 17:54:08 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 054EADA703;
+        Fri, 31 May 2019 17:54:06 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 31 May 2019 17:54:06 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D2DE34265A5B;
+        Fri, 31 May 2019 17:54:05 +0200 (CEST)
+Date:   Fri, 31 May 2019 17:54:05 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukasz Pawelczyk <havner@gmail.com>
+Subject: Re: [PATCH v3] netfilter: xt_owner: Add supplementary groups option
+Message-ID: <20190531155405.npz2fhey7vj56zjx@salvia>
+References: <CGME20190510114627eucas1p25476833d2d375b113353741c18aecd92@eucas1p2.samsung.com>
+ <20190510114622.831-1-l.pawelczyk@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190531135748.23740-2-andrew@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190510114622.831-1-l.pawelczyk@samsung.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 03:57:47PM +0200, Andrew Lunn wrote:
-> Sync ethtool-copy.h with linux-next from 22/05/2019. This provides
-> access to the new link modes for 100BaseT1 and 1000BaseT1.
+On Fri, May 10, 2019 at 01:46:22PM +0200, Lukasz Pawelczyk wrote:
+> The XT_OWNER_SUPPL_GROUPS flag causes GIDs specified with XT_OWNER_GID
+> to be also checked in the supplementary groups of a process.
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+> f_cred->group_info cannot be modified during its lifetime and f_cred
+> holds a reference to it so it's safe to use.
 
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-
-BtW, this differs from the file "make headers_install" produces in
-net-next but only in white space so that it doesn't really matter and it
-gets sorted in a future sync.
-
->  ethtool-copy.h | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/ethtool-copy.h b/ethtool-copy.h
-> index 92ab10d65fc9..ad16e8f9c290 100644
-> --- a/ethtool-copy.h
-> +++ b/ethtool-copy.h
-> @@ -1481,6 +1481,8 @@ enum ethtool_link_mode_bit_indices {
->  	ETHTOOL_LINK_MODE_200000baseLR4_ER4_FR4_Full_BIT = 64,
->  	ETHTOOL_LINK_MODE_200000baseDR4_Full_BIT	 = 65,
->  	ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT	 = 66,
-> +	ETHTOOL_LINK_MODE_100baseT1_Full_BIT             = 67,
-> +	ETHTOOL_LINK_MODE_1000baseT1_Full_BIT            = 68,
->  
->  	/* must be last entry */
->  	__ETHTOOL_LINK_MODE_MASK_NBITS
-> @@ -1597,7 +1599,7 @@ enum ethtool_link_mode_bit_indices {
->  
->  static __inline__ int ethtool_validate_speed(__u32 speed)
->  {
-> -	return speed <= INT_MAX || speed == SPEED_UNKNOWN;
-> +	return speed <= INT_MAX || speed == (__u32)SPEED_UNKNOWN;
->  }
->  
->  /* Duplex, half or full. */
-> @@ -1710,6 +1712,9 @@ static __inline__ int ethtool_validate_duplex(__u8 duplex)
->  #define ETH_MODULE_SFF_8436		0x4
->  #define ETH_MODULE_SFF_8436_LEN		256
->  
-> +#define ETH_MODULE_SFF_8636_MAX_LEN	640
-> +#define ETH_MODULE_SFF_8436_MAX_LEN	640
-> +
->  /* Reset flags */
->  /* The reset() operation must clear the flags for the components which
->   * were actually reset.  On successful return, the flags indicate the
-> -- 
-> 2.20.1
-> 
+Applied, thanks.
