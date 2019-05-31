@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E013E31477
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6572D314A6
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 20:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfEaSOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 14:14:35 -0400
-Received: from Galois.linutronix.de ([146.0.238.70]:60512 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbfEaSOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:14:35 -0400
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1hWm2x-0005jr-Ko; Fri, 31 May 2019 20:14:31 +0200
-Date:   Fri, 31 May 2019 20:14:31 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, tglx@linutronix.de,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 1/7] net: Don't disable interrupts in
- napi_alloc_frag()
-Message-ID: <20190531181430.t4katzn66ajhfpgc@linutronix.de>
-References: <20190529221523.22399-1-bigeasy@linutronix.de>
- <20190529221523.22399-2-bigeasy@linutronix.de>
- <6a2940ff-ade4-64b5-2014-4e0701c14b87@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <6a2940ff-ade4-64b5-2014-4e0701c14b87@gmail.com>
-User-Agent: NeoMutt/20180716
+        id S1727093AbfEaSaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 14:30:19 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:25532 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726967AbfEaSaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 14:30:19 -0400
+X-Greylist: delayed 854 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 May 2019 14:30:19 EDT
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x4VIG5p6030585
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 31 May 2019 12:16:05 -0600 (CST)
+Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x4VIG5Di043766
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 31 May 2019 12:16:05 -0600
+From:   Robert Hancock <hancock@sedsystems.ca>
+To:     netdev@vger.kernel.org
+Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
+        Robert Hancock <hancock@sedsystems.ca>
+Subject: [PATCH net-next 00/13] Xilinx axienet driver updates
+Date:   Fri, 31 May 2019 12:15:32 -0600
+Message-Id: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
+X-Mailer: git-send-email 1.8.3.1
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-29 15:48:51 [-0700], Eric Dumazet wrote:
-> > +
-> > +	fragsz = SKB_DATA_ALIGN(fragsz);
-> > +	if (irqs_disabled()) {
-> 
-> 
-> What is the difference between this prior test, and the following ?
-> 
-> if (in_irq() || irqs_disabled())
-> 
-> I am asking because I see the latter being used in __dev_kfree_skb_any()
+This is a series of enhancements and bug fixes in order to get the mainline
+version of this driver into a more generally usable state, including on
+x86 or ARM platforms. It also converts the driver to use the phylink API
+in order to provide support for SFP modules.
 
-in_irq() is always true in hardirq context which is true for non-NAPI
-drivers. If in_irq() is true, irqs_disabled() will also be true.
-So I *think* I could replace the irqs_disabled() check with in_irq()
-which should be cheaper because it just checks the preempt counter.
+Robert Hancock (13):
+  net: axienet: Fixed 64-bit compile, enable build on X86 and ARM
+  net: axienet: clean up MDIO handling
+  net: axienet: Cleanup DMA device reset and halt process
+  net: axienet: Make RX/TX ring sizes configurable
+  net: axienet: Add DMA registers to ethtool register dump
+  net: axienet: Support shared interrupts
+  net: axienet: Add optional support for Ethernet core interrupt
+  net: axienet: Fix race condition causing TX hang
+  net: axienet: Make missing MAC address non-fatal
+  net: axienet: stop interface during shutdown
+  net: axienet: document axistream-connected attribute
+  net: axienet: make use of axistream-connected attribute optional
+  net: axienet: convert to phylink API
 
-Sebastian
+ .../devicetree/bindings/net/xilinx_axienet.txt     |  24 +-
+ drivers/net/ethernet/xilinx/Kconfig                |   6 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet.h       |  43 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  | 652 ++++++++++++++-------
+ drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c  | 171 +++---
+ 5 files changed, 602 insertions(+), 294 deletions(-)
+
+-- 
+1.8.3.1
+
