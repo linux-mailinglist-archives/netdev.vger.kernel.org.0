@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23E4E30E69
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1851C30E71
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 14:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727346AbfEaMyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 08:54:20 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47450 "EHLO mx1.redhat.com"
+        id S1727255AbfEaM4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 08:56:32 -0400
+Received: from sauhun.de ([88.99.104.3]:41340 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726330AbfEaMyT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 08:54:19 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CD4AC317465D;
-        Fri, 31 May 2019 12:54:19 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CCAA15DD91;
-        Fri, 31 May 2019 12:54:18 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH net-next 3/3] net/mlx5e: use indirect calls wrapper for the rx packet handler
-Date:   Fri, 31 May 2019 14:53:35 +0200
-Message-Id: <74fb497974fe8267c2c5f0a1422a418363f0c50f.1559304330.git.pabeni@redhat.com>
-In-Reply-To: <cover.1559304330.git.pabeni@redhat.com>
-References: <cover.1559304330.git.pabeni@redhat.com>
+        id S1726518AbfEaM4b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 08:56:31 -0400
+Received: from localhost (ip5b40b67c.dynamic.kabel-deutschland.de [91.64.182.124])
+        by pokefinder.org (Postfix) with ESMTPSA id AAF692C2761;
+        Fri, 31 May 2019 14:56:28 +0200 (CEST)
+Date:   Fri, 31 May 2019 14:56:28 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [net-next,v4 0/2] Enable SFP on ACPI based systems
+Message-ID: <20190531125628.GA951@kunai>
+References: <20190528230233.26772-1-ruslan@babayev.com>
+ <20190529094818.GF2781@lahna.fi.intel.com>
+ <20190529155132.GZ18059@lunn.ch>
+ <20190531062740.GQ2781@lahna.fi.intel.com>
+ <20190531064842.GA1058@kunai>
+ <20190531120513.GB18608@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 31 May 2019 12:54:19 +0000 (UTC)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DocE+STaALJfprDB"
+Content-Disposition: inline
+In-Reply-To: <20190531120513.GB18608@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can avoid another indirect call per packet wrapping the rx
-handler call with the proper helper.
 
-To ensure that even the last listed direct call experience
-measurable gain, despite the additional conditionals we must
-traverse before reaching it, I tested reversing the order of the
-listed options, with performance differences below noise level.
+--DocE+STaALJfprDB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Together with the previous indirect call patch, this gives
-~6% performance improvement in raw UDP tput.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> Maybe he can create a smaller immutable branch for you.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 0fe5f13d07cc..c3752dbe00c8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1333,7 +1333,9 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 
- 		mlx5_cqwq_pop(cqwq);
- 
--		rq->handle_rx_cqe(rq, cqe);
-+		INDIRECT_CALL_4(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
-+				mlx5e_handle_rx_cqe, mlx5e_handle_rx_cqe_rep,
-+				mlx5e_ipsec_handle_rx_cqe, rq, cqe);
- 	} while ((++work_done < budget) && (cqe = mlx5_cqwq_get_cqe(cqwq)));
- 
- out:
--- 
-2.20.1
+Yeah, that's what I was basically asking for, but probably should reply
+to his mail.
 
+
+--DocE+STaALJfprDB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlzxJHcACgkQFA3kzBSg
+KbZ/Zg/+N3b5FeN2MagU71YxoN8a9FgQsNW7Sy0U8X1de5MHBp+3lifh3mkDGf7j
+BnxWA8GzyHMhabtHy4N8GVhnb7f0jFTgTI3bvhsklvOkicG1k7O6IK4nUx7ddUqd
+/bb/PEFj0EEIACra2itO45dxh+mHhiPQPproTzJCoHJ9V68evyft9fxqMczLZlgL
+2BOOo0gPG4n4WEhpyXGp3ecaEqpTBZwjuZVSRdGajXkGFGVWsxFEqtLnGMoe7IOo
+YS4Wuz6fGch0F46TvYVf5sI2R8QuejUpJ5Op34kseinniCQ1JRoTOlLj6pueWVFp
+DWnw3U7bgPApwwkYIfdVWXMS8CYBHvrxqtavJNBxTcYrWfL/AAsCH0Lg4HkUKDjv
+ycnC66plq2BMk3KlmMftmCwaVbAlIUvKLQoLsLiEChTS2W7ctppq6A9oOonhuPzH
+3aWqS2oQwHm1FRus1uC1K2j/eWMOojiZUsFIL428BeJPZjPu0n2IK3qp0K28pktK
+hxyUiFt3YrC82mCO7VFX0dUvFHAJ2H5rniWlt5XbDv1kRQW/TpaTQfz9kPWfn0Ud
+50+duo5d5Qxxa5XnZuKwCNBf2qd8Qut+xVZjSv0jx/9bR6fqUb2Ko4MkeE7MShEO
+003MzY6cj/PRBBE1PBLh/EI8JFIT23s4EQYxkxxJkUs04atRPZc=
+=BnCX
+-----END PGP SIGNATURE-----
+
+--DocE+STaALJfprDB--
