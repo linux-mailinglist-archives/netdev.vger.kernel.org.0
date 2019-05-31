@@ -2,122 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A23A308FE
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 08:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B7830932
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 09:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbfEaGye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 02:54:34 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34226 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725963AbfEaGye (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 02:54:34 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C1C6FAF8D;
-        Fri, 31 May 2019 06:54:32 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 28191E00E3; Fri, 31 May 2019 08:54:32 +0200 (CEST)
-Date:   Fri, 31 May 2019 08:54:32 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, linville@redhat.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net-next] ethtool: do not use regs->len after
- ops->get_regs
-Message-ID: <20190531065432.GB15954@unicorn.suse.cz>
-References: <20190530235450.11824-1-vivien.didelot@gmail.com>
+        id S1726792AbfEaHS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 03:18:28 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:41341 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbfEaHS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 03:18:28 -0400
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+X-IronPort-AV: E=Sophos;i="5.60,534,1549954800"; 
+   d="scan'208";a="32575660"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2019 00:18:27 -0700
+Received: from soft-dev3.microsemi.net (10.10.85.251) by mx.microchip.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5; Fri, 31 May 2019
+ 00:18:23 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "Paul Burton" <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-mips@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH net-next v3 0/2] Add hw offload of TC flower on MSCC Ocelot
+Date:   Fri, 31 May 2019 09:16:55 +0200
+Message-ID: <1559287017-32397-1-git-send-email-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190530235450.11824-1-vivien.didelot@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 30, 2019 at 07:54:50PM -0400, Vivien Didelot wrote:
-> The kernel allocates a buffer of size ops->get_regs_len(), and pass
-> it to the kernel driver via ops->get_regs() for filling.
-> 
-> There is no restriction about what the kernel drivers can or cannot
-> do with the regs->len member. Drivers usually ignore it or set
-> the same size again. However, ethtool_get_regs() must not use this
-> value when copying the buffer back to the user, because userspace may
-> have allocated a smaller buffer. For instance ethtool does that when
-> dumping the raw registers directly into a fixed-size file.
-> 
-> Software may still make use of the regs->len value updated by the
-> kernel driver, but ethtool_get_regs() must use the original regs->len
-> given by userspace, up to ops->get_regs_len(), when copying the buffer.
-> 
-> Also no need to check regbuf twice.
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
->  net/core/ethtool.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-> index 4a593853cbf2..8f95c7b7cafe 100644
-> --- a/net/core/ethtool.c
-> +++ b/net/core/ethtool.c
-> @@ -1338,38 +1338,40 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
->  static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
->  {
->  	struct ethtool_regs regs;
->  	const struct ethtool_ops *ops = dev->ethtool_ops;
->  	void *regbuf;
->  	int reglen, ret;
->  
->  	if (!ops->get_regs || !ops->get_regs_len)
->  		return -EOPNOTSUPP;
->  
->  	if (copy_from_user(&regs, useraddr, sizeof(regs)))
->  		return -EFAULT;
->  
->  	reglen = ops->get_regs_len(dev);
->  	if (reglen <= 0)
->  		return reglen;
->  
->  	if (regs.len > reglen)
->  		regs.len = reglen;
-> +	else
-> +		reglen = regs.len;
+This patch series enables hardware offload for flower filter used in
+traffic controller on MSCC Ocelot board.
 
-This seems wrong. Most drivers do not check regs.len in their get_regs()
-handler (I'm not sure if there are any that do) and simply write as much
-data as they have. Thus if userspace passes too short regs.len, this
-would replace overflow of a userspace buffer for few drivers by overflow
-of a kernel buffer for (almost) all drivers.
+v2->v3 changes:
+ - remove the check for shared blocks
 
-So while we should use the original regs.len from userspace for final
-copy_to_user(), we have to allocate the buffer for driver ->get_regs()
-callback with size returned by its ->get_regs_len() callback.
+v1->v2 changes:
+ - when declaring variables use reverse christmas tree
 
-Michal Kubecek
+CC: Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+CC: Rob Herring <robh+dt@kernel.org>
+CC: Mark Rutland <mark.rutland@arm.com>
+CC: Ralf Baechle <ralf@linux-mips.org>
+CC: Paul Burton <paul.burton@mips.com>
+CC: James Hogan <jhogan@kernel.org>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: linux-mips@vger.kernel.org
+CC: devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org
+CC: netdev@vger.kernel.org
 
->  
->  	regbuf = vzalloc(reglen);
->  	if (!regbuf)
->  		return -ENOMEM;
->  
->  	ops->get_regs(dev, &regs, regbuf);
->  
->  	ret = -EFAULT;
->  	if (copy_to_user(useraddr, &regs, sizeof(regs)))
->  		goto out;
->  	useraddr += offsetof(struct ethtool_regs, data);
-> -	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
-> +	if (copy_to_user(useraddr, regbuf, reglen))
->  		goto out;
->  	ret = 0;
->  
->   out:
->  	vfree(regbuf);
->  	return ret;
->  }
-> -- 
-> 2.21.0
-> 
+Horatiu Vultur (2):
+  net: mscc: ocelot: Add support for tcam
+  net: mscc: ocelot: Hardware ofload for tc flower filter
+
+ arch/mips/boot/dts/mscc/ocelot.dtsi       |   5 +-
+ drivers/net/ethernet/mscc/Makefile        |   2 +-
+ drivers/net/ethernet/mscc/ocelot.c        |  13 +
+ drivers/net/ethernet/mscc/ocelot.h        |   8 +
+ drivers/net/ethernet/mscc/ocelot_ace.c    | 777 ++++++++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_ace.h    | 232 +++++++++
+ drivers/net/ethernet/mscc/ocelot_board.c  |   1 +
+ drivers/net/ethernet/mscc/ocelot_flower.c | 357 ++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_regs.c   |  11 +
+ drivers/net/ethernet/mscc/ocelot_s2.h     |  64 +++
+ drivers/net/ethernet/mscc/ocelot_tc.c     |  16 +-
+ drivers/net/ethernet/mscc/ocelot_vcap.h   | 403 ++++++++++++++++
+ 12 files changed, 1880 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.h
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_flower.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_s2.h
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_vcap.h
+
+-- 
+2.7.4
+
