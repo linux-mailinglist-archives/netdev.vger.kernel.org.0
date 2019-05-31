@@ -2,114 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 867F83152B
-	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 21:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E059E31552
+	for <lists+netdev@lfdr.de>; Fri, 31 May 2019 21:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbfEaTTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 15:19:36 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35042 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727147AbfEaTTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 15:19:36 -0400
-Received: by mail-qt1-f193.google.com with SMTP id d23so2279847qto.2;
-        Fri, 31 May 2019 12:19:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZasN1uMb6LWNr3Bdl17/Az/Guny0XVTL4T4x9/AydIU=;
-        b=UM7nM38a4xI4mDFTwnvkJ5uHeKUmW5NKf3JRUxdTvVLKyk3lfgeHGBlEUqaNm+x6op
-         udiG16NB4a4/8mD1sYtFKZj/e7GY+WmzrZiVg4lYlWN6zFfd09RrCx+R5Nje6ghN1QRn
-         yzoAa+Wq1me6pdGv2h8OPve/9ubJP1LKN1/8Mou1YDKNckcjjPjTsoeez9gkCeLQg5Wu
-         IHlT2IDcB04iwimQNvzsqyVAMTK4lyHaW4eeBLEAETEPKj/W/hbbXZWcwrRlmPgg1b0k
-         9uYspbGfFV+zqceCU0Yq1ECpOIInlGicyj+yOgHlAgwNQQVz0hsmVsYOjC/Xwp5HwSke
-         o2uQ==
-X-Gm-Message-State: APjAAAVtt06/JdcWU2abaK4ocDsg948NoQUaRlUX/fjoihElVyrWttft
-        UV8Bh8u5tk7Ns+rvlNcoBA579DL7o8wLYjIN204=
-X-Google-Smtp-Source: APXvYqwTzyt4WCkVVX3Qulyt1v2QQMhca2JE7R2nPL+bbYIIgogHgkLIhe92uxEulcPWL7paeV3/6XiyNu5oc8Epn44=
-X-Received: by 2002:aed:3e7c:: with SMTP id m57mr5706705qtf.204.1559330374999;
- Fri, 31 May 2019 12:19:34 -0700 (PDT)
+        id S1727143AbfEaT1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 15:27:30 -0400
+Received: from mail-eopbgr30044.outbound.protection.outlook.com ([40.107.3.44]:19578
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726807AbfEaT1a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 May 2019 15:27:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RHlRjS1qPHWFFN6+eVLuq0e26VDQk0SIJXNEypX2LnE=;
+ b=Y+oNtLSY3kAOSGmrEKFnYNJt4VEC9hv2UOCx8W5/EsbhjfK8ZDmrSOgwPwLfvcddTejIYQgN7lRBd1dSEfOcvSH3qy9F+tiba3K8hAR8JKpmJC92OgtfDinikLku5SsSQOjNzpnfNF1igqf8DmdFDJMlEkPeuBZ6s5yG52cw0Tc=
+Received: from VI1PR05MB5902.eurprd05.prod.outlook.com (20.178.125.223) by
+ VI1PR05MB5213.eurprd05.prod.outlook.com (20.178.12.86) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1878.25; Fri, 31 May 2019 19:27:24 +0000
+Received: from VI1PR05MB5902.eurprd05.prod.outlook.com
+ ([fe80::dd31:2532:9adf:9b38]) by VI1PR05MB5902.eurprd05.prod.outlook.com
+ ([fe80::dd31:2532:9adf:9b38%6]) with mapi id 15.20.1922.021; Fri, 31 May 2019
+ 19:27:24 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Roi Dayan <roid@mellanox.com>,
+        "xiangxia.m.yue@gmail.com" <xiangxia.m.yue@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net/mlx5e: Allow matching only enc_key_id/enc_dst_port
+ for decapsulation action
+Thread-Topic: [PATCH] net/mlx5e: Allow matching only enc_key_id/enc_dst_port
+ for decapsulation action
+Thread-Index: AQHVBYRbOldYs/M930mTRgSMdkZgw6ZnOV2AgBL5soCACf/cgIABj8kA
+Date:   Fri, 31 May 2019 19:27:24 +0000
+Message-ID: <803515e511734958ee938873fc4444b2f170d667.camel@mellanox.com>
+References: <1557167317-50202-1-git-send-email-xiangxia.m.yue@gmail.com>
+         <d7bd1535-c56d-5d8c-a44f-611a4fcea9b4@mellanox.com>
+         <CAMDZJNVTNBypD8sMG86RqMZ2b=sxqk8NDxGDu2zv3VW8XVaPcQ@mail.gmail.com>
+         <2347558ec8e71dde14b05ae30048b2bfc6f32134.camel@mellanox.com>
+In-Reply-To: <2347558ec8e71dde14b05ae30048b2bfc6f32134.camel@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 76be8377-3b3a-4fde-e184-08d6e5fe02af
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR05MB5213;
+x-ms-traffictypediagnostic: VI1PR05MB5213:
+x-microsoft-antispam-prvs: <VI1PR05MB5213E930A45CD7ABD27F27E8BE190@VI1PR05MB5213.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 00540983E2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(376002)(346002)(136003)(366004)(199004)(189003)(6436002)(66476007)(446003)(229853002)(11346002)(91956017)(2616005)(476003)(66446008)(118296001)(66946007)(6246003)(76116006)(6486002)(66556008)(8936002)(7736002)(6512007)(66066001)(53936002)(71200400001)(186003)(71190400001)(68736007)(73956011)(305945005)(8676002)(5660300002)(486006)(64756008)(53546011)(36756003)(76176011)(102836004)(58126008)(81166006)(6116002)(2906002)(86362001)(256004)(99286004)(81156014)(6506007)(14454004)(110136005)(3846002)(4326008)(2501003)(508600001)(25786009)(316002)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5213;H:VI1PR05MB5902.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 39M0TeOWkIPy6W0yGzf9tmhZKgj8x2cQN/rzGIMhNAv6Pwg0Dml3lWdIgQD3tYD1pWivxGiQ43dQ7vfn3NXG1eRVHESxL8XGTlGids+LHfgqVS/RkfA90piFVAAjMwDhpzIoQ6LNXEUHjldq2NMmpJ7S7mCmPB+1U0s27lyIdFK017bPjnJTC6ceeOgZQvjivfTOI/xYXio2y6fZP5dC0H/GvfWEIjzIcRvVP5wVhQZqXcxVnHGKZLQ5mN1pe5mk6HyKzm2OoAkT4yQbeWroK48ydFnqvQcAeg9Em8w8N7QWbvifAw+/P0QRou0Qs2PqVx0dE2W+FTW4NLor39T0CVZ5PLQl59d194/7c7THKJluwSzPO0ijnST9ONNyjglN0jpCQBmdZXjH3T/FdxhcJDxmBnviOG48nGqPwHHCs5A=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <97B3F2DB7420E24BA2522EB0C2F28352@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190531035348.7194-1-elder@linaro.org> <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
- <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org>
-In-Reply-To: <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 31 May 2019 21:19:18 +0200
-Message-ID: <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Alex Elder <elder@linaro.org>
-Cc:     Dan Williams <dcbw@redhat.com>, David Miller <davem@davemloft.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        evgreen@chromium.org, Ben Chan <benchan@google.com>,
-        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
-        syadagir@codeaurora.org,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Networking <netdev@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76be8377-3b3a-4fde-e184-08d6e5fe02af
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 19:27:24.7309
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5213
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 6:36 PM Alex Elder <elder@linaro.org> wrote:
-> On 5/31/19 9:58 AM, Dan Williams wrote:
-> > On Thu, 2019-05-30 at 22:53 -0500, Alex Elder wrote:
-> >
-> > My question from the Nov 2018 IPA rmnet driver still stands; how does
-> > this relate to net/ethernet/qualcomm/rmnet/ if at all? And if this is
-> > really just a netdev talking to the IPA itself and unrelated to
-> > net/ethernet/qualcomm/rmnet, let's call it "ipa%d" and stop cargo-
-> > culting rmnet around just because it happens to be a net driver for a
-> > QC SoC.
->
-> First, the relationship between the IPA driver and the rmnet driver
-> is that the IPA driver is assumed to sit between the rmnet driver
-> and the hardware.
-
-Does this mean that IPA can only be used to back rmnet, and rmnet
-can only be used on top of IPA, or can or both of them be combined
-with another driver to talk to instead?
-
-> Currently the modem is assumed to use QMAP protocol.  This means
-> each packet is prefixed by a (struct rmnet_map_header) structure
-> that allows the IPA connection to be multiplexed for several logical
-> connections.  The rmnet driver parses such messages and implements
-> the multiplexed network interfaces.
->
-> QMAP protocol can also be used for aggregating many small packets
-> into a larger message.  The rmnet driver implements de-aggregation
-> of such messages (and could probably aggregate them for TX as well).
->
-> Finally, the IPA can support checksum offload, and the rmnet
-> driver handles providing a prepended header (for TX) and
-> interpreting the appended trailer (for RX) if these features
-> are enabled.
->
-> So basically, the purpose of the rmnet driver is to handle QMAP
-> protocol connections, and right now that's what the modem provides.
-
-Do you have any idea why this particular design was picked?
-
-My best guess is that it evolved organically with multiple
-generations of hardware and software, rather than being thought
-out as a nice abstraction layer. If the two are tightly connected,
-this might mean that what we actually want here is to reintegrate
-the two components into a single driver with a much simpler
-RX and TX path that handles the checksumming and aggregation
-of data packets directly as it passes them from the network
-stack into the hardware.
-
-Always passing data from one netdev to another both ways
-sounds like it introduces both direct CPU overhead, and
-problems with flow control when data gets buffered inbetween.
-The intermediate buffer here acts like a router that must
-pass data along or randomly drop packets when the consumer
-can't keep up with the producer.
-
-        Arnd
+T24gVGh1LCAyMDE5LTA1LTMwIGF0IDE5OjM2ICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gT24gRnJpLCAyMDE5LTA1LTI0IGF0IDE4OjU0ICswODAwLCBUb25naGFvIFpoYW5nIHdyb3Rl
+Og0KPiA+IE9uIFN1biwgTWF5IDEyLCAyMDE5IGF0IDU6MDggUE0gUm9pIERheWFuIDxyb2lkQG1l
+bGxhbm94LmNvbT4NCj4gPiB3cm90ZToNCj4gPiA+IA0KPiA+ID4gT24gMDYvMDUvMjAxOSAyMToy
+OCwgeGlhbmd4aWEubS55dWVAZ21haWwuY29tIHdyb3RlOg0KPiA+ID4gPiBGcm9tOiBUb25naGFv
+IFpoYW5nIDx4aWFuZ3hpYS5tLnl1ZUBnbWFpbC5jb20+DQo+ID4gPiA+IA0KPiA+ID4gPiBJbiBz
+b21lIGNhc2UsIHdlIGRvbid0IGNhcmUgdGhlIGVuY19zcmNfaXAgYW5kIGVuY19kc3RfaXAsIGFu
+ZA0KPiA+ID4gPiBpZiB3ZSBkb24ndCBtYXRjaCB0aGUgZmllbGQgZW5jX3NyY19pcCBhbmQgZW5j
+X2RzdF9pcCwgd2UgY2FuDQo+ID4gPiA+IHVzZQ0KPiA+ID4gPiBmZXdlciBmbG93cyBpbiBoYXJk
+d2FyZSB3aGVuIHJldmljZSB0aGUgdHVubmVsIHBhY2tldHMuIEZvcg0KPiA+ID4gPiBleGFtcGxl
+LA0KPiA+ID4gPiB0aGUgdHVubmVsIHBhY2tldHMgbWF5IGJlIHNlbnQgZnJvbSBkaWZmZXJlbnQg
+aG9zdHMsIHdlIG11c3QNCj4gPiA+ID4gb2ZmbG9hZA0KPiA+ID4gPiBvbmUgcnVsZSBmb3IgZWFj
+aCBob3N0Lg0KPiA+ID4gPiANCj4gPiA+ID4gICAgICAgJCB0YyBmaWx0ZXIgYWRkIGRldiB2eGxh
+bjAgcHJvdG9jb2wgaXAgcGFyZW50IGZmZmY6IHByaW8NCj4gPiA+ID4gMQ0KPiA+ID4gPiBcDQo+
+ID4gPiA+ICAgICAgICAgICAgICAgZmxvd2VyIGRzdF9tYWMgMDA6MTE6MjI6MzM6NDQ6MDAgXA0K
+PiA+ID4gPiAgICAgICAgICAgICAgIGVuY19zcmNfaXAgSG9zdDBfSVAgZW5jX2RzdF9pcCAyLjIu
+Mi4xMDAgXA0KPiA+ID4gPiAgICAgICAgICAgICAgIGVuY19kc3RfcG9ydCA0Nzg5IGVuY19rZXlf
+aWQgMTAwIFwNCj4gPiA+ID4gICAgICAgICAgICAgICBhY3Rpb24gdHVubmVsX2tleSB1bnNldCBh
+Y3Rpb24gbWlycmVkIGVncmVzcw0KPiA+ID4gPiByZWRpcmVjdCBkZXYgZXRoMF8xDQo+ID4gPiA+
+IA0KPiA+ID4gPiAgICAgICAkIHRjIGZpbHRlciBhZGQgZGV2IHZ4bGFuMCBwcm90b2NvbCBpcCBw
+YXJlbnQgZmZmZjogcHJpbw0KPiA+ID4gPiAxDQo+ID4gPiA+IFwNCj4gPiA+ID4gICAgICAgICAg
+ICAgICBmbG93ZXIgZHN0X21hYyAwMDoxMToyMjozMzo0NDowMCBcDQo+ID4gPiA+ICAgICAgICAg
+ICAgICAgZW5jX3NyY19pcCBIb3N0MV9JUCBlbmNfZHN0X2lwIDIuMi4yLjEwMCBcDQo+ID4gPiA+
+ICAgICAgICAgICAgICAgZW5jX2RzdF9wb3J0IDQ3ODkgZW5jX2tleV9pZCAxMDAgXA0KPiA+ID4g
+PiAgICAgICAgICAgICAgIGFjdGlvbiB0dW5uZWxfa2V5IHVuc2V0IGFjdGlvbiBtaXJyZWQgZWdy
+ZXNzDQo+ID4gPiA+IHJlZGlyZWN0IGRldiBldGgwXzENCj4gPiA+ID4gDQo+ID4gPiA+IElmIHdl
+IHN1cHBvcnQgZmxvd3Mgd2hpY2ggb25seSBtYXRjaCB0aGUgZW5jX2tleV9pZCBhbmQNCj4gPiA+
+ID4gZW5jX2RzdF9wb3J0LA0KPiA+ID4gPiBhIGZsb3cgY2FuIHByb2Nlc3MgdGhlIHBhY2tldHMg
+c2VudCB0byBWTSB3aGljaCAobWFjDQo+ID4gPiA+IDAwOjExOjIyOjMzOjQ0OjAwKS4NCj4gPiA+
+ID4gDQo+ID4gPiA+ICAgICAgICQgdGMgZmlsdGVyIGFkZCBkZXYgdnhsYW4wIHByb3RvY29sIGlw
+IHBhcmVudCBmZmZmOiBwcmlvDQo+ID4gPiA+IDENCj4gPiA+ID4gXA0KPiA+ID4gPiAgICAgICAg
+ICAgICAgIGZsb3dlciBkc3RfbWFjIDAwOjExOjIyOjMzOjQ0OjAwIFwNCj4gPiA+ID4gICAgICAg
+ICAgICAgICBlbmNfZHN0X3BvcnQgNDc4OSBlbmNfa2V5X2lkIDEwMCBcDQo+ID4gPiA+ICAgICAg
+ICAgICAgICAgYWN0aW9uIHR1bm5lbF9rZXkgdW5zZXQgYWN0aW9uIG1pcnJlZCBlZ3Jlc3MNCj4g
+PiA+ID4gcmVkaXJlY3QgZGV2IGV0aDBfMQ0KPiA+ID4gPiANCj4gPiA+ID4gU2lnbmVkLW9mZi1i
+eTogVG9uZ2hhbyBaaGFuZyA8eGlhbmd4aWEubS55dWVAZ21haWwuY29tPg0KPiA+ID4gPiAtLS0N
+Cj4gPiA+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90Yy5j
+IHwgMjcgKysrKysrKy0tDQo+ID4gPiA+IC0tLS0tLS0tLS0tLS0tLS0NCj4gPiA+ID4gIDEgZmls
+ZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyksIDIwIGRlbGV0aW9ucygtKQ0KPiA+ID4gPiANCj4g
+PiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29y
+ZS9lbl90Yy5jDQo+ID4gPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
+b3JlL2VuX3RjLmMNCj4gPiA+ID4gaW5kZXggMTIyZjQ1Ny4uOTFlNGRiMSAxMDA2NDQNCj4gPiA+
+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3RjLmMN
+Cj4gPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vu
+X3RjLmMNCj4gPiA+ID4gQEAgLTEzMzksNyArMTMzOSw2IEBAIHN0YXRpYyBpbnQgcGFyc2VfdHVu
+bmVsX2F0dHIoc3RydWN0DQo+ID4gPiA+IG1seDVlX3ByaXYgKnByaXYsDQo+ID4gPiA+ICAgICAg
+IHZvaWQgKmhlYWRlcnNfdiA9IE1MWDVfQUREUl9PRihmdGVfbWF0Y2hfcGFyYW0sIHNwZWMtDQo+
+ID4gPiA+ID4gbWF0Y2hfdmFsdWUsDQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBvdXRlcl9oZWFkZXJzKTsNCj4gPiA+ID4gICAgICAgc3RydWN0IGZsb3dfcnVs
+ZSAqcnVsZSA9DQo+ID4gPiA+IHRjX2Nsc19mbG93ZXJfb2ZmbG9hZF9mbG93X3J1bGUoZik7DQo+
+ID4gPiA+IC0gICAgIHN0cnVjdCBmbG93X21hdGNoX2NvbnRyb2wgZW5jX2NvbnRyb2w7DQo+ID4g
+PiA+ICAgICAgIGludCBlcnI7DQo+ID4gPiA+IA0KPiA+ID4gPiAgICAgICBlcnIgPSBtbHg1ZV90
+Y190dW5fcGFyc2UoZmlsdGVyX2RldiwgcHJpdiwgc3BlYywgZiwNCj4gPiA+ID4gQEAgLTEzNTAs
+OSArMTM0OSw3IEBAIHN0YXRpYyBpbnQgcGFyc2VfdHVubmVsX2F0dHIoc3RydWN0DQo+ID4gPiA+
+IG1seDVlX3ByaXYgKnByaXYsDQo+ID4gPiA+ICAgICAgICAgICAgICAgcmV0dXJuIGVycjsNCj4g
+PiA+ID4gICAgICAgfQ0KPiA+ID4gPiANCj4gPiA+ID4gLSAgICAgZmxvd19ydWxlX21hdGNoX2Vu
+Y19jb250cm9sKHJ1bGUsICZlbmNfY29udHJvbCk7DQo+ID4gPiA+IC0NCj4gPiA+ID4gLSAgICAg
+aWYgKGVuY19jb250cm9sLmtleS0+YWRkcl90eXBlID09DQo+ID4gPiA+IEZMT1dfRElTU0VDVE9S
+X0tFWV9JUFY0X0FERFJTKSB7DQo+ID4gPiA+ICsgICAgIGlmIChmbG93X3J1bGVfbWF0Y2hfa2V5
+KHJ1bGUsDQo+ID4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9FTkNfSVBWNF9BRERSUykpIHsNCj4g
+PiA+ID4gICAgICAgICAgICAgICBzdHJ1Y3QgZmxvd19tYXRjaF9pcHY0X2FkZHJzIG1hdGNoOw0K
+PiA+ID4gPiANCj4gPiA+ID4gICAgICAgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfZW5jX2lwdjRf
+YWRkcnMocnVsZSwgJm1hdGNoKTsNCj4gPiA+ID4gQEAgLTEzNzIsNyArMTM2OSw3IEBAIHN0YXRp
+YyBpbnQgcGFyc2VfdHVubmVsX2F0dHIoc3RydWN0DQo+ID4gPiA+IG1seDVlX3ByaXYgKnByaXYs
+DQo+ID4gPiA+IA0KPiA+ID4gPiAgICAgICAgICAgICAgIE1MWDVfU0VUX1RPX09ORVMoZnRlX21h
+dGNoX3NldF9seXJfMl80LA0KPiA+ID4gPiBoZWFkZXJzX2MsDQo+ID4gPiA+IGV0aGVydHlwZSk7
+DQo+ID4gPiA+ICAgICAgICAgICAgICAgTUxYNV9TRVQoZnRlX21hdGNoX3NldF9seXJfMl80LCBo
+ZWFkZXJzX3YsDQo+ID4gPiA+IGV0aGVydHlwZSwgRVRIX1BfSVApOw0KPiA+ID4gPiAtICAgICB9
+IGVsc2UgaWYgKGVuY19jb250cm9sLmtleS0+YWRkcl90eXBlID09DQo+ID4gPiA+IEZMT1dfRElT
+U0VDVE9SX0tFWV9JUFY2X0FERFJTKSB7DQo+ID4gPiA+ICsgICAgIH0gZWxzZSBpZiAoZmxvd19y
+dWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4gPiBGTE9XX0RJU1NFQ1RPUl9LRVlfRU5DX0lQVjZf
+QUREUlMpKSB7DQo+ID4gPiA+ICAgICAgICAgICAgICAgc3RydWN0IGZsb3dfbWF0Y2hfaXB2Nl9h
+ZGRycyBtYXRjaDsNCj4gPiA+ID4gDQo+ID4gPiA+ICAgICAgICAgICAgICAgZmxvd19ydWxlX21h
+dGNoX2VuY19pcHY2X2FkZHJzKHJ1bGUsICZtYXRjaCk7DQo+ID4gPiA+IEBAIC0xNTA0LDIyICsx
+NTAxLDEyIEBAIHN0YXRpYyBpbnQgX19wYXJzZV9jbHNfZmxvd2VyKHN0cnVjdA0KPiA+ID4gPiBt
+bHg1ZV9wcml2ICpwcml2LA0KPiA+ID4gPiAgICAgICAgICAgICAgIHJldHVybiAtRU9QTk9UU1VQ
+UDsNCj4gPiA+ID4gICAgICAgfQ0KPiA+ID4gPiANCj4gPiA+ID4gLSAgICAgaWYgKChmbG93X3J1
+bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+ID4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9FTkNfSVBWNF9B
+RERSUykgfHwNCj4gPiA+ID4gLSAgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfa2V5KHJ1bGUsDQo+
+ID4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9FTkNfS0VZSUQpIHx8DQo+ID4gPiA+IC0gICAgICAg
+ICAgZmxvd19ydWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4gPiBGTE9XX0RJU1NFQ1RPUl9LRVlf
+RU5DX1BPUlRTKSkgJiYNCj4gPiA+ID4gLSAgICAgICAgIGZsb3dfcnVsZV9tYXRjaF9rZXkocnVs
+ZSwNCj4gPiA+ID4gRkxPV19ESVNTRUNUT1JfS0VZX0VOQ19DT05UUk9MKSkgew0KPiA+ID4gPiAt
+ICAgICAgICAgICAgIHN0cnVjdCBmbG93X21hdGNoX2NvbnRyb2wgbWF0Y2g7DQo+ID4gPiA+IC0N
+Cj4gPiA+ID4gLSAgICAgICAgICAgICBmbG93X3J1bGVfbWF0Y2hfZW5jX2NvbnRyb2wocnVsZSwg
+Jm1hdGNoKTsNCj4gPiA+ID4gLSAgICAgICAgICAgICBzd2l0Y2ggKG1hdGNoLmtleS0+YWRkcl90
+eXBlKSB7DQo+ID4gPiA+IC0gICAgICAgICAgICAgY2FzZSBGTE9XX0RJU1NFQ1RPUl9LRVlfSVBW
+NF9BRERSUzoNCj4gPiA+ID4gLSAgICAgICAgICAgICBjYXNlIEZMT1dfRElTU0VDVE9SX0tFWV9J
+UFY2X0FERFJTOg0KPiA+ID4gPiAtICAgICAgICAgICAgICAgICAgICAgaWYgKHBhcnNlX3R1bm5l
+bF9hdHRyKHByaXYsIHNwZWMsIGYsDQo+ID4gPiA+IGZpbHRlcl9kZXYsIHR1bm5lbF9tYXRjaF9s
+ZXZlbCkpDQo+ID4gPiA+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtRU9Q
+Tk9UU1VQUDsNCj4gPiA+ID4gLSAgICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPiA+ID4gPiAt
+ICAgICAgICAgICAgIGRlZmF1bHQ6DQo+ID4gPiA+ICsgICAgIGlmIChmbG93X3J1bGVfbWF0Y2hf
+a2V5KHJ1bGUsDQo+ID4gPiA+IEZMT1dfRElTU0VDVE9SX0tFWV9FTkNfSVBWNF9BRERSUykgfHwN
+Cj4gPiA+ID4gKyAgICAgICAgIGZsb3dfcnVsZV9tYXRjaF9rZXkocnVsZSwNCj4gPiA+ID4gRkxP
+V19ESVNTRUNUT1JfS0VZX0VOQ19JUFY2X0FERFJTKSB8fA0KPiA+ID4gPiArICAgICAgICAgZmxv
+d19ydWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4gPiBGTE9XX0RJU1NFQ1RPUl9LRVlfRU5DX0tF
+WUlEKQ0KPiA+ID4gPiArICAgICAgICAgZmxvd19ydWxlX21hdGNoX2tleShydWxlLA0KPiA+ID4g
+PiBGTE9XX0RJU1NFQ1RPUl9LRVlfRU5DX1BPUlRTKSkgew0KPiA+ID4gPiArICAgICAgICAgICAg
+IGlmIChwYXJzZV90dW5uZWxfYXR0cihwcml2LCBzcGVjLCBmLCBmaWx0ZXJfZGV2LA0KPiA+ID4g
+PiB0dW5uZWxfbWF0Y2hfbGV2ZWwpKQ0KPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgcmV0
+dXJuIC1FT1BOT1RTVVBQOw0KPiA+ID4gPiAtICAgICAgICAgICAgIH0NCj4gPiA+ID4gDQo+ID4g
+PiA+ICAgICAgICAgICAgICAgLyogSW4gZGVjYXAgZmxvdywgaGVhZGVyIHBvaW50ZXJzIHNob3Vs
+ZCBwb2ludCB0bw0KPiA+ID4gPiB0aGUgaW5uZXINCj4gPiA+ID4gICAgICAgICAgICAgICAgKiBo
+ZWFkZXJzLCBvdXRlciBoZWFkZXIgd2VyZSBhbHJlYWR5IHNldCBieQ0KPiA+ID4gPiBwYXJzZV90
+dW5uZWxfYXR0cg0KPiA+ID4gPiANCj4gPiA+IA0KPiA+ID4gUmV2aWV3ZWQtYnk6IFJvaSBEYXlh
+biA8cm9pZEBtZWxsYW5veC5jb20+DQo+ID4gSGkgU2FlZWQsDQo+ID4gdGhpcyBwYXRjaCBpcyBy
+ZWFkeSwgd2lsbCBiZSBhcHBsaWVkID8NCj4gDQo+IEhpIFRvbmdoYW8sDQo+IHNvcnJ5IGZvciB0
+aGUgZGVsYXksIHRoZXJlIGlzIHNvbWUgY29uZmxpY3Qgd2l0aCBhbiBpbnRlcm5hbCBwYXRjaCBp
+bg0KPiBteSB0cmVlLg0KPiBJIHdpbGwgcmVzb2x2ZSBpdCBzb29uIGFuZCBhcHBseSB5b3VyIHBh
+dGNoLCB3aWxsIGxldCB5b3Uga25vdy4NCj4gDQoNCkFwcGxpZWQgdG8gbmV0LW5leHQtbWx4NSwg
+d2lsbCBiZSBzZW50IGxhdGVyIHRvZGF5IHRvIG5ldC1uZXh0Lg0KDQpUaGFua3MhDQoNCg==
