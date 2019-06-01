@@ -2,205 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A75431DA6
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 527DA31D12
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729943AbfFANas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 09:30:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56512 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729640AbfFAN0K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Jun 2019 09:26:10 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7FB8E2739B;
-        Sat,  1 Jun 2019 13:26:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559395568;
-        bh=iVRWZ07lKolSwaj0InoW8KQ+LMzttB+DVK4BkP2f12c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JYAjNSvyLVR5QgXagLHhrD6OM/oBThh88CjgetgIx4RpYebk5PcbECr6L+Wp5sKkc
-         BHh4KaVcKbaOYYYuhsnQ3mAaSxX0gcr4hVxhPFkvE1CHF6ywnla/D3n8qmdfKk0Cqq
-         8i1wMEfkFfTnAEdGRunMVo/aWY5yV8GVhV8VObEE=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Rongqing <lirongqing@baidu.com>, Zhang Yu <zhangyu31@baidu.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 03/56] ipc: prevent lockup on alloc_msg and free_msg
-Date:   Sat,  1 Jun 2019 09:25:07 -0400
-Message-Id: <20190601132600.27427-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190601132600.27427-1-sashal@kernel.org>
-References: <20190601132600.27427-1-sashal@kernel.org>
+        id S1729840AbfFAN0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 09:26:55 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37809 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729805AbfFAN0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 09:26:54 -0400
+Received: by mail-pf1-f196.google.com with SMTP id a23so7918707pff.4
+        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 06:26:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pwvnYnBqLw7TKDTfHUAStl91ZXmaSNmLLfk1dZ/hOA8=;
+        b=iKFhXP10jsmQAyGbE9Z0+RUUrs0d6RCY5FVGGr6UxHAcJhl3kHEIWNwGSiJ/PWYuy8
+         /kt8BQnKPa6/aq1On1lWb6ndY8o2CPMl96GpeQZwtyZW1h8HiwbpdoGwDreVo4Ln2mi8
+         sKvZXeJk19d/OHCcyuvYnBiOzNjTJKvMLa90Uvae2ywnGlkWqQ9aES0D8NeOWFHfCjQc
+         9/yc1ThG4VJWhpp8QmMNA7Qnkkzk5aMfv4O2EX22mZuEihBFtqr+DY4ltvYyj6aSi+I6
+         Dk7H+OyzIIxcicysVWRaOltRHxwIPZ96PrDAsVxnOfKSrSrOA0UrzyQefo/a9weA6G7n
+         bopQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pwvnYnBqLw7TKDTfHUAStl91ZXmaSNmLLfk1dZ/hOA8=;
+        b=O6jwYOfouI3VWUejWUIKpxfun6ZQHtYE/JjF1O/nxFbWHmQj3lgRuKAvVmwD9y0eLY
+         TPiLlrYaUKTjWri6DsdLexQ1S+SDjke41fwdIWG1Ba7B9C29FTo/o/7MBD5n6zW4WiVX
+         iiAUqtl4pb8jFn9vAAkY9+GlPKDVUJRnSLWvRt/3/rdOVomH4eyZUW5sdcNfOFoU7Fxv
+         Dxp0a+5u969yfC13dcBqqsvq/2gaMBLHAKzXuM3jYGfr4X/RhPJVqP1robJVuAheoFEo
+         mtYq6D8luo8hTG/kIP6RNaEmXcM461cHrGZKnSJz5bRx0SpwAHg6xXkA+SHe4NFo5+7r
+         FPLA==
+X-Gm-Message-State: APjAAAXmcoJpldyVtaRvXXYlHFDGNQzTYfEEl7SDJmD4KJZY02ruXqgC
+        So/s6/NQSvFlr45pEPnpwmY1mybV6XgxaQ==
+X-Google-Smtp-Source: APXvYqxXLKMeoLKPbDQIbvyJ2JVdTcMjSEVuZ09wje8NwWgfMVCOxl33oowTbxAkgmipG8IFXUkbng==
+X-Received: by 2002:a17:90a:ca14:: with SMTP id x20mr14983138pjt.98.1559395613381;
+        Sat, 01 Jun 2019 06:26:53 -0700 (PDT)
+Received: from xps13 (S01065039555c1e92.gv.shawcable.net. [24.69.138.89])
+        by smtp.gmail.com with ESMTPSA id n13sm7612913pff.59.2019.06.01.06.26.52
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 01 Jun 2019 06:26:53 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 06:26:51 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 203769] New: Regression: Valid network link no longer
+ detected
+Message-ID: <20190601062651.2d82b819@xps13>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li Rongqing <lirongqing@baidu.com>
+Details are a bit scarce. 
 
-[ Upstream commit d6a2946a88f524a47cc9b79279667137899db807 ]
+The referenced commit is.
 
-msgctl10 of ltp triggers the following lockup When CONFIG_KASAN is
-enabled on large memory SMP systems, the pages initialization can take a
-long time, if msgctl10 requests a huge block memory, and it will block
-rcu scheduler, so release cpu actively.
+commit 7dc2bccab0ee37ac28096b8fcdc390a679a15841
+Author: Maxim Mikityanskiy <maximmi@mellanox.com>
+Date:   Tue May 21 06:40:04 2019 +0000
 
-After adding schedule() in free_msg, free_msg can not be called when
-holding spinlock, so adding msg to a tmp list, and free it out of
-spinlock
+    Validate required parameters in inet6_validate_link_af
 
-  rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-  rcu:     Tasks blocked on level-1 rcu_node (CPUs 16-31): P32505
-  rcu:     Tasks blocked on level-1 rcu_node (CPUs 48-63): P34978
-  rcu:     (detected by 11, t=35024 jiffies, g=44237529, q=16542267)
-  msgctl10        R  running task    21608 32505   2794 0x00000082
-  Call Trace:
-   preempt_schedule_irq+0x4c/0xb0
-   retint_kernel+0x1b/0x2d
-  RIP: 0010:__is_insn_slot_addr+0xfb/0x250
-  Code: 82 1d 00 48 8b 9b 90 00 00 00 4c 89 f7 49 c1 ee 03 e8 59 83 1d 00 48 b8 00 00 00 00 00 fc ff df 4c 39 eb 48 89 9d 58 ff ff ff <41> c6 04 06 f8 74 66 4c 8d 75 98 4c 89 f1 48 c1 e9 03 48 01 c8 48
-  RSP: 0018:ffff88bce041f758 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-  RAX: dffffc0000000000 RBX: ffffffff8471bc50 RCX: ffffffff828a2a57
-  RDX: dffffc0000000000 RSI: dffffc0000000000 RDI: ffff88bce041f780
-  RBP: ffff88bce041f828 R08: ffffed15f3f4c5b3 R09: ffffed15f3f4c5b3
-  R10: 0000000000000001 R11: ffffed15f3f4c5b2 R12: 000000318aee9b73
-  R13: ffffffff8471bc50 R14: 1ffff1179c083ef0 R15: 1ffff1179c083eec
-   kernel_text_address+0xc1/0x100
-   __kernel_text_address+0xe/0x30
-   unwind_get_return_address+0x2f/0x50
-   __save_stack_trace+0x92/0x100
-   create_object+0x380/0x650
-   __kmalloc+0x14c/0x2b0
-   load_msg+0x38/0x1a0
-   do_msgsnd+0x19e/0xcf0
-   do_syscall_64+0x117/0x400
-   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Begin forwarded message:
 
-  rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-  rcu:     Tasks blocked on level-1 rcu_node (CPUs 0-15): P32170
-  rcu:     (detected by 14, t=35016 jiffies, g=44237525, q=12423063)
-  msgctl10        R  running task    21608 32170  32155 0x00000082
-  Call Trace:
-   preempt_schedule_irq+0x4c/0xb0
-   retint_kernel+0x1b/0x2d
-  RIP: 0010:lock_acquire+0x4d/0x340
-  Code: 48 81 ec c0 00 00 00 45 89 c6 4d 89 cf 48 8d 6c 24 20 48 89 3c 24 48 8d bb e4 0c 00 00 89 74 24 0c 48 c7 44 24 20 b3 8a b5 41 <48> c1 ed 03 48 c7 44 24 28 b4 25 18 84 48 c7 44 24 30 d0 54 7a 82
-  RSP: 0018:ffff88af83417738 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-  RAX: dffffc0000000000 RBX: ffff88bd335f3080 RCX: 0000000000000002
-  RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88bd335f3d64
-  RBP: ffff88af83417758 R08: 0000000000000000 R09: 0000000000000000
-  R10: 0000000000000001 R11: ffffed13f3f745b2 R12: 0000000000000000
-  R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000000000
-   is_bpf_text_address+0x32/0xe0
-   kernel_text_address+0xec/0x100
-   __kernel_text_address+0xe/0x30
-   unwind_get_return_address+0x2f/0x50
-   __save_stack_trace+0x92/0x100
-   save_stack+0x32/0xb0
-   __kasan_slab_free+0x130/0x180
-   kfree+0xfa/0x2d0
-   free_msg+0x24/0x50
-   do_msgrcv+0x508/0xe60
-   do_syscall_64+0x117/0x400
-   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Date: Sat, 01 Jun 2019 09:53:51 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 203769] New: Regression: Valid network link no longer detected
 
-Davidlohr said:
- "So after releasing the lock, the msg rbtree/list is empty and new
-  calls will not see those in the newly populated tmp_msg list, and
-  therefore they cannot access the delayed msg freeing pointers, which
-  is good. Also the fact that the node_cache is now freed before the
-  actual messages seems to be harmless as this is wanted for
-  msg_insert() avoiding GFP_ATOMIC allocations, and after releasing the
-  info->lock the thing is freed anyway so it should not change things"
 
-Link: http://lkml.kernel.org/r/1552029161-4957-1-git-send-email-lirongqing@baidu.com
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
-Reviewed-by: Davidlohr Bueso <dbueso@suse.de>
-Cc: Manfred Spraul <manfred@colorfullife.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- ipc/mqueue.c  | 10 ++++++++--
- ipc/msgutil.c |  6 ++++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+https://bugzilla.kernel.org/show_bug.cgi?id=203769
 
-diff --git a/ipc/mqueue.c b/ipc/mqueue.c
-index 5e24eb0ab5dd2..6ed74825ab542 100644
---- a/ipc/mqueue.c
-+++ b/ipc/mqueue.c
-@@ -373,7 +373,8 @@ static void mqueue_evict_inode(struct inode *inode)
- 	struct user_struct *user;
- 	unsigned long mq_bytes, mq_treesize;
- 	struct ipc_namespace *ipc_ns;
--	struct msg_msg *msg;
-+	struct msg_msg *msg, *nmsg;
-+	LIST_HEAD(tmp_msg);
- 
- 	clear_inode(inode);
- 
-@@ -384,10 +385,15 @@ static void mqueue_evict_inode(struct inode *inode)
- 	info = MQUEUE_I(inode);
- 	spin_lock(&info->lock);
- 	while ((msg = msg_get(info)) != NULL)
--		free_msg(msg);
-+		list_add_tail(&msg->m_list, &tmp_msg);
- 	kfree(info->node_cache);
- 	spin_unlock(&info->lock);
- 
-+	list_for_each_entry_safe(msg, nmsg, &tmp_msg, m_list) {
-+		list_del(&msg->m_list);
-+		free_msg(msg);
-+	}
-+
- 	/* Total amount of bytes accounted for the mqueue */
- 	mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
- 		min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
-diff --git a/ipc/msgutil.c b/ipc/msgutil.c
-index ed81aafd23926..9467307487f74 100644
---- a/ipc/msgutil.c
-+++ b/ipc/msgutil.c
-@@ -18,6 +18,7 @@
- #include <linux/utsname.h>
- #include <linux/proc_ns.h>
- #include <linux/uaccess.h>
-+#include <linux/sched.h>
- 
- #include "util.h"
- 
-@@ -66,6 +67,9 @@ static struct msg_msg *alloc_msg(size_t len)
- 	pseg = &msg->next;
- 	while (len > 0) {
- 		struct msg_msgseg *seg;
-+
-+		cond_resched();
-+
- 		alen = min(len, DATALEN_SEG);
- 		seg = kmalloc(sizeof(*seg) + alen, GFP_KERNEL);
- 		if (seg == NULL)
-@@ -178,6 +182,8 @@ void free_msg(struct msg_msg *msg)
- 	kfree(msg);
- 	while (seg != NULL) {
- 		struct msg_msgseg *tmp = seg->next;
-+
-+		cond_resched();
- 		kfree(seg);
- 		seg = tmp;
- 	}
+            Bug ID: 203769
+           Summary: Regression: Valid network link no longer detected
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.2.0-rc2
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: gwhite@kupulau.com
+        Regression: No
+
+Commit 7dc2bccab0ee37ac28096b8fcdc390a679a15841 has broken wired networking on
+two of my machines.  Drivers e1000e, igb and r8169 all fail to detect link with
+this commit applied.  The drivers load and appear to initialize correctly, but
+no link is ever detected.
+
+With this commit reverted, they work perfectly.
+
+This is on a fully updated Arch.  Happy to provide any other information that
+is of use.
+
 -- 
-2.20.1
-
+You are receiving this mail because:
+You are the assignee for the bug.
