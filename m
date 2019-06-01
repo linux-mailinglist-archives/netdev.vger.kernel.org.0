@@ -2,109 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 527DA31D12
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C3531FC3
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 17:19:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729840AbfFAN0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 09:26:55 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37809 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729805AbfFAN0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 09:26:54 -0400
-Received: by mail-pf1-f196.google.com with SMTP id a23so7918707pff.4
-        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 06:26:54 -0700 (PDT)
+        id S1726634AbfFAPTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 11:19:36 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39334 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbfFAPTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 11:19:36 -0400
+Received: by mail-ot1-f65.google.com with SMTP id k24so7047639otn.6;
+        Sat, 01 Jun 2019 08:19:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pwvnYnBqLw7TKDTfHUAStl91ZXmaSNmLLfk1dZ/hOA8=;
-        b=iKFhXP10jsmQAyGbE9Z0+RUUrs0d6RCY5FVGGr6UxHAcJhl3kHEIWNwGSiJ/PWYuy8
-         /kt8BQnKPa6/aq1On1lWb6ndY8o2CPMl96GpeQZwtyZW1h8HiwbpdoGwDreVo4Ln2mi8
-         sKvZXeJk19d/OHCcyuvYnBiOzNjTJKvMLa90Uvae2ywnGlkWqQ9aES0D8NeOWFHfCjQc
-         9/yc1ThG4VJWhpp8QmMNA7Qnkkzk5aMfv4O2EX22mZuEihBFtqr+DY4ltvYyj6aSi+I6
-         Dk7H+OyzIIxcicysVWRaOltRHxwIPZ96PrDAsVxnOfKSrSrOA0UrzyQefo/a9weA6G7n
-         bopQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DZ8EqvDyWqIwxw5uZ651sYBJbgvZFIAJoCrfZ/Kg7Zw=;
+        b=RKmKfTKDV3iutmhvFK0woxtRH6yzeEaHjsVmyQmmyw2v07giiLuwhYhbp3nC5EGgzl
+         gWoDbiHRlqBV9fWVmwLbOXiOQvDveID+y1ARlftv2J7y140cy8o6sYdeC8Cbx68MmW8J
+         YY1YnJNXHAPf9zRMB4bcNKJ+lGKbE7jmgBEexvTcgDgoMPrVvHY9NOUscrkviNlVk91v
+         r/GFI+LKSXXvUbZy5d+8sxVlhfxL4XQ1ffnlVEBvpTXOIc3ybLrMiXsLDnNr13fhFwRl
+         Fq5xxmcnMEpEe3Ov03+TdfiVRK7MxDURbdjj7vG3T/2Q2Zw6WlUpA1+tyxbR4eg0riI4
+         /s4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pwvnYnBqLw7TKDTfHUAStl91ZXmaSNmLLfk1dZ/hOA8=;
-        b=O6jwYOfouI3VWUejWUIKpxfun6ZQHtYE/JjF1O/nxFbWHmQj3lgRuKAvVmwD9y0eLY
-         TPiLlrYaUKTjWri6DsdLexQ1S+SDjke41fwdIWG1Ba7B9C29FTo/o/7MBD5n6zW4WiVX
-         iiAUqtl4pb8jFn9vAAkY9+GlPKDVUJRnSLWvRt/3/rdOVomH4eyZUW5sdcNfOFoU7Fxv
-         Dxp0a+5u969yfC13dcBqqsvq/2gaMBLHAKzXuM3jYGfr4X/RhPJVqP1robJVuAheoFEo
-         mtYq6D8luo8hTG/kIP6RNaEmXcM461cHrGZKnSJz5bRx0SpwAHg6xXkA+SHe4NFo5+7r
-         FPLA==
-X-Gm-Message-State: APjAAAXmcoJpldyVtaRvXXYlHFDGNQzTYfEEl7SDJmD4KJZY02ruXqgC
-        So/s6/NQSvFlr45pEPnpwmY1mybV6XgxaQ==
-X-Google-Smtp-Source: APXvYqxXLKMeoLKPbDQIbvyJ2JVdTcMjSEVuZ09wje8NwWgfMVCOxl33oowTbxAkgmipG8IFXUkbng==
-X-Received: by 2002:a17:90a:ca14:: with SMTP id x20mr14983138pjt.98.1559395613381;
-        Sat, 01 Jun 2019 06:26:53 -0700 (PDT)
-Received: from xps13 (S01065039555c1e92.gv.shawcable.net. [24.69.138.89])
-        by smtp.gmail.com with ESMTPSA id n13sm7612913pff.59.2019.06.01.06.26.52
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DZ8EqvDyWqIwxw5uZ651sYBJbgvZFIAJoCrfZ/Kg7Zw=;
+        b=YQXNumHYoDN7hRAXlXbW4Mk3zvgQhuDU0OPaPpCWrBDf08TPL2aMrdy89pBWj2UIBc
+         VAvhoLzMLLyrhsKq48F/t3+z+IGRnwbjJmD960eH9Fln5INXQ+myG5fjGGxNuYH731RD
+         vMiwuTSd6x7jU36RQZU7XmGz4cR7hXceqpBzXDhxlCJpBxAh7UYRPEYp6jh7xns6F69h
+         sgMVFnkxBpbIWmeg4Pac2loNdjpu1PfK18wCkuRmjvVLF5vc0jbLathZLtP7kKn0d60k
+         bincLSON/2nAPRH4KDcayfIoW1troMVWRqvI0RGaNqzByrLGTWBDH7C9wKqW7ulNnZUX
+         R7VQ==
+X-Gm-Message-State: APjAAAUvzlkVFeXawSwgf3CKgypNiyts6OMgmTKUuThFZHAtEWK2t/3p
+        z6wVRQWgZrkbp3gq3tY6IRp3vt8=
+X-Google-Smtp-Source: APXvYqz87YY3UNw+GPNxnK8eKWjApCu8nRLf7NND4TafvxCLm5EqKiQNzc0fvFPNqVKaBy2rPjK2rw==
+X-Received: by 2002:a9d:7312:: with SMTP id e18mr5711785otk.148.1559402375857;
+        Sat, 01 Jun 2019 08:19:35 -0700 (PDT)
+Received: from ubuntu (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
+        by smtp.gmail.com with ESMTPSA id r14sm3125038otk.72.2019.06.01.08.19.34
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 01 Jun 2019 06:26:53 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 06:26:51 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 203769] New: Regression: Valid network link no longer
- detected
-Message-ID: <20190601062651.2d82b819@xps13>
+        Sat, 01 Jun 2019 08:19:34 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 11:04:29 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: add support for matching IPv4 options
+Message-ID: <20190601150429.GA16560@ubuntu>
+References: <20190523093801.3747-1-ssuryaextr@gmail.com>
+ <20190531171101.5pttvxlbernhmlra@salvia>
+ <20190531193558.GB4276@ubuntu>
+ <20190601002230.bo6dhdf3lhlkknqq@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190601002230.bo6dhdf3lhlkknqq@salvia>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Details are a bit scarce. 
+On Sat, Jun 01, 2019 at 02:22:30AM +0200, Pablo Neira Ayuso wrote:
+> > It is the same as the IPv6 one. The offset returned is the offset to the
+> > specific option (target) or the byte beyond the options if the target
+> > isn't specified (< 0).
+> 
+> Thanks for explaining. So you are using ipv6_find_hdr() as reference,
+> but not sure this offset parameter is useful for this patchset since
+> this is always set to zero, do you have plans to use this in a follow
+> up patchset?
 
-The referenced commit is.
+I developed this patchset to suit my employer needs and there is no plan
+for a follow up patchset, however I think non-zero offset might be useful
+in the future for tunneled packets.
 
-commit 7dc2bccab0ee37ac28096b8fcdc390a679a15841
-Author: Maxim Mikityanskiy <maximmi@mellanox.com>
-Date:   Tue May 21 06:40:04 2019 +0000
+> I mean, you make this check upfront from the _eval() path, ie.
+> 
+> static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
+>                                  ...
+> {
+>         ...
+> 
+>         if (skb->protocol != htons(ETH_P_IP))
+>                 goto err;
 
-    Validate required parameters in inet6_validate_link_af
+Got it.
 
-Begin forwarded message:
-
-Date: Sat, 01 Jun 2019 09:53:51 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 203769] New: Regression: Valid network link no longer detected
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=203769
-
-            Bug ID: 203769
-           Summary: Regression: Valid network link no longer detected
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.2.0-rc2
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: gwhite@kupulau.com
-        Regression: No
-
-Commit 7dc2bccab0ee37ac28096b8fcdc390a679a15841 has broken wired networking on
-two of my machines.  Drivers e1000e, igb and r8169 all fail to detect link with
-this commit applied.  The drivers load and appear to initialize correctly, but
-no link is ever detected.
-
-With this commit reverted, they work perfectly.
-
-This is on a fully updated Arch.  Happy to provide any other information that
-is of use.
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
+Thanks.
