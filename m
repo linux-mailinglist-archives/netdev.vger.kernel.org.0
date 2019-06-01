@@ -2,163 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D8E31926
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 04:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B3531929
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfFAC6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 22:58:37 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:42430 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725913AbfFAC6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 22:58:37 -0400
-Received: by mail-lj1-f195.google.com with SMTP id t28so248372lje.9;
-        Fri, 31 May 2019 19:58:34 -0700 (PDT)
+        id S1726649AbfFAC7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 22:59:20 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40434 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfFAC7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 22:59:20 -0400
+Received: by mail-pg1-f196.google.com with SMTP id d30so5041335pgm.7
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 19:59:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eDJPKBJvnZIRQnVeU5Lb59LIyt1tkURiT5wO7mlIN2g=;
-        b=MuvYnZ9XPAUOZtr1DQPs2ZYe/V+if7M4fgGPF9KyRogW1ExivLd9GX8YhgorfW7lKA
-         8nYfqY52S9/WE233IrA9c34eVWFJnw2Za0nS3oirRbYh0k6AS8aCvUd3X/h7akTgn+uy
-         UEa42RfzfaMaxAfeO4xUkRAmHsZ65fLRqWJccJg2/iuGioOBIaa4joTqf9vVVwyheOOb
-         z2zfwCqrvs9heMOWsKyMk5GB9tHf86qakbVzG+6Io6gRSsmzI1P1ZzaVHAO/IqeBXeBx
-         P9dSnZNpfiTZUfq3S0uekMzv5vRnC0w75Bi9HJGkHI12Od7waq2B1bl0XlyfhCq4rwoC
-         975w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QLks2yf8WIDN/lJQpKbYO8XLRA0o0JKjDoOcOkg3yfU=;
+        b=BZ0j079OaMzta1CYXg6VevoLd+O5psq+M+HmUljfrLyMPrsIw89jAvLtbDKj/YWcfj
+         qhLIgOCmyW4eJM2LJdoFXIXLcBQE6RGbztuq3g3Q0lfpqAfDPXFzcSpY8AhPGyKh8GFu
+         9MwZ07Pq6XsIcl3bbRX77p0gAwXD4vv6qLIqXGoMqmEMgxk+VCUoWR0oGfNizeDAxwzy
+         fir8nM87Tcrx//hH9Cq8x2EDra8rs2SBF3aAedHL+u5k2ikNEA4+vhEv43zRsV6DbLIH
+         9iLSwt+CBhWpM0V4FLbFGZNaA3l5AKCVNW6yCuxrXbh7bfDZlpifmGFBkL9UQnE6jA6g
+         HRag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eDJPKBJvnZIRQnVeU5Lb59LIyt1tkURiT5wO7mlIN2g=;
-        b=JU9uCX/uLN2bG6lrXhJA/Sk2/j++gmG6q4bS8Ol5wdstBCejDDV3NjAwLs4bj5LX2+
-         jfUmgNdIiMxF2Jt7gi7LRbbpCeB7vLAeRm3JCdGMZ0O/NW1zEagAFYRGJkicYMec45SS
-         Z5VWcHCSFEs0mDeu0fvU9K9TabUUaPxpJl7Y2RVEuI17lX6fIXQ9z9xZ3VyCnsvFKBPU
-         VFwIg+xB84URsFZxB+g1UxZHZJ8gdeFUXFcjoOK5cx1LuHCHOwFtSY2/z//4q4fcezgc
-         7CORgIFQeAhtFqJITH3Mmre9HDz/7gx2+MpFbLuRDYUevHlCYmwiBFSonJvcbto7n4Wv
-         VA8Q==
-X-Gm-Message-State: APjAAAWawsSm7g7HV2UYjWkWKsMMTYYAcDbRgjSmvbL2epoUS02ZoUbw
-        HHX6gBgAhn08NM/oGRC8/jzpEF3jqiy6D8g8UgY=
-X-Google-Smtp-Source: APXvYqyreNdEHm79xwC9JivNNbNhJN4VOgT69fXZdX4ZtalnKX7JmwEccg3O7i6gmGhljZxUilzx4sxMisjuDvKS9nc=
-X-Received: by 2002:a2e:9c09:: with SMTP id s9mr7590038lji.74.1559357913798;
- Fri, 31 May 2019 19:58:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QLks2yf8WIDN/lJQpKbYO8XLRA0o0JKjDoOcOkg3yfU=;
+        b=m48BUrL6z76XwuzFCUVegUVWeK2FyU5drRSkcZ7s4dSpwvmGf6/Np1gcINTTzTTSw5
+         gPirK6X73qxbP8Lu8AZfmQ7r1XySNGG+z4ZlFDP1SPv8OJ7ALDHUF4Y8RyLfWWxNk5u9
+         jEet2SP+hL0cD3RNG1n224v7H9KSMJx41wx9TddZ6vnrrVMeN2siT8rzkKrWpqltDIvY
+         div6Q6N54CxDBrZXZuCDr78757bvELC3E9yHNNqDqs/bfMewU/rRMxL239MKCO1eJqAm
+         nG32MFx5ctRtTNUqeqSMHMHt7YZuX3DQlEpPCF3xUAdfEIorPqbxV+EfPaxLNWrj9kvd
+         bSKA==
+X-Gm-Message-State: APjAAAVd3b3emjUdRksL/QLFCO7fYMIeXIVYi2W9CEaouBkJ0g+shNlw
+        rcA453LgsG6jhKq6SMdzctM=
+X-Google-Smtp-Source: APXvYqzmNnmdsDMhCFHebSdVt3GhldbPA/2zLeh0DUIHGpwEmzbhzNFLmc1xZ4SpK0Mo6w8tNLwAGQ==
+X-Received: by 2002:a62:5801:: with SMTP id m1mr14432209pfb.32.1559357960115;
+        Fri, 31 May 2019 19:59:20 -0700 (PDT)
+Received: from [172.27.227.252] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id ds14sm6396803pjb.32.2019.05.31.19.59.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 19:59:19 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/7] net: add struct nexthop to fib{6}_info
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>
+References: <CAADnVQJT8UJntO=pSYGN-eokuWGP_6jEeLkFgm2rmVvxmGtUCg@mail.gmail.com>
+ <65320e39-8ea2-29d8-b5f9-2de0c0c7e689@gmail.com>
+ <CAADnVQ+KqC0XCgKSBcCHB8hgQroCq=JH7Pi5NN4B9hN3xtUvYw@mail.gmail.com>
+ <20190531.142936.1364854584560958251.davem@davemloft.net>
+ <ace2225d-f0fe-03b3-12ee-b442265211dd@gmail.com>
+ <CAADnVQ+yj28xchvW6jCPfXCneuHxN+0MNHVquA1v10rWQ=dBMQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8da19c41-b4ba-12c2-0f43-676c90037f67@gmail.com>
+Date:   Fri, 31 May 2019 20:59:17 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <1559324834-30570-1-git-send-email-alan.maguire@oracle.com> <ACCC49B3-7A81-45D4-9AB8-C91B487FD22A@fb.com>
-In-Reply-To: <ACCC49B3-7A81-45D4-9AB8-C91B487FD22A@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 31 May 2019 19:58:22 -0700
-Message-ID: <CAADnVQJsyCJAfH4ioBkRWdaeSJiXxE5bT39jhpo9sL2CSxf6eQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5] selftests/bpf: measure RTT from xdp using xdping
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAADnVQ+yj28xchvW6jCPfXCneuHxN+0MNHVquA1v10rWQ=dBMQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 6:37 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On May 31, 2019, at 10:47 AM, Alan Maguire <alan.maguire@oracle.com> wrote:
-> >
-> > xdping allows us to get latency estimates from XDP.  Output looks
-> > like this:
-> >
-> > ./xdping -I eth4 192.168.55.8
-> > Setting up XDP for eth4, please wait...
-> > XDP setup disrupts network connectivity, hit Ctrl+C to quit
-> >
-> > Normal ping RTT data
-> > [Ignore final RTT; it is distorted by XDP using the reply]
-> > PING 192.168.55.8 (192.168.55.8) from 192.168.55.7 eth4: 56(84) bytes of data.
-> > 64 bytes from 192.168.55.8: icmp_seq=1 ttl=64 time=0.302 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=2 ttl=64 time=0.208 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=3 ttl=64 time=0.163 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=8 ttl=64 time=0.275 ms
-> >
-> > 4 packets transmitted, 4 received, 0% packet loss, time 3079ms
-> > rtt min/avg/max/mdev = 0.163/0.237/0.302/0.054 ms
-> >
-> > XDP RTT data:
-> > 64 bytes from 192.168.55.8: icmp_seq=5 ttl=64 time=0.02808 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=6 ttl=64 time=0.02804 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=7 ttl=64 time=0.02815 ms
-> > 64 bytes from 192.168.55.8: icmp_seq=8 ttl=64 time=0.02805 ms
-> >
-> > The xdping program loads the associated xdping_kern.o BPF program
-> > and attaches it to the specified interface.  If run in client
-> > mode (the default), it will add a map entry keyed by the
-> > target IP address; this map will store RTT measurements, current
-> > sequence number etc.  Finally in client mode the ping command
-> > is executed, and the xdping BPF program will use the last ICMP
-> > reply, reformulate it as an ICMP request with the next sequence
-> > number and XDP_TX it.  After the reply to that request is received
-> > we can measure RTT and repeat until the desired number of
-> > measurements is made.  This is why the sequence numbers in the
-> > normal ping are 1, 2, 3 and 8.  We XDP_TX a modified version
-> > of ICMP reply 4 and keep doing this until we get the 4 replies
-> > we need; hence the networking stack only sees reply 8, where
-> > we have XDP_PASSed it upstream since we are done.
-> >
-> > In server mode (-s), xdping simply takes ICMP requests and replies
-> > to them in XDP rather than passing the request up to the networking
-> > stack.  No map entry is required.
-> >
-> > xdping can be run in native XDP mode (the default, or specified
-> > via -N) or in skb mode (-S).
-> >
-> > A test program test_xdping.sh exercises some of these options.
-> >
-> > Note that native XDP does not seem to XDP_TX for veths, hence -N
-> > is not tested.  Looking at the code, it looks like XDP_TX is
-> > supported so I'm not sure if that's expected.  Running xdping in
-> > native mode for ixgbe as both client and server works fine.
-> >
-> > Changes since v4
-> >
-> > - close fds on cleanup (Song Liu)
-> >
-> > Changes since v3
-> >
-> > - fixed seq to be __be16 (Song Liu)
-> > - fixed fd checks in xdping.c (Song Liu)
-> >
-> > Changes since v2
-> >
-> > - updated commit message to explain why seq number of last
-> >  ICMP reply is 8 not 4 (Song Liu)
-> > - updated types of seq number, raddr and eliminated csum variable
-> >  in xdpclient/xdpserver functions as it was not needed (Song Liu)
-> > - added XDPING_DEFAULT_COUNT definition and usage specification of
-> >  default/max counts (Song Liu)
-> >
-> > Changes since v1
-> > - moved from RFC to PATCH
-> > - removed unused variable in ipv4_csum() (Song Liu)
-> > - refactored ICMP checks into icmp_check() function called by client
-> >   and server programs and reworked client and server programs due
-> >   to lack of shared code (Song Liu)
-> > - added checks to ensure that SKB and native mode are not requested
-> >   together (Song Liu)
-> >
-> > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
->
-> Acked-by: Song Liu <songliubraving@fb.com>
->
-> Note: I am Ack'ing it as a test. It needs more work, if we would
-> distribute it as a tool (maybe we really would).
+On 5/31/19 8:51 PM, Alexei Starovoitov wrote:
+> From single sentence of commit log it's not clear at all
+> whether they're related to this thread.
+> Will they fail if run w/o this set?
+> 
 
-Agree. I think it works fine as a test.
-./test_xdping.sh passed in my test setup.
-Applied to bpf-next. Thanks
+New code in this set (if (fi->nh) {}) can not be tested yet. It can not
+be tested until the final patch that wires up nexthops with fib entries.
+
+Old code in this set (else {}) is tested by existing selftests.
