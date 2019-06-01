@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96845320AF
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 22:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A98320BB
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 23:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbfFAUa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 16:30:29 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:34862 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbfFAUa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 16:30:28 -0400
-Received: by mail-ed1-f67.google.com with SMTP id p26so20457616edr.2
-        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 13:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t5szP295+NWZz8uU+DdJv27LUpzZfoAdzMomr0CA/oY=;
-        b=dVsrwHMOSozVDeXCzo8XyeXXaoUORB9nM55/eE3gqe0psp32fA0Bu5cZHhoWtmk/C8
-         z+I1wlSwCqVflVc3McNR6WsDYsJSJdRNe7hz0lKN/9tbXE7ngOt0Elqv1MoQjdlsR0Qg
-         eWV2likHeIBB9DYZU8jLNkTRXXcq3nbU/AYv6DEMz5JdGs6P+/mv1QVsfggQCNhBpQpa
-         zKAZ6duIEXLFuFJa2UynFHy7XuqZfkUxPLnT3LyHdm0w1f5kcLJca4eXqBj8k3xrimhS
-         rN1LtMJElmwOx5GbzFC6N1jF/cZPHZso2O7IXJ7Hf63H/3ciojggHB5/FHRT4Wl1TtJs
-         QxJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t5szP295+NWZz8uU+DdJv27LUpzZfoAdzMomr0CA/oY=;
-        b=Z1AmAuUN6Wtlw1kZKZvPBvsvOvQXNji+yEVC7xYOViPq0hS2o1iTMYRwIpQNvrojaK
-         BzRn3SLff6TauMUJ62icTI93yPGyl/b2mt9/1VTYt4VgLG9DWG7MeFOVEF34YdvNIfgP
-         CK+qPmXerVXhM3n1vVC+COvziJp11pW0tdZXb6O5uyS/jTA0djXlZHWnOCWM3MTB0Yup
-         6RqlVGbAgIWB2mwZ4rXEEOh1rXrnEzgYBGd3zu4TXSENFjttlmKVl2PgyXzRbfAA/Zv5
-         VylB2wKc3ngv/cYf7+R6Wg1HmhkeOPwUUswybLr/QM04TaQGvCy9RX8zkVqT/1RVN1T0
-         q2Uw==
-X-Gm-Message-State: APjAAAVyE1FBWiIcHrqPSmY+5RczSmGMQd1zqdB0LXN7c+bU6HSnusDs
-        Z3+YqRS1/YYSvLpHlihJAUWxWkmngN18wf4SmfQ=
-X-Google-Smtp-Source: APXvYqwK9CcDhr7eWFzQLn8+od0/Pnm5fff4X8cwFTQ2MRmdMDTKeRwixM2p6YStuXW2IenbXMZxp6Gwwahd4Mpwn1s=
-X-Received: by 2002:a17:906:259a:: with SMTP id m26mr16094696ejb.230.1559421027329;
- Sat, 01 Jun 2019 13:30:27 -0700 (PDT)
+        id S1726701AbfFAVJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 17:09:28 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:41446 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbfFAVJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 17:09:28 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x51L46G3137258;
+        Sat, 1 Jun 2019 21:09:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=lFRaHJV4AGaMGcCZiaC3ENU3IoTU0EjPSzC0mon4Pw8=;
+ b=l6HbYv0V4EtKyZ0owaeuuMaDS8qE+aLFVzv7JIcl+6UpfTX2xhNJwusiCNWKRXuN5pzQ
+ vDXUytzmHT32WlvbBCgZ12k7IPY9OPzOQou773+zDjC/L6Nj0+SBIU45tJEwQ09FHUTh
+ HnOZ3oCBRYsqWChnKPDDtS1HbsUGAXQsvvQ1ePMMKYJj7Y8DHIEf140E4amww+nQSZQk
+ fXNbm9McFg7wiOWpMA+poFw3YtiZ3/cgVkHMwH2brXV+6zHKkyqVnqvpnHDNm1SEbXJ4
+ lF7JrWguYk948C/upAmVl3iROuNJk1e6FmTGJRKHteiKX0cU8uyccK0PVzH7JI7fwlwx nA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2suj0q1p0x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 01 Jun 2019 21:09:14 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x51L8djc149730;
+        Sat, 1 Jun 2019 21:09:14 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2suh60y1qk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 01 Jun 2019 21:09:14 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x51L98Z7029165;
+        Sat, 1 Jun 2019 21:09:08 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 01 Jun 2019 14:09:07 -0700
+Date:   Sun, 2 Jun 2019 00:08:58 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Ganapathi Bhat <gbhat@marvell.com>
+Cc:     Colin King <colin.king@canonical.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Nishant Sarmukadam <nishants@marvell.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH] mwifiex: check for null return from skb_copy
+Message-ID: <20190601210858.GG31203@kadam>
+References: <20190413161438.6376-1-colin.king@canonical.com>
+ <20190413192729.GL6095@kadam>
+ <MN2PR18MB2637DAA4852542EDA2BBC01DA01A0@MN2PR18MB2637.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-References: <20190601103735.27506-1-olteanv@gmail.com> <20190601103735.27506-2-olteanv@gmail.com>
- <20190601160356.GB19081@lunn.ch>
-In-Reply-To: <20190601160356.GB19081@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sat, 1 Jun 2019 23:30:16 +0300
-Message-ID: <CA+h21hpuYeyT6vPTXHQ-oJDcFuOb_q3L+t660YayPeDXm0AGtw@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] net: dsa: sja1105: Force a negative value for
- enum sja1105_speed_t
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN2PR18MB2637DAA4852542EDA2BBC01DA01A0@MN2PR18MB2637.namprd18.prod.outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9275 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=790
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906010152
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9275 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=825 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906010152
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 Jun 2019 at 19:03, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sat, Jun 01, 2019 at 01:37:34PM +0300, Vladimir Oltean wrote:
-> > The code in sja1105_adjust_port_config relies on the fact that an
-> > invalid link speed is detected by sja1105_get_speed_cfg and returned as
-> > -EINVAL.  However storing this into an enum that only has positive
-> > members will cast it into an unsigned value, and it will miss the
-> > negative check.
-> >
-> > So make the -EINVAL value part of the enum, so that it is stored as a
-> > signed number and passes the negative check.
-> >
-> > Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
->
-> Hi Vladimir
->
-> It seems like just using a switch statement would be simpler, and more
-> likely to be correct. And it would avoid adding SJA1105_SPEED_INVALID
-> = -EINVAL which feels hackish.
->
->   Andrew
+On Sat, Jun 01, 2019 at 05:29:26PM +0000, Ganapathi Bhat wrote:
+> Hi Dan,
+> 
+> > >  	if (is_multicast_ether_addr(ra)) {
+> > >  		skb_uap = skb_copy(skb, GFP_ATOMIC);
+> > > +		if (!skb_uap)
+> > > +			return -ENOMEM;
+> > 
+> > I think we would want to free dev_kfree_skb_any(skb) before returning.
+> I think if the pointer is NULL, no need to free it; 
 
-Hi Andrew,
+You're misreading skb vs skb_uap.  "skb_uap" is NULL but "skb" is
+non-NULL and I'm pretty sure we should free it.
 
-You mean I should completely remove the sja1105_get_speed_cfg function?
-I suppose I can do that, I'm only using it in one place.
+regards,
+dan carpenter
 
-Thanks,
--Vladimir
