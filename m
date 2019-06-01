@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1DC31E2B
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC2A31E24
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbfFANeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 09:34:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53580 "EHLO mail.kernel.org"
+        id S1729082AbfFANXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 09:23:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728470AbfFANXg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Jun 2019 09:23:36 -0400
+        id S1728215AbfFANXi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Jun 2019 09:23:38 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7651C264BE;
-        Sat,  1 Jun 2019 13:23:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE1AC27333;
+        Sat,  1 Jun 2019 13:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559395416;
-        bh=vx53/cn0piw5/Nd49Mujb3RPDQN5VCsCot01OzuqToI=;
+        s=default; t=1559395417;
+        bh=mpK1R3CoQOBwdpjhvFcXxrFDFhjGjyoxehuKVzq5gmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OoRQVnHRYTwjNf4BdrffianhOuohGmdTyCsDu3veeVcHqjvqcXK951kuVYUUL8I//
-         izA5O3U7IytKGA72TW26SKgLj+Bik9YEqJTv+AwPDGmIcu9POHipQaMka8SNjqwctJ
-         I6ol6DrpbjYd1VCa0a0xPdsm2qyEE5uWhC+iNnvQ=
+        b=CP4BNeUX9RGVDwKuYnMuXyR7Pbgczw7QueMFnyaNm3FJS7wDfjRHQLjkRfK7VkxYQ
+         STdqZ1oXuk0mTFA4mZ2pOkZStnH/R3aCXg6Wl19LE2DGVHS0Qkam6Wdbj7+cxOsQcf
+         k4LNwd3s2gA5lEeVP6EwStTA6W0Ju/pyfVt2Ta2E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
+Cc:     Jakub Jankowski <shasta@toxcorp.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 051/141] netfilter: nf_flow_table: fix missing error check for rhashtable_insert_fast
-Date:   Sat,  1 Jun 2019 09:20:27 -0400
-Message-Id: <20190601132158.25821-51-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 052/141] netfilter: nf_conntrack_h323: restore boundary check correctness
+Date:   Sat,  1 Jun 2019 09:20:28 -0400
+Message-Id: <20190601132158.25821-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190601132158.25821-1-sashal@kernel.org>
 References: <20190601132158.25821-1-sashal@kernel.org>
@@ -45,59 +45,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Jakub Jankowski <shasta@toxcorp.com>
 
-[ Upstream commit 43c8f131184faf20c07221f3e09724611c6525d8 ]
+[ Upstream commit f5e85ce8e733c2547827f6268136b70b802eabdb ]
 
-rhashtable_insert_fast() may return an error value when memory
-allocation fails, but flow_offload_add() does not check for errors.
-This patch just adds missing error checking.
+Since commit bc7d811ace4a ("netfilter: nf_ct_h323: Convert
+CHECK_BOUND macro to function"), NAT traversal for H.323
+doesn't work, failing to parse H323-UserInformation.
+nf_h323_error_boundary() compares contents of the bitstring,
+not the addresses, preventing valid H.323 packets from being
+conntrack'd.
 
-Fixes: ac2a66665e23 ("netfilter: add generic flow table infrastructure")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+This looks like an oversight from when CHECK_BOUND macro was
+converted to a function.
+
+To fix it, stop dereferencing bs->cur and bs->end.
+
+Fixes: bc7d811ace4a ("netfilter: nf_ct_h323: Convert CHECK_BOUND macro to function")
+Signed-off-by: Jakub Jankowski <shasta@toxcorp.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_flow_table_core.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ net/netfilter/nf_conntrack_h323_asn1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index e1537ace2b90c..5df7486bb4164 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -185,14 +185,25 @@ static const struct rhashtable_params nf_flow_offload_rhash_params = {
+diff --git a/net/netfilter/nf_conntrack_h323_asn1.c b/net/netfilter/nf_conntrack_h323_asn1.c
+index 1601275efe2d1..4c2ef42e189cb 100644
+--- a/net/netfilter/nf_conntrack_h323_asn1.c
++++ b/net/netfilter/nf_conntrack_h323_asn1.c
+@@ -172,7 +172,7 @@ static int nf_h323_error_boundary(struct bitstr *bs, size_t bytes, size_t bits)
+ 	if (bits % BITS_PER_BYTE > 0)
+ 		bytes++;
  
- int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
- {
--	flow->timeout = (u32)jiffies;
-+	int err;
+-	if (*bs->cur + bytes > *bs->end)
++	if (bs->cur + bytes > bs->end)
+ 		return 1;
  
--	rhashtable_insert_fast(&flow_table->rhashtable,
--			       &flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].node,
--			       nf_flow_offload_rhash_params);
--	rhashtable_insert_fast(&flow_table->rhashtable,
--			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
--			       nf_flow_offload_rhash_params);
-+	err = rhashtable_insert_fast(&flow_table->rhashtable,
-+				     &flow->tuplehash[0].node,
-+				     nf_flow_offload_rhash_params);
-+	if (err < 0)
-+		return err;
-+
-+	err = rhashtable_insert_fast(&flow_table->rhashtable,
-+				     &flow->tuplehash[1].node,
-+				     nf_flow_offload_rhash_params);
-+	if (err < 0) {
-+		rhashtable_remove_fast(&flow_table->rhashtable,
-+				       &flow->tuplehash[0].node,
-+				       nf_flow_offload_rhash_params);
-+		return err;
-+	}
-+
-+	flow->timeout = (u32)jiffies;
  	return 0;
- }
- EXPORT_SYMBOL_GPL(flow_offload_add);
 -- 
 2.20.1
 
