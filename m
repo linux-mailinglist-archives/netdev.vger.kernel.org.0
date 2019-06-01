@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CA2318E3
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 03:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02386318E5
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 03:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfFAB2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 21:28:24 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58744 "EHLO
+        id S1726956AbfFABhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 21:37:22 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40116 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726946AbfFAB2X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 21:28:23 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x511Ji8v015846;
-        Fri, 31 May 2019 18:27:32 -0700
+        by vger.kernel.org with ESMTP id S1726643AbfFABhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 21:37:21 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x511TDVY004412;
+        Fri, 31 May 2019 18:36:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=QH9Ls4QnXX3WJz6s4GS5x2eBqiVoVK/KSrofik2YrF4=;
- b=XEN6qd6maIi3XQT07tpyYPnyOhOZVVnwimKS8OufEHHcyq8LvS4kio7z+tTlhma/iP3c
- vL2Rh3VoQJIPw3Cw0QEMmwS3WPSOa0YHQyo1q5qq5wPFJaJd/S7FECTCWmSvOgOe/g7v
- QrcWOH/1IbjMLkEpo9uEBr72S3PLqi6ZONE= 
+ bh=uD0Wurnerv7C+5jsRnNXNZv9TBjKSJrrIQZ63tgZkFU=;
+ b=eMFnBe8HeIbMjVAJH/NSN6ubv6BVbvgadH3URCHXHBX9GcZfVbZnr4328Zwv6pLfys3+
+ ObNxwm1hyhI93nI+YAUnNhEtQXTs4ANV4l3S48olHQjsNTdQpQ++F7qJRYdDH6123GsF
+ h2Awx7E4ujypFgJQI1KXhyjdq2wupVDEXFc= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2subm50sv8-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2su8tu9dah-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 31 May 2019 18:27:32 -0700
-Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+        Fri, 31 May 2019 18:36:52 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 31 May 2019 18:27:31 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
+ 15.1.1713.5; Fri, 31 May 2019 18:36:52 -0700
+Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 31 May 2019 18:27:30 -0700
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ 15.1.1713.5; Fri, 31 May 2019 18:36:52 -0700
+Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 31 May 2019 18:27:30 -0700
+ via Frontend Transport; Fri, 31 May 2019 18:36:52 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector1-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QH9Ls4QnXX3WJz6s4GS5x2eBqiVoVK/KSrofik2YrF4=;
- b=csKgfzYsrrp2T5/RC9l2QKyBVnCZSQhIWSpMYZ7C9N+pozriLJxBA+yw/uDqD5tcRQ7QGF3Ovmdyh3OmtU/ssrtwWVYORTtiqzJyt5feQi7+djzbLLBMguZEbqTqB1mZXgw+JIxlZlZGpAUfjWNzRC68W+2Ko5ueKaREsthidQ8=
+ bh=uD0Wurnerv7C+5jsRnNXNZv9TBjKSJrrIQZ63tgZkFU=;
+ b=PlW861JGer6r6JQXnHX2GjQoJ3JVnidpqKvTypcv1sePkx2jJ7zrb0ecqE9Bt+fFfTy35UXDK1w90B6ziOKRJaGy/hzxlPE+loG+1Ri0ilF+evIjgNcoAnIzgDVdx4g3/09qyv3Kf/KonUXNlaiRDP+/DraCVaOj9XeGmfEEnCU=
 Received: from DM5PR15MB1163.namprd15.prod.outlook.com (10.173.215.141) by
  DM5PR15MB1562.namprd15.prod.outlook.com (10.173.221.15) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Sat, 1 Jun 2019 01:27:29 +0000
+ 15.20.1922.18; Sat, 1 Jun 2019 01:36:50 +0000
 Received: from DM5PR15MB1163.namprd15.prod.outlook.com
  ([fe80::cc3d:9bc2:1c3f:e661]) by DM5PR15MB1163.namprd15.prod.outlook.com
  ([fe80::cc3d:9bc2:1c3f:e661%4]) with mapi id 15.20.1943.016; Sat, 1 Jun 2019
- 01:27:29 +0000
+ 01:36:50 +0000
 From:   Song Liu <songliubraving@fb.com>
-To:     Matt Mullins <mmullins@fb.com>
-CC:     Andrew Hall <hall@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+To:     Alan Maguire <alan.maguire@oracle.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
         Networking <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH bpf v2] bpf: preallocate a perf_sample_data per event fd
-Thread-Topic: [PATCH bpf v2] bpf: preallocate a perf_sample_data per event fd
-Thread-Index: AQHVGAF5Ri5mkc0O1EinvOYIiQfGfqaGAlYA
-Date:   Sat, 1 Jun 2019 01:27:29 +0000
-Message-ID: <B719E003-E100-463E-A921-E59189572181@fb.com>
-References: <20190531223735.4998-1-mmullins@fb.com>
-In-Reply-To: <20190531223735.4998-1-mmullins@fb.com>
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH bpf-next v5] selftests/bpf: measure RTT from xdp using
+ xdping
+Thread-Topic: [PATCH bpf-next v5] selftests/bpf: measure RTT from xdp using
+ xdping
+Thread-Index: AQHVF9j/QELnn+8c10GEKYAnOoqUC6aGBUSA
+Date:   Sat, 1 Jun 2019 01:36:50 +0000
+Message-ID: <ACCC49B3-7A81-45D4-9AB8-C91B487FD22A@fb.com>
+References: <1559324834-30570-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1559324834-30570-1-git-send-email-alan.maguire@oracle.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -74,23 +79,23 @@ X-MS-TNEF-Correlator:
 x-mailer: Apple Mail (2.3445.104.11)
 x-originating-ip: [2620:10d:c090:180::4b5c]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 108295b9-dcbc-4a3c-e02c-08d6e6304ffb
+x-ms-office365-filtering-correlation-id: e4dabad3-54b8-4bc0-453d-08d6e6319e66
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM5PR15MB1562;
 x-ms-traffictypediagnostic: DM5PR15MB1562:
-x-microsoft-antispam-prvs: <DM5PR15MB15620D0EBE5B48D2AE8598BAB31A0@DM5PR15MB1562.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-microsoft-antispam-prvs: <DM5PR15MB15626B8C94C091AEABAB5A6BB31A0@DM5PR15MB1562.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1443;
 x-forefront-prvs: 00550ABE1F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(136003)(396003)(366004)(376002)(199004)(189003)(51914003)(25786009)(54906003)(99286004)(76176011)(14454004)(76116006)(91956017)(6636002)(37006003)(256004)(14444005)(66476007)(66946007)(5024004)(66446008)(66556008)(64756008)(446003)(73956011)(6862004)(2616005)(68736007)(86362001)(46003)(53936002)(11346002)(476003)(6246003)(486006)(36756003)(478600001)(6512007)(102836004)(316002)(71200400001)(2906002)(4326008)(81156014)(81166006)(71190400001)(186003)(50226002)(82746002)(8676002)(8936002)(6116002)(6506007)(7736002)(5660300002)(6486002)(83716004)(229853002)(6436002)(53546011)(33656002)(57306001)(305945005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1562;H:DM5PR15MB1163.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(396003)(136003)(39860400002)(366004)(189003)(199004)(82746002)(6506007)(6116002)(8936002)(8676002)(30864003)(71200400001)(316002)(53946003)(102836004)(6512007)(71190400001)(81166006)(81156014)(50226002)(186003)(4326008)(2906002)(53546011)(305945005)(57306001)(33656002)(6486002)(5660300002)(7736002)(229853002)(6436002)(83716004)(91956017)(256004)(76116006)(14454004)(5024004)(66556008)(66446008)(14444005)(66946007)(66476007)(7416002)(25786009)(99286004)(76176011)(54906003)(486006)(6246003)(476003)(11346002)(36756003)(478600001)(73956011)(6916009)(446003)(64756008)(68736007)(53936002)(46003)(86362001)(45080400002)(2616005)(579004);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1562;H:DM5PR15MB1163.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: EODrS++LOpqxRlq/bzqYAUEanJmW9ZsMRMGASrSqXFkmpSVG1HI/6dGACSu2nriEc+Z1bZ8xvpeph4wrhkySwUpp7lsBjSUDQid3DcIPgiiMq7aMxaKW1cUGiFLXlEQGgbxDd2KAV28O6bnbckHVGZnXJhOqPvwuZC78PGRYWQXVKZe6prsrD9ncnqQKg+KRwbWJl9vGUnOHWFHLkegGuGGt++sUnGZLnMjwWsIbJrTCcNUeSI2lPPdEFn5g4wMFMJYkK1ij5PFKLuwIDczPvpakpsk4Xw0PgZg/pqtBtiq5sA6nsw7D3YpyQIP3LQ8/oZMSaKEipmeF+ZXPOQmlNXiVSqkxM+v5mO7qMeghSUG39yNbX5Ty7rLpXdS7LivrJcXJNVynINPKZfV2lyAh0gPNJ6u/yIGLvJNrCBkzWQY=
+x-microsoft-antispam-message-info: IxgY1s7o6cl6Yt4Y8U5i1382vTi1sn56lzEg60uoEIbxsoYr8oK2MqDUlUncp3Q+ayIyF/nR+tOoaNv/J3yqPxTGKxbhei3E4ILtZTwr6W3/K5cNMIWeXdmwn5eTwLXrhQ8smh1eQSg8dsOVAfp+PeYkKZUHwa6/0XLtO/zmiHMD8Gnfh22LiozCMndheGZBleBtIFzBXjY4VwK7cvYUAmx9AadLkJgkqc7GwKID5g4Sla9lyNHIj7XYvt6IibLiPz8zUzHaKtiogKMyFtVxwPLrBkFZWza7lo5S2i7KUP7vXFmgR9LObCn0o+AAcNFWwnF3nIljpjMYfZvxhN5daWRKPdye+cqDsTQXgtTXwC84mYdVSQu2ab6PbjRhBh2Ui3eOuoFAFXIdiXxUMV/2OGXBkfN/Rw9DMcSS0LQtSe4=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4D1213DC839D614D89889BC474182A7C@namprd15.prod.outlook.com>
+Content-ID: <5F4232F6926CDA49A59668586771F7C5@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 108295b9-dcbc-4a3c-e02c-08d6e6304ffb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2019 01:27:29.2448
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4dabad3-54b8-4bc0-453d-08d6e6319e66
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2019 01:36:50.1849
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
@@ -104,7 +109,7 @@ X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 pri
  malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906010009
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906010010
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -113,214 +118,737 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> On May 31, 2019, at 3:37 PM, Matt Mullins <mmullins@fb.com> wrote:
+> On May 31, 2019, at 10:47 AM, Alan Maguire <alan.maguire@oracle.com> wrot=
+e:
 >=20
-> It is possible that a BPF program can be called while another BPF
-> program is executing bpf_perf_event_output.  This has been observed with
-> I/O completion occurring as a result of an interrupt:
+> xdping allows us to get latency estimates from XDP.  Output looks
+> like this:
 >=20
-> 	bpf_prog_247fd1341cddaea4_trace_req_end+0x8d7/0x1000
-> 	? trace_call_bpf+0x82/0x100
-> 	? sch_direct_xmit+0xe2/0x230
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? kprobe_perf_func+0x19b/0x240
-> 	? __qdisc_run+0x86/0x520
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? kprobe_ftrace_handler+0x90/0xf0
-> 	? ftrace_ops_assist_func+0x6e/0xe0
-> 	? ip6_input_finish+0xbf/0x460
-> 	? 0xffffffffa01e80bf
-> 	? nbd_dbg_flags_show+0xc0/0xc0 [nbd]
-> 	? blkdev_issue_zeroout+0x200/0x200
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? flush_smp_call_function_queue+0x6c/0xe0
-> 	? smp_call_function_single_interrupt+0x32/0xc0
-> 	? call_function_single_interrupt+0xf/0x20
-> 	? call_function_single_interrupt+0xa/0x20
-> 	? swiotlb_map_page+0x140/0x140
-> 	? refcount_sub_and_test+0x1a/0x50
-> 	? tcp_wfree+0x20/0xf0
-> 	? skb_release_head_state+0x62/0xc0
-> 	? skb_release_all+0xe/0x30
-> 	? napi_consume_skb+0xb5/0x100
-> 	? mlx5e_poll_tx_cq+0x1df/0x4e0
-> 	? mlx5e_poll_tx_cq+0x38c/0x4e0
-> 	? mlx5e_napi_poll+0x58/0xc30
-> 	? mlx5e_napi_poll+0x232/0xc30
-> 	? net_rx_action+0x128/0x340
-> 	? __do_softirq+0xd4/0x2ad
-> 	? irq_exit+0xa5/0xb0
-> 	? do_IRQ+0x7d/0xc0
-> 	? common_interrupt+0xf/0xf
-> 	</IRQ>
-> 	? __rb_free_aux+0xf0/0xf0
-> 	? perf_output_sample+0x28/0x7b0
-> 	? perf_prepare_sample+0x54/0x4a0
-> 	? perf_event_output+0x43/0x60
-> 	? bpf_perf_event_output_raw_tp+0x15f/0x180
-> 	? blk_mq_start_request+0x1/0x120
-> 	? bpf_prog_411a64a706fc6044_should_trace+0xad4/0x1000
-> 	? bpf_trace_run3+0x2c/0x80
-> 	? nbd_send_cmd+0x4c2/0x690 [nbd]
+> ./xdping -I eth4 192.168.55.8
+> Setting up XDP for eth4, please wait...
+> XDP setup disrupts network connectivity, hit Ctrl+C to quit
 >=20
-> This also cannot be alleviated by further splitting the per-cpu
-> perf_sample_data structs (as in commit 283ca526a9bd ("bpf: fix
-> corruption on concurrent perf_event_output calls")), as a raw_tp could
-> be attached to the block:block_rq_complete tracepoint and execute during
-> another raw_tp.  Instead, keep a pre-allocated perf_sample_data
-> structure per perf_event_array element and fail a bpf_perf_event_output
-> if that element is concurrently being used.
+> Normal ping RTT data
+> [Ignore final RTT; it is distorted by XDP using the reply]
+> PING 192.168.55.8 (192.168.55.8) from 192.168.55.7 eth4: 56(84) bytes of =
+data.
+> 64 bytes from 192.168.55.8: icmp_seq=3D1 ttl=3D64 time=3D0.302 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D2 ttl=3D64 time=3D0.208 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D3 ttl=3D64 time=3D0.163 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D8 ttl=3D64 time=3D0.275 ms
 >=20
-> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_da=
-ta")
-> Signed-off-by: Matt Mullins <mmullins@fb.com>
-
-This looks great. Thanks for the fix.=20
+> 4 packets transmitted, 4 received, 0% packet loss, time 3079ms
+> rtt min/avg/max/mdev =3D 0.163/0.237/0.302/0.054 ms
+>=20
+> XDP RTT data:
+> 64 bytes from 192.168.55.8: icmp_seq=3D5 ttl=3D64 time=3D0.02808 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D6 ttl=3D64 time=3D0.02804 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D7 ttl=3D64 time=3D0.02815 ms
+> 64 bytes from 192.168.55.8: icmp_seq=3D8 ttl=3D64 time=3D0.02805 ms
+>=20
+> The xdping program loads the associated xdping_kern.o BPF program
+> and attaches it to the specified interface.  If run in client
+> mode (the default), it will add a map entry keyed by the
+> target IP address; this map will store RTT measurements, current
+> sequence number etc.  Finally in client mode the ping command
+> is executed, and the xdping BPF program will use the last ICMP
+> reply, reformulate it as an ICMP request with the next sequence
+> number and XDP_TX it.  After the reply to that request is received
+> we can measure RTT and repeat until the desired number of
+> measurements is made.  This is why the sequence numbers in the
+> normal ping are 1, 2, 3 and 8.  We XDP_TX a modified version
+> of ICMP reply 4 and keep doing this until we get the 4 replies
+> we need; hence the networking stack only sees reply 8, where
+> we have XDP_PASSed it upstream since we are done.
+>=20
+> In server mode (-s), xdping simply takes ICMP requests and replies
+> to them in XDP rather than passing the request up to the networking
+> stack.  No map entry is required.
+>=20
+> xdping can be run in native XDP mode (the default, or specified
+> via -N) or in skb mode (-S).
+>=20
+> A test program test_xdping.sh exercises some of these options.
+>=20
+> Note that native XDP does not seem to XDP_TX for veths, hence -N
+> is not tested.  Looking at the code, it looks like XDP_TX is
+> supported so I'm not sure if that's expected.  Running xdping in
+> native mode for ixgbe as both client and server works fine.
+>=20
+> Changes since v4
+>=20
+> - close fds on cleanup (Song Liu)
+>=20
+> Changes since v3
+>=20
+> - fixed seq to be __be16 (Song Liu)
+> - fixed fd checks in xdping.c (Song Liu)
+>=20
+> Changes since v2
+>=20
+> - updated commit message to explain why seq number of last
+>  ICMP reply is 8 not 4 (Song Liu)
+> - updated types of seq number, raddr and eliminated csum variable
+>  in xdpclient/xdpserver functions as it was not needed (Song Liu)
+> - added XDPING_DEFAULT_COUNT definition and usage specification of
+>  default/max counts (Song Liu)
+>=20
+> Changes since v1
+> - moved from RFC to PATCH
+> - removed unused variable in ipv4_csum() (Song Liu)
+> - refactored ICMP checks into icmp_check() function called by client
+>   and server programs and reworked client and server programs due
+>   to lack of shared code (Song Liu)
+> - added checks to ensure that SKB and native mode are not requested
+>   together (Song Liu)
+>=20
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 
 Acked-by: Song Liu <songliubraving@fb.com>
 
+Note: I am Ack'ing it as a test. It needs more work, if we would=20
+distribute it as a tool (maybe we really would).=20
+
 > ---
-> v1->v2:
-> 	keep a pointer to the struct perf_sample_data rather than directly
-> 	embedding it in the structure, avoiding the circular include and
-> 	removing the need for in_use.  Suggested by Song.
+> tools/testing/selftests/bpf/.gitignore          |   1 +
+> tools/testing/selftests/bpf/Makefile            |   5 +-
+> tools/testing/selftests/bpf/progs/xdping_kern.c | 184 +++++++++++++++++
+> tools/testing/selftests/bpf/test_xdping.sh      |  99 +++++++++
+> tools/testing/selftests/bpf/xdping.c            | 258 +++++++++++++++++++=
++++++
+> tools/testing/selftests/bpf/xdping.h            |  13 ++
+> 6 files changed, 558 insertions(+), 2 deletions(-)
+> create mode 100644 tools/testing/selftests/bpf/progs/xdping_kern.c
+> create mode 100755 tools/testing/selftests/bpf/test_xdping.sh
+> create mode 100644 tools/testing/selftests/bpf/xdping.c
+> create mode 100644 tools/testing/selftests/bpf/xdping.h
 >=20
-> include/linux/bpf.h      |  1 +
-> kernel/bpf/arraymap.c    |  3 ++-
-> kernel/trace/bpf_trace.c | 29 ++++++++++++++++-------------
-> 3 files changed, 19 insertions(+), 14 deletions(-)
+> diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selft=
+ests/bpf/.gitignore
+> index b2a9902..7470327 100644
+> --- a/tools/testing/selftests/bpf/.gitignore
+> +++ b/tools/testing/selftests/bpf/.gitignore
+> @@ -38,3 +38,4 @@ libbpf.pc
+> libbpf.so.*
+> test_hashmap
+> test_btf_dump
+> +xdping
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
+ts/bpf/Makefile
+> index 9b21391..2b426ae 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -26,7 +26,7 @@ TEST_GEN_PROGS =3D test_verifier test_tag test_maps tes=
+t_lru_map test_lpm_map test
+> 	test_sock test_btf test_sockmap test_lirc_mode2_user get_cgroup_id_user =
+\
+> 	test_socket_cookie test_cgroup_storage test_select_reuseport test_sectio=
+n_names \
+> 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashma=
+p \
+> -	test_btf_dump test_cgroup_attach
+> +	test_btf_dump test_cgroup_attach xdping
 >=20
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 4fb3aa2dc975..47fd85cfbbaf 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -472,6 +472,7 @@ struct bpf_event_entry {
-> 	struct file *perf_file;
-> 	struct file *map_file;
-> 	struct rcu_head rcu;
-> +	struct perf_sample_data *sd;
-> };
+> BPF_OBJ_FILES =3D $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+> TEST_GEN_FILES =3D $(BPF_OBJ_FILES)
+> @@ -57,7 +57,8 @@ TEST_PROGS :=3D test_kmod.sh \
+> 	test_lwt_ip_encap.sh \
+> 	test_tcp_check_syncookie.sh \
+> 	test_tc_tunnel.sh \
+> -	test_tc_edt.sh
+> +	test_tc_edt.sh \
+> +	test_xdping.sh
 >=20
-> bool bpf_prog_array_compatible(struct bpf_array *array, const struct bpf_=
-prog *fp);
-> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> index 584636c9e2eb..c7f5d593e04f 100644
-> --- a/kernel/bpf/arraymap.c
-> +++ b/kernel/bpf/arraymap.c
-> @@ -654,11 +654,12 @@ static struct bpf_event_entry *bpf_event_entry_gen(=
-struct file *perf_file,
-> {
-> 	struct bpf_event_entry *ee;
->=20
-> -	ee =3D kzalloc(sizeof(*ee), GFP_ATOMIC);
-> +	ee =3D kzalloc(sizeof(*ee) + sizeof(struct perf_sample_data), GFP_ATOMI=
-C);
-> 	if (ee) {
-> 		ee->event =3D perf_file->private_data;
-> 		ee->perf_file =3D perf_file;
-> 		ee->map_file =3D map_file;
-> +		ee->sd =3D (void *)ee + sizeof(*ee);
-> 	}
->=20
-> 	return ee;
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index f92d6ad5e080..076f8e987355 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -410,17 +410,17 @@ static const struct bpf_func_proto bpf_perf_event_r=
-ead_value_proto =3D {
-> 	.arg4_type	=3D ARG_CONST_SIZE,
-> };
->=20
-> -static DEFINE_PER_CPU(struct perf_sample_data, bpf_trace_sd);
-> -
-> static __always_inline u64
-> __bpf_perf_event_output(struct pt_regs *regs, struct bpf_map *map,
-> -			u64 flags, struct perf_sample_data *sd)
-> +			u64 flags, struct perf_raw_record *raw)
-> {
-> 	struct bpf_array *array =3D container_of(map, struct bpf_array, map);
-> 	unsigned int cpu =3D smp_processor_id();
-> 	u64 index =3D flags & BPF_F_INDEX_MASK;
-> 	struct bpf_event_entry *ee;
-> 	struct perf_event *event;
-> +	struct perf_sample_data *sd;
-> +	u64 ret;
->=20
-> 	if (index =3D=3D BPF_F_CURRENT_CPU)
-> 		index =3D cpu;
-> @@ -439,13 +439,22 @@ __bpf_perf_event_output(struct pt_regs *regs, struc=
-t bpf_map *map,
-> 	if (unlikely(event->oncpu !=3D cpu))
-> 		return -EOPNOTSUPP;
->=20
-> -	return perf_event_output(event, sd, regs);
-> +	sd =3D xchg(&ee->sd, NULL);
-> +	if (!sd)
-> +		return -EBUSY;
+> TEST_PROGS_EXTENDED :=3D with_addr.sh \
+> 	with_tunnels.sh \
+> diff --git a/tools/testing/selftests/bpf/progs/xdping_kern.c b/tools/test=
+ing/selftests/bpf/progs/xdping_kern.c
+> new file mode 100644
+> index 0000000..87393e7
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/xdping_kern.c
+> @@ -0,0 +1,184 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved=
+. */
 > +
-> +	perf_sample_data_init(sd, 0, 0);
-> +	sd->raw =3D raw;
+> +#define KBUILD_MODNAME "foo"
+> +#include <stddef.h>
+> +#include <string.h>
+> +#include <linux/bpf.h>
+> +#include <linux/icmp.h>
+> +#include <linux/in.h>
+> +#include <linux/if_ether.h>
+> +#include <linux/if_packet.h>
+> +#include <linux/if_vlan.h>
+> +#include <linux/ip.h>
 > +
-> +	ret =3D perf_event_output(event, sd, regs);
+> +#include "bpf_helpers.h"
+> +#include "bpf_endian.h"
 > +
-> +	xchg(&ee->sd, sd);
+> +#include "xdping.h"
+> +
+> +struct bpf_map_def SEC("maps") ping_map =3D {
+> +	.type =3D BPF_MAP_TYPE_HASH,
+> +	.key_size =3D sizeof(__u32),
+> +	.value_size =3D sizeof(struct pinginfo),
+> +	.max_entries =3D 256,
+> +};
+> +
+> +static __always_inline void swap_src_dst_mac(void *data)
+> +{
+> +	unsigned short *p =3D data;
+> +	unsigned short dst[3];
+> +
+> +	dst[0] =3D p[0];
+> +	dst[1] =3D p[1];
+> +	dst[2] =3D p[2];
+> +	p[0] =3D p[3];
+> +	p[1] =3D p[4];
+> +	p[2] =3D p[5];
+> +	p[3] =3D dst[0];
+> +	p[4] =3D dst[1];
+> +	p[5] =3D dst[2];
+> +}
+> +
+> +static __always_inline __u16 csum_fold_helper(__wsum sum)
+> +{
+> +	sum =3D (sum & 0xffff) + (sum >> 16);
+> +	return ~((sum & 0xffff) + (sum >> 16));
+> +}
+> +
+> +static __always_inline __u16 ipv4_csum(void *data_start, int data_size)
+> +{
+> +	__wsum sum;
+> +
+> +	sum =3D bpf_csum_diff(0, 0, data_start, data_size, 0);
+> +	return csum_fold_helper(sum);
+> +}
+> +
+> +#define ICMP_ECHO_LEN		64
+> +
+> +static __always_inline int icmp_check(struct xdp_md *ctx, int type)
+> +{
+> +	void *data_end =3D (void *)(long)ctx->data_end;
+> +	void *data =3D (void *)(long)ctx->data;
+> +	struct ethhdr *eth =3D data;
+> +	struct icmphdr *icmph;
+> +	struct iphdr *iph;
+> +
+> +	if (data + sizeof(*eth) + sizeof(*iph) + ICMP_ECHO_LEN > data_end)
+> +		return XDP_PASS;
+> +
+> +	if (eth->h_proto !=3D bpf_htons(ETH_P_IP))
+> +		return XDP_PASS;
+> +
+> +	iph =3D data + sizeof(*eth);
+> +
+> +	if (iph->protocol !=3D IPPROTO_ICMP)
+> +		return XDP_PASS;
+> +
+> +	if (bpf_ntohs(iph->tot_len) - sizeof(*iph) !=3D ICMP_ECHO_LEN)
+> +		return XDP_PASS;
+> +
+> +	icmph =3D data + sizeof(*eth) + sizeof(*iph);
+> +
+> +	if (icmph->type !=3D type)
+> +		return XDP_PASS;
+> +
+> +	return XDP_TX;
+> +}
+> +
+> +SEC("xdpclient")
+> +int xdping_client(struct xdp_md *ctx)
+> +{
+> +	void *data_end =3D (void *)(long)ctx->data_end;
+> +	void *data =3D (void *)(long)ctx->data;
+> +	struct pinginfo *pinginfo =3D NULL;
+> +	struct ethhdr *eth =3D data;
+> +	struct icmphdr *icmph;
+> +	struct iphdr *iph;
+> +	__u64 recvtime;
+> +	__be32 raddr;
+> +	__be16 seq;
+> +	int ret;
+> +	__u8 i;
+> +
+> +	ret =3D icmp_check(ctx, ICMP_ECHOREPLY);
+> +
+> +	if (ret !=3D XDP_TX)
+> +		return ret;
+> +
+> +	iph =3D data + sizeof(*eth);
+> +	icmph =3D data + sizeof(*eth) + sizeof(*iph);
+> +	raddr =3D iph->saddr;
+> +
+> +	/* Record time reply received. */
+> +	recvtime =3D bpf_ktime_get_ns();
+> +	pinginfo =3D bpf_map_lookup_elem(&ping_map, &raddr);
+> +	if (!pinginfo || pinginfo->seq !=3D icmph->un.echo.sequence)
+> +		return XDP_PASS;
+> +
+> +	if (pinginfo->start) {
+> +#pragma clang loop unroll(full)
+> +		for (i =3D 0; i < XDPING_MAX_COUNT; i++) {
+> +			if (pinginfo->times[i] =3D=3D 0)
+> +				break;
+> +		}
+> +		/* verifier is fussy here... */
+> +		if (i < XDPING_MAX_COUNT) {
+> +			pinginfo->times[i] =3D recvtime -
+> +					     pinginfo->start;
+> +			pinginfo->start =3D 0;
+> +			i++;
+> +		}
+> +		/* No more space for values? */
+> +		if (i =3D=3D pinginfo->count || i =3D=3D XDPING_MAX_COUNT)
+> +			return XDP_PASS;
+> +	}
+> +
+> +	/* Now convert reply back into echo request. */
+> +	swap_src_dst_mac(data);
+> +	iph->saddr =3D iph->daddr;
+> +	iph->daddr =3D raddr;
+> +	icmph->type =3D ICMP_ECHO;
+> +	seq =3D bpf_htons(bpf_ntohs(icmph->un.echo.sequence) + 1);
+> +	icmph->un.echo.sequence =3D seq;
+> +	icmph->checksum =3D 0;
+> +	icmph->checksum =3D ipv4_csum(icmph, ICMP_ECHO_LEN);
+> +
+> +	pinginfo->seq =3D seq;
+> +	pinginfo->start =3D bpf_ktime_get_ns();
+> +
+> +	return XDP_TX;
+> +}
+> +
+> +SEC("xdpserver")
+> +int xdping_server(struct xdp_md *ctx)
+> +{
+> +	void *data_end =3D (void *)(long)ctx->data_end;
+> +	void *data =3D (void *)(long)ctx->data;
+> +	struct ethhdr *eth =3D data;
+> +	struct icmphdr *icmph;
+> +	struct iphdr *iph;
+> +	__be32 raddr;
+> +	int ret;
+> +
+> +	ret =3D icmp_check(ctx, ICMP_ECHO);
+> +
+> +	if (ret !=3D XDP_TX)
+> +		return ret;
+> +
+> +	iph =3D data + sizeof(*eth);
+> +	icmph =3D data + sizeof(*eth) + sizeof(*iph);
+> +	raddr =3D iph->saddr;
+> +
+> +	/* Now convert request into echo reply. */
+> +	swap_src_dst_mac(data);
+> +	iph->saddr =3D iph->daddr;
+> +	iph->daddr =3D raddr;
+> +	icmph->type =3D ICMP_ECHOREPLY;
+> +	icmph->checksum =3D 0;
+> +	icmph->checksum =3D ipv4_csum(icmph, ICMP_ECHO_LEN);
+> +
+> +	return XDP_TX;
+> +}
+> +
+> +char _license[] SEC("license") =3D "GPL";
+> diff --git a/tools/testing/selftests/bpf/test_xdping.sh b/tools/testing/s=
+elftests/bpf/test_xdping.sh
+> new file mode 100755
+> index 0000000..c2f0ddb
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/test_xdping.sh
+> @@ -0,0 +1,99 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +# xdping tests
+> +#   Here we setup and teardown configuration required to run
+> +#   xdping, exercising its options.
+> +#
+> +#   Setup is similar to test_tunnel tests but without the tunnel.
+> +#
+> +# Topology:
+> +# ---------
+> +#     root namespace   |     tc_ns0 namespace
+> +#                      |
+> +#      ----------      |     ----------
+> +#      |  veth1  | --------- |  veth0  |
+> +#      ----------    peer    ----------
+> +#
+> +# Device Configuration
+> +# --------------------
+> +# Root namespace with BPF
+> +# Device names and addresses:
+> +#	veth1 IP: 10.1.1.200
+> +#	xdp added to veth1, xdpings originate from here.
+> +#
+> +# Namespace tc_ns0 with BPF
+> +# Device names and addresses:
+> +#       veth0 IPv4: 10.1.1.100
+> +#	For some tests xdping run in server mode here.
+> +#
+> +
+> +readonly TARGET_IP=3D"10.1.1.100"
+> +readonly TARGET_NS=3D"xdp_ns0"
+> +
+> +readonly LOCAL_IP=3D"10.1.1.200"
+> +
+> +setup()
+> +{
+> +	ip netns add $TARGET_NS
+> +	ip link add veth0 type veth peer name veth1
+> +	ip link set veth0 netns $TARGET_NS
+> +	ip netns exec $TARGET_NS ip addr add ${TARGET_IP}/24 dev veth0
+> +	ip addr add ${LOCAL_IP}/24 dev veth1
+> +	ip netns exec $TARGET_NS ip link set veth0 up
+> +	ip link set veth1 up
+> +}
+> +
+> +cleanup()
+> +{
+> +	set +e
+> +	ip netns delete $TARGET_NS 2>/dev/null
+> +	ip link del veth1 2>/dev/null
+> +	if [[ $server_pid -ne 0 ]]; then
+> +		kill -TERM $server_pid
+> +	fi
+> +}
+> +
+> +test()
+> +{
+> +	client_args=3D"$1"
+> +	server_args=3D"$2"
+> +
+> +	echo "Test client args '$client_args'; server args '$server_args'"
+> +
+> +	server_pid=3D0
+> +	if [[ -n "$server_args" ]]; then
+> +		ip netns exec $TARGET_NS ./xdping $server_args &
+> +		server_pid=3D$!
+> +		sleep 10
+> +	fi
+> +	./xdping $client_args $TARGET_IP
+> +
+> +	if [[ $server_pid -ne 0 ]]; then
+> +		kill -TERM $server_pid
+> +		server_pid=3D0
+> +	fi
+> +
+> +	echo "Test client args '$client_args'; server args '$server_args': PASS=
+"
+> +}
+> +
+> +set -e
+> +
+> +server_pid=3D0
+> +
+> +trap cleanup EXIT
+> +
+> +setup
+> +
+> +for server_args in "" "-I veth0 -s -S" ; do
+> +	# client in skb mode
+> +	client_args=3D"-I veth1 -S"
+> +	test "$client_args" "$server_args"
+> +
+> +	# client with count of 10 RTT measurements.
+> +	client_args=3D"-I veth1 -S -c 10"
+> +	test "$client_args" "$server_args"
+> +done
+> +
+> +echo "OK. All tests passed"
+> +exit 0
+> diff --git a/tools/testing/selftests/bpf/xdping.c b/tools/testing/selftes=
+ts/bpf/xdping.c
+> new file mode 100644
+> index 0000000..d60a343
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/xdping.c
+> @@ -0,0 +1,258 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved=
+. */
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/if_link.h>
+> +#include <arpa/inet.h>
+> +#include <assert.h>
+> +#include <errno.h>
+> +#include <signal.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <string.h>
+> +#include <unistd.h>
+> +#include <libgen.h>
+> +#include <sys/resource.h>
+> +#include <net/if.h>
+> +#include <sys/types.h>
+> +#include <sys/socket.h>
+> +#include <netdb.h>
+> +
+> +#include "bpf/bpf.h"
+> +#include "bpf/libbpf.h"
+> +
+> +#include "xdping.h"
+> +
+> +static int ifindex;
+> +static __u32 xdp_flags =3D XDP_FLAGS_UPDATE_IF_NOEXIST;
+> +
+> +static void cleanup(int sig)
+> +{
+> +	bpf_set_link_xdp_fd(ifindex, -1, xdp_flags);
+> +	if (sig)
+> +		exit(1);
+> +}
+> +
+> +static int get_stats(int fd, __u16 count, __u32 raddr)
+> +{
+> +	struct pinginfo pinginfo =3D { 0 };
+> +	char inaddrbuf[INET_ADDRSTRLEN];
+> +	struct in_addr inaddr;
+> +	__u16 i;
+> +
+> +	inaddr.s_addr =3D raddr;
+> +
+> +	printf("\nXDP RTT data:\n");
+> +
+> +	if (bpf_map_lookup_elem(fd, &raddr, &pinginfo)) {
+> +		perror("bpf_map_lookup elem: ");
+> +		return 1;
+> +	}
+> +
+> +	for (i =3D 0; i < count; i++) {
+> +		if (pinginfo.times[i] =3D=3D 0)
+> +			break;
+> +
+> +		printf("64 bytes from %s: icmp_seq=3D%d ttl=3D64 time=3D%#.5f ms\n",
+> +		       inet_ntop(AF_INET, &inaddr, inaddrbuf,
+> +				 sizeof(inaddrbuf)),
+> +		       count + i + 1,
+> +		       (double)pinginfo.times[i]/1000000);
+> +	}
+> +
+> +	if (i < count) {
+> +		fprintf(stderr, "Expected %d samples, got %d.\n", count, i);
+> +		return 1;
+> +	}
+> +
+> +	bpf_map_delete_elem(fd, &raddr);
+> +
+> +	return 0;
+> +}
+> +
+> +static void show_usage(const char *prog)
+> +{
+> +	fprintf(stderr,
+> +		"usage: %s [OPTS] -I interface destination\n\n"
+> +		"OPTS:\n"
+> +		"    -c count		Stop after sending count requests\n"
+> +		"			(default %d, max %d)\n"
+> +		"    -I interface	interface name\n"
+> +		"    -N			Run in driver mode\n"
+> +		"    -s			Server mode\n"
+> +		"    -S			Run in skb mode\n",
+> +		prog, XDPING_DEFAULT_COUNT, XDPING_MAX_COUNT);
+> +}
+> +
+> +int main(int argc, char **argv)
+> +{
+> +	__u32 mode_flags =3D XDP_FLAGS_DRV_MODE | XDP_FLAGS_SKB_MODE;
+> +	struct addrinfo *a, hints =3D { .ai_family =3D AF_INET };
+> +	struct rlimit r =3D {RLIM_INFINITY, RLIM_INFINITY};
+> +	__u16 count =3D XDPING_DEFAULT_COUNT;
+> +	struct pinginfo pinginfo =3D { 0 };
+> +	const char *optstr =3D "c:I:NsS";
+> +	struct bpf_program *main_prog;
+> +	int prog_fd =3D -1, map_fd =3D -1;
+> +	struct sockaddr_in rin;
+> +	struct bpf_object *obj;
+> +	struct bpf_map *map;
+> +	char *ifname =3D NULL;
+> +	char filename[256];
+> +	int opt, ret =3D 1;
+> +	__u32 raddr =3D 0;
+> +	int server =3D 0;
+> +	char cmd[256];
+> +
+> +	while ((opt =3D getopt(argc, argv, optstr)) !=3D -1) {
+> +		switch (opt) {
+> +		case 'c':
+> +			count =3D atoi(optarg);
+> +			if (count < 1 || count > XDPING_MAX_COUNT) {
+> +				fprintf(stderr,
+> +					"min count is 1, max count is %d\n",
+> +					XDPING_MAX_COUNT);
+> +				return 1;
+> +			}
+> +			break;
+> +		case 'I':
+> +			ifname =3D optarg;
+> +			ifindex =3D if_nametoindex(ifname);
+> +			if (!ifindex) {
+> +				fprintf(stderr, "Could not get interface %s\n",
+> +					ifname);
+> +				return 1;
+> +			}
+> +			break;
+> +		case 'N':
+> +			xdp_flags |=3D XDP_FLAGS_DRV_MODE;
+> +			break;
+> +		case 's':
+> +			/* use server program */
+> +			server =3D 1;
+> +			break;
+> +		case 'S':
+> +			xdp_flags |=3D XDP_FLAGS_SKB_MODE;
+> +			break;
+> +		default:
+> +			show_usage(basename(argv[0]));
+> +			return 1;
+> +		}
+> +	}
+> +
+> +	if (!ifname) {
+> +		show_usage(basename(argv[0]));
+> +		return 1;
+> +	}
+> +	if (!server && optind =3D=3D argc) {
+> +		show_usage(basename(argv[0]));
+> +		return 1;
+> +	}
+> +
+> +	if ((xdp_flags & mode_flags) =3D=3D mode_flags) {
+> +		fprintf(stderr, "-N or -S can be specified, not both.\n");
+> +		show_usage(basename(argv[0]));
+> +		return 1;
+> +	}
+> +
+> +	if (!server) {
+> +		/* Only supports IPv4; see hints initiailization above. */
+> +		if (getaddrinfo(argv[optind], NULL, &hints, &a) || !a) {
+> +			fprintf(stderr, "Could not resolve %s\n", argv[optind]);
+> +			return 1;
+> +		}
+> +		memcpy(&rin, a->ai_addr, sizeof(rin));
+> +		raddr =3D rin.sin_addr.s_addr;
+> +		freeaddrinfo(a);
+> +	}
+> +
+> +	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
+> +		perror("setrlimit(RLIMIT_MEMLOCK)");
+> +		return 1;
+> +	}
+> +
+> +	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+> +
+> +	if (bpf_prog_load(filename, BPF_PROG_TYPE_XDP, &obj, &prog_fd)) {
+> +		fprintf(stderr, "load of %s failed\n", filename);
+> +		return 1;
+> +	}
+> +
+> +	main_prog =3D bpf_object__find_program_by_title(obj,
+> +						      server ? "xdpserver" :
+> +							       "xdpclient");
+> +	if (main_prog)
+> +		prog_fd =3D bpf_program__fd(main_prog);
+> +	if (!main_prog || prog_fd < 0) {
+> +		fprintf(stderr, "could not find xdping program");
+> +		return 1;
+> +	}
+> +
+> +	map =3D bpf_map__next(NULL, obj);
+> +	if (map)
+> +		map_fd =3D bpf_map__fd(map);
+> +	if (!map || map_fd < 0) {
+> +		fprintf(stderr, "Could not find ping map");
+> +		goto done;
+> +	}
+> +
+> +	signal(SIGINT, cleanup);
+> +	signal(SIGTERM, cleanup);
+> +
+> +	printf("Setting up XDP for %s, please wait...\n", ifname);
+> +
+> +	printf("XDP setup disrupts network connectivity, hit Ctrl+C to quit\n")=
+;
+> +
+> +	if (bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags) < 0) {
+> +		fprintf(stderr, "Link set xdp fd failed for %s\n", ifname);
+> +		goto done;
+> +	}
+> +
+> +	if (server) {
+> +		close(prog_fd);
+> +		close(map_fd);
+> +		printf("Running server on %s; press Ctrl+C to exit...\n",
+> +		       ifname);
+> +		do { } while (1);
+> +	}
+> +
+> +	/* Start xdping-ing from last regular ping reply, e.g. for a count
+> +	 * of 10 ICMP requests, we start xdping-ing using reply with seq number
+> +	 * 10.  The reason the last "real" ping RTT is much higher is that
+> +	 * the ping program sees the ICMP reply associated with the last
+> +	 * XDP-generated packet, so ping doesn't get a reply until XDP is done.
+> +	 */
+> +	pinginfo.seq =3D htons(count);
+> +	pinginfo.count =3D count;
+> +
+> +	if (bpf_map_update_elem(map_fd, &raddr, &pinginfo, BPF_ANY)) {
+> +		fprintf(stderr, "could not communicate with BPF map: %s\n",
+> +			strerror(errno));
+> +		cleanup(0);
+> +		goto done;
+> +	}
+> +
+> +	/* We need to wait for XDP setup to complete. */
+> +	sleep(10);
+> +
+> +	snprintf(cmd, sizeof(cmd), "ping -c %d -I %s %s",
+> +		 count, ifname, argv[optind]);
+> +
+> +	printf("\nNormal ping RTT data\n");
+> +	printf("[Ignore final RTT; it is distorted by XDP using the reply]\n");
+> +
+> +	ret =3D system(cmd);
+> +
+> +	if (!ret)
+> +		ret =3D get_stats(map_fd, count, raddr);
+> +
+> +	cleanup(0);
+> +
+> +done:
+> +	if (prog_fd > 0)
+> +		close(prog_fd);
+> +	if (map_fd > 0)
+> +		close(map_fd);
+> +
 > +	return ret;
-> }
->=20
-> BPF_CALL_5(bpf_perf_event_output, struct pt_regs *, regs, struct bpf_map =
-*, map,
-> 	   u64, flags, void *, data, u64, size)
-> {
-> -	struct perf_sample_data *sd =3D this_cpu_ptr(&bpf_trace_sd);
-> 	struct perf_raw_record raw =3D {
-> 		.frag =3D {
-> 			.size =3D size,
-> @@ -456,10 +465,8 @@ BPF_CALL_5(bpf_perf_event_output, struct pt_regs *, =
-regs, struct bpf_map *, map,
-> 	if (unlikely(flags & ~(BPF_F_INDEX_MASK)))
-> 		return -EINVAL;
->=20
-> -	perf_sample_data_init(sd, 0, 0);
-> -	sd->raw =3D &raw;
->=20
-> -	return __bpf_perf_event_output(regs, map, flags, sd);
-> +	return __bpf_perf_event_output(regs, map, flags, &raw);
-> }
->=20
-> static const struct bpf_func_proto bpf_perf_event_output_proto =3D {
-> @@ -474,12 +481,10 @@ static const struct bpf_func_proto bpf_perf_event_o=
-utput_proto =3D {
-> };
->=20
-> static DEFINE_PER_CPU(struct pt_regs, bpf_pt_regs);
-> -static DEFINE_PER_CPU(struct perf_sample_data, bpf_misc_sd);
->=20
-> u64 bpf_event_output(struct bpf_map *map, u64 flags, void *meta, u64 meta=
-_size,
-> 		     void *ctx, u64 ctx_size, bpf_ctx_copy_t ctx_copy)
-> {
-> -	struct perf_sample_data *sd =3D this_cpu_ptr(&bpf_misc_sd);
-> 	struct pt_regs *regs =3D this_cpu_ptr(&bpf_pt_regs);
-> 	struct perf_raw_frag frag =3D {
-> 		.copy		=3D ctx_copy,
-> @@ -497,10 +502,8 @@ u64 bpf_event_output(struct bpf_map *map, u64 flags,=
- void *meta, u64 meta_size,
-> 	};
->=20
-> 	perf_fetch_caller_regs(regs);
-> -	perf_sample_data_init(sd, 0, 0);
-> -	sd->raw =3D &raw;
->=20
-> -	return __bpf_perf_event_output(regs, map, flags, sd);
-> +	return __bpf_perf_event_output(regs, map, flags, &raw);
-> }
->=20
-> BPF_CALL_0(bpf_get_current_task)
+> +}
+> diff --git a/tools/testing/selftests/bpf/xdping.h b/tools/testing/selftes=
+ts/bpf/xdping.h
+> new file mode 100644
+> index 0000000..afc578d
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/xdping.h
+> @@ -0,0 +1,13 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved=
+. */
+> +
+> +#define	XDPING_MAX_COUNT	10
+> +#define	XDPING_DEFAULT_COUNT	4
+> +
+> +struct pinginfo {
+> +	__u64	start;
+> +	__be16	seq;
+> +	__u16	count;
+> +	__u32	pad;
+> +	__u64	times[XDPING_MAX_COUNT];
+> +};
 > --=20
-> 2.17.1
+> 1.8.3.1
 >=20
 
