@@ -2,155 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF32320D9
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 00:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D215320DF
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 00:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfFAWFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 18:05:09 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41454 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbfFAWFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 18:05:08 -0400
-Received: by mail-pl1-f196.google.com with SMTP id s24so5295143plr.8;
-        Sat, 01 Jun 2019 15:05:08 -0700 (PDT)
+        id S1726601AbfFAW1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 18:27:47 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41172 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726414AbfFAW1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 18:27:46 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q17so8349353pfq.8
+        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 15:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/4V2UooyuT/xkSgDxYFCbZIPQVYE9qANQONtUStbi0I=;
-        b=aEiIIh6j5gaLu/uiZsVxflyGB2psU3ACsQYja8COPyf/sGEsPia+zJxZNoD5tRkohA
-         g9RV5ceEJlQFAzKNPGKe9mXBRs4ZWaHZ/ykZOXdmK/wsC4X/pZk5ph1ByGBeC2VzyNRZ
-         O8yGDJHbGv6Vy23coroNP8rSiSlp0M9GBuLhOT6/rN6tqdYEKPQg9TLYjxNZ/5VUaPf6
-         5Qk97JOBOmNB8B9TzI1J8UsEzsUGf99HKRtbZ34XYB/ZzAlpWiIpjFEpBpm+MFutG6om
-         hebDvdHhAY/Ih8rd03POUsAeMllDh1EtKmFFh5UEMr8tP7v6OsTOY0nl5hoqMf5lb7mR
-         COPg==
+        d=joelfernandes.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aBGnU4B8yz6TY7rs1ttpv6dYzM78JOOLHwHJBrwnlj0=;
+        b=CQwWpjN2M/JQgAh0nRmAFns5qtmUi/CfZMZrB2mQoTB9+Qo1tSEc1Kpz0C1BNh1MMF
+         Qoe6ipWnbmIlLMqdCsoERG9eceVDsizaAa+20vynwx8xh51jXlOaCvVKdu7AF8PI2hsW
+         7P7wjWs83oqjTUezNSxGTAR88321VMSmNnCfo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/4V2UooyuT/xkSgDxYFCbZIPQVYE9qANQONtUStbi0I=;
-        b=mxn9fpVu4v6PczwtaajB8ugK0YYiScBmc0eencKcMuO9QJSBiBMOLH+WURh6vC4Uck
-         mTRX/PK1HPnw4GO/Ib3aBVmPn+L4bBto1QDrznYeUbvOg7wwVqpnBqsVcpYSZdmdHZKo
-         YpsqWG7soa3u4+IPe9/ZmLI+csTVT6juLJluVeUi7RHvM7nQVmQ9/vzNv0swGdLz7r02
-         JnPZLL+fi4VhikyyxFwxWl7X2uCeaJJvewhnrQll+Y5CfRdfeq3zDT8X+eNAjjSYhAZ3
-         4yMSojDbMAB0UtJ1Xu52/8GKvaX0/a+Gd2h+RvLCKt8+SJhinTnzAz7T2zqoQ++E0b3z
-         hhZA==
-X-Gm-Message-State: APjAAAUyRHW/OPKobDes4z7ojt21HgEcptUcr7YK0bFcHxH91KcqOeF2
-        L8Il7eHIj61XRf3hi7pEEZM=
-X-Google-Smtp-Source: APXvYqwphbTFBcDNn046SvWLFg37yH4vLdMAbWqhRuMWdSG0CO0So6w07nR8xMOHP9MX59I3A8TMoA==
-X-Received: by 2002:a17:902:9f8b:: with SMTP id g11mr19481783plq.199.1559426707771;
-        Sat, 01 Jun 2019 15:05:07 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::92b7])
-        by smtp.gmail.com with ESMTPSA id p7sm10562075pgb.92.2019.06.01.15.05.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 01 Jun 2019 15:05:07 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 15:05:05 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: add real-world BPF verifier
- scale test program
-Message-ID: <20190601220503.7dabs472ixfbtjsf@ast-mbp.dhcp.thefacebook.com>
-References: <20190601063952.2176919-1-andriin@fb.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aBGnU4B8yz6TY7rs1ttpv6dYzM78JOOLHwHJBrwnlj0=;
+        b=Yzi3paVl+QlpfZtlzl1wDK8x1rAf9Qmronsf6pU4v2xSxD90/qkZns/U1Kb+chixRC
+         kw+/iBp5+vwN3mnB6Nj5vNQfDhksyRL5BtvfH63TgDDyym/SVplJ/IjX8VhYvl8Fc+0U
+         cgs56OyhuoeqWvsVjvbJvRbst9G172+jabH7GqsCLscv3Wdom+bbZXY/VIgE60G/sH4w
+         g+DbcYTjS8pJ1aTdsqUhxKbnSKJn/aEpNBCUe7mBKWrSfhKhHC8AS8QcGpP7ptjTE2Sg
+         oyM8G4Rlusc49IYkXHGpUwd2FzbqxsVtg3wry/lGRjStt3dZ5ojqCS/A9qO6c8YHBIcG
+         KsqQ==
+X-Gm-Message-State: APjAAAWhm8PGOtdlzh8ISnOVXhtwj53SyFTZq2gvmly/GOJfqMFTRWKA
+        n9jWeSXYHU0pLSi+vAISW38f3A==
+X-Google-Smtp-Source: APXvYqz+bu0xK6K2Pq1cv50i7dezdioX7vQ1voWVoSyrcm+9lGNu615sW37T90U6U6uGuDCkx76uoA==
+X-Received: by 2002:a63:6848:: with SMTP id d69mr18759474pgc.0.1559428065507;
+        Sat, 01 Jun 2019 15:27:45 -0700 (PDT)
+Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id t33sm9908018pjb.1.2019.06.01.15.27.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 01 Jun 2019 15:27:44 -0700 (PDT)
+From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>, peterz@infradead.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT))
+Subject: [RFC 0/6] Harden list_for_each_entry_rcu() and family
+Date:   Sat,  1 Jun 2019 18:27:32 -0400
+Message-Id: <20190601222738.6856-1-joel@joelfernandes.org>
+X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190601063952.2176919-1-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 11:39:52PM -0700, Andrii Nakryiko wrote:
-> This patch adds a new test program, based on real-world production
-> application, for testing BPF verifier scalability w/ realistic
-> complexity.
+Hi,
+Please consider this as an RFC / proof-of-concept to gather some feedback. This
+series aims to provide lockdep checking to RCU list macros.
 
-Thanks!
+RCU has a number of primitives for "consumption" of an RCU protected pointer.
+Most of the time, these consumers make sure that such accesses are under a RCU
+reader-section (such as rcu_dereference{,sched,bh} or under a lock, such as
+with rcu_dereference_protected()).
 
-> -	const char *pyperf[] = {
-> +	const char *tp_progs[] = {
+However, there are other ways to consume RCU pointers, such as by
+list_for_each_enry_rcu or hlist_for_each_enry_rcu. Unlike the rcu_dereference
+family, these consumers do no lockdep checking at all. And with the growing
+number of RCU list uses, it is possible for bugs to creep in and go unnoticed
+which lockdep checks can catch.
 
-I had very similar change in my repo :)
+Since RCU consolidation efforts last year, the different traditional RCU
+flavors (preempt, bh, sched) are all consolidated. In other words, any of these
+flavors can cause a reader section to occur and all of them must cease before
+the reader section is considered to be unlocked.
 
-> +struct strobemeta_payload {
-> +	/* req_id has valid request ID, if req_meta_valid == 1 */
-> +	int64_t req_id;
-> +	uint8_t req_meta_valid;
-> +	/*
-> +	 * mask has Nth bit set to 1, if Nth metavar was present and
-> +	 * successfully read
-> +	 */
-> +	uint64_t int_vals_set_mask;
-> +	int64_t int_vals[STROBE_MAX_INTS];
-> +	/* len is >0 for present values */
-> +	uint16_t str_lens[STROBE_MAX_STRS];
-> +	/* if map_descrs[i].cnt == -1, metavar is not present/set */
-> +	struct strobe_map_descr map_descrs[STROBE_MAX_MAPS];
-> +	/*
-> +	 * payload has compactly packed values of str and map variables in the
-> +	 * form: strval1\0strval2\0map1key1\0map1val1\0map2key1\0map2val1\0
-> +	 * (and so on); str_lens[i], key_lens[i] and val_lens[i] determines
-> +	 * value length
-> +	 */
-> +	char payload[STROBE_MAX_PAYLOAD];
-> +};
-> +
-> +struct strobelight_bpf_sample {
-> +	uint64_t ktime;
-> +	char comm[TASK_COMM_LEN];
-> +	pid_t pid;
-> +	int user_stack_id;
-> +	int kernel_stack_id;
-> +	int has_meta;
-> +	struct strobemeta_payload metadata;
-> +	/*
-> +	 * makes it possible to pass (<real payload size> + 1) as data size to
-> +	 * perf_submit() to avoid perf_submit's paranoia about passing zero as
-> +	 * size, as it deduces that <real payload size> might be
-> +	 * **theoretically** zero
-> +	 */
-> +	char dummy_safeguard;
-> +};
+Now, the list_for_each_entry_rcu and family are different from the
+rcu_dereference family in that, there is no _bh or _sched version of this
+macro. They are used under many different RCU reader flavors, and also SRCU.
+This series adds a new internal function rcu_read_lock_any_held() which checks
+if any reader section is active at all, when these macros are called. If no
+reader section exists, then the optional fourth argument to
+list_for_each_entry_rcu() can be a lockdep expression which is evaluated
+(similar to how rcu_dereference_check() works).
 
-> +struct bpf_map_def SEC("maps") sample_heap = {
-> +	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-> +	.key_size = sizeof(uint32_t),
-> +	.value_size = sizeof(struct strobelight_bpf_sample),
-> +	.max_entries = 1,
-> +};
+The optional argument trick to list_for_each_entry_rcu() can also be used in
+the future to possibly remove rcu_dereference_{,bh,sched}_protected() API and
+we can pass an optional lockdep expression to rcu_dereference() itself. Thus
+eliminating 3 more RCU APIs.
 
-due to this design the stressfulness of the test is
-limited by bpf max map value limitation which comes from
-alloc_percpu limit.
-That makes it not as stressful as I was hoping for :)
+Note that some list macro wrappers already do their own lockdep checking in the
+caller side. These can be eliminated in favor of the built-in lockdep checking
+in the list macro that this series adds. For example, workqueue code has a
+assert_rcu_or_wq_mutex() function which is called in for_each_wq().  This
+series replaces that in favor of the built-in one.
 
-> +#define STROBE_MAX_INTS 25
-> +#define STROBE_MAX_STRS 25
-> +#define STROBE_MAX_MAPS 5
-> +#define STROBE_MAX_MAP_ENTRIES 20
+Also in the future, we can extend these checks to list_entry_rcu() and other
+list macros as well.
 
-so I could bump STROBE_MAX_INTS to 300 and got:
-verification time 302401 usec // with kasan
-stack depth 464
-processed 40388 insns (limit 1000000) max_states_per_insn 6 total_states 8863 peak_states 8796 mark_read 4110
-test_scale:./strobemeta25.o:OK
+Joel Fernandes (Google) (6):
+rcu: Add support for consolidated-RCU reader checking
+ipv4: add lockdep condition to fix for_each_entry
+driver/core: Convert to use built-in RCU list checking
+workqueue: Convert for_each_wq to use built-in list check
+x86/pci: Pass lockdep condition to pcm_mmcfg_list iterator
+acpi: Use built-in RCU list checking for acpi_ioremaps list
 
-which is not that stressful comparing to some of the tests :)
+arch/x86/pci/mmconfig-shared.c |  5 +++--
+drivers/acpi/osl.c             |  6 +++--
+drivers/base/base.h            |  1 +
+drivers/base/core.c            | 10 +++++++++
+drivers/base/power/runtime.c   | 15 ++++++++-----
+include/linux/rculist.h        | 40 ++++++++++++++++++++++++++++++----
+include/linux/rcupdate.h       |  7 ++++++
+kernel/rcu/update.c            | 26 ++++++++++++++++++++++
+kernel/workqueue.c             |  5 ++---
+net/ipv4/fib_frontend.c        |  3 ++-
+10 files changed, 101 insertions(+), 17 deletions(-)
 
-Without unroll:
-verification time 435963 usec // with kasan
-stack depth 488
-processed 52812 insns (limit 1000000) max_states_per_insn 26 total_states 6786 peak_states 1405 mark_read 777
-test_scale:./strobemeta25.o:OK
-
-So things are looking pretty good.
-
-I'll roll your test into my set with few tweaks. Thanks a lot!
-
-btw I consistently see better code and less insn_processed in alu32 mode.
-It's probably time to make it llvm default.
+--
+2.22.0.rc1.311.g5d7573a151-goog
 
