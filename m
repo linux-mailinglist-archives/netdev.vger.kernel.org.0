@@ -2,91 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2622E3192B
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED13A31931
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbfFADEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 23:04:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46978 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726428AbfFADEE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 May 2019 23:04:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Eqa2M6pZQ4QcObAUfSEwZYQVm3xf1r4dljtXwNT9io0=; b=hTiHc9xa+KeSTb9Ucg0RoiGTdz
-        8lNY7LyAnigPmrzfnBEIR8lAwSeyTX+hAnz+UE74NczQ3Go4TtHHzMJmC5beEdqql0DG8yKqAMwt2
-        0Ye7PeFDEge3kOX6+lC6rAvtkPQG7sBliHV+Sx7rNYF1K4WR7q6ygo4P2ACWlaa+jhKI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hWuJM-000377-G2; Sat, 01 Jun 2019 05:04:00 +0200
-Date:   Sat, 1 Jun 2019 05:04:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
-Subject: Re: [PATCH net-next 01/13] net: axienet: Fixed 64-bit compile,
- enable build on X86 and ARM
-Message-ID: <20190601030400.GH18608@lunn.ch>
-References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
- <1559326545-28825-2-git-send-email-hancock@sedsystems.ca>
- <20190531211043.GD3154@lunn.ch>
- <94beef09-4ec9-194b-b8ed-47032c586b50@sedsystems.ca>
+        id S1726652AbfFADKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 23:10:45 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39141 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725934AbfFADKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 23:10:45 -0400
+Received: by mail-lf1-f68.google.com with SMTP id p24so2979882lfo.6
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 20:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G4xZjVwS79aLStW8E7LRD6UpsT6T1crYSjZnP9O5XDI=;
+        b=LC3oKl3NwAmQnxy1QePaF50dH9kiJbeis2aCyEW6HkO0bxJ9aK3Jppz3qHPQRn8ARA
+         K/b1JiTs39el4CRcY8FNVP11D0Ju9CKld2w61BDsuETvbc7T27krxXhRwwcqSvleLk+V
+         camSe6B8AELh7T8epbKb17kEij9W1U2Ndz/QZVMALRaQs84DTGucW96+Ku2mk6OjJPiY
+         RF4Tx3E3Rfgh2hTNKmqaSvmpFZpjw3noEEsSdkJCmA92LpYZjgMuhV/pyxBGgRjdXNtd
+         F4Ewfz+/EF5m7VRK9UuL7LDfmNt1xkdsvyzwOL5uf2MaYs0vw8Jkl6wVqAj6+4rIymky
+         sfpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G4xZjVwS79aLStW8E7LRD6UpsT6T1crYSjZnP9O5XDI=;
+        b=Q2ODRJdxHtA9zir2BCy8j8LeGg0Q+0SSj7y5flLQ1qw3CJx2sN0csQCXVmSR6T4MTa
+         +ks/G+twNzJW/+DG0if6aF2vWnv+AyQbGpjkWonjz32fIu92Z16LtqrakNcZHIuRrCv1
+         52fb1S0lzwZyieOLykp//e277tvbqBzGiDj59hHnXR/x81yrGUfQ0M4/NRYVVYj9yz7P
+         fPd9TWIQNlBv2KE6ei+xsjMM1frveTiCNyOGCYypvx48Qw/plwH3K54EJ/s/3EB2Jgdd
+         GQurWBVE5VEPyhmZPgCCMOH/eO0bpGKSwFPnI5CNaY5ZPvyKVE1hVVze/TuvWetHqLWS
+         cXmQ==
+X-Gm-Message-State: APjAAAVZTQBkFb85/unY90S5zYc6c62oKY1B3pWzE09YmpjvR7ZON9YM
+        0xNbwn5Hl3o66Lo1xNooza/Sw50WWoP4/xl/1aM=
+X-Google-Smtp-Source: APXvYqzT3MDSVJeJEMctoW5yXoi4uSBm3En4IhrlCMh5z2NcKR7Ol9pOjA0+RN+sfxXOymOUEWkVYMq6f4gdi61D078=
+X-Received: by 2002:a19:ab1a:: with SMTP id u26mr102936lfe.6.1559358643753;
+ Fri, 31 May 2019 20:10:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <94beef09-4ec9-194b-b8ed-47032c586b50@sedsystems.ca>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <CAADnVQJT8UJntO=pSYGN-eokuWGP_6jEeLkFgm2rmVvxmGtUCg@mail.gmail.com>
+ <65320e39-8ea2-29d8-b5f9-2de0c0c7e689@gmail.com> <CAADnVQ+KqC0XCgKSBcCHB8hgQroCq=JH7Pi5NN4B9hN3xtUvYw@mail.gmail.com>
+ <20190531.142936.1364854584560958251.davem@davemloft.net> <ace2225d-f0fe-03b3-12ee-b442265211dd@gmail.com>
+ <CAADnVQ+yj28xchvW6jCPfXCneuHxN+0MNHVquA1v10rWQ=dBMQ@mail.gmail.com> <8da19c41-b4ba-12c2-0f43-676c90037f67@gmail.com>
+In-Reply-To: <8da19c41-b4ba-12c2-0f43-676c90037f67@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 31 May 2019 20:10:32 -0700
+Message-ID: <CAADnVQK0L98pJh3Mar_sa9hY1Mzc8EVh9rwuk5BWS8W_VmfMcA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/7] net: add struct nexthop to fib{6}_info
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 05:28:45PM -0600, Robert Hancock wrote:
-> On 2019-05-31 3:10 p.m., Andrew Lunn wrote:
-> >>  static inline u32 axienet_ior(struct axienet_local *lp, off_t offset)
-> >>  {
-> >> -	return in_be32(lp->regs + offset);
-> >> +#ifdef CONFIG_MICROBLAZE
-> >> +	return __raw_readl(lp->regs + offset);
-> >> +#else
-> >> +	return ioread32(lp->regs + offset);
-> >> +#endif
-> >>  }
-> > 
-> > Please dig deeper into the available accessor functions. There should
-> > be a set which works without this #defery. 
-> 
-> This driver previously only compiled on MicroBlaze, and on that
-> platform, in_be32 is mapped to __raw_readl which reads with no byte
-> swapping. The confusing this is that MicroBlaze can apparently be set up
-> as either LE or BE, so I'm guessing that the hardware setup just
-> arranges that the reads are natively in the right byte order depending
-> on the mode. If I were to just use ioread32, there would be no change on
-> LE Microblaze, but BE Microblaze would start byte-swapping, which I
-> assume would break things.
-> 
-> The Xilinx version of this driver also supports Zynq (arm) and ZynqMP
-> (aarch64) platforms, and for those platforms it defines in_be32 to
-> __raw_readl as well. Since those are little-endian that ends up being
-> the same byte order as ioread32.
-> 
-> Finally, the setup we're using this hardware with on ARM over a PCIe to
-> AXI bridge exposes the device with the same byte order as any other PCIe
-> device, so the regular ioread32 accessors are correct.
-> 
-> I'm not quite sure what to make of that.. most platforms either would
-> need or work fine with the "regular" accessors, but I'm not sure that
-> wouldn't break big-endian MicroBlaze. It would be useful if one of the
-> Xilinx people could confirm that..
+On Fri, May 31, 2019 at 7:59 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 5/31/19 8:51 PM, Alexei Starovoitov wrote:
+> > From single sentence of commit log it's not clear at all
+> > whether they're related to this thread.
+> > Will they fail if run w/o this set?
+> >
+>
+> New code in this set (if (fi->nh) {}) can not be tested yet. It can not
+> be tested until the final patch that wires up nexthops with fib entries.
 
-What matter here is the endianness of the devices register. Once you
-know that, there should be macros which work independent of the
-endianness of the CPU and compile to the right thing.  Assuming the
-endianness of the device is fixed and not a synthesis option? If it is
-synthesis option, i would hope there is a register you can read to
-determine its endianennes.
-
-	Andrew
+Could you post the whole thing please?
+This set to review/apply and whatever number of
+supporting sets _including_ final tests as RFC ?
