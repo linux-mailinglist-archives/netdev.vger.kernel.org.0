@@ -2,132 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5581832077
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 20:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 225533204E
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 20:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfFASaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 14:30:55 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:38578 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbfFASay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 14:30:54 -0400
-Received: by mail-yw1-f68.google.com with SMTP id b74so5577139ywe.5
-        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 11:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=V4LEPBHszcA4LDKdJA8sIqb7I7JUdyqNTO7/R+BtBSw=;
-        b=sJ/yX9U/e872vZ0TITenOSMzO1GzCg63IHjFB7HI3lEfS3TSilShCziBJXGNdz/z5/
-         1loPoCWdshiQ2Qu3nwFYj39CuuXggu/4M+sxO6FHh0VhizqhdIXP8Y+z6DaDdxZeBxax
-         Elo7yGMqgzHGI+zi7p6C5UhcBAt+M0ExC6VpsgL3efUsiQbftWn1CnUqlhUjzrRDU8Pa
-         KqtP7MqKW6zcrtXytN/dwP206uDZBzoStTLeL7z9AqkjT4bzqejl58KKGSCJ3KWszHJ0
-         RaejYErd3HL1iNy5NsmQTghKijpKYx3LmlKafgIgCmhD000MzIYLoPJ6yzE8An07A7mg
-         KORg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=V4LEPBHszcA4LDKdJA8sIqb7I7JUdyqNTO7/R+BtBSw=;
-        b=GvBWTqz4eigNOUMRdh8NBLQtqOYkykU8qV0qrhxx9T/KFx8JXKzD+x8oS+ar8Um8xb
-         qKfnVVDFhNvqrcwUjtHsXMcv8JdIGJCjQKQlWqkEuJPDCEAufmIe6GcpisH9h3bnKD3V
-         0ivvuLMgXesgpEcBKeqwFx7pT+/GN3+Zl1FT4fS+5MlUx5XpkOEg9ZEpcaS1aSZyDo2s
-         KX/s/lafLEzoMr3k7di7W97WOW60taSA72VrwUjydFHany8OSHzMalOZUA/SD98A2sMp
-         aiaBeCttpV6QTqkXQSq/o3Leh+IqGLXBxQBIqCqzSByljpFJzC1FHYJYRtcAe55Apg2l
-         Kppg==
-X-Gm-Message-State: APjAAAW9hpnre8fhnXUcAFSFE9QouWrHLQqDmPMS8l/y2JANoWE3cGIV
-        fye8FYtdE0yXnc9OiMw51A==
-X-Google-Smtp-Source: APXvYqx1F0R6DsOG08UEUIvcoBrNjT7iYBUxBmYduN9XdmtRu/o5QljmFP6ozVPa6MFuxQj1VJpu/g==
-X-Received: by 2002:a81:3dc8:: with SMTP id k191mr9040955ywa.383.1559413853953;
-        Sat, 01 Jun 2019 11:30:53 -0700 (PDT)
-Received: from ubuntu (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
-        by smtp.gmail.com with ESMTPSA id v124sm1914060ywb.15.2019.06.01.11.30.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 01 Jun 2019 11:30:53 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 14:14:29 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] vrf: Increment Icmp6InMsgs on the original netdev
-Message-ID: <20190601181429.GB16560@ubuntu>
-References: <20190530050815.20352-1-ssuryaextr@gmail.com>
- <c438f6b0-bb3c-7568-005e-68d7fcd406c3@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c438f6b0-bb3c-7568-005e-68d7fcd406c3@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726722AbfFASYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 14:24:05 -0400
+Received: from mail.us.es ([193.147.175.20]:39994 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726143AbfFASYF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Jun 2019 14:24:05 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3205EB60DC
+        for <netdev@vger.kernel.org>; Sat,  1 Jun 2019 20:24:00 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1CFB3DA708
+        for <netdev@vger.kernel.org>; Sat,  1 Jun 2019 20:24:00 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6829ADA714; Sat,  1 Jun 2019 20:23:50 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2FE02FC3FE;
+        Sat,  1 Jun 2019 20:23:47 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 01 Jun 2019 20:23:47 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [31.4.178.197])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id BE4194265A32;
+        Sat,  1 Jun 2019 20:23:46 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/15] Netfilter/IPVS updates for net-next
+Date:   Sat,  1 Jun 2019 20:23:25 +0200
+Message-Id: <20190601182340.2662-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 05:06:16PM -0600, David Ahern wrote:
-> On 5/29/19 11:08 PM, Stephen Suryaputra wrote:
-> > diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-> > index 1a832f5e190b..9b365c345c34 100644
-> > --- a/net/ipv6/reassembly.c
-> > +++ b/net/ipv6/reassembly.c
-> > @@ -260,6 +260,9 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
-> >  	int payload_len;
-> >  	u8 ecn;
-> >  
-> > +	if (netif_is_l3_master(dev))
-> > +		dev = dev_get_by_index_rcu(net, inet6_iif(skb));
-> > +
-> >  	inet_frag_kill(&fq->q);
-> >  
-> >  	ecn = ip_frag_ecn_table[fq->ecn];
-> > 
-> 
-> this part changes skb->dev. Seems like it has an unintended effect if
-> the packet is delivered locally.
+Hi David,
 
-Ah, right. How about this then?
+The following patchset container Netfilter/IPVS update for net-next:
 
-+/**
-+ * __in6_dev_stats_get - get inet6_dev pointer for stats
-+ * @dev: network device
-+ * @skb: skb for original incoming interface if neeeded
-+ *
-+ * Caller must hold rcu_read_lock or RTNL, because this function
-+ * does not take a reference on the inet6_dev.
-+ */
-+static inline struct inet6_dev *__in6_dev_stats_get(const struct net_device *dev,
-+						    const struct sk_buff *skb)
-+{
-+	if (netif_is_l3_master(dev))
-+		dev = dev_get_by_index_rcu(dev_net(dev), inet6_iif(skb));
-+	return __in6_dev_get(dev);
-+}
+1) Add UDP tunnel support for ICMP errors in IPVS.
 
-@@ -260,9 +260,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
- 	int payload_len;
- 	u8 ecn;
- 
--	if (netif_is_l3_master(dev))
--		dev = dev_get_by_index_rcu(net, inet6_iif(skb));
--
- 	inet_frag_kill(&fq->q);
- 
- 	ecn = ip_frag_ecn_table[fq->ecn];
-@@ -305,7 +302,7 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
- 			   skb_network_header_len(skb));
- 
- 	rcu_read_lock();
--	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMOKS);
-+	__IP6_INC_STATS(net, __in6_dev_stats_get(dev, skb), IPSTATS_MIB_REASMOKS);
- 	rcu_read_unlock();
- 	fq->q.rb_fragments = RB_ROOT;
- 	fq->q.fragments_tail = NULL;
-@@ -319,7 +316,7 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
- 	net_dbg_ratelimited("ip6_frag_reasm: no memory for reassembly\n");
- out_fail:
- 	rcu_read_lock();
--	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMFAILS);
-+	__IP6_INC_STATS(net, __in6_dev_stats_get(dev, skb), IPSTATS_MIB_REASMFAILS);
- 	rcu_read_unlock();
- 	inet_frag_kill(&fq->q);
- 	return -1;
+Julian Anastasov says:
 
-Thanks.
+This patchset is a followup to the commit that adds UDP/GUE tunnel:
+"ipvs: allow tunneling with gue encapsulation".
+
+What we do is to put tunnel real servers in hash table (patch 1),
+add function to lookup tunnels (patch 2) and use it to strip the
+embedded tunnel headers from ICMP errors (patch 3).
+
+2) Extend xt_owner to match for supplementary groups, from
+   Lukasz Pawelczyk.
+
+3) Remove unused oif field in flow_offload_tuple object, from
+   Taehee Yoo.
+
+4) Release basechain counters from workqueue to skip synchronize_rcu()
+   call. From Florian Westphal.
+
+5) Replace skb_make_writable() by skb_ensure_writable(). Patchset
+   from Florian Westphal.
+
+6) Checksum support for gue encapsulation in IPVS, from Jacky Hu.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit 7b3ed2a137b077bc0967352088b0adb6049eed20:
+
+  Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue (2019-05-30 15:17:05 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 29930e314da3833437a2ddc7b17f6a954f38d8fb:
+
+  ipvs: add checksum support for gue encapsulation (2019-05-31 18:23:52 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (9):
+      netfilter: nf_tables: free base chain counters from worker
+      netfilter: bridge: convert skb_make_writable to skb_ensure_writable
+      netfilter: ipvs: prefer skb_ensure_writable
+      netfilter: conntrack, nat: prefer skb_ensure_writable
+      netfilter: ipv4: prefer skb_ensure_writable
+      netfilter: nf_tables: prefer skb_ensure_writable
+      netfilter: xt_HL: prefer skb_ensure_writable
+      netfilter: tcpmss, optstrip: prefer skb_ensure_writable
+      netfilter: replace skb_make_writable with skb_ensure_writable
+
+Jacky Hu (1):
+      ipvs: add checksum support for gue encapsulation
+
+Julian Anastasov (3):
+      ipvs: allow rs_table to contain different real server types
+      ipvs: add function to find tunnels
+      ipvs: strip udp tunnel headers from icmp errors
+
+Lukasz Pawelczyk (1):
+      netfilter: xt_owner: Add supplementary groups option
+
+Taehee Yoo (1):
+      netfilter: nf_flow_table: remove unnecessary variable in flow_offload_tuple
+
+ include/linux/netfilter.h                   |   5 -
+ include/net/ip_vs.h                         |   8 ++
+ include/net/netfilter/nf_flow_table.h       |   2 -
+ include/uapi/linux/ip_vs.h                  |   7 ++
+ include/uapi/linux/netfilter/xt_owner.h     |   7 +-
+ net/bridge/netfilter/ebt_dnat.c             |   2 +-
+ net/bridge/netfilter/ebt_redirect.c         |   2 +-
+ net/bridge/netfilter/ebt_snat.c             |   2 +-
+ net/ipv4/netfilter/arpt_mangle.c            |   2 +-
+ net/ipv4/netfilter/ipt_ECN.c                |   4 +-
+ net/ipv4/netfilter/nf_nat_h323.c            |   2 +-
+ net/ipv4/netfilter/nf_nat_snmp_basic_main.c |   2 +-
+ net/netfilter/core.c                        |  22 ----
+ net/netfilter/ipvs/ip_vs_app.c              |   4 +-
+ net/netfilter/ipvs/ip_vs_core.c             |  72 ++++++++++++-
+ net/netfilter/ipvs/ip_vs_ctl.c              |  83 +++++++++++++--
+ net/netfilter/ipvs/ip_vs_ftp.c              |   4 +-
+ net/netfilter/ipvs/ip_vs_proto_sctp.c       |   4 +-
+ net/netfilter/ipvs/ip_vs_proto_tcp.c        |   4 +-
+ net/netfilter/ipvs/ip_vs_proto_udp.c        |   4 +-
+ net/netfilter/ipvs/ip_vs_xmit.c             | 155 ++++++++++++++++++++++++----
+ net/netfilter/nf_conntrack_proto_sctp.c     |   2 +-
+ net/netfilter/nf_conntrack_seqadj.c         |   4 +-
+ net/netfilter/nf_flow_table_core.c          |   1 -
+ net/netfilter/nf_nat_helper.c               |   4 +-
+ net/netfilter/nf_nat_proto.c                |  24 ++---
+ net/netfilter/nf_nat_sip.c                  |   2 +-
+ net/netfilter/nf_synproxy_core.c            |   2 +-
+ net/netfilter/nf_tables_api.c               |  26 ++---
+ net/netfilter/nfnetlink_queue.c             |   2 +-
+ net/netfilter/nft_exthdr.c                  |   3 +-
+ net/netfilter/nft_payload.c                 |   6 +-
+ net/netfilter/xt_DSCP.c                     |   8 +-
+ net/netfilter/xt_HL.c                       |   4 +-
+ net/netfilter/xt_TCPMSS.c                   |   2 +-
+ net/netfilter/xt_TCPOPTSTRIP.c              |  28 +++--
+ net/netfilter/xt_owner.c                    |  23 ++++-
+ 37 files changed, 389 insertions(+), 149 deletions(-)
