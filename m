@@ -2,95 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03CBF31B3F
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 12:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D5C31B44
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 12:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbfFAKgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 06:36:31 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:35452 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbfFAKga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 06:36:30 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x51AaSmc090174;
-        Sat, 1 Jun 2019 05:36:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1559385388;
-        bh=shWkaHiI805do+UScyf+ZVyVOGJ/6uFSU3jC7FwgsqQ=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=hxDfOUbTxHfV9P7O2168bRlHcaNJa3/Kds0xQMv6S2kYWREhPmdGbWcbwZc3qRmbM
-         wGniq9vlqnEJ4awYfI0I9igorDYESZeZRLRmU+NyjpfWH9GAyLlIWLuzF2pvypLIKj
-         VMCkw42D15t6FsgaKnKqLjaCJPN4EvpHlDk/iYWI=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x51AaSrj117528
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 1 Jun 2019 05:36:28 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Sat, 1 Jun
- 2019 05:36:28 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Sat, 1 Jun 2019 05:36:28 -0500
-Received: from [10.250.96.121] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x51AaQnn041282;
-        Sat, 1 Jun 2019 05:36:27 -0500
-Subject: Re: [PATCH v2] net: ethernet: ti: cpsw_ethtool: fix ethtool ring
- param set
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>, <davem@davemloft.net>
-CC:     <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190531134725.2054-1-ivan.khoronzhuk@linaro.org>
-From:   grygorii <grygorii.strashko@ti.com>
-Message-ID: <3b1b0ac9-6165-6d59-d3f7-d484705119f2@ti.com>
-Date:   Sat, 1 Jun 2019 13:36:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190531134725.2054-1-ivan.khoronzhuk@linaro.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727141AbfFAKhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 06:37:43 -0400
+Received: from mail-wr1-f43.google.com ([209.85.221.43]:42224 "EHLO
+        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbfFAKhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 06:37:43 -0400
+Received: by mail-wr1-f43.google.com with SMTP id o12so969261wrj.9
+        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 03:37:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=2P6ObSJR05OuRzMKv+ncXdQU+uAKOgXXOo0yLuXdv7Q=;
+        b=N89rWYZLRyKAQfYSx8SOwp14YLizNfI+SP5MJHBMWynxyuSqxp9ZfYTixnsbi3TlMX
+         8Ra4Sx3RAYX7T4YpgRFyKjiOcHNxnFnkBlmyN1kIDSzBF9uohNW5uakm5O9teMrHdFPw
+         AttsmazfS9hN0CNRYbOOvGXEPTpVg/MrHJSJXWkc4eAw0FA2VImdYxyInC1QKhy1c1NY
+         y07vDfG75SvqphJMOTJVHHvvHf7Kxq4DAvxfLfYHiCe3HOB4g71j6hLgP5oFkPTdyOt+
+         tk5onJsh2upRuvBMWqV1FH772OkdbGwFnCStZPSvajjBsMgtPKm35r8qI3/Z0OKyjLiD
+         ecoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2P6ObSJR05OuRzMKv+ncXdQU+uAKOgXXOo0yLuXdv7Q=;
+        b=YPQvkjiUzCTMlt/zL88cV5zuPOfZaq1FpnbEF43gbg2/Np9EvUYUyI1JfFbLbfQltB
+         szOvhhxTZr1X/H2mGChTtO2KkQGFmdnyWjchg43KqxpNamkbybWcPr5J1wI+L7CKaHEq
+         EuncdoTgl1O+yP0W378r3JW5454n4cvKPPJ5PTT/yJYLAto+BusrPhsdjioOO4PDCzZe
+         fbvDZJFuCXWS3ZayJUSa1JV0HnI4fin6df5T9C7Pi80zPEK9/syzp8+cZS3VvROL8N2m
+         4wlrFn2DhWkZZbbKOanwH/SFdxLEKqqsf4PljxA6XSbD0T8aqUrYXOwSUHTYfBqDCXlG
+         UpIA==
+X-Gm-Message-State: APjAAAUulsSlEM6mD/djgL+GAocyIXzv1RA2hQUyauSnzzoT4zGYTmLC
+        KNO+I1Z/ij0VrA0Y1qo5niZfBpwY13M=
+X-Google-Smtp-Source: APXvYqzlmnD75KMuIESsGgzAloMJJLXnZyzzW2f9p7ajRzDpzsM44b23kP6dy3CInaVXgtD2+0tTTw==
+X-Received: by 2002:adf:b643:: with SMTP id i3mr10222898wre.284.1559385461607;
+        Sat, 01 Jun 2019 03:37:41 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.27.188])
+        by smtp.gmail.com with ESMTPSA id h90sm26273063wrh.15.2019.06.01.03.37.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 01 Jun 2019 03:37:41 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net 0/2] Fix link speed handling for SJA1105 DSA driver
+Date:   Sat,  1 Jun 2019 13:37:33 +0300
+Message-Id: <20190601103735.27506-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset fixes two bugs in the logic handling of the enum
+sja1105_speed_t which caused link speeds of 10 and 100 Mbps to not be
+interpreted correctly and thus not be applied to the switch MACs.
 
+Vladimir Oltean (2):
+  net: dsa: sja1105: Force a negative value for enum sja1105_speed_t
+  net: dsa: sja1105: Fix link speed not working at 100 Mbps and below
 
-On 31/05/2019 16:47, Ivan Khoronzhuk wrote:
-> Fix ability to set RX descriptor number, the reason - initially
-> "tx_max_pending" was set incorrectly, but the issue appears after
-> adding sanity check, so fix is for "sanity" patch.
-> 
-> Fixes: 37e2d99b59c476 ("ethtool: Ensure new ring parameters are within bounds during SRINGPARAM")
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
-> Based on net/master
-> 
->   drivers/net/ethernet/ti/cpsw_ethtool.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
-> index a4a7ec0d2531..6d1c9ebae7cc 100644
-> --- a/drivers/net/ethernet/ti/cpsw_ethtool.c
-> +++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
-> @@ -643,7 +643,7 @@ void cpsw_get_ringparam(struct net_device *ndev,
->   	struct cpsw_common *cpsw = priv->cpsw;
->   
->   	/* not supported */
-> -	ering->tx_max_pending = 0;
-> +	ering->tx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
->   	ering->tx_pending = cpdma_get_num_tx_descs(cpsw->dma);
->   	ering->rx_max_pending = cpsw->descs_pool_size - CPSW_MAX_QUEUES;
->   	ering->rx_pending = cpdma_get_num_rx_descs(cpsw->dma);
-> 
-
-Thank you.
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+ drivers/net/dsa/sja1105/sja1105.h      | 1 +
+ drivers/net/dsa/sja1105/sja1105_main.c | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
 -- 
-Best regards,
-grygorii
+2.17.1
+
