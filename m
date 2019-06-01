@@ -2,95 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C12D318E7
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 03:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B93318E8
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 03:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbfFABn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 21:43:56 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41844 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726881AbfFABnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 21:43:55 -0400
-Received: by mail-lj1-f196.google.com with SMTP id s21so646035lji.8
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 18:43:54 -0700 (PDT)
+        id S1727034AbfFABy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 21:54:59 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37128 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726881AbfFABy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 21:54:59 -0400
+Received: by mail-pl1-f195.google.com with SMTP id e7so4210959pln.4;
+        Fri, 31 May 2019 18:54:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jlr9qLL9Vgy0gBgXQ4/IDkCeMqnCFC9akEvCKd6pcyk=;
-        b=IVZ5ehzB6ICtTECBvev1+6YDAck4uWc1fNoix/YTnUZqH/f+EZ/+QzfGrUTUDdClhR
-         1KHV1xkvvlRHxORE8XZ2B55j3aYNSi+nU7sf2SYlOVVn1g7zyimhWIwMdKHEufwqcYp/
-         dEhzv92KcAA1bg53LMIWyNfSAYz2QMto+1hW9OE/TTjbXZEJCuvWP+YNJsEBOpxlWQew
-         +bSYcSWzdi0qFF0n7/GVAt9AjPfvkk1zKgB6A10GoAFZijkFL1uCWGCAZmtRw5239rC0
-         WsbaKlX0nu3M545pgNlE1qm8mvbUKmYyrcPsC78j4EFKJKvyw4IOxt/9LZ0t3kWxg0of
-         Lo3g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uS+vkMtqLwlIIErU0XBgxFsO/mgm3Z3e/UEBQvk7P8o=;
+        b=SLIlcpF/RkF/lfru9fMPLVo34LGp6B4XeEx1g4Lg4HJtqxO5Aja6HUn9uQgx611RkX
+         isnsTKvJMlYVOCP4kwvm+HPblCUpsvNA7wRaWwxqkxVKpB2X23uSoMuXlByZv/Hct1TG
+         aT9nqdC/bcDgcIPQHQ2tqJcXYY7gkersU7cC76wvqiS6aIuHmkXCCCx+blwCixi2NUA/
+         HMPT2W+zvwZXbJ7HNP13J41zO4SGnt9YSzGbdlbp66sUmYEF892q3DsWenZVebCNt4dL
+         vBAk0h2oupbJyLwf7LBwoNlNS2gIryySrMebXuAGW/T3FYbcqMhuAUVlEjocVS1Ivt/C
+         yPOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jlr9qLL9Vgy0gBgXQ4/IDkCeMqnCFC9akEvCKd6pcyk=;
-        b=LnZmVpDovMEOoQK3Huslv7dHY5L19HKzDhEzfvX/ds7lI0QJ31MAx8WHCilzXJWLj5
-         vuE1gNA9AvO5MMJX7/QwYMn/NwYNV4Ok5JPxfNKGCv3T4oUgQ55iOX3ozTMY4mI4maaM
-         SUp3h84ow7oBRr/jO01qtBs/6Kb14d34LHyrrmoiOUNI8tSSr/RjTU3JO5cEqYAb7TSJ
-         O5oP3JOx9TViDmlIFIqYtklhKSsa8BvxEL+5XbD26XH2GwxTEdKe+NuKNrxit6wanVnR
-         umtbryO5zXIGiVKrO4j3IPhmgwkXKNqgdnpnC7xFaX+3zaZFbsJxYDIXWYONojJKUrL/
-         zTTA==
-X-Gm-Message-State: APjAAAXdljKsGyDMkbKUWjiwG98/Wv/dHXBbwT3VtWyXfXglwARujIb1
-        pCBNIf1WgPK108ZaJybzyCyrS5w6IRGdshJlO3k=
-X-Google-Smtp-Source: APXvYqzlsf//pVpSmUOSuwFVmk1vYklv7DGK8tKh4y+ea4A5HdMzHgSdhRBlInwGpO5rJCz6ns2PXqPY6cs0leugv80=
-X-Received: by 2002:a2e:5b52:: with SMTP id p79mr7652647ljb.208.1559353433988;
- Fri, 31 May 2019 18:43:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uS+vkMtqLwlIIErU0XBgxFsO/mgm3Z3e/UEBQvk7P8o=;
+        b=ZUca1MxvksfElbArQMceZEgL0pEaM+r/pKNXuveDUaeMBuZNTpz9zfLnynk4yeadfc
+         A8snaqj8Oghbw7CO6aYIDGVHd/9lmNka5Lsb88SJohMwOAv7Uvvvr0/7R8bj6AiPJ/Zs
+         kReC3PVD4+RihBgpFDTYmtqN5XqJ7v6RGK8qGOc4dldniEnp4ezDRAUrYEgHuROxveqf
+         dJwYAm4rr/uh6UMOtKFBbk4wN8EJnjxMnE0wvY0imknAZPQoaD8HHjFofzJulXClLNth
+         cmwB8+obDcYknfeInzrd8RcUsF+C92N4UqVfM/+oqNGJ+boWsTYQBK/rv1f0cUiAWfxB
+         hIBA==
+X-Gm-Message-State: APjAAAX93JclN/enxHDNeiYj5dIoXSvXqJDpm5uJyXDv8Fq6t0oeyAWu
+        CFA5BgwB2yWAcqT575UAU94=
+X-Google-Smtp-Source: APXvYqyUxXtqiMXf43Nasi77WVM6izDgKinuUHnegJHnYh7EszBuC9IqxPnp5EESnDUDEZ24MZooXg==
+X-Received: by 2002:a17:902:205:: with SMTP id 5mr12386264plc.165.1559354098463;
+        Fri, 31 May 2019 18:54:58 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id y16sm12198928pfo.133.2019.05.31.18.54.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 18:54:57 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 09:54:42 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        Eric Paris <eparis@parisplace.org>, ccross@android.com,
+        selinux@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] hooks: fix a missing-check bug in
+ selinux_add_mnt_opt()
+Message-ID: <20190601015442.GA7832@zhanggen-UX430UQ>
+References: <20190530080602.GA3600@zhanggen-UX430UQ>
+ <CAFqZXNtX1R1VDFxm7Jco3BZ=pVnNiHU3-C=d8MhCVV1XSUQ8bw@mail.gmail.com>
+ <20190530085438.GA2862@zhanggen-UX430UQ>
+ <CAHC9VhSwzD652qKUy7qrRJ=zy-NZtKRGc7H4NZurzUcK4OgFZA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190507091118.24324-1-liuhangbin@gmail.com> <20190508.093541.1274244477886053907.davem@davemloft.net>
-In-Reply-To: <20190508.093541.1274244477886053907.davem@davemloft.net>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Fri, 31 May 2019 18:43:42 -0700
-Message-ID: <CAHo-OozeC3o9avh5kgKpXq1koRH0fVtNRaM9mb=vduYRNX0T7g@mail.gmail.com>
-Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same rule
- exists when NLM_F_EXCL not supplied
-To:     David Miller <davem@davemloft.net>,
-        Lorenzo Colitti <lorenzo@google.com>, astrachan@google.com,
-        Greg KH <greg@kroah.com>
-Cc:     liuhangbin@gmail.com, Linux NetDev <netdev@vger.kernel.org>,
-        mateusz.bajorski@nokia.com, dsa@cumulusnetworks.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhSwzD652qKUy7qrRJ=zy-NZtKRGc7H4NZurzUcK4OgFZA@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FYI, this userspace visible change in behaviour breaks Android.
-
-We rely on being able to add a rule and either have a dup be created
-(in which case we'll remove it later) or have it fail with EEXIST (in
-which case we won't remove it later).
-
-Returning 0 makes atomically changing a rule difficult.
-
-Please revert.
-
-On Wed, May 8, 2019 at 9:39 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> Date: Tue,  7 May 2019 17:11:18 +0800
->
-> > With commit 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to
-> > fib_nl_newrule") we now able to check if a rule already exists. But this
-> > only works with iproute2. For other tools like libnl, NetworkManager,
-> > it still could add duplicate rules with only NLM_F_CREATE flag, like
+On Fri, May 31, 2019 at 11:55:23AM -0400, Paul Moore wrote:
+> On Thu, May 30, 2019 at 4:55 AM Gen Zhang <blackgod016574@gmail.com> wrote:
 > >
-> > [localhost ~ ]# ip rule
-> > 0:      from all lookup local
-> > 32766:  from all lookup main
-> > 32767:  from all lookup default
-> > 100000: from 192.168.7.5 lookup 5
-> > 100000: from 192.168.7.5 lookup 5
+> > In selinux_add_mnt_opt(), 'val' is allcoted by kmemdup_nul(). It returns
+> > NULL when fails. So 'val' should be checked.
 > >
-> > As it doesn't make sense to create two duplicate rules, let's just return
-> > 0 if the rule exists.
+> > Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+> > Fixes: 757cbe597fe8 ("LSM: new method: ->sb_add_mnt_opt()")
+> 
+> Previous comments regarding "selinux:" instead of "hooks:" apply here as well.
+> 
+Thanks for your comments, Paul. I will make some changes.
+> > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> > index 3ec702c..4797c63 100644
+> > --- a/security/selinux/hooks.c
+> > +++ b/security/selinux/hooks.c
+> > @@ -1052,8 +1052,11 @@ static int selinux_add_mnt_opt(const char *option, const char *val, int len,
+> >         if (token == Opt_error)
+> >                 return -EINVAL;
 > >
-> > Fixes: 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to fib_nl_newrule")
-> > Reported-by: Thomas Haller <thaller@redhat.com>
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
->
-> Applied and queued up for -stable, thanks.
+> > -       if (token != Opt_seclabel)
+> > -               val = kmemdup_nul(val, len, GFP_KERNEL);
+> > +       if (token != Opt_seclabel) {
+> > +                       val = kmemdup_nul(val, len, GFP_KERNEL);
+> > +                       if (!val)
+> > +                               return -ENOMEM;
+> 
+> It looks like this code is only ever called by NFS, which will
+> eventually clean up mnt_opts via security_free_mnt_opts(), but since
+> the selinux_add_opt() error handler below cleans up mnt_opts it might
+> be safer to do the same here in case this function is called multiple
+> times to add multiple options.
+> 
+> > +       }
+> >         rc = selinux_add_opt(token, val, mnt_opts);
+> >         if (unlikely(rc)) {
+> >                 kfree(val);
+> 
+> -- 
+> paul moore
+> www.paul-moore.com
+Thanks
+Gen
