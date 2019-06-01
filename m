@@ -2,162 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 225533204E
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 20:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BD93206C
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 20:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbfFASYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726652AbfFASYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 1 Jun 2019 14:24:05 -0400
-Received: from mail.us.es ([193.147.175.20]:39994 "EHLO mail.us.es"
+Received: from mail.us.es ([193.147.175.20]:39996 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726143AbfFASYF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726148AbfFASYF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 1 Jun 2019 14:24:05 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3205EB60DC
+        by mail.us.es (Postfix) with ESMTP id 39FA2B60DD
         for <netdev@vger.kernel.org>; Sat,  1 Jun 2019 20:24:00 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 1CFB3DA708
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1DD93DA709
         for <netdev@vger.kernel.org>; Sat,  1 Jun 2019 20:24:00 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6829ADA714; Sat,  1 Jun 2019 20:23:50 +0200 (CEST)
+        id 6CA27FF133; Sat,  1 Jun 2019 20:23:51 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2FE02FC3FE;
-        Sat,  1 Jun 2019 20:23:47 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 80F19B7FE0;
+        Sat,  1 Jun 2019 20:23:48 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 01 Jun 2019 20:23:47 +0200 (CEST)
+ Sat, 01 Jun 2019 20:23:48 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [31.4.178.197])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id BE4194265A32;
-        Sat,  1 Jun 2019 20:23:46 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 0FCB84265A32;
+        Sat,  1 Jun 2019 20:23:47 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 00/15] Netfilter/IPVS updates for net-next
-Date:   Sat,  1 Jun 2019 20:23:25 +0200
-Message-Id: <20190601182340.2662-1-pablo@netfilter.org>
+Subject: [PATCH 01/15] ipvs: allow rs_table to contain different real server types
+Date:   Sat,  1 Jun 2019 20:23:26 +0200
+Message-Id: <20190601182340.2662-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20190601182340.2662-1-pablo@netfilter.org>
+References: <20190601182340.2662-1-pablo@netfilter.org>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+From: Julian Anastasov <ja@ssi.bg>
 
-The following patchset container Netfilter/IPVS update for net-next:
+Before now rs_table was used only for NAT real servers.
+Change it to allow TUN real severs from different types,
+possibly hashed with different port key.
 
-1) Add UDP tunnel support for ICMP errors in IPVS.
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Signed-off-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/net/ip_vs.h            |  3 +++
+ net/netfilter/ipvs/ip_vs_ctl.c | 43 ++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 38 insertions(+), 8 deletions(-)
 
-Julian Anastasov says:
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 2ac40135b576..9a8ac8997e34 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -1497,6 +1497,9 @@ static inline int ip_vs_todrop(struct netns_ipvs *ipvs)
+ static inline int ip_vs_todrop(struct netns_ipvs *ipvs) { return 0; }
+ #endif
+ 
++#define IP_VS_DFWD_METHOD(dest) (atomic_read(&(dest)->conn_flags) & \
++				 IP_VS_CONN_F_FWD_MASK)
++
+ /* ip_vs_fwd_tag returns the forwarding tag of the connection */
+ #define IP_VS_FWD_METHOD(cp)  (cp->flags & IP_VS_CONN_F_FWD_MASK)
+ 
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 0e887159425c..30b1a9f9c2e3 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -515,15 +515,36 @@ static inline unsigned int ip_vs_rs_hashkey(int af,
+ static void ip_vs_rs_hash(struct netns_ipvs *ipvs, struct ip_vs_dest *dest)
+ {
+ 	unsigned int hash;
++	__be16 port;
+ 
+ 	if (dest->in_rs_table)
+ 		return;
+ 
++	switch (IP_VS_DFWD_METHOD(dest)) {
++	case IP_VS_CONN_F_MASQ:
++		port = dest->port;
++		break;
++	case IP_VS_CONN_F_TUNNEL:
++		switch (dest->tun_type) {
++		case IP_VS_CONN_F_TUNNEL_TYPE_GUE:
++			port = dest->tun_port;
++			break;
++		case IP_VS_CONN_F_TUNNEL_TYPE_IPIP:
++			port = 0;
++			break;
++		default:
++			return;
++		}
++		break;
++	default:
++		return;
++	}
++
+ 	/*
+ 	 *	Hash by proto,addr,port,
+ 	 *	which are the parameters of the real service.
+ 	 */
+-	hash = ip_vs_rs_hashkey(dest->af, &dest->addr, dest->port);
++	hash = ip_vs_rs_hashkey(dest->af, &dest->addr, port);
+ 
+ 	hlist_add_head_rcu(&dest->d_list, &ipvs->rs_table[hash]);
+ 	dest->in_rs_table = 1;
+@@ -555,7 +576,8 @@ bool ip_vs_has_real_service(struct netns_ipvs *ipvs, int af, __u16 protocol,
+ 		if (dest->port == dport &&
+ 		    dest->af == af &&
+ 		    ip_vs_addr_equal(af, &dest->addr, daddr) &&
+-		    (dest->protocol == protocol || dest->vfwmark)) {
++		    (dest->protocol == protocol || dest->vfwmark) &&
++		    IP_VS_DFWD_METHOD(dest) == IP_VS_CONN_F_MASQ) {
+ 			/* HIT */
+ 			return true;
+ 		}
+@@ -585,7 +607,8 @@ struct ip_vs_dest *ip_vs_find_real_service(struct netns_ipvs *ipvs, int af,
+ 		if (dest->port == dport &&
+ 		    dest->af == af &&
+ 		    ip_vs_addr_equal(af, &dest->addr, daddr) &&
+-			(dest->protocol == protocol || dest->vfwmark)) {
++		    (dest->protocol == protocol || dest->vfwmark) &&
++		    IP_VS_DFWD_METHOD(dest) == IP_VS_CONN_F_MASQ) {
+ 			/* HIT */
+ 			return dest;
+ 		}
+@@ -831,6 +854,13 @@ __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
+ 	conn_flags = udest->conn_flags & IP_VS_CONN_F_DEST_MASK;
+ 	conn_flags |= IP_VS_CONN_F_INACTIVE;
+ 
++	/* Need to rehash? */
++	if ((udest->conn_flags & IP_VS_CONN_F_FWD_MASK) !=
++	    IP_VS_DFWD_METHOD(dest) ||
++	    udest->tun_type != dest->tun_type ||
++	    udest->tun_port != dest->tun_port)
++		ip_vs_rs_unhash(dest);
++
+ 	/* set the tunnel info */
+ 	dest->tun_type = udest->tun_type;
+ 	dest->tun_port = udest->tun_port;
+@@ -839,16 +869,13 @@ __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
+ 	if ((conn_flags & IP_VS_CONN_F_FWD_MASK) != IP_VS_CONN_F_MASQ) {
+ 		conn_flags |= IP_VS_CONN_F_NOOUTPUT;
+ 	} else {
+-		/*
+-		 *    Put the real service in rs_table if not present.
+-		 *    For now only for NAT!
+-		 */
+-		ip_vs_rs_hash(ipvs, dest);
+ 		/* FTP-NAT requires conntrack for mangling */
+ 		if (svc->port == FTPPORT)
+ 			ip_vs_register_conntrack(svc);
+ 	}
+ 	atomic_set(&dest->conn_flags, conn_flags);
++	/* Put the real service in rs_table if not present. */
++	ip_vs_rs_hash(ipvs, dest);
+ 
+ 	/* bind the service */
+ 	old_svc = rcu_dereference_protected(dest->svc, 1);
+-- 
+2.11.0
 
-This patchset is a followup to the commit that adds UDP/GUE tunnel:
-"ipvs: allow tunneling with gue encapsulation".
-
-What we do is to put tunnel real servers in hash table (patch 1),
-add function to lookup tunnels (patch 2) and use it to strip the
-embedded tunnel headers from ICMP errors (patch 3).
-
-2) Extend xt_owner to match for supplementary groups, from
-   Lukasz Pawelczyk.
-
-3) Remove unused oif field in flow_offload_tuple object, from
-   Taehee Yoo.
-
-4) Release basechain counters from workqueue to skip synchronize_rcu()
-   call. From Florian Westphal.
-
-5) Replace skb_make_writable() by skb_ensure_writable(). Patchset
-   from Florian Westphal.
-
-6) Checksum support for gue encapsulation in IPVS, from Jacky Hu.
-
-You can pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
-
-Thanks!
-
-----------------------------------------------------------------
-
-The following changes since commit 7b3ed2a137b077bc0967352088b0adb6049eed20:
-
-  Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue (2019-05-30 15:17:05 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
-
-for you to fetch changes up to 29930e314da3833437a2ddc7b17f6a954f38d8fb:
-
-  ipvs: add checksum support for gue encapsulation (2019-05-31 18:23:52 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (9):
-      netfilter: nf_tables: free base chain counters from worker
-      netfilter: bridge: convert skb_make_writable to skb_ensure_writable
-      netfilter: ipvs: prefer skb_ensure_writable
-      netfilter: conntrack, nat: prefer skb_ensure_writable
-      netfilter: ipv4: prefer skb_ensure_writable
-      netfilter: nf_tables: prefer skb_ensure_writable
-      netfilter: xt_HL: prefer skb_ensure_writable
-      netfilter: tcpmss, optstrip: prefer skb_ensure_writable
-      netfilter: replace skb_make_writable with skb_ensure_writable
-
-Jacky Hu (1):
-      ipvs: add checksum support for gue encapsulation
-
-Julian Anastasov (3):
-      ipvs: allow rs_table to contain different real server types
-      ipvs: add function to find tunnels
-      ipvs: strip udp tunnel headers from icmp errors
-
-Lukasz Pawelczyk (1):
-      netfilter: xt_owner: Add supplementary groups option
-
-Taehee Yoo (1):
-      netfilter: nf_flow_table: remove unnecessary variable in flow_offload_tuple
-
- include/linux/netfilter.h                   |   5 -
- include/net/ip_vs.h                         |   8 ++
- include/net/netfilter/nf_flow_table.h       |   2 -
- include/uapi/linux/ip_vs.h                  |   7 ++
- include/uapi/linux/netfilter/xt_owner.h     |   7 +-
- net/bridge/netfilter/ebt_dnat.c             |   2 +-
- net/bridge/netfilter/ebt_redirect.c         |   2 +-
- net/bridge/netfilter/ebt_snat.c             |   2 +-
- net/ipv4/netfilter/arpt_mangle.c            |   2 +-
- net/ipv4/netfilter/ipt_ECN.c                |   4 +-
- net/ipv4/netfilter/nf_nat_h323.c            |   2 +-
- net/ipv4/netfilter/nf_nat_snmp_basic_main.c |   2 +-
- net/netfilter/core.c                        |  22 ----
- net/netfilter/ipvs/ip_vs_app.c              |   4 +-
- net/netfilter/ipvs/ip_vs_core.c             |  72 ++++++++++++-
- net/netfilter/ipvs/ip_vs_ctl.c              |  83 +++++++++++++--
- net/netfilter/ipvs/ip_vs_ftp.c              |   4 +-
- net/netfilter/ipvs/ip_vs_proto_sctp.c       |   4 +-
- net/netfilter/ipvs/ip_vs_proto_tcp.c        |   4 +-
- net/netfilter/ipvs/ip_vs_proto_udp.c        |   4 +-
- net/netfilter/ipvs/ip_vs_xmit.c             | 155 ++++++++++++++++++++++++----
- net/netfilter/nf_conntrack_proto_sctp.c     |   2 +-
- net/netfilter/nf_conntrack_seqadj.c         |   4 +-
- net/netfilter/nf_flow_table_core.c          |   1 -
- net/netfilter/nf_nat_helper.c               |   4 +-
- net/netfilter/nf_nat_proto.c                |  24 ++---
- net/netfilter/nf_nat_sip.c                  |   2 +-
- net/netfilter/nf_synproxy_core.c            |   2 +-
- net/netfilter/nf_tables_api.c               |  26 ++---
- net/netfilter/nfnetlink_queue.c             |   2 +-
- net/netfilter/nft_exthdr.c                  |   3 +-
- net/netfilter/nft_payload.c                 |   6 +-
- net/netfilter/xt_DSCP.c                     |   8 +-
- net/netfilter/xt_HL.c                       |   4 +-
- net/netfilter/xt_TCPMSS.c                   |   2 +-
- net/netfilter/xt_TCPOPTSTRIP.c              |  28 +++--
- net/netfilter/xt_owner.c                    |  23 ++++-
- 37 files changed, 389 insertions(+), 149 deletions(-)
