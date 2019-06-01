@@ -2,81 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DAD43200E
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 19:15:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3FF632027
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 19:29:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbfFARPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 13:15:09 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39953 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbfFARPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 13:15:09 -0400
-Received: by mail-pf1-f193.google.com with SMTP id u17so8108823pfn.7;
-        Sat, 01 Jun 2019 10:15:08 -0700 (PDT)
+        id S1726720AbfFAR3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 13:29:42 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:56448 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726075AbfFAR3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 13:29:41 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x51HQW7o025981;
+        Sat, 1 Jun 2019 10:29:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=VEXJAPUyXQ1tmq30nNNR7Z+xEWFfQ24I/OO1e5N8kcw=;
+ b=dH+gSu3faad4e+X3cLXGb7vcn8vFTYTQmPQng5mGb3OSqBAJylhovg6k2TP39oQ+XFy8
+ 073XfRLhUvKR8PUDsy0OhFHbsMzousP5b5WSxEwUHi9LFSscadW65fGM9YVoHVTohzAM
+ Hns1jxji0cVpsHhWoZGrAO+Wv4C1shxMQ+bWVTQjtfZDLz9DX8Q3Drxh+im+kfGahnw4
+ bNwvmImDgTxsU5/H0tM6YQ1bBAI2Xu720gLzXjfWuAY1a00Xd0cw17g7eSZIEloZnUb0
+ Ntro0w2bbuD/1Uug0RbVyschEoN5HNVKK5KVpqxAgLqwSMt3ZZzWR/dldW37r6x1hEm4 VQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2survk0uyc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sat, 01 Jun 2019 10:29:33 -0700
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sat, 1 Jun
+ 2019 10:29:31 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.56) by
+ SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Sat, 1 Jun 2019 10:29:31 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=MaeGnnu+LwIT7dIVF39aAxoy1OwHrQNYuo7RxgaVTjQ=;
-        b=gp2miNk+sV9zve1Qb/a9ZeG/1gcf4PLmuQGszm6cOYE7H1B6IdNlLyUTLiQLHNfi9o
-         56DX9+eRzseOc7m6ZgXwL2skvNZ7DMnzIqeOt+Mo1D9gd3eE1pTZsSd2VMAcgmpw+DDh
-         NvfJyQ1b8xzliUGVy0/Fb5p2pn1GKfx3/6prbWqHBmHBCPqxTg84NnLbZwY+HFm+Y23A
-         kprnJt4BjrjtYrBgiqVvyVW5zxKltHnE/N7D9sO92/C/dmOt1SuwCPM46l0Ml0GFsdWw
-         3KSRVdNHSIley7Ce3Fn6GJKCLh6BwPZjg9xbQLXbGOlfRfX7VxJWdYmHqfeaZ2VYN+Ou
-         nFsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MaeGnnu+LwIT7dIVF39aAxoy1OwHrQNYuo7RxgaVTjQ=;
-        b=ODKXnEY5EZ5Ff7eleA7+wyUUWi4HdlkNBR3gRnW3q7LujpjobamzoVSuBS7QoxTvsB
-         eBmEA52PI1jUhneOPwcbSMg6I3SEp9norAlECJH2RbooivVZxVSo3NjRQ9VTpjJD37Si
-         UC2JpC5agdk1HL8zyzeu9XXG1PHCeCpE3RPZ6EDI1uRu0z5c0xAYELjSypwQq8SN39E0
-         1yAC20MQcPL+EbIwetbuqAEfXDf3bwZPw7hgqAbf+RNZTBzCyfka74r9DmkGh//MUtQN
-         CAII1bzAB2D051H2L/2JKkw9SarPtbRp2SPxN3pl1ktQg9+7VnN+4Zaknogz1G/A2/Ja
-         Ithw==
-X-Gm-Message-State: APjAAAWQiqPsKvrLHURPzV4HqDPzaHS+ayiU+iYxqZ1HSYRQJCdRcpri
-        cy2C9yh47+uFK6xjOs/y908=
-X-Google-Smtp-Source: APXvYqz7XXeNdzCz/ZCHL7/zjTH9yoyX7XjU53lgzzYBDwyefm3nWjGT0hfgqI8+Rz6pQRUcjsgFJg==
-X-Received: by 2002:aa7:80d9:: with SMTP id a25mr18637915pfn.50.1559409308633;
-        Sat, 01 Jun 2019 10:15:08 -0700 (PDT)
-Received: from [172.27.227.228] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id d19sm8361120pjs.22.2019.06.01.10.15.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 01 Jun 2019 10:15:07 -0700 (PDT)
-Subject: Re: KASAN: user-memory-access Read in ip6_hold_safe (3)
-To:     syzbot <syzbot+a5b6e01ec8116d046842@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-References: <000000000000a7776f058a3ce9db@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <178c7ee0-46b7-8334-ef98-e530eb60a2cf@gmail.com>
-Date:   Sat, 1 Jun 2019 11:15:05 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <000000000000a7776f058a3ce9db@google.com>
-Content-Type: text/plain; charset=utf-8
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VEXJAPUyXQ1tmq30nNNR7Z+xEWFfQ24I/OO1e5N8kcw=;
+ b=ZS0PZKzo5/Hkdx/MQ6sT2R9cwObT/4NETW0y5KIwp1+K1HdzxcAfT+NowZKCaasMjfZJURM4j+USHGqCbXXsrXKnpPIrQwtIIbETgdzvrqdXV7M7bGFUJP7rchDW0Px1qIpEceVFO2l1hROh01AhrEkXzcWUdJIeLu2ZOME/EXU=
+Received: from MN2PR18MB2637.namprd18.prod.outlook.com (20.179.80.147) by
+ MN2PR18MB2784.namprd18.prod.outlook.com (20.179.23.89) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Sat, 1 Jun 2019 17:29:26 +0000
+Received: from MN2PR18MB2637.namprd18.prod.outlook.com
+ ([fe80::3c77:9f53:7e47:7eb8]) by MN2PR18MB2637.namprd18.prod.outlook.com
+ ([fe80::3c77:9f53:7e47:7eb8%7]) with mapi id 15.20.1922.021; Sat, 1 Jun 2019
+ 17:29:26 +0000
+From:   Ganapathi Bhat <gbhat@marvell.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Colin King <colin.king@canonical.com>
+CC:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Nishant Sarmukadam <nishants@marvell.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH] mwifiex: check for null return from skb_copy
+Thread-Topic: [EXT] Re: [PATCH] mwifiex: check for null return from skb_copy
+Thread-Index: AQHU8i7/8jDHsxlJZE+NM+DVVJab26aHWmow
+Date:   Sat, 1 Jun 2019 17:29:26 +0000
+Message-ID: <MN2PR18MB2637DAA4852542EDA2BBC01DA01A0@MN2PR18MB2637.namprd18.prod.outlook.com>
+References: <20190413161438.6376-1-colin.king@canonical.com>
+ <20190413192729.GL6095@kadam>
+In-Reply-To: <20190413192729.GL6095@kadam>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [157.45.208.183]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2330b682-847b-41f0-dbba-08d6e6b6b242
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2784;
+x-ms-traffictypediagnostic: MN2PR18MB2784:
+x-microsoft-antispam-prvs: <MN2PR18MB2784803E6C38B29B07054C7DA01A0@MN2PR18MB2784.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 00550ABE1F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(346002)(396003)(136003)(39850400004)(376002)(199004)(189003)(3846002)(2906002)(229853002)(6116002)(476003)(6246003)(25786009)(73956011)(11346002)(446003)(66946007)(14454004)(4326008)(7736002)(66556008)(64756008)(486006)(52536014)(558084003)(256004)(66476007)(33656002)(5660300002)(71190400001)(71200400001)(86362001)(66446008)(305945005)(76116006)(68736007)(99286004)(6506007)(53936002)(316002)(66066001)(7696005)(54906003)(26005)(110136005)(478600001)(81166006)(81156014)(55016002)(7416002)(74316002)(8936002)(9686003)(102836004)(76176011)(8676002)(186003)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2784;H:MN2PR18MB2637.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: GoyTU02FbGE9T7qAX/L3AsFXKsRsAvVuirybqJr1cj9LBLMKN8k28BBHAaRWdLtvU7HyM2oq6IXk6/l6ePcDcojvMS4lYw4yTFacHOlzN6AA74KmytcemA+Yf8HH2hzcCjr3M8yxLx9hsaslb8I7zroaFZYSAIXrqcVr4DUZKgY8YhrcalnMpgehGmaxT9r8pIRpBYrMCDstiM2+1d4uE9Twx3WfrkodXHo+gxdz5JzIJw2CsuDv1XW+Ml71mazPR6UIBfX/x4s5UP/XTNlvCiqIgNkzMIKegXQyipNE88VN0KSBjX6ks3nbvRa1Hhh1wCZoEjgCAkP1MUr2yl1YLNp98FHjnLsiCaKHfc9/8RwAnOBgJiXInrFExF2an09YIrQeyZSDbywA5tkcE5k2Bzy7dza2g1j6ejPcnl59rIM=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2330b682-847b-41f0-dbba-08d6e6b6b242
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2019 17:29:26.7377
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gbhat@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2784
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-01_12:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/19 12:05 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    dfb569f2 net: ll_temac: Fix compile error
-> git tree:       net-next
-syzbot team:
+Hi Dan,
 
-Is there any way to know the history of syzbot runs to determine that
-crash X did not happen at commit Y but does happen at commit Z? That
-narrows the window when trying to find where a regression occurs.
+> >  	if (is_multicast_ether_addr(ra)) {
+> >  		skb_uap =3D skb_copy(skb, GFP_ATOMIC);
+> > +		if (!skb_uap)
+> > +			return -ENOMEM;
+>=20
+> I think we would want to free dev_kfree_skb_any(skb) before returning.
+I think if the pointer is NULL, no need to free it;=20
 
-Thanks,
+Regards,
+Ganapathi
