@@ -2,90 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A92531B46
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 12:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8399631B4D
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 12:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727173AbfFAKhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 06:37:46 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39913 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbfFAKhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 06:37:45 -0400
-Received: by mail-wr1-f65.google.com with SMTP id x4so8107673wrt.6
-        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 03:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qC3cTC6iOsRLdr2pHn823m1pV0SUlxDOahYmCzMhqvA=;
-        b=AOEnSqPo2I6hSQwt4xtvtrS/CQCvnZpJ1iMl+Vgyhprqt47s7fAfBsFYySyslm1UaZ
-         nSHUOT7YeFwA+wWSxrIXPx+VTih1dQ44csSaU7SUhDcSOXsZKilnB3sKYEdUjF0RWenX
-         3lhPSvsFKTJobMWFGk83lndTR+M8Oz/h+B4QaEvuCosDEpfQ5w6b9F8PZETUytsaFBtd
-         G/lOVrjb49OKPdXIZsUwZcBOD9HuFSQaXfJ8cKCjhvQkvdto/CsacWMV5WU4CmomMfbX
-         1nVUEAsjlPFX9IkaXgFn/9v2l+HIzTN9+mSV7UN8+t2nS0K27hk4dhFXyRb5X6FMpE62
-         zJ2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=qC3cTC6iOsRLdr2pHn823m1pV0SUlxDOahYmCzMhqvA=;
-        b=IFnQA0EIi22SSgRUXVomdOi3t+UzcA5l+wJU23HGa8LvfBSl8r2UizxGV0in1ZxYXA
-         0ZrgGeowl/wBQAEEk4/i+9S+jNX4X4IjPDhGeyltH2Yc02Xj+Vv/3wBWTHh+jkpTenZK
-         MqJF4EAft1aLawfUKLpymafTd+ahuMJlZT7RnTwnAhDt2zX2HbXgwMBwMqqneEu7rbeO
-         0RNGQy4SgVP5SpXf/wgnMyMa/TkCQKs4ESAsOedLdoxPMtUzEVLqGlFNmHJDerCGuC3n
-         eLlpS1WbkmOuC0kqIC4D+zpP6YhK0Fbo6vxxd6CeSa9pE/x2CzMCn5bwMzyFNn1tIoSg
-         a89g==
-X-Gm-Message-State: APjAAAU74Zcm4zA9Zpa1qq2KGORCOT2vYR7SMnQndLZe1DCSjSJxs0e8
-        Mr+xbtpLrXBjgF7YnIv7OFA=
-X-Google-Smtp-Source: APXvYqw4b+OQTBBSxJb+8JDomo/JZzTBf3cBjcVjYVhjqk1ZctmikuMQ9Id/ojnEEnXyuABflm4DRw==
-X-Received: by 2002:a5d:4f0d:: with SMTP id c13mr10054106wru.117.1559385463380;
-        Sat, 01 Jun 2019 03:37:43 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id h90sm26273063wrh.15.2019.06.01.03.37.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 01 Jun 2019 03:37:43 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net 2/2] net: dsa: sja1105: Fix link speed not working at 100 Mbps and below
-Date:   Sat,  1 Jun 2019 13:37:35 +0300
-Message-Id: <20190601103735.27506-3-olteanv@gmail.com>
+        id S1726697AbfFAKpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 06:45:54 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:43768 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726089AbfFAKpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 06:45:53 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id x51Aji7w017184;
+        Sat, 1 Jun 2019 05:45:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1559385944;
+        bh=oc83/WPZAKxZ5gQImeSIybMZHlJVM8DNCMv1sFjd1hU=;
+        h=From:To:CC:Subject:Date;
+        b=Mi8XPKWvDzQ3mg2ey+x3AjQiZbi86miCck1paLJvmkU821YROEZSu87Vfexfoo9EW
+         1/2EVIU0dIzrhHJdFHUnNEO60C04a4Gi+S9bd3XGuBBNe1gvZud97vZ9jZIMGRQZ16
+         L7xjaODp4d6xQoH0T7flv0qgaRjQOL7g9oPfWOps=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x51Aji0A022616
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 1 Jun 2019 05:45:44 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Sat, 1 Jun
+ 2019 05:45:44 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Sat, 1 Jun 2019 05:45:44 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x51AjgxX076536;
+        Sat, 1 Jun 2019 05:45:43 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Wingman Kwok <w-kwok2@ti.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next 00/10] net: ethernet: ti: netcp: update and enable cpts support
+Date:   Sat, 1 Jun 2019 13:45:24 +0300
+Message-ID: <20190601104534.25790-1-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190601103735.27506-1-olteanv@gmail.com>
-References: <20190601103735.27506-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hardware values for link speed are held in the sja1105_speed_t enum.
-However they do not increase in the order that sja1105_get_speed_cfg was
-iterating over them (basically from SJA1105_SPEED_AUTO - 0 - to
-SJA1105_SPEED_1000MBPS - 1 - skipping the other two).
+Hi
 
-Change the iteration from going through the enum values to going through
-the sja1105_speed array, which makes sure that all elements are visited
-regardless of underlying ordering.
+The Keystone 2 66AK2HK/E/L 1G Ethernet Switch Subsystems contains The
+Common Platform Time Sync (CPTS) module which is in general compatible with
+CPTS module found on TI AM3/4/5 SoCs. So, the basic support for
+Keystone 2 CPTS is available by default, but not documented and has never been
+enabled inconfig files.
 
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The Keystone 2 CPTS module supports also some additional features like time
+sync reference (RFTCLK) clock selection through CPTS_RFTCLK_SEL register
+(offset: x08) in CPTS module, which can modelled as multiplexer clock
+(this was discussed some time ago [1]).
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 12b1af52d84b..c3eab40b0500 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -716,7 +716,7 @@ static sja1105_speed_t sja1105_get_speed_cfg(unsigned int speed_mbps)
- {
- 	int i;
- 
--	for (i = SJA1105_SPEED_AUTO; i <= SJA1105_SPEED_1000MBPS; i++)
-+	for (i = 0; i < ARRAY_SIZE(sja1105_speed); i++)
- 		if (sja1105_speed[i] == speed_mbps)
- 			return i;
- 	return SJA1105_SPEED_INVALID;
+This series adds missed binding documentation for Keystone 2 66AK2HK/E/L
+CPTS module and enables CPTS for TI Keystone 2 66AK2HK/E/L SoCs with possiblity
+to select CPTS reference clock.
+
+Patch 1: adds the CPTS binding documentation. CPTS bindings are defined in the
+way that allows CPTS properties to be grouped under "cpts" sub-node.
+It also defines "cpts-refclk-mux" clock for CPTS RFTCLK selection.
+Patches 2-3: implement CPTS properties grouping under "cpts" sub-node with
+backward compatibility support.
+Patch 4: adds support for time sync reference (RFTCLK) clock selection from DT
+by adding support for "cpts-refclk-mux" multiplexer clock.
+Patches 5-9: DT CPTS nodes update for TI Keystone 2 66AK2HK/E/L SoCs.
+Patch 10: enables CPTS for TI Keystone 2 66AK2HK/E/L SoCs.
+
+I grouped all patches in one series for better illustration of the changes,
+but in general Pateches 1-4 are netdev matarieal (first) and other patches
+are platform specific.
+
+Series can be found at:
+ git@git.ti.com:~gragst/ti-linux-kernel/gragsts-ti-linux-kernel.git
+branch:
+ net-next-k2e-cpts-refclk
+
+[1] https://www.spinics.net/lists/netdev/msg408931.html
+
+Grygorii Strashko (10):
+  dt-bindings: doc: net: keystone-netcp: document cpts
+  net: ethernet: ti: cpts: use devm_get_clk_from_child
+  net: ethernet: ti: netcp_ethss: add support for child cpts node
+  net: ethernet: ti: cpts: add support for ext rftclk selection
+  ARM: dts: keystone-clocks: add input fixed clocks
+  ARM: dts: k2e-clocks: add input ext. fixed clocks tsipclka/b
+  ARM: dts: k2e-netcp: add cpts refclk_mux node
+  ARM: dts: k2hk-netcp: add cpts refclk_mux node
+  ARM: dts: k2l-netcp: add cpts refclk_mux node
+  ARM: configs: keystone: enable cpts
+
+ .../bindings/net/keystone-netcp.txt           | 44 ++++++++++
+ arch/arm/boot/dts/keystone-clocks.dtsi        | 27 ++++++
+ arch/arm/boot/dts/keystone-k2e-clocks.dtsi    | 20 +++++
+ arch/arm/boot/dts/keystone-k2e-netcp.dtsi     | 21 ++++-
+ arch/arm/boot/dts/keystone-k2hk-netcp.dtsi    | 20 ++++-
+ arch/arm/boot/dts/keystone-k2l-netcp.dtsi     | 20 ++++-
+ arch/arm/configs/keystone_defconfig           |  1 +
+ drivers/net/ethernet/ti/cpts.c                | 88 ++++++++++++++++++-
+ drivers/net/ethernet/ti/cpts.h                |  2 +-
+ drivers/net/ethernet/ti/netcp_ethss.c         |  9 +-
+ 10 files changed, 240 insertions(+), 12 deletions(-)
+
 -- 
 2.17.1
 
