@@ -2,78 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5CC8318F1
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 04:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0FAC318FE
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 04:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbfFACJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 22:09:07 -0400
-Received: from mail-qk1-f202.google.com ([209.85.222.202]:40693 "EHLO
-        mail-qk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726881AbfFACJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 22:09:06 -0400
-Received: by mail-qk1-f202.google.com with SMTP id n5so9533999qkf.7
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 19:09:06 -0700 (PDT)
+        id S1727054AbfFACPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 22:15:43 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45683 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfFACPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 22:15:43 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w34so4987048pga.12;
+        Fri, 31 May 2019 19:15:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=9KgZzYWXetbxJ1ZpCfMaxPqmnNdHH2S3HCSttXXXF7k=;
-        b=PxVB7XN3iVjthY15Ey47IQifyxz+siXkPaNDpI7BQVaWFbyE9MWVmkj1J/ysL+R1gp
-         oyWxmHOj9bSxYKrCboFXAx7DCPgIWzVnp9DXXjXoJoGl9u/5N7FCUt1aBEq86u/Zsklf
-         8N08TaXiEHoCVHK4l8No9r/Ti0XzMEuG4Hp+YbPFnM58+c/4jJwJydj2Yr9niJDXNXd0
-         Yknx9eRTRR1uwukIg0rJkCf8dSm4r1TsT3gM7DKyX/U+utUEmr7zo+DqFUZMh7B7kyb0
-         mRMbWdmZ2H0cZiMoM0lHf3iQ4a5ASDbkxjPX/RXcGot6JSg/R7KtKqZLOkRVHsqgQCvX
-         Nqfw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=lTR0jTl5oD+Gm74Vzo4HY2zyqfQyqs0HXRg7trWVZDw=;
+        b=rWBCB21HCyCQmjsTX5J+I8l8H9HdFrpIbABMMBZUeEykp/hqFwNyZA0QeFPrXhGpXM
+         bVPFXYL0+LV36Q2SUZ7TamxilUye1NU1qZV3m1Mf9QBP0+cMdq4zvWa3DH1jYsdCoWIA
+         SI9FfgJOEW+H7i4RAxxxUSNp//6rza4EPdPi1juhCaeTWG077LuqbCBjuOOz9T05vsyD
+         iz6zyS1/4SVzPx5ZrWVt7nZUVkzDVaLJ+QZofE4Lb40EmZ5DNJWVWW/o2v9D9GM1uH2p
+         f24y0AGYWNaOp5gxh/0AeQ37jRj9bWjFX6KSc0/Yvwn/JaQrIbgdfwRGbw+UvIVLDOs7
+         yI3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=9KgZzYWXetbxJ1ZpCfMaxPqmnNdHH2S3HCSttXXXF7k=;
-        b=OFp8LiZ8QtWQQD1YhMJXL5A6a471tRMTbM4KTZw91GORcdVdrk4EzxtYSA9rn5cdGI
-         8owlPv2f5bDj933dQmgyPB9dg0rma+kxSwR3BbjH59NKCNLYwwl9Naz7i5WXosE1BULq
-         9mqRHa2s6cU4+b6oAz7c/Dmc7FqoGciuK7PePYn2szVuW4ClNZmnUmGjRAs7nSs+Pl8F
-         rRJ/RrHG/rLnmMVKdBv+QUEJ/Qf6G4yD4l4wjvHauLepTtUj1tOhbBPTmJmGLe5y5Q1b
-         t6+GCwpJxHu2Ubg/YbIMlSJrUrEKaZoxOFVuWRKIHrMmW+CBm6m6sPNi3uH0SRIEZ03y
-         tK3g==
-X-Gm-Message-State: APjAAAW6vjHy7uKd37nXMR8v7bvE1QXH3UPGj2dUZ8ysNY57ZSQNFxAA
-        Mwgxxo7KmjYIPwVYRVS73R0tq/2ZAVcfOw==
-X-Google-Smtp-Source: APXvYqxGLEy1cLV8x7rcu8//lajCQmeJ5DjD+42CIu88GfZ6AvtJ5UM4UpLjGX2qx25UnhQAXrDN9CiJ1Cddgg==
-X-Received: by 2002:aed:3b33:: with SMTP id p48mr5708025qte.143.1559354945808;
- Fri, 31 May 2019 19:09:05 -0700 (PDT)
-Date:   Fri, 31 May 2019 19:09:02 -0700
-Message-Id: <20190601020902.158016-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
-Subject: [PATCH net-next] ipv4: icmp: use this_cpu_read() in icmp_sk()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=lTR0jTl5oD+Gm74Vzo4HY2zyqfQyqs0HXRg7trWVZDw=;
+        b=pH/OGEflFicb8ovpwhXDq4JVDHm0mveWRTcgT04pB1laJs1GZ4YyGPZPXWDTFwgavd
+         LM1x5kStGwkALfdQb0PVb0Z59yrUALJCnA83mKsENvvl9nBi96s7DphemP5WeYnhx6An
+         bxlRLDAPyIuc3RDHT1sjM6C3sXxEz0fffh87nfbUALr3mgeT8AlqqFU1R+FStUE41gTi
+         jOzkIxBci8+3qXlcuXgDoh4wOi7aO6n9GtJAf+bjJONnydv0HsAAJz/txCRkmANqLSCL
+         /g6CmseLkicVHBr7X7h7moH7ZfPpgsZ1fiuCCNJRRneqflnweX66u6HLLr4ZT0cVwLVB
+         OngA==
+X-Gm-Message-State: APjAAAUZz3I42PnAHPAvmiy+8Ssyln6ZDuLXlXOR6imT0czJ5/HjQJZg
+        8P+9lnznvjVrjCU6ghYPlL0=
+X-Google-Smtp-Source: APXvYqw2UcKBg8KaCjlDxLjTX9foxqDY1SJrvZ1GppBqpCOrlc8ZOaEwdnuQZ7jf5NzrAX0z8BQ21Q==
+X-Received: by 2002:aa7:9356:: with SMTP id 22mr14098622pfn.188.1559355342480;
+        Fri, 31 May 2019 19:15:42 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id c17sm7934773pfo.114.2019.05.31.19.15.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 May 2019 19:15:41 -0700 (PDT)
+Date:   Sat, 1 Jun 2019 10:15:26 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     paul@paul-moore.com, sds@tycho.nsa.gov, eparis@parisplace.org
+Cc:     omosnace@redhat.com, selinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v3] selinux: lsm: fix a missing-check bug in
+ selinux_sb_eat_lsm_opts()
+Message-ID: <20190601021526.GA8264@zhanggen-UX430UQ>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-this_cpu_read(*X) is faster than *this_cpu_ptr(X)
+In selinux_sb_eat_lsm_opts(), 'arg' is allocated by kmemdup_nul(). It
+returns NULL when fails. So 'arg' should be checked. And 'mnt_opts' 
+should be freed when error.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+Fixes: 99dbbb593fe6 ("selinux: rewrite selinux_sb_eat_lsm_opts()")
 ---
- net/ipv4/icmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index f3a5893b1e8619716f19f85dc77f2e1e12284b4d..49d6b037b113e85877f8e689e690f1c0d3427386 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -206,7 +206,7 @@ static const struct icmp_control icmp_pointers[NR_ICMP_TYPES+1];
-  */
- static struct sock *icmp_sk(struct net *net)
- {
--	return *this_cpu_ptr(net->ipv4.icmp_sk);
-+	return this_cpu_read(*net->ipv4.icmp_sk);
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 3ec702c..f329fc0 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2616,6 +2616,7 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+ 	char *from = options;
+ 	char *to = options;
+ 	bool first = true;
++	int ret;
+ 
+ 	while (1) {
+ 		int len = opt_len(from);
+@@ -2635,15 +2636,16 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+ 						*q++ = c;
+ 				}
+ 				arg = kmemdup_nul(arg, q - arg, GFP_KERNEL);
++				if (!arg) {
++					ret = -ENOMEM;
++					goto free_opt;
++				}
+ 			}
+ 			rc = selinux_add_opt(token, arg, mnt_opts);
+ 			if (unlikely(rc)) {
++				ret = rc;
+ 				kfree(arg);
+-				if (*mnt_opts) {
+-					selinux_free_mnt_opts(*mnt_opts);
+-					*mnt_opts = NULL;
+-				}
+-				return rc;
++				goto free_opt;
+ 			}
+ 		} else {
+ 			if (!first) {	// copy with preceding comma
+@@ -2661,6 +2663,12 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+ 	}
+ 	*to = '\0';
+ 	return 0;
++free_opt:
++	if (*mnt_opts) {
++		selinux_free_mnt_opts(*mnt_opts);
++		*mnt_opts = NULL;
++	}
++	return ret;
  }
  
- /* Called with BH disabled */
--- 
-2.22.0.rc1.257.g3120a18244-goog
-
+ static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
