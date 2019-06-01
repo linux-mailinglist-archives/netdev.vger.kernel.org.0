@@ -2,92 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C3531FC3
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 17:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FC2231FCF
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 17:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbfFAPTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 11:19:36 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:39334 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbfFAPTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 11:19:36 -0400
-Received: by mail-ot1-f65.google.com with SMTP id k24so7047639otn.6;
-        Sat, 01 Jun 2019 08:19:36 -0700 (PDT)
+        id S1726343AbfFAPmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 11:42:35 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37138 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbfFAPmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 11:42:35 -0400
+Received: by mail-lf1-f65.google.com with SMTP id m15so10307255lfh.4;
+        Sat, 01 Jun 2019 08:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DZ8EqvDyWqIwxw5uZ651sYBJbgvZFIAJoCrfZ/Kg7Zw=;
-        b=RKmKfTKDV3iutmhvFK0woxtRH6yzeEaHjsVmyQmmyw2v07giiLuwhYhbp3nC5EGgzl
-         gWoDbiHRlqBV9fWVmwLbOXiOQvDveID+y1ARlftv2J7y140cy8o6sYdeC8Cbx68MmW8J
-         YY1YnJNXHAPf9zRMB4bcNKJ+lGKbE7jmgBEexvTcgDgoMPrVvHY9NOUscrkviNlVk91v
-         r/GFI+LKSXXvUbZy5d+8sxVlhfxL4XQ1ffnlVEBvpTXOIc3ybLrMiXsLDnNr13fhFwRl
-         Fq5xxmcnMEpEe3Ov03+TdfiVRK7MxDURbdjj7vG3T/2Q2Zw6WlUpA1+tyxbR4eg0riI4
-         /s4Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ANAnojDFgO/UEOlubtSuomjYlfi+/05syRfAQew4Lkc=;
+        b=BWe3vZYk2212WygQaRKlhOpRBvB4lylIckxRox790gWm26U5NjY3x6nsinUGmJR/Ot
+         vu4u0v2+q1Utb2Ud96218SSO/CgAae857yAyxW7poZSMvXFKCzM8b2cEW9v1cCB1943Q
+         9jA5EZ96jgiydsflEcKjIRORIgYkSXJak4RuQNc1olKMoHdsjLRCBbIwopCFcz6gyenB
+         WQoEH9M9xoEtdtQNzeZXj/Ea+uOsA0w5Fl6dCoN057C+dhy7uAR3R4ORpoSaJ5ExD4+A
+         BgjCGvoTlDsUwGb2jF/Kd8MtRGl+jYLUQWRK7EdwmoCreKB+V/WaZxYCtB9sjh2J5XlI
+         rSUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DZ8EqvDyWqIwxw5uZ651sYBJbgvZFIAJoCrfZ/Kg7Zw=;
-        b=YQXNumHYoDN7hRAXlXbW4Mk3zvgQhuDU0OPaPpCWrBDf08TPL2aMrdy89pBWj2UIBc
-         VAvhoLzMLLyrhsKq48F/t3+z+IGRnwbjJmD960eH9Fln5INXQ+myG5fjGGxNuYH731RD
-         vMiwuTSd6x7jU36RQZU7XmGz4cR7hXceqpBzXDhxlCJpBxAh7UYRPEYp6jh7xns6F69h
-         sgMVFnkxBpbIWmeg4Pac2loNdjpu1PfK18wCkuRmjvVLF5vc0jbLathZLtP7kKn0d60k
-         bincLSON/2nAPRH4KDcayfIoW1troMVWRqvI0RGaNqzByrLGTWBDH7C9wKqW7ulNnZUX
-         R7VQ==
-X-Gm-Message-State: APjAAAUvzlkVFeXawSwgf3CKgypNiyts6OMgmTKUuThFZHAtEWK2t/3p
-        z6wVRQWgZrkbp3gq3tY6IRp3vt8=
-X-Google-Smtp-Source: APXvYqz87YY3UNw+GPNxnK8eKWjApCu8nRLf7NND4TafvxCLm5EqKiQNzc0fvFPNqVKaBy2rPjK2rw==
-X-Received: by 2002:a9d:7312:: with SMTP id e18mr5711785otk.148.1559402375857;
-        Sat, 01 Jun 2019 08:19:35 -0700 (PDT)
-Received: from ubuntu (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
-        by smtp.gmail.com with ESMTPSA id r14sm3125038otk.72.2019.06.01.08.19.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 01 Jun 2019 08:19:34 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 11:04:29 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH nf-next] netfilter: add support for matching IPv4 options
-Message-ID: <20190601150429.GA16560@ubuntu>
-References: <20190523093801.3747-1-ssuryaextr@gmail.com>
- <20190531171101.5pttvxlbernhmlra@salvia>
- <20190531193558.GB4276@ubuntu>
- <20190601002230.bo6dhdf3lhlkknqq@salvia>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ANAnojDFgO/UEOlubtSuomjYlfi+/05syRfAQew4Lkc=;
+        b=Bif2dm23coOiTkvWzLafMhwctIsfRDUnGf7vfQTyUMFqPfSv1fc1M+u8gfEAkKW/8C
+         qcxjdSaWyUPWVt/Yiu21pQ7gxduaauX9TJM3mevsSlu3meMrVVEYouO8TVLhRyyA6Z5F
+         HZM/Tt7k5KugK2HyoxDTHNbaVrpqu67WjxJweshbBZtNydm2YNatQQXTzI1o92b70a7K
+         NZzNV41keJ4eNfIauPkGUqBKx+vXk4m0SFd9m0zIZBN6Ndx09up2ObamSqlfAz4T04Ji
+         RU8fNVn+G3t8bTX2QcNZImrYzUegk99ChfHnNXQjhmMs+mohZ8t+yCtlLoWLjS6Ub7av
+         joDA==
+X-Gm-Message-State: APjAAAVmirC+F5mk/cjTXtvvU0xCJaAZpLWZHZgMOyZcQaZ4ZsNxkEOb
+        o5Ml/j3InG7AOyVHwr6YFBcVniMXySu/wrchGvQ=
+X-Google-Smtp-Source: APXvYqytR1+jWyGN6bSKk5YHqC9B/y7Dba5mi2AgjkjhDwtD1lpQ7TlbddjDrIvEUcp0YLJt1cM/vJ8MjIjGQhARSvw=
+X-Received: by 2002:a19:ab1a:: with SMTP id u26mr1575334lfe.6.1559403753167;
+ Sat, 01 Jun 2019 08:42:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190601002230.bo6dhdf3lhlkknqq@salvia>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <201906011337.lBp5SlWB%lkp@intel.com>
+In-Reply-To: <201906011337.lBp5SlWB%lkp@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 1 Jun 2019 08:42:21 -0700
+Message-ID: <CAADnVQJC5Gx5Z=2=mngHMU65fGoesMBWy5pifeDquPOhefMF-A@mail.gmail.com>
+Subject: Re: [bpf:master 3/3] kernel/bpf/arraymap.c:657:36: error: invalid
+ application of 'sizeof' to incomplete type 'struct perf_sample_data'
+To:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     Matt Mullins <mmullins@fb.com>, kbuild-all@01.org,
+        Andrew Hall <hall@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 01, 2019 at 02:22:30AM +0200, Pablo Neira Ayuso wrote:
-> > It is the same as the IPv6 one. The offset returned is the offset to the
-> > specific option (target) or the byte beyond the options if the target
-> > isn't specified (< 0).
-> 
-> Thanks for explaining. So you are using ipv6_find_hdr() as reference,
-> but not sure this offset parameter is useful for this patchset since
-> this is always set to zero, do you have plans to use this in a follow
-> up patchset?
+Hi Matt,
 
-I developed this patchset to suit my employer needs and there is no plan
-for a follow up patchset, however I think non-zero offset might be useful
-in the future for tunneled packets.
+due to this build issue I removed your commit from bpf tree.
+Please fix and resubmit.
 
-> I mean, you make this check upfront from the _eval() path, ie.
-> 
-> static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
->                                  ...
-> {
->         ...
-> 
->         if (skb->protocol != htons(ETH_P_IP))
->                 goto err;
+Thanks!
 
-Got it.
-
-Thanks.
+On Fri, May 31, 2019 at 10:48 PM kbuild test robot <lkp@intel.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
+> head:   0b21b5502f561940e0d29f7ec5f840309e4a0243
+> commit: 0b21b5502f561940e0d29f7ec5f840309e4a0243 [3/3] bpf: preallocate a perf_sample_data per event fd
+> config: m68k-allyesconfig (attached as .config)
+> compiler: m68k-linux-gcc (GCC) 7.4.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         git checkout 0b21b5502f561940e0d29f7ec5f840309e4a0243
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=7.4.0 make.cross ARCH=m68k
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    kernel/bpf/arraymap.c: In function 'bpf_event_entry_gen':
+> >> kernel/bpf/arraymap.c:657:36: error: invalid application of 'sizeof' to incomplete type 'struct perf_sample_data'
+>      ee = kzalloc(sizeof(*ee) + sizeof(struct perf_sample_data), GFP_ATOMIC);
+>                                        ^~~~~~
+>
+> vim +657 kernel/bpf/arraymap.c
+>
+>    651
+>    652  static struct bpf_event_entry *bpf_event_entry_gen(struct file *perf_file,
+>    653                                                     struct file *map_file)
+>    654  {
+>    655          struct bpf_event_entry *ee;
+>    656
+>  > 657          ee = kzalloc(sizeof(*ee) + sizeof(struct perf_sample_data), GFP_ATOMIC);
+>    658          if (ee) {
+>    659                  ee->event = perf_file->private_data;
+>    660                  ee->perf_file = perf_file;
+>    661                  ee->map_file = map_file;
+>    662                  ee->sd = (void *)ee + sizeof(*ee);
+>    663          }
+>    664
+>    665          return ee;
+>    666  }
+>    667
+>
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
