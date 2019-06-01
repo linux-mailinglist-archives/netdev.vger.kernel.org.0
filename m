@@ -2,64 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13EED31FDB
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 18:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BEDB3200B
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 19:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbfFAQEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 12:04:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47626 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726009AbfFAQEA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Jun 2019 12:04:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tdktNTrvifj9xw6GAZ7hsKI1EUS0OsdpyU+NlVA+YKw=; b=Fuu+wpto1sIxwspHFc7oLCySGH
-        a18IU1UhxSVCqO09eCLA4mbXAE6oGPteE/m0SEjUKb7lyfEFidanx4m7+umCv/huElZbw/DheZ4+t
-        qtD+TIhNgZ13imGdrJeV8sK2vjBUjKue3rLlZe+mVLzzsvXqc07p6eZXjQ23AkNFgMNo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hX6U8-00058j-K2; Sat, 01 Jun 2019 18:03:56 +0200
-Date:   Sat, 1 Jun 2019 18:03:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: dsa: sja1105: Force a negative value for
- enum sja1105_speed_t
-Message-ID: <20190601160356.GB19081@lunn.ch>
-References: <20190601103735.27506-1-olteanv@gmail.com>
- <20190601103735.27506-2-olteanv@gmail.com>
+        id S1726617AbfFARO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 13:14:26 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:33208 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbfFAROZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 13:14:25 -0400
+Received: by mail-yb1-f194.google.com with SMTP id w127so4946057yba.0
+        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 10:14:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=w5R2Tst2s7tEETC5HjzVcuxNpQo69R9uTgohCbePuhc=;
+        b=W3f8Sx7f/xHQRIgVKtiQVlgnBNQndKSmZt5vLiIac/hiJMXY+XLFYJTWUqQA51XlTn
+         aDJHpaVv/Qa+LIU3rlMdcCTLVchzumG25zb2tb5uhu/bp+ygSoHt33ToGIVKN2oJDXBo
+         ze6rRomQuHrbfidXf/MhY+U8+/7GdCaC2vwhJE/G7ILBXEtQLBgF8TYLOwQuHVHNHkyd
+         zXjUaI3Y8y5wWagYU36llO4HVPO74BQz12qFGjCE5ZQ2dzNO8MRFlcTpe2BbdAZnjCsa
+         /SMpMbu3YttWZt/guTkz8zYpc5uFJMz3GiKAaIdvvjPLYz9O2KJhm9Oh1s7NttaW/60z
+         VsaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=w5R2Tst2s7tEETC5HjzVcuxNpQo69R9uTgohCbePuhc=;
+        b=QHkG0X0iVHVkPFu8j0o0HQPjD2470aTBBeWWUlrb1/0GkaVbCXwOBlF1bojuLlkczT
+         KaBK0jbQuxKNi6tjKbdH5edVGLCb6LpIS3xXaas3Z78vFOjsuu7w8ct642Nxlbh2rLRS
+         p+4Kt2b11G3FYT/s+XwjEKpkMDWD0q2/DKHNeC+YBpQMZhfvdMdriUuhUKwncGltuDP9
+         gjr7fxeCngh4ATMCSxzgFCjHY/PMFRxUUbX4TM/jC3qYvDHAR4XBFlRFFjOqDJXO/guw
+         oZw4dnvQ8ez3UJ2d5ySDB4BD2okML2beh//pOIob/xukJbYNe2n+7v9GtgOmc9yOTSCj
+         EiQg==
+X-Gm-Message-State: APjAAAVKN0Pm1ph7T21yuLtrx/AY1DZFetrbjfbdhHcZ5Nd4v03gq5Hh
+        kyOynXnbzq4SdgLNLbd0r7E26IUKul2LXfMzplQ=
+X-Google-Smtp-Source: APXvYqxYiqzSpjcSW4dE5FIZtmOiVRk79MaQmF4eql77czMaoQzv5MeRcexZfhv4vZMxbePnaxrrXWw45nDp0WAm6No=
+X-Received: by 2002:a25:97c6:: with SMTP id j6mr8395910ybo.513.1559409265187;
+ Sat, 01 Jun 2019 10:14:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190601103735.27506-2-olteanv@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Received: by 2002:a5b:551:0:0:0:0:0 with HTTP; Sat, 1 Jun 2019 10:14:24 -0700 (PDT)
+Reply-To: mrdavidkekeli0@gmail.com
+From:   "Mr.David Keller" <kezia.colee4@gmail.com>
+Date:   Sat, 1 Jun 2019 17:14:24 +0000
+Message-ID: <CANDm_mw3ypFmbHwx6D4QvAfqNbLP2AWDLdjj8PW0WpX+jdVXCw@mail.gmail.com>
+Subject: Please answer me
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 01, 2019 at 01:37:34PM +0300, Vladimir Oltean wrote:
-> The code in sja1105_adjust_port_config relies on the fact that an
-> invalid link speed is detected by sja1105_get_speed_cfg and returned as
-> -EINVAL.  However storing this into an enum that only has positive
-> members will cast it into an unsigned value, and it will miss the
-> negative check.
-> 
-> So make the -EINVAL value part of the enum, so that it is stored as a
-> signed number and passes the negative check.
-> 
-> Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-
-Hi Vladimir
-
-It seems like just using a switch statement would be simpler, and more
-likely to be correct. And it would avoid adding SJA1105_SPEED_INVALID
-= -EINVAL which feels hackish.
-
-  Andrew
+My Greeting, Did you receive the letter i sent to you.Please answer
+me.Best Regard,Mr.David Keller.
