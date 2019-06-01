@@ -2,190 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 327CD320A4
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 22:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4F4320AA
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 22:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfFAUC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 16:02:28 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34056 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726246AbfFAUC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 16:02:28 -0400
-Received: by mail-pf1-f195.google.com with SMTP id c14so5835414pfi.1
-        for <netdev@vger.kernel.org>; Sat, 01 Jun 2019 13:02:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=xy8MS2h0CWCw9bCHyV9wMr6WM+l0cnsYOJ5ENcwhPQU=;
-        b=KIgHCCMmCRxtATSwhQzp7Xt6whGBcSGWws0Ev9SBl6KxYrEkYH6pWjGD+H/rWa4n2Z
-         oxmp3pPPUKo+SoXRn4LiuYzF4GSoaikRH122gljJcnN8CB4XgBF1JD9YjOVcKDUuX8tA
-         sXXBbJyQES7trxmV3hqo3a/k2l0NlH1qHKL2KuVgnw5scQAl+NI/EqGjt5ISp0zRFRKR
-         dXSUzL7xkPz6yBoWTcGhToZkaBPPfik5hiKcQYrfixMb7qF2LXFYmSBgSSQpdQNM1DLq
-         X3k2/O8h/05z6PC+Dt1kj8EhD3UC9o5DEZEVIz2lA0MuHFAWlWghRwbiC7N/QdTGE4Fj
-         MhCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=xy8MS2h0CWCw9bCHyV9wMr6WM+l0cnsYOJ5ENcwhPQU=;
-        b=arW6ldk5NF2xKRN16EHDgBhAWOd6RPVkj0oZa+To7V8ZiYIqCo1JAxXZWI4TM5lM7g
-         zbyiy8LRdIrwPjLFnkgdrdaCPGns3Dh6am1DAsy9e9fx2jQplRbqzG917SUQTRnXmN72
-         Z1K24UCVTapcDX92QzHA34FQBVOOoQUsYEfFD5eIBdr5CsalW7lZjl7X13maybfd6G0S
-         1meQTfr7d+8Q/7CAcu88cyON9ctM4s3WB+LgI7RHluYQNWMf+IKST5uo27REb4qvF+ng
-         TjvxcqpnNqoqXTzHZ65nzopL+vo1fI6IY5oC+QflcLYtPoh4QHo9pN1Zk0wrzAuSmuqd
-         WUPQ==
-X-Gm-Message-State: APjAAAX8JhU0+PK5+0EC1nPc+oZZuzN60SAa5t7eOuF0QUuS2tom5jNa
-        o9X8eJl5vSmJpMtMheMqWih1nw==
-X-Google-Smtp-Source: APXvYqyE9zHR6wpcd+ILpl+RnJ2+hgV9hy8h9CYO7M2UFxvNRxMBxmMX99JZFHLzB7CBlemQHiIkuQ==
-X-Received: by 2002:a62:ee05:: with SMTP id e5mr19263697pfi.117.1559419347074;
-        Sat, 01 Jun 2019 13:02:27 -0700 (PDT)
-Received: from cakuba.netronome.com ([2601:646:8e00:e50::3])
-        by smtp.gmail.com with ESMTPSA id p13sm9604796pff.2.2019.06.01.13.02.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 01 Jun 2019 13:02:26 -0700 (PDT)
-Date:   Sat, 1 Jun 2019 13:02:23 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     toke@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, brouer@redhat.com, bpf@vger.kernel.org,
-        saeedm@mellanox.com
-Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
- to netdev
-Message-ID: <20190601130223.5ef947fa@cakuba.netronome.com>
-In-Reply-To: <20190531094215.3729-2-bjorn.topel@gmail.com>
-References: <20190531094215.3729-1-bjorn.topel@gmail.com>
-        <20190531094215.3729-2-bjorn.topel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726485AbfFAULC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 16:11:02 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:52298 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbfFAULC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jun 2019 16:11:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=j6seBH5nwaDlQJNR3CpPDhbn7MofJMRie3jxnSZGW2A=; b=JwdnhwUnpcVSW+HJQAB4uoQg3
+        72X9mIXxVs23Vyqou5ML+wmK/4/8BMQYQK5vuXlXr84qqUTci5uXhKKfTZ+cFSRjdOc+/p2ULX+cR
+        CoxoSIV80s9GX7LiLKHL0prIMvZeitbJnYb9j7S7Mg8vAp1ldMohzOOfhwXB7mCfA2qsdm78qeOip
+        zyuBU2Z6w/VMYf10K3necEzFNd4v3grJ6rlK+Q9gmnbRQPCso1MghyB6lzyK8xt+uTYr00ixaoI0Y
+        poNWQXbCOJyLAL93MmB+w2QUZQgX/UP7Ir+PtHwJbnlbocZrHymWQpPAIUanocaotY23jXKKFgZ32
+        hHe4XoJMg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38448)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hXALC-0000m8-C1; Sat, 01 Jun 2019 21:10:59 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hXALA-0007YZ-1h; Sat, 01 Jun 2019 21:10:56 +0100
+Date:   Sat, 1 Jun 2019 21:10:55 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Robert Hancock <hancock@sedsystems.ca>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: phylink: support using device PHY in
+ fixed or 802.3z mode
+Message-ID: <20190601201055.isqcqj4psps3fafr@shell.armlinux.org.uk>
+References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
+ <1559330285-30246-5-git-send-email-hancock@sedsystems.ca>
+ <20190531203131.skdlic6ub2esyw3o@shell.armlinux.org.uk>
+ <1cb5994f-cb70-e2ec-7f72-2e7828813150@sedsystems.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1cb5994f-cb70-e2ec-7f72-2e7828813150@sedsystems.ca>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 May 2019 11:42:14 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 44b47e9df94a..f3a875a52c6c 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1940,6 +1940,9 @@ struct net_device {
->  #endif
->  	struct hlist_node	index_hlist;
-> =20
-> +	struct bpf_prog		*xdp_prog_hw;
+On Fri, May 31, 2019 at 06:33:32PM -0600, Robert Hancock wrote:
+> On 2019-05-31 2:31 p.m., Russell King - ARM Linux admin wrote:
+> > On Fri, May 31, 2019 at 01:18:05PM -0600, Robert Hancock wrote:
+> >> The Xilinx AXI Ethernet controller supports SFP modules in 1000BaseX
+> >> mode in a somewhat unusual manner: it still exposes a PHY device which
+> >> needs some PHY-level initialization for the PCS/PMA layer to work properly,
+> >> and which provides some link status/control information.
+> >>
+> >> In this case, we want to use the phylink layer to support proper
+> >> communication with the SFP module, but in most other respects we want to
+> >> use the PHY attached to the controller.
+> >>
+> >> Currently the phylink driver does not initialize or use a controller PHY
+> >> even if it exists for fixed-link or 802.3z PHY modes, and doesn't
+> >> support SFP module attachment in those modes.
+> > 
+> > Sorry, I'm having a hard time following this description.  Please draw
+> > an ASCII diagram of the setup you have - a picture is worth 1000 words,
+> > and I think that is very much the case here.
+> >
+> > We do have boards where the SFP is connected to a real PHY, where the
+> > real PHY offers a RJ45 copper socket and a fiber interface,
+> > automatically switching between the two.  In this case, we do not
+> > use phylink to represent the link between the PHY and the SFP cage,
+> > but instead the PHY binds directly to the SFP cage.
+> >
+> 
+> It sounds like the setup you're describing has the PHY being smarter and
+> doing more of the SFP module handling internally. In our setup, the
+> situation is something like this:
+> 
+> Xilinx MAC		I2C	GPIO
+> |
+> |GMII			|	|
+> |			|	|
+> Xilinx PHY		|	|
+> |			|	|
+> |1000BaseX		|	|
+> |			|	|
+> SFP -----------------------------
 
-IDK if we should pay the cost of this pointer for every netdev on the
-system just for the single production driver out there that implements
-HW offload :(  I'm on the fence about this..
+That is very similar, except the Marvell 88x3310 uses a 10GBASE-R
+protocol to a SFP+ module, but can be switched to either SGMII or
+1000BASE-X mode (neither of which we currently support, but work is
+in progress, if it turns out that these boards with strong pullups
+can work with SFP modules.)
 
-> +	u32			xdp_flags;
-> +
->  /*
->   * Cache lines mostly used on transmit path
->   */
+With the 88x3310, I have a couple of patches that "bolt on" to the
+PHY driver, so we end up with this setup from the DT, kernel and
+hardware point of view:
 
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index adcc045952c2..5e396fd01d8b 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1360,42 +1360,44 @@ static int rtnl_fill_link_ifmap(struct sk_buff *s=
-kb, struct net_device *dev)
->  	return 0;
->  }
-> =20
-> -static u32 rtnl_xdp_prog_skb(struct net_device *dev)
-> +static unsigned int rtnl_xdp_mode_to_flag(u8 tgt_mode)
->  {
-> -	const struct bpf_prog *generic_xdp_prog;
-> -
-> -	ASSERT_RTNL();
-> -
-> -	generic_xdp_prog =3D rtnl_dereference(dev->xdp_prog);
-> -	if (!generic_xdp_prog)
-> -		return 0;
-> -	return generic_xdp_prog->aux->id;
-> -}
-> -
-> -static u32 rtnl_xdp_prog_drv(struct net_device *dev)
-> -{
-> -	return __dev_xdp_query(dev, dev->netdev_ops->ndo_bpf, XDP_QUERY_PROG);
-> +	switch (tgt_mode) {
-> +	case XDP_ATTACHED_DRV:
-> +		return XDP_FLAGS_DRV_MODE;
-> +	case XDP_ATTACHED_SKB:
-> +		return XDP_FLAGS_SKB_MODE;
-> +	case XDP_ATTACHED_HW:
-> +		return XDP_FLAGS_HW_MODE;
-> +	}
-> +	return 0;
->  }
-> =20
-> -static u32 rtnl_xdp_prog_hw(struct net_device *dev)
-> +static u32 rtnl_xdp_mode_to_attr(u8 tgt_mode)
->  {
-> -	return __dev_xdp_query(dev, dev->netdev_ops->ndo_bpf,
-> -			       XDP_QUERY_PROG_HW);
-> +	switch (tgt_mode) {
-> +	case XDP_ATTACHED_DRV:
-> +		return IFLA_XDP_DRV_PROG_ID;
-> +	case XDP_ATTACHED_SKB:
-> +		return IFLA_XDP_SKB_PROG_ID;
-> +	case XDP_ATTACHED_HW:
-> +		return IFLA_XDP_HW_PROG_ID;
-> +	}
-> +	return 0;
->  }
-> =20
->  static int rtnl_xdp_report_one(struct sk_buff *skb, struct net_device *d=
-ev,
-> -			       u32 *prog_id, u8 *mode, u8 tgt_mode, u32 attr,
-> -			       u32 (*get_prog_id)(struct net_device *dev))
-> +			       u32 *prog_id, u8 *mode, u8 tgt_mode)
->  {
->  	u32 curr_id;
->  	int err;
-> =20
-> -	curr_id =3D get_prog_id(dev);
-> +	curr_id =3D dev_xdp_query(dev, rtnl_xdp_mode_to_flag(tgt_mode));
->  	if (!curr_id)
->  		return 0;
-> =20
->  	*prog_id =3D curr_id;
-> -	err =3D nla_put_u32(skb, attr, curr_id);
-> +	err =3D nla_put_u32(skb, rtnl_xdp_mode_to_attr(tgt_mode), curr_id);
->  	if (err)
->  		return err;
-> =20
-> @@ -1420,16 +1422,13 @@ static int rtnl_xdp_fill(struct sk_buff *skb, str=
-uct net_device *dev)
-> =20
->  	prog_id =3D 0;
->  	mode =3D XDP_ATTACHED_NONE;
-> -	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_SKB,
-> -				  IFLA_XDP_SKB_PROG_ID, rtnl_xdp_prog_skb);
-> +	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_SKB=
-);
->  	if (err)
->  		goto err_cancel;
-> -	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_DRV,
-> -				  IFLA_XDP_DRV_PROG_ID, rtnl_xdp_prog_drv);
-> +	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_DRV=
-);
->  	if (err)
->  		goto err_cancel;
-> -	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_HW,
-> -				  IFLA_XDP_HW_PROG_ID, rtnl_xdp_prog_hw);
-> +	err =3D rtnl_xdp_report_one(skb, dev, &prog_id, &mode, XDP_ATTACHED_HW);
->  	if (err)
->  		goto err_cancel;
-> =20
+                 ,-----> Copper RJ45
+   MAC -----> PHY
+                 `-----> SFP
 
-So you remove all the attr and flag params just to add a conversion
-helpers to get them based on mode?  Why?  Seems like unnecessary churn,
-and questionable change :S
+Hence, the PHY driver is responsible for registering itself as an
+"upstream" of the SFP cage without involving phylink - phylink gets
+used for the MAC <-> PHY part of the connection.
 
-Otherwise looks good to me!
+There's an awkward problem though: the PHY driver doesn't really have
+much clue whether the network interface is up or down, which SFP
+really needs to know so it can control whether the SFP module's laser
+is emitting or not.  One of the patches tweaks the phylink code to
+pass this information over to the SFP cage, around phylib, but the
+proper solution would be for phylib to propagate that information to
+the phylib driver, so that it can in turn pass that on to the SFP cage.
+
+However, there's a slightly bigger problem looming here, which is that
+phylib and the network layers in general do _not_ support having two
+PHYs actively bound to one network interface, and without radically
+reworking phylib and how phylib is bolted into the network layer, that
+is not easy to get around.
+
+> So in this case the Xilinx PHY is just really doing PCS/PMA, etc.
+> conversions. The I2C and GPIO lines for the SFP socket are routed back
+> to the host separately and the Xilinx PHY has no interaction with them
+> (other than that I believe the LOS signal from the SFP socket is
+> connected into the PHY to provide some link status indication back to it).
+
+So, very similar situation as on the Macchiatobin with the 88x3310
+PHYs.
+
+> In this setup, phylink is basically allowing us to communicate with the
+> SFP module over I2C and manage the LOS, TX enable, etc. control lines
+> properly, but the Xilinx PHY does need to be initialized as well for the
+> actual link traffic to pass through.
+
+I think what you're missing is that the design is a layered one.
+All the SFP cage stuff is interfaced through the sfp layer, and is
+made accessible independently via the sfp-bus layer (which is needed
+to avoid sfp being a hard dependency for the MAC driver - especially
+important when we have SoCs such as Armada 8040 where one hardware
+module provides multiple network ports.)
+
+phylink provides a mechanism to separate PHYs from the MAC driver
+such that we can hot-plug PHYs (necessary for the PHYs on SFP modules),
+and deal with dynamically reconfiguring the MAC's hardware interface
+mode according to what the module supports.  It isn't intended to
+always be closely bound to the SFP cage side.
+
+One of the reasons we have this design is because the early boards I
+had access to when designing this setup were direct MAC to SFP cage
+setups - there was no intermediate PHY.  Then came the Macchiatobin
+board which does have a PHY, which brings with it additional
+complexities, but various hardware problems have stood in the way of
+having SFP modules in the 10G slots.
+
+> In our case the controller is supporting 1000BaseX only and is mainly
+> intended for fiber modules. We do want to be able to get copper modules
+> to work - obviously only ones that are set up for 1000BaseX mode are
+> possible.
+
+So, what I say below applies:
+
+> > If the former, then I'm pretty certain you're going about it the wrong
+> > way - as I've said before, there is nothing in the EEPROM that
+> > indicates definitively what format the control word is (and therefore
+> > whether it is SGMII or 1000base-X.)
+> > 
+> > Some network controllers may be able to tell the difference, but that
+> > is not true of all controllers.
+> > 
+> > The only way I can see to support such modules would be to have a table
+> > of quirks to set the interface mode accordingly, and not try this "lets
+> > pick one, try to validate it with the network controller, otherwise try
+> > the other."
+> > 
+> > In any case, the format of the connection between the SFP module and
+> > the network controller isn't one that should appear in the ethtool link
+> > modes - I view what you've done there as a hack rather than proper
+> > design.
+
+I do have the beginnings of a quirk system for the sfp-bus layer,
+since I've been conversing with someone with a GPON module that
+does appear to follow the SFP MSA, in particular with regard to the
+time it takes the module to start responding on I2C, and in regard
+of the speeds it actually supports (basically, the EEPROM is
+misleading.)  So, that should be useful for you as well.
+
+http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=phy
+
+is my playground of patches for SFP, which are in various stages of
+maturity, some which have been posted for inclusion (and merged)
+others that have been waiting some time.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
