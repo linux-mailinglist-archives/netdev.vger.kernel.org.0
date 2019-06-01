@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B85A31933
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0105531934
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfFADMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 23:12:23 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43212 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbfFADMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 23:12:22 -0400
-Received: by mail-qt1-f195.google.com with SMTP id z24so3327619qtj.10
-        for <netdev@vger.kernel.org>; Fri, 31 May 2019 20:12:22 -0700 (PDT)
+        id S1726776AbfFADMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 23:12:25 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:46527 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726547AbfFADMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 May 2019 23:12:24 -0400
+Received: by mail-qk1-f195.google.com with SMTP id a132so7590826qkb.13
+        for <netdev@vger.kernel.org>; Fri, 31 May 2019 20:12:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7g2C++z5L1B0b7jSoWsRL4W87Xloowa8K63ZnjfwCxk=;
-        b=u/MFqPTvAALEafoDwRN2Zlw8y91EP/PXD6v661kHY7FLCqNidJaSFepeUEB7R3EGdX
-         LI9H5dK26Rt3kJit3MfpXJ7F8+pOM/UIJRQPHiMhIw8Rnduq86482kDjihdFb6ev3b0Q
-         HF1ywp8GB5U6d8xIP1VV98hjBI4iaNhfNHxkEybnUr1glBx/jj+7c35Od9UUMpiNRR27
-         tAfeT7TyHk22LLsxQ+OGwC0XUrxsb25xNJ771FDgzRh7M1tyYOCzSmOWMx6wM+dxwmkT
-         jUaJyWpY4H6i7PnVJiRdWnMcQcacJq2Sie4MJ+WxWAZynqi426Xo47lazTpIf3L4ED6D
-         NyJQ==
+        bh=ibLhAGS11wNI6Ucgk/hwmf5LyhCFXZ4AAXTO9FJKPlA=;
+        b=BDhzGOLBH9UJ5DPx/U84WhlfCJEcOaKWaI9vXG84hsGkEJsXIZ58p0vXPnKwoINikA
+         JIXefN7hK48R2E8M95t/Be+IohxtyEOEl7aMjypHwK/7g8nW8k+fo4C7Tz3LDyBOFVwG
+         AsgJ/CqaW4QnoZWFQJDawYJbFe4GNhfmGiXJaJFHYWejlsDFqvC+be6ogjH3tFsBLjBS
+         S04xkXq8/SmfrGfipbxU8cOjyYJgbDevJa/XGaJKFggPmII/j26HYrp/3pSc8hKD3YOJ
+         sDtLTkfUFxvBQPxiSH/oOpq4UyNYFfBgczQAU5QNr9+IruPeSn0+jW0+tcK9gOnEDhja
+         1Tcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7g2C++z5L1B0b7jSoWsRL4W87Xloowa8K63ZnjfwCxk=;
-        b=iFHpvSsJ+7CRyN4Ui2Pc67zcZwjm2qb3FkNSmJqBjU5IY8yaMDlR2flGvGs201Ahtk
-         SYyYxRrkHejz6t/MiTGKlkJ2AxZJXqtmHLK6NCBHRWxoPz4qgf0Pc93a9yOC9LJO0QQ8
-         NliI4KhThBZRNRHGQkXiSGHyH0cBuLMmyJ74otFKDOz+m0TXfSDT+IGOcp1HuOcMYBnU
-         /79OBgefUvYHWa7SxUyhJyIQ8RREZQ3zeNrxgSxmA5LxS9Elch3I/mVsZi0riIG1ZK0l
-         cvWgUuYQSRFv/7bumgqL82tG/BNYvZANrqKVEV9PMkGM58l+yjgYI3Nl9flhYkyXqLWY
-         7Wvw==
-X-Gm-Message-State: APjAAAUgOmeQNsX/fmaXhfxrIpyp+uVcmgBCOfdiAByxJJTizISXuNIH
-        2YRpnioazD3Yhvd7v5jdPQ4C3Q==
-X-Google-Smtp-Source: APXvYqy+TkdVz8zj4eNkXg9pw2GkISMUiDdSmd2+272G8Fwof5PFUWQ1c4VAu13XSxt+U85qroWpyg==
-X-Received: by 2002:ac8:2d08:: with SMTP id n8mr12378789qta.383.1559358741931;
-        Fri, 31 May 2019 20:12:21 -0700 (PDT)
+        bh=ibLhAGS11wNI6Ucgk/hwmf5LyhCFXZ4AAXTO9FJKPlA=;
+        b=nRFg0OZgOe2600y9cEQK0mk8qxVslYTUpOO3jFuTCPfpJ/0nsJ0/gaBBWasUM0MPxo
+         cUlGYLv0PoUhHY8xjOQos5C84iUv4u6OIUtSqaHnLb8Kb+o6/s702SAjBzqzVl6aeEcN
+         lqCnkLCvj3I88P7YJe2DV4r5D4lAKsVCTTipxWyBEGrk98O8UCZLPkRgi7L0TUeGtyQH
+         8kdMD/j/juVyxnC15/YBmzXyW81fHaSKLgeU/XkCfWjrfI27fWIpbRaOa4hjo6yDD9pr
+         2whfQP0sybZM4mpuaKultd5eSCErVhD7S7WjCInOF2OXaaHxs10U2kD3F5UvXn+D1XRG
+         mX8A==
+X-Gm-Message-State: APjAAAWgeXyCu8BE4BJXsU1Yf/EdB3C/ZKngcEx0fbNUkWIVOG7lyPgs
+        r05JJmCyX/GFe3EVHFg+zhctIg==
+X-Google-Smtp-Source: APXvYqxaEy8QL9EHuFuCPQ1las/kCepr9kcjqmpDKu3oDHZd8bL82fMDaB8lMeDMd90nSDXf0wZRFg==
+X-Received: by 2002:a05:620a:102d:: with SMTP id a13mr11368279qkk.268.1559358743206;
+        Fri, 31 May 2019 20:12:23 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j26sm5354267qtj.70.2019.05.31.20.12.20
+        by smtp.gmail.com with ESMTPSA id j26sm5354267qtj.70.2019.05.31.20.12.22
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 31 May 2019 20:12:21 -0700 (PDT)
+        Fri, 31 May 2019 20:12:22 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net 1/2] Revert "net/tls: avoid NULL-deref on resync during device removal"
-Date:   Fri, 31 May 2019 20:12:00 -0700
-Message-Id: <20190601031201.32027-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net 2/2] net/tls: replace the sleeping lock around RX resync with a bit lock
+Date:   Fri, 31 May 2019 20:12:01 -0700
+Message-Id: <20190601031201.32027-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190601031201.32027-1-jakub.kicinski@netronome.com>
 References: <20190601031201.32027-1-jakub.kicinski@netronome.com>
@@ -62,50 +62,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 38030d7cb77963ba84cdbe034806e2b81245339f.
-Unfortunately the RX resync may get called from soft IRQ,
-so we can't take the rwsem to protect from the device
-disappearing.
+Commit 38030d7cb779 ("net/tls: avoid NULL-deref on resync during device removal")
+tried to fix a potential NULL-dereference by taking the
+context rwsem.  Unfortunately the RX resync may get called
+from soft IRQ, so we can't use the rwsem to protect from
+the device disappearing.  Because we are guaranteed there
+can be only one resync at a time (it's called from strparser)
+use a bit to indicate resync is busy and make device
+removal wait for the bit to get cleared.
 
+Note that there is a leftover "flags" field in struct
+tls_context already.
+
+Fixes: 4799ac81e52a ("tls: Add rx inline crypto offload")
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- net/tls/tls_device.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ include/net/tls.h    |  4 ++++
+ net/tls/tls_device.c | 26 +++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 39ea62f0c1f6..4a55ce6a303f 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -209,6 +209,10 @@ struct tls_offload_context_tx {
+ 	(ALIGN(sizeof(struct tls_offload_context_tx), sizeof(void *)) +        \
+ 	 TLS_DRIVER_STATE_SIZE)
+ 
++enum tls_context_flags {
++	TLS_RX_SYNC_RUNNING = 0,
++};
++
+ struct cipher_context {
+ 	char *iv;
+ 	char *rec_seq;
 diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index b95c408fd771..49b3a2ff8ef3 100644
+index 49b3a2ff8ef3..ed1c5db88eb0 100644
 --- a/net/tls/tls_device.c
 +++ b/net/tls/tls_device.c
-@@ -553,8 +553,8 @@ void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
+@@ -550,6 +550,19 @@ void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
+ 	}
+ }
+ 
++static void tls_device_resync_rx(struct tls_context *tls_ctx,
++				 struct sock *sk, u32 seq, u64 rcd_sn)
++{
++	struct net_device *netdev;
++
++	if (WARN_ON(test_and_set_bit(TLS_RX_SYNC_RUNNING, &tls_ctx->flags)))
++		return;
++	netdev = READ_ONCE(tls_ctx->netdev);
++	if (netdev)
++		netdev->tlsdev_ops->tls_dev_resync_rx(netdev, sk, seq, rcd_sn);
++	clear_bit_unlock(TLS_RX_SYNC_RUNNING, &tls_ctx->flags);
++}
++
  void handle_device_resync(struct sock *sk, u32 seq, u64 rcd_sn)
  {
  	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	struct net_device *netdev = tls_ctx->netdev;
- 	struct tls_offload_context_rx *rx_ctx;
--	struct net_device *netdev;
- 	u32 is_req_pending;
- 	s64 resync_req;
- 	u32 req_seq;
-@@ -568,15 +568,10 @@ void handle_device_resync(struct sock *sk, u32 seq, u64 rcd_sn)
+@@ -568,10 +581,10 @@ void handle_device_resync(struct sock *sk, u32 seq, u64 rcd_sn)
  	is_req_pending = resync_req;
  
  	if (unlikely(is_req_pending) && req_seq == seq &&
--	    atomic64_try_cmpxchg(&rx_ctx->resync_req, &resync_req, 0)) {
--		seq += TLS_HEADER_SIZE - 1;
--		down_read(&device_offload_lock);
--		netdev = tls_ctx->netdev;
--		if (netdev)
--			netdev->tlsdev_ops->tls_dev_resync_rx(netdev, sk, seq,
--							      rcd_sn);
--		up_read(&device_offload_lock);
--	}
-+	    atomic64_try_cmpxchg(&rx_ctx->resync_req, &resync_req, 0))
-+		netdev->tlsdev_ops->tls_dev_resync_rx(netdev, sk,
-+						      seq + TLS_HEADER_SIZE - 1,
-+						      rcd_sn);
+-	    atomic64_try_cmpxchg(&rx_ctx->resync_req, &resync_req, 0))
+-		netdev->tlsdev_ops->tls_dev_resync_rx(netdev, sk,
+-						      seq + TLS_HEADER_SIZE - 1,
+-						      rcd_sn);
++	    atomic64_try_cmpxchg(&rx_ctx->resync_req, &resync_req, 0)) {
++		seq += TLS_HEADER_SIZE - 1;
++		tls_device_resync_rx(tls_ctx, sk, seq, rcd_sn);
++	}
  }
  
  static int tls_device_reencrypt(struct sock *sk, struct sk_buff *skb)
+@@ -972,7 +985,10 @@ static int tls_device_down(struct net_device *netdev)
+ 		if (ctx->rx_conf == TLS_HW)
+ 			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
+ 							TLS_OFFLOAD_CTX_DIR_RX);
+-		ctx->netdev = NULL;
++		WRITE_ONCE(ctx->netdev, NULL);
++		smp_mb__before_atomic(); /* pairs with test_and_set_bit() */
++		while (test_bit(TLS_RX_SYNC_RUNNING, &ctx->flags))
++			usleep_range(10, 200);
+ 		dev_put(netdev);
+ 		list_del_init(&ctx->list);
+ 
 -- 
 2.21.0
 
