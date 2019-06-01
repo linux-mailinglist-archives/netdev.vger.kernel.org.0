@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4AC31CE9
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A75431DA6
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 15:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729425AbfFANZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jun 2019 09:25:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55378 "EHLO mail.kernel.org"
+        id S1729943AbfFANas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jun 2019 09:30:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727467AbfFANZM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Jun 2019 09:25:12 -0400
+        id S1729640AbfFAN0K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Jun 2019 09:26:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9E68E2739B;
-        Sat,  1 Jun 2019 13:25:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7FB8E2739B;
+        Sat,  1 Jun 2019 13:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559395510;
-        bh=K20fQdb8BuzR/+kXSlmwfctDmxjP4gTtYm/RgRPKRcU=;
+        s=default; t=1559395568;
+        bh=iVRWZ07lKolSwaj0InoW8KQ+LMzttB+DVK4BkP2f12c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dI8AOszllW9JKnTiuRVQaNd37/o3ntryT05y0MfkCkQt2UiZ0olsxcwqHULGeiFKx
-         4LlcE1HsrRAdAu38UcTLrpdu2pqZgKlv3LBcgvBQTJQ7xEvKWJVpHbLJ5s5qJfabWG
-         q8orIuyN2o5gFW7GJsR10agpBo/1Dh3wcazEsOVo=
+        b=JYAjNSvyLVR5QgXagLHhrD6OM/oBThh88CjgetgIx4RpYebk5PcbECr6L+Wp5sKkc
+         BHh4KaVcKbaOYYYuhsnQ3mAaSxX0gcr4hVxhPFkvE1CHF6ywnla/D3n8qmdfKk0Cqq
+         8i1wMEfkFfTnAEdGRunMVo/aWY5yV8GVhV8VObEE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Li Rongqing <lirongqing@baidu.com>, Zhang Yu <zhangyu31@baidu.com>,
@@ -33,12 +33,12 @@ Cc:     Li Rongqing <lirongqing@baidu.com>, Zhang Yu <zhangyu31@baidu.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 04/74] ipc: prevent lockup on alloc_msg and free_msg
-Date:   Sat,  1 Jun 2019 09:23:51 -0400
-Message-Id: <20190601132501.27021-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 03/56] ipc: prevent lockup on alloc_msg and free_msg
+Date:   Sat,  1 Jun 2019 09:25:07 -0400
+Message-Id: <20190601132600.27427-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190601132501.27021-1-sashal@kernel.org>
-References: <20190601132501.27021-1-sashal@kernel.org>
+In-Reply-To: <20190601132600.27427-1-sashal@kernel.org>
+References: <20190601132600.27427-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -140,10 +140,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/ipc/mqueue.c b/ipc/mqueue.c
-index 28a142f1be36d..d5491a8807515 100644
+index 5e24eb0ab5dd2..6ed74825ab542 100644
 --- a/ipc/mqueue.c
 +++ b/ipc/mqueue.c
-@@ -371,7 +371,8 @@ static void mqueue_evict_inode(struct inode *inode)
+@@ -373,7 +373,8 @@ static void mqueue_evict_inode(struct inode *inode)
  	struct user_struct *user;
  	unsigned long mq_bytes, mq_treesize;
  	struct ipc_namespace *ipc_ns;
@@ -153,7 +153,7 @@ index 28a142f1be36d..d5491a8807515 100644
  
  	clear_inode(inode);
  
-@@ -382,10 +383,15 @@ static void mqueue_evict_inode(struct inode *inode)
+@@ -384,10 +385,15 @@ static void mqueue_evict_inode(struct inode *inode)
  	info = MQUEUE_I(inode);
  	spin_lock(&info->lock);
  	while ((msg = msg_get(info)) != NULL)
@@ -171,7 +171,7 @@ index 28a142f1be36d..d5491a8807515 100644
  	mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
  		min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
 diff --git a/ipc/msgutil.c b/ipc/msgutil.c
-index bf74eaa5c39f2..6d90b191c6385 100644
+index ed81aafd23926..9467307487f74 100644
 --- a/ipc/msgutil.c
 +++ b/ipc/msgutil.c
 @@ -18,6 +18,7 @@
@@ -182,7 +182,7 @@ index bf74eaa5c39f2..6d90b191c6385 100644
  
  #include "util.h"
  
-@@ -64,6 +65,9 @@ static struct msg_msg *alloc_msg(size_t len)
+@@ -66,6 +67,9 @@ static struct msg_msg *alloc_msg(size_t len)
  	pseg = &msg->next;
  	while (len > 0) {
  		struct msg_msgseg *seg;
@@ -190,9 +190,9 @@ index bf74eaa5c39f2..6d90b191c6385 100644
 +		cond_resched();
 +
  		alen = min(len, DATALEN_SEG);
- 		seg = kmalloc(sizeof(*seg) + alen, GFP_KERNEL_ACCOUNT);
+ 		seg = kmalloc(sizeof(*seg) + alen, GFP_KERNEL);
  		if (seg == NULL)
-@@ -176,6 +180,8 @@ void free_msg(struct msg_msg *msg)
+@@ -178,6 +182,8 @@ void free_msg(struct msg_msg *msg)
  	kfree(msg);
  	while (seg != NULL) {
  		struct msg_msgseg *tmp = seg->next;
