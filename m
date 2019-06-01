@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97EA831959
-	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 880F03194C
+	for <lists+netdev@lfdr.de>; Sat,  1 Jun 2019 05:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727049AbfFADgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 May 2019 23:36:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51456 "EHLO mail.kernel.org"
+        id S1727140AbfFADgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 May 2019 23:36:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726960AbfFADgX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726973AbfFADgX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 31 May 2019 23:36:23 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7E543270E2;
+        by mail.kernel.org (Postfix) with ESMTPSA id B6C0F270D6;
         Sat,  1 Jun 2019 03:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1559360182;
-        bh=7C08nLAnUxphEvbQe9pjioFxgmUGLQafOQ5X2+jGbgY=;
+        bh=xWOGumuJjJSpaV+AmnJQsbSpoLy1BWToXImYRGFNRBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zalrSZSvBW+PzuxncU46ILJKNfQj4qeEIfGAQJ2+83t0oo9BITQg+YvC/N6yq2TSV
-         eg9q/PiTVRssZrNHSlqS+UWaeu+RaDoxqfTGXZdx4K1uOUptqbBNfC1I5NA/SVq7FG
-         1JqDegcghGZamMV27jc/E+fY9iO2+nydhQPD6HFg=
+        b=cG5g83gyiKDJJWyQ4WYV7LDdp7lc4bQn+kyRcD2J23bkNpl5I7fAUNeyrWEE7v6VF
+         OYP2/7lHnfNFs6EPbioDEJGHWpi7JNTmrPZglxmjAHPzPgISMY6E7HLeMfZFB06s2J
+         q0t2C4mULgTpsWypVr7QLX/i8EzKidtIXvjb0DX4=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     alexei.starovoitov@gmail.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH RFC net-next 13/27] ipv6: Handle all fib6_nh in a nexthop in fib6_info_uses_dev
-Date:   Fri, 31 May 2019 20:36:04 -0700
-Message-Id: <20190601033618.27702-14-dsahern@kernel.org>
+Subject: [PATCH RFC net-next 14/27] ipv6: Handle all fib6_nh in a nexthop in exception handling
+Date:   Fri, 31 May 2019 20:36:05 -0700
+Message-Id: <20190601033618.27702-15-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190601033618.27702-1-dsahern@kernel.org>
 References: <20190601033618.27702-1-dsahern@kernel.org>
@@ -39,45 +39,179 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add a hook in fib6_info_uses_dev to handle nexthop struct in a fib6_info.
+Add a hook in rt6_flush_exceptions, rt6_remove_exception_rt,
+rt6_update_exception_stamp_rt, and rt6_age_exceptions to handle
+nexthop struct in a fib6_info.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- net/ipv6/route.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ net/ipv6/route.c | 109 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 106 insertions(+), 3 deletions(-)
 
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 0c9ba144b8d0..680d61b65647 100644
+index 680d61b65647..49d58ad9f76e 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -5202,9 +5202,27 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 	return -EMSGSIZE;
+@@ -1747,9 +1747,22 @@ static void fib6_nh_flush_exceptions(struct fib6_nh *nh, struct fib6_info *from)
+ 	spin_unlock_bh(&rt6_exception_lock);
  }
  
-+static int fib6_info_nh_uses_dev(struct fib6_nh *nh, void *arg)
++static int rt6_nh_flush_exceptions(struct fib6_nh *nh, void *arg)
 +{
-+	const struct net_device *dev = arg;
++	struct fib6_info *f6i = arg;
 +
-+	if (nh->fib_nh_dev == dev)
-+		return 1;
++	fib6_nh_flush_exceptions(nh, f6i);
 +
 +	return 0;
 +}
 +
- static bool fib6_info_uses_dev(const struct fib6_info *f6i,
- 			       const struct net_device *dev)
+ void rt6_flush_exceptions(struct fib6_info *f6i)
  {
-+	if (f6i->nh) {
-+		struct net_device *_dev = (struct net_device *)dev;
+-	fib6_nh_flush_exceptions(f6i->fib6_nh, f6i);
++	if (f6i->nh)
++		nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_flush_exceptions,
++					 f6i);
++	else
++		fib6_nh_flush_exceptions(f6i->fib6_nh, f6i);
+ }
+ 
+ /* Find cached rt in the hash table inside passed in rt
+@@ -1836,6 +1849,24 @@ static int fib6_nh_remove_exception(const struct fib6_nh *nh, int plen,
+ 	return err;
+ }
+ 
++struct fib6_nh_excptn_arg {
++	struct rt6_info	*rt;
++	int		plen;
++	bool		found;
++};
 +
-+		return !!nexthop_for_each_fib6_nh(f6i->nh,
-+						  fib6_info_nh_uses_dev,
-+						  _dev);
++static int rt6_nh_remove_exception_rt(struct fib6_nh *nh, void *_arg)
++{
++	struct fib6_nh_excptn_arg *arg = _arg;
++	int err;
++
++	err = fib6_nh_remove_exception(nh, arg->plen, arg->rt);
++	if (err == 0)
++		arg->found = true;
++
++	return 0;
++}
++
+ static int rt6_remove_exception_rt(struct rt6_info *rt)
+ {
+ 	struct fib6_info *from;
+@@ -1844,6 +1875,17 @@ static int rt6_remove_exception_rt(struct rt6_info *rt)
+ 	if (!from || !(rt->rt6i_flags & RTF_CACHE))
+ 		return -EINVAL;
+ 
++	if (from->nh) {
++		struct fib6_nh_excptn_arg arg = {
++			.rt = rt,
++			.plen = from->fib6_src.plen
++		};
++
++		nexthop_for_each_fib6_nh(from->nh, rt6_nh_remove_exception_rt,
++					 &arg);
++		return arg.found ? 0 : -ENOENT;
 +	}
 +
- 	if (f6i->fib6_nh->fib_nh_dev == dev)
- 		return true;
+ 	return fib6_nh_remove_exception(from->fib6_nh,
+ 					from->fib6_src.plen, rt);
+ }
+@@ -1874,9 +1916,33 @@ static void fib6_nh_update_exception(const struct fib6_nh *nh, int plen,
+ 		rt6_ex->stamp = jiffies;
+ }
  
++struct fib6_nh_match_arg {
++	const struct net_device *dev;
++	const struct in6_addr	*gw;
++	struct fib6_nh		*match;
++};
++
++/* determine if fib6_nh has given device and gateway */
++static int fib6_nh_find_match(struct fib6_nh *nh, void *_arg)
++{
++	struct fib6_nh_match_arg *arg = _arg;
++
++	if (arg->dev != nh->fib_nh_dev ||
++	    (arg->gw && !nh->fib_nh_gw_family) ||
++	    (!arg->gw && nh->fib_nh_gw_family) ||
++	    (arg->gw && !ipv6_addr_equal(arg->gw, &nh->fib_nh_gw6)))
++		return 0;
++
++	arg->match = nh;
++
++	/* found a match, break the loop */
++	return 1;
++}
++
+ static void rt6_update_exception_stamp_rt(struct rt6_info *rt)
+ {
+ 	struct fib6_info *from;
++	struct fib6_nh *fib6_nh;
+ 
+ 	rcu_read_lock();
+ 
+@@ -1884,7 +1950,21 @@ static void rt6_update_exception_stamp_rt(struct rt6_info *rt)
+ 	if (!from || !(rt->rt6i_flags & RTF_CACHE))
+ 		goto unlock;
+ 
+-	fib6_nh_update_exception(from->fib6_nh, from->fib6_src.plen, rt);
++	if (from->nh) {
++		struct fib6_nh_match_arg arg = {
++			.dev = rt->dst.dev,
++			.gw = &rt->rt6i_gateway,
++		};
++
++		nexthop_for_each_fib6_nh(from->nh, fib6_nh_find_match, &arg);
++
++		if (!arg.match)
++			return;
++		fib6_nh = arg.match;
++	} else {
++		fib6_nh = from->fib6_nh;
++	}
++	fib6_nh_update_exception(fib6_nh, from->fib6_src.plen, rt);
+ unlock:
+ 	rcu_read_unlock();
+ }
+@@ -2046,11 +2126,34 @@ static void fib6_nh_age_exceptions(const struct fib6_nh *nh,
+ 	rcu_read_unlock_bh();
+ }
+ 
++struct fib6_nh_age_excptn_arg {
++	struct fib6_gc_args	*gc_args;
++	unsigned long		now;
++};
++
++static int rt6_nh_age_exceptions(struct fib6_nh *nh, void *_arg)
++{
++	struct fib6_nh_age_excptn_arg *arg = _arg;
++
++	fib6_nh_age_exceptions(nh, arg->gc_args, arg->now);
++	return 0;
++}
++
+ void rt6_age_exceptions(struct fib6_info *f6i,
+ 			struct fib6_gc_args *gc_args,
+ 			unsigned long now)
+ {
+-	fib6_nh_age_exceptions(f6i->fib6_nh, gc_args, now);
++	if (f6i->nh) {
++		struct fib6_nh_age_excptn_arg arg = {
++			.gc_args = gc_args,
++			.now = now
++		};
++
++		nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_age_exceptions,
++					 &arg);
++	} else {
++		fib6_nh_age_exceptions(f6i->fib6_nh, gc_args, now);
++	}
+ }
+ 
+ /* must be called with rcu lock held */
 -- 
 2.11.0
 
