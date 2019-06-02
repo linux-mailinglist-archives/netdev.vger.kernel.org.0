@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB596324E6
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 992EF324E7
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbfFBVMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 17:12:42 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37567 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726799AbfFBVMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:12:41 -0400
-Received: by mail-wr1-f66.google.com with SMTP id h1so9976657wro.4
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:12:40 -0700 (PDT)
+        id S1726976AbfFBVMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 17:12:50 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41287 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726879AbfFBVMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:12:50 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c2so9971691wrm.8
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:12:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/7idbJYbPkvOwXVW3F5WgG4aMeUuxl7rBeCsGS57eDU=;
-        b=e6Ayehf8/PKp4dyuHktqCbzZW3gPe6RQt+4KlwS7CR8QOOn/uLIiIPBmJc2Ipcovcm
-         MA5xAyO8TRcIHvgso7XN0I8rMbMJrjAyO15x3PHIKGafaYD2nc5C8fUDyOOBZ6so5l+s
-         mQg1sFvgtE6/I3/UBKI1hlu7aC4TVVroTYa5V18CVPkPuyya45Du3+mbH1214ocn5TDL
-         BAxri6hByLAIpwH98Fx47imd6/luz6+PLSHCCQW4VTN36gcksTLxkFAVNYVjNqM/KW6S
-         yZdawHgyel9YG0uQDh7iQR+w4VUZ1YOe1pwq9oUFvx80O3B71PqyAjmsi7dg4Y+VRDjL
-         lSvA==
+        bh=X7Isc7dkSAG4gSYUlK60oTHltsGixfWJEjAtfvpYsUM=;
+        b=uVb13Syg+Dt3mG4w8+W4CoRY9/4GeGGPbigRzsXkSBq7DF262fY/cY/qOPyC7rKsdq
+         ZI2auQnMqXPDEDdxWm59D9o6i83s9/sfHWl0iXYr+CzFhWaAPZkDyVzmUOld4/l5lYSc
+         SbtObgAf8eeQq2Qreb+mn8bVDLVu2XWq6IKCjYwRZSTqF4wd9G2ud4XDbuWv5L707JhL
+         aaWUehk8c7HZyYfblC1eZqUGUYIf6s4ujhYtynuRIq1JBYd/ZFMCGeF4x56Wbt6bp5wl
+         XxCcMb+7pUcFKIs8rDSVGHQaVbe13YjrjuikL8bkiWczwryo2meVk95W6tdodeMUIZAH
+         DOgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/7idbJYbPkvOwXVW3F5WgG4aMeUuxl7rBeCsGS57eDU=;
-        b=cKcPhAWQ2b7oT8HHZ7HvcPqJDoEbbRZmGGiA+2LEavf8C4MazqfwJBepPpblaOUohr
-         70t3k6rmbTisYpA7h895ceJ3IeEL5UfnaszpqsLgs+2rXwOc51fxcHPIXzDmvCEvMsyb
-         c8aOhm8Qt2wJBbIOlyh13UYcXJEWMyqhdtco16+iPNFZtwhZnpH6nyBENeLa5aUdrQyK
-         lpoyLld+O9fLaoP7DY8LdmBjUsnjF0Q7ZiS4sfCar+AZ7BvJxjLgylan/+/u+/HxDhaP
-         88xC359pJxJFIJHTPjSp/oJrnBODcHvFhZvZBcdpkWxrpX4DVAHs4gRV8hNpTNKVfLXE
-         GCvQ==
-X-Gm-Message-State: APjAAAWIW0j0jwmYlBpUazzqI7CQH+vILfEY7I0/6hS0qfp0zQrtW7i5
-        MoAHdhsaGU43In8zk9dx2eVC4Ule
-X-Google-Smtp-Source: APXvYqw2cLTIMKRA82vFlUkKm59+/5K3SGJnWX7A8MvdxyOTlPiEumPX7QMp/Q6W7HsrUTXC87LBfA==
-X-Received: by 2002:adf:e34e:: with SMTP id n14mr9014274wrj.169.1559509960242;
-        Sun, 02 Jun 2019 14:12:40 -0700 (PDT)
+        bh=X7Isc7dkSAG4gSYUlK60oTHltsGixfWJEjAtfvpYsUM=;
+        b=r7HsWLK2WkuA8pOAJ2whPq5koFQcSDMELhoHfE4EWatShE7NNhxoqqJTSEBfrPK/zz
+         MGQ1h9d76M7eaYvFA0FKw/NRIRIHso8fST54iTEazg9419sLtGfAgYCI4wJiTS0vQHb4
+         J10qdd9wBb6PxYigOoYrh6+E+D8lcAZxydDl3DqOBCCe3R2WQZl6U+OSagjpK3j1uMHl
+         JhWILm+hZT2TiNSmWPcPzSxysI1p3lQ6iLFvm4jEuB9mEkjJHtl+xzwWPICJ+W7eMRAE
+         HiKiJz+Foxr8KHIzQK7xsLHrRwzIemfDZFDmP3wum6YO16uG61gc7p5AuwELbaReM6H/
+         Uodg==
+X-Gm-Message-State: APjAAAUoCbVOuGE+BMqgmnOGQF+JOjNVwo+IdDVam8w08Fg7fI9dyBtk
+        QhSxktTO5c+TCDtrfEHh5FW6UA0m
+X-Google-Smtp-Source: APXvYqy5Ah+QqY5rf7N00T62yC7hlJIGYIKjUOxL5V8sW9S0JH/pis6v2Jw2wODdgkYManhVpa/73Q==
+X-Received: by 2002:adf:e9c4:: with SMTP id l4mr101628wrn.142.1559509967634;
+        Sun, 02 Jun 2019 14:12:47 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id q11sm9548193wmc.15.2019.06.02.14.12.35
+        by smtp.gmail.com with ESMTPSA id q11sm9548193wmc.15.2019.06.02.14.12.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 14:12:37 -0700 (PDT)
+        Sun, 02 Jun 2019 14:12:42 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 03/11] net: dsa: sja1105: Add missing L2 Forwarding Table definitions for P/Q/R/S
-Date:   Mon,  3 Jun 2019 00:11:55 +0300
-Message-Id: <20190602211203.17773-4-olteanv@gmail.com>
+Subject: [PATCH net-next 04/11] net: dsa: sja1105: Plug in support for TCAM searches via the dynamic interface
+Date:   Mon,  3 Jun 2019 00:11:56 +0300
+Message-Id: <20190602211203.17773-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190602211203.17773-1-olteanv@gmail.com>
 References: <20190602211203.17773-1-olteanv@gmail.com>
@@ -58,85 +58,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This appends to the L2 Forwarding and L2 Forwarding Parameters tables
-(originally added for first-generation switches) the bits that are new
-in the second generation.
+Only a single dynamic configuration table of the SJA1105 P/Q/R/S
+supports this operation: the FDB.
+
+To keep the existing structure in place (sja1105_dynamic_config_read and
+sja1105_dynamic_config_write) and not introduce any new function, a
+convention is made for sja1105_dynamic_config_read that a negative index
+argument denotes a search for the entry provided as argument.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- .../net/dsa/sja1105/sja1105_static_config.c   | 18 ++++++++++---
- .../net/dsa/sja1105/sja1105_static_config.h   | 26 +++++++++++++++++++
- 2 files changed, 40 insertions(+), 4 deletions(-)
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 36 ++++++++++++++++++-
+ .../net/dsa/sja1105/sja1105_dynamic_config.h  |  3 ++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
-index 7e90e62da389..6d65a7b09395 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
-@@ -236,10 +236,20 @@ size_t sja1105pqrs_l2_lookup_entry_packing(void *buf, void *entry_ptr,
- 	const size_t size = SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
- 	struct sja1105_l2_lookup_entry *entry = entry_ptr;
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index 0023b03a010d..7e7efc2e8ee4 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -36,6 +36,7 @@
+ 	SJA1105PQRS_SIZE_MAC_CONFIG_DYN_CMD
  
--	/* These are static L2 lookup entries, so the structure
--	 * should match UM11040 Table 16/17 definitions when
--	 * LOCKEDS is 1.
--	 */
-+	if (entry->lockeds) {
-+		sja1105_packing(buf, &entry->tsreg,    159, 159, size, op);
-+		sja1105_packing(buf, &entry->mirrvlan, 158, 147, size, op);
-+		sja1105_packing(buf, &entry->takets,   146, 146, size, op);
-+		sja1105_packing(buf, &entry->mirr,     145, 145, size, op);
-+		sja1105_packing(buf, &entry->retag,    144, 144, size, op);
-+	} else {
-+		sja1105_packing(buf, &entry->touched,  159, 159, size, op);
-+		sja1105_packing(buf, &entry->age,      158, 144, size, op);
-+	}
-+	sja1105_packing(buf, &entry->mask_iotag,   143, 143, size, op);
-+	sja1105_packing(buf, &entry->mask_vlanid,  142, 131, size, op);
-+	sja1105_packing(buf, &entry->mask_macaddr, 130,  83, size, op);
-+	sja1105_packing(buf, &entry->iotag,         82,  82, size, op);
- 	sja1105_packing(buf, &entry->vlanid,        81,  70, size, op);
- 	sja1105_packing(buf, &entry->macaddr,       69,  22, size, op);
- 	sja1105_packing(buf, &entry->destports,     21,  17, size, op);
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.h b/drivers/net/dsa/sja1105/sja1105_static_config.h
-index 069ca8fd059c..d513b1c91b98 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.h
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.h
-@@ -122,9 +122,35 @@ struct sja1105_l2_lookup_entry {
- 	u64 destports;
- 	u64 enfport;
- 	u64 index;
-+	/* P/Q/R/S only */
-+	u64 mask_iotag;
-+	u64 mask_vlanid;
-+	u64 mask_macaddr;
-+	u64 iotag;
-+	bool lockeds;
-+	union {
-+		/* LOCKEDS=1: Static FDB entries */
-+		struct {
-+			u64 tsreg;
-+			u64 mirrvlan;
-+			u64 takets;
-+			u64 mirr;
-+			u64 retag;
-+		};
-+		/* LOCKEDS=0: Dynamically learned FDB entries */
-+		struct {
-+			u64 touched;
-+			u64 age;
-+		};
-+	};
+ struct sja1105_dyn_cmd {
++	bool search;
+ 	u64 valid;
+ 	u64 rdwrset;
+ 	u64 errors;
+@@ -248,6 +249,7 @@ sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
+ #define OP_READ		BIT(0)
+ #define OP_WRITE	BIT(1)
+ #define OP_DEL		BIT(2)
++#define OP_SEARCH	BIT(3)
+ 
+ /* SJA1105E/T: First generation */
+ struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
+@@ -367,6 +369,24 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 	[BLK_IDX_XMII_PARAMS] = {0},
  };
  
- struct sja1105_l2_lookup_params_entry {
-+	u64 start_dynspc;    /* P/Q/R/S only */
-+	u64 drpnolearn;      /* P/Q/R/S only */
-+	u64 use_static;      /* P/Q/R/S only */
-+	u64 owr_dyn;         /* P/Q/R/S only */
-+	u64 learn_once;      /* P/Q/R/S only */
- 	u64 maxage;          /* Shared */
- 	u64 dyn_tbsz;        /* E/T only */
- 	u64 poly;            /* E/T only */
++/* Provides read access to the settings through the dynamic interface
++ * of the switch.
++ * @blk_idx	is used as key to select from the sja1105_dynamic_table_ops.
++ *		The selection is limited by the hardware in respect to which
++ *		configuration blocks can be read through the dynamic interface.
++ * @index	is used to retrieve a particular table entry. If negative,
++ *		(and if the @blk_idx supports the searching operation) a search
++ *		is performed by the @entry parameter.
++ * @entry	Type-casted to an unpacked structure that holds a table entry
++ *		of the type specified in @blk_idx.
++ *		Usually an output argument. If @index is negative, then this
++ *		argument is used as input/output: it should be pre-populated
++ *		with the element to search for. Entries which support the
++ *		search operation will have an "index" field (not the @index
++ *		argument to this function) and that is where the found index
++ *		will be returned (or left unmodified - thus negative - if not
++ *		found).
++ */
+ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 				enum sja1105_blk_idx blk_idx,
+ 				int index, void *entry)
+@@ -385,6 +405,8 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 
+ 	if (index >= ops->max_entry_count)
+ 		return -ERANGE;
++	if (index < 0 && !(ops->access & OP_SEARCH))
++		return -EOPNOTSUPP;
+ 	if (!(ops->access & OP_READ))
+ 		return -EOPNOTSUPP;
+ 	if (ops->packed_size > SJA1105_MAX_DYN_CMD_SIZE)
+@@ -396,9 +418,19 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 
+ 	cmd.valid = true; /* Trigger action on table entry */
+ 	cmd.rdwrset = SPI_READ; /* Action is read */
+-	cmd.index = index;
++	if (index < 0) {
++		/* Avoid copying a signed negative number to an u64 */
++		cmd.index = 0;
++		cmd.search = true;
++	} else {
++		cmd.index = index;
++		cmd.search = false;
++	}
+ 	ops->cmd_packing(packed_buf, &cmd, PACK);
+ 
++	if (cmd.search)
++		ops->entry_packing(packed_buf, entry, PACK);
++
+ 	/* Send SPI write operation: read config table entry */
+ 	rc = sja1105_spi_send_packed_buf(priv, SPI_WRITE, ops->addr,
+ 					 packed_buf, ops->packed_size);
+@@ -456,6 +488,8 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
+ 
+ 	if (index >= ops->max_entry_count)
+ 		return -ERANGE;
++	if (index < 0)
++		return -ERANGE;
+ 	if (!(ops->access & OP_WRITE))
+ 		return -EOPNOTSUPP;
+ 	if (!keep && !(ops->access & OP_DEL))
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.h b/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
+index 49c611eb02cb..740dadf43f01 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
+@@ -7,6 +7,9 @@
+ #include "sja1105.h"
+ #include <linux/packing.h>
+ 
++/* Special index that can be used for sja1105_dynamic_config_read */
++#define SJA1105_SEARCH		-1
++
+ struct sja1105_dyn_cmd;
+ 
+ struct sja1105_dynamic_table_ops {
 -- 
 2.17.1
 
