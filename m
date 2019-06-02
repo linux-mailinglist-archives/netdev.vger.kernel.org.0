@@ -2,150 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95D79324EB
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AADDB324EC
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726818AbfFBVPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 17:15:42 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36221 "EHLO
+        id S1726858AbfFBVPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 17:15:50 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36225 "EHLO
         mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726693AbfFBVPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:15:41 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n4so6926550wrs.3
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:15:40 -0700 (PDT)
+        with ESMTP id S1726663AbfFBVPu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:15:50 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n4so6926680wrs.3
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:15:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=kENYGijRJXdKjo4gcTmbCUDdyWtUcvt1iTG4bwFTD00=;
-        b=BRDvxO0Nylj7VvHAljGpSDYGrD8+9Tw6aqpMiH98t3Cze3t45/SwcA165jdTVoKH2S
-         Q1QuDHdp4LTEUGpH+TVXiDDFFTLdT7rpLpmeU5UEDOf3YPHzBMOvzhFkhpiZw1fH7hSV
-         Vw+wWN8gHMnYE38EcJn0vD8kNP7R8WlUnlalEjWjkvveByXSA0CbbfuGrzaAu91eIEqO
-         7sFybMDUiNDKHLDUPfUZHDgZWKWgpFzMZ3/U/F0ZC/KnwqZPlilQ5wIDxKH2rvXrgD3k
-         eGw9wIKvlqFWV9Ae6LaJIPXYSb87E5LG0Kbm8EZyNY/WGLRHFayoeLocOP4CN6PcsJVH
-         mdiQ==
+        bh=E74MMGf2KBXbo4P0ocVGsRMk5ZgBipC1AALJcdJysiQ=;
+        b=WLNdAuva3yg5aOZaxQpW3f0c4XszUtlO66QeI9NLmj7/1LOm5/oGJQXjhwMxoyRAtC
+         G7jKr58bnZRvC6cuZhintpIcffo+dxFiCYgTQp4006mwAkK3kWrjXk/rSWLxuYmXRO74
+         b9PlryYWZ8rzJXuuH3QH+ix9PZnrMSMxqg+PBz/zxuvKFGNsbrqpuSuwiL6oAboyPhSo
+         2RKOy6e0kOyv6Smm27m6gs022kdD1vVDfmMR7ZHzw9ShNe8TIglF/cP69XRokV4aSsOl
+         ZwXEr7yn0PtVzXZaSu7jsuqMGR60e9AqFC+8KYIr4RyfIWIGCzyGcIX7RDV6h0YGVEBl
+         MzvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kENYGijRJXdKjo4gcTmbCUDdyWtUcvt1iTG4bwFTD00=;
-        b=CczsLn9GkECo2yX9oOqJ5q9euzVBfi8kXEINOJOdpIPM1kr4+NJUNxkimdgGV5S/1t
-         VfbvkPQjuUd9IMkE+v8qbvnO2LGLv68HWe0AwWEuqXQo2Iy9ybcaboKkI4Uju5zj4xK3
-         joAUT6Y7OMFRjj+AbKuhw3qDaKbu/aL8VQGay1OnjxgN6trd9GVUh362T7Whhbk/Bcza
-         yxkimeZ3GX1SqzK83GtsRfFvbcyynahJju9wK5AiK6NxIBZteXS4CuukbqIyd1iEWBG1
-         IMy93INJgwFKB7PMUaEYcvUkWD55y6n7wkz9IQcUeDRpveOe0BScxHKAo0mvhuA0yiyt
-         ffAw==
-X-Gm-Message-State: APjAAAWMLV9E5hBPdweVxHTpU11sd3iPLOFhNokUp85bvwyCzGl4AOjl
-        yuZfcBDdFF0U6sOzC7a8m8zo7HOB
-X-Google-Smtp-Source: APXvYqwA8gKPRmkPZPKBeDPFSon/SuOvxUpNbbWKPbgiqxAeSLCRsVw8dAr6ch54VsFFHLT8BSqH6Q==
-X-Received: by 2002:a5d:4004:: with SMTP id n4mr14305901wrp.240.1559510139794;
-        Sun, 02 Jun 2019 14:15:39 -0700 (PDT)
+        bh=E74MMGf2KBXbo4P0ocVGsRMk5ZgBipC1AALJcdJysiQ=;
+        b=LpxXh6XeQQvo+xJ8BmqhPkPeEI/VoCKQ81zunQmFbFAZGa9QnEN656pnJy/8cc/caH
+         ypbFyg4BJAh9P+DGKKtZll7cXSGi6fO3C6GHOePwz2LD7/bwkAdhHKOBJibMKCwL7/u+
+         0ozL7izVNUCZtCvcf3BHk2sYH9dd0rmIBJRr2OhDwQPEcf/rAK/47yX8ZShFYBic6unX
+         zGbQhRkVxHEyxTYYx5sac7SzTYwbuTrCk4ixQgtiXV/grBh4LNlc7qzMx/Jze5sfVfPb
+         lMNl6/PbcZNGJdkFNfT0mTNi22HGK2qwNXLIgeueH6iewOj2LUODCT3liQ2nq1Qh69YO
+         ApVg==
+X-Gm-Message-State: APjAAAVIvpb3Jptb7Ah9wpyeRNURsGfJMozzi0/7LGi9jweVig9SDWsO
+        RTQE8a7Ux4GqAhip8QVKVFQ=
+X-Google-Smtp-Source: APXvYqwRf05/zg9PiZ0PXUprLA5TgEdh3HGC83xC/BWcFhpLyAHXkKgiaAYJhmif8slhmCCBfLFy6w==
+X-Received: by 2002:a5d:4089:: with SMTP id o9mr8277896wrp.6.1559510148034;
+        Sun, 02 Jun 2019 14:15:48 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id p11sm8858589wrs.5.2019.06.02.14.15.39
+        by smtp.gmail.com with ESMTPSA id s11sm9520534wro.17.2019.06.02.14.15.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 14:15:39 -0700 (PDT)
+        Sun, 02 Jun 2019 14:15:47 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 08/11] net: dsa: sja1105: Add P/Q/R/S management route support via dynamic interface
-Date:   Mon,  3 Jun 2019 00:15:33 +0300
-Message-Id: <20190602211533.18855-1-olteanv@gmail.com>
+Subject: [PATCH net-next 09/11] net: dsa: sja1105: Add FDB operations for P/Q/R/S series
+Date:   Mon,  3 Jun 2019 00:15:45 +0300
+Message-Id: <20190602211545.18967-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Management routes are one-shot FDB rules installed on the CPU port for
-sending link-local traffic.  They are a prerequisite for STP, PTP etc to
-work.
+This adds support for manipulating the L2 forwarding database (dump,
+add, delete) for the second generation of NXP SJA1105 switches.
 
-Also make a note that removing a management route was not supported on
-the previous generation of switches.
+At the moment only FDB entries installed statically through 'bridge fdb'
+are visible in the dump callback - the dynamically learned ones are
+still under investigation.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 40 ++++++++++++++++++-
- drivers/net/dsa/sja1105/sja1105_main.c        |  2 +
- 2 files changed, 41 insertions(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105.h      |  5 ++
+ drivers/net/dsa/sja1105/sja1105_main.c | 89 +++++++++++++++++++++++++-
+ 2 files changed, 92 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 02a67df4437e..352bb6e89297 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -161,6 +161,36 @@ static size_t sja1105et_mgmt_route_entry_packing(void *buf, void *entry_ptr,
- 	return size;
- }
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index f55e95d1b731..61d00682de60 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -147,6 +147,11 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
+ 				 enum sja1105_blk_idx blk_idx,
+ 				 int index, void *entry, bool keep);
  
-+static void
-+sja1105pqrs_mgmt_route_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+				   enum packing_op op)
-+{
-+	u8 *p = buf + SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
-+	u64 mgmtroute = 1;
++enum sja1105_iotag {
++	SJA1105_C_TAG = 0, /* Inner VLAN header */
++	SJA1105_S_TAG = 1, /* Outer VLAN header */
++};
 +
-+	sja1105pqrs_l2_lookup_cmd_packing(buf, cmd, op);
-+	if (op == PACK)
-+		sja1105_pack(p, &mgmtroute, 26, 26, SJA1105_SIZE_DYN_CMD);
-+}
-+
-+static size_t sja1105pqrs_mgmt_route_entry_packing(void *buf, void *entry_ptr,
-+						   enum packing_op op)
-+{
-+	const size_t size = SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
-+	struct sja1105_mgmt_entry *entry = entry_ptr;
-+
-+	/* In P/Q/R/S, enfport got renamed to mgmtvalid, but its purpose
-+	 * is the same (driver uses it to confirm that frame was sent).
-+	 * So just keep the name from E/T.
-+	 */
-+	sja1105_packing(buf, &entry->tsreg,     71, 71, size, op);
-+	sja1105_packing(buf, &entry->takets,    70, 70, size, op);
-+	sja1105_packing(buf, &entry->macaddr,   69, 22, size, op);
-+	sja1105_packing(buf, &entry->destports, 21, 17, size, op);
-+	sja1105_packing(buf, &entry->enfport,   16, 16, size, op);
-+	return size;
-+}
-+
- /* In E/T, entry is at addresses 0x27-0x28. There is a 4 byte gap at 0x29,
-  * and command is at 0x2a. Similarly in P/Q/R/S there is a 1 register gap
-  * between entry (0x2d, 0x2e) and command (0x30).
-@@ -359,7 +389,7 @@ struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_XMII_PARAMS] = {0},
- };
- 
--/* SJA1105P/Q/R/S: Second generation: TODO */
-+/* SJA1105P/Q/R/S: Second generation */
- struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.entry_packing = sja1105pqrs_l2_lookup_entry_packing,
-@@ -369,6 +399,14 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.packed_size = SJA1105PQRS_SIZE_L2_LOOKUP_DYN_CMD,
- 		.addr = 0x24,
- 	},
-+	[BLK_IDX_MGMT_ROUTE] = {
-+		.entry_packing = sja1105pqrs_mgmt_route_entry_packing,
-+		.cmd_packing = sja1105pqrs_mgmt_route_cmd_packing,
-+		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH),
-+		.max_entry_count = SJA1105_NUM_PORTS,
-+		.packed_size = SJA1105PQRS_SIZE_L2_LOOKUP_DYN_CMD,
-+		.addr = 0x24,
-+	},
- 	[BLK_IDX_L2_POLICING] = {0},
- 	[BLK_IDX_VLAN_LOOKUP] = {
- 		.entry_packing = sja1105_vlan_lookup_entry_packing,
+ u8 sja1105et_fdb_hash(struct sja1105_private *priv, const u8 *addr, u16 vid);
+ int sja1105et_fdb_add(struct dsa_switch *ds, int port,
+ 		      const unsigned char *addr, u16 vid);
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index dc9803efdbbd..f9bbc780f835 100644
+index f9bbc780f835..46e2cc7b9ddc 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1475,6 +1475,8 @@ static int sja1105_mgmt_xmit(struct dsa_switch *ds, int port, int slot,
- 	if (!timeout) {
- 		/* Clean up the management route so that a follow-up
- 		 * frame may not match on it by mistake.
-+		 * This is only hardware supported on P/Q/R/S - on E/T it is
-+		 * a no-op and we are silently discarding the -EOPNOTSUPP.
+@@ -210,6 +210,8 @@ static int sja1105_init_l2_lookup_params(struct sja1105_private *priv)
+ 		.maxage = SJA1105_AGEING_TIME_MS(300000),
+ 		/* All entries within a FDB bin are available for learning */
+ 		.dyn_tbsz = SJA1105ET_FDB_BIN_SIZE,
++		/* And the P/Q/R/S equivalent setting: */
++		.start_dynspc = 0,
+ 		/* 2^8 + 2^5 + 2^3 + 2^2 + 2^1 + 1 in Koopman notation */
+ 		.poly = 0x97,
+ 		/* This selects between Independent VLAN Learning (IVL) and
+@@ -225,6 +227,13 @@ static int sja1105_init_l2_lookup_params(struct sja1105_private *priv)
+ 		 * Maybe correlate with no_linklocal_learn from bridge driver?
  		 */
- 		sja1105_dynamic_config_write(priv, BLK_IDX_MGMT_ROUTE,
- 					     slot, &mgmt_route, false);
+ 		.no_mgmt_learn = true,
++		/* P/Q/R/S only */
++		.use_static = true,
++		/* Dynamically learned FDB entries can overwrite other (older)
++		 * dynamic FDB entries
++		 */
++		.owr_dyn = true,
++		.drpnolearn = true,
+ 	};
+ 
+ 	table = &priv->static_config.tables[BLK_IDX_L2_LOOKUP_PARAMS];
+@@ -908,13 +917,89 @@ int sja1105et_fdb_del(struct dsa_switch *ds, int port,
+ int sja1105pqrs_fdb_add(struct dsa_switch *ds, int port,
+ 			const unsigned char *addr, u16 vid)
+ {
+-	return -EOPNOTSUPP;
++	struct sja1105_l2_lookup_entry l2_lookup = {0};
++	struct sja1105_private *priv = ds->priv;
++	int rc, i;
++
++	/* Search for an existing entry in the FDB table */
++	l2_lookup.macaddr = ether_addr_to_u64(addr);
++	l2_lookup.vlanid = vid;
++	l2_lookup.iotag = SJA1105_S_TAG;
++	l2_lookup.mask_macaddr = GENMASK_ULL(ETH_ALEN * 8 - 1, 0);
++	l2_lookup.mask_vlanid = VLAN_VID_MASK;
++	l2_lookup.mask_iotag = BIT(0);
++	l2_lookup.destports = BIT(port);
++
++	rc = sja1105_dynamic_config_read(priv, BLK_IDX_L2_LOOKUP,
++					 SJA1105_SEARCH, &l2_lookup);
++	if (rc == 0) {
++		/* Found and this port is already in the entry's
++		 * port mask => job done
++		 */
++		if (l2_lookup.destports & BIT(port))
++			return 0;
++		/* l2_lookup.index is populated by the switch in case it
++		 * found something.
++		 */
++		l2_lookup.destports |= BIT(port);
++		goto skip_finding_an_index;
++	}
++
++	/* Not found, so try to find an unused spot in the FDB.
++	 * This is slightly inefficient because the strategy is knock-knock at
++	 * every possible position from 0 to 1023.
++	 */
++	for (i = 0; i < SJA1105_MAX_L2_LOOKUP_COUNT; i++) {
++		rc = sja1105_dynamic_config_read(priv, BLK_IDX_L2_LOOKUP,
++						 i, NULL);
++		if (rc < 0)
++			break;
++	}
++	if (i == SJA1105_MAX_L2_LOOKUP_COUNT) {
++		dev_err(ds->dev, "FDB is full, cannot add entry.\n");
++		return -EINVAL;
++	}
++	l2_lookup.index = i;
++
++skip_finding_an_index:
++	return sja1105_dynamic_config_write(priv, BLK_IDX_L2_LOOKUP,
++					    l2_lookup.index, &l2_lookup,
++					    true);
+ }
+ 
+ int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
+ 			const unsigned char *addr, u16 vid)
+ {
+-	return -EOPNOTSUPP;
++	struct sja1105_l2_lookup_entry l2_lookup = {0};
++	struct sja1105_private *priv = ds->priv;
++	bool keep;
++	int rc;
++
++	l2_lookup.macaddr = ether_addr_to_u64(addr);
++	l2_lookup.vlanid = vid;
++	l2_lookup.iotag = SJA1105_S_TAG;
++	l2_lookup.mask_macaddr = GENMASK_ULL(ETH_ALEN * 8 - 1, 0);
++	l2_lookup.mask_vlanid = VLAN_VID_MASK;
++	l2_lookup.mask_iotag = BIT(0);
++	l2_lookup.destports = BIT(port);
++
++	rc = sja1105_dynamic_config_read(priv, BLK_IDX_L2_LOOKUP,
++					 SJA1105_SEARCH, &l2_lookup);
++	if (rc < 0)
++		return 0;
++
++	l2_lookup.destports &= ~BIT(port);
++
++	/* Decide whether we remove just this port from the FDB entry,
++	 * or if we remove it completely.
++	 */
++	if (l2_lookup.destports)
++		keep = true;
++	else
++		keep = false;
++
++	return sja1105_dynamic_config_write(priv, BLK_IDX_L2_LOOKUP,
++					    l2_lookup.index, &l2_lookup, keep);
+ }
+ 
+ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
 -- 
 2.17.1
 
