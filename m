@@ -2,137 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC3232286
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 09:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9578322C1
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 10:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726124AbfFBHuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 03:50:24 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:46676 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725875AbfFBHuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 03:50:23 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x527nnvN018126;
-        Sun, 2 Jun 2019 00:50:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=U/Y+saax1dAQ0eNAL2r41Z6lrdj5PTBHu0Vfi43qz9U=;
- b=hEdbjXxt54wN01rX+yV2MhTsZthXjXzbsSErq6QAAMb362V2GA1HbLAwLR20Wu6POJ0R
- /C6GeASQxMhRMMwRf3flSHGEEz0FwHCSjjSbjjz/Ar3szIYgTGs6iqpNByX196CPv8pd
- qQSJ7lJwsYfv7rJh1fVxh5/mB+Qs0Hhz20YN1klvb81YrxpfvwH5lfc6IRaZs+/ObuN0
- h1MAvvkQdSbLAbE+Ew3GkVMEcQMgpYDXBGU0mKLrNAS/hSH5iKM6d1kWgT9tVhANFVRP
- 1/rfltXPetwyuj4B8K9SZ5ugE9KKi+p48byEcHGJ9PZjNGnhxgHlBP+MtxOMjAir23nI TQ== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2survk2xy4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 02 Jun 2019 00:50:09 -0700
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sun, 2 Jun
- 2019 00:50:08 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.53) by
- SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Sun, 2 Jun 2019 00:50:08 -0700
+        id S1726124AbfFBIx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 04:53:56 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41265 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbfFBIx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 04:53:56 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c2so9237241wrm.8
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 01:53:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U/Y+saax1dAQ0eNAL2r41Z6lrdj5PTBHu0Vfi43qz9U=;
- b=THigIyw4VT1tHNvFwaSXHCXPE7hy7Agvs50DOA/TT/tqGj6OGt8xGIYkd5gf/3RWvuJ4csu5QaT+PkrhzSAoVCDJkOfm28NRsepqVD7YnsDBrSo9w7jr8b8V//ZvM6Veal2NuuEKPVYYiSaZz+qB2O8BK1w29zbw0U9rojG3AYQ=
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
- MN2PR18MB2589.namprd18.prod.outlook.com (20.179.82.96) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.21; Sun, 2 Jun 2019 07:50:06 +0000
-Received: from MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::9880:2b8b:52e5:b413]) by MN2PR18MB3182.namprd18.prod.outlook.com
- ([fe80::9880:2b8b:52e5:b413%3]) with mapi id 15.20.1922.025; Sun, 2 Jun 2019
- 07:50:06 +0000
-From:   Michal Kalderon <mkalderon@marvell.com>
-To:     YueHaibing <yuehaibing@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        Ariel Elior <aelior@marvell.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next] qed: Fix build error without CONFIG_DEVLINK
-Thread-Topic: [PATCH net-next] qed: Fix build error without CONFIG_DEVLINK
-Thread-Index: AQHVGFD4gMyJs5ZeR0mTxcaxDoreq6aH/tsA
-Date:   Sun, 2 Jun 2019 07:50:05 +0000
-Message-ID: <MN2PR18MB31826214544CB3DFD79A2671A11B0@MN2PR18MB3182.namprd18.prod.outlook.com>
-References: <20190601080605.13052-1-yuehaibing@huawei.com>
-In-Reply-To: <20190601080605.13052-1-yuehaibing@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [212.199.69.1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 760ca41f-ab3c-4b36-21c5-08d6e72eeda2
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2589;
-x-ms-traffictypediagnostic: MN2PR18MB2589:
-x-microsoft-antispam-prvs: <MN2PR18MB2589A52CA4CB31B6122E4308A11B0@MN2PR18MB2589.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 005671E15D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(396003)(376002)(136003)(346002)(199004)(189003)(74316002)(99286004)(6116002)(3846002)(66066001)(52536014)(446003)(11346002)(486006)(476003)(4744005)(5660300002)(6636002)(478600001)(6436002)(71200400001)(71190400001)(86362001)(66946007)(73956011)(229853002)(9686003)(76116006)(316002)(66556008)(66476007)(64756008)(66446008)(2201001)(55016002)(68736007)(8936002)(81156014)(8676002)(2501003)(81166006)(186003)(256004)(6246003)(2906002)(53936002)(4326008)(110136005)(6506007)(76176011)(7696005)(7736002)(305945005)(54906003)(25786009)(102836004)(33656002)(14454004)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2589;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: SOxPeklc8bfb9iQHlD6Ec8IX1Q6LV+TMgfagmqIaZpGfPn6ml4s088uJC/Dw4oO1JvBeee3oy3XS5jscNSYW7Qj+SE42QDuhCqGjT3zTKufsCMtrMmFNZ86L9d4Htn93X8qNB7zRWebnOhwpVWelsISjAS4XBnud8MLptgfhsI2XgW7D6sHrBoF8SkjnkrSzTuKAXrCmZeF6gRdKYEZzqiM2gleVbFQ2/EwjWH1E6SA15dQIusaEwGBmPk75TFEBifvAdYMRTK06wWn/bvVWkq9yXnWw9hiAXJRYVn7dV8nyvs/sTpxYvPPXLJNBYsH6CfHLH7gmilFmcD4eVVGRjvx3TkMIl3mWIFFocozzQ2J0zg/g0poyybglonEOqIv1Zcu0ILkOUbJRrW7sI6GJhfUUFEp0jfHMOJP4rXzO/cQ=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=646vwrdUjGPgp5Xpk69ulTEiumrAk6uCROQ1O1C4gW4=;
+        b=Tq9GKLRmjdyn5JyFjcRzqRoXK2U3rptYc9k6nLkj/VOzi/KdnXUfkpPNuSTMSCzXTP
+         1hLQrYSPsp/BLZNJsFfFm7Vq94COpT8vsjgUAldrOLIv6ie0HeYUhx2LaRZlJD382LDD
+         38Vf/12ud5ZKneWuaIpkPlFW40+j97tvmLSIqS6qXqfMVnUhp5VrxYYkkQ2TaFSwKUnn
+         Ve62XyslaHiafMJVro9uaH6dEg2ZgCiBWpQdO9Os5qkZpt4C2N7bXDvkcoK7pskww457
+         ogfuRV15b93gcTLwsGk4fN9dSZViwIC0zT9M1eyglMlx+H3L68ntekrDMMdM0zxlHgG5
+         A71w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=646vwrdUjGPgp5Xpk69ulTEiumrAk6uCROQ1O1C4gW4=;
+        b=GcZ4F4t8p9xYIn3IoAMjZP333MFGuGtmIuEk+DBV83y9BjpZ8CQlRc6qG+6W9lP1ZO
+         dfUoiSOr040gQaK+LueluH1IS5VzDzoIfeJGUGZ4z4EKXQAecwVY5rzguKB9WKF3l9sa
+         o6OIesEmMKvfHnQ+clDlo6BdFCMjSoCjNm2YmdVblbsE+bs8OEXiL7sg0R65EeA2Sb5+
+         xn8BVO3vOdWpXuq5grgM+IYB6E15/eb0dMVCIxtEa2ngXoPcOWMnL7fGL3oBztv13RVL
+         CAS3EsaMCN3zueauismlFT/5L4N+zX7zQd1a1NQcmJRS4OstuK0YJ7L0HslZr4nGH+4m
+         5Yfg==
+X-Gm-Message-State: APjAAAXrCEg3lqBSe9K0lW3Pz+h4z54z17lFLFlRKKPDXAWWMGUOpaxy
+        yjecGPg8B1aMNOFZN6Doq+RoH0Fz
+X-Google-Smtp-Source: APXvYqyXfbXqJvZQNNF1pZmpqv+9eMTGvfenLsjUGczSVHtFhUT96JqDuyYu3suRXA//TmF/64Jjrw==
+X-Received: by 2002:a5d:6745:: with SMTP id l5mr5149203wrw.160.1559465633841;
+        Sun, 02 Jun 2019 01:53:53 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:5dff:1e78:fa4c:7fa7? (p200300EA8BF3BD005DFF1E78FA4C7FA7.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:5dff:1e78:fa4c:7fa7])
+        by smtp.googlemail.com with ESMTPSA id t6sm22450220wmt.34.2019.06.02.01.53.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 02 Jun 2019 01:53:53 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: use paged versions of phylib MDIO access
+ functions
+Message-ID: <f7415a62-625d-06d8-0402-f2f8ef9764df@gmail.com>
+Date:   Sun, 2 Jun 2019 10:53:49 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 760ca41f-ab3c-4b36-21c5-08d6e72eeda2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2019 07:50:05.9761
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mkalderon@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2589
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-02_02:,,
- signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
-> On Behalf Of YueHaibing
->=20
-> Fix gcc build error while CONFIG_DEVLINK is not set
->=20
-> drivers/net/ethernet/qlogic/qed/qed_main.o: In function `qed_remove':
-> qed_main.c:(.text+0x1eb4): undefined reference to `devlink_unregister'
->=20
-> Select DEVLINK to fix this.
->=20
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 24e04879abdd ("qed: Add qed devlink parameters table")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/net/ethernet/qlogic/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/ethernet/qlogic/Kconfig
-> b/drivers/net/ethernet/qlogic/Kconfig
-> index fdbb3ce..a391cf6 100644
-> --- a/drivers/net/ethernet/qlogic/Kconfig
-> +++ b/drivers/net/ethernet/qlogic/Kconfig
-> @@ -87,6 +87,7 @@ config QED
->  	depends on PCI
->  	select ZLIB_INFLATE
->  	select CRC8
-> +	select NET_DEVLINK
->  	---help---
->  	  This enables the support for ...
->=20
-> --
-> 2.7.4
->=20
+Use paged versions of phylib MDIO access functions to simplify
+the code.
 
-Thanks,=A0
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169.c | 105 +++++++++------------------
+ 1 file changed, 33 insertions(+), 72 deletions(-)
 
-Acked-by: Michal Kalderon=A0<michal.kalderon@marvell.com>
-
+diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
+index 2705eb510..53a4e3a73 100644
+--- a/drivers/net/ethernet/realtek/r8169.c
++++ b/drivers/net/ethernet/realtek/r8169.c
+@@ -1969,9 +1969,7 @@ static int rtl_get_eee_supp(struct rtl8169_private *tp)
+ 		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
+-		phy_write(phydev, 0x1f, 0x0a5c);
+-		ret = phy_read(phydev, 0x12);
+-		phy_write(phydev, 0x1f, 0x0000);
++		ret = phy_read_paged(phydev, 0x0a5c, 0x12);
+ 		break;
+ 	default:
+ 		ret = -EPROTONOSUPPORT;
+@@ -1994,9 +1992,7 @@ static int rtl_get_eee_lpadv(struct rtl8169_private *tp)
+ 		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
+-		phy_write(phydev, 0x1f, 0x0a5d);
+-		ret = phy_read(phydev, 0x11);
+-		phy_write(phydev, 0x1f, 0x0000);
++		ret = phy_read_paged(phydev, 0x0a5d, 0x11);
+ 		break;
+ 	default:
+ 		ret = -EPROTONOSUPPORT;
+@@ -2019,9 +2015,7 @@ static int rtl_get_eee_adv(struct rtl8169_private *tp)
+ 		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
+-		phy_write(phydev, 0x1f, 0x0a5d);
+-		ret = phy_read(phydev, 0x10);
+-		phy_write(phydev, 0x1f, 0x0000);
++		ret = phy_read_paged(phydev, 0x0a5d, 0x10);
+ 		break;
+ 	default:
+ 		ret = -EPROTONOSUPPORT;
+@@ -2044,9 +2038,7 @@ static int rtl_set_eee_adv(struct rtl8169_private *tp, int val)
+ 		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, val);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
+-		phy_write(phydev, 0x1f, 0x0a5d);
+-		phy_write(phydev, 0x10, val);
+-		phy_write(phydev, 0x1f, 0x0000);
++		phy_write_paged(phydev, 0x0a5d, 0x10, val);
+ 		break;
+ 	default:
+ 		ret = -EPROTONOSUPPORT;
+@@ -2582,9 +2574,7 @@ static void rtl8168f_config_eee_phy(struct rtl8169_private *tp)
+ 
+ static void rtl8168g_config_eee_phy(struct rtl8169_private *tp)
+ {
+-	phy_write(tp->phydev, 0x1f, 0x0a43);
+-	phy_set_bits(tp->phydev, 0x11, BIT(4));
+-	phy_write(tp->phydev, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a43, 0x11, 0, BIT(4));
+ }
+ 
+ static void rtl8169s_hw_phy_config(struct rtl8169_private *tp)
+@@ -3483,20 +3473,15 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp)
+ 
+ static void rtl8168g_disable_aldps(struct rtl8169_private *tp)
+ {
+-	phy_write(tp->phydev, 0x1f, 0x0a43);
+-	phy_clear_bits(tp->phydev, 0x10, BIT(2));
++	phy_modify_paged(tp->phydev, 0x0a43, 0x10, BIT(2), 0);
+ }
+ 
+ static void rtl8168g_phy_adjust_10m_aldps(struct rtl8169_private *tp)
+ {
+ 	struct phy_device *phydev = tp->phydev;
+ 
+-	phy_write(phydev, 0x1f, 0x0bcc);
+-	phy_clear_bits(phydev, 0x14, BIT(8));
+-
+-	phy_write(phydev, 0x1f, 0x0a44);
+-	phy_set_bits(phydev, 0x11, BIT(7) | BIT(6));
+-
++	phy_modify_paged(phydev, 0x0bcc, 0x14, BIT(8), 0);
++	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(7) | BIT(6));
+ 	phy_write(phydev, 0x1f, 0x0a43);
+ 	phy_write(phydev, 0x13, 0x8084);
+ 	phy_clear_bits(phydev, 0x14, BIT(14) | BIT(13));
+@@ -3507,43 +3492,36 @@ static void rtl8168g_phy_adjust_10m_aldps(struct rtl8169_private *tp)
+ 
+ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp)
+ {
++	int ret;
++
+ 	rtl_apply_firmware(tp);
+ 
+-	rtl_writephy(tp, 0x1f, 0x0a46);
+-	if (rtl_readphy(tp, 0x10) & 0x0100) {
+-		rtl_writephy(tp, 0x1f, 0x0bcc);
+-		rtl_w0w1_phy(tp, 0x12, 0x0000, 0x8000);
+-	} else {
+-		rtl_writephy(tp, 0x1f, 0x0bcc);
+-		rtl_w0w1_phy(tp, 0x12, 0x8000, 0x0000);
+-	}
++	ret = phy_read_paged(tp->phydev, 0x0a46, 0x10);
++	if (ret & BIT(8))
++		phy_modify_paged(tp->phydev, 0x0bcc, 0x12, BIT(15), 0);
++	else
++		phy_modify_paged(tp->phydev, 0x0bcc, 0x12, 0, BIT(15));
+ 
+-	rtl_writephy(tp, 0x1f, 0x0a46);
+-	if (rtl_readphy(tp, 0x13) & 0x0100) {
+-		rtl_writephy(tp, 0x1f, 0x0c41);
+-		rtl_w0w1_phy(tp, 0x15, 0x0002, 0x0000);
+-	} else {
+-		rtl_writephy(tp, 0x1f, 0x0c41);
+-		rtl_w0w1_phy(tp, 0x15, 0x0000, 0x0002);
+-	}
++	ret = phy_read_paged(tp->phydev, 0x0a46, 0x13);
++	if (ret & BIT(8))
++		phy_modify_paged(tp->phydev, 0x0c41, 0x12, 0, BIT(1));
++	else
++		phy_modify_paged(tp->phydev, 0x0c41, 0x12, BIT(1), 0);
+ 
+ 	/* Enable PHY auto speed down */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x000c, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, 0, BIT(3) | BIT(2));
+ 
+ 	rtl8168g_phy_adjust_10m_aldps(tp);
+ 
+ 	/* EEE auto-fallback function */
+-	rtl_writephy(tp, 0x1f, 0x0a4b);
+-	rtl_w0w1_phy(tp, 0x11, 0x0004, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a4b, 0x11, 0, BIT(2));
+ 
+ 	/* Enable UC LPF tune function */
+ 	rtl_writephy(tp, 0x1f, 0x0a43);
+ 	rtl_writephy(tp, 0x13, 0x8012);
+ 	rtl_w0w1_phy(tp, 0x14, 0x8000, 0x0000);
+ 
+-	rtl_writephy(tp, 0x1f, 0x0c42);
+-	rtl_w0w1_phy(tp, 0x11, 0x4000, 0x2000);
++	phy_modify_paged(tp->phydev, 0x0c42, 0x11, BIT(13), BIT(14));
+ 
+ 	/* Improve SWR Efficiency */
+ 	rtl_writephy(tp, 0x1f, 0x0bcd);
+@@ -3555,6 +3533,7 @@ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x14, 0x1065);
+ 	rtl_writephy(tp, 0x14, 0x9065);
+ 	rtl_writephy(tp, 0x14, 0x1065);
++	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	rtl8168g_disable_aldps(tp);
+ 	rtl8168g_config_eee_phy(tp);
+@@ -3639,14 +3618,10 @@ static void rtl8168h_1_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* enable GPHY 10M */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x0800, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, 0, BIT(11));
+ 
+ 	/* SAR ADC performance */
+-	rtl_writephy(tp, 0x1f, 0x0bca);
+-	rtl_w0w1_phy(tp, 0x17, 0x4000, 0x3000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0bca, 0x17, BIT(12) | BIT(13), BIT(14));
+ 
+ 	rtl_writephy(tp, 0x1f, 0x0a43);
+ 	rtl_writephy(tp, 0x13, 0x803f);
+@@ -3666,9 +3641,7 @@ static void rtl8168h_1_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* disable phy pfm mode */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x0000, 0x0080);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, BIT(7), 0);
+ 
+ 	rtl8168g_disable_aldps(tp);
+ 	rtl8168g_config_eee_phy(tp);
+@@ -3698,9 +3671,7 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* enable GPHY 10M */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x0800, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, 0, BIT(11));
+ 
+ 	r8168_mac_ocp_write(tp, 0xdd02, 0x807d);
+ 	data = r8168_mac_ocp_read(tp, 0xdd02);
+@@ -3736,9 +3707,7 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* disable phy pfm mode */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x0000, 0x0080);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, BIT(7), 0);
+ 
+ 	rtl8168g_disable_aldps(tp);
+ 	rtl8168g_config_eee_phy(tp);
+@@ -3748,16 +3717,12 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp)
+ static void rtl8168ep_1_hw_phy_config(struct rtl8169_private *tp)
+ {
+ 	/* Enable PHY auto speed down */
+-	rtl_writephy(tp, 0x1f, 0x0a44);
+-	rtl_w0w1_phy(tp, 0x11, 0x000c, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a44, 0x11, 0, BIT(3) | BIT(2));
+ 
+ 	rtl8168g_phy_adjust_10m_aldps(tp);
+ 
+ 	/* Enable EEE auto-fallback function */
+-	rtl_writephy(tp, 0x1f, 0x0a4b);
+-	rtl_w0w1_phy(tp, 0x11, 0x0004, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0a4b, 0x11, 0, BIT(2));
+ 
+ 	/* Enable UC LPF tune function */
+ 	rtl_writephy(tp, 0x1f, 0x0a43);
+@@ -3766,9 +3731,7 @@ static void rtl8168ep_1_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* set rg_sel_sdm_rate */
+-	rtl_writephy(tp, 0x1f, 0x0c42);
+-	rtl_w0w1_phy(tp, 0x11, 0x4000, 0x2000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0c42, 0x11, BIT(13), BIT(14));
+ 
+ 	rtl8168g_disable_aldps(tp);
+ 	rtl8168g_config_eee_phy(tp);
+@@ -3786,9 +3749,7 @@ static void rtl8168ep_2_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* Set rg_sel_sdm_rate */
+-	rtl_writephy(tp, 0x1f, 0x0c42);
+-	rtl_w0w1_phy(tp, 0x11, 0x4000, 0x2000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(tp->phydev, 0x0c42, 0x11, BIT(13), BIT(14));
+ 
+ 	/* Channel estimation parameters */
+ 	rtl_writephy(tp, 0x1f, 0x0a43);
+-- 
+2.21.0
 
