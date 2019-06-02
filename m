@@ -2,132 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2971B32382
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 16:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9964B32383
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 16:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfFBONG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 10:13:06 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35230 "EHLO
+        id S1726697AbfFBONO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 10:13:14 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35242 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726084AbfFBONG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 10:13:06 -0400
+        with ESMTP id S1726084AbfFBONN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 10:13:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
         :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
         Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fGUDYUlZv1P9M2NShtU9t7DVk5Kjb7tgB11eNEqgCPE=; b=RxVrdHA1fiURmxwbMZtTqSE79X
-        eX4lJJFq91ZxsLctb8qq+FB2NIF9vUb1RJZ2BDW5mJhtH6g5Re+dQ0ZdvJlOx+WSP1y34ZKDuFmJG
-        Pgi3m6ZaRH7dCOkl6YAW3LQfZZ3oPqRgZ2x2C0nHbE+SKjL1TLRMsiz0bgCsWwei9i/6NOq/dKwq2
-        3yU5D2N+fDJ31BrbgAZGL+4RWFDx72KgaVzjvkvDFnvnZ2IzFg9tirLxZmaaqXR+oRRRhBtEWackX
-        +hzIcnLfJhmZeuLsokmJoZeYQJOphD8y397sI7csFUZ8SaOJcx0MjrPCo1efDe20vI32KjY4cxzNC
-        4+sgHZ/w==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:56592 helo=rmk-PC.armlinux.org.uk)
+        bh=zu1c9gNK8kb9nagzN3GuqSkjYz8u3X/+NvilC4tuuOE=; b=eMyyomeBwt57yb+y6qLMm4dZGf
+        //aSrsYcYndcM1ovMNWBIOAKTXLu5r81+C0uK36TzHl/8+X8wmzUrmMsvtb+bdGk5YdWh7xM/q76+
+        elp3bbdIunWvGHm2PyntiGHdRhLI4UVtNWcjaCvdzpsE4jsLSy3rmuLr0PtVIKaYQrfIn1FBu/aWc
+        SSmC93DTmu3009NW1KW0jjJBl6kWBy4Fkanhs/6o151xWCRznCpowZpgdMlsz270Jj20BT/erUTQB
+        hi7erydCLVkKXUTkfFBVmq34cKDy74+A9ug0p00AkuwCOvua84bMHT0+aKTM1AGDaeisZcoL9rvs0
+        2i9gbp+w==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:47164 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1hXREF-0005Qa-Du; Sun, 02 Jun 2019 15:12:55 +0100
+        id 1hXREL-0005Qi-96; Sun, 02 Jun 2019 15:13:01 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.82_1-5b7a7c0-XX)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1hXREE-0005KM-Jy; Sun, 02 Jun 2019 15:12:54 +0100
+        id 1hXREK-0005KT-1e; Sun, 02 Jun 2019 15:13:00 +0100
 From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH] net: phylink: avoid reducing support mask
+Subject: [PATCH] net: sfp: read eeprom in maximum 16 byte increments
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1hXREE-0005KM-Jy@rmk-PC.armlinux.org.uk>
-Date:   Sun, 02 Jun 2019 15:12:54 +0100
+Message-Id: <E1hXREK-0005KT-1e@rmk-PC.armlinux.org.uk>
+Date:   Sun, 02 Jun 2019 15:13:00 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid reducing the support mask as a result of the interface type
-selected for SFP modules, or when setting the link settings through
-ethtool - this should only change when the supported link modes of
-the hardware combination change.
+Some SFP modules do not like reads longer than 16 bytes, so read the
+EEPROM in chunks of 16 bytes at a time.  This behaviour is not specified
+in the SFP MSAs, which specifies:
+
+ "The serial interface uses the 2-wire serial CMOS E2PROM protocol
+  defined for the ATMEL AT24C01A/02/04 family of components."
+
+and
+
+ "As long as the SFP+ receives an acknowledge, it shall serially clock
+  out sequential data words. The sequence is terminated when the host
+  responds with a NACK and a STOP instead of an acknowledge."
+
+We must avoid breaking a read across a 16-bit quantity in the diagnostic
+page, thankfully all 16-bit quantities in that page are naturally
+aligned.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/phy/sfp.c | 24 ++++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 9044b95d2afe..4c0616ba314d 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1073,6 +1073,7 @@ EXPORT_SYMBOL_GPL(phylink_ethtool_ksettings_get);
- int phylink_ethtool_ksettings_set(struct phylink *pl,
- 				  const struct ethtool_link_ksettings *kset)
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index d4635c2178d1..71812be0ac64 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -281,6 +281,7 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
  {
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(support);
- 	struct ethtool_link_ksettings our_kset;
- 	struct phylink_link_state config;
+ 	struct i2c_msg msgs[2];
+ 	u8 bus_addr = a2 ? 0x51 : 0x50;
++	size_t this_len;
  	int ret;
-@@ -1083,11 +1084,12 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 	    kset->base.autoneg != AUTONEG_ENABLE)
- 		return -EINVAL;
  
-+	linkmode_copy(support, pl->supported);
- 	config = pl->link_config;
+ 	msgs[0].addr = bus_addr;
+@@ -292,11 +293,26 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
+ 	msgs[1].len = len;
+ 	msgs[1].buf = buf;
  
- 	/* Mask out unsupported advertisements */
- 	linkmode_and(config.advertising, kset->link_modes.advertising,
--		     pl->supported);
-+		     support);
+-	ret = i2c_transfer(sfp->i2c, msgs, ARRAY_SIZE(msgs));
+-	if (ret < 0)
+-		return ret;
++	while (len) {
++		this_len = len;
++		if (this_len > 16)
++			this_len = 16;
  
- 	/* FIXME: should we reject autoneg if phy/mac does not support it? */
- 	if (kset->base.autoneg == AUTONEG_DISABLE) {
-@@ -1097,7 +1099,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 		 * duplex.
- 		 */
- 		s = phy_lookup_setting(kset->base.speed, kset->base.duplex,
--				       pl->supported, false);
-+				       support, false);
- 		if (!s)
- 			return -EINVAL;
- 
-@@ -1126,7 +1128,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 		__set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, config.advertising);
- 	}
- 
--	if (phylink_validate(pl, pl->supported, &config))
-+	if (phylink_validate(pl, support, &config))
- 		return -EINVAL;
- 
- 	/* If autonegotiation is enabled, we must have an advertisement */
-@@ -1576,6 +1578,7 @@ static int phylink_sfp_module_insert(void *upstream,
- {
- 	struct phylink *pl = upstream;
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(support1);
- 	struct phylink_link_state config;
- 	phy_interface_t iface;
- 	int ret = 0;
-@@ -1603,6 +1606,8 @@ static int phylink_sfp_module_insert(void *upstream,
- 		return ret;
- 	}
- 
-+	linkmode_copy(support1, support);
+-	return ret == ARRAY_SIZE(msgs) ? len : 0;
++		msgs[1].len = this_len;
 +
- 	iface = sfp_select_interface(pl->sfp_bus, id, config.advertising);
- 	if (iface == PHY_INTERFACE_MODE_NA) {
- 		netdev_err(pl->netdev,
-@@ -1612,7 +1617,7 @@ static int phylink_sfp_module_insert(void *upstream,
- 	}
++		ret = i2c_transfer(sfp->i2c, msgs, ARRAY_SIZE(msgs));
++		if (ret < 0)
++			return ret;
++
++		if (ret != ARRAY_SIZE(msgs))
++			break;
++
++		msgs[1].buf += this_len;
++		dev_addr += this_len;
++		len -= this_len;
++	}
++
++	return msgs[1].buf - (u8 *)buf;
+ }
  
- 	config.interface = iface;
--	ret = phylink_validate(pl, support, &config);
-+	ret = phylink_validate(pl, support1, &config);
- 	if (ret) {
- 		netdev_err(pl->netdev, "validation of %s/%s with support %*pb failed: %d\n",
- 			   phylink_an_mode_str(MLO_AN_INBAND),
+ static int sfp_i2c_write(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
 -- 
 2.7.4
 
