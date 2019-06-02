@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8827F3230F
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 13:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C9E3233D
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 14:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfFBLKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 07:10:55 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42725 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfFBLKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 07:10:55 -0400
-Received: by mail-pg1-f193.google.com with SMTP id e6so5340986pgd.9
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 04:10:54 -0700 (PDT)
+        id S1726652AbfFBMU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 08:20:28 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45877 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbfFBMU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 08:20:28 -0400
+Received: by mail-lf1-f67.google.com with SMTP id u10so4378463lfm.12
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 05:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=3x7NDeHlDCA9j8foSgI2/SwaoOOyyAL1Z2z0/P5/q0Y=;
-        b=p7KihpUMBjhBdE9scVSnmOX35w11zj93wY96YMAFEPLDYIYRyBmGrHAt0EXpwjhr5a
-         NDDCzWpbp78h9bEbVIEEPd9J6pSqjXuW5HymKwWIng4sx216MyGdnFJzJzYqOg+V7s3y
-         4UQ522OG3yNGHE1gygWinGhYInOGeYYtheVJWazar9la+4qKp5gbEDtK2F0vf5FxsgeE
-         gWiuOg3la9VufgK3+6PLSCyeBZmWBOubMJ72aEB1CZ52M6vCFOHcQwmCP/koCxgOrKJU
-         yA416hYe613xq0MNhzMfn8XnPE2euP7gPF8CjaDRLeKzFpxoJsvYDVUQoykCluYwKMGO
-         2wcg==
+        d=joelfernandes.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=P8XJjbcSeHXWyfrm0lZNaxFevNGN/ntRWhil7kOzvQw=;
+        b=cpm9Wahqojbpp4VkjWfrSzKQi0a2ao6+Snhc7Rw0Q7G2cnlWl4NN+SpMBNDiynHStQ
+         e+MwKcJW+v+aBPTP2CMVHQ+2Z75W4hXURUexykVjLm+sx6J//Q5pTVNwqTtc92n26m9x
+         wUI8z1LDwo3dz8mT0g1ckf93t0vtaHtsUBp88=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3x7NDeHlDCA9j8foSgI2/SwaoOOyyAL1Z2z0/P5/q0Y=;
-        b=lN889Th20sUcK9DdJGU0gHJBC85rysFXmj2i1Z7mruKGylpXGmmWuZySfpfRbj8emF
-         lg9a/qQfHPtEM4CX8jb5Op1pZcnTBZAJkjdf8237QB7C9A174PoMtwgmibx+9krnYofr
-         dNT53PF5D+4YPu0XsXXv3aRhY4w6MEZpOAVAJTjlhqU95YlGELQwPpxEke+uTkoQG0Ze
-         OMPywuCXr6l7/Ocy/M5ts/lCqq2BBrRh9GF9NHQch7rRCNr06SynGbw4oBFLfK/Y/JWA
-         +NnJ3YuQPHl8jHwDe765aFDBOO5QBzAVOkfFRCaWRzWDw64irUta65QrXi2UDhp76Wop
-         SKAg==
-X-Gm-Message-State: APjAAAWrCSYd4MdYLIXd+9LvQKdO0mGJX8bWsse4t86wcqi78ryy93KK
-        tiILgazBnmfOHP4kzvld31x2YPCn
-X-Google-Smtp-Source: APXvYqzqPYsa10McosUBO4VYePNQsXLSbEcAlN91O0h7BqQoASXOLWcCgufw01Y8DNmRItgaJxC/Kw==
-X-Received: by 2002:a63:8dc4:: with SMTP id z187mr10979637pgd.337.1559473854296;
-        Sun, 02 Jun 2019 04:10:54 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j15sm14399095pfn.187.2019.06.02.04.10.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 04:10:53 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] ipv6: fix the check before getting the cookie in rt6_get_cookie
-Date:   Sun,  2 Jun 2019 19:10:46 +0800
-Message-Id: <49388c263f652f91bad8a0d3687df7bb4a18f0da.1559473846.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=P8XJjbcSeHXWyfrm0lZNaxFevNGN/ntRWhil7kOzvQw=;
+        b=Tbvx9aEme6dKil3EC4Ji7nAy0CSdPBX/4B/xUW25Yjj+c5K5nEdmwwI4phLhiXm2U+
+         DJGiDKfChuKLXce36gNHrPjFuhj7scKAMAloxwqlEUEtGuiCyq84kf+mhQNSDVoPJyUQ
+         rJNtzG+I9pcrasF9TxCFVneIZ7CcAtIcVli8SqeTRZzJzG8PUGCpM+F7Fot7RSB+Hrlg
+         UcAExR2ZwuQ26Mh2Z/zPatG/SIP0qHpXdQZBFH33iCu0AeZmJgWRjtmqaN7Gql4lxBwY
+         ILtzyuVgp1vxP9iWJGISOFFH/k6kscTl+DhQayWtVPUc1GvIKpH1g4M0VBmGnhHWLNvT
+         C/8Q==
+X-Gm-Message-State: APjAAAXuRX1eKIu3bt3kUatFq0WkFwFww5UaK6E6xK8GuE/gjm7QKOr0
+        R0wPFSXyWJz5NCV8+P+MB0WNK6QyLafdOvw7Tu3GDA==
+X-Google-Smtp-Source: APXvYqxoUeTRSI6CtltHxEsRlYpiPonozfm3ENUzJsZRTMHK2FWCrZ71nbqlV68IH4IhR7parmAXCyudOrYXvzl+KNs=
+X-Received: by 2002:ac2:4544:: with SMTP id j4mr10895112lfm.176.1559478026242;
+ Sun, 02 Jun 2019 05:20:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190601222738.6856-1-joel@joelfernandes.org> <20190601222738.6856-3-joel@joelfernandes.org>
+ <20190602070014.GA543@amd>
+In-Reply-To: <20190602070014.GA543@amd>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Sun, 2 Jun 2019 08:20:15 -0400
+Message-ID: <CAEXW_YT3t4Hb6wKsjXPGng+YbA5rhNRa7OSdZwdN4AKGfVkX3g@mail.gmail.com>
+Subject: Re: [RFC 2/6] ipv4: add lockdep condition to fix for_each_entry
+To:     Pavel Machek <pavel@denx.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Neil Brown <neilb@suse.com>, netdev <netdev@vger.kernel.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Peter Zilstra <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu <rcu@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In Jianlin's testing, netperf was broken with 'Connection reset by peer',
-as the cookie check failed in rt6_check() and ip6_dst_check() always
-returned NULL.
+On Sun, Jun 2, 2019 at 3:00 AM Pavel Machek <pavel@denx.de> wrote:
+>
+> On Sat 2019-06-01 18:27:34, Joel Fernandes (Google) wrote:
+> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+>
+> This really needs to be merged to previous patch, you can't break
+> compilation in middle of series...
+>
+> Or probably you need hlist_for_each_entry_rcu_lockdep() macro with
+> additional argument, and switch users to it.
 
-It's caused by Commit 93531c674315 ("net/ipv6: separate handling of FIB
-entries from dst based routes"), where the cookie can be got only when
-'c1'(see below) for setting dst_cookie whereas rt6_check() is called
-when !'c1' for checking dst_cookie, as we can see in ip6_dst_check().
+Good point. I can also just add a temporary transition macro, and then
+remove it in the last patch. That way no new macro is needed.
 
-Since in ip6_dst_check() both rt6_dst_from_check() (c1) and rt6_check()
-(!c1) will check the 'from' cookie, this patch is to remove the c1 check
-in rt6_get_cookie(), so that the dst_cookie can always be set properly.
-
-c1:
-  (rt->rt6i_flags & RTF_PCPU || unlikely(!list_empty(&rt->rt6i_uncached)))
-
-Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/ip6_fib.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 525f701..d6d936c 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -263,8 +263,7 @@ static inline u32 rt6_get_cookie(const struct rt6_info *rt)
- 	rcu_read_lock();
- 
- 	from = rcu_dereference(rt->from);
--	if (from && (rt->rt6i_flags & RTF_PCPU ||
--	    unlikely(!list_empty(&rt->rt6i_uncached))))
-+	if (from)
- 		fib6_get_cookie_safe(from, &cookie);
- 
- 	rcu_read_unlock();
--- 
-2.1.0
-
+Thanks!
