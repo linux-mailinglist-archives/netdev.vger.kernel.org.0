@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 992EF324E7
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A27324E8
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 23:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726976AbfFBVMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 17:12:50 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:41287 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbfFBVMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:12:50 -0400
-Received: by mail-wr1-f65.google.com with SMTP id c2so9971691wrm.8
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:12:48 -0700 (PDT)
+        id S1726990AbfFBVNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 17:13:09 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:56237 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726879AbfFBVNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 17:13:09 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 16so4777880wmg.5
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 14:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=X7Isc7dkSAG4gSYUlK60oTHltsGixfWJEjAtfvpYsUM=;
-        b=uVb13Syg+Dt3mG4w8+W4CoRY9/4GeGGPbigRzsXkSBq7DF262fY/cY/qOPyC7rKsdq
-         ZI2auQnMqXPDEDdxWm59D9o6i83s9/sfHWl0iXYr+CzFhWaAPZkDyVzmUOld4/l5lYSc
-         SbtObgAf8eeQq2Qreb+mn8bVDLVu2XWq6IKCjYwRZSTqF4wd9G2ud4XDbuWv5L707JhL
-         aaWUehk8c7HZyYfblC1eZqUGUYIf6s4ujhYtynuRIq1JBYd/ZFMCGeF4x56Wbt6bp5wl
-         XxCcMb+7pUcFKIs8rDSVGHQaVbe13YjrjuikL8bkiWczwryo2meVk95W6tdodeMUIZAH
-         DOgQ==
+        bh=IEJlP2IFNv1AEVXTSPVIlSUf+kHI7zpH9o/BzpeSxJM=;
+        b=U+y/b4kHzbfcwdTjy2LW7aBsRaGQrkPOtqKpwA822+ueyMPdGRNXg8XCA6LH2t5+7o
+         PM3gBBVr8WWt8IeXy3eTKuPV3YjbLcAwzHJKwYTnHAFIskoZgeitQ2TLVTuwcAb3RzeD
+         iwLxPKay682V2P6v2XHT887TRbcoyD70hNd5ZQKuaaWKoMBk4nzf0wMXY7yYwFnm3o9k
+         h/CACO+3Z0K4blriiS4Cf/DjsgDHDXH1lP0La13AvaTdlQH1TmEE3FAWV65FvG+/CBuF
+         fMlftTkKOnP0GbmO+HDiu1JzS2SofEhYC39jYYGnsmANilWW2LSgKKDnN6cOypdf1ogc
+         /n5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=X7Isc7dkSAG4gSYUlK60oTHltsGixfWJEjAtfvpYsUM=;
-        b=r7HsWLK2WkuA8pOAJ2whPq5koFQcSDMELhoHfE4EWatShE7NNhxoqqJTSEBfrPK/zz
-         MGQ1h9d76M7eaYvFA0FKw/NRIRIHso8fST54iTEazg9419sLtGfAgYCI4wJiTS0vQHb4
-         J10qdd9wBb6PxYigOoYrh6+E+D8lcAZxydDl3DqOBCCe3R2WQZl6U+OSagjpK3j1uMHl
-         JhWILm+hZT2TiNSmWPcPzSxysI1p3lQ6iLFvm4jEuB9mEkjJHtl+xzwWPICJ+W7eMRAE
-         HiKiJz+Foxr8KHIzQK7xsLHrRwzIemfDZFDmP3wum6YO16uG61gc7p5AuwELbaReM6H/
-         Uodg==
-X-Gm-Message-State: APjAAAUoCbVOuGE+BMqgmnOGQF+JOjNVwo+IdDVam8w08Fg7fI9dyBtk
-        QhSxktTO5c+TCDtrfEHh5FW6UA0m
-X-Google-Smtp-Source: APXvYqy5Ah+QqY5rf7N00T62yC7hlJIGYIKjUOxL5V8sW9S0JH/pis6v2Jw2wODdgkYManhVpa/73Q==
-X-Received: by 2002:adf:e9c4:: with SMTP id l4mr101628wrn.142.1559509967634;
-        Sun, 02 Jun 2019 14:12:47 -0700 (PDT)
+        bh=IEJlP2IFNv1AEVXTSPVIlSUf+kHI7zpH9o/BzpeSxJM=;
+        b=RIyx80rbvuA9PzWDfIxiIJW0kn26ZMnA4Va6mYCYWctSpYEChxlHvX00NH6VrzlaAA
+         RmxeyRinvNLGFTeJsXIAw/5UcIRacMK9iZbtQ4wKN28g2b1lJjgcm2DJTyLPQt2jSZd9
+         /dgbH17X+fzlF6m7iRqeq/CtsrJylnQmckbwZoVRR5rlPxkE7+DuD5ljF1GPI7HU7dB7
+         1ZyE7YIEODh9//ZtTUgAJYuzAxA3qDTK4CUJI3zvsv4Z1/3gVBM+tFCjetfZNWETMhYd
+         1ngCxXIDZl3z1yPF5UOFLPXPpEZ4O93JqjSoxoTM5eQrugwN71sMeRg462frQ5z9KT0Z
+         cc4w==
+X-Gm-Message-State: APjAAAV4x1+CHhvZREbUSVaC99+mI70SaCt1IbLW5MMDVbz0nASIM+LE
+        mlBkjAa/VFnp1iXh3+C02sI=
+X-Google-Smtp-Source: APXvYqyNqjYUNh7V8r+FzA3t7R4Myl+Meia6aW1OulgfGMaViRRH1l9YmlzAryPtTxmXVWDXUB3zjA==
+X-Received: by 2002:a1c:65c3:: with SMTP id z186mr52651wmb.116.1559509985930;
+        Sun, 02 Jun 2019 14:13:05 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id q11sm9548193wmc.15.2019.06.02.14.12.40
+        by smtp.gmail.com with ESMTPSA id q11sm9548193wmc.15.2019.06.02.14.12.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 14:12:42 -0700 (PDT)
+        Sun, 02 Jun 2019 14:12:50 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 04/11] net: dsa: sja1105: Plug in support for TCAM searches via the dynamic interface
-Date:   Mon,  3 Jun 2019 00:11:56 +0300
-Message-Id: <20190602211203.17773-5-olteanv@gmail.com>
+Subject: [PATCH net-next 05/11] net: dsa: sja1105: Make room for P/Q/R/S FDB operations
+Date:   Mon,  3 Jun 2019 00:11:57 +0300
+Message-Id: <20190602211203.17773-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190602211203.17773-1-olteanv@gmail.com>
 References: <20190602211203.17773-1-olteanv@gmail.com>
@@ -58,118 +58,231 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only a single dynamic configuration table of the SJA1105 P/Q/R/S
-supports this operation: the FDB.
+The DSA callbacks were written with the E/T (first generation) in mind,
+which is quite different.
 
-To keep the existing structure in place (sja1105_dynamic_config_read and
-sja1105_dynamic_config_write) and not introduce any new function, a
-convention is made for sja1105_dynamic_config_read that a negative index
-argument denotes a search for the entry provided as argument.
+For P/Q/R/S completely new implementations need to be provided, which
+are held as function pointers in the priv->info structure.  We are
+taking a slightly roundabout way for this (a function from
+sja1105_main.c reads a structure defined in sja1105_spi.c that
+points to a function defined in sja1105_main.c), but it is what it is.
+
+The FDB dump callback works for both families, hence no function pointer
+for that.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 36 ++++++++++++++++++-
- .../net/dsa/sja1105/sja1105_dynamic_config.h  |  3 ++
- 2 files changed, 38 insertions(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105.h             | 15 ++++-
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  |  2 +-
+ drivers/net/dsa/sja1105/sja1105_main.c        | 56 ++++++++++++++-----
+ drivers/net/dsa/sja1105/sja1105_spi.c         | 12 ++++
+ 4 files changed, 69 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 0023b03a010d..7e7efc2e8ee4 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -36,6 +36,7 @@
- 	SJA1105PQRS_SIZE_MAC_CONFIG_DYN_CMD
- 
- struct sja1105_dyn_cmd {
-+	bool search;
- 	u64 valid;
- 	u64 rdwrset;
- 	u64 errors;
-@@ -248,6 +249,7 @@ sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
- #define OP_READ		BIT(0)
- #define OP_WRITE	BIT(1)
- #define OP_DEL		BIT(2)
-+#define OP_SEARCH	BIT(3)
- 
- /* SJA1105E/T: First generation */
- struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
-@@ -367,6 +369,24 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_XMII_PARAMS] = {0},
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index b043bfc408f2..f55e95d1b731 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -55,6 +55,11 @@ struct sja1105_info {
+ 	const struct sja1105_regs *regs;
+ 	int (*reset_cmd)(const void *ctx, const void *data);
+ 	int (*setup_rgmii_delay)(const void *ctx, int port);
++	/* Prototypes from include/net/dsa.h */
++	int (*fdb_add_cmd)(struct dsa_switch *ds, int port,
++			   const unsigned char *addr, u16 vid);
++	int (*fdb_del_cmd)(struct dsa_switch *ds, int port,
++			   const unsigned char *addr, u16 vid);
+ 	const char *name;
  };
  
-+/* Provides read access to the settings through the dynamic interface
-+ * of the switch.
-+ * @blk_idx	is used as key to select from the sja1105_dynamic_table_ops.
-+ *		The selection is limited by the hardware in respect to which
-+ *		configuration blocks can be read through the dynamic interface.
-+ * @index	is used to retrieve a particular table entry. If negative,
-+ *		(and if the @blk_idx supports the searching operation) a search
-+ *		is performed by the @entry parameter.
-+ * @entry	Type-casted to an unpacked structure that holds a table entry
-+ *		of the type specified in @blk_idx.
-+ *		Usually an output argument. If @index is negative, then this
-+ *		argument is used as input/output: it should be pre-populated
-+ *		with the element to search for. Entries which support the
-+ *		search operation will have an "index" field (not the @index
-+ *		argument to this function) and that is where the found index
-+ *		will be returned (or left unmodified - thus negative - if not
-+ *		found).
-+ */
- int sja1105_dynamic_config_read(struct sja1105_private *priv,
- 				enum sja1105_blk_idx blk_idx,
- 				int index, void *entry)
-@@ -385,6 +405,8 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+@@ -142,7 +147,15 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
+ 				 enum sja1105_blk_idx blk_idx,
+ 				 int index, void *entry, bool keep);
  
- 	if (index >= ops->max_entry_count)
- 		return -ERANGE;
-+	if (index < 0 && !(ops->access & OP_SEARCH))
-+		return -EOPNOTSUPP;
- 	if (!(ops->access & OP_READ))
- 		return -EOPNOTSUPP;
- 	if (ops->packed_size > SJA1105_MAX_DYN_CMD_SIZE)
-@@ -396,9 +418,19 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+-u8 sja1105_fdb_hash(struct sja1105_private *priv, const u8 *addr, u16 vid);
++u8 sja1105et_fdb_hash(struct sja1105_private *priv, const u8 *addr, u16 vid);
++int sja1105et_fdb_add(struct dsa_switch *ds, int port,
++		      const unsigned char *addr, u16 vid);
++int sja1105et_fdb_del(struct dsa_switch *ds, int port,
++		      const unsigned char *addr, u16 vid);
++int sja1105pqrs_fdb_add(struct dsa_switch *ds, int port,
++			const unsigned char *addr, u16 vid);
++int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
++			const unsigned char *addr, u16 vid);
  
- 	cmd.valid = true; /* Trigger action on table entry */
- 	cmd.rdwrset = SPI_READ; /* Action is read */
--	cmd.index = index;
-+	if (index < 0) {
-+		/* Avoid copying a signed negative number to an u64 */
-+		cmd.index = 0;
-+		cmd.search = true;
-+	} else {
-+		cmd.index = index;
-+		cmd.search = false;
-+	}
- 	ops->cmd_packing(packed_buf, &cmd, PACK);
+ /* Common implementations for the static and dynamic configs */
+ size_t sja1105_l2_forwarding_entry_packing(void *buf, void *entry_ptr,
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index 7e7efc2e8ee4..3a8b0d0ab330 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -552,7 +552,7 @@ static u8 sja1105_crc8_add(u8 crc, u8 byte, u8 poly)
+  * is also received as argument in the Koopman notation that the switch
+  * hardware stores it in.
+  */
+-u8 sja1105_fdb_hash(struct sja1105_private *priv, const u8 *addr, u16 vid)
++u8 sja1105et_fdb_hash(struct sja1105_private *priv, const u8 *addr, u16 vid)
+ {
+ 	struct sja1105_l2_lookup_params_entry *l2_lookup_params =
+ 		priv->static_config.tables[BLK_IDX_L2_LOOKUP_PARAMS].entries;
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index cfdefd9f1905..c78d2def52f1 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -786,10 +786,10 @@ static inline int sja1105et_fdb_index(int bin, int way)
+ 	return bin * SJA1105ET_FDB_BIN_SIZE + way;
+ }
  
-+	if (cmd.search)
-+		ops->entry_packing(packed_buf, entry, PACK);
+-static int sja1105_is_fdb_entry_in_bin(struct sja1105_private *priv, int bin,
+-				       const u8 *addr, u16 vid,
+-				       struct sja1105_l2_lookup_entry *match,
+-				       int *last_unused)
++static int sja1105et_is_fdb_entry_in_bin(struct sja1105_private *priv, int bin,
++					 const u8 *addr, u16 vid,
++					 struct sja1105_l2_lookup_entry *match,
++					 int *last_unused)
+ {
+ 	int way;
+ 
+@@ -818,8 +818,8 @@ static int sja1105_is_fdb_entry_in_bin(struct sja1105_private *priv, int bin,
+ 	return -1;
+ }
+ 
+-static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+-			   const unsigned char *addr, u16 vid)
++int sja1105et_fdb_add(struct dsa_switch *ds, int port,
++		      const unsigned char *addr, u16 vid)
+ {
+ 	struct sja1105_l2_lookup_entry l2_lookup = {0};
+ 	struct sja1105_private *priv = ds->priv;
+@@ -827,10 +827,10 @@ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+ 	int last_unused = -1;
+ 	int bin, way;
+ 
+-	bin = sja1105_fdb_hash(priv, addr, vid);
++	bin = sja1105et_fdb_hash(priv, addr, vid);
+ 
+-	way = sja1105_is_fdb_entry_in_bin(priv, bin, addr, vid,
+-					  &l2_lookup, &last_unused);
++	way = sja1105et_is_fdb_entry_in_bin(priv, bin, addr, vid,
++					    &l2_lookup, &last_unused);
+ 	if (way >= 0) {
+ 		/* We have an FDB entry. Is our port in the destination
+ 		 * mask? If yes, we need to do nothing. If not, we need
+@@ -874,17 +874,17 @@ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+ 					    true);
+ }
+ 
+-static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+-			   const unsigned char *addr, u16 vid)
++int sja1105et_fdb_del(struct dsa_switch *ds, int port,
++		      const unsigned char *addr, u16 vid)
+ {
+ 	struct sja1105_l2_lookup_entry l2_lookup = {0};
+ 	struct sja1105_private *priv = ds->priv;
+ 	int index, bin, way;
+ 	bool keep;
+ 
+-	bin = sja1105_fdb_hash(priv, addr, vid);
+-	way = sja1105_is_fdb_entry_in_bin(priv, bin, addr, vid,
+-					  &l2_lookup, NULL);
++	bin = sja1105et_fdb_hash(priv, addr, vid);
++	way = sja1105et_is_fdb_entry_in_bin(priv, bin, addr, vid,
++					    &l2_lookup, NULL);
+ 	if (way < 0)
+ 		return 0;
+ 	index = sja1105et_fdb_index(bin, way);
+@@ -905,6 +905,34 @@ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+ 					    index, &l2_lookup, keep);
+ }
+ 
++int sja1105pqrs_fdb_add(struct dsa_switch *ds, int port,
++			const unsigned char *addr, u16 vid)
++{
++	return -EOPNOTSUPP;
++}
 +
- 	/* Send SPI write operation: read config table entry */
- 	rc = sja1105_spi_send_packed_buf(priv, SPI_WRITE, ops->addr,
- 					 packed_buf, ops->packed_size);
-@@ -456,6 +488,8 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
- 
- 	if (index >= ops->max_entry_count)
- 		return -ERANGE;
-+	if (index < 0)
-+		return -ERANGE;
- 	if (!(ops->access & OP_WRITE))
- 		return -EOPNOTSUPP;
- 	if (!keep && !(ops->access & OP_DEL))
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.h b/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
-index 49c611eb02cb..740dadf43f01 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.h
-@@ -7,6 +7,9 @@
- #include "sja1105.h"
- #include <linux/packing.h>
- 
-+/* Special index that can be used for sja1105_dynamic_config_read */
-+#define SJA1105_SEARCH		-1
++int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
++			const unsigned char *addr, u16 vid)
++{
++	return -EOPNOTSUPP;
++}
 +
- struct sja1105_dyn_cmd;
- 
- struct sja1105_dynamic_table_ops {
++static int sja1105_fdb_add(struct dsa_switch *ds, int port,
++			   const unsigned char *addr, u16 vid)
++{
++	struct sja1105_private *priv = ds->priv;
++
++	return priv->info->fdb_add_cmd(ds, port, addr, vid);
++}
++
++static int sja1105_fdb_del(struct dsa_switch *ds, int port,
++			   const unsigned char *addr, u16 vid)
++{
++	struct sja1105_private *priv = ds->priv;
++
++	return priv->info->fdb_del_cmd(ds, port, addr, vid);
++}
++
+ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+ 			    dsa_fdb_dump_cb_t *cb, void *data)
+ {
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 2eb70b8acfc3..b1344ed1697f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -541,6 +541,8 @@ struct sja1105_info sja1105e_info = {
+ 	.static_ops		= sja1105e_table_ops,
+ 	.dyn_ops		= sja1105et_dyn_ops,
+ 	.reset_cmd		= sja1105et_reset_cmd,
++	.fdb_add_cmd		= sja1105et_fdb_add,
++	.fdb_del_cmd		= sja1105et_fdb_del,
+ 	.regs			= &sja1105et_regs,
+ 	.name			= "SJA1105E",
+ };
+@@ -550,6 +552,8 @@ struct sja1105_info sja1105t_info = {
+ 	.static_ops		= sja1105t_table_ops,
+ 	.dyn_ops		= sja1105et_dyn_ops,
+ 	.reset_cmd		= sja1105et_reset_cmd,
++	.fdb_add_cmd		= sja1105et_fdb_add,
++	.fdb_del_cmd		= sja1105et_fdb_del,
+ 	.regs			= &sja1105et_regs,
+ 	.name			= "SJA1105T",
+ };
+@@ -559,6 +563,8 @@ struct sja1105_info sja1105p_info = {
+ 	.static_ops		= sja1105p_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
+ 	.reset_cmd		= sja1105pqrs_reset_cmd,
++	.fdb_add_cmd		= sja1105pqrs_fdb_add,
++	.fdb_del_cmd		= sja1105pqrs_fdb_del,
+ 	.regs			= &sja1105pqrs_regs,
+ 	.name			= "SJA1105P",
+ };
+@@ -568,6 +574,8 @@ struct sja1105_info sja1105q_info = {
+ 	.static_ops		= sja1105q_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
+ 	.reset_cmd		= sja1105pqrs_reset_cmd,
++	.fdb_add_cmd		= sja1105pqrs_fdb_add,
++	.fdb_del_cmd		= sja1105pqrs_fdb_del,
+ 	.regs			= &sja1105pqrs_regs,
+ 	.name			= "SJA1105Q",
+ };
+@@ -577,6 +585,8 @@ struct sja1105_info sja1105r_info = {
+ 	.static_ops		= sja1105r_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
+ 	.reset_cmd		= sja1105pqrs_reset_cmd,
++	.fdb_add_cmd		= sja1105pqrs_fdb_add,
++	.fdb_del_cmd		= sja1105pqrs_fdb_del,
+ 	.regs			= &sja1105pqrs_regs,
+ 	.name			= "SJA1105R",
+ };
+@@ -587,5 +597,7 @@ struct sja1105_info sja1105s_info = {
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
+ 	.regs			= &sja1105pqrs_regs,
+ 	.reset_cmd		= sja1105pqrs_reset_cmd,
++	.fdb_add_cmd		= sja1105pqrs_fdb_add,
++	.fdb_del_cmd		= sja1105pqrs_fdb_del,
+ 	.name			= "SJA1105S",
+ };
 -- 
 2.17.1
 
