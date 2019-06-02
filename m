@@ -2,110 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF0E3230D
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 13:10:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8643230E
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 13:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbfFBLKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 07:10:04 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39871 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfFBLKE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 07:10:04 -0400
-Received: by mail-pf1-f193.google.com with SMTP id j2so8900609pfe.6
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 04:10:04 -0700 (PDT)
+        id S1726521AbfFBLKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 07:10:34 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35577 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfFBLKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 07:10:33 -0400
+Received: by mail-pg1-f195.google.com with SMTP id s27so988534pgl.2
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 04:10:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=2pFEUYDHFg7rnZ7Z2U7G7gMrGbA4wlTfL08BWYuLPxk=;
-        b=bNP4uPhFJdOWRieR9Zg8kqS70nNNkqQOmszWIcY05QrqqQ/xUAf1BCtvN9Q6+SWI3S
-         4nfrGupXXQf/8hd9cbpPch9XdoLg1vOB1KrmgTYMa4+/wLSuN8PNjpMaaUvmZp1Kkfsa
-         NuS+A9Ax2PmqxmSSpH6r4KY8JtR/20VYBTseoIY/KS5yKTjw6U1Z1fkFpH0Jt7zyTaxi
-         D69GWpVr+IeRXUq/2jD9SVZ3zgiTI1Npi70CAGysv7y+z6//kLnZJM03UPPAUn+iei02
-         GHN6Kvu3MpvQGJKgBAkIGWC14iea4o6/B+givZcTSBjsTfyWuy/YXFVPDBScuVt/WM0Z
-         Z5Cg==
+        bh=5TTMOLEScgSAihfdLvAGl84YJi5CxuK7So96A+cIHzY=;
+        b=NTobo7+gMynjEJ93tTzN3h/usCaJWB6UKsXVa9R8vldO/9RHx2WO2JbqPelrYZUgZs
+         nZz0Wqg5NhV4Dqj3/Zo8go4RMOGbd7O7mWQ1pGJkHpyjF5IvgCNnwkF49J915Wik1cAj
+         /Sk52/XEcfYWNxSyBNTNjZAmhBk5/yPoI01FsteuaseLMFRkzLuUeECD3ZONkj+X4ZWt
+         /lOf/AuT1A7jQ1GR/SmV4uNxb8N7J2DHMhvB8YrT7H+gOat/k9pkLtcBtqtjgDRsEWmj
+         KkvfUVFr/dGkQYw16HUSqGHsiIbCqj4ueEp9RhKy2LPO0220JIz6+AUf3vgk87L6q/DV
+         QMqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2pFEUYDHFg7rnZ7Z2U7G7gMrGbA4wlTfL08BWYuLPxk=;
-        b=phpWnlpqsd3XprFXHrgKeTIQauw7IMFbpiGn+JD7Cgee/B2+LIBoqO0F/ddjm44dPX
-         sda0dvhNX2setGeMBrfJK+Qqdq+R5ro/L3IvUd8wN6JVN/dkvMGeE2N6rYb2ypuVWM7A
-         8RkCYnI0LtiYlsG+8BiIR6r5S1HJKPRMIOd4AfcWizeliKt1cnWUPWbHDfgyo/8SGhTv
-         WwbVxkFBuip7Ya4Jbo6s6Vm1BIM0ZjjCl7oC/ah/fQZXm0A+yieVgRJpE8ejPVfNnkea
-         0YrEkiQ2DkzVXQ3wVLY9LGWGI9QYh7/h2XlBO+T3FwjpiN97kIUiZMGgKe5mrJSy6lb/
-         pnjA==
-X-Gm-Message-State: APjAAAVEk1hAwQSxodqsGcVXCKsg2CNxlsJ2QSHSZ3Zb+NGr3n0P85Os
-        BoGOq4K3by9aEtv2njBzkhci+zdi
-X-Google-Smtp-Source: APXvYqynR8YziXxYeKryw1ezASbMVoOUtI/uiS3HvHnpqE26KEoQOFMXzfTXQzysX63K4FRXbJiZgg==
-X-Received: by 2002:a17:90a:25af:: with SMTP id k44mr8546921pje.122.1559473803399;
-        Sun, 02 Jun 2019 04:10:03 -0700 (PDT)
+        bh=5TTMOLEScgSAihfdLvAGl84YJi5CxuK7So96A+cIHzY=;
+        b=UmhA4JAItauob0i2ttan7CcOWXFbsjmqzpNzWu9op6EIhCgRN7F+VQSk5/s3EnDrhT
+         jx8OJjTUGeyzWGV10bX9QbAczStCcHbPN1QfrgJIbTfBZCaKhO4+3ZA3ak3jumxgsRWE
+         3e65TlpoHL7/TEXXHzHO/gl9e7/s0TQdmn5+nQsLZYf+hS9EPvXfGnr2bDpyHnfddITx
+         xovoeMJzKaPJRQR7B3WOs0CBwEQ2xB/pn7+nmyexkwSxAn92mR6a9k/ijYpADdmyYsbL
+         cxcX1jDe9/11lnaPs6Yr7KYkIQw0wN/ltRCd42A9e7u4H36NuHCs45tJ7vGKC1+/0ONl
+         8fJw==
+X-Gm-Message-State: APjAAAV3p8h1/nKtdC/+VahUJAbH4dg1NgNsRNhsQy+rjC4l6ffl39Uq
+        4524HVBaptRCirZU0pplwxyt3T68
+X-Google-Smtp-Source: APXvYqwj1V+P8IHOyKfii0DV5eyL5lLuPo5Dm4SkDAYH9y7RDMKJlKdjBwhDuiPu61DtL1S5LHIuGQ==
+X-Received: by 2002:a63:5d45:: with SMTP id o5mr21394955pgm.40.1559473832878;
+        Sun, 02 Jun 2019 04:10:32 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d6sm12655826pgv.4.2019.06.02.04.10.02
+        by smtp.gmail.com with ESMTPSA id d35sm9367999pgb.55.2019.06.02.04.10.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 04:10:02 -0700 (PDT)
+        Sun, 02 Jun 2019 04:10:32 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] selftests: set sysctl bc_forwarding properly in router_broadcast.sh
-Date:   Sun,  2 Jun 2019 19:09:55 +0800
-Message-Id: <e22d53ba6d4dde4de8364f9c903a98061344cbe2.1559473795.git.lucien.xin@gmail.com>
+Subject: [PATCH net] ipv4: not do cache for local delivery if bc_forwarding is enabled
+Date:   Sun,  2 Jun 2019 19:10:24 +0800
+Message-Id: <9b4ce2be76ea7a635fe431ec42a784db0196a5a0.1559473824.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sysctl setting bc_forwarding for $rp2 is needed when ping_test_from h2,
-otherwise the bc packets from $rp2 won't be forwarded. This patch is to
-add this setting for $rp2.
+With the topo:
 
-Also, as ping_test_from does grep "$from" only, which could match some
-unexpected output, some test case doesn't really work, like:
+    h1 ---| rp1            |
+          |     route  rp3 |--- h3 (192.168.200.1)
+    h2 ---| rp2            |
 
-  # ping_test_from $h2 198.51.200.255 198.51.200.2
-    PING 198.51.200.255 from 198.51.100.2 veth3: 56(84) bytes of data.
-    64 bytes from 198.51.100.1: icmp_seq=1 ttl=64 time=0.336 ms
+If rp1 bc_forwarding is set while rp2 bc_forwarding is not, after
+doing "ping 192.168.200.255" on h1, then ping 192.168.200.255 on
+h2, and the packets can still be forwared.
 
-When doing grep $form (198.51.200.2), the output could still match.
-So change to grep "bytes from $from" instead.
+This issue was caused by the input route cache. It should only do
+the cache for either bc forwarding or local delivery. Otherwise,
+local delivery can use the route cache for bc forwarding of other
+interfaces.
 
-Fixes: 40f98b9af943 ("selftests: add a selftest for directed broadcast forwarding")
+This patch is to fix it by not doing cache for local delivery if
+all.bc_forwarding is enabled.
+
+Note that we don't fix it by checking route cache local flag after
+rt_cache_valid() in "local_input:" and "ip_mkroute_input", as the
+common route code shouldn't be touched for bc_forwarding.
+
+Fixes: 5cbf777cfdf6 ("route: add support for directed broadcast forwarding")
+Reported-by: Jianlin Shi <jishi@redhat.com>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- tools/testing/selftests/net/forwarding/router_broadcast.sh | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ipv4/route.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/router_broadcast.sh b/tools/testing/selftests/net/forwarding/router_broadcast.sh
-index 9a678ec..4eac0a0 100755
---- a/tools/testing/selftests/net/forwarding/router_broadcast.sh
-+++ b/tools/testing/selftests/net/forwarding/router_broadcast.sh
-@@ -145,16 +145,19 @@ bc_forwarding_disable()
- {
- 	sysctl_set net.ipv4.conf.all.bc_forwarding 0
- 	sysctl_set net.ipv4.conf.$rp1.bc_forwarding 0
-+	sysctl_set net.ipv4.conf.$rp2.bc_forwarding 0
- }
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 11ddc27..91bf75b 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1985,7 +1985,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 	u32		itag = 0;
+ 	struct rtable	*rth;
+ 	struct flowi4	fl4;
+-	bool do_cache;
++	bool do_cache = true;
  
- bc_forwarding_enable()
- {
- 	sysctl_set net.ipv4.conf.all.bc_forwarding 1
- 	sysctl_set net.ipv4.conf.$rp1.bc_forwarding 1
-+	sysctl_set net.ipv4.conf.$rp2.bc_forwarding 1
- }
+ 	/* IP on this device is disabled. */
  
- bc_forwarding_restore()
- {
-+	sysctl_restore net.ipv4.conf.$rp2.bc_forwarding
- 	sysctl_restore net.ipv4.conf.$rp1.bc_forwarding
- 	sysctl_restore net.ipv4.conf.all.bc_forwarding
- }
-@@ -171,7 +174,7 @@ ping_test_from()
- 	log_info "ping $dip, expected reply from $from"
- 	ip vrf exec $(master_name_get $oif) \
- 		$PING -I $oif $dip -c 10 -i 0.1 -w $PING_TIMEOUT -b 2>&1 \
--		| grep $from &> /dev/null
-+		| grep "bytes from $from" > /dev/null
- 	check_err_fail $fail $?
- }
+@@ -2062,6 +2062,9 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 	if (res->type == RTN_BROADCAST) {
+ 		if (IN_DEV_BFORWARD(in_dev))
+ 			goto make_route;
++		/* not do cache if bc_forwarding is enabled */
++		if (IPV4_DEVCONF_ALL(net, BC_FORWARDING))
++			do_cache = false;
+ 		goto brd_input;
+ 	}
+ 
+@@ -2099,18 +2102,15 @@ out:	return err;
+ 	RT_CACHE_STAT_INC(in_brd);
+ 
+ local_input:
+-	do_cache = false;
+-	if (res->fi) {
+-		if (!itag) {
+-			struct fib_nh_common *nhc = FIB_RES_NHC(*res);
++	do_cache &= res->fi && !itag;
++	if (do_cache) {
++		struct fib_nh_common *nhc = FIB_RES_NHC(*res);
+ 
+-			rth = rcu_dereference(nhc->nhc_rth_input);
+-			if (rt_cache_valid(rth)) {
+-				skb_dst_set_noref(skb, &rth->dst);
+-				err = 0;
+-				goto out;
+-			}
+-			do_cache = true;
++		rth = rcu_dereference(nhc->nhc_rth_input);
++		if (rt_cache_valid(rth)) {
++			skb_dst_set_noref(skb, &rth->dst);
++			err = 0;
++			goto out;
+ 		}
+ 	}
  
 -- 
 2.1.0
