@@ -2,109 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D1733253D
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 00:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 852FF325A2
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 01:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbfFBWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 18:00:23 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46331 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfFBWAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 18:00:23 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m15so6022403ljg.13;
-        Sun, 02 Jun 2019 15:00:21 -0700 (PDT)
+        id S1726634AbfFBXbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 19:31:46 -0400
+Received: from mail-wm1-f50.google.com ([209.85.128.50]:37736 "EHLO
+        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbfFBXbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 19:31:45 -0400
+Received: by mail-wm1-f50.google.com with SMTP id 22so959552wmg.2
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 16:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pSO0H2Cb09CLOksHCZL4+23n2F4bglfpiYqVlXdmSfM=;
-        b=rXUyCBlMcV0bxFvqljbaR2UaMAAKXoGyvYOwiL/fraYrb6NX1s+e06Db9EmTtqZyq+
-         MR9+Aj7S7O0Esk1UGwr5N3MsS20PQbC6MjjZT0UyE3LB9lU/OmE3hxPpTeRxMCMscSTj
-         bM8WlmIS2thi69ERW3BEQlCfeuJ2NlX7b3nA1YjDNzidYEX7taTrVG8j1NfN9uw5LYEG
-         QCIsyOeDsNjNtJWo2T5zpo9DAi94Js2EmxoOkbU97JY6FQV4VHDUkJHqPWffysMBS5pN
-         ADpDcj57t3ob377xVWa8R8LcdFHbJS1/TvUf+Rw1nQDRlYN7CQkw9yu+SipjBVdm0KJA
-         DCLw==
+        h=from:to:cc:subject:date:message-id;
+        bh=SQv678lLk/VPktU7U8RESghFEs1ZOEYSnzU4ZYcYEb0=;
+        b=lYfGZJRuh314NdVNz57oYz6lMCga+Zv3g+AaL5wZbjGF2Veo9BosfGIJ2dMFarhqwN
+         +srHSeN8QTfBNaMWtdsyPfOagolWcoVTsWuFhmK+wLsGdjL2iQHAhKUMGm2yKjkF6cXF
+         z7KQ3R4GW4Nsj3ub/joFU9F86bnSeK6gNVTaqO3nbrKqcrCLMY80QseAMoSX6tUlW5eD
+         JqnQCQkCV1fyy6sLdt93v0T6bHRKds4vSlFXzCA5da9TbocTz+OaWSzLjA2YvkgrrUZe
+         oXid5ai67aui5U4P2yWHmmQ2cIgizBZQ+ojShFcgYUWRlds+hNpIPicE4gqz6/k5kJ0A
+         rRkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pSO0H2Cb09CLOksHCZL4+23n2F4bglfpiYqVlXdmSfM=;
-        b=bn7KO7kSG9gqwHIq+rPXsuiF16yx43XhYo15auszsqGq/ECJEt+Zhrrnu2Vs9pyOZY
-         MTi61kICWDfl/NibXXoa+hB4rbgXTugZqV3I+DdFOm9J4QPhkQ0bz1VPmRSXyyRxppfj
-         q8Tm16eBVxfhQiRbhtZQHzX7Ern72hef6jpLVHrRuTg9868sYKuGYHn6NoYGnqLu4aZ8
-         DHfpA6AUeUmv0e8I1DUJxOAIx9aN7+N4oRThY5iYu+sBva9oPntDTtdpQxA/Qm41z7mE
-         b7jevFnLxhlpI49Y0CtNqfJdLe2yb6bpS9DgZbw8lvgYYj8kKj8aA/KBzet19dLnseCH
-         cz0A==
-X-Gm-Message-State: APjAAAUnzDgqcKXc+kmOeXHruCqoKpYBGMDXdLjXXP/r303zFFkeUOl+
-        Gvo18AGkvagnTl04nqhPhGLYvEiYhZ29kMSRvDo=
-X-Google-Smtp-Source: APXvYqzF2ASIyINX5BllZ1zYtV8spOtlH4ML28puBxpogyGYLuAXeJjrOIOpZBBzC3J7OdWvFcybZF60eiLm7KaJ6zs=
-X-Received: by 2002:a2e:8116:: with SMTP id d22mr7225ljg.8.1559512820874; Sun,
- 02 Jun 2019 15:00:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190602213926.2290-1-olteanv@gmail.com> <20190602213926.2290-9-olteanv@gmail.com>
-In-Reply-To: <20190602213926.2290-9-olteanv@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SQv678lLk/VPktU7U8RESghFEs1ZOEYSnzU4ZYcYEb0=;
+        b=V9aISKwnwApzYj9xIpdCqUqpSgU2suh3nEUEyRY2cER5AifUDLWJ3AOUfrCWbXWzv5
+         nOYvuLEsjTC4FGPLobd9bfrWYp//J4DKAOSxCTNoGe+hH8r9b0uCykWGNFiMsZBAr4UA
+         5YpF5gvIUpTLHZWczCG0Af1Sk0jvkOdAN8hqE3ZttYzljQckqeo+p9W7rr+xXgtgd2tJ
+         R9tc21qna6/ASco8EgSLNzqmUXcam4LqLxc5QqaAkaps6SKPqJZjAwJEZBa6ic8W7usm
+         mJKJdQRCp/alGa+i6tKIvoiNsjhOgG31qNX0F02oQ2i2N5TLVRFXayCReZaJqNNjsfqm
+         OE2A==
+X-Gm-Message-State: APjAAAX62H1I+ZwD0ec+2W+W8UYjyrVgDzMsqO/EhmXmWyj5bzA15ss4
+        B5D9kZxWQRWLYE8QDPaVPjY=
+X-Google-Smtp-Source: APXvYqx/xQn4Rc6XzLLJCqAzRAmvcgSWqvh6WXury++ALCgqPamw0+9TVB3mlzyrnzKoSaOa7zImGg==
+X-Received: by 2002:a1c:f116:: with SMTP id p22mr323264wmh.70.1559518303373;
+        Sun, 02 Jun 2019 16:31:43 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.27.188])
+        by smtp.gmail.com with ESMTPSA id 32sm39414631wra.35.2019.06.02.16.31.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 02 Jun 2019 16:31:42 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 3 Jun 2019 01:00:10 +0300
-Message-ID: <CA+h21ho1d0RWE=fjy9YhcJ2aBr11BHvOT+daoQd7M+S1S6B0WA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 08/10] net: dsa: sja1105: Make
- sja1105_is_link_local not match meta frames
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v2 net 0/1] Fix link speed handling for SJA1105 DSA driver
+Date:   Mon,  3 Jun 2019 02:31:36 +0300
+Message-Id: <20190602233137.17930-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 at 00:40, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Although meta frames are configured to be sent at SJA1105_META_DMAC
-> (01-80-C2-00-00-0E) which is a multicast MAC address that would also be
-> trapped by the switch to the CPU, were it to receive it on a front-panel
-> port, meta frames are conceptually not link-local frames, they only
-> carry their RX timestamps.
->
-> The choice of sending meta frames at a multicast DMAC is a pragmatic
-> one, to avoid installing an extra entry to the DSA master port's
-> multicast MAC filter.
->
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
-> Changes in v2:
->
-> Patch is new.
->
->  include/linux/dsa/sja1105.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
-> index f3237afed35a..d64e56d6c521 100644
-> --- a/include/linux/dsa/sja1105.h
-> +++ b/include/linux/dsa/sja1105.h
-> @@ -31,6 +31,8 @@ static inline bool sja1105_is_link_local(const struct sk_buff *skb)
->         const struct ethhdr *hdr = eth_hdr(skb);
->         u64 dmac = ether_addr_to_u64(hdr->h_dest);
->
-> +       if (ntohs(hdr->h_proto) == ETH_P_SJA1105_META)
-> +               return false;
->         if ((dmac & SJA1105_LINKLOCAL_FILTER_A_MASK) ==
->                     SJA1105_LINKLOCAL_FILTER_A)
->                 return true;
-> --
-> 2.17.1
->
+This patchset avoids two bugs in the logic handling of the enum
+sja1105_speed_t which caused link speeds of 10 and 100 Mbps to not be
+interpreted correctly and thus not be applied to the switch MACs.
 
-Please be aware that this patch is misplaced and should be moved after
-the current 09/10 (doesn't compile as 08/10).
-I'll bundle this change in v3 with the other feedback I'll hopefully get.
+v1 patchset can be found at:
+https://www.spinics.net/lists/netdev/msg574477.html
 
-Thanks!
--Vladimir
+Changes from v1:
+Applied Andrew Lunn's suggestion of removing the sja1105_get_speed_cfg
+function altogether instead of trying to fix it.
+
+Vladimir Oltean (1):
+  net: dsa: sja1105: Fix link speed not working at 100 Mbps and below
+
+ drivers/net/dsa/sja1105/sja1105_main.c | 32 +++++++++++++-------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+-- 
+2.17.1
+
