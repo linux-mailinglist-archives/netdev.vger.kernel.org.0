@@ -2,46 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE66324B9
-	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 22:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B2C324BE
+	for <lists+netdev@lfdr.de>; Sun,  2 Jun 2019 22:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbfFBUGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 16:06:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:47986 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfFBUGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 16:06:31 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D361F14010600;
-        Sun,  2 Jun 2019 13:06:30 -0700 (PDT)
-Date:   Sun, 02 Jun 2019 13:06:30 -0700 (PDT)
-Message-Id: <20190602.130630.516000280894424300.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH net-next] selftests: Add test cases for nexthop objects
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190530190636.31664-1-dsahern@kernel.org>
-References: <20190530190636.31664-1-dsahern@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 02 Jun 2019 13:06:31 -0700 (PDT)
+        id S1726744AbfFBUWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 16:22:06 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:54685 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbfFBUWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 16:22:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id n8so1558094ioo.21
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 13:22:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=nm/6ER+q3h3p7sTnyVJsppuDHKrbGzPwoUfMZCDiitU=;
+        b=NwW4g/51zuxVAwebup9HZAEPcqCmQPWJmkuE0ZMuA/qLuytmUzpLv6XlOmx8RuT6DG
+         1ibSdn8kgtLhMfhnP4g2PbtT3MaRXBnf9dtkEBYXY9h8fIANHLtIgZNU8vK6GPdV3rUw
+         dlDXBY0saXAuXLWY0lOpcgHK1f6RPdQXBg+7/MdOL5Sh02wJi4TZIQnqoH8CjlW6+JQN
+         OGcpv0n/6kRqSCY8e4X9wqPiBcuA2TUdIkYpUnZc8beAekbqjGT/hdgTk6QNGI3Cjy5n
+         yCghaDFPefC2Hp2hMh2XZ1jbs7+ZMLeMelkjUuxLK+3JM8nC9aA/k2DwExXZ2HCwIyXL
+         mkTw==
+X-Gm-Message-State: APjAAAVIBTlg6Rt40/zLX5eqWS6IsB2q8vhkC1lbn883yXO7T2a7FNPl
+        FvxgBSle06DzdlVYX3A2nQ4UPXH81XwUu0qMmDM9sSuwgx1Z
+X-Google-Smtp-Source: APXvYqxQFrUTlp580iEffCW3xPsgRer1omtAU0nI1TGqhLahdWMMLa63xxmOMwAlI+JCxnE0Es2ID4rmw2ObF6bcoZb4nORmgJNi
+MIME-Version: 1.0
+X-Received: by 2002:a6b:6006:: with SMTP id r6mr13572641iog.231.1559506925129;
+ Sun, 02 Jun 2019 13:22:05 -0700 (PDT)
+Date:   Sun, 02 Jun 2019 13:22:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004c134d058a5d0096@google.com>
+Subject: memory leak in sctp_v6_create_accept_sk
+From:   syzbot <syzbot+276ca1c77a19977c0130@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Thu, 30 May 2019 12:06:36 -0700
+Hello,
 
-> From: David Ahern <dsahern@gmail.com>
-> 
-> Add functional test cases for nexthop objects.
-> 
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+syzbot found the following crash on:
 
-Applied, thanks.
+HEAD commit:    3ab4436f Merge tag 'nfsd-5.2-1' of git://linux-nfs.org/~bf..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=153c64a6a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=50393f7bfe444ff6
+dashboard link: https://syzkaller.appspot.com/bug?extid=276ca1c77a19977c0130
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16195636a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1717d286a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+276ca1c77a19977c0130@syzkaller.appspotmail.com
+
+ffffffffda RBX: 00000000006fbc38 RCX: 0000000000446b59
+BUG: memory leak
+unreferenced object 0xffff88812382ec40 (size 1512):
+   comm "syz-executor098", pid 7138, jiffies 4294945165 (age 7.780s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+     0a 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
+   backtrace:
+     [<0000000006e93bd5>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:55 [inline]
+     [<0000000006e93bd5>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<0000000006e93bd5>] slab_alloc mm/slab.c:3326 [inline]
+     [<0000000006e93bd5>] kmem_cache_alloc+0x134/0x270 mm/slab.c:3488
+     [<000000007da542cd>] sk_prot_alloc+0x41/0x170 net/core/sock.c:1596
+     [<00000000a4eabe8a>] sk_alloc+0x35/0x2f0 net/core/sock.c:1656
+     [<0000000053fa015e>] sctp_v6_create_accept_sk+0x5c/0x1b0  
+net/sctp/ipv6.c:711
+     [<000000008c31091c>] sctp_accept+0x1df/0x290 net/sctp/socket.c:4913
+     [<00000000ec8d71b8>] inet_accept+0x4e/0x1d0 net/ipv4/af_inet.c:734
+     [<000000001f5fe485>] __sys_accept4+0x12a/0x280 net/socket.c:1760
+     [<0000000070a98ea5>] __do_sys_accept net/socket.c:1801 [inline]
+     [<0000000070a98ea5>] __se_sys_accept net/socket.c:1798 [inline]
+     [<0000000070a98ea5>] __x64_sys_accept+0x20/0x30 net/socket.c:1798
+     [<000000004a076fbd>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<00000000d752b65c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
