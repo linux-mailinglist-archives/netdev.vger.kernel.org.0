@@ -2,129 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC9333841
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 20:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7CD33838
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 20:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727151AbfFCSiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 14:38:03 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44572 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727082AbfFCSiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 14:38:01 -0400
-Received: by mail-pl1-f196.google.com with SMTP id c5so7302139pll.11
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 11:38:00 -0700 (PDT)
+        id S1726603AbfFCShw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 14:37:52 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:44188 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfFCShv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 14:37:51 -0400
+Received: by mail-pf1-f194.google.com with SMTP id t16so2281437pfe.11
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 11:37:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=F8wwxq9VxptsURCry2b+aTfA85f9o72dfCgQNjFbLVk=;
-        b=OoHOFFjgzLmkfMx69PpDw1GCFMxg+4mC3LGY9v8drB9Wns2TR4K59tgzJJx+TIUwgM
-         xgZv1h8aB3DRO5FFXODObJQkwbi6Sr2sXsXKBfZrJCH3TG+vi6Qe/3jPtb5RsIIFhYME
-         LCF9vDlm1NdGoKiRNrKIL9Vh4qwj9eWNIm2Lc=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9CsumWRKo8endDXdqOri9lOV+pY+j4oT74Qo66P8Jwk=;
+        b=h7MyZpUecW74U00Js1xj4QeYIEOeBwhuRatWUPwDxDH9zRx5vjFneTXVe/ALEVXbiM
+         nirdU46HuThaKR2csEDuj0KlNBtfK0PAKeOQRHLd2gn6lGc/5wWMY7zsEbw1SCb+rIJj
+         gRMyKvEEQLarbP8op+saNvREaZfqZKynqZMn3de7to/mQiIAyfHhqvKIIwLYXRZXD1Pd
+         6JVPFBoOv3NUkKpwGl5vEhLNvwnbGI83YS6xayUY5AMBZdyl5FZWEHxreBDqp3+qX5dn
+         qKT0p4h5pasBdDhwF3yKsfNyMX5OrBAkstJJ3pcPus735E3TT+73/177TkjAJKUuRtH3
+         HgtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=F8wwxq9VxptsURCry2b+aTfA85f9o72dfCgQNjFbLVk=;
-        b=jogOvs3eoHjXvPDbnkOuyFUI+Uy3FCQo4q3LZMMvzBdw2loIpNVuY36iexyi7RUqj0
-         rwz28KzY0hisUbfpJLD7NP4t52wS7w2XIsfli2dzCPnXA0h51v1gnxU51HfnjXBRR3SD
-         wB1dP8c2bSViOsbiHYRe6Jec0W9CmWcTtd2dhfOFDEOFm0yYBZXrxximIfI0zGxPnRtp
-         8gS3+Eb+ueB0RR0kI5k3a0jQRcP7MUm1qC0ZT5s1UVr0jAt5gDHgAVyf5Y2ddSGEMEOB
-         CE2QnNkAD4ShTI7IPAYZ0POIM0DvFJX36dI1XNHYpeOY7jdlgFV8Yv+BepW5E5JtHgnI
-         7SFw==
-X-Gm-Message-State: APjAAAUtBWo2lXxmpYYRPYOpBKIHSATDKvFcwhkEwUjvk3kF9Nku42r4
-        GNx1aW5ArJ7JQdZPrCfr3zgTDQ==
-X-Google-Smtp-Source: APXvYqy0yhloB5894+QBKfjxD938Rjte+CYfFTXs3NtclcxDXGASENk362PIU8f/7EORJkc4NCJG+Q==
-X-Received: by 2002:a17:902:2ae6:: with SMTP id j93mr32669828plb.130.1559587080394;
-        Mon, 03 Jun 2019 11:38:00 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id t2sm14808969pfh.166.2019.06.03.11.37.59
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9CsumWRKo8endDXdqOri9lOV+pY+j4oT74Qo66P8Jwk=;
+        b=Pfo9iUwmt6dI3hBNAGsadH22x/bvx7kiyPYEH8cX5MJoi//9JLKIRTKjJJp8hpfaa2
+         4SOA4YZVsot6VqGJf8HU+UxNnnn5VmeakgVRbDvkCKo+XxOBunzTrqnFWBlvf5mVjtcZ
+         1jd7wSSs1jAL7BD/EPrJuzESOfKChNRJ5hk43O6pPFI1nDanpaTqqssUhC5ogVzl7E3D
+         zpe1IxVLHcF5ukHIaXhbFPFwXpzdOzY6hzx62N0vxRSb4SGfUX5hado9c0/Wt19noE7k
+         qxqHN1DYns7oyeSz3J4h3AwTdkDQ87L0tkc0mvmRw6DZEOg+IbliB8+3FJPH2ZF81gLQ
+         qSWA==
+X-Gm-Message-State: APjAAAWoBqNHHJJZxJ2rbZGbrXBsrC6Q2DHkrhnaUWN4pJazrh1g2oby
+        wRYhSl74JToHbXr+ZXIuWIUPeXibcm0=
+X-Google-Smtp-Source: APXvYqwBkai/x6lqOkmJQKTZbM9djImr4PhwvgW6wyQkA98y3IvcbzWX1I/m7rT4IMY+1gdiC8ErXw==
+X-Received: by 2002:a63:d949:: with SMTP id e9mr30107446pgj.437.1559587071239;
+        Mon, 03 Jun 2019 11:37:51 -0700 (PDT)
+Received: from [172.27.227.197] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id k1sm50812pjp.2.2019.06.03.11.37.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 11:37:59 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        linux-wireless@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        Douglas Anderson <dianders@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Franky Lin <franky.lin@broadcom.com>,
-        linux-kernel@vger.kernel.org,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>
-Subject: [PATCH v2 3/3] brcmfmac: sdio: Disable auto-tuning around commands expected to fail
-Date:   Mon,  3 Jun 2019 11:37:40 -0700
-Message-Id: <20190603183740.239031-4-dianders@chromium.org>
-X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
-In-Reply-To: <20190603183740.239031-1-dianders@chromium.org>
-References: <20190603183740.239031-1-dianders@chromium.org>
+        Mon, 03 Jun 2019 11:37:50 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
+ a fib6_info
+To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, saeedm@mellanox.com,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20190603040817.4825-1-dsahern@kernel.org>
+ <20190603040817.4825-5-dsahern@kernel.org>
+ <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <de758bfa-4c20-9d40-58d8-c5ae07b40ff3@gmail.com>
+Date:   Mon, 3 Jun 2019 12:37:48 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are certain cases, notably when transitioning between sleep and
-active state, when Broadcom SDIO WiFi cards will produce errors on the
-SDIO bus.  This is evident from the source code where you can see that
-we try commands in a loop until we either get success or we've tried
-too many times.  The comment in the code reinforces this by saying
-"just one write attempt may fail"
+On 6/3/19 12:09 PM, Wei Wang wrote:
+>> @@ -667,6 +704,13 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
+>>         }
+>>         if (do_flush)
+>>                 fib_flush(net);
+>> +
+>> +       /* ip6_del_rt removes the entry from this list hence the _safe */
+>> +       list_for_each_entry_safe(f6i, tmp, &nh->f6i_list, nh_list) {
+>> +               /* __ip6_del_rt does a release, so do a hold here */
+>> +               fib6_info_hold(f6i);
+> Do we need fib6_info_hold_safe() here?
+> 
 
-Unfortunately these failures sometimes end up causing an "-EILSEQ"
-back to the core which triggers a retuning of the SDIO card and that
-blocks all traffic to the card until it's done.
+I do not think so.
 
-Let's disable retuning around the commands we expect might fail.
-
-Fixes: bd11e8bd03ca ("mmc: core: Flag re-tuning is needed on CRC errors")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-
-Changes in v2: None
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 4a750838d8cd..e0cfcc078a54 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -16,6 +16,7 @@
- #include <linux/mmc/sdio_ids.h>
- #include <linux/mmc/sdio_func.h>
- #include <linux/mmc/card.h>
-+#include <linux/mmc/core.h>
- #include <linux/semaphore.h>
- #include <linux/firmware.h>
- #include <linux/module.h>
-@@ -697,6 +698,7 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 		bmask = SBSDIO_FUNC1_SLEEPCSR_KSO_MASK;
- 	}
- 
-+	mmc_expect_errors_begin(bus->sdiodev->func1->card->host);
- 	do {
- 		/* reliable KSO bit set/clr:
- 		 * the sdiod sleep write access is synced to PMU 32khz clk
-@@ -719,6 +721,7 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 				   &err);
- 
- 	} while (try_cnt++ < MAX_KSO_ATTEMPTS);
-+	mmc_expect_errors_end(bus->sdiodev->func1->card->host);
- 
- 	if (try_cnt > 2)
- 		brcmf_dbg(SDIO, "try_cnt=%d rd_val=0x%x err=%d\n", try_cnt,
--- 
-2.22.0.rc1.311.g5d7573a151-goog
-
+If it is on the f6i_list, then fib6_purge_rt has not been called.
+fib6_purge_rt and this function are both called with rtnl held, so there
+is no race with the removal from the list.
