@@ -2,134 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53139332D9
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CC47332FE
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729229AbfFCO6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 10:58:09 -0400
-Received: from smtp6.emailarray.com ([65.39.216.46]:28417 "EHLO
-        smtp6.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728882AbfFCO6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:58:08 -0400
-Received: (qmail 40787 invoked by uid 89); 3 Jun 2019 14:58:07 -0000
-Received: from unknown (HELO ?172.20.92.49?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTk5LjIwMS42NC4y) (POLARISLOCAL)  
-  by smtp6.emailarray.com with (AES256-GCM-SHA384 encrypted) SMTP; 3 Jun 2019 14:58:07 -0000
-From:   "Jonathan Lemon" <jlemon@flugsvamp.com>
-To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
-Cc:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>,
-        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        "Saeed Mahameed" <saeedm@mellanox.com>
-Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
- to netdev
-Date:   Mon, 03 Jun 2019 07:58:02 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <65A0C25F-D4EA-4DCC-951E-2A196F80270F@flugsvamp.com>
-In-Reply-To: <CAJ+HfNj=h1Ns_Q4tzmK-5q8jr5icVLA9-tiH7-tQTXx0hATZ0A@mail.gmail.com>
-References: <20190531094215.3729-1-bjorn.topel@gmail.com>
- <20190531094215.3729-2-bjorn.topel@gmail.com>
- <E5650E49-81B5-4F36-B931-E433A0BD210D@flugsvamp.com>
- <CAJ+HfNj=h1Ns_Q4tzmK-5q8jr5icVLA9-tiH7-tQTXx0hATZ0A@mail.gmail.com>
+        id S1729333AbfFCPBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 11:01:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50728 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729038AbfFCPBa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 11:01:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=alJ1LnKHdTrSERDEsnCav6Cl9EFgdbgEAHodmjMaerw=; b=RBLl4e3b4qaAknaEE/9kgU17EQ
+        eiDB8AGRAF4E2p85V5dW0xTKmFGrBQ2JBrwj2swrhf9ZRD+1HPHMhbcik5TBjKueQaSlccq79Rr4K
+        yKyC1HT3nezO+EKIbaNcBFbtbrhbaiaN6JGH9/KJ3726yBAqfzGw4LxL1YvjABoTYEBU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hXoSk-0005yA-1l; Mon, 03 Jun 2019 17:01:26 +0200
+Date:   Mon, 3 Jun 2019 17:01:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 06/10] net: dsa: mv88e6xxx: implement
+ port_set_speed for mv88e6250
+Message-ID: <20190603150126.GE19627@lunn.ch>
+References: <20190603144112.27713-1-rasmus.villemoes@prevas.dk>
+ <20190603144112.27713-7-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603144112.27713-7-rasmus.villemoes@prevas.dk>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3 Jun 2019, at 1:39, Björn Töpel wrote:
+On Mon, Jun 03, 2019 at 02:42:19PM +0000, Rasmus Villemoes wrote:
+> The data sheet also mentions the possibility of selecting 200 Mbps for
+> the MII ports (ports 5 and 6) by setting the ForceSpd field to
+> 0x2 (aka MV88E6065_PORT_MAC_CTL_SPEED_200). However, there's a note
+> that "actual speed is determined by bit 8 above", and flipping back a
+> page, one finds that bits 13:8 are reserved...
+> 
+> So without further information on what bit 8 means, let's stick to
+> supporting just 10 and 100 Mbps on all ports.
 
-> On Sat, 1 Jun 2019 at 20:12, Jonathan Lemon <jlemon@flugsvamp.com> 
-> wrote:
->>
->> On 31 May 2019, at 2:42, Björn Töpel wrote:
->>
->>> From: Björn Töpel <bjorn.topel@intel.com>
->>>
->>> All XDP capable drivers need to implement the XDP_QUERY_PROG{,_HW}
->>> command of ndo_bpf. The query code is fairly generic. This commit
->>> refactors the query code up from the drivers to the netdev level.
->>>
->>> The struct net_device has gained two new members: xdp_prog_hw and
->>> xdp_flags. The former is the offloaded XDP program, if any, and the
->>> latter tracks the flags that the supplied when attaching the XDP
->>> program. The flags only apply to SKB_MODE or DRV_MODE, not HW_MODE.
->>>
->>> The xdp_prog member, previously only used for SKB_MODE, is shared 
->>> with
->>> DRV_MODE. This is OK, due to the fact that SKB_MODE and DRV_MODE are
->>> mutually exclusive. To differentiate between the two modes, a new
->>> internal flag is introduced as well.
->>
->> I'm not entirely clear why this new flag is needed - GENERIC seems to
->> be an alias for SKB_MODE, so why just use SKB_MODE directly?
->>
->> If the user does not explicitly specify a type (skb|drv|hw), then the
->> command should choose the correct type and then behave as if this 
->> type
->> was specified.
->>
->
-> Yes, this is kind of hairy.
->
-> SKB and DRV are mutually exclusive, but HW is not. IOW, valid options 
-> are:
-> SKB, DRV, HW, SKB+HW DRV+HW.
+200Mbps is also somewhat Marvell Proprietary. I've not seen any other
+vendors interfaces supporting it. So i don't think anybody will really
+miss it.
 
-Fair enough, that was the understanding that I had from the code, 
-although I'm not sure about the usage of SKB+HW mode.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-
-
->
-> What complicates things further, is that SKB and DRV can be implicitly
-> (auto/no flags) or explicitly enabled (flags).
->
-> If a user doesn't pass any flags, the "best supported mode" should be
-> selected. If this "auto mode" is used, it should be seen as a third
-> mode. E.g.
->
-> ip link set dev eth0 xdp on -- OK
-> ip link set dev eth0 xdp off -- OK
->
-> ip link set dev eth0 xdp on -- OK # generic auto selected
-> ip link set dev eth0 xdpgeneric off -- NOK, bad flags
->
-> ip link set dev eth0 xdp on -- OK # drv auto selected
-> ip link set dev eth0 xdpdrv off -- NOK, bad flags
->
-> ...and so on. The idea is that a user should use the same set of flags 
-> always.
-
-I'm not sure about this.  The "xdp" mode shouldn't be treated as a 
-separate mode, it should be "best supported mode", as indicated above.  
- From my view, it should select the appropriate mode, and then proceed 
-as if the user had specified that mode, rather than being treated as an 
-independent mode.
-
-ip link set dev eth0 xdp on		- OK
-ip link set dev eth0 xdp off	- OK
-
-ip link set dev eth0 xdp on 	- OK, selected dev
-ip link set dev eth0 xdpgeneric off - NOK, not running
-ip link set dev eth0 xdpdrv off	- OK
-
-
-
-
-> The internal "GENERIC" flag is only to determine if the xdp_prog
-> represents a DRV version or SKB version. Maybe it would be clearer
-> just to add an additional xdp_prog_drv to the net_device, instead?
-
-I'd go the other way, and remove GENERIC, leaving only SKB, DRV, and HW.
-The appropriate mode flag (SKB|DRV) is enough to indicate the type of 
-xdp_prog.
--- 
-Jonathan
+    Andrew
