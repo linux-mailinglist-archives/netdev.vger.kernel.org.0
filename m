@@ -2,140 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8E533998
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 22:14:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16623339AC
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 22:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbfFCUOT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 3 Jun 2019 16:14:19 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38381 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbfFCUOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 16:14:18 -0400
-Received: by mail-ed1-f66.google.com with SMTP id g13so28584873edu.5
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 13:14:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Q2/9moJbjndV1cW6Hj1XANq+vkkmQEi9E4FRdRIySFs=;
-        b=hSHsL1kblOPjYjrTe6DRzocOk5x4NR/lv5XOU705mxfu2DxWVbNliqq+/tQW19qtnn
-         EbzPD1U3Nz3zS+4Rl8pKY1fv9bf+H4xAxFFah9jql438SmcPyDKcaJWb0D8KyrKj/uoL
-         AB3f9lVhUpTwbcUSX6hA0ENFphMiOopMu2CVSDRdtlsPqLMQ9FSvQsBUEHkrYHdJ02fv
-         wN9COogppmnlXK7qAbCBCkjecKx5wuMrBFRAg6QQQl4IgsuNfS9fht9q/mw/zszVxRs+
-         bIN/UVHYMnlLhKZUVvwuEPnk37JzEpIlUW9f+8742KhA5z8gdNMbM/xxq3mfZybfzEZf
-         sGZQ==
-X-Gm-Message-State: APjAAAUvFL8wHQYJTQNpHGs1voII5R8uInAO5f+VEbPRIABsqlBi/yqs
-        ff37zATeACwbHjBgnH4TyHYmXg==
-X-Google-Smtp-Source: APXvYqwXMLjpPY35oIs90KmRdY/aELDtTmvmotSFs8zdoB/3zHsgw6Dt0LWd7AggGk2THaiXX2Wzog==
-X-Received: by 2002:a17:906:30c3:: with SMTP id b3mr25499572ejb.153.1559592856626;
-        Mon, 03 Jun 2019 13:14:16 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id o11sm2291884edh.30.2019.06.03.13.14.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 Jun 2019 13:14:15 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3565D1800F7; Mon,  3 Jun 2019 22:14:15 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
-        ldir@darbyshire-bryant.me.uk
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org
-Subject: Re: [PATCH RFC iproute2-next v4] tc: add support for action act_ctinfo
-In-Reply-To: <20190603135040.75408-1-ldir@darbyshire-bryant.me.uk>
-References: <20190602185020.40787-1-ldir@darbyshire-bryant.me.uk> <20190603135040.75408-1-ldir@darbyshire-bryant.me.uk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 03 Jun 2019 22:14:15 +0200
-Message-ID: <87y32ifmug.fsf@toke.dk>
+        id S1726805AbfFCUYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 16:24:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51268 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725956AbfFCUYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 16:24:46 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 697D9306E33B;
+        Mon,  3 Jun 2019 20:24:39 +0000 (UTC)
+Received: from x2.localnet (ovpn-122-112.rdu2.redhat.com [10.10.122.112])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DC03E19936;
+        Mon,  3 Jun 2019 20:24:23 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>,
+        Tycho Andersen <tycho@tycho.ws>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
+        Eric Paris <eparis@parisplace.org>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com
+Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
+Date:   Mon, 03 Jun 2019 16:24:23 -0400
+Message-ID: <97478582.yP93vGJyqj@x2>
+Organization: Red Hat
+In-Reply-To: <CAHC9VhTrM1op_EH=YAn9pU8dMOr=jB-Ph4SxFeqGFskwLmFnCA@mail.gmail.com>
+References: <20190529145742.GA8959@cisco> <20190531002058.tsddah4edcazkuzs@madcap2.tricolour.ca> <CAHC9VhTrM1op_EH=YAn9pU8dMOr=jB-Ph4SxFeqGFskwLmFnCA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Mon, 03 Jun 2019 20:24:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> writes:
+Hello Paul,
 
-> ctinfo is an action restoring data stored in conntrack marks to various
-> fields.  At present it has two independent modes of operation,
-> restoration of DSCP into IPv4/v6 diffserv and restoration of conntrack
-> marks into packet skb marks.
->
-> It understands a number of parameters specific to this action in
-> additional to the usual action syntax.  Each operating mode is
-> independent of the other so all options are optional, however not
-> specifying at least one mode is a bit pointless.
->
-> Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE]
-> 		  [CONTROL] [index <INDEX>]
->
-> DSCP mode
->
-> dscp enables copying of a DSCP store in the conntrack mark into the
-> ipv4/v6 diffserv field.  The mask is a 32bit field and specifies where
-> in the conntrack mark the DSCP value is stored.  It must be 6 contiguous
-> bits long, e.g. 0xfc000000 would restore the DSCP from the upper 6 bits
-> of the conntrack mark.
->
-> The DSCP copying may be optionally controlled by a statemask.  The
-> statemask is a 32bit field, usually with a single bit set and must not
-> overlap the dscp mask.  The DSCP restore operation will only take place
-> if the corresponding bit/s in conntrack mark yield a non zero result.
->
-> eg. dscp 0xfc000000/0x01000000 would retrieve the DSCP from the top 6
-> bits, whilst using bit 25 as a flag to do so.  Bit 26 is unused in this
-> example.
->
-> CPMARK mode
->
-> cpmark enables copying of the conntrack mark to the packet skb mark.  In
-> this mode it is completely equivalent to the existing act_connmark.
-> Additional functionality is provided by the optional mask parameter,
-> whereby the stored conntrack mark is logically anded with the cpmark
-> mask before being stored into skb mark.  This allows shared usage of the
-> conntrack mark between applications.
->
-> eg. cpmark 0x00ffffff would restore only the lower 24 bits of the
-> conntrack mark, thus may be useful in the event that the upper 8 bits
-> are used by the DSCP function.
->
-> Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE]
-> 		  [CONTROL] [index <INDEX>]
-> where :
-> 	dscp MASK is the bitmask to restore DSCP
-> 	     STATEMASK is the bitmask to determine conditional restoring
-> 	cpmark MASK mask applied to restored packet mark
-> 	ZONE is the conntrack zone
-> 	CONTROL := reclassify | pipe | drop | continue | ok |
-> 		   goto chain <CHAIN_INDEX>
->
-> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
->
-> ---
-> v2 - fix whitespace issue in pkt_cls
->      fix most warnings from checkpatch - some lines still over 80 chars
->      due to long TLV names.
-> v3 - fix some dangling else warnings.
->      refactor stats printing to please checkpatch.
->      send zone TLV even if default '0' zone.
->      now checkpatch clean even though I think some of the formatting
->      is horrible :-)
->      sending via google's smtp 'cos MS' exchange office365 appears
->      to mangle patches from git send-email.
-> v4 - use the NEXT_ARG macros throughout.
->      fix printing typo use 'cpmark' instead of 'mark'.
->      use space separator between dscp mask & optional statemask and
->      update usage as a result.
->      validate dscp mask & statemask and print friendlier warnings
->      than "invalid".
->      fix cpmark option default value handling bug.
+I am curious about this. We seemed to be close to getting this patch pulled 
+in. A lot of people are waiting for it. Can you summarize what you think the 
+patches need and who we think needs to do it? I'm lost. Does LXC people need 
+to propose something? Does Richard? Someone else? Who's got the ball?
 
-No further comments on this version; you should probably re-submit
-without the RFC tag, though.
+Thank,
+-Steve
 
-Feel free to add my
+On Friday, May 31, 2019 8:44:45 AM EDT Paul Moore wrote:
+> On Thu, May 30, 2019 at 8:21 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2019-05-30 19:26, Paul Moore wrote:
+> > > On Thu, May 30, 2019 at 5:29 PM Tycho Andersen <tycho@tycho.ws> wrote:
+> > > > On Thu, May 30, 2019 at 03:29:32PM -0400, Paul Moore wrote:
+> > > > > [REMINDER: It is an "*audit* container ID" and not a general
+> > > > > "container ID" ;)  Smiley aside, I'm not kidding about that part.]
+> > > > 
+> > > > This sort of seems like a distinction without a difference;
+> > > > presumably
+> > > > audit is going to want to differentiate between everything that
+> > > > people
+> > > > in userspace call a container. So you'll have to support all this
+> > > > insanity anyway, even if it's "not a container ID".
+> > > 
+> > > That's not quite right.  Audit doesn't care about what a container is,
+> > > or is not, it also doesn't care if the "audit container ID" actually
+> > > matches the ID used by the container engine in userspace and I think
+> > > that is a very important line to draw.  Audit is simply given a value
+> > > which it calls the "audit container ID", it ensures that the value is
+> > > inherited appropriately (e.g. children inherit their parent's audit
+> > > container ID), and it uses the value in audit records to provide some
+> > > additional context for log analysis.  The distinction isn't limited to
+> > > the value itself, but also to how it is used; it is an "audit
+> > > container ID" and not a "container ID" because this value is
+> > > exclusively for use by the audit subsystem.  We are very intentionally
+> > > not adding a generic container ID to the kernel.  If the kernel does
+> > > ever grow a general purpose container ID we will be one of the first
+> > > ones in line to make use of it, but we are not going to be the ones to
+> > > generically add containers to the kernel.  Enough people already hate
+> > > audit ;)
+> > > 
+> > > > > I'm not interested in supporting/merging something that isn't
+> > > > > useful;
+> > > > > if this doesn't work for your use case then we need to figure out
+> > > > > what
+> > > > > would work.  It sounds like nested containers are much more common
+> > > > > in
+> > > > > the lxc world, can you elaborate a bit more on this?
+> > > > > 
+> > > > > As far as the possible solutions you mention above, I'm not sure I
+> > > > > like the per-userns audit container IDs, I'd much rather just emit
+> > > > > the
+> > > > > necessary tracking information via the audit record stream and let
+> > > > > the
+> > > > > log analysis tools figure it out.  However, the bigger question is
+> > > > > how
+> > > > > to limit (re)setting the audit container ID when you are in a
+> > > > > non-init
+> > > > > userns.  For reasons already mentioned, using capable() is a non
+> > > > > starter for everything but the initial userns, and using
+> > > > > ns_capable()
+> > > > > is equally poor as it essentially allows any userns the ability to
+> > > > > munge it's audit container ID (obviously not good).  It appears we
+> > > > > need a different method for controlling access to the audit
+> > > > > container
+> > > > > ID.
+> > > > 
+> > > > One option would be to make it a string, and have it be append only.
+> > > > That should be safe with no checks.
+> > > > 
+> > > > I know there was a long thread about what type to make this thing. I
+> > > > think you could accomplish the append-only-ness with a u64 if you had
+> > > > some rule about only allowing setting lower order bits than those
+> > > > that
+> > > > are already set. With 4 bits for simplicity:
+> > > > 
+> > > > 1100         # initial container id
+> > > > 1100 -> 1011 # not allowed
+> > > > 1100 -> 1101 # allowed, but now 1101 is set in stone since there are
+> > > > 
+> > > >              # no lower order bits left
+> > > > 
+> > > > There are probably fancier ways to do it if you actually understand
+> > > > math :)
+> > >  
+> > >  ;)
+> > >  
+> > > > Since userns nesting is limited to 32 levels (right now, IIRC), and
+> > > > you have 64 bits, this might be reasonable. You could just teach
+> > > > container engines to use the first say N bits for themselves, with a
+> > > > 1
+> > > > bit for the barrier at the end.
+> > > 
+> > > I like the creativity, but I worry that at some point these
+> > > limitations are going to be raised (limits have a funny way of doing
+> > > that over time) and we will be in trouble.  I say "trouble" because I
+> > > want to be able to quickly do an audit container ID comparison and
+> > > we're going to pay a penalty for these larger values (we'll need this
+> > > when we add multiple auditd support and the requisite record routing).
+> > > 
+> > > Thinking about this makes me also realize we probably need to think a
+> > > bit longer about audit container ID conflicts between orchestrators.
+> > > Right now we just take the value that is given to us by the
+> > > orchestrator, but if we want to allow multiple container orchestrators
+> > > to work without some form of cooperation in userspace (I think we have
+> > > to assume the orchestrators will not talk to each other) we likely
+> > > need to have some way to block reuse of an audit container ID.  We
+> > > would either need to prevent the orchestrator from explicitly setting
+> > > an audit container ID to a currently in use value, or instead generate
+> > > the audit container ID in the kernel upon an event triggered by the
+> > > orchestrator (e.g. a write to a /proc file).  I suspect we should
+> > > start looking at the idr code, I think we will need to make use of it.
+> > 
+> > My first reaction to using the IDR code is that once an idr is given up,
+> > it can be reused.  I suppose we request IDRs and then never give them up
+> > to avoid reuse...
+> 
+> I'm not sure we ever what to guarantee that an audit container ID
+> won't be reused during the lifetime of the system, it is a discrete
+> integer after all.  What I think we do want to guarantee is that we
+> won't allow an unintentional audit container ID collision between
+> different orchestrators; if a single orchestrator wants to reuse an
+> audit container ID then that is its choice.
+> 
+> > I already had some ideas of preventing an existing ID from being reused,
+> 
+> Cool.  I only made the idr suggestion since it is used for PIDs and
+> solves a very similar problem.
+> 
+> > but that makes the practice of some container engines injecting
+> > processes into existing containers difficult if not impossible.
+> 
+> Yes, we'll need some provision to indicate which orchestrator
+> "controls" that particular audit container ID, and allow that
+> orchestrator to reuse that particular audit container ID (until all
+> those containers disappear and the audit container ID is given back to
+> the pool).
 
-Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 
-when you do...
 
--Toke
+
