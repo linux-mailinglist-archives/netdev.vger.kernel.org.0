@@ -2,46 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F21833A5E
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DE733A77
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbfFCV5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 17:57:15 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:35866 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfFCV5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:57:15 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AB526133E97CE;
-        Mon,  3 Jun 2019 14:57:14 -0700 (PDT)
-Date:   Mon, 03 Jun 2019 14:57:14 -0700 (PDT)
-Message-Id: <20190603.145714.586469768418251982.davem@davemloft.net>
-To:     ecree@solarflare.com
-Cc:     jhs@mojatatu.com, jiri@resnulli.us, pablo@netfilter.org,
-        netdev@vger.kernel.org, xiyou.wangcong@gmail.com
-Subject: Re: [PATCH net-next] flow_offload: include linux/kernel.h from
- flow_offload.h
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <c7da964b-72ba-964a-5adf-c7b33b32c737@solarflare.com>
-References: <c7da964b-72ba-964a-5adf-c7b33b32c737@solarflare.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Jun 2019 14:57:14 -0700 (PDT)
+        id S1726749AbfFCV6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:58:04 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:12160 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfFCV5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:57:38 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x53Lva6B007837
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 3 Jun 2019 15:57:37 -0600 (CST)
+Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x53LvTMX008601
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 3 Jun 2019 15:57:35 -0600
+From:   Robert Hancock <hancock@sedsystems.ca>
+To:     netdev@vger.kernel.org
+Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
+        Robert Hancock <hancock@sedsystems.ca>
+Subject: [PATCH net-next 16/18] net: axienet: document axistream-connected attribute
+Date:   Mon,  3 Jun 2019 15:57:15 -0600
+Message-Id: <1559599037-8514-17-git-send-email-hancock@sedsystems.ca>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
+References: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree@solarflare.com>
-Date: Fri, 31 May 2019 22:47:21 +0100
+The axienet driver requires the use of an axistream-connected attribute,
+but this isn't documented in the devicetree bindings. Document how this
+attribute is supposed to be used, including the upcoming change to make
+the usage of this attribute optional.
 
-> flow_stats_update() uses max_t, so ensure we have that defined.
-> 
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+---
+ .../devicetree/bindings/net/xilinx_axienet.txt        | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Applied.
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index 3f7b65e..da4eac2 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -17,9 +17,15 @@ For more details about mdio please refer phy.txt file in the same directory.
+ Required properties:
+ - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
+ 		  "xlnx,axi-ethernet-1.01.a", "xlnx,axi-ethernet-2.01.a"
+-- reg		: Address and length of the IO space.
++- reg		: Address and length of the IO space, as well as the address
++                  and length of the AXI DMA controller IO space, unless
++                  axistream-connected is specified, in which case the reg
++                  attribute of the node referenced by it is used.
+ - interrupts	: Should be a list of 2 or 3 interrupts: TX DMA, RX DMA,
+-		  and optionally Ethernet core.
++		  and optionally Ethernet core. If axistream-connected is
++		  specified, the TX/RX DMA interrupts should be on that node
++		  instead, and only the Ethernet core interrupt is optionally
++		  specified here.
+ - phy-handle	: Should point to the external phy device.
+ 		  See ethernet.txt file in the same directory.
+ - xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
+@@ -36,15 +42,20 @@ Optional properties:
+                            to MDIO bus. If not specified, it is auto-detected
+                            from the CPU clock (but only on platforms where this
+                            is possible).
++- axistream-connected: Reference to another node which contains the resources
++		       for the AXI DMA controller used by this device.
++		       If this is specified, the DMA-related resources from that
++		       device (DMA registers and DMA TX/RX interrupts) rather
++		       than this one will be used.
+ 
+ Example:
+ 	axi_ethernet_eth: ethernet@40c00000 {
+ 		compatible = "xlnx,axi-ethernet-1.00.a";
+ 		device_type = "network";
+ 		interrupt-parent = <&microblaze_0_axi_intc>;
+-		interrupts = <2 0>;
++		interrupts = <2 0 1>;
+ 		phy-mode = "mii";
+-		reg = <0x40c00000 0x40000>;
++		reg = <0x40c00000 0x40000 0x50c00000 0x40000>;
+ 		xlnx,rxcsum = <0x2>;
+ 		xlnx,rxmem = <0x800>;
+ 		xlnx,txcsum = <0x2>;
+-- 
+1.8.3.1
+
