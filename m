@@ -2,121 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12278326D6
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:03:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87844326DE
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726816AbfFCDDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 23:03:36 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:44406 "EHLO deadmen.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725872AbfFCDDf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Jun 2019 23:03:35 -0400
-Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
-        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1hXdFy-000817-M0; Mon, 03 Jun 2019 11:03:30 +0800
-Received: from herbert by gondobar with local (Exim 4.89)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1hXdFs-0001zg-Qt; Mon, 03 Jun 2019 11:03:24 +0800
-Date:   Mon, 3 Jun 2019 11:03:24 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Message-ID: <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
-References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
- <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
- <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
- <20190603000617.GD28207@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603000617.GD28207@linux.ibm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726606AbfFCDW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 23:22:29 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:46406 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726535AbfFCDW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:22:28 -0400
+Received: by mail-pl1-f196.google.com with SMTP id e5so4653665pls.13;
+        Sun, 02 Jun 2019 20:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KmRAPnKxqRKba6oTJsLOzCHLkMezniOe4XDMZ4AA92c=;
+        b=g0KUvNSRydARyGLbB2fDMcwQWkqc1M0bE4biJyDclWKRhMYT2mL3T8vmNw1qd+xwxT
+         LCQ7TTk2nroh/nOaLz/+/nx3ROzIyTKoAoV2bLbdeGLNVP+G78U804qFUFPrEUQ582dL
+         gRTd0BYI+Sd5731NeV/YMbrVIIhmJ3+lJAo4QkPIhXOfHigHpUF8Q5AjUPVAh5685fAN
+         H0l6pcr1maOZwuUiTmDvlaRSEGA85x1ryiN8m3dvPN+4lL7PgVPbqeO1hXQ4mAjHdZV9
+         6eQVFqVNYg/SzfqX9NJMVyZQ2Xf+1JKrOr4qxwckMAT51gdNO4zrZxrh3/wYU0fwi/su
+         aPMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KmRAPnKxqRKba6oTJsLOzCHLkMezniOe4XDMZ4AA92c=;
+        b=cKXu1fa/Cx9fgQVPSDC1uCGTOvf9ZycBQZW+pbcvMBmeEyVBWaqJ8/sWC6h0r8TJa7
+         YuHlGvTpQ6g/AWzp4We2iiLGi6eJMa+oZxaBGq2dKC/dZB+3mlL8FymXgJRlbbs9ln5V
+         gHdl/GnZISQwwNMCaWROPA4Xu3zW4c/CgjSu0JFajq7mUS4zi6E4UmxHe87hYq83JzGB
+         E5juTp55pD0jMRz/GppOAV/UnSO1Vn1B2p8L1bu8a0SV1WP6n0g2c5a6BzaL5DMDl4RB
+         yAsTM01sdR1OVD6nFyL7nWqreFve1OaNjUOcvHmo+eo9IgTLNamRCuEpTMUXw7Jl+i/V
+         +dMg==
+X-Gm-Message-State: APjAAAV3gIVluTM6dYqKSSJ1veg67b5VNSGMprHQ2B+3d85e7EpyF3Sj
+        bcBZdA0Mne/+qWlWIQYXchU=
+X-Google-Smtp-Source: APXvYqwpfYH7HkEgILtPPxhVj8ePxi86Gg00rBEHOgWVdZdxe2vAyUmay69NcAybIIUVk2kPaqJ4fA==
+X-Received: by 2002:a17:902:24c:: with SMTP id 70mr27214564plc.2.1559532148376;
+        Sun, 02 Jun 2019 20:22:28 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id g15sm17145279pfm.119.2019.06.02.20.22.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 02 Jun 2019 20:22:27 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     davem@davemloft.net, daniel@iogearbox.net, petrm@mellanox.com,
+        jiri@mellanox.com, idosch@mellanox.com, lucien.xin@gmail.com,
+        uehaibing@huawei.com, liuhangbin@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] ipvlan: Don't propagate IFF_ALLMULTI changes on down interfaces.
+Date:   Mon,  3 Jun 2019 11:23:36 +0800
+Message-Id: <1559532216-12114-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 02, 2019 at 05:06:17PM -0700, Paul E. McKenney wrote:
->
-> Please note that preemptible Tree RCU has lacked the compiler barrier on
-> all but the outermost rcu_read_unlock() for years before Boqun's patch.
+Clearing the IFF_ALLMULTI flag on a down interface could cause an allmulti
+overflow on the underlying interface.
 
-Actually this is not true.  Boqun's patch (commit bb73c52bad36) does
-not add a barrier() to __rcu_read_lock.  In fact I dug into the git
-history and this compiler barrier() has existed in preemptible tree
-RCU since the very start in 2009:
+Attempting the set IFF_ALLMULTI on the underlying interface would cause an
+error and the log message:
 
-: commit f41d911f8c49a5d65c86504c19e8204bb605c4fd
-: Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-: Date:   Sat Aug 22 13:56:52 2009 -0700
-:
-:     rcu: Merge preemptable-RCU functionality into hierarchical RCU
-:
-: +/*
-: + * Tree-preemptable RCU implementation for rcu_read_lock().
-: + * Just increment ->rcu_read_lock_nesting, shared state will be updated
-: + * if we block.
-: + */
-: +void __rcu_read_lock(void)
-: +{
-: +       ACCESS_ONCE(current->rcu_read_lock_nesting)++;
-: +       barrier();  /* needed if we ever invoke rcu_read_lock in rcutree.c */
-: +}
-: +EXPORT_SYMBOL_GPL(__rcu_read_lock);
+"allmulti touches root, set allmulti failed."
 
-However, you are correct that in the non-preempt tree RCU case,
-the compiler barrier in __rcu_read_lock was not always present.
-In fact it was added by:
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+---
+ drivers/net/ipvlan/ipvlan_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-: commit 386afc91144b36b42117b0092893f15bc8798a80
-: Author: Linus Torvalds <torvalds@linux-foundation.org>
-: Date:   Tue Apr 9 10:48:33 2013 -0700
-:
-:     spinlocks and preemption points need to be at least compiler barriers
-
-I suspect this is what prompted you to remove it in 2015.
-
-> I do not believe that reverting that patch will help you at all.
-> 
-> But who knows?  So please point me at the full code body that was being
-> debated earlier on this thread.  It will no doubt take me quite a while to
-> dig through it, given my being on the road for the next couple of weeks,
-> but so it goes.
-
-Please refer to my response to Linus for the code in question.
-
-In any case, I am now even more certain that compiler barriers are
-not needed in the code in question.  The reasoning is quite simple.
-If you need those compiler barriers then you surely need real memory
-barriers.
-
-Vice versa, if real memory barriers are already present thanks to
-RCU, then you don't need those compiler barriers.
-
-In fact this calls into question the use of READ_ONCE/WRITE_ONCE in
-RCU primitives such as rcu_dereference and rcu_assign_pointer.  IIRC
-when RCU was first added to the Linux kernel we did not have compiler
-barriers in rcu_dereference and rcu_assign_pointer.  They were added
-later on.
-
-As compiler barriers per se are useless, these are surely meant to
-be coupled with the memory barriers provided by RCU grace periods
-and synchronize_rcu.  But then those real memory barriers would have
-compiler barriers too.  So why do we need the compiler barriers in
-rcu_dereference and rcu_assign_pointer?
-
-Cheers,
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index bbeb162..523bb83 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -242,8 +242,10 @@ static void ipvlan_change_rx_flags(struct net_device *dev, int change)
+ 	struct ipvl_dev *ipvlan = netdev_priv(dev);
+ 	struct net_device *phy_dev = ipvlan->phy_dev;
+ 
+-	if (change & IFF_ALLMULTI)
+-		dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI? 1 : -1);
++	if (dev->flags & IFF_UP) {
++		if (change & IFF_ALLMULTI)
++			dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI ? 1 : -1);
++	}
+ }
+ 
+ static void ipvlan_set_multicast_mac_filter(struct net_device *dev)
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.7.4
+
