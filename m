@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D9D33B06
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3659D33B08
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfFCWSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 18:18:09 -0400
-Received: from mail-qt1-f181.google.com ([209.85.160.181]:46264 "EHLO
-        mail-qt1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbfFCWSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:18:07 -0400
-Received: by mail-qt1-f181.google.com with SMTP id z19so11407342qtz.13
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:18:06 -0700 (PDT)
+        id S1726867AbfFCWSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 18:18:11 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45669 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726794AbfFCWSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:18:09 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j19so7730255qtr.12
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:18:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=92fW+QfKjKqGC/dpOjwcfw9cwas5vdSx+8jcXUotsaw=;
-        b=WCo3qAtUGTM1DcwEkve7PQK0nngOZpfpwuD+IcyBt2KIZ0Zsfiaya5Pd6G+1gc6830
-         KIUadOnb77iV9XTED9kkzhSWx8tanTkGaLoLCA9d0iuo/5Lte6q51AvPJeYqSyWCdSE9
-         /OXuVLI3Jd1fFN28fC3TPFHwUhotJW1hwq6Q4lcWbSEfXYDf3KPu7IPHYYojw2ZJvPkz
-         IBvtGY5ffIwPt43S8jZjA+pbWZv2LAKeEhnLc3w431iRIa2FTG5WPYpNUBVzTK6ITYMk
-         0MKJBOwDeqEuko//bzYYY0e1yEijB/rHXP1c08rqOpqLeRC6mg0H+MfCmyxwWk1vmqGY
-         PwXA==
+        bh=vs2kMMYqpyXH/imkrYG9inZHZITKvJLfjo8bIu/5Lro=;
+        b=NAw3y2zM4JE3RajAlGIhsHd8hayo6yJXMa1eniFUySrnAmAe4FMM8aS53evzMxXUbT
+         UGZDJrUCDiVGV9DCDhgxaAtuzdMBxaCcdn1QQME8ylWgew4c/kgPGnWQ5K2zzlGgn8aa
+         iAIM0zO6lAE02eLBVJAUBg8N5K3CxitaiZRKu6q7OBV4IvL3Ctt4hBgICwSSZ+5JSUJs
+         EhxrDrOfCXOzNDkneujXsttD5EZTe3ciPm4C7ABgrAGyhMOVEkeU0pRltXRui0VuAalQ
+         dbW2pbwVzp8jL8Lj0RgfPfJmep1+05HFD+bgqN24FlxdOmotL3JYILyYiQM8Heu7nFYd
+         Nh/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=92fW+QfKjKqGC/dpOjwcfw9cwas5vdSx+8jcXUotsaw=;
-        b=SNIoq7fWjJkuX3dClqD4KREVjshp6qsebIsDjUs4q6UruENxDotc6daCrVGxvhXFX+
-         TEqxrE+Jjt+iMTmGbrtcWxzuTuxz6kjZXrU8UFVXnwBntrU6kQg5NjNH5i1KOwOGDVwE
-         NiE2PfyTO9b8UgFnL2rbqGe2VDcitmbppU2ERjiRS6vaebbgufOBKWH4hHhcGhGM2hdZ
-         aXXx5Y2Ofj487iqv5m7EWAWpmx1V/6+9i/xNAihooKioET7/e0QxJQiYCrC19wdXCu4r
-         l3Tc4V17v/7/es9X8VN+sdy2uZSdYWLxlf8cEybSYC1W3oNLyaDhBLtCyTfGbgpyQQZ3
-         V/hA==
-X-Gm-Message-State: APjAAAVWhfFYZGA0YIikWDzYsIjvWm4I3khFmsQgXMkp5TWlSXDwXlOY
-        EPSYRvSjAltj/OPz9HBgFRD55w==
-X-Google-Smtp-Source: APXvYqxqDjT/MNvC5MvYgHuHio9CRhcKO1nezOEldyp32Y6TWhIAnnS45M7JaEtWvf+yvIclBKZ7bg==
-X-Received: by 2002:ac8:2d08:: with SMTP id n8mr5229445qta.383.1559600286312;
-        Mon, 03 Jun 2019 15:18:06 -0700 (PDT)
+        bh=vs2kMMYqpyXH/imkrYG9inZHZITKvJLfjo8bIu/5Lro=;
+        b=D+/4rFdcHhW7/v9tzqfOzQXvlenAzFebX/9P4kc9XquzqCNvSXP88v4ET96eLDtepE
+         8JEjbMDsVY2m8ZJeiaX4VcrCCNB/MhcUQY4827TKd3JCH3iNqiK+mXm5/RprHJ5Vgi4P
+         5iB42PfCitci2vmN/v3ploLJ6vCkhMurrErNDcx3zETA66Poj+nQldAz9g9OlJ5GQyuI
+         JILIpaToZFk2f54N3lrUibLgaQJ+iYnoVJYn/SirJEJKt+M9Upx6WwCxlIVlnFpUQazO
+         yPn23RTPRuC37hzWhRdrCCEUbHcQMRN/1GkyEdGSnRSXTa8f7eDoqjI8tNUoJDmKcS4L
+         l9Og==
+X-Gm-Message-State: APjAAAXLxMoH9wSehAH8xX/C7pLGBvTLpL7ZytdD2gW0k0XCrsl2Wxrq
+        5AtdBOghLkSWf6kMNYWhjHkYSw==
+X-Google-Smtp-Source: APXvYqxEuciYFkfxH2CYDwMzGG2+gN4eB2PvO6trFwpQKE0928M6DUAPGaFNT+zWovkk1bZm5GUxpQ==
+X-Received: by 2002:ac8:38c5:: with SMTP id g5mr25731522qtc.299.1559600288021;
+        Mon, 03 Jun 2019 15:18:08 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m4sm4332391qka.70.2019.06.03.15.18.04
+        by smtp.gmail.com with ESMTPSA id m4sm4332391qka.70.2019.06.03.15.18.06
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 15:18:05 -0700 (PDT)
+        Mon, 03 Jun 2019 15:18:07 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net-next 7/8] net/tls: reorganize struct tls_context
-Date:   Mon,  3 Jun 2019 15:17:04 -0700
-Message-Id: <20190603221705.12602-8-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 8/8] net/tls: don't pass version to tls_advance_record_sn()
+Date:   Mon,  3 Jun 2019 15:17:05 -0700
+Message-Id: <20190603221705.12602-9-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190603221705.12602-1-jakub.kicinski@netronome.com>
 References: <20190603221705.12602-1-jakub.kicinski@netronome.com>
@@ -63,78 +63,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct tls_context is slightly badly laid out.  If we reorder things
-right we can save 16 bytes (320 -> 304) but also make all fast path
-data fit into two cache lines (one read only and one read/write,
-down from four cache lines).
+All callers pass prot->version as the last parameter
+of tls_advance_record_sn(), yet tls_advance_record_sn()
+itself needs a pointer to prot.  Pass prot from callers.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- include/net/tls.h | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ include/net/tls.h    | 10 +++-------
+ net/tls/tls_device.c |  2 +-
+ net/tls/tls_sw.c     |  9 ++++-----
+ 3 files changed, 8 insertions(+), 13 deletions(-)
 
 diff --git a/include/net/tls.h b/include/net/tls.h
-index 39ea62f0c1f6..a463a6074e5d 100644
+index a463a6074e5d..0a0072636009 100644
 --- a/include/net/tls.h
 +++ b/include/net/tls.h
-@@ -236,34 +236,32 @@ struct tls_prot_info {
- };
+@@ -446,19 +446,15 @@ static inline struct tls_context *tls_get_ctx(const struct sock *sk)
+ }
  
- struct tls_context {
-+	/* read-only cache line */
- 	struct tls_prot_info prot_info;
- 
--	union tls_crypto_context crypto_send;
--	union tls_crypto_context crypto_recv;
-+	u8 tx_conf:3;
-+	u8 rx_conf:3;
- 
--	struct list_head list;
--	struct net_device *netdev;
--	refcount_t refcount;
-+	int (*push_pending_record)(struct sock *sk, int flags);
-+	void (*sk_write_space)(struct sock *sk);
- 
- 	void *priv_ctx_tx;
- 	void *priv_ctx_rx;
- 
--	u8 tx_conf:3;
--	u8 rx_conf:3;
-+	struct net_device *netdev;
- 
-+	/* rw cache line */
- 	struct cipher_context tx;
- 	struct cipher_context rx;
- 
- 	struct scatterlist *partially_sent_record;
- 	u16 partially_sent_offset;
- 
--	unsigned long flags;
- 	bool in_tcp_sendpages;
- 	bool pending_open_record_frags;
-+	unsigned long flags;
- 
--	int (*push_pending_record)(struct sock *sk, int flags);
+ static inline void tls_advance_record_sn(struct sock *sk,
+-					 struct cipher_context *ctx,
+-					 int version)
++					 struct tls_prot_info *prot,
++					 struct cipher_context *ctx)
+ {
+-	struct tls_context *tls_ctx = tls_get_ctx(sk);
+-	struct tls_prot_info *prot = &tls_ctx->prot_info;
 -
--	void (*sk_write_space)(struct sock *sk);
-+	/* cache cold stuff */
- 	void (*sk_destruct)(struct sock *sk);
- 	void (*sk_proto_close)(struct sock *sk, long timeout);
+ 	if (tls_bigint_increment(ctx->rec_seq, prot->rec_seq_size))
+ 		tls_err_abort(sk, EBADMSG);
  
-@@ -275,6 +273,12 @@ struct tls_context {
- 			   int __user *optlen);
- 	int  (*hash)(struct sock *sk);
- 	void (*unhash)(struct sock *sk);
-+
-+	union tls_crypto_context crypto_send;
-+	union tls_crypto_context crypto_recv;
-+
-+	struct list_head list;
-+	refcount_t refcount;
- };
+-	if (version != TLS_1_3_VERSION) {
++	if (prot->version != TLS_1_3_VERSION)
+ 		tls_bigint_increment(ctx->iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
+ 				     prot->iv_size);
+-	}
+ }
  
- enum tls_offload_ctx_dir {
+ static inline void tls_fill_prepend(struct tls_context *ctx,
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 8ffc8f95f55f..51e556e79371 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -264,7 +264,7 @@ static int tls_push_record(struct sock *sk,
+ 	list_add_tail(&record->list, &offload_ctx->records_list);
+ 	spin_unlock_irq(&offload_ctx->lock);
+ 	offload_ctx->open_record = NULL;
+-	tls_advance_record_sn(sk, &ctx->tx, prot->version);
++	tls_advance_record_sn(sk, prot, &ctx->tx);
+ 
+ 	for (i = 0; i < record->num_frags; i++) {
+ 		frag = &record->frags[i];
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index f833407c789f..bef71e54fad0 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -534,7 +534,7 @@ static int tls_do_encryption(struct sock *sk,
+ 
+ 	/* Unhook the record from context if encryption is not failure */
+ 	ctx->open_rec = NULL;
+-	tls_advance_record_sn(sk, &tls_ctx->tx, prot->version);
++	tls_advance_record_sn(sk, prot, &tls_ctx->tx);
+ 	return rc;
+ }
+ 
+@@ -1486,7 +1486,6 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+ 	struct tls_prot_info *prot = &tls_ctx->prot_info;
+-	int version = prot->version;
+ 	struct strp_msg *rxm = strp_msg(skb);
+ 	int pad, err = 0;
+ 
+@@ -1504,8 +1503,8 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 					       async);
+ 			if (err < 0) {
+ 				if (err == -EINPROGRESS)
+-					tls_advance_record_sn(sk, &tls_ctx->rx,
+-							      version);
++					tls_advance_record_sn(sk, prot,
++							      &tls_ctx->rx);
+ 
+ 				return err;
+ 			}
+@@ -1520,7 +1519,7 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 		rxm->full_len -= pad;
+ 		rxm->offset += prot->prepend_size;
+ 		rxm->full_len -= prot->overhead_size;
+-		tls_advance_record_sn(sk, &tls_ctx->rx, version);
++		tls_advance_record_sn(sk, prot, &tls_ctx->rx);
+ 		ctx->decrypted = true;
+ 		ctx->saved_data_ready(sk);
+ 	} else {
 -- 
 2.21.0
 
