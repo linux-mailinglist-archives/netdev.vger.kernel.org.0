@@ -2,107 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA45332A59
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 10:04:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC41C32AC1
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 10:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbfFCIEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 04:04:13 -0400
-Received: from mail-eopbgr80094.outbound.protection.outlook.com ([40.107.8.94]:20974
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725856AbfFCIEN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 04:04:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W0EI1mCB1KYrocYqIE5bdD3myKTeyCjqok9MCtjZwkw=;
- b=KjNPLVHkTD9/7sUsvgfiWkS97vzc040gDvRfuqftPp/2jpPr56baoTD7ZrqGlh0FbNwvGr4nmlcucapTtHaJvGBhPjP6/DnaiNW4gZVTShf9qm7iIHYe1G8prccrEJqHTmhgAsMOZH2n59nmfmt5wG4DgiabJCRcw+MtiwKgD1o=
-Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM (20.178.126.80) by
- VI1PR10MB2783.EURPRD10.PROD.OUTLOOK.COM (20.178.204.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.22; Mon, 3 Jun 2019 08:04:09 +0000
-Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8844:426d:816b:f5d5]) by VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8844:426d:816b:f5d5%6]) with mapi id 15.20.1943.018; Mon, 3 Jun 2019
- 08:04:09 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: dsa: mv88e6xxx: make mv88e6xxx_g1_stats_wait static
-Thread-Topic: [PATCH] net: dsa: mv88e6xxx: make mv88e6xxx_g1_stats_wait static
-Thread-Index: AQHVGeLstGN9HejI90yCwDmeLZ5eTg==
-Date:   Mon, 3 Jun 2019 08:04:09 +0000
-Message-ID: <20190603080353.18957-1-rasmus.villemoes@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1P190CA0020.EURP190.PROD.OUTLOOK.COM (2603:10a6:3:bc::30)
- To VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:e1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [81.216.59.226]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f2b0d3a3-5e12-4c5b-ea7a-08d6e7fa0ecb
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR10MB2783;
-x-ms-traffictypediagnostic: VI1PR10MB2783:
-x-microsoft-antispam-prvs: <VI1PR10MB2783CB85B72F2B85808D74EA8A140@VI1PR10MB2783.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:449;
-x-forefront-prvs: 0057EE387C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(366004)(39850400004)(346002)(376002)(189003)(199004)(52116002)(8936002)(99286004)(8976002)(50226002)(6116002)(72206003)(3846002)(256004)(478600001)(386003)(1076003)(6506007)(25786009)(102836004)(4326008)(81156014)(81166006)(5660300002)(8676002)(6512007)(53936002)(2906002)(74482002)(14454004)(68736007)(36756003)(44832011)(66476007)(54906003)(486006)(476003)(6436002)(73956011)(66946007)(66446008)(64756008)(66556008)(110136005)(66066001)(316002)(71190400001)(71200400001)(305945005)(7736002)(26005)(2616005)(6486002)(42882007)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB2783;H:VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: prevas.se does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: hin0lT+nBTC6DVNPuiXpQT09v6zTXMS+bt5H6DsmVeDkHwc8GCtWalHQ03Nlw1RBejZ2//gFtcoJpLgfB3JiL4b8u8XdYxz7H7eshS3t+Ze3dnPAaqVZEi6trJDHuo8I80hD3qYmv1chqDv91rOEtF9+ftTcKtJJNlWUxIrCOQYki71DqJJBIK5d81HXKBgGNIobj9IiDxGWPhEh8RgcZz2B+lA1LZ+lw6k0Kr4h7A0qurauwt/NY6YEALCmB1MS6IsMFIty5JAbl7pHZbm/g1eynm9RLVv0X6IaTPOufkuehNuVde5gNSyZsh5+7vlTCLXEmetS+zqEP8qPGuWFG+LEx9JugwZHmLXQ5KUEfzlV8kUQJycpPZpT1PtVgIiynm1pOW2uoHvoPp1uP0wjsZnZX5yrflXT6LDem8qb5uE=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727551AbfFCI1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 04:27:15 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:38279 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726272AbfFCI1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 04:27:15 -0400
+Received: by mail-ot1-f68.google.com with SMTP id d17so1082385oth.5;
+        Mon, 03 Jun 2019 01:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uv/TYWEESnDfEscWsGSPSE6N/KhRP3li2RzgDdqcb9s=;
+        b=bYkYopunreF8aBv8dJzYYp8r1Tc6xLp7e7TvvhnVCjKyT3yI0dw7w9IgS5bVkP7azy
+         z6h+xf5XS+2QD3nn5lK0+f5GdzgnEeuEx8IdFMMcy+5oxs1wdQaCTcMFACptJS+ZYeax
+         DYGehZGIfjKHUDAz74wHNbbga7p0zQv+v2yRiowWZHmaCDoqzAbly76kHeNWf9sKSB6a
+         0jGMvDkizbSLu8XWxpKXdqrg/hZ32sHhVxCX2gtZkj2c9VqwjJBKisyLIZ8IVj9G8LYv
+         zmyKEdtyA8DIhHWGxQh1APk8SXjMYNU8nvhnubjz8QgijjNE6IHfhC1CAbIM4fOaE43Q
+         sHmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uv/TYWEESnDfEscWsGSPSE6N/KhRP3li2RzgDdqcb9s=;
+        b=thvZDDDmb6bQRBoyfotj7s2COe/ZZdRcJQYerbNBvzTg82XT7W1nJLvlpKwt1ws/2k
+         pM6Bbx0vaEg1oUsQc4NFFf94Lce88p/7gyU235IMOOCkrVkFyhUGNHJKm7zcpWAgxCLc
+         YkQXgQm+ij9bIWwaC/V+ZeRGHxogv9rU6y9wZ5pp/ascewDX3ue4KA8GoBcZuKtMqSM1
+         nXhuK6A43ImsraVAfF58G2I4og5kswBD+Fp64UUfWgzOsNg6xBl8IyLiRHQev5tY6BeB
+         FYIlmpTks/HSpcmUzewJgIHQAnF9MP10HHZ8eA/Qo+cAvo0ztWkRvKgJCweqD5PFxEU3
+         LH2g==
+X-Gm-Message-State: APjAAAU8cF5z3NPXwJmZjSkdJKTP4dpak8f9kWq7/MwAiYdPofY0gZdU
+        Tfdvz+DP0y8vangODFQY5EZ/NXrFf5tjWmLbDfQ=
+X-Google-Smtp-Source: APXvYqws1NHuRMJ3cst1WOeYWICtgUQP/IXjVREOK02PnlVFd/0ygeJ4jq+eB7TUSp2JDdAKcbrVcjI2LO66nGaFi2c=
+X-Received: by 2002:a9d:69ce:: with SMTP id v14mr302587oto.39.1559550434134;
+ Mon, 03 Jun 2019 01:27:14 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2b0d3a3-5e12-4c5b-ea7a-08d6e7fa0ecb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2019 08:04:09.8417
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2783
+References: <20190524093431.20887-1-maximmi@mellanox.com> <8b0450c2-ad5e-ecaa-9958-df4da1dd6456@intel.com>
+ <c5f6ab402de93f0b675d19499490e8c99701b5cc.camel@mellanox.com>
+In-Reply-To: <c5f6ab402de93f0b675d19499490e8c99701b5cc.camel@mellanox.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 3 Jun 2019 10:27:02 +0200
+Message-ID: <CAJ8uoz01-0B+-ePfPA2J+qrq4JM1aNUaesevQDmSZLJ1m91crA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 00/16] AF_XDP infrastructure improvements and
+ mlx5e support
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>,
+        "bsd@fb.com" <bsd@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bXY4OGU2eHh4X2cxX3N0YXRzX3dhaXQgaGFzIG5vIHVzZXJzIG91dHNpZGUgZ2xvYmFsMS5jLCBz
-byBtYWtlIGl0DQpzdGF0aWMuDQoNClNpZ25lZC1vZmYtYnk6IFJhc211cyBWaWxsZW1vZXMgPHJh
-c211cy52aWxsZW1vZXNAcHJldmFzLmRrPg0KLS0tDQogZHJpdmVycy9uZXQvZHNhL212ODhlNnh4
-eC9nbG9iYWwxLmMgfCAyICstDQogZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmgg
-fCAxIC0NCiAyIGZpbGVzIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAyIGRlbGV0aW9ucygtKQ0K
-DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmMgYi9kcml2
-ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuYw0KaW5kZXggYjVjZWZmMjk0NmZlLi43NzBj
-MDM0MDYwMzMgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEu
-Yw0KKysrIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmMNCkBAIC00NjUsNyAr
-NDY1LDcgQEAgaW50IG12ODhlNnh4eF9nMV9zZXRfZGV2aWNlX251bWJlcihzdHJ1Y3QgbXY4OGU2
-eHh4X2NoaXAgKmNoaXAsIGludCBpbmRleCkNCiANCiAvKiBPZmZzZXQgMHgxZDogU3RhdGlzdGlj
-cyBPcGVyYXRpb24gMiAqLw0KIA0KLWludCBtdjg4ZTZ4eHhfZzFfc3RhdHNfd2FpdChzdHJ1Y3Qg
-bXY4OGU2eHh4X2NoaXAgKmNoaXApDQorc3RhdGljIGludCBtdjg4ZTZ4eHhfZzFfc3RhdHNfd2Fp
-dChzdHJ1Y3QgbXY4OGU2eHh4X2NoaXAgKmNoaXApDQogew0KIAlyZXR1cm4gbXY4OGU2eHh4X2cx
-X3dhaXQoY2hpcCwgTVY4OEU2WFhYX0cxX1NUQVRTX09QLA0KIAkJCQkgTVY4OEU2WFhYX0cxX1NU
-QVRTX09QX0JVU1kpOw0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xv
-YmFsMS5oIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmgNCmluZGV4IDJmMTk1
-YTBiZDg5MS4uYmI5MmExMzBjYmVmIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhl
-Nnh4eC9nbG9iYWwxLmgNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5o
-DQpAQCAtMjYzLDcgKzI2Myw2IEBAIGludCBtdjg4ZTYzNTJfZzFfcmVzZXQoc3RydWN0IG12ODhl
-Nnh4eF9jaGlwICpjaGlwKTsNCiBpbnQgbXY4OGU2MTg1X2cxX3BwdV9lbmFibGUoc3RydWN0IG12
-ODhlNnh4eF9jaGlwICpjaGlwKTsNCiBpbnQgbXY4OGU2MTg1X2cxX3BwdV9kaXNhYmxlKHN0cnVj
-dCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCk7DQogDQotaW50IG12ODhlNnh4eF9nMV9zdGF0c193YWl0
-KHN0cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCk7DQogaW50IG12ODhlNnh4eF9nMV9zdGF0c19z
-bmFwc2hvdChzdHJ1Y3QgbXY4OGU2eHh4X2NoaXAgKmNoaXAsIGludCBwb3J0KTsNCiBpbnQgbXY4
-OGU2MzIwX2cxX3N0YXRzX3NuYXBzaG90KHN0cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCwgaW50
-IHBvcnQpOw0KIGludCBtdjg4ZTYzOTBfZzFfc3RhdHNfc25hcHNob3Qoc3RydWN0IG12ODhlNnh4
-eF9jaGlwICpjaGlwLCBpbnQgcG9ydCk7DQotLSANCjIuMjAuMQ0KDQo=
+On Fri, May 31, 2019 at 11:59 PM Saeed Mahameed <saeedm@mellanox.com> wrote=
+:
+>
+> On Fri, 2019-05-24 at 12:18 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
+> > On 2019-05-24 11:35, Maxim Mikityanskiy wrote:
+> > > This series contains improvements to the AF_XDP kernel
+> > > infrastructure
+> > > and AF_XDP support in mlx5e. The infrastructure improvements are
+> > > required for mlx5e, but also some of them benefit to all drivers,
+> > > and
+> > > some can be useful for other drivers that want to implement AF_XDP.
+> > >
+> > >
+> [...]
+> >
+> > Maxim, this doesn't address the uapi concern we had on your v2.
+> > Please refer to Magnus' comment here [1].
+> >
+> > Please educate me why you cannot publish AF_XDP without the uapi
+> > change?
+> > It's an extension, right? If so, then existing XDP/AF_XDP program can
+> > use Mellanox ZC without your addition? It's great that Mellanox has a
+> > ZC
+> > capable driver, but the uapi change is a NAK.
+> >
+> > To reiterate; We'd like to get the queue setup/steering for AF_XDP
+> > correct. I, and Magnus, dislike this approach. It requires a more
+> > complicated XDP program, and is hard for regular users to understand.
+> >
+> >
+>
+> Hi Bjorn and Magnus,
+>
+> It is not clear to me why you don't like this approach, if anything,
+> this approach is addressing many concerns you raised about current
+> limited approach of re-using/"stealing" only regular RX rings for xsk
+> traffic !
+>
+> for instance
+> 1) xsk ring now has a unique id. (wasn't this the plan from the
+> beginning ?)
+> 2) No RSS issues, only explicit steering rules got the the newly
+> created isolated xsk ring, default RSS is not affected regular RX rings
+> are still intact.
+> 3) the new scheme is flexible and will allow as much xsk sockets as
+> needed, and can co-exist with regular rings.
+> 4) We want to have a solution that will replace DPDK, having such
+> limitations of a limited number of RX rings and stealing from regular
+> rings, is really not a worthy design, just because some drivers do not
+> want to deal or don't know how to deal with creating dedicated
+> resources.
+> 5) i think it is wrong to compare xsk rings with regular rings, xsk
+> rings are actually just a a device context that redirects traffic to a
+> special buffer space, there is no real memory buffers model behind it,
+> other than the rx/tx descriptors. (memory model is handled outside the
+> driver).
+> 6) mlx5 is designed and optimized for such use cases (dedicated/unique
+> rx/tx rings for XDP), limiting us to current AF_XDP limitation without
+> allowing us to improve the AF_XDP design is really not fair.
+
+Hi Saeed,
+
+Agree on all your statements. We need and should proceed in this
+direction (as I have stated before) so I am all aligned with what you
+want and hopefully also what other users or potential users want. The
+only issue I personally have is that we identify the "create a new
+channel/pipe/flow of packets from the NIC completely separated from
+the regular SKB flows" with the queue id. The user really does not
+care about queue ids. He/She only wants an endpoint that can be used
+to receive and send packets and then to be able to program this
+endpoint to receive the packets that the application is interested in.
+Queue ids and conglomerates of queue ids expose too much of HW
+concepts that we really should not care about in user space, IMHO.
+What I would like is to be able to do all these things without
+exposing queue ids. Maybe just with the socket instead.
+
+Now I am going to argue for the other side :-). The above approach
+would require some new plumbing for sure, since ethtool uses queue ids
+today to set the redirection of packets. So maybe it is just a pipe
+dream to get to this point (it will take too long, for example) and we
+should just reuse the queue id space for a new set of queue ids that
+have all the good properties that you describe. What I would
+preferably not like to end up with is some new interface that we do
+not need in one to two years time.
+
+Is there some way we can extend the uapi so that it can be used for
+both the intermediary step (tagging along the queue ids) and the end
+goal (not having to use them at all)? Could we extend the bind() call
+so that it creates a socket that is bound to some queue that we do not
+specify (it can be created together with some other queues and bundled
+with them, or some completely new queue and irq line, or whatever, we
+do not care). It is bound to an "anonymous queue" you could say. Then
+as an intermediary step, we can add a getsockopt that gets the real
+queue id identifiers from the socket that we can use in ethtool, for
+example. Other suggestions?
+
+As I have said before, I like 99% of the work that Maxim has done. But
+new uapis should not be take lightly as they have repercussions that
+lasts forever. That is why your patch set is taking time as you
+bundled them all together. Or maybe I am just chicken ;-).
+
+/Magnus
+
+> the way i see it, this new extension is actually a generalization to
+> allow for more drivers support and AF_XDP flexibility.
+>
+> if you have different ideas on how to implement the new design, please
+> provide your feedback and we will be more than happy to improve the
+> current implementation, but requesting to drop it, i think is not a
+> fair request.
+>
+> Side note: Our task is to provide a scalable and flexible in-kernel XDP
+> solution so we can offer a valid replacement for DPDK and userspace
+> only solutions, I think we need to have a scheme where we allow an
+> unlimited number of xsk sockets/rings with full flow
+> separation/isolation between different user sockets/apps, the driver/hw
+> resources are really very cheap (as there is no buffer management) much
+> cheaper than allocating a full blown regular socket buffers.
+>
+> Thanks,
+> Saeed.
+>
+> > Thanks,
+> > Bj=C3=B6rn
+> >
+> > [1]
+> > https://lore.kernel.org/bpf/CAJ8uoz2UHk+5xPwz-STM9gkQZdm7r_=3DjsgaB0nF+=
+mHgch=3DaxPg@mail.gmail.com/
+> >
+> >
