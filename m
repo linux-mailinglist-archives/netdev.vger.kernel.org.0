@@ -2,50 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 211A233BD3
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4357F33BE0
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:24:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726261AbfFCXTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 19:19:23 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36966 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbfFCXTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 19:19:22 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D62A9136DF6FB;
-        Mon,  3 Jun 2019 16:19:21 -0700 (PDT)
-Date:   Mon, 03 Jun 2019 16:19:19 -0700 (PDT)
-Message-Id: <20190603.161919.1231780626602694372.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        richardcochran@gmail.com, john.stultz@linaro.org,
-        tglx@linutronix.de, sboyd@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 00/10] PTP support for the SJA1105 DSA
- driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CA+h21hoOO1apNWXer01LE572pgdnVdmf_e7-Tnp6jgJuTPbGHg@mail.gmail.com>
-References: <20190602213926.2290-1-olteanv@gmail.com>
-        <CA+h21hoOO1apNWXer01LE572pgdnVdmf_e7-Tnp6jgJuTPbGHg@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Jun 2019 16:19:22 -0700 (PDT)
+        id S1726416AbfFCXYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 19:24:17 -0400
+Received: from mga04.intel.com ([192.55.52.120]:11687 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726102AbfFCXYN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 19:24:13 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jun 2019 16:24:13 -0700
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 03 Jun 2019 16:24:11 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hXwJG-000E3f-Sv; Tue, 04 Jun 2019 07:24:10 +0800
+Date:   Tue, 4 Jun 2019 07:23:10 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Xue Chaojing <xuechaojing@huawei.com>
+Cc:     kbuild-all@01.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        luoshaokai@huawei.com, cloud.wangxiaoyun@huawei.com,
+        xuechaojing@huawei.com, chiqijun@huawei.com, wulike1@huawei.com
+Subject: Re: [PATCH net-next v3] hinic: add LRO support
+Message-ID: <201906040753.bqwbqtxT%lkp@intel.com>
+References: <20190603043536.4970-1-xuechaojing@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603043536.4970-1-xuechaojing@huawei.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Tue, 4 Jun 2019 02:13:16 +0300
+Hi Xue,
 
-> This series appears in patchwork as "superseded":
-> https://patchwork.ozlabs.org/project/netdev/list/?series=111356&state=*
-> Perhaps it got mixed up with another one?
+Thank you for the patch! Perhaps something to improve:
 
-No, there was a comment in this thread that there would be a respin with
-some changes.  Anticipating that respin, I mark this as superseded.
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Xue-Chaojing/hinic-add-LRO-support/20190604-035042
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/huawei/hinic/hinic_main.c:375:5: sparse: sparse: symbol 'hinic_rx_configure' was not declared. Should it be static?
+--
+>> drivers/net/ethernet/huawei/hinic/hinic_port.c:469:5: sparse: sparse: symbol 'hinic_set_rx_lro' was not declared. Should it be static?
+>> drivers/net/ethernet/huawei/hinic/hinic_port.c:497:5: sparse: sparse: symbol 'hinic_set_rx_lro_timer' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
