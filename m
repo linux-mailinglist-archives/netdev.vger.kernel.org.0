@@ -2,81 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E58F033A4A
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:52:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4DF339FF
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:43:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbfFCVwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 17:52:55 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41288 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfFCVwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:52:55 -0400
-Received: by mail-qt1-f194.google.com with SMTP id s57so4245452qte.8
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 14:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=+VDRigI9bAvCIF7F6f/5OkoxLCCdCDUcvZ9OdP0dzjQ=;
-        b=00TjDU11UTI9nRK+clcx5vKmdBh/0fxfZgmdQazK4lheM9ZFNWzd/UN1A/ptt7r5+P
-         O6XZT38Lvk29MJ1AdW3bBj87vuL1MUYZpndn7QmJK+YFF3lhj/5DKWVWo4wsExM3YYAr
-         FjzteRr01DEaBo4sfoef8ajb9tZB9jA7BSMikvZvKI+wnaHtqUVXB9/rhAu1EvwkPRKe
-         BX+c7sOjuFuoQkbdwRw73uY0TCxbn76KGqOvZIzV5CFC3KRw4UI48MTMtxO4/nmsZfaE
-         ISBBFU7uMyXP9BgvDxbp9QocA4AyvK3ZP2EQhErr9V6Nd9VrEEowwymNzJOuajmUbuzy
-         GwQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=+VDRigI9bAvCIF7F6f/5OkoxLCCdCDUcvZ9OdP0dzjQ=;
-        b=lYaoDs2H0C67d4rHwC+uMOUaTXK18fjm5FOA0Vdhheajjtm5QM7UYIhongoboMrLiP
-         Uw4n1kxfugyw+LQ+hF81PwYZXE+6J0GEM5HjwwgS0E3CKQmVHp/IHjxa7oJbVFvbsNkG
-         yd59rMepFRsw+gRnrlz0z0CzdW3xDu/xw9tXGYmcP2ZrTzFv7JxiMaw7kdXSHPL1NhS+
-         eT4Xp4Advs78IQcVt888dIhHZiniA9jyIzW3z+EjHe458aQCgEDaG0jVlkbaow8DhYHU
-         HDHLJfqrMUPrWGYweryvu0EIgOm+nqKNVSzZD1diYPkLItdz4Cw2NoeoxFgSBHoTYZyM
-         WDNA==
-X-Gm-Message-State: APjAAAXvzIxu0p2zj2xqyLl3Wc9u7Hb/58caXpDFW6MDRylTjW9ehfWz
-        5GHtBxVZclErniMsy0XaDHvbpdnN+3o=
-X-Google-Smtp-Source: APXvYqwBW7bVmHwPAPft2oNhaVDyumYD0RH4pTZFRIJlzwttjpb+F/MqyDBSIjHqLcXKJPsDImLY2Q==
-X-Received: by 2002:ac8:2454:: with SMTP id d20mr24986641qtd.266.1559597531207;
-        Mon, 03 Jun 2019 14:32:11 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p40sm11487862qte.93.2019.06.03.14.32.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 03 Jun 2019 14:32:11 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 14:32:05 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     <sameehj@amazon.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
- features and enhance performance
-Message-ID: <20190603143205.1d95818e@cakuba.netronome.com>
-In-Reply-To: <20190603144329.16366-1-sameehj@amazon.com>
-References: <20190603144329.16366-1-sameehj@amazon.com>
-Organization: Netronome Systems, Ltd.
+        id S1726510AbfFCVn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:43:27 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:55560 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726102AbfFCVn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 17:43:27 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x53LWMvZ008943;
+        Tue, 4 Jun 2019 00:32:22 +0300
+Date:   Tue, 4 Jun 2019 00:32:22 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     syzbot <syzbot+722da59ccb264bc19910@syzkaller.appspotmail.com>
+cc:     coreteam@netfilter.org, "David S. Miller" <davem@davemloft.net>,
+        fw@strlen.de, kadlec@blackhole.kfki.hu,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        lvs-devel@vger.kernel.org
+Subject: Re: memory leak in nf_hook_entries_grow
+In-Reply-To: <0000000000002b2262058a70001d@google.com>
+Message-ID: <alpine.LFD.2.21.1906040021510.3876@ja.home.ssi.bg>
+References: <0000000000002b2262058a70001d@google.com>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 17:43:18 +0300, sameehj@amazon.com wrote:
-> * net: ena: ethtool: add extra properties retrieval via get_priv_flags (2/11):
->  * replaced snprintf with strlcpy
->  * dropped confusing error message
->  * added more details to  the commit message
 
-I asked you to clearly state that you are using the blindly passing
-this info from the FW to user space.  Stating that you "retrieve" it
-is misleading.
+	Hello,
 
-IMHO it's a dangerous precedent, you're extending kernel's uAPI down to
-the proprietary FW of the device.  Now we have no idea what the flags
-are, so we can't refactor and create common APIs among drivers, or even
-use the same names.  We have no idea what you're exposing.
+On Mon, 3 Jun 2019, syzbot wrote:
+
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    3ab4436f Merge tag 'nfsd-5.2-1' of git://linux-nfs.org/~bf..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15feaf82a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=50393f7bfe444ff6
+> dashboard link: https://syzkaller.appspot.com/bug?extid=722da59ccb264bc19910
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12f02772a00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1657b80ea00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+722da59ccb264bc19910@syzkaller.appspotmail.com
+> 
+> 035][ T7273] IPVS: ftp: loaded support on port[0] = 21
+> BUG: memory leak
+> unreferenced object 0xffff88810acd8a80 (size 96):
+>  comm "syz-executor073", pid 7254, jiffies 4294950560 (age 22.250s)
+>  hex dump (first 32 bytes):
+>    02 00 00 00 00 00 00 00 50 8b bb 82 ff ff ff ff  ........P.......
+>    00 00 00 00 00 00 00 00 00 77 bb 82 ff ff ff ff  .........w......
+>  backtrace:
+>    [<0000000013db61f1>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
+>    [inline]
+>    [<0000000013db61f1>] slab_post_alloc_hook mm/slab.h:439 [inline]
+>    [<0000000013db61f1>] slab_alloc_node mm/slab.c:3269 [inline]
+>    [<0000000013db61f1>] kmem_cache_alloc_node_trace+0x15b/0x2a0 mm/slab.c:3597
+>    [<000000001a27307d>] __do_kmalloc_node mm/slab.c:3619 [inline]
+>    [<000000001a27307d>] __kmalloc_node+0x38/0x50 mm/slab.c:3627
+>    [<0000000025054add>] kmalloc_node include/linux/slab.h:590 [inline]
+>    [<0000000025054add>] kvmalloc_node+0x4a/0xd0 mm/util.c:431
+>    [<0000000050d1bc00>] kvmalloc include/linux/mm.h:637 [inline]
+>    [<0000000050d1bc00>] kvzalloc include/linux/mm.h:645 [inline]
+>    [<0000000050d1bc00>] allocate_hook_entries_size+0x3b/0x60
+>    net/netfilter/core.c:61
+>    [<00000000e8abe142>] nf_hook_entries_grow+0xae/0x270
+>    net/netfilter/core.c:128
+>    [<000000004b94797c>] __nf_register_net_hook+0x9a/0x170
+>    net/netfilter/core.c:337
+>    [<00000000d1545cbc>] nf_register_net_hook+0x34/0xc0
+>    net/netfilter/core.c:464
+>    [<00000000876c9b55>] nf_register_net_hooks+0x53/0xc0
+>    net/netfilter/core.c:480
+>    [<000000002ea868e0>] __ip_vs_init+0xe8/0x170
+>    net/netfilter/ipvs/ip_vs_core.c:2280
+
+	After commit "ipvs: Fix use-after-free in ip_vs_in" we planned
+to call nf_register_net_hooks() only when rule is created but this
+is net-next material and we should not leave leak in the error path.
+I'll post a patch that adds .init handler for ipvs_core_dev_ops, so
+that nf_register_net_hooks() is called there.
+
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
