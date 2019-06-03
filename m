@@ -2,148 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBDD32631
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 03:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9717325B5
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 02:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbfFCBhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 21:37:32 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40522 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726561AbfFCBhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 21:37:32 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x531ahF0120790
-        for <netdev@vger.kernel.org>; Sun, 2 Jun 2019 21:37:31 -0400
-Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2svnuaxtd5-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 21:37:30 -0400
-Received: from localhost
-        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-        Mon, 3 Jun 2019 02:37:30 +0100
-Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
-        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 3 Jun 2019 02:37:25 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x531bOTL10617208
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Jun 2019 01:37:24 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6CA60B206B;
-        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 38429B2067;
-        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.136.155])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 5467E16C37A7; Sun,  2 Jun 2019 17:06:17 -0700 (PDT)
-Date:   Sun, 2 Jun 2019 17:06:17 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Reply-To: paulmck@linux.ibm.com
-References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
- <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
- <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+        id S1726634AbfFCAdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 20:33:40 -0400
+Received: from mail-pg1-f176.google.com ([209.85.215.176]:33741 "EHLO
+        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfFCAdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 20:33:40 -0400
+Received: by mail-pg1-f176.google.com with SMTP id h17so7264039pgv.0
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 17:33:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Axk3pAddM4DVVF3y+8riwBqiQl1hFLkJKxJi4K9liuY=;
+        b=wzluIUjYBioOXKA/k4ufqkLCbBUmT0CpBv8rpo9NJ6rl0Lhd+UiaNHl6xB/iIaMFrP
+         WsenvkehoFIf5Fi2rMtpVBj2L9Wxbn01Lekg1ZERSezczAD85OIFcPGhPT3grH4Srr7n
+         dH1aUoUiwPkwbYn3f26sm8Cq6i74/4ljF5r1llbicnCjBqPO1liHV11Cim4O1YtTBIcW
+         jm2ctHKORKEJ+ye5oI+PWm6UYcPTw6c/WbC0DLsbl9ocqU0pdeJ6mo6SE+prpxx1hkaz
+         bDrCjDUduIAXUNqTp4r4CQ3erdJCysP64Q8kRAE3tJVJDFGK0e9LDiobzvszJh8kkkTd
+         lf1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Axk3pAddM4DVVF3y+8riwBqiQl1hFLkJKxJi4K9liuY=;
+        b=q4tTaJNiM6/j2803Q164WXNvL0WoxLlOhpNfnFEXOnPgws7zZoHtJhKi82ZZmClDUX
+         QydRyvWXwTZAcL7Cn+SOM5N2a+U7gt8jKHkH9gViJW4TZRmVRQTQw0UR5rEKpgrzA/0h
+         ScdoNIqnPMbDGrd0HKxA1yLZ8w6f8ZG30fnxUkpuXxU1Napb1Rac7ev70F+StTx7IPzt
+         vSrz1fZMCAuu/9KPPn8k16RSPw+0Sh5/VqiY65XSxo+JRjGfqgFqQi+sUsyYFS1Yl6NR
+         65E/y0s3tbPyr1zCdWvO5QvYXWqCJysVi4KmYUiXd1tiYqYQsJOCdBA4YbcAEDCJL3vs
+         MrhQ==
+X-Gm-Message-State: APjAAAXV6Nr0O38LqomawZPZqnAe01yoWviXJFIxAnxE223bK8awE/XE
+        Xu7uzKfrFQSyiaTpKDpVCQvB+A==
+X-Google-Smtp-Source: APXvYqxygP/xjo3Ov2qb74A/P/ttbI681/8gw/kDPhh5nqXQEcAuLo+jAOT3Iuhr+1hB25Cr/yC5Ng==
+X-Received: by 2002:a62:304:: with SMTP id 4mr27743090pfd.186.1559522019018;
+        Sun, 02 Jun 2019 17:33:39 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id 66sm2651999pfg.140.2019.06.02.17.33.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 02 Jun 2019 17:33:38 -0700 (PDT)
+Date:   Sun, 2 Jun 2019 17:33:34 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map
+ definitions using BTF
+Message-ID: <20190602173334.18e68d66@cakuba.netronome.com>
+In-Reply-To: <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
+References: <20190531202132.379386-1-andriin@fb.com>
+        <20190531202132.379386-7-andriin@fb.com>
+        <20190531212835.GA31612@mini-arch>
+        <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19060301-0072-0000-0000-000004369950
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011206; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01212416; UDB=6.00637148; IPR=6.00993472;
- MB=3.00027158; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 01:37:28
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060301-0073-0000-0000-00004C762ED8
-Message-Id: <20190603000617.GD28207@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-02_16:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=589 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906030009
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 02, 2019 at 01:56:07PM +0800, Herbert Xu wrote:
-> Digging up an old email because I was not aware of this previously
-> but Paul pointed me to it during another discussion.
+On Fri, 31 May 2019 15:58:41 -0700, Andrii Nakryiko wrote:
+> On Fri, May 31, 2019 at 2:28 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > On 05/31, Andrii Nakryiko wrote:  
+> > > This patch adds support for a new way to define BPF maps. It relies on
+> > > BTF to describe mandatory and optional attributes of a map, as well as
+> > > captures type information of key and value naturally. This eliminates
+> > > the need for BPF_ANNOTATE_KV_PAIR hack and ensures key/value sizes are
+> > > always in sync with the key/value type.  
+> > My 2c: this is too magical and relies on me knowing the expected fields.
+> > (also, the compiler won't be able to help with the misspellings).  
+
+I have mixed feelings, too.  Especially the key and value fields are
+very non-idiomatic for C :(  They never hold any value or data, while
+the other fields do.  That feels so awkward.  I'm no compiler expert,
+but even something like:
+
+struct map_def {
+	void *key_type_ref;
+} mamap = {
+	.key_type_ref = &(struct key_xyz){},
+};
+
+Would feel like less of a hack to me, and then map_def doesn't have to
+be different for every map.  But yea, IDK if it's easy to (a) resolve
+the type of what key_type points to, or (b) how to do this for scalar
+types.
+
+> I don't think it's really worse than current bpf_map_def approach. In
+> typical scenario, there are only two fields you need to remember: type
+> and max_entries (notice, they are called exactly the same as in
+> bpf_map_def, so this knowledge is transferrable). Then you'll have
+> key/value, using which you are describing both type (using field's
+> type) and size (calculated from the type).
 > 
-> On Mon, Sep 21, 2015 at 01:43:27PM -0700, Paul E. McKenney wrote:
-> > On Mon, Sep 21, 2015 at 09:30:49PM +0200, Frederic Weisbecker wrote:
-> >
-> > > > diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-> > > > index d63bb77..6c3cece 100644
-> > > > --- a/include/linux/rcupdate.h
-> > > > +++ b/include/linux/rcupdate.h
-> > > > @@ -297,12 +297,14 @@ void synchronize_rcu(void);
-> > > >  
-> > > >  static inline void __rcu_read_lock(void)
-> > > >  {
-> > > > -	preempt_disable();
-> > > > +	if (IS_ENABLED(CONFIG_PREEMPT_COUNT))
-> > > > +		preempt_disable();
-> > > 
-> > > preempt_disable() is a no-op when !CONFIG_PREEMPT_COUNT, right?
-> > > Or rather it's a barrier(), which is anyway implied by rcu_read_lock().
-> > > 
-> > > So perhaps we can get rid of the IS_ENABLED() check?
-> > 
-> > Actually, barrier() is not intended to be implied by rcu_read_lock().
-> > In a non-preemptible RCU implementation, it doesn't help anything
-> > to have the compiler flush its temporaries upon rcu_read_lock()
-> > and rcu_read_unlock().
+> I can relate a bit to that with bpf_map_def you can find definition
+> and see all possible fields, but one can also find a lot of examples
+> for new map definitions as well.
 > 
-> This is seriously broken.  RCU has been around for years and is
-> used throughout the kernel while the compiler barrier existed.
+> One big advantage of this scheme, though, is that you get that type
+> association automagically without using BPF_ANNOTATE_KV_PAIR hack,
+> with no chance of having a mismatch, etc. This is less duplication (no
+> need to do sizeof(struct my_struct) and struct my_struct as an arg to
+> that macro) and there is no need to go and ping people to add those
+> annotations to improve introspection of BPF maps.
 
-Please note that preemptible Tree RCU has lacked the compiler barrier on
-all but the outermost rcu_read_unlock() for years before Boqun's patch.
-
-So exactly where in the code that we are currently discussing
-are you relying on compiler barriers in either rcu_read_lock() or
-rcu_read_unlock()?
-
-The grace-period guarantee allows the compiler ordering to be either in
-the readers (SMP&&PREEMPT), in the grace-period mechanism (SMP&&!PREEMPT),
-or both (SRCU).
-
-> You can't then go and decide to remove the compiler barrier!  To do
-> that you'd need to audit every single use of rcu_read_lock in the
-> kernel to ensure that they're not depending on the compiler barrier.
+> > > Relying on BTF, this approach allows for both forward and backward
+> > > compatibility w.r.t. extending supported map definition features. Old
+> > > libbpf implementation will ignore fields it doesn't recognize, while new
+> > > implementations will parse and recognize new optional attributes.  
+> > I also don't know how to feel about old libbpf ignoring some attributes.
+> > In the kernel we require that the unknown fields are zeroed.
+> > We probably need to do something like that here? What do you think
+> > would be a good example of an optional attribute?  
 > 
-> This is also contrary to the definition of almost every other
-> *_lock primitive in the kernel where the compiler barrier is
-> included.
+> Ignoring is required for forward-compatibility, where old libbpf will
+> be used to load newer user BPF programs. We can decided not to do it,
+> in that case it's just a question of erroring out on first unknown
+> field. This RFC was posted exactly to discuss all these issues with
+> more general community, as there is no single true way to do this.
 > 
-> So please revert this patch.
+> As for examples of when it can be used. It's any feature that can be
+> considered optional or a hint, so if old libbpf doesn't do that, it's
+> still not the end of the world (and we can live with that, or can
+> correct using direct libbpf API calls).
 
-I do not believe that reverting that patch will help you at all.
-
-But who knows?  So please point me at the full code body that was being
-debated earlier on this thread.  It will no doubt take me quite a while to
-dig through it, given my being on the road for the next couple of weeks,
-but so it goes.
-
-							Thanx, Paul
-
+On forward compatibility my 0.02c would be - if we want to go there 
+and silently ignore fields it'd be good to have some form of "hard
+required" bit.  For TLVs ABIs it can be a "you have to understand 
+this one" bit, for libbpf perhaps we could add a "min libbpf version
+required" section?  That kind of ties us ELF formats to libbpf
+specifics (the libbpf version presumably would imply support for
+features), but I think we want to go there, anyway.
