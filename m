@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE3433318
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7504533347
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729357AbfFCPG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 11:06:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50754 "EHLO vps0.lunn.ch"
+        id S1729366AbfFCPQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 11:16:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50778 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729081AbfFCPG0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 11:06:26 -0400
+        id S1729171AbfFCPQL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 11:16:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=HVCAKnGE2o6vcUDUe+ngXqRsklPv7HNwpc9aiFTjxqY=; b=tPEEj9eo0d/eQNi5ewgQrBGxFP
-        GQsLe/xdWnEr2bRxVObacb7/WZlL7Cnmry6dWAs75DziNxOi486Eqc7Ge73JRDNkcEp6wEqbacgKU
-        J9kdRbEtsvrUPrBN88a7uEK6mHjxIWbahGlf6xPFNrbyz5zFJ7UFnndMZqvt1qmB1J5w=;
+        bh=fPn2jgXxehD/h+yYF5fK2Ud2Xt3zX9OgX9H3wnmo/ig=; b=F2ra5yoDEWJ3UCbYraOBznnZ+y
+        p6/BIq4obLb1xi0ctNuB/oTN8LyGtJnX/9uVf4jHufC7+3kNYD4SY9rVV41WgP+zH4nzOQy2i+Z5Y
+        ugPk07bYwdqaS2lKz2zD+dFOtPb+z8FgFqH93oyYzcKOG7iZG08kcON8fqISMSxeoU/s=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hXoXV-000612-Ku; Mon, 03 Jun 2019 17:06:21 +0200
-Date:   Mon, 3 Jun 2019 17:06:21 +0200
+        id 1hXogw-00064L-4s; Mon, 03 Jun 2019 17:16:06 +0200
+Date:   Mon, 3 Jun 2019 17:16:06 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -32,40 +32,43 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 07/10] net: dsa: mv88e6xxx: implement
- port_link_state for mv88e6250
-Message-ID: <20190603150621.GF19627@lunn.ch>
+Subject: Re: [PATCH net-next v3 08/10] net: dsa: mv88e6xxx: add support for
+ mv88e6250
+Message-ID: <20190603151606.GG19627@lunn.ch>
 References: <20190603144112.27713-1-rasmus.villemoes@prevas.dk>
- <20190603144112.27713-8-rasmus.villemoes@prevas.dk>
+ <20190603144112.27713-9-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190603144112.27713-8-rasmus.villemoes@prevas.dk>
+In-Reply-To: <20190603144112.27713-9-rasmus.villemoes@prevas.dk>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 02:42:20PM +0000, Rasmus Villemoes wrote:
-> The mv88e6250 has a rather different way of reporting the link, speed
-> and duplex status. A simple difference is that the link bit is bit 12
-> rather than bit 11 of the port status register.
-> 
-> It gets more complicated for speed and duplex, which do not have
-> separate fields. Instead, there's a four-bit PortMode field, and
-> decoding that depends on whether it's a phy or mii port. For the phy
-> ports, only four of the 16 values have defined meaning; the rest are
-> called "reserved", so returning {SPEED,DUPLEX}_UNKNOWN seems
-> reasonable.
-> 
-> For the mii ports, most possible values are documented (0x3 and 0x5
-> are reserved), but I'm unable to make sense of them all. Since the
-> bits simply reflect the Px_MODE[3:0] configuration pins, just support
-> the subset that I'm certain about. Support for other setups can be
-> added later.
+> The chip has four per port 16-bits statistics registers, two of which
+> correspond to the existing "sw_in_filtered" and "sw_out_filtered" (but
+> at offsets 0x13 and 0x10 rather than 0x12 and 0x13, because why should
+> this be easy...).
 
-The code looks sensible and covers the most likely scenarios.
+This is Marvell. Nothing is easy, they keep making subtle changes like
+this.
+
+> Wiring up those four statistics seems to require
+> introducing a STATS_TYPE_PORT_6250 bit or similar, which seems a tad
+> ugly, so for now this just allows access to the STATS_TYPE_BANK0 ones.
+
+I don't think it will be too ugly. We have the abstraction in place to
+support it. So feel free to add a follow up patch adding these
+statistics if you want.
+ 
+> The chip does have ptp support, and the existing
+> mv88e6352_{gpio,avb,ptp}_ops at first glance seem like they would work
+> out-of-the-box, but for simplicity (and lack of testing) I'm eliding
+> this.
+
+Fine, you can add this later, if you do get a test system.
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
