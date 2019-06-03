@@ -2,117 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB9432942
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B44132985
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727247AbfFCHXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 03:23:51 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:39292 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726272AbfFCHXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:23:50 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x537LqI8143306
-        for <netdev@vger.kernel.org>; Mon, 3 Jun 2019 03:23:46 -0400
-Received: from e17.ny.us.ibm.com (e17.ny.us.ibm.com [129.33.205.207])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2svvpbw6r1-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 03:23:45 -0400
-Received: from localhost
-        by e17.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-        Mon, 3 Jun 2019 08:23:43 +0100
-Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
-        by e17.ny.us.ibm.com (146.89.104.204) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 3 Jun 2019 08:23:41 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x537NehR37224950
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Jun 2019 07:23:40 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 21EF0B205F;
-        Mon,  3 Jun 2019 07:23:40 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5748B2065;
-        Mon,  3 Jun 2019 07:23:39 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.80.211.40])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Jun 2019 07:23:39 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 35E7316C5D9E; Mon,  3 Jun 2019 00:23:39 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 00:23:39 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Reply-To: paulmck@linux.ibm.com
-References: <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
- <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
- <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
- <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
- <20190603034707.GG28207@linux.ibm.com>
- <20190603040114.st646bujtgyu7adn@gondor.apana.org.au>
+        id S1726538AbfFCH1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 03:27:41 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:32953 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfFCH1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:27:40 -0400
+Received: by mail-oi1-f193.google.com with SMTP id q186so12115805oia.0
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 00:27:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=91l+n5sLsO8XrUlcVUfMfSBih2YfyMwvOg3hnHFMMJw=;
+        b=NkdlPXgFQUKwsEZhcfpIW5gqieigJ3gccqDAHGyMDD4TX1FL8eong7Mp7xXn4/haLK
+         Q6I/71E3FdOcusC2pdNAo+8K2EzvlN2OQH889FUfzcW4EYocJUpzwbkNyh0hhRhP15pf
+         k0FCO83JHyXEASG+QK0eiiCEbbIimaI2aRx8hIRMr24E3uJD6BI2TGvgeGoDWnZql0ZZ
+         g7nPiii6Z2t5yJ3YobiNoLu+oeiVZGTNMwpTkbBvNzMJeRglaAjWC/ZZRI70mq8VHF68
+         9ycvZ/qEKbDoNL8Uls9QUqWEmLQvad9hNYqa1bBkKvs2Q22kZo9YpGV+Zts0ZXoBFoRc
+         fm/g==
+X-Gm-Message-State: APjAAAUsrMrP71XkGduVW9VZ5a6cn0Cg6ffLaIvtIgNsoP6p1JNQe52y
+        AMTRyw2r2p+MftuOUP8wzH2TF50c4+Jm7N8o3Np0Zw==
+X-Google-Smtp-Source: APXvYqy4T57mDjaHFCyHTKOwj1BaQRtES/e739DaslgYKUUjlVAXZOV5trKZ1YmsPbDI5+1eyBiTHu+dO12TFQJ5Z+Y=
+X-Received: by 2002:aca:300d:: with SMTP id w13mr12937oiw.26.1559546859860;
+ Mon, 03 Jun 2019 00:27:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603040114.st646bujtgyu7adn@gondor.apana.org.au>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19060307-0040-0000-0000-000004F7DBD9
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011207; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01212527; UDB=6.00637217; IPR=6.00993587;
- MB=3.00027161; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 07:23:43
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060307-0041-0000-0000-00000903F8FC
-Message-Id: <20190603072339.GH28207@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=936 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906030054
+References: <20190601021526.GA8264@zhanggen-UX430UQ>
+In-Reply-To: <20190601021526.GA8264@zhanggen-UX430UQ>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Mon, 3 Jun 2019 09:27:29 +0200
+Message-ID: <CAFqZXNuPMxOQeq-5evh4dSuGC-Q5sQPjbhRgCBh4Q=u6OrEi9Q@mail.gmail.com>
+Subject: Re: [PATCH v3] selinux: lsm: fix a missing-check bug in selinux_sb_eat_lsm_opts()
+To:     Gen Zhang <blackgod016574@gmail.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 12:01:14PM +0800, Herbert Xu wrote:
-> On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
-> >
-> > 	CPU2:         if (b != 1)
-> > 	CPU2:                 b = 1;
-> 
-> Stop right there.  The kernel is full of code that assumes that
-> assignment to an int/long is atomic.  If your compiler breaks this
-> assumption that we can kiss the kernel good-bye.
+On Sat, Jun 1, 2019 at 4:15 AM Gen Zhang <blackgod016574@gmail.com> wrote:
+> In selinux_sb_eat_lsm_opts(), 'arg' is allocated by kmemdup_nul(). It
+> returns NULL when fails. So 'arg' should be checked. And 'mnt_opts'
+> should be freed when error.
+>
+> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> Fixes: 99dbbb593fe6 ("selinux: rewrite selinux_sb_eat_lsm_opts()")
+> ---
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index 3ec702c..f329fc0 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -2616,6 +2616,7 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>         char *from = options;
+>         char *to = options;
+>         bool first = true;
+> +       int ret;
 
-Here you go:
+I'd suggest just moving the declaration of 'rc' here and simply reuse
+that variable. Otherwise the patch looks good to me.
 
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55981
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56028
+>
+>         while (1) {
+>                 int len = opt_len(from);
+> @@ -2635,15 +2636,16 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>                                                 *q++ = c;
+>                                 }
+>                                 arg = kmemdup_nul(arg, q - arg, GFP_KERNEL);
+> +                               if (!arg) {
+> +                                       ret = -ENOMEM;
+> +                                       goto free_opt;
+> +                               }
+>                         }
+>                         rc = selinux_add_opt(token, arg, mnt_opts);
+>                         if (unlikely(rc)) {
+> +                               ret = rc;
+>                                 kfree(arg);
+> -                               if (*mnt_opts) {
+> -                                       selinux_free_mnt_opts(*mnt_opts);
+> -                                       *mnt_opts = NULL;
+> -                               }
+> -                               return rc;
+> +                               goto free_opt;
+>                         }
+>                 } else {
+>                         if (!first) {   // copy with preceding comma
+> @@ -2661,6 +2663,12 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>         }
+>         *to = '\0';
+>         return 0;
+> +free_opt:
+> +       if (*mnt_opts) {
+> +               selinux_free_mnt_opts(*mnt_opts);
+> +               *mnt_opts = NULL;
+> +       }
+> +       return ret;
+>  }
+>
+>  static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
 
-TL;DR: On x86, of you are doing a plain store of a 32-bit constant
-that has bits set only in the lower few bits of each 16-bit half of
-that constant, the compiler is plenty happy to use a pair of 16-bit
-store-immediate instructions to carry out that store.  This is also
-known as "store tearing".
-
-The two bugs were filed (and after some back and forth, fixed) because
-someone forgot to exclude C11 atomics and volatile accesses from this
-store tearing.
-
-							Thanx, Paul
-
+-- 
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
