@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D95332662
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 796ED32665
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbfFCCLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 22:11:04 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17652 "EHLO huawei.com"
+        id S1727094AbfFCCLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 22:11:05 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17649 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726899AbfFCCLC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726270AbfFCCLC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 2 Jun 2019 22:11:02 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CE37BF53AD241E04240E;
+        by Forcepoint Email with ESMTP id DFD5DF5CBD9DD8024160;
         Mon,  3 Jun 2019 10:11:00 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 3 Jun 2019 10:10:51 +0800
+ 14.3.439.0; Mon, 3 Jun 2019 10:10:52 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, Weihang Li <liweihang@hisilicon.com>,
         Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 06/10] net: hns3: set ops to null when unregister ad_dev
-Date:   Mon, 3 Jun 2019 10:09:18 +0800
-Message-ID: <1559527762-22931-7-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 07/10] net: hns3: add handling of two bits in MAC tunnel interrupts
+Date:   Mon, 3 Jun 2019 10:09:19 +0800
+Message-ID: <1559527762-22931-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559527762-22931-1-git-send-email-tanhuazhong@huawei.com>
 References: <1559527762-22931-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,38 +41,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Weihang Li <liweihang@hisilicon.com>
 
-The hclge/hclgevf and hns3 module can be unloaded independently,
-when hclge/hclgevf unloaded firstly, the ops of ae_dev should
-be set to NULL, otherwise it will cause an use-after-free problem.
+LINK_UP and LINK_DOWN are two bits of MAC tunnel interrupts, but previous
+HNS3 driver didn't handle them. If they were enabled, value of these two
+bits will change during link down and link up, which will cause HNS3
+driver keep receiving IRQ but can't handle them.
 
-Fixes: 38caee9d3ee8 ("net: hns3: Add support of the HNAE3 framework")
+This patch adds handling of these two bits of interrupts, we will record
+and clear them as what we do to other MAC tunnel interrupts.
+
 Signed-off-by: Weihang Li <liweihang@hisilicon.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h     | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.c b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-index fa8b850..738e013 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
-@@ -251,6 +251,7 @@ void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index ed1f533..e1007d9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -1053,7 +1053,7 @@ static void hclge_dbg_dump_mac_tnl_status(struct hclge_dev *hdev)
  
- 		ae_algo->ops->uninit_ae_dev(ae_dev);
- 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 0);
-+		ae_dev->ops = NULL;
+ 	while (kfifo_get(&hdev->mac_tnl_log, &stats)) {
+ 		rem_nsec = do_div(stats.time, HCLGE_BILLION_NANO_SECONDS);
+-		dev_info(&hdev->pdev->dev, "[%07lu.%03lu]status = 0x%x\n",
++		dev_info(&hdev->pdev->dev, "[%07lu.%03lu] status = 0x%x\n",
+ 			 (unsigned long)stats.time, rem_nsec / 1000,
+ 			 stats.status);
  	}
- 
- 	list_del(&ae_algo->node);
-@@ -351,6 +352,7 @@ void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev)
- 
- 		ae_algo->ops->uninit_ae_dev(ae_dev);
- 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 0);
-+		ae_dev->ops = NULL;
- 	}
- 
- 	list_del(&ae_dev->node);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+index 9645590..c56b11e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+@@ -47,9 +47,9 @@
+ #define HCLGE_NCSI_ERR_INT_TYPE	0x9
+ #define HCLGE_MAC_COMMON_ERR_INT_EN		0x107FF
+ #define HCLGE_MAC_COMMON_ERR_INT_EN_MASK	0x107FF
+-#define HCLGE_MAC_TNL_INT_EN			GENMASK(7, 0)
+-#define HCLGE_MAC_TNL_INT_EN_MASK		GENMASK(7, 0)
+-#define HCLGE_MAC_TNL_INT_CLR			GENMASK(7, 0)
++#define HCLGE_MAC_TNL_INT_EN			GENMASK(9, 0)
++#define HCLGE_MAC_TNL_INT_EN_MASK		GENMASK(9, 0)
++#define HCLGE_MAC_TNL_INT_CLR			GENMASK(9, 0)
+ #define HCLGE_PPU_MPF_ABNORMAL_INT0_EN		GENMASK(31, 0)
+ #define HCLGE_PPU_MPF_ABNORMAL_INT0_EN_MASK	GENMASK(31, 0)
+ #define HCLGE_PPU_MPF_ABNORMAL_INT1_EN		GENMASK(31, 0)
 -- 
 2.7.4
 
