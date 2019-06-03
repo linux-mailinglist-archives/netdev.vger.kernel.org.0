@@ -2,125 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8868232A1C
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1226832A52
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 10:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbfFCHyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 03:54:11 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37394 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726656AbfFCHyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:54:10 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 22so1684698wmg.2;
-        Mon, 03 Jun 2019 00:54:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vxn++X6GnNn7FvRm2GLwCr6U91lHVxlpb9LxLQUYoh8=;
-        b=UaA55vFXUfkwbZG1fE7WZ3BEU/NRz3EniJlHgVBM/EDOoI+hIjRj09/ae1Pl4bHi9b
-         Rh0+ZR+hWmbGNRI24pI29x0wGunvVOsLfbNgkJk1kzx3SVl/klB+IuEyzfp2oY9s9zdF
-         wm5ciRxDVw12GbJ0SfU8YpQl27uoRnFxeaTv4RDr+3Q6F5bf38Oy0djTORRtPA55Q7lr
-         gSJut3+7O3lkELl0qvFS87+AMZQT7i2zBlBXZzjBJJJvIXo7bk1/0mdRz4ZURgGMvLmM
-         IwJdpJ1NpWDp3CdNKNjR0BlaCg5N0atpWN838Y0INAuA8kHuEqYRCBKVDqszMJshdVZK
-         nNcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vxn++X6GnNn7FvRm2GLwCr6U91lHVxlpb9LxLQUYoh8=;
-        b=DtaPX48hcQUlYuEWXkdpz07zcSieDaVGpViYuavlSEr9IoqXFLcE1hk+chnkAp+a2b
-         pcDbxBNPzb9nl34tfEbu1QHm3zl5cJj+qc4XL3xCKA5bI76vznHNUqm7KB7si5HcNbcK
-         ptEsHLks/AdjSRzIfgMP9oDv33h1rgmPcckXhseklSDL2lF9Oa1F4+xg9f8ZAG2h1384
-         rmqRuqGqQoaZApv/w2CFezjL7e8YbGJ/ksHgWZAg9zaB3nkcYAcrZbH6EhXn9AV3e5vo
-         7jgnvAJzhhMM3ZXPWneOhaicACKId+wrBsHA2y82s2AWycSdholsj/bm/Xmm2EgOBIZu
-         8cqA==
-X-Gm-Message-State: APjAAAWCNnvc4Oky1BFdRnsLrPC6Y1SrkAiWIWAVLM/rgrdO42Hg9KN+
-        CzOB06m+Le335o2fd9JdsYEmrmIhPmwxj9TbZeU=
-X-Google-Smtp-Source: APXvYqw9kMPf+INXeMqlOFlFgNgw0nEIS42SjTDd0sxR9d2hrhqUuyp/FltCIycXfO33ebmylOwNZSqfjQ0mSG0kHZc=
-X-Received: by 2002:a1c:eb16:: with SMTP id j22mr1122553wmh.56.1559548447660;
- Mon, 03 Jun 2019 00:54:07 -0700 (PDT)
+        id S1727588AbfFCIDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 04:03:37 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:50138 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725856AbfFCIDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 04:03:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=YGw/VDsnOloIaXgrEbA/FOCyBbJYxl2QNc1vAYVXNY0=; b=Kh81Fh/GkYy+PcGkyTuRLYqJr
+        5d3meB8Iu/apofeU9LBaVTbdU34exlCBZ6/cvkSTsWYbCITa+85dcFdl1TuwCCRcbBbbBHcmz79tU
+        YNA75f//Beu0qWv4xrOjE3yCBU/h7Wpdldb8AXCdnFyE/xt6GG7X5SHHOhvkwxY2EDPpuVJ40I8NT
+        ZcmLp7vu3BxxYFbsJSX2sSX4rHSTxLEQ0MZogDpDfR8tMLBVyzA2HGhhcxPa3RuWryoN7hsbltCid
+        ApVADLC1Be6a9Xztz6ysLp/Pg3F0N3np5vQaItnOalc4ycKqr7JKLLA3Zs069bXnA/w4o4wPQqclC
+        BYeGsVrnQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hXhuM-0001Ln-LU; Mon, 03 Jun 2019 08:01:31 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0FE772029F880; Mon,  3 Jun 2019 10:01:28 +0200 (CEST)
+Date:   Mon, 3 Jun 2019 10:01:28 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [RFC 1/6] rcu: Add support for consolidated-RCU reader checking
+Message-ID: <20190603080128.GA3436@hirez.programming.kicks-ass.net>
+References: <20190601222738.6856-1-joel@joelfernandes.org>
+ <20190601222738.6856-2-joel@joelfernandes.org>
 MIME-Version: 1.0
-References: <1559532216-12114-1-git-send-email-92siuyang@gmail.com>
-In-Reply-To: <1559532216-12114-1-git-send-email-92siuyang@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 3 Jun 2019 15:53:56 +0800
-Message-ID: <CADvbK_eUYhP=pSLqHdBp8E3-NJP28=jErSSvW5moO9WVK=X8XQ@mail.gmail.com>
-Subject: Re: [PATCH] ipvlan: Don't propagate IFF_ALLMULTI changes on down interfaces.
-To:     Young Xiao <92siuyang@gmail.com>
-Cc:     davem <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>, petrm@mellanox.com,
-        jiri@mellanox.com, idosch@mellanox.com, uehaibing@huawei.com,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190601222738.6856-2-joel@joelfernandes.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 3, 2019 at 11:22 AM Young Xiao <92siuyang@gmail.com> wrote:
->
-> Clearing the IFF_ALLMULTI flag on a down interface could cause an allmulti
-> overflow on the underlying interface.
->
-> Attempting the set IFF_ALLMULTI on the underlying interface would cause an
-> error and the log message:
->
-> "allmulti touches root, set allmulti failed."
-s/root/roof
+On Sat, Jun 01, 2019 at 06:27:33PM -0400, Joel Fernandes (Google) wrote:
+> +#define list_for_each_entry_rcu(pos, head, member, cond...)		\
+> +	if (COUNT_VARGS(cond) != 0) {					\
+> +		__list_check_rcu_cond(0, ## cond);			\
+> +	} else {							\
+> +		__list_check_rcu();					\
+> +	}								\
+> +	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
+> +		&pos->member != (head);					\
+>  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
+>  
+>  /**
+> @@ -621,7 +648,12 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
+>   * the _rcu list-mutation primitives such as hlist_add_head_rcu()
+>   * as long as the traversal is guarded by rcu_read_lock().
+>   */
+> +#define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
+> +	if (COUNT_VARGS(cond) != 0) {					\
+> +		__list_check_rcu_cond(0, ## cond);			\
+> +	} else {							\
+> +		__list_check_rcu();					\
+> +	}								\
+>  	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
+>  			typeof(*(pos)), member);			\
+>  		pos;							\
 
-I guess this patch was inspired by:
 
-commit bbeb0eadcf9fe74fb2b9b1a6fea82cd538b1e556
-Author: Peter Christensen <pch@ordbogen.com>
-Date:   Thu May 8 11:15:37 2014 +0200
+This breaks code like:
 
-    macvlan: Don't propagate IFF_ALLMULTI changes on down interfaces.
+	if (...)
+		list_for_each_entry_rcu(...);
 
-I could trigger this error on macvlan prior to this patch with:
-
-  # ip link add mymacvlan1 link eth2 type macvlan mode bridge
-  # ip link set mymacvlan1 up
-  # ip link set mymacvlan1 allmulticast on
-  # ip link set mymacvlan1 down
-  # ip link set mymacvlan1 allmulticast off
-  # ip link set mymacvlan1 allmulticast on
-
-but not on ipvlan, could you?
-
-macvlan had this problem, as lowerdev's allmulticast is cleared when doing
-dev_stop and set when doing dev_open, which doesn't happen on ipvlan.
-
-So I'd think this patch fixes nothing unless you want to add
-dev_set_allmulti(1/-1) in ipvlan_open/stop(), but that's another topic.
-
-did I miss something?
-
->
-> Signed-off-by: Young Xiao <92siuyang@gmail.com>
-> ---
->  drivers/net/ipvlan/ipvlan_main.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-> index bbeb162..523bb83 100644
-> --- a/drivers/net/ipvlan/ipvlan_main.c
-> +++ b/drivers/net/ipvlan/ipvlan_main.c
-> @@ -242,8 +242,10 @@ static void ipvlan_change_rx_flags(struct net_device *dev, int change)
->         struct ipvl_dev *ipvlan = netdev_priv(dev);
->         struct net_device *phy_dev = ipvlan->phy_dev;
->
-> -       if (change & IFF_ALLMULTI)
-> -               dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI? 1 : -1);
-> +       if (dev->flags & IFF_UP) {
-> +               if (change & IFF_ALLMULTI)
-> +                       dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI ? 1 : -1);
-> +       }
->  }
->
->  static void ipvlan_set_multicast_mac_filter(struct net_device *dev)
-> --
-> 2.7.4
->
+as they are no longer a single statement. You'll have to frob it into
+the initializer part of the for statement.
