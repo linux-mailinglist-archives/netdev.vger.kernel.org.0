@@ -2,177 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB94331E4
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:18:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D494133200
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbfFCOSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 10:18:51 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44450 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726968AbfFCOSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:18:50 -0400
-Received: by mail-pf1-f195.google.com with SMTP id t16so1886152pfe.11
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 07:18:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wino6sk3VdZE6+hAQNM1PvtsWBqO77h9pHog6R+saB4=;
-        b=ILFGoBB8mLMqVVtS8/R/M5XmKpli9djqbjha1UCLJ1dh/6QP3UUReHWHDiD4kff4T7
-         9/EuFMLCU7KEekS2AIMDnGtUJRZ7MQJimC/aYCot7tPs1eoHEET2YsyCOXT26R5TB610
-         BnMntKUbojtA1j1WCh9KSm7cLhDJ39hgwOFSU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wino6sk3VdZE6+hAQNM1PvtsWBqO77h9pHog6R+saB4=;
-        b=bLHrpyICIa+Q4KimuA59kHD6ptogP12xTv+QSnNT1qLYTmW9SFiwZlBZUL6df//BmI
-         H8hhoPxPkS1tpo1r2zohMwOzJ4eyEKg7gCazycMpwRQrcj8gMnjlGWa1Wf8SAjaH5XkS
-         WRP+VB2hQd4LQHjTUXJZ7OWnYiMTnzoaXej4mMo1+yRmZab/LjLVOm4zq/R3y9bcL3XP
-         enL0A9Av9fvBxkbDkqRTZz2N9infufuKxOjdkiIbWqUGf3c0RrvIjpQNiEEBiWD6XBrf
-         ijDTNDid5pVhF0LWWkZowDRockpF/2ygnG6NngJcCsr3s9+98WrZ/pej4o54T1iHWhQn
-         gHkA==
-X-Gm-Message-State: APjAAAWYwjIIMIzOdNTEgBmF9iCiDfE2rvxkjx7uyZaacG7ReZ2tQpUn
-        XIIj96ZfW9YkVv/LWsmIIn7+MQ==
-X-Google-Smtp-Source: APXvYqyKAjR/D78/kGgs8thHzTfUR/LOLb5cBxjo6X/LlWYPb4MJB9cnaSwLt+1e5dELPHpdsRQU0Q==
-X-Received: by 2002:a63:6157:: with SMTP id v84mr14697278pgb.36.1559571529472;
-        Mon, 03 Jun 2019 07:18:49 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id d2sm13148346pfh.115.2019.06.03.07.18.48
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 Jun 2019 07:18:48 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 10:18:47 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [RFC 1/6] rcu: Add support for consolidated-RCU reader checking
-Message-ID: <20190603141847.GA94186@google.com>
-References: <20190601222738.6856-1-joel@joelfernandes.org>
- <20190601222738.6856-2-joel@joelfernandes.org>
- <20190603080128.GA3436@hirez.programming.kicks-ass.net>
+        id S1728981AbfFCOVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 10:21:53 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:33956 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727429AbfFCOVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:21:53 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hXnqL-0000Tk-6t; Mon, 03 Jun 2019 10:21:50 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     linux-sctp@vger.kernel.org
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] Fix memory leak in sctp_process_init
+Date:   Mon,  3 Jun 2019 10:21:12 -0400
+Message-Id: <20190603142112.20229-1-nhorman@tuxdriver.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603080128.GA3436@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 10:01:28AM +0200, Peter Zijlstra wrote:
-> On Sat, Jun 01, 2019 at 06:27:33PM -0400, Joel Fernandes (Google) wrote:
-> > +#define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> > +	if (COUNT_VARGS(cond) != 0) {					\
-> > +		__list_check_rcu_cond(0, ## cond);			\
-> > +	} else {							\
-> > +		__list_check_rcu();					\
-> > +	}								\
-> > +	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-> > +		&pos->member != (head);					\
-> >  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
-> >  
-> >  /**
-> > @@ -621,7 +648,12 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
-> >   * the _rcu list-mutation primitives such as hlist_add_head_rcu()
-> >   * as long as the traversal is guarded by rcu_read_lock().
-> >   */
-> > +#define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
-> > +	if (COUNT_VARGS(cond) != 0) {					\
-> > +		__list_check_rcu_cond(0, ## cond);			\
-> > +	} else {							\
-> > +		__list_check_rcu();					\
-> > +	}								\
-> >  	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
-> >  			typeof(*(pos)), member);			\
-> >  		pos;							\
-> 
-> 
-> This breaks code like:
-> 
-> 	if (...)
-> 		list_for_each_entry_rcu(...);
-> 
-> as they are no longer a single statement. You'll have to frob it into
-> the initializer part of the for statement.
+syzbot found the following leak in sctp_process_init
+BUG: memory leak
+unreferenced object 0xffff88810ef68400 (size 1024):
+  comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
+  hex dump (first 32 bytes):
+    1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000a02cebbd>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
+[inline]
+    [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
+    [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
+    [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
+    [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
+    [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
+    [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
+    [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
+net/sctp/sm_make_chunk.c:2437
+    [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
+[inline]
+    [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
+[inline]
+    [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
+[inline]
+    [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60 net/sctp/sm_sideeffect.c:1165
+    [<0000000044e11f96>] sctp_assoc_bh_rcv+0x13c/0x200
+net/sctp/associola.c:1074
+    [<00000000ec43804d>] sctp_inq_push+0x7f/0xb0 net/sctp/inqueue.c:95
+    [<00000000726aa954>] sctp_backlog_rcv+0x5e/0x2a0 net/sctp/input.c:354
+    [<00000000d9e249a8>] sk_backlog_rcv include/net/sock.h:950 [inline]
+    [<00000000d9e249a8>] __release_sock+0xab/0x110 net/core/sock.c:2418
+    [<00000000acae44fa>] release_sock+0x37/0xd0 net/core/sock.c:2934
+    [<00000000963cc9ae>] sctp_sendmsg+0x2c0/0x990 net/sctp/socket.c:2122
+    [<00000000a7fc7565>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
+    [<00000000b732cbd3>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<00000000b732cbd3>] sock_sendmsg+0x54/0x70 net/socket.c:671
+    [<00000000274c57ab>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2292
+    [<000000008252aedb>] __sys_sendmsg+0x80/0xf0 net/socket.c:2330
+    [<00000000f7bf23d1>] __do_sys_sendmsg net/socket.c:2339 [inline]
+    [<00000000f7bf23d1>] __se_sys_sendmsg net/socket.c:2337 [inline]
+    [<00000000f7bf23d1>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2337
+    [<00000000a8b4131f>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:3
 
-Thanks a lot for that. I fixed it as below (diff is on top of the patch):
+The problem was that the peer.cookie value points to an skb allocated
+area on the first pass through this function, at which point it is
+overwritten with a heap allocated value, but in certain cases, where a
+COOKIE_ECHO chunk is included in the packet, a second pass through
+sctp_process_init is made, where the cookie value is re-allocated,
+leaking the first allocation.
 
-If not for that '##' , I could have abstracted the whole if/else
-expression into its own macro and called it from list_for_each_entry_rcu() to
-keep it more clean.
+Fix is to always allocate the cookie value, and free it when we are done
+using it.
 
----8<-----------------------
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
+CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+---
+ net/sctp/associola.c     |  1 +
+ net/sctp/sm_make_chunk.c | 12 +++---------
+ net/sctp/sm_sideeffect.c |  5 +++++
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/rculist.h b/include/linux/rculist.h
-index b641fdd9f1a2..cc742d294bb0 100644
---- a/include/linux/rculist.h
-+++ b/include/linux/rculist.h
-@@ -371,12 +372,15 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
-  * as long as the traversal is guarded by rcu_read_lock().
-  */
- #define list_for_each_entry_rcu(pos, head, member, cond...)		\
--	if (COUNT_VARGS(cond) != 0) {					\
--		__list_check_rcu_cond(0, ## cond);			\
--	} else {							\
--		__list_check_rcu();					\
--	}								\
--	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-+	for (								\
-+	     ({								\
-+		if (COUNT_VARGS(cond) != 0) {				\
-+			__list_check_rcu_cond(0, ## cond);		\
-+		} else {						\
-+			__list_check_rcu_nocond();			\
-+		}							\
-+	      }),							\
-+	     pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
- 		&pos->member != (head);					\
- 		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index d2c7d0d2abc1..718b9917844e 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -393,6 +393,7 @@ void sctp_association_free(struct sctp_association *asoc)
+ 	kfree(asoc->peer.peer_random);
+ 	kfree(asoc->peer.peer_chunks);
+ 	kfree(asoc->peer.peer_hmacs);
++	kfree(asoc->peer.cookie);
  
-@@ -649,12 +653,15 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
-  * as long as the traversal is guarded by rcu_read_lock().
-  */
- #define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
--	if (COUNT_VARGS(cond) != 0) {					\
--		__list_check_rcu_cond(0, ## cond);			\
--	} else {							\
--		__list_check_rcu();					\
--	}								\
--	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
-+	for (								\
-+	     ({								\
-+		if (COUNT_VARGS(cond) != 0) {				\
-+			__list_check_rcu_cond(0, ## cond);		\
-+		} else {						\
-+			__list_check_rcu_nocond();			\
-+		}							\
-+	     }),							\
-+	     pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
- 			typeof(*(pos)), member);			\
- 		pos;							\
- 		pos = hlist_entry_safe(rcu_dereference_raw(hlist_next_rcu(\
+ 	/* Release the transport structures. */
+ 	list_for_each_safe(pos, temp, &asoc->peer.transport_addr_list) {
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 72e74503f9fc..ff365f22a3c1 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2431,14 +2431,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+ 	/* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
+ 	asoc->peer.rwnd = asoc->peer.i.a_rwnd;
+ 
+-	/* Copy cookie in case we need to resend COOKIE-ECHO. */
+-	cookie = asoc->peer.cookie;
+-	if (cookie) {
+-		asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
+-		if (!asoc->peer.cookie)
+-			goto clean_up;
+-	}
+-
+ 	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
+ 	 * high (for example, implementations MAY use the size of the receiver
+ 	 * advertised window).
+@@ -2607,7 +2599,9 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 	case SCTP_PARAM_STATE_COOKIE:
+ 		asoc->peer.cookie_len =
+ 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
+-		asoc->peer.cookie = param.cookie->body;
++		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
++		if (!asoc->peer.cookie)
++			retval = 0;
+ 		break;
+ 
+ 	case SCTP_PARAM_HEARTBEAT_INFO:
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index 4aa03588f87b..27ddf2d8f001 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
+ 						asoc->rto_initial;
+ 	}
+ 
++	if (sctp_state(asoc, ESTABLISHED)) {
++		kfree(asoc->peer.cookie);
++		asoc->peer.cookie = NULL;
++	}
++
+ 	if (sctp_state(asoc, ESTABLISHED) ||
+ 	    sctp_state(asoc, CLOSED) ||
+ 	    sctp_state(asoc, SHUTDOWN_RECEIVED)) {
 -- 
-2.22.0.rc1.311.g5d7573a151-goog
+2.20.1
 
