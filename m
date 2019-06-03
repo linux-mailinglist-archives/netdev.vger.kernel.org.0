@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E92E1326E5
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:29:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68CC326E6
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbfFCD3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 23:29:15 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40467 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfFCD3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:29:15 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g69so6410422plb.7
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 20:29:15 -0700 (PDT)
+        id S1726636AbfFCD3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 23:29:19 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40473 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725872AbfFCD3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:29:18 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g69so6410461plb.7
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 20:29:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=PQnXGGdP/A5D00bGfCWs4uE8hOzXxm1T6ltCq+vih2k=;
-        b=JbUuCmkBAx+r/hth75ibePfnv/okC9RF5r6d6bzfXFqpY4LPGV4ZP82/is8OAM+hHo
-         DtFMBLbJFOVcVoD2fOmPuGrWBUwZXYmD5vS1AqkOJ5kGhPyutHdvO6BHybwIUXu8HVZQ
-         ybSmbhB7Gu6lE5ixjiTuGvgcI3+JLxD/2AvkC2N/geDoDcfg/j7REhcFhg75KOPO6Baa
-         LhKCpIj3j+g/aHqYI89P/1Xofn/dsIIGfb5aZvKcDUkyYms0qMQFjhZW1PRUG1M9AjFg
-         W8RXOeQSOIwa7/CEVn+i8b92VkhKPptQ5XTIruu3gioCr0fb71WsNLWueU/7P4x5mAal
-         7DKA==
+        bh=qolUrxKgA0je1UdGJ7G6NKw5HG97+OI5EAAYtHD1LCE=;
+        b=g1X1dIQMihMW3tOr67Ij4jUP7LN7atfVHgozSz3z7EmiG7rLJEJhiY0JVPQktjCpHL
+         1XR6L9CHOxfzEelsm7/uh8xoypKptlhIFHyQI48DjjoDFmtnzdPRv+XP2gM7DNwwngAE
+         SUHDtJllQfwpHqQNKgt5CsfkGOBbRTQVUUupSJlB1kyszhfpqUQ9krp1Q6BG6NuPGcZR
+         WzjAQplOhNx8bjFRZ6F9DaUIR4UCajfQh/mbSVTeJOHzyo7mfURQ2BRL8hCazLj7c8p1
+         zCDvu6qIFir2/sg61O5GBdeyiGptgUh1iPdnAObmbmIj0KqUuTL3sRhjiw9s6lw2Rc58
+         0niA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PQnXGGdP/A5D00bGfCWs4uE8hOzXxm1T6ltCq+vih2k=;
-        b=PG6eKgWggy6UJ/SDWupYzDZzJq4qWamHZPUMp67a4DcCxCbi5Ckye2ncVP8eMK/Y3G
-         RWMED34FNmbrr0P0zzWCqkp3Q4nRYol/Coi7057cBFSO8sidKqsa4l3/8So2EsIRFWJR
-         J+7uCMpPlGsqbVqCwwO5pej6pdpCzagzYw6MQUSY50v/X+2HMoTuRGGctkZzndsc+FdX
-         fGNF2r5K5w7YzSSshlp76UyImkCXr8fdDeAkXY+MD/rrf02LoeFJaZfL/9gYrMuDSDmV
-         3WCrznVzCP3y3drAvg7gdJkHFSULSUevX4g7rDcmMSrT6UxMRxhqnibSWLTNkBaVZgXc
-         4kTg==
-X-Gm-Message-State: APjAAAWzFFDBJN5hqns9N/J9VM0c8c0bGfXgCxMGgSkpio8A/5s+A0JT
-        6yGoUtKBBdy6lPxYKhTGgx0=
-X-Google-Smtp-Source: APXvYqy2qnYTyfcEIOtexvCRUrU6KJhumEJOtpya9S3EJFtapSULjHRZfUcbOMAXzEiRyYp0ZIb+7A==
-X-Received: by 2002:a17:902:8bc1:: with SMTP id r1mr26658145plo.163.1559532554671;
-        Sun, 02 Jun 2019 20:29:14 -0700 (PDT)
+        bh=qolUrxKgA0je1UdGJ7G6NKw5HG97+OI5EAAYtHD1LCE=;
+        b=S2bnRmTqk0z8HQOyRHd0kGo1am2k2PDXYFDJZ4SjCLNVcu8EdS0f5e2wsGMQbk0XX/
+         Sw/FisS+RLm0bDs0rsu44DLqCAkpEImUTqUEgyovuBOclyMUWrrrlIdC74VRutG05hIu
+         myajUAm4KU/Dg7b4E+LTCLuiwVYjy+DJIFxWeK92pqh/OkCCsjsUjlPdDsSfLAqDHE1A
+         KiLOKrK9ovXWGE0o8zu2QG4Ph6KwTJFtaLOcljrf5jKYhEDld+krHCiwHBp4SeT/hNzx
+         RWSkz/mQ9s0csooEvdeSN3Ex8iBPTCF9sJ16F4/o+BUP3zlkLYC6U6uxJcJ71rYeKfm8
+         ri2A==
+X-Gm-Message-State: APjAAAXXaA6gXD8wnGSMV3wuNZTYw0pNXYMRQQ7F4zD/mftZPsGFy5BH
+        NavDakma3SATusq4sCwJxCY=
+X-Google-Smtp-Source: APXvYqx4ch/irVVyNRy7v62LZCp8nMFJ9AssMyh4wxz4SST8HWb8rYIGsPcAWUFdYz5OPvQN+n26Xw==
+X-Received: by 2002:a17:902:b407:: with SMTP id x7mr27108549plr.28.1559532558356;
+        Sun, 02 Jun 2019 20:29:18 -0700 (PDT)
 Received: from [172.27.227.194] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id k3sm12921346pgo.81.2019.06.02.20.29.12
+        by smtp.googlemail.com with ESMTPSA id t5sm10566659pgh.46.2019.06.02.20.29.17
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 20:29:13 -0700 (PDT)
-Subject: Re: KASAN: user-memory-access Read in ip6_hold_safe (3)
-To:     syzbot <syzbot+a5b6e01ec8116d046842@syzkaller.appspotmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <000000000000a7776f058a3ce9db@google.com>
+        Sun, 02 Jun 2019 20:29:17 -0700 (PDT)
+Subject: Re: general protection fault in tcp_v6_connect
+To:     syzbot <syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+References: <000000000000aa7a27058a3ce9aa@google.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <88c0d223-f958-06d1-067a-ee7f2c801d71@gmail.com>
-Date:   Sun, 2 Jun 2019 21:29:11 -0600
+Message-ID: <250fba08-9cd7-7c79-f00a-d116e76fb51b@gmail.com>
+Date:   Sun, 2 Jun 2019 21:29:16 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <000000000000a7776f058a3ce9db@google.com>
+In-Reply-To: <000000000000aa7a27058a3ce9aa@google.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -71,78 +70,51 @@ On 6/1/19 12:05 AM, syzbot wrote:
 > 
 > syzbot found the following crash on:
 > 
-> HEAD commit:    dfb569f2 net: ll_temac: Fix compile error
-
-just an FYI: this is before any of my IPv6 changes in 5.2-next that are
-relevant. At this commit the only IPv6 changes of mine are:
-
-19a3b7eea424 ipv6: export function to send route updates
-cdaa16a4f70c ipv6: Add hook to bump sernum for a route to stubs
-68a9b13d9219 ipv6: Add delete route hook to stubs
-
-which are function exports - unused at commit dfb569f2.
-
-
+> HEAD commit:    f4aa8012 cxgb4: Make t4_get_tp_e2c_map static
 > git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10afcb8aa00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=fc045131472947d7
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1662cb12a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d137eb988ffd93c3
 > dashboard link:
-> https://syzkaller.appspot.com/bug?extid=a5b6e01ec8116d046842
+> https://syzkaller.appspot.com/bug?extid=5ee26b4e30c45930bd3c
 > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 > 
 > Unfortunately, I don't have any reproducer for this crash yet.
 > 
 > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+a5b6e01ec8116d046842@syzkaller.appspotmail.com
+> Reported-by: syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com
 > 
-> ==================================================================
-> BUG: KASAN: user-memory-access in atomic_read
-> include/asm-generic/atomic-instrumented.h:26 [inline]
-> BUG: KASAN: user-memory-access in atomic_fetch_add_unless
-> include/linux/atomic-fallback.h:1086 [inline]
-> BUG: KASAN: user-memory-access in atomic_add_unless
-> include/linux/atomic-fallback.h:1111 [inline]
-> BUG: KASAN: user-memory-access in atomic_inc_not_zero
-> include/linux/atomic-fallback.h:1127 [inline]
-> BUG: KASAN: user-memory-access in dst_hold_safe include/net/dst.h:297
-> [inline]
-> BUG: KASAN: user-memory-access in ip6_hold_safe+0xad/0x380
-> net/ipv6/route.c:1050
-> Read of size 4 at addr 0000000000001ec4 by task syz-executor.0/10106
-
-0xc1ec4 is not a valid address for an allocated rt6_info.
-
-> 
-> CPU: 0 PID: 10106 Comm: syz-executor.0 Not tainted 5.2.0-rc1+ #5
+> kasan: CONFIG_KASAN_INLINE enabled
+> kasan: GPF could be caused by NULL-ptr deref or user memory access
+> general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 17324 Comm: syz-executor.5 Not tainted 5.2.0-rc1+ #2
 > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
 > Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
->  __kasan_report.cold+0x5/0x40 mm/kasan/report.c:321
->  kasan_report+0x12/0x20 mm/kasan/common.c:614
->  check_memory_region_inline mm/kasan/generic.c:185 [inline]
->  check_memory_region+0x123/0x190 mm/kasan/generic.c:191
->  kasan_check_read+0x11/0x20 mm/kasan/common.c:94
->  atomic_read include/asm-generic/atomic-instrumented.h:26 [inline]
->  atomic_fetch_add_unless include/linux/atomic-fallback.h:1086 [inline]
->  atomic_add_unless include/linux/atomic-fallback.h:1111 [inline]
->  atomic_inc_not_zero include/linux/atomic-fallback.h:1127 [inline]
->  dst_hold_safe include/net/dst.h:297 [inline]
->  ip6_hold_safe+0xad/0x380 net/ipv6/route.c:1050
->  rt6_get_pcpu_route net/ipv6/route.c:1277 [inline]
+> RIP: 0010:__read_once_size include/linux/compiler.h:194 [inline]
+> RIP: 0010:rt6_get_cookie include/net/ip6_fib.h:264 [inline]
+> RIP: 0010:ip6_dst_store include/net/ip6_route.h:213 [inline]
+> RIP: 0010:tcp_v6_connect+0xfd0/0x20a0 net/ipv6/tcp_ipv6.c:298
+> Code: 89 e6 e8 83 a2 48 fb 45 84 e4 0f 84 90 09 00 00 e8 35 a1 48 fb 49
+> 8d 7e 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02
+> 00 0f 85 57 0e 00 00 4d 8b 66 70 e8 4d 88 35 fb 31 ff 89
+> RSP: 0018:ffff888066547800 EFLAGS: 00010207
+> RAX: dffffc0000000000 RBX: ffff888064e839f0 RCX: ffffc90010e49000
+> RDX: 000000000000002b RSI: ffffffff8628033b RDI: 000000000000015f
+> RBP: ffff888066547980 R08: ffff8880a9412080 R09: ffffed1015d26be0
 
-My hunch is that this is memory corruption in the pcpu memory space.
+This one is not so obvious.
 
-In a fib6_info, rt6i_pcpu is non-NULL for ALL fib6_info except
-fib6_null_entry for which pcpu routes are never generated.
+The error has to be a bad dst from ip6_dst_lookup_flow called by
+tcp_v6_connect which then is attempted to be stored in the socket via
+ip6_dst_store. ip6_dst_store calls rt6_get_cookie with dst as the
+argument. RDI (first arg for x86) shows 0x15f which is not a valid and
+would cause a fault.
 
-rt6i_pcpu is allocated via pcpu_alloc which means this memory space is
-amongst other pcpu users and easily stepped on by other pcpu users. The
-entries stored in rt6_pcpu are kmem_cache entries for the ipv6 dst cache
-and either a valid allocated memory address or NULL.
+None of the ip6_dst_* functions in net/ipv6/ip6_output.c have changed
+recently (5.2-next definitely but I believe this true for many releases
+prior). Further, all of the FIB lookup functions (called by
+ip6_dst_lookup_flow) always return a non-NULL dst.
 
-Past issues with pcpu routes was the 'from' (the fib6_info used to
-generate the rt6_info) being NULL (several), the fib entry getting
-released more than it should (0e2338749192) or not getting freed at all
-(61fb0d016807).
+If my hunch about the other splat is correct (pcpu corruption) that
+could explain this one: FIB lookup is fine and finds an entry, the entry
+has a pcpu cache entry so it is returned. If the pcpu entry was stomped
+on then it would be invalid and the above would result.
