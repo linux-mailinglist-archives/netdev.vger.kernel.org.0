@@ -2,142 +2,464 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE0D33B20
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:24:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E51233A5B
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbfFCWYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 18:24:04 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:54708 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbfFCWYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:24:04 -0400
-Received: by mail-io1-f70.google.com with SMTP id n8so4269306ioo.21
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:24:03 -0700 (PDT)
+        id S1726163AbfFCV4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:56:42 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:44032 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726049AbfFCV4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:56:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w13so13636531wru.11
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 14:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=darbyshire-bryant.me.uk; s=google;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D7F7k2PJ0nfvQF+7pGzzUO/f1ZisDOnq8OMy1HnmWSM=;
+        b=g6WILtHcUSVpyVN/aMFxhdUGH9eGmevsJ60vc0jZmSB7aAVBGdvEHfimmghkpD97qU
+         U2YlLoy6WUhSj+2o7xWFdrmTqBoFZvzJZJ5jIGBwnCCpXac2SkZrk5kS697HfKOB6leP
+         WuNhmwuXoBtfIuj//NhsG5pNuwxKvvPJwinXI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zy+G7CpgELhLwgzs/ScfOsi6z+cOCikk738HcwlNl2M=;
-        b=fTk/05PqeIu9Q5oJ83+dUs4YOdqNLgisxylawsmpVRSuw+0bXUEIVUZVMXqaSOte7n
-         KIDyeIW5sv3wuBulrnEocSBwsvZNmxvNgCHX1cEzGXVRw6+/nZ/NMjGmXGV/FB6192He
-         eNKRj3j4Rsj5m9Rl3N25pWMu0IxQ4F+LWP3YK58+93B1AHzR5RwMhKZg0YY5/JZ4s8yD
-         58NFTLRdvGV3TEcMkoFBI/KQOQkukSyBVoQLJwVtwwAn1lJ5ODmoVOG4z35GIp6dqsqz
-         dSVp23gkWJ58rGlV4Y+WVaPRGfS3KWCr3hygfTS8jrO25KmN7YAmA+SvqreCyAgPMMPh
-         5+Bg==
-X-Gm-Message-State: APjAAAWlk5IKGXlwdaJ66e6niBp8/g8r/kIw5WCUGU7NECFQ9BTmTnU7
-        pqeckNXA0lBV4nPJ8sKiW587PaCwZ/wT5i/NBvObKbF7dp2t
-X-Google-Smtp-Source: APXvYqwmPGLNecgCGODGKgKJBDEzDLmk5wLcXzOhpW2pvyGFBZA3BINPBhUXmcKOpGkbD6FtVQKBDBIrb1Hwd/5PqbkyAfSsRKsZ
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=D7F7k2PJ0nfvQF+7pGzzUO/f1ZisDOnq8OMy1HnmWSM=;
+        b=Wz5ZXv3jggurhDPkzTqvOdXhzYAU3DAyZ35+nEAIFq8kNx0BEF0oDsyUrthw53PHpU
+         kST2LdQc4NfLPmYtSdgHP9Q344QasJmqkNJZkSmqqM7UyzG42sNyRxSi4S2kZ4q9oeVD
+         NBqD6zUzhqxcFyZlohYyO7RyRHDAm9vrCcbt92+9l9gjtFcxW6NIgM++1/DZxb3E8cy5
+         y9TmAKPRxjqH5UcMtOeZg4/ymA7yXtErTAJcWIs32gQ9QFAKg5uso4xGoM9tX9SfWnRk
+         VQWipwRgKpaONrV8gxFJgAZnENxYg/spzI9scdw2uZZVdMnw2SJvu6P9c7ALaPe0uY0G
+         rLvQ==
+X-Gm-Message-State: APjAAAVdaI4/Znlp06nMJiBQ5RdCWeqlfVLzWsO5YLcblK9nhw41xYok
+        qrOudj+af3l2t7GQWGyOn5uwS5jldsReSg==
+X-Google-Smtp-Source: APXvYqw2+vfc/Iuy2CxpS6gDUn631DVC3FwkCLQPj26VcHveEP1Vl0/E6w/9xGdsuYq5bQEAgitZoQ==
+X-Received: by 2002:adf:facb:: with SMTP id a11mr3826911wrs.280.1559594663745;
+        Mon, 03 Jun 2019 13:44:23 -0700 (PDT)
+Received: from Kevins-MBP.lan.darbyshire-bryant.me.uk ([2a02:c7f:1268:6500::dc83])
+        by smtp.gmail.com with ESMTPSA id p3sm15841944wrd.47.2019.06.03.13.44.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 03 Jun 2019 13:44:22 -0700 (PDT)
+From:   Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org,
+        Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [PATCH iproute2-next v1] tc: add support for action act_ctinfo
+Date:   Mon,  3 Jun 2019 21:41:43 +0100
+Message-Id: <20190603204142.51674-1-ldir@darbyshire-bryant.me.uk>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 MIME-Version: 1.0
-X-Received: by 2002:a6b:14c2:: with SMTP id 185mr3504074iou.69.1559594465472;
- Mon, 03 Jun 2019 13:41:05 -0700 (PDT)
-Date:   Mon, 03 Jun 2019 13:41:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001bb6d7058a716205@google.com>
-Subject: memory leak in raw_sendmsg
-From:   syzbot <syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+ctinfo is an action restoring data stored in conntrack marks to various
+fields.  At present it has two independent modes of operation,
+restoration of DSCP into IPv4/v6 diffserv and restoration of conntrack
+marks into packet skb marks.
 
-syzbot found the following crash on:
+It understands a number of parameters specific to this action in
+additional to the usual action syntax.  Each operating mode is
+independent of the other so all options are optional, however not
+specifying at least one mode is a bit pointless.
 
-HEAD commit:    3ab4436f Merge tag 'nfsd-5.2-1' of git://linux-nfs.org/~bf..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=158090a6a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=50393f7bfe444ff6
-dashboard link: https://syzkaller.appspot.com/bug?extid=a90604060cb40f5bdd16
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e42092a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1327b0a6a00000
+Usage: ... ctinfo [dscp mask[/statemask]] [cpmark [mask]] [zone ZONE]
+		  [CONTROL] [index <INDEX>]
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com
+DSCP mode
 
-DRCONF(NETDEV_CHANGE): hsr_slave_0: link becomes ready
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88812af50600 (size 512):
-   comm "syz-executor081", pid 7046, jiffies 4294948162 (age 13.870s)
-   hex dump (first 32 bytes):
-     0d 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-     9d 92 de d5 ec ad bc 02 6f 66 69 6c 65 3d 30 20  ........ofile=0
-   backtrace:
-     [<00000000c4297f99>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<00000000c4297f99>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<00000000c4297f99>] slab_alloc_node mm/slab.c:3269 [inline]
-     [<00000000c4297f99>] kmem_cache_alloc_node_trace+0x15b/0x2a0  
-mm/slab.c:3597
-     [<0000000066d13723>] __do_kmalloc_node mm/slab.c:3619 [inline]
-     [<0000000066d13723>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3634
-     [<00000000ed0585ca>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:138
-     [<000000009a9dc318>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:206
-     [<00000000926a7d5b>] alloc_skb include/linux/skbuff.h:1054 [inline]
-     [<00000000926a7d5b>] alloc_skb_with_frags+0x5f/0x250  
-net/core/skbuff.c:5327
-     [<00000000c4ab3faa>] sock_alloc_send_pskb+0x269/0x2a0  
-net/core/sock.c:2219
-     [<00000000723cdeb0>] sock_alloc_send_skb+0x32/0x40 net/core/sock.c:2236
-     [<000000009ba80e2d>] raw_sendmsg+0xce/0x300 net/can/raw.c:761
-     [<0000000000a68d92>] sock_sendmsg_nosec net/socket.c:646 [inline]
-     [<0000000000a68d92>] sock_sendmsg+0x54/0x70 net/socket.c:665
-     [<000000004e3a95f6>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2286
-     [<00000000ec078bc9>] __sys_sendmsg+0x80/0xf0 net/socket.c:2324
-     [<0000000002d8ab21>] __do_sys_sendmsg net/socket.c:2333 [inline]
-     [<0000000002d8ab21>] __se_sys_sendmsg net/socket.c:2331 [inline]
-     [<0000000002d8ab21>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2331
-     [<0000000007c3590d>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<000000003149a5e4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+dscp enables copying of a DSCP store in the conntrack mark into the
+ipv4/v6 diffserv field.  The mask is a 32bit field and specifies where
+in the conntrack mark the DSCP value is stored.  It must be 6 contiguous
+bits long, e.g. 0xfc000000 would restore the DSCP from the upper 6 bits
+of the conntrack mark.
 
-BUG: memory leak
-unreferenced object 0xffff888118308200 (size 224):
-   comm "syz-executor081", pid 7046, jiffies 4294948162 (age 13.870s)
-   hex dump (first 32 bytes):
-     b0 64 19 2a 81 88 ff ff b0 64 19 2a 81 88 ff ff  .d.*.....d.*....
-     00 90 28 24 81 88 ff ff 00 64 19 2a 81 88 ff ff  ..($.....d.*....
-   backtrace:
-     [<0000000085e706a4>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000085e706a4>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000085e706a4>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000085e706a4>] kmem_cache_alloc+0x134/0x270 mm/slab.c:3488
-     [<000000005a366403>] skb_clone+0x6e/0x140 net/core/skbuff.c:1321
-     [<00000000854d44b1>] __skb_tstamp_tx+0x19f/0x220 net/core/skbuff.c:4434
-     [<0000000091e53e01>] __dev_queue_xmit+0x920/0xd60 net/core/dev.c:3813
-     [<0000000043e22300>] dev_queue_xmit+0x18/0x20 net/core/dev.c:3910
-     [<0000000091bdc746>] can_send+0x138/0x2b0 net/can/af_can.c:290
-     [<000000002dddbaef>] raw_sendmsg+0x1bb/0x300 net/can/raw.c:780
-     [<0000000000a68d92>] sock_sendmsg_nosec net/socket.c:646 [inline]
-     [<0000000000a68d92>] sock_sendmsg+0x54/0x70 net/socket.c:665
-     [<000000004e3a95f6>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2286
-     [<00000000ec078bc9>] __sys_sendmsg+0x80/0xf0 net/socket.c:2324
-     [<0000000002d8ab21>] __do_sys_sendmsg net/socket.c:2333 [inline]
-     [<0000000002d8ab21>] __se_sys_sendmsg net/socket.c:2331 [inline]
-     [<0000000002d8ab21>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2331
-     [<0000000007c3590d>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<000000003149a5e4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+The DSCP copying may be optionally controlled by a statemask.  The
+statemask is a 32bit field, usually with a single bit set and must not
+overlap the dscp mask.  The DSCP restore operation will only take place
+if the corresponding bit/s in conntrack mark yield a non zero result.
 
+eg. dscp 0xfc000000/0x01000000 would retrieve the DSCP from the top 6
+bits, whilst using bit 25 as a flag to do so.  Bit 26 is unused in this
+example.
 
+CPMARK mode
 
+cpmark enables copying of the conntrack mark to the packet skb mark.  In
+this mode it is completely equivalent to the existing act_connmark.
+Additional functionality is provided by the optional mask parameter,
+whereby the stored conntrack mark is logically anded with the cpmark
+mask before being stored into skb mark.  This allows shared usage of the
+conntrack mark between applications.
+
+eg. cpmark 0x00ffffff would restore only the lower 24 bits of the
+conntrack mark, thus may be useful in the event that the upper 8 bits
+are used by the DSCP function.
+
+Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE]
+		  [CONTROL] [index <INDEX>]
+where :
+	dscp MASK is the bitmask to restore DSCP
+	     STATEMASK is the bitmask to determine conditional restoring
+	cpmark MASK mask applied to restored packet mark
+	ZONE is the conntrack zone
+	CONTROL := reclassify | pipe | drop | continue | ok |
+		   goto chain <CHAIN_INDEX>
+
+Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ include/uapi/linux/pkt_cls.h          |   1 +
+ include/uapi/linux/tc_act/tc_ctinfo.h |  34 ++++
+ tc/Makefile                           |   1 +
+ tc/m_ctinfo.c                         | 268 ++++++++++++++++++++++++++
+ 4 files changed, 304 insertions(+)
+ create mode 100644 include/uapi/linux/tc_act/tc_ctinfo.h
+ create mode 100644 tc/m_ctinfo.c
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 51a0496f..a93680fc 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -105,6 +105,7 @@ enum tca_id {
+ 	TCA_ID_IFE = TCA_ACT_IFE,
+ 	TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
+ 	/* other actions go here */
++	TCA_ID_CTINFO,
+ 	__TCA_ID_MAX = 255
+ };
+ 
+diff --git a/include/uapi/linux/tc_act/tc_ctinfo.h b/include/uapi/linux/tc_act/tc_ctinfo.h
+new file mode 100644
+index 00000000..da803e05
+--- /dev/null
++++ b/include/uapi/linux/tc_act/tc_ctinfo.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef __UAPI_TC_CTINFO_H
++#define __UAPI_TC_CTINFO_H
++
++#include <linux/types.h>
++#include <linux/pkt_cls.h>
++
++struct tc_ctinfo {
++	tc_gen;
++};
++
++enum {
++	TCA_CTINFO_UNSPEC,
++	TCA_CTINFO_PAD,
++	TCA_CTINFO_TM,
++	TCA_CTINFO_ACT,
++	TCA_CTINFO_ZONE,
++	TCA_CTINFO_PARMS_DSCP_MASK,
++	TCA_CTINFO_PARMS_DSCP_STATEMASK,
++	TCA_CTINFO_PARMS_CPMARK_MASK,
++	TCA_CTINFO_STATS_DSCP_SET,
++	TCA_CTINFO_STATS_DSCP_ERROR,
++	TCA_CTINFO_STATS_CPMARK_SET,
++	__TCA_CTINFO_MAX
++};
++
++#define TCA_CTINFO_MAX (__TCA_CTINFO_MAX - 1)
++
++enum {
++	CTINFO_MODE_DSCP	= BIT(0),
++	CTINFO_MODE_CPMARK	= BIT(1)
++};
++
++#endif
+diff --git a/tc/Makefile b/tc/Makefile
+index 1a305cf4..60abddee 100644
+--- a/tc/Makefile
++++ b/tc/Makefile
+@@ -48,6 +48,7 @@ TCMODULES += m_csum.o
+ TCMODULES += m_simple.o
+ TCMODULES += m_vlan.o
+ TCMODULES += m_connmark.o
++TCMODULES += m_ctinfo.o
+ TCMODULES += m_bpf.o
+ TCMODULES += m_tunnel_key.o
+ TCMODULES += m_sample.o
+diff --git a/tc/m_ctinfo.c b/tc/m_ctinfo.c
+new file mode 100644
+index 00000000..5e451f87
+--- /dev/null
++++ b/tc/m_ctinfo.c
+@@ -0,0 +1,268 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * m_ctinfo.c		netfilter ctinfo mark action
++ *
++ * Copyright (c) 2019 Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <string.h>
++#include "utils.h"
++#include "tc_util.h"
++#include <linux/tc_act/tc_ctinfo.h>
++
++static void
++explain(void)
++{
++	fprintf(stderr,
++		"Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE] [CONTROL] [index <INDEX>]\n"
++		"where :\n"
++		"\tdscp   MASK bitmask location of stored DSCP\n"
++		"\t       STATEMASK bitmask to determine conditional restoring\n"
++		"\tcpmark MASK mask applied to mark on restoration\n"
++		"\tZONE is the conntrack zone\n"
++		"\tCONTROL := reclassify | pipe | drop | continue | ok |\n"
++		"\t           goto chain <CHAIN_INDEX>\n");
++}
++
++static void
++usage(void)
++{
++	explain();
++	exit(-1);
++}
++
++static int
++parse_ctinfo(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
++	     struct nlmsghdr *n)
++{
++	unsigned int cpmarkmask = 0, dscpmask = 0, dscpstatemask = 0;
++	struct tc_ctinfo sel = {};
++	unsigned short zone = 0;
++	char **argv = *argv_p;
++	struct rtattr *tail;
++	int argc = *argc_p;
++	int ok = 0;
++	__u8 i;
++
++	while (argc > 0) {
++		if (matches(*argv, "ctinfo") == 0) {
++			ok = 1;
++			NEXT_ARG_FWD();
++		} else if (matches(*argv, "help") == 0) {
++			usage();
++		} else {
++			break;
++		}
++
++	}
++
++	if (!ok) {
++		explain();
++		return -1;
++	}
++
++	if (argc) {
++		if (matches(*argv, "dscp") == 0) {
++			NEXT_ARG();
++			if (get_u32(&dscpmask, *argv, 0)) {
++				fprintf(stderr,
++					"ctinfo: Illegal dscp \"mask\"\n");
++				return -1;
++			}
++			if (NEXT_ARG_OK()) {
++				NEXT_ARG_FWD();
++				if (!get_u32(&dscpstatemask, *argv, 0))
++					NEXT_ARG_FWD(); /* was a statemask */
++			} else {
++				NEXT_ARG_FWD();
++			}
++		}
++	}
++
++	/* cpmark has optional mask parameter, so the next arg might not  */
++	/* exist, or it might be the next option, or it may actually be a */
++	/* 32bit mask */
++	if (argc) {
++		if (matches(*argv, "cpmark") == 0) {
++			cpmarkmask = ~0;
++			if (NEXT_ARG_OK()) {
++				NEXT_ARG_FWD();
++				if (!get_u32(&cpmarkmask, *argv, 0))
++					NEXT_ARG_FWD(); /* was a mask */
++			} else {
++				NEXT_ARG_FWD();
++			}
++		}
++	}
++
++	if (argc) {
++		if (matches(*argv, "zone") == 0) {
++			NEXT_ARG();
++			if (get_u16(&zone, *argv, 10)) {
++				fprintf(stderr, "ctinfo: Illegal \"zone\"\n");
++				return -1;
++			}
++			NEXT_ARG_FWD();
++		}
++	}
++
++	parse_action_control_dflt(&argc, &argv, &sel.action,
++				  false, TC_ACT_PIPE);
++
++	if (argc) {
++		if (matches(*argv, "index") == 0) {
++			NEXT_ARG();
++			if (get_u32(&sel.index, *argv, 10)) {
++				fprintf(stderr, "ctinfo: Illegal \"index\"\n");
++				return -1;
++			}
++			NEXT_ARG_FWD();
++		}
++	}
++
++	if (dscpmask & dscpstatemask) {
++		fprintf(stderr,
++			"ctinfo: dscp mask & statemask must NOT overlap\n");
++		return -1;
++	}
++
++	i = ffs(dscpmask);
++	if (i && ((~0 & (dscpmask >> (i - 1))) != 0x3f)) {
++		fprintf(stderr,
++			"ctinfo: dscp mask must be 6 contiguous bits long\n");
++		return -1;
++	}
++
++	tail = addattr_nest(n, MAX_MSG, tca_id);
++	addattr_l(n, MAX_MSG, TCA_CTINFO_ACT, &sel, sizeof(sel));
++	addattr16(n, MAX_MSG, TCA_CTINFO_ZONE, zone);
++
++	if (dscpmask)
++		addattr32(n, MAX_MSG,
++			  TCA_CTINFO_PARMS_DSCP_MASK, dscpmask);
++
++	if (dscpstatemask)
++		addattr32(n, MAX_MSG,
++			  TCA_CTINFO_PARMS_DSCP_STATEMASK, dscpstatemask);
++
++	if (cpmarkmask)
++		addattr32(n, MAX_MSG,
++			  TCA_CTINFO_PARMS_CPMARK_MASK, cpmarkmask);
++
++	addattr_nest_end(n, tail);
++
++	*argc_p = argc;
++	*argv_p = argv;
++	return 0;
++}
++
++static void print_ctinfo_stats(FILE *f, struct rtattr *tb[TCA_CTINFO_MAX + 1])
++{
++	struct tcf_t *tm;
++
++	if (tb[TCA_CTINFO_TM]) {
++		tm = RTA_DATA(tb[TCA_CTINFO_TM]);
++
++		print_tm(f, tm);
++	}
++
++	if (tb[TCA_CTINFO_STATS_DSCP_SET])
++		print_lluint(PRINT_ANY, "dscpset", " DSCP set %llu",
++			     rta_getattr_u64(tb[TCA_CTINFO_STATS_DSCP_SET]));
++	if (tb[TCA_CTINFO_STATS_DSCP_ERROR])
++		print_lluint(PRINT_ANY, "dscperror", " error %llu",
++			     rta_getattr_u64(tb[TCA_CTINFO_STATS_DSCP_ERROR]));
++
++	if (tb[TCA_CTINFO_STATS_CPMARK_SET])
++		print_lluint(PRINT_ANY, "cpmarkset", " CPMARK set %llu",
++			     rta_getattr_u64(tb[TCA_CTINFO_STATS_CPMARK_SET]));
++}
++
++static int print_ctinfo(struct action_util *au, FILE *f, struct rtattr *arg)
++{
++	unsigned int cpmarkmask = ~0, dscpmask = 0, dscpstatemask = 0;
++	struct rtattr *tb[TCA_CTINFO_MAX + 1];
++	unsigned short zone = 0;
++	struct tc_ctinfo *ci;
++
++	if (arg == NULL)
++		return -1;
++
++	parse_rtattr_nested(tb, TCA_CTINFO_MAX, arg);
++	if (!tb[TCA_CTINFO_ACT]) {
++		print_string(PRINT_FP, NULL, "%s",
++			     "[NULL ctinfo action parameters]");
++		return -1;
++	}
++
++	ci = RTA_DATA(tb[TCA_CTINFO_ACT]);
++
++	if (tb[TCA_CTINFO_PARMS_DSCP_MASK]) {
++		if (RTA_PAYLOAD(tb[TCA_CTINFO_PARMS_DSCP_MASK]) >=
++		    sizeof(__u32))
++			dscpmask = rta_getattr_u32(
++					tb[TCA_CTINFO_PARMS_DSCP_MASK]);
++		else
++			print_string(PRINT_FP, NULL, "%s",
++				     "[invalid dscp mask parameter]");
++	}
++
++	if (tb[TCA_CTINFO_PARMS_DSCP_STATEMASK]) {
++		if (RTA_PAYLOAD(tb[TCA_CTINFO_PARMS_DSCP_STATEMASK]) >=
++		    sizeof(__u32))
++			dscpstatemask = rta_getattr_u32(
++					tb[TCA_CTINFO_PARMS_DSCP_STATEMASK]);
++		else
++			print_string(PRINT_FP, NULL, "%s",
++				     "[invalid dscp statemask parameter]");
++	}
++
++	if (tb[TCA_CTINFO_PARMS_CPMARK_MASK]) {
++		if (RTA_PAYLOAD(tb[TCA_CTINFO_PARMS_CPMARK_MASK]) >=
++		    sizeof(__u32))
++			cpmarkmask = rta_getattr_u32(
++					tb[TCA_CTINFO_PARMS_CPMARK_MASK]);
++		else
++			print_string(PRINT_FP, NULL, "%s",
++				     "[invalid cpmark mask parameter]");
++	}
++
++	if (tb[TCA_CTINFO_ZONE] && RTA_PAYLOAD(tb[TCA_CTINFO_ZONE]) >=
++	    sizeof(__u16))
++		zone = rta_getattr_u16(tb[TCA_CTINFO_ZONE]);
++
++	print_string(PRINT_ANY, "kind", "%s ", "ctinfo");
++	print_hu(PRINT_ANY, "zone", "zone %u", zone);
++	print_action_control(f, " ", ci->action, "");
++
++	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_uint(PRINT_ANY, "index", "\t index %u", ci->index);
++	print_int(PRINT_ANY, "ref", " ref %d", ci->refcnt);
++	print_int(PRINT_ANY, "bind", " bind %d", ci->bindcnt);
++
++	if (tb[TCA_CTINFO_PARMS_DSCP_MASK]) {
++		print_0xhex(PRINT_ANY, "dscpmask", " dscp %#010llx", dscpmask);
++		print_0xhex(PRINT_ANY, "dscpstatemask", " %#010llx",
++			    dscpstatemask);
++	}
++
++	if (tb[TCA_CTINFO_PARMS_CPMARK_MASK])
++		print_0xhex(PRINT_ANY, "cpmark", " cpmark %#010llx",
++			    cpmarkmask);
++
++	if (show_stats)
++		print_ctinfo_stats(f, tb);
++
++	print_string(PRINT_FP, NULL, "%s", _SL_);
++
++	return 0;
++}
++
++struct action_util ctinfo_action_util = {
++	.id = "ctinfo",
++	.parse_aopt = parse_ctinfo,
++	.print_aopt = print_ctinfo,
++};
+-- 
+2.20.1 (Apple Git-117)
+
