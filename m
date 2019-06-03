@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C81232C6A
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:17:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A67232C4D
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbfFCJLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:11:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56014 "EHLO mail.kernel.org"
+        id S1728710AbfFCJMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:12:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728302AbfFCJLK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 05:11:10 -0400
+        id S1728693AbfFCJMr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 05:12:47 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B5AC27E36;
-        Mon,  3 Jun 2019 09:11:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4856F245B9;
+        Mon,  3 Jun 2019 09:12:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559553069;
-        bh=wKRkOxxi0rWgjjdvH42irIrb7H/TvTZPRbgRF8ZF4o4=;
+        s=default; t=1559553166;
+        bh=erX6YxDH2r6uXzI9LcRs8ZHxY09bIc1J7b+RmnL8fMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8NuzwFiP4/7M5GN4pyLznQz0hGS2EmARSfKYpLNCogowH5dDgNi8aA+dpEngg3GX
-         6u15ARH51C1Jcer7ii5tI4XlS/BMfcsb6+wIwpKOfq9AIsq9qS9G2YEHpR4+QkfLRZ
-         tv5RC1mzcyVToXGGSW+rlbm0a0TOn74orba7Ynv0=
+        b=aS91T9+Xmh5q7CpqlkXFGskdaGSaVzQkIHi7J9piv3sQRgupXj1aDCh0CS2xxCMqy
+         vKlqJlhRVuGeTaMWIlfaTwGkC1izpru7sfz9fABBamKe4R+fryWzZnwu8wXSdTovyj
+         /5pFSu5wDabtuIL5D1/N+JiPpqcH/bSdmUAU2JWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -33,12 +33,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heesoon Kim <Heesoon.Kim@stratus.com>,
         Jarod Wilson <jarod@redhat.com>,
         Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [PATCH 5.0 01/36] bonding/802.3ad: fix slave link initialization transition states
-Date:   Mon,  3 Jun 2019 11:08:49 +0200
-Message-Id: <20190603090521.077564611@linuxfoundation.org>
+Subject: [PATCH 5.1 01/40] bonding/802.3ad: fix slave link initialization transition states
+Date:   Mon,  3 Jun 2019 11:08:54 +0200
+Message-Id: <20190603090522.709589250@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190603090520.998342694@linuxfoundation.org>
-References: <20190603090520.998342694@linuxfoundation.org>
+In-Reply-To: <20190603090522.617635820@linuxfoundation.org>
+References: <20190603090522.617635820@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
@@ -88,7 +88,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/net/bonding/bond_main.c
 +++ b/drivers/net/bonding/bond_main.c
-@@ -3123,13 +3123,18 @@ static int bond_slave_netdev_event(unsig
+@@ -3122,13 +3122,18 @@ static int bond_slave_netdev_event(unsig
  	case NETDEV_CHANGE:
  		/* For 802.3ad mode only:
  		 * Getting invalid Speed/Duplex values here will put slave
