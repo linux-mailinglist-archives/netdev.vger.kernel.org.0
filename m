@@ -2,124 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A6B332907
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 08:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1134732946
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbfFCG7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 02:59:13 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:39452 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbfFCG7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 02:59:13 -0400
-Received: by mail-it1-f194.google.com with SMTP id j204so19629029ite.4
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 23:59:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XWFIz7NCVrdK9m5dlh1tOBVk1VqWPZQpkAyT6C9+b4c=;
-        b=JgvjmlKSO8ChcoDDUlEBzPC1cwn20fuDHG2ADbUlJtHKKLjUAhF6GrbiFVSbNQFbaf
-         knTHSBPg1kE9/Of8AJvRfaJCwvhxRD9G9wD80wDkzgUQTzVORcuhfgbYyTV24bVmzTA9
-         cPI92iHii4rT/P+bLqdAy72/7mvElkr1QIuRYPNSu+dSczB6G1FmZt1nliPEpVFgutSy
-         eudMufFqpzqlhxKe+a3FfoI9+uITZvlyIQw2IfxAzrEXOYRdLf4D1dlVqpd8+HAIVj8z
-         Pt/YrVfb/hE2EtHcJ2amA8IfSPTbu+2uZeFaUQOIfIqvakZVotNHx+X9+Esrke+L+Nd5
-         TZmg==
+        id S1726406AbfFCHXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 03:23:44 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:33742 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbfFCHXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:23:43 -0400
+Received: by mail-oi1-f194.google.com with SMTP id q186so12108914oia.0
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 00:23:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XWFIz7NCVrdK9m5dlh1tOBVk1VqWPZQpkAyT6C9+b4c=;
-        b=UG7Mh+f1AMzjt5IynCG76MYEUeEFD7hgS//OvbWiUdrwy46WIIjjqJpt07V52xNw/s
-         Kb8wEzSQ6wO5CMEfLa0oKeD4CSimYrJJO16JguwR9uhViOIyMcFUTj2PRaJi49J9F96N
-         s45UvaodqGBylVba5LJnvfxzNl0HnuJj3tZFjhucpwGElLhJ6klWUbCUjDgkCv7Mx+My
-         iB95eozqxguWUbAeyaoRC3EPTCUEwt13hDSfobkBXOYxVnKrG5mDgosBRlgI6E7RHrqd
-         AyD5c9PLUS6aE/eT3+fAv1kP7AkSTfmF6v7SHMPyZWBsWOf4iKj8a8gxVDNm646akogD
-         kewA==
-X-Gm-Message-State: APjAAAXQbu6sAcKqs/P17Ks6xeHycIX8XlIqMMAPx2slQeTIV26L6giK
-        HyBXRhOGzMPOyXb9bybmRn1U3G4dz55qYwfVXezArA==
-X-Google-Smtp-Source: APXvYqwqPQASMFCWoe21WchhYtOEk7CEvxoeXCxaQk0iE0UfTp6/xHZmJiVR7Ce5xDMdeKfJKN4J++WN1mQ7DE3OkPQ=
-X-Received: by 2002:a24:9083:: with SMTP id x125mr9448011itd.76.1559545152651;
- Sun, 02 Jun 2019 23:59:12 -0700 (PDT)
+        bh=iTUu3d7b9FzAYYjmvVuBAKOXOUdvkARIBZFMJ5+g9jg=;
+        b=ZDTTUa+ig98uawH039o4R3ahgELgKq4i279PnJLpvYpxhkZDMRS1TdkiJ98NhNHmoH
+         CabomTY90/DMqk9BraPy5hO3WWk07rNo5AiQPjTqbMbzHsMT09tRmjBQm35wfWzHnRn9
+         rmadkc6R+vIBzHQlewy7nTnK7t0F2OOovlGORSz+eJkcCgHtYd77su+P/OC1W0rJAUL0
+         yJuaYPWV5HDKDFs2F8NY0hBUKeguDCVq1VUFScKiWQrefxiOFUYxHZYshOuftU/rL8r3
+         O496bd38cAxc8zkm13JJ/iMe4bCTzh2KH6fkS7F3s4iUDJj65dJlemOl08ahPUKaRes/
+         9IQw==
+X-Gm-Message-State: APjAAAV8uI3mVlofsubiCDFARAuGfg7ptv3518ST8MZ/b0DT6zgxJiXO
+        v5d0eu9g1fQIkgWbOhUJGbbnpO8Y56AFl5A1/7W2jA==
+X-Google-Smtp-Source: APXvYqx0VgOQnKSu2Xug35l6BWUdLvg06ZkeE2AA30kAXedGN2FJpCJud/tT+mFlsFIbw6BQNQLjACXkglcx7v8H0DQ=
+X-Received: by 2002:aca:e887:: with SMTP id f129mr115563oih.156.1559546622977;
+ Mon, 03 Jun 2019 00:23:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000aa7a27058a3ce9aa@google.com> <250fba08-9cd7-7c79-f00a-d116e76fb51b@gmail.com>
-In-Reply-To: <250fba08-9cd7-7c79-f00a-d116e76fb51b@gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 3 Jun 2019 08:59:01 +0200
-Message-ID: <CACT4Y+aOY01_2whx4cjFGY7Pj29JwYKmgBcpS6cM2oz75y1bjg@mail.gmail.com>
-Subject: Re: general protection fault in tcp_v6_connect
-To:     David Ahern <dsahern@gmail.com>
-Cc:     syzbot <syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <20190601021526.GA8264@zhanggen-UX430UQ>
+In-Reply-To: <20190601021526.GA8264@zhanggen-UX430UQ>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Mon, 3 Jun 2019 09:23:32 +0200
+Message-ID: <CAFqZXNvBpmxNYjZx6YcH5Q-u4Tkwhfyzu_8VmEe8O7r9CCsvNg@mail.gmail.com>
+Subject: Re: [PATCH v3] selinux: lsm: fix a missing-check bug in selinux_sb_eat_lsm_opts()
+To:     Gen Zhang <blackgod016574@gmail.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 3, 2019 at 5:29 AM David Ahern <dsahern@gmail.com> wrote:
+On Sat, Jun 1, 2019 at 4:15 AM Gen Zhang <blackgod016574@gmail.com> wrote:
+> In selinux_sb_eat_lsm_opts(), 'arg' is allocated by kmemdup_nul(). It
+> returns NULL when fails. So 'arg' should be checked. And 'mnt_opts'
+> should be freed when error.
 >
-> On 6/1/19 12:05 AM, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    f4aa8012 cxgb4: Make t4_get_tp_e2c_map static
-> > git tree:       net-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1662cb12a00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=d137eb988ffd93c3
-> > dashboard link:
-> > https://syzkaller.appspot.com/bug?extid=5ee26b4e30c45930bd3c
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com
-> >
-> > kasan: CONFIG_KASAN_INLINE enabled
-> > kasan: GPF could be caused by NULL-ptr deref or user memory access
-> > general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> > CPU: 1 PID: 17324 Comm: syz-executor.5 Not tainted 5.2.0-rc1+ #2
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > RIP: 0010:__read_once_size include/linux/compiler.h:194 [inline]
-> > RIP: 0010:rt6_get_cookie include/net/ip6_fib.h:264 [inline]
-> > RIP: 0010:ip6_dst_store include/net/ip6_route.h:213 [inline]
-> > RIP: 0010:tcp_v6_connect+0xfd0/0x20a0 net/ipv6/tcp_ipv6.c:298
-> > Code: 89 e6 e8 83 a2 48 fb 45 84 e4 0f 84 90 09 00 00 e8 35 a1 48 fb 49
-> > 8d 7e 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02
-> > 00 0f 85 57 0e 00 00 4d 8b 66 70 e8 4d 88 35 fb 31 ff 89
-> > RSP: 0018:ffff888066547800 EFLAGS: 00010207
-> > RAX: dffffc0000000000 RBX: ffff888064e839f0 RCX: ffffc90010e49000
-> > RDX: 000000000000002b RSI: ffffffff8628033b RDI: 000000000000015f
-> > RBP: ffff888066547980 R08: ffff8880a9412080 R09: ffffed1015d26be0
->
-> This one is not so obvious.
->
-> The error has to be a bad dst from ip6_dst_lookup_flow called by
-> tcp_v6_connect which then is attempted to be stored in the socket via
-> ip6_dst_store. ip6_dst_store calls rt6_get_cookie with dst as the
-> argument. RDI (first arg for x86) shows 0x15f which is not a valid and
-> would cause a fault.
->
-> None of the ip6_dst_* functions in net/ipv6/ip6_output.c have changed
-> recently (5.2-next definitely but I believe this true for many releases
-> prior). Further, all of the FIB lookup functions (called by
-> ip6_dst_lookup_flow) always return a non-NULL dst.
->
-> If my hunch about the other splat is correct (pcpu corruption) that
-> could explain this one: FIB lookup is fine and finds an entry, the entry
-> has a pcpu cache entry so it is returned. If the pcpu entry was stomped
-> on then it would be invalid and the above would result.
+> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 
+It looks like you're new to the kernel development community, so let
+me give you a bit of friendly advice for the future :)
 
-This happened only once so far, so may be a previous silent memory corruption.
+You don't need to repost the patch when people give you
+Acked-by/Reviewed-by/Tested-by (unless there is a different reason to
+respin/repost the patches). The maintainer goes over the replies when
+applying the final patch and adds Acked-by/Reviewed-by/... on his/her
+own.
 
-This also may be related to "KASAN: user-memory-access Read in
-ip6_hold_safe (3)":
-https://syzkaller.appspot.com/bug?extid=a5b6e01ec8116d046842
-because that one seems to be a race in involved code.
-So this one may be a rare incarnation of the other crash.
+If you *do* need to respin a path for which you have received A/R/T,
+then you need to distinguish between two cases:
+1. Only trivial changes to the patch (only fixed typos, edited commit
+message, removed empty line, etc. - for example, v1 -> v2 of this
+patch falls into this category) - in this case you can collect the
+A/R/T yourself and add them to the new version. This saves the
+maintainer and the reviewers from redundant work, since the patch is
+still semantically the same and the A/R/T from the last version still
+apply.
+2. Non-trivial changes to the patch (as is the case for this patch) -
+in this case your patch needs to be reviewed again and you should
+disregard all A/R/T from the previous version. You can easily piss
+someone off if you add their Reviewed-by to a patch they haven't
+actually reviewed, so be careful ;-)
+
+(Someone please correct me if I got it wrong - this is what I gathered
+so far from my experience.)
+
+Good luck in your future work!
+
+> Fixes: 99dbbb593fe6 ("selinux: rewrite selinux_sb_eat_lsm_opts()")
+> ---
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index 3ec702c..f329fc0 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -2616,6 +2616,7 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>         char *from = options;
+>         char *to = options;
+>         bool first = true;
+> +       int ret;
+>
+>         while (1) {
+>                 int len = opt_len(from);
+> @@ -2635,15 +2636,16 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>                                                 *q++ = c;
+>                                 }
+>                                 arg = kmemdup_nul(arg, q - arg, GFP_KERNEL);
+> +                               if (!arg) {
+> +                                       ret = -ENOMEM;
+> +                                       goto free_opt;
+> +                               }
+>                         }
+>                         rc = selinux_add_opt(token, arg, mnt_opts);
+>                         if (unlikely(rc)) {
+> +                               ret = rc;
+>                                 kfree(arg);
+> -                               if (*mnt_opts) {
+> -                                       selinux_free_mnt_opts(*mnt_opts);
+> -                                       *mnt_opts = NULL;
+> -                               }
+> -                               return rc;
+> +                               goto free_opt;
+>                         }
+>                 } else {
+>                         if (!first) {   // copy with preceding comma
+> @@ -2661,6 +2663,12 @@ static int selinux_sb_eat_lsm_opts(char *options, void **mnt_opts)
+>         }
+>         *to = '\0';
+>         return 0;
+> +free_opt:
+> +       if (*mnt_opts) {
+> +               selinux_free_mnt_opts(*mnt_opts);
+> +               *mnt_opts = NULL;
+> +       }
+> +       return ret;
+>  }
+>
+>  static int selinux_sb_remount(struct super_block *sb, void *mnt_opts)
+
+-- 
+Ondrej Mosnacek <omosnace at redhat dot com>
+Software Engineer, Security Technologies
+Red Hat, Inc.
