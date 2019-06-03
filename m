@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25B9E3328A
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:44:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E731E3328F
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfFCOo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 10:44:27 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:34266 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729228AbfFCOo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:44:26 -0400
+        id S1729395AbfFCOoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 10:44:38 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:17924 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729151AbfFCOoh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:44:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1559573066; x=1591109066;
+  t=1559573077; x=1591109077;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=RqqOh7b8pJGEOQ5eCKSWJZz+Xx3mV36GrTVqRWDL/q0=;
-  b=XLebJpryKO2PR+iUsho5wpFNkk6lirUOb0HcznRTl2IVYw/bqWHymd/Z
-   G00O2SYK5WMPSWe3b4BayyUgR4E81eXUurbZu26VeOYsnQp4QvPJvNk8K
-   khbAWOaiTT08/v9OEIedwUOYNsrXcDfMrqvrImjU89o4W9uKg7PmIF6mG
-   M=;
+  bh=NJA+iuBkhIRB8vuS1bk6jiR56ll2BslmQ8xkPzB1kHc=;
+  b=dJn6NBKvM43V87xUSv/xTok/ICYqoaa+pJkbwbLtSbkEcUCfNwOZOloC
+   rOYnIhcqa8uGdcMTXH9dVXonZq8WJPgSCDeNPF+R2ttw57T6UXmQvOWD1
+   /ZdTsyF5qJyaEQld6SBpLQeGAc+jlgkR++Oy88dhxqwYQ7N/SrabDAmR1
+   U=;
 X-IronPort-AV: E=Sophos;i="5.60,547,1549929600"; 
-   d="scan'208";a="404808687"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 03 Jun 2019 14:44:25 +0000
+   d="scan'208";a="803248440"
+Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.47.22.34])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 03 Jun 2019 14:44:36 +0000
 Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com (Postfix) with ESMTPS id 79704A212B;
-        Mon,  3 Jun 2019 14:44:25 +0000 (UTC)
-Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 3 Jun 2019 14:44:03 +0000
+        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id E9DA1A0310;
+        Mon,  3 Jun 2019 14:44:35 +0000 (UTC)
+Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 3 Jun 2019 14:44:07 +0000
 Received: from EX13MTAUEE001.ant.amazon.com (10.43.62.200) by
- EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 3 Jun 2019 14:44:03 +0000
+ EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 3 Jun 2019 14:44:06 +0000
 Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.60.55) by
  mail-relay.amazon.com (10.43.62.226) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Mon, 3 Jun 2019 14:44:00 +0000
+ 15.0.1367.3 via Frontend Transport; Mon, 3 Jun 2019 14:44:03 +0000
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
@@ -44,10 +44,10 @@ CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <akiyano@amazon.com>,
-        Igor Chauskin <igorch@amazon.com>
-Subject: [PATCH V2 net 09/11] net: ena: optimise calculations for CQ doorbell
-Date:   Mon, 3 Jun 2019 17:43:27 +0300
-Message-ID: <20190603144329.16366-10-sameehj@amazon.com>
+        Evgeny Shmeilin <evgeny@annapurnaLabs.com>
+Subject: [PATCH V2 net 10/11] net: ena: add good checksum counter
+Date:   Mon, 3 Jun 2019 17:43:28 +0300
+Message-ID: <20190603144329.16366-11-sameehj@amazon.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190603144329.16366-1-sameehj@amazon.com>
 References: <20190603144329.16366-1-sameehj@amazon.com>
@@ -60,46 +60,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sameeh Jubran <sameehj@amazon.com>
 
-This patch initially checks if CQ doorbell
-is needed before proceeding with the calculations.
+Add a new statistics to ETHTOOL to specify if the device calculated
+and validated the Rx csum.
 
-Signed-off-by: Igor Chauskin <igorch@amazon.com>
+Signed-off-by: Evgeny Shmeilin <evgeny@annapurnaLabs.com>
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_eth_com.h | 20 ++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 3 ++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 3 +++
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  | 3 ++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.h b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-index 0a3d9180e..77986c0ea 100644
---- a/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-@@ -195,15 +195,17 @@ static inline int ena_com_update_dev_comp_head(struct ena_com_io_cq *io_cq)
- 	u16 unreported_comp, head;
- 	bool need_update;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 28fe4c6ef..5687a2860 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -88,13 +88,14 @@ static const struct ena_stats ena_stats_tx_strings[] = {
+ static const struct ena_stats ena_stats_rx_strings[] = {
+ 	ENA_STAT_RX_ENTRY(cnt),
+ 	ENA_STAT_RX_ENTRY(bytes),
++	ENA_STAT_RX_ENTRY(rx_copybreak_pkt),
++	ENA_STAT_RX_ENTRY(csum_good),
+ 	ENA_STAT_RX_ENTRY(refil_partial),
+ 	ENA_STAT_RX_ENTRY(bad_csum),
+ 	ENA_STAT_RX_ENTRY(page_alloc_fail),
+ 	ENA_STAT_RX_ENTRY(skb_alloc_fail),
+ 	ENA_STAT_RX_ENTRY(dma_mapping_err),
+ 	ENA_STAT_RX_ENTRY(bad_desc_num),
+-	ENA_STAT_RX_ENTRY(rx_copybreak_pkt),
+ 	ENA_STAT_RX_ENTRY(bad_req_id),
+ 	ENA_STAT_RX_ENTRY(empty_rx_ring),
+ 	ENA_STAT_RX_ENTRY(csum_unchecked),
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 399bd5453..cff297e19 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1001,6 +1001,9 @@ static inline void ena_rx_checksum(struct ena_ring *rx_ring,
  
--	head = io_cq->head;
--	unreported_comp = head - io_cq->last_head_update;
--	need_update = unreported_comp > (io_cq->q_depth / ENA_COMP_HEAD_THRESH);
--
--	if (io_cq->cq_head_db_reg && need_update) {
--		pr_debug("Write completion queue doorbell for queue %d: head: %d\n",
--			 io_cq->qid, head);
--		writel(head, io_cq->cq_head_db_reg);
--		io_cq->last_head_update = head;
-+	if (unlikely(io_cq->cq_head_db_reg)) {
-+		head = io_cq->head;
-+		unreported_comp = head - io_cq->last_head_update;
-+		need_update = unreported_comp > (io_cq->q_depth / ENA_COMP_HEAD_THRESH);
-+
-+		if (unlikely(need_update)) {
-+			pr_debug("Write completion queue doorbell for queue %d: head: %d\n",
-+				 io_cq->qid, head);
-+			writel(head, io_cq->cq_head_db_reg);
-+			io_cq->last_head_update = head;
-+		}
- 	}
- 
- 	return 0;
+ 		if (likely(ena_rx_ctx->l4_csum_checked)) {
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
++			u64_stats_update_begin(&rx_ring->syncp);
++			rx_ring->rx_stats.csum_good++;
++			u64_stats_update_end(&rx_ring->syncp);
+ 		} else {
+ 			u64_stats_update_begin(&rx_ring->syncp);
+ 			rx_ring->rx_stats.csum_unchecked++;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 74c316081..ec111cfc5 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -208,13 +208,14 @@ struct ena_stats_tx {
+ struct ena_stats_rx {
+ 	u64 cnt;
+ 	u64 bytes;
++	u64 rx_copybreak_pkt;
++	u64 csum_good;
+ 	u64 refil_partial;
+ 	u64 bad_csum;
+ 	u64 page_alloc_fail;
+ 	u64 skb_alloc_fail;
+ 	u64 dma_mapping_err;
+ 	u64 bad_desc_num;
+-	u64 rx_copybreak_pkt;
+ 	u64 bad_req_id;
+ 	u64 empty_rx_ring;
+ 	u64 csum_unchecked;
 -- 
 2.17.1
 
