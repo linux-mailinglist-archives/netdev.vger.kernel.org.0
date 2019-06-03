@@ -2,119 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E68CC326E6
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C63832708
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbfFCD3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 23:29:19 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40473 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfFCD3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:29:18 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g69so6410461plb.7
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 20:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=qolUrxKgA0je1UdGJ7G6NKw5HG97+OI5EAAYtHD1LCE=;
-        b=g1X1dIQMihMW3tOr67Ij4jUP7LN7atfVHgozSz3z7EmiG7rLJEJhiY0JVPQktjCpHL
-         1XR6L9CHOxfzEelsm7/uh8xoypKptlhIFHyQI48DjjoDFmtnzdPRv+XP2gM7DNwwngAE
-         SUHDtJllQfwpHqQNKgt5CsfkGOBbRTQVUUupSJlB1kyszhfpqUQ9krp1Q6BG6NuPGcZR
-         WzjAQplOhNx8bjFRZ6F9DaUIR4UCajfQh/mbSVTeJOHzyo7mfURQ2BRL8hCazLj7c8p1
-         zCDvu6qIFir2/sg61O5GBdeyiGptgUh1iPdnAObmbmIj0KqUuTL3sRhjiw9s6lw2Rc58
-         0niA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qolUrxKgA0je1UdGJ7G6NKw5HG97+OI5EAAYtHD1LCE=;
-        b=S2bnRmTqk0z8HQOyRHd0kGo1am2k2PDXYFDJZ4SjCLNVcu8EdS0f5e2wsGMQbk0XX/
-         Sw/FisS+RLm0bDs0rsu44DLqCAkpEImUTqUEgyovuBOclyMUWrrrlIdC74VRutG05hIu
-         myajUAm4KU/Dg7b4E+LTCLuiwVYjy+DJIFxWeK92pqh/OkCCsjsUjlPdDsSfLAqDHE1A
-         KiLOKrK9ovXWGE0o8zu2QG4Ph6KwTJFtaLOcljrf5jKYhEDld+krHCiwHBp4SeT/hNzx
-         RWSkz/mQ9s0csooEvdeSN3Ex8iBPTCF9sJ16F4/o+BUP3zlkLYC6U6uxJcJ71rYeKfm8
-         ri2A==
-X-Gm-Message-State: APjAAAXXaA6gXD8wnGSMV3wuNZTYw0pNXYMRQQ7F4zD/mftZPsGFy5BH
-        NavDakma3SATusq4sCwJxCY=
-X-Google-Smtp-Source: APXvYqx4ch/irVVyNRy7v62LZCp8nMFJ9AssMyh4wxz4SST8HWb8rYIGsPcAWUFdYz5OPvQN+n26Xw==
-X-Received: by 2002:a17:902:b407:: with SMTP id x7mr27108549plr.28.1559532558356;
-        Sun, 02 Jun 2019 20:29:18 -0700 (PDT)
-Received: from [172.27.227.194] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id t5sm10566659pgh.46.2019.06.02.20.29.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 20:29:17 -0700 (PDT)
-Subject: Re: general protection fault in tcp_v6_connect
-To:     syzbot <syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <000000000000aa7a27058a3ce9aa@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <250fba08-9cd7-7c79-f00a-d116e76fb51b@gmail.com>
-Date:   Sun, 2 Jun 2019 21:29:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726817AbfFCDsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 23:48:30 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:43844 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726606AbfFCDsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:48:30 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x533kkxE107904
+        for <netdev@vger.kernel.org>; Sun, 2 Jun 2019 23:48:28 -0400
+Received: from e11.ny.us.ibm.com (e11.ny.us.ibm.com [129.33.205.201])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2svqrhybwp-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 23:48:28 -0400
+Received: from localhost
+        by e11.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+        Mon, 3 Jun 2019 04:48:27 +0100
+Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
+        by e11.ny.us.ibm.com (146.89.104.198) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 3 Jun 2019 04:48:24 +0100
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x533l8wm33882592
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 3 Jun 2019 03:47:08 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5EE95B205F;
+        Mon,  3 Jun 2019 03:47:08 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0C301B2064;
+        Mon,  3 Jun 2019 03:47:08 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.80.207.252])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon,  3 Jun 2019 03:47:07 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id 9571A16C3B7A; Sun,  2 Jun 2019 20:47:07 -0700 (PDT)
+Date:   Sun, 2 Jun 2019 20:47:07 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Reply-To: paulmck@linux.ibm.com
+References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
+ <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
+ <20150910171649.GE4029@linux.vnet.ibm.com>
+ <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
+ <20150921193045.GA13674@lerouge>
+ <20150921204327.GH4029@linux.vnet.ibm.com>
+ <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+ <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
+ <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
 MIME-Version: 1.0
-In-Reply-To: <000000000000aa7a27058a3ce9aa@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19060303-2213-0000-0000-000003994407
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011206; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01212457; UDB=6.00637174; IPR=6.00993516;
+ MB=3.00027159; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 03:48:26
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060303-2214-0000-0000-00005EAE1DB9
+Message-Id: <20190603034707.GG28207@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906030026
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/19 12:05 AM, syzbot wrote:
-> Hello,
+On Mon, Jun 03, 2019 at 10:46:40AM +0800, Herbert Xu wrote:
+> On Sun, Jun 02, 2019 at 01:54:12PM -0700, Linus Torvalds wrote:
+> > On Sat, Jun 1, 2019 at 10:56 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> > >
+> > > You can't then go and decide to remove the compiler barrier!  To do
+> > > that you'd need to audit every single use of rcu_read_lock in the
+> > > kernel to ensure that they're not depending on the compiler barrier.
+> > 
+> > What's the possible case where it would matter when there is no preemption?
 > 
-> syzbot found the following crash on:
+> The case we were discussing is from net/ipv4/inet_fragment.c from
+> the net-next tree:
 > 
-> HEAD commit:    f4aa8012 cxgb4: Make t4_get_tp_e2c_map static
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1662cb12a00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d137eb988ffd93c3
-> dashboard link:
-> https://syzkaller.appspot.com/bug?extid=5ee26b4e30c45930bd3c
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> void fqdir_exit(struct fqdir *fqdir)
+> {
+> 	...
+> 	fqdir->dead = true;
 > 
-> Unfortunately, I don't have any reproducer for this crash yet.
+> 	/* call_rcu is supposed to provide memory barrier semantics,
+> 	 * separating the setting of fqdir->dead with the destruction
+> 	 * work.  This implicit barrier is paired with inet_frag_kill().
+> 	 */
 > 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+5ee26b4e30c45930bd3c@syzkaller.appspotmail.com
+> 	INIT_RCU_WORK(&fqdir->destroy_rwork, fqdir_rwork_fn);
+> 	queue_rcu_work(system_wq, &fqdir->destroy_rwork);
+> }
 > 
-> kasan: CONFIG_KASAN_INLINE enabled
-> kasan: GPF could be caused by NULL-ptr deref or user memory access
-> general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 17324 Comm: syz-executor.5 Not tainted 5.2.0-rc1+ #2
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:__read_once_size include/linux/compiler.h:194 [inline]
-> RIP: 0010:rt6_get_cookie include/net/ip6_fib.h:264 [inline]
-> RIP: 0010:ip6_dst_store include/net/ip6_route.h:213 [inline]
-> RIP: 0010:tcp_v6_connect+0xfd0/0x20a0 net/ipv6/tcp_ipv6.c:298
-> Code: 89 e6 e8 83 a2 48 fb 45 84 e4 0f 84 90 09 00 00 e8 35 a1 48 fb 49
-> 8d 7e 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02
-> 00 0f 85 57 0e 00 00 4d 8b 66 70 e8 4d 88 35 fb 31 ff 89
-> RSP: 0018:ffff888066547800 EFLAGS: 00010207
-> RAX: dffffc0000000000 RBX: ffff888064e839f0 RCX: ffffc90010e49000
-> RDX: 000000000000002b RSI: ffffffff8628033b RDI: 000000000000015f
-> RBP: ffff888066547980 R08: ffff8880a9412080 R09: ffffed1015d26be0
+> and
+> 
+> void inet_frag_kill(struct inet_frag_queue *fq)
+> {
+> 		...
+> 		rcu_read_lock();
+> 		/* The RCU read lock provides a memory barrier
+> 		 * guaranteeing that if fqdir->dead is false then
+> 		 * the hash table destruction will not start until
+> 		 * after we unlock.  Paired with inet_frags_exit_net().
+> 		 */
+> 		if (!fqdir->dead) {
+> 			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
+> 					       fqdir->f->rhash_params);
+> 			...
+> 		}
+> 		...
+> 		rcu_read_unlock();
+> 		...
+> }
+> 
+> I simplified this to
+> 
+> Initial values:
+> 
+> a = 0
+> b = 0
+> 
+> CPU1				CPU2
+> ----				----
+> a = 1				rcu_read_lock
+> synchronize_rcu			if (a == 0)
+> b = 2					b = 1
+> 				rcu_read_unlock
+> 
+> On exit we want this to be true:
+> b == 2
+> 
+> Now what Paul was telling me is that unless every memory operation
+> is done with READ_ONCE/WRITE_ONCE then his memory model shows that
+> the exit constraint won't hold.
 
-This one is not so obvious.
+But please note that the plain-variable portion of the memory model is
+very new and likely still has a bug or two.  In fact, see below.
 
-The error has to be a bad dst from ip6_dst_lookup_flow called by
-tcp_v6_connect which then is attempted to be stored in the socket via
-ip6_dst_store. ip6_dst_store calls rt6_get_cookie with dst as the
-argument. RDI (first arg for x86) shows 0x15f which is not a valid and
-would cause a fault.
+>                                  IOW, we need
+> 
+> CPU1				CPU2
+> ----				----
+> WRITE_ONCE(a, 1)		rcu_read_lock
+> synchronize_rcu			if (READ_ONCE(a) == 0)
+> WRITE_ONCE(b, 2)			WRITE_ONCE(b, 1)
+> 				rcu_read_unlock
+> 
+> Now I think this bullshit because if we really needed these compiler
+> barriers then we surely would need real memory barriers to go with
+> them.
 
-None of the ip6_dst_* functions in net/ipv6/ip6_output.c have changed
-recently (5.2-next definitely but I believe this true for many releases
-prior). Further, all of the FIB lookup functions (called by
-ip6_dst_lookup_flow) always return a non-NULL dst.
+On the one hand, you have no code before your rcu_read_lock() and also
+1no code after your rcu_read_unlock().  So in this particular example,
+adding compiler barriers to these guys won't help you.
 
-If my hunch about the other splat is correct (pcpu corruption) that
-could explain this one: FIB lookup is fine and finds an entry, the entry
-has a pcpu cache entry so it is returned. If the pcpu entry was stomped
-on then it would be invalid and the above would result.
+On the other hand, on CPU 1's write to "b", I agree with you and disagree
+with the model, though perhaps my partners in LKMM crime will show me the
+error of my ways on this point.  On CPU 2's write to "b", I can see the
+memory model's point, but getting there requires some gymnastics on the
+part of both the compiler and the CPU.  The WRITE_ONCE() and READ_ONCE()
+for "a" is the normal requirement for variables that are concurrently
+loaded and stored.
+
+Please note that garden-variety uses of RCU have similar requirements,
+namely the rcu_assign_pointer() on the one side and the rcu_dereference()
+on the other.  Your use case allows rcu_assign_pointer() to be weakened
+to WRITE_ONCE() and rcu_dereference() to be weakened to READ_ONCE()
+(not that this last is all that much of a weakening these days).
+
+> In fact, the sole purpose of the RCU mechanism is to provide those
+> memory barriers.  Quoting from
+> Documentation/RCU/Design/Requirements/Requirements.html:
+> 
+> <li>	Each CPU that has an RCU read-side critical section that
+> 	begins before <tt>synchronize_rcu()</tt> starts is
+> 	guaranteed to execute a full memory barrier between the time
+> 	that the RCU read-side critical section ends and the time that
+> 	<tt>synchronize_rcu()</tt> returns.
+> 	Without this guarantee, a pre-existing RCU read-side critical section
+> 	might hold a reference to the newly removed <tt>struct foo</tt>
+> 	after the <tt>kfree()</tt> on line&nbsp;14 of
+> 	<tt>remove_gp_synchronous()</tt>.
+> <li>	Each CPU that has an RCU read-side critical section that ends
+> 	after <tt>synchronize_rcu()</tt> returns is guaranteed
+> 	to execute a full memory barrier between the time that
+> 	<tt>synchronize_rcu()</tt> begins and the time that the RCU
+> 	read-side critical section begins.
+> 	Without this guarantee, a later RCU read-side critical section
+> 	running after the <tt>kfree()</tt> on line&nbsp;14 of
+> 	<tt>remove_gp_synchronous()</tt> might
+> 	later run <tt>do_something_gp()</tt> and find the
+> 	newly deleted <tt>struct foo</tt>.
+
+Ahem.
+
+1.	These guarantees are of full memory barriers, -not- compiler
+	barriers.
+
+2.	These rules don't say exactly where these full memory barriers
+	go.  SRCU is at one extreme, placing those full barriers in
+	srcu_read_lock() and srcu_read_unlock(), and !PREEMPT Tree RCU
+	at the other, placing these barriers entirely within the callback
+	queueing/invocation, grace-period computation, and the scheduler.
+	Preemptible Tree RCU is in the middle, with rcu_read_unlock()
+	sometimes including a full memory barrier, but other times with
+	the full memory barrier being confined as it is with !PREEMPT
+	Tree RCU.
+
+So let's place those memory barriers in your example, interleaving:
+
+	CPU2: rcu_read_lock();
+	CPU1: WRITE_ONCE(a, 1) | CPU2: if (READ_ONCE(a) == 0)
+	                         CPU2:         WRITE_ONCE(b, 1)
+	CPU2: rcu_read_unlock
+	/* Could put a full memory barrier here, but it wouldn't help. */
+	CPU1: synchronize_rcu	
+	CPU1: b = 2;	
+
+Here the accesses to "a" are concurrent, and there are legal placements
+for the required full memory barrier that don't change that.  In fact,
+I cannot see how any memory-barrier placement can help here.  So the
+WRITE_ONCE() and READ_ONCE() should be used for "a".  And again, in
+garden-variety RCU use cases, these would be rcu_assign_pointer() and
+rcu_dereference(), respectively.  So again, I advise using READ_ONCE()
+and WRITE_ONCE() for the accesses to "a", for documentation purposes,
+even ignoring the future proofing.
+
+Now let's do the (admittedly quite crazy, at least here in 2019)
+profiling-directed transformation of the "b = 1" on a weakly ordered
+system:
+
+	CPU1: WRITE_ONCE(a, 1)
+	CPU1: synchronize_rcu	
+	CPU1: b = 2;	
+
+	CPU2: rcu_read_lock();
+	CPU2: if (READ_ONCE(a) == 0)
+	CPU2:         if (b != 1)
+	CPU2:                 b = 1;
+	CPU2: rcu_read_unlock
+
+Interleaving and inserting full memory barriers as per the rules above:
+
+	CPU1: WRITE_ONCE(a, 1)
+	CPU1: synchronize_rcu	
+	/* Could put a full memory barrier here, but it wouldn't help. */
+
+	CPU2: rcu_read_lock();
+	CPU1: b = 2;	
+	CPU2: if (READ_ONCE(a) == 0)
+	CPU2:         if (b != 1)  /* Weakly ordered CPU moved this up! */
+	CPU2:                 b = 1;
+	CPU2: rcu_read_unlock
+
+In fact, CPU2's load from b might be moved up to race with CPU1's store,
+which (I believe) is why the model complains in this case.
+
+I still cannot imagine why CPU1's "b = 2" needs to be WRITE_ONCE(),
+perhaps due to a failure of imagination on my part.
+
+> My review of the RCU code shows that these memory barriers are
+> indeed present (at least when we're not in tiny mode where all
+> this discussion would be moot anyway).  For example, in call_rcu
+> we eventually get down to rcu_segcblist_enqueue which has an smp_mb.
+> On the reader side (correct me if I'm wrong Paul) the memory
+> barrier is implicitly coming from the scheduler.
+> 
+> My point is that within our kernel whenever we have a CPU memory
+> barrier we always have a compiler barrier too.  Therefore my code
+> example above does not need any extra compiler barriers such as
+> the ones provided by READ_ONCE/WRITE_ONCE.
+
+For the garden-variety RCU use cases, this is true.  Instead, they
+require things that are as strong or stronger than READ_ONCE/WRITE_ONCE.
+
+For example:
+
+	CPU 0:
+	p = kzalloc(sizeof(*p), GFP_KERNEL);
+	BUG_ON(!p);
+	p->a = 42;
+	r1 = p->b;
+	rcu_assign_pointer(gp, p);
+
+	CPU 1:
+	rcu_read_lock()
+	q = rcu_dereference(gp);
+	r2 = p->a;
+	p->b = 202;
+	rcu_read_unlock()
+
+In this case, the plain C-language loads and stores cannot possibly
+execute concurrently, and the model agrees with this.  Again, we didn't
+use WRITE_ONCE() and READ_ONCE() -- we instead used rcu_assign_pointer()
+and rcu_dereference().
+
+Similar examples involving (say) list_del_rcu() and synchronize_rcu()
+are also safe for plain C-language loads and stores.  Plain C-language
+accesses by readers to the item being deleted cannot race with plain
+C-language accesses after the synchronize_rcu() returns.  But here we
+are using list_del_rcu() in the update-side code along with the
+synchronize_rcu() and the readers are again using rcu_dereference().
+
+> I think perhaps Paul was perhaps thinking that I'm expecting
+> rcu_read_lock/rcu_read_unlock themselves to provide the memory
+> or compiler barriers.  That would indeed be wrong but this is
+> not what I need.  All I need is the RCU semantics as documented
+> for there to be memory and compiler barriers around the whole
+> grace period.
+
+Whew!!!  That was -exactly- what I was thinking, and I am glad that
+you are not advocating rcu_read_lock() and rcu_read_unlock() supplying
+those barriers.  ;-)
+
+And again, it is early days for plain accesses for the Linux-kernel
+memory model.  I am confident that READ_ONCE() and WRITE_ONCE for
+"a" is a very good thing to do, but less confident for "b", most
+especially for CPU1's store to "b".
+
+Either way, your example is an excellent test case for the plain
+C-language access capability of the Linux-kernel memory model, so thank
+you for that!
+
+							Thanx, Paul
+
