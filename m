@@ -2,144 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6946733BB0
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E25833BB8
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbfFCXEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 19:04:00 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45914 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726102AbfFCXD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 19:03:59 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s22so1592076qkj.12
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 16:03:58 -0700 (PDT)
+        id S1726501AbfFCXF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 19:05:58 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:44762 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726102AbfFCXF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 19:05:57 -0400
+Received: by mail-io1-f68.google.com with SMTP id s7so8412904iob.11
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 16:05:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=3wD4XKnC52ChQXnah5Wm6NhkKkuhVyeo/CSAIpyAe2Y=;
-        b=cgnK0g8hWS0U80Iv/CjHU7icJavaiF219Wf9YwAFjiE0xz6bXoMqwGLsc4LU88D6rC
-         k8p2qwsWvixeFUbcMiMDmYrbhZ/p+jp4gslY9j+auLC50B1Z06/L3oMPBprJAD3QV0ZX
-         mZP4sQvtRwfAAt9YfMVxfkueWYjP9GsXADOCPOZXdkT6eJG+Vp0Ez0f3xafhoOgbf2RS
-         0GwZdKyDGGo98iJTlbGgD+tqXY+keIXk2ZfQdBLO5yPZkcgZO2OAjXPdc8mWT95x/uvq
-         crjINVUJi+NQnBAJ6I8KYXc1JZaWOgx+zmEYUAcEc+g+FVt//l3FpXRQSljFSZIbGE+p
-         zxEA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/V4gnxQfa3ZeyRDF8tLure6rZ3RY8m3WKPoPPPxAlgs=;
+        b=aE5sylYzwudn3B7+371zZyYDhWt7d2bEXbi8lxWkn3MBv6LeIAsPoJtx+G+e4LG08m
+         cRlR4ZwRSAsZvTdrRkEdSX4GJuKRVw7XFkZU2vMZZrYjo9gcm0ZrkkVVmh9D1DROBMgl
+         WymqNhfHy7gxRpcfKi1BN36S2aE2HQN0elF9SyyYg/fNfqdDFfOZ52Heb5L63dL6p9si
+         wthbMHlQFWQ2QI7WuTxPHJlgP09VWR6Mx4Nakl00be2VnMQZSVnFSvIa7AJ2AxOSfloR
+         mw21gHNxLMxwB/La+GtIpR76MlVp5LJbbEn1sMFcq7pajcKn1yflmpYNuA2z9XmZ69F4
+         vV8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=3wD4XKnC52ChQXnah5Wm6NhkKkuhVyeo/CSAIpyAe2Y=;
-        b=EkI0RiZ4wL120ShNUa9HyK510qZhMXIUz7eV+nbiIDU6XtueacXVTMUGIhNRdgrfw+
-         iUBATG125wELWjnj8akjgv0LStJq4xRyUnR0psB2cerWOWYDSfmvzUEUn63FU3ycaR7P
-         DrpYdMKKtFJ2p+t0w6JB3BieiX/BsDhYGOXN2j0YEeTE4LCIvagmiggtVzFHoncHfBhF
-         GoXXrGPhCDnwe0NefVJuVNR1bXwHyaUdvWJ2Ke0LClhAHNEIPFCnQfu2rh4Fll6MWYMp
-         gy9YqDhjE8M78qUwZpoKtb9OFS4wq6b0vy1KFIm7ir3SQG/fbxBMYTeNvyl4lBCZujZR
-         F8hA==
-X-Gm-Message-State: APjAAAW7SODypuB2814L9wxsAqtuEUxEHT4OXJAo+wLdwTlpaqY+XxAL
-        t+2tRg9GiQa4w3+EF+VNQY1mfg==
-X-Google-Smtp-Source: APXvYqw/jRIJJaEZ8T5A8VbeNrRx5fPx0YeMHTCocz96uioJWVQfv6/T5nvHS2lNMN4xwnxIZNTc1Q==
-X-Received: by 2002:a37:49c2:: with SMTP id w185mr17101654qka.156.1559603037926;
-        Mon, 03 Jun 2019 16:03:57 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j9sm7668554qkg.30.2019.06.03.16.03.55
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 03 Jun 2019 16:03:57 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 16:03:51 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Woodhouse, David" <dwmw@amazon.co.uk>
-Cc:     "Jubran, Samih" <sameehj@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
- features and enhance performance
-Message-ID: <20190603160351.085daa91@cakuba.netronome.com>
-In-Reply-To: <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
-References: <20190603144329.16366-1-sameehj@amazon.com>
-        <20190603143205.1d95818e@cakuba.netronome.com>
-        <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/V4gnxQfa3ZeyRDF8tLure6rZ3RY8m3WKPoPPPxAlgs=;
+        b=EwwnPO7KQzS9TuYIBn/AiUDw7dfQuWtjj8/OX35Qpx4y96iiWnLW+H5L5T413C4yVr
+         WkOeXW6n5pnEQb7c17aDoZFDO4xzcmT/W94/PLjyLE0PIPogN2nrRpwd6jS3XY9F/QNP
+         fCoP8xfh7iuJdRLU4akI6OIlY7FGHyzBnxLBMLGyb2SfSrslMZzB85kCepx9vcVI2NPW
+         FIL1us9MUrtOSPpB8pSYQuYofQHuSPepX1EXf9jJB/sN89lOsn9nEuidgDmAY/qw6O/w
+         yGDAwTcUFe/teW7/N3l7cxk9fb3TKc7wlwxRRnQAp+p7NRCqYSF2A+SiLT4TwM5aaFQh
+         /trw==
+X-Gm-Message-State: APjAAAXIM/gIVLJRmEtFiyraOaqQcesAZdvMOng9FbPb2+bQwgdxS5Mf
+        hHqEqbbJr4Yq3/5blTXfBI9/4q8yOAPSMstk3skd5w==
+X-Google-Smtp-Source: APXvYqzTQj5BLwHAQscRtizlorgdqzxkSmscNw9Tl5JY3CBjWnl5kI4wm6fs6XIbvxJq7tV64gkkStSr538NbxAK4H8=
+X-Received: by 2002:a6b:b206:: with SMTP id b6mr5933690iof.286.1559603156832;
+ Mon, 03 Jun 2019 16:05:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20190603040817.4825-1-dsahern@kernel.org> <20190603040817.4825-5-dsahern@kernel.org>
+ <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
+ <dec5c727-4002-913f-a858-362e0d926b8d@gmail.com> <CAEA6p_Aa2eV+jH=H9iOqepbrBLBUvAg2-_oD96wA0My6FMG_PQ@mail.gmail.com>
+ <5263d3ae-1865-d935-cb03-f6dfd4604d15@gmail.com>
+In-Reply-To: <5263d3ae-1865-d935-cb03-f6dfd4604d15@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Mon, 3 Jun 2019 16:05:45 -0700
+Message-ID: <CAEA6p_CixzdRNUa46YZusFg-37MFAVqQ8D09rxVU5Nja6gO1SA@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
+ a fib6_info
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, saeedm@mellanox.com,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 22:27:28 +0000, Woodhouse, David wrote:
-> On Mon, 2019-06-03 at 14:32 -0700, Jakub Kicinski wrote:
-> > On Mon, 3 Jun 2019 17:43:18 +0300, sameehj@amazon.com wrote: =20
-> > > * net: ena: ethtool: add extra properties retrieval via get_priv_flag=
-s (2/11):
-> > >   * replaced snprintf with strlcpy
-> > >   * dropped confusing error message
-> > >   * added more details to  the commit message =20
-> >=20
-> > I asked you to clearly state that you are using the blindly passing
-> > this info from the FW to user space.  Stating that you "retrieve" it
-> > is misleading. =20
->=20
-> Yes, we should be very clear about that.
->=20
-> > IMHO it's a dangerous precedent, you're extending kernel's uAPI down to
-> > the proprietary FW of the device.  Now we have no idea what the flags
-> > are, so we can't refactor and create common APIs among drivers, or even
-> > use the same names.  We have no idea what you're exposing. =20
->=20
-> Yes, that should be documented very clearly too, and we should
-> absolutely make sure that anything that makes sense for other devices
-> is considered for making a common API.
->=20
-> However, the deployment environment for ENA is kind of weird =E2=80=94 we=
- get
-> to upgrade the *firmware*, while guest kernels might get updated only
-> once a decade. So the passthrough you're objecting to, actually gives
-> us fairly much the only viable way to offer many users the tuning
-> options they need =E2=80=94 or at least to experiment and establish wheth=
-er
-> they *do* need them or not, and thus if we should turn them into a
-> "real" generic property.
->=20
-> You do have a valid concern, but I think we can handle it, and I
-> suspect that the approach taken here does make sense. Let's just make
-> it explicitly clear, and also document the properties that we expect to
-> be exposing, for visibility.
-
-Thank you.
-
-It's generally easier to push FW updates, also to enterprises, rather
-than rolling out full new kernels.  People are less concerned with FW
-updates, because the only thing those can break is the NIC.  Some
-customers also run their own modified kernels.  I'd dispute the fact
-that Amazon is so very special.
-
-I don't dispute that this is convenient for Amazon and your FW team.
-However, what's best for the vendors differs here from what's good for
-Open Source (the FW is proprietary) and IMHO health of Linux ecosystem
-in general.
-
-Any "SmartNIC" vendor has temptation of uAPI-level hand off to the
-firmware (including my employer), we all run pretty beefy processors
-inside "the NIC" after all.  The device centric ethtool configuration
-can be implemented by just forwarding the uAPI structures as they are
-to the FW.  I'm sure Andrew and others who would like to see Linux
-takes more control over PHYs etc. would not like this scenario, either.
-
-To address your specific points, let's be realistic, after initial
-submission it's unlikely the features will be updated in a timely
-manner anywhere else than perhaps some Amazon's own docs.  Can you
-be more specific on what those tuning options are today?  There are
-users who don't care to update their kernels for 10 years, yet they
-care about some minor tuning option of the NIC?
+On Mon, Jun 3, 2019 at 3:35 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 6/3/19 3:58 PM, Wei Wang wrote:
+> > Hmm... I am still a bit concerned with the ip6_create_rt_rcu() call.
+> > If we have a blackholed nexthop, the lookup code here always tries to
+> > create an rt cache entry for every lookup.
+> > Maybe we could reuse the pcpu cache logic for this? So we only create
+> > new dst cache on the CPU if there is no cache created before.
+>
+> I'll take a look.
+>
+> Long term, I would like to see IPv6 separate FIB lookups from dst's -
+> like IPv4 does. In that case reject routes would not use a dst_entry;
+> rather the fib lookups return an error code.
+Yes. Agree. That will be even better.
