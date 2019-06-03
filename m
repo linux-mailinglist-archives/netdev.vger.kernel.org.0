@@ -2,111 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1482328A8
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 08:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6640A328FA
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 08:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727225AbfFCGmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 02:42:17 -0400
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:53347 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727194AbfFCGmQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 02:42:16 -0400
-Received: by atrey.karlin.mff.cuni.cz (Postfix, from userid 512)
-        id 72C3D80295; Mon,  3 Jun 2019 08:42:03 +0200 (CEST)
-Date:   Mon, 3 Jun 2019 08:42:12 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Pavel Machek <pavel@denx.de>, LKML <linux-kernel@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Neil Brown <neilb@suse.com>, netdev <netdev@vger.kernel.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Peter Zilstra <peterz@infradead.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu <rcu@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [RFC 2/6] ipv4: add lockdep condition to fix for_each_entry
-Message-ID: <20190603064212.GA7400@amd>
-References: <20190601222738.6856-1-joel@joelfernandes.org>
- <20190601222738.6856-3-joel@joelfernandes.org>
- <20190602070014.GA543@amd>
- <CAEXW_YT3t4Hb6wKsjXPGng+YbA5rhNRa7OSdZwdN4AKGfVkX3g@mail.gmail.com>
- <CAEXW_YSM2wwah2Q7LKmUO1Dp7GG62ciQA1nZ7GLw3m6cyuXXTw@mail.gmail.com>
+        id S1726949AbfFCG4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 02:56:24 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:52232 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726684AbfFCG4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 02:56:24 -0400
+Received: by mail-it1-f195.google.com with SMTP id l21so3676702ita.2
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 23:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ooOZ8aCismIzzPcMY1VTWsTBEe7b7TcB9sjbz4A8RV4=;
+        b=QV0cPHPnK3fS+9Pj30mBk3EJNolqnegqOausWsF3KeigPRW1UDHE4cDmUCt52QGaoG
+         o2DfahDuF3m+7pwHDz9XHj/Yud2N0e3Dej3Yd/lFBl+2qIZEOm3C3PkkSX8NTklthRPD
+         Nm5dv/tgL2lbBbBuckHd+BOS6vaGu7PnnAXIpTZ9AErLVZSB4p/sSnAfha+5YqPfmGaF
+         zRKaeOWwsoRniCJL1dnwriCXZ691hVwHD6ah2afo5iTBy9mi+RQsswozPHsWNHdN/Y2g
+         NIWeFZogW92q4eBLVCTnjKAyt/yOJhsZkTHCswIhaB1Lc/eooWT3G/CGghTy9JVVYpVH
+         orpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ooOZ8aCismIzzPcMY1VTWsTBEe7b7TcB9sjbz4A8RV4=;
+        b=d3L3fT/BzLOvQN6/ZeyVbepFMpZZL9YV6PCu3po8I3/MXQoiWojZnwEBNKN4ITvzQv
+         6K2EHCn+47bgl+4g6iY0OjvTN0NMmAX8G4oADZ6nBEyVbrzQDNpZM4WLNw3Yx2v84kng
+         +LjLtpW0gIhwWcAy0rwr8fqeV8UgHO2S1dFjXClOK7X/j4h7Ae2LiMk31zP/UKFK/vTX
+         S83vVrxfDU5jwIWam6nLuowSQDvQfH1FTyPa2jh3e663+LwtCHTiOw2vKwdiljKFo0U2
+         fz0FHWscnQKyVPeTcehI4b4Ia2+xwRpU1elELom9hvsA/4k0TNQfpMgBn+I5snLU8F/X
+         +kTA==
+X-Gm-Message-State: APjAAAVB+THMxEYoFr6qdVgwFo91oJ3D2SQa02RqQrGjLEnildjGVO8g
+        9E1/jA+N/5xIUi/WQrQ9wiVqt7fjnxd4eyjVxud56w==
+X-Google-Smtp-Source: APXvYqzpGauoTJieg32wk37//cRiF4h/aqH1Z79YNWgjJysa7Is5ms6lE/NZf3cE3Fq2u4wFUatF74z5A98JGk90B7I=
+X-Received: by 2002:a24:9083:: with SMTP id x125mr9442626itd.76.1559544983323;
+ Sun, 02 Jun 2019 23:56:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
-Content-Disposition: inline
-In-Reply-To: <CAEXW_YSM2wwah2Q7LKmUO1Dp7GG62ciQA1nZ7GLw3m6cyuXXTw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <000000000000a7776f058a3ce9db@google.com> <178c7ee0-46b7-8334-ef98-e530eb60a2cf@gmail.com>
+In-Reply-To: <178c7ee0-46b7-8334-ef98-e530eb60a2cf@gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 3 Jun 2019 08:56:11 +0200
+Message-ID: <CACT4Y+ZqM84Ny22p7=J6vVXG7XOkqVN_jjkb87DNetNCFQRFBQ@mail.gmail.com>
+Subject: Re: KASAN: user-memory-access Read in ip6_hold_safe (3)
+To:     David Ahern <dsahern@gmail.com>
+Cc:     syzbot <syzbot+a5b6e01ec8116d046842@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---SLDf9lqlvOQaIe6s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun 2019-06-02 08:24:35, Joel Fernandes wrote:
-> On Sun, Jun 2, 2019 at 8:20 AM Joel Fernandes <joel@joelfernandes.org> wr=
-ote:
+On Sat, Jun 1, 2019 at 7:15 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 6/1/19 12:05 AM, syzbot wrote:
+> > Hello,
 > >
-> > On Sun, Jun 2, 2019 at 3:00 AM Pavel Machek <pavel@denx.de> wrote:
-> > >
-> > > On Sat 2019-06-01 18:27:34, Joel Fernandes (Google) wrote:
-> > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > >
-> > > This really needs to be merged to previous patch, you can't break
-> > > compilation in middle of series...
-> > >
-> > > Or probably you need hlist_for_each_entry_rcu_lockdep() macro with
-> > > additional argument, and switch users to it.
+> > syzbot found the following crash on:
 > >
-> > Good point. I can also just add a temporary transition macro, and then
-> > remove it in the last patch. That way no new macro is needed.
->=20
-> Actually, no. There is no compilation break so I did not follow what
-> you mean. The fourth argument to the hlist_for_each_entry_rcu is
-> optional. The only thing that happens is new lockdep warnings will
-> arise which later parts of the series fix by passing in that fourth
-> argument.
+> > HEAD commit:    dfb569f2 net: ll_temac: Fix compile error
+> > git tree:       net-next
+> syzbot team:
+>
+> Is there any way to know the history of syzbot runs to determine that
+> crash X did not happen at commit Y but does happen at commit Z? That
+> narrows the window when trying to find where a regression occurs.
 
-Sorry, I missed that subtlety. Might be worth it enabling the lockdep
-warning last in the series...
+Hi David,
 
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+All info is available on the dashboard:
 
---SLDf9lqlvOQaIe6s
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+> dashboard link: https://syzkaller.appspot.com/bug?extid=a5b6e01ec8116d046842
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+We don't keep any private info on top of that.
 
-iEYEARECAAYFAlz0wUQACgkQMOfwapXb+vJZhACeMv6qy1KMl8fpAmSRbXsFU5yP
-LY8Ani5H9/TBihxu13cOJbn7mJJ9RWkQ
-=hotv
------END PGP SIGNATURE-----
+This crash happened 129 times in the past 9 days. This suggests this
+is not a previous memory corruption, these usually happen at most few
+times.
+The first one was:
 
---SLDf9lqlvOQaIe6s--
+2019/05/24 15:33 net-next dfb569f2
+
+Then it was joined by bpf-next:
+
+ci-upstream-bpf-next-kasan-gce 2019/06/01 15:51 bpf-next 0462eaac
+
+Since it happens a dozen of times per day, most likely it was
+introduced into net-next around dfb569f2 (syzbot should do new builds
+every ~12h, minus broken trees).
