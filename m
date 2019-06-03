@@ -2,131 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1EE32B03
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 10:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E96032B2B
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 10:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbfFCImX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 04:42:23 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:52320 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727698AbfFCImX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 04:42:23 -0400
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x538bcwu141161
-        for <netdev@vger.kernel.org>; Mon, 3 Jun 2019 04:42:22 -0400
-Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2svwneern4-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 04:42:22 -0400
-Received: from localhost
-        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-        Mon, 3 Jun 2019 09:42:21 +0100
-Received: from b01cxnp22033.gho.pok.ibm.com (9.57.198.23)
-        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 3 Jun 2019 09:42:16 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x538gFPw21299220
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Jun 2019 08:42:15 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A43C3B2065;
-        Mon,  3 Jun 2019 08:42:15 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7303EB2066;
-        Mon,  3 Jun 2019 08:42:15 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.160.165])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Jun 2019 08:42:15 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id C316616C5D9E; Mon,  3 Jun 2019 01:42:14 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 01:42:14 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Reply-To: paulmck@linux.ibm.com
-References: <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
- <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
- <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
- <20190603034707.GG28207@linux.ibm.com>
- <20190603040114.st646bujtgyu7adn@gondor.apana.org.au>
- <20190603072339.GH28207@linux.ibm.com>
+        id S1727786AbfFCIwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 04:52:43 -0400
+Received: from mail-eopbgr140130.outbound.protection.outlook.com ([40.107.14.130]:32741
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727674AbfFCIwn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 04:52:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V2xv2c1nXUpKS1eY7P223w68uiRCzJ17BNKotsoteVk=;
+ b=MMzzb+EAohOK4x4sgqmXL1OAZmh7UBottp6GT1ZKx4Njr9mo1RZQDc3Utk3dEKGKV3RKopQFToMs8LqU6tNumYMHhcuMIqgB0zW2bbpPTjQVI5RCrpfnRcDZpG8eu0pr92c9W45HGrHQpYBz4Eoz8x08b2eePxQ1KgYaGbSQjgE=
+Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM (20.178.126.80) by
+ VI1PR10MB2253.EURPRD10.PROD.OUTLOOK.COM (20.177.62.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.22; Mon, 3 Jun 2019 08:52:38 +0000
+Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8844:426d:816b:f5d5]) by VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8844:426d:816b:f5d5%6]) with mapi id 15.20.1943.018; Mon, 3 Jun 2019
+ 08:52:38 +0000
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 5/5] net: dsa: add support for mv88e6250
+Thread-Topic: [PATCH v2 5/5] net: dsa: add support for mv88e6250
+Thread-Index: AQHVEg8jEsslq8o0eEGsKLQNDGbj76Z6VYIAgA9Zv4A=
+Date:   Mon, 3 Jun 2019 08:52:38 +0000
+Message-ID: <b05a12b8-fe03-e3c4-dbf0-ca29c1931e54@prevas.dk>
+References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
+ <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
+ <20190524085921.11108-6-rasmus.villemoes@prevas.dk>
+ <20190524142728.GL2979@lunn.ch>
+In-Reply-To: <20190524142728.GL2979@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1PR0102CA0017.eurprd01.prod.exchangelabs.com
+ (2603:10a6:7:14::30) To VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:e1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [81.216.59.226]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6960ac01-aa11-453e-b57b-08d6e800d461
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR10MB2253;
+x-ms-traffictypediagnostic: VI1PR10MB2253:
+x-microsoft-antispam-prvs: <VI1PR10MB225369C29C39767379329EA88A140@VI1PR10MB2253.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0057EE387C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39850400004)(376002)(136003)(346002)(366004)(189003)(199004)(8936002)(14454004)(4326008)(81166006)(386003)(6512007)(76176011)(6506007)(54906003)(256004)(8976002)(102836004)(99286004)(68736007)(52116002)(36756003)(53936002)(66066001)(66946007)(73956011)(7736002)(31696002)(6246003)(305945005)(71190400001)(71200400001)(5660300002)(66446008)(64756008)(66556008)(66476007)(476003)(74482002)(26005)(44832011)(31686004)(186003)(316002)(3846002)(6116002)(25786009)(81156014)(6486002)(2616005)(478600001)(8676002)(229853002)(11346002)(486006)(42882007)(6916009)(446003)(2906002)(6436002)(72206003)(138113003);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB2253;H:VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: prevas.se does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: fTqQ7wAEs36ltCQ8k971J05XeWrbdt8Q2FyQnSlLfvC3ElxPZLIBKAOAYDD2SHNQAm4auhbgf2R6UCxxcPjdnXEe2kxKrhM+EtXPBr8nzfT9q0fpDJpKAtO4qv7TX4CpvgB04F7wH4bPCx1lEOhJJI+Gh50YabBYOG9B7w2GRLeREE4oC6wyMckVgdo1vS5MhgKbJMF1OU/XXTnfN9ioQF2VVUN25ium2hHrSsMWJuS7ONaRmxTasq95Mw5O9x7rx8lVJhChapSGD0eVPXTYh5QLWAr2jX8GWvT+4Jc5UjIjky3I7gzIAEE1VD/SiqqIOHBck3HFoRSTSOqRpEKR0Mjc6hiktA0lmBdi8/PRaytPyV5bT81lmSw7Sgxu0/LJXbfnRW9I9/HiSuq8H6YZ1xUSfInzlkgnkMfLbw+alVU=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B133697A43333A438E4A334C231D9DEE@EURPRD10.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603072339.GH28207@linux.ibm.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19060308-0072-0000-0000-00000436B2E7
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011207; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01212553; UDB=6.00637233; IPR=6.00993614;
- MB=3.00027161; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 08:42:19
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060308-0073-0000-0000-00004C774240
-Message-Id: <20190603084214.GA1496@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=949 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906030064
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6960ac01-aa11-453e-b57b-08d6e800d461
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2019 08:52:38.4378
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2253
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 12:23:39AM -0700, Paul E. McKenney wrote:
-> On Mon, Jun 03, 2019 at 12:01:14PM +0800, Herbert Xu wrote:
-> > On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
-> > >
-> > > 	CPU2:         if (b != 1)
-> > > 	CPU2:                 b = 1;
-> > 
-> > Stop right there.  The kernel is full of code that assumes that
-> > assignment to an int/long is atomic.  If your compiler breaks this
-> > assumption that we can kiss the kernel good-bye.
-> 
-> Here you go:
-> 
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55981
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56028
-> 
-> TL;DR: On x86, of you are doing a plain store of a 32-bit constant
-> that has bits set only in the lower few bits of each 16-bit half of
-> that constant, the compiler is plenty happy to use a pair of 16-bit
-> store-immediate instructions to carry out that store.  This is also
-> known as "store tearing".
-> 
-> The two bugs were filed (and after some back and forth, fixed) because
-> someone forgot to exclude C11 atomics and volatile accesses from this
-> store tearing.
-
-I should hasten to add that I have not seen load tearing, nor have I seen
-store tearing when storing a value unknown to the compiler.  However,
-plain C-language loads and stores can be invented, fused, and a few other
-"interesting" optimization can be applied.
-
-On kissing the kernel goodbye, a reasonable strategy might be to
-identify the transformations that are actually occuring (like the
-stores of certain constants called out above) and fix those.  We do
-occasionally use READ_ONCE() to prevent load-fusing optimizations that
-would otherwise cause the compiler to turn while-loops into if-statements
-guarding infinite loops.  There is also the possibility of having the
-compiler guys give us more command-line arguments.
-
-							Thanx, Paul
-
+T24gMjQvMDUvMjAxOSAxNi4yNywgQW5kcmV3IEx1bm4gd3JvdGU6DQo+PiBAQCAtNDg0MSw2ICs0
+OTEwLDEwIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIG12ODhlNnh4eF9vZl9t
+YXRjaFtdID0gew0KPj4gIAkJLmNvbXBhdGlibGUgPSAibWFydmVsbCxtdjg4ZTYxOTAiLA0KPj4g
+IAkJLmRhdGEgPSAmbXY4OGU2eHh4X3RhYmxlW01WODhFNjE5MF0sDQo+PiAgCX0sDQo+PiArCXsN
+Cj4+ICsJCS5jb21wYXRpYmxlID0gIm1hcnZlbGwsbXY4OGU2MjUwIiwNCj4+ICsJCS5kYXRhID0g
+Jm12ODhlNnh4eF90YWJsZVtNVjg4RTYyNTBdLA0KPj4gKwl9LA0KPj4gIAl7IC8qIHNlbnRpbmVs
+ICovIH0sDQo+PiAgfTsNCj4gDQo+IEFoLCB5ZXMuIEkgaGFkIG5vdCB0aG91Z2h0IGFib3V0IHRo
+YXQuIEEgZGV2aWNlIGF0IGFkZHJlc3MgMCB3b3VsZCBiZQ0KPiBmb3VuZCwgYnV0IGEgZGV2aWNl
+IGF0IGFkZHJlc3MgMTYgd291bGQgYmUgbWlzc2VkLg0KDQpFaCwgbm8/IFRoZSBwb3J0IHJlZ2lz
+dGVycyBhcmUgYXQgb2Zmc2V0IDB4OCwgaS5lLiBhdCBlaXRoZXIgU01JIGFkZHJlc3MNCjggb3Ig
+MjQsIHNvIEkgZG9uJ3QgdGhpbmsgYSA2MjUwIGF0IGFkZHJlc3MgMCBjb3VsZCBiZSBkZXRlY3Rl
+ZCB1c2luZw0KZWl0aGVyIG9mIHRoZSBleGlzdGluZyBmYW1pbGllcz8NCg0KPiBQbGVhc2UgYWRk
+IHRoaXMgY29tcGF0aWJsZSBzdHJpbmcgdG8gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL25ldC9kc2EvbWFydmVsbC50eHQgDQoNCldpbGwgZG8uDQoNCj4+ICsrKyBiL2RyaXZlcnMv
+bmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5jDQo+PiBAQCAtMTgyLDYgKzE4MiwyNSBAQCBpbnQg
+bXY4OGU2MTg1X2cxX3Jlc2V0KHN0cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCkNCj4+ICAJcmV0
+dXJuIG12ODhlNjE4NV9nMV93YWl0X3BwdV9wb2xsaW5nKGNoaXApOw0KPj4gIH0NCj4+ICANCj4+
+ICtpbnQgbXY4OGU2MjUwX2cxX3Jlc2V0KHN0cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCkNCj4+
+ICt7DQo+PiArCXUxNiB2YWw7DQo+PiArCWludCBlcnI7DQo+PiArDQo+PiArCS8qIFNldCB0aGUg
+U1dSZXNldCBiaXQgMTUgKi8NCj4+ICsJZXJyID0gbXY4OGU2eHh4X2cxX3JlYWQoY2hpcCwgTVY4
+OEU2WFhYX0cxX0NUTDEsICZ2YWwpOw0KPj4gKwlpZiAoZXJyKQ0KPj4gKwkJcmV0dXJuIGVycjsN
+Cj4+ICsNCj4+ICsJdmFsIHw9IE1WODhFNlhYWF9HMV9DVEwxX1NXX1JFU0VUOw0KPj4gKw0KPj4g
+KwllcnIgPSBtdjg4ZTZ4eHhfZzFfd3JpdGUoY2hpcCwgTVY4OEU2WFhYX0cxX0NUTDEsIHZhbCk7
+DQo+PiArCWlmIChlcnIpDQo+PiArCQlyZXR1cm4gZXJyOw0KPj4gKw0KPj4gKwlyZXR1cm4gbXY4
+OGU2eHh4X2cxX3dhaXRfaW5pdF9yZWFkeShjaGlwKTsNCj4+ICt9DQo+IA0KPiBJdCBsb29rcyBs
+aWtlIHlvdSBjb3VsZCByZWZhY3RvciBtdjg4ZTYzNTJfZzFfcmVzZXQoKSB0byBjYWxsDQo+IHRo
+aXMgZnVuY3Rpb24sIGFuZCB0aGVuIG12ODhlNjM1Ml9nMV93YWl0X3BwdV9wb2xsaW5nKGNoaXAp
+Ow0KDQpZZXMsIEkgYWN0dWFsbHkgZGVsaWJlcmF0ZWx5IG1vdmVkIHRoZSA2MjUwIHJlc2V0IGZ1
+bmN0aW9uIGZ1cnRoZXIgdXAgaW4NCnYyIHRvIGFsbG93IHRoYXQuIEknbGwgYWRkIHRoYXQgcmVm
+YWN0b3JpbmcgYXMgYSBzZXBhcmF0ZSBwYXRjaC4NCg0KVGhhbmtzLA0KUmFzbXVzDQo=
