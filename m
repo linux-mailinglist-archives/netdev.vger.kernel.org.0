@@ -2,140 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF401325A3
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 01:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FBDD32631
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 03:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbfFBXbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 19:31:46 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34100 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbfFBXbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 19:31:46 -0400
-Received: by mail-wr1-f66.google.com with SMTP id e16so1866280wrn.1
-        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 16:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=T7wkRLIv1vr7+h2mJXm6cb/iDeROyc1IClzygOY9Nxg=;
-        b=E+ZuQHyDWx+tSC2zBCBbx/MC+kpK9DtyLp6PSqiM4sstq6v06rItEqkj4U9+Ahp7mA
-         RKy26DcjxsnyUUmstpd6gxhjC/9r5hgfN9pudbuF5ucjYDEwMB0RnozVvL2FfMnumO5b
-         ceW75utX7MTdJXPtJ3baTyCe7pV6XxfUhR4geqXdGnRJxAQl5igg/0UPB9PJwKUpsFq2
-         jlN2VFEB+hWrDoTxyamFo9yUNceUREFXb+PsysIs6pbA84bfkbkVh8OJbgt67KjfKCfd
-         x3C6YJNOW440w4VsvjexqYETNmGks4bfN2vmLu/7Pn4neynuEF6Esf+UDifgsHcakHPY
-         4xdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=T7wkRLIv1vr7+h2mJXm6cb/iDeROyc1IClzygOY9Nxg=;
-        b=hQ7qyW0CcMEhITjnp2XtYHsTevm9VwZeV5yixEOTUAGZ16iEv/WNTbzGRhxVRg/xBB
-         FOcFb1q+/8+gV5frvdOukg2UxQ11O60e4JoWaJ9tqvoAECKaG5PtX2mio+ISkiaC3IhM
-         Z8qA3B3I4kCxey1l7ESePCd8ZCn4ITIwRy7ce/OVd7WPDzhlXXMQygf6fCYFcjxYBcC6
-         xVz1c+//fSO3uWvVpOPBSzOV4pZ0HDpNSDXqD4sqm++HmtMmvRmSUP/n6QMJvgZ1FxgL
-         8ghlviYb+mYvvaI3fpW85d5xgCKvWQVkTvpWecLlHo5PMCzczkWEn+VMD2xHvEUKH8uu
-         KeqA==
-X-Gm-Message-State: APjAAAUt5n68TPvfs6yL4mWgHzSrSHVB2dqaH8OSbP3IxMlYKYGnf6pN
-        lY5/B1Z7PAKM2/N4D8WzFlY=
-X-Google-Smtp-Source: APXvYqxoHbXhOUrT3TIEWj7bNNt6hWtRGrGmhFoITWs0kyF1UZ7YZQIPzY4QIKiBonBf7qolqxmEAA==
-X-Received: by 2002:a5d:694c:: with SMTP id r12mr334192wrw.214.1559518304326;
-        Sun, 02 Jun 2019 16:31:44 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id 32sm39414631wra.35.2019.06.02.16.31.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 Jun 2019 16:31:43 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net 1/1] net: dsa: sja1105: Fix link speed not working at 100 Mbps and below
-Date:   Mon,  3 Jun 2019 02:31:37 +0300
-Message-Id: <20190602233137.17930-2-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190602233137.17930-1-olteanv@gmail.com>
-References: <20190602233137.17930-1-olteanv@gmail.com>
+        id S1726786AbfFCBhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 21:37:32 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40522 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726561AbfFCBhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 21:37:32 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x531ahF0120790
+        for <netdev@vger.kernel.org>; Sun, 2 Jun 2019 21:37:31 -0400
+Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2svnuaxtd5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 02 Jun 2019 21:37:30 -0400
+Received: from localhost
+        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+        Mon, 3 Jun 2019 02:37:30 +0100
+Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
+        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 3 Jun 2019 02:37:25 +0100
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x531bOTL10617208
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 3 Jun 2019 01:37:24 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6CA60B206B;
+        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 38429B2067;
+        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.85.136.155])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon,  3 Jun 2019 01:37:24 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id 5467E16C37A7; Sun,  2 Jun 2019 17:06:17 -0700 (PDT)
+Date:   Sun, 2 Jun 2019 17:06:17 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Reply-To: paulmck@linux.ibm.com
+References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
+ <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
+ <20150910171649.GE4029@linux.vnet.ibm.com>
+ <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
+ <20150921193045.GA13674@lerouge>
+ <20150921204327.GH4029@linux.vnet.ibm.com>
+ <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19060301-0072-0000-0000-000004369950
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011206; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01212416; UDB=6.00637148; IPR=6.00993472;
+ MB=3.00027158; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 01:37:28
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060301-0073-0000-0000-00004C762ED8
+Message-Id: <20190603000617.GD28207@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-02_16:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=589 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906030009
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hardware values for link speed are held in the sja1105_speed_t enum.
-However they do not increase in the order that sja1105_get_speed_cfg was
-iterating over them (basically from SJA1105_SPEED_AUTO - 0 - to
-SJA1105_SPEED_1000MBPS - 1 - skipping the other two).
+On Sun, Jun 02, 2019 at 01:56:07PM +0800, Herbert Xu wrote:
+> Digging up an old email because I was not aware of this previously
+> but Paul pointed me to it during another discussion.
+> 
+> On Mon, Sep 21, 2015 at 01:43:27PM -0700, Paul E. McKenney wrote:
+> > On Mon, Sep 21, 2015 at 09:30:49PM +0200, Frederic Weisbecker wrote:
+> >
+> > > > diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+> > > > index d63bb77..6c3cece 100644
+> > > > --- a/include/linux/rcupdate.h
+> > > > +++ b/include/linux/rcupdate.h
+> > > > @@ -297,12 +297,14 @@ void synchronize_rcu(void);
+> > > >  
+> > > >  static inline void __rcu_read_lock(void)
+> > > >  {
+> > > > -	preempt_disable();
+> > > > +	if (IS_ENABLED(CONFIG_PREEMPT_COUNT))
+> > > > +		preempt_disable();
+> > > 
+> > > preempt_disable() is a no-op when !CONFIG_PREEMPT_COUNT, right?
+> > > Or rather it's a barrier(), which is anyway implied by rcu_read_lock().
+> > > 
+> > > So perhaps we can get rid of the IS_ENABLED() check?
+> > 
+> > Actually, barrier() is not intended to be implied by rcu_read_lock().
+> > In a non-preemptible RCU implementation, it doesn't help anything
+> > to have the compiler flush its temporaries upon rcu_read_lock()
+> > and rcu_read_unlock().
+> 
+> This is seriously broken.  RCU has been around for years and is
+> used throughout the kernel while the compiler barrier existed.
 
-Another bug is that the code in sja1105_adjust_port_config relies on the
-fact that an invalid link speed is detected by sja1105_get_speed_cfg and
-returned as -EINVAL.  However storing this into an enum that only has
-positive members will cast it into an unsigned value, and it will miss
-the negative check.
+Please note that preemptible Tree RCU has lacked the compiler barrier on
+all but the outermost rcu_read_unlock() for years before Boqun's patch.
 
-So take the simplest approach and remove the sja1105_get_speed_cfg
-function and replace it with a simple switch-case statement.
+So exactly where in the code that we are currently discussing
+are you relying on compiler barriers in either rcu_read_lock() or
+rcu_read_unlock()?
 
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 32 +++++++++++++-------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+The grace-period guarantee allows the compiler ordering to be either in
+the readers (SMP&&PREEMPT), in the grace-period mechanism (SMP&&!PREEMPT),
+or both (SRCU).
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 5412c3551bcc..25bb64ce0432 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -710,16 +710,6 @@ static int sja1105_speed[] = {
- 	[SJA1105_SPEED_1000MBPS] = 1000,
- };
- 
--static sja1105_speed_t sja1105_get_speed_cfg(unsigned int speed_mbps)
--{
--	int i;
--
--	for (i = SJA1105_SPEED_AUTO; i <= SJA1105_SPEED_1000MBPS; i++)
--		if (sja1105_speed[i] == speed_mbps)
--			return i;
--	return -EINVAL;
--}
--
- /* Set link speed and enable/disable traffic I/O in the MAC configuration
-  * for a specific port.
-  *
-@@ -742,8 +732,21 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
- 	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
- 
--	speed = sja1105_get_speed_cfg(speed_mbps);
--	if (speed_mbps && speed < 0) {
-+	switch (speed_mbps) {
-+	case 0:
-+		/* No speed update requested */
-+		speed = SJA1105_SPEED_AUTO;
-+		break;
-+	case 10:
-+		speed = SJA1105_SPEED_10MBPS;
-+		break;
-+	case 100:
-+		speed = SJA1105_SPEED_100MBPS;
-+		break;
-+	case 1000:
-+		speed = SJA1105_SPEED_1000MBPS;
-+		break;
-+	default:
- 		dev_err(dev, "Invalid speed %iMbps\n", speed_mbps);
- 		return -EINVAL;
- 	}
-@@ -753,10 +756,7 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	 * and we no longer need to store it in the static config (already told
- 	 * hardware we want auto during upload phase).
- 	 */
--	if (speed_mbps)
--		mac[port].speed = speed;
--	else
--		mac[port].speed = SJA1105_SPEED_AUTO;
-+	mac[port].speed = speed;
- 
- 	/* On P/Q/R/S, one can read from the device via the MAC reconfiguration
- 	 * tables. On E/T, MAC reconfig tables are not readable, only writable.
--- 
-2.17.1
+> You can't then go and decide to remove the compiler barrier!  To do
+> that you'd need to audit every single use of rcu_read_lock in the
+> kernel to ensure that they're not depending on the compiler barrier.
+> 
+> This is also contrary to the definition of almost every other
+> *_lock primitive in the kernel where the compiler barrier is
+> included.
+> 
+> So please revert this patch.
+
+I do not believe that reverting that patch will help you at all.
+
+But who knows?  So please point me at the full code body that was being
+debated earlier on this thread.  It will no doubt take me quite a while to
+dig through it, given my being on the road for the next couple of weeks,
+but so it goes.
+
+							Thanx, Paul
 
