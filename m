@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 553F033A65
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5A933A6F
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfFCV5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 17:57:38 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:40935 "EHLO
+        id S1726623AbfFCV5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:57:40 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:10860 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726531AbfFCV5g (ORCPT
+        with ESMTP id S1726163AbfFCV5g (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:57:36 -0400
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x53LvYCd018087
+        by sed198n136.sedsystems.ca  with ESMTP id x53LvZN4004080
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 3 Jun 2019 15:57:34 -0600 (CST)
+        Mon, 3 Jun 2019 15:57:35 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x53LvTMS008601
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x53LvTMT008601
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
         Mon, 3 Jun 2019 15:57:34 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 11/18] net: axienet: Support shared interrupts
-Date:   Mon,  3 Jun 2019 15:57:10 -0600
-Message-Id: <1559599037-8514-12-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next 12/18] net: axienet: Add optional support for Ethernet core interrupt
+Date:   Mon,  3 Jun 2019 15:57:11 -0600
+Message-Id: <1559599037-8514-13-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
 References: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
@@ -35,71 +35,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Specify IRQF_SHARED to support shared interrupts. If the interrupt
-handler is called and the device is not indicating an interrupt,
-just return IRQ_NONE rather than spewing error messages.
+Previously this driver only handled interrupts from the DMA RX and TX
+blocks, not from the Ethernet core itself. Add optional support for
+the Ethernet core interrupt, which is used to detect rx_missed and
+framing errors signalled by the hardware. In order to use this
+interrupt, a third interrupt needs to be specified in the device tree.
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ .../devicetree/bindings/net/xilinx_axienet.txt     |  3 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet.h       |  1 +
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  | 49 ++++++++++++++++++++++
+ 3 files changed, 52 insertions(+), 1 deletion(-)
 
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index 708722e..3f7b65e 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -18,7 +18,8 @@ Required properties:
+ - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
+ 		  "xlnx,axi-ethernet-1.01.a", "xlnx,axi-ethernet-2.01.a"
+ - reg		: Address and length of the IO space.
+-- interrupts	: Should be a list of two interrupt, TX and RX.
++- interrupts	: Should be a list of 2 or 3 interrupts: TX DMA, RX DMA,
++		  and optionally Ethernet core.
+ - phy-handle	: Should point to the external phy device.
+ 		  See ethernet.txt file in the same directory.
+ - xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+index 70e186a..4ac9e79 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+@@ -435,6 +435,7 @@ struct axienet_local {
+ 
+ 	int tx_irq;
+ 	int rx_irq;
++	int eth_irq;
+ 	phy_interface_t phy_mode;
+ 
+ 	u32 options;			/* Current options word */
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index f7156e9..8e85275 100644
+index 8e85275..e26b339 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -808,7 +808,7 @@ static void axienet_recv(struct net_device *ndev)
-  * @irq:	irq number
-  * @_ndev:	net_device pointer
-  *
-- * Return: IRQ_HANDLED for all cases.
-+ * Return: IRQ_HANDLED if device generated a TX interrupt, IRQ_NONE otherwise.
-  *
-  * This is the Axi DMA Tx done Isr. It invokes "axienet_start_xmit_done"
-  * to complete the BD processing.
-@@ -827,7 +827,7 @@ static irqreturn_t axienet_tx_irq(int irq, void *_ndev)
- 		goto out;
- 	}
- 	if (!(status & XAXIDMA_IRQ_ALL_MASK))
--		dev_err(&ndev->dev, "No interrupts asserted in Tx path\n");
-+		return IRQ_NONE;
- 	if (status & XAXIDMA_IRQ_ERROR_MASK) {
- 		dev_err(&ndev->dev, "DMA Tx error 0x%x\n", status);
- 		dev_err(&ndev->dev, "Current BD is at: 0x%x\n",
-@@ -857,7 +857,7 @@ static irqreturn_t axienet_tx_irq(int irq, void *_ndev)
-  * @irq:	irq number
-  * @_ndev:	net_device pointer
-  *
-- * Return: IRQ_HANDLED for all cases.
-+ * Return: IRQ_HANDLED if device generated a RX interrupt, IRQ_NONE otherwise.
-  *
-  * This is the Axi DMA Rx Isr. It invokes "axienet_recv" to complete the BD
-  * processing.
-@@ -876,7 +876,7 @@ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
- 		goto out;
- 	}
- 	if (!(status & XAXIDMA_IRQ_ALL_MASK))
--		dev_err(&ndev->dev, "No interrupts asserted in Rx path\n");
-+		return IRQ_NONE;
- 	if (status & XAXIDMA_IRQ_ERROR_MASK) {
- 		dev_err(&ndev->dev, "DMA Rx error 0x%x\n", status);
- 		dev_err(&ndev->dev, "Current BD is at: 0x%x\n",
-@@ -949,11 +949,13 @@ static int axienet_open(struct net_device *ndev)
- 		     (unsigned long) lp);
+@@ -501,6 +501,8 @@ static void axienet_device_reset(struct net_device *ndev)
+ 	axienet_status = axienet_ior(lp, XAE_IP_OFFSET);
+ 	if (axienet_status & XAE_INT_RXRJECT_MASK)
+ 		axienet_iow(lp, XAE_IS_OFFSET, XAE_INT_RXRJECT_MASK);
++	axienet_iow(lp, XAE_IE_OFFSET, lp->eth_irq > 0 ?
++		    XAE_INT_RECV_ERROR_MASK : 0);
  
- 	/* Enable interrupts for Axi DMA Tx */
--	ret = request_irq(lp->tx_irq, axienet_tx_irq, 0, ndev->name, ndev);
-+	ret = request_irq(lp->tx_irq, axienet_tx_irq, IRQF_SHARED,
-+			  ndev->name, ndev);
- 	if (ret)
- 		goto err_tx_irq;
- 	/* Enable interrupts for Axi DMA Rx */
--	ret = request_irq(lp->rx_irq, axienet_rx_irq, 0, ndev->name, ndev);
-+	ret = request_irq(lp->rx_irq, axienet_rx_irq, IRQF_SHARED,
-+			  ndev->name, ndev);
+ 	axienet_iow(lp, XAE_FCC_OFFSET, XAE_FCC_FCRX_MASK);
+ 
+@@ -901,6 +903,35 @@ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
+ 	return IRQ_HANDLED;
+ }
+ 
++/**
++ * axienet_eth_irq - Ethernet core Isr.
++ * @irq:	irq number
++ * @_ndev:	net_device pointer
++ *
++ * Return: IRQ_HANDLED if device generated a core interrupt, IRQ_NONE otherwise.
++ *
++ * Handle miscellaneous conditions indicated by Ethernet core IRQ.
++ */
++static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
++{
++	unsigned int pending;
++	struct net_device *ndev = _ndev;
++	struct axienet_local *lp = netdev_priv(ndev);
++
++	pending = axienet_ior(lp, XAE_IP_OFFSET);
++	if (!pending)
++		return IRQ_NONE;
++
++	if (pending & XAE_INT_RXFIFOOVR_MASK)
++		ndev->stats.rx_missed_errors++;
++
++	if (pending & XAE_INT_RXRJECT_MASK)
++		ndev->stats.rx_frame_errors++;
++
++	axienet_iow(lp, XAE_IS_OFFSET, pending);
++	return IRQ_HANDLED;
++}
++
+ static void axienet_dma_err_handler(unsigned long data);
+ 
+ /**
+@@ -958,9 +989,18 @@ static int axienet_open(struct net_device *ndev)
+ 			  ndev->name, ndev);
  	if (ret)
  		goto err_rx_irq;
++	/* Enable interrupts for Axi Ethernet core (if defined) */
++	if (lp->eth_irq > 0) {
++		ret = request_irq(lp->eth_irq, axienet_eth_irq, IRQF_SHARED,
++				  ndev->name, ndev);
++		if (ret)
++			goto err_eth_irq;
++	}
  
+ 	return 0;
+ 
++err_eth_irq:
++	free_irq(lp->rx_irq, ndev);
+ err_rx_irq:
+ 	free_irq(lp->tx_irq, ndev);
+ err_tx_irq:
+@@ -1020,6 +1060,8 @@ static int axienet_stop(struct net_device *ndev)
+ 
+ 	tasklet_kill(&lp->dma_err_tasklet);
+ 
++	if (lp->eth_irq > 0)
++		free_irq(lp->eth_irq, ndev);
+ 	free_irq(lp->tx_irq, ndev);
+ 	free_irq(lp->rx_irq, ndev);
+ 
+@@ -1480,6 +1522,8 @@ static void axienet_dma_err_handler(unsigned long data)
+ 	axienet_status = axienet_ior(lp, XAE_IP_OFFSET);
+ 	if (axienet_status & XAE_INT_RXRJECT_MASK)
+ 		axienet_iow(lp, XAE_IS_OFFSET, XAE_INT_RXRJECT_MASK);
++	axienet_iow(lp, XAE_IE_OFFSET, lp->eth_irq > 0 ?
++		    XAE_INT_RECV_ERROR_MASK : 0);
+ 	axienet_iow(lp, XAE_FCC_OFFSET, XAE_FCC_FCRX_MASK);
+ 
+ 	/* Sync default options with HW but leave receiver and
+@@ -1649,6 +1693,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	}
+ 	lp->rx_irq = irq_of_parse_and_map(np, 1);
+ 	lp->tx_irq = irq_of_parse_and_map(np, 0);
++	lp->eth_irq = irq_of_parse_and_map(np, 2);
+ 	of_node_put(np);
+ 	if ((lp->rx_irq <= 0) || (lp->tx_irq <= 0)) {
+ 		dev_err(&pdev->dev, "could not determine irqs\n");
+@@ -1656,6 +1701,10 @@ static int axienet_probe(struct platform_device *pdev)
+ 		goto free_netdev;
+ 	}
+ 
++	/* Check for Ethernet core IRQ (optional) */
++	if (lp->eth_irq <= 0)
++		dev_info(&pdev->dev, "Ethernet core IRQ not defined\n");
++
+ 	/* Retrieve the MAC address */
+ 	mac_addr = of_get_mac_address(pdev->dev.of_node);
+ 	if (IS_ERR(mac_addr)) {
 -- 
 1.8.3.1
 
