@@ -2,171 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D602D33BC9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:13:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0743133BD1
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 01:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbfFCXNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 19:13:31 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35770 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfFCXNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 19:13:30 -0400
-Received: by mail-ed1-f68.google.com with SMTP id p26so29212777edr.2;
-        Mon, 03 Jun 2019 16:13:28 -0700 (PDT)
+        id S1726136AbfFCXSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 19:18:17 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46395 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726025AbfFCXSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 19:18:16 -0400
+Received: by mail-pg1-f195.google.com with SMTP id v9so9123830pgr.13
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 16:18:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nri5hU1JrVEqtA4r+2sZlw3+yvE80eWqFfb9xwcT2OY=;
-        b=uR6AEwG7x0FN4XSTCsDC/ZRDJJ2DQb0nwwu5Jna57WNv9cfuW7BjDNTWh0LT4Ge2bC
-         Rso37okspkqVW0kbIoclPtj0BA0tkUamEA+1JiMxOIyCWu3XpZfnyNG4Wd2wQsBNOKgz
-         uu21lqZ9Tq/zCSuqpP3KSQsn1T3QxJfk04PhEldAaLdl1S1Foq1wxMuLUcBsYLzQtUA5
-         6l8QmZpMUZTze6GlYSdZyfQaM4DyUnteGKyMWpKBAInD7oK7h/A9nlyxWpzLqLmNUX3G
-         Xtn2+c0C/GThuppxKhYUqd7Ye/6p87WAthvwOmgwqoY1Jav+ltNYoXsYj4I3KK1e3Jel
-         z85Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EUXhgTEYtGABT/45PYDr+36gG4MeHzs4BYxMsQ4kJbo=;
+        b=pu7fe05uneoe3G/NPQClfZM0d626ET/Vktv3UKmgzIZUXEbWQks1CizuG9I8nQql1D
+         03doDCBmSmM/yPuWyyHrBmnMu04BIRIHWEDECkfAgA0yZXng+BDYgRYG6Tq52gIa9JSl
+         8XIuoKz6jvGHkRyyMteyg+M/Ra6rm16XrSuKw4BmSIWEAGPiC2oZCjLCsOmXxOKpZs9D
+         2UwAyE/j32uuMm787NKaoavI7VjJuuDH54ENKmDVfAlTMWdvKjVqTJAX++viqaMsBazl
+         62M/SbZWYsk86HIVcfg1SdTbKX4QSSrxxg68kWVZYz1AqXAaKNR3tRUjLAPMBcIfwXlo
+         VWuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nri5hU1JrVEqtA4r+2sZlw3+yvE80eWqFfb9xwcT2OY=;
-        b=qaQHIGpzx4XnKwivpZ9olJF6TPiaSjC/Rn2HTvVW5GcROjWkfh6mLJidRjUstek9XV
-         23KpH1gmcUS4I3s1X0ZeyACADAqZujk6H7R70sQyfm6pjGb1G3B0Bps1PCvHlMfb3Bj+
-         r4oNQsXwWbcaKqa0DRhjywI20ppjQ6PKl9N1w72/QgBPmfc3Xk9m2dcfviPmuElE6dut
-         O0DMrZFdvUm66XOuTqpZtL0Qv3o4Du7VJn6KX+ihHkEevPBf9YIWh/ca+BJ1UvejHFE2
-         0nC0YCSuZQ19AXyeYww3ohe5QL+NFIgptAcXJ40tRFOZ9p5yZpym5iJuaJHlH7x8vUn+
-         PN6A==
-X-Gm-Message-State: APjAAAUAq5upYwBQU35zl1yxVbK7C9U0KrBreT65YeFH/dPLxnLpOWuA
-        CUfmBAmr1/K8pxJAbwvkbrj0yZX481KF/HsdWyk=
-X-Google-Smtp-Source: APXvYqwNRwNzukAWmwUOs3YBExLPE65Lglm3cahyu+HYVKD5XpIhE3R9PwPs42PHvMqXauefLRQpfW4YHq7DEwfME0Y=
-X-Received: by 2002:a50:fd0a:: with SMTP id i10mr30998950eds.117.1559603608065;
- Mon, 03 Jun 2019 16:13:28 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EUXhgTEYtGABT/45PYDr+36gG4MeHzs4BYxMsQ4kJbo=;
+        b=hOV8EmWIAMpwuUJWoy/kue7uxvQpOEWxtQshETKO+xc+Nbw3kX5QKYXp8Xq8RU7kt0
+         qn+Dl8maSmqskPb+xn7UgdPoCBo+mvbDh/yI8fbSAXj+t7CWNjxiP0jZXYq4b7Goo6NZ
+         8rJ57owC6ty0P7ZTNLDGUPwhf0ieKxyEP6K1I69F5barYCTmUhpricGHEi17t4Kuqi9s
+         ndwqW+o5vcL4LXPBqtklYYeWqivyrB13RMv+Gh4n60azYglCIVn/ZusF2BusBbUoMB3A
+         Zm9PYd/R3e8NiJmP7ZLQOcRvZShlXHY2t/X7GaNxPReiM53ye8P+08zjkwNm1JNBemwY
+         7N3Q==
+X-Gm-Message-State: APjAAAUhoIQ0uErHmTE3ug1nKXbWEWHOuP2+n75jgxNbnM2RXCOEToDi
+        QHfyMxXfC7CHGUbqoh9WKlc=
+X-Google-Smtp-Source: APXvYqwKMwQErsTGmJba+xqGC668fbOvoGXho6EieQ/hdXA+wJpDoe1FdW1euKo3YnnkonCbGupY1Q==
+X-Received: by 2002:aa7:8b49:: with SMTP id i9mr6844153pfd.74.1559603896315;
+        Mon, 03 Jun 2019 16:18:16 -0700 (PDT)
+Received: from [172.27.227.197] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id j72sm17067482pje.12.2019.06.03.16.18.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 03 Jun 2019 16:18:15 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
+ a fib6_info
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, saeedm@mellanox.com,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20190603040817.4825-1-dsahern@kernel.org>
+ <20190603040817.4825-5-dsahern@kernel.org>
+ <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
+ <dec5c727-4002-913f-a858-362e0d926b8d@gmail.com>
+ <CAEA6p_Aa2eV+jH=H9iOqepbrBLBUvAg2-_oD96wA0My6FMG_PQ@mail.gmail.com>
+ <5263d3ae-1865-d935-cb03-f6dfd4604d15@gmail.com>
+ <CAEA6p_CixzdRNUa46YZusFg-37MFAVqQ8D09rxVU5Nja6gO1SA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4cdcdf65-4d34-603e-cb21-d649b399d760@gmail.com>
+Date:   Mon, 3 Jun 2019 17:18:11 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190602213926.2290-1-olteanv@gmail.com>
-In-Reply-To: <20190602213926.2290-1-olteanv@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 4 Jun 2019 02:13:16 +0300
-Message-ID: <CA+h21hoOO1apNWXer01LE572pgdnVdmf_e7-Tnp6jgJuTPbGHg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 00/10] PTP support for the SJA1105 DSA driver
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAEA6p_CixzdRNUa46YZusFg-37MFAVqQ8D09rxVU5Nja6gO1SA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 at 00:40, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> This patchset adds the following:
->
->  - A timecounter/cyclecounter based PHC for the free-running
->    timestamping clock of this switch.
->
->  - A state machine implemented in the DSA tagger for SJA1105, which
->    keeps track of metadata follow-up Ethernet frames (the switch's way
->    of transmitting RX timestamps).
->
-> Clock manipulations on the actual hardware PTP clock will have to be
-> implemented anyway, for the TTEthernet block and the time-based ingress
-> policer.
->
-> This depends upon the "FDB updates for SJA1105 DSA driver" series at:
-> https://patchwork.ozlabs.org/project/netdev/list/?series=111354&state=*
->
-> v1 patchset can be found at:
-> https://lkml.org/lkml/2019/5/28/1093
->
-> Changes from v1:
->
-> - Removed the addition of the DSA .can_timestamp callback.
->
-> - Waiting for meta frames is done completely inside the tagger, and all
->   frames emitted on RX are already partially timestamped.
->
-> - Added a global data structure for the tagger common to all ports.
->
-> - Made PTP work with ports in standalone mode, by limiting use of the
->   DMAC-mangling "incl_srcpt" mode only when ports are bridged, aka when
->   the DSA master is already promiscuous and can receive anything.
->   Also changed meta frames to be sent at the 01-80-C2-00-00-0E DMAC.
->
-> - Made some progress w.r.t. observed negative path delay.  Apparently it
->   only appears when the delay mechanism is the delay request-response
->   (end-to-end) one. If peer delay is used (-P), the path delay is
->   positive and appears reasonable for an 1000Base-T link (485 ns in
->   steady state).
->
->   SJA1105 as PTP slave (OC) with E2E path delay:
->
-> ptp4l[55.600]: master offset          8 s2 freq  +83677 path delay     -2390
-> ptp4l[56.600]: master offset         17 s2 freq  +83688 path delay     -2391
-> ptp4l[57.601]: master offset          6 s2 freq  +83682 path delay     -2391
-> ptp4l[58.601]: master offset         -1 s2 freq  +83677 path delay     -2391
->
->   SJA1105 as PTP slave (OC) with P2P path delay:
->
-> ptp4l[48.343]: master offset          5 s2 freq  +83715 path delay       484
-> ptp4l[48.468]: master offset         -3 s2 freq  +83705 path delay       485
-> ptp4l[48.593]: master offset          0 s2 freq  +83708 path delay       485
-> ptp4l[48.718]: master offset          1 s2 freq  +83710 path delay       485
-> ptp4l[48.844]: master offset          1 s2 freq  +83710 path delay       485
-> ptp4l[48.969]: master offset         -5 s2 freq  +83702 path delay       485
-> ptp4l[49.094]: master offset          3 s2 freq  +83712 path delay       485
-> ptp4l[49.219]: master offset          4 s2 freq  +83714 path delay       485
-> ptp4l[49.344]: master offset         -5 s2 freq  +83702 path delay       485
-> ptp4l[49.469]: master offset          3 s2 freq  +83713 path delay       487
->
-> Vladimir Oltean (10):
->   net: dsa: Keep a pointer to the skb clone for TX timestamping
->   net: dsa: Add teardown callback for drivers
->   net: dsa: tag_8021q: Create helper function for removing VLAN header
->   net: dsa: sja1105: Move sja1105_change_tpid into
->     sja1105_vlan_filtering
->   net: dsa: sja1105: Limit use of incl_srcpt to bridge+vlan mode
->   net: dsa: sja1105: Add support for the PTP clock
->   net: dsa: sja1105: Move sja1105_is_link_local to include/linux
->   net: dsa: sja1105: Make sja1105_is_link_local not match meta frames
->   net: dsa: sja1105: Add support for PTP timestamping
->   net: dsa: sja1105: Increase priority of CPU-trapped frames
->
->  drivers/net/dsa/sja1105/Kconfig               |   7 +
->  drivers/net/dsa/sja1105/Makefile              |   1 +
->  drivers/net/dsa/sja1105/sja1105.h             |  29 ++
->  .../net/dsa/sja1105/sja1105_dynamic_config.c  |   2 +
->  drivers/net/dsa/sja1105/sja1105_main.c        | 317 ++++++++++++--
->  drivers/net/dsa/sja1105/sja1105_ptp.c         | 392 ++++++++++++++++++
->  drivers/net/dsa/sja1105/sja1105_ptp.h         |  64 +++
->  drivers/net/dsa/sja1105/sja1105_spi.c         |  33 ++
->  .../net/dsa/sja1105/sja1105_static_config.c   |  59 +++
->  .../net/dsa/sja1105/sja1105_static_config.h   |  10 +
->  include/linux/dsa/8021q.h                     |   7 +
->  include/linux/dsa/sja1105.h                   |  51 +++
->  include/net/dsa.h                             |   1 +
->  net/dsa/dsa2.c                                |   3 +
->  net/dsa/slave.c                               |   3 +
->  net/dsa/tag_8021q.c                           |  15 +
->  net/dsa/tag_sja1105.c                         | 203 ++++++++-
->  17 files changed, 1150 insertions(+), 47 deletions(-)
->  create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.c
->  create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.h
->
-> --
-> 2.17.1
->
+On 6/3/19 5:05 PM, Wei Wang wrote:
+> On Mon, Jun 3, 2019 at 3:35 PM David Ahern <dsahern@gmail.com> wrote:
+>>
+>> On 6/3/19 3:58 PM, Wei Wang wrote:
+>>> Hmm... I am still a bit concerned with the ip6_create_rt_rcu() call.
+>>> If we have a blackholed nexthop, the lookup code here always tries to
+>>> create an rt cache entry for every lookup.
+>>> Maybe we could reuse the pcpu cache logic for this? So we only create
+>>> new dst cache on the CPU if there is no cache created before.
+>>
+>> I'll take a look.
+>>
 
-Hi Dave,
+BTW, I am only updating ip6_pol_route to use pcpu routes for blackhole
+nexthops.
 
-This series appears in patchwork as "superseded":
-https://patchwork.ozlabs.org/project/netdev/list/?series=111356&state=*
-Perhaps it got mixed up with another one?
+ip6_pol_route_lookup will continue as is. That function does not use
+pcpu routes and will stay as is.
 
-Thanks,
--Vladimir
