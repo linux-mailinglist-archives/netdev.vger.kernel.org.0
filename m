@@ -2,153 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF8132ED6
+	by mail.lfdr.de (Postfix) with ESMTP id 05DFE32ED4
 	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 13:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728502AbfFCLky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 07:40:54 -0400
-Received: from mga17.intel.com ([192.55.52.151]:21921 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728476AbfFCLky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 07:40:54 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jun 2019 04:40:53 -0700
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Jun 2019 04:40:52 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hXlKe-0004uq-Bw; Mon, 03 Jun 2019 19:40:52 +0800
-Date:   Mon, 3 Jun 2019 19:39:54 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org
-Subject: [net-next:master 391/455] drivers/staging/isdn/avm/b1.c:163:49:
- sparse: sparse: incorrect type in argument 2 (different address spaces)
-Message-ID: <201906031939.e6qlcBmD%lkp@intel.com>
+        id S1728480AbfFCLks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 07:40:48 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:36000 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726798AbfFCLks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 07:40:48 -0400
+Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 30711C1E73;
+        Mon,  3 Jun 2019 11:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559562028; bh=JNgLsT7LPunYfej4pP5aCroqrdhvEaNr8asK8r1HI7Y=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=QnpyQMXRrAFzeVwuPSVQX9syBt+Hb02uRHs7Fs7uKpQolYd8MaUOTYFEKb3Tvkqt9
+         ryS1+FR7+e8qYxHQFmZexwW9ROZau/gsFbKRW8YZxLn2JNuZh0RFRNvE3Kww/Cahjm
+         /VUoCFFnV/yofaYRK2uhyZ+RJ7lRutTQ9dWPb1YmY7UW8cmdF60WTBv9hcvoxI4Aa1
+         tw6oUYRs/E7Xfe8+LHapSeLdJuzhzEiI2BZQ0K/HHKSB/fX0xsfVFNPqGQUdZIPVMS
+         dbyLdu/ckJRdYQAGzW7p+A4V8h3eT/bTrRTjx0LBuOmQ6nw2vvbDvdGQ7gKWFrOtEn
+         NrO2YR068NpfA==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 87BABA0067;
+        Mon,  3 Jun 2019 11:40:40 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 3 Jun 2019 04:40:40 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Mon,
+ 3 Jun 2019 13:40:37 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Biao Huang <biao.huang@mediatek.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.com" <jianguo.zhang@mediatek.com>,
+        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>
+Subject: RE: [v2, PATCH 3/4] net: stmmac: modify default value of tx-frames
+Thread-Topic: [v2, PATCH 3/4] net: stmmac: modify default value of tx-frames
+Thread-Index: AQHVGa/XGYfQ4t70BkaeZd4pZlVHSKaJzoyA
+Date:   Mon, 3 Jun 2019 11:40:37 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B93B6DF@DE02WEMBXB.internal.synopsys.com>
+References: <1559527086-7227-1-git-send-email-biao.huang@mediatek.com>
+ <1559527086-7227-4-git-send-email-biao.huang@mediatek.com>
+In-Reply-To: <1559527086-7227-4-git-send-email-biao.huang@mediatek.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+From: Biao Huang <biao.huang@mediatek.com>
 
-First bad commit (maybe != root cause):
+> the default value of tx-frames is 25, it's too late when
+> passing tstamp to stack, then the ptp4l will fail:
+>=20
+> ptp4l -i eth0 -f gPTP.cfg -m
+> ptp4l: selected /dev/ptp0 as PTP clock
+> ptp4l: port 1: INITIALIZING to LISTENING on INITIALIZE
+> ptp4l: port 0: INITIALIZING to LISTENING on INITIALIZE
+> ptp4l: port 1: link up
+> ptp4l: timed out while polling for tx timestamp
+> ptp4l: increasing tx_timestamp_timeout may correct this issue,
+>        but it is likely caused by a driver bug
+> ptp4l: port 1: send peer delay response failed
+> ptp4l: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+>=20
+> ptp4l tests pass when changing the tx-frames from 25 to 1 with
+> ethtool -C option.
+> It should be fine to set tx-frames default value to 1, so ptp4l will pass
+> by default.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   b33bc2b878e05c5dd4e20682328c3addb4787ac9
-commit: 6d97985072dc270032dc7a08631080bfd6253e82 [391/455] isdn: move capi drivers to staging
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
-        git checkout 6d97985072dc270032dc7a08631080bfd6253e82
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+I'm not sure if this is the right approach ... What's the timeout value=20
+you have for TX Timestamp ?
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/staging/isdn/avm/b1.c:163:49: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
->> drivers/staging/isdn/avm/b1.c:163:49: sparse:    expected void const [noderef] <asn:1> *from
->> drivers/staging/isdn/avm/b1.c:163:49: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/b1.c:179:49: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/b1.c:179:49: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/b1.c:179:49: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/b1.c:211:49: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/b1.c:211:49: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/b1.c:211:49: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/b1.c:227:49: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/b1.c:227:49: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/b1.c:227:49: sparse:    got unsigned char *[assigned] dp
---
->> drivers/staging/isdn/avm/c4.c:206:50: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
->> drivers/staging/isdn/avm/c4.c:206:50: sparse:    expected void const [noderef] <asn:1> *from
->> drivers/staging/isdn/avm/c4.c:206:50: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/c4.c:223:50: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/c4.c:223:50: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/c4.c:223:50: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/c4.c:830:49: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/c4.c:830:49: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/c4.c:830:49: sparse:    got unsigned char *[assigned] dp
-   drivers/staging/isdn/avm/c4.c:843:50: sparse: sparse: incorrect type in argument 2 (different address spaces) @@    expected void const [noderef] <asn:1> *from @@    got  const [noderef] <asn:1> *from @@
-   drivers/staging/isdn/avm/c4.c:843:50: sparse:    expected void const [noderef] <asn:1> *from
-   drivers/staging/isdn/avm/c4.c:843:50: sparse:    got unsigned char *[assigned] dp
---
->> drivers/staging/isdn/hysdn/boardergo.c:402:21: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got oderef] <asn:2> *addr @@
->> drivers/staging/isdn/hysdn/boardergo.c:402:21: sparse:    expected void volatile [noderef] <asn:2> *addr
->> drivers/staging/isdn/hysdn/boardergo.c:402:21: sparse:    got void *[usertype] dpram
->> drivers/staging/isdn/hysdn/boardergo.c:422:27: sparse: sparse: incorrect type in assignment (different address spaces) @@    expected void *[usertype] dpram @@    got void [nvoid *[usertype] dpram @@
->> drivers/staging/isdn/hysdn/boardergo.c:422:27: sparse:    expected void *[usertype] dpram
->> drivers/staging/isdn/hysdn/boardergo.c:422:27: sparse:    got void [noderef] <asn:2> *
---
->> drivers/staging/isdn/hysdn/hysdn_net.c:72:29: sparse: sparse: incorrect type in assignment (different address spaces) @@    expected struct in_device *in_dev @@    got struct in_device [struct in_device *in_dev @@
->> drivers/staging/isdn/hysdn/hysdn_net.c:72:29: sparse:    expected struct in_device *in_dev
->> drivers/staging/isdn/hysdn/hysdn_net.c:72:29: sparse:    got struct in_device [noderef] <asn:4> *ip_ptr
-
-vim +163 drivers/staging/isdn/avm/b1.c
-
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  150  
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  151  #define FWBUF_SIZE	256
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  152  int b1_load_t4file(avmcard *card, capiloaddatapart *t4file)
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  153  {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  154  	unsigned char buf[FWBUF_SIZE];
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  155  	unsigned char *dp;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  156  	int i, left;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  157  	unsigned int base = card->port;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  158  
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  159  	dp = t4file->data;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  160  	left = t4file->len;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  161  	while (left > FWBUF_SIZE) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  162  		if (t4file->user) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16 @163  			if (copy_from_user(buf, dp, FWBUF_SIZE))
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  164  				return -EFAULT;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  165  		} else {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  166  			memcpy(buf, dp, FWBUF_SIZE);
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  167  		}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  168  		for (i = 0; i < FWBUF_SIZE; i++)
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  169  			if (b1_save_put_byte(base, buf[i]) < 0) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  170  				printk(KERN_ERR "%s: corrupted firmware file ?\n",
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  171  				       card->name);
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  172  				return -EIO;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  173  			}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  174  		left -= FWBUF_SIZE;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  175  		dp += FWBUF_SIZE;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  176  	}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  177  	if (left) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  178  		if (t4file->user) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  179  			if (copy_from_user(buf, dp, left))
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  180  				return -EFAULT;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  181  		} else {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  182  			memcpy(buf, dp, left);
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  183  		}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  184  		for (i = 0; i < left; i++)
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  185  			if (b1_save_put_byte(base, buf[i]) < 0) {
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  186  				printk(KERN_ERR "%s: corrupted firmware file ?\n",
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  187  				       card->name);
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  188  				return -EIO;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  189  			}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  190  	}
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  191  	return 0;
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  192  }
-^1da177e drivers/isdn/hardware/avm/b1.c Linus Torvalds 2005-04-16  193  
-
-:::::: The code at line 163 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Thanks,
+Jose Miguel Abreu
