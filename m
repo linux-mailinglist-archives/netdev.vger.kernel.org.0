@@ -2,230 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC27333D8
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C69333DE
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727611AbfFCPsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 11:48:04 -0400
-Received: from mail-pf1-f172.google.com ([209.85.210.172]:45678 "EHLO
-        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbfFCPsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 11:48:04 -0400
-Received: by mail-pf1-f172.google.com with SMTP id s11so10832837pfm.12
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 08:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=TnuuO/EthjA0EV2Y3JshweY85TFtp18DCpPoy0lraxs=;
-        b=2MvlB6EGU7IjGlDGbkUWLLAkzx4/f+ifg/vn4Q1c/fUYzF2gezO/SJrXxQg9LGziT4
-         OORwMLDDVTgiyzaWKHCJBFEuemJHpYMrRSNtDsT7a+XzVkKOxXDM/GJtvNIdAMZXjdmK
-         AOELFrmEySjfXkaq1kaTTKoZQONHhKE/Vhj6RQghqxvqjc/rQpMWKbh9I09JJRymmY33
-         RFXfLCBpI4+y34FEMVpyzLOPdiUkwmiGPCSe0J1J/6N7CeTJpV8ew1Ti2uQtaxAgg9/3
-         X601UjmCqDbv/G/a2KEXXeSpW2sjBeA7IJxze7hO2d5Q36M5nH15N1egRxxB8USMvB53
-         Hvzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=TnuuO/EthjA0EV2Y3JshweY85TFtp18DCpPoy0lraxs=;
-        b=jzt0BoT+hG9aZ7RR2T3yXr9UyudkgNhNg/pdIFo+6z7tDnyxcYH+I6bHhh2hIDpYPy
-         in4pFfsF9/vwBU0Ua2JdFWvhuGoXCRZpyMB91RUAK6RSSmvS4GAasOqpbKBAv52Xp3Fc
-         ch6+o3cLcHA+KnJCVhiseSl38+b7B3ng55kiMQj1H7YAEeKTiTDhSbIGz2LVwKqY7ego
-         PfPd5lCM1fdm49tVbqnpFxX9/jrJNwDl/NgFRzdujWL+ewVOnPrJLdJMRPEOigY8KY5t
-         fmw/5mCC393CdnuHjLwfARRO6q70Vkb/ojJTAbgyyiTeilCGvpdnPDWOU3gQVS2YxbGx
-         iDbQ==
-X-Gm-Message-State: APjAAAVDI79Ln3PUYDcAeIReVenBNzD7zH/PUL1Sf+T9J7jFuWzjANFS
-        hzF9yW3I4M2+ZcUx/vVcXiVurTHUABI=
-X-Google-Smtp-Source: APXvYqx8KXDm6osiWLl8eagtu4AqhkhnfxamhNNAn2zE31f5hbHKLCppd+E1t15zCMjKw0wdK7l6hQ==
-X-Received: by 2002:a63:1844:: with SMTP id 4mr27370490pgy.402.1559576883357;
-        Mon, 03 Jun 2019 08:48:03 -0700 (PDT)
-Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id j72sm16485462pje.12.2019.06.03.08.48.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 03 Jun 2019 08:48:02 -0700 (PDT)
-From:   Tom Herbert <tom@herbertland.com>
-X-Google-Original-From: Tom Herbert <tom@quantonium.net>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH v2 net-next] ipv6: Send ICMP errors for exceeding extension header limits
-Date:   Mon,  3 Jun 2019 08:47:47 -0700
-Message-Id: <1559576867-4241-1-git-send-email-tom@quantonium.net>
-X-Mailer: git-send-email 2.7.4
+        id S1727501AbfFCPuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 11:50:02 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:10881 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727164AbfFCPuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 11:50:02 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x53FnpsB031240
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 3 Jun 2019 09:49:52 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x53Fnpgh012899
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Mon, 3 Jun 2019 09:49:51 -0600
+Subject: Re: [PATCH net-next 09/13] net: axienet: Make missing MAC address
+ non-fatal
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "anirudh@xilinx.com" <anirudh@xilinx.com>,
+        "John.Linn@xilinx.com" <John.Linn@xilinx.com>
+References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
+ <1559326545-28825-10-git-send-email-hancock@sedsystems.ca>
+ <cc01dd319abd4b1194bcdb9900e0e1ce@AcuMS.aculab.com>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <166ae8f1-4906-c030-33c5-ceac7b345fff@sedsystems.ca>
+Date:   Mon, 3 Jun 2019 09:49:51 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <cc01dd319abd4b1194bcdb9900e0e1ce@AcuMS.aculab.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define constants and add support to send ICMPv6 Parameter Problem
-errors as specified in draft-ietf-6man-icmp-limits-02.
+On 2019-06-03 7:22 a.m., David Laight wrote:
+> From: Robert Hancock
+>> Sent: 31 May 2019 19:16
+>> Failing initialization on a missing MAC address property is excessive.
+>> We can just fall back to using a random MAC instead, which at least
+>> leaves the interface in a functioning state.
+>>
+>> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+>> ---
+>>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 5 ++---
+>>  1 file changed, 2 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+>> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+>> index 9949e67..947fa5d 100644
+>> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+>> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+>> @@ -308,7 +308,7 @@ static void axienet_set_mac_address(struct net_device *ndev,
+>>  {
+>>  	struct axienet_local *lp = netdev_priv(ndev);
+>>
+>> -	if (address)
+>> +	if (!IS_ERR(address))
+>>  		memcpy(ndev->dev_addr, address, ETH_ALEN);
+>>  	if (!is_valid_ether_addr(ndev->dev_addr))
+>>  		eth_hw_addr_random(ndev);
+>> @@ -1730,8 +1730,7 @@ static int axienet_probe(struct platform_device *pdev)
+>>  	/* Retrieve the MAC address */
+>>  	mac_addr = of_get_mac_address(pdev->dev.of_node);
+>>  	if (IS_ERR(mac_addr)) {
+>> -		dev_err(&pdev->dev, "could not find MAC address\n");
+>> -		goto free_netdev;
+>> +		dev_warn(&pdev->dev, "could not find MAC address property\n");
+>>  	}
+>>  	axienet_set_mac_address(ndev, mac_addr);
+> 
+> Isn't that going to read from an invalid address on error?
+> Seems you didn't test of_get_mac_address() failing :-)
 
-The following parameter problem errors are sent when processing
-Hop-by-Hop or Destination Options:
+axienet_set_mac_address checks IS_ERR(mac_addr) as well before reading
+from it, so the invalid address should not be accessed.
 
-   * ICMPV6_TOOBIG_OPTION
-      - Sent if the length of an option exceeds the extent of the
-        extension header.
-      - Sent if a packet exceeding the padding limit is received
-        (more than seven consecutive bytes of padding).
-
-   * ICMPV6_TOOMANY_OPTIONS
-      - Sent if a packet is received and HBH option count exceeds
-        ipv6.sysctl.max_hbh_opts_cnt or DO option count exceeds
-        ipv6.sysctl.max_dst_opts_cnt.
-
-   * ICMPV6_EXTHDR_TOOBIG
-      - Sent if length of HBH EH exceeds ipv6.sysctl.max_hbh_opts_len
-        or length of DO EH exceeds ipv6.sysctl.max_dst_opts_len.
-      - Sent if the length of an extension header exceeds the
-        extent of the packet.
-
-   * ICMPV6_HDR_FIELD
-      - Sent if a data byte in PADN is non-zero
-
-Signed-off-by: Tom Herbert <tom@quantonium.net>
----
- include/uapi/linux/icmpv6.h |  6 ++++++
- net/ipv6/exthdrs.c          | 50 +++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 48 insertions(+), 8 deletions(-)
-
-diff --git a/include/uapi/linux/icmpv6.h b/include/uapi/linux/icmpv6.h
-index 2622b5a..966279b 100644
---- a/include/uapi/linux/icmpv6.h
-+++ b/include/uapi/linux/icmpv6.h
-@@ -124,6 +124,7 @@ struct icmp6hdr {
- #define ICMPV6_PORT_UNREACH		4
- #define ICMPV6_POLICY_FAIL		5
- #define ICMPV6_REJECT_ROUTE		6
-+#define ICMPV6_SRCRT_ERR		7
- 
- /*
-  *	Codes for Time Exceeded
-@@ -137,6 +138,11 @@ struct icmp6hdr {
- #define ICMPV6_HDR_FIELD		0
- #define ICMPV6_UNK_NEXTHDR		1
- #define ICMPV6_UNK_OPTION		2
-+#define ICMPV6_FIRST_FRAG_INCOMP	3
-+#define ICMPV6_EXTHDR_TOOBIG		4
-+#define ICMPV6_EXTHDR_CHAINLONG		5
-+#define ICMPV6_TOOMANY_OPTIONS		6
-+#define ICMPV6_TOOBIG_OPTION		7
- 
- /*
-  *	constants for (set|get)sockopt
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 20291c2..05061f4 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -131,8 +131,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 		max_count = -max_count;
- 	}
- 
--	if (skb_transport_offset(skb) + len > skb_headlen(skb))
-+	if (skb_transport_offset(skb) + len > skb_headlen(skb)) {
-+		icmpv6_send(skb, ICMPV6_PARAMPROB,
-+			    ICMPV6_EXTHDR_TOOBIG, skb_transport_offset(skb));
- 		goto bad;
-+	}
- 
- 	off += 2;
- 	len -= 2;
-@@ -145,8 +148,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 		case IPV6_TLV_PAD1:
- 			optlen = 1;
- 			padlen++;
--			if (padlen > 7)
-+			if (padlen > 7) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOBIG_OPTION, off);
- 				goto bad;
-+			}
- 			break;
- 
- 		case IPV6_TLV_PADN:
-@@ -156,25 +162,37 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 			 * See also RFC 4942, Section 2.1.9.5.
- 			 */
- 			padlen += optlen;
--			if (padlen > 7)
-+			if (padlen > 7) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOBIG_OPTION, off);
- 				goto bad;
-+			}
- 			/* RFC 4942 recommends receiving hosts to
- 			 * actively check PadN payload to contain
- 			 * only zeroes.
- 			 */
- 			for (i = 2; i < optlen; i++) {
--				if (nh[off + i] != 0)
-+				if (nh[off + i] != 0) {
-+					icmpv6_send(skb, ICMPV6_PARAMPROB,
-+						    ICMPV6_HDR_FIELD, off + i);
- 					goto bad;
-+				}
- 			}
- 			break;
- 
- 		default: /* Other TLV code so scan list */
--			if (optlen > len)
-+			if (optlen > len) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOBIG_OPTION, off);
- 				goto bad;
-+			}
- 
- 			tlv_count++;
--			if (tlv_count > max_count)
-+			if (tlv_count > max_count) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOMANY_OPTIONS, off);
- 				goto bad;
-+			}
- 
- 			for (curr = procs; curr->type >= 0; curr++) {
- 				if (curr->type == nh[off]) {
-@@ -200,6 +218,8 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 	if (len == 0)
- 		return true;
- bad:
-+	__IP6_INC_STATS(dev_net(skb->dev), __in6_dev_get(skb->dev),
-+			IPSTATS_MIB_INHDRERRORS);
- 	kfree_skb(skb);
- 	return false;
- }
-@@ -300,8 +320,15 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
- 	}
- 
- 	extlen = (skb_transport_header(skb)[1] + 1) << 3;
--	if (extlen > net->ipv6.sysctl.max_dst_opts_len)
-+	if (extlen > net->ipv6.sysctl.max_dst_opts_len) {
-+		icmpv6_send(skb, ICMPV6_PARAMPROB,
-+			    ICMPV6_EXTHDR_TOOBIG,
-+			    skb_network_header_len(skb) +
-+				net->ipv6.sysctl.max_dst_opts_len);
-+		__IP6_INC_STATS(dev_net(dst->dev), idev,
-+				IPSTATS_MIB_INHDRERRORS);
- 		goto fail_and_free;
-+	}
- 
- 	opt->lastopt = opt->dst1 = skb_network_header_len(skb);
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
-@@ -843,8 +870,15 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
- 	}
- 
- 	extlen = (skb_transport_header(skb)[1] + 1) << 3;
--	if (extlen > net->ipv6.sysctl.max_hbh_opts_len)
-+	if (extlen > net->ipv6.sysctl.max_hbh_opts_len) {
-+		__IP6_INC_STATS(net, __in6_dev_get(skb->dev),
-+				IPSTATS_MIB_INHDRERRORS);
-+		icmpv6_send(skb, ICMPV6_PARAMPROB,
-+			    ICMPV6_EXTHDR_TOOBIG,
-+			skb_network_header_len(skb) +
-+				net->ipv6.sysctl.max_hbh_opts_len);
- 		goto fail_and_free;
-+	}
- 
- 	opt->flags |= IP6SKB_HOPBYHOP;
- 	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
 -- 
-2.7.4
-
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
