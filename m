@@ -2,203 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E982532CF6
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1B632D2F
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbfFCJfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:35:39 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35028 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727334AbfFCJfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 05:35:39 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x539WtVk028296;
-        Mon, 3 Jun 2019 05:35:32 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2sw0ytg7pg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jun 2019 05:35:32 -0400
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x539X0tZ029210;
-        Mon, 3 Jun 2019 05:35:32 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2sw0ytg7nw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jun 2019 05:35:32 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x533XSKN001411;
-        Mon, 3 Jun 2019 03:40:32 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma01dal.us.ibm.com with ESMTP id 2suh08xmts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jun 2019 03:40:32 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x539ZTIa26017906
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Jun 2019 09:35:29 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97067B2064;
-        Mon,  3 Jun 2019 09:35:29 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 356E5B2071;
-        Mon,  3 Jun 2019 09:35:29 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.160.165])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Jun 2019 09:35:29 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id A392716C5D9E; Mon,  3 Jun 2019 02:35:28 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 02:35:28 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Message-ID: <20190603093528.GJ28207@linux.ibm.com>
-Reply-To: paulmck@linux.ibm.com
-References: <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
- <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
- <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
- <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
- <20190603034707.GG28207@linux.ibm.com>
- <20190603052626.nz2qktwmkswxfnsd@gondor.apana.org.au>
+        id S1726964AbfFCJvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:51:15 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54520 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726342AbfFCJvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 05:51:14 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7F644C058CA2;
+        Mon,  3 Jun 2019 09:51:09 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.182])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 715DC1001DD9;
+        Mon,  3 Jun 2019 09:51:08 +0000 (UTC)
+Message-ID: <141f34bb8d1505783b4f939faac5223200deeb13.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/3] indirect call wrappers: add helpers for 3
+ and 4 ways switch
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "leon@kernel.org" <leon@kernel.org>
+Date:   Mon, 03 Jun 2019 11:51:07 +0200
+In-Reply-To: <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
+References: <cover.1559304330.git.pabeni@redhat.com>
+         <7dc56c32624fd102473fc66ffdda6ebfcdfe6ad0.1559304330.git.pabeni@redhat.com>
+         <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603052626.nz2qktwmkswxfnsd@gondor.apana.org.au>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906030070
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 03 Jun 2019 09:51:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 01:26:26PM +0800, Herbert Xu wrote:
-> On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
+On Fri, 2019-05-31 at 18:30 +0000, Saeed Mahameed wrote:
+> On Fri, 2019-05-31 at 14:53 +0200, Paolo Abeni wrote:
+> > Experimental results[1] has shown that resorting to several branches
+> > and a direct-call is faster than indirect call via retpoline, even
+> > when the number of added branches go up 5.
 > > 
-> > 1.	These guarantees are of full memory barriers, -not- compiler
-> > 	barriers.
-> 
-> What I'm saying is that wherever they are, they must come with
-> compiler barriers.  I'm not aware of any synchronisation mechanism
-> in the kernel that gives a memory barrier without a compiler barrier.
-
-Yes, if a given synchronization mechanism requires that memory references
-need to be ordered, both the compiler and the CPU must maintain that
-ordering.
-
-> > 2.	These rules don't say exactly where these full memory barriers
-> > 	go.  SRCU is at one extreme, placing those full barriers in
-> > 	srcu_read_lock() and srcu_read_unlock(), and !PREEMPT Tree RCU
-> > 	at the other, placing these barriers entirely within the callback
-> > 	queueing/invocation, grace-period computation, and the scheduler.
-> > 	Preemptible Tree RCU is in the middle, with rcu_read_unlock()
-> > 	sometimes including a full memory barrier, but other times with
-> > 	the full memory barrier being confined as it is with !PREEMPT
-> > 	Tree RCU.
-> 
-> The rules do say that the (full) memory barrier must precede any
-> RCU read-side that occur after the synchronize_rcu and after the
-> end of any RCU read-side that occur before the synchronize_rcu.
-> 
-> All I'm arguing is that wherever that full mb is, as long as it
-> also carries with it a barrier() (which it must do if it's done
-> using an existing kernel mb/locking primitive), then we're fine.
-
-Fair enough, and smp_mb() does provide what is needed.
-
-> > Interleaving and inserting full memory barriers as per the rules above:
+> > This change adds two additional helpers, to cope with indirect calls
+> > with up to 4 available direct call option. We will use them
+> > in the next patch.
 > > 
-> > 	CPU1: WRITE_ONCE(a, 1)
-> > 	CPU1: synchronize_rcu	
-> > 	/* Could put a full memory barrier here, but it wouldn't help. */
-> 
-> 	CPU1: smp_mb();
-> 	CPU2: smp_mb();
-
-What is CPU2's smp_mb() ordering?  In other words, what comment would
-you put on each of the above smp_mb() calls?
-
-> Let's put them in because I think they are critical.  smp_mb() also
-> carries with it a barrier().
-
-Again, agreed, smp_mb() implies barrier().
-
-> > 	CPU2: rcu_read_lock();
-> > 	CPU1: b = 2;	
-> > 	CPU2: if (READ_ONCE(a) == 0)
-> > 	CPU2:         if (b != 1)  /* Weakly ordered CPU moved this up! */
-> > 	CPU2:                 b = 1;
-> > 	CPU2: rcu_read_unlock
+> > [1] 
+> > https://linuxplumbersconf.org/event/2/contributions/99/attachments/98/117/lpc18_paper_af_xdp_perf-v2.pdf
 > > 
-> > In fact, CPU2's load from b might be moved up to race with CPU1's store,
-> > which (I believe) is why the model complains in this case.
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  include/linux/indirect_call_wrapper.h | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> > 
+> > diff --git a/include/linux/indirect_call_wrapper.h
+> > b/include/linux/indirect_call_wrapper.h
+> > index 00d7e8e919c6..7c4cac87eaf7 100644
+> > --- a/include/linux/indirect_call_wrapper.h
+> > +++ b/include/linux/indirect_call_wrapper.h
+> > @@ -23,6 +23,16 @@
+> >  		likely(f == f2) ? f2(__VA_ARGS__) :			
+> > \
+> >  				  INDIRECT_CALL_1(f, f1, __VA_ARGS__);	
+> > \
+> >  	})
+> > +#define INDIRECT_CALL_3(f, f3, f2, f1, ...)				
+> > \
+> > +	({								
+> > \
+> > +		likely(f == f3) ? f3(__VA_ARGS__) :			
+> > \
+> > +				  INDIRECT_CALL_2(f, f2, f1,
+> > __VA_ARGS__); \
+> > +	})
+> > +#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...)			
+> > 	\
+> > +	({								
+> > \
+> > +		likely(f == f4) ? f4(__VA_ARGS__) :		
 > 
-> Let's put aside my doubt over how we're even allowing a compiler
-> to turn
-> 
-> 	b = 1
-> 
-> into
-> 
-> 	if (b != 1)
-> 		b = 1
-> 
-> Since you seem to be assuming that (a == 0) is true in this case
-> (as the assignment b = 1 is carried out), then because of the
-> presence of the full memory barrier, the RCU read-side section
-> must have started prior to the synchronize_rcu.  This means that
-> synchronize_rcu is not allowed to return until at least the end
-> of the grace period, or at least until the end of rcu_read_unlock.
-> 
-> So it actually should be:
-> 
-> 	CPU1: WRITE_ONCE(a, 1)
-> 	CPU1: synchronize_rcu called
-> 	/* Could put a full memory barrier here, but it wouldn't help. */
-> 
-> 	CPU1: smp_mb();
-> 	CPU2: smp_mb();
-> 
-> 	CPU2: grace period starts
-> 	...time passes...
-> 	CPU2: rcu_read_lock();
-> 	CPU2: if (READ_ONCE(a) == 0)
-> 	CPU2:         if (b != 1)  /* Weakly ordered CPU moved this up! */
-> 	CPU2:                 b = 1;
-> 	CPU2: rcu_read_unlock
-> 	...time passes...
-> 	CPU2: grace period ends
-> 
-> 	/* This full memory barrier is also guaranteed by RCU. */
-> 	CPU2: smp_mb();
+> do we really want "likely" here ? in our cases there is no preference
+> on whuch fN is going to have the top priority, all of them are equally
+> important and statically configured and guranteed to not change on data
+> path .. 
 
-But in this case, given that there are no more statements for CPU2,
-what is this smp_mb() ordering?
+I was a little undecided about that, too. 'likely()' is there mainly
+for simmetry with the already existing _1 and _2 variants. In such
+macros the branch prediction hint represent a real priority of the
+available choices.
 
-							Thanx, Paul
+To avoid the branch prediction, a new set of macros should be defined,
+but that also sounds redundant.
 
-> 	CPU1 synchronize_rcu returns
-> 	CPU1: b = 2;	
+If you have strong opinion against the breanch prediction hint, I could
+either drop this patch and the next one or resort to custom macros in
+the mlx code.
+
+Any [alternative] suggestions more than welcome!
+	\
+> > +				  INDIRECT_CALL_3(f, f3, f2, f1,
+> > __VA_ARGS__); \
+> > +	})
+> >  
 > 
-> Cheers,
-> -- 
-> Email: Herbert Xu <herbert@gondor.apana.org.au>
-> Home Page: http://gondor.apana.org.au/~herbert/
-> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+> Oh the RETPOLINE!
 > 
+> On which (N) where INDIRECT_CALL_N(f, fN, fN-1, ..., f1,...) , calling
+> the indirection function pointer directly is going to be actually
+> better than this whole INDIRECT_CALL_N wrapper "if else" dance ?
+
+In commit ce02ef06fcf7a399a6276adb83f37373d10cbbe1, it's measured a
+relevant gain even with more than 5 options. I personally would avoid
+adding much more options than the above.
+
+Thanks,
+
+Paolo
+
+
