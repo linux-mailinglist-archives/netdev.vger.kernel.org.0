@@ -2,619 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CEC832A0B
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB7732A11
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfFCHtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 03:49:32 -0400
-Received: from mailgate.titro.de ([130.180.107.90]:3931 "EHLO
-        mailgate.titro.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbfFCHtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:49:32 -0400
-X-Greylist: delayed 941 seconds by postgrey-1.27 at vger.kernel.org; Mon, 03 Jun 2019 03:49:31 EDT
-Received: from linux-mfz8.localnet (wernern3 [10.0.2.53])
-        by mailgate.titro.de (8.14.4/8.14.4) with ESMTP id x537XHtJ030561;
-        Mon, 3 Jun 2019 09:33:17 +0200
-From:   Werner Cornelius <Wernerp@cornelius-consult.de>
-To:     isdn4linux@listserv.isdn4linux.de
-Subject: Re: [GIT PULL net-next, resend] isdn: deprecate non-mISDN drivers
-Date:   Mon, 3 Jun 2019 09:36:30 +0200
-User-Agent: KMail/1.12.4 (Linux/2.6.37-desktop; KDE/4.3.5; x86_64; ; )
-Cc:     Arnd Bergmann <arnd@arndb.de>, Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Tilman Schmidt <tilman@imap.cc>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        gigaset307x-common@lists.sourceforge.net, Greg KH <greg@kroah.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Thomas Jarosch <thomas.jarosch@intra2net.com>,
-        Holger Schurig <holgerschurig@googlemail.com>,
-        Paul Bolle <pebolle@tiscali.nl>
-References: <CAK8P3a1JvZNQ7oTLkAe8hA5qkU4=_Jwch=dqUgk2Qe1vR1SAsg@mail.gmail.com>
-In-Reply-To: <CAK8P3a1JvZNQ7oTLkAe8hA5qkU4=_Jwch=dqUgk2Qe1vR1SAsg@mail.gmail.com>
-X-PRIORITY: 2 (High)
+        id S1726858AbfFCHwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 03:52:54 -0400
+Received: from mail-eopbgr130102.outbound.protection.outlook.com ([40.107.13.102]:34879
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725856AbfFCHwy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 03:52:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pW1yIgQ6rrrRseTC6AMboN4w7TzbyrgQrm1HqlO8r0k=;
+ b=R9dM50hBEKCR4JeoqKqCO/VGoim5YjazswaZjwvLLWUsh1lVjUUKz/vXPmkdI/O7kal55KpzgfGUS+3txfnTS+SBIMbYOyMKblNMyRVNNpGklVkJYUlldHDMAlPdNwcXHT1uaIBf1PH5xqVsXj+LBkkCE7mV5dXJTdkbCiH8/IE=
+Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM (20.178.126.80) by
+ VI1PR10MB2478.EURPRD10.PROD.OUTLOOK.COM (20.177.59.75) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.22; Mon, 3 Jun 2019 07:52:46 +0000
+Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8844:426d:816b:f5d5]) by VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8844:426d:816b:f5d5%6]) with mapi id 15.20.1943.018; Mon, 3 Jun 2019
+ 07:52:46 +0000
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: fix comments and macro names in
+ mv88e6390_g1_mgmt_rsvd2cpu
+Thread-Topic: [PATCH net-next] net: dsa: mv88e6xxx: fix comments and macro
+ names in mv88e6390_g1_mgmt_rsvd2cpu
+Thread-Index: AQHVGeFVBsiRXJ9dkEWwSdw5tHml9Q==
+Date:   Mon, 3 Jun 2019 07:52:46 +0000
+Message-ID: <20190603075236.18470-1-rasmus.villemoes@prevas.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1PR0701CA0045.eurprd07.prod.outlook.com
+ (2603:10a6:3:9e::13) To VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:e1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [81.216.59.226]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1ecba8de-6e80-4796-ba1a-08d6e7f87765
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR10MB2478;
+x-ms-traffictypediagnostic: VI1PR10MB2478:
+x-microsoft-antispam-prvs: <VI1PR10MB2478164B32EA5F0A4E8568C98A140@VI1PR10MB2478.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:1169;
+x-forefront-prvs: 0057EE387C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39850400004)(346002)(136003)(366004)(376002)(189003)(199004)(14454004)(8936002)(50226002)(4326008)(81166006)(386003)(6512007)(6506007)(256004)(110136005)(8976002)(99286004)(68736007)(52116002)(54906003)(102836004)(53936002)(66066001)(66946007)(73956011)(36756003)(305945005)(7736002)(71190400001)(71200400001)(5660300002)(66556008)(66476007)(66446008)(64756008)(26005)(476003)(44832011)(186003)(74482002)(3846002)(6116002)(316002)(1076003)(25786009)(81156014)(2616005)(6486002)(72206003)(6436002)(8676002)(478600001)(486006)(42882007)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB2478;H:VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: prevas.se does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: by/1Sh10CgkfYTNjHYDsCKOY0k79dFR9x/YEuqqVOVENTXNvu0yYeLBuvt3lw7CQOUzN7z6cxVmVrlNbJIl7qdajIfwGaeBXflUNU0o/Hi55IUekNZYUL1YRdVX/DJY5PjCGpsUq8eB5diAJTzKF17n2+xdoGDKuvHrkKVuRjyz9jZ8Jdo8kET0WZn93XjpeLjcFbzqFA33tcaEIbAhFzPvnrTTQRasidWljxObdy35ewQlqqIpjt5NbxcvPLFM2bKbjsgUCLNF4ylwZiBbvGlj3gYyjQdr0x28Wd/rremwyCIyn93fXkE+eip4t8xpA4/VbgU1eJUZNplQXcuPdOrhXb4ZYfkR+h/LznLGpeBQ6XRrVkCt1PH9bWDOyUaqjq2OJenyvZs7X5Q5fDZtBA8NT96z5Kzz5JI9QRDjNVdg=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart91769814.Epor5veC3B";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <201906030936.41044.Wernerp@cornelius-consult.de>
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ecba8de-6e80-4796-ba1a-08d6e7f87765
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2019 07:52:46.2803
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2478
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart91769814.Epor5veC3B
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-Am Freitag, 31. Mai 2019 schrieb Arnd Bergmann:
-
-Just for information about the history and maybe state of parts of the old=
-=20
-ISDN drivers.
-There are still some large private ISDN networks available and will stay=20
-available for several years. I am still serving solutions there, but withou=
-t=20
-i4l or capi.
-I know one customer of mine that might use i4l for this purpose only. But=20
-maybe they switched over to a totally different solution, as  ISDN was the=
-=20
-third level of fallback there.
-I didn't receive any requests for service or migration from any outside par=
-ty=20
-for years and so there has nothing been done on this drivers.
-
-I am the author of the complete supplementary services (diversion...) the=20
-complete hysdn and parts of the Hisax  and i4l.
-
-Hysdn was used by many shop companies and banks, but as the company produci=
-ng=20
-the needed pci cards became bankrupt nearly 15 years ago and the company wh=
-ich=20
-bought the remaining rest does no longer exist too, I assume that there wil=
-l=20
-be no or few users of this driver part only.
- =20
-Its a bit sad that the software will disappear, but when there is no need a=
-ny=20
-longer and of course support and test are difficult its understandable that=
- it=20
-should phase out.
-
-Best regards
-
-Werner
-
-
-
-> [resending, rebased on top of today's net-next]
->=20
-> The following changes since commit
->  7b3ed2a137b077bc0967352088b0adb6049eed20:
->=20
->   Merge branch '100GbE' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue
-> (2019-05-30 15:17:05 -0700)
->=20
-> are available in the Git repository at:
->=20
->  https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git
-> tags/isdn-removal
->=20
-> for you to fetch changes up to 6d97985072dc270032dc7a08631080bfd6253e82:
->=20
->   isdn: move capi drivers to staging (2019-05-31 11:17:41 +0200)
->=20
-> ----------------------------------------------------------------
-> isdn: deprecate non-mISDN drivers
->=20
-> When isdn4linux came up in the context of another patch series, I
-> remembered that we had discussed removing it a while ago.
->=20
-> It turns out that the suggestion from Karsten Keil wa to remove I4L
-> in 2018 after the last public ISDN networks are shut down. This has
-> happened now (with a very small number of exceptions), so I guess it's
-> time to try again.
->=20
-> We currently have three ISDN stacks in the kernel: the original
-> isdn4linux (with the hisax driver), the newer CAPI (with four drivers),
-> and finally the mISDN stack (supporting roughly the same hardware as
-> hisax).
->=20
-> As far as I can tell, anyone using ISDN with mainline kernel drivers in
-> the past few years uses mISDN, and this is typically used for voice-only
-> PBX installations that don't require a public network.
->=20
-> The older stacks support additional features for data networks, but those
-> typically make no sense any more if there is no network to connect to.
->=20
-> My proposal for this time is to kill off isdn4linux entirely, as it seems
-> to have been unusable for quite a while. This code has been abandoned
-> for many years and it does cause problems for treewide maintenance as
-> it tends to do everything that we try to stop doing.
-> Birger Harzenetter mentioned that is is still using i4l in order to
-> make use of the 'divert' feature that is not part of mISDN, but has
-> otherwise moved on to mISDN for normal operation, like apparently
-> everyone else.
->=20
-> CAPI in turn is not quite as obsolete, but two of the drivers (avm
-> and hysdn) don't seem to be used at all, while another one (gigaset)
-> will stop being maintained as Paul Bolle is no longer able to
-> test it after the network gets shut down in September.
-> All three are now moved into drivers/staging to let others speak
-> up in case there are remaining users.
-> This leaves Bluetooth CMTP as the only remaining user of CAPI, but
-> Marcel Holtmann wishes to keep maintaining it.
->=20
-> For the discussion on version 1, see [2]
-> Unfortunately, Karsten Keil as the maintainer has not participated in
-> the discussion.
->=20
->       Arnd
->=20
-> [1] https://patchwork.kernel.org/patch/8484861/#17900371
-> [2]
->  https://listserv.isdn4linux.de/pipermail/isdn4linux/2019-April/thread.ht=
-ml
->=20
-> ----------------------------------------------------------------
->=20
-> Arnd Bergmann (5):
->       isdn: gigaset: remove i4l support
->       isdn: remove hisax driver
->       isdn: remove isdn4linux
->       isdn: hdlc: move into mISDN
->       isdn: move capi drivers to staging
->=20
->  Documentation/isdn/HiSax.cert                      |   96 -
->  Documentation/isdn/INTERFACE                       |  759 ----
->  Documentation/isdn/INTERFACE.fax                   |  163 -
->  Documentation/isdn/README                          |  599 ----
->  Documentation/isdn/README.FAQ                      |   26 -
->  Documentation/isdn/README.HiSax                    |  659 ----
->  Documentation/isdn/README.audio                    |  138 -
->  Documentation/isdn/README.concap                   |  259 --
->  Documentation/isdn/README.diversion                |  127 -
->  Documentation/isdn/README.fax                      |   45 -
->  Documentation/isdn/README.gigaset                  |   36 +-
->  Documentation/isdn/README.hfc-pci                  |   41 -
->  Documentation/isdn/README.syncppp                  |   58 -
->  Documentation/isdn/README.x25                      |  184 -
->  Documentation/isdn/syncPPP.FAQ                     |  224 --
->  Documentation/process/changes.rst                  |   16 +-
->  MAINTAINERS                                        |   22 +-
->  drivers/isdn/Kconfig                               |   51 -
->  drivers/isdn/Makefile                              |    6 -
->  drivers/isdn/capi/Kconfig                          |   29 +-
->  drivers/isdn/capi/Makefile                         |    2 +
->  drivers/isdn/capi/capidrv.c                        | 2525 -------------
->  drivers/isdn/capi/capidrv.h                        |  140 -
->  drivers/isdn/divert/Makefile                       |   10 -
->  drivers/isdn/divert/divert_init.c                  |   82 -
->  drivers/isdn/divert/divert_procfs.c                |  336 --
->  drivers/isdn/divert/isdn_divert.c                  |  846 -----
->  drivers/isdn/divert/isdn_divert.h                  |  132 -
->  drivers/isdn/gigaset/i4l.c                         |  695 ----
->  drivers/isdn/hardware/Kconfig                      |    8 -
->  drivers/isdn/hardware/Makefile                     |    1 -
->  drivers/isdn/hardware/mISDN/Kconfig                |    7 +-
->  drivers/isdn/hardware/mISDN/Makefile               |    2 +
->  drivers/isdn/{i4l =3D> hardware/mISDN}/isdnhdlc.c    |    2 +-
->  .../isdn/hardware/mISDN/isdnhdlc.h                 |    0
->  drivers/isdn/hardware/mISDN/netjet.c               |    2 +-
->  drivers/isdn/hisax/Kconfig                         |  423 ---
->  drivers/isdn/hisax/Makefile                        |   60 -
->  drivers/isdn/hisax/amd7930_fn.c                    |  794 -----
->  drivers/isdn/hisax/amd7930_fn.h                    |   37 -
->  drivers/isdn/hisax/arcofi.c                        |  131 -
->  drivers/isdn/hisax/arcofi.h                        |   27 -
->  drivers/isdn/hisax/asuscom.c                       |  423 ---
->  drivers/isdn/hisax/avm_a1.c                        |  307 --
->  drivers/isdn/hisax/avm_a1p.c                       |  267 --
->  drivers/isdn/hisax/avm_pci.c                       |  904 -----
->  drivers/isdn/hisax/avma1_cs.c                      |  162 -
->  drivers/isdn/hisax/bkm_a4t.c                       |  358 --
->  drivers/isdn/hisax/bkm_a8.c                        |  433 ---
->  drivers/isdn/hisax/bkm_ax.h                        |  119 -
->  drivers/isdn/hisax/callc.c                         | 1792 ----------
->  drivers/isdn/hisax/config.c                        | 1993 -----------
->  drivers/isdn/hisax/diva.c                          | 1282 -------
->  drivers/isdn/hisax/elsa.c                          | 1245 -------
->  drivers/isdn/hisax/elsa_cs.c                       |  218 --
->  drivers/isdn/hisax/elsa_ser.c                      |  659 ----
->  drivers/isdn/hisax/enternow_pci.c                  |  420 ---
->  drivers/isdn/hisax/fsm.c                           |  161 -
->  drivers/isdn/hisax/fsm.h                           |   61 -
->  drivers/isdn/hisax/gazel.c                         |  691 ----
->  drivers/isdn/hisax/hfc4s8s_l1.c                    | 1584 ---------
->  drivers/isdn/hisax/hfc4s8s_l1.h                    |   89 -
->  drivers/isdn/hisax/hfc_2bds0.c                     | 1078 ------
->  drivers/isdn/hisax/hfc_2bds0.h                     |  128 -
->  drivers/isdn/hisax/hfc_2bs0.c                      |  591 ---
->  drivers/isdn/hisax/hfc_2bs0.h                      |   60 -
->  drivers/isdn/hisax/hfc_pci.c                       | 1755 ---------
->  drivers/isdn/hisax/hfc_pci.h                       |  235 --
->  drivers/isdn/hisax/hfc_sx.c                        | 1517 --------
->  drivers/isdn/hisax/hfc_sx.h                        |  196 -
->  drivers/isdn/hisax/hfc_usb.c                       | 1608 ---------
->  drivers/isdn/hisax/hfc_usb.h                       |  208 --
->  drivers/isdn/hisax/hfcscard.c                      |  261 --
->  drivers/isdn/hisax/hisax.h                         | 1352 -------
->  drivers/isdn/hisax/hisax_cfg.h                     |   66 -
->  drivers/isdn/hisax/hisax_debug.h                   |   80 -
->  drivers/isdn/hisax/hisax_fcpcipnp.c                | 1024 ------
->  drivers/isdn/hisax/hisax_fcpcipnp.h                |   58 -
->  drivers/isdn/hisax/hisax_if.h                      |   66 -
->  drivers/isdn/hisax/hisax_isac.c                    |  895 -----
->  drivers/isdn/hisax/hisax_isac.h                    |   46 -
->  drivers/isdn/hisax/hscx.c                          |  277 --
->  drivers/isdn/hisax/hscx.h                          |   41 -
->  drivers/isdn/hisax/hscx_irq.c                      |  294 --
->  drivers/isdn/hisax/icc.c                           |  680 ----
->  drivers/isdn/hisax/icc.h                           |   72 -
->  drivers/isdn/hisax/ipac.h                          |   29 -
->  drivers/isdn/hisax/ipacx.c                         |  913 -----
->  drivers/isdn/hisax/ipacx.h                         |  162 -
->  drivers/isdn/hisax/isac.c                          |  681 ----
->  drivers/isdn/hisax/isac.h                          |   70 -
->  drivers/isdn/hisax/isar.c                          | 1910 ----------
->  drivers/isdn/hisax/isar.h                          |  222 --
->  drivers/isdn/hisax/isdnl1.c                        |  930 -----
->  drivers/isdn/hisax/isdnl1.h                        |   32 -
->  drivers/isdn/hisax/isdnl2.c                        | 1839 ----------
->  drivers/isdn/hisax/isdnl2.h                        |   25 -
->  drivers/isdn/hisax/isdnl3.c                        |  594 ----
->  drivers/isdn/hisax/isdnl3.h                        |   42 -
->  drivers/isdn/hisax/isurf.c                         |  305 --
->  drivers/isdn/hisax/ix1_micro.c                     |  316 --
->  drivers/isdn/hisax/jade.c                          |  305 --
->  drivers/isdn/hisax/jade.h                          |  134 -
->  drivers/isdn/hisax/jade_irq.c                      |  238 --
->  drivers/isdn/hisax/l3_1tr6.c                       |  932 -----
->  drivers/isdn/hisax/l3_1tr6.h                       |  164 -
->  drivers/isdn/hisax/l3dss1.c                        | 3227
->  ----------------- drivers/isdn/hisax/l3dss1.h                        |=20
->  124 -
->  drivers/isdn/hisax/l3ni1.c                         | 3182
->  ----------------- drivers/isdn/hisax/l3ni1.h                         |=20
->  136 -
->  drivers/isdn/hisax/lmgr.c                          |   50 -
->  drivers/isdn/hisax/mic.c                           |  235 --
->  drivers/isdn/hisax/netjet.c                        |  985 -----
->  drivers/isdn/hisax/netjet.h                        |   69 -
->  drivers/isdn/hisax/niccy.c                         |  380 --
->  drivers/isdn/hisax/nj_s.c                          |  294 --
->  drivers/isdn/hisax/nj_u.c                          |  258 --
->  drivers/isdn/hisax/q931.c                          | 1513 --------
->  drivers/isdn/hisax/s0box.c                         |  260 --
->  drivers/isdn/hisax/saphir.c                        |  296 --
->  drivers/isdn/hisax/sedlbauer.c                     |  873 -----
->  drivers/isdn/hisax/sedlbauer_cs.c                  |  209 --
->  drivers/isdn/hisax/sportster.c                     |  267 --
->  drivers/isdn/hisax/st5481.h                        |  529 ---
->  drivers/isdn/hisax/st5481_b.c                      |  380 --
->  drivers/isdn/hisax/st5481_d.c                      |  780 ----
->  drivers/isdn/hisax/st5481_init.c                   |  221 --
->  drivers/isdn/hisax/st5481_usb.c                    |  659 ----
->  drivers/isdn/hisax/tei.c                           |  465 ---
->  drivers/isdn/hisax/teleint.c                       |  334 --
->  drivers/isdn/hisax/teles0.c                        |  364 --
->  drivers/isdn/hisax/teles3.c                        |  498 ---
->  drivers/isdn/hisax/teles_cs.c                      |  201 --
->  drivers/isdn/hisax/telespci.c                      |  349 --
->  drivers/isdn/hisax/w6692.c                         | 1085 ------
->  drivers/isdn/hisax/w6692.h                         |  184 -
->  drivers/isdn/i4l/Kconfig                           |  129 -
->  drivers/isdn/i4l/Makefile                          |   20 -
->  drivers/isdn/i4l/isdn_audio.c                      |  711 ----
->  drivers/isdn/i4l/isdn_audio.h                      |   44 -
->  drivers/isdn/i4l/isdn_bsdcomp.c                    |  930 -----
->  drivers/isdn/i4l/isdn_common.c                     | 2368 ------------
->  drivers/isdn/i4l/isdn_common.h                     |   47 -
->  drivers/isdn/i4l/isdn_concap.c                     |   99 -
->  drivers/isdn/i4l/isdn_concap.h                     |   11 -
->  drivers/isdn/i4l/isdn_net.c                        | 3198
->  ----------------- drivers/isdn/i4l/isdn_net.h                        |=20
->  151 -
->  drivers/isdn/i4l/isdn_ppp.c                        | 3046 --------------=
-=2D-
->  drivers/isdn/i4l/isdn_ppp.h                        |   41 -
->  drivers/isdn/i4l/isdn_tty.c                        | 3756
->  -------------------- drivers/isdn/i4l/isdn_tty.h                        =
-|=20
->  120 -
->  drivers/isdn/i4l/isdn_ttyfax.c                     | 1123 ------
->  drivers/isdn/i4l/isdn_ttyfax.h                     |   17 -
->  drivers/isdn/i4l/isdn_v110.c                       |  625 ----
->  drivers/isdn/i4l/isdn_v110.h                       |   29 -
->  drivers/isdn/i4l/isdn_x25iface.c                   |  332 --
->  drivers/isdn/i4l/isdn_x25iface.h                   |   30 -
->  drivers/isdn/isdnloop/Makefile                     |    6 -
->  drivers/isdn/isdnloop/isdnloop.c                   | 1528 --------
->  drivers/isdn/isdnloop/isdnloop.h                   |  112 -
->  drivers/staging/Kconfig                            |    2 +
->  drivers/staging/Makefile                           |    1 +
->  drivers/staging/isdn/Kconfig                       |   12 +
->  drivers/staging/isdn/Makefile                      |    8 +
->  drivers/staging/isdn/TODO                          |   22 +
->  .../{isdn/hardware =3D> staging/isdn}/avm/Kconfig    |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/Makefile   |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/avm_cs.c   |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/avmcard.h  |    0
->  drivers/{isdn/hardware =3D> staging/isdn}/avm/b1.c   |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/b1dma.c    |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/b1isa.c    |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/b1pci.c    |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/b1pcmcia.c |    0
->  drivers/{isdn/hardware =3D> staging/isdn}/avm/c4.c   |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/t1isa.c    |    0
->  .../{isdn/hardware =3D> staging/isdn}/avm/t1pci.c    |    0
->  drivers/{ =3D> staging}/isdn/gigaset/Kconfig         |    9 -
->  drivers/{ =3D> staging}/isdn/gigaset/Makefile        |   10 +-
->  drivers/{ =3D> staging}/isdn/gigaset/asyncdata.c     |    0
->  drivers/{ =3D> staging}/isdn/gigaset/bas-gigaset.c   |    0
->  drivers/{ =3D> staging}/isdn/gigaset/capi.c          |    0
->  drivers/{ =3D> staging}/isdn/gigaset/common.c        |    0
->  drivers/{ =3D> staging}/isdn/gigaset/dummyll.c       |    0
->  drivers/{ =3D> staging}/isdn/gigaset/ev-layer.c      |    0
->  drivers/{ =3D> staging}/isdn/gigaset/gigaset.h       |    0
->  drivers/{ =3D> staging}/isdn/gigaset/interface.c     |    0
->  drivers/{ =3D> staging}/isdn/gigaset/isocdata.c      |    0
->  drivers/{ =3D> staging}/isdn/gigaset/proc.c          |    0
->  drivers/{ =3D> staging}/isdn/gigaset/ser-gigaset.c   |    0
->  drivers/{ =3D> staging}/isdn/gigaset/usb-gigaset.c   |    0
->  drivers/{ =3D> staging}/isdn/hysdn/Kconfig           |    0
->  drivers/{ =3D> staging}/isdn/hysdn/Makefile          |    0
->  drivers/{ =3D> staging}/isdn/hysdn/boardergo.c       |    0
->  drivers/{ =3D> staging}/isdn/hysdn/boardergo.h       |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hycapi.c          |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_boot.c      |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_defs.h      |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_init.c      |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_net.c       |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_pof.h       |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_procconf.c  |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_proclog.c   |    0
->  drivers/{ =3D> staging}/isdn/hysdn/hysdn_sched.c     |    0
->  drivers/{ =3D> staging}/isdn/hysdn/ince1pc.h         |    0
->  include/linux/concap.h                             |  112 -
->  include/linux/isdn.h                               |  473 ---
->  include/linux/isdn_divertif.h                      |   35 -
->  include/linux/isdn_ppp.h                           |  194 -
->  include/linux/isdnif.h                             |  505 ---
->  include/linux/wanrouter.h                          |   11 -
->  include/uapi/linux/isdn.h                          |  144 -
->  include/uapi/linux/isdn_divertif.h                 |   31 -
->  include/uapi/linux/isdn_ppp.h                      |   68 -
->  include/uapi/linux/isdnif.h                        |   57 -
->  include/uapi/linux/wanrouter.h                     |   18 -
->  216 files changed, 107 insertions(+), 83884 deletions(-)
->  delete mode 100644 Documentation/isdn/HiSax.cert
->  delete mode 100644 Documentation/isdn/INTERFACE
->  delete mode 100644 Documentation/isdn/INTERFACE.fax
->  delete mode 100644 Documentation/isdn/README
->  delete mode 100644 Documentation/isdn/README.FAQ
->  delete mode 100644 Documentation/isdn/README.HiSax
->  delete mode 100644 Documentation/isdn/README.audio
->  delete mode 100644 Documentation/isdn/README.concap
->  delete mode 100644 Documentation/isdn/README.diversion
->  delete mode 100644 Documentation/isdn/README.fax
->  delete mode 100644 Documentation/isdn/README.hfc-pci
->  delete mode 100644 Documentation/isdn/README.syncppp
->  delete mode 100644 Documentation/isdn/README.x25
->  delete mode 100644 Documentation/isdn/syncPPP.FAQ
->  delete mode 100644 drivers/isdn/capi/capidrv.c
->  delete mode 100644 drivers/isdn/capi/capidrv.h
->  delete mode 100644 drivers/isdn/divert/Makefile
->  delete mode 100644 drivers/isdn/divert/divert_init.c
->  delete mode 100644 drivers/isdn/divert/divert_procfs.c
->  delete mode 100644 drivers/isdn/divert/isdn_divert.c
->  delete mode 100644 drivers/isdn/divert/isdn_divert.h
->  delete mode 100644 drivers/isdn/gigaset/i4l.c
->  delete mode 100644 drivers/isdn/hardware/Kconfig
->  rename drivers/isdn/{i4l =3D> hardware/mISDN}/isdnhdlc.c (99%)
->  rename include/linux/isdn/hdlc.h =3D>
-> drivers/isdn/hardware/mISDN/isdnhdlc.h (100%)
->  delete mode 100644 drivers/isdn/hisax/Kconfig
->  delete mode 100644 drivers/isdn/hisax/Makefile
->  delete mode 100644 drivers/isdn/hisax/amd7930_fn.c
->  delete mode 100644 drivers/isdn/hisax/amd7930_fn.h
->  delete mode 100644 drivers/isdn/hisax/arcofi.c
->  delete mode 100644 drivers/isdn/hisax/arcofi.h
->  delete mode 100644 drivers/isdn/hisax/asuscom.c
->  delete mode 100644 drivers/isdn/hisax/avm_a1.c
->  delete mode 100644 drivers/isdn/hisax/avm_a1p.c
->  delete mode 100644 drivers/isdn/hisax/avm_pci.c
->  delete mode 100644 drivers/isdn/hisax/avma1_cs.c
->  delete mode 100644 drivers/isdn/hisax/bkm_a4t.c
->  delete mode 100644 drivers/isdn/hisax/bkm_a8.c
->  delete mode 100644 drivers/isdn/hisax/bkm_ax.h
->  delete mode 100644 drivers/isdn/hisax/callc.c
->  delete mode 100644 drivers/isdn/hisax/config.c
->  delete mode 100644 drivers/isdn/hisax/diva.c
->  delete mode 100644 drivers/isdn/hisax/elsa.c
->  delete mode 100644 drivers/isdn/hisax/elsa_cs.c
->  delete mode 100644 drivers/isdn/hisax/elsa_ser.c
->  delete mode 100644 drivers/isdn/hisax/enternow_pci.c
->  delete mode 100644 drivers/isdn/hisax/fsm.c
->  delete mode 100644 drivers/isdn/hisax/fsm.h
->  delete mode 100644 drivers/isdn/hisax/gazel.c
->  delete mode 100644 drivers/isdn/hisax/hfc4s8s_l1.c
->  delete mode 100644 drivers/isdn/hisax/hfc4s8s_l1.h
->  delete mode 100644 drivers/isdn/hisax/hfc_2bds0.c
->  delete mode 100644 drivers/isdn/hisax/hfc_2bds0.h
->  delete mode 100644 drivers/isdn/hisax/hfc_2bs0.c
->  delete mode 100644 drivers/isdn/hisax/hfc_2bs0.h
->  delete mode 100644 drivers/isdn/hisax/hfc_pci.c
->  delete mode 100644 drivers/isdn/hisax/hfc_pci.h
->  delete mode 100644 drivers/isdn/hisax/hfc_sx.c
->  delete mode 100644 drivers/isdn/hisax/hfc_sx.h
->  delete mode 100644 drivers/isdn/hisax/hfc_usb.c
->  delete mode 100644 drivers/isdn/hisax/hfc_usb.h
->  delete mode 100644 drivers/isdn/hisax/hfcscard.c
->  delete mode 100644 drivers/isdn/hisax/hisax.h
->  delete mode 100644 drivers/isdn/hisax/hisax_cfg.h
->  delete mode 100644 drivers/isdn/hisax/hisax_debug.h
->  delete mode 100644 drivers/isdn/hisax/hisax_fcpcipnp.c
->  delete mode 100644 drivers/isdn/hisax/hisax_fcpcipnp.h
->  delete mode 100644 drivers/isdn/hisax/hisax_if.h
->  delete mode 100644 drivers/isdn/hisax/hisax_isac.c
->  delete mode 100644 drivers/isdn/hisax/hisax_isac.h
->  delete mode 100644 drivers/isdn/hisax/hscx.c
->  delete mode 100644 drivers/isdn/hisax/hscx.h
->  delete mode 100644 drivers/isdn/hisax/hscx_irq.c
->  delete mode 100644 drivers/isdn/hisax/icc.c
->  delete mode 100644 drivers/isdn/hisax/icc.h
->  delete mode 100644 drivers/isdn/hisax/ipac.h
->  delete mode 100644 drivers/isdn/hisax/ipacx.c
->  delete mode 100644 drivers/isdn/hisax/isac.c
->  delete mode 100644 drivers/isdn/hisax/isac.h
->  delete mode 100644 drivers/isdn/hisax/isar.c
->  delete mode 100644 drivers/isdn/hisax/isar.h
->  delete mode 100644 drivers/isdn/hisax/isdnl1.c
->  delete mode 100644 drivers/isdn/hisax/isdnl1.h
->  delete mode 100644 drivers/isdn/hisax/isdnl2.c
->  delete mode 100644 drivers/isdn/hisax/isdnl2.h
->  delete mode 100644 drivers/isdn/hisax/isdnl3.c
->  delete mode 100644 drivers/isdn/hisax/isdnl3.h
->  delete mode 100644 drivers/isdn/hisax/isurf.c
->  delete mode 100644 drivers/isdn/hisax/ix1_micro.c
->  delete mode 100644 drivers/isdn/hisax/jade.c
->  delete mode 100644 drivers/isdn/hisax/jade.h
->  delete mode 100644 drivers/isdn/hisax/jade_irq.c
->  delete mode 100644 drivers/isdn/hisax/l3_1tr6.c
->  delete mode 100644 drivers/isdn/hisax/l3_1tr6.h
->  delete mode 100644 drivers/isdn/hisax/l3dss1.c
->  delete mode 100644 drivers/isdn/hisax/l3dss1.h
->  delete mode 100644 drivers/isdn/hisax/l3ni1.c
->  delete mode 100644 drivers/isdn/hisax/l3ni1.h
->  delete mode 100644 drivers/isdn/hisax/lmgr.c
->  delete mode 100644 drivers/isdn/hisax/mic.c
->  delete mode 100644 drivers/isdn/hisax/netjet.c
->  delete mode 100644 drivers/isdn/hisax/netjet.h
->  delete mode 100644 drivers/isdn/hisax/niccy.c
->  delete mode 100644 drivers/isdn/hisax/nj_s.c
->  delete mode 100644 drivers/isdn/hisax/nj_u.c
->  delete mode 100644 drivers/isdn/hisax/q931.c
->  delete mode 100644 drivers/isdn/hisax/s0box.c
->  delete mode 100644 drivers/isdn/hisax/saphir.c
->  delete mode 100644 drivers/isdn/hisax/sedlbauer.c
->  delete mode 100644 drivers/isdn/hisax/sedlbauer_cs.c
->  delete mode 100644 drivers/isdn/hisax/sportster.c
->  delete mode 100644 drivers/isdn/hisax/st5481.h
->  delete mode 100644 drivers/isdn/hisax/st5481_b.c
->  delete mode 100644 drivers/isdn/hisax/st5481_d.c
->  delete mode 100644 drivers/isdn/hisax/st5481_init.c
->  delete mode 100644 drivers/isdn/hisax/st5481_usb.c
->  delete mode 100644 drivers/isdn/hisax/tei.c
->  delete mode 100644 drivers/isdn/hisax/teleint.c
->  delete mode 100644 drivers/isdn/hisax/teles0.c
->  delete mode 100644 drivers/isdn/hisax/teles3.c
->  delete mode 100644 drivers/isdn/hisax/teles_cs.c
->  delete mode 100644 drivers/isdn/hisax/telespci.c
->  delete mode 100644 drivers/isdn/hisax/w6692.c
->  delete mode 100644 drivers/isdn/hisax/w6692.h
->  delete mode 100644 drivers/isdn/i4l/Kconfig
->  delete mode 100644 drivers/isdn/i4l/Makefile
->  delete mode 100644 drivers/isdn/i4l/isdn_audio.c
->  delete mode 100644 drivers/isdn/i4l/isdn_audio.h
->  delete mode 100644 drivers/isdn/i4l/isdn_bsdcomp.c
->  delete mode 100644 drivers/isdn/i4l/isdn_common.c
->  delete mode 100644 drivers/isdn/i4l/isdn_common.h
->  delete mode 100644 drivers/isdn/i4l/isdn_concap.c
->  delete mode 100644 drivers/isdn/i4l/isdn_concap.h
->  delete mode 100644 drivers/isdn/i4l/isdn_net.c
->  delete mode 100644 drivers/isdn/i4l/isdn_net.h
->  delete mode 100644 drivers/isdn/i4l/isdn_ppp.c
->  delete mode 100644 drivers/isdn/i4l/isdn_ppp.h
->  delete mode 100644 drivers/isdn/i4l/isdn_tty.c
->  delete mode 100644 drivers/isdn/i4l/isdn_tty.h
->  delete mode 100644 drivers/isdn/i4l/isdn_ttyfax.c
->  delete mode 100644 drivers/isdn/i4l/isdn_ttyfax.h
->  delete mode 100644 drivers/isdn/i4l/isdn_v110.c
->  delete mode 100644 drivers/isdn/i4l/isdn_v110.h
->  delete mode 100644 drivers/isdn/i4l/isdn_x25iface.c
->  delete mode 100644 drivers/isdn/i4l/isdn_x25iface.h
->  delete mode 100644 drivers/isdn/isdnloop/Makefile
->  delete mode 100644 drivers/isdn/isdnloop/isdnloop.c
->  delete mode 100644 drivers/isdn/isdnloop/isdnloop.h
->  create mode 100644 drivers/staging/isdn/Kconfig
->  create mode 100644 drivers/staging/isdn/Makefile
->  create mode 100644 drivers/staging/isdn/TODO
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/Kconfig (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/Makefile (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/avm_cs.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/avmcard.h (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/b1.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/b1dma.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/b1isa.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/b1pci.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/b1pcmcia.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/c4.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/t1isa.c (100%)
->  rename drivers/{isdn/hardware =3D> staging/isdn}/avm/t1pci.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/Kconfig (92%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/Makefile (74%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/asyncdata.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/bas-gigaset.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/capi.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/common.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/dummyll.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/ev-layer.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/gigaset.h (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/interface.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/isocdata.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/proc.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/ser-gigaset.c (100%)
->  rename drivers/{ =3D> staging}/isdn/gigaset/usb-gigaset.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/Kconfig (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/Makefile (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/boardergo.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/boardergo.h (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hycapi.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_boot.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_defs.h (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_init.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_net.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_pof.h (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_procconf.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_proclog.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/hysdn_sched.c (100%)
->  rename drivers/{ =3D> staging}/isdn/hysdn/ince1pc.h (100%)
->  delete mode 100644 include/linux/concap.h
->  delete mode 100644 include/linux/isdn.h
->  delete mode 100644 include/linux/isdn_divertif.h
->  delete mode 100644 include/linux/isdn_ppp.h
->  delete mode 100644 include/linux/isdnif.h
->  delete mode 100644 include/linux/wanrouter.h
->  delete mode 100644 include/uapi/linux/isdn.h
->  delete mode 100644 include/uapi/linux/isdn_divertif.h
->  delete mode 100644 include/uapi/linux/isdn_ppp.h
->  delete mode 100644 include/uapi/linux/isdnif.h
->  delete mode 100644 include/uapi/linux/wanrouter.h
-> _______________________________________________
-> isdn4linux mailing list
-> isdn4linux@listserv.isdn4linux.de
-> https://www.isdn4linux.de/mailman/listinfo/isdn4linux
->=20
-
-
---nextPart91769814.Epor5veC3B
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.12 (GNU/Linux)
-
-iJwEAAECAAYFAlz0zgkACgkQj3tUlNHnXERdRwP/b1zaJVC+i8fvsmeeLhOlUjyl
-8QpoVhNVnoddl8sN7SPYbORq2+lGCpgSB3DhWEpfrsaG1AUE5Qd6lMDqjF7G/GBc
-bDdxGRGZvDYfGBFcHx1Do+ECce3GHh4bY7d1uYtN1ndppcuHgX1VgCDeDTB+zcKO
-lr0A9cGMmPctxVv/tWs=
-=Orb3
------END PGP SIGNATURE-----
-
---nextPart91769814.Epor5veC3B--
+VGhlIG1hY3JvcyBoYXZlIGFuIGV4dHJhbmVvdXMgJzgwMCcgKGFmdGVyIDAxODBDMiB0aGVyZSBz
+aG91bGQgYmUganVzdA0Kc2l4IG5pYmJsZXMsIHdpdGggWCByZXByZXNlbnRpbmcgb25lKSwgd2hp
+bGUgdGhlIGNvbW1lbnRzIGhhdmUNCmludGVyY2hhbmdlZCBjMiBhbmQgODAgYW5kIGFuIGV4dHJh
+IDowMC4NCg0KU2lnbmVkLW9mZi1ieTogUmFzbXVzIFZpbGxlbW9lcyA8cmFzbXVzLnZpbGxlbW9l
+c0BwcmV2YXMuZGs+DQotLS0NCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuYyB8
+IDE2ICsrKysrKysrLS0tLS0tLS0NCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEu
+aCB8ICA4ICsrKystLS0tDQogMiBmaWxlcyBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAxMiBk
+ZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xv
+YmFsMS5jIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmMNCmluZGV4IDM4ZTM5
+OWUwZjMwZS4uYjVjZWZmMjk0NmZlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhl
+Nnh4eC9nbG9iYWwxLmMNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5j
+DQpAQCAtMzc5LDI2ICszNzksMjYgQEAgaW50IG12ODhlNjM5MF9nMV9tZ210X3JzdmQyY3B1KHN0
+cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCkNCiAJdTE2IHB0cjsNCiAJaW50IGVycjsNCiANCi0J
+LyogMDE6YzI6ODA6MDA6MDA6MDA6MDAtMDE6YzI6ODA6MDA6MDA6MDA6MDcgYXJlIE1hbmFnZW1l
+bnQgKi8NCi0JcHRyID0gTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjgw
+MDAwMDAwWExPOw0KKwkvKiAwMTo4MDpjMjowMDowMDowMC0wMTo4MDpjMjowMDowMDowNyBhcmUg
+TWFuYWdlbWVudCAqLw0KKwlwdHIgPSBNVjg4RTYzOTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJf
+MDE4MEMyMDAwMDBYTE87DQogCWVyciA9IG12ODhlNjM5MF9nMV9tb25pdG9yX3dyaXRlKGNoaXAs
+IHB0ciwgMHhmZik7DQogCWlmIChlcnIpDQogCQlyZXR1cm4gZXJyOw0KIA0KLQkvKiAwMTpjMjo4
+MDowMDowMDowMDowOC0wMTpjMjo4MDowMDowMDowMDowZiBhcmUgTWFuYWdlbWVudCAqLw0KLQlw
+dHIgPSBNVjg4RTYzOTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJfMDE4MEMyODAwMDAwMDBYSEk7
+DQorCS8qIDAxOjgwOmMyOjAwOjAwOjA4LTAxOjgwOmMyOjAwOjAwOjBmIGFyZSBNYW5hZ2VtZW50
+ICovDQorCXB0ciA9IE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAw
+MFhISTsNCiAJZXJyID0gbXY4OGU2MzkwX2cxX21vbml0b3Jfd3JpdGUoY2hpcCwgcHRyLCAweGZm
+KTsNCiAJaWYgKGVycikNCiAJCXJldHVybiBlcnI7DQogDQotCS8qIDAxOmMyOjgwOjAwOjAwOjAw
+OjIwLTAxOmMyOjgwOjAwOjAwOjAwOjI3IGFyZSBNYW5hZ2VtZW50ICovDQotCXB0ciA9IE1WODhF
+NjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhMTzsNCisJLyogMDE6
+ODA6YzI6MDA6MDA6MjAtMDE6ODA6YzI6MDA6MDA6MjcgYXJlIE1hbmFnZW1lbnQgKi8NCisJcHRy
+ID0gTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjAwMDAyWExPOw0KIAll
+cnIgPSBtdjg4ZTYzOTBfZzFfbW9uaXRvcl93cml0ZShjaGlwLCBwdHIsIDB4ZmYpOw0KIAlpZiAo
+ZXJyKQ0KIAkJcmV0dXJuIGVycjsNCiANCi0JLyogMDE6YzI6ODA6MDA6MDA6MDA6MjgtMDE6YzI6
+ODA6MDA6MDA6MDA6MmYgYXJlIE1hbmFnZW1lbnQgKi8NCi0JcHRyID0gTVY4OEU2MzkwX0cxX01P
+TklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjgwMDAwMDAyWEhJOw0KKwkvKiAwMTo4MDpjMjowMDow
+MDoyOC0wMTo4MDpjMjowMDowMDoyZiBhcmUgTWFuYWdlbWVudCAqLw0KKwlwdHIgPSBNVjg4RTYz
+OTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJfMDE4MEMyMDAwMDJYSEk7DQogCWVyciA9IG12ODhl
+NjM5MF9nMV9tb25pdG9yX3dyaXRlKGNoaXAsIHB0ciwgMHhmZik7DQogCWlmIChlcnIpDQogCQly
+ZXR1cm4gZXJyOw0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFs
+MS5oIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmgNCmluZGV4IGJlZjAxMzMx
+MjY2Zi4uMmYxOTVhMGJkODkxIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4
+eC9nbG9iYWwxLmgNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5oDQpA
+QCAtMTkwLDEwICsxOTAsMTAgQEANCiAjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRf
+Q1RMCQkJCTB4MWENCiAjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1VQREFU
+RQkJCTB4ODAwMA0KICNkZWZpbmUgTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSX01B
+U0sJCQkweDNmMDANCi0jZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8w
+MTgwQzI4MDAwMDAwMFhMTwkweDAwMDANCi0jZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01H
+TVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMFhISQkweDAxMDANCi0jZGVmaW5lIE1WODhFNjM5MF9H
+MV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhMTwkweDAyMDANCi0jZGVmaW5l
+IE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhISQkweDAz
+MDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAw
+MFhMTwkweDAwMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8w
+MTgwQzIwMDAwMFhISQkweDAxMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRf
+Q1RMX1BUUl8wMTgwQzIwMDAwMlhMTwkweDAyMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05J
+VE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAwMlhISQkweDAzMDANCiAjZGVmaW5lIE1WODhFNjM5
+MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl9JTkdSRVNTX0RFU1QJCTB4MjAwMA0KICNkZWZpbmUg
+TVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSX0VHUkVTU19ERVNUCQkweDIxMDANCiAj
+ZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl9DUFVfREVTVAkJMHgzMDAw
+DQotLSANCjIuMjAuMQ0KDQo=
