@@ -2,89 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7CD33838
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 20:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 540D033890
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 20:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfFCShw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 14:37:52 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44188 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFCShv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 14:37:51 -0400
-Received: by mail-pf1-f194.google.com with SMTP id t16so2281437pfe.11
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 11:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9CsumWRKo8endDXdqOri9lOV+pY+j4oT74Qo66P8Jwk=;
-        b=h7MyZpUecW74U00Js1xj4QeYIEOeBwhuRatWUPwDxDH9zRx5vjFneTXVe/ALEVXbiM
-         nirdU46HuThaKR2csEDuj0KlNBtfK0PAKeOQRHLd2gn6lGc/5wWMY7zsEbw1SCb+rIJj
-         gRMyKvEEQLarbP8op+saNvREaZfqZKynqZMn3de7to/mQiIAyfHhqvKIIwLYXRZXD1Pd
-         6JVPFBoOv3NUkKpwGl5vEhLNvwnbGI83YS6xayUY5AMBZdyl5FZWEHxreBDqp3+qX5dn
-         qKT0p4h5pasBdDhwF3yKsfNyMX5OrBAkstJJ3pcPus735E3TT+73/177TkjAJKUuRtH3
-         HgtQ==
+        id S1726600AbfFCSvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 14:51:12 -0400
+Received: from mail-it1-f200.google.com ([209.85.166.200]:36917 "EHLO
+        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfFCSvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 14:51:07 -0400
+Received: by mail-it1-f200.google.com with SMTP id q20so3086417itq.2
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 11:51:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9CsumWRKo8endDXdqOri9lOV+pY+j4oT74Qo66P8Jwk=;
-        b=Pfo9iUwmt6dI3hBNAGsadH22x/bvx7kiyPYEH8cX5MJoi//9JLKIRTKjJJp8hpfaa2
-         4SOA4YZVsot6VqGJf8HU+UxNnnn5VmeakgVRbDvkCKo+XxOBunzTrqnFWBlvf5mVjtcZ
-         1jd7wSSs1jAL7BD/EPrJuzESOfKChNRJ5hk43O6pPFI1nDanpaTqqssUhC5ogVzl7E3D
-         zpe1IxVLHcF5ukHIaXhbFPFwXpzdOzY6hzx62N0vxRSb4SGfUX5hado9c0/Wt19noE7k
-         qxqHN1DYns7oyeSz3J4h3AwTdkDQ87L0tkc0mvmRw6DZEOg+IbliB8+3FJPH2ZF81gLQ
-         qSWA==
-X-Gm-Message-State: APjAAAWoBqNHHJJZxJ2rbZGbrXBsrC6Q2DHkrhnaUWN4pJazrh1g2oby
-        wRYhSl74JToHbXr+ZXIuWIUPeXibcm0=
-X-Google-Smtp-Source: APXvYqwBkai/x6lqOkmJQKTZbM9djImr4PhwvgW6wyQkA98y3IvcbzWX1I/m7rT4IMY+1gdiC8ErXw==
-X-Received: by 2002:a63:d949:: with SMTP id e9mr30107446pgj.437.1559587071239;
-        Mon, 03 Jun 2019 11:37:51 -0700 (PDT)
-Received: from [172.27.227.197] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id k1sm50812pjp.2.2019.06.03.11.37.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 11:37:50 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
- a fib6_info
-To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        idosch@mellanox.com, saeedm@mellanox.com,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20190603040817.4825-1-dsahern@kernel.org>
- <20190603040817.4825-5-dsahern@kernel.org>
- <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <de758bfa-4c20-9d40-58d8-c5ae07b40ff3@gmail.com>
-Date:   Mon, 3 Jun 2019 12:37:48 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Hc/Ql5pBCcEqkkw7qSEADSbLYyZ9Yl7/t4LfmUF/Rso=;
+        b=aBUe5UU/d3c0qDqwNuyzwMaNg9eE+NZQ7AiTVafyO3DElZNAqUQOE5S000sWV9nsbQ
+         tmnA7ZutdnFxpYjqdfjDH9ACRkFvfRaoAtmkp7fCkH+huTSQrqe0xk6biI8rraOS6XOt
+         A2X9+occVaYutvkSbSBUaJCkcLupC9AsCww78AlQ/NxR24AGYsTJfDWsj+z/H1+u3qSp
+         qD8GeTS90Z8+Xpqdu4lGKCMGodWUPHtWUJ2t5XRbR0FyMg7Va/AfPs/X2bkUKx2Nugc+
+         z0CF4VpvPxf2wX1KhkifYpoge/VN1bF10qOXSw9y+9ezWSeisGvSqihsfibxCwUfdoYg
+         JNFg==
+X-Gm-Message-State: APjAAAWNtSQgXolNH7jQzmELz7Kii3s+fP4u2HQiKQlSTswwkt24nyl/
+        hgvp6tiopFSSVqUf3hJeio3uL+2GP3aigxYjwj/DKB02eTBj
+X-Google-Smtp-Source: APXvYqyv0SnXMwc5y1PdJYmwJwPRSYd45Ii8i3pUCXQWuobZWIPev3JRvnZPyZdLwYw0Im3FKuWPa925cFr0Gdovko4iIv/+z6ee
 MIME-Version: 1.0
-In-Reply-To: <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a24:7585:: with SMTP id y127mr18509944itc.112.1559587865933;
+ Mon, 03 Jun 2019 11:51:05 -0700 (PDT)
+Date:   Mon, 03 Jun 2019 11:51:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bec591058a6fd889@google.com>
+Subject: WARNING: suspicious RCU usage in in_dev_dump_addr
+From:   syzbot <syzbot+bad6e32808a3a97b1515@syzkaller.appspotmail.com>
+To:     amitkarwar@gmail.com, anshuman.khandual@arm.com, axboe@kernel.dk,
+        benedictwong@google.com, benve@cisco.com, coreteam@netfilter.org,
+        davej@codemonkey.org.uk, davem@davemloft.net, dbanerje@akamai.com,
+        devel@driverdev.osuosl.org, dledford@redhat.com, doshir@vmware.com,
+        edumazet@google.com, faisal.latif@intel.com, fw@strlen.de,
+        gbhat@marvell.com, gregkh@linuxfoundation.org,
+        gustavo@embeddedor.com, huxinming820@gmail.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com, jgg@ziepe.ca,
+        johannes@sipsolutions.net, kadlec@blackhole.kfki.hu,
+        keescook@chromium.org, kuznet@ms2.inr.ac.ru, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-wireless@vger.kernel.org, liuhangbin@gmail.com,
+        lucien.xin@gmail.com, matwey@sai.msu.ru, mpe@ellerman.id.au,
+        neescoba@cisco.com, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, nishants@marvell.com,
+        pablo@netfilter.org, paulmck@linux.ibm.com, petrm@mellanox.com,
+        pkaustub@cisco.com, pv-drivers@vmware.com, romieu@fr.zoreil.com,
+        shannon.nelson@oracle.com, shiraz.saleem@intel.com,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/19 12:09 PM, Wei Wang wrote:
->> @@ -667,6 +704,13 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
->>         }
->>         if (do_flush)
->>                 fib_flush(net);
->> +
->> +       /* ip6_del_rt removes the entry from this list hence the _safe */
->> +       list_for_each_entry_safe(f6i, tmp, &nh->f6i_list, nh_list) {
->> +               /* __ip6_del_rt does a release, so do a hold here */
->> +               fib6_info_hold(f6i);
-> Do we need fib6_info_hold_safe() here?
-> 
+Hello,
 
-I do not think so.
+syzbot found the following crash on:
 
-If it is on the f6i_list, then fib6_purge_rt has not been called.
-fib6_purge_rt and this function are both called with rtnl held, so there
-is no race with the removal from the list.
+HEAD commit:    b33bc2b8 nexthop: Add entry to MAINTAINERS
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13f46f52a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1004db091673bbaf
+dashboard link: https://syzkaller.appspot.com/bug?extid=bad6e32808a3a97b1515
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11dc685aa00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16229e36a00000
+
+The bug was bisected to:
+
+commit 2638eb8b50cfc16240e0bb080b9afbf541a9b39d
+Author: Florian Westphal <fw@strlen.de>
+Date:   Fri May 31 16:27:09 2019 +0000
+
+     net: ipv4: provide __rcu annotation for ifa_list
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170e1a0ea00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=148e1a0ea00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=108e1a0ea00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+bad6e32808a3a97b1515@syzkaller.appspotmail.com
+Fixes: 2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
+
+=============================
+WARNING: suspicious RCU usage
+5.2.0-rc2+ #13 Not tainted
+-----------------------------
+net/ipv4/devinet.c:1766 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by syz-executor924/9000:
+  #0: 0000000087fe3874 (rtnl_mutex){+.+.}, at: netlink_dump+0xe7/0xfb0  
+net/netlink/af_netlink.c:2208
+
+stack backtrace:
+CPU: 0 PID: 9000 Comm: syz-executor924 Not tainted 5.2.0-rc2+ #13
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  lockdep_rcu_suspicious+0x153/0x15d kernel/locking/lockdep.c:5250
+  in_dev_dump_addr+0x36f/0x3d0 net/ipv4/devinet.c:1766
+  inet_dump_ifaddr+0xa8f/0xca0 net/ipv4/devinet.c:1826
+  rtnl_dump_all+0x295/0x490 net/core/rtnetlink.c:3444
+  netlink_dump+0x558/0xfb0 net/netlink/af_netlink.c:2253
+  __netlink_dump_start+0x5b1/0x7d0 net/netlink/af_netlink.c:2361
+  netlink_dump_start include/linux/netlink.h:226 [inline]
+  rtnetlink_rcv_msg+0x73d/0xb00 net/core/rtnetlink.c:5181
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2486
+  rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5236
+  netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1337
+  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1926
+  sock_sendmsg_nosec net/socket.c:652 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:671
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2292
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2330
+  __do_sys_sendmsg net/socket.c:2339 [inline]
+  __se_sys_sendmsg net/socket.c:2337 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2337
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4402a9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fffe5f26f18 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402a9
+RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
+R10:
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
