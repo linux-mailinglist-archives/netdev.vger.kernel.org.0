@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E432632666
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9834232663
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727140AbfFCCLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 22:11:06 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17647 "EHLO huawei.com"
+        id S1727124AbfFCCLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 22:11:05 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17651 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726634AbfFCCK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Jun 2019 22:10:58 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id B993AE83A1B1C7DB13C8;
-        Mon,  3 Jun 2019 10:10:55 +0800 (CST)
+        id S1726917AbfFCCLC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Jun 2019 22:11:02 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C9C3996AC0E7F6520BDA;
+        Mon,  3 Jun 2019 10:11:00 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
  14.3.439.0; Mon, 3 Jun 2019 10:10:50 +0800
@@ -21,11 +21,12 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>,
-        Peng Li <lipeng321@huawei.com>
-Subject: [PATCH V2 net-next 01/10] net: hns3: remove redundant core reset
-Date:   Mon, 3 Jun 2019 10:09:13 +0800
-Message-ID: <1559527762-22931-2-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 02/10] net: hns3: don't configure new VLAN ID into VF VLAN table when it's full
+Date:   Mon, 3 Jun 2019 10:09:14 +0800
+Message-ID: <1559527762-22931-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559527762-22931-1-git-send-email-tanhuazhong@huawei.com>
 References: <1559527762-22931-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,156 +39,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since core reset is similar to the global reset, so this
-patch removes it and uses global reset to replace it.
+From: Jian Shen <shenjian15@huawei.com>
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+VF VLAN table can only support no more than 256 VLANs. When user
+adds too many VLANs, the VF VLAN table will be full, and firmware
+will close the VF VLAN table for the function. When VF VLAN table
+is full, and user keeps adding new VLANs, it's unnecessary to
+configure the VF VLAN table, because it will always fail, and print
+warning message. The worst case is adding 4K VLANs, and doing reset,
+it will take much time to restore these VLANs, which may cause VF
+reset fail by timeout.
+
+Fixes: 6c251711b37f ("net: hns3: Disable vf vlan filter when vf vlan table is full")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 -
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 24 +++++++++----------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 28 ----------------------
- 3 files changed, 12 insertions(+), 41 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 8 ++++++++
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h | 1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index a18645e..51c2ff1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -154,7 +154,6 @@ enum hnae3_reset_type {
- 	HNAE3_VF_FULL_RESET,
- 	HNAE3_FLR_RESET,
- 	HNAE3_FUNC_RESET,
--	HNAE3_CORE_RESET,
- 	HNAE3_GLOBAL_RESET,
- 	HNAE3_IMP_RESET,
- 	HNAE3_UNKNOWN_RESET,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index 4ac8063..55c4a1b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -87,25 +87,25 @@ static const struct hclge_hw_error hclge_msix_sram_ecc_int[] = {
- 
- static const struct hclge_hw_error hclge_igu_int[] = {
- 	{ .int_msk = BIT(0), .msg = "igu_rx_buf0_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(2), .msg = "igu_rx_buf1_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ /* sentinel */ }
- };
- 
- static const struct hclge_hw_error hclge_igu_egu_tnl_int[] = {
- 	{ .int_msk = BIT(0), .msg = "rx_buf_overflow",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(1), .msg = "rx_stp_fifo_overflow",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(2), .msg = "rx_stp_fifo_undeflow",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(3), .msg = "tx_buf_overflow",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(4), .msg = "tx_buf_underrun",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(5), .msg = "rx_stp_buf_overflow",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ /* sentinel */ }
- };
- 
-@@ -413,13 +413,13 @@ static const struct hclge_hw_error hclge_ppu_mpf_abnormal_int_st2[] = {
- 
- static const struct hclge_hw_error hclge_ppu_mpf_abnormal_int_st3[] = {
- 	{ .int_msk = BIT(4), .msg = "gro_bd_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(5), .msg = "gro_context_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(6), .msg = "rx_stash_cfg_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(7), .msg = "axi_rd_fbd_ecc_mbit_err",
--	  .reset_level = HNAE3_CORE_RESET },
-+	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ /* sentinel */ }
- };
- 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 0545f38..f0f618d 100644
+index f0f618d..1215455 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2706,15 +2706,6 @@ static u32 hclge_check_event_cause(struct hclge_dev *hdev, u32 *clearval)
- 		return HCLGE_VECTOR0_EVENT_RST;
- 	}
+@@ -7025,6 +7025,12 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, int vfid,
+ 	u8 vf_byte_off;
+ 	int ret;
  
--	if (BIT(HCLGE_VECTOR0_CORERESET_INT_B) & rst_src_reg) {
--		dev_info(&hdev->pdev->dev, "core reset interrupt\n");
--		set_bit(HCLGE_STATE_CMD_DISABLE, &hdev->state);
--		set_bit(HNAE3_CORE_RESET, &hdev->reset_pending);
--		*clearval = BIT(HCLGE_VECTOR0_CORERESET_INT_B);
--		hdev->rst_stats.core_rst_cnt++;
--		return HCLGE_VECTOR0_EVENT_RST;
--	}
--
- 	/* check for vector0 msix event source */
- 	if (msix_src_reg & HCLGE_VECTOR0_REG_MSIX_MASK) {
- 		dev_dbg(&hdev->pdev->dev, "received event 0x%x\n",
-@@ -2941,10 +2932,6 @@ static int hclge_reset_wait(struct hclge_dev *hdev)
- 		reg = HCLGE_GLOBAL_RESET_REG;
- 		reg_bit = HCLGE_GLOBAL_RESET_BIT;
- 		break;
--	case HNAE3_CORE_RESET:
--		reg = HCLGE_GLOBAL_RESET_REG;
--		reg_bit = HCLGE_CORE_RESET_BIT;
--		break;
- 	case HNAE3_FUNC_RESET:
- 		reg = HCLGE_FUN_RST_ING;
- 		reg_bit = HCLGE_FUN_RST_ING_B;
-@@ -3076,12 +3063,6 @@ static void hclge_do_reset(struct hclge_dev *hdev)
- 		hclge_write_dev(&hdev->hw, HCLGE_GLOBAL_RESET_REG, val);
- 		dev_info(&pdev->dev, "Global Reset requested\n");
- 		break;
--	case HNAE3_CORE_RESET:
--		val = hclge_read_dev(&hdev->hw, HCLGE_GLOBAL_RESET_REG);
--		hnae3_set_bit(val, HCLGE_CORE_RESET_BIT, 1);
--		hclge_write_dev(&hdev->hw, HCLGE_GLOBAL_RESET_REG, val);
--		dev_info(&pdev->dev, "Core Reset requested\n");
--		break;
- 	case HNAE3_FUNC_RESET:
- 		dev_info(&pdev->dev, "PF Reset requested\n");
- 		/* schedule again to check later */
-@@ -3128,16 +3109,10 @@ static enum hnae3_reset_type hclge_get_reset_level(struct hclge_dev *hdev,
- 		rst_level = HNAE3_IMP_RESET;
- 		clear_bit(HNAE3_IMP_RESET, addr);
- 		clear_bit(HNAE3_GLOBAL_RESET, addr);
--		clear_bit(HNAE3_CORE_RESET, addr);
- 		clear_bit(HNAE3_FUNC_RESET, addr);
- 	} else if (test_bit(HNAE3_GLOBAL_RESET, addr)) {
- 		rst_level = HNAE3_GLOBAL_RESET;
- 		clear_bit(HNAE3_GLOBAL_RESET, addr);
--		clear_bit(HNAE3_CORE_RESET, addr);
--		clear_bit(HNAE3_FUNC_RESET, addr);
--	} else if (test_bit(HNAE3_CORE_RESET, addr)) {
--		rst_level = HNAE3_CORE_RESET;
--		clear_bit(HNAE3_CORE_RESET, addr);
- 		clear_bit(HNAE3_FUNC_RESET, addr);
- 	} else if (test_bit(HNAE3_FUNC_RESET, addr)) {
- 		rst_level = HNAE3_FUNC_RESET;
-@@ -3165,9 +3140,6 @@ static void hclge_clear_reset_cause(struct hclge_dev *hdev)
- 	case HNAE3_GLOBAL_RESET:
- 		clearval = BIT(HCLGE_VECTOR0_GLOBALRESET_INT_B);
- 		break;
--	case HNAE3_CORE_RESET:
--		clearval = BIT(HCLGE_VECTOR0_CORERESET_INT_B);
--		break;
- 	default:
- 		break;
- 	}
++	/* if vf vlan table is full, firmware will close vf vlan filter, it
++	 * is unable and unnecessary to add new vlan id to vf vlan filter
++	 */
++	if (test_bit(vfid, hdev->vf_vlan_full) && !is_kill)
++		return 0;
++
+ 	hclge_cmd_setup_basic_desc(&desc[0],
+ 				   HCLGE_OPC_VLAN_FILTER_VF_CFG, false);
+ 	hclge_cmd_setup_basic_desc(&desc[1],
+@@ -7060,6 +7066,7 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, int vfid,
+ 			return 0;
+ 
+ 		if (req0->resp_code == HCLGE_VF_VLAN_NO_ENTRY) {
++			set_bit(vfid, hdev->vf_vlan_full);
+ 			dev_warn(&hdev->pdev->dev,
+ 				 "vf vlan table is full, vf vlan filter is disabled\n");
+ 			return 0;
+@@ -8621,6 +8628,7 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 
+ 	hclge_stats_clear(hdev);
+ 	memset(hdev->vlan_table, 0, sizeof(hdev->vlan_table));
++	memset(hdev->vf_vlan_full, 0, sizeof(hdev->vf_vlan_full));
+ 
+ 	ret = hclge_cmd_init(hdev);
+ 	if (ret) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 2b3bc95..414f7db 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -820,6 +820,7 @@ struct hclge_dev {
+ 	struct hclge_vlan_type_cfg vlan_type_cfg;
+ 
+ 	unsigned long vlan_table[VLAN_N_VID][BITS_TO_LONGS(HCLGE_VPORT_NUM)];
++	unsigned long vf_vlan_full[BITS_TO_LONGS(HCLGE_VPORT_NUM)];
+ 
+ 	struct hclge_fd_cfg fd_cfg;
+ 	struct hlist_head fd_rule_list;
 -- 
 2.7.4
 
