@@ -2,491 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D000133A70
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89AC633A7A
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbfFCV5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 17:57:55 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:39588 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726722AbfFCV5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:57:53 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x53LvqTx031825
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 3 Jun 2019 15:57:52 -0600 (CST)
-Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x53LvTMZ008601
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 3 Jun 2019 15:57:36 -0600
-From:   Robert Hancock <hancock@sedsystems.ca>
-To:     netdev@vger.kernel.org
-Cc:     anirudh@xilinx.com, John.Linn@xilinx.com,
-        Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 18/18] net: axienet: convert to phylink API
-Date:   Mon,  3 Jun 2019 15:57:17 -0600
-Message-Id: <1559599037-8514-19-git-send-email-hancock@sedsystems.ca>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
-References: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+        id S1726211AbfFCV6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:58:47 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:36115 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726049AbfFCV6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:58:47 -0400
+Received: by mail-it1-f193.google.com with SMTP id e184so29151366ite.1
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 14:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NL9f6XOx3J7Q95bQTD2irmDDqpKCOFl2i8nQhxBNDIw=;
+        b=m/hzuj78pl71Wo8rW22CJeRYXmI9rm2OBckcAMeuUhBYgTu7PRD5fNj9ZO00sWOivQ
+         GU/Rp3zpESrgP4fPe9x4dBokq/BjLwNo+CvMas2wQYkgWZl2Svut+qMxVR7AB13voQqv
+         raIuUhwQS4hno9FZ34PLRsH3dRRxc1lE9GBmPycGwfeGYRBNC1qRjVaY3TjunH0iNopF
+         fQDjuxVwXR3rY2Hc4DkBx1Xw8y1ODnVrAemb+Yih7AbGzDxsYyXmsNHZMD+MRBmRw5TD
+         WLLomd6qSPE7LA/MGQmMvoqPVSm8ovQuL60XtjTYyskj7aTnvRiMQvIG1OPTwaEhDttd
+         bZeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NL9f6XOx3J7Q95bQTD2irmDDqpKCOFl2i8nQhxBNDIw=;
+        b=gu0gzlJX4reDsb+CK+uoP6x9fJYCoTTJZytvMdBz8s5ru4xh4aImhL0MTc5nDSdavZ
+         wP16L6qtLUqdRGFKhA13/Hyi7ahHunX5MRXmOfFko9NTR+Zysjo1oURSvCPxpVszVrHx
+         HpzwZLdDIOFIPZg6qPn/nslunj4Zn/PDJdf4I1ghUiBQ5LEawVYkuSIKNNcqcZJfBoUy
+         zg6A/8P/xAm5oXkTy1WZlMLQ+P+xLWNcO5OY0esWZli+9jSIaRE6XqAiS5IeXNhI48Cv
+         Bov94/GiF+1KoE4ZI3g9qUUiWpWtdPow4jKuaprUNLUbaLgz5d323qldNe66bFbjdyWv
+         TT8w==
+X-Gm-Message-State: APjAAAUJ4JND6XbCBnnglSBuJl4OAKHxxaIggK/l63dVPM1C6O8hY4ci
+        N3xY6+7CeYBpzdfkWVKwjDOvGrhv5Ch2Mnhk2WZECg==
+X-Google-Smtp-Source: APXvYqz8NRIwLyy20sO2NMCwyyvOQch3Rnx0z6zTpmeJleYW0yBk6rUSKJnDg5YofKbCF/dZwGAdtKDo1f7C6Bb7Vzo=
+X-Received: by 2002:a24:dc5:: with SMTP id 188mr18232821itx.63.1559599126140;
+ Mon, 03 Jun 2019 14:58:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190603040817.4825-1-dsahern@kernel.org> <20190603040817.4825-5-dsahern@kernel.org>
+ <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com> <dec5c727-4002-913f-a858-362e0d926b8d@gmail.com>
+In-Reply-To: <dec5c727-4002-913f-a858-362e0d926b8d@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Mon, 3 Jun 2019 14:58:34 -0700
+Message-ID: <CAEA6p_Aa2eV+jH=H9iOqepbrBLBUvAg2-_oD96wA0My6FMG_PQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
+ a fib6_info
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, saeedm@mellanox.com,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert this driver to use the phylink API rather than the legacy PHY
-API. This allows for better support for SFP modules connected using a
-1000BaseX or SGMII interface.
+On Mon, Jun 3, 2019 at 1:42 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 6/3/19 12:09 PM, Wei Wang wrote:
+> >> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> >> index fada5a13bcb2..51cb5cb027ae 100644
+> >> --- a/net/ipv6/route.c
+> >> +++ b/net/ipv6/route.c
+> >> @@ -432,15 +432,21 @@ void fib6_select_path(const struct net *net, struct fib6_result *res,
+> >>         struct fib6_info *sibling, *next_sibling;
+> >>         struct fib6_info *match = res->f6i;
+> >>
+> >> -       if (!match->fib6_nsiblings || have_oif_match)
+> >> +       if ((!match->fib6_nsiblings && !match->nh) || have_oif_match)
+> >>                 goto out;
+> >
+> > So you mentioned fib6_nsiblings and nexthop is mutually exclusive. Is
+> > it enforced from the configuration?
+>
+> It is enforced by the patch that wires up RTA_NH_ID for IPv6.
+>
+> >> @@ -1982,6 +2010,14 @@ struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
+> >>                 rcu_read_unlock();
+> >>                 dst_hold(&rt->dst);
+> >>                 return rt;
+> >> +       } else if (res.fib6_flags & RTF_REJECT) {
+> >> +               rt = ip6_create_rt_rcu(&res);
+> >> +               rcu_read_unlock();
+> >> +               if (!rt) {
+> >> +                       rt = net->ipv6.ip6_null_entry;
+> >> +                       dst_hold(&rt->dst);
+> >> +               }
+> >> +               return rt;
+> >>         }
+> >>
+> > Why do we need to call ip6_create_rt_rcu() to create a dst cache? Can
+> > we directly return ip6_null_entry here? This route is anyway meant to
+> > drop the packet. Same goes for the change in ip6_pol_route_lookup().
+>
+> This is to mimic what happens if you added a route like this:
+>    ip -6 ro add blackhole 2001:db8:99::/64
+>
+> except now the blackhole target is contained in the nexthop spec.
+>
+>
+Hmm... I am still a bit concerned with the ip6_create_rt_rcu() call.
+If we have a blackholed nexthop, the lookup code here always tries to
+create an rt cache entry for every lookup.
+Maybe we could reuse the pcpu cache logic for this? So we only create
+new dst cache on the CPU if there is no cache created before.
 
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
----
- drivers/net/ethernet/xilinx/Kconfig               |   2 +-
- drivers/net/ethernet/xilinx/xilinx_axienet.h      |   5 +-
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 284 ++++++++++++++--------
- 3 files changed, 190 insertions(+), 101 deletions(-)
+> >
+> > And for my education, how does this new nexthop logic interact with
+> > the pcpu_rt cache and the exception table? Those 2 are currently
+> > stored in struct fib6_nh. They are shared with fib6_siblings under the
+> > same fib6_info. Are they also shared with nexthop for the same
+> > fib6_info?
+>
+> With nexthop objects IPv6 can work very similar to IPv4. Multiple IPv4
+> fib entries (fib_alias) can reference the same fib_info where the
+> fib_info contains an array of fib_nh and the cached routes and
+> exceptions are stored in the fib_nh.
+>
+> The one IPv6 attribute that breaks the model is source routing which is
+> a function of the prefix. For that reason you can not use nexthop
+> objects with fib entries using source routing. See the note in this
+> patch in fib6_check_nexthop
+>
+> > I don't see much changes around that area. So I assume they work as is?
+>
+> Prior patch sets moved the pcpu and exception caches from fib6_info to
+> fib6_nh.
 
-diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-index 5f50764..8d994ce 100644
---- a/drivers/net/ethernet/xilinx/Kconfig
-+++ b/drivers/net/ethernet/xilinx/Kconfig
-@@ -27,7 +27,7 @@ config XILINX_EMACLITE
- config XILINX_AXI_EMAC
- 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
- 	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
--	select PHYLIB
-+	select PHYLINK
- 	---help---
- 	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
- 	  AXI bus interface used in Xilinx Virtex FPGAs.
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 4ac9e79..f41791d 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -13,6 +13,7 @@
- #include <linux/spinlock.h>
- #include <linux/interrupt.h>
- #include <linux/if_vlan.h>
-+#include <linux/phylink.h>
- 
- /* Packet size info */
- #define XAE_HDR_SIZE			14 /* Size of Ethernet header */
-@@ -420,6 +421,9 @@ struct axienet_local {
- 	/* Connection to PHY device */
- 	struct device_node *phy_node;
- 
-+	struct phylink *phylink;
-+	struct phylink_config phylink_config;
-+
- 	/* MDIO clock divisor (0=detected from CPU clock) */
- 	u32 mdio_clock_divisor;
- 
-@@ -439,7 +443,6 @@ struct axienet_local {
- 	phy_interface_t phy_mode;
- 
- 	u32 options;			/* Current options word */
--	u32 last_link;
- 	u32 features;
- 
- 	/* Buffer descriptors */
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 999f03a..c417089 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -7,6 +7,7 @@
-  * Copyright (c) 2008-2009 Secret Lab Technologies Ltd.
-  * Copyright (c) 2010 - 2011 Michal Simek <monstr@monstr.eu>
-  * Copyright (c) 2010 - 2011 PetaLogix
-+ * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
-  * Copyright (c) 2010 - 2012 Xilinx, Inc. All rights reserved.
-  *
-  * This is a driver for the Xilinx Axi Ethernet which is used in the Virtex6
-@@ -519,63 +520,6 @@ static void axienet_device_reset(struct net_device *ndev)
- }
- 
- /**
-- * axienet_adjust_link - Adjust the PHY link speed/duplex.
-- * @ndev:	Pointer to the net_device structure
-- *
-- * This function is called to change the speed and duplex setting after
-- * auto negotiation is done by the PHY. This is the function that gets
-- * registered with the PHY interface through the "of_phy_connect" call.
-- */
--static void axienet_adjust_link(struct net_device *ndev)
--{
--	u32 emmc_reg;
--	u32 link_state;
--	u32 setspeed = 1;
--	struct axienet_local *lp = netdev_priv(ndev);
--	struct phy_device *phy = ndev->phydev;
--
--	link_state = phy->speed | (phy->duplex << 1) | phy->link;
--	if (lp->last_link != link_state) {
--		if ((phy->speed == SPEED_10) || (phy->speed == SPEED_100)) {
--			if (lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX)
--				setspeed = 0;
--		} else {
--			if ((phy->speed == SPEED_1000) &&
--			    (lp->phy_mode == PHY_INTERFACE_MODE_MII))
--				setspeed = 0;
--		}
--
--		if (setspeed == 1) {
--			emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
--			emmc_reg &= ~XAE_EMMC_LINKSPEED_MASK;
--
--			switch (phy->speed) {
--			case SPEED_1000:
--				emmc_reg |= XAE_EMMC_LINKSPD_1000;
--				break;
--			case SPEED_100:
--				emmc_reg |= XAE_EMMC_LINKSPD_100;
--				break;
--			case SPEED_10:
--				emmc_reg |= XAE_EMMC_LINKSPD_10;
--				break;
--			default:
--				dev_err(&ndev->dev, "Speed other than 10, 100 "
--					"or 1Gbps is not supported\n");
--				break;
--			}
--
--			axienet_iow(lp, XAE_EMMC_OFFSET, emmc_reg);
--			lp->last_link = link_state;
--			phy_print_status(phy);
--		} else {
--			netdev_err(ndev,
--				   "Error setting Axi Ethernet mac speed\n");
--		}
--	}
--}
--
--/**
-  * axienet_start_xmit_done - Invoked once a transmit is completed by the
-  * Axi DMA Tx channel.
-  * @ndev:	Pointer to the net_device structure
-@@ -955,7 +899,8 @@ static irqreturn_t axienet_eth_irq(int irq, void *_ndev)
-  * Return: 0, on success.
-  *	    non-zero error value on failure
-  *
-- * This is the driver open routine. It calls phy_start to start the PHY device.
-+ * This is the driver open routine. It calls phylink_start to start the
-+ * PHY device.
-  * It also allocates interrupt service routines, enables the interrupt lines
-  * and ISR handling. Axi Ethernet core is reset through Axi DMA core. Buffer
-  * descriptors are initialized.
-@@ -964,7 +909,6 @@ static int axienet_open(struct net_device *ndev)
- {
- 	int ret;
- 	struct axienet_local *lp = netdev_priv(ndev);
--	struct phy_device *phydev = NULL;
- 
- 	dev_dbg(&ndev->dev, "axienet_open()\n");
- 
-@@ -979,16 +923,14 @@ static int axienet_open(struct net_device *ndev)
- 	if (ret < 0)
- 		return ret;
- 
--	if (lp->phy_node) {
--		phydev = of_phy_connect(lp->ndev, lp->phy_node,
--					axienet_adjust_link, 0, lp->phy_mode);
--
--		if (!phydev)
--			dev_err(lp->dev, "of_phy_connect() failed\n");
--		else
--			phy_start(phydev);
-+	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
-+	if (ret) {
-+		dev_err(lp->dev, "phylink_of_phy_connect() failed: %d\n", ret);
-+		return ret;
- 	}
- 
-+	phylink_start(lp->phylink);
-+
- 	/* Enable tasklets for Axi DMA error handling */
- 	tasklet_init(&lp->dma_err_tasklet, axienet_dma_err_handler,
- 		     (unsigned long) lp);
-@@ -1018,8 +960,8 @@ static int axienet_open(struct net_device *ndev)
- err_rx_irq:
- 	free_irq(lp->tx_irq, ndev);
- err_tx_irq:
--	if (phydev)
--		phy_disconnect(phydev);
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
- 	tasklet_kill(&lp->dma_err_tasklet);
- 	dev_err(lp->dev, "request_irq() failed\n");
- 	return ret;
-@@ -1031,7 +973,7 @@ static int axienet_open(struct net_device *ndev)
-  *
-  * Return: 0, on success.
-  *
-- * This is the driver stop routine. It calls phy_disconnect to stop the PHY
-+ * This is the driver stop routine. It calls phylink_disconnect to stop the PHY
-  * device. It also removes the interrupt handlers and disables the interrupts.
-  * The Axi DMA Tx/Rx BDs are released.
-  */
-@@ -1043,6 +985,9 @@ static int axienet_stop(struct net_device *ndev)
- 
- 	dev_dbg(&ndev->dev, "axienet_close()\n");
- 
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
-+
- 	axienet_setoptions(ndev, lp->options &
- 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
- 
-@@ -1079,9 +1024,6 @@ static int axienet_stop(struct net_device *ndev)
- 	free_irq(lp->tx_irq, ndev);
- 	free_irq(lp->rx_irq, ndev);
- 
--	if (ndev->phydev)
--		phy_disconnect(ndev->phydev);
--
- 	axienet_dma_bd_release(ndev);
- 	return 0;
- }
-@@ -1286,12 +1228,9 @@ static int axienet_ethtools_set_ringparam(struct net_device *ndev,
- axienet_ethtools_get_pauseparam(struct net_device *ndev,
- 				struct ethtool_pauseparam *epauseparm)
- {
--	u32 regval;
- 	struct axienet_local *lp = netdev_priv(ndev);
--	epauseparm->autoneg  = 0;
--	regval = axienet_ior(lp, XAE_FCC_OFFSET);
--	epauseparm->tx_pause = regval & XAE_FCC_FCTX_MASK;
--	epauseparm->rx_pause = regval & XAE_FCC_FCRX_MASK;
-+
-+	phylink_ethtool_get_pauseparam(lp->phylink, epauseparm);
- }
- 
- /**
-@@ -1310,27 +1249,9 @@ static int axienet_ethtools_set_ringparam(struct net_device *ndev,
- axienet_ethtools_set_pauseparam(struct net_device *ndev,
- 				struct ethtool_pauseparam *epauseparm)
- {
--	u32 regval = 0;
- 	struct axienet_local *lp = netdev_priv(ndev);
- 
--	if (netif_running(ndev)) {
--		netdev_err(ndev,
--			   "Please stop netif before applying configuration\n");
--		return -EFAULT;
--	}
--
--	regval = axienet_ior(lp, XAE_FCC_OFFSET);
--	if (epauseparm->tx_pause)
--		regval |= XAE_FCC_FCTX_MASK;
--	else
--		regval &= ~XAE_FCC_FCTX_MASK;
--	if (epauseparm->rx_pause)
--		regval |= XAE_FCC_FCRX_MASK;
--	else
--		regval &= ~XAE_FCC_FCRX_MASK;
--	axienet_iow(lp, XAE_FCC_OFFSET, regval);
--
--	return 0;
-+	return phylink_ethtool_set_pauseparam(lp->phylink, epauseparm);
- }
- 
- /**
-@@ -1409,6 +1330,24 @@ static int axienet_ethtools_set_coalesce(struct net_device *ndev,
- 	return 0;
- }
- 
-+static int
-+axienet_ethtools_get_link_ksettings(struct net_device *ndev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_get(lp->phylink, cmd);
-+}
-+
-+static int
-+axienet_ethtools_set_link_ksettings(struct net_device *ndev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_set(lp->phylink, cmd);
-+}
-+
- static const struct ethtool_ops axienet_ethtool_ops = {
- 	.get_drvinfo    = axienet_ethtools_get_drvinfo,
- 	.get_regs_len   = axienet_ethtools_get_regs_len,
-@@ -1420,8 +1359,141 @@ static int axienet_ethtools_set_coalesce(struct net_device *ndev,
- 	.set_pauseparam = axienet_ethtools_set_pauseparam,
- 	.get_coalesce   = axienet_ethtools_get_coalesce,
- 	.set_coalesce   = axienet_ethtools_set_coalesce,
--	.get_link_ksettings = phy_ethtool_get_link_ksettings,
--	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_link_ksettings = axienet_ethtools_get_link_ksettings,
-+	.set_link_ksettings = axienet_ethtools_set_link_ksettings,
-+};
-+
-+static void axienet_validate(struct phylink_config *config,
-+			     unsigned long *supported,
-+			     struct phylink_link_state *state)
-+{
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	/* Only support the mode we are configured for */
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != lp->phy_mode) {
-+		netdev_warn(ndev, "Cannot use PHY mode %s, supported: %s\n",
-+			    phy_modes(state->interface),
-+			    phy_modes(lp->phy_mode));
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	phylink_set(mask, Autoneg);
-+	phylink_set_port_modes(mask);
-+
-+	phylink_set(mask, Asym_Pause);
-+	phylink_set(mask, Pause);
-+	phylink_set(mask, 1000baseX_Full);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Full);
-+	phylink_set(mask, 1000baseT_Full);
-+
-+	bitmap_and(supported, supported, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static int axienet_mac_link_state(struct phylink_config *config,
-+				  struct phylink_link_state *state)
-+{
-+	u32 emmc_reg, fcc_reg;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	state->interface = lp->phy_mode;
-+
-+	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
-+	if (emmc_reg & XAE_EMMC_LINKSPD_1000)
-+		state->speed = SPEED_1000;
-+	else if (emmc_reg & XAE_EMMC_LINKSPD_100)
-+		state->speed = SPEED_100;
-+	else
-+		state->speed = SPEED_10;
-+
-+	state->pause = 0;
-+	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
-+	if (fcc_reg & XAE_FCC_FCTX_MASK)
-+		state->pause |= MLO_PAUSE_TX;
-+	if (fcc_reg & XAE_FCC_FCRX_MASK)
-+		state->pause |= MLO_PAUSE_RX;
-+
-+	state->an_complete = 0;
-+	state->duplex = 1;
-+
-+	return 1;
-+}
-+
-+static void axienet_mac_an_restart(struct phylink_config *config)
-+{
-+	/* Unsupported, do nothing */
-+}
-+
-+static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
-+			       const struct phylink_link_state *state)
-+{
-+	u32 emmc_reg, fcc_reg;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+
-+	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
-+	emmc_reg &= ~XAE_EMMC_LINKSPEED_MASK;
-+
-+	switch (state->speed) {
-+	case SPEED_1000:
-+		emmc_reg |= XAE_EMMC_LINKSPD_1000;
-+		break;
-+	case SPEED_100:
-+		emmc_reg |= XAE_EMMC_LINKSPD_100;
-+		break;
-+	case SPEED_10:
-+		emmc_reg |= XAE_EMMC_LINKSPD_10;
-+		break;
-+	default:
-+		dev_err(&ndev->dev,
-+			"Speed other than 10, 100 or 1Gbps is not supported\n");
-+		break;
-+	}
-+
-+	axienet_iow(lp, XAE_EMMC_OFFSET, emmc_reg);
-+
-+	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
-+	if (state->pause & MLO_PAUSE_TX)
-+		fcc_reg |= XAE_FCC_FCTX_MASK;
-+	else
-+		fcc_reg &= ~XAE_FCC_FCTX_MASK;
-+	if (state->pause & MLO_PAUSE_RX)
-+		fcc_reg |= XAE_FCC_FCRX_MASK;
-+	else
-+		fcc_reg &= ~XAE_FCC_FCRX_MASK;
-+	axienet_iow(lp, XAE_FCC_OFFSET, fcc_reg);
-+}
-+
-+static void axienet_mac_link_down(struct phylink_config *config,
-+				  unsigned int mode,
-+				  phy_interface_t interface)
-+{
-+	/* nothing meaningful to do */
-+}
-+
-+static void axienet_mac_link_up(struct phylink_config *config,
-+				unsigned int mode,
-+				phy_interface_t interface,
-+				struct phy_device *phy)
-+{
-+	/* nothing meaningful to do */
-+}
-+
-+static const struct phylink_mac_ops axienet_phylink_ops = {
-+	.validate = axienet_validate,
-+	.mac_link_state = axienet_mac_link_state,
-+	.mac_an_restart = axienet_mac_an_restart,
-+	.mac_config = axienet_mac_config,
-+	.mac_link_down = axienet_mac_link_down,
-+	.mac_link_up = axienet_mac_link_up,
- };
- 
- /**
-@@ -1755,6 +1827,18 @@ static int axienet_probe(struct platform_device *pdev)
- 				 "error registering MDIO bus: %d\n", ret);
- 	}
- 
-+	lp->phylink_config.dev = &ndev->dev;
-+	lp->phylink_config.type = PHYLINK_NETDEV;
-+
-+	lp->phylink = phylink_create(&lp->phylink_config, pdev->dev.fwnode,
-+				     lp->phy_mode,
-+				     &axienet_phylink_ops);
-+	if (IS_ERR(lp->phylink)) {
-+		ret = PTR_ERR(lp->phylink);
-+		dev_err(&pdev->dev, "phylink_create error (%i)\n", ret);
-+		goto free_netdev;
-+	}
-+
- 	ret = register_netdev(lp->ndev);
- 	if (ret) {
- 		dev_err(lp->dev, "register_netdev() error (%i)\n", ret);
-@@ -1777,6 +1861,8 @@ static int axienet_remove(struct platform_device *pdev)
- 	unregister_netdev(ndev);
- 	axienet_mdio_teardown(lp);
- 
-+	if (lp->phylink)
-+		phylink_destroy(lp->phylink);
- 	of_node_put(lp->phy_node);
- 	lp->phy_node = NULL;
- 
--- 
-1.8.3.1
-
+Understood. Basically, for every nexthop object, it will have its own
+fib6_nh which contains pcpu_rt and exception table.
+And we only use the built-in fib6_nh in struct fib6_info when nexthop
+is not used.
+And if src addr routing is used, then nexthop object will not be used.
