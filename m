@@ -2,86 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE3133099
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB42330A3
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728175AbfFCNHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 09:07:37 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35015 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbfFCNHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:07:37 -0400
-Received: by mail-qk1-f194.google.com with SMTP id l128so322696qke.2
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 06:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BSEdgqESlMSsojoD0L6U8hdhvYh8fKdpdX1m+uG6RFw=;
-        b=DW+1tj6N1A9FAqtzap+AF6eatkOZTRTXTNwk0XFkECvmtI5lf6m5JH8zaLMoOV49Fe
-         pfGivCOkFydNDnB4SiT8LQZ6a3GosrtEz6VufOBIGuvqSpKaUeuhErLpMIaew66tE23s
-         1zMqpaUd/0fdVLdsdsKSrbXhbMa00wFK6fjAFYNiGY8mxd6HhoU3XUITgtfdfbPCfYMp
-         4DNHJ1fEpUUQuVtENTeM5BuuXW2b+lCFQVKnZv4S/NJAaanDHpcsNRnd74Gjj8gtfhmz
-         M4ncQGkj3SKmOcIvTfsXgD+lHz31scAjqrqxeoXoZhEw3V+t560vYe+odOzIPIEkw5UX
-         WICw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BSEdgqESlMSsojoD0L6U8hdhvYh8fKdpdX1m+uG6RFw=;
-        b=qgJSyav8w2pLPvqyh8+7IHOL6HBur3Ft0Owum/JvLUFQkjvIKUgvKE367243sM1sQV
-         KJpWRbh6ytOoagzFyb2VFeGCq1XglEA9UgW0qMEwhUTYiuxn/+BGTnncJx+jdhQdrQMs
-         QwvgNbPybqJSmbucvYlYjyV9XuR2dhA8alg6Pc5ptVL5AeMtzA3N8nWt2w006dD/Bf2x
-         NXI8n6NpwGnFBKftCYhYi1zqFp2vUYw0QFaF+UPqN7ViCaG/2t2I775V2loCB8CI7nNL
-         rCyJKaGa2Hs5dv/5t67/Qb4hw9FiLHYxrt+x1lsgssZedhWzlIODTCt2OnpaKoRaIgze
-         NeSQ==
-X-Gm-Message-State: APjAAAUoKOo8HyZazsNOWz7WzYMwjXkCisKJci5ui2PX6Y4+3s3Nvb64
-        Ik0gLpAtctANp6KJEouA9rn4GEB7n4f0GS+fWSyJVgtS
-X-Google-Smtp-Source: APXvYqyq3rUxBaOA0YTWzvW4UmUadCCZQDT1jRpuqGG7BQNosITRSlrgEDi9k3H2zgxs+fEv02BXOLT0hjqss3UsmnU=
-X-Received: by 2002:a37:a9c9:: with SMTP id s192mr21560737qke.335.1559567256651;
- Mon, 03 Jun 2019 06:07:36 -0700 (PDT)
+        id S1728330AbfFCNIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 09:08:50 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45050 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727841AbfFCNIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:08:50 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hXmhf-0000SK-K6; Mon, 03 Jun 2019 15:08:43 +0200
+Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hXmhf-0007wD-54; Mon, 03 Jun 2019 15:08:43 +0200
+Subject: Re: [PATCH bpf v2] bpf: preallocate a perf_sample_data per event fd
+To:     Matt Mullins <mmullins@fb.com>, hall@fb.com, ast@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+References: <20190531223735.4998-1-mmullins@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6c6a4d47-796a-20e2-eb12-503a00d1fa0b@iogearbox.net>
+Date:   Mon, 3 Jun 2019 15:08:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-References: <20190531222910.2499861-1-kafai@fb.com> <20190531222911.2500496-1-kafai@fb.com>
-In-Reply-To: <20190531222911.2500496-1-kafai@fb.com>
-From:   Craig Gallek <kraig@google.com>
-Date:   Mon, 3 Jun 2019 09:07:33 -0400
-Message-ID: <CAEfhGiyfydP4xggD-v5DCXyM0mtaEa5oPu39WLD7o8v_DgobAA@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: udp: ipv6: Avoid running reuseport's
- bpf_prog from __udp6_lib_err
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190531223735.4998-1-mmullins@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25469/Mon Jun  3 09:59:22 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 31, 2019 at 6:29 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> __udp6_lib_err() may be called when handling icmpv6 message. For example,
-> the icmpv6 toobig(type=2).  __udp6_lib_lookup() is then called
-> which may call reuseport_select_sock().  reuseport_select_sock() will
-> call into a bpf_prog (if there is one).
->
-> reuseport_select_sock() is expecting the skb->data pointing to the
-> transport header (udphdr in this case).  For example, run_bpf_filter()
-> is pulling the transport header.
->
-> However, in the __udp6_lib_err() path, the skb->data is pointing to the
-> ipv6hdr instead of the udphdr.
->
-> One option is to pull and push the ipv6hdr in __udp6_lib_err().
-> Instead of doing this, this patch follows how the original
-> commit 538950a1b752 ("soreuseport: setsockopt SO_ATTACH_REUSEPORT_[CE]BPF")
-> was done in IPv4, which has passed a NULL skb pointer to
-> reuseport_select_sock().
->
-> Fixes: 538950a1b752 ("soreuseport: setsockopt SO_ATTACH_REUSEPORT_[CE]BPF")
-> Cc: Craig Gallek <kraig@google.com>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+On 06/01/2019 12:37 AM, Matt Mullins wrote:
+> It is possible that a BPF program can be called while another BPF
+> program is executing bpf_perf_event_output.  This has been observed with
+> I/O completion occurring as a result of an interrupt:
+> 
+> 	bpf_prog_247fd1341cddaea4_trace_req_end+0x8d7/0x1000
+> 	? trace_call_bpf+0x82/0x100
+> 	? sch_direct_xmit+0xe2/0x230
+> 	? blk_mq_end_request+0x1/0x100
+> 	? blk_mq_end_request+0x5/0x100
+> 	? kprobe_perf_func+0x19b/0x240
+> 	? __qdisc_run+0x86/0x520
+> 	? blk_mq_end_request+0x1/0x100
+> 	? blk_mq_end_request+0x5/0x100
+> 	? kprobe_ftrace_handler+0x90/0xf0
+> 	? ftrace_ops_assist_func+0x6e/0xe0
+> 	? ip6_input_finish+0xbf/0x460
+> 	? 0xffffffffa01e80bf
+> 	? nbd_dbg_flags_show+0xc0/0xc0 [nbd]
+> 	? blkdev_issue_zeroout+0x200/0x200
+> 	? blk_mq_end_request+0x1/0x100
+> 	? blk_mq_end_request+0x5/0x100
+> 	? flush_smp_call_function_queue+0x6c/0xe0
+> 	? smp_call_function_single_interrupt+0x32/0xc0
+> 	? call_function_single_interrupt+0xf/0x20
+> 	? call_function_single_interrupt+0xa/0x20
+> 	? swiotlb_map_page+0x140/0x140
+> 	? refcount_sub_and_test+0x1a/0x50
+> 	? tcp_wfree+0x20/0xf0
+> 	? skb_release_head_state+0x62/0xc0
+> 	? skb_release_all+0xe/0x30
+> 	? napi_consume_skb+0xb5/0x100
+> 	? mlx5e_poll_tx_cq+0x1df/0x4e0
+> 	? mlx5e_poll_tx_cq+0x38c/0x4e0
+> 	? mlx5e_napi_poll+0x58/0xc30
+> 	? mlx5e_napi_poll+0x232/0xc30
+> 	? net_rx_action+0x128/0x340
+> 	? __do_softirq+0xd4/0x2ad
+> 	? irq_exit+0xa5/0xb0
+> 	? do_IRQ+0x7d/0xc0
+> 	? common_interrupt+0xf/0xf
+> 	</IRQ>
+> 	? __rb_free_aux+0xf0/0xf0
+> 	? perf_output_sample+0x28/0x7b0
+> 	? perf_prepare_sample+0x54/0x4a0
+> 	? perf_event_output+0x43/0x60
+> 	? bpf_perf_event_output_raw_tp+0x15f/0x180
+> 	? blk_mq_start_request+0x1/0x120
+> 	? bpf_prog_411a64a706fc6044_should_trace+0xad4/0x1000
+> 	? bpf_trace_run3+0x2c/0x80
+> 	? nbd_send_cmd+0x4c2/0x690 [nbd]
+> 
+> This also cannot be alleviated by further splitting the per-cpu
+> perf_sample_data structs (as in commit 283ca526a9bd ("bpf: fix
+> corruption on concurrent perf_event_output calls")), as a raw_tp could
+> be attached to the block:block_rq_complete tracepoint and execute during
+> another raw_tp.  Instead, keep a pre-allocated perf_sample_data
+> structure per perf_event_array element and fail a bpf_perf_event_output
+> if that element is concurrently being used.
+> 
+> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_data")
+> Signed-off-by: Matt Mullins <mmullins@fb.com>
 
-Acked-by: Craig Gallek <kraig@google.com>
+You do not elaborate why is this needed for all the networking programs that
+use this functionality. The bpf_misc_sd should therefore be kept as-is. There
+cannot be nested occurrences there (xdp, tc ingress/egress). Please explain why
+non-tracing should be affected here...
