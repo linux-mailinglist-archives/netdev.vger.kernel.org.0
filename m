@@ -2,154 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 446BA33A19
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E3CB33A92
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbfFCVrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 17:47:55 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33210 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726141AbfFCVrz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 17:47:55 -0400
-Received: by mail-ed1-f65.google.com with SMTP id y17so10849292edr.0;
-        Mon, 03 Jun 2019 14:47:53 -0700 (PDT)
+        id S1726761AbfFCWAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 18:00:48 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33330 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbfFCWAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:00:47 -0400
+Received: by mail-pf1-f193.google.com with SMTP id x15so1579591pfq.0
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:00:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MAT8OhoS4E4LTraS73i1GkEab4d2tmtFt+UsInKjjJY=;
-        b=VBXBHrPvpSV9c710oZQ/FURflCEUoDTzB2RsYYgOCVVgjMVNXiD5bLiXCZCFwcDnvY
-         4ZxP7ZineS8Zr0tO9wosc3nmO6TAkxrWp54rwY9om/RaukbnjBTUsOeYv4t8uhaPsJu2
-         oR4aYRxNPFUQ1YVC0FTz17jP38hO6TT6ZqiOfadcM6sNoStkP56sGqjJPGjUxxkXgsWF
-         +Cvico5SinDL2F/m87OmvsXih5rOYvdaXNnBikOJ2v0XY9X3ooZy6EJ6ojIzSa3qUtlX
-         lpverQaCNzdXzbI9wVblP0LgqNXzcuSGU3WnvMrawroQgUQSJ/+3zfuzCPcdwvH/4Rwy
-         vliw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=R6du/6KKnNDmznz33lKQnArtHrJyOSHRvKP6Z3+6Gug=;
+        b=CAeexWrdYYccZQVE3RvyI5Yc3+4LkwqveBPjE9fFipsReUp41O3X9lmdZT5DluuFGG
+         fGwF3Mv722F4uswfNbEs7PVHReYDTWyaq7Ltmr9hQF5Y/+nMHmA2Ni+QqvBbyr0qJ+fO
+         CNJt23MW8x9ofHhxmVU1qcw10UywUp+msi+kmJozy7O40RV7c+5/5gPNZ/xIPCVCsRnT
+         rAVZYCcVEoLCgZX0VJ6CEYjGi/mYzxe/qEcEgaHtHEIkhFLKgLs52/frURFALdJIek91
+         yn/aOxR8k3EyNmN9MvfCgzyVAE/uRRKDtDPiqg4P+S17nZMYn6GgG+RlqqClmuJrobPj
+         9QEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MAT8OhoS4E4LTraS73i1GkEab4d2tmtFt+UsInKjjJY=;
-        b=rnvuMuU0X93qDQK+FRlrC8h6uoLtBSBc3UM8gaeTgRFEEL5VrT8SN+Ta+VN8L8OUKp
-         qnlBedNGFyZYoSd4AToNe3oNO4biuIK6H9RHMEvhWl7WB/Duj1DDHD5A7JH2YeE9kbNJ
-         0VwgbIAsKwTuRkFkRAQ9E2uAVcEcs0RjgZYRnTSTItum8csZyWEzkBPLXSfPIfOIqoIi
-         ISuY/5y/Cb70kSMQLneS1gtUdWEh4csiy1eqh9ln/i7aCs7B2L4qWBPYTibHdAk9F6K4
-         pUzQQLsDOEkCSsegVj2Q9EwrukWZFrElLDPWVQyGiFG1bK5TBQWMX797oQzX7uJRjq4u
-         hVAQ==
-X-Gm-Message-State: APjAAAWjgXk4dzz1S3q7Kj5QzB/IJcqX7scAbEOukTMgzjp1VPnXPUsY
-        mvs8ufXcGku9jGCwlnDfDuW9IX1tZWQ=
-X-Google-Smtp-Source: APXvYqztp4bl5Go/CL9OzkdSXd1fkORq8n4jiBnd3Uk9KoeuelIAM0v75z/280Ucla5BqFyXTwwKVQ==
-X-Received: by 2002:a17:906:318a:: with SMTP id 10mr4143419ejy.245.1559595066841;
-        Mon, 03 Jun 2019 13:51:06 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id j12sm856780ejq.44.2019.06.03.13.51.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 13:51:06 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] net: mscc: ocelot: Fix some struct initializations
-Date:   Mon,  3 Jun 2019 13:49:53 -0700
-Message-Id: <20190603204953.44235-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc3
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=R6du/6KKnNDmznz33lKQnArtHrJyOSHRvKP6Z3+6Gug=;
+        b=cT2eBeJ/CpwptK5qAZv1gU+3rjgDf0Hz6ZzzeSK3bQHCitpG211QHz8U2F6LGu9AaC
+         kzZivt5GURgxJdaARIg3DVUu0FlYazv6JIuk+V6pIIwaelSBwc0TxdW71KWeFTAQ41vP
+         Oj/QdzrLX0rZqayY3z/8wwUju5xrInY66Juf1RF3VyKiuftEiNz8UQuvwZr+9SzwMq3H
+         NJnzcXebw7Y462OgyESBw+yxsfWesdE7IK6JLBKEETx00q7v2fupLlEQey1+G8vW0yjI
+         sSHv0dDisHgYMqrkeFyBzfnIXKQgCGztgE/NMhqlSMn8J3grJYdTn3V0ebBOB2RifE7A
+         w1xg==
+X-Gm-Message-State: APjAAAW28ZCuBJLhEByZGi8MxLT9lhDnyeVb3fD5JJNnBEDlLf9aLB+H
+        XHg/sfuhqaGoAeBd0y3JZN52TjraZMLqVA==
+X-Google-Smtp-Source: APXvYqzY0dEmdEiuuhkMibuvAxzI6GrqjGqjGE+NKVDzbGNPaLbZD+VVd8yBj2X+2xk/phzD+Jwpkg==
+X-Received: by 2002:a62:7641:: with SMTP id r62mr9530270pfc.35.1559595141159;
+        Mon, 03 Jun 2019 13:52:21 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id x18sm18781016pfo.8.2019.06.03.13.52.20
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 03 Jun 2019 13:52:21 -0700 (PDT)
+Date:   Mon, 3 Jun 2019 13:52:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Cc:     netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Subject: Re: [PATCH iproute2-next v1] tc: add support for action act_ctinfo
+Message-ID: <20190603135219.180df8e6@hermes.lan>
+In-Reply-To: <20190603204142.51674-1-ldir@darbyshire-bryant.me.uk>
+References: <20190603204142.51674-1-ldir@darbyshire-bryant.me.uk>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On Mon,  3 Jun 2019 21:41:43 +0100
+Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> wrote:
 
-drivers/net/ethernet/mscc/ocelot_ace.c:335:37: warning: suggest braces
-around initialization of subobject [-Wmissing-braces]
-        struct ocelot_vcap_u64 payload = { 0 };
-                                           ^
-                                           {}
-drivers/net/ethernet/mscc/ocelot_ace.c:336:28: warning: suggest braces
-around initialization of subobject [-Wmissing-braces]
-        struct vcap_data data = { 0 };
-                                  ^
-                                  {}
-drivers/net/ethernet/mscc/ocelot_ace.c:683:37: warning: suggest braces
-around initialization of subobject [-Wmissing-braces]
-        struct ocelot_ace_rule del_ace = { 0 };
-                                           ^
-                                           {}
-drivers/net/ethernet/mscc/ocelot_ace.c:743:28: warning: suggest braces
-around initialization of subobject [-Wmissing-braces]
-        struct vcap_data data = { 0 };
-                                  ^
-                                  {}
-4 warnings generated.
+> ctinfo is an action restoring data stored in conntrack marks to various
+> fields.  At present it has two independent modes of operation,
+> restoration of DSCP into IPv4/v6 diffserv and restoration of conntrack
+> marks into packet skb marks.
+>=20
+> It understands a number of parameters specific to this action in
+> additional to the usual action syntax.  Each operating mode is
+> independent of the other so all options are optional, however not
+> specifying at least one mode is a bit pointless.
+>=20
+> Usage: ... ctinfo [dscp mask[/statemask]] [cpmark [mask]] [zone ZONE]
+> 		  [CONTROL] [index <INDEX>]
+>=20
+> DSCP mode
+>=20
+> dscp enables copying of a DSCP store in the conntrack mark into the
+> ipv4/v6 diffserv field.  The mask is a 32bit field and specifies where
+> in the conntrack mark the DSCP value is stored.  It must be 6 contiguous
+> bits long, e.g. 0xfc000000 would restore the DSCP from the upper 6 bits
+> of the conntrack mark.
+>=20
+> The DSCP copying may be optionally controlled by a statemask.  The
+> statemask is a 32bit field, usually with a single bit set and must not
+> overlap the dscp mask.  The DSCP restore operation will only take place
+> if the corresponding bit/s in conntrack mark yield a non zero result.
+>=20
+> eg. dscp 0xfc000000/0x01000000 would retrieve the DSCP from the top 6
+> bits, whilst using bit 25 as a flag to do so.  Bit 26 is unused in this
+> example.
+>=20
+> CPMARK mode
+>=20
+> cpmark enables copying of the conntrack mark to the packet skb mark.  In
+> this mode it is completely equivalent to the existing act_connmark.
+> Additional functionality is provided by the optional mask parameter,
+> whereby the stored conntrack mark is logically anded with the cpmark
+> mask before being stored into skb mark.  This allows shared usage of the
+> conntrack mark between applications.
+>=20
+> eg. cpmark 0x00ffffff would restore only the lower 24 bits of the
+> conntrack mark, thus may be useful in the event that the upper 8 bits
+> are used by the DSCP function.
+>=20
+> Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE]
+> 		  [CONTROL] [index <INDEX>]
+> where :
+> 	dscp MASK is the bitmask to restore DSCP
+> 	     STATEMASK is the bitmask to determine conditional restoring
+> 	cpmark MASK mask applied to restored packet mark
+> 	ZONE is the conntrack zone
+> 	CONTROL :=3D reclassify | pipe | drop | continue | ok |
+> 		   goto chain <CHAIN_INDEX>
+>=20
+> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-One way to fix these warnings is to add additional braces like Clang
-suggests; however, there has been a bit of push back from some
-maintainers[1][2], who just prefer memset as it is unambiguous, doesn't
-depend on a particular compiler version[3], and properly initializes all
-subobjects. Do that here so there are no more warnings.
-
-[1]: https://lore.kernel.org/lkml/022e41c0-8465-dc7a-a45c-64187ecd9684@amd.com/
-[2]: https://lore.kernel.org/lkml/20181128.215241.702406654469517539.davem@davemloft.net/
-[3]: https://lore.kernel.org/lkml/20181116150432.2408a075@redhat.com/
-
-Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
-Link: https://github.com/ClangBuiltLinux/linux/issues/505
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/ethernet/mscc/ocelot_ace.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
-index afbeb837a372..34d8260b8cb8 100644
---- a/drivers/net/ethernet/mscc/ocelot_ace.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ace.c
-@@ -332,10 +332,13 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
- {
- 	u32 val, msk, type, type_mask = 0xf, i, count;
- 	struct ocelot_ace_vlan *tag = &ace->vlan;
--	struct ocelot_vcap_u64 payload = { 0 };
--	struct vcap_data data = { 0 };
-+	struct ocelot_vcap_u64 payload;
-+	struct vcap_data data;
- 	int row = (ix / 2);
- 
-+	memset(&payload, 0, sizeof(payload));
-+	memset(&data, 0, sizeof(data));
-+
- 	/* Read row */
- 	vcap_row_cmd(ocelot, row, VCAP_CMD_READ, VCAP_SEL_ALL);
- 	vcap_cache2entry(ocelot, &data);
-@@ -680,10 +683,12 @@ static void ocelot_ace_rule_del(struct ocelot_acl_block *block,
- 
- int ocelot_ace_rule_offload_del(struct ocelot_ace_rule *rule)
- {
--	struct ocelot_ace_rule del_ace = { 0 };
-+	struct ocelot_ace_rule del_ace;
- 	struct ocelot_ace_rule *ace;
- 	int i, index;
- 
-+	memset(&del_ace, 0, sizeof(del_ace));
-+
- 	/* Gets index of the rule */
- 	index = ocelot_ace_rule_get_index_id(acl_block, rule);
- 
-@@ -740,8 +745,9 @@ static void ocelot_acl_block_destroy(struct ocelot_acl_block *block)
- 
- int ocelot_ace_init(struct ocelot *ocelot)
- {
--	struct vcap_data data = { 0 };
-+	struct vcap_data data;
- 
-+	memset(&data, 0, sizeof(data));
- 	vcap_entry2cache(ocelot, &data);
- 	ocelot_write(ocelot, vcap_is2.entry_count, S2_CORE_MV_CFG);
- 	vcap_cmd(ocelot, 0, VCAP_CMD_INITIALIZE, VCAP_SEL_ENTRY);
--- 
-2.22.0.rc3
-
+How about a man page update?
