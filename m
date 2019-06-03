@@ -2,65 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CC47332FE
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:01:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1DC033343
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 17:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729333AbfFCPBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 11:01:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50728 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729038AbfFCPBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 11:01:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=alJ1LnKHdTrSERDEsnCav6Cl9EFgdbgEAHodmjMaerw=; b=RBLl4e3b4qaAknaEE/9kgU17EQ
-        eiDB8AGRAF4E2p85V5dW0xTKmFGrBQ2JBrwj2swrhf9ZRD+1HPHMhbcik5TBjKueQaSlccq79Rr4K
-        yKyC1HT3nezO+EKIbaNcBFbtbrhbaiaN6JGH9/KJ3726yBAqfzGw4LxL1YvjABoTYEBU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hXoSk-0005yA-1l; Mon, 03 Jun 2019 17:01:26 +0200
-Date:   Mon, 3 Jun 2019 17:01:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 06/10] net: dsa: mv88e6xxx: implement
- port_set_speed for mv88e6250
-Message-ID: <20190603150126.GE19627@lunn.ch>
-References: <20190603144112.27713-1-rasmus.villemoes@prevas.dk>
- <20190603144112.27713-7-rasmus.villemoes@prevas.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603144112.27713-7-rasmus.villemoes@prevas.dk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1729353AbfFCPP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 11:15:56 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60754 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729081AbfFCPPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 11:15:55 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x53FFa9m107754
+        for <netdev@vger.kernel.org>; Mon, 3 Jun 2019 11:15:54 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2sw4yhktns-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 11:15:54 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Mon, 3 Jun 2019 16:05:36 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 3 Jun 2019 16:05:33 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x53F5Wkj48627950
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 3 Jun 2019 15:05:32 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 553314C050;
+        Mon,  3 Jun 2019 15:05:32 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 070E74C04A;
+        Mon,  3 Jun 2019 15:05:32 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  3 Jun 2019 15:05:31 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net 0/4] s390/qeth: fixes 2019-06-03
+Date:   Mon,  3 Jun 2019 17:04:42 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19060315-0016-0000-0000-00000283391F
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060315-0017-0000-0000-000032E04444
+Message-Id: <20190603150446.23351-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_11:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906030106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 02:42:19PM +0000, Rasmus Villemoes wrote:
-> The data sheet also mentions the possibility of selecting 200 Mbps for
-> the MII ports (ports 5 and 6) by setting the ForceSpd field to
-> 0x2 (aka MV88E6065_PORT_MAC_CTL_SPEED_200). However, there's a note
-> that "actual speed is determined by bit 8 above", and flipping back a
-> page, one finds that bits 13:8 are reserved...
-> 
-> So without further information on what bit 8 means, let's stick to
-> supporting just 10 and 100 Mbps on all ports.
+Hi Dave,
 
-200Mbps is also somewhat Marvell Proprietary. I've not seen any other
-vendors interfaces supporting it. So i don't think anybody will really
-miss it.
+please apply the following set of qeth fixes to -net.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+- The first two patches fix issues in the L3 driver's cast type
+  selection for transmitted skbs.
+- Alexandra adds a sanity check when retrieving VLAN information from
+  neighbour address events.
+- The last patch adds some missing error handling for qeth's new
+  multiqueue code.
 
-    Andrew
+Thanks,
+Julian
+
+
+Alexandra Winter (1):
+  s390/qeth: fix VLAN attribute in bridge_hostnotify udev event
+
+Julian Wiedmann (3):
+  s390/qeth: handle limited IPv4 broadcast in L3 TX path
+  s390/qeth: don't use obsolete dst entry
+  s390/qeth: handle error when updating TX queue count
+
+ drivers/s390/net/qeth_core.h      |  2 +-
+ drivers/s390/net/qeth_core_main.c | 22 ++++++++----
+ drivers/s390/net/qeth_l2_main.c   |  2 +-
+ drivers/s390/net/qeth_l3_main.c   | 59 +++++++++++++++++++------------
+ 4 files changed, 55 insertions(+), 30 deletions(-)
+
+-- 
+2.17.1
+
