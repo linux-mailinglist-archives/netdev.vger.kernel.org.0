@@ -2,220 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC8D32723
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 06:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F12173271F
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 06:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfFCEI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 00:08:28 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:36640 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbfFCEI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 00:08:26 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x533woA6038839;
-        Mon, 3 Jun 2019 04:08:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=0zpR9rEIAG3te1kwJxUIvUthSABVNqzMGkJNMU8O2vA=;
- b=oJvCkCdX4D0iM0CoYbQsqgsGpSOBtMSPxffFwD6LKuLoYUmtYgKwa0tFtwPz0zRNHg66
- zsN331ootGuvpMuZMexT39/QcexUKOKxHEsxUSvdBvotQkYWf5pg09X8zJVp9xVWcsC2
- BrCW+j/NXp7XUCjz9VZlpKO+aPvWc8T1q8dIMn8SFQnm8lUUGH9PvlV1Zqk025VXHQPS
- FlbAW4flnmU8h/GcoxM++1CKBmGUbNAnAF8TniUiI0xgAzcUoWi/13lGaPLM+gEnvNKB
- SaRAMau735BVsiigqsypFxuolg49feIwr8hZ+RKxCqBQ6jInT4uvOuIQuT6HEMNuEl0B bA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2sugst4ek7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Jun 2019 04:08:16 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5348Gl1061418;
-        Mon, 3 Jun 2019 04:08:16 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2svnn82frn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 03 Jun 2019 04:08:16 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x5348FAL061405;
-        Mon, 3 Jun 2019 04:08:15 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2svnn82frc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Jun 2019 04:08:15 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5348Ev2005113;
-        Mon, 3 Jun 2019 04:08:14 GMT
-Received: from [10.182.69.170] (/10.182.69.170)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 02 Jun 2019 21:08:14 -0700
-Subject: Re: [PATCH 1/1] net: rds: add per rds connection cache statistics
-To:     "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        rds-devel@oss.oracle.com
-References: <1559375674-17913-1-git-send-email-yanjun.zhu@oracle.com>
- <c9164a0b-fb6f-b3ab-1d38-76413e4820b2@oracle.com>
-From:   Yanjun Zhu <yanjun.zhu@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <3552e6e4-7dde-51c7-aee6-005fbccfbf4e@oracle.com>
-Date:   Mon, 3 Jun 2019 12:08:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <c9164a0b-fb6f-b3ab-1d38-76413e4820b2@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9276 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906030027
+        id S1726314AbfFCEIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 00:08:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42374 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725818AbfFCEIT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 00:08:19 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C7A9027B30;
+        Mon,  3 Jun 2019 04:08:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559534899;
+        bh=ajG/F0kP1NlQuljlN6U/Olvuz7yQqibG3MWLzLB49p8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bH76ofwqQq+qXCdWWQcDOrH4yMn/Xy5JvHiUgEidFTWfL5BFXvCG5Exwex06ipDUh
+         5D3ynKai4X6QOCQJmkxJ02ZNc8W7KI8gLlXKNXLzqkEpZi3r9nCm1EslXosxrAL9q/
+         j1mFtMW4uOaBf3KiZoj9xeWTjzI5FM6eXB4l+u3I=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, saeedm@mellanox.com, kafai@fb.com,
+        weiwan@google.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v2 net-next 0/7] net: add struct nexthop to fib{6}_info
+Date:   Sun,  2 Jun 2019 21:08:10 -0700
+Message-Id: <20190603040817.4825-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: David Ahern <dsahern@gmail.com>
 
-On 2019/6/3 11:03, santosh.shilimkar@oracle.com wrote:
-> On 6/1/19 12:54 AM, Zhu Yanjun wrote:
->> The variable cache_allocs is to indicate how many frags (KiB) are in one
->> rds connection frag cache.
->> The command "rds-info -Iv" will output the rds connection cache
->> statistics as below:
->> "
->> RDS IB Connections:
->>        LocalAddr RemoteAddr Tos SL  LocalDev RemoteDev
->>        1.1.1.14 1.1.1.14   58 255  fe80::2:c903:a:7a31 
->> fe80::2:c903:a:7a31
->>        send_wr=256, recv_wr=1024, send_sge=8, rdma_mr_max=4096,
->>        rdma_mr_size=257, cache_allocs=12
->> "
->> This means that there are about 12KiB frag in this rds connection frag
->>   cache.
->>
->> Tested-by: RDS CI <rdsci_oslo@no.oracle.com>
-> Please add some valid email id or drop above. Its expected
-> that with SOB, patches are tested before testing.
+This sets adds 'struct nexthop' to fib_info and fib6_info. IPv4
+already handles multiple fib_nh entries in a single fib_info, so
+the conversion to use a nexthop struct is fairly mechanical. IPv6
+using a nexthop struct with a fib6_info impacts a lot of core logic
+which is built around the assumption of a single, builtin fib6_nh
+per fib6_info. To make this easier to review, this set adds
+nexthop to fib6_info and adds checks in most places fib6_info is
+used. The next set finishes the IPv6 conversion, walking through
+the places that need to consider all fib6_nh within a nexthop struct.
 
-Thanks for review.
+Offload drivers - mlx5, mlxsw and rocker - are changed to fail FIB
+entries using nexthop objects. That limitation can be removed once
+the drivers are updated to properly support separate nexthops.
 
-OK. I will remove this in V2.
+This set starts by adding accessors for fib_nh and fib_nhs in a
+fib_info. This makes it easier to extract the number of nexthops
+in the fib entry and a specific fib_nh once the entry references
+a struct nexthop. Patch 2 converts more of IPv4 code to use
+fib_nh_common allowing a struct nexthop to use a fib6_nh with an
+IPv4 entry.
 
->
->> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
->> ---
->>   include/uapi/linux/rds.h | 2 ++
->>   net/rds/ib.c             | 2 ++
->>   2 files changed, 4 insertions(+)
->>
->> diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
->> index 5d0f76c..fd6b5f6 100644
->> --- a/include/uapi/linux/rds.h
->> +++ b/include/uapi/linux/rds.h
->> @@ -250,6 +250,7 @@ struct rds_info_rdma_connection {
->>       __u32        rdma_mr_max;
->>       __u32        rdma_mr_size;
->>       __u8        tos;
->> +    __u32        cache_allocs;
-> Some of this header file changes, how is taking care of backward
-> compatibility with tooling ? 
+Patches 3 and 4 add 'struct nexthop' to fib{6}_info and update
+references to both take a different path when it is set. New
+exported functions are added to the nexthop code to validate a
+nexthop struct when configured for use with a fib entry. IPv4
+is allowed to use a nexthop with either v4 or v6 entries. IPv6
+is limited to v6 entries only. In both cases list_heads track
+the fib entries using a nexthop struct for fast correlation on
+events (e.g., device events or nexthop events like delete or
+replace).
 
-Just now I made tests with rds-tools.
+The last 3 patches add hooks to drivers listening for FIB
+notificationas. All 3 of them reject the routes as unsupported,
+returning an error message to the user via extack. For mlxsw
+at least this is a stop gap measure until the driver is updated for
+proper support.
 
-In this commit
+Functional tests for nexthops have already been committed. Those tests
+will be active after the next patch set which makes the code paths
+created by this set and the next one live.
 
-"
+Existing code paths moved to the else branch of 'if (f{6}i->nh)' checks
+are covered by existing tests under selftests/net.
 
-commit 6c03b61e9097098d35b4c2be16d0f0f9f8357112
-Author: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Date:   Wed Mar 9 04:30:48 2016 -0800
+v2
+- no code changes from v1
+- commit messages for first 4 patches updated
 
-     rds-tools: sync up sources with 2.0.7-1.16
-"
+David Ahern (7):
+  ipv4: Use accessors for fib_info nexthop data
+  ipv4: Prepare for fib6_nh from a nexthop object
+  ipv4: Plumb support for nexthop object in a fib_info
+  ipv6: Plumb support for nexthop object in a fib6_info
+  mlxsw: Fail attempts to use routes with nexthop objects
+  mlx5: Fail attempts to use routes with nexthop objects
+  rocker: Fail attempts to use routes with nexthop objects
 
-cache_allocs is added into rds-tools. The diff is as below.
+ drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c   |  33 ++-
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c  |  33 ++-
+ drivers/net/ethernet/rocker/rocker_main.c          |   4 +
+ drivers/net/ethernet/rocker/rocker_ofdpa.c         |  25 +-
+ include/net/ip6_fib.h                              |  11 +-
+ include/net/ip6_route.h                            |  13 +-
+ include/net/ip_fib.h                               |  25 +-
+ include/net/nexthop.h                              | 113 +++++++++
+ net/core/filter.c                                  |   3 +-
+ net/ipv4/fib_frontend.c                            |  15 +-
+ net/ipv4/fib_lookup.h                              |   1 +
+ net/ipv4/fib_rules.c                               |   8 +-
+ net/ipv4/fib_semantics.c                           | 257 ++++++++++++++-------
+ net/ipv4/fib_trie.c                                |  38 ++-
+ net/ipv4/nexthop.c                                 | 111 ++++++++-
+ net/ipv4/route.c                                   |   5 +-
+ net/ipv6/addrconf.c                                |   5 +
+ net/ipv6/ip6_fib.c                                 |  22 +-
+ net/ipv6/ndisc.c                                   |   3 +-
+ net/ipv6/route.c                                   | 156 +++++++++++--
+ 20 files changed, 706 insertions(+), 175 deletions(-)
 
-"
+-- 
+2.11.0
 
-@@ -176,6 +191,9 @@ struct rds_info_rdma_connection {
-         uint32_t        max_send_sge;
-         uint32_t        rdma_mr_max;
-         uint32_t        rdma_mr_size;
-+       uint8_t         tos;
-+       uint8_t         sl;
-+       uint32_t        cache_allocs;
-  };
-"
-Then this cache_allocs does not exist in rds-tools 2.0.6 and rds-tools 
-2.0.5.
-
-I made tests with 2.0.5 and 2.0.6
-
-"
-
-rds-info -V
-rds-info: Invalid option '-V'
-rds-info version 2.0.5
-
-[root@ca-dev14 rds-tools]# rds-info -Iv
-
-RDS IB Connections:
-       LocalAddr      RemoteAddr LocalDev                        RemoteDev
-        1.1.1.14        1.1.1.14 fe80::2:c903:a:7a31              
-fe80::2:c903:a:7a31  send_wr=256, recv_wr=1024, send_sge=8, 
-rdma_mr_max=4096, rdma_mr_size=257
-"
-
-"
-
-[root@ca-dev14 rds-tools]# rds-info -V
-rds-info: Invalid option '-V'
-rds-info version 2.0.6
-
-[root@ca-dev14 rds-tools]# rds-info -Iv
-
-RDS IB Connections:
-       LocalAddr      RemoteAddr LocalDev                        RemoteDev
-        1.1.1.14        1.1.1.14 fe80::2:c903:a:7a31              
-fe80::2:c903:a:7a31  send_wr=256, recv_wr=1024, send_sge=8, 
-rdma_mr_max=4096, rdma_mr_size=257
-"
-
- From output of rds-tools 2.0.5 and 2.0.6, cache_allocs does not appear 
-since cache_allocs does not exist in struct rds_info_rdma_connection.
-
-But in rds-tools 2.0.7, cache_allocs exists in struct 
-rds_info_rdma_connection.
-
-"
-
-[root@ca-dev14 rds-tools]# rds-info -V
-rds-info: invalid option -- 'V'
-
-rds-info version 2.0.7
-
-[root@ca-dev14 rds-tools]# rds-info -Iv
-
-RDS IB Connections:
-       LocalAddr      RemoteAddr  Tos  SL 
-LocalDev                        RemoteDev
-        1.1.1.14        1.1.1.14    5 255 
-fe80::2:c903:a:7a31              fe80::2:c903:a:7a31  send_wr=256, 
-recv_wr=1024, send_sge=8, rdma_mr_max=4096, rdma_mr_size=257, 
-cache_allocs=12
-"
-
-So do not worry about backward compatibility.  This commit will work 
-well with older rds-tools2.0.5 and 2.0.6.
-
-I will send V2 soon.
-
-Thanks
-
-Zhu Yanjun
-
-> This was one of the reason, the
-> all the fields are not updated.
->
-> Regards,
-> Santosh
