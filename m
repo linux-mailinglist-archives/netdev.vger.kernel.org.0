@@ -2,175 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54970326C1
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32602326D4
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726837AbfFCCqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 22:46:54 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:44096 "EHLO deadmen.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbfFCCqx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Jun 2019 22:46:53 -0400
-Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
-        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1hXczn-0007pq-Vp; Mon, 03 Jun 2019 10:46:48 +0800
-Received: from herbert by gondobar with local (Exim 4.89)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1hXczg-0001y1-8M; Mon, 03 Jun 2019 10:46:40 +0800
-Date:   Mon, 3 Jun 2019 10:46:40 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Message-ID: <20190603024640.2soysu4rpkwjuash@gondor.apana.org.au>
-References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
- <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
- <20150910171649.GE4029@linux.vnet.ibm.com>
- <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
- <20150921193045.GA13674@lerouge>
- <20150921204327.GH4029@linux.vnet.ibm.com>
- <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
- <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
+        id S1726606AbfFCDDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 23:03:20 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:51224 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbfFCDDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:03:20 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x532rwZk018629;
+        Mon, 3 Jun 2019 03:03:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
+ references : cc : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=6ylz5I4VHlNveusG0wbyKoE8rzqoR1wJmxiYoM6U6yA=;
+ b=SHn27NHI/y4pNhAQCv8LH29upSuVAMEYlDyrTqPTb7lHflcToYcd/FNpvINvZh/yadhl
+ Uks5xXxKHg7B5nfPdvxQQl0wO4IyHR1tW0ttoaUk6pJa1tFVfNHpqTXdk93VFmaYlOdn
+ vNXuY5DFVDtIlqiUGCp7yiPtlnUd10xnGKGfFylVaIdc9bKUbevskUF4p3ICsuF2LIYa
+ D/PyYDOOi7RAnvYgk6KCgUnFLI1r8zTqRC64b/RMRn1LeKZY4qXzYPBgQY4VY7lfpjl9
+ JLrNngxSqA+gsBV8X03ijARN5LhwKAWR1UoRXxm800xLQ0onT3vpgXxudQKj2x3iU1WF OA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2130.oracle.com with ESMTP id 2suevd4gkn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 Jun 2019 03:03:12 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5332o3q085675;
+        Mon, 3 Jun 2019 03:03:12 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2svbbuwcrk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 03 Jun 2019 03:03:12 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x5333BvH086136;
+        Mon, 3 Jun 2019 03:03:11 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 2svbbuwcre-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 Jun 2019 03:03:11 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5333Aoh024863;
+        Mon, 3 Jun 2019 03:03:10 GMT
+Received: from santoshs-mbp-3.lan (/69.181.241.203)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 02 Jun 2019 20:03:10 -0700
+Subject: Re: [PATCH 1/1] net: rds: add per rds connection cache statistics
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>
+References: <1559375674-17913-1-git-send-email-yanjun.zhu@oracle.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com
+From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <c9164a0b-fb6f-b3ab-1d38-76413e4820b2@oracle.com>
+Date:   Sun, 2 Jun 2019 20:03:02 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whLGKOmM++OQi5GX08_dfh8Xfz9Wq7khPo+MVtPYh_8hw@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <1559375674-17913-1-git-send-email-yanjun.zhu@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9276 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906030019
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 02, 2019 at 01:54:12PM -0700, Linus Torvalds wrote:
-> On Sat, Jun 1, 2019 at 10:56 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> >
-> > You can't then go and decide to remove the compiler barrier!  To do
-> > that you'd need to audit every single use of rcu_read_lock in the
-> > kernel to ensure that they're not depending on the compiler barrier.
+On 6/1/19 12:54 AM, Zhu Yanjun wrote:
+> The variable cache_allocs is to indicate how many frags (KiB) are in one
+> rds connection frag cache.
+> The command "rds-info -Iv" will output the rds connection cache
+> statistics as below:
+> "
+> RDS IB Connections:
+>        LocalAddr RemoteAddr Tos SL  LocalDev            RemoteDev
+>        1.1.1.14 1.1.1.14   58 255  fe80::2:c903:a:7a31 fe80::2:c903:a:7a31
+>        send_wr=256, recv_wr=1024, send_sge=8, rdma_mr_max=4096,
+>        rdma_mr_size=257, cache_allocs=12
+> "
+> This means that there are about 12KiB frag in this rds connection frag
+>   cache.
 > 
-> What's the possible case where it would matter when there is no preemption?
+> Tested-by: RDS CI <rdsci_oslo@no.oracle.com>
+Please add some valid email id or drop above. Its expected
+that with SOB, patches are tested before testing.
 
-The case we were discussing is from net/ipv4/inet_fragment.c from
-the net-next tree:
+> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+> ---
+>   include/uapi/linux/rds.h | 2 ++
+>   net/rds/ib.c             | 2 ++
+>   2 files changed, 4 insertions(+)
+> 
+> diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
+> index 5d0f76c..fd6b5f6 100644
+> --- a/include/uapi/linux/rds.h
+> +++ b/include/uapi/linux/rds.h
+> @@ -250,6 +250,7 @@ struct rds_info_rdma_connection {
+>   	__u32		rdma_mr_max;
+>   	__u32		rdma_mr_size;
+>   	__u8		tos;
+> +	__u32		cache_allocs;
+Some of this header file changes, how is taking care of backward
+compatibility with tooling ? This was one of the reason, the
+all the fields are not updated.
 
-void fqdir_exit(struct fqdir *fqdir)
-{
-	...
-	fqdir->dead = true;
-
-	/* call_rcu is supposed to provide memory barrier semantics,
-	 * separating the setting of fqdir->dead with the destruction
-	 * work.  This implicit barrier is paired with inet_frag_kill().
-	 */
-
-	INIT_RCU_WORK(&fqdir->destroy_rwork, fqdir_rwork_fn);
-	queue_rcu_work(system_wq, &fqdir->destroy_rwork);
-}
-
-and
-
-void inet_frag_kill(struct inet_frag_queue *fq)
-{
-		...
-		rcu_read_lock();
-		/* The RCU read lock provides a memory barrier
-		 * guaranteeing that if fqdir->dead is false then
-		 * the hash table destruction will not start until
-		 * after we unlock.  Paired with inet_frags_exit_net().
-		 */
-		if (!fqdir->dead) {
-			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
-					       fqdir->f->rhash_params);
-			...
-		}
-		...
-		rcu_read_unlock();
-		...
-}
-
-I simplified this to
-
-Initial values:
-
-a = 0
-b = 0
-
-CPU1				CPU2
-----				----
-a = 1				rcu_read_lock
-synchronize_rcu			if (a == 0)
-b = 2					b = 1
-				rcu_read_unlock
-
-On exit we want this to be true:
-b == 2
-
-Now what Paul was telling me is that unless every memory operation
-is done with READ_ONCE/WRITE_ONCE then his memory model shows that
-the exit constraint won't hold.  IOW, we need
-
-CPU1				CPU2
-----				----
-WRITE_ONCE(a, 1)		rcu_read_lock
-synchronize_rcu			if (READ_ONCE(a) == 0)
-WRITE_ONCE(b, 2)			WRITE_ONCE(b, 1)
-				rcu_read_unlock
-
-Now I think this bullshit because if we really needed these compiler
-barriers then we surely would need real memory barriers to go with
-them.
-
-In fact, the sole purpose of the RCU mechanism is to provide those
-memory barriers.  Quoting from
-Documentation/RCU/Design/Requirements/Requirements.html:
-
-<li>	Each CPU that has an RCU read-side critical section that
-	begins before <tt>synchronize_rcu()</tt> starts is
-	guaranteed to execute a full memory barrier between the time
-	that the RCU read-side critical section ends and the time that
-	<tt>synchronize_rcu()</tt> returns.
-	Without this guarantee, a pre-existing RCU read-side critical section
-	might hold a reference to the newly removed <tt>struct foo</tt>
-	after the <tt>kfree()</tt> on line&nbsp;14 of
-	<tt>remove_gp_synchronous()</tt>.
-<li>	Each CPU that has an RCU read-side critical section that ends
-	after <tt>synchronize_rcu()</tt> returns is guaranteed
-	to execute a full memory barrier between the time that
-	<tt>synchronize_rcu()</tt> begins and the time that the RCU
-	read-side critical section begins.
-	Without this guarantee, a later RCU read-side critical section
-	running after the <tt>kfree()</tt> on line&nbsp;14 of
-	<tt>remove_gp_synchronous()</tt> might
-	later run <tt>do_something_gp()</tt> and find the
-	newly deleted <tt>struct foo</tt>.
-
-My review of the RCU code shows that these memory barriers are
-indeed present (at least when we're not in tiny mode where all
-this discussion would be moot anyway).  For example, in call_rcu
-we eventually get down to rcu_segcblist_enqueue which has an smp_mb.
-On the reader side (correct me if I'm wrong Paul) the memory
-barrier is implicitly coming from the scheduler.
-
-My point is that within our kernel whenever we have a CPU memory
-barrier we always have a compiler barrier too.  Therefore my code
-example above does not need any extra compiler barriers such as
-the ones provided by READ_ONCE/WRITE_ONCE.
-
-I think perhaps Paul was perhaps thinking that I'm expecting
-rcu_read_lock/rcu_read_unlock themselves to provide the memory
-or compiler barriers.  That would indeed be wrong but this is
-not what I need.  All I need is the RCU semantics as documented
-for there to be memory and compiler barriers around the whole
-grace period.
-
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Regards,
+Santosh
