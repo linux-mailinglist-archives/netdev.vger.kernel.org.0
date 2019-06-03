@@ -2,114 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB42330A3
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE6C330D4
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728330AbfFCNIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 09:08:50 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45050 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727841AbfFCNIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:08:50 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hXmhf-0000SK-K6; Mon, 03 Jun 2019 15:08:43 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hXmhf-0007wD-54; Mon, 03 Jun 2019 15:08:43 +0200
-Subject: Re: [PATCH bpf v2] bpf: preallocate a perf_sample_data per event fd
-To:     Matt Mullins <mmullins@fb.com>, hall@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-References: <20190531223735.4998-1-mmullins@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6c6a4d47-796a-20e2-eb12-503a00d1fa0b@iogearbox.net>
-Date:   Mon, 3 Jun 2019 15:08:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <20190531223735.4998-1-mmullins@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25469/Mon Jun  3 09:59:22 2019)
+        id S1728239AbfFCNTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 09:19:16 -0400
+Received: from mail-lj1-f172.google.com ([209.85.208.172]:38434 "EHLO
+        mail-lj1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726336AbfFCNTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:19:16 -0400
+Received: by mail-lj1-f172.google.com with SMTP id o13so16157287lji.5
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 06:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=3gu1j9RhXlTqQguks8O7Dvrlo91jcb2ezpz6/2M5UY4=;
+        b=TK6+IuLy+cm5YkxH5+7ENAAEpCagNcCjRlL8cj2m0UBV7AK6XhESa2q7nDtJHU/ghw
+         9cx7wy+rEmMiQYQprtRluwz+or5BXml1u7GZbq4BAcF28lssdSMa+AkHRma0KpU43OnN
+         bRtZDVmB9e3H9rGtyj8Dhgk+EfcgRTjYoKKJVvikH2YEAD3Cpq1Vatzymxha8hVMGTeY
+         kk4XRRz60MwmOfqDnjacZxD/CNhercvH5z8j7ktDSTlpsz7fUC6fsmVTmLHUI9l/qz2G
+         4J1nbqtiV49//vOnBcLaFAS+l0iaHlI5D1xY5z3rSToGNaz/uQJc48Qb+tIY/KXcuzi+
+         rvyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3gu1j9RhXlTqQguks8O7Dvrlo91jcb2ezpz6/2M5UY4=;
+        b=C1OyCNqZT2p4bOyXccouW2gBj20BLCOG0P5zgArA2TkX5K+iyMrbx9Fvkl0axLcxM2
+         7f5/sxyskvxUzwZy82PwHaQFxCqh9QVm0rzkrrK08E7GaMs/3AzrAjTo4IaNDO1q043g
+         Fzn+zuIiDdTsna7n8Ua2npgTBFtYbu8X24DkuLe0DasEgFo6YI39tEja4vOBu+ViyRll
+         4U2VE9Np9yC9fGDytbAj9SC5MjgGRmgaUhSak3ifCVxm/e4LG+u46N3PeAuvvWuFih4G
+         m9mTqGT/JpZNuXEPdXX874WmMYVeseqxMaFkLVhOQRMk/mmf1eqdnUNiAHqlYfYrQT7K
+         pLDQ==
+X-Gm-Message-State: APjAAAX+g/fl8kseVbckGE2rHMvAnpzsniO1OikALyKOtdJw5qyyC6bF
+        YGZ10U2o4BFzlx7WVTzrCIs=
+X-Google-Smtp-Source: APXvYqzswHcl9tpcP4CEdvLyGcAEdp2U7FhD/2WEpX2Nl7GUk2w6DvJKnvHbM0lE6u4GV26jZAOjaw==
+X-Received: by 2002:a2e:9919:: with SMTP id v25mr9668699lji.191.1559567953842;
+        Mon, 03 Jun 2019 06:19:13 -0700 (PDT)
+Received: from localhost.localdomain (host-185-93-94-143.ip-point.pl. [185.93.94.143])
+        by smtp.gmail.com with ESMTPSA id 20sm577808ljf.21.2019.06.03.06.19.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 03 Jun 2019 06:19:13 -0700 (PDT)
+From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+X-Google-Original-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        jonathan.lemon@gmail.com, songliubraving@fb.com
+Subject: [RFC PATCH bpf-next 0/4] libbpf: xsk improvements
+Date:   Mon,  3 Jun 2019 15:19:03 +0200
+Message-Id: <20190603131907.13395-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.16.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/01/2019 12:37 AM, Matt Mullins wrote:
-> It is possible that a BPF program can be called while another BPF
-> program is executing bpf_perf_event_output.  This has been observed with
-> I/O completion occurring as a result of an interrupt:
-> 
-> 	bpf_prog_247fd1341cddaea4_trace_req_end+0x8d7/0x1000
-> 	? trace_call_bpf+0x82/0x100
-> 	? sch_direct_xmit+0xe2/0x230
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? kprobe_perf_func+0x19b/0x240
-> 	? __qdisc_run+0x86/0x520
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? kprobe_ftrace_handler+0x90/0xf0
-> 	? ftrace_ops_assist_func+0x6e/0xe0
-> 	? ip6_input_finish+0xbf/0x460
-> 	? 0xffffffffa01e80bf
-> 	? nbd_dbg_flags_show+0xc0/0xc0 [nbd]
-> 	? blkdev_issue_zeroout+0x200/0x200
-> 	? blk_mq_end_request+0x1/0x100
-> 	? blk_mq_end_request+0x5/0x100
-> 	? flush_smp_call_function_queue+0x6c/0xe0
-> 	? smp_call_function_single_interrupt+0x32/0xc0
-> 	? call_function_single_interrupt+0xf/0x20
-> 	? call_function_single_interrupt+0xa/0x20
-> 	? swiotlb_map_page+0x140/0x140
-> 	? refcount_sub_and_test+0x1a/0x50
-> 	? tcp_wfree+0x20/0xf0
-> 	? skb_release_head_state+0x62/0xc0
-> 	? skb_release_all+0xe/0x30
-> 	? napi_consume_skb+0xb5/0x100
-> 	? mlx5e_poll_tx_cq+0x1df/0x4e0
-> 	? mlx5e_poll_tx_cq+0x38c/0x4e0
-> 	? mlx5e_napi_poll+0x58/0xc30
-> 	? mlx5e_napi_poll+0x232/0xc30
-> 	? net_rx_action+0x128/0x340
-> 	? __do_softirq+0xd4/0x2ad
-> 	? irq_exit+0xa5/0xb0
-> 	? do_IRQ+0x7d/0xc0
-> 	? common_interrupt+0xf/0xf
-> 	</IRQ>
-> 	? __rb_free_aux+0xf0/0xf0
-> 	? perf_output_sample+0x28/0x7b0
-> 	? perf_prepare_sample+0x54/0x4a0
-> 	? perf_event_output+0x43/0x60
-> 	? bpf_perf_event_output_raw_tp+0x15f/0x180
-> 	? blk_mq_start_request+0x1/0x120
-> 	? bpf_prog_411a64a706fc6044_should_trace+0xad4/0x1000
-> 	? bpf_trace_run3+0x2c/0x80
-> 	? nbd_send_cmd+0x4c2/0x690 [nbd]
-> 
-> This also cannot be alleviated by further splitting the per-cpu
-> perf_sample_data structs (as in commit 283ca526a9bd ("bpf: fix
-> corruption on concurrent perf_event_output calls")), as a raw_tp could
-> be attached to the block:block_rq_complete tracepoint and execute during
-> another raw_tp.  Instead, keep a pre-allocated perf_sample_data
-> structure per perf_event_array element and fail a bpf_perf_event_output
-> if that element is concurrently being used.
-> 
-> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_data")
-> Signed-off-by: Matt Mullins <mmullins@fb.com>
+Hello,
+This set contains fixes for libbpf's AF_XDP support. For patches 1-3 please
+have a look at commit messages, 4th patch needs a bit more discussion.
 
-You do not elaborate why is this needed for all the networking programs that
-use this functionality. The bpf_misc_sd should therefore be kept as-is. There
-cannot be nested occurrences there (xdp, tc ingress/egress). Please explain why
-non-tracing should be affected here...
+Patch 4 tries to address the issue of dangling xsksocks in case when there were
+many instances of those running on a particular interface and one of them got
+removed. The case is that we don't keep an information about how many entries
+are currently used in eBPF maps, so there's a need for having an external
+counter, or we could just be traversing the map via
+bpf_map_get_next_key/bpf_map_lookup_elem syscall combination, but IMHO that's a
+no-go since the maps used in libbpf's xsk get preallocated entries. The count
+of entries is equal to number of HW queues present on a working interface,
+which means many unnecessary operations as CPUs are getting more and more cores
+and normally NICs are allocating HW queue per CPU core.
+
+For xsk counter we could have for example additional entry in qidconf_map, but
+that map is removed in Jonathan's patches, so that's not an option. The
+resolution I gave a shot is to have a pinned map with a single entry. Further
+reasoning is included in commit message of fourth patch.
+
+Thanks!
+
+Maciej Fijalkowski (4):
+  libbpf: fill the AF_XDP fill queue before bind() call
+  libbpf: check for channels.max_{t,r}x in xsk_get_max_queues
+  libbpf: move xdp program removal to libbpf
+  libbpf: don't remove eBPF resources when other xsks are present
+
+ samples/bpf/xdpsock_user.c |  48 ++++--------------
+ tools/lib/bpf/xsk.c        | 124 +++++++++++++++++++++++++++++++++++++++------
+ tools/lib/bpf/xsk.h        |   1 +
+ 3 files changed, 120 insertions(+), 53 deletions(-)
+
+-- 
+2.16.1
+
