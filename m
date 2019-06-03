@@ -2,114 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 380A73352E
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 18:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5464133538
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 18:50:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729435AbfFCQmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 12:42:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53902 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726211AbfFCQmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 12:42:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B3319AE79;
-        Mon,  3 Jun 2019 16:42:13 +0000 (UTC)
-Subject: Re: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
-To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        Roy Pledge <roy.pledge@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jocke@infinera.com" <joakim.tjernlund@infinera.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
-References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
- <d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
- <VI1PR04MB5134BFA391D8FF013762882FEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
- <19cc3230-33b0-e465-6317-590780b33efa@suse.de>
- <VI1PR04MB5134E4DA6EA052BEBB3C26EFEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Openpgp: preference=signencrypt
-Organization: SUSE Linux GmbH
-Message-ID: <c237dd17-ed43-d2d0-c76c-0c1dbf859690@suse.de>
-Date:   Mon, 3 Jun 2019 18:42:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727501AbfFCQuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 12:50:40 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:43426 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726988AbfFCQuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 12:50:39 -0400
+Received: by mail-ed1-f66.google.com with SMTP id w33so27770712edb.10
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 09:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=knr8D4hkv6W6rhBQ8NuaEakh8/x/Td4aIAD4DhQpvog=;
+        b=ZhrCorZvgnAJ2nwagFq9ZtZ9aDeRlXcWbMDS86OLhjUvsgrQ8J7+VQ/usZoXTANU+W
+         snOic+GoBR/Ob+7OnV0TBL8BGVLk2oGxPrg2ctSWtqR+38hZ+WAxggqzhuehzQkfdjsE
+         UG1ZAToTOc/dBKkEhttLdiOP5TvVpDWs3j4RxA9tdjod3XXbILUx1PidKIdhbmnRXnga
+         6IL9bc0UYrOGbjPbYgr+CKxADD4Z4r5WlqH8EfWQEvjlFuikUDksR38OG90TpYMHQgqp
+         FVbEY1XpFet6nIAl/I0xFgJbO8ISuaZMEhz/X9xGljJgYv0munrE25+GBV5bVrpZGpOh
+         q1bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=knr8D4hkv6W6rhBQ8NuaEakh8/x/Td4aIAD4DhQpvog=;
+        b=bNe6U9AMPzESx/Gfg4EDGQT7vqfswOb5OJsmhyMFh5QwH1EUE3OZmscbFhnsFsUMVU
+         FTeVbzlODNhGxVVxJSRwtYaWBZVX0nuivuiNZWQHRJpBuVu71kRlxvH8URiikebin/Ws
+         Pzzi0f0qsgoxB8P61vkEd/TLbKm0GCQwHrqJjh77jENPHZ5zrAOrXVHh4/TsOnvCjCD2
+         /SWbDWynWPEaQrEKeAk8mK3AfBS/DbdHxtlpoFvp/BC6rv9aGVR6ll8yA9mZAZpIcK8R
+         9Q7TNFZyULCWiRf2ukr/wTqsZ3nLRtyVmOZdmiToImUNdqtmaJTzFZO85Ev26jEEgEsO
+         lAJw==
+X-Gm-Message-State: APjAAAVwRUW9spB5FVit6KrCEkcVKyurKdk940ukemS2njSpC/korhtk
+        PpVFK/UH7R1aL8aoq5zlqQROQSCHsWZjbqlBBjM=
+X-Google-Smtp-Source: APXvYqy/lJ5Vn0eBcQj9c+FOe4hX6WAd5ElukNQQzV3ixNjPpqwhUWySXue18PkaMEOGpVGrU0f62bID/EEAs+pB/4Y=
+X-Received: by 2002:a50:bdc2:: with SMTP id z2mr29951058edh.245.1559580638079;
+ Mon, 03 Jun 2019 09:50:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <VI1PR04MB5134E4DA6EA052BEBB3C26EFEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAADnVQJT8UJntO=pSYGN-eokuWGP_6jEeLkFgm2rmVvxmGtUCg@mail.gmail.com>
+ <65320e39-8ea2-29d8-b5f9-2de0c0c7e689@gmail.com> <CAADnVQ+KqC0XCgKSBcCHB8hgQroCq=JH7Pi5NN4B9hN3xtUvYw@mail.gmail.com>
+ <20190531.142936.1364854584560958251.davem@davemloft.net> <ace2225d-f0fe-03b3-12ee-b442265211dd@gmail.com>
+In-Reply-To: <ace2225d-f0fe-03b3-12ee-b442265211dd@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 3 Jun 2019 12:50:01 -0400
+Message-ID: <CAF=yD-LPpDZzgW8QezvoQ=R5zykQSRvsv74YEZQz1QVqUj0riA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/7] net: add struct nexthop to fib{6}_info
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>, weiwan@google.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 31.05.19 um 19:32 schrieb Laurentiu Tudor:
->> -----Original Message-----
->> From: Andreas Färber <afaerber@suse.de>
->> Sent: Friday, May 31, 2019 8:04 PM
->>
->> Hello Laurentiu,
->>
->> Am 31.05.19 um 18:46 schrieb Laurentiu Tudor:
->>>> -----Original Message-----
->>>> From: Andreas Färber <afaerber@suse.de>
->>>> Sent: Friday, May 31, 2019 7:15 PM
->>>>
->>>> Hi Laurentiu,
->>>>
->>>> Am 30.05.19 um 16:19 schrieb laurentiu.tudor@nxp.com:
->>>>> This patch series contains several fixes in preparation for SMMU
->>>>> support on NXP LS1043A and LS1046A chips. Once these get picked up,
->>>>> I'll submit the actual SMMU enablement patches consisting in the
->>>>> required device tree changes.
->>>>
->>>> Have you thought through what will happen if this patch ordering is not
->>>> preserved? In particular, a user installing a future U-Boot update with
->>>> the DTB bits but booting a stable kernel without this patch series -
->>>> wouldn't that regress dpaa then for our customers?
->>>>
->>>
->>> These are fixes for issues that popped out after enabling SMMU.
->>> I do not expect them to break anything.
->>
->> That was not my question! You're missing my point: All your patches are
->> lacking a Fixes header in their commit message, for backporting them, to
->> avoid _your DT patches_ breaking the driver on stable branches!
-> 
-> It does appear that I'm missing your point. For sure, the DT updates solely will
-> break the kernel without these fixes but I'm not sure I understand how this
-> could happen.
+On Fri, May 31, 2019 at 5:38 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 5/31/19 3:29 PM, David Miller wrote:
+> > David, can you add some supplementary information to your cover letter
+> > et al.  which seems to be part of what Alexei is asking for and seems
+> > quite reasonable?
+> >
+>
+> It is not clear to me what more is wanted in the cover letter.
 
-In short, customers rarely run master branch. Kindly have your
-colleagues explain stable branches to you in details.
+A bit late and people in this thread probably already do know the context.
 
-With Fixes header I was referring to the syntax explained here:
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
+But for those like me that did not: a summary or pointer to the
+overall goal and design would be informative. A search dug up the RFC
+from last year. That definitely helped me understand the intent a bit
+better.
 
-> My plan was to share the kernel dts patches sometime after this series
-> makes it through.
-
-That's fine. What I'm warning you is that seemingly your DT patches,
-once in one of your LSDK U-Boot releases, will cause a regression for
-distros like our SLES 15 SP1 unless these prereq kernel patches get
-applied on the respective stable branches. Which will not happen
-automatically unless you as patch author take the appropriate action
-before they get merged.
-
-Thanks,
-Andreas
-
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+   net: Improve route scalability via support for nexthop objects
+   https://lwn.net/Articles/763950/
