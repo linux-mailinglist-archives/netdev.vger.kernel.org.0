@@ -2,363 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FAD132CCF
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37DCF32CDB
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727915AbfFCJZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:25:32 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44241 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726684AbfFCJZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 05:25:32 -0400
-Received: by mail-qt1-f196.google.com with SMTP id x47so8454582qtk.11;
-        Mon, 03 Jun 2019 02:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ikUw+ytl/jsnVysIkbTsq+JT7D2M4qVQgPABHM/gxKE=;
-        b=XxTjOJqD3Br4gh80err34HV6TB5AmR6T+NOz+z+XUYCkqSwz9Td98UME/bEKUirK6V
-         wq7qD4sDgRFyBN+lKGUekEe+zcIME/d1YnfPQno+/8hhRjTkOFb854IqC6bjq75LM6c6
-         otDpogvSV4VFtyP38NV/pDNJPR9QBERHFEV8R4legmVq32GNRMARpH/ei0gWVRfyBjK3
-         XKfLzcPs9WUC9/nv8uobr6y8mX9mLtLq0lbPtxP0+6mJnlNx/G8FT8nVESJLWTZou/95
-         vSsu+NwgEQWQFlECjuWpCUCqLTPEOXx2ZAm9E4WyLAtZv2ZURqSqIN2wl/MoxBYbEr57
-         V32Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ikUw+ytl/jsnVysIkbTsq+JT7D2M4qVQgPABHM/gxKE=;
-        b=eENUzkQ//lRV0mvKeNmU5sCJLtHRsCgBEKmOLBPnLnQd0JI3uQbDxP6kgTWE7YjDJ7
-         ktx0h0rq8Vv5PXD8FORMQhqryDYDCHTqkb52pMUp4G7YioYnZ/FaIvDN7nqa96MqSiN3
-         w2qJhnefINXXEt032AmVPVOUgr2j+jkgWDcJjuOCx1Hl7rZD5+6E22dtBBYp8eeodYzq
-         SOlj8UGv5PZ66SdZv+bKH9P7g4hX/aIVwDUQNAH+L7erS9ZbeCZL1/S6/28yoYBaNcqU
-         VnxlVj+aN1XoOZTvRHlp8/pMLVj1NS7/ySEgdrQQMTnU4JM4qT3q230SV50P2vUQ0EWT
-         5QPw==
-X-Gm-Message-State: APjAAAUCLwBR7qhjxXssJKWKScxzS5NHp68YToC/zwceokkeTWJpSFDs
-        srpo9oDV8R/n6nuuQ0C5i9F41rj6uJuLMmdKTeI=
-X-Google-Smtp-Source: APXvYqzaANy/LuR10lmdUFk0MBCTv7vm5m1kF0NKWoRxbZE8+kNEfPvpys1yTgpa5qdaQ7fmZvpFJWbq8bA0T1sHnmk=
-X-Received: by 2002:ac8:25b1:: with SMTP id e46mr2418019qte.36.1559553931035;
- Mon, 03 Jun 2019 02:25:31 -0700 (PDT)
+        id S1727724AbfFCJ1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:27:53 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47644 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727615AbfFCJ1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 05:27:52 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x539NGJl070509
+        for <netdev@vger.kernel.org>; Mon, 3 Jun 2019 05:27:51 -0400
+Received: from e12.ny.us.ibm.com (e12.ny.us.ibm.com [129.33.205.202])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2sw0ejs9q3-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 05:27:51 -0400
+Received: from localhost
+        by e12.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+        Mon, 3 Jun 2019 10:27:50 +0100
+Received: from b01cxnp23034.gho.pok.ibm.com (9.57.198.29)
+        by e12.ny.us.ibm.com (146.89.104.199) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 3 Jun 2019 10:27:46 +0100
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x539Rim636962760
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 3 Jun 2019 09:27:45 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E1CEFB205F;
+        Mon,  3 Jun 2019 09:27:44 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 811A8B2065;
+        Mon,  3 Jun 2019 09:27:44 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.85.160.165])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon,  3 Jun 2019 09:27:44 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id BCA5916C5D8E; Mon,  3 Jun 2019 02:27:43 -0700 (PDT)
+Date:   Mon, 3 Jun 2019 02:27:43 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Reply-To: paulmck@linux.ibm.com
+References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
+ <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
+ <20150910171649.GE4029@linux.vnet.ibm.com>
+ <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
+ <20150921193045.GA13674@lerouge>
+ <20150921204327.GH4029@linux.vnet.ibm.com>
+ <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+ <20190603000617.GD28207@linux.ibm.com>
+ <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
 MIME-Version: 1.0
-References: <20190522133742.7654-1-bjorn.topel@gmail.com> <20190522133742.7654-2-bjorn.topel@gmail.com>
- <CAPhsuW7asezC+0MA3tNyU9ms0rX9iP7Dk0QW4qqXvNvSECrpGA@mail.gmail.com>
-In-Reply-To: <CAPhsuW7asezC+0MA3tNyU9ms0rX9iP7Dk0QW4qqXvNvSECrpGA@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 3 Jun 2019 11:25:19 +0200
-Message-ID: <CAJ+HfNggDLVCzAqsFS06+xa6uyH95+jC=74kAi-cJYUcwwnmCg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] xsk: remove AF_XDP socket from map when
- the socket is released
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Bruce Richardson <bruce.richardson@intel.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19060309-0060-0000-0000-0000034B5C36
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011207; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01212568; UDB=6.00637242; IPR=6.00993628;
+ MB=3.00027161; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-03 09:27:48
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060309-0061-0000-0000-00004999EF8C
+Message-Id: <20190603092743.GI28207@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-03_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906030069
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2 Jun 2019 at 00:32, Song Liu <liu.song.a23@gmail.com> wrote:
->
-> On Wed, May 22, 2019 at 6:38 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.=
-com> wrote:
+On Mon, Jun 03, 2019 at 11:03:24AM +0800, Herbert Xu wrote:
+> On Sun, Jun 02, 2019 at 05:06:17PM -0700, Paul E. McKenney wrote:
 > >
-> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >
-> > When an AF_XDP socket is released/closed the XSKMAP still holds a
-> > reference to the socket in a "released" state. The socket will still
-> > use the netdev queue resource, and block newly created sockets from
-> > attaching to that queue, but no user application can access the
-> > fill/complete/rx/tx queues. This results in that all applications need
-> > to explicitly clear the map entry from the old "zombie state"
-> > socket. This should be done automatically.
-> >
-> > After this patch, when a socket is released, it will remove itself
-> > from all the XSKMAPs it resides in, allowing the socket application to
-> > remove the code that cleans the XSKMAP entry.
-> >
-> > This behavior is also closer to that of SOCKMAP, making the two socket
-> > maps more consistent.
-> >
-> > Suggested-by: Bruce Richardson <bruce.richardson@intel.com>
-> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> > ---
-> >  include/net/xdp_sock.h |   3 ++
-> >  kernel/bpf/xskmap.c    | 101 +++++++++++++++++++++++++++++++++++------
-> >  net/xdp/xsk.c          |  25 ++++++++++
-> >  3 files changed, 116 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> > index d074b6d60f8a..b5f8f9f826d0 100644
-> > --- a/include/net/xdp_sock.h
-> > +++ b/include/net/xdp_sock.h
-> > @@ -68,6 +68,8 @@ struct xdp_sock {
-> >          */
-> >         spinlock_t tx_completion_lock;
-> >         u64 rx_dropped;
-> > +       struct list_head map_list;
-> > +       spinlock_t map_list_lock;
-> >  };
-> >
-> >  struct xdp_buff;
-> > @@ -87,6 +89,7 @@ struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_=
-umem *umem,
-> >                                           struct xdp_umem_fq_reuse *new=
-q);
-> >  void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq);
-> >  struct xdp_umem *xdp_get_umem_from_qid(struct net_device *dev, u16 que=
-ue_id);
-> > +void xsk_map_delete_from_node(struct xdp_sock *xs, struct list_head *n=
-ode);
-> >
-> >  static inline char *xdp_umem_get_data(struct xdp_umem *umem, u64 addr)
-> >  {
-> > diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-> > index 686d244e798d..318f6a07fa31 100644
-> > --- a/kernel/bpf/xskmap.c
-> > +++ b/kernel/bpf/xskmap.c
-> > @@ -13,8 +13,58 @@ struct xsk_map {
-> >         struct bpf_map map;
-> >         struct xdp_sock **xsk_map;
-> >         struct list_head __percpu *flush_list;
-> > +       spinlock_t lock;
-> >  };
-> >
-> > +/* Nodes are linked in the struct xdp_sock map_list field, and used to
-> > + * track which maps a certain socket reside in.
-> > + */
-> > +struct xsk_map_node {
-> > +       struct list_head node;
-> > +       struct xsk_map *map;
-> > +       struct xdp_sock **map_entry;
-> > +};
->
-> Why do we need map_entry to be struct xdp_sock **? I think we could
-> just use struct xdp_sock *? Or did I miss anytihg?
->
+> > Please note that preemptible Tree RCU has lacked the compiler barrier on
+> > all but the outermost rcu_read_unlock() for years before Boqun's patch.
+> 
+> Actually this is not true.  Boqun's patch (commit bb73c52bad36) does
+> not add a barrier() to __rcu_read_lock.  In fact I dug into the git
+> history and this compiler barrier() has existed in preemptible tree
+> RCU since the very start in 2009:
 
-It's a reference into the map (which is an array of xdp_sock *), so
-that it's simple to clear. Would you prefer storing the index of the
-map, and doing a lookup?
+I said rcu_read_unlock() and you said __rcu_read_lock().
 
-Bj=C3=B6rn
+> : commit f41d911f8c49a5d65c86504c19e8204bb605c4fd
+> : Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+> : Date:   Sat Aug 22 13:56:52 2009 -0700
+> :
+> :     rcu: Merge preemptable-RCU functionality into hierarchical RCU
+> :
+> : +/*
+> : + * Tree-preemptable RCU implementation for rcu_read_lock().
+> : + * Just increment ->rcu_read_lock_nesting, shared state will be updated
+> : + * if we block.
+> : + */
+> : +void __rcu_read_lock(void)
+> : +{
+> : +       ACCESS_ONCE(current->rcu_read_lock_nesting)++;
+> : +       barrier();  /* needed if we ever invoke rcu_read_lock in rcutree.c */
+> : +}
+> : +EXPORT_SYMBOL_GPL(__rcu_read_lock);
 
-> Thanks,
-> Song
->
->
-> > +
-> > +static struct xsk_map_node *xsk_map_node_alloc(void)
-> > +{
-> > +       return kzalloc(sizeof(struct xsk_map_node), GFP_ATOMIC | __GFP_=
-NOWARN);
-> > +}
-> > +
-> > +static void xsk_map_node_free(struct xsk_map_node *node)
-> > +{
-> > +       kfree(node);
-> > +}
-> > +
-> > +static void xsk_map_node_init(struct xsk_map_node *node,
-> > +                             struct xsk_map *map,
-> > +                             struct xdp_sock **map_entry)
-> > +{
-> > +       node->map =3D map;
-> > +       node->map_entry =3D map_entry;
-> > +}
-> > +
-> > +static void xsk_map_add_node(struct xdp_sock *xs, struct xsk_map_node =
-*node)
-> > +{
-> > +       spin_lock_bh(&xs->map_list_lock);
-> > +       list_add_tail(&node->node, &xs->map_list);
-> > +       spin_unlock_bh(&xs->map_list_lock);
-> > +}
-> > +
-> > +static void xsk_map_del_node(struct xdp_sock *xs, struct xdp_sock **ma=
-p_entry)
-> > +{
-> > +       struct xsk_map_node *n, *tmp;
-> > +
-> > +       spin_lock_bh(&xs->map_list_lock);
-> > +       list_for_each_entry_safe(n, tmp, &xs->map_list, node) {
-> > +               if (map_entry =3D=3D n->map_entry) {
-> > +                       list_del(&n->node);
-> > +                       xsk_map_node_free(n);
-> > +               }
-> > +       }
-> > +       spin_unlock_bh(&xs->map_list_lock);
-> > +
-> > +}
-> > +
-> >  static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
-> >  {
-> >         int cpu, err =3D -EINVAL;
-> > @@ -34,6 +84,7 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *=
-attr)
-> >                 return ERR_PTR(-ENOMEM);
-> >
-> >         bpf_map_init_from_attr(&m->map, attr);
-> > +       spin_lock_init(&m->lock);
-> >
-> >         cost =3D (u64)m->map.max_entries * sizeof(struct xdp_sock *);
-> >         cost +=3D sizeof(struct list_head) * num_possible_cpus();
-> > @@ -78,15 +129,16 @@ static void xsk_map_free(struct bpf_map *map)
-> >         bpf_clear_redirect_map(map);
-> >         synchronize_net();
-> >
-> > +       spin_lock_bh(&m->lock);
-> >         for (i =3D 0; i < map->max_entries; i++) {
-> > -               struct xdp_sock *xs;
-> > -
-> > -               xs =3D m->xsk_map[i];
-> > -               if (!xs)
-> > -                       continue;
-> > +               struct xdp_sock **map_entry =3D &m->xsk_map[i];
-> > +               struct xdp_sock *old_xs;
-> >
-> > -               sock_put((struct sock *)xs);
-> > +               old_xs =3D xchg(map_entry, NULL);
-> > +               if (old_xs)
-> > +                       xsk_map_del_node(old_xs, map_entry);
-> >         }
-> > +       spin_unlock_bh(&m->lock);
-> >
-> >         free_percpu(m->flush_list);
-> >         bpf_map_area_free(m->xsk_map);
-> > @@ -162,7 +214,8 @@ static int xsk_map_update_elem(struct bpf_map *map,=
- void *key, void *value,
-> >  {
-> >         struct xsk_map *m =3D container_of(map, struct xsk_map, map);
-> >         u32 i =3D *(u32 *)key, fd =3D *(u32 *)value;
-> > -       struct xdp_sock *xs, *old_xs;
-> > +       struct xdp_sock *xs, *old_xs, **entry;
-> > +       struct xsk_map_node *node;
-> >         struct socket *sock;
-> >         int err;
-> >
-> > @@ -189,11 +242,20 @@ static int xsk_map_update_elem(struct bpf_map *ma=
-p, void *key, void *value,
-> >                 return -EOPNOTSUPP;
-> >         }
-> >
-> > -       sock_hold(sock->sk);
-> > +       node =3D xsk_map_node_alloc();
-> > +       if (!node) {
-> > +               sockfd_put(sock);
-> > +               return -ENOMEM;
-> > +       }
-> >
-> > -       old_xs =3D xchg(&m->xsk_map[i], xs);
-> > +       spin_lock_bh(&m->lock);
-> > +       entry =3D &m->xsk_map[i];
-> > +       xsk_map_node_init(node, m, entry);
-> > +       xsk_map_add_node(xs, node);
-> > +       old_xs =3D xchg(entry, xs);
-> >         if (old_xs)
-> > -               sock_put((struct sock *)old_xs);
-> > +               xsk_map_del_node(old_xs, entry);
-> > +       spin_unlock_bh(&m->lock);
-> >
-> >         sockfd_put(sock);
-> >         return 0;
-> > @@ -202,19 +264,32 @@ static int xsk_map_update_elem(struct bpf_map *ma=
-p, void *key, void *value,
-> >  static int xsk_map_delete_elem(struct bpf_map *map, void *key)
-> >  {
-> >         struct xsk_map *m =3D container_of(map, struct xsk_map, map);
-> > -       struct xdp_sock *old_xs;
-> > +       struct xdp_sock *old_xs, **map_entry;
-> >         int k =3D *(u32 *)key;
-> >
-> >         if (k >=3D map->max_entries)
-> >                 return -EINVAL;
-> >
-> > -       old_xs =3D xchg(&m->xsk_map[k], NULL);
-> > +       spin_lock_bh(&m->lock);
-> > +       map_entry =3D &m->xsk_map[k];
-> > +       old_xs =3D xchg(map_entry, NULL);
-> >         if (old_xs)
-> > -               sock_put((struct sock *)old_xs);
-> > +               xsk_map_del_node(old_xs, map_entry);
-> > +       spin_unlock_bh(&m->lock);
-> >
-> >         return 0;
-> >  }
-> >
-> > +void xsk_map_delete_from_node(struct xdp_sock *xs, struct list_head *n=
-ode)
-> > +{
-> > +       struct xsk_map_node *n =3D list_entry(node, struct xsk_map_node=
-, node);
-> > +
-> > +       spin_lock_bh(&n->map->lock);
-> > +       *n->map_entry =3D NULL;
-> > +       spin_unlock_bh(&n->map->lock);
-> > +       xsk_map_node_free(n);
-> > +}
-> > +
-> >  const struct bpf_map_ops xsk_map_ops =3D {
-> >         .map_alloc =3D xsk_map_alloc,
-> >         .map_free =3D xsk_map_free,
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index a14e8864e4fa..1931d98a7754 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -335,6 +335,27 @@ static int xsk_init_queue(u32 entries, struct xsk_=
-queue **queue,
-> >         return 0;
-> >  }
-> >
-> > +static struct list_head *xsk_map_list_pop(struct xdp_sock *xs)
-> > +{
-> > +       struct list_head *node =3D NULL;
-> > +
-> > +       spin_lock_bh(&xs->map_list_lock);
-> > +       if (!list_empty(&xs->map_list)) {
-> > +               node =3D xs->map_list.next;
-> > +               list_del(node);
-> > +       }
-> > +       spin_unlock_bh(&xs->map_list_lock);
-> > +       return node;
-> > +}
-> > +
-> > +static void xsk_delete_from_maps(struct xdp_sock *xs)
-> > +{
-> > +       struct list_head *node;
-> > +
-> > +       while ((node =3D xsk_map_list_pop(xs)))
-> > +               xsk_map_delete_from_node(xs, node);
-> > +}
-> > +
-> >  static int xsk_release(struct socket *sock)
-> >  {
-> >         struct sock *sk =3D sock->sk;
-> > @@ -354,6 +375,7 @@ static int xsk_release(struct socket *sock)
-> >         sock_prot_inuse_add(net, sk->sk_prot, -1);
-> >         local_bh_enable();
-> >
-> > +       xsk_delete_from_maps(xs);
-> >         if (xs->dev) {
-> >                 struct net_device *dev =3D xs->dev;
-> >
-> > @@ -767,6 +789,9 @@ static int xsk_create(struct net *net, struct socke=
-t *sock, int protocol,
-> >         mutex_init(&xs->mutex);
-> >         spin_lock_init(&xs->tx_completion_lock);
-> >
-> > +       INIT_LIST_HEAD(&xs->map_list);
-> > +       spin_lock_init(&xs->map_list_lock);
-> > +
-> >         mutex_lock(&net->xdp.lock);
-> >         sk_add_node_rcu(sk, &net->xdp.list);
-> >         mutex_unlock(&net->xdp.lock);
-> > --
-> > 2.20.1
-> >
+Thank you for finding this!  This particular version does have an
+unconditional barrier() in __rcu_read_unlock(), for whatever that
+is worth:
+
++void __rcu_read_unlock(void)
++{
++       struct task_struct *t = current;
++
++       barrier();  /* needed if we ever invoke rcu_read_unlock in rcutree.c */
++       if (--ACCESS_ONCE(t->rcu_read_lock_nesting) == 0 &&
++           unlikely(ACCESS_ONCE(t->rcu_read_unlock_special)))
++               rcu_read_unlock_special(t);
++}
+
+I would not have seen the point of a compiler barrier in the non-outermost
+__rcu_read_unlock(), since the completion of an inner __rcu_read_unlock()
+does not permit the grace period to complete.
+
+> However, you are correct that in the non-preempt tree RCU case,
+> the compiler barrier in __rcu_read_lock was not always present.
+> In fact it was added by:
+> 
+> : commit 386afc91144b36b42117b0092893f15bc8798a80
+> : Author: Linus Torvalds <torvalds@linux-foundation.org>
+> : Date:   Tue Apr 9 10:48:33 2013 -0700
+> :
+> :     spinlocks and preemption points need to be at least compiler barriers
+> 
+> I suspect this is what prompted you to remove it in 2015.
+
+If I remember correctly, it was pointed out to me that in !PREEMPT kernels,
+the compiler barrier in the preempt_disable() invoked in rcu_read_lock()
+(and similar on the rcu_read_unlock() side) wasn't helping anything,
+
+> > I do not believe that reverting that patch will help you at all.
+> > 
+> > But who knows?  So please point me at the full code body that was being
+> > debated earlier on this thread.  It will no doubt take me quite a while to
+> > dig through it, given my being on the road for the next couple of weeks,
+> > but so it goes.
+> 
+> Please refer to my response to Linus for the code in question.
+> 
+> In any case, I am now even more certain that compiler barriers are
+> not needed in the code in question.  The reasoning is quite simple.
+> If you need those compiler barriers then you surely need real memory
+> barriers.
+
+OK, we are in agreement on that point, then!
+
+> Vice versa, if real memory barriers are already present thanks to
+> RCU, then you don't need those compiler barriers.
+
+For users of RCU, this seems reasonable.
+
+On the other hand, the compiler barriers in PREEMPT Tree RCU's outermost
+__rcu_read_lock() and __rcu_read_unlock() invocations really are needed
+by RCU internals.  This is because RCU uses of interrupt handlers that
+access per-task and per-CPU variables, and these need to be able to
+sense the edges of the nested set of RCU read-side critical sections.
+It is OK for these interrupt handlers to think that the critical section
+is larger than it really is, but fatal for them to think that the critical
+sections are smaller than they really are.
+
+> In fact this calls into question the use of READ_ONCE/WRITE_ONCE in
+> RCU primitives such as rcu_dereference and rcu_assign_pointer.
+
+No, these are -not- called into question, or if they are, the question
+gets quickly answered it a way that supports current Linux-kernel code.
+As mentioned in earlier emails, the traditional uses of RCU that involve
+rcu_dereference(), rcu_assign_pointer(), and synchronize_rcu() all work
+just fine.
+
+In fact, from what I can see, the issue stems from having developed
+intuitions from working with the traditional rcu_dereference(),
+rcu_assign_pointer(), and synchronize_rcu() linked-structure use cases,
+and then attempting to apply these intuition to use cases that have
+neither rcu_dereference() nor rcu_assign_pointer().  Don't get me wrong,
+it is only natural to try to extend your intuitions to something that
+admittedly looks pretty similar to the traditional use cases.  But this
+is one of those cases where "pretty similar" might not be good enough.
+
+>                                                                 IIRC
+> when RCU was first added to the Linux kernel we did not have compiler
+> barriers in rcu_dereference and rcu_assign_pointer.  They were added
+> later on.
+
+From what I can see, rcu_dereference() still does not have a compiler
+barrier.  Please note that the pair of barrier() calls in READ_ONCE()
+only apply when READ_ONCE()ing something larger than the machine can load.
+And if your platform cannot load and store pointers with a single access,
+the Linux kernel isn't going to do very well regardless.  Ditto for
+WRITE_ONCE().
+
+> As compiler barriers per se are useless, these are surely meant to
+> be coupled with the memory barriers provided by RCU grace periods
+> and synchronize_rcu.  But then those real memory barriers would have
+> compiler barriers too.  So why do we need the compiler barriers in
+> rcu_dereference and rcu_assign_pointer?
+
+In rcu_dereference(), RCU does not need them.  They are instead
+inherited from READ_ONCE() for when it is used on a data structure too
+big for any single load instruction available on the system in question.
+These barrier() calls are in a case that rcu_dereference() had better
+not be using -- after all, using them would mean that the hardware didn't
+have a load instruction big enough to handle a pointer.
+
+In rcu_assign_pointer(), RCU just needs this to act like a release
+store, that is, the store itself must not be reordered with any earlier
+memory accesses.  The Linux kernel's smp_store_release() currently
+over-approximates this using a barrier() or equivalent inline-assembly
+directive, which enforces compiler ordering for not only the release
+store, but also far all memory accesses following the release store.
+Obviously, barrier is not enough for weakly ordered systems, which
+must also emit an appropriate memory-barrier instruction (or a special
+load instruction for architectures like ARMv8 providing such a thing).
+
+The compiler barriers in __rcu_read_lock() and __rcu_read_unlock() are
+there so that preemptible Tree RCU can use its various tricks to make
+readers perform and scale well.  Read-side state is confined to the CPU
+and/or task in the common case, thus avoiding heavy synchronization
+overhead in the common case (or, in the case of !PREEMPT RCU, thus
+avoiding -any- synchronization overhead in the common case).  For example,
+the compiler barriers ensure that RCU's scheduler-clock code and softirq
+code can trust per-CPU/task state indicating whether or not there is an
+RCU read-side critical section in effect.
+
+Does that help?  Or am I missing your point?
+
+							Thanx, Paul
+
