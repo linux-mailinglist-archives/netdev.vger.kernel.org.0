@@ -2,125 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDEFA33ACE
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB39E33A07
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 23:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfFCWJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 18:09:01 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:32808 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726102AbfFCWJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:09:01 -0400
-Received: by mail-lf1-f66.google.com with SMTP id y17so14820330lfe.0
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:09:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KcMRXd21hP8UmZkIG2RNnfnlH3SL7cuLE0q0RRkiu6s=;
-        b=VKJfnpAi1elHGrQJDGOtM/gN/DHi+Ci3IGMyX3NflK3rCh5QLlasviFfYvd5Z1n0Ll
-         sfT8j+rkJXOwV+YDS4o331naQ3mO3WKL+3uzZCCq+E1Ng8/lfuiakuEj6quDz1FceLdp
-         VfWqSDxDiyG7NS9ZHVwM7jMRPxBMvAPlMmUAa+1zKBWuFKfkWh+WvFe7roZu+S9re1MR
-         3mC8jy0LYvW2rqnw21AMOZdU5BlpaR9WphB1XPicbMYHATdnNswhzKRw/tq3nf2r/7OW
-         3pfIOyj1vzv7RlvQMgzQll2YOArCb8xfux5xgJZAvw7K6GU8R2M0+JaSP0/ZEshAzMpu
-         KasQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KcMRXd21hP8UmZkIG2RNnfnlH3SL7cuLE0q0RRkiu6s=;
-        b=PbdVb6gv5ik7OCC1hMqbb6j/bd1HppKD7fVn0yN5smrLryd4s9rJDplOVBBJnJRxPE
-         6gsFUOwCML+ZKstvfxJcDAi2S0STgyBL6VqKsFYK9TLeoOOCgmiKipIXpjryk4OWbVSw
-         5O8pWPsaCLqCEyDxAsVfIhh/mdJ3JjVob+l9454SsACHR2dQLZNOLnywVgQPz7KiRvAs
-         2df54NQRY02wdj7VxhapkH8vdjbKh6yN/90elKsMiR9abNL71+MFMx50IfPUUOogvIkh
-         840gfbjuiXEJz0o9nztVw/swbRGZjXiTSvcMxdwSCqrRQM6Jyd0yh3YObfswYkeM0f6w
-         U5RA==
-X-Gm-Message-State: APjAAAWvO3gbIIhOfvNBOHfT9IaIpXQ7ArRzXpXYp57hDYl30hhVco3v
-        fPBqDKMHvIZqokrd7ZkUVQ55T+37nNPsgKdbjjSvKvxwwg==
-X-Google-Smtp-Source: APXvYqzBxyQVJ38l2yQR8Z55mFmcEnbrYjFwFo/PW/t0ZGSpit+8SCjtd4FFxwH9Ik99pI6puP1BvcBqmSMmUGqMVew=
-X-Received: by 2002:ac2:4358:: with SMTP id o24mr14377637lfl.13.1559596567285;
- Mon, 03 Jun 2019 14:16:07 -0700 (PDT)
+        id S1726399AbfFCVor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 17:44:47 -0400
+Received: from mail-eopbgr150089.outbound.protection.outlook.com ([40.107.15.89]:55545
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726101AbfFCVor (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 17:44:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=olU0hpppv+S2hVIC6lK11fYUdJNDRVVHO4z+Odr29pg=;
+ b=qNhezd5k+uhn32bJp30rmtqdjat5opN8qG4olYgZ/vW3w62QLK6hVpAm/JIp3qIC7OoszhR15/0cQjIY/sZrm0C+YNG0yr1nKOQuKD4aO32VDzzT7PyCWtlInZ0ZdIHxRI9GQaniXdb2gc+QQQlfAJIc2S+A/vCX8V7hqIjwhHQ=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB5996.eurprd05.prod.outlook.com (20.179.10.88) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.22; Mon, 3 Jun 2019 21:20:30 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1943.018; Mon, 3 Jun 2019
+ 21:20:30 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "bjorn.topel@gmail.com" <bjorn.topel@gmail.com>
+CC:     "toke@redhat.com" <toke@redhat.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "bjorn.topel@intel.com" <bjorn.topel@intel.com>
+Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
+ to netdev
+Thread-Topic: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
+ to netdev
+Thread-Index: AQHVF5UyingDVomLXU+x48iNqvXUO6aFnAaAgAGZH4CAAnJWAIAAza8A
+Date:   Mon, 3 Jun 2019 21:20:30 +0000
+Message-ID: <f7e9b1c8f358a4bb83f01ab76dcc95195083e2bf.camel@mellanox.com>
+References: <20190531094215.3729-1-bjorn.topel@gmail.com>
+         <20190531094215.3729-2-bjorn.topel@gmail.com>
+         <b0a9c3b198bdefd145c34e52aa89d33aa502aaf5.camel@mellanox.com>
+         <20190601124233.5a130838@cakuba.netronome.com>
+         <CAJ+HfNjbALzf4SaopKe3pA4dV6n9m30doai_CLEDB9XG2RzjOg@mail.gmail.com>
+In-Reply-To: <CAJ+HfNjbALzf4SaopKe3pA4dV6n9m30doai_CLEDB9XG2RzjOg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 598706f8-31f7-4d89-1bf4-08d6e8694e88
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB8PR05MB5996;
+x-ms-traffictypediagnostic: DB8PR05MB5996:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <DB8PR05MB59967A01A98576B253F39750BE140@DB8PR05MB5996.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0057EE387C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(346002)(136003)(376002)(366004)(396003)(189003)(199004)(86362001)(4326008)(186003)(76176011)(102836004)(6506007)(66574012)(2616005)(99286004)(5024004)(256004)(6436002)(5660300002)(71200400001)(446003)(71190400001)(26005)(118296001)(6246003)(6486002)(6116002)(316002)(3846002)(66066001)(53936002)(8936002)(6512007)(486006)(966005)(11346002)(25786009)(229853002)(508600001)(6306002)(58126008)(2906002)(68736007)(8676002)(81166006)(81156014)(66446008)(66946007)(73956011)(36756003)(476003)(54906003)(64756008)(14454004)(66476007)(2501003)(305945005)(7416002)(7736002)(110136005)(66556008)(76116006)(91956017);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5996;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Ns7BZ+H6Kl5akERsipUAI03hpjEeDb+Ib2kc15M90ct3ZkUf8qca7m2CqTKYxpoGL0QpJHQFyceds6rs5dNBUfJoLqPNcC51fXg6X/Wu6GCx/8reeNRtdjZoR6PDGjJQ2V8+yTr/5hcEHW3aFvbxxxyWVLn/prLR535dZ8QbkY03jfFZHVqaH9Eq1sw8NWPDZi2xV8kP+eSfWFtcx0IJzkLwZoPY4OKXSYNBby5qWgwKBHO68R0+tSQayquRQK8J2clDIs7MzBiu12oEf1HlNwM4DVphDHvgb7eURS/WpGx5pFtmcIvMIITaooVKw2NgzrBM64GeNQLyW2iONfNLECfMLkDLFklOF3dhF9NykX8LExOVvhxM9NLJCrnnLPMKcgFITvi5wNdetl923bP00mfAyD0yEmqxOkAd5tstsWY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EA54FFF36169E8478822E5964402D355@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190601021526.GA8264@zhanggen-UX430UQ> <CAFqZXNvBpmxNYjZx6YcH5Q-u4Tkwhfyzu_8VmEe8O7r9CCsvNg@mail.gmail.com>
-In-Reply-To: <CAFqZXNvBpmxNYjZx6YcH5Q-u4Tkwhfyzu_8VmEe8O7r9CCsvNg@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 3 Jun 2019 17:15:56 -0400
-Message-ID: <CAHC9VhQdr0uOe0X0vLN9fOe7zDJ8bnX4fDLSTmjAGJymCyQ+zg@mail.gmail.com>
-Subject: Re: [PATCH v3] selinux: lsm: fix a missing-check bug in selinux_sb_eat_lsm_opts()
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Gen Zhang <blackgod016574@gmail.com>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 598706f8-31f7-4d89-1bf4-08d6e8694e88
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2019 21:20:30.4787
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5996
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 3, 2019 at 3:23 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> On Sat, Jun 1, 2019 at 4:15 AM Gen Zhang <blackgod016574@gmail.com> wrote:
-> > In selinux_sb_eat_lsm_opts(), 'arg' is allocated by kmemdup_nul(). It
-> > returns NULL when fails. So 'arg' should be checked. And 'mnt_opts'
-> > should be freed when error.
-> >
-> > Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
-> > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
->
-> It looks like you're new to the kernel development community, so let
-> me give you a bit of friendly advice for the future :)
->
-> You don't need to repost the patch when people give you
-> Acked-by/Reviewed-by/Tested-by (unless there is a different reason to
-> respin/repost the patches). The maintainer goes over the replies when
-> applying the final patch and adds Acked-by/Reviewed-by/... on his/her
-> own.
->
-> If you *do* need to respin a path for which you have received A/R/T,
-> then you need to distinguish between two cases:
-> 1. Only trivial changes to the patch (only fixed typos, edited commit
-> message, removed empty line, etc. - for example, v1 -> v2 of this
-> patch falls into this category) - in this case you can collect the
-> A/R/T yourself and add them to the new version. This saves the
-> maintainer and the reviewers from redundant work, since the patch is
-> still semantically the same and the A/R/T from the last version still
-> apply.
-> 2. Non-trivial changes to the patch (as is the case for this patch) -
-> in this case your patch needs to be reviewed again and you should
-> disregard all A/R/T from the previous version. You can easily piss
-> someone off if you add their Reviewed-by to a patch they haven't
-> actually reviewed, so be careful ;-)
-
-I want to stress Ondrej's last point.  Carrying over an
-Acked-by/Reviewed-by/Tested-by tag if you make anything more than the
-most trivial change in a patch is *very* bad, and will likely result
-in a loss of trust between you and the maintainer.  If you are unsure,
-drop the A/R/T tag, there is *much* less harm in asking someone to
-re-review a patch than falsely tagging a patch as reviewed by someone
-when you have made substantial changes.
-
-I suspect you may have already read the
-Documentation/process/submitting-patches.rst file, but if you haven't
-it is worth reading.  It covers many of the things that are discussed
-elsewhere.
-
-If you aren't already, you should get in the habit of doing the
-following for each patch you post to the mailing list:
-1. Make sure it compiles cleanly, or at least doesn't introduce any
-new compiler warnings/errors.
-2. Run ./scripts/checkpatch.pl and fix as many problems as you can; a
-patch can still be accepted with checkpatch warnings/errors (and some
-maintainers might dislike some of checkpatch's decisions), but it
-helps a lot if you can fix all those.
-3. At the very least make sure your kernel changes boot, if you can,
-run the associated subsystem's test (if they have one) to verify that
-there are no regressions (the SELinux kernel test suite is here:
-https://github.com/SELinuxProject/selinux-testsuite)
-
-Lastly, when in doubt, you can always ask the mailing list; the
-SELinux list is a pretty friendly place :)
-
--- 
-paul moore
-www.paul-moore.com
+T24gTW9uLCAyMDE5LTA2LTAzIGF0IDExOjA0ICswMjAwLCBCasO2cm4gVMO2cGVsIHdyb3RlOg0K
+PiBPbiBTYXQsIDEgSnVuIDIwMTkgYXQgMjE6NDIsIEpha3ViIEtpY2luc2tpDQo+IDxqYWt1Yi5r
+aWNpbnNraUBuZXRyb25vbWUuY29tPiB3cm90ZToNCj4gPiBPbiBGcmksIDMxIE1heSAyMDE5IDE5
+OjE4OjE3ICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToNCj4gPiA+IE9uIEZyaSwgMjAxOS0w
+NS0zMSBhdCAxMTo0MiArMDIwMCwgQmrDtnJuIFTDtnBlbCB3cm90ZToNCj4gPiA+ID4gRnJvbTog
+QmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAaW50ZWwuY29tPg0KPiA+ID4gPiANCj4gPiA+ID4g
+QWxsIFhEUCBjYXBhYmxlIGRyaXZlcnMgbmVlZCB0byBpbXBsZW1lbnQgdGhlDQo+ID4gPiA+IFhE
+UF9RVUVSWV9QUk9HeyxfSFd9DQo+ID4gPiA+IGNvbW1hbmQgb2YgbmRvX2JwZi4gVGhlIHF1ZXJ5
+IGNvZGUgaXMgZmFpcmx5IGdlbmVyaWMuIFRoaXMNCj4gPiA+ID4gY29tbWl0DQo+ID4gPiA+IHJl
+ZmFjdG9ycyB0aGUgcXVlcnkgY29kZSB1cCBmcm9tIHRoZSBkcml2ZXJzIHRvIHRoZSBuZXRkZXYN
+Cj4gPiA+ID4gbGV2ZWwuDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGUgc3RydWN0IG5ldF9kZXZpY2Ug
+aGFzIGdhaW5lZCB0d28gbmV3IG1lbWJlcnM6IHhkcF9wcm9nX2h3DQo+ID4gPiA+IGFuZA0KPiA+
+ID4gPiB4ZHBfZmxhZ3MuIFRoZSBmb3JtZXIgaXMgdGhlIG9mZmxvYWRlZCBYRFAgcHJvZ3JhbSwg
+aWYgYW55LCBhbmQNCj4gPiA+ID4gdGhlDQo+ID4gPiA+IGxhdHRlciB0cmFja3MgdGhlIGZsYWdz
+IHRoYXQgdGhlIHN1cHBsaWVkIHdoZW4gYXR0YWNoaW5nIHRoZQ0KPiA+ID4gPiBYRFANCj4gPiA+
+ID4gcHJvZ3JhbS4gVGhlIGZsYWdzIG9ubHkgYXBwbHkgdG8gU0tCX01PREUgb3IgRFJWX01PREUs
+IG5vdA0KPiA+ID4gPiBIV19NT0RFLg0KPiA+ID4gPiANCj4gPiA+ID4gVGhlIHhkcF9wcm9nIG1l
+bWJlciwgcHJldmlvdXNseSBvbmx5IHVzZWQgZm9yIFNLQl9NT0RFLCBpcw0KPiA+ID4gPiBzaGFy
+ZWQNCj4gPiA+ID4gd2l0aA0KPiA+ID4gPiBEUlZfTU9ERS4gVGhpcyBpcyBPSywgZHVlIHRvIHRo
+ZSBmYWN0IHRoYXQgU0tCX01PREUgYW5kDQo+ID4gPiA+IERSVl9NT0RFIGFyZQ0KPiA+ID4gPiBt
+dXR1YWxseSBleGNsdXNpdmUuIFRvIGRpZmZlcmVudGlhdGUgYmV0d2VlbiB0aGUgdHdvIG1vZGVz
+LCBhDQo+ID4gPiA+IG5ldw0KPiA+ID4gPiBpbnRlcm5hbCBmbGFnIGlzIGludHJvZHVjZWQgYXMg
+d2VsbC4NCj4gPiA+IA0KPiA+ID4gSnVzdCB0aGlua2luZyBvdXQgbG91ZCwgd2h5IGNhbid0IHdl
+IGFsbG93IGFueSBjb21iaW5hdGlvbiBvZg0KPiA+ID4gSFcvRFJWL1NLQiBtb2Rlcz8gdGhleSBh
+cmUgdG90YWxseSBkaWZmZXJlbnQgYXR0YWNoIHBvaW50cyBpbiBhDQo+ID4gPiB0b3RhbGx5DQo+
+ID4gPiBkaWZmZXJlbnQgY2hlY2twb2ludHMgaW4gYSBmcmFtZSBsaWZlIGN5Y2xlLg0KPiA+IA0K
+PiA+IEZXSVcgc2VlIE1lc3NhZ2UtSUQ6IDwyMDE5MDIwMTA4MDIzNi40NDZkODRkNEByZWRoYXQu
+Y29tPg0KPiA+IA0KPiANCj4gSSd2ZSBhbHdheXMgc2VlbiB0aGUgU0tCLW1vZGUgYXMgc29tZXRo
+aW5nIHRoYXQgd2lsbCBldmVudHVhbGx5IGJlDQo+IHJlbW92ZWQuDQo+IA0KDQpJIGRvbid0IHRo
+aW5rIHNvLCB3ZSBhcmUgdG9vIGRlZXAgaW50byBTS0ItbW9kZS4NCg0KPiBDbGlja2FibGUgbGlu
+azoNCj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbmV0ZGV2LzIwMTkwMjAxMDgwMjM2LjQ0NmQ4
+NGQ0QHJlZGhhdC5jb20vIDotDQo+IFANCj4gDQoNClNvIHdlIGFyZSBhbGwgaGFuZ2luZyBvbiBK
+ZXNwZXIncyByZWZhY3RvcmluZyBpZGVhcyB0aGF0IGFyZSBub3QNCmdldHRpbmcgYW55IHByaW9y
+aXR5IGZvciBub3cgOikuDQoNCg0KPiA+ID4gRG93biB0aGUgcm9hZCBpIHRoaW5rIHdlIHdpbGwg
+dXRpbGl6ZSB0aGlzIGZhY3QgYW5kIHN0YXJ0DQo+ID4gPiBpbnRyb2R1Y2luZw0KPiA+ID4gU0tC
+IGhlbHBlcnMgZm9yIFNLQiBtb2RlIGFuZCBkcml2ZXIgaGVscGVycyBmb3IgRFJWIG1vZGUuLg0K
+PiA+IA0KPiA+IEFueSByZWFzb24gd2h5IHdlIHdvdWxkIHdhbnQgdGhlIGV4dHJhIGNvbXBsZXhp
+dHk/ICBUaGVyZSBpcw0KPiA+IGNsc19icGYNCj4gPiBpZiBzb21lb25lIHdhbnRzIHNrYiBmZWF0
+dXJlcyBhZnRlciBhbGwuLg0KDQpEb25ubywgU0tCIG1vZGUgaXMgZWFybGllciBpbiB0aGUgc3Rh
+Y2sgbWF5YmUgLi4gDQogDQoNCg==
