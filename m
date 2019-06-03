@@ -2,139 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB7732A11
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8868232A1C
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 09:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbfFCHwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 03:52:54 -0400
-Received: from mail-eopbgr130102.outbound.protection.outlook.com ([40.107.13.102]:34879
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725856AbfFCHwy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 03:52:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pW1yIgQ6rrrRseTC6AMboN4w7TzbyrgQrm1HqlO8r0k=;
- b=R9dM50hBEKCR4JeoqKqCO/VGoim5YjazswaZjwvLLWUsh1lVjUUKz/vXPmkdI/O7kal55KpzgfGUS+3txfnTS+SBIMbYOyMKblNMyRVNNpGklVkJYUlldHDMAlPdNwcXHT1uaIBf1PH5xqVsXj+LBkkCE7mV5dXJTdkbCiH8/IE=
-Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM (20.178.126.80) by
- VI1PR10MB2478.EURPRD10.PROD.OUTLOOK.COM (20.177.59.75) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.22; Mon, 3 Jun 2019 07:52:46 +0000
-Received: from VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8844:426d:816b:f5d5]) by VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8844:426d:816b:f5d5%6]) with mapi id 15.20.1943.018; Mon, 3 Jun 2019
- 07:52:46 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: fix comments and macro names in
- mv88e6390_g1_mgmt_rsvd2cpu
-Thread-Topic: [PATCH net-next] net: dsa: mv88e6xxx: fix comments and macro
- names in mv88e6390_g1_mgmt_rsvd2cpu
-Thread-Index: AQHVGeFVBsiRXJ9dkEWwSdw5tHml9Q==
-Date:   Mon, 3 Jun 2019 07:52:46 +0000
-Message-ID: <20190603075236.18470-1-rasmus.villemoes@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR0701CA0045.eurprd07.prod.outlook.com
- (2603:10a6:3:9e::13) To VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:803:e1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [81.216.59.226]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1ecba8de-6e80-4796-ba1a-08d6e7f87765
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR10MB2478;
-x-ms-traffictypediagnostic: VI1PR10MB2478:
-x-microsoft-antispam-prvs: <VI1PR10MB2478164B32EA5F0A4E8568C98A140@VI1PR10MB2478.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
-x-forefront-prvs: 0057EE387C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39850400004)(346002)(136003)(366004)(376002)(189003)(199004)(14454004)(8936002)(50226002)(4326008)(81166006)(386003)(6512007)(6506007)(256004)(110136005)(8976002)(99286004)(68736007)(52116002)(54906003)(102836004)(53936002)(66066001)(66946007)(73956011)(36756003)(305945005)(7736002)(71190400001)(71200400001)(5660300002)(66556008)(66476007)(66446008)(64756008)(26005)(476003)(44832011)(186003)(74482002)(3846002)(6116002)(316002)(1076003)(25786009)(81156014)(2616005)(6486002)(72206003)(6436002)(8676002)(478600001)(486006)(42882007)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB2478;H:VI1PR10MB2639.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: prevas.se does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: by/1Sh10CgkfYTNjHYDsCKOY0k79dFR9x/YEuqqVOVENTXNvu0yYeLBuvt3lw7CQOUzN7z6cxVmVrlNbJIl7qdajIfwGaeBXflUNU0o/Hi55IUekNZYUL1YRdVX/DJY5PjCGpsUq8eB5diAJTzKF17n2+xdoGDKuvHrkKVuRjyz9jZ8Jdo8kET0WZn93XjpeLjcFbzqFA33tcaEIbAhFzPvnrTTQRasidWljxObdy35ewQlqqIpjt5NbxcvPLFM2bKbjsgUCLNF4ylwZiBbvGlj3gYyjQdr0x28Wd/rremwyCIyn93fXkE+eip4t8xpA4/VbgU1eJUZNplQXcuPdOrhXb4ZYfkR+h/LznLGpeBQ6XRrVkCt1PH9bWDOyUaqjq2OJenyvZs7X5Q5fDZtBA8NT96z5Kzz5JI9QRDjNVdg=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727455AbfFCHyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 03:54:11 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37394 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726656AbfFCHyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 03:54:10 -0400
+Received: by mail-wm1-f67.google.com with SMTP id 22so1684698wmg.2;
+        Mon, 03 Jun 2019 00:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vxn++X6GnNn7FvRm2GLwCr6U91lHVxlpb9LxLQUYoh8=;
+        b=UaA55vFXUfkwbZG1fE7WZ3BEU/NRz3EniJlHgVBM/EDOoI+hIjRj09/ae1Pl4bHi9b
+         Rh0+ZR+hWmbGNRI24pI29x0wGunvVOsLfbNgkJk1kzx3SVl/klB+IuEyzfp2oY9s9zdF
+         wm5ciRxDVw12GbJ0SfU8YpQl27uoRnFxeaTv4RDr+3Q6F5bf38Oy0djTORRtPA55Q7lr
+         gSJut3+7O3lkELl0qvFS87+AMZQT7i2zBlBXZzjBJJJvIXo7bk1/0mdRz4ZURgGMvLmM
+         IwJdpJ1NpWDp3CdNKNjR0BlaCg5N0atpWN838Y0INAuA8kHuEqYRCBKVDqszMJshdVZK
+         nNcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vxn++X6GnNn7FvRm2GLwCr6U91lHVxlpb9LxLQUYoh8=;
+        b=DtaPX48hcQUlYuEWXkdpz07zcSieDaVGpViYuavlSEr9IoqXFLcE1hk+chnkAp+a2b
+         pcDbxBNPzb9nl34tfEbu1QHm3zl5cJj+qc4XL3xCKA5bI76vznHNUqm7KB7si5HcNbcK
+         ptEsHLks/AdjSRzIfgMP9oDv33h1rgmPcckXhseklSDL2lF9Oa1F4+xg9f8ZAG2h1384
+         rmqRuqGqQoaZApv/w2CFezjL7e8YbGJ/ksHgWZAg9zaB3nkcYAcrZbH6EhXn9AV3e5vo
+         7jgnvAJzhhMM3ZXPWneOhaicACKId+wrBsHA2y82s2AWycSdholsj/bm/Xmm2EgOBIZu
+         8cqA==
+X-Gm-Message-State: APjAAAWCNnvc4Oky1BFdRnsLrPC6Y1SrkAiWIWAVLM/rgrdO42Hg9KN+
+        CzOB06m+Le335o2fd9JdsYEmrmIhPmwxj9TbZeU=
+X-Google-Smtp-Source: APXvYqw9kMPf+INXeMqlOFlFgNgw0nEIS42SjTDd0sxR9d2hrhqUuyp/FltCIycXfO33ebmylOwNZSqfjQ0mSG0kHZc=
+X-Received: by 2002:a1c:eb16:: with SMTP id j22mr1122553wmh.56.1559548447660;
+ Mon, 03 Jun 2019 00:54:07 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ecba8de-6e80-4796-ba1a-08d6e7f87765
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2019 07:52:46.2803
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2478
+References: <1559532216-12114-1-git-send-email-92siuyang@gmail.com>
+In-Reply-To: <1559532216-12114-1-git-send-email-92siuyang@gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 3 Jun 2019 15:53:56 +0800
+Message-ID: <CADvbK_eUYhP=pSLqHdBp8E3-NJP28=jErSSvW5moO9WVK=X8XQ@mail.gmail.com>
+Subject: Re: [PATCH] ipvlan: Don't propagate IFF_ALLMULTI changes on down interfaces.
+To:     Young Xiao <92siuyang@gmail.com>
+Cc:     davem <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>, petrm@mellanox.com,
+        jiri@mellanox.com, idosch@mellanox.com, uehaibing@huawei.com,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhlIG1hY3JvcyBoYXZlIGFuIGV4dHJhbmVvdXMgJzgwMCcgKGFmdGVyIDAxODBDMiB0aGVyZSBz
-aG91bGQgYmUganVzdA0Kc2l4IG5pYmJsZXMsIHdpdGggWCByZXByZXNlbnRpbmcgb25lKSwgd2hp
-bGUgdGhlIGNvbW1lbnRzIGhhdmUNCmludGVyY2hhbmdlZCBjMiBhbmQgODAgYW5kIGFuIGV4dHJh
-IDowMC4NCg0KU2lnbmVkLW9mZi1ieTogUmFzbXVzIFZpbGxlbW9lcyA8cmFzbXVzLnZpbGxlbW9l
-c0BwcmV2YXMuZGs+DQotLS0NCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuYyB8
-IDE2ICsrKysrKysrLS0tLS0tLS0NCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEu
-aCB8ICA4ICsrKystLS0tDQogMiBmaWxlcyBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAxMiBk
-ZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xv
-YmFsMS5jIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmMNCmluZGV4IDM4ZTM5
-OWUwZjMwZS4uYjVjZWZmMjk0NmZlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhl
-Nnh4eC9nbG9iYWwxLmMNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5j
-DQpAQCAtMzc5LDI2ICszNzksMjYgQEAgaW50IG12ODhlNjM5MF9nMV9tZ210X3JzdmQyY3B1KHN0
-cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCkNCiAJdTE2IHB0cjsNCiAJaW50IGVycjsNCiANCi0J
-LyogMDE6YzI6ODA6MDA6MDA6MDA6MDAtMDE6YzI6ODA6MDA6MDA6MDA6MDcgYXJlIE1hbmFnZW1l
-bnQgKi8NCi0JcHRyID0gTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjgw
-MDAwMDAwWExPOw0KKwkvKiAwMTo4MDpjMjowMDowMDowMC0wMTo4MDpjMjowMDowMDowNyBhcmUg
-TWFuYWdlbWVudCAqLw0KKwlwdHIgPSBNVjg4RTYzOTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJf
-MDE4MEMyMDAwMDBYTE87DQogCWVyciA9IG12ODhlNjM5MF9nMV9tb25pdG9yX3dyaXRlKGNoaXAs
-IHB0ciwgMHhmZik7DQogCWlmIChlcnIpDQogCQlyZXR1cm4gZXJyOw0KIA0KLQkvKiAwMTpjMjo4
-MDowMDowMDowMDowOC0wMTpjMjo4MDowMDowMDowMDowZiBhcmUgTWFuYWdlbWVudCAqLw0KLQlw
-dHIgPSBNVjg4RTYzOTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJfMDE4MEMyODAwMDAwMDBYSEk7
-DQorCS8qIDAxOjgwOmMyOjAwOjAwOjA4LTAxOjgwOmMyOjAwOjAwOjBmIGFyZSBNYW5hZ2VtZW50
-ICovDQorCXB0ciA9IE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAw
-MFhISTsNCiAJZXJyID0gbXY4OGU2MzkwX2cxX21vbml0b3Jfd3JpdGUoY2hpcCwgcHRyLCAweGZm
-KTsNCiAJaWYgKGVycikNCiAJCXJldHVybiBlcnI7DQogDQotCS8qIDAxOmMyOjgwOjAwOjAwOjAw
-OjIwLTAxOmMyOjgwOjAwOjAwOjAwOjI3IGFyZSBNYW5hZ2VtZW50ICovDQotCXB0ciA9IE1WODhF
-NjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhMTzsNCisJLyogMDE6
-ODA6YzI6MDA6MDA6MjAtMDE6ODA6YzI6MDA6MDA6MjcgYXJlIE1hbmFnZW1lbnQgKi8NCisJcHRy
-ID0gTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjAwMDAyWExPOw0KIAll
-cnIgPSBtdjg4ZTYzOTBfZzFfbW9uaXRvcl93cml0ZShjaGlwLCBwdHIsIDB4ZmYpOw0KIAlpZiAo
-ZXJyKQ0KIAkJcmV0dXJuIGVycjsNCiANCi0JLyogMDE6YzI6ODA6MDA6MDA6MDA6MjgtMDE6YzI6
-ODA6MDA6MDA6MDA6MmYgYXJlIE1hbmFnZW1lbnQgKi8NCi0JcHRyID0gTVY4OEU2MzkwX0cxX01P
-TklUT1JfTUdNVF9DVExfUFRSXzAxODBDMjgwMDAwMDAyWEhJOw0KKwkvKiAwMTo4MDpjMjowMDow
-MDoyOC0wMTo4MDpjMjowMDowMDoyZiBhcmUgTWFuYWdlbWVudCAqLw0KKwlwdHIgPSBNVjg4RTYz
-OTBfRzFfTU9OSVRPUl9NR01UX0NUTF9QVFJfMDE4MEMyMDAwMDJYSEk7DQogCWVyciA9IG12ODhl
-NjM5MF9nMV9tb25pdG9yX3dyaXRlKGNoaXAsIHB0ciwgMHhmZik7DQogCWlmIChlcnIpDQogCQly
-ZXR1cm4gZXJyOw0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFs
-MS5oIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmgNCmluZGV4IGJlZjAxMzMx
-MjY2Zi4uMmYxOTVhMGJkODkxIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4
-eC9nbG9iYWwxLmgNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5oDQpA
-QCAtMTkwLDEwICsxOTAsMTAgQEANCiAjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRf
-Q1RMCQkJCTB4MWENCiAjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1VQREFU
-RQkJCTB4ODAwMA0KICNkZWZpbmUgTVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSX01B
-U0sJCQkweDNmMDANCi0jZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8w
-MTgwQzI4MDAwMDAwMFhMTwkweDAwMDANCi0jZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01H
-TVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMFhISQkweDAxMDANCi0jZGVmaW5lIE1WODhFNjM5MF9H
-MV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhMTwkweDAyMDANCi0jZGVmaW5l
-IE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzI4MDAwMDAwMlhISQkweDAz
-MDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAw
-MFhMTwkweDAwMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl8w
-MTgwQzIwMDAwMFhISQkweDAxMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRf
-Q1RMX1BUUl8wMTgwQzIwMDAwMlhMTwkweDAyMDANCisjZGVmaW5lIE1WODhFNjM5MF9HMV9NT05J
-VE9SX01HTVRfQ1RMX1BUUl8wMTgwQzIwMDAwMlhISQkweDAzMDANCiAjZGVmaW5lIE1WODhFNjM5
-MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl9JTkdSRVNTX0RFU1QJCTB4MjAwMA0KICNkZWZpbmUg
-TVY4OEU2MzkwX0cxX01PTklUT1JfTUdNVF9DVExfUFRSX0VHUkVTU19ERVNUCQkweDIxMDANCiAj
-ZGVmaW5lIE1WODhFNjM5MF9HMV9NT05JVE9SX01HTVRfQ1RMX1BUUl9DUFVfREVTVAkJMHgzMDAw
-DQotLSANCjIuMjAuMQ0KDQo=
+On Mon, Jun 3, 2019 at 11:22 AM Young Xiao <92siuyang@gmail.com> wrote:
+>
+> Clearing the IFF_ALLMULTI flag on a down interface could cause an allmulti
+> overflow on the underlying interface.
+>
+> Attempting the set IFF_ALLMULTI on the underlying interface would cause an
+> error and the log message:
+>
+> "allmulti touches root, set allmulti failed."
+s/root/roof
+
+I guess this patch was inspired by:
+
+commit bbeb0eadcf9fe74fb2b9b1a6fea82cd538b1e556
+Author: Peter Christensen <pch@ordbogen.com>
+Date:   Thu May 8 11:15:37 2014 +0200
+
+    macvlan: Don't propagate IFF_ALLMULTI changes on down interfaces.
+
+I could trigger this error on macvlan prior to this patch with:
+
+  # ip link add mymacvlan1 link eth2 type macvlan mode bridge
+  # ip link set mymacvlan1 up
+  # ip link set mymacvlan1 allmulticast on
+  # ip link set mymacvlan1 down
+  # ip link set mymacvlan1 allmulticast off
+  # ip link set mymacvlan1 allmulticast on
+
+but not on ipvlan, could you?
+
+macvlan had this problem, as lowerdev's allmulticast is cleared when doing
+dev_stop and set when doing dev_open, which doesn't happen on ipvlan.
+
+So I'd think this patch fixes nothing unless you want to add
+dev_set_allmulti(1/-1) in ipvlan_open/stop(), but that's another topic.
+
+did I miss something?
+
+>
+> Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> ---
+>  drivers/net/ipvlan/ipvlan_main.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+> index bbeb162..523bb83 100644
+> --- a/drivers/net/ipvlan/ipvlan_main.c
+> +++ b/drivers/net/ipvlan/ipvlan_main.c
+> @@ -242,8 +242,10 @@ static void ipvlan_change_rx_flags(struct net_device *dev, int change)
+>         struct ipvl_dev *ipvlan = netdev_priv(dev);
+>         struct net_device *phy_dev = ipvlan->phy_dev;
+>
+> -       if (change & IFF_ALLMULTI)
+> -               dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI? 1 : -1);
+> +       if (dev->flags & IFF_UP) {
+> +               if (change & IFF_ALLMULTI)
+> +                       dev_set_allmulti(phy_dev, dev->flags & IFF_ALLMULTI ? 1 : -1);
+> +       }
+>  }
+>
+>  static void ipvlan_set_multicast_mac_filter(struct net_device *dev)
+> --
+> 2.7.4
+>
