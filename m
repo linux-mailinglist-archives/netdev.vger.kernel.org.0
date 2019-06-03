@@ -2,72 +2,363 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 850AE32CAB
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:21:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAD132CCF
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727671AbfFCJVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:21:33 -0400
-Received: from mail.us.es ([193.147.175.20]:48820 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726555AbfFCJVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 05:21:33 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 012F2C3281
-        for <netdev@vger.kernel.org>; Mon,  3 Jun 2019 11:21:32 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E7914DA706
-        for <netdev@vger.kernel.org>; Mon,  3 Jun 2019 11:21:31 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DA098DA704; Mon,  3 Jun 2019 11:21:31 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BA05ADA708;
-        Mon,  3 Jun 2019 11:21:29 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 03 Jun 2019 11:21:29 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 6F1214265A5B;
-        Mon,  3 Jun 2019 11:21:29 +0200 (CEST)
-Date:   Mon, 3 Jun 2019 11:21:28 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     davem@davemloft.net, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] netfilter: ipv6: Fix undefined symbol
- nf_ct_frag6_gather
-Message-ID: <20190603092128.47omjnvbqxzealst@salvia>
-References: <1559483366-12371-1-git-send-email-wenxu@ucloud.cn>
+        id S1727915AbfFCJZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:25:32 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:44241 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726684AbfFCJZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 05:25:32 -0400
+Received: by mail-qt1-f196.google.com with SMTP id x47so8454582qtk.11;
+        Mon, 03 Jun 2019 02:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ikUw+ytl/jsnVysIkbTsq+JT7D2M4qVQgPABHM/gxKE=;
+        b=XxTjOJqD3Br4gh80err34HV6TB5AmR6T+NOz+z+XUYCkqSwz9Td98UME/bEKUirK6V
+         wq7qD4sDgRFyBN+lKGUekEe+zcIME/d1YnfPQno+/8hhRjTkOFb854IqC6bjq75LM6c6
+         otDpogvSV4VFtyP38NV/pDNJPR9QBERHFEV8R4legmVq32GNRMARpH/ei0gWVRfyBjK3
+         XKfLzcPs9WUC9/nv8uobr6y8mX9mLtLq0lbPtxP0+6mJnlNx/G8FT8nVESJLWTZou/95
+         vSsu+NwgEQWQFlECjuWpCUCqLTPEOXx2ZAm9E4WyLAtZv2ZURqSqIN2wl/MoxBYbEr57
+         V32Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ikUw+ytl/jsnVysIkbTsq+JT7D2M4qVQgPABHM/gxKE=;
+        b=eENUzkQ//lRV0mvKeNmU5sCJLtHRsCgBEKmOLBPnLnQd0JI3uQbDxP6kgTWE7YjDJ7
+         ktx0h0rq8Vv5PXD8FORMQhqryDYDCHTqkb52pMUp4G7YioYnZ/FaIvDN7nqa96MqSiN3
+         w2qJhnefINXXEt032AmVPVOUgr2j+jkgWDcJjuOCx1Hl7rZD5+6E22dtBBYp8eeodYzq
+         SOlj8UGv5PZ66SdZv+bKH9P7g4hX/aIVwDUQNAH+L7erS9ZbeCZL1/S6/28yoYBaNcqU
+         VnxlVj+aN1XoOZTvRHlp8/pMLVj1NS7/ySEgdrQQMTnU4JM4qT3q230SV50P2vUQ0EWT
+         5QPw==
+X-Gm-Message-State: APjAAAUCLwBR7qhjxXssJKWKScxzS5NHp68YToC/zwceokkeTWJpSFDs
+        srpo9oDV8R/n6nuuQ0C5i9F41rj6uJuLMmdKTeI=
+X-Google-Smtp-Source: APXvYqzaANy/LuR10lmdUFk0MBCTv7vm5m1kF0NKWoRxbZE8+kNEfPvpys1yTgpa5qdaQ7fmZvpFJWbq8bA0T1sHnmk=
+X-Received: by 2002:ac8:25b1:: with SMTP id e46mr2418019qte.36.1559553931035;
+ Mon, 03 Jun 2019 02:25:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559483366-12371-1-git-send-email-wenxu@ucloud.cn>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20190522133742.7654-1-bjorn.topel@gmail.com> <20190522133742.7654-2-bjorn.topel@gmail.com>
+ <CAPhsuW7asezC+0MA3tNyU9ms0rX9iP7Dk0QW4qqXvNvSECrpGA@mail.gmail.com>
+In-Reply-To: <CAPhsuW7asezC+0MA3tNyU9ms0rX9iP7Dk0QW4qqXvNvSECrpGA@mail.gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 3 Jun 2019 11:25:19 +0200
+Message-ID: <CAJ+HfNggDLVCzAqsFS06+xa6uyH95+jC=74kAi-cJYUcwwnmCg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] xsk: remove AF_XDP socket from map when
+ the socket is released
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 02, 2019 at 09:49:26PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> CONFIG_NETFILTER=m and CONFIG_NF_DEFRAG_IPV6 is not set
-> 
-> ERROR: "nf_ct_frag6_gather" [net/ipv6/ipv6.ko] undefined!
-> 
-> Fixes: c9bb6165a16e ("netfilter: nf_conntrack_bridge: fix CONFIG_IPV6=y")
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+On Sun, 2 Jun 2019 at 00:32, Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Wed, May 22, 2019 at 6:38 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.=
+com> wrote:
+> >
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > When an AF_XDP socket is released/closed the XSKMAP still holds a
+> > reference to the socket in a "released" state. The socket will still
+> > use the netdev queue resource, and block newly created sockets from
+> > attaching to that queue, but no user application can access the
+> > fill/complete/rx/tx queues. This results in that all applications need
+> > to explicitly clear the map entry from the old "zombie state"
+> > socket. This should be done automatically.
+> >
+> > After this patch, when a socket is released, it will remove itself
+> > from all the XSKMAPs it resides in, allowing the socket application to
+> > remove the code that cleans the XSKMAP entry.
+> >
+> > This behavior is also closer to that of SOCKMAP, making the two socket
+> > maps more consistent.
+> >
+> > Suggested-by: Bruce Richardson <bruce.richardson@intel.com>
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > ---
+> >  include/net/xdp_sock.h |   3 ++
+> >  kernel/bpf/xskmap.c    | 101 +++++++++++++++++++++++++++++++++++------
+> >  net/xdp/xsk.c          |  25 ++++++++++
+> >  3 files changed, 116 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> > index d074b6d60f8a..b5f8f9f826d0 100644
+> > --- a/include/net/xdp_sock.h
+> > +++ b/include/net/xdp_sock.h
+> > @@ -68,6 +68,8 @@ struct xdp_sock {
+> >          */
+> >         spinlock_t tx_completion_lock;
+> >         u64 rx_dropped;
+> > +       struct list_head map_list;
+> > +       spinlock_t map_list_lock;
+> >  };
+> >
+> >  struct xdp_buff;
+> > @@ -87,6 +89,7 @@ struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_=
+umem *umem,
+> >                                           struct xdp_umem_fq_reuse *new=
+q);
+> >  void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq);
+> >  struct xdp_umem *xdp_get_umem_from_qid(struct net_device *dev, u16 que=
+ue_id);
+> > +void xsk_map_delete_from_node(struct xdp_sock *xs, struct list_head *n=
+ode);
+> >
+> >  static inline char *xdp_umem_get_data(struct xdp_umem *umem, u64 addr)
+> >  {
+> > diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+> > index 686d244e798d..318f6a07fa31 100644
+> > --- a/kernel/bpf/xskmap.c
+> > +++ b/kernel/bpf/xskmap.c
+> > @@ -13,8 +13,58 @@ struct xsk_map {
+> >         struct bpf_map map;
+> >         struct xdp_sock **xsk_map;
+> >         struct list_head __percpu *flush_list;
+> > +       spinlock_t lock;
+> >  };
+> >
+> > +/* Nodes are linked in the struct xdp_sock map_list field, and used to
+> > + * track which maps a certain socket reside in.
+> > + */
+> > +struct xsk_map_node {
+> > +       struct list_head node;
+> > +       struct xsk_map *map;
+> > +       struct xdp_sock **map_entry;
+> > +};
+>
+> Why do we need map_entry to be struct xdp_sock **? I think we could
+> just use struct xdp_sock *? Or did I miss anytihg?
+>
 
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+It's a reference into the map (which is an array of xdp_sock *), so
+that it's simple to clear. Would you prefer storing the index of the
+map, and doing a lookup?
 
-Thanks!
+Bj=C3=B6rn
+
+> Thanks,
+> Song
+>
+>
+> > +
+> > +static struct xsk_map_node *xsk_map_node_alloc(void)
+> > +{
+> > +       return kzalloc(sizeof(struct xsk_map_node), GFP_ATOMIC | __GFP_=
+NOWARN);
+> > +}
+> > +
+> > +static void xsk_map_node_free(struct xsk_map_node *node)
+> > +{
+> > +       kfree(node);
+> > +}
+> > +
+> > +static void xsk_map_node_init(struct xsk_map_node *node,
+> > +                             struct xsk_map *map,
+> > +                             struct xdp_sock **map_entry)
+> > +{
+> > +       node->map =3D map;
+> > +       node->map_entry =3D map_entry;
+> > +}
+> > +
+> > +static void xsk_map_add_node(struct xdp_sock *xs, struct xsk_map_node =
+*node)
+> > +{
+> > +       spin_lock_bh(&xs->map_list_lock);
+> > +       list_add_tail(&node->node, &xs->map_list);
+> > +       spin_unlock_bh(&xs->map_list_lock);
+> > +}
+> > +
+> > +static void xsk_map_del_node(struct xdp_sock *xs, struct xdp_sock **ma=
+p_entry)
+> > +{
+> > +       struct xsk_map_node *n, *tmp;
+> > +
+> > +       spin_lock_bh(&xs->map_list_lock);
+> > +       list_for_each_entry_safe(n, tmp, &xs->map_list, node) {
+> > +               if (map_entry =3D=3D n->map_entry) {
+> > +                       list_del(&n->node);
+> > +                       xsk_map_node_free(n);
+> > +               }
+> > +       }
+> > +       spin_unlock_bh(&xs->map_list_lock);
+> > +
+> > +}
+> > +
+> >  static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
+> >  {
+> >         int cpu, err =3D -EINVAL;
+> > @@ -34,6 +84,7 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *=
+attr)
+> >                 return ERR_PTR(-ENOMEM);
+> >
+> >         bpf_map_init_from_attr(&m->map, attr);
+> > +       spin_lock_init(&m->lock);
+> >
+> >         cost =3D (u64)m->map.max_entries * sizeof(struct xdp_sock *);
+> >         cost +=3D sizeof(struct list_head) * num_possible_cpus();
+> > @@ -78,15 +129,16 @@ static void xsk_map_free(struct bpf_map *map)
+> >         bpf_clear_redirect_map(map);
+> >         synchronize_net();
+> >
+> > +       spin_lock_bh(&m->lock);
+> >         for (i =3D 0; i < map->max_entries; i++) {
+> > -               struct xdp_sock *xs;
+> > -
+> > -               xs =3D m->xsk_map[i];
+> > -               if (!xs)
+> > -                       continue;
+> > +               struct xdp_sock **map_entry =3D &m->xsk_map[i];
+> > +               struct xdp_sock *old_xs;
+> >
+> > -               sock_put((struct sock *)xs);
+> > +               old_xs =3D xchg(map_entry, NULL);
+> > +               if (old_xs)
+> > +                       xsk_map_del_node(old_xs, map_entry);
+> >         }
+> > +       spin_unlock_bh(&m->lock);
+> >
+> >         free_percpu(m->flush_list);
+> >         bpf_map_area_free(m->xsk_map);
+> > @@ -162,7 +214,8 @@ static int xsk_map_update_elem(struct bpf_map *map,=
+ void *key, void *value,
+> >  {
+> >         struct xsk_map *m =3D container_of(map, struct xsk_map, map);
+> >         u32 i =3D *(u32 *)key, fd =3D *(u32 *)value;
+> > -       struct xdp_sock *xs, *old_xs;
+> > +       struct xdp_sock *xs, *old_xs, **entry;
+> > +       struct xsk_map_node *node;
+> >         struct socket *sock;
+> >         int err;
+> >
+> > @@ -189,11 +242,20 @@ static int xsk_map_update_elem(struct bpf_map *ma=
+p, void *key, void *value,
+> >                 return -EOPNOTSUPP;
+> >         }
+> >
+> > -       sock_hold(sock->sk);
+> > +       node =3D xsk_map_node_alloc();
+> > +       if (!node) {
+> > +               sockfd_put(sock);
+> > +               return -ENOMEM;
+> > +       }
+> >
+> > -       old_xs =3D xchg(&m->xsk_map[i], xs);
+> > +       spin_lock_bh(&m->lock);
+> > +       entry =3D &m->xsk_map[i];
+> > +       xsk_map_node_init(node, m, entry);
+> > +       xsk_map_add_node(xs, node);
+> > +       old_xs =3D xchg(entry, xs);
+> >         if (old_xs)
+> > -               sock_put((struct sock *)old_xs);
+> > +               xsk_map_del_node(old_xs, entry);
+> > +       spin_unlock_bh(&m->lock);
+> >
+> >         sockfd_put(sock);
+> >         return 0;
+> > @@ -202,19 +264,32 @@ static int xsk_map_update_elem(struct bpf_map *ma=
+p, void *key, void *value,
+> >  static int xsk_map_delete_elem(struct bpf_map *map, void *key)
+> >  {
+> >         struct xsk_map *m =3D container_of(map, struct xsk_map, map);
+> > -       struct xdp_sock *old_xs;
+> > +       struct xdp_sock *old_xs, **map_entry;
+> >         int k =3D *(u32 *)key;
+> >
+> >         if (k >=3D map->max_entries)
+> >                 return -EINVAL;
+> >
+> > -       old_xs =3D xchg(&m->xsk_map[k], NULL);
+> > +       spin_lock_bh(&m->lock);
+> > +       map_entry =3D &m->xsk_map[k];
+> > +       old_xs =3D xchg(map_entry, NULL);
+> >         if (old_xs)
+> > -               sock_put((struct sock *)old_xs);
+> > +               xsk_map_del_node(old_xs, map_entry);
+> > +       spin_unlock_bh(&m->lock);
+> >
+> >         return 0;
+> >  }
+> >
+> > +void xsk_map_delete_from_node(struct xdp_sock *xs, struct list_head *n=
+ode)
+> > +{
+> > +       struct xsk_map_node *n =3D list_entry(node, struct xsk_map_node=
+, node);
+> > +
+> > +       spin_lock_bh(&n->map->lock);
+> > +       *n->map_entry =3D NULL;
+> > +       spin_unlock_bh(&n->map->lock);
+> > +       xsk_map_node_free(n);
+> > +}
+> > +
+> >  const struct bpf_map_ops xsk_map_ops =3D {
+> >         .map_alloc =3D xsk_map_alloc,
+> >         .map_free =3D xsk_map_free,
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index a14e8864e4fa..1931d98a7754 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -335,6 +335,27 @@ static int xsk_init_queue(u32 entries, struct xsk_=
+queue **queue,
+> >         return 0;
+> >  }
+> >
+> > +static struct list_head *xsk_map_list_pop(struct xdp_sock *xs)
+> > +{
+> > +       struct list_head *node =3D NULL;
+> > +
+> > +       spin_lock_bh(&xs->map_list_lock);
+> > +       if (!list_empty(&xs->map_list)) {
+> > +               node =3D xs->map_list.next;
+> > +               list_del(node);
+> > +       }
+> > +       spin_unlock_bh(&xs->map_list_lock);
+> > +       return node;
+> > +}
+> > +
+> > +static void xsk_delete_from_maps(struct xdp_sock *xs)
+> > +{
+> > +       struct list_head *node;
+> > +
+> > +       while ((node =3D xsk_map_list_pop(xs)))
+> > +               xsk_map_delete_from_node(xs, node);
+> > +}
+> > +
+> >  static int xsk_release(struct socket *sock)
+> >  {
+> >         struct sock *sk =3D sock->sk;
+> > @@ -354,6 +375,7 @@ static int xsk_release(struct socket *sock)
+> >         sock_prot_inuse_add(net, sk->sk_prot, -1);
+> >         local_bh_enable();
+> >
+> > +       xsk_delete_from_maps(xs);
+> >         if (xs->dev) {
+> >                 struct net_device *dev =3D xs->dev;
+> >
+> > @@ -767,6 +789,9 @@ static int xsk_create(struct net *net, struct socke=
+t *sock, int protocol,
+> >         mutex_init(&xs->mutex);
+> >         spin_lock_init(&xs->tx_completion_lock);
+> >
+> > +       INIT_LIST_HEAD(&xs->map_list);
+> > +       spin_lock_init(&xs->map_list_lock);
+> > +
+> >         mutex_lock(&net->xdp.lock);
+> >         sk_add_node_rcu(sk, &net->xdp.list);
+> >         mutex_unlock(&net->xdp.lock);
+> > --
+> > 2.20.1
+> >
