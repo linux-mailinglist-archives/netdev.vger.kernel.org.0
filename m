@@ -2,85 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E34432B7B
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7732B32B95
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbfFCJHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:07:33 -0400
-Received: from mail.us.es ([193.147.175.20]:38876 "EHLO mail.us.es"
+        id S1727874AbfFCJJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:09:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727209AbfFCJHc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 05:07:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 98D52EDB0B
-        for <netdev@vger.kernel.org>; Mon,  3 Jun 2019 11:07:30 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8CB1EDA718
-        for <netdev@vger.kernel.org>; Mon,  3 Jun 2019 11:07:30 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 825A2DA712; Mon,  3 Jun 2019 11:07:30 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5B6ECDA70E;
-        Mon,  3 Jun 2019 11:07:28 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 03 Jun 2019 11:07:28 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
+        id S1726555AbfFCJJl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 05:09:41 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 22D1F40705C3;
-        Mon,  3 Jun 2019 11:07:28 +0200 (CEST)
-Date:   Mon, 3 Jun 2019 11:07:27 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net-next] net: fix use-after-free in kfree_skb_list
-Message-ID: <20190603090727.g2cxedtuwe2hhvjl@salvia>
-References: <20190602182418.117629-1-edumazet@google.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 18BB027E18;
+        Mon,  3 Jun 2019 09:09:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559552980;
+        bh=PR2gDj7HeiBVVjLwByQikjEIKX1jF7EuwGlOJc9xCSc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=x95RudnISGfB+LnzHq8Bx6Mw7AYfWRmQMkk8+NorS/HK2hzv6227jaJwgBneREKxI
+         SpF2tvIPDnhhHV7Seo5gIHnmBZDZnSrKM5S5OpsqkdnmIJ+w3lPyfmwncGspvnvMFp
+         It5Bx2Rk0QqZrxfIizk3KJH81i8J82mE3lMwjd2g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Heesoon Kim <Heesoon.Kim@stratus.com>,
+        Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Subject: [PATCH 4.19 01/32] bonding/802.3ad: fix slave link initialization transition states
+Date:   Mon,  3 Jun 2019 11:07:55 +0200
+Message-Id: <20190603090308.660242491@linuxfoundation.org>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190603090308.472021390@linuxfoundation.org>
+References: <20190603090308.472021390@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190602182418.117629-1-edumazet@google.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 02, 2019 at 11:24:18AM -0700, Eric Dumazet wrote:
-> syzbot reported nasty use-after-free [1]
-> 
-> Lets remove frag_list field from structs ip_fraglist_iter
-> and ip6_fraglist_iter. This seens not needed anyway.
-> 
-> [1] :
-> BUG: KASAN: use-after-free in kfree_skb_list+0x5d/0x60 net/core/skbuff.c:706
-> Read of size 8 at addr ffff888085a3cbc0 by task syz-executor303/8947
-[...]
-> 
-> Memory state around the buggy address:
->  ffff888085a3ca80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->  ffff888085a3cb00: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-> >ffff888085a3cb80: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
->                                            ^
->  ffff888085a3cc00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff888085a3cc80: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
-> 
-> Fixes: 0feca6190f88 ("net: ipv6: add skbuff fraglist splitter")
-> Fixes: c8b17be0b7a4 ("net: ipv4: add skbuff fraglist splitter")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Jarod Wilson <jarod@redhat.com>
 
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[ Upstream commit 334031219a84b9994594015aab85ed7754c80176 ]
 
-Thanks!
+Once in a while, with just the right timing, 802.3ad slaves will fail to
+properly initialize, winding up in a weird state, with a partner system
+mac address of 00:00:00:00:00:00. This started happening after a fix to
+properly track link_failure_count tracking, where an 802.3ad slave that
+reported itself as link up in the miimon code, but wasn't able to get a
+valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
+BOND_LINK_DOWN. That was the proper thing to do for the general "my link
+went down" case, but has created a link initialization race that can put
+the interface in this odd state.
+
+The simple fix is to instead set the slave link to BOND_LINK_DOWN again,
+if the link has never been up (last_link_up == 0), so the link state
+doesn't bounce from BOND_LINK_DOWN to BOND_LINK_FAIL -- it hasn't failed
+in this case, it simply hasn't been up yet, and this prevents the
+unnecessary state change from DOWN to FAIL and getting stuck in an init
+failure w/o a partner mac.
+
+Fixes: ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+Tested-by: Heesoon Kim <Heesoon.Kim@stratus.com>
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/bonding/bond_main.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3107,13 +3107,18 @@ static int bond_slave_netdev_event(unsig
+ 	case NETDEV_CHANGE:
+ 		/* For 802.3ad mode only:
+ 		 * Getting invalid Speed/Duplex values here will put slave
+-		 * in weird state. So mark it as link-fail for the time
+-		 * being and let link-monitoring (miimon) set it right when
+-		 * correct speeds/duplex are available.
++		 * in weird state. Mark it as link-fail if the link was
++		 * previously up or link-down if it hasn't yet come up, and
++		 * let link-monitoring (miimon) set it right when correct
++		 * speeds/duplex are available.
+ 		 */
+ 		if (bond_update_speed_duplex(slave) &&
+-		    BOND_MODE(bond) == BOND_MODE_8023AD)
+-			slave->link = BOND_LINK_FAIL;
++		    BOND_MODE(bond) == BOND_MODE_8023AD) {
++			if (slave->last_link_up)
++				slave->link = BOND_LINK_FAIL;
++			else
++				slave->link = BOND_LINK_DOWN;
++		}
+ 
+ 		if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 			bond_3ad_adapter_speed_duplex_changed(slave);
+
+
