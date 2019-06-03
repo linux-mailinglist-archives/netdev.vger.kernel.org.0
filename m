@@ -2,200 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D5433227
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA25C33236
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 16:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728998AbfFCObU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 10:31:20 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36263 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726780AbfFCObT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:31:19 -0400
-Received: by mail-qk1-f193.google.com with SMTP id g18so525472qkl.3;
-        Mon, 03 Jun 2019 07:31:19 -0700 (PDT)
+        id S1729124AbfFCOcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 10:32:04 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35249 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729112AbfFCOcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 10:32:02 -0400
+Received: by mail-pg1-f195.google.com with SMTP id s27so2783138pgl.2
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 07:32:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=btLWlPKhCwA0WAdmS4Zww6hmWu7L+sESm4GAMbzvcAA=;
-        b=R1x5sJPR9BHYmYwgAJWxhpajl6v59EwCQulBDlI2VQWZEFy8lc57Y3ycP5xthTNbzj
-         2I+ckyXQnLKWGirNrmf1WlqHOTjRYE59HloGtJOB/Zhz/miRDMlE8CcpiEkFJv+K4qva
-         4AZcjdnr+zj+llxFZIODRYPaHvHeu+4Nu8pWU4kytjUgJLBHoqpXHB+uJS6QeU/CMes5
-         flkxuvBK3w9jxkIap5rpstXU+XZWaLxFOxO5ud7PtFYluJRmtmehBckLbHVYWr3foMp/
-         J3NmNZl10xYjqX6FEcn4aMc1acqJ5J9ib6SVD7KRv+Vx6Y8IQ3Ou7TSP4Pb6F4yIpD/a
-         R7Kg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hzUTYLyJIfqWCjhTtjBG0SwXN5C9pieJX1yZ/fNJlfM=;
+        b=eaLPFr+Eaf59bCyCzpVAHIPnC8xqLgpWXZaR4rZz8ItD+0nBJJeq69I92bv3/zpy2O
+         41hZVzQIDPfP+wD63PGly4n4s0gTBx70DvVQMCVrx/HhSth24Q5Wi4TakwbZhuJS6rip
+         cz3RHY+nauj3rE0y4a8pBcSQOdRwozKlJSWLGK9DK4i3eTakYP7btsk4XWihEYedjE2n
+         3pChjIa2/IfYRg/2RQcCBUhi1yUFmNqcbvSA0QzljaudvdI/ZVQnpRQFz/hiiCleLfkq
+         iI4SLIlK93MtjqC67lx6+neBootb9ne1ziuUOW7s51yCKC4B2MK723+klvt9EfbBrR93
+         fJLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=btLWlPKhCwA0WAdmS4Zww6hmWu7L+sESm4GAMbzvcAA=;
-        b=PkEprt342P6WflZRTIetnAD4MKb+B9H5pPlq8eeu5Ls7DWWsl89IGnag9mTUmSKTFf
-         RuAbaMMKuCgJNID28DSPVtSMVy1FRMzokHT7I3SQ3gCSn/J8VnXZrmM/KjqRFv8lEFOY
-         YrEBbHWD11ZpyiXMav2FSDW9QipClSagE3xQrWIr/i5AQFg+Cd898rtXwLQXQgWZxbeJ
-         Xkf23p/KcbzSO29JL1giemboM892TQJhH58m9NZio9ypgeqL8EblgPUvbi1Gi1et9RSr
-         1Rj2Bs/6fHXK9/6rQEIDyHj7Ba+gM5GR1T3KQCY43rKyoU9tFZTB8mIITDoFx6CJIEhN
-         MjcA==
-X-Gm-Message-State: APjAAAV3jMzW6UZnEGxpC3roMzqAjXV8ei6ohZ4kXvnqIPh3CAGQ+WpF
-        UABiHxSW9At392iAWw+DV30=
-X-Google-Smtp-Source: APXvYqy8Os/hB2Y/EqvGys7fqA/5t+xRhxfYPqzxv795iH3/nolNG5PbxRNjVDCBxjQMOkSZg9022g==
-X-Received: by 2002:a37:ef14:: with SMTP id j20mr22187515qkk.162.1559572278493;
-        Mon, 03 Jun 2019 07:31:18 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.32])
-        by smtp.gmail.com with ESMTPSA id t197sm3123625qke.2.2019.06.03.07.31.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 Jun 2019 07:31:16 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id CBD82C085E; Mon,  3 Jun 2019 11:31:13 -0300 (-03)
-Date:   Mon, 3 Jun 2019 11:31:13 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     linux-sctp@vger.kernel.org,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] Fix memory leak in sctp_process_init
-Message-ID: <20190603143113.GH3713@localhost.localdomain>
-References: <20190603142112.20229-1-nhorman@tuxdriver.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hzUTYLyJIfqWCjhTtjBG0SwXN5C9pieJX1yZ/fNJlfM=;
+        b=QnQHnRN9z/HDaMqi33sS2Qyoof8g7fCcrVsh40XWAR6BXpL7pPyt0FgtiQkdkQiKFs
+         V6Rl89P07XX1ffqw30EvjiPxdvIMQ+Kr/gZxO9g6R132zF48R4xsEc/HJw6zXsSgP4PZ
+         YQhf2RHgrPcWaH1Dv2IH23FwcO67Kbq3FfVsTBbU8vpP22vsaqEtm0dXGr9uozFjVfVy
+         wm7YlpzlWULCq6vj7EEC/iDsAmZ0xoQPqWA3Ff404OIcorJ6xGhpLM7Y3vqgbQBBH5Sy
+         x0HWaxEGZF7zqNQCPuKdhmD0uGdv5OxUqCdRMYAAqzhH3am18FY9WQtK3jNX4eyLQR9n
+         +QmA==
+X-Gm-Message-State: APjAAAUh+nrxKt649myX84toqtAmXhzkolTetPDA+SVkSiETkeAi+If9
+        ADwhInuSvQBbGiQrGCI+S9LlOOChQlRfWynRrLkezg==
+X-Google-Smtp-Source: APXvYqz62JARGj8JxGWFy+5viuvU32dXkhQ5iv+X79Ts4VPYi9LH21dOu2hiS+UtzZDuokRswnFwn9epckI55I9JNQY=
+X-Received: by 2002:a65:64d9:: with SMTP id t25mr28553940pgv.130.1559572321848;
+ Mon, 03 Jun 2019 07:32:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603142112.20229-1-nhorman@tuxdriver.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <00000000000044cec9058a6b6003@google.com>
+In-Reply-To: <00000000000044cec9058a6b6003@google.com>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Mon, 3 Jun 2019 16:31:50 +0200
+Message-ID: <CAAeHK+z6wQA_ZMG0bC7M9792JXDY=-y4qG=_qypVjwuNbFnFpw@mail.gmail.com>
+Subject: Re: INFO: trying to register non-static key in mwifiex_unregister_dev
+To:     syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>
+Cc:     amitkarwar@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        gbhat@marvell.com, huxinming820@gmail.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        nishants@marvell.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 10:21:12AM -0400, Neil Horman wrote:
-> syzbot found the following leak in sctp_process_init
-> BUG: memory leak
-> unreferenced object 0xffff88810ef68400 (size 1024):
->   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
->   hex dump (first 32 bytes):
->     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000a02cebbd>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
-> [inline]
->     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
->     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
->     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
->     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
->     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
->     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
->     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
-> net/sctp/sm_make_chunk.c:2437
->     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
-> [inline]
->     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
-> [inline]
->     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
-> [inline]
->     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60 net/sctp/sm_sideeffect.c:1165
->     [<0000000044e11f96>] sctp_assoc_bh_rcv+0x13c/0x200
-> net/sctp/associola.c:1074
->     [<00000000ec43804d>] sctp_inq_push+0x7f/0xb0 net/sctp/inqueue.c:95
->     [<00000000726aa954>] sctp_backlog_rcv+0x5e/0x2a0 net/sctp/input.c:354
->     [<00000000d9e249a8>] sk_backlog_rcv include/net/sock.h:950 [inline]
->     [<00000000d9e249a8>] __release_sock+0xab/0x110 net/core/sock.c:2418
->     [<00000000acae44fa>] release_sock+0x37/0xd0 net/core/sock.c:2934
->     [<00000000963cc9ae>] sctp_sendmsg+0x2c0/0x990 net/sctp/socket.c:2122
->     [<00000000a7fc7565>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
->     [<00000000b732cbd3>] sock_sendmsg_nosec net/socket.c:652 [inline]
->     [<00000000b732cbd3>] sock_sendmsg+0x54/0x70 net/socket.c:671
->     [<00000000274c57ab>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2292
->     [<000000008252aedb>] __sys_sendmsg+0x80/0xf0 net/socket.c:2330
->     [<00000000f7bf23d1>] __do_sys_sendmsg net/socket.c:2339 [inline]
->     [<00000000f7bf23d1>] __se_sys_sendmsg net/socket.c:2337 [inline]
->     [<00000000f7bf23d1>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2337
->     [<00000000a8b4131f>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:3
-> 
-> The problem was that the peer.cookie value points to an skb allocated
-> area on the first pass through this function, at which point it is
-> overwritten with a heap allocated value, but in certain cases, where a
-> COOKIE_ECHO chunk is included in the packet, a second pass through
-> sctp_process_init is made, where the cookie value is re-allocated,
-> leaking the first allocation.
-> 
-> Fix is to always allocate the cookie value, and free it when we are done
-> using it.
-> 
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> CC: "David S. Miller" <davem@davemloft.net>
-> CC: netdev@vger.kernel.org
+On Mon, Jun 3, 2019 at 3:31 PM syzbot
+<syzbot+373e6719b49912399d21@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    69bbe8c7 usb-fuzzer: main usb gadget fuzzer driver
+> git tree:       https://github.com/google/kasan.git usb-fuzzer
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1448d0f2a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=193d8457178b3229
+> dashboard link: https://syzkaller.appspot.com/bug?extid=373e6719b49912399d21
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e57ca6a00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1106eda2a00000
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+373e6719b49912399d21@syzkaller.appspotmail.com
+>
+> usb 1-1: Using ep0 maxpacket: 8
+> usb 1-1: config 0 has an invalid interface number: 182 but max is 0
+> usb 1-1: config 0 has no interface number 0
+> usb 1-1: New USB device found, idVendor=1286, idProduct=2052,
+> bcdDevice=61.43
+> usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+> usb 1-1: config 0 descriptor??
+> usb 1-1: Direct firmware load for mrvl/usbusb8997_combo_v4.bin failed with
+> error -2
+> usb 1-1: Failed to get firmware mrvl/usbusb8997_combo_v4.bin
+> usb 1-1: info: _mwifiex_fw_dpc: unregister device
+> INFO: trying to register non-static key.
+> the code is fine but needs lockdep annotation.
+> turning off the locking correctness validator.
+> CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.2.0-rc1+ #10
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> Workqueue: events request_firmware_work_func
+> Call Trace:
+>   __dump_stack lib/dump_stack.c:77 [inline]
+>   dump_stack+0xca/0x13e lib/dump_stack.c:113
+>   assign_lock_key kernel/locking/lockdep.c:774 [inline]
+>   register_lock_class+0x11ae/0x1240 kernel/locking/lockdep.c:1083
+>   __lock_acquire+0x11d/0x5340 kernel/locking/lockdep.c:3673
+>   lock_acquire+0x100/0x2b0 kernel/locking/lockdep.c:4302
+>   del_timer_sync+0x3a/0x130 kernel/time/timer.c:1277
+>   mwifiex_usb_cleanup_tx_aggr
+> drivers/net/wireless/marvell/mwifiex/usb.c:1358 [inline]
+>   mwifiex_unregister_dev+0x416/0x690
+> drivers/net/wireless/marvell/mwifiex/usb.c:1370
+>   _mwifiex_fw_dpc+0x577/0xda0 drivers/net/wireless/marvell/mwifiex/main.c:651
+>   request_firmware_work_func+0x126/0x242
+> drivers/base/firmware_loader/main.c:785
+>   process_one_work+0x905/0x1570 kernel/workqueue.c:2268
+>   worker_thread+0x96/0xe20 kernel/workqueue.c:2414
+>   kthread+0x30b/0x410 kernel/kthread.c:254
+>   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> ------------[ cut here ]------------
+> ODEBUG: assert_init not available (active state 0) object type: timer_list
+> hint: 0x0
+> WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:325
+> debug_print_object+0x160/0x250 lib/debugobjects.c:325
+>
+>
 > ---
->  net/sctp/associola.c     |  1 +
->  net/sctp/sm_make_chunk.c | 12 +++---------
->  net/sctp/sm_sideeffect.c |  5 +++++
->  3 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> index d2c7d0d2abc1..718b9917844e 100644
-> --- a/net/sctp/associola.c
-> +++ b/net/sctp/associola.c
-> @@ -393,6 +393,7 @@ void sctp_association_free(struct sctp_association *asoc)
->  	kfree(asoc->peer.peer_random);
->  	kfree(asoc->peer.peer_chunks);
->  	kfree(asoc->peer.peer_hmacs);
-> +	kfree(asoc->peer.cookie);
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 
-This one slipped back..
-
->  
->  	/* Release the transport structures. */
->  	list_for_each_safe(pos, temp, &asoc->peer.transport_addr_list) {
-> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> index 72e74503f9fc..ff365f22a3c1 100644
-> --- a/net/sctp/sm_make_chunk.c
-> +++ b/net/sctp/sm_make_chunk.c
-> @@ -2431,14 +2431,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
->  	/* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
->  	asoc->peer.rwnd = asoc->peer.i.a_rwnd;
->  
-> -	/* Copy cookie in case we need to resend COOKIE-ECHO. */
-> -	cookie = asoc->peer.cookie;
-> -	if (cookie) {
-> -		asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
-> -		if (!asoc->peer.cookie)
-> -			goto clean_up;
-> -	}
-
-cookie will be left unused after this. May as well remove it too.
-
-  Marcelo
-
-> -
->  	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
->  	 * high (for example, implementations MAY use the size of the receiver
->  	 * advertised window).
-> @@ -2607,7 +2599,9 @@ static int sctp_process_param(struct sctp_association *asoc,
->  	case SCTP_PARAM_STATE_COOKIE:
->  		asoc->peer.cookie_len =
->  			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-> -		asoc->peer.cookie = param.cookie->body;
-> +		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
-> +		if (!asoc->peer.cookie)
-> +			retval = 0;
->  		break;
->  
->  	case SCTP_PARAM_HEARTBEAT_INFO:
-> diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-> index 4aa03588f87b..27ddf2d8f001 100644
-> --- a/net/sctp/sm_sideeffect.c
-> +++ b/net/sctp/sm_sideeffect.c
-> @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
->  						asoc->rto_initial;
->  	}
->  
-> +	if (sctp_state(asoc, ESTABLISHED)) {
-> +		kfree(asoc->peer.cookie);
-> +		asoc->peer.cookie = NULL;
-> +	}
-> +
->  	if (sctp_state(asoc, ESTABLISHED) ||
->  	    sctp_state(asoc, CLOSED) ||
->  	    sctp_state(asoc, SHUTDOWN_RECEIVED)) {
-> -- 
-> 2.20.1
-> 
+#syz dup: INFO: trying to register non-static key in del_timer_sync (2)
