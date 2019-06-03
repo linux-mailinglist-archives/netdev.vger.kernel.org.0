@@ -2,96 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 842FF330F8
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B87A833114
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 15:31:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfFCNWj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 3 Jun 2019 09:22:39 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:32004 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726516AbfFCNWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:22:35 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-149-2i4xwsqCOGe9w_cHrK2MyA-1; Mon, 03 Jun 2019 14:22:32 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon,
- 3 Jun 2019 14:22:31 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 3 Jun 2019 14:22:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Robert Hancock' <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "anirudh@xilinx.com" <anirudh@xilinx.com>,
-        "John.Linn@xilinx.com" <John.Linn@xilinx.com>
-Subject: RE: [PATCH net-next 09/13] net: axienet: Make missing MAC address
- non-fatal
-Thread-Topic: [PATCH net-next 09/13] net: axienet: Make missing MAC address
- non-fatal
-Thread-Index: AQHVF97vnsjN2fINTkywHBXtncRQ+qaJ7rAQ
-Date:   Mon, 3 Jun 2019 13:22:31 +0000
-Message-ID: <cc01dd319abd4b1194bcdb9900e0e1ce@AcuMS.aculab.com>
-References: <1559326545-28825-1-git-send-email-hancock@sedsystems.ca>
- <1559326545-28825-10-git-send-email-hancock@sedsystems.ca>
-In-Reply-To: <1559326545-28825-10-git-send-email-hancock@sedsystems.ca>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728709AbfFCNbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 09:31:10 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:56760 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726842AbfFCNbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 09:31:05 -0400
+Received: by mail-it1-f198.google.com with SMTP id l124so15087512itg.6
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 06:31:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Xd9c0wiNMk6Apek2lhhQ7MeiJewPRVMefJXoiTf1Kzk=;
+        b=dC8SDWeJdUCpImWH3D7olFYtX+dlGXJDQ83GmFRW25BtXzfLJoXEXDz2SYtZiqUMD/
+         d4wbF3CktV9B7/ahndaXzdbKV2snuqgTUe8pWoVrj3PfdnCHT+8/5FH8kNgyCoqNzibe
+         i3+HAQjp2so7sxumCqWEaK54QjCjcgZyrOCB6P4ujGN9PJn4UGEGicJajWsTjoJymsgw
+         ZClT0rqighHf4l6HQ2MHp9MyDJz3VhttpNgDalnNYyzgFQEHz3Bbqe1/HswxaPpBTDSE
+         iA0E6LKAMvN4SgiUPBbP+WnShV8V0KHNTZRGzfoROvSa9NijPjwPd/RPqHkwHjsb8eNT
+         TsIA==
+X-Gm-Message-State: APjAAAUH6fQpv7A53715yT21KjuediI6Q30Fm/kHyJ+Tt3tV4DSeKOh0
+        58ETA1oNlc8903IfZo1K+2oIS3lAC/4DkbwNswTNR/VlYWcP
+X-Google-Smtp-Source: APXvYqzgujQbAIS/Q+3FyQrH3nuh9kfgM04XgvloUsUlk8OX4StVb91+53wTYXM1u9UxnN/Ag0AEck9BFvOQ2gzYiBIaW0D8pNES
 MIME-Version: 1.0
-X-MC-Unique: 2i4xwsqCOGe9w_cHrK2MyA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+X-Received: by 2002:a24:6e90:: with SMTP id w138mr17164666itc.150.1559568664806;
+ Mon, 03 Jun 2019 06:31:04 -0700 (PDT)
+Date:   Mon, 03 Jun 2019 06:31:04 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000044cec9058a6b6003@google.com>
+Subject: INFO: trying to register non-static key in mwifiex_unregister_dev
+From:   syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>
+To:     amitkarwar@gmail.com, andreyknvl@google.com, davem@davemloft.net,
+        gbhat@marvell.com, huxinming820@gmail.com, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        nishants@marvell.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Robert Hancock
-> Sent: 31 May 2019 19:16
-> Failing initialization on a missing MAC address property is excessive.
-> We can just fall back to using a random MAC instead, which at least
-> leaves the interface in a functioning state.
-> 
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index 9949e67..947fa5d 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -308,7 +308,7 @@ static void axienet_set_mac_address(struct net_device *ndev,
->  {
->  	struct axienet_local *lp = netdev_priv(ndev);
-> 
-> -	if (address)
-> +	if (!IS_ERR(address))
->  		memcpy(ndev->dev_addr, address, ETH_ALEN);
->  	if (!is_valid_ether_addr(ndev->dev_addr))
->  		eth_hw_addr_random(ndev);
-> @@ -1730,8 +1730,7 @@ static int axienet_probe(struct platform_device *pdev)
->  	/* Retrieve the MAC address */
->  	mac_addr = of_get_mac_address(pdev->dev.of_node);
->  	if (IS_ERR(mac_addr)) {
-> -		dev_err(&pdev->dev, "could not find MAC address\n");
-> -		goto free_netdev;
-> +		dev_warn(&pdev->dev, "could not find MAC address property\n");
->  	}
->  	axienet_set_mac_address(ndev, mac_addr);
+Hello,
 
-Isn't that going to read from an invalid address on error?
-Seems you didn't test of_get_mac_address() failing :-)
+syzbot found the following crash on:
 
-	David
+HEAD commit:    69bbe8c7 usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=1448d0f2a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=193d8457178b3229
+dashboard link: https://syzkaller.appspot.com/bug?extid=373e6719b49912399d21
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e57ca6a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1106eda2a00000
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+373e6719b49912399d21@syzkaller.appspotmail.com
 
+usb 1-1: Using ep0 maxpacket: 8
+usb 1-1: config 0 has an invalid interface number: 182 but max is 0
+usb 1-1: config 0 has no interface number 0
+usb 1-1: New USB device found, idVendor=1286, idProduct=2052,  
+bcdDevice=61.43
+usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+usb 1-1: config 0 descriptor??
+usb 1-1: Direct firmware load for mrvl/usbusb8997_combo_v4.bin failed with  
+error -2
+usb 1-1: Failed to get firmware mrvl/usbusb8997_combo_v4.bin
+usb 1-1: info: _mwifiex_fw_dpc: unregister device
+INFO: trying to register non-static key.
+the code is fine but needs lockdep annotation.
+turning off the locking correctness validator.
+CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.2.0-rc1+ #10
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xca/0x13e lib/dump_stack.c:113
+  assign_lock_key kernel/locking/lockdep.c:774 [inline]
+  register_lock_class+0x11ae/0x1240 kernel/locking/lockdep.c:1083
+  __lock_acquire+0x11d/0x5340 kernel/locking/lockdep.c:3673
+  lock_acquire+0x100/0x2b0 kernel/locking/lockdep.c:4302
+  del_timer_sync+0x3a/0x130 kernel/time/timer.c:1277
+  mwifiex_usb_cleanup_tx_aggr  
+drivers/net/wireless/marvell/mwifiex/usb.c:1358 [inline]
+  mwifiex_unregister_dev+0x416/0x690  
+drivers/net/wireless/marvell/mwifiex/usb.c:1370
+  _mwifiex_fw_dpc+0x577/0xda0 drivers/net/wireless/marvell/mwifiex/main.c:651
+  request_firmware_work_func+0x126/0x242  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x905/0x1570 kernel/workqueue.c:2268
+  worker_thread+0x96/0xe20 kernel/workqueue.c:2414
+  kthread+0x30b/0x410 kernel/kthread.c:254
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+------------[ cut here ]------------
+ODEBUG: assert_init not available (active state 0) object type: timer_list  
+hint: 0x0
+WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:325  
+debug_print_object+0x160/0x250 lib/debugobjects.c:325
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
