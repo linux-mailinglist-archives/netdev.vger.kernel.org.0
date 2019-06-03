@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32602326D4
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12278326D6
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 05:03:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726606AbfFCDDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 23:03:20 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:51224 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfFCDDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 23:03:20 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x532rwZk018629;
-        Mon, 3 Jun 2019 03:03:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : cc : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=6ylz5I4VHlNveusG0wbyKoE8rzqoR1wJmxiYoM6U6yA=;
- b=SHn27NHI/y4pNhAQCv8LH29upSuVAMEYlDyrTqPTb7lHflcToYcd/FNpvINvZh/yadhl
- Uks5xXxKHg7B5nfPdvxQQl0wO4IyHR1tW0ttoaUk6pJa1tFVfNHpqTXdk93VFmaYlOdn
- vNXuY5DFVDtIlqiUGCp7yiPtlnUd10xnGKGfFylVaIdc9bKUbevskUF4p3ICsuF2LIYa
- D/PyYDOOi7RAnvYgk6KCgUnFLI1r8zTqRC64b/RMRn1LeKZY4qXzYPBgQY4VY7lfpjl9
- JLrNngxSqA+gsBV8X03ijARN5LhwKAWR1UoRXxm800xLQ0onT3vpgXxudQKj2x3iU1WF OA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 2suevd4gkn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Jun 2019 03:03:12 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5332o3q085675;
-        Mon, 3 Jun 2019 03:03:12 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 2svbbuwcrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 03 Jun 2019 03:03:12 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x5333BvH086136;
-        Mon, 3 Jun 2019 03:03:11 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 2svbbuwcre-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Jun 2019 03:03:11 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5333Aoh024863;
-        Mon, 3 Jun 2019 03:03:10 GMT
-Received: from santoshs-mbp-3.lan (/69.181.241.203)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 02 Jun 2019 20:03:10 -0700
-Subject: Re: [PATCH 1/1] net: rds: add per rds connection cache statistics
-To:     Zhu Yanjun <yanjun.zhu@oracle.com>
-References: <1559375674-17913-1-git-send-email-yanjun.zhu@oracle.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        rds-devel@oss.oracle.com
-From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <c9164a0b-fb6f-b3ab-1d38-76413e4820b2@oracle.com>
-Date:   Sun, 2 Jun 2019 20:03:02 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S1726816AbfFCDDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 23:03:36 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:44406 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725872AbfFCDDf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Jun 2019 23:03:35 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
+        id 1hXdFy-000817-M0; Mon, 03 Jun 2019 11:03:30 +0800
+Received: from herbert by gondobar with local (Exim 4.89)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1hXdFs-0001zg-Qt; Mon, 03 Jun 2019 11:03:24 +0800
+Date:   Mon, 3 Jun 2019 11:03:24 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
+Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Message-ID: <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
+References: <20150910005708.GA23369@wfg-t540p.sh.intel.com>
+ <20150910102513.GA1677@fixme-laptop.cn.ibm.com>
+ <20150910171649.GE4029@linux.vnet.ibm.com>
+ <20150911021933.GA1521@fixme-laptop.cn.ibm.com>
+ <20150921193045.GA13674@lerouge>
+ <20150921204327.GH4029@linux.vnet.ibm.com>
+ <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+ <20190603000617.GD28207@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <1559375674-17913-1-git-send-email-yanjun.zhu@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9276 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906030019
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603000617.GD28207@linux.ibm.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/19 12:54 AM, Zhu Yanjun wrote:
-> The variable cache_allocs is to indicate how many frags (KiB) are in one
-> rds connection frag cache.
-> The command "rds-info -Iv" will output the rds connection cache
-> statistics as below:
-> "
-> RDS IB Connections:
->        LocalAddr RemoteAddr Tos SL  LocalDev            RemoteDev
->        1.1.1.14 1.1.1.14   58 255  fe80::2:c903:a:7a31 fe80::2:c903:a:7a31
->        send_wr=256, recv_wr=1024, send_sge=8, rdma_mr_max=4096,
->        rdma_mr_size=257, cache_allocs=12
-> "
-> This means that there are about 12KiB frag in this rds connection frag
->   cache.
-> 
-> Tested-by: RDS CI <rdsci_oslo@no.oracle.com>
-Please add some valid email id or drop above. Its expected
-that with SOB, patches are tested before testing.
+On Sun, Jun 02, 2019 at 05:06:17PM -0700, Paul E. McKenney wrote:
+>
+> Please note that preemptible Tree RCU has lacked the compiler barrier on
+> all but the outermost rcu_read_unlock() for years before Boqun's patch.
 
-> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-> ---
->   include/uapi/linux/rds.h | 2 ++
->   net/rds/ib.c             | 2 ++
->   2 files changed, 4 insertions(+)
-> 
-> diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
-> index 5d0f76c..fd6b5f6 100644
-> --- a/include/uapi/linux/rds.h
-> +++ b/include/uapi/linux/rds.h
-> @@ -250,6 +250,7 @@ struct rds_info_rdma_connection {
->   	__u32		rdma_mr_max;
->   	__u32		rdma_mr_size;
->   	__u8		tos;
-> +	__u32		cache_allocs;
-Some of this header file changes, how is taking care of backward
-compatibility with tooling ? This was one of the reason, the
-all the fields are not updated.
+Actually this is not true.  Boqun's patch (commit bb73c52bad36) does
+not add a barrier() to __rcu_read_lock.  In fact I dug into the git
+history and this compiler barrier() has existed in preemptible tree
+RCU since the very start in 2009:
 
-Regards,
-Santosh
+: commit f41d911f8c49a5d65c86504c19e8204bb605c4fd
+: Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+: Date:   Sat Aug 22 13:56:52 2009 -0700
+:
+:     rcu: Merge preemptable-RCU functionality into hierarchical RCU
+:
+: +/*
+: + * Tree-preemptable RCU implementation for rcu_read_lock().
+: + * Just increment ->rcu_read_lock_nesting, shared state will be updated
+: + * if we block.
+: + */
+: +void __rcu_read_lock(void)
+: +{
+: +       ACCESS_ONCE(current->rcu_read_lock_nesting)++;
+: +       barrier();  /* needed if we ever invoke rcu_read_lock in rcutree.c */
+: +}
+: +EXPORT_SYMBOL_GPL(__rcu_read_lock);
+
+However, you are correct that in the non-preempt tree RCU case,
+the compiler barrier in __rcu_read_lock was not always present.
+In fact it was added by:
+
+: commit 386afc91144b36b42117b0092893f15bc8798a80
+: Author: Linus Torvalds <torvalds@linux-foundation.org>
+: Date:   Tue Apr 9 10:48:33 2013 -0700
+:
+:     spinlocks and preemption points need to be at least compiler barriers
+
+I suspect this is what prompted you to remove it in 2015.
+
+> I do not believe that reverting that patch will help you at all.
+> 
+> But who knows?  So please point me at the full code body that was being
+> debated earlier on this thread.  It will no doubt take me quite a while to
+> dig through it, given my being on the road for the next couple of weeks,
+> but so it goes.
+
+Please refer to my response to Linus for the code in question.
+
+In any case, I am now even more certain that compiler barriers are
+not needed in the code in question.  The reasoning is quite simple.
+If you need those compiler barriers then you surely need real memory
+barriers.
+
+Vice versa, if real memory barriers are already present thanks to
+RCU, then you don't need those compiler barriers.
+
+In fact this calls into question the use of READ_ONCE/WRITE_ONCE in
+RCU primitives such as rcu_dereference and rcu_assign_pointer.  IIRC
+when RCU was first added to the Linux kernel we did not have compiler
+barriers in rcu_dereference and rcu_assign_pointer.  They were added
+later on.
+
+As compiler barriers per se are useless, these are surely meant to
+be coupled with the memory barriers provided by RCU grace periods
+and synchronize_rcu.  But then those real memory barriers would have
+compiler barriers too.  So why do we need the compiler barriers in
+rcu_dereference and rcu_assign_pointer?
+
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
