@@ -2,122 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3CB33A92
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:00:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F32833AA7
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 00:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfFCWAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 18:00:48 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33330 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbfFCWAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:00:47 -0400
-Received: by mail-pf1-f193.google.com with SMTP id x15so1579591pfq.0
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:00:47 -0700 (PDT)
+        id S1726749AbfFCWDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 18:03:42 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37704 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbfFCWDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 18:03:42 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d15so1526850qkl.4
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 15:03:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R6du/6KKnNDmznz33lKQnArtHrJyOSHRvKP6Z3+6Gug=;
-        b=CAeexWrdYYccZQVE3RvyI5Yc3+4LkwqveBPjE9fFipsReUp41O3X9lmdZT5DluuFGG
-         fGwF3Mv722F4uswfNbEs7PVHReYDTWyaq7Ltmr9hQF5Y/+nMHmA2Ni+QqvBbyr0qJ+fO
-         CNJt23MW8x9ofHhxmVU1qcw10UywUp+msi+kmJozy7O40RV7c+5/5gPNZ/xIPCVCsRnT
-         rAVZYCcVEoLCgZX0VJ6CEYjGi/mYzxe/qEcEgaHtHEIkhFLKgLs52/frURFALdJIek91
-         yn/aOxR8k3EyNmN9MvfCgzyVAE/uRRKDtDPiqg4P+S17nZMYn6GgG+RlqqClmuJrobPj
-         9QEQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Ej4J8CCT6nTH/wduGavRKvzjrElQsQ1ce2aVsNPgak=;
+        b=GWrqqlACaIQYYf1EAB+crhrtYxkwZryE6heb/TmMbja++VkE3kq/xqHHxi6mKfZTAP
+         tN08Y6kVtz4hR85DRRaTfuukhZuWtyDHTsH1MfGkHiAubJC0j3X1GSOVXQUZ1NjQ7Oom
+         ksW8g0JslOaQ3vZgEv/IdOgEqN/hvxInX5m7ZL8mxJqV78LVUSp0XdHyORKUYzviFkRY
+         Cpy7ARJ0zXm52iMHWVhNfELo+HPrsg5SWpBozSB7WTkKkfKYQ8pnLjgbe6TB0He3CUk6
+         LTl9x8RZEl9SvuvzV7MXZ4UIS2H4S5kXPpAZogQJsy8OeLs9Jq6EqmslZKxgjOHuxSKn
+         oSiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R6du/6KKnNDmznz33lKQnArtHrJyOSHRvKP6Z3+6Gug=;
-        b=cT2eBeJ/CpwptK5qAZv1gU+3rjgDf0Hz6ZzzeSK3bQHCitpG211QHz8U2F6LGu9AaC
-         kzZivt5GURgxJdaARIg3DVUu0FlYazv6JIuk+V6pIIwaelSBwc0TxdW71KWeFTAQ41vP
-         Oj/QdzrLX0rZqayY3z/8wwUju5xrInY66Juf1RF3VyKiuftEiNz8UQuvwZr+9SzwMq3H
-         NJnzcXebw7Y462OgyESBw+yxsfWesdE7IK6JLBKEETx00q7v2fupLlEQey1+G8vW0yjI
-         sSHv0dDisHgYMqrkeFyBzfnIXKQgCGztgE/NMhqlSMn8J3grJYdTn3V0ebBOB2RifE7A
-         w1xg==
-X-Gm-Message-State: APjAAAW28ZCuBJLhEByZGi8MxLT9lhDnyeVb3fD5JJNnBEDlLf9aLB+H
-        XHg/sfuhqaGoAeBd0y3JZN52TjraZMLqVA==
-X-Google-Smtp-Source: APXvYqzY0dEmdEiuuhkMibuvAxzI6GrqjGqjGE+NKVDzbGNPaLbZD+VVd8yBj2X+2xk/phzD+Jwpkg==
-X-Received: by 2002:a62:7641:: with SMTP id r62mr9530270pfc.35.1559595141159;
-        Mon, 03 Jun 2019 13:52:21 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id x18sm18781016pfo.8.2019.06.03.13.52.20
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Ej4J8CCT6nTH/wduGavRKvzjrElQsQ1ce2aVsNPgak=;
+        b=bCj1eFXL9Z7qzRtohy8qGj4hTEns3N6wM/jORyUcIXtD3NOlWiVjeK5ReAnBwkxuUZ
+         QD7q3e4H+ABFs/OB9dmEggHs583qF8FtQTkzKMNMfSy2p3PGSJszDxZsDrF7CL3fZCOj
+         lbBRLlX0+WKWM3bv9HbmSGOLREdvCpgp4wQA9ryn067IczGxvyMHDj9/LEEFU4pCzzL3
+         XD8h7ixEjQYsn6UGrqaHT0iLsSR2ZiK3IcaetHCGKNgfeQq9575uwVkLXtl5BoIGXG9w
+         nLXqH2raxqSDoXJbVCcUtfs1IyqtEMZnmXHqJBcxyuR6QWlc4lS7w+Q6mMAh6zXgoMo3
+         bvnw==
+X-Gm-Message-State: APjAAAUe48k2m+wr2xJpWQmt4V2D5R6O76GmOVNnnbxTqoyRcx6ugd9B
+        IT/AroBJphBVxCIzF6RbnyR5shhFE4Q=
+X-Google-Smtp-Source: APXvYqz1OLObaWHvDyD7NwXAiTCn6zkf079V21ccS29gBW3QjWhjRnpp6GQGgr90PFrM4+SPSoa3yA==
+X-Received: by 2002:a37:9a4d:: with SMTP id c74mr23874570qke.123.1559595459692;
+        Mon, 03 Jun 2019 13:57:39 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id f16sm1617472qth.46.2019.06.03.13.57.37
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 Jun 2019 13:52:21 -0700 (PDT)
-Date:   Mon, 3 Jun 2019 13:52:19 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Cc:     netdev@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCH iproute2-next v1] tc: add support for action act_ctinfo
-Message-ID: <20190603135219.180df8e6@hermes.lan>
-In-Reply-To: <20190603204142.51674-1-ldir@darbyshire-bryant.me.uk>
-References: <20190603204142.51674-1-ldir@darbyshire-bryant.me.uk>
+        Mon, 03 Jun 2019 13:57:38 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>, linville@redhat.com,
+        f.fainelli@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net v2] ethtool: fix potential userspace buffer overflow
+Date:   Mon,  3 Jun 2019 16:57:13 -0400
+Message-Id: <20190603205713.28121-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  3 Jun 2019 21:41:43 +0100
-Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> wrote:
+ethtool_get_regs() allocates a buffer of size ops->get_regs_len(),
+and pass it to the kernel driver via ops->get_regs() for filling.
 
-> ctinfo is an action restoring data stored in conntrack marks to various
-> fields.  At present it has two independent modes of operation,
-> restoration of DSCP into IPv4/v6 diffserv and restoration of conntrack
-> marks into packet skb marks.
->=20
-> It understands a number of parameters specific to this action in
-> additional to the usual action syntax.  Each operating mode is
-> independent of the other so all options are optional, however not
-> specifying at least one mode is a bit pointless.
->=20
-> Usage: ... ctinfo [dscp mask[/statemask]] [cpmark [mask]] [zone ZONE]
-> 		  [CONTROL] [index <INDEX>]
->=20
-> DSCP mode
->=20
-> dscp enables copying of a DSCP store in the conntrack mark into the
-> ipv4/v6 diffserv field.  The mask is a 32bit field and specifies where
-> in the conntrack mark the DSCP value is stored.  It must be 6 contiguous
-> bits long, e.g. 0xfc000000 would restore the DSCP from the upper 6 bits
-> of the conntrack mark.
->=20
-> The DSCP copying may be optionally controlled by a statemask.  The
-> statemask is a 32bit field, usually with a single bit set and must not
-> overlap the dscp mask.  The DSCP restore operation will only take place
-> if the corresponding bit/s in conntrack mark yield a non zero result.
->=20
-> eg. dscp 0xfc000000/0x01000000 would retrieve the DSCP from the top 6
-> bits, whilst using bit 25 as a flag to do so.  Bit 26 is unused in this
-> example.
->=20
-> CPMARK mode
->=20
-> cpmark enables copying of the conntrack mark to the packet skb mark.  In
-> this mode it is completely equivalent to the existing act_connmark.
-> Additional functionality is provided by the optional mask parameter,
-> whereby the stored conntrack mark is logically anded with the cpmark
-> mask before being stored into skb mark.  This allows shared usage of the
-> conntrack mark between applications.
->=20
-> eg. cpmark 0x00ffffff would restore only the lower 24 bits of the
-> conntrack mark, thus may be useful in the event that the upper 8 bits
-> are used by the DSCP function.
->=20
-> Usage: ... ctinfo [dscp mask [statemask]] [cpmark [mask]] [zone ZONE]
-> 		  [CONTROL] [index <INDEX>]
-> where :
-> 	dscp MASK is the bitmask to restore DSCP
-> 	     STATEMASK is the bitmask to determine conditional restoring
-> 	cpmark MASK mask applied to restored packet mark
-> 	ZONE is the conntrack zone
-> 	CONTROL :=3D reclassify | pipe | drop | continue | ok |
-> 		   goto chain <CHAIN_INDEX>
->=20
-> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+There is no restriction about what the kernel drivers can or cannot do
+with the open ethtool_regs structure. They usually set regs->version
+and ignore regs->len or set it to the same size as ops->get_regs_len().
 
-How about a man page update?
+But if userspace allocates a smaller buffer for the registers dump,
+we would cause a userspace buffer overflow in the final copy_to_user()
+call, which uses the regs.len value potentially reset by the driver.
+
+To fix this, make this case obvious and store regs.len before calling
+ops->get_regs(), to only copy as much data as requested by userspace,
+up to the value returned by ops->get_regs_len().
+
+While at it, remove the redundant check for non-null regbuf.
+
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ net/core/ethtool.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 43e9add58340..1a0196fbb49c 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -1338,38 +1338,41 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
+ static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
+ {
+ 	struct ethtool_regs regs;
+ 	const struct ethtool_ops *ops = dev->ethtool_ops;
+ 	void *regbuf;
+ 	int reglen, ret;
+ 
+ 	if (!ops->get_regs || !ops->get_regs_len)
+ 		return -EOPNOTSUPP;
+ 
+ 	if (copy_from_user(&regs, useraddr, sizeof(regs)))
+ 		return -EFAULT;
+ 
+ 	reglen = ops->get_regs_len(dev);
+ 	if (reglen <= 0)
+ 		return reglen;
+ 
+ 	if (regs.len > reglen)
+ 		regs.len = reglen;
+ 
+ 	regbuf = vzalloc(reglen);
+ 	if (!regbuf)
+ 		return -ENOMEM;
+ 
++	if (regs.len < reglen)
++		reglen = regs.len;
++
+ 	ops->get_regs(dev, &regs, regbuf);
+ 
+ 	ret = -EFAULT;
+ 	if (copy_to_user(useraddr, &regs, sizeof(regs)))
+ 		goto out;
+ 	useraddr += offsetof(struct ethtool_regs, data);
+-	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
++	if (copy_to_user(useraddr, regbuf, reglen))
+ 		goto out;
+ 	ret = 0;
+ 
+  out:
+ 	vfree(regbuf);
+ 	return ret;
+ }
+-- 
+2.21.0
+
