@@ -2,100 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2047E32647
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 03:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0605C32661
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 04:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbfFCB6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jun 2019 21:58:34 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:57292 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726587AbfFCB6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jun 2019 21:58:33 -0400
-X-UUID: 86a6f4060c6a4d65af0fd213df3b19b3-20190603
-X-UUID: 86a6f4060c6a4d65af0fd213df3b19b3-20190603
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 1008483883; Mon, 03 Jun 2019 09:58:23 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 3 Jun 2019 09:58:22 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Mon, 3 Jun 2019 09:58:21 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jose Abreu <joabreu@synopsys.com>,
-        <andrew@lunn.ch>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.com>,
-        <boon.leong.ong@intel.com>
-Subject: [v2, PATCH 4/4] net: stmmac: dwmac4: fix flow control issue
-Date:   Mon, 3 Jun 2019 09:58:06 +0800
-Message-ID: <1559527086-7227-5-git-send-email-biao.huang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <1559527086-7227-1-git-send-email-biao.huang@mediatek.com>
-References: <1559527086-7227-1-git-send-email-biao.huang@mediatek.com>
+        id S1726830AbfFCCK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jun 2019 22:10:58 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17648 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726270AbfFCCK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Jun 2019 22:10:58 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id B539C219D2BD07B5B9AF;
+        Mon,  3 Jun 2019 10:10:55 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 3 Jun 2019 10:10:50 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 00/10] code optimizations & bugfixes for HNS3 driver
+Date:   Mon, 3 Jun 2019 10:09:12 +0800
+Message-ID: <1559527762-22931-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current dwmac4_flow_ctrl will not clear
-GMAC_RX_FLOW_CTRL_RFE/GMAC_RX_FLOW_CTRL_RFE bits,
-so MAC hw will keep flow control on although expecting
-flow control off by ethtool. Add codes to fix it.
+This patch-set includes code optimizations and bugfixes for the HNS3
+ethernet controller driver.
 
-Fixes: 477286b53f55 ("stmmac: add GMAC4 core support")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+[patch 1/10] removes the redundant core reset type
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 2544cff..9322b71 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -488,8 +488,9 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 	if (fc & FLOW_RX) {
- 		pr_debug("\tReceive Flow-Control ON\n");
- 		flow |= GMAC_RX_FLOW_CTRL_RFE;
--		writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
- 	}
-+	writel(flow, ioaddr + GMAC_RX_FLOW_CTRL);
-+
- 	if (fc & FLOW_TX) {
- 		pr_debug("\tTransmit Flow-Control ON\n");
- 
-@@ -497,7 +498,7 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 			pr_debug("\tduplex mode: PAUSE %d\n", pause_time);
- 
- 		for (queue = 0; queue < tx_cnt; queue++) {
--			flow |= GMAC_TX_FLOW_CTRL_TFE;
-+			flow = GMAC_TX_FLOW_CTRL_TFE;
- 
- 			if (duplex)
- 				flow |=
-@@ -505,6 +506,9 @@ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
- 
- 			writel(flow, ioaddr + GMAC_QX_TX_FLOW_CTRL(queue));
- 		}
-+	} else {
-+		for (queue = 0; queue < tx_cnt; queue++)
-+			writel(0, ioaddr + GMAC_QX_TX_FLOW_CTRL(queue));
- 	}
- }
- 
+[patch 2/10 - 3/10] fixes two VLAN related issues
+
+[patch 4/10] fixes a TM issue
+
+[patch 5/10 - 10/10] includes some patches related to RAS & MSI-X error
+
+Change log:
+V1->V2: removes two patches which needs to change HNS's infiniband
+	driver as well, they will be upstreamed later with the
+	infiniband's one.
+
+Huazhong Tan (1):
+  net: hns3: remove redundant core reset
+
+Jian Shen (2):
+  net: hns3: don't configure new VLAN ID into VF VLAN table when it's
+    full
+  net: hns3: fix VLAN filter restore issue after reset
+
+Weihang Li (6):
+  net: hns3: add a check to pointer in error_detected and slot_reset
+  net: hns3: set ops to null when unregister ad_dev
+  net: hns3: add handling of two bits in MAC tunnel interrupts
+  net: hns3: remove setting bit of reset_requests when handling mac
+    tunnel interrupts
+  net: hns3: add opcode about query and clear RAS & MSI-X to special
+    opcode
+  net: hns3: delay and separate enabling of NIC and ROCE HW errors
+
+Yunsheng Lin (1):
+  net: hns3: set the port shaper according to MAC speed
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.c        |   2 +
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   4 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  41 ++-----
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   1 -
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |   6 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |   2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |  50 +++------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |   9 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 123 +++++++++++++--------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   1 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |   2 +-
+ 11 files changed, 117 insertions(+), 124 deletions(-)
+
 -- 
-1.7.9.5
+2.7.4
 
