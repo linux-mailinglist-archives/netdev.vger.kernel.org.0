@@ -2,127 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF1B632D2F
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 632E532D3E
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 11:55:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfFCJvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 05:51:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54520 "EHLO mx1.redhat.com"
+        id S1727298AbfFCJzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 05:55:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56434 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726342AbfFCJvO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 05:51:14 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        id S1726840AbfFCJzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 05:55:14 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7F644C058CA2;
-        Mon,  3 Jun 2019 09:51:09 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9D4B7C1EB1E0;
+        Mon,  3 Jun 2019 09:55:14 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.32.181.182])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 715DC1001DD9;
-        Mon,  3 Jun 2019 09:51:08 +0000 (UTC)
-Message-ID: <141f34bb8d1505783b4f939faac5223200deeb13.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/3] indirect call wrappers: add helpers for 3
- and 4 ways switch
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8315E60C44;
+        Mon,  3 Jun 2019 09:55:13 +0000 (UTC)
+Message-ID: <94e7d8feb29bf7d7b2add710a997bc095990a019.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/3] net/mlx5e: use indirect calls wrapper for
+ the rx packet handler
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     Saeed Mahameed <saeedm@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "leon@kernel.org" <leon@kernel.org>
-Date:   Mon, 03 Jun 2019 11:51:07 +0200
-In-Reply-To: <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
+Date:   Mon, 03 Jun 2019 11:55:12 +0200
+In-Reply-To: <1b740c86d3917640657934961b40fe4b288c2a40.camel@mellanox.com>
 References: <cover.1559304330.git.pabeni@redhat.com>
-         <7dc56c32624fd102473fc66ffdda6ebfcdfe6ad0.1559304330.git.pabeni@redhat.com>
-         <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
+         <74fb497974fe8267c2c5f0a1422a418363f0c50f.1559304330.git.pabeni@redhat.com>
+         <1b740c86d3917640657934961b40fe4b288c2a40.camel@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 03 Jun 2019 09:51:14 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 03 Jun 2019 09:55:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-05-31 at 18:30 +0000, Saeed Mahameed wrote:
+On Fri, 2019-05-31 at 18:41 +0000, Saeed Mahameed wrote:
 > On Fri, 2019-05-31 at 14:53 +0200, Paolo Abeni wrote:
-> > Experimental results[1] has shown that resorting to several branches
-> > and a direct-call is faster than indirect call via retpoline, even
-> > when the number of added branches go up 5.
+> > We can avoid another indirect call per packet wrapping the rx
+> > handler call with the proper helper.
 > > 
-> > This change adds two additional helpers, to cope with indirect calls
-> > with up to 4 available direct call option. We will use them
-> > in the next patch.
+> > To ensure that even the last listed direct call experience
+> > measurable gain, despite the additional conditionals we must
+> > traverse before reaching it, I tested reversing the order of the
+> > listed options, with performance differences below noise level.
 > > 
-> > [1] 
-> > https://linuxplumbersconf.org/event/2/contributions/99/attachments/98/117/lpc18_paper_af_xdp_perf-v2.pdf
+> > Together with the previous indirect call patch, this gives
+> > ~6% performance improvement in raw UDP tput.
 > > 
+> 
+> Nice ! I like it.
+> 
 > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > > ---
-> >  include/linux/indirect_call_wrapper.h | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
 > > 
-> > diff --git a/include/linux/indirect_call_wrapper.h
-> > b/include/linux/indirect_call_wrapper.h
-> > index 00d7e8e919c6..7c4cac87eaf7 100644
-> > --- a/include/linux/indirect_call_wrapper.h
-> > +++ b/include/linux/indirect_call_wrapper.h
-> > @@ -23,6 +23,16 @@
-> >  		likely(f == f2) ? f2(__VA_ARGS__) :			
-> > \
-> >  				  INDIRECT_CALL_1(f, f1, __VA_ARGS__);	
-> > \
-> >  	})
-> > +#define INDIRECT_CALL_3(f, f3, f2, f1, ...)				
-> > \
-> > +	({								
-> > \
-> > +		likely(f == f3) ? f3(__VA_ARGS__) :			
-> > \
-> > +				  INDIRECT_CALL_2(f, f2, f1,
-> > __VA_ARGS__); \
-> > +	})
-> > +#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...)			
-> > 	\
-> > +	({								
-> > \
-> > +		likely(f == f4) ? f4(__VA_ARGS__) :		
-> 
-> do we really want "likely" here ? in our cases there is no preference
-> on whuch fN is going to have the top priority, all of them are equally
-> important and statically configured and guranteed to not change on data
-> path .. 
-
-I was a little undecided about that, too. 'likely()' is there mainly
-for simmetry with the already existing _1 and _2 variants. In such
-macros the branch prediction hint represent a real priority of the
-available choices.
-
-To avoid the branch prediction, a new set of macros should be defined,
-but that also sounds redundant.
-
-If you have strong opinion against the breanch prediction hint, I could
-either drop this patch and the next one or resort to custom macros in
-the mlx code.
-
-Any [alternative] suggestions more than welcome!
-	\
-> > +				  INDIRECT_CALL_3(f, f3, f2, f1,
-> > __VA_ARGS__); \
-> > +	})
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> > b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> > index 0fe5f13d07cc..c3752dbe00c8 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+> > @@ -1333,7 +1333,9 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int
+> > budget)
 > >  
+> >  		mlx5_cqwq_pop(cqwq);
+> >  
+> > -		rq->handle_rx_cqe(rq, cqe);
+> > +		INDIRECT_CALL_4(rq->handle_rx_cqe,
+> > mlx5e_handle_rx_cqe_mpwrq,
+> > +				mlx5e_handle_rx_cqe,
+> > mlx5e_handle_rx_cqe_rep,
+> > +				mlx5e_ipsec_handle_rx_cqe, rq, cqe);
 > 
-> Oh the RETPOLINE!
+> you missed mlx5i_handle_rx_cqe, anyway don't add INDIRECT_CALL_5 :D
 > 
-> On which (N) where INDIRECT_CALL_N(f, fN, fN-1, ..., f1,...) , calling
-> the indirection function pointer directly is going to be actually
-> better than this whole INDIRECT_CALL_N wrapper "if else" dance ?
+> just replace mlx5e_handle_rx_cqe_rep with mlx5i_handle_rx_cqe, 
+> mlx5e_handle_rx_cqe_rep is actually a slow path of switchdev mode.
 
-In commit ce02ef06fcf7a399a6276adb83f37373d10cbbe1, it's measured a
-relevant gain even with more than 5 options. I personally would avoid
-adding much more options than the above.
+Thank you! This is exactly the kind of feedback I was looking for! I
+hoped some of the options was less relevant than the other, but I do
+not know the driver well enough to guess. Also I missed completely
+mlx5i_handle_rx_cqe, as you noded.
+
+> Maybe define the list somewhere in en.h where it is visible for every
+> one:
+> 
+> #define MLX5_RX_INDIRECT_CALL_LIST \
+> mlx5e_handle_rx_cqe_mpwrq, mlx5e_handle_rx_cqe, mlx5i_handle_rx_cqe,
+> mlx5e_ipsec_handle_rx_cqe
+> 
+> and here:
+> INDIRECT_CALL_4(rq->handle_rx_cqe, MLX5_RX_INDIRECT_CALL_LIST, rq,
+> cqe);
+
+Will do in v2, unless this patch will be dropped, please see my reply
+to patch 2/3.
 
 Thanks,
 
 Paolo
-
 
