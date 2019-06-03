@@ -2,125 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 921D93366E
-	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 19:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516AB33672
+	for <lists+netdev@lfdr.de>; Mon,  3 Jun 2019 19:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729434AbfFCRVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 13:21:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:50960 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729241AbfFCRVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 13:21:09 -0400
-Received: by mail-io1-f71.google.com with SMTP id m26so4734553ioh.17
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 10:21:08 -0700 (PDT)
+        id S1729634AbfFCRVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 13:21:47 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:36584 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727302AbfFCRVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 13:21:47 -0400
+Received: by mail-qk1-f196.google.com with SMTP id g18so936005qkl.3
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 10:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=x7mTqHfW25Yfgg2m6bdYw6M5XlwzGvI7rSJIno4dGcg=;
+        b=0pXOe0S3UATwQJ3foBGdeblPbc59sDMnw5rDa66bcJ7G6nqdYwsQk8hCfb5up0XMmM
+         Xy01qTNfOqEqK9rjJEe66Nr2RxfnaGNnjoSo8ZbBnNJreVKYmqsILtZwHNg4hZhpRkNU
+         YPvtf6KKMyygMqKeEOZ3ltOcu96YjOhtKbV7ZKGpqx1fO5zJGT8U8sIjlLmqq1jKniSX
+         Jb9Pgaj2cceEhgjBZE7RNL6I1QnfxIcCDY7L0Zsy9t5Ss1TVs4EHzOD31w0h6d3UhiHg
+         +Pw/XQ5+7tXPZyBDTJnK0Xv3aM8ZL6AO4j02CnutvdBDb+NXgHs7Md9385ZYFvG2M2H6
+         tctQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=aA85r0WK7ovUzBU9dngtfLxX84uudMjhacvFQEgLVO0=;
-        b=jqrEHVlLLAd3bOOG6Bkp9nIDDxrffF3CxlZFYVfTAYBjUUIqHEmoGFBHT7/zfL1y0O
-         KBrnmZRvvFvQrG8Nb7GvdbaIEyyq+MeSX2l/aPAWok1Zp+XS2RaIvKBZjQYlZRm+kHS0
-         v/wN2AtibrhRwVPXSJBm2c7SIDHzdsZg8uBQsF7IXujEnN4TQLXdG0FCfnv2AbQWcQdo
-         75qR2SaqLbFJagZ0cfOlIQD7mmPKmWvMr03MH2oQCdf95rTC5QbKRVyVlRPvypKnbYh7
-         SmwG2Eapb7n7tyIzFgbV6fiDXso8T5wopu+3Snu03MCKZdPqMLwgHq293AcXLCVmtsBo
-         YCrg==
-X-Gm-Message-State: APjAAAWn62yxLzibnBLvay6UYnDy47CBdt2CRJm1FuTHxSQn5Wz7B7C+
-        TzkgKpbXYxG7/02R2FXGcG2NnSBSuXNtKNEiXwDbFYKKavvd
-X-Google-Smtp-Source: APXvYqz8VcrKpsEONNybVfgiThOm4wkEFAhEQ1kajfoIpocJ8NzKUb3GZUzFdIJWWCmiA+OPMphErTMbuHXDHkS0dNCp2tyhkNW3
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=x7mTqHfW25Yfgg2m6bdYw6M5XlwzGvI7rSJIno4dGcg=;
+        b=Tpt9A9bMo3H9HuRBMdXlErTpPdR200AKKO4bBy9QSm10TZ/J1V8DC9d3fgnrjt5SVE
+         2rC30asEHiNycQbMAjBptRoj9uqltn97i7Of/kC4HcuVIY9KRqTln51VVeyDLjZbKxaw
+         3UE+Dt47P/bFTNLfZt7w2Cn1wwp+yv70PpbYXxCxpscGwC4L/AnuPgHrAGbwHjWxCvlj
+         wRvRLGlO99mUO9ASXWnJlRpjhWfPFfEkazQzQ2dKW6uoQaj6k76+ZqqePw61A1ptcVQW
+         kCxbk4ytXtQZgWLuspVpth8GHCoifnVdEIKhiGLK0K6KjnHxV50lSCK5HBuhEGy/mCTw
+         vc/g==
+X-Gm-Message-State: APjAAAVjuVG/fY8qDFwBTxwKDI4WDMr1C0C7enO1SJ0DRORdGyEbWo5c
+        zJ/Z6LKSElVh3cTORFqSMtbjBA==
+X-Google-Smtp-Source: APXvYqzLGOq03x63kPvRAktqQgITC5ecSo/OEEL09HH061JSrHRVkAQ5hmpnP8/k5LqHiSqlUAfRNw==
+X-Received: by 2002:ae9:ed0a:: with SMTP id c10mr22414632qkg.207.1559582506309;
+        Mon, 03 Jun 2019 10:21:46 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 100sm8493263qtb.53.2019.06.03.10.21.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 03 Jun 2019 10:21:46 -0700 (PDT)
+Date:   Mon, 3 Jun 2019 10:21:40 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] bpf: remove redundant assignment to err
+Message-ID: <20190603102140.70fee157@cakuba.netronome.com>
+In-Reply-To: <20190603170247.9951-1-colin.king@canonical.com>
+References: <20190603170247.9951-1-colin.king@canonical.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Received: by 2002:a24:3ce:: with SMTP id e197mr18291143ite.143.1559582468531;
- Mon, 03 Jun 2019 10:21:08 -0700 (PDT)
-Date:   Mon, 03 Jun 2019 10:21:08 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000008f06d058a6e9783@google.com>
-Subject: KMSAN: uninit-value in ax88772_bind
-From:   syzbot <syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        lynxis@fe80.eu, marcel.ziswiler@toradex.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        yang.wei9@zte.com.cn, zhang.run@zte.com.cn
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon,  3 Jun 2019 18:02:47 +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The variable err is assigned with the value -EINVAL that is never
+> read and it is re-assigned a new value later on.  The assignment is
+> redundant and can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  kernel/bpf/devmap.c | 2 +-
+>  kernel/bpf/xskmap.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 5ae7cce5ef16..a76cc6412fc4 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -88,7 +88,7 @@ static u64 dev_map_bitmap_size(const union bpf_attr *attr)
+>  static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+>  {
+>  	struct bpf_dtab *dtab;
+> -	int err = -EINVAL;
+> +	int err;
+>  	u64 cost;
 
-syzbot found the following crash on:
+Perhaps keep the variables ordered longest to shortest?
 
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link: https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
+>  	if (!capable(CAP_NET_ADMIN))
+> diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+> index 22066c28ba61..26859c6c9491 100644
+> --- a/kernel/bpf/xskmap.c
+> +++ b/kernel/bpf/xskmap.c
+> @@ -17,7 +17,7 @@ struct xsk_map {
+>  
+>  static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
+>  {
+> -	int cpu, err = -EINVAL;
+> +	int cpu, err;
+>  	struct xsk_map *m;
+>  	u64 cost;
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
+And here.
 
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr  
-include/linux/etherdevice.h:200 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr  
-drivers/net/usb/asix_devices.c:73 [inline]
-BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0  
-drivers/net/usb/asix_devices.c:724
-CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
-  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
-  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  process_scheduled_works kernel/workqueue.c:2331 [inline]
-  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
