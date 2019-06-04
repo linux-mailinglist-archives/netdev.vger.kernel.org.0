@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A36F34052
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 09:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F8E34118
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:04:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727162AbfFDHfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 03:35:33 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:37947 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727146AbfFDHfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 03:35:32 -0400
-Received: by mail-lf1-f68.google.com with SMTP id b11so15654308lfa.5;
-        Tue, 04 Jun 2019 00:35:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ObbNbZR/72D98Vc550uzYyGenM0+DWmngeVzeXEi0ZM=;
-        b=ib0Xu1g61kKt4saR39X37LXuWJON+tfn85aLur4B3MXKxOJKsfGcIrueka9ap5bITB
-         GZoaEwnWIFosuMgHN8xJ84pTa1Na4qwF5dIz7HuW1rrERMosDX86L2l8Fh60r2plgffi
-         wygnHVaoMDJdhDTRBf8gJG/cvFPWof0X0UXRFoQAa+4To8SVIiWJPznjo7/KP/ruXsku
-         zWpiEzqudMm+yTj4usuJcPEfEEh4oqWP2FQ7wSx0x0mmb+5SLE5TDO+r2CQgAIxECjqT
-         nvdoPLYYOB4vNCVIsAb67gsneD5g5ExuqyzTCFOlEG4UbJB0UdS8u+UZsAtiga1lSjMJ
-         o1KA==
-X-Gm-Message-State: APjAAAVEY6okXx8ui8koZ53gOQ05I/nYLdNNnd3RVjefPUInN16wUlQR
-        hNh8DkJbnCcnDZ5xJ575U/aVjDYqHYMjWqjN1mQ=
-X-Google-Smtp-Source: APXvYqzZy7bAsh6aATIcduZ/ydlM1aKS4jqm+mf9GX84nUleah+LyhiDwD0TYIniqNJly32Ees0tY+eMT6LcuMOqD9Q=
-X-Received: by 2002:a19:c142:: with SMTP id r63mr17039438lff.49.1559633729962;
- Tue, 04 Jun 2019 00:35:29 -0700 (PDT)
+        id S1726973AbfFDIEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 04:04:08 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:42678 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726925AbfFDIEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 04:04:08 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5482hLZ015683
+        for <netdev@vger.kernel.org>; Tue, 4 Jun 2019 04:04:07 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2swkqk337d-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 04:04:06 -0400
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Tue, 4 Jun 2019 09:04:04 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 4 Jun 2019 09:04:01 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x54840Zn51249238
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 4 Jun 2019 08:04:00 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4BE064203F;
+        Tue,  4 Jun 2019 08:04:00 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0855542045;
+        Tue,  4 Jun 2019 08:04:00 +0000 (GMT)
+Received: from [9.152.222.52] (unknown [9.152.222.52])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  4 Jun 2019 08:03:59 +0000 (GMT)
+Subject: Re: [PATCH net 2/4] s390/qeth: don't use obsolete dst entry
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+References: <20190603150446.23351-1-jwi@linux.ibm.com>
+ <20190603150446.23351-3-jwi@linux.ibm.com>
+ <20190603.124348.5212561789204100.davem@davemloft.net>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Date:   Tue, 4 Jun 2019 10:03:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190528142424.19626-1-geert@linux-m68k.org> <20190528142424.19626-3-geert@linux-m68k.org>
- <15499.1559298884@warthog.procyon.org.uk> <CAMuHMdX57DKCMpLXdtZPE-w0esUNVv9-SwYjmT5=m+u9ryAiHQ@mail.gmail.com>
- <9306.1559633653@warthog.procyon.org.uk>
-In-Reply-To: <9306.1559633653@warthog.procyon.org.uk>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 4 Jun 2019 09:35:16 +0200
-Message-ID: <CAMuHMdXOikfh56DAHGpNUoRefbhYSbh=VK3J8EzZCXVLqZtEVw@mail.gmail.com>
-Subject: Re: [PATCH] rxrpc: Fix uninitialized error code in rxrpc_send_data_packet()
-To:     David Howells <dhowells@redhat.com>
-Cc:     Igor Konopko <igor.j.konopko@intel.com>,
-        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Matias Bjorling <mb@lightnvm.io>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Joe Perches <joe@perches.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-afs@lists.infradead.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190603.124348.5212561789204100.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 19060408-0008-0000-0000-000002EDE626
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060408-0009-0000-0000-0000225AC8D5
+Message-Id: <06972ee2-43ac-045f-8d7e-568752908ecd@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-04_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=932 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906040055
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On 03.06.19 21:43, David Miller wrote:
+> From: Julian Wiedmann <jwi@linux.ibm.com>
+> Date: Mon,  3 Jun 2019 17:04:44 +0200
+> 
+>> While qeth_l3 uses netif_keep_dst() to hold onto the dst, a skb's dst
+>> may still have been obsoleted (via dst_dev_put()) by the time that we
+>> end up using it. The dst then points to the loopback interface, which
+>> means the neighbour lookup in qeth_l3_get_cast_type() determines a bogus
+>> cast type of RTN_BROADCAST.
+>> For IQD interfaces this causes us to place such skbs on the wrong
+>> HW queue, resulting in TX errors.
+>>
+>> Fix-up the various call sites to check whether the dst is obsolete, and
+>> fall back accordingly.
+>>
+>> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+> 
+> Please use "dst_check()".
+> 
+> Some routes have DST_OBSOLETE_FORCE_CHK set on them from the very beginning
+> so that uses of the route are forced through the dst->ops->check() method.
+> 
+> Simply use dst_check() and then you can just retain the 'rt == NULL' logic
+> as-is.
+> 
+> Thanks.
+> 
+Alright - I was hesitant to go down that path in the context of a driver,
+but looks like rt6_get_cookie() should do the trick. v2 coming up... thanks.
 
-On Tue, Jun 4, 2019 at 9:34 AM David Howells <dhowells@redhat.com> wrote:
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> > I'm not such a big fan of BUG(), so I'd go for ret = -EAFNOSUPPORT, but given
-> > rxrpc is already full of BUG() calls, I guess it is an acceptable solution.
->
-> Okay.  Are you okay with this going through net-next?
-
-Yes, I am.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
