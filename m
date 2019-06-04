@@ -2,171 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66601344D0
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D78234573
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 13:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbfFDKyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 06:54:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727088AbfFDKyL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 06:54:11 -0400
-Received: from oasis.local.home (unknown [146.247.46.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A53624986;
-        Tue,  4 Jun 2019 10:54:03 +0000 (UTC)
-Date:   Tue, 4 Jun 2019 06:53:58 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [RFC 1/6] rcu: Add support for consolidated-RCU reader checking
-Message-ID: <20190604065358.73347ced@oasis.local.home>
-In-Reply-To: <20190603141847.GA94186@google.com>
-References: <20190601222738.6856-1-joel@joelfernandes.org>
-        <20190601222738.6856-2-joel@joelfernandes.org>
-        <20190603080128.GA3436@hirez.programming.kicks-ass.net>
-        <20190603141847.GA94186@google.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727444AbfFDLdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 07:33:24 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44651 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbfFDLdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 07:33:24 -0400
+Received: by mail-pg1-f195.google.com with SMTP id n2so10182832pgp.11
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 04:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EUprF+8/pHWVdRSsm+gYg6Nl/I7GuQYxpR2PKTuS704=;
+        b=cX5NyM5ycgQOuk4IAmaDphsDa6H1d8CV7lcsQ4WAlb3RMe7FRqEdFwUIy/zUw8PT8H
+         Haqw45ol2rk0FawObSUduoqdJamkzKEihgKpPg8h/L/kNvLP5+HNu60rp64HSLBJfQpF
+         3HigbEfhYLItfyDMYlI5C8j8tpV6TYxxSik3E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EUprF+8/pHWVdRSsm+gYg6Nl/I7GuQYxpR2PKTuS704=;
+        b=JPdghdUw2hY5Rj0UtQFxirhHlxLlYP+KzfbS//HFriA4s3yfc08YgjNxnrKv6W54F5
+         qraUsETLIYBRc1iGjtwsGdCsnK4rTzf+WYGNvMNnveniHSbeuUrq/tCNdjpBKHeJUMYf
+         EQtbyX360qGVI5BjY8Lg6w3sILBIW3H2IaX1Ff01G4YpXzZLheBjTbsoY4o+XwMjAVAF
+         jOv+4tKe13LeuthjCMnN2NrtMDUBbK8zWzZIHxD+89oQSmm0dV296F1WERgkOcf8VG6j
+         VBL5QoLXKfAjXH1kln6Q3VLUmIEAH3oMn7mQqQAX+69dB2LwPHu5n+CTFpjbjvAU+eR7
+         Rk/A==
+X-Gm-Message-State: APjAAAWwf87pH2EH+qG0+/64zbvGt71hVabKi2nDyurW19Qi/8r+o8wb
+        FaXPLIlQnM2atCX/PByvoeMvWdg3mL8sZXjHArcpc5itaLoLg4A2GOX//v9oBGV+hjM6loE4/EQ
+        u+LttLssi9I/u56ZB1ULvcs8sM2LTWfktwNaUDhSFOLa+PeHXlRiZyHqKVme+4IzRCkVfxtEkDW
+        Wav3s=
+X-Google-Smtp-Source: APXvYqxvTH3i5lfqNDE1vh1a5Z/iOkSgOFTEfkO87DUgwW2C+aCSxKKDsoC0hUv5/Gdl7rHPksKKEw==
+X-Received: by 2002:a62:ea04:: with SMTP id t4mr36483301pfh.47.1559648003307;
+        Tue, 04 Jun 2019 04:33:23 -0700 (PDT)
+Received: from [10.176.68.125] ([192.19.248.250])
+        by smtp.gmail.com with ESMTPSA id u4sm17314721pfu.26.2019.06.04.04.33.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 04:33:22 -0700 (PDT)
+Subject: Re: Issue with Broadcom wireless in 5.2rc1 (was Re: [PATCH] mmc:
+ sdhci: queue work after sdhci_defer_done())
+To:     Adrian Hunter <adrian.hunter@intel.com>,
+        Brian Masney <masneyb@onstation.org>
+Cc:     Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>, ulf.hansson@linaro.org,
+        faiz_abbas@ti.com, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+References: <20190524111053.12228-1-masneyb@onstation.org>
+ <70782901-a9ac-5647-1abe-89c86a44a01b@intel.com>
+ <20190524154958.GB16322@basecamp> <20190526122136.GA26456@basecamp>
+ <e8c049ce-07e1-8b34-678d-41b3d6d41983@broadcom.com>
+ <20190526195819.GA29665@basecamp> <20190527093711.GA853@basecamp>
+ <ead7f268-b730-3541-31f7-4499556efec0@intel.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <af4d6703-8506-dad7-c2ed-13fa8b2e390d@broadcom.com>
+Date:   Tue, 4 Jun 2019 13:33:18 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <ead7f268-b730-3541-31f7-4499556efec0@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 10:18:47 -0400
-Joel Fernandes <joel@joelfernandes.org> wrote:
-
-> On Mon, Jun 03, 2019 at 10:01:28AM +0200, Peter Zijlstra wrote:
-> > On Sat, Jun 01, 2019 at 06:27:33PM -0400, Joel Fernandes (Google) wrote:  
-> > > +#define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> > > +	if (COUNT_VARGS(cond) != 0) {					\
-> > > +		__list_check_rcu_cond(0, ## cond);			\
-> > > +	} else {							\
-> > > +		__list_check_rcu();					\
-> > > +	}								\
-> > > +	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-> > > +		&pos->member != (head);					\
-> > >  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
-> > >  
-> > >  /**
-> > > @@ -621,7 +648,12 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
-> > >   * the _rcu list-mutation primitives such as hlist_add_head_rcu()
-> > >   * as long as the traversal is guarded by rcu_read_lock().
-> > >   */
-> > > +#define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
-> > > +	if (COUNT_VARGS(cond) != 0) {					\
-> > > +		__list_check_rcu_cond(0, ## cond);			\
-> > > +	} else {							\
-> > > +		__list_check_rcu();					\
-> > > +	}								\
-> > >  	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
-> > >  			typeof(*(pos)), member);			\
-> > >  		pos;							\  
-> > 
-> > 
-> > This breaks code like:
-> > 
-> > 	if (...)
-> > 		list_for_each_entry_rcu(...);
-> > 
-> > as they are no longer a single statement. You'll have to frob it into
-> > the initializer part of the for statement.  
+On 5/27/2019 2:08 PM, Adrian Hunter wrote:
+> On 27/05/19 12:37 PM, Brian Masney wrote:
+>> On Sun, May 26, 2019 at 03:58:19PM -0400, Brian Masney wrote:
+>>> I attached a patch that shows how I was able to determine what had
+>>> already claimed the host.
+>> On Mon, May 27, 2019 at 10:48:24AM +0300, Adrian Hunter wrote:
+>>> This is because SDHCI is using the IRQ thread to process the SDIO card
+>>> interrupt (sdio_run_irqs()).  When the card driver tries to use the card, it
+>>> causes interrupts which deadlocks since c07a48c26519 ("mmc: sdhci: Remove
+>>> finish_tasklet") has moved the tasklet processing to the IRQ thread.
+>>>
+>>> I would expect to be able to use the IRQ thread to complete requests, and it
+>>> is desirable to do so because it is lower latency.
+>>>
+>>> Probably, SDHCI should use sdio_signal_irq() which queues a work item, and
+>>> is what other drivers are doing.
+>>>
+>>> I will investigate some more and send a patch.
 > 
-> Thanks a lot for that. I fixed it as below (diff is on top of the patch):
-> 
-> If not for that '##' , I could have abstracted the whole if/else
-> expression into its own macro and called it from list_for_each_entry_rcu() to
-> keep it more clean.
-> 
-> ---8<-----------------------
-> 
-> diff --git a/include/linux/rculist.h b/include/linux/rculist.h
-> index b641fdd9f1a2..cc742d294bb0 100644
-> --- a/include/linux/rculist.h
-> +++ b/include/linux/rculist.h
-> @@ -371,12 +372,15 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
->   * as long as the traversal is guarded by rcu_read_lock().
->   */
->  #define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> -	if (COUNT_VARGS(cond) != 0) {					\
-> -		__list_check_rcu_cond(0, ## cond);			\
-> -	} else {							\
-> -		__list_check_rcu();					\
-> -	}								\
-> -	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-> +	for (								\
-> +	     ({								\
-> +		if (COUNT_VARGS(cond) != 0) {				\
-> +			__list_check_rcu_cond(0, ## cond);		\
-> +		} else {						\
-> +			__list_check_rcu_nocond();			\
-> +		}							\
-> +	      }),							\
+> Please try the patch below:
 
-For easier to read I would do something like this:
+Finally got time to update my kernel to 5.2-rc2. This patch indeed 
+resolves the issue.
 
-#define check_rcu_list(cond)						\
-	({								\
-		if (COUNT_VARGS(cond) != 0)				\
-			__list_check_rcu_cond(0, ## cond);		\
-		else							\
-			__list_check_rcu_nocond();			\
-	})
-
-#define list_for_each_entry_rcu(pos, head, member, cond...)		\
-	for (check_rcu_list(cond),					\
-
-
--- Steve
-
-> +	     pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
->  		&pos->member != (head);					\
->  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
->  
-> @@ -649,12 +653,15 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
->   * as long as the traversal is guarded by rcu_read_lock().
->   */
->  #define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
-> -	if (COUNT_VARGS(cond) != 0) {					\
-> -		__list_check_rcu_cond(0, ## cond);			\
-> -	} else {							\
-> -		__list_check_rcu();					\
-> -	}								\
-> -	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
-> +	for (								\
-> +	     ({								\
-> +		if (COUNT_VARGS(cond) != 0) {				\
-> +			__list_check_rcu_cond(0, ## cond);		\
-> +		} else {						\
-> +			__list_check_rcu_nocond();			\
-> +		}							\
-> +	     }),							\
-> +	     pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
->  			typeof(*(pos)), member);			\
->  		pos;							\
->  		pos = hlist_entry_safe(rcu_dereference_raw(hlist_next_rcu(\
-
+Thanks,
+Arend
