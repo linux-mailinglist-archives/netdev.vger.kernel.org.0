@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CCB93543E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:32:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C2035431
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727256AbfFDXbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 19:31:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33100 "EHLO mail.kernel.org"
+        id S1727025AbfFDXWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 19:22:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727003AbfFDXWu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 19:22:50 -0400
+        id S1727009AbfFDXWv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 19:22:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C07020B7C;
-        Tue,  4 Jun 2019 23:22:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 36DF420863;
+        Tue,  4 Jun 2019 23:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559690569;
-        bh=iWSbiFnhIIDjOnuZj9cOzoMDZNfvc7+hkcwYKwJDwXo=;
+        s=default; t=1559690571;
+        bh=66hOY2fBtQRs/WlfFucZlqG6SUvnQxfmiGeG7HznvFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17/AV3t35NCiU90irG8+4mrObsgBjaN/vSAebZmwq8K4eaJ/phXmxxZysLhDwM3Ht
-         dqBkjye1ZUrgx3LFXrrvufQcCy/g1MIXxUkn8yQFvvp3mppTSP5QN/KV8/oMQ8WH/m
-         DtSLfVYpLN4WuUrgdDwEUE2T+t61JP8xtknEYwKI=
+        b=szIKkU80u6EavR5yIQEaETIy6ElQRBKN1jhNvXWZOWNoypc+qMyhuZ2wuX0VwISt4
+         jSCed1sXaJcCKo2UquS7MHxrvcudAsTAczQwTh6yo/Q9Xnqws3gXqM6FxddOsnAs/x
+         zZXV/mhgF0Or7BBFy7IGQIrECC4uuWgNJ0Td1vpE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 23/60] enetc: Fix NULL dma address unmap for Tx BD extensions
-Date:   Tue,  4 Jun 2019 19:21:33 -0400
-Message-Id: <20190604232212.6753-23-sashal@kernel.org>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Arika Chen <eaglesora@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 24/60] bpf, tcp: correctly handle DONT_WAIT flags and timeo == 0
+Date:   Tue,  4 Jun 2019 19:21:34 -0400
+Message-Id: <20190604232212.6753-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190604232212.6753-1-sashal@kernel.org>
 References: <20190604232212.6753-1-sashal@kernel.org>
@@ -43,37 +45,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Claudiu Manoil <claudiu.manoil@nxp.com>
+From: John Fastabend <john.fastabend@gmail.com>
 
-[ Upstream commit f4a0be84d73ec648628bf8094600ceb73cb6073f ]
+[ Upstream commit 5fa2ca7c4a3fc176f31b495e1a704862d8188b53 ]
 
-For the unlikely case of TxBD extensions (i.e. ptp)
-the driver tries to unmap the tx_swbd corresponding
-to the extension, which is bogus as it has no buffer
-attached.
+The tcp_bpf_wait_data() routine needs to check timeo != 0 before
+calling sk_wait_event() otherwise we may see unexpected stalls
+on receiver.
 
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Arika did all the leg work here I just formatted, posted and ran
+a few tests.
+
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Reported-by: Arika Chen <eaglesora@gmail.com>
+Suggested-by: Arika Chen <eaglesora@gmail.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 5bb9eb35d76d..491475d87736 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -313,7 +313,9 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
- 		bool is_eof = !!tx_swbd->skb;
- 
--		enetc_unmap_tx_buff(tx_ring, tx_swbd);
-+		if (likely(tx_swbd->dma))
-+			enetc_unmap_tx_buff(tx_ring, tx_swbd);
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 4a619c85daed..3d1e15401384 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -27,7 +27,10 @@ static int tcp_bpf_wait_data(struct sock *sk, struct sk_psock *psock,
+ 			     int flags, long timeo, int *err)
+ {
+ 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+-	int ret;
++	int ret = 0;
 +
- 		if (is_eof) {
- 			napi_consume_skb(tx_swbd->skb, napi_budget);
- 			tx_swbd->skb = NULL;
++	if (!timeo)
++		return ret;
+ 
+ 	add_wait_queue(sk_sleep(sk), &wait);
+ 	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
 -- 
 2.20.1
 
