@@ -2,176 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C653B34F4A
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 441DB34F59
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:54:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbfFDRsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:48:06 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38718 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbfFDRsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:48:06 -0400
-Received: by mail-pf1-f194.google.com with SMTP id a186so12425380pfa.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:48:05 -0700 (PDT)
+        id S1726301AbfFDRyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:54:31 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52870 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726200AbfFDRyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:54:31 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s3so993702wms.2
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:54:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WO/pU2tXKcWaOz/Mz8XljUSgZVyxjPQIhAnHQSTWhKk=;
-        b=xswXLDjNe6Jf8a386sadmYdZwL+QReS4MtQ+UfRYLrhTIRzkvqzQ03azY36uhAFiZ6
-         VUlZKPeFui2lSXPN/A1Ld5L6ikHcGCXM0hfmX2/Daawvc4dvYRdpTQNj2TB11YyjMros
-         4yJDUHelpg3r8bdjufBbLRnEpioOFwufDjlJU=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=snlWljHbyiYc5NMUY405FHmvRsv+YWjQScPjwf39fSw=;
+        b=p1oWI0UMbKVEleRIa75VxpeOERVb02mb2YuXNGWEDXvd0aeudmINqM1hBtHsVXVC5k
+         6o8iGLe/SgO0WoiF9yXSsx1HQOUb2QcML2Bz9U32XwOyf/l2JGajapPQRg435NeT1smq
+         RED10vY1TQe0XX9QcOKC9DSARbR6NYCBy1gGgf/0lAekWM3/4bxNQsIkt89UixPw5Zz5
+         ldDgiYP+4rE4nqLR3/3WPKbj5SS89Opk9S9NTBQFriM2bcLdVNrw7FFaSv7ZcOqDO+5B
+         BnXMrC/rdAb+68al/zcGw6Bw9z8mC7dqaw6pNA61Zd7I51MhSYcZS+gdfOIRHIwnf8bV
+         xTqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WO/pU2tXKcWaOz/Mz8XljUSgZVyxjPQIhAnHQSTWhKk=;
-        b=nmzSnLweJvinKvVcGDaBJoyco2t5BCBO37fKqrmNNueEmHAz5L1XT8fTP8+4KNMpiW
-         T8T4hhj5t8DTsCfmzlWw4UQBCFK/cmmTidIToWs9DkO8NVQhe2unVLgSW7WiBYkdYXFu
-         19oNJsy6mU8ka79Og8lDIuDsImupJ2OqJEFgJFmmYeD3iFChxsnUe8s69pcCCzhQ/uR3
-         Thc8a1f72vPiSsdbxAKsMFr+aU8tGfPHvSMDG6+GSVkb8S0WNt/5s5ZYaEA1ZYLYnkRR
-         m9tWqt1X3ev0HgCqVY7x2RouGMC3j2PxbGgEL+FgnF69HC+GZm795qnSdNWL1R38ZB1H
-         ECvw==
-X-Gm-Message-State: APjAAAXj1mm0BUT5cguYzIhrAGvqND9Os6G+ndCPNG9ZrHBFGswk5gFa
-        /9aGvwDUgFlvxSuj+FLpiPMr1w==
-X-Google-Smtp-Source: APXvYqx8jMof6CsO9RKVykzVQR/GUv12PGEyjyOIN6xEEzRdygdf09yxJH05WCP0zIpQf4tWt1xQtQ==
-X-Received: by 2002:a62:5487:: with SMTP id i129mr38037550pfb.68.1559670484899;
-        Tue, 04 Jun 2019 10:48:04 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id v4sm24304610pff.45.2019.06.04.10.48.03
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 10:48:03 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 13:48:02 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
-        kernel-hardening@lists.openwall.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: [RFC 1/6] rcu: Add support for consolidated-RCU reader checking
-Message-ID: <20190604174802.GB228607@google.com>
-References: <20190601222738.6856-1-joel@joelfernandes.org>
- <20190601222738.6856-2-joel@joelfernandes.org>
- <20190603080128.GA3436@hirez.programming.kicks-ass.net>
- <20190603141847.GA94186@google.com>
- <20190604065358.73347ced@oasis.local.home>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=snlWljHbyiYc5NMUY405FHmvRsv+YWjQScPjwf39fSw=;
+        b=kB0Yknus3mPnwUH4HvRAP6H5KNh92oSJU7Ncg3KCoIVyMPUb1QxbvTCC8l+ptbRY48
+         YFcu05jU3j4OQnBKuA2KbVvtcC26X4WmR5G0QHqZ9BNc53GNCMEWriDRTqjKqHUYTVw3
+         5y0gOkSESIJ5gPttFUnHFGe1U18MnPyooYokkqZszXwUU1U2k1eY+YFfSe7OtCeAlgOz
+         MejDcnuWlUUOkw1SrFf5O8lNfau4fT0Kp5exj6qs4S5kYw1ZIa4eHHFKq+RL1MlQV5gW
+         qXf9N992uj735+/tEBdFwonGpdPlA35AFkwnwa/wEe78nbM/g16y30iv4qJ2Uk/mVpzp
+         UpyQ==
+X-Gm-Message-State: APjAAAUwh0luVrdk0FpPHVrfND94yhgUcz8phwPzwjmK9IuYhHAVewtT
+        UKhKJ/1VEnIarrCH2XDplAc=
+X-Google-Smtp-Source: APXvYqyWqIkrpIk4plbcbS/U1oVvyUMykIAhibwi13iImIYoiC3AGB33cUqua4gPTSoiatUbKJ+uiw==
+X-Received: by 2002:a1c:a942:: with SMTP id s63mr19120079wme.76.1559670869021;
+        Tue, 04 Jun 2019 10:54:29 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2? (p200300EA8BF3BD00CD0DE1C0529B04E2.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2])
+        by smtp.googlemail.com with ESMTPSA id c18sm18340867wrm.7.2019.06.04.10.54.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 10:54:28 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] net: phy: xilinx: add Xilinx PHY driver
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Robert Hancock <hancock@sedsystems.ca>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
+References: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+ <d8c22bc3-0a20-2c24-88bb-b1f5f8cc907a@gmail.com>
+ <7684776f-2bec-e9e2-1a79-dbc3e9844f7e@sedsystems.ca>
+ <20190604165452.GU19627@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <2a547fef-880e-fe59-ecff-4e616212a0f7@gmail.com>
+Date:   Tue, 4 Jun 2019 19:54:23 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190604065358.73347ced@oasis.local.home>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190604165452.GU19627@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 06:53:58AM -0400, Steven Rostedt wrote:
-> On Mon, 3 Jun 2019 10:18:47 -0400
-> Joel Fernandes <joel@joelfernandes.org> wrote:
+On 04.06.2019 18:54, Andrew Lunn wrote:
+>> So it seems like what is missing is the ability of genphy_config_init to
+>> detect the bits in the extended status register for 1000Base-X and add
+>> the corresponding mode flags. It appears bit 15 for 1000Base-X full
+>> duplex is standardized in 802.3 Clause 22, so I would expect Linux
+>> should be able to detect that and add it as a supported mode for the
+>> PHY. genphy_config_init is dealing with the "legacy" 32-bit mode masks
+>> that have no bit for 1000BaseX though.. how is that intended to work?
 > 
-> > On Mon, Jun 03, 2019 at 10:01:28AM +0200, Peter Zijlstra wrote:
-> > > On Sat, Jun 01, 2019 at 06:27:33PM -0400, Joel Fernandes (Google) wrote:  
-> > > > +#define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> > > > +	if (COUNT_VARGS(cond) != 0) {					\
-> > > > +		__list_check_rcu_cond(0, ## cond);			\
-> > > > +	} else {							\
-> > > > +		__list_check_rcu();					\
-> > > > +	}								\
-> > > > +	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-> > > > +		&pos->member != (head);					\
-> > > >  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
-> > > >  
-> > > >  /**
-> > > > @@ -621,7 +648,12 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
-> > > >   * the _rcu list-mutation primitives such as hlist_add_head_rcu()
-> > > >   * as long as the traversal is guarded by rcu_read_lock().
-> > > >   */
-> > > > +#define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
-> > > > +	if (COUNT_VARGS(cond) != 0) {					\
-> > > > +		__list_check_rcu_cond(0, ## cond);			\
-> > > > +	} else {							\
-> > > > +		__list_check_rcu();					\
-> > > > +	}								\
-> > > >  	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
-> > > >  			typeof(*(pos)), member);			\
-> > > >  		pos;							\  
-> > > 
-> > > 
-> > > This breaks code like:
-> > > 
-> > > 	if (...)
-> > > 		list_for_each_entry_rcu(...);
-> > > 
-> > > as they are no longer a single statement. You'll have to frob it into
-> > > the initializer part of the for statement.  
-> > 
-> > Thanks a lot for that. I fixed it as below (diff is on top of the patch):
-> > 
-> > If not for that '##' , I could have abstracted the whole if/else
-> > expression into its own macro and called it from list_for_each_entry_rcu() to
-> > keep it more clean.
-> > 
-> > ---8<-----------------------
-> > 
-> > diff --git a/include/linux/rculist.h b/include/linux/rculist.h
-> > index b641fdd9f1a2..cc742d294bb0 100644
-> > --- a/include/linux/rculist.h
-> > +++ b/include/linux/rculist.h
-> > @@ -371,12 +372,15 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
-> >   * as long as the traversal is guarded by rcu_read_lock().
-> >   */
-> >  #define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> > -	if (COUNT_VARGS(cond) != 0) {					\
-> > -		__list_check_rcu_cond(0, ## cond);			\
-> > -	} else {							\
-> > -		__list_check_rcu();					\
-> > -	}								\
-> > -	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
-> > +	for (								\
-> > +	     ({								\
-> > +		if (COUNT_VARGS(cond) != 0) {				\
-> > +			__list_check_rcu_cond(0, ## cond);		\
-> > +		} else {						\
-> > +			__list_check_rcu_nocond();			\
-> > +		}							\
-> > +	      }),							\
+> Hi Robert
 > 
-> For easier to read I would do something like this:
+> I think you are looking at an old genphy_config_init(). The u32 has
+> been replaced. Adding:
 > 
-> #define check_rcu_list(cond)						\
-> 	({								\
-> 		if (COUNT_VARGS(cond) != 0)				\
-> 			__list_check_rcu_cond(0, ## cond);		\
-> 		else							\
-> 			__list_check_rcu_nocond();			\
-> 	})
+> #define ESTATUS_1000_XFULL      0x8000  /* Can do 1000BX Full          */
+> #define ESTATUS_1000_XHALF      0x4000  /* Can do 1000BT Half          */
 > 
-> #define list_for_each_entry_rcu(pos, head, member, cond...)		\
-> 	for (check_rcu_list(cond),					\
+At least so far phylib knows 1000Base-X/Full only. Not sure whether optical
+half duplex modes are used in reality.
 
-Yes, already doing it this way as I replied to Peter here:
-https://lore.kernel.org/patchwork/patch/1082846/#1278489
+Detecting 1000Base-X capability is one thing, how about 1000Base-X
+advertisement and link partner capability detection?
+If I remember the Marvell specs correctly, there was some bit to switch the
+complete register set to fibre mode.
 
-Thanks!
+Robert, how is this done for the Xilinx PHY?
 
- - Joel
 
+> and
+> 
+>                 if (val & ESTATUS_1000_XFULL)
+>                         linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
+>                                          features);
+> 
+> should not be a problem.
+> 
+>        Andrew
+>   
+> 
 
