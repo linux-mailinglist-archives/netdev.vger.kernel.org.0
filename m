@@ -2,136 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 424F3353C0
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A1D353E2
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfFDX1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 19:27:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36258 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726778AbfFDXY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 19:24:56 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03B1620863;
-        Tue,  4 Jun 2019 23:24:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559690695;
-        bh=S6EsX3yP0Y7WfST1830zxVqYmuAMKCYmeBVTkdEiLbE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZghipU/3R733EScZs9aqkfpohpU5OqPo1Wu+a4P0Ljp+kgOJzS5VbtXcCYCjhlNEo
-         dK85KjTrALJosuwnrezv71ICgvQ3A7t9KvHevBhTsJemjzUKYG+iFu5inhaolZMjRS
-         9aTF2XwSzUYhkZqTV+SWue6k26YyW0G2ZjM9ouFo=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kloetzke Jan <Jan.Kloetzke@preh.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 22/24] usbnet: fix kernel crash after disconnect
-Date:   Tue,  4 Jun 2019 19:24:13 -0400
-Message-Id: <20190604232416.7479-22-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190604232416.7479-1-sashal@kernel.org>
-References: <20190604232416.7479-1-sashal@kernel.org>
+        id S1727268AbfFDX3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 19:29:05 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:47132 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727655AbfFDXYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 19:24:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=dWIgDhv9e+tXmol+y8WvywrkiH6N9PLNU40QuJlGM6Q=; b=1wxzfboKaycP9fkpHlc+cM5Nt
+        qmFtesSZYH2mOExJUroeLNvtRJ+OtsRYnt8gB6pge+ZGIpeoxrC2WkjQKhwL9klgqgkcG7hU80G8S
+        cTGxVnxxu9EgHQT0LN7zcqfMXH7Cq4ZX0zwhy87W+9d7n/MA0r1w/779S50HScZLvv2SU8Rp0Zbxi
+        tyfsvrR9jy41XXxu2Z/uenLHDS0pZj7j3aLGxUjMv2s2g2bBIMEY5vrfnrQ3CzL3J1FyNtLSPC6C1
+        1mQV/UoFtCP6Be9Fv8PrpSW/LEZt822NGRgHtDTuB+58bU59Z+zxXyyC25KYertKEUoe+uBZh+Yfo
+        xxf/HHgaw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56208)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hYInC-0004CW-R3; Wed, 05 Jun 2019 00:24:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hYInB-0001sX-BK; Wed, 05 Jun 2019 00:24:33 +0100
+Date:   Wed, 5 Jun 2019 00:24:33 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+Message-ID: <20190604232433.4v2qqxyihqi2rmjl@shell.armlinux.org.uk>
+References: <CA+h21hrJPAoieooUKY=dBxoteJ32DfAXHYtfm0rVi25g9gKuxg@mail.gmail.com>
+ <20190604211221.GW19627@lunn.ch>
+ <CA+h21hrqsH9FYtTOrCV+Bb0YANQvSnW9Uq=SoS7AJv9Wcw3A3w@mail.gmail.com>
+ <31cc0e5e-810c-86ea-7766-ec37008c5f9d@gmail.com>
+ <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
+ <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com>
+ <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk>
+ <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
+ <20190604225919.xpkykt2z3a7utiet@shell.armlinux.org.uk>
+ <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kloetzke Jan <Jan.Kloetzke@preh.de>
+On Wed, Jun 05, 2019 at 02:03:19AM +0300, Vladimir Oltean wrote:
+> On Wed, 5 Jun 2019 at 01:59, Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Wed, Jun 05, 2019 at 01:44:08AM +0300, Vladimir Oltean wrote:
+> > > You caught me.
+> > >
+> > > But even ignoring the NIC case, isn't the PHY state machine
+> > > inconsistent with itself? It is ok with callink phy_suspend upon
+> > > ndo_stop, but it won't call phy_suspend after phy_connect, when the
+> > > netdev is implicitly stopped?
+> >
+> > The PHY state machine isn't inconsistent with itself, but it does
+> > have strange behaviour.
+> >
+> > When the PHY is attached, the PHY is resumed and the state machine
+> > is in PHY_READY state.  If it goes through a start/stop cycle, the
+> > state machine transitions to PHY_HALTED and attempts to place the
+> > PHY into a low power state.  So the PHY state is consistent with
+> > the state machine state (we don't end up in the same state but with
+> > the PHY in a different state.)
+> >
+> > What we do have is a difference between the PHY state (and state
+> > machine state) between the boot scenario, and the interface up/down
+> > scenario, the latter behaviour having been introduced by a commit
+> > back in 2013:
+> >
+> >     net: phy: suspend phydev when going to HALTED
+> >
+> >     When phydev is going to HALTED state, we can try to suspend it to
+> >     safe more power. phy_suspend helper will check if PHY can be suspended,
+> >     so just call it when entering HALTED state.
+> >
+> > --
+> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> > FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> > According to speedtest.net: 11.9Mbps down 500kbps up
+> 
+> I am really not into the PHYLIB internals, but basically what you're
+> telling me is that running "ip link set dev eth0 down" is a
+> stronger/more imperative condition than not running "ip link set dev
+> eth0 up"... Does it also suspend the PHY if I put the interface down
+> while it was already down?
 
-[ Upstream commit ad70411a978d1e6e97b1e341a7bde9a79af0c93d ]
+No - but that has nothing to do with phylib internals, more to do with
+the higher levels of networking.  ndo_stop() will not be called unless
+ndo_open() has already been called.  In other words, setting an already
+down device down via "ip link set dev eth0 down" is a no-op.
 
-When disconnecting cdc_ncm the kernel sporadically crashes shortly
-after the disconnect:
+So, let's a common scenario.  You power up a board.  The PHY comes up
+and establishes a link.  The boot loader runs, loads the kernel, which
+then boots.  Your network driver is a module, and hasn't been loaded
+yet.  The link is still up.
 
-  [   57.868812] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-  ...
-  [   58.006653] PC is at 0x0
-  [   58.009202] LR is at call_timer_fn+0xec/0x1b4
-  [   58.013567] pc : [<0000000000000000>] lr : [<ffffff80080f5130>] pstate: 00000145
-  [   58.020976] sp : ffffff8008003da0
-  [   58.024295] x29: ffffff8008003da0 x28: 0000000000000001
-  [   58.029618] x27: 000000000000000a x26: 0000000000000100
-  [   58.034941] x25: 0000000000000000 x24: ffffff8008003e68
-  [   58.040263] x23: 0000000000000000 x22: 0000000000000000
-  [   58.045587] x21: 0000000000000000 x20: ffffffc68fac1808
-  [   58.050910] x19: 0000000000000100 x18: 0000000000000000
-  [   58.056232] x17: 0000007f885aff8c x16: 0000007f883a9f10
-  [   58.061556] x15: 0000000000000001 x14: 000000000000006e
-  [   58.066878] x13: 0000000000000000 x12: 00000000000000ba
-  [   58.072201] x11: ffffffc69ff1db30 x10: 0000000000000020
-  [   58.077524] x9 : 8000100008001000 x8 : 0000000000000001
-  [   58.082847] x7 : 0000000000000800 x6 : ffffff8008003e70
-  [   58.088169] x5 : ffffffc69ff17a28 x4 : 00000000ffff138b
-  [   58.093492] x3 : 0000000000000000 x2 : 0000000000000000
-  [   58.098814] x1 : 0000000000000000 x0 : 0000000000000000
-  ...
-  [   58.205800] [<          (null)>]           (null)
-  [   58.210521] [<ffffff80080f5298>] expire_timers+0xa0/0x14c
-  [   58.215937] [<ffffff80080f542c>] run_timer_softirq+0xe8/0x128
-  [   58.221702] [<ffffff8008081120>] __do_softirq+0x298/0x348
-  [   58.227118] [<ffffff80080a6304>] irq_exit+0x74/0xbc
-  [   58.232009] [<ffffff80080e17dc>] __handle_domain_irq+0x78/0xac
-  [   58.237857] [<ffffff8008080cf4>] gic_handle_irq+0x80/0xac
-  ...
+The modular network driver gets loaded, and initialises.  Userspace
+does not bring the network device up, and the network driver does not
+attach or connect to the PHY (which is actually quite common).  So,
+the link is still up.
 
-The crash happens roughly 125..130ms after the disconnect. This
-correlates with the 'delay' timer that is started on certain USB tx/rx
-errors in the URB completion handler.
+The modular PHY driver gets loaded, and binds to the PHY.  The link
+is still up.
 
-The problem is a race of usbnet_stop() with usbnet_start_xmit(). In
-usbnet_stop() we call usbnet_terminate_urbs() to cancel all URBs in
-flight. This only makes sense if no new URBs are submitted
-concurrently, though. But the usbnet_start_xmit() can run at the same
-time on another CPU which almost unconditionally submits an URB. The
-error callback of the new URB will then schedule the timer after it was
-already stopped.
+Userspace configures the network interface, which causes the PHY
+device to be attached to the network device, and phy_start() to be
+called on it - the negotiation advertisement is configured, and
+negotiation restarted if necessary.
 
-The fix adds a check if the tx queue is stopped after the tx list lock
-has been taken. This should reliably prevent the submission of new URBs
-while usbnet_terminate_urbs() does its job. The same thing is done on
-the rx side even though it might be safe due to other flags that are
-checked there.
+When userspace deconfigures the network interface, phy_stop() will
+be called, and, as the network driver attached the PHY in its
+ndo_open() function, the network driver will detach the PHY from
+the network interface to reverse those effects.  The PHY will be
+suspended, but more so than that, if there is a reset line, the
+reset line will be activated to the PHY.
 
-Signed-off-by: Jan Klötzke <Jan.Kloetzke@preh.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/usbnet.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+The above is an illustration of one sequence that /can/ happen.
+Other sequences are also possible.
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 32fc69539126..831a9cec700c 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -508,6 +508,7 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
- 
- 	if (netif_running (dev->net) &&
- 	    netif_device_present (dev->net) &&
-+	    test_bit(EVENT_DEV_OPEN, &dev->flags) &&
- 	    !test_bit (EVENT_RX_HALT, &dev->flags) &&
- 	    !test_bit (EVENT_DEV_ASLEEP, &dev->flags)) {
- 		switch (retval = usb_submit_urb (urb, GFP_ATOMIC)) {
-@@ -1433,6 +1434,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
- 		spin_unlock_irqrestore(&dev->txq.lock, flags);
- 		goto drop;
- 	}
-+	if (netif_queue_stopped(net)) {
-+		usb_autopm_put_interface_async(dev->intf);
-+		spin_unlock_irqrestore(&dev->txq.lock, flags);
-+		goto drop;
-+	}
- 
- #ifdef CONFIG_PM
- 	/* if this triggers the device is still a sleep */
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
