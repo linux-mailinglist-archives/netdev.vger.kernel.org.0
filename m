@@ -2,92 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B94733CF9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8F633CFA
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbfFDCEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 22:04:45 -0400
-Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:36518
-        "EHLO cat-porwal-prod-mail1.catalyst.net.nz" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725876AbfFDCEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 22:04:45 -0400
-X-Greylist: delayed 463 seconds by postgrey-1.27 at vger.kernel.org; Mon, 03 Jun 2019 22:04:44 EDT
-Received: from timbeale-pc.wgtn.cat-it.co.nz (unknown [IPv6:2404:130:0:1000:ed06:1c1d:e56c:b595])
-        (Authenticated sender: timbeale@catalyst.net.nz)
-        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id BE17E81232;
-        Tue,  4 Jun 2019 13:56:57 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1559613419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=zlxPk8Grmjvfc1gNhrJYrpT6xOBrQjE/mrwvf8Qc9M0=;
-        b=tlbS4rAuReuDG+cTAMYG5To879bmPuCxZzvMOln/7pVB2R3HsKhzmBTldZFohzT6xCNm/d
-        HdgMW9OpT7FGT5/Z3PiOBzZRaeGiufM9uL2BvqCi+1cai8DZqGncUKB0mIJufmC+aG+/nA
-        QReWZsavQLEg7WcZv347TDDREz0SCI3m/yEeD11eRjU9xQTbAXiHJozznEEnyJTia+x3H4
-        r4AZOVnWHF/S3o3rDSvuaIzJjLzMMjkg2scfneY9TM+vhCy34edgiAGKj8gSqaZdzY9UkJ
-        h6tXVyF/pwjmTU3jhiUWenRZaCeIUiLnjfq8DWTR09bzNX3TU38/HBKTsVcX6g==
-From:   Tim Beale <timbeale@catalyst.net.nz>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        Tim Beale <timbeale@catalyst.net.nz>
-Subject: [PATCH net] udp: only choose unbound UDP socket for multicast when not in a VRF
-Date:   Tue,  4 Jun 2019 13:56:23 +1200
-Message-Id: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
-X-Mailer: git-send-email 2.7.4
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1559613420;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=zlxPk8Grmjvfc1gNhrJYrpT6xOBrQjE/mrwvf8Qc9M0=;
-        b=OGqnBs0jg5cS5u+Jz50M86Lk0ACDAQw0ZpNDJE4yIMpFegYZMfv3xHKhwRVD9P+gBP/VVG
-        QiHdEevHjEa7yQrlpvg6w/fswFyaG/6o7bRuCJ1T/JjlC19vvWRkiXcyeBP6D5UN7VHvvz
-        gyerxTm7ZvuPzgIl03LzOEuypV3ropePGmjFZ8P4RPs1/cbIqCFTKiv8vvlm6q4uVgTsVR
-        j6ydAGePuZmeuUCXHh+PyJmspsX1XpxICpw7U80GsoJcEwBzZE4YuFMpPmYTPf3Ec71WZv
-        7MbNQ3s9K4GzRiHAU+KgEas7NbyrCs0SIeNnfn3DTHZM8qUTczhf4iEQrT89zA==
-ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1559613420; a=rsa-sha256;
-        cv=none;
-        b=s4rSGkei7s9QcgucrgDSCuqP+XhasqXQQnNWlvFR1a1iiNaZbC/a2xOF8wTbt0mfhSKl4s
-        EHaDLOX8yNBen55fKt1mmJUQBBY3kSsx+QoPUforaBjgDekGb+AMbsR4h4gW+MptehfO7u
-        ed4xDCiqv/FNrAva1jYS1nN77vuUtpeOteGiqOrWYZxyc68yXgp9PTNUEkmEPpkSRK6RPQ
-        4To2lQZ4sAIpPtK+EyFhw61HO9n4LeVUrDpyA9IE+8pJRXHi5Dk8ZqZGzM91y0ynT64sPc
-        RWJDPyExPnzRWpmUObfV5MRQEqgcR8JXfFJNbaeKrK3YRr89D/FI+dLaWUDGEw==
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=timbeale@catalyst.net.nz smtp.mailfrom=timbeale@catalyst.net.nz
+        id S1726223AbfFDCFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 22:05:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52782 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725876AbfFDCFG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 22:05:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=0C5/9hNsFJy85Op9+MDkg+R/CtXricvNhx0APekNuHg=; b=XJPZtOpUuVqzZ93m0HGJPaJ/j7
+        c3kbSwLAcq9RJcettKu+EDe9kWp1lT9j6uQs4zklikZWKP6mObXQQlXe9xvRw8omVlFWm9LSBp17f
+        o4KprfOg02hWGmjs0QiYQe9ZiW6MFWrMC81ht1jZ6Yfg8Cf/xkRgNxzZpWziGilJReMY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hXyox-0001OS-EC; Tue, 04 Jun 2019 04:05:03 +0200
+Date:   Tue, 4 Jun 2019 04:05:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Hancock <hancock@sedsystems.ca>
+Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
+Subject: Re: [PATCH net-next 01/18] net: axienet: Fix casting of pointers to
+ u32
+Message-ID: <20190604020503.GH17267@lunn.ch>
+References: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
+ <1559599037-8514-2-git-send-email-hancock@sedsystems.ca>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1559599037-8514-2-git-send-email-hancock@sedsystems.ca>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By default, packets received in another VRF should not be passed to an
-unbound socket in the default VRF. This patch updates the IPv4 UDP
-multicast logic to match the unicast VRF logic (in compute_score()),
-as well as the IPv6 mcast logic (in __udp_v6_is_mcast_sock()).
+On Mon, Jun 03, 2019 at 03:57:00PM -0600, Robert Hancock wrote:
+> This driver was casting skb pointers to u32 and storing them as such in
+> the DMA buffer descriptor, which is obviously broken on 64-bit. The area
+> of the buffer descriptor being used is not accessed by the hardware and
+> has sufficient room for a 32 or 64-bit pointer, so just store the skb
+> pointer as such.
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet.h      | 11 +++-------
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 26 ++++++++++++-----------
+>  2 files changed, 17 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> index 011adae..e09dc14 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> @@ -356,9 +356,6 @@
+>   * @app2:         MM2S/S2MM User Application Field 2.
+>   * @app3:         MM2S/S2MM User Application Field 3.
+>   * @app4:         MM2S/S2MM User Application Field 4.
+> - * @sw_id_offset: MM2S/S2MM Sw ID
+> - * @reserved5:    Reserved and not used
+> - * @reserved6:    Reserved and not used
+>   */
+>  struct axidma_bd {
+>  	u32 next;	/* Physical address of next buffer descriptor */
+> @@ -373,11 +370,9 @@ struct axidma_bd {
+>  	u32 app1;	/* TX start << 16 | insert */
+>  	u32 app2;	/* TX csum seed */
+>  	u32 app3;
+> -	u32 app4;
+> -	u32 sw_id_offset;
+> -	u32 reserved5;
+> -	u32 reserved6;
+> -};
+> +	u32 app4;   /* Last field used by HW */
+> +	struct sk_buff *skb;
+> +} __aligned(XAXIDMA_BD_MINIMUM_ALIGNMENT);
 
-The particular case I noticed was DHCP discover packets going
-to the 255.255.255.255 address, which are handled by
-__udp4_lib_mcast_deliver(). The previous code meant that running
-multiple different DHCP server or relay agent instances across VRFs
-did not work correctly - any server/relay agent in the default VRF
-received DHCP discover packets for all other VRFs.
+Hi Robert
 
-Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
----
- net/ipv4/udp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Is the memory for the descriptor non-cachable? I expect so.  You may
+get slightly better performance if you were to keep an shadow array in
+normal RAM. But this is O.K. as well.
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 8fb250e..efe9283 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -538,8 +538,7 @@ static inline bool __udp_is_mcast_sock(struct net *net, struct sock *sk,
- 	    (inet->inet_dport != rmt_port && inet->inet_dport) ||
- 	    (inet->inet_rcv_saddr && inet->inet_rcv_saddr != loc_addr) ||
- 	    ipv6_only_sock(sk) ||
--	    (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
--	     sk->sk_bound_dev_if != sdif))
-+	    !udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif))
- 		return false;
- 	if (!ip_mc_sf_allow(sk, loc_addr, rmt_addr, dif, sdif))
- 		return false;
--- 
-2.7.4
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
