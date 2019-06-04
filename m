@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70EEC3514E
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6972935167
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbfFDUqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 16:46:04 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:46726 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbfFDUqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:46:03 -0400
-Received: by mail-pl1-f195.google.com with SMTP id e5so7063181pls.13;
-        Tue, 04 Jun 2019 13:46:03 -0700 (PDT)
+        id S1726354AbfFDUzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 16:55:20 -0400
+Received: from mail-wr1-f46.google.com ([209.85.221.46]:38139 "EHLO
+        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726033AbfFDUzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:55:20 -0400
+Received: by mail-wr1-f46.google.com with SMTP id d18so17256642wrs.5
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 13:55:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=966+N7ccmkYRjH2WFNEfk5YVx0RXBeuKP5qbRTNRyuI=;
-        b=PglzN+HFFV+M/7XgYVTVJ4niF/AJMFnOu7CLPfTqi0p98A1vc2OOhck18EjW72dktG
-         xxQghoda9dDeqJpva8i/t2sgJmfGTrCEYMu8TviN3n7TkM0V8Mnmz3Vm4TKJRzF5aCRg
-         p+leRS3umXiM7jGIBQgYIgusKYIVakqzFLDU6pJl62sE1XUx9xZKPNOLHa1mk5pOMkFj
-         My5MfovdWNBeq8EDUhw6rzSz28Vj5Y1uF9cXXGqVSNgC/5MdN8auQ4bwfbZDtzlwJrjq
-         M2aRi0V9hY7xU6bNkrcZ+0X4JKmNgzCw1t62LbbEKkgREqytSh0zaJCMqTBz3GjqBFka
-         VCJg==
+        bh=blfnqOSDorl2cdNxWhI/xPE58WtmiUx318SuUhSD9Dk=;
+        b=N87PDMWpbVZMn5fHMAPMRVKclR7q2XXhf8GzW8HDTUmVDvkVKAX7TAFSma0UM5RyPF
+         qUF7X/0jtpsDSD2/BTmaashQrNYxiH0BvwY1OBhXq11gwoop4tFBrEeLsl/jrp+Iivb6
+         gxltQkIanGx8cTTR7WW2CxtOHJdv2b0NqO3KC+b4aD2Iq3Qb3yZ7DgMfVDywRtzukHNV
+         DK5j1gWG8fzbFibCGSrEGqsHspK82F624bR+tAxauJHbydeJLfBZYuOAIcS7nnb0hbeC
+         HLMiIpHMJxdtAmKOJVTNIYrvDVAj/0HSRXbHHkhyMc6ED/dJnxB0eyOE6dVhVYDfBOrV
+         y8Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=966+N7ccmkYRjH2WFNEfk5YVx0RXBeuKP5qbRTNRyuI=;
-        b=dYKZ7LNeEDbd5Bt77o9jmzzi4TalIxFlfFgaVN0Zy3qadGQW+8qoaMXSwSv7RMYFTf
-         eJzHnn9Rswd7mINwDOC3sBaHk+iQ+o27HU1cOb6hZo7uNXYSA7pBnX3ILopAV1K13YpV
-         eVlxOZOLA++2a8si8lQDBIs9R4yOoATuBDwT1mVSGD43oIwaQn/NwY0dztB5n/w+c1eH
-         rJ+UR6wBtlF+0gHBFH0eBo6IfMpfJ52SIFp8NkC5mRjBMLFb9kyADVhtkB9v3EnA/AAU
-         3cMzFRuDgFZq/WmFvRIcN2TsKmQkg7mWkQJtf9GNyOuQ9aqD0KMosi6lNVw5lC6wvBw/
-         WmuA==
-X-Gm-Message-State: APjAAAWuymtV8P4FPr1zpx/GKTZ7iU3iJnrnOeTE4RHAERSU07hgKxd0
-        qt44A2aV75KjXG6iCnvfVTY=
-X-Google-Smtp-Source: APXvYqyY0b1jzIL0ifex6cTy5GObi69PPA247k+oXFQ3v5VQMrs5BJrhALsxfxEqESBZXTHVPFfG3g==
-X-Received: by 2002:a17:902:5ac9:: with SMTP id g9mr39278813plm.134.1559681162457;
-        Tue, 04 Jun 2019 13:46:02 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id j22sm18171487pfh.71.2019.06.04.13.46.00
+        bh=blfnqOSDorl2cdNxWhI/xPE58WtmiUx318SuUhSD9Dk=;
+        b=Jhyn5FZbevnkBDCd6Q2JpfLkoaNNcvmH7pxjazeGf/KEY5BLzkooxfmk85XcdsfFdB
+         xFfbgGb0812UxKf6iT36Ou5Bka7TKcw2NghkGIiz7jFBsa0nVWZeD71v0OD4zSeUwnJ9
+         40GtACGmAEK45hhz25a+d0SVzmS7VSGVUPjvI3VEm+nVKg+WzDmC8Lp0UjMjEuBOf8MG
+         QFjcPkUk7NWZxb7fx3BN3SqMGjGMCJl9YKXsooMc6f33zm+O8XrMj6iC9/ti5I9pFWmg
+         E1E6gQNMQMm4IiaR/CTP86HxwQkZK2ENUjQY0OKUdb9wHpXGzIGBrCQF7a6ZC+j7C8vK
+         285A==
+X-Gm-Message-State: APjAAAViJ9lTfaFvuNQJH8aIXGLvYiaXMVBqwK60pz6XPeMC0sPgFWj3
+        Q9fGw0TOeGmEAIQ4UxayeJY=
+X-Google-Smtp-Source: APXvYqwNoHNFDIH0sOqDSXF7ZmFNCMTz03eCvySpGuRj54J6e2RjOdKclhDgaW3BmQvHdkYlksWJlA==
+X-Received: by 2002:a5d:6652:: with SMTP id f18mr7549836wrw.19.1559681718006;
+        Tue, 04 Jun 2019 13:55:18 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2? (p200300EA8BF3BD00CD0DE1C0529B04E2.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2])
+        by smtp.googlemail.com with ESMTPSA id y184sm12855349wmg.14.2019.06.04.13.55.16
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 13:46:01 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 2/5] net: stmmac: introducing support for DWC
- xPCS logics
-To:     Voon Weifeng <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>
-References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
- <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
-Date:   Tue, 4 Jun 2019 13:46:00 -0700
+        Tue, 04 Jun 2019 13:55:16 -0700 (PDT)
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+ <20190604200713.GV19627@lunn.ch>
+ <CA+h21hrJPAoieooUKY=dBxoteJ32DfAXHYtfm0rVi25g9gKuxg@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <5b1c1578-bbf9-8f8c-6657-8f1cceb539d1@gmail.com>
+Date:   Tue, 4 Jun 2019 22:55:09 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
+In-Reply-To: <CA+h21hrJPAoieooUKY=dBxoteJ32DfAXHYtfm0rVi25g9gKuxg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,396 +69,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Russell,
+On 04.06.2019 22:42, Vladimir Oltean wrote:
+> On Tue, 4 Jun 2019 at 23:07, Andrew Lunn <andrew@lunn.ch> wrote:
+>>
+>> On Tue, Jun 04, 2019 at 10:58:41PM +0300, Vladimir Oltean wrote:
+>>> Hi,
+>>>
+>>> I've been wondering what is the correct approach to cut the Ethernet link
+>>> when the user requests it to be administratively down (aka ip link set dev
+>>> eth0 down).
+>>> Most of the Ethernet drivers simply call phy_stop or the phylink equivalent.
+>>> This leaves an Ethernet link between the PHY and its link partner.
+>>> The Freescale gianfar driver (authored by Andy Fleming who also authored the
+>>> phylib) does a phy_disconnect here. It may seem a bit overkill, but of the
+>>> extra things it does, it calls phy_suspend where most PHY drivers set the
+>>> BMCR_PDOWN bit. Only this achieves the intended purpose of also cutting the
+>>> link partner's link on 'ip link set dev eth0 down'.
+>>
+>> Hi Vladimir
+>>
+>> Heiner knows the state machine better than i. But when we transition
+>> to PHY_HALTED, as part of phy_stop(), it should do a phy_suspend().
+>>
+>>    Andrew
+> 
+> Hi Andrew, Florian,
+> 
+> Thanks for giving me the PHY_HALTED hint!
+> Indeed it looks like I conflated two things - the Ehernet port that
+> uses phy_disconnect also happens to be connected to a PHY that has
+> phy_suspend implemented. Whereas the one that only does phy_stop is
+> connected to a PHY that doesn't have that... I thought that in absence
+> of .suspend, the PHY library automatically calls genphy_suspend. Oh
+> well, looks like it doesn't. So of course, phy_stop calls phy_suspend
+> too.
+> But now the second question: between a phy_connect and a phy_start,
+> shouldn't the PHY be suspended too? Experimentally it looks like it
+> still isn't.
+> By the way, Florian, yes, PHY drivers that use WOL still set
+> BMCR_ISOLATE, which cuts the MII-side, so that's ok. However that's
+> not the case here - no WOL.
+> 
+Right, some PHY driver callbacks fall back to the generic functionality,
+for the suspend/resume callbacks that's not the case.
+phy_connect() eventually calls phy_attach_direct() that has a call to
+phy_resume(). So your observation is correct, phy_connect() wakes the
+PHY. I'm not 100% sure whether this is needed because also phy_start()
+resumes the PHY.
 
-On 6/4/2019 11:58 AM, Voon Weifeng wrote:
-> From: Ong Boon Leong <boon.leong.ong@intel.com>
-> 
-> xPCS is DWC Ethernet Physical Coding Sublayer that may be integrated
-> into a GbE controller that uses DWC EQoS MAC controller. An example of
-> HW configuration is shown below:-
-> 
->   <-----------------GBE Controller---------->|<--External PHY chip-->
-> 
->   +----------+         +----+    +---+               +--------------+
->   |   EQoS   | <-GMII->| DW |<-->|PHY| <-- SGMII --> | External GbE |
->   |   MAC    |         |xPCS|    |IF |               | PHY Chip     |
->   +----------+         +----+    +---+               +--------------+
->          ^               ^                                  ^
->          |               |                                  |
->          +---------------------MDIO-------------------------+
-> 
-> xPCS is a Clause-45 MDIO Manageable Device (MMD) and we need a way to
-> differentiate it from external PHY chip that is discovered over MDIO.
-> Therefore, xpcs_phy_addr is introduced in stmmac platform data
-> (plat_stmmacenet_data) for differentiating xPCS from 'phy_addr' that
-> belongs to external PHY.
+BMCR_ISOLATE isn't set by any phylib function. We just have few
+calls where BMCR_ISOLATE is cleared as part of the functionality.
 
-Assuming this DW xPCS can be found with designs other than STMMAC would
-not it make sense to model this as some kind of PHY/MDIO bridge? A
-little bit like what drivers/net/phy/xilinx_gmii2rgmii.c tries to do?
-
+> Regards,
+> -Vladimir
 > 
-> Basic functionalities for initializing xPCS and configuring auto
-> negotiation (AN), loopback, link status, AN advertisement and Link
-> Partner ability are implemented. The implementation supports the C37
-> AN for 1000BASE-X and SGMII (MAC side SGMII only).
-> 
-> Tested-by: Tan, Tee Min <tee.min.tan@intel.com>
-> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-> Reviewed-by: Kweh Hock Leong <hock.leong.kweh@intel.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/Makefile |   2 +-
->  drivers/net/ethernet/stmicro/stmmac/common.h |   1 +
->  drivers/net/ethernet/stmicro/stmmac/dwxpcs.c | 208 +++++++++++++++++++++++++++
->  drivers/net/ethernet/stmicro/stmmac/dwxpcs.h |  51 +++++++
->  drivers/net/ethernet/stmicro/stmmac/hwif.h   |  19 +++
->  include/linux/stmmac.h                       |   1 +
->  6 files changed, 281 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.c
->  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.h
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> index c59926d96bcc..f007fb873455 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-> @@ -6,7 +6,7 @@ stmmac-objs:= stmmac_main.o stmmac_ethtool.o stmmac_mdio.o ring_mode.o	\
->  	      mmc_core.o stmmac_hwtstamp.o stmmac_ptp.o dwmac4_descs.o	\
->  	      dwmac4_dma.o dwmac4_lib.o dwmac4_core.o dwmac5.o hwif.o \
->  	      stmmac_tc.o dwxgmac2_core.o dwxgmac2_dma.o dwxgmac2_descs.o \
-> -	      $(stmmac-y)
-> +	      dwxpcs.o $(stmmac-y)
->  
->  stmmac-$(CONFIG_STMMAC_SELFTESTS) += stmmac_selftests.o
->  
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-> index 1961fe9144ca..83df093c4636 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/common.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-> @@ -419,6 +419,7 @@ struct mii_regs {
->  
->  struct mac_device_info {
->  	const struct stmmac_ops *mac;
-> +	const struct stmmac_xpcs_ops *xpcs;
->  	const struct stmmac_desc_ops *desc;
->  	const struct stmmac_dma_ops *dma;
->  	const struct stmmac_mode_ops *mode;
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxpcs.c b/drivers/net/ethernet/stmicro/stmmac/dwxpcs.c
-> new file mode 100644
-> index 000000000000..7e850b9dd7b7
-> --- /dev/null
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwxpcs.c
-> @@ -0,0 +1,208 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2019, Intel Corporation.
-> + * DWC Ethernet Physical Coding Sublayer
-> + */
-> +#include <linux/bitops.h>
-> +#include <linux/mdio.h>
-> +#include "dwxpcs.h"
-> +#include "stmmac.h"
-> +
-> +/* DW xPCS mdiobus_read and mdiobus_write helper functions */
-> +#define xpcs_read(dev, reg) \
-> +	mdiobus_read(priv->mii, xpcs_phy_addr, \
-> +		     MII_ADDR_C45 | (reg) | \
-> +		     ((dev) << MII_DEVADDR_C45_SHIFT))
-> +#define xpcs_write(dev, reg, val) \
-> +	mdiobus_write(priv->mii, xpcs_phy_addr, \
-> +		      MII_ADDR_C45 | (reg) | \
-> +		      ((dev) << MII_DEVADDR_C45_SHIFT), val)
-> +
-> +static void dw_xpcs_init(struct net_device *ndev, int pcs_mode)
-> +{
-> +	struct stmmac_priv *priv = netdev_priv(ndev);
-> +	int xpcs_phy_addr;
-> +	int phydata;
-> +
-> +	xpcs_phy_addr = priv->plat->xpcs_phy_addr;
-> +
-> +	if (pcs_mode == AN_CTRL_PCS_MD_C37_SGMII) {
-> +		/* For AN for SGMII mode, the settings are :-
-> +		 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
-> +		 * 2) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
-> +		 *    DW xPCS used with DW EQoS MAC is always MAC
-> +		 *    side SGMII.
-> +		 * 3) VR_MII_AN_CTRL Bit(0) [AN_INTR_EN] = 1b (AN Interrupt
-> +		 *    enabled)
-> +		 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
-> +		 *    speed mode change after SGMII AN complete)
-> +		 * Note: Since it is MAC side SGMII, there is no need to set
-> +		 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config
-> +		 *	 from PHY about the link state change after C28 AN
-> +		 *	 is completed between PHY and Link Partner.
-> +		 */
-> +		phydata = xpcs_read(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_CTRL);
-> +		phydata &= ~MDIO_MII_MMD_AN_CTRL_PCS_MD;
-> +		phydata |= MDIO_MII_MMD_AN_CTRL_AN_INTR_EN |
-> +			   (AN_CTRL_PCS_MD_C37_SGMII <<
-> +			    MDIO_MII_MMD_AN_CTRL_PCS_MD_SHIFT &
-> +			    MDIO_MII_MMD_AN_CTRL_PCS_MD) |
-> +			   (AN_CTRL_TX_CONF_MAC_SIDE_SGMII <<
-> +			    MDIO_MII_MMD_AN_CTRL_TX_CONFIG_SHIFT);
-> +		xpcs_write(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_CTRL, phydata);
-> +
-> +		phydata = xpcs_read(XPCS_MDIO_MII_MMD,
-> +				    MDIO_MII_MMD_DIGITAL_CTRL_1);
-> +		phydata |= MDIO_MII_MMD_DIGI_CTRL_1_MAC_AUTO_SW;
-> +		xpcs_write(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_DIGITAL_CTRL_1,
-> +			   phydata);
-> +	} else {
-> +		/* For AN for 1000BASE-X mode, the settings are :-
-> +		 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 00b (1000BASE-X C37)
-> +		 * 2) VR_MII_AN_CTRL Bit(0) [AN_INTR_EN] = 1b (AN Interrupt
-> +		 *    enabled)
-> +		 * 3) SR_MII_AN_ADV Bit(6)[FD] = 1b (Full Duplex)
-> +		 *    Note: Half Duplex is rarely used, so don't advertise.
-> +		 * 4) SR_MII_AN_ADV Bit(8:7)[PSE] = 11b (Sym & Asym Pause)
-> +		 */
-> +		phydata = xpcs_read(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_CTRL);
-> +		phydata &= ~MDIO_MII_MMD_AN_CTRL_PCS_MD;
-> +		phydata |= MDIO_MII_MMD_AN_CTRL_AN_INTR_EN |
-> +			   (AN_CTRL_PCS_MD_C37_1000BASEX <<
-> +			    MDIO_MII_MMD_AN_CTRL_PCS_MD_SHIFT &
-> +			    MDIO_MII_MMD_AN_CTRL_PCS_MD);
-> +		xpcs_write(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_CTRL, phydata);
-> +
-> +		phydata = xpcs_read(XPCS_MDIO_MII_MMD, MII_ADVERTISE);
-> +		phydata |= MDIO_MII_MMD_FD |
-> +			   (MDIO_MII_MMD_PSE_BOTH << MDIO_MII_MMD_PSE_SHIFT);
-> +		xpcs_write(XPCS_MDIO_MII_MMD, MII_ADVERTISE, phydata);
-> +	}
-> +}
-> +
-> +static void dw_xpcs_ctrl_ane(struct net_device *ndev, bool ane,
-> +			     bool loopback)
-> +{
-> +	struct stmmac_priv *priv = netdev_priv(ndev);
-> +	int xpcs_phy_addr;
-> +	int phydata;
-> +
-> +	xpcs_phy_addr = priv->plat->xpcs_phy_addr;
-> +	phydata = xpcs_read(XPCS_MDIO_MII_MMD, MII_BMCR);
-> +
-> +	if (ane)
-> +		phydata |= (BMCR_ANENABLE | BMCR_ANRESTART);
-> +
-> +	if (loopback)
-> +		phydata |= BMCR_LOOPBACK;
-> +
-> +	xpcs_write(XPCS_MDIO_MII_MMD, MII_BMCR, phydata);
-> +}
-> +
-> +static void dw_xpcs_get_adv_lp(struct net_device *ndev,
-> +			       struct rgmii_adv *adv_lp,
-> +			       int pcs_mode)
-> +{
-> +	struct stmmac_priv *priv = netdev_priv(ndev);
-> +	int xpcs_phy_addr;
-> +	int value;
-> +
-> +	xpcs_phy_addr = priv->plat->xpcs_phy_addr;
-> +
-> +	/* AN Advertisement Ability */
-> +	value = xpcs_read(XPCS_MDIO_MII_MMD, MII_ADVERTISE);
-> +
-> +	if (value & MDIO_MII_MMD_FD)
-> +		adv_lp->duplex = DUPLEX_FULL;
-> +	if (value & MDIO_MII_MMD_HD)
-> +		adv_lp->duplex = DUPLEX_HALF;
-> +	adv_lp->pause = (u32)((value & MDIO_MII_MMD_PSE) >>
-> +			      MDIO_MII_MMD_PSE_SHIFT);
-> +
-> +	/* Link Partner Ability - 1000BASE-X only*/
-> +	if (pcs_mode == AN_CTRL_PCS_MD_C37_1000BASEX) {
-> +		value = xpcs_read(XPCS_MDIO_MII_MMD, MII_LPA);
-> +		if (value & MDIO_MII_MMD_FD)
-> +			adv_lp->lp_duplex = DUPLEX_FULL;
-> +		if (value & MDIO_MII_MMD_HD)
-> +			adv_lp->lp_duplex = DUPLEX_HALF;
-> +		adv_lp->lp_pause = (u32)((value & MDIO_MII_MMD_PSE) >>
-> +					 MDIO_MII_MMD_PSE_SHIFT);
-> +	}
-> +}
-> +
-> +static void dw_xpcs_get_linkstatus(struct net_device *ndev,
-> +				   u16 an_stat,
-> +				   struct stmmac_extra_stats *x)
-> +{
-> +	/* Check the SGMII AN link status */
-> +	if (an_stat & AN_STAT_SGMII_AN_LNKSTS) {
-> +		int speed_value;
-> +
-> +		x->pcs_link = 1;
-> +
-> +		speed_value = ((an_stat & AN_STAT_SGMII_AN_SPEED) >>
-> +				AN_STAT_SGMII_AN_SPEED_SHIFT);
-> +		if (speed_value == AN_STAT_SGMII_AN_1000MBPS)
-> +			x->pcs_speed = SPEED_1000;
-> +		else if (speed_value == AN_STAT_SGMII_AN_100MBPS)
-> +			x->pcs_speed = SPEED_100;
-> +		else
-> +			x->pcs_speed = SPEED_10;
-> +
-> +		if (an_stat & AN_STAT_SGMII_AN_FD)
-> +			x->pcs_duplex = 1;
-> +		else
-> +			x->pcs_duplex = 0;
-> +
-> +		netdev_info(ndev, "Link is Up - %d/%s\n", (int)x->pcs_speed,
-> +			    x->pcs_duplex ? "Full" : "Half");
-> +	} else {
-> +		x->pcs_link = 0;
-> +		netdev_info(ndev, "Link is Down\n");
-> +	}
-> +}
-> +
-> +static int dw_xpcs_irq_status(struct net_device *ndev,
-> +			      struct stmmac_extra_stats *x,
-> +			      int pcs_mode)
-> +{
-> +	struct stmmac_priv *priv = netdev_priv(ndev);
-> +	int ret = IRQ_NONE;
-> +	int xpcs_phy_addr;
-> +	int an_stat;
-> +
-> +	xpcs_phy_addr = priv->plat->xpcs_phy_addr;
-> +
-> +	/* AN status */
-> +	an_stat = xpcs_read(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_STAT);
-> +
-> +	if (an_stat & AN_STAT_SGMII_AN_CMPLT) {
-> +		x->irq_pcs_ane_n++;
-> +
-> +		if (pcs_mode == AN_CTRL_PCS_MD_C37_SGMII) {
-> +			dw_xpcs_get_linkstatus(ndev, an_stat, x);
-> +		} else {
-> +			/* For 1000BASE-X AN, DW xPCS does not have register
-> +			 * to read the link state of 1000BASE-X C37 AN and
-> +			 * since 1000BASE-X is always 1000Mbps and FD, we
-> +			 * just set the default link here.
-> +			 */
-> +			x->pcs_link = 1;
-> +			x->pcs_duplex = 1;
-> +			x->pcs_speed = SPEED_1000;
-> +		}
-> +
-> +		/* Clear C37 AN complete status by writing zero */
-> +		xpcs_write(XPCS_MDIO_MII_MMD, MDIO_MII_MMD_AN_STAT, 0);
-> +		ret = IRQ_HANDLED;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +const struct stmmac_xpcs_ops xpcs_ops = {
-> +	.xpcs_init = dw_xpcs_init,
-> +	.xpcs_ctrl_ane = dw_xpcs_ctrl_ane,
-> +	.xpcs_get_adv_lp = dw_xpcs_get_adv_lp,
-> +	.xpcs_irq_status = dw_xpcs_irq_status,
-> +};
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxpcs.h b/drivers/net/ethernet/stmicro/stmmac/dwxpcs.h
-> new file mode 100644
-> index 000000000000..bd52ce80bf4e
-> --- /dev/null
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwxpcs.h
-> @@ -0,0 +1,51 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright (c) 2019, Intel Corporation.
-> + * DWC Ethernet Physical Coding Sublayer
-> + */
-> +#ifndef __DW_XPCS_H__
-> +#define __DW_XPCS_H__
-> +
-> +/* XPCS MII MMD Device Addresses */
-> +#define XPCS_MDIO_MII_MMD	MDIO_MMD_VEND2
-> +
-> +/* MII MMD registers offsets */
-> +#define MDIO_MII_MMD_DIGITAL_CTRL_1	0x8000	/* Digital Control 1 */
-> +#define MDIO_MII_MMD_AN_CTRL		0x8001	/* AN Control */
-> +#define MDIO_MII_MMD_AN_STAT		0x8002	/* AN Status */
-> +
-> +/* MII MMD SR AN Advertisement & Link Partner Ability are slightly
-> + * different from MII_ADVERTISEMENT & MII_LPA in below fields:
-> + */
-> +#define MDIO_MII_MMD_HD			BIT(6)	/* Half duplex */
-> +#define MDIO_MII_MMD_FD			BIT(5)	/* Full duplex */
-> +#define MDIO_MII_MMD_PSE_SHIFT		7	/* Pause Ability shift */
-> +#define MDIO_MII_MMD_PSE		GENMASK(8, 7)	/* Pause Ability */
-> +#define MDIO_MII_MMD_PSE_NO		0x0
-> +#define MDIO_MII_MMD_PSE_ASYM		0x1
-> +#define MDIO_MII_MMD_PSE_SYM		0x2
-> +#define MDIO_MII_MMD_PSE_BOTH		0x3
-> +
-> +/* Automatic Speed Mode Change for MAC side SGMII AN */
-> +#define MDIO_MII_MMD_DIGI_CTRL_1_MAC_AUTO_SW	BIT(9)
-> +
-> +/* MII MMD AN Control defines */
-> +#define MDIO_MII_MMD_AN_CTRL_TX_CONFIG_SHIFT	3 /* TX Config shift */
-> +#define AN_CTRL_TX_CONF_PHY_SIDE_SGMII		0x1 /* PHY side SGMII mode */
-> +#define AN_CTRL_TX_CONF_MAC_SIDE_SGMII		0x0 /* MAC side SGMII mode */
-> +#define MDIO_MII_MMD_AN_CTRL_PCS_MD_SHIFT	1  /* PCS Mode shift */
-> +#define MDIO_MII_MMD_AN_CTRL_PCS_MD	GENMASK(2, 1) /* PCS Mode */
-> +#define AN_CTRL_PCS_MD_C37_1000BASEX	0x0	/* C37 AN for 1000BASE-X */
-> +#define AN_CTRL_PCS_MD_C37_SGMII	0x2	/* C37 AN for SGMII */
-> +#define MDIO_MII_MMD_AN_CTRL_AN_INTR_EN	BIT(0)	/* AN Complete Intr Enable */
-> +
-> +/* MII MMD AN Status defines for SGMII AN Status */
-> +#define AN_STAT_SGMII_AN_CMPLT		BIT(0)	/* AN Complete Intr */
-> +#define AN_STAT_SGMII_AN_FD		BIT(1)	/* Full Duplex */
-> +#define AN_STAT_SGMII_AN_SPEED_SHIFT	2	/* AN Speed shift */
-> +#define AN_STAT_SGMII_AN_SPEED		GENMASK(3, 2)	/* AN Speed */
-> +#define AN_STAT_SGMII_AN_10MBPS		0x0	/* 10 Mbps */
-> +#define AN_STAT_SGMII_AN_100MBPS	0x1	/* 100 Mbps */
-> +#define AN_STAT_SGMII_AN_1000MBPS	0x2	/* 1000 Mbps */
-> +#define AN_STAT_SGMII_AN_LNKSTS		BIT(4)	/* Link Status */
-> +
-> +#endif /* __DW_XPCS_H__ */
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-> index 2acfbc70e3c8..431cf4261264 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-> @@ -398,6 +398,25 @@ struct stmmac_ops {
->  #define stmmac_set_mac_loopback(__priv, __args...) \
->  	stmmac_do_void_callback(__priv, mac, set_mac_loopback, __args)
->  
-> +/* Helpers for DW xPCS */
-> +struct stmmac_xpcs_ops {
-> +	void (*xpcs_init)(struct net_device *ndev, int pcs_mode);
-> +	void (*xpcs_ctrl_ane)(struct net_device *ndev, bool ane, bool loopback);
-> +	void (*xpcs_get_adv_lp)(struct net_device *ndev, struct rgmii_adv *adv,
-> +				int pcs_mode);
-> +	int (*xpcs_irq_status)(struct net_device *ndev,
-> +			       struct stmmac_extra_stats *x, int pcs_mode);
-> +};
-> +
-> +#define stmmac_xpcs_init(__priv, __args...) \
-> +	stmmac_do_void_callback(__priv, xpcs, xpcs_init, __args)
-> +#define stmmac_xpcs_ctrl_ane(__priv, __args...) \
-> +	stmmac_do_void_callback(__priv, xpcs, xpcs_ctrl_ane, __args)
-> +#define stmmac_xpcs_get_adv_lp(__priv, __args...) \
-> +	stmmac_do_void_callback(__priv, xpcs, xpcs_get_adv_lp, __args)
-> +#define stmmac_xpcs_irq_status(__priv, __args...) \
-> +	stmmac_do_callback(__priv, xpcs, xpcs_irq_status, __args)
-> +
->  /* PTP and HW Timer helpers */
->  struct stmmac_hwtimestamp {
->  	void (*config_hw_tstamping) (void __iomem *ioaddr, u32 data);
-> diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-> index 4335bd771ce5..b00e7951a66d 100644
-> --- a/include/linux/stmmac.h
-> +++ b/include/linux/stmmac.h
-> @@ -148,6 +148,7 @@ struct stmmac_txq_cfg {
->  struct plat_stmmacenet_data {
->  	int bus_id;
->  	int phy_addr;
-> +	int xpcs_phy_addr;
->  	int interface;
->  	struct stmmac_mdio_bus_data *mdio_bus_data;
->  	struct device_node *phy_node;
-> 
-
--- 
-Florian
+Heiner
