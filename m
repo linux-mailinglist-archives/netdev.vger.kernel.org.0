@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BBBE35213
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EEB3521E
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbfFDVoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 17:44:01 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:6027 "EHLO
+        id S1726674AbfFDVoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 17:44:09 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:36043 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbfFDVoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:44:01 -0400
+        with ESMTP id S1726532AbfFDVoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:44:08 -0400
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x54Lhx8C027424
+        by sed198n136.sedsystems.ca  with ESMTP id x54Li2SE027494
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 4 Jun 2019 15:43:59 -0600 (CST)
+        Tue, 4 Jun 2019 15:44:05 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Lhw3Z020053
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Lhw3a020053
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 4 Jun 2019 15:43:58 -0600
+        Tue, 4 Jun 2019 15:44:02 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com, andrew@lunn.ch,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next v3 01/19] net: axienet: Fix casting of pointers to u32
-Date:   Tue,  4 Jun 2019 15:43:28 -0600
-Message-Id: <1559684626-24775-2-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next v3 02/19] net: axienet: Use standard IO accessors
+Date:   Tue,  4 Jun 2019 15:43:29 -0600
+Message-Id: <1559684626-24775-3-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
 References: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
@@ -35,144 +35,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver was casting skb pointers to u32 and storing them as such in
-the DMA buffer descriptor, which is obviously broken on 64-bit. The area
-of the buffer descriptor being used is not accessed by the hardware and
-has sufficient room for a 32 or 64-bit pointer, so just store the skb
-pointer as such.
+This driver was using in_be32 and out_be32 IO accessors which do not
+exist on most platforms. Also, the use of big-endian accessors does not
+seem correct as this hardware is accessed over an AXI bus which, to the
+extent it has an endian-ness, is little-endian. Switch to standard
+ioread32/iowrite32 accessors.
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h      | 11 +++-------
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 26 ++++++++++++-----------
- 2 files changed, 17 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet.h      | 4 ++--
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 011adae..e09dc14 100644
+index e09dc14..d82e3b6 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -356,9 +356,6 @@
-  * @app2:         MM2S/S2MM User Application Field 2.
-  * @app3:         MM2S/S2MM User Application Field 3.
-  * @app4:         MM2S/S2MM User Application Field 4.
-- * @sw_id_offset: MM2S/S2MM Sw ID
-- * @reserved5:    Reserved and not used
-- * @reserved6:    Reserved and not used
+@@ -476,7 +476,7 @@ struct axienet_option {
   */
- struct axidma_bd {
- 	u32 next;	/* Physical address of next buffer descriptor */
-@@ -373,11 +370,9 @@ struct axidma_bd {
- 	u32 app1;	/* TX start << 16 | insert */
- 	u32 app2;	/* TX csum seed */
- 	u32 app3;
--	u32 app4;
--	u32 sw_id_offset;
--	u32 reserved5;
--	u32 reserved6;
--};
-+	u32 app4;   /* Last field used by HW */
-+	struct sk_buff *skb;
-+} __aligned(XAXIDMA_BD_MINIMUM_ALIGNMENT);
+ static inline u32 axienet_ior(struct axienet_local *lp, off_t offset)
+ {
+-	return in_be32(lp->regs + offset);
++	return ioread32(lp->regs + offset);
+ }
  
- /**
-  * struct axienet_local - axienet private per device data
+ static inline u32 axinet_ior_read_mcr(struct axienet_local *lp)
+@@ -496,7 +496,7 @@ static inline u32 axinet_ior_read_mcr(struct axienet_local *lp)
+ static inline void axienet_iow(struct axienet_local *lp, off_t offset,
+ 			       u32 value)
+ {
+-	out_be32((lp->regs + offset), value);
++	iowrite32(value, lp->regs + offset);
+ }
+ 
+ /* Function prototypes visible in xilinx_axienet_mdio.c for other files */
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 831967f..1bace60 100644
+index 1bace60..55beca1 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -159,8 +159,7 @@ static void axienet_dma_bd_release(struct net_device *ndev)
- 	for (i = 0; i < RX_BD_NUM; i++) {
- 		dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
- 				 lp->max_frm_size, DMA_FROM_DEVICE);
--		dev_kfree_skb((struct sk_buff *)
--			      (lp->rx_bd_v[i].sw_id_offset));
-+		dev_kfree_skb(lp->rx_bd_v[i].skb);
- 	}
+@@ -125,7 +125,7 @@
+  */
+ static inline u32 axienet_dma_in32(struct axienet_local *lp, off_t reg)
+ {
+-	return in_be32(lp->dma_regs + reg);
++	return ioread32(lp->dma_regs + reg);
+ }
  
- 	if (lp->rx_bd_v) {
-@@ -227,7 +226,7 @@ static int axienet_dma_bd_init(struct net_device *ndev)
- 		if (!skb)
- 			goto out;
+ /**
+@@ -140,7 +140,7 @@ static inline u32 axienet_dma_in32(struct axienet_local *lp, off_t reg)
+ static inline void axienet_dma_out32(struct axienet_local *lp,
+ 				     off_t reg, u32 value)
+ {
+-	out_be32((lp->dma_regs + reg), value);
++	iowrite32(value, lp->dma_regs + reg);
+ }
  
--		lp->rx_bd_v[i].sw_id_offset = (u32) skb;
-+		lp->rx_bd_v[i].skb = skb;
- 		lp->rx_bd_v[i].phys = dma_map_single(ndev->dev.parent,
- 						     skb->data,
- 						     lp->max_frm_size,
-@@ -595,14 +594,15 @@ static void axienet_start_xmit_done(struct net_device *ndev)
- 		dma_unmap_single(ndev->dev.parent, cur_p->phys,
- 				(cur_p->cntrl & XAXIDMA_BD_CTRL_LENGTH_MASK),
- 				DMA_TO_DEVICE);
--		if (cur_p->app4)
--			dev_consume_skb_irq((struct sk_buff *)cur_p->app4);
-+		if (cur_p->skb)
-+			dev_consume_skb_irq(cur_p->skb);
- 		/*cur_p->phys = 0;*/
- 		cur_p->app0 = 0;
- 		cur_p->app1 = 0;
- 		cur_p->app2 = 0;
- 		cur_p->app4 = 0;
- 		cur_p->status = 0;
-+		cur_p->skb = NULL;
- 
- 		size += status & XAXIDMA_BD_STS_ACTUAL_LEN_MASK;
- 		packets++;
-@@ -707,7 +707,7 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
- 	}
- 
- 	cur_p->cntrl |= XAXIDMA_BD_CTRL_TXEOF_MASK;
--	cur_p->app4 = (unsigned long)skb;
-+	cur_p->skb = skb;
- 
- 	tail_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
- 	/* Start the transfer */
-@@ -742,13 +742,15 @@ static void axienet_recv(struct net_device *ndev)
- 
- 	while ((cur_p->status & XAXIDMA_BD_STS_COMPLETE_MASK)) {
- 		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
--		skb = (struct sk_buff *) (cur_p->sw_id_offset);
--		length = cur_p->app4 & 0x0000FFFF;
- 
- 		dma_unmap_single(ndev->dev.parent, cur_p->phys,
- 				 lp->max_frm_size,
- 				 DMA_FROM_DEVICE);
- 
-+		skb = cur_p->skb;
-+		cur_p->skb = NULL;
-+		length = cur_p->app4 & 0x0000FFFF;
-+
- 		skb_put(skb, length);
- 		skb->protocol = eth_type_trans(skb, ndev);
- 		/*skb_checksum_none_assert(skb);*/
-@@ -783,7 +785,7 @@ static void axienet_recv(struct net_device *ndev)
- 					     DMA_FROM_DEVICE);
- 		cur_p->cntrl = lp->max_frm_size;
- 		cur_p->status = 0;
--		cur_p->sw_id_offset = (u32) new_skb;
-+		cur_p->skb = new_skb;
- 
- 		++lp->rx_bd_ci;
- 		lp->rx_bd_ci %= RX_BD_NUM;
-@@ -1343,8 +1345,8 @@ static void axienet_dma_err_handler(unsigned long data)
- 					 (cur_p->cntrl &
- 					  XAXIDMA_BD_CTRL_LENGTH_MASK),
- 					 DMA_TO_DEVICE);
--		if (cur_p->app4)
--			dev_kfree_skb_irq((struct sk_buff *) cur_p->app4);
-+		if (cur_p->skb)
-+			dev_kfree_skb_irq(cur_p->skb);
- 		cur_p->phys = 0;
- 		cur_p->cntrl = 0;
- 		cur_p->status = 0;
-@@ -1353,7 +1355,7 @@ static void axienet_dma_err_handler(unsigned long data)
- 		cur_p->app2 = 0;
- 		cur_p->app3 = 0;
- 		cur_p->app4 = 0;
--		cur_p->sw_id_offset = 0;
-+		cur_p->skb = NULL;
- 	}
- 
- 	for (i = 0; i < RX_BD_NUM; i++) {
+ /**
 -- 
 1.8.3.1
 
