@@ -2,107 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BCE234E9E
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC39D34EAC
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbfFDRV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:21:26 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:38038 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726092AbfFDRV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:21:26 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x54HIK6e041685;
-        Tue, 4 Jun 2019 17:21:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2018-07-02;
- bh=HCaMBzaHqLDd6VrCHLaNxl+UWnBBKBAImvCfac3RBf8=;
- b=mjcvZy426gCnIYuO62xISvRaKv9nt8/egtmrgljFlGpUTahiCuRENmQwQKGKj/EvU4lD
- R5gQaniAl9esqCD2DEm3q2DUnDisxal0q45MqbtCZmZX2YBLu6BV7gN7wP9P2YsdVPBD
- uok9ubVJMAhDF6t7xGsKCY2354Rdio+it1w9JqdY9XzWEk4obU1W0fh4Vd9gjewzTi5J
- I2bn1Q3GOMFcT+kMkwBtRHSG1vJEwyawx/Zr8SjqKRp6TMF6hcBSdHiJGo4Dm54PQnHQ
- PvwUZAP9RoKKmy4O7Uvq79al4yxVSPrB/ZTcE70Yfujc1t4HWmHEhczZi8+Xi4XOi85U nA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2suj0qebsc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 04 Jun 2019 17:21:23 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x54HKaTU138210;
-        Tue, 4 Jun 2019 17:21:22 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 2swnhbqk73-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 04 Jun 2019 17:21:22 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x54HLLYg009690;
-        Tue, 4 Jun 2019 17:21:21 GMT
-Received: from dhcp-10-175-213-181.vpn.oracle.com (/10.175.213.181)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 04 Jun 2019 10:21:20 -0700
-Date:   Tue, 4 Jun 2019 18:21:13 +0100 (BST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@dhcp-10-175-213-181.vpn.oracle.com
-To:     David Ahern <dsahern@gmail.com>
-cc:     Alan Maguire <alan.maguire@oracle.com>, netdev@vger.kernel.org
-Subject: Re: support for popping multiple MPLS labels with iproute2?
-In-Reply-To: <b1455c03-d98c-c08b-a6f3-330d9f36d8be@gmail.com>
-Message-ID: <alpine.LRH.2.20.1906041819440.7085@dhcp-10-175-213-181.vpn.oracle.com>
-References: <alpine.LRH.2.20.1905311313080.9247@dhcp-10-175-206-186.vpn.oracle.com> <b1455c03-d98c-c08b-a6f3-330d9f36d8be@gmail.com>
-User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
+        id S1726532AbfFDRXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:23:31 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39965 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfFDRXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:23:30 -0400
+Received: by mail-pg1-f196.google.com with SMTP id d30so10737058pgm.7
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rGcQVMW0fl0747wGN/wBm81XIYeH3j1OT8rxKvWO9OQ=;
+        b=m+ctwRTctdutVQx24X3Gs7FuURvap6cu6wYrnEq+2aAobkQB3co58DZWT4P7iIHlvJ
+         kdUdanyucypLJaOoHkhmS/+NA2V5OZ3KjuuWaaJsCNFHbGQ5gsCmoAbiVLtJUaGcU6O6
+         jcJQ8sln+Ai5E6m+Qoh3KPGlq7dzGmhkfIdWocBjASeLlNaHIDilSAfIluN+0uQawgBu
+         UFCdaTS/tUfjMNJNuM6FPSwYyy65sNptG4cGLZTWlSBt22751X+Utg2aCK/hdNxVFhVU
+         +8qMNujt30rqQBME50g9tuCcqo27ln1RztTzj5JK61trwaL5Mk1TacD7VLxWoAF3Qqld
+         wCSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rGcQVMW0fl0747wGN/wBm81XIYeH3j1OT8rxKvWO9OQ=;
+        b=mDVnEkYPVvp5jvSamO/DI/Yx9KsiFugWPAsM7dHia7lLIV5iWCKCkdXwgRbslmSFMi
+         EhUBPiCLfTex6DpTa8z+j2cnUdKunBeHn+bunn/Aeewx1h7Rp80KO1C+aa/iuEbN1z+b
+         UkTaAnC2bjCd3RQDzhTGcV1/CZ+Ktaeft6MuhQiEwZ3/y1KGgSImeY5LgHw9pDPLv9Rp
+         878Y7j0NFsmRiKjAkkUbAh89UKJO/W989m376hxX8zLG0fpugeVuYJhtjw9UR9CH0yi7
+         w7Jb6/6dzPBccphIPqnvQIjDPjJJXl8QGtS3D0l+3JcBuUX6lNqTGoDvaLcZdP15Fzc0
+         o90g==
+X-Gm-Message-State: APjAAAXxUNFpd9zikTeaYSBUXmeOafJL35LgPcVmnBAMNpnkxsk7mu/Z
+        L2VpzZ+F+SKbay1PtYwNUbY=
+X-Google-Smtp-Source: APXvYqy0WDvMlaIoP14Xf+XQq4nf0kurR5jiI0WNLYB4J/5jry71UXVSoIY5AsRTPQ2VZ60f3WkMbw==
+X-Received: by 2002:a17:90a:1541:: with SMTP id y1mr3266292pja.88.1559669010210;
+        Tue, 04 Jun 2019 10:23:30 -0700 (PDT)
+Received: from [172.27.227.158] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id y7sm36682983pja.26.2019.06.04.10.23.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 10:23:29 -0700 (PDT)
+Subject: Re: [PATCH net] udp: only choose unbound UDP socket for multicast
+ when not in a VRF
+To:     Tim Beale <timbeale@catalyst.net.nz>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+References: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e9d20a8f-146d-e9f3-4ef5-22a2f882146f@gmail.com>
+Date:   Tue, 4 Jun 2019 11:23:27 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9278 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1906040110
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9278 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906040110
+In-Reply-To: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 May 2019, David Ahern wrote:
-
-> On 5/31/19 6:24 AM, Alan Maguire wrote:
-> > I was wondering if there is a way to pop multiple MPLS labels at
-> > once for local delivery using iproute2?
-> > 
-> > Adding multiple labels for encapsulation is supported via
-> > label1/label2/... syntax, but I can't find a way to do the same
-> > for popping multiple labels for local delivery.
-> > 
-> > For example if I run
-> > 
-> > # ip route add 192.168.1.0/24 encap mpls 100/200 via inet 192.168.1.101 \
-> >    dev mytun mtu 1450
-> > 
-> > ...I'm looking for the equivalent command to pop both labels on the
-> > target system for local delivery; something like
-> > 
-> > # ip -f mpls route add 100/200 dev lo
-> > 
-> > ...but that gets rejected as only a single label is expected.
-> > 
+On 6/3/19 7:56 PM, Tim Beale wrote:
+> By default, packets received in another VRF should not be passed to an
+> unbound socket in the default VRF. This patch updates the IPv4 UDP
+> multicast logic to match the unicast VRF logic (in compute_score()),
+> as well as the IPv6 mcast logic (in __udp_v6_is_mcast_sock()).
 > 
-> as I recall the kernel driver only pops one and does a look for it.
+> The particular case I noticed was DHCP discover packets going
+> to the 255.255.255.255 address, which are handled by
+> __udp4_lib_mcast_deliver(). The previous code meant that running
+> multiple different DHCP server or relay agent instances across VRFs
+> did not work correctly - any server/relay agent in the default VRF
+> received DHCP discover packets for all other VRFs.
 > 
-> Try:
+> Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
+> ---
+>  net/ipv4/udp.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> ip -f mpls route add 100 dev lo
-> ip -f mpls route add 200 dev lo
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 8fb250e..efe9283 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -538,8 +538,7 @@ static inline bool __udp_is_mcast_sock(struct net *net, struct sock *sk,
+>  	    (inet->inet_dport != rmt_port && inet->inet_dport) ||
+>  	    (inet->inet_rcv_saddr && inet->inet_rcv_saddr != loc_addr) ||
+>  	    ipv6_only_sock(sk) ||
+> -	    (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
+> -	     sk->sk_bound_dev_if != sdif))
+> +	    !udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif))
+>  		return false;
+>  	if (!ip_mc_sf_allow(sk, loc_addr, rmt_addr, dif, sdif))
+>  		return false;
 > 
 
-That worked perfectly (once I remembered to run
+Thanks for the fix.
 
-sysctl -w net.ipv4.conf.lo.accept_local=1
+Really should have been apart of this commit:
 
-...as well as on the tunnel). Thanks again!
+Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen
+when not in a VRF")
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-Alan
+IPv6 mcast socket lookup was converted to udp_sk_bound_dev_eq, so v6
+seems ok.
