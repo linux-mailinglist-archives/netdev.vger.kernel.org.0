@@ -2,93 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 227C3351A4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05ED6351A3
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726608AbfFDVHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 17:07:18 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54739 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726488AbfFDVHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:07:17 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g135so154609wme.4
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 14:07:16 -0700 (PDT)
+        id S1726595AbfFDVHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 17:07:13 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40500 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbfFDVHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:07:12 -0400
+Received: by mail-pf1-f196.google.com with SMTP id u17so13430855pfn.7
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 14:07:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=okT8Fp1wjyaD6akdRHXS0V90ovKu5q8DFT+3qvNAGcY=;
-        b=tcCB8jfZ7u9e0a3nGpPgMo5lGMpSNMosHBNhOUPTiGOpTfGBhbdVsVXF1xevDatUkb
-         2Ud/TAqNTHH99/ox493HXKlcU2wTWrcsWqhBjTXe5NUdDTg7nBbOOrRH1wTvP7/G1FmR
-         D2El/TYeZEXvq0wnnOOngIWAReiO6bjy/zF1JYCVSmAzLkwdXCPBwn0gPswjLGTp4hHL
-         1IO2WHbqgHDO75fftv55VLLsILYy4Heclac3faBtbo6i5KZjJ9N1UuEaN6Wfm47rdYDg
-         TCZUDrnOQA3e4s1f63aHgeNdAnBfIdRL2XXf8TRZCzZ4G9t8cr4tUPV6jvcOKpnF8Qcn
-         cd3A==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AVNzuJ16OlOt4Vvvv/aqtbS0TAayMNqKXRIgbNicTgk=;
+        b=hNom/jwSwV6l3jYiFNsE9F2XTqDdeaGPCv2lIEpqA0UT7JmGDDrdwLPsPJrEGpRY9c
+         t4y9vUkamRrGLrNJ+lbFbm31eZyc/Rr8smNBmu3u1VEVOEoHoRbzUa3SF1X2d9KVBnyx
+         NKnp6P0bFkcz78/RMm5rF1XhY4TdD27hm9zXNWD/JlTLvozYxH7N/JDNZ14OdP/jUZJD
+         nfoBZ9mBskBlJde6Gt/uUMIN28SLs5U0vy1/5lxRLGBqdPgl6QIdLDEPKZGr/s5Ougyp
+         62GeQYWolJEHUF3aDuBEsqnvdrtii+9sJFXzmp2nWX8EHgXpJjwNo8gbpqX72cR89B5b
+         g55w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=okT8Fp1wjyaD6akdRHXS0V90ovKu5q8DFT+3qvNAGcY=;
-        b=Fbj/VLyI3OiABgTvVqMMBbyDA/s/gAnRclN5xARtT68uOIYB+s+6q0dUSGDpMxQYAH
-         7UBfT0rzeIub1go2PfsBlwKuh5ZIEsNafh56cS+KUJNx8WlMY/YxBFYsXhF1ThJsA3kD
-         Klzk0fVZTcE4N+1PWCUoMQRtI5IjKTFlV3Kql52qkbD3cwH6vcuHfkqiczhlPxIo6H/9
-         PuwJFqq3tGXS7LxKYN1qCjCv4rnt/Q40pxpZbhep0IK6ap4eMlo7pJ4iFpqG/UMFUq6y
-         ZAIkywCnzCu+ThO26fOsn0RAWZycvn+TUjMB3Hpacs7w3nRtPeT1M8iLrXA/gAObk9l3
-         arag==
-X-Gm-Message-State: APjAAAWPHog0XnZqcf4hMKInNOMQatehNbkqfrpsuGIjfAg95uj6Z2dy
-        ANL24RAKApT8R0+OyxA3AFJtGVtA
-X-Google-Smtp-Source: APXvYqwZ++/OjUB2zGYWjumCURYK1LWRovnFJlxfB13438zdeoWbisrr39REitwmkx57ThMOrEYOYw==
-X-Received: by 2002:a1c:2bc7:: with SMTP id r190mr11784684wmr.174.1559682435511;
-        Tue, 04 Jun 2019 14:07:15 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2? (p200300EA8BF3BD00CD0DE1C0529B04E2.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:cd0d:e1c0:529b:4e2])
-        by smtp.googlemail.com with ESMTPSA id z14sm4642155wre.96.2019.06.04.14.07.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 14:07:14 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: phy: add flag PHY_QUIRK_NO_ESTATEN
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <e5518425-0a62-0790-8203-b011c3db69d3@gmail.com>
- <20190604130049.GA16951@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <3b926b01-4473-f070-056f-75bf3cd49a74@gmail.com>
-Date:   Tue, 4 Jun 2019 23:07:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AVNzuJ16OlOt4Vvvv/aqtbS0TAayMNqKXRIgbNicTgk=;
+        b=VnQN3xUpzZON90V0Q+8Z23gN1d+3T17Mpme8CthWGNCdqyYnPMKNbvk3mzUInNUZvt
+         K05Uu+B6kWEhCLhVG9Mn62xjvTckvkYTIWsDxs2zT/tYZrxVTkKwAe8RAH9xH+eAQKz9
+         u3F2aXoPSuYtcCn7rzd0MFZA3VAmXhn7+gZVy76+ZvwxCgTB56UNd7e9yxmLjkTfrPQe
+         uKCNDk7WeVvfLd3K6BS5V+g+qTCzq9pQJTPjt6iM7kbzCFWmJ1/xy0CK4fQOpcGXXVni
+         kI+CySVrUgEJeL9LIWCQYXli7hmSj0846CqUD8SNyBWgUkFFtE+7hMscC+Q4xqxY4d12
+         laHA==
+X-Gm-Message-State: APjAAAXzupdCLgoJDYg83eqXEYhjXKVrMg2QmlkkrjROzcyZsViWNaaz
+        Lo8yBymF1c24JUliu+qjl14hlg==
+X-Google-Smtp-Source: APXvYqzlpK5pBiX4ZkgLqxxNTRGRH0ynLDYmWkspxcryl8RjU9it0Gu+UXY5JkgZrcsNnP/avbUxqw==
+X-Received: by 2002:a63:6157:: with SMTP id v84mr785749pgb.36.1559682432353;
+        Tue, 04 Jun 2019 14:07:12 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id n184sm20166360pfn.21.2019.06.04.14.07.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 14:07:11 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 14:07:10 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map
+ definitions using BTF
+Message-ID: <20190604210710.GA17053@mini-arch>
+References: <20190531202132.379386-7-andriin@fb.com>
+ <20190531212835.GA31612@mini-arch>
+ <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
+ <20190603163222.GA14556@mini-arch>
+ <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
+ <20190604010254.GB14556@mini-arch>
+ <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
+ <20190604042902.GA2014@mini-arch>
+ <20190604134538.GB2014@mini-arch>
+ <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190604130049.GA16951@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.06.2019 15:00, Andrew Lunn wrote:
-> On Tue, Jun 04, 2019 at 08:10:50AM +0200, Heiner Kallweit wrote:
->> We have a Xilinx GBit PHY that doesn't have BMSR_ESTATEN set
->> (what violates the Clause 22 standard). Instead of having the PHY
->> driver to implement almost identical copies of few generic functions
->> let's add a flag for this quirk to phylib.
+On 06/04, Andrii Nakryiko wrote:
+> On Tue, Jun 4, 2019 at 6:45 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 06/03, Stanislav Fomichev wrote:
+> > > > BTF is mandatory for _any_ new feature.
+> > > If something is easy to support without asking everyone to upgrade to
+> > > a bleeding edge llvm, why not do it?
+> > > So much for backwards compatibility and flexibility.
+> > >
+> > > > It's for introspection and debuggability in the first place.
+> > > > Good debugging is not optional.
+> > > Once llvm 8+ is everywhere, sure, but we are not there yet (I'm talking
+> > > about upstream LTS distros like ubuntu/redhat).
+> > But putting this aside, one thing that I didn't see addressed in the
+> > cover letter is: what is the main motivation for the series?
+> > Is it to support iproute2 map definitions (so cilium can switch to libbpf)?
 > 
-> Hi Heiner
-> 
-> It is a bit of a personal preference, but i would prefer the Xilinx
-> driver worked around broken hardware, not scatter quirks in the core.
-> Keep the core clean.
-> 
-> If we had multiple PHYs broken in the same way, then maybe a quirk.
-> 
-Yes, I was expecting that there may be different opinions on whether
-this should be handled in the core or by the driver.
-But this is obsolete now anyway after Robert figured out that his
-problem actually was another one.
+> In general, the motivation is to arrive at a way to support
+> declaratively defining maps in such a way, that:
+> - captures type information (for debuggability/introspection) in
+> coherent and hard-to-screw-up way;
+> - allows to support missing useful features w/ good syntax (e.g.,
+> natural map-in-map case vs current completely manual non-declarative
+> way for libbpf);
 
-> 	Andrew
-> 
-Heiner
+[..]
+> - ultimately allow iproute2 to use libbpf as unified loader (and thus
+> the need to support its existing features, like
+> BPF_MAP_TYPE_PROG_ARRAY initialization, pinning, map-in-map);
+So prog_array tail call info would be encoded in the magic struct instead of
+a __section_tail(whatever) macros that iproute2 is using? Does it
+mean that the programs that target iproute2 would have to be rewritten?
+Or we don't have a goal to provide source-level compatibility?
 
+In general, supporting iproute2 seems like the most compelling
+reason to use BTF given current state of llvm+btf adoption.
+BPF_ANNOTATE_KV_PAIR and map-in-map syntax while ugly, is not the major
+paint point (imho); but I agree, with BTF both of those things
+look much better.
+
+That's why I was trying to understand whether we can start with using
+BTF to support _existing_ iproute2 format and then, once it's working,
+generalize it (and kill bpf_map_def or make it a subset of generic BTF).
+That way we are not implementing another way to support pinning/tail
+calls, but enabling iproute2 to use libbpf.
+
+But feel free to ignore all my nonsense above; I don't really have any
+major concerns with the new generic format rather than discoverability
+(the docs might help) and a mandate that everyone switches to it immediately.
+
+> The only missing feature that can be supported reasonably with
+> bpf_map_def is pinning (as it's just another int field), but all the
+> other use cases requires awkward approach of matching arbitrary IDs,
+> which feels like a bad way forward.
+> 
+> 
+> > If that's the case, maybe explicitly focus on that? Once we have
+> > proof-of-concept working for iproute2 mode, we can extend it to everything.
