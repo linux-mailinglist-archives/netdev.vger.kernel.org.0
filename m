@@ -2,101 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C88433CC8
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 03:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B85B133CE0
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 03:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726174AbfFDBhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 21:37:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37076 "EHLO mail.kernel.org"
+        id S1726324AbfFDBur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 21:50:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52744 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726033AbfFDBhF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 21:37:05 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 664F9243D6;
-        Tue,  4 Jun 2019 01:37:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559612224;
-        bh=oNlFGsFyynyqg/jA1origqu0r2/ozsxeIVArPIqhHMw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dCKTxJRbD3VCaVoRC9Ln8yDnjZg2C8zCy8Kzk1Lcj+wVWcz/potJ0RlUFIgCh/o77
-         CNpI59a+DphsCxkj9KQXefsUCD/ZTX/ZV3cmg9FRJ4zQciW82r18G9U3biLb8gqTFX
-         PvXvpRC3Ncojn6tOb0fu7QPbGUrDuEMYOee9H8sk=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] ipv6: Always allocate pcpu memory in a fib6_nh
-Date:   Mon,  3 Jun 2019 18:37:03 -0700
-Message-Id: <20190604013703.2043-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1726076AbfFDBuq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jun 2019 21:50:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9aYBR+ChM9b0r9InSGeh76Dfwf6gDMyd/B79DaUVug4=; b=a9v2rM9/oUHa3Ap+YHUnQd1VdW
+        Bxf9pmBthKBI1CHBJbaWpqCLj6UfDn8Xu+MXE45Fp2eusQ70WiUyIA4A9ajkzyjA52i5XTTPHioXS
+        1T5hjFC/Ov19YCrDJWlRiUiN0VfiYYoAgtpai44WlhKCJSmuLmorjKhvn25KNOnNTvyQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hXyb5-0001AY-BS; Tue, 04 Jun 2019 03:50:43 +0200
+Date:   Tue, 4 Jun 2019 03:50:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Message-ID: <20190604015043.GG17267@lunn.ch>
+References: <20190603144329.16366-1-sameehj@amazon.com>
+ <20190603143205.1d95818e@cakuba.netronome.com>
+ <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
+ <20190603160351.085daa91@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603160351.085daa91@cakuba.netronome.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+> Any "SmartNIC" vendor has temptation of uAPI-level hand off to the
+> firmware (including my employer), we all run pretty beefy processors
+> inside "the NIC" after all.  The device centric ethtool configuration
+> can be implemented by just forwarding the uAPI structures as they are
+> to the FW.  I'm sure Andrew and others who would like to see Linux
+> takes more control over PHYs etc. would not like this scenario, either.
 
-A recent commit had an unintended side effect with reject routes:
-rt6i_pcpu is expected to always be initialized for all fib6_info except
-the null entry. The commit mentioned below skips it for reject routes
-and ends up leaking references to the loopback device. For example,
+No, i would not. There are a few good examples of both firmware and
+open drivers being used to control the same PHY, on different
+boards. The PHY driver was developed by the community, and has more
+features than the firmware driver. And it keeps gaining features. The
+firmware i stuck, no updates. The community driver can be debugged,
+the firmware is a black box, no chance of the community fixing any
+bugs in it.
 
-    ip netns add foo
-    ip -netns foo li set lo up
-    ip -netns foo -6 ro add blackhole 2001:db8:1::1
-    ip netns exec foo ping6 2001:db8:1::1
-    ip netns del foo
+And PHYs are commodity devices. I doubt there is any value add in the
+firmware for a PHY, any real IPR which makes the product better, magic
+sauce related to the PHY. So just save the cost of writing and
+maintaining firmware, export the MDIO bus, and let Linux control it.
+Concentrate the engineers on the interesting parts of the NIC, the
+Smart parts, where there can be real IPR.
 
-ends up spewing:
-    unregister_netdevice: waiting for lo to become free. Usage count = 3
+And i would say this is true for any NIC. Let Linux control the PHY.
 
-The fib_nh_common_init is not needed for reject routes (no ipv4 caching
-or encaps), so move the alloc_percpu_gfp after it and adjust the goto label.
-
-Fixes: f40b6ae2b612 ("ipv6: Move pcpu cached routes to fib6_nh")
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- net/ipv6/route.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 29c2f5086116..d5777e92609d 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3400,7 +3400,7 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
- 				goto out;
- 			}
- 		}
--		goto set_dev;
-+		goto pcpu_alloc;
- 	}
- 
- 	if (cfg->fc_flags & RTF_GATEWAY) {
-@@ -3432,17 +3432,18 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
- 	    !netif_carrier_ok(dev))
- 		fib6_nh->fib_nh_flags |= RTNH_F_LINKDOWN;
- 
-+	err = fib_nh_common_init(&fib6_nh->nh_common, cfg->fc_encap,
-+				 cfg->fc_encap_type, cfg, gfp_flags, extack);
-+	if (err)
-+		goto out;
-+
-+pcpu_alloc:
- 	fib6_nh->rt6i_pcpu = alloc_percpu_gfp(struct rt6_info *, gfp_flags);
- 	if (!fib6_nh->rt6i_pcpu) {
- 		err = -ENOMEM;
- 		goto out;
- 	}
- 
--	err = fib_nh_common_init(&fib6_nh->nh_common, cfg->fc_encap,
--				 cfg->fc_encap_type, cfg, gfp_flags, extack);
--	if (err)
--		goto out;
--set_dev:
- 	fib6_nh->fib_nh_dev = dev;
- 	fib6_nh->fib_nh_oif = dev->ifindex;
- 	err = 0;
--- 
-2.11.0
+      Andrew
 
