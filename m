@@ -2,99 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE3035089
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24F9335090
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbfFDUAh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 16:00:37 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41562 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFDUAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:00:37 -0400
-Received: by mail-ed1-f68.google.com with SMTP id x25so2180460eds.8
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 13:00:36 -0700 (PDT)
+        id S1726502AbfFDUE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 16:04:28 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45233 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfFDUE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:04:28 -0400
+Received: by mail-qk1-f193.google.com with SMTP id s22so3680282qkj.12;
+        Tue, 04 Jun 2019 13:04:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=noDwviL+4rBDVse1gNVnZx4mNT7DQGI6SZB0FNaozME=;
-        b=i+yIlEzJAwd+ukmdhOJJ/myMGxgBs3lLB5UjSpRkuFtGnGxIMFHEAq7AW0AjMgK+53
-         UYqxWUWJnvSAl8O9rl+jkB1uIz10sD8WrdniN1h1JdASoQX7lOla1UO4LS/8eHKzjKo8
-         Do9Q5JRysVrM41BRUoTUp/Po5QbJJRsalxextSG5xw7bG8qhqHStvrCYhGbs/o3ciVu1
-         WddV+Filv3HWmSUl1inYbjyh2JE3XSBCn7D5uWIO5lKK1oeHKdH1YWodB+XM+3fmROc0
-         yITvn2Po0Tzh4sg6uu4Rlid3AJiCxDWoDQtAyD13F+9JNBu18+2edO26z4nsTeK7Kr9R
-         /NEA==
-X-Gm-Message-State: APjAAAWEbPxjBa+8C47V05j3TnCEjELQW0kFPBasGw1T8nJ6+6DiGTdT
-        uxVM4CCca+lXi6hlA8B48kQdiQ==
-X-Google-Smtp-Source: APXvYqwCLLHjpCA0YK1MmzStYYe0ZKWj2FWZdTKlNfoGD9J5ErnAJdp04fJi4fPrCNlUDs2sTfniRw==
-X-Received: by 2002:a50:86b7:: with SMTP id r52mr9125906eda.100.1559678435755;
-        Tue, 04 Jun 2019 13:00:35 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id a5sm1785202ejv.62.2019.06.04.13.00.35
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 13:00:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7D938181CC1; Tue,  4 Jun 2019 22:00:34 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@redhat.com>
-Subject: Re: [PATCH net-next 2/2] devmap: Allow map lookups from eBPF
-In-Reply-To: <A5CA54A9-34A0-4583-84E8-0530BAEE215B@gmail.com>
-References: <155966185058.9084.14076895203527880808.stgit@alrua-x1> <155966185078.9084.7775851923786129736.stgit@alrua-x1> <20190604183559.10db09d2@carbon> <A5CA54A9-34A0-4583-84E8-0530BAEE215B@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 04 Jun 2019 22:00:34 +0200
-Message-ID: <877ea1f7dp.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kRWHmlTazXX9nh3l+uCl+QUYh7joRupEOxTxYsi6yow=;
+        b=SXym818ZY4smWXmvcE8o6563iTfvy9jWjvzneIlUJ0KNSaAYSAvPo6xhPb+Wz/Wts4
+         BNe5iFhu64pMgFczNJCTLx/iPJqLtHERbO9poa/paXZZ/nA2Y+1ZTleHYf96HT30TAdC
+         FXvJPtekAFeA5MwxyytMoCoYyx/LP6PBev3VZHIkdq6u5SWoZo7dvzHiq5VqQACnF2fV
+         erBgkR/gsR0mAC8Bx5IWH8+IyQW/9bEDCgu2IsIavL4BS89bXdu0Q4Ao1K8LyBxArK13
+         ml6HdIdwmtOwW3x59uzxTA5lKiTl2v5V+QE2U0/S6jScsSywwbbsCZc2Fdmae2DlFe8s
+         S7kg==
+X-Gm-Message-State: APjAAAWUwLJ/K1XrwnSPzN4kl9/FZxIUNPxdpd4NPjXSbiRoLL95LgZu
+        il7lndNrbyezfTu1dC/igIWHROGbC+dD9OxK1aI=
+X-Google-Smtp-Source: APXvYqyofKzA14lv2A+QgH4Q7Jn1VXFGegI/NwNXTI2mi6UtDhR9SWuQ11u/xLdSZRSY6UUR1nNt+brbqwKzA9VWtmY=
+X-Received: by 2002:a37:a4d3:: with SMTP id n202mr28029003qke.84.1559678666645;
+ Tue, 04 Jun 2019 13:04:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <20190531035348.7194-1-elder@linaro.org> <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+ <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org> <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
+ <a28c5e13-59bc-144d-4153-9d104cfa9188@linaro.org> <20190531233306.GB25597@minitux>
+ <d76a710d45dd7df3a28afb12fc62cf14@codeaurora.org> <CAK8P3a0brT0zyZGNWiS2R0RMHHFF2JG=_ixQyvjhj3Ky39o0UA@mail.gmail.com>
+ <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org> <CAK8P3a2U=RzfpVaAgRP1QwPhRpZiBNsG5qdWjzwG=tCKZefYHA@mail.gmail.com>
+ <b26cf34c0d3fa1a7a700cee935244d7a2a7e1388.camel@redhat.com>
+In-Reply-To: <b26cf34c0d3fa1a7a700cee935244d7a2a7e1388.camel@redhat.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 4 Jun 2019 22:04:09 +0200
+Message-ID: <CAK8P3a3pQpSpH4q=CL6gr_YzjYgoyD6-eyiLrvnZsqqjpcRxtQ@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Dan Williams <dcbw@redhat.com>
+Cc:     Alex Elder <elder@linaro.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        evgreen@chromium.org, Ben Chan <benchan@google.com>,
+        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, abhishek.esse@gmail.com,
+        Networking <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Lemon <jonathan.lemon@gmail.com> writes:
-
-> On 4 Jun 2019, at 9:35, Jesper Dangaard Brouer wrote:
+On Tue, Jun 4, 2019 at 5:18 PM Dan Williams <dcbw@redhat.com> wrote:
+> On Tue, 2019-06-04 at 10:13 +0200, Arnd Bergmann wrote:
+> >
+> > Can you describe what kind of multiplexing is actually going on?
+> > I'm still unclear about what we actually use multiple logical
+> > interfaces for here, and how they relate to one another.
 >
->> On Tue, 04 Jun 2019 17:24:10 +0200
->> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->>> We don't currently allow lookups into a devmap from eBPF, because the map
->>> lookup returns a pointer directly to the dev->ifindex, which shouldn't be
->>> modifiable from eBPF.
->>>
->>> However, being able to do lookups in devmaps is useful to know (e.g.)
->>> whether forwarding to a specific interface is enabled. Currently, programs
->>> work around this by keeping a shadow map of another type which indicates
->>> whether a map index is valid.
->>>
->>> To allow lookups, simply copy the ifindex into a scratch variable and
->>> return a pointer to this. If an eBPF program does modify it, this doesn't
->>> matter since it will be overridden on the next lookup anyway. While this
->>> does add a write to every lookup, the overhead of this is negligible
->>> because the cache line is hot when both the write and the subsequent
->>> read happens.
->>
->> When we choose the return value, here the ifindex, then this basically
->> becomes UABI, right?
->>
->> Can we somehow use BTF to help us to make this extensible?
->>
->> As Toke mention in the cover letter, we really want to know if the
->> chosen egress have actually enabled/allocated resources for XDP
->> transmitting, but as we currently don't have in-kernel way to query
->> thus (thus, we cannot expose such info).
+> Each logical interface represents a different "connection" (PDP/EPS
+> context) to the provider network with a distinct IP address and QoS.
+> VLANs may be a suitable analogy but here they are L3+QoS.
 >
-> Would it be better to add a helper like bpf_map_element_present(), which
-> just returns a boolean value indicating whether the entry is NULL or not?
+> In realistic example the main interface (say rmnet0) would be used for
+> web browsing and have best-effort QoS. A second interface (say rmnet1)
+> would be used for VOIP and have certain QoS guarantees from both the
+> modem and the network itself.
 >
-> This would solve this problem (and my xskmap problem).
+> QMAP can also aggregate frames for a given channel (connection/EPS/PDP
+> context/rmnet interface/etc) to better support LTE speeds.
 
-Ah, totally missed that other thread; will go reply there :)
+Thanks, that's a very helpful explanation!
 
--Toke
+Is it correct to say then that the concept of having those separate
+connections would be required for any proper LTE modem implementation,
+but the QMAP protocol (and based on that, the rmnet implementation)
+is Qualcomm specific and shared only among several generations of
+modems from that one vendor?
+
+You mentioned the need to have a common user space interface
+for configuration, and if the above is true, I agree that we should try
+to achieve that, either by ensuring rmnet is generic enough to
+cover other vendors (and non-QMAP clients), or by creating a
+new user level interface that IPA/rmnet can be adapted to.
+
+       Arnd
