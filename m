@@ -2,184 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C7934EFE
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B725934F1A
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfFDRet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:34:49 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:47016 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726179AbfFDRet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:34:49 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 803CD9C0076;
-        Tue,  4 Jun 2019 17:34:47 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 4 Jun
- 2019 10:34:43 -0700
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [RFC PATCH v4 net-next 4/4] net/sched: call action stats offload in
- flower or mall dump
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-References: <a3f0a79a-7e2c-4cdc-8c97-dfebe959ab1f@solarflare.com>
-Message-ID: <ed9e6ace-4997-9054-806e-1e6c8bc37a00@solarflare.com>
-Date:   Tue, 4 Jun 2019 18:34:41 +0100
+        id S1726708AbfFDRhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:37:54 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:4459 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726660AbfFDRhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:37:54 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x54Hbp6H016908
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 4 Jun 2019 11:37:51 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Hbo9i019343
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Tue, 4 Jun 2019 11:37:50 -0600
+Subject: Re: [PATCH net-next v2] net: phy: xilinx: add Xilinx PHY driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+ <d8c22bc3-0a20-2c24-88bb-b1f5f8cc907a@gmail.com>
+ <7684776f-2bec-e9e2-1a79-dbc3e9844f7e@sedsystems.ca>
+ <20190604165452.GU19627@lunn.ch>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <06f2d970-d6bb-8407-c4b9-dad45330dd0a@sedsystems.ca>
+Date:   Tue, 4 Jun 2019 11:37:50 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <a3f0a79a-7e2c-4cdc-8c97-dfebe959ab1f@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+In-Reply-To: <20190604165452.GU19627@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24656.005
-X-TM-AS-Result: No-1.439900-4.000000-10
-X-TMASE-MatchedRID: aYY/z8vMijyh9oPbMj7PPFFSD47VOxuSsKzLQnnS/xwGmHr1eMxt2VMe
-        5Blkpry7rdoLblq9S5rMJYD0aRF0RV/gigjYmFkNGjzBgnFZvQ7gXnxE81iysY5JUK9UdYknVJ3
-        kOqZYJFYNUQt57QDCkLIOm0VPglY2I7HU13GYiCjlvSeYSYEULH0tCKdnhB58vqq8s2MNhPCZMP
-        CnTMzfOiq2rl3dzGQ1PKufoifxElo5MkPRb9tyWkpZbvMu9ruFnvxCLTPh8vJktC5ZhPtd0g5CC
-        bL5rMRQpjnlkRjMYHGL4JeB4aASVKx+ULyKAeAkl0kb426sKbJDgw2OfwbhLKMa5OkNpiHkifsL
-        +6CY4RnJZmo0UvMlsUMMprcbiest
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.439900-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24656.005
-X-MDID: 1559669688-1HSOQ2p1LuiP
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers that support per-action stats should implement TC_ACTION_STATS
- rather than TC_CLSFLOWER_STATS/TC_CLSMATCHALL_STATS.
+On 2019-06-04 10:54 a.m., Andrew Lunn wrote:
+>> So it seems like what is missing is the ability of genphy_config_init to
+>> detect the bits in the extended status register for 1000Base-X and add
+>> the corresponding mode flags. It appears bit 15 for 1000Base-X full
+>> duplex is standardized in 802.3 Clause 22, so I would expect Linux
+>> should be able to detect that and add it as a supported mode for the
+>> PHY. genphy_config_init is dealing with the "legacy" 32-bit mode masks
+>> that have no bit for 1000BaseX though.. how is that intended to work?
+> 
+> Hi Robert
+> 
+> I think you are looking at an old genphy_config_init(). The u32 has
+> been replaced. Adding:
+> 
+> #define ESTATUS_1000_XFULL      0x8000  /* Can do 1000BX Full          */
+> #define ESTATUS_1000_XHALF      0x4000  /* Can do 1000BT Half          */
+> 
+> and
+> 
+>                 if (val & ESTATUS_1000_XFULL)
+>                         linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
+>                                          features);
+> 
+> should not be a problem.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- include/net/act_api.h      | 5 +++++
- include/net/flow_offload.h | 1 +
- net/sched/act_api.c        | 3 ++-
- net/sched/cls_api.c        | 1 +
- net/sched/cls_flower.c     | 6 ++++++
- net/sched/cls_matchall.c   | 5 +++++
- 6 files changed, 20 insertions(+), 1 deletion(-)
+Yup, mixing up branches again. I'll need to try adding that in and see
+if that works with net-next.
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 38d1769f279b..76054524a2de 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -187,6 +187,11 @@ int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
- 			     struct netlink_ext_ack *newchain);
- struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
- 					 struct tcf_chain *newchain);
-+void tcf_action_update_stats(struct tc_action *a);
-+#else /* CONFIG_NET_CLS_ACT */
-+static inline void tcf_action_update_stats(struct tc_action *a)
-+{
-+}
- #endif /* CONFIG_NET_CLS_ACT */
- 
- static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index d526696958f6..813a91ae9d9a 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -140,6 +140,7 @@ enum flow_action_mangle_base {
- 
- struct flow_action_entry {
- 	enum flow_action_id		id;
-+	bool				want_stats;
- 	unsigned long			cookie;
- 	union {
- 		u32			chain_index;	/* FLOW_ACTION_GOTO */
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 239fc28456d9..82f9c1f1acd6 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -754,7 +754,7 @@ tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	return a->ops->dump(skb, a, bind, ref);
- }
- 
--static void tcf_action_update_stats(struct tc_action *a)
-+void tcf_action_update_stats(struct tc_action *a)
- {
- 	struct tc_action_block_binding *bind;
- 	struct tc_action_offload offl = {};
-@@ -767,6 +767,7 @@ static void tcf_action_update_stats(struct tc_action *a)
- 	tcf_action_stats_update(a, offl.stats.bytes, offl.stats.pkts,
- 				offl.stats.lastused, true);
- }
-+EXPORT_SYMBOL(tcf_action_update_stats);
- 
- int
- tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 5411cec17af5..bb9b0d7ec1c0 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3195,6 +3195,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 		struct flow_action_entry *entry;
- 
- 		entry = &flow_action->entries[j];
-+		entry->want_stats = act->ops && act->ops->stats_update;
- 		entry->cookie = (unsigned long)act;
- 		if (is_tcf_gact_ok(act)) {
- 			entry->id = FLOW_ACTION_ACCEPT;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 252d102702bb..fcd5615ca2bc 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -477,6 +477,8 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
- {
- 	struct tc_cls_flower_offload cls_flower = {};
- 	struct tcf_block *block = tp->chain->block;
-+	struct tc_action *act;
-+	int i;
- 
- 	if (!rtnl_held)
- 		rtnl_lock();
-@@ -492,6 +494,10 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
- 			      cls_flower.stats.pkts,
- 			      cls_flower.stats.lastused);
- 
-+	tcf_exts_for_each_action(i, act, &f->exts)
-+		if (act->ops && act->ops->stats_update)
-+			tcf_action_update_stats(act);
-+
- 	if (!rtnl_held)
- 		rtnl_unlock();
- }
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 5cb4832d1b3b..c51beed83b1e 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -338,6 +338,8 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
- {
- 	struct tc_cls_matchall_offload cls_mall = {};
- 	struct tcf_block *block = tp->chain->block;
-+	struct tc_action *act;
-+	int i;
- 
- 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, NULL);
- 	cls_mall.command = TC_CLSMATCHALL_STATS;
-@@ -347,6 +349,9 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
- 
- 	tcf_exts_stats_update(&head->exts, cls_mall.stats.bytes,
- 			      cls_mall.stats.pkts, cls_mall.stats.lastused);
-+	tcf_exts_for_each_action(i, act, &head->exts)
-+		if (act->ops && act->ops->stats_update)
-+			tcf_action_update_stats(act);
- }
- 
- static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
+So I think this patch can be shelved for now - if that change for
+1000BaseX works, there's no real need for a specific PHY driver since
+the generic one should be good enough.
+
+-- 
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
