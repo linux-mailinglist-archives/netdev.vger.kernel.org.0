@@ -2,92 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8F633CFA
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E3933D07
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726223AbfFDCFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 22:05:06 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52782 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725876AbfFDCFG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 22:05:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0C5/9hNsFJy85Op9+MDkg+R/CtXricvNhx0APekNuHg=; b=XJPZtOpUuVqzZ93m0HGJPaJ/j7
-        c3kbSwLAcq9RJcettKu+EDe9kWp1lT9j6uQs4zklikZWKP6mObXQQlXe9xvRw8omVlFWm9LSBp17f
-        o4KprfOg02hWGmjs0QiYQe9ZiW6MFWrMC81ht1jZ6Yfg8Cf/xkRgNxzZpWziGilJReMY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hXyox-0001OS-EC; Tue, 04 Jun 2019 04:05:03 +0200
-Date:   Tue, 4 Jun 2019 04:05:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
-Subject: Re: [PATCH net-next 01/18] net: axienet: Fix casting of pointers to
- u32
-Message-ID: <20190604020503.GH17267@lunn.ch>
-References: <1559599037-8514-1-git-send-email-hancock@sedsystems.ca>
- <1559599037-8514-2-git-send-email-hancock@sedsystems.ca>
+        id S1726488AbfFDCP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 22:15:28 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:26613 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbfFDCP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 22:15:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1559614527; x=1591150527;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=8Hwclfbp9ZImcy7JwV+ku4rdlk61fQJheiqwVo7zwrM=;
+  b=C3QqFSz21ugIwbp+hjhX+MTbKah0AvTh92uJ3SuadoByvJKbKZ77AZ2G
+   zddPhgdKUpQ7aXk9SMAvZYodTNPxnHtcoexn1WG/Vd1Xl4p3TtOHmZnAU
+   IP7pg9NdZ99BwT8NiPk+s0AYeWuP0g/saroslSQm3WqRxrj7DZEOUhknq
+   s=;
+X-IronPort-AV: E=Sophos;i="5.60,549,1549929600"; 
+   d="scan'208";a="808373627"
+Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.47.22.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 04 Jun 2019 02:15:25 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id 4D02C141703;
+        Tue,  4 Jun 2019 02:15:24 +0000 (UTC)
+Received: from EX13D08EUB003.ant.amazon.com (10.43.166.117) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 4 Jun 2019 02:15:23 +0000
+Received: from EX13D04EUB002.ant.amazon.com (10.43.166.51) by
+ EX13D08EUB003.ant.amazon.com (10.43.166.117) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 4 Jun 2019 02:15:22 +0000
+Received: from EX13D04EUB002.ant.amazon.com ([10.43.166.51]) by
+ EX13D04EUB002.ant.amazon.com ([10.43.166.51]) with mapi id 15.00.1367.000;
+ Tue, 4 Jun 2019 02:15:22 +0000
+From:   "Bshara, Nafea" <nafea@amazon.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Thread-Topic: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Thread-Index: AQHVGhq67AG/toDzFEuJgXAZxcdpDaaKc16AgAAPeQCAAAorgIAALp+AgAAG49I=
+Date:   Tue, 4 Jun 2019 02:15:22 +0000
+Message-ID: <D26B5448-1E74-44E8-83DA-FC93E5520325@amazon.com>
+References: <20190603144329.16366-1-sameehj@amazon.com>
+ <20190603143205.1d95818e@cakuba.netronome.com>
+ <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
+ <20190603160351.085daa91@cakuba.netronome.com>,<20190604015043.GG17267@lunn.ch>
+In-Reply-To: <20190604015043.GG17267@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559599037-8514-2-git-send-email-hancock@sedsystems.ca>
-User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 03:57:00PM -0600, Robert Hancock wrote:
-> This driver was casting skb pointers to u32 and storing them as such in
-> the DMA buffer descriptor, which is obviously broken on 64-bit. The area
-> of the buffer descriptor being used is not accessed by the hardware and
-> has sufficient room for a 32 or 64-bit pointer, so just store the skb
-> pointer as such.
-> 
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet.h      | 11 +++-------
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 26 ++++++++++++-----------
->  2 files changed, 17 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> index 011adae..e09dc14 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-> @@ -356,9 +356,6 @@
->   * @app2:         MM2S/S2MM User Application Field 2.
->   * @app3:         MM2S/S2MM User Application Field 3.
->   * @app4:         MM2S/S2MM User Application Field 4.
-> - * @sw_id_offset: MM2S/S2MM Sw ID
-> - * @reserved5:    Reserved and not used
-> - * @reserved6:    Reserved and not used
->   */
->  struct axidma_bd {
->  	u32 next;	/* Physical address of next buffer descriptor */
-> @@ -373,11 +370,9 @@ struct axidma_bd {
->  	u32 app1;	/* TX start << 16 | insert */
->  	u32 app2;	/* TX csum seed */
->  	u32 app3;
-> -	u32 app4;
-> -	u32 sw_id_offset;
-> -	u32 reserved5;
-> -	u32 reserved6;
-> -};
-> +	u32 app4;   /* Last field used by HW */
-> +	struct sk_buff *skb;
-> +} __aligned(XAXIDMA_BD_MINIMUM_ALIGNMENT);
-
-Hi Robert
-
-Is the memory for the descriptor non-cachable? I expect so.  You may
-get slightly better performance if you were to keep an shadow array in
-normal RAM. But this is O.K. as well.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+QW5kcmV3LA0KDQpTZW50IGZyb20gbXkgaVBob25lDQoNCk9uIEp1biAzLCAyMDE5LCBhdCA2OjUy
+IFBNLCBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+IHdyb3RlOg0KDQo+PiBBbnkgIlNtYXJ0
+TklDIiB2ZW5kb3IgaGFzIHRlbXB0YXRpb24gb2YgdUFQSS1sZXZlbCBoYW5kIG9mZiB0byB0aGUN
+Cj4+IGZpcm13YXJlIChpbmNsdWRpbmcgbXkgZW1wbG95ZXIpLCB3ZSBhbGwgcnVuIHByZXR0eSBi
+ZWVmeSBwcm9jZXNzb3JzDQo+PiBpbnNpZGUgInRoZSBOSUMiIGFmdGVyIGFsbC4gIFRoZSBkZXZp
+Y2UgY2VudHJpYyBldGh0b29sIGNvbmZpZ3VyYXRpb24NCj4+IGNhbiBiZSBpbXBsZW1lbnRlZCBi
+eSBqdXN0IGZvcndhcmRpbmcgdGhlIHVBUEkgc3RydWN0dXJlcyBhcyB0aGV5IGFyZQ0KPj4gdG8g
+dGhlIEZXLiAgSSdtIHN1cmUgQW5kcmV3IGFuZCBvdGhlcnMgd2hvIHdvdWxkIGxpa2UgdG8gc2Vl
+IExpbnV4DQo+PiB0YWtlcyBtb3JlIGNvbnRyb2wgb3ZlciBQSFlzIGV0Yy4gd291bGQgbm90IGxp
+a2UgdGhpcyBzY2VuYXJpbywgZWl0aGVyLg0KPiANCj4gTm8sIGkgd291bGQgbm90LiBUaGVyZSBh
+cmUgYSBmZXcgZ29vZCBleGFtcGxlcyBvZiBib3RoIGZpcm13YXJlIGFuZA0KPiBvcGVuIGRyaXZl
+cnMgYmVpbmcgdXNlZCB0byBjb250cm9sIHRoZSBzYW1lIFBIWSwgb24gZGlmZmVyZW50DQo+IGJv
+YXJkcy4gVGhlIFBIWSBkcml2ZXIgd2FzIGRldmVsb3BlZCBieSB0aGUgY29tbXVuaXR5LCBhbmQg
+aGFzIG1vcmUNCj4gZmVhdHVyZXMgdGhhbiB0aGUgZmlybXdhcmUgZHJpdmVyLiBBbmQgaXQga2Vl
+cHMgZ2FpbmluZyBmZWF0dXJlcy4gVGhlDQo+IGZpcm13YXJlIGkgc3R1Y2ssIG5vIHVwZGF0ZXMu
+IFRoZSBjb21tdW5pdHkgZHJpdmVyIGNhbiBiZSBkZWJ1Z2dlZCwNCj4gdGhlIGZpcm13YXJlIGlz
+IGEgYmxhY2sgYm94LCBubyBjaGFuY2Ugb2YgdGhlIGNvbW11bml0eSBmaXhpbmcgYW55DQo+IGJ1
+Z3MgaW4gaXQuDQo+IA0KPiBBbmQgUEhZcyBhcmUgY29tbW9kaXR5IGRldmljZXMuIEkgZG91YnQg
+dGhlcmUgaXMgYW55IHZhbHVlIGFkZCBpbiB0aGUNCj4gZmlybXdhcmUgZm9yIGEgUEhZLCBhbnkg
+cmVhbCBJUFIgd2hpY2ggbWFrZXMgdGhlIHByb2R1Y3QgYmV0dGVyLCBtYWdpYw0KPiBzYXVjZSBy
+ZWxhdGVkIHRvIHRoZSBQSFkuIFNvIGp1c3Qgc2F2ZSB0aGUgY29zdCBvZiB3cml0aW5nIGFuZA0K
+PiBtYWludGFpbmluZyBmaXJtd2FyZSwgZXhwb3J0IHRoZSBNRElPIGJ1cywgYW5kIGxldCBMaW51
+eCBjb250cm9sIGl0Lg0KPiBDb25jZW50cmF0ZSB0aGUgZW5naW5lZXJzIG9uIHRoZSBpbnRlcmVz
+dGluZyBwYXJ0cyBvZiB0aGUgTklDLCB0aGUNCj4gU21hcnQgcGFydHMsIHdoZXJlIHRoZXJlIGNh
+biBiZSByZWFsIElQUi4NCj4gDQo+IEFuZCBpIHdvdWxkIHNheSB0aGlzIGlzIHRydWUgZm9yIGFu
+eSBOSUMuIExldCBMaW51eCBjb250cm9sIHRoZSBQSFkuDQo+IA0KPiAgICAgIEFuZHJldw0KPiAN
+Cg0KSXQgbWF5IGJlIHRydWUgZm9yIG9sZCBHYkUgUEhZcyB3aGVyZSBpdOKAmXMgYSBkaXNjcmV0
+ZSBjaGlwIGZyb20gdGhlIGxpa2VzIG9mIE1hcnZlbGwgb3IgYnJvYWRjb20NCg0KQnV0IGF0IDI1
+LzUwLzEwMEcsIHRoZSBQSHkgaXMgYWN0dWFsbHkgcGFydCBvZiB0aGUgbmljLiBJdOKAmXMgYSB2
+ZXJ5IGNvbXBsZXggU0VSREVTLiAgQ2xvdWQgcHJvdmlkZXJzIGxpa2UgdXMgc3BlbmQgZW5vcm1v
+dXMgYW1vdW50IG9mIHRpbWUgdGVzdGluZyB0aGUgUEhZIGFjcm9zcyBwcm9jZXNzIGFuZCB2b2x0
+YWdlIHZhcmlhdGlvbnMsIGFsbCBjYWJsZSB0eXBlcywgbGVuZ3RoIGFuZCBtYW51ZmFjdHVyaW5n
+IHZhcmlhdGlvbnMsIGFuZCBhZ2FpbnN0IGFsbCBzd2l0Y2hlcyB3ZSB1c2UuICBDb21tdW5pdHkg
+ZHJpdmVycyB3b27igJl0IGJlIGFibGUgdG8gdmFsaWRhdGUgYW5kIHR1bmUgYWxsIHRoaXMuDQoN
+ClBsdXMgd2Ugd291bGQgbmVlZCBleGFjdCBzYW1lIHNldHRpbmcgZm9yIExpbnV4LCBpbmNsdWRp
+bmcgYWxsIGRpc3RyaWJ1dGlvbnMgZXZlbiAxMHllYXIgb2xkIGxpa2UgUkhFTDYsIGZvciBhbGwg
+V2luZG93cywgRVNYLCBEUERLLCBGcmVlQlNELCAgYW5kIHN1cHBvcnQgbWlsbGlvbnMgb2YgZGlm
+ZmVyZW50IGN1c3RvbWVycyB3aXRoIGRpZmZlcmVudCBzZXRzIG9mIE1hY2hpbmUgaW1hZ2VzLiAN
+Cg0KSW4gdGhpcyBjYXNlLCB0aGVyZSBpcyBubyBwcmFjdGljYWwgY2hvaWNlIGJ5IGhhdmUgdGhl
+IGZpcm13YXJlIHRvIG1hbmFnZSB0aGUgUEhZ
