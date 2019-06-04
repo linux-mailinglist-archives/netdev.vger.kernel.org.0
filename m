@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D991134E6C
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C118434E70
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbfFDRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:08:10 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45364 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727848AbfFDRIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:08:07 -0400
-Received: by mail-wr1-f68.google.com with SMTP id f9so1917705wre.12;
-        Tue, 04 Jun 2019 10:08:06 -0700 (PDT)
+        id S1728381AbfFDRJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:09:41 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45363 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728021AbfFDRII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:08:08 -0400
+Received: by mail-wr1-f65.google.com with SMTP id f9so1917754wre.12;
+        Tue, 04 Jun 2019 10:08:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vuvZzizp1G0cVCZViE7O7i65Bt526Td+PC5RJmQRqkQ=;
-        b=Bg/LpytX7B47GPGFTPty7Uy7c+wUDG2IyFYwOH0pnjqszdhEmtQPwMCAJ/ityjQJcG
-         XnKTkGW2P0MA+ildUrvqoi3IpFuWUMSd+35Oyxy48PxW6NwxHFg8/UyHuBlmT4+aYgnR
-         Z6k2pN9Qb/LG6HQqyFRunD5UIh7lNZlU5uKq25qE2yvVvCuR2PM54SQrbcaPRwvPFbx8
-         1vNrN96T26jmIwK5rFpV9+yAYcTfb9NDuMKmZaJw9W2GilE+OzFyNFcxUtivnCX2O7OL
-         HNCc6dIopvhuniFoEaqtDTQZZGNR/CKWhet4dAiIr7G+eCDebVPxh91MauKuglJfVod8
-         EjSg==
+        bh=EwNKLdhvHIZWuc2AMTf/Nh+UlcpRZAbzNWQ1cMFMEHc=;
+        b=D8SAKmcMepeCU71WMObGfrZhdbyauHSxKeduE7juWpihIWzSd6OA85eGA9K/DQ/Pd0
+         Npe8PVsQyuLR5d8mCbQkXJdLo7aT24ZIZfk0NoUOOQeRehO2YHTlq6HULDqV2fLilghq
+         BrYIiJW2UDpUr+V8B5vNPqNr0FJzsHMOAq1UqnHfTZKHWHYQGw1P7ZIx9o7q+mZZtv2v
+         /ADQhaCn74/YJ2cseCFUN0WXXszb7tmUEhVGCNIBBHDBYA/2vXrLGtjh5JVXBwpDxaMF
+         7KE1LGBM7xIkOVT24rk6GXP5ZaUJSSgp9cP8FbzgEZSrf090Zld1+2JFS+H3MzsdzBgG
+         yDEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vuvZzizp1G0cVCZViE7O7i65Bt526Td+PC5RJmQRqkQ=;
-        b=ivZIvMYQuPIXmHss1KyR86ntX9aKP7ulDgfu3qIW3al6wz1/oz4E61UM6hqy9lmilZ
-         i2OlW14zDHoWS36mO01dy5WINLeOqHhISmQRxNwmiyvBaUXasljYOcfqZnK2+HMxb8mz
-         WglkgTU4aRkH2XihjdnsRiiiKgs+X0GrgChOmQGehGvIg6w0RcAZUOfsq77blfAkKP6c
-         JHCaVOp3TInRpdpbqhqqWUJV55gcGYRuiCZ15/L+s7pTcRP2s3MegROHcljgl1qZRCfX
-         6/NIHBLI4wi+FmYin0sQ2iflNNs3n0RZ/MB0zDF1hL4lraomgpUC2vAenGYmhrqMrNGy
-         +amw==
-X-Gm-Message-State: APjAAAWa14knNH98D+1dOzow2mjuH4hPyhDXhuBVyIIgkqSChpKAs+yV
-        6pp4VUA+sbia9V9VPOZZiJU=
-X-Google-Smtp-Source: APXvYqwkm6qK86qSGIcBn+OCuG9ltQsON8KuBofrkExsQlmLyTp7h4tCj9Gd8HDYLEhWeJkHQsGs7w==
-X-Received: by 2002:a5d:4e46:: with SMTP id r6mr5820557wrt.290.1559668085584;
-        Tue, 04 Jun 2019 10:08:05 -0700 (PDT)
+        bh=EwNKLdhvHIZWuc2AMTf/Nh+UlcpRZAbzNWQ1cMFMEHc=;
+        b=Gwe6+dtGvCvjtm7kFNAByddPDxbKUvTj2P3FvM9hHu3X7tLG14CagrDDEsw4JAWJEQ
+         u+yWVWX1toVHDHn6rVLY7NSoP6jxMRuUPAwAaHuS9A9wHGFajdA3dWvFT4ZiCsPu1jVV
+         4ndUF2gl+DwEEa0x/RwYDp2lBZu6zvufZLSg8jD0ZSMAQFCskh7Da8WuQf4oxp+Mcib/
+         R/H+M2UniBqLKuaYzx1ilk+w7ZPNF4Q4278Oy15okE5aPx4kiq0mMrpP9fg1ZBzexsZQ
+         zIctKuZXstFYHUgbiIngqj6RyLZZ9sb9DhtwhmwAYF6mOSECpe+4rQChca83vPy8oF83
+         U+ig==
+X-Gm-Message-State: APjAAAWikVEFdpi6TFrQEcCCMD3PZ0wYe1OgWAthcIqCefBXGYQgNeDt
+        c56NYXZORCuNzdZaCtuJJpQ=
+X-Google-Smtp-Source: APXvYqxQSPgeN5YppLz1uZK+S/fEyGTT26eYimJpLpaVw9f3fC98pvFz0tlfMXa0nKTBJ7UpBHzNaQ==
+X-Received: by 2002:a5d:5186:: with SMTP id k6mr4630818wrv.30.1559668086642;
+        Tue, 04 Jun 2019 10:08:06 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id f2sm19692218wme.12.2019.06.04.10.08.04
+        by smtp.gmail.com with ESMTPSA id f2sm19692218wme.12.2019.06.04.10.08.05
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 10:08:05 -0700 (PDT)
+        Tue, 04 Jun 2019 10:08:06 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, richardcochran@gmail.com,
         john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v3 net-next 02/17] net: dsa: Add teardown callback for drivers
-Date:   Tue,  4 Jun 2019 20:07:41 +0300
-Message-Id: <20190604170756.14338-3-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 03/17] net: dsa: tag_8021q: Create helper function for removing VLAN header
+Date:   Tue,  4 Jun 2019 20:07:42 +0300
+Message-Id: <20190604170756.14338-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190604170756.14338-1-olteanv@gmail.com>
 References: <20190604170756.14338-1-olteanv@gmail.com>
@@ -60,50 +60,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is helpful for e.g. draining per-driver (not per-port) tagger
-queues.
+This removes the existing implementation from tag_sja1105, which was
+partially incorrect (it was not changing the MAC header offset, thereby
+leaving it to point 4 bytes earlier than it should have).
+
+This overwrites the VLAN tag by moving the Ethernet source and
+destination MACs 4 bytes to the right. Then skb->data (assumed to be
+pointing immediately after the EtherType) is temporarily pushed to the
+beginning of the new Ethernet header, the new Ethernet header offset and
+length are recorded, then skb->data is moved back to where it was.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
 Changes in v3:
 
-Moved after dsa_switch_unregister_notifier, which is symmetrical to
-where the setup callback is.
+None.
 
 Changes in v2:
 
 Patch is new.
 
- include/net/dsa.h | 1 +
- net/dsa/dsa2.c    | 3 +++
- 2 files changed, 4 insertions(+)
+ include/linux/dsa/8021q.h |  7 +++++++
+ net/dsa/tag_8021q.c       | 15 +++++++++++++++
+ net/dsa/tag_sja1105.c     |  3 +--
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index a7f36219904f..4033e0677be4 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -361,6 +361,7 @@ struct dsa_switch_ops {
- 						  int port);
+diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
+index 3911e0586478..463378812f18 100644
+--- a/include/linux/dsa/8021q.h
++++ b/include/linux/dsa/8021q.h
+@@ -31,6 +31,8 @@ int dsa_8021q_rx_switch_id(u16 vid);
  
- 	int	(*setup)(struct dsa_switch *ds);
-+	void	(*teardown)(struct dsa_switch *ds);
- 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
+ int dsa_8021q_rx_source_port(u16 vid);
  
- 	/*
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index b70befe8a3c8..d98e0e8ee8aa 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -412,6 +412,9 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 
- 	dsa_switch_unregister_notifier(ds);
- 
-+	if (ds->ops->teardown)
-+		ds->ops->teardown(ds);
++struct sk_buff *dsa_8021q_remove_header(struct sk_buff *skb);
 +
- 	if (ds->devlink) {
- 		devlink_unregister(ds->devlink);
- 		devlink_free(ds->devlink);
+ #else
+ 
+ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
+@@ -71,6 +73,11 @@ int dsa_8021q_rx_source_port(u16 vid)
+ 	return 0;
+ }
+ 
++struct sk_buff *dsa_8021q_remove_header(struct sk_buff *skb)
++{
++	return NULL;
++}
++
+ #endif /* IS_ENABLED(CONFIG_NET_DSA_TAG_8021Q) */
+ 
+ #endif /* _NET_DSA_8021Q_H */
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 65a35e976d7b..0ce680ef8e83 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -261,6 +261,21 @@ struct sk_buff *dsa_8021q_rcv(struct sk_buff *skb, struct net_device *netdev,
+ }
+ EXPORT_SYMBOL_GPL(dsa_8021q_rcv);
+ 
++struct sk_buff *dsa_8021q_remove_header(struct sk_buff *skb)
++{
++	u8 *from = skb_mac_header(skb);
++	u8 *dest = from + VLAN_HLEN;
++
++	memmove(dest, from, ETH_HLEN - VLAN_HLEN);
++	skb_push(skb, ETH_HLEN);
++	skb_reset_mac_header(skb);
++	skb_reset_mac_len(skb);
++	skb_pull(skb, ETH_HLEN);
++
++	return skb;
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_remove_header);
++
+ static const struct dsa_device_ops dsa_8021q_netdev_ops = {
+ 	.name		= "8021q",
+ 	.proto		= DSA_TAG_PROTO_8021Q,
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index d43737e6c3fb..535d8a1aabe1 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -106,8 +106,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 	 * it there, see dsa_switch_rcv: skb_push(skb, ETH_HLEN).
+ 	 */
+ 	if (is_tagged)
+-		memmove(skb->data - ETH_HLEN, skb->data - ETH_HLEN - VLAN_HLEN,
+-			ETH_HLEN - VLAN_HLEN);
++		skb = dsa_8021q_remove_header(skb);
+ 
+ 	return skb;
+ }
 -- 
 2.17.1
 
