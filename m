@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A323412B
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DACB634130
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbfFDIHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 04:07:31 -0400
-Received: from mga07.intel.com ([134.134.136.100]:36616 "EHLO mga07.intel.com"
+        id S1727104AbfFDIIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 04:08:09 -0400
+Received: from mga06.intel.com ([134.134.136.31]:39488 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbfFDIHb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 04:07:31 -0400
+        id S1726828AbfFDIIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 04:08:09 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jun 2019 01:07:30 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jun 2019 01:08:08 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.255.41.153])
-  by fmsmga006.fm.intel.com with ESMTP; 04 Jun 2019 01:07:26 -0700
-Subject: Re: [RFC PATCH bpf-next 3/4] libbpf: move xdp program removal to
- libbpf
+  by fmsmga006.fm.intel.com with ESMTP; 04 Jun 2019 01:08:04 -0700
+Subject: Re: [RFC PATCH bpf-next 4/4] libbpf: don't remove eBPF resources when
+ other xsks are present
 To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
         magnus.karlsson@intel.com, netdev@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, jakub.kicinski@netronome.com,
         jonathan.lemon@gmail.com, songliubraving@fb.com,
         bpf <bpf@vger.kernel.org>
 References: <20190603131907.13395-1-maciej.fijalkowski@intel.com>
- <20190603131907.13395-4-maciej.fijalkowski@intel.com>
+ <20190603131907.13395-5-maciej.fijalkowski@intel.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <cf7cf390-39b4-7430-107e-97f068f9c3d9@intel.com>
-Date:   Tue, 4 Jun 2019 10:07:25 +0200
+Message-ID: <470fba94-a47f-83bd-d2c4-83d424dafb38@intel.com>
+Date:   Tue, 4 Jun 2019 10:08:03 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190603131907.13395-4-maciej.fijalkowski@intel.com>
+In-Reply-To: <20190603131907.13395-5-maciej.fijalkowski@intel.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -42,195 +42,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
 On 2019-06-03 15:19, Maciej Fijalkowski wrote:
-> Since xsk support in libbpf loads the xdp program interface, make it
-> also responsible for its removal. Store the prog id in xsk_socket_config
-> so when removing the program we are still able to compare the current
-> program id with the id from the attachment time and make a decision
-> onward.
+> In case where multiple xsk sockets are attached to a single interface
+> and one of them gets detached, the eBPF maps and program are removed.
+> This should not happen as the rest of xsksocks are still using these
+> resources.
 > 
-> While at it, remove the socket/umem in xdpsock's error path.
+> In order to fix that, let's have an additional eBPF map with a single
+> entry that will be used as a xsks count. During the xsk_socket__delete,
+> remove the resources only when this count is equal to 0.  This map is
+> not being accessed from eBPF program, so the verifier is not associating
+> it with the prog, which in turn makes bpf_obj_get_info_by_fd not
+> reporting this map in nr_map_ids field of struct bpf_prog_info. The
+> described behaviour brings the need to have this map pinned, so in
+> case when socket is being created and the libbpf detects the presence of
+> bpf resources, it will be able to access that map.
 >
 
-We're loading a new, or reusing an existing XDP program at socket
-creation, but tearing it down at *socket delete* is explicitly left to
-the application.
+This commit is only needed after #3 is applied, right? So, this is a way 
+of refcounting XDP socks?
 
-For a per-queue XDP program (tied to the socket), this kind cleanup would
-make sense.
-
-The intention with the libbpf AF_XDP support was to leave the XDP
-handling to whatever XDP orchestration process availble. It's not part
-of libbpf. For convenience, *loading/lookup of the XDP program* was
-added even though this was an asymmetry.
-
-For the sample application, this makes sense, but for larger/real
-applications?
-
-OTOH I like the idea of a scoped cleanup "when all sockets are gone",
-the XDP program + maps are removed.
 
 > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
->   samples/bpf/xdpsock_user.c | 33 ++++++++++-----------------------
->   tools/lib/bpf/xsk.c        | 32 ++++++++++++++++++++++++++++++++
->   tools/lib/bpf/xsk.h        |  1 +
->   3 files changed, 43 insertions(+), 23 deletions(-)
+>   tools/lib/bpf/xsk.c | 59 +++++++++++++++++++++++++++++++++++++++++++++--------
+>   1 file changed, 51 insertions(+), 8 deletions(-)
 > 
-> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> index e9dceb09b6d1..123862b16dd4 100644
-> --- a/samples/bpf/xdpsock_user.c
-> +++ b/samples/bpf/xdpsock_user.c
-> @@ -68,7 +68,6 @@ static int opt_queue;
->   static int opt_poll;
->   static int opt_interval = 1;
->   static u32 opt_xdp_bind_flags;
-> -static __u32 prog_id;
->   
->   struct xsk_umem_info {
->   	struct xsk_ring_prod fq;
-> @@ -170,22 +169,6 @@ static void *poller(void *arg)
->   	return NULL;
->   }
->   
-> -static void remove_xdp_program(void)
-> -{
-> -	__u32 curr_prog_id = 0;
-> -
-> -	if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags)) {
-> -		printf("bpf_get_link_xdp_id failed\n");
-> -		exit(EXIT_FAILURE);
-> -	}
-> -	if (prog_id == curr_prog_id)
-> -		bpf_set_link_xdp_fd(opt_ifindex, -1, opt_xdp_flags);
-> -	else if (!curr_prog_id)
-> -		printf("couldn't find a prog id on a given interface\n");
-> -	else
-> -		printf("program on interface changed, not removing\n");
-> -}
-> -
->   static void int_exit(int sig)
->   {
->   	struct xsk_umem *umem = xsks[0]->umem->umem;
-> @@ -195,7 +178,6 @@ static void int_exit(int sig)
->   	dump_stats();
->   	xsk_socket__delete(xsks[0]->xsk);
->   	(void)xsk_umem__delete(umem);
-> -	remove_xdp_program();
->   
->   	exit(EXIT_SUCCESS);
->   }
-> @@ -206,7 +188,16 @@ static void __exit_with_error(int error, const char *file, const char *func,
->   	fprintf(stderr, "%s:%s:%i: errno: %d/\"%s\"\n", file, func,
->   		line, error, strerror(error));
->   	dump_stats();
-> -	remove_xdp_program();
-> +
-> +	if (xsks[0]->xsk)
-> +		xsk_socket__delete(xsks[0]->xsk);
-> +
-> +	if (xsks[0]->umem) {
-> +		struct xsk_umem *umem = xsks[0]->umem->umem;
-> +
-> +		(void)xsk_umem__delete(umem);
-> +	}
-> +
->   	exit(EXIT_FAILURE);
->   }
->   
-> @@ -312,10 +303,6 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem)
->   	if (ret)
->   		exit_with_error(-ret);
->   
-> -	ret = bpf_get_link_xdp_id(opt_ifindex, &prog_id, opt_xdp_flags);
-> -	if (ret)
-> -		exit_with_error(-ret);
-> -
->   	return xsk;
->   }
->   
 > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 514ab3fb06f4..e28bedb0b078 100644
+> index e28bedb0b078..88d2c931ad14 100644
 > --- a/tools/lib/bpf/xsk.c
 > +++ b/tools/lib/bpf/xsk.c
-> @@ -259,6 +259,8 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, void *umem_area, __u64 size,
->   static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   {
->   	static const int log_buf_size = 16 * 1024;
-> +	struct bpf_prog_info info = {};
-> +	__u32 info_len = sizeof(info);
->   	char log_buf[log_buf_size];
->   	int err, prog_fd;
+> @@ -44,6 +44,8 @@
+>    #define PF_XDP AF_XDP
+>   #endif
 >   
-> @@ -321,6 +323,14 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   		return err;
->   	}
->   
-> +	err = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
-> +	if (err) {
-> +		pr_warning("can't get prog info - %s\n", strerror(errno));
-> +		close(prog_fd);
-> +		return err;
-> +	}
-> +	xsk->config.prog_id = info.id;
+> +#define XSKS_CNT_MAP_PATH "/sys/fs/bpf/xsks_cnt_map"
 > +
->   	xsk->prog_fd = prog_fd;
+>   struct xsk_umem {
+>   	struct xsk_ring_prod *fill;
+>   	struct xsk_ring_cons *comp;
+> @@ -65,6 +67,7 @@ struct xsk_socket {
+>   	int prog_fd;
+>   	int qidconf_map_fd;
+>   	int xsks_map_fd;
+> +	int xsks_cnt_map_fd;
+>   	__u32 queue_id;
+>   	char ifname[IFNAMSIZ];
+>   };
+> @@ -372,7 +375,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+>   static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+>   {
+>   	int max_queues;
+> -	int fd;
+> +	int fd, ret;
+>   
+>   	max_queues = xsk_get_max_queues(xsk);
+>   	if (max_queues < 0)
+> @@ -392,6 +395,24 @@ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+>   	}
+>   	xsk->xsks_map_fd = fd;
+>   
+> +	fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "xsks_cnt_map",
+> +				 sizeof(int), sizeof(int), 1, 0);
+> +	if (fd < 0) {
+> +		close(xsk->qidconf_map_fd);
+> +		close(xsk->xsks_map_fd);
+> +		return fd;
+> +	}
+> +
+> +	ret = bpf_obj_pin(fd, XSKS_CNT_MAP_PATH);
+> +	if (ret < 0) {
+> +		pr_warning("pinning map failed; is bpffs mounted?\n");
+> +		close(xsk->qidconf_map_fd);
+> +		close(xsk->xsks_map_fd);
+> +		close(fd);
+> +		return ret;
+> +	}
+> +	xsk->xsks_cnt_map_fd = fd;
+> +
 >   	return 0;
 >   }
-> @@ -483,6 +493,25 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+>   
+> @@ -456,8 +477,10 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+>   		close(fd);
+>   	}
+>   
+> +	xsk->xsks_cnt_map_fd = bpf_obj_get(XSKS_CNT_MAP_PATH);
+>   	err = 0;
+> -	if (xsk->qidconf_map_fd < 0 || xsk->xsks_map_fd < 0) {
+> +	if (xsk->qidconf_map_fd < 0 || xsk->xsks_map_fd < 0 ||
+> +	    xsk->xsks_cnt_map_fd < 0) {
+>   		err = -ENOENT;
+>   		xsk_delete_bpf_maps(xsk);
+>   	}
+> @@ -467,17 +490,25 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
 >   	return err;
 >   }
 >   
-> +static void xsk_remove_xdp_prog(struct xsk_socket *xsk)
-> +{
-> +	__u32 prog_id = xsk->config.prog_id;
-> +	__u32 curr_prog_id = 0;
-> +	int err;
-> +
-> +	err = bpf_get_link_xdp_id(xsk->ifindex, &curr_prog_id,
-> +				  xsk->config.xdp_flags);
-> +	if (err)
-> +		return;
-> +
-> +	if (prog_id == curr_prog_id)
-> +		bpf_set_link_xdp_fd(xsk->ifindex, -1, xsk->config.xdp_flags);
-> +	else if (!curr_prog_id)
-> +		pr_warning("couldn't find a prog id on a given interface\n");
-> +	else
-> +		pr_warning("program on interface changed, not removing\n");
-> +}
-> +
->   static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+> -static void xsk_clear_bpf_maps(struct xsk_socket *xsk)
+> +static void xsk_clear_bpf_maps(struct xsk_socket *xsk, long *xsks_cnt_ptr)
 >   {
->   	__u32 prog_id = 0;
-> @@ -506,6 +535,7 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
->   		err = xsk_lookup_bpf_maps(xsk);
->   		if (err)
->   			goto out_load;
-> +		xsk->config.prog_id = prog_id;
->   	}
+> +	long xsks_cnt, key = 0;
+>   	int qid = false;
 >   
->   	err = xsk_set_bpf_maps(xsk);
-> @@ -744,6 +774,8 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>   	bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
+>   	bpf_map_delete_elem(xsk->xsks_map_fd, &xsk->queue_id);
+> +	bpf_map_lookup_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt);
+> +	if (xsks_cnt)
+> +		xsks_cnt--;
+> +	bpf_map_update_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt, 0);
+> +	if (xsks_cnt_ptr)
+> +		*xsks_cnt_ptr = xsks_cnt;
+
+This refcount scheme will not work; There's no synchronization between 
+the updates (cross process)!
+
+>   }
 >   
->   	}
+>   static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+>   {
+>   	int qid = true, fd = xsk->fd, err;
+> +	long xsks_cnt, key = 0;
 >   
-> +	xsk_remove_xdp_prog(xsk);
+>   	err = bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
+>   	if (err)
+> @@ -487,9 +518,18 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+>   	if (err)
+>   		goto out;
+>   
+> +	err = bpf_map_lookup_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt);
+> +	if (err)
+> +		goto out;
 > +
+> +	xsks_cnt++;
+> +	err = bpf_map_update_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt, 0);
+> +	if (err)
+> +		goto out;
+> +
+
+Dito.
+
+>   	return 0;
+>   out:
+> -	xsk_clear_bpf_maps(xsk);
+> +	xsk_clear_bpf_maps(xsk, NULL);
+>   	return err;
+>   }
+>   
+> @@ -752,13 +792,18 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>   	size_t desc_sz = sizeof(struct xdp_desc);
+>   	struct xdp_mmap_offsets off;
+>   	socklen_t optlen;
+> +	long xsks_cnt;
+>   	int err;
+>   
+>   	if (!xsk)
+>   		return;
+>   
+> -	xsk_clear_bpf_maps(xsk);
+> -	xsk_delete_bpf_maps(xsk);
+> +	xsk_clear_bpf_maps(xsk, &xsks_cnt);
+> +	unlink(XSKS_CNT_MAP_PATH);
+> +	if (!xsks_cnt) {
+> +		xsk_delete_bpf_maps(xsk);
+> +		xsk_remove_xdp_prog(xsk);
+> +	}
+>   
+>   	optlen = sizeof(off);
+>   	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
+> @@ -774,8 +819,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>   
+>   	}
+>   
+> -	xsk_remove_xdp_prog(xsk);
+> -
 >   	xsk->umem->refcount--;
 >   	/* Do not close an fd that also has an associated umem connected
 >   	 * to it.
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 82ea71a0f3ec..e1b23e9432c9 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -186,6 +186,7 @@ struct xsk_socket_config {
->   	__u32 tx_size;
->   	__u32 libbpf_flags;
->   	__u32 xdp_flags;
-> +	__u32 prog_id;
->   	__u16 bind_flags;
->   };
->   
 > 
