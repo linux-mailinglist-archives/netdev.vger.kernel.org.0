@@ -2,168 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F359534CC5
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E27E34CCA
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbfFDQBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 12:01:30 -0400
-Received: from mail-vk1-f193.google.com ([209.85.221.193]:38406 "EHLO
-        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727422AbfFDQBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 12:01:30 -0400
-Received: by mail-vk1-f193.google.com with SMTP id p24so3656929vki.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 09:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=JJnKTszq0LucT9tff8aVBNiTlpqFIuwICl/wZRuN/SM=;
-        b=GQPGFwKdD+yYos6fP+5thtoEjgvr0MNDy0yHYc8fZz73MyW879mUUBZAhYk/YR5/zU
-         9hIznQ03ADry6HE/yWZjoTrxElltsqKGduoZz2kRZMN1cCWbM/+RGRexzWI62NcqV19V
-         CocEHM4nD9FB9MbHrma4vtmwngw3CVYG9b9VA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=JJnKTszq0LucT9tff8aVBNiTlpqFIuwICl/wZRuN/SM=;
-        b=qkP07nfSOrphhdttkZqEE1tTUGW8Fd6BxaRxol0X7+YA5UK0UtWxHqUu4aCAwMwrsI
-         F9zq+OWObITZr6XEMhJtN/BmQuixtblDBr7xjlEs+zZpU+IVW2KQxLdr+1psPIO8p3RB
-         hFfVKF+AZK6ccQhpz7LYLQgbyJcTBWzeRHpLUKe9z7VcABmoyYfiaug0zPOID9sNRD/w
-         OG6FF8sbBczu+/yYt2SMC/4D3gWKO7CfLJo1XqDgQhqDFxtRcBZRsu/47vCJAivcIdKH
-         ro6/Q3NLB+9BtdY/ySMlCOIe46K9W75lT0laaPJnnnzo+kjr5eA4g/ASbo6NQlxVBfT/
-         muxA==
-X-Gm-Message-State: APjAAAUENEk3pvJgDLnbrPq3UYd8XtxJwgPB3erVQTBa/S6Qkgj8hu3m
-        dQwAOVW6yR/ntzrAk+SJ+X5bV9OyMRs=
-X-Google-Smtp-Source: APXvYqzxDA+gOmLziNEnIYwu9fXB2YqleYhnJZtFTzcI4xsh7KXtzoNhwJm3vFqP0nfMSAUaQeOisg==
-X-Received: by 2002:a1f:12d5:: with SMTP id 204mr3902895vks.4.1559664088322;
-        Tue, 04 Jun 2019 09:01:28 -0700 (PDT)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id s5sm300925uas.8.2019.06.04.09.01.25
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 09:01:27 -0700 (PDT)
-Received: by mail-ua1-f43.google.com with SMTP id r7so7996574ual.2
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 09:01:25 -0700 (PDT)
-X-Received: by 2002:ab0:5ad0:: with SMTP id x16mr15793093uae.124.1559664085104;
- Tue, 04 Jun 2019 09:01:25 -0700 (PDT)
+        id S1728214AbfFDQDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 12:03:10 -0400
+Received: from mail.us.es ([193.147.175.20]:52012 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728154AbfFDQDK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 12:03:10 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8B3B46D00B
+        for <netdev@vger.kernel.org>; Tue,  4 Jun 2019 18:03:08 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7C936DA706
+        for <netdev@vger.kernel.org>; Tue,  4 Jun 2019 18:03:08 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 62B92DA70B; Tue,  4 Jun 2019 18:03:08 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 59188DA706;
+        Tue,  4 Jun 2019 18:03:06 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 04 Jun 2019 18:03:06 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4775F4265A2F;
+        Tue,  4 Jun 2019 18:03:06 +0200 (CEST)
+Date:   Tue, 4 Jun 2019 18:03:05 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Peter Oskolkov <posk@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] netfilter: ipv6: nf_defrag: fix leakage of unqueued
+ fragments
+Message-ID: <20190604160305.7bpwsjsjoosj2szt@salvia>
+References: <51d82a9bd6312e51a56ccae54e00452a0ef957dd.1559480671.git.gnault@redhat.com>
+ <20190604132605.jlhxljrzaqkw4f2j@salvia>
+ <20190604150218.GA12962@linux.home>
 MIME-Version: 1.0
-References: <20190517225420.176893-2-dianders@chromium.org>
- <20190528121833.7D3A460A00@smtp.codeaurora.org> <CAD=FV=VtxdEeFQsdF=U7-_7R+TXfVmA2_JMB_-WYidGHTLDgLw@mail.gmail.com>
- <16aff33f3e0.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
- <16aff358a20.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com> <40587a64-490b-8b1e-8a11-1e1aebdab2f3@cypress.com>
-In-Reply-To: <40587a64-490b-8b1e-8a11-1e1aebdab2f3@cypress.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 4 Jun 2019 09:01:10 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wr4WsO7Xmei5GB4X91L_sDN331B1_oH+CPZOeFUkxyMg@mail.gmail.com>
-Message-ID: <CAD=FV=Wr4WsO7Xmei5GB4X91L_sDN331B1_oH+CPZOeFUkxyMg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] brcmfmac: re-enable command decode in sdio_aos for
- BRCM 4354
-To:     Wright Feng <Wright.Feng@cypress.com>
-Cc:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Madhan Mohan R <MadhanMohan.R@cypress.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Chi-Hsien Lin <Chi-Hsien.Lin@cypress.com>,
-        Brian Norris <briannorris@chromium.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Naveen Gupta <Naveen.Gupta@cypress.com>,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        Double Lo <Double.Lo@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190604150218.GA12962@linux.home>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Jun 04, 2019 at 05:02:21PM +0200, Guillaume Nault wrote:
+> On Tue, Jun 04, 2019 at 03:26:05PM +0200, Pablo Neira Ayuso wrote:
+> > On Sun, Jun 02, 2019 at 03:13:47PM +0200, Guillaume Nault wrote:
+> > > With commit 997dd9647164 ("net: IP6 defrag: use rbtrees in
+> > > nf_conntrack_reasm.c"), nf_ct_frag6_reasm() is now called from
+> > > nf_ct_frag6_queue(). With this change, nf_ct_frag6_queue() can fail
+> > > after the skb has been added to the fragment queue and
+> > > nf_ct_frag6_gather() was adapted to handle this case.
+> > 
+> > Applied, thanks.
+> 
+> Thanks. Can you also please queue it for -stable?
 
-On Mon, Jun 3, 2019 at 8:20 PM Wright Feng <Wright.Feng@cypress.com> wrote:
->
-> On 2019/5/29 =E4=B8=8A=E5=8D=88 12:11, Arend Van Spriel wrote:
-> > On May 28, 2019 6:09:21 PM Arend Van Spriel
-> > <arend.vanspriel@broadcom.com> wrote:
-> >
-> >> On May 28, 2019 5:52:10 PM Doug Anderson <dianders@chromium.org> wrote=
-:
-> >>
-> >>> Hi,
-> >>>
-> >>> On Tue, May 28, 2019 at 5:18 AM Kalle Valo <kvalo@codeaurora.org> wro=
-te:
-> >>>>
-> >>>> Douglas Anderson <dianders@chromium.org> wrote:
-> >>>>
-> >>>> > In commit 29f6589140a1 ("brcmfmac: disable command decode in
-> >>>> > sdio_aos") we disabled something called "command decode in sdio_ao=
-s"
-> >>>> > for a whole bunch of Broadcom SDIO WiFi parts.
-> >>>> >
-> >>>> > After that patch landed I find that my kernel log on
-> >>>> > rk3288-veyron-minnie and rk3288-veyron-speedy is filled with:
-> >>>> >   brcmfmac: brcmf_sdio_bus_sleep: error while changing bus sleep
-> >>>> state -110
-> >>>> >
-> >>>> > This seems to happen every time the Broadcom WiFi transitions out =
-of
-> >>>> > sleep mode.  Reverting the part of the commit that affects the
-> >>>> WiFi on
-> >>>> > my boards fixes the problem for me, so that's what this patch does=
-.
-> >>>> >
-> >>>> > Note that, in general, the justification in the original commit
-> >>>> seemed
-> >>>> > a little weak.  It looked like someone was testing on a SD card
-> >>>> > controller that would sometimes die if there were CRC errors on th=
-e
-> >>>> > bus.  This used to happen back in early days of dw_mmc (the
-> >>>> controller
-> >>>> > on my boards), but we fixed it.  Disabling a feature on all boards
-> >>>> > just because one SD card controller is broken seems bad.  ...so
-> >>>> > instead of just this patch possibly the right thing to do is to fu=
-lly
-> >>>> > revert the original commit.
-> >>>> >
-> Since the commit 29f6589140a1 ("brcmfmac: disable command decode in
-> sdio_aos") causes the regression on other SD card controller, it is
-> better to revert it as you mentioned.
-> Actually, without the commit, we hit MMC timeout(-110) and hanged
-> instead of CRC error in our test.
-
-Any chance I can convince you to provide some official tags like
-Reviewed-by or Tested-by on the revert?
-
-> Would you please share the analysis of
-> dw_mmc issue which you fixed? We'd like to compare whether we got the
-> same issue.
-
-I'm not sure there's any single magic commit I can point to.  When I
-started working on dw_mmc it was terrible at handling error cases and
-would often crash / hang / stop all future communication upon certain
-classes or efforts.  There were dozens of problems we've had to fix
-over the years.  These problems showed up when we started supporting
-HS200 / UHS since the tuning phase really stress the error handling of
-the host controller.
-
-I searched and by the time we were supporting Broadcom SDIO cards the
-error handling was already pretty good.  ...but if we hadn't already
-made the error handling more robust for UHS tuning then we would have
-definitely hit these types of problems.  The only problem I remember
-having to solve in dw_mmc that was unique to Broadcom was commit
-0bdbd0e88cf6 ("mmc: dw_mmc: Don't start commands while busy").  Any
-chance that could be what you're hitting?
-
-What host controller are you having problems with?
-
--Doug
+As soon as this hits Linus tree, yes.
