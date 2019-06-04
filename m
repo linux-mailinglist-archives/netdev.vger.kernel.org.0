@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FA434C26
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:25:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F1934C37
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:28:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbfFDPZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 11:25:07 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:34276 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728002AbfFDPZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 11:25:06 -0400
-Received: by mail-yw1-f65.google.com with SMTP id v189so4256728ywe.1
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 08:25:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8Dtq6s34f/EEPTJjI8bt32p5N5sr2kVgZ6rratqLn1s=;
-        b=RoBwZxUd9jm4Ew2r42DQ/Al0LsebSoX83OCQQ/OVY9TYgpzOcEGzILyWZgmJAtXYQv
-         kwYt6d761Pk8odVagi3IEW4dfAZBh4mw0we0C+RxsY7EPFL9lVYGsrTEBMHmfYYvbT54
-         8BzREr+tvPgEM2xomwiL0FwNjbIcakk8S4P6vvYmCbKdHXt00hsBWxVJ50P444H63AyM
-         s06GQOjk6Nt9bT+2uriEEET3V/A/n6MCbsrYqhrkcQoN8LL1wCa3cU2RKKcc8rXbyZcY
-         PYOmUeEIJjbOlyye4ng3JuNX2zEypA1OInSQ7oyLRJ6Mbxrt5OXAOLwIdrQAPBEnfxCV
-         /hgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8Dtq6s34f/EEPTJjI8bt32p5N5sr2kVgZ6rratqLn1s=;
-        b=H8De5JHfiu52JUaUFNscnJHeajD5+H2bwkpZTqCJ1Q/n0zNI5KV+5QF6uWEs/HGS05
-         vVXDWzRk1cLDwBpVRxJz8YiM9eHakJ+eY8Z9KNqGfDiCIrQbz3sRFpYvJpc4f6ZhcEjZ
-         Me3afIOIEaPwHxZTfy6ZJdIyeujk9bXmJ/RcBhmdiJwOQBKk3UxURtCH8lphrKE2scfS
-         wVtVAJ3JB/Yz0z11iD4D15T5HsMhJtlYIqXsybzdMYAy9MZeShTqCy2sWo7WLTTM6UYN
-         9THEGE80idKRchN8QxT+yyScAxtdrACVBTqEG8lR7EsgJ8XujnH2te4ZfCk5SH1rFcZs
-         fpMA==
-X-Gm-Message-State: APjAAAWbLFkXN4yszh/Rkot6c8il1PSRz1mjJwjxJWFqF4HXWmeMpDtR
-        Ntn8kYwQRW5jrJ79oA6/cVZcTEpMLLvjxk0SeA6++Q==
-X-Google-Smtp-Source: APXvYqyIoMgFiWcnbNSKFs5E6LfHTEVX3WywEFYE4bBfgycPk68vT1M5l9FzgYVO05MbJHn7uSuOATsPxc4O1c6OyGA=
-X-Received: by 2002:a81:83d7:: with SMTP id t206mr16485392ywf.146.1559661905376;
- Tue, 04 Jun 2019 08:25:05 -0700 (PDT)
+        id S1728100AbfFDP2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 11:28:49 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:57090 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727843AbfFDP2s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 11:28:48 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 36685F51F310A0F796DC;
+        Tue,  4 Jun 2019 23:28:34 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Tue, 4 Jun 2019
+ 23:28:26 +0800
+Subject: Re: [PATCH next] sysctl: add proc_dointvec_jiffies_minmax to limit
+ the min/max write value
+To:     Kees Cook <keescook@chromium.org>, <akpm@linux-foundation.org>
+CC:     <mcgrof@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <ebiederm@xmission.com>,
+        <pbonzini@redhat.com>, <viro@zeniv.linux.org.uk>,
+        <adobriyan@gmail.com>, <mingfangsen@huawei.com>,
+        <wangxiaogang3@huawei.com>, "Zhoukang (A)" <zhoukang7@huawei.com>,
+        <netdev@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <032e024f-2b1b-a980-1b53-d903bc8db297@huawei.com>
+ <3e421384-a9cb-e534-3370-953c56883516@huawei.com>
+ <d5138655-41a8-0177-ae0d-c4674112bf56@huawei.com>
+ <201905150945.C9D1F811F@keescook>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Message-ID: <dd40ae3b-8e0a-2d55-d402-6f261a6c0e09@huawei.com>
+Date:   Tue, 4 Jun 2019 23:27:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-References: <20190604145543.61624-1-maowenan@huawei.com>
-In-Reply-To: <20190604145543.61624-1-maowenan@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 4 Jun 2019 08:24:54 -0700
-Message-ID: <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: avoid creating multiple req socks with the same tuples
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <201905150945.C9D1F811F@keescook>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 4, 2019 at 7:47 AM Mao Wenan <maowenan@huawei.com> wrote:
->
-> There is one issue about bonding mode BOND_MODE_BROADCAST, and
-> two slaves with diffierent affinity, so packets will be handled
-> by different cpu. These are two pre-conditions in this case.
->
-> When two slaves receive the same syn packets at the same time,
-> two request sock(reqsk) will be created if below situation happens:
-> 1. syn1 arrived tcp_conn_request, create reqsk1 and have not yet called
-> inet_csk_reqsk_queue_hash_add.
-> 2. syn2 arrived tcp_v4_rcv, it goes to tcp_conn_request and create reqsk2
-> because it can't find reqsk1 in the __inet_lookup_skb.
->
-> Then reqsk1 and reqsk2 are added to establish hash table, and two synack with different
-> seq(seq1 and seq2) are sent to client, then tcp ack arrived and will be
-> processed in tcp_v4_rcv and tcp_check_req, if __inet_lookup_skb find the reqsk2, and
-> tcp ack packet is ack_seq is seq1, it will be failed after checking:
-> TCP_SKB_CB(skb)->ack_seq != tcp_rsk(req)->snt_isn + 1)
-> and then tcp rst will be sent to client and close the connection.
->
-> To fix this, do lookup before calling inet_csk_reqsk_queue_hash_add
-> to add reqsk2 to hash table, if it finds the existed reqsk1 with the same five tuples,
-> it removes reqsk2 and does not send synack to client.
->
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> ---
->  net/ipv4/tcp_input.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 08a477e74cf3..c75eeb1fe098 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6569,6 +6569,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->                 bh_unlock_sock(fastopen_sk);
->                 sock_put(fastopen_sk);
->         } else {
-> +               struct sock *sk1 = req_to_sk(req);
-> +               struct sock *sk2 = NULL;
-> +               sk2 = __inet_lookup_established(sock_net(sk1), &tcp_hashinfo,
-> +                                                                       sk1->sk_daddr, sk1->sk_dport,
-> +                                                                       sk1->sk_rcv_saddr, sk1->sk_num,
-> +                                                                       inet_iif(skb),inet_sdif(skb));
-> +               if (sk2 != NULL)
-> +                       goto drop_and_release;
-> +
->                 tcp_rsk(req)->tfo_listener = false;
->                 if (!want_cookie)
->                         inet_csk_reqsk_queue_hash_add(sk, req,
+> On Wed, May 15, 2019 at 10:53:55PM +0800, Zhiqiang Liu wrote:
+> 
+> (Please include akpm on CC for next versions of this, as he's likely
+> the person to take this patch.)
+Thanks for your advice. And sorry to reply you so late.
 
-This issue has been discussed last year.
+>>>> In proc_dointvec_jiffies func, the write value is only checked
+>>>> whether it is larger than INT_MAX. If the write value is less
+>>>> than zero, it can also be successfully writen in the data.
+> 
+> This appears to be "be design", but I see many "unsigned int" users
+> that might be tricked into giant values... (for example, see
+> net/netfilter/nf_conntrack_standalone.c)
+> 
+> Should proc_dointvec_jiffies() just be fixed to disallow negative values
+> entirely? Looking at the implementation, it seems to be very intentional
+> about accepting negative values.
+> 
+> However, when I looked through a handful of proc_dointvec_jiffies()
+> users, it looks like they're all expecting a positive value. Many in the
+> networking subsystem are, in fact, writing to unsigned long variables,
+> as I mentioned.
+> 
+I totally agree with you. And I also cannot find an scenario that expects
+negative values. Consideing the "negative" scenario may be exist, I add the
+proc_dointvec_jiffies_minmax like proc_dointvec_minmax.
 
-I am afraid your patch does not solve all races.
+> Are there real-world cases of wanting to set a negative jiffie value
+> via proc_dointvec_jiffies()?
+Until now, I do not find such cases.
 
-The lookup you add is lockless, so this is racy.
+>>>>
+>>>> Here, we add a new func, proc_dointvec_jiffies_minmax, to limit the
+>>>> min/max write value, which is similar to the proc_dointvec_minmax func.
+>>>>
+> 
+> If proc_dointvec_jiffies() can't just be fixed, where will the new
+> function get used? It seems all the "unsigned int" users could benefit.
+> 
+I tend to add the proc_dointvec_jiffies_minmax func to provide more choices and
+not change the previous use of proc_dointvec_jiffies func.
 
-Really the only way to solve this is to make sure that _when_ the
-bucket lock is held,
-we do not insert a request socket if the 4-tuple is already in the
-chain (probably in inet_ehash_insert())
+Thanks for your reply again.
 
-This needs more tricky changes than your patch.
