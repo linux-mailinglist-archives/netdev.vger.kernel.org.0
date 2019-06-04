@@ -2,239 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B681350C3
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18040350C5
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:17:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbfFDUQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 16:16:39 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53713 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbfFDUQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:16:38 -0400
-Received: by mail-wm1-f65.google.com with SMTP id d17so42432wmb.3;
-        Tue, 04 Jun 2019 13:16:36 -0700 (PDT)
+        id S1726593AbfFDURb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 16:17:31 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41666 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfFDURb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:17:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q17so13361605pfq.8
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 13:17:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WDDtZQaB0Y8DUYCzg/gJkiouCs/WxELVfffAB7j9h0c=;
-        b=OzG/oifKTYTYc2y0EH+rlfGit8p5Fp5HQ5Y2NCqzYWdF09UcuMP23XRgwkWyDIETPt
-         bHPZBB5omzFsgqAIJzk3U+0BmELI5Nf6LgVbb4k4jrazDvRiFkUF87kxkwSD4Ywr+hLN
-         hlmpb/LwfP3QNWyBdqG0YhLSZvypS2yxQv/DdP2JD6hgZzu05R4UofDtPr8cZghPzDht
-         a6sJWuE2/kiMlfCtzThof9q0+/BPmSFZTg6wEKMYOedhdwk4H8zRBABCNUmggdDA2jIJ
-         lFKPVHc98UX9XHzR3ogMWN63WV2hJ/i4HcUuMEyT1VtuH0DNQG1lxARpwFmuIkc899AR
-         z/+Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BBTP4mbA1qxBFzXiHdooyCFJBHJAfO3uJV870x/x2P4=;
+        b=Ah/iLRMdxnnR6LtQl4K4bGYj/uprOAR1qNyfE6mYpjr9hxNU/8K8uxXbWd5OE7UF5B
+         b8uT6eF/ZSs5TcFjpU8tWr9TxutoYjuTkLkkhpZ5CrP+wk3nMLcLEoI+RXOHd1+N29J8
+         iaH+evImntWEpbtTEEvo5uoMxf4SYTGGxF2KBt8I3MeK4XAQyHZXfFE6hKDSzq8Lu31L
+         0tnInezRM1judOtukIvnJvgz2sO/FBYHYpS8xZs0fhmHdfPiB34pzHXOjhgmto9EgkvG
+         eMZpGzAjHey5cRhcuZ81MsfoZffDpQe+7R6Yrjn2YqaO9miA3KvpEeVy286F94QmUf4e
+         Twkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WDDtZQaB0Y8DUYCzg/gJkiouCs/WxELVfffAB7j9h0c=;
-        b=ozWDug5hK9uS6eAETq21F/vdW21z8OP/iYbZ9Os8jT9oxe+ygYK3BKBlOg9ZmfADjY
-         NfEaIk+EZe+yleMuaZZXSWOBfyo0FCizMNz0KdS+WZl/4w9Q3url9lxaQY2KBRtUAJP9
-         CKBjr3vfGb/PuKxLETJXZEqn7UJGwZn27SNZ31wqduVcOPMF+knU/rQo5MP6sW6hbpnj
-         TyditkqIqNDuZ9BDz1+u3HByFBsrKlRbhT3hd20DiDWH2uFXJPpq/Zjbdspq0ufUx7Yw
-         uzAORL4yVFUBBp9RI/Sbbc8he76og0AKUtLX0Za6zjEUd84LaitLcNv4fgFMdjS6OZ0/
-         BV/g==
-X-Gm-Message-State: APjAAAW9d/ydM27U2yV9OqxzEtqb9LOOTZeJscEDFU2xG6iCS2m00d1W
-        IIQnV65Nz6DeHH0/Z6U8j8y+l2NM5hYEaThDBGE=
-X-Google-Smtp-Source: APXvYqwmOcIri0ozci72V9YrNMoqbhOHWYQu9iJKvanf1M/HwekyOmbpdvjzRubpgZNDKQltfBR+x/QuHj5c6nSsU8s=
-X-Received: by 2002:a7b:cd15:: with SMTP id f21mr18358065wmj.99.1559679395674;
- Tue, 04 Jun 2019 13:16:35 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BBTP4mbA1qxBFzXiHdooyCFJBHJAfO3uJV870x/x2P4=;
+        b=e1bZ/eqWQuy2WIfNNrcZdTvHN6nB1hm833njazQjt/gKsYNqsQOYAbmA+Xku2HCnX2
+         DITqx++CA51Ii5AQ8PYxwGtu0g2S9qVZCAMlR17jl4+ntKrj3ed9366Nyfe95D/KHZkE
+         YJx2uHoFspH4pGPT5dmtza/uSAq2o3plFrlVQqoy2lcE0S03sIeN+F0+lz4OBFftzDpu
+         NvCu4Pigr4Ia7s2rxoxmaFtbiVGN9NvE7gMlkwvcJhlfrK2kxZ7SBHrOqBg5002z+GAF
+         q+EN2dJwAw9shUw4tlcWE0glaL9ZS8NFvwFVmvwVGAnQWfGQF44LiZ5FKPKpaja7SprA
+         zgxA==
+X-Gm-Message-State: APjAAAVrOBuEa+sJY6qu1WFnAp2ytEb5Hjr2wE02VWS4NZXiRVHwjfg0
+        /vpGCE/6dlOeQQDUsdksjkI=
+X-Google-Smtp-Source: APXvYqyP41kzVSwV+bVIWQuvcnjXNRCR9rW2dm8bZu7Vj1lYNxkVniF14oOGs/W0+5ogcFyNdRrbRw==
+X-Received: by 2002:a63:1d02:: with SMTP id d2mr516797pgd.26.1559679450941;
+        Tue, 04 Jun 2019 13:17:30 -0700 (PDT)
+Received: from [172.27.227.186] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id p20sm30051354pgk.7.2019.06.04.13.17.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 13:17:30 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
+ a fib6_info
+To:     Martin Lau <kafai@fb.com>
+Cc:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>
+References: <20190603040817.4825-1-dsahern@kernel.org>
+ <20190603040817.4825-5-dsahern@kernel.org>
+ <CAEA6p_AgK08iXuSBbMDqzatGaJj_UFbNWiBV-dQp2r-Y71iesw@mail.gmail.com>
+ <dec5c727-4002-913f-a858-362e0d926b8d@gmail.com>
+ <CAEA6p_Aa2eV+jH=H9iOqepbrBLBUvAg2-_oD96wA0My6FMG_PQ@mail.gmail.com>
+ <5263d3ae-1865-d935-cb03-f6dfd4604d15@gmail.com>
+ <CAEA6p_CixzdRNUa46YZusFg-37MFAVqQ8D09rxVU5Nja6gO1SA@mail.gmail.com>
+ <4cdcdf65-4d34-603e-cb21-d649b399d760@gmail.com>
+ <20190604005840.tiful44xo34lpf6d@kafai-mbp.dhcp.thefacebook.com>
+ <453565b0-d08a-be96-3cd7-5608d4c21541@gmail.com>
+ <20190604052929.4mlxa5sswm46mwrq@kafai-mbp.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c7fb6999-16a2-001d-8e9a-ac44ed9e9fa2@gmail.com>
+Date:   Tue, 4 Jun 2019 14:17:28 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <00000000000097abb90589e804fd@google.com> <20190603203259.21508-1-nhorman@tuxdriver.com>
-In-Reply-To: <20190603203259.21508-1-nhorman@tuxdriver.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 5 Jun 2019 04:16:24 +0800
-Message-ID: <CADvbK_c6Ym2pbKqGQD8WUmUPX_PtAa6RGde7AQwhRZzUr_emiw@mail.gmail.com>
-Subject: Re: [PATCH V2] Fix memory leak in sctp_process_init
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     linux-sctp@vger.kernel.org,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        network dev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190604052929.4mlxa5sswm46mwrq@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 4, 2019 at 4:34 AM Neil Horman <nhorman@tuxdriver.com> wrote:
->
-> syzbot found the following leak in sctp_process_init
-> BUG: memory leak
-> unreferenced object 0xffff88810ef68400 (size 1024):
->   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
->   hex dump (first 32 bytes):
->     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000a02cebbd>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
-> [inline]
->     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
->     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
->     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
->     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
->     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
->     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
->     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
-> net/sctp/sm_make_chunk.c:2437
->     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
-> [inline]
->     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
-> [inline]
->     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
-> [inline]
->     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60 net/sctp/sm_sideeffect.c:1165
->     [<0000000044e11f96>] sctp_assoc_bh_rcv+0x13c/0x200
-> net/sctp/associola.c:1074
->     [<00000000ec43804d>] sctp_inq_push+0x7f/0xb0 net/sctp/inqueue.c:95
->     [<00000000726aa954>] sctp_backlog_rcv+0x5e/0x2a0 net/sctp/input.c:354
->     [<00000000d9e249a8>] sk_backlog_rcv include/net/sock.h:950 [inline]
->     [<00000000d9e249a8>] __release_sock+0xab/0x110 net/core/sock.c:2418
->     [<00000000acae44fa>] release_sock+0x37/0xd0 net/core/sock.c:2934
->     [<00000000963cc9ae>] sctp_sendmsg+0x2c0/0x990 net/sctp/socket.c:2122
->     [<00000000a7fc7565>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
->     [<00000000b732cbd3>] sock_sendmsg_nosec net/socket.c:652 [inline]
->     [<00000000b732cbd3>] sock_sendmsg+0x54/0x70 net/socket.c:671
->     [<00000000274c57ab>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2292
->     [<000000008252aedb>] __sys_sendmsg+0x80/0xf0 net/socket.c:2330
->     [<00000000f7bf23d1>] __do_sys_sendmsg net/socket.c:2339 [inline]
->     [<00000000f7bf23d1>] __se_sys_sendmsg net/socket.c:2337 [inline]
->     [<00000000f7bf23d1>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2337
->     [<00000000a8b4131f>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:3
->
-> The problem was that the peer.cookie value points to an skb allocated
-> area on the first pass through this function, at which point it is
-> overwritten with a heap allocated value, but in certain cases, where a
-> COOKIE_ECHO chunk is included in the packet, a second pass through
-> sctp_process_init is made, where the cookie value is re-allocated,
-> leaking the first allocation.
-This's not gonna happen, as after processing INIT, the temp asoc will be
-deleted on the server side. Besides, from the reproducer:
+On 6/3/19 11:29 PM, Martin Lau wrote:
+> On Mon, Jun 03, 2019 at 07:36:06PM -0600, David Ahern wrote:
+>> On 6/3/19 6:58 PM, Martin Lau wrote:
+>>> I have concern on calling ip6_create_rt_rcu() in general which seems
+>>> to trace back to this commit
+>>> dec9b0e295f6 ("net/ipv6: Add rt6_info create function for ip6_pol_route_lookup")
+>>>
+>>> This rt is not tracked in pcpu_rt, rt6_uncached_list or exception bucket.
+>>> In particular, how to react to NETDEV_UNREGISTER/DOWN like
+>>> the rt6_uncached_list_flush_dev() does and calls dev_put()?
+>>>
+>>> The existing callers seem to do dst_release() immediately without
+>>> caching it, but still concerning.
+>>
+>> those are the callers that don't care about the dst_entry, but are
+>> forced to deal with it. Removing the tie between fib lookups an
+>> dst_entry is again the right solution.
+> Great to know that there will be a solution.  It would be great
+> if there is patch (or repo) to show how that may look like on
+> those rt6_lookup() callers.
 
-  https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
-
-Packet(INIT|COOKIE_ECHO) can't be made in here.
-
-The call trace says the leak happened when processing INIT_ACK on the
-client side, as Marcelo noticed.  Then it can be triggered by:
-
-1. sctp_sf_do_5_1C_ack() -> SCTP_CMD_PEER_INIT -> sctp_process_init():
-   where it "goto clean_up" after sctp_process_param(), but in 'cleanup'
-   path, it doesn't do any freeup for the memdups of sctp_process_param().
-   then the client T1 retrans INIT, and later get INIT_ACK again from the
-   peer, and go to sctp_process_init() to memdup().
-
-2. sctp_sf_cookie_echoed_err() -> sctp_sf_do_5_2_6_stale():
-   where the asoc state will go from COOKIE_ECHOED back to COOKIE_WAIT,
-   and T1 starts to retrans INIT, and later it will get INIT_ACK again
-   to sctp_process_init() and memdup().
-
-As on either above, asoc's never been to ESTABLISHED state,
-asoc->peer.cookie can be not freed, and this patch won't work.
-But yes, it's nice to have this patch, just not to fix this memleak.
-
-I tracked the code, this memleak was triggered by case 2, so I think
-you also need to add something like:
-
-@@ -881,6 +893,18 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
-                                                asoc->rto_initial;
-                asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_COOKIE] =
-                                                asoc->rto_initial;
-+
-+               if (asoc->peer.cookie) {
-+                       kfree(asoc->peer.cookie);
-+                       kfree(asoc->peer.peer_random);
-+                       kfree(asoc->peer.peer_chunks);
-+                       kfree(asoc->peer.peer_hmacs);
-+
-+                       asoc->peer.cookie = NULL;
-+                       asoc->peer.peer_random = NULL;
-+                       asoc->peer.peer_random = NULL;
-+                       asoc->peer.peer_hmacs = NULL;
-+               }
-        }
-
-and the same thing may also be needed in sctp_cmd_process_init() on the
-err path for case 1.
-
->
-> Fix is to always allocate the cookie value, and free it when we are done
-> using it.
->
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> CC: "David S. Miller" <davem@davemloft.net>
-> CC: netdev@vger.kernel.org
->
-> ---
-> Change notes
->
-> V1->V2:
->   * Removed an accidental double free I let slip in in
-> sctp_association_free
->   * Removed now unused cookie variable
-> ---
->  net/sctp/sm_make_chunk.c | 13 +++----------
->  net/sctp/sm_sideeffect.c |  5 +++++
->  2 files changed, 8 insertions(+), 10 deletions(-)
->
-> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> index 72e74503f9fc..8e12e19fe42d 100644
-> --- a/net/sctp/sm_make_chunk.c
-> +++ b/net/sctp/sm_make_chunk.c
-> @@ -2327,7 +2327,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
->         union sctp_addr addr;
->         struct sctp_af *af;
->         int src_match = 0;
-> -       char *cookie;
->
->         /* We must include the address that the INIT packet came from.
->          * This is the only address that matters for an INIT packet.
-> @@ -2431,14 +2430,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
->         /* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
->         asoc->peer.rwnd = asoc->peer.i.a_rwnd;
->
-> -       /* Copy cookie in case we need to resend COOKIE-ECHO. */
-> -       cookie = asoc->peer.cookie;
-> -       if (cookie) {
-> -               asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
-> -               if (!asoc->peer.cookie)
-> -                       goto clean_up;
-> -       }
-> -
->         /* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
->          * high (for example, implementations MAY use the size of the receiver
->          * advertised window).
-> @@ -2607,7 +2598,9 @@ static int sctp_process_param(struct sctp_association *asoc,
->         case SCTP_PARAM_STATE_COOKIE:
->                 asoc->peer.cookie_len =
->                         ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-> -               asoc->peer.cookie = param.cookie->body;
-> +               asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
-> +               if (!asoc->peer.cookie)
-> +                       retval = 0;
->                 break;
->
->         case SCTP_PARAM_HEARTBEAT_INFO:
-> diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-> index 4aa03588f87b..27ddf2d8f001 100644
-> --- a/net/sctp/sm_sideeffect.c
-> +++ b/net/sctp/sm_sideeffect.c
-> @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
->                                                 asoc->rto_initial;
->         }
->
-> +       if (sctp_state(asoc, ESTABLISHED)) {
-> +               kfree(asoc->peer.cookie);
-> +               asoc->peer.cookie = NULL;
-> +       }
-> +
->         if (sctp_state(asoc, ESTABLISHED) ||
->             sctp_state(asoc, CLOSED) ||
->             sctp_state(asoc, SHUTDOWN_RECEIVED)) {
-> --
-> 2.20.1
->
+Not 'will be', 'there is' a solution now. Someone just needs to do the
+conversions and devise the tests for the impacted users.
