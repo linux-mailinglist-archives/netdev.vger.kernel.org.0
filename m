@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B85B133CE0
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 03:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B94733CF9
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726324AbfFDBur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 21:50:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52744 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726076AbfFDBuq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 21:50:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9aYBR+ChM9b0r9InSGeh76Dfwf6gDMyd/B79DaUVug4=; b=a9v2rM9/oUHa3Ap+YHUnQd1VdW
-        Bxf9pmBthKBI1CHBJbaWpqCLj6UfDn8Xu+MXE45Fp2eusQ70WiUyIA4A9ajkzyjA52i5XTTPHioXS
-        1T5hjFC/Ov19YCrDJWlRiUiN0VfiYYoAgtpai44WlhKCJSmuLmorjKhvn25KNOnNTvyQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hXyb5-0001AY-BS; Tue, 04 Jun 2019 03:50:43 +0200
-Date:   Tue, 4 Jun 2019 03:50:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>
-Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
- features and enhance performance
-Message-ID: <20190604015043.GG17267@lunn.ch>
-References: <20190603144329.16366-1-sameehj@amazon.com>
- <20190603143205.1d95818e@cakuba.netronome.com>
- <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
- <20190603160351.085daa91@cakuba.netronome.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603160351.085daa91@cakuba.netronome.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726174AbfFDCEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 22:04:45 -0400
+Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:36518
+        "EHLO cat-porwal-prod-mail1.catalyst.net.nz" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725876AbfFDCEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 22:04:45 -0400
+X-Greylist: delayed 463 seconds by postgrey-1.27 at vger.kernel.org; Mon, 03 Jun 2019 22:04:44 EDT
+Received: from timbeale-pc.wgtn.cat-it.co.nz (unknown [IPv6:2404:130:0:1000:ed06:1c1d:e56c:b595])
+        (Authenticated sender: timbeale@catalyst.net.nz)
+        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id BE17E81232;
+        Tue,  4 Jun 2019 13:56:57 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
+        s=default; t=1559613419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=zlxPk8Grmjvfc1gNhrJYrpT6xOBrQjE/mrwvf8Qc9M0=;
+        b=tlbS4rAuReuDG+cTAMYG5To879bmPuCxZzvMOln/7pVB2R3HsKhzmBTldZFohzT6xCNm/d
+        HdgMW9OpT7FGT5/Z3PiOBzZRaeGiufM9uL2BvqCi+1cai8DZqGncUKB0mIJufmC+aG+/nA
+        QReWZsavQLEg7WcZv347TDDREz0SCI3m/yEeD11eRjU9xQTbAXiHJozznEEnyJTia+x3H4
+        r4AZOVnWHF/S3o3rDSvuaIzJjLzMMjkg2scfneY9TM+vhCy34edgiAGKj8gSqaZdzY9UkJ
+        h6tXVyF/pwjmTU3jhiUWenRZaCeIUiLnjfq8DWTR09bzNX3TU38/HBKTsVcX6g==
+From:   Tim Beale <timbeale@catalyst.net.nz>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Tim Beale <timbeale@catalyst.net.nz>
+Subject: [PATCH net] udp: only choose unbound UDP socket for multicast when not in a VRF
+Date:   Tue,  4 Jun 2019 13:56:23 +1200
+Message-Id: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
+X-Mailer: git-send-email 2.7.4
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
+        s=default; t=1559613420;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=zlxPk8Grmjvfc1gNhrJYrpT6xOBrQjE/mrwvf8Qc9M0=;
+        b=OGqnBs0jg5cS5u+Jz50M86Lk0ACDAQw0ZpNDJE4yIMpFegYZMfv3xHKhwRVD9P+gBP/VVG
+        QiHdEevHjEa7yQrlpvg6w/fswFyaG/6o7bRuCJ1T/JjlC19vvWRkiXcyeBP6D5UN7VHvvz
+        gyerxTm7ZvuPzgIl03LzOEuypV3ropePGmjFZ8P4RPs1/cbIqCFTKiv8vvlm6q4uVgTsVR
+        j6ydAGePuZmeuUCXHh+PyJmspsX1XpxICpw7U80GsoJcEwBzZE4YuFMpPmYTPf3Ec71WZv
+        7MbNQ3s9K4GzRiHAU+KgEas7NbyrCs0SIeNnfn3DTHZM8qUTczhf4iEQrT89zA==
+ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1559613420; a=rsa-sha256;
+        cv=none;
+        b=s4rSGkei7s9QcgucrgDSCuqP+XhasqXQQnNWlvFR1a1iiNaZbC/a2xOF8wTbt0mfhSKl4s
+        EHaDLOX8yNBen55fKt1mmJUQBBY3kSsx+QoPUforaBjgDekGb+AMbsR4h4gW+MptehfO7u
+        ed4xDCiqv/FNrAva1jYS1nN77vuUtpeOteGiqOrWYZxyc68yXgp9PTNUEkmEPpkSRK6RPQ
+        4To2lQZ4sAIpPtK+EyFhw61HO9n4LeVUrDpyA9IE+8pJRXHi5Dk8ZqZGzM91y0ynT64sPc
+        RWJDPyExPnzRWpmUObfV5MRQEqgcR8JXfFJNbaeKrK3YRr89D/FI+dLaWUDGEw==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=timbeale@catalyst.net.nz smtp.mailfrom=timbeale@catalyst.net.nz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Any "SmartNIC" vendor has temptation of uAPI-level hand off to the
-> firmware (including my employer), we all run pretty beefy processors
-> inside "the NIC" after all.  The device centric ethtool configuration
-> can be implemented by just forwarding the uAPI structures as they are
-> to the FW.  I'm sure Andrew and others who would like to see Linux
-> takes more control over PHYs etc. would not like this scenario, either.
+By default, packets received in another VRF should not be passed to an
+unbound socket in the default VRF. This patch updates the IPv4 UDP
+multicast logic to match the unicast VRF logic (in compute_score()),
+as well as the IPv6 mcast logic (in __udp_v6_is_mcast_sock()).
 
-No, i would not. There are a few good examples of both firmware and
-open drivers being used to control the same PHY, on different
-boards. The PHY driver was developed by the community, and has more
-features than the firmware driver. And it keeps gaining features. The
-firmware i stuck, no updates. The community driver can be debugged,
-the firmware is a black box, no chance of the community fixing any
-bugs in it.
+The particular case I noticed was DHCP discover packets going
+to the 255.255.255.255 address, which are handled by
+__udp4_lib_mcast_deliver(). The previous code meant that running
+multiple different DHCP server or relay agent instances across VRFs
+did not work correctly - any server/relay agent in the default VRF
+received DHCP discover packets for all other VRFs.
 
-And PHYs are commodity devices. I doubt there is any value add in the
-firmware for a PHY, any real IPR which makes the product better, magic
-sauce related to the PHY. So just save the cost of writing and
-maintaining firmware, export the MDIO bus, and let Linux control it.
-Concentrate the engineers on the interesting parts of the NIC, the
-Smart parts, where there can be real IPR.
+Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
+---
+ net/ipv4/udp.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-And i would say this is true for any NIC. Let Linux control the PHY.
-
-      Andrew
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8fb250e..efe9283 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -538,8 +538,7 @@ static inline bool __udp_is_mcast_sock(struct net *net, struct sock *sk,
+ 	    (inet->inet_dport != rmt_port && inet->inet_dport) ||
+ 	    (inet->inet_rcv_saddr && inet->inet_rcv_saddr != loc_addr) ||
+ 	    ipv6_only_sock(sk) ||
+-	    (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
+-	     sk->sk_bound_dev_if != sdif))
++	    !udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif))
+ 		return false;
+ 	if (!ip_mc_sf_allow(sk, loc_addr, rmt_addr, dif, sdif))
+ 		return false;
+-- 
+2.7.4
 
