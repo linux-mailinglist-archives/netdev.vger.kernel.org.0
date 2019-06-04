@@ -2,221 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DACB634130
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81ABD3414C
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:14:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727104AbfFDIIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 04:08:09 -0400
-Received: from mga06.intel.com ([134.134.136.31]:39488 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbfFDIIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 04:08:09 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jun 2019 01:08:08 -0700
-X-ExtLoop1: 1
-Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.255.41.153])
-  by fmsmga006.fm.intel.com with ESMTP; 04 Jun 2019 01:08:04 -0700
-Subject: Re: [RFC PATCH bpf-next 4/4] libbpf: don't remove eBPF resources when
- other xsks are present
-To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        jonathan.lemon@gmail.com, songliubraving@fb.com,
-        bpf <bpf@vger.kernel.org>
-References: <20190603131907.13395-1-maciej.fijalkowski@intel.com>
- <20190603131907.13395-5-maciej.fijalkowski@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <470fba94-a47f-83bd-d2c4-83d424dafb38@intel.com>
-Date:   Tue, 4 Jun 2019 10:08:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726947AbfFDIN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 04:13:56 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41658 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726637AbfFDIN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 04:13:56 -0400
+Received: by mail-qt1-f195.google.com with SMTP id s57so5580411qte.8;
+        Tue, 04 Jun 2019 01:13:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OlXBKw7HgP4DZult/XowRKn8oIkzj5I8Bd8HMNjnVco=;
+        b=WM6UY//u3gKrc0uo6AsfF8nChVGhf0xjC7EpAbk4VMYXb4/+tNYkyOb+YzQp5QDF+F
+         eATXSb0zT4e1tS4eHVzdmlE5htmqXImNh17u+QbK07ea8zHYXMfc93UVZD9mzC5lkgFf
+         jW2YyBnearx5ncMLRsP6hmF4VtuyxzyJJTuHiEYTY4rjTctXn9T4FojidVlcmEbO+Czk
+         KK2JY7zq6/hFcHFAk4At6DYq5ooPpxWGllOO6r4CyuS+0gAIIovda48sgtxPPWjB5B7W
+         VhJcL99+Maezi626WOXoV0bAmEn2WArGh7xclwN9Rr5nyhNpkMi+fYWMGLUiFkvwvqk9
+         ebOA==
+X-Gm-Message-State: APjAAAUHRFZifjj64hotD1DGUzR/OQaMQ02RxR15vu9da26nwDX0TW9L
+        AZyCatY999QurzjVJu5CvU59YVNFTrjc+vSH80c=
+X-Google-Smtp-Source: APXvYqz5kir33J5AjmzplbKAfH30cVdEZ3sEoQzuyfFO20zuGZF8LYiKII1TI8KuvJglH3idinfKAhZ4lWT5LqRWGgc=
+X-Received: by 2002:ac8:3ff5:: with SMTP id v50mr24492574qtk.142.1559636034539;
+ Tue, 04 Jun 2019 01:13:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190603131907.13395-5-maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190531035348.7194-1-elder@linaro.org> <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+ <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org> <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
+ <a28c5e13-59bc-144d-4153-9d104cfa9188@linaro.org> <20190531233306.GB25597@minitux>
+ <d76a710d45dd7df3a28afb12fc62cf14@codeaurora.org> <CAK8P3a0brT0zyZGNWiS2R0RMHHFF2JG=_ixQyvjhj3Ky39o0UA@mail.gmail.com>
+ <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org>
+In-Reply-To: <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 4 Jun 2019 10:13:37 +0200
+Message-ID: <CAK8P3a2U=RzfpVaAgRP1QwPhRpZiBNsG5qdWjzwG=tCKZefYHA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Alex Elder <elder@linaro.org>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Dan Williams <dcbw@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        evgreen@chromium.org, Ben Chan <benchan@google.com>,
+        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, abhishek.esse@gmail.com,
+        Networking <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-03 15:19, Maciej Fijalkowski wrote:
-> In case where multiple xsk sockets are attached to a single interface
-> and one of them gets detached, the eBPF maps and program are removed.
-> This should not happen as the rest of xsksocks are still using these
-> resources.
-> 
-> In order to fix that, let's have an additional eBPF map with a single
-> entry that will be used as a xsks count. During the xsk_socket__delete,
-> remove the resources only when this count is equal to 0.  This map is
-> not being accessed from eBPF program, so the verifier is not associating
-> it with the prog, which in turn makes bpf_obj_get_info_by_fd not
-> reporting this map in nr_map_ids field of struct bpf_prog_info. The
-> described behaviour brings the need to have this map pinned, so in
-> case when socket is being created and the libbpf detects the presence of
-> bpf resources, it will be able to access that map.
+On Mon, Jun 3, 2019 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
+> On 6/3/19 5:04 AM, Arnd Bergmann wrote:
+> > On Sat, Jun 1, 2019 at 1:59 AM Subash Abhinov Kasiviswanathan
+> >
+> > - What I'm worried about most here is the flow control handling on the
+> >   transmit side. The IPA driver now uses the modern BQL method to
+> >   control how much data gets submitted to the hardware at any time.
+> >   The rmnet driver also uses flow control using the
+> >   rmnet_map_command() function, that blocks tx on the higher
+> >   level device when the remote side asks us to.
+> >   I fear that doing flow control for a single physical device on two
+> >   separate netdev instances is counterproductive and confuses
+> >   both sides.
 >
+> I understand what you're saying here, and instinctively I think
+> you're right.
+>
+> But BQL manages the *local* interface's ability to get rid of
+> packets, whereas the QMAP flow control is initiated by the other
+> end of the connection (the modem in this case).
+>
+> With multiplexing, it's possible that one of several logical
+> devices on the modem side has exhausted a resource and must
+> ask the source of the data on the host side to suspend the
+> flow.  Meanwhile the other logical devices sharing the physical
+> link might be fine, and should not be delayed by the first one.
+>
+> It is the multiplexing itself that confuses the BQL algorithm.
+> The abstraction obscures the *real* rates at which individual
+> logical connections are able to transmit data.
 
-This commit is only needed after #3 is applied, right? So, this is a way 
-of refcounting XDP socks?
+I would assume that the real rate constantly changes, at least
+for wireless interfaces that are also shared with other users
+on the same network. BQL is meant to deal with that, at least
+when using a modern queuing algorithm.
 
+> Even if the multiple logical interfaces implemented BQL, they
+> would not get the feedback they need directly from the IPA
+> driver, because transmitting over the physical interface might
+> succeed even if the logical interface on the modem side can't
+> handle more data.  So I think the flow control commands may be
+> necessary, given multiplexing.
 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->   tools/lib/bpf/xsk.c | 59 +++++++++++++++++++++++++++++++++++++++++++++--------
->   1 file changed, 51 insertions(+), 8 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index e28bedb0b078..88d2c931ad14 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -44,6 +44,8 @@
->    #define PF_XDP AF_XDP
->   #endif
->   
-> +#define XSKS_CNT_MAP_PATH "/sys/fs/bpf/xsks_cnt_map"
-> +
->   struct xsk_umem {
->   	struct xsk_ring_prod *fill;
->   	struct xsk_ring_cons *comp;
-> @@ -65,6 +67,7 @@ struct xsk_socket {
->   	int prog_fd;
->   	int qidconf_map_fd;
->   	int xsks_map_fd;
-> +	int xsks_cnt_map_fd;
->   	__u32 queue_id;
->   	char ifname[IFNAMSIZ];
->   };
-> @@ -372,7 +375,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
->   static int xsk_create_bpf_maps(struct xsk_socket *xsk)
->   {
->   	int max_queues;
-> -	int fd;
-> +	int fd, ret;
->   
->   	max_queues = xsk_get_max_queues(xsk);
->   	if (max_queues < 0)
-> @@ -392,6 +395,24 @@ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
->   	}
->   	xsk->xsks_map_fd = fd;
->   
-> +	fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "xsks_cnt_map",
-> +				 sizeof(int), sizeof(int), 1, 0);
-> +	if (fd < 0) {
-> +		close(xsk->qidconf_map_fd);
-> +		close(xsk->xsks_map_fd);
-> +		return fd;
-> +	}
-> +
-> +	ret = bpf_obj_pin(fd, XSKS_CNT_MAP_PATH);
-> +	if (ret < 0) {
-> +		pr_warning("pinning map failed; is bpffs mounted?\n");
-> +		close(xsk->qidconf_map_fd);
-> +		close(xsk->xsks_map_fd);
-> +		close(fd);
-> +		return ret;
-> +	}
-> +	xsk->xsks_cnt_map_fd = fd;
-> +
->   	return 0;
->   }
->   
-> @@ -456,8 +477,10 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   		close(fd);
->   	}
->   
-> +	xsk->xsks_cnt_map_fd = bpf_obj_get(XSKS_CNT_MAP_PATH);
->   	err = 0;
-> -	if (xsk->qidconf_map_fd < 0 || xsk->xsks_map_fd < 0) {
-> +	if (xsk->qidconf_map_fd < 0 || xsk->xsks_map_fd < 0 ||
-> +	    xsk->xsks_cnt_map_fd < 0) {
->   		err = -ENOENT;
->   		xsk_delete_bpf_maps(xsk);
->   	}
-> @@ -467,17 +490,25 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   	return err;
->   }
->   
-> -static void xsk_clear_bpf_maps(struct xsk_socket *xsk)
-> +static void xsk_clear_bpf_maps(struct xsk_socket *xsk, long *xsks_cnt_ptr)
->   {
-> +	long xsks_cnt, key = 0;
->   	int qid = false;
->   
->   	bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
->   	bpf_map_delete_elem(xsk->xsks_map_fd, &xsk->queue_id);
-> +	bpf_map_lookup_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt);
-> +	if (xsks_cnt)
-> +		xsks_cnt--;
-> +	bpf_map_update_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt, 0);
-> +	if (xsks_cnt_ptr)
-> +		*xsks_cnt_ptr = xsks_cnt;
+Can you describe what kind of multiplexing is actually going on?
+I'm still unclear about what we actually use multiple logical
+interfaces for here, and how they relate to one another.
 
-This refcount scheme will not work; There's no synchronization between 
-the updates (cross process)!
+> The rmnet driver could use BQL, and could return NETDEV_TX_BUSY
+> for a logical interface when its TX flow has been stopped by a
+> QMAP command.  That way the feedback for BQL on the logical
+> interfaces would be provided in the right place.
+>
+> I have no good intuition about the interaction between
+> two layered BQL managed queues though.
 
->   }
->   
->   static int xsk_set_bpf_maps(struct xsk_socket *xsk)
->   {
->   	int qid = true, fd = xsk->fd, err;
-> +	long xsks_cnt, key = 0;
->   
->   	err = bpf_map_update_elem(xsk->qidconf_map_fd, &xsk->queue_id, &qid, 0);
->   	if (err)
-> @@ -487,9 +518,18 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
->   	if (err)
->   		goto out;
->   
-> +	err = bpf_map_lookup_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt);
-> +	if (err)
-> +		goto out;
-> +
-> +	xsks_cnt++;
-> +	err = bpf_map_update_elem(xsk->xsks_cnt_map_fd, &key, &xsks_cnt, 0);
-> +	if (err)
-> +		goto out;
-> +
+Returning NETDEV_TX_BUSY is usually a bad idea as that
+leads to unnecessary frame drop.
 
-Dito.
+I do think that using BQL and the QMAP flow command on
+the /same/ device would be best, as that throttles the connection
+when either of the two algorithms wants us to slow down.
 
->   	return 0;
->   out:
-> -	xsk_clear_bpf_maps(xsk);
-> +	xsk_clear_bpf_maps(xsk, NULL);
->   	return err;
->   }
->   
-> @@ -752,13 +792,18 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->   	size_t desc_sz = sizeof(struct xdp_desc);
->   	struct xdp_mmap_offsets off;
->   	socklen_t optlen;
-> +	long xsks_cnt;
->   	int err;
->   
->   	if (!xsk)
->   		return;
->   
-> -	xsk_clear_bpf_maps(xsk);
-> -	xsk_delete_bpf_maps(xsk);
-> +	xsk_clear_bpf_maps(xsk, &xsks_cnt);
-> +	unlink(XSKS_CNT_MAP_PATH);
-> +	if (!xsks_cnt) {
-> +		xsk_delete_bpf_maps(xsk);
-> +		xsk_remove_xdp_prog(xsk);
-> +	}
->   
->   	optlen = sizeof(off);
->   	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
-> @@ -774,8 +819,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->   
->   	}
->   
-> -	xsk_remove_xdp_prog(xsk);
-> -
->   	xsk->umem->refcount--;
->   	/* Do not close an fd that also has an associated umem connected
->   	 * to it.
-> 
+The question is mainly which of the two devices that should be.
+Doing it in the ipa driver is probably easier to implement here,
+but ideally I think we'd only have a single queue visible to the
+network stack, if we can come up with a way to do that.
+
+> > - I was a little confused by the location of the rmnet driver in
+> >   drivers/net/ethernet/... More conventionally, I think as a protocol
+> >   handler it should go into net/qmap/, with the ipa driver going
+> >   into drivers/net/qmap/ipa/, similar to what we have fo ethernet,
+> >   wireless, ppp, appletalk, etc.
+> >
+> > - The rx_handler uses gro_cells, which as I understand is meant
+> >   for generic tunnelling setups and takes another loop through
+> >   NAPI to aggregate data from multiple queues, but in case of
+> >   IPA's single-queue receive calling gro directly would be simpler
+> >   and more efficient.
+>
+> I have been planning to investigate some of the generic GRO
+> stuff for IPA but was going to wait on that until the basic
+> code was upstream.
+
+That's ok, that part can easily be changed after the fact, as it
+does not impact the user interface or the general design.
+
+> >   From the overall design and the rmnet Kconfig description, it
+> >   appears as though the intention as that rmnet could be a
+> >   generic wrapper on top of any device, but from the
+> >   implementation it seems that IPA is not actually usable that
+> >   way and would always go through IPA.
+>
+> As far as I know *nothing* upstream currently uses rmnet; the
+> IPA driver will be the first, but as Bjorn said others seem to
+> be on the way.  I'm not sure what you mean by "IPA is not
+> usable that way."  Currently the IPA driver assumes a fixed
+> configuration, and that configuration assumes the use of QMAP,
+> and therefore assumes the rmnet driver is layered above it.
+> That doesn't preclude rmnet from using a different back end.
+
+Yes, that's what I meant above: IPA can only be used through
+rmnet (I wrote "through IPA", sorry for the typo), but cannot be
+used by itself.
+
+       Arnd
