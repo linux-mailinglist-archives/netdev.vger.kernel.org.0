@@ -2,138 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D5733DA1
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 05:55:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0904533E12
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 06:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbfFDDzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 23:55:10 -0400
-Received: from mail-eopbgr10054.outbound.protection.outlook.com ([40.107.1.54]:2654
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726136AbfFDDzK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jun 2019 23:55:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rpP388YuLV7gu3A5NPVXe61z889jcmX5W5rGMVGl6A0=;
- b=KBDD0avJYLPJ+VG+6nVR8ynKPoKLZ1OFCvTlvrc9qZPSAYoi0+ZSLTF7OMuHWpbkQIL2/O/Px+J1Jv1auVdNgbrL9BmjGx9WbjA+Bu0cc/qs7zm0Y46pW+agOlgwbrEyukpgBWyhsQY6BVNySHN2baJF3f5IJH48sXwQvjsN6C0=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.5.23) by
- VI1PR0402MB3550.eurprd04.prod.outlook.com (52.134.4.31) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.21; Tue, 4 Jun 2019 03:55:07 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::4c3e:205:bec9:54ef]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::4c3e:205:bec9:54ef%4]) with mapi id 15.20.1943.018; Tue, 4 Jun 2019
- 03:55:07 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Fabio Estevam <festevam@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] [PATCH net-next v2 1/2] net: fec_main: Use netdev_err()
- instead of pr_err()
-Thread-Topic: [EXT] [PATCH net-next v2 1/2] net: fec_main: Use netdev_err()
- instead of pr_err()
-Thread-Index: AQHVGoJNph8/XB2twEuE/oTywEUc+KaK3QkA
-Date:   Tue, 4 Jun 2019 03:55:07 +0000
-Message-ID: <VI1PR0402MB36004F96D79358F7EFFE0EB6FF150@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20190604030445.21994-1-festevam@gmail.com>
-In-Reply-To: <20190604030445.21994-1-festevam@gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1bd3e067-3078-4484-4a16-08d6e8a06ee4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3550;
-x-ms-traffictypediagnostic: VI1PR0402MB3550:
-x-microsoft-antispam-prvs: <VI1PR0402MB355095417A44A5182093BDA3FF150@VI1PR0402MB3550.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-forefront-prvs: 0058ABBBC7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(396003)(136003)(39860400002)(366004)(346002)(199004)(189003)(316002)(102836004)(6246003)(446003)(33656002)(14444005)(8936002)(7696005)(66446008)(66476007)(99286004)(66556008)(68736007)(81166006)(86362001)(4326008)(66946007)(6506007)(81156014)(25786009)(76176011)(52536014)(53936002)(66066001)(256004)(64756008)(2501003)(8676002)(5660300002)(478600001)(14454004)(71200400001)(71190400001)(9686003)(11346002)(55016002)(2906002)(305945005)(476003)(26005)(3846002)(486006)(110136005)(6116002)(74316002)(7736002)(186003)(76116006)(73956011)(6436002)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3550;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UoAHoEYkmXd63RGiKmoitPPVcBHWsYiV3iqoz7Xjpk7xmDtnfDmgOk4SImRifWqnG1uQP0gGLlU51Agf/txx1xCoqDwTowSTe0Dc5/aebwVw7eRDa1Riw9zIPzx9QQOE6XHS+LzsgGryiToX9YrZJlFufLa1H6TRaHZ9VY5FQ8LcOkXWqDXuPh2Ar5V/Wp6E7pOtqgSz0cvB9zzY1CiNLmMTCuyKeTsG3nOrOZJB0d2XuIbE90OCn4pnWoTCAsR76340GrhnIeGxQdPfWd8LaqNzGuL/4J5cXz9h2tit7uY7N15p+ZJPCBl4Kxgp/Ifgt6Z+0BkZ/mYJpM20hwfzU7kyWW3yE3RaaesldX64Wrcsd3T+Mq+SEcLxw24TN40iVML3EdzDNO+xXB2toFTaLkiJJz9X+Ik4/8OApDMk97o=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726410AbfFDE3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 00:29:05 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43332 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726078AbfFDE3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 00:29:05 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c6so11865525pfa.10
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 21:29:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YotpcPgy/ioLN67cVEDyEBsnoXdJdPakdgz5ApLCKBw=;
+        b=vuaYM4A0poBnYZZxP35tYSRSs5ZAwY0nZXUpR9OsgNvq7oymErrMjALZJKhL5mN7Pg
+         suEaN+JJSRJEv2VFGHahe7uKa4LOd2Ju2/35oF7K6qmewnSQTZIY7misahhfJ2a4Umqn
+         4+FDmEn+Z8mk7c4YJar8nLKcyvEbUAKqdyiQxL9BGmG6e1ISstAxOFiiCVH+FFP+Hi6f
+         Rp6ixq7zr411GGOT4BASjzgvU7Q1A1haFfH0V74DRQ+xmfjAS1/Kb7No92G3enkiWlXr
+         9ncfGmD04t4i/NsnvM/RbnqRf885wEcjypnJKmTyfBFLUAY9ssx3n8uUzUZLdqetqbR6
+         pIJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YotpcPgy/ioLN67cVEDyEBsnoXdJdPakdgz5ApLCKBw=;
+        b=J3YoxhsyAwmEsTfwDCVuPtTk/k+xuMslkniloZNa6nSwTljD7TBzP9ZzyMkc2awqvl
+         6zympVwAjmExfoS5RXQiyDCkyQ28ezmXBj47yfBsKoODiohhsUXms9aBXb9b4hdCcq4k
+         gw6jAyITFm6D+QYHb+8qeVb3N8kWvjXoRh/VhuH6ORNH67/iMiR0WsnBjEHH0D5AzSIg
+         iGsKCqZoy4WRds6u6/apnvgIGLdOUoxbvDTjKVNE/djV0DoGW/QqY7UGNxQavQwN0vZE
+         +WzdKVgJJe8xoEjMpaE8j52DrpC4dqLoI5kC2OjOP6BYfefVAVOyc0673cjFYuXxDEK0
+         L/bw==
+X-Gm-Message-State: APjAAAX2liTkXcRQj2mAhBiuOT4lkHKsjTL8DH3DtExcZthjsdFaxB4j
+        sUnwElsZVmjrQ4kv9WCDrBjZjQ==
+X-Google-Smtp-Source: APXvYqxr9pbzD16CDHaDITplzgJZ0pdLe7pnp0oejXhAzlarnnMQ5G4pKa94Ngv5uU0D1h47wCh8aw==
+X-Received: by 2002:aa7:8248:: with SMTP id e8mr36021946pfn.155.1559622544057;
+        Mon, 03 Jun 2019 21:29:04 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id q20sm15305137pgq.66.2019.06.03.21.29.02
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 03 Jun 2019 21:29:03 -0700 (PDT)
+Date:   Mon, 3 Jun 2019 21:29:02 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map
+ definitions using BTF
+Message-ID: <20190604042902.GA2014@mini-arch>
+References: <20190531202132.379386-1-andriin@fb.com>
+ <20190531202132.379386-7-andriin@fb.com>
+ <20190531212835.GA31612@mini-arch>
+ <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
+ <20190603163222.GA14556@mini-arch>
+ <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
+ <20190604010254.GB14556@mini-arch>
+ <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bd3e067-3078-4484-4a16-08d6e8a06ee4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2019 03:55:07.1260
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fugang.duan@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3550
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com> Sent: Tuesday, June 4, 2019 11:05 =
-AM
-> netdev_err() is more appropriate for printing error messages inside netwo=
-rk
-> drivers, so switch to netdev_err().
->=20
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
-> ---
-> Changes since v1:
-> - Split the changes from fec_main and fec_ptp in two different patches
->=20
->  drivers/net/ethernet/freescale/fec_main.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index 848defa33d3a..4ec9733a88d5 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -2452,24 +2452,24 @@ fec_enet_set_coalesce(struct net_device *ndev,
-> struct ethtool_coalesce *ec)
->                 return -EOPNOTSUPP;
->=20
->         if (ec->rx_max_coalesced_frames > 255) {
-> -               pr_err("Rx coalesced frames exceed hardware
-> limitation\n");
-> +               netdev_err(ndev, "Rx coalesced frames exceed hardware
-> + limitation\n");
+> BTF is mandatory for _any_ new feature.
+If something is easy to support without asking everyone to upgrade to
+a bleeding edge llvm, why not do it?
+So much for backwards compatibility and flexibility.
 
-The API still can be called before .register_netdev(), which means ndev is =
-uninitialized.
->                 return -EINVAL;
->         }
->=20
->         if (ec->tx_max_coalesced_frames > 255) {
-> -               pr_err("Tx coalesced frame exceed hardware
-> limitation\n");
-> +               netdev_err(ndev, "Tx coalesced frame exceed hardware
-> + limitation\n");
->                 return -EINVAL;
->         }
->=20
->         cycle =3D fec_enet_us_to_itr_clock(ndev, fep->rx_time_itr);
->         if (cycle > 0xFFFF) {
-> -               pr_err("Rx coalesced usec exceed hardware
-> limitation\n");
-> +               netdev_err(ndev, "Rx coalesced usec exceed hardware
-> + limitation\n");
->                 return -EINVAL;
->         }
->=20
->         cycle =3D fec_enet_us_to_itr_clock(ndev, fep->tx_time_itr);
->         if (cycle > 0xFFFF) {
-> -               pr_err("Rx coalesced usec exceed hardware
-> limitation\n");
-> +               netdev_err(ndev, "Rx coalesced usec exceed hardware
-> + limitation\n");
->                 return -EINVAL;
->         }
->=20
-> --
-> 2.17.1
-
+> It's for introspection and debuggability in the first place.
+> Good debugging is not optional.
+Once llvm 8+ is everywhere, sure, but we are not there yet (I'm talking
+about upstream LTS distros like ubuntu/redhat).
