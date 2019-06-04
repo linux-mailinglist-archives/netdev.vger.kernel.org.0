@@ -2,98 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B7C33D3C
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C72F33D41
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 04:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbfFDCf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jun 2019 22:35:27 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42819 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFDCf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 22:35:27 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e6so8143892pgd.9
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 19:35:27 -0700 (PDT)
+        id S1726223AbfFDCjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jun 2019 22:39:15 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42747 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbfFDCjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jun 2019 22:39:15 -0400
+Received: by mail-pl1-f194.google.com with SMTP id go2so7705418plb.9
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 19:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tGa9RS01vGpHQOleOaUe4nJ7FM2xlQiHP6+7RJgSjXE=;
-        b=qyOw18AVAcOLjs7Z1nFSf/wGwpho+U1Yf6Yd8CCXMWCeVxUye8YPrXnxnoheG6zrvw
-         9peKAkZnQ8MkQC1qOKZtnWk9ofiYmyfVSVIP2wlVr3N0S/BjiWYUN44/K1JwxzHGZa2u
-         3KcxtBxPeTGcKAC0FkhM8X2eJLCm/6XENK+lYVTUs259omTngf4S3YTqP9mZARLy5aj9
-         KPshv5vDquPc93duQlGVAPf8BGyp0PIcwh170Dn6gaNICLPeru13IQDDohnNP6dNWWJf
-         NbCeMqDy/ahTMoijRSEXsk46dcQ2xQ9F/r+8QKS95o+vwVhNFayqREZ2DkCW+UKHAhHi
-         91eg==
+        h=subject:to:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YUyIv0vX9OhDgaJjeJwPkMdWjuC17vitRLoGMxR2Z3o=;
+        b=p+dyBSZD7qb4ZPJpJIrcnxEf7/rC8/qqZlsh+RwE8+t+xlw4C4aOHnd5V7hCCzsNDV
+         /j4prvQH/I1QvguMmhzN86nYO1emu96Hi617LYvFRMkkFyVBrIfMYF4mcL1ULquou/F0
+         HkOvyZwzFPz7ksd3FNi1KyWqS+xmWfr0P794VwXpkwTSMEUsQ4wzhiKX5X09B3YjdAZO
+         qJf1U/SXJfbQyzGJMITdGF+TLLjr4q7aoFXbjj6s2zl7wPyDQJRxrZFL9Akq5ANT2ap8
+         UBbneetTj4/ZV6kT2L4WbBN+CpvwO8IINxf92SlpR/jTHNOtReGpT02mBIoOx+3//5FZ
+         VIWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=tGa9RS01vGpHQOleOaUe4nJ7FM2xlQiHP6+7RJgSjXE=;
-        b=FIif1W82DDwuVuavKOeM0k61i9p8X7OskRSVPdznxcajOYjB090OQIecJT6pbuwLeF
-         iBm7vNVQtnEHt3rYHNDNGNLDevP7wGLO4htCmnhRIW+7rqxtt6VsuyXSQDsszEM4zDwe
-         wrBDraiBvtYXinQx+zLVRiqNlInYP1QT0iGP0idlHUiVcJZ4QiiTvtHDbpieElQHKo3s
-         IOjgJ7udupTNXe7TCo0Q/fKqA+tgB26eFWahA18cpBqT3mz9qQv4OCrJTW6k9O3OjnDW
-         ByYLiO3fHvEzu7WxilzQN0c8ZxrJbt4SP6yt6awy1PpDbZdxFmNPFgwXFD6AopSjgxIU
-         rKyg==
-X-Gm-Message-State: APjAAAXsOPKmiEvRQA5CkZNFxReCwwbOMhfA45DaM29Anurd4b/slnDg
-        hzJUT2b0OP5+j+38HOnd+LPjCavFz7YiVg==
-X-Google-Smtp-Source: APXvYqzjNT0GDJtobQSntl5xwo6n54WIG5JXTTfV53nutMoK929HJ9N8VLkDt95uA8IqZ/Uv7ljT+Q==
-X-Received: by 2002:a17:90a:bf02:: with SMTP id c2mr7263360pjs.73.1559615726635;
-        Mon, 03 Jun 2019 19:35:26 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v5sm14688030pfm.22.2019.06.03.19.35.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 Jun 2019 19:35:25 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sean Young <sean@mess.org>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf] selftests/bpf: move test_lirc_mode2_user to TEST_GEN_PROGS_EXTENDED
-Date:   Tue,  4 Jun 2019 10:35:05 +0800
-Message-Id: <20190604023505.27390-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        bh=YUyIv0vX9OhDgaJjeJwPkMdWjuC17vitRLoGMxR2Z3o=;
+        b=sJIcwTqowDmBYvUwBOtVR/WxCDyUToNBYGJOg3yYzdhickw3BX3WvqXwVzqIY8mjor
+         O5hwFYcOG+nm32DOmLCNRBKE/EARRjLxZJI/wR/j3MbolFidfzRqdrSIUXNRw7wThP9B
+         yyWoZF4Tc+twiPq4grRG/FNWS19fCVe9wtEt4tBccQttXzNTZMPnxQRk6F+P8mg2crxS
+         4kA0f4mMdKRv91f06nU6CRUL2xvLIUfDASIZxui8vLh1I/8xSdIsV7DaWiWXu883on6c
+         qtESWTY9FbmorA2lzMhyWRnpe3B27sfzYT5fmPXexrmPBLAhmTu+ld43fx5mPjV/uUmv
+         7o3Q==
+X-Gm-Message-State: APjAAAV8e8jamEV20BrUIAEOAGsm0KkboFegbAi9/R5fOU/AQgPMAPg0
+        wiP6oLH/pChcB5D4obTUjBZr5Mhu
+X-Google-Smtp-Source: APXvYqzh41lbINz8Ofq4wT23Snr/+aFlrUuMNsjlLqrUsopUnTSiYIDtjq5DKe1Wd8+pZ+/WEqFCLA==
+X-Received: by 2002:a17:902:b717:: with SMTP id d23mr18661124pls.53.1559615954759;
+        Mon, 03 Jun 2019 19:39:14 -0700 (PDT)
+Received: from [10.230.28.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y10sm18594787pfm.68.2019.06.03.19.39.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 03 Jun 2019 19:39:13 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] net: phy: xilinx: add Xilinx PHY driver
+To:     Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <6fe3ec68-3848-c648-6904-23c98165382d@gmail.com>
+Date:   Mon, 3 Jun 2019 19:39:09 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
+In-Reply-To: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-test_lirc_mode2_user is included in test_lirc_mode2.sh test and should
-not be run directly.
++Heiner, Andrew,
 
-Fixes: 6bdd533cee9a ("bpf: add selftest for lirc_mode2 type program")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- tools/testing/selftests/bpf/Makefile | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+On 6/3/2019 4:12 PM, Robert Hancock wrote:
+> This adds a driver for the PHY device implemented in the Xilinx PCS/PMA
+> Core logic. This is mostly a generic gigabit PHY, except that the
+> features are explicitly set because the PHY wrongly indicates it has no
+> extended status register when it actually does.
+> 
+> This version is a simplified version of the GPL 2+ version from the
+> Xilinx kernel tree.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 66f2dca1dee1..e36356e2377e 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -21,8 +21,8 @@ LDLIBS += -lcap -lelf -lrt -lpthread
- # Order correspond to 'make run_tests' order
- TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test_progs \
- 	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
--	test_sock test_btf test_sockmap test_lirc_mode2_user get_cgroup_id_user \
--	test_socket_cookie test_cgroup_storage test_select_reuseport test_section_names \
-+	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
-+	test_cgroup_storage test_select_reuseport test_section_names \
- 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl
- 
- BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
-@@ -63,7 +63,8 @@ TEST_PROGS_EXTENDED := with_addr.sh \
- 
- # Compile but not part of 'make run_tests'
- TEST_GEN_PROGS_EXTENDED = test_libbpf_open test_sock_addr test_skb_cgroup_id_user \
--	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user
-+	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-+	test_lirc_mode2_user
- 
- include ../lib.mk
- 
+For future submission, please use scripts/get_maintainer.pl so the
+appropriate maintainers can be copied and give a chance to review this.
+
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> ---
+> 
+
+[snip]
+
+> +/* Mask used for ID comparisons */
+> +#define XILINX_PHY_ID_MASK		0xfffffff0
+> +
+> +/* Known PHY IDs */
+> +#define XILINX_PHY_ID			0x01740c00
+> +
+> +static struct phy_driver xilinx_drivers[] = {
+> +{
+> +	.phy_id		= XILINX_PHY_ID,
+> +	.phy_id_mask	= XILINX_PHY_ID_MASK,
+
+You can use PHY_ID_MATCH_MODEL to declare the first two fields here.
+
+> +	.name		= "Xilinx PCS/PMA PHY",
+> +	/* Xilinx PHY wrongly indicates BMSR_ESTATEN = 0 even though
+> +	 * extended status registers are supported. So we force the PHY
+> +	 * features to PHY_GBIT_FEATURES in order to allow gigabit support
+> +	 * to be detected.
+> +	 */
+A PHY fixup might have worked too, but I suppose this is equally fine.
 -- 
-2.19.2
-
+Florian
