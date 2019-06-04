@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A73535083
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 21:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE3035089
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726305AbfFDT6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 15:58:44 -0400
-Received: from mail-wm1-f41.google.com ([209.85.128.41]:35501 "EHLO
-        mail-wm1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbfFDT6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 15:58:44 -0400
-Received: by mail-wm1-f41.google.com with SMTP id c6so13924wml.0
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 12:58:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=G2f3vMfSNJw3LLdtLwKk1+YL0T97U1YBnbTLXlkw07Q=;
-        b=vSo3VP+XkFafF4BhA75r7g8jTag4wXQMdMt0zGnIjy1KyrkNn7ZJsvL1RpqlU+mMnK
-         Q0SeGbFq/8M8E1fsijJhTN1LwDMxXPTLfnx68BlXODFHIPXHbZIXGd+slftteC9DORJJ
-         dc5xePrwH+SJ+nhf3WcmFo6OeXAmOMN7TCDLzCuGrYLQH3xzoQ8KM6LGJOIMkfsSurOv
-         WXiPADGuPFVIf0cg+/i8GcbU+tB+zvrXBo0bZSMCrhQ/1+5PSn6Lv8fRgTjkQwOxcP3m
-         46fKY0PlmXfum/n5zT7JSsiFpQqtysDxfse2PKQixej/b2d40nqgU5wWjzDKyctDGUfp
-         MJBg==
+        id S1726303AbfFDUAh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 16:00:37 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41562 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfFDUAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:00:37 -0400
+Received: by mail-ed1-f68.google.com with SMTP id x25so2180460eds.8
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 13:00:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=G2f3vMfSNJw3LLdtLwKk1+YL0T97U1YBnbTLXlkw07Q=;
-        b=Q3s7m4ccV6yUxX1mzjk2EWtyitcjQPAikkz52XBGPYZ0kyrXJ7SoOvWh6c4YngRIsh
-         1KrTzvb6r1iBCmSt7ZtN/607HfV5XSDWE2CBMrywMXP0DvEmrbm7r3LEMWDKQ3pMQHNk
-         /d4UaAEZG5rSBeG+OG68iFS+koH94fFopCdH+CteJNQLX1+MNDNH5IyS5kT2JkzK+BcB
-         ywNwd2RwnEijfVXImoql32f2BQSGsgSv5QOljwHzSpJDpMKRB8CVvYutZ/LJ9AFLZU4T
-         RpHi7569sNONz7Y5mKC0NERfR0Cek0UbmHQMXZqa0wlmLT/l2lEFki4QP1kNkfliWfMo
-         GsCg==
-X-Gm-Message-State: APjAAAXmM332T+H6MWt73xev1mCbx45JvCAesclN9zB94KGgnEMz29bl
-        qmnh+y2uWssyweH1mAybYe4=
-X-Google-Smtp-Source: APXvYqxtaa7knOQtAW6satP78lJRWxOyOH6Sxf2YmOg3LtpVLbv0wKd4y6tvqvOjNoFevmMMKFKcfw==
-X-Received: by 2002:a1c:8017:: with SMTP id b23mr19334851wmd.117.1559678322650;
-        Tue, 04 Jun 2019 12:58:42 -0700 (PDT)
-Received: from [192.168.1.2] ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id p16sm34211478wrg.49.2019.06.04.12.58.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 12:58:42 -0700 (PDT)
-To:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Subject: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Message-ID: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
-Date:   Tue, 4 Jun 2019 22:58:41 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=noDwviL+4rBDVse1gNVnZx4mNT7DQGI6SZB0FNaozME=;
+        b=i+yIlEzJAwd+ukmdhOJJ/myMGxgBs3lLB5UjSpRkuFtGnGxIMFHEAq7AW0AjMgK+53
+         UYqxWUWJnvSAl8O9rl+jkB1uIz10sD8WrdniN1h1JdASoQX7lOla1UO4LS/8eHKzjKo8
+         Do9Q5JRysVrM41BRUoTUp/Po5QbJJRsalxextSG5xw7bG8qhqHStvrCYhGbs/o3ciVu1
+         WddV+Filv3HWmSUl1inYbjyh2JE3XSBCn7D5uWIO5lKK1oeHKdH1YWodB+XM+3fmROc0
+         yITvn2Po0Tzh4sg6uu4Rlid3AJiCxDWoDQtAyD13F+9JNBu18+2edO26z4nsTeK7Kr9R
+         /NEA==
+X-Gm-Message-State: APjAAAWEbPxjBa+8C47V05j3TnCEjELQW0kFPBasGw1T8nJ6+6DiGTdT
+        uxVM4CCca+lXi6hlA8B48kQdiQ==
+X-Google-Smtp-Source: APXvYqwCLLHjpCA0YK1MmzStYYe0ZKWj2FWZdTKlNfoGD9J5ErnAJdp04fJi4fPrCNlUDs2sTfniRw==
+X-Received: by 2002:a50:86b7:: with SMTP id r52mr9125906eda.100.1559678435755;
+        Tue, 04 Jun 2019 13:00:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id a5sm1785202ejv.62.2019.06.04.13.00.35
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 13:00:35 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 7D938181CC1; Tue,  4 Jun 2019 22:00:34 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@redhat.com>
+Subject: Re: [PATCH net-next 2/2] devmap: Allow map lookups from eBPF
+In-Reply-To: <A5CA54A9-34A0-4583-84E8-0530BAEE215B@gmail.com>
+References: <155966185058.9084.14076895203527880808.stgit@alrua-x1> <155966185078.9084.7775851923786129736.stgit@alrua-x1> <20190604183559.10db09d2@carbon> <A5CA54A9-34A0-4583-84E8-0530BAEE215B@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 04 Jun 2019 22:00:34 +0200
+Message-ID: <877ea1f7dp.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Jonathan Lemon <jonathan.lemon@gmail.com> writes:
 
-I've been wondering what is the correct approach to cut the Ethernet 
-link when the user requests it to be administratively down (aka ip link 
-set dev eth0 down).
-Most of the Ethernet drivers simply call phy_stop or the phylink 
-equivalent. This leaves an Ethernet link between the PHY and its link 
-partner.
-The Freescale gianfar driver (authored by Andy Fleming who also authored 
-the phylib) does a phy_disconnect here. It may seem a bit overkill, but 
-of the extra things it does, it calls phy_suspend where most PHY drivers 
-set the BMCR_PDOWN bit. Only this achieves the intended purpose of also 
-cutting the link partner's link on 'ip link set dev eth0 down'.
-What is the general consensus here?
-I see the ability to be able to put the PHY link administratively down a 
-desirable feat. If it's left to negotiate/receive traffic etc while the 
-MAC driver isn't completely set up and ready, in theory a lot of 
-processing can happen outside of the operating system's control.
+> On 4 Jun 2019, at 9:35, Jesper Dangaard Brouer wrote:
+>
+>> On Tue, 04 Jun 2019 17:24:10 +0200
+>> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>>> We don't currently allow lookups into a devmap from eBPF, because the map
+>>> lookup returns a pointer directly to the dev->ifindex, which shouldn't be
+>>> modifiable from eBPF.
+>>>
+>>> However, being able to do lookups in devmaps is useful to know (e.g.)
+>>> whether forwarding to a specific interface is enabled. Currently, programs
+>>> work around this by keeping a shadow map of another type which indicates
+>>> whether a map index is valid.
+>>>
+>>> To allow lookups, simply copy the ifindex into a scratch variable and
+>>> return a pointer to this. If an eBPF program does modify it, this doesn't
+>>> matter since it will be overridden on the next lookup anyway. While this
+>>> does add a write to every lookup, the overhead of this is negligible
+>>> because the cache line is hot when both the write and the subsequent
+>>> read happens.
+>>
+>> When we choose the return value, here the ifindex, then this basically
+>> becomes UABI, right?
+>>
+>> Can we somehow use BTF to help us to make this extensible?
+>>
+>> As Toke mention in the cover letter, we really want to know if the
+>> chosen egress have actually enabled/allocated resources for XDP
+>> transmitting, but as we currently don't have in-kernel way to query
+>> thus (thus, we cannot expose such info).
+>
+> Would it be better to add a helper like bpf_map_element_present(), which
+> just returns a boolean value indicating whether the entry is NULL or not?
+>
+> This would solve this problem (and my xskmap problem).
 
-Regards,
--Vladimir
+Ah, totally missed that other thread; will go reply there :)
+
+-Toke
