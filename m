@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4649A34DE7
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221AA34DF0
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727827AbfFDQph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 12:45:37 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44992 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727470AbfFDQph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 12:45:37 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n2so10675228pgp.11
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 09:45:36 -0700 (PDT)
+        id S1727916AbfFDQrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 12:47:21 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41554 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727470AbfFDQrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 12:47:20 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 83so3866347pgg.8
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 09:47:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CUZhA4yAj4TLDGFIadVZVNw3lmcRT2Ciiub/8XGf6UQ=;
-        b=oIzffG4FRd2E07zWXuVyehtbhbDoB+7QzEff15NUP0zIvpyFr106L4qTXAn0uL0T2E
-         jh2zQV63XBObSxnKZepl7hQvImSODjYFI35PKBS/rU+y4v7Bx9MO53vzkapoxZUGn565
-         e0hsde1IV23UQesw+imkPCQ7Mbl2lFDDJPF3UzuxQ0i6lmghRvt+K+PwoAmLtQFkOWx7
-         OwjgFblVnc2KvYilLHRFbI4Haw0F/mRtEs8DtVjFLMGB/6TNu/38z/ymMxmjtOjliBx2
-         xMgh09f5JYafjOg9UAK55gxvmFVGeBBqfwIMVXvG64xp20KCgeFh860UxvfhEKX4PbFM
-         /qwA==
+        bh=f2ES3kTiavhUyzOLb3MzT5LHrx6FzBon3Rtq3npOl74=;
+        b=CULsKovvdsf9zEAbzLFsSw/CxJ3LVnFLxI1snQdV1ni7ME/LyVs7fSYreRBTg2Ek9C
+         YiGDW6xVBAm/xdTXsIJDR1vH1lEUX2X6B8zGaPTGMFtElvilha+EeGiwjQJVZk7PLFrG
+         nZsXu3EzX5U1XYgHuMnt3oB11H8hATX+MTAXKhBOuPAcl5PbGuLXbt+nxllqNZPfJevu
+         ESFuP+eVCCBkeFIurlu0jSmnmX210FjVIx2MI2YzLlXSi08jZJoCC70zOPhXgsJdTXr5
+         V/nhLF4gZG7W6UpgSRoXTjDTMN6TxUIteEus6S8ECcdwEd9TVy2DE2mERkR4RfDaqvNJ
+         CFug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CUZhA4yAj4TLDGFIadVZVNw3lmcRT2Ciiub/8XGf6UQ=;
-        b=Y3ZPrTqOMXiqeBK8tCuXC6+0WiWEz/G/NUkv2TF7EajQ5EgGRo3b0tc4/P3CLNiPqa
-         shWlVhvnlKD9c+/Bb6m0KLVf72QUnBtKOGixiHPk7nj3r0gNQgu0XCH4us6FxgRMQPCc
-         bEDbZI0Gn9nxVUuNyD8iAglHmcSLRv/Q2qA3NM0KDSVDgTxVkhCvBFafxWH6we0w4RnY
-         wNls/G0pRPsF0cwwfJJ68BSOzz6OhWSLy3t7pPWrPZAlqNBGd1pi2UISCXky0dyXnCYJ
-         twjQT2KsMJrsPdbHVvz3tmh7ukbA+5vYiaMUKR8jmgVY7QpewNy7QrZskcT/c+BBMjDN
-         guKQ==
-X-Gm-Message-State: APjAAAV8kJIlDCVZnlJAV6f4wmo1j6mIQDjz8lLarOxn8KQeLGZOUpXu
-        dDHrpoxFCR2IN6WCtM5CZGy2JqfGUXY=
-X-Google-Smtp-Source: APXvYqxZ9hg5sC91spAS51wbjVoJV586gJ+rXDLcsNkMKxyOzNoaqci5fccP7jvIryKI2slv6XqLQQ==
-X-Received: by 2002:a17:90a:628a:: with SMTP id d10mr9758899pjj.7.1559666736350;
-        Tue, 04 Jun 2019 09:45:36 -0700 (PDT)
+        bh=f2ES3kTiavhUyzOLb3MzT5LHrx6FzBon3Rtq3npOl74=;
+        b=oeNlXjI6I+lYpBlOXuMBb2XRof997KfSNRfjIJgcRCoquWdQveaSThTl3y1Jhsvh/+
+         T7AsMl+BxNvGGh8cld0Mv+PuZer7qoNUAdFmsCv5fPQ2mH6ksw5irdK2kachW4kz3Wxf
+         S7vCA0fhUP8kInDpDHeP7U1yebgf3VfP+ENZRp/bNljBH8UOa6DW/xJk0YGuVhQxhM3Z
+         NNzAQhSGhUcpoR99DxTsohljAa8+ZKRwY5nP66j38PuCCHnxYHTflh3Lc2eIZIBEoE8T
+         F8vNcFnqL/P36aAmW3oUPtvpsFLc2LGWo7E6boMZ1zg7TMtv+2OUTswBLjH5IXEm5cwz
+         IcIw==
+X-Gm-Message-State: APjAAAVnGtKyloq6NQ4LV6Ega32OxwZDRTvqO6gJcqTz2qQoRMpMWBf0
+        afj+ig57LrRxdj/f/14ha4dtZA==
+X-Google-Smtp-Source: APXvYqzgfJ4LY5ngI9QIZShPAynOLrqlVJTBtd2iw8jrrCtTbVZiguvLVQm3eVxYlLid7Uobr/gUdA==
+X-Received: by 2002:a63:6848:: with SMTP id d69mr37273538pgc.0.1559666840027;
+        Tue, 04 Jun 2019 09:47:20 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id l20sm18457567pff.102.2019.06.04.09.45.36
+        by smtp.gmail.com with ESMTPSA id q125sm39859561pfq.62.2019.06.04.09.47.19
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 09:45:36 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 09:45:34 -0700
+        Tue, 04 Jun 2019 09:47:19 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 09:47:18 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Baruch Siach <baruch@tkos.co.il>
 Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
         Moshe Shemesh <moshe@mellanox.com>
 Subject: Re: [PATCH] devlink: fix libc and kernel headers collision
-Message-ID: <20190604094534.6974f899@hermes.lan>
+Message-ID: <20190604094718.0a56d7a5@hermes.lan>
 In-Reply-To: <602128d22db86bd67e11dec8fe40a73832c222c9.1559230347.git.baruch@tkos.co.il>
 References: <602128d22db86bd67e11dec8fe40a73832c222c9.1559230347.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -69,9 +69,10 @@ Baruch Siach <baruch@tkos.co.il> wrote:
 > iproute2 carries a local version of the kernel struct sysinfo, this
 > causes a collision with libc that do not rely on kernel defined sysinfo
 > like musl libc:
-> 
+>=20
 > In file included from devlink.c:25:0:
-> .../sysroot/usr/include/sys/sysinfo.h:10:8: error: redefinition of 'struct sysinfo'
+> .../sysroot/usr/include/sys/sysinfo.h:10:8: error: redefinition of 'struc=
+t sysinfo'
 >  struct sysinfo {
 >         ^~~~~~~
 > In file included from ../include/uapi/linux/kernel.h:5:0,
@@ -81,15 +82,25 @@ Baruch Siach <baruch@tkos.co.il> wrote:
 > ../include/uapi/linux/sysinfo.h:8:8: note: originally defined here
 >  struct sysinfo {
 > 		^~~~~~~
-> 
+>=20
 > Rely on the kernel header alone to avoid kernel and userspace headers
 > collision of definitions.
-> 
+>=20
 > Cc: Aya Levin <ayal@mellanox.com>
 > Cc: Moshe Shemesh <moshe@mellanox.com>
 > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-Ok, applied. Note that musl libc is not officially supported or tested
-as part of iproute2. I will take patches to fix build and bugs, but you
-are on your own if you must use it.
+Sorry this breaks the glibc build.
 
+
+    CC       devlink.o
+devlink.c: In function =E2=80=98format_logtime=E2=80=99:
+devlink.c:6124:8: warning: implicit declaration of function =E2=80=98sysinf=
+o=E2=80=99; did you mean =E2=80=98psiginfo=E2=80=99? [-Wimplicit-function-d=
+eclaration]
+  err =3D sysinfo(&s_info);
+        ^~~~~~~
+        psiginfo
+
+I backed out the patch now (before pushing it).
+Please fix and resubmit.
