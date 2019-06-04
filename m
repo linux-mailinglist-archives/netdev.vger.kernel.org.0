@@ -2,413 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78B43343F5
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DAB34446
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727306AbfFDKMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 06:12:13 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:23550 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727266AbfFDKMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 06:12:12 -0400
-Received: from fcoe-test11.asicdesigners.com (fcoe-test11.blr.asicdesigners.com [10.193.185.180])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x54AC4qI007298;
-        Tue, 4 Jun 2019 03:12:05 -0700
-From:   Varun Prakash <varun@chelsio.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, dt@chelsio.com, indranil@chelsio.com,
-        ganji.aravind@chelsio.com, varun@chelsio.com
-Subject: [PATCH v2 net-next] cxgb4/libcxgb/cxgb4i/cxgbit: enable eDRAM page pods for iSCSI
-Date:   Tue,  4 Jun 2019 15:41:49 +0530
-Message-Id: <1559643109-3397-1-git-send-email-varun@chelsio.com>
-X-Mailer: git-send-email 2.0.2
+        id S1727322AbfFDKSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 06:18:39 -0400
+Received: from conuserg-08.nifty.com ([210.131.2.75]:44024 "EHLO
+        conuserg-08.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727139AbfFDKSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 06:18:39 -0400
+Received: from localhost.localdomain (p14092-ipngnfx01kyoto.kyoto.ocn.ne.jp [153.142.97.92]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id x54AEC76032511;
+        Tue, 4 Jun 2019 19:14:12 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com x54AEC76032511
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1559643254;
+        bh=2Cnt75TjD0TucqN65Zm4F4aK2FsJEMupPn4+qQfaomQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=T4jvQ0G6x7AI4kdGX5qwlpK7HOvTaBPAv/cRO5t4X32Dcs0uPZAvSErXh4DSjGB31
+         HcpKj3d7GK+dEJgeRDnlb3IgG5M1SUitGYK8fWYBHTStYwEem3M/mbalLmPcf7FXff
+         2NyynthHyJ0CxXthF++gCaIlODh+BwsYOnM6Vm7DKEJGoJYT3haZXkmHOejQU4htdI
+         qbLlQa5xUwjLEMB8M7yoUoLHvQw77TZmiZ2m1IsbGjpX7v+Ox9dBMBaEmddSnnMqUe
+         FudqJKtGFxDLUHkFG12GbiN4Ma4TLji3PyPSof/DKDCjFWY8qenZH14JVAqU6EKQqf
+         rZdDvtK1Yi38A==
+X-Nifty-SrcIP: [153.142.97.92]
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-riscv@lists.infradead.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-s390@vger.kernel.org, Greentime Hu <green.hu@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        linux-snps-arc@lists.infradead.org,
+        Song Liu <songliubraving@fb.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Yonghong Song <yhs@fb.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Paul Mackerras <paulus@samba.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linux-parisc@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        linux-kernel@vger.kernel.org, Vincent Chen <deanbo422@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 00/15] kbuild: refactor headers_install and support compile-test of UAPI headers
+Date:   Tue,  4 Jun 2019 19:13:54 +0900
+Message-Id: <20190604101409.2078-1-yamada.masahiro@socionext.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Page pods are used for direct data placement, this patch
-enables eDRAM page pods if firmware supports this feature.
 
-Signed-off-by: Varun Prakash <varun@chelsio.com>
----
- v2: fixed incorrect spelling of "contiguous"
+Multiple people have suggested to compile-test UAPI headers.
 
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c    | 57 ++++++++++++++++++++++
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h     |  1 +
- drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h      |  3 ++
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.c | 43 +++++++++++++---
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.h |  7 +--
- drivers/scsi/cxgbi/cxgb3i/cxgb3i.c                 | 10 ++--
- drivers/scsi/cxgbi/cxgb4i/cxgb4i.c                 | 17 +++++--
- drivers/scsi/cxgbi/libcxgbi.c                      | 15 +++---
- drivers/scsi/cxgbi/libcxgbi.h                      |  9 ++--
- drivers/target/iscsi/cxgbit/cxgbit_ddp.c           |  6 ++-
- 10 files changed, 140 insertions(+), 28 deletions(-)
+Currently, Kbuild provides simple sanity checks by headers_check
+but they are not enough to catch bugs.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 7d7df59..02d414b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -742,6 +742,40 @@ static void free_msix_queue_irqs(struct adapter *adap)
- 		free_irq(adap->msix_info[msi_index++].vec, &s->ethrxq[i].rspq);
- }
- 
-+static int setup_ppod_edram(struct adapter *adap)
-+{
-+	int ret;
-+	unsigned int param, val;
-+
-+	/* Driver sends FW_PARAMS_PARAM_DEV_PPOD_EDRAM read command to check
-+	 * if firmware supports ppod edram feature or not. If firmware
-+	 * returns 1, then driver can enable this feature by sending
-+	 * FW_PARAMS_PARAM_DEV_PPOD_EDRAM write command with value 1 to
-+	 * enable ppod edram feature.
-+	 */
-+	param = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
-+		FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_PPOD_EDRAM));
-+
-+	ret = t4_query_params(adap, adap->mbox, adap->pf, 0, 1, &param, &val);
-+	if (ret < 0) {
-+		dev_warn(adap->pdev_dev,
-+			 "querying PPOD_EDRAM support failed: %d\n",
-+			 ret);
-+		return -1;
-+	}
-+
-+	if (val != 1)
-+		return -1;
-+
-+	ret = t4_set_params(adap, adap->mbox, adap->pf, 0, 1, &param, &val);
-+	if (ret < 0) {
-+		dev_err(adap->pdev_dev,
-+			"setting PPOD_EDRAM failed: %d\n", ret);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
- /**
-  *	cxgb4_write_rss - write the RSS table for a given port
-  *	@pi: the port
-@@ -4126,6 +4160,13 @@ static int adap_init0_config(struct adapter *adapter, int reset)
- 		dev_err(adapter->pdev_dev,
- 			"HMA configuration failed with error %d\n", ret);
- 
-+	if (is_t6(adapter->params.chip)) {
-+		ret = setup_ppod_edram(adapter);
-+		if (!ret)
-+			dev_info(adapter->pdev_dev, "Successfully enabled "
-+				 "ppod edram feature\n");
-+	}
-+
- 	/*
- 	 * And finally tell the firmware to initialize itself using the
- 	 * parameters from the Configuration File.
-@@ -4749,6 +4790,22 @@ static int adap_init0(struct adapter *adap)
- 			goto bye;
- 		adap->vres.iscsi.start = val[0];
- 		adap->vres.iscsi.size = val[1] - val[0] + 1;
-+		if (is_t6(adap->params.chip)) {
-+			params[0] = FW_PARAM_PFVF(PPOD_EDRAM_START);
-+			params[1] = FW_PARAM_PFVF(PPOD_EDRAM_END);
-+			ret = t4_query_params(adap, adap->mbox, adap->pf, 0, 2,
-+					      params, val);
-+			if (!ret) {
-+				adap->vres.ppod_edram.start = val[0];
-+				adap->vres.ppod_edram.size =
-+					val[1] - val[0] + 1;
-+
-+				dev_info(adap->pdev_dev,
-+					 "ppod edram start 0x%x end 0x%x size 0x%x\n",
-+					 val[0], val[1],
-+					 adap->vres.ppod_edram.size);
-+			}
-+		}
- 		/* LIO target and cxgb4i initiaitor */
- 		adap->num_ofld_uld += 2;
- 	}
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index 42ae28d..cee582e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -292,6 +292,7 @@ struct cxgb4_virt_res {                      /* virtualized HW resources */
- 	struct cxgb4_range ocq;
- 	struct cxgb4_range key;
- 	unsigned int ncrypto_fc;
-+	struct cxgb4_range ppod_edram;
- };
- 
- struct chcr_stats_debug {
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-index 0be4ce5..65313f6 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-@@ -1270,6 +1270,7 @@ enum fw_params_param_dev {
- 	FW_PARAMS_PARAM_DEV_TPCHMAP     = 0x1F,
- 	FW_PARAMS_PARAM_DEV_HMA_SIZE	= 0x20,
- 	FW_PARAMS_PARAM_DEV_RDMA_WRITE_WITH_IMM = 0x21,
-+	FW_PARAMS_PARAM_DEV_PPOD_EDRAM  = 0x23,
- 	FW_PARAMS_PARAM_DEV_RI_WRITE_CMPL_WR    = 0x24,
- 	FW_PARAMS_PARAM_DEV_OPAQUE_VIID_SMT_EXTN = 0x27,
- 	FW_PARAMS_PARAM_DEV_HASHFILTER_WITH_OFLD = 0x28,
-@@ -1332,6 +1333,8 @@ enum fw_params_param_pfvf {
- 	FW_PARAMS_PARAM_PFVF_RAWF_END = 0x37,
- 	FW_PARAMS_PARAM_PFVF_NCRYPTO_LOOKASIDE = 0x39,
- 	FW_PARAMS_PARAM_PFVF_PORT_CAPS32 = 0x3A,
-+	FW_PARAMS_PARAM_PFVF_PPOD_EDRAM_START = 0x3B,
-+	FW_PARAMS_PARAM_PFVF_PPOD_EDRAM_END = 0x3C,
- 	FW_PARAMS_PARAM_PFVF_LINK_STATE = 0x40,
- };
- 
-diff --git a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.c b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.c
-index e291900..99c7529 100644
---- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.c
-+++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.c
-@@ -123,6 +123,9 @@ static int ppm_get_cpu_entries(struct cxgbi_ppm *ppm, unsigned int count,
- 	unsigned int cpu;
- 	int i;
- 
-+	if (!ppm->pool)
-+		return -EINVAL;
-+
- 	cpu = get_cpu();
- 	pool = per_cpu_ptr(ppm->pool, cpu);
- 	spin_lock_bh(&pool->lock);
-@@ -169,7 +172,9 @@ static int ppm_get_entries(struct cxgbi_ppm *ppm, unsigned int count,
- 	}
- 
- 	ppm->next = i + count;
--	if (ppm->next >= ppm->bmap_index_max)
-+	if (ppm->max_index_in_edram && (ppm->next >= ppm->max_index_in_edram))
-+		ppm->next = 0;
-+	else if (ppm->next >= ppm->bmap_index_max)
- 		ppm->next = 0;
- 
- 	spin_unlock_bh(&ppm->map_lock);
-@@ -382,11 +387,10 @@ static struct cxgbi_ppm_pool *ppm_alloc_cpu_pool(unsigned int *total,
- 
- int cxgbi_ppm_init(void **ppm_pp, struct net_device *ndev,
- 		   struct pci_dev *pdev, void *lldev,
--		   struct cxgbi_tag_format *tformat,
--		   unsigned int ppmax,
--		   unsigned int llimit,
--		   unsigned int start,
--		   unsigned int reserve_factor)
-+		   struct cxgbi_tag_format *tformat, unsigned int iscsi_size,
-+		   unsigned int llimit, unsigned int start,
-+		   unsigned int reserve_factor, unsigned int iscsi_edram_start,
-+		   unsigned int iscsi_edram_size)
- {
- 	struct cxgbi_ppm *ppm = (struct cxgbi_ppm *)(*ppm_pp);
- 	struct cxgbi_ppm_pool *pool = NULL;
-@@ -394,6 +398,25 @@ int cxgbi_ppm_init(void **ppm_pp, struct net_device *ndev,
- 	unsigned int pool_index_max = 0;
- 	unsigned int alloc_sz;
- 	unsigned int ppod_bmap_size;
-+	unsigned int ppmax;
-+
-+	if (!iscsi_edram_start)
-+		iscsi_edram_size = 0;
-+
-+	if (iscsi_edram_size &&
-+	    ((iscsi_edram_start + iscsi_edram_size) != start)) {
-+		pr_err("iscsi ppod region not contiguous: EDRAM start 0x%x "
-+			"size 0x%x DDR start 0x%x\n",
-+			iscsi_edram_start, iscsi_edram_size, start);
-+		return -EINVAL;
-+	}
-+
-+	if (iscsi_edram_size) {
-+		reserve_factor = 0;
-+		start = iscsi_edram_start;
-+	}
-+
-+	ppmax = (iscsi_edram_size + iscsi_size) >> PPOD_SIZE_SHIFT;
- 
- 	if (ppm) {
- 		pr_info("ippm: %s, ppm 0x%p,0x%p already initialized, %u/%u.\n",
-@@ -434,6 +457,14 @@ int cxgbi_ppm_init(void **ppm_pp, struct net_device *ndev,
- 			__func__, ppmax, ppmax_pool, ppod_bmap_size, start,
- 			end);
- 	}
-+	if (iscsi_edram_size) {
-+		unsigned int first_ddr_idx =
-+				iscsi_edram_size >> PPOD_SIZE_SHIFT;
-+
-+		ppm->max_index_in_edram = first_ddr_idx - 1;
-+		bitmap_set(ppm->ppod_bmap, first_ddr_idx, 1);
-+		pr_debug("reserved %u ppod in bitmap\n", first_ddr_idx);
-+	}
- 
- 	spin_lock_init(&ppm->map_lock);
- 	kref_init(&ppm->refcnt);
-diff --git a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.h b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.h
-index a91ad76..7b02c20 100644
---- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.h
-+++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_ppm.h
-@@ -143,6 +143,7 @@ struct cxgbi_ppm {
- 	spinlock_t map_lock;		/* ppm map lock */
- 	unsigned int bmap_index_max;
- 	unsigned int next;
-+	unsigned int max_index_in_edram;
- 	unsigned long *ppod_bmap;
- 	struct cxgbi_ppod_data ppod_data[0];
- };
-@@ -324,9 +325,9 @@ int cxgbi_ppm_ppods_reserve(struct cxgbi_ppm *, unsigned short nr_pages,
- 			    unsigned long caller_data);
- int cxgbi_ppm_init(void **ppm_pp, struct net_device *, struct pci_dev *,
- 		   void *lldev, struct cxgbi_tag_format *,
--		   unsigned int ppmax, unsigned int llimit,
--		   unsigned int start,
--		   unsigned int reserve_factor);
-+		   unsigned int iscsi_size, unsigned int llimit,
-+		   unsigned int start, unsigned int reserve_factor,
-+		   unsigned int edram_start, unsigned int edram_size);
- int cxgbi_ppm_release(struct cxgbi_ppm *ppm);
- void cxgbi_tagmask_check(unsigned int tagmask, struct cxgbi_tag_format *);
- unsigned int cxgbi_tagmask_set(unsigned int ppmax);
-diff --git a/drivers/scsi/cxgbi/cxgb3i/cxgb3i.c b/drivers/scsi/cxgbi/cxgb3i/cxgb3i.c
-index b8dd9e6..524cdbc 100644
---- a/drivers/scsi/cxgbi/cxgb3i/cxgb3i.c
-+++ b/drivers/scsi/cxgbi/cxgb3i/cxgb3i.c
-@@ -1243,8 +1243,12 @@ static int cxgb3i_ddp_init(struct cxgbi_device *cdev)
- 		tformat.pgsz_order[i] = uinfo.pgsz_factor[i];
- 	cxgbi_tagmask_check(tagmask, &tformat);
- 
--	cxgbi_ddp_ppm_setup(&tdev->ulp_iscsi, cdev, &tformat, ppmax,
--			    uinfo.llimit, uinfo.llimit, 0);
-+	err = cxgbi_ddp_ppm_setup(&tdev->ulp_iscsi, cdev, &tformat,
-+				  (uinfo.ulimit - uinfo.llimit + 1),
-+				  uinfo.llimit, uinfo.llimit, 0, 0, 0);
-+	if (err)
-+		return err;
-+
- 	if (!(cdev->flags & CXGBI_FLAG_DDP_OFF)) {
- 		uinfo.tagmask = tagmask;
- 		uinfo.ulimit = uinfo.llimit + (ppmax << PPOD_SIZE_SHIFT);
-@@ -1318,7 +1322,7 @@ static void cxgb3i_dev_open(struct t3cdev *t3dev)
- 
- 	err = cxgb3i_ddp_init(cdev);
- 	if (err) {
--		pr_info("0x%p ddp init failed\n", cdev);
-+		pr_info("0x%p ddp init failed %d\n", cdev, err);
- 		goto err_out;
- 	}
- 
-diff --git a/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c b/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
-index 124f334..66d6e1f 100644
---- a/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
-+++ b/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
-@@ -2070,7 +2070,7 @@ static int cxgb4i_ddp_init(struct cxgbi_device *cdev)
- 	struct net_device *ndev = cdev->ports[0];
- 	struct cxgbi_tag_format tformat;
- 	unsigned int ppmax;
--	int i;
-+	int i, err;
- 
- 	if (!lldi->vr->iscsi.size) {
- 		pr_warn("%s, iscsi NOT enabled, check config!\n", ndev->name);
-@@ -2086,8 +2086,17 @@ static int cxgb4i_ddp_init(struct cxgbi_device *cdev)
- 					 & 0xF;
- 	cxgbi_tagmask_check(lldi->iscsi_tagmask, &tformat);
- 
--	cxgbi_ddp_ppm_setup(lldi->iscsi_ppm, cdev, &tformat, ppmax,
--			    lldi->iscsi_llimit, lldi->vr->iscsi.start, 2);
-+	pr_info("iscsi_edram.start 0x%x iscsi_edram.size 0x%x",
-+		lldi->vr->ppod_edram.start, lldi->vr->ppod_edram.size);
-+
-+	err = cxgbi_ddp_ppm_setup(lldi->iscsi_ppm, cdev, &tformat,
-+				  lldi->vr->iscsi.size, lldi->iscsi_llimit,
-+				  lldi->vr->iscsi.start, 2,
-+				  lldi->vr->ppod_edram.start,
-+				  lldi->vr->ppod_edram.size);
-+
-+	if (err < 0)
-+		return err;
- 
- 	cdev->csk_ddp_setup_digest = ddp_setup_conn_digest;
- 	cdev->csk_ddp_setup_pgidx = ddp_setup_conn_pgidx;
-@@ -2141,7 +2150,7 @@ static void *t4_uld_add(const struct cxgb4_lld_info *lldi)
- 
- 	rc = cxgb4i_ddp_init(cdev);
- 	if (rc) {
--		pr_info("t4 0x%p ddp init failed.\n", cdev);
-+		pr_info("t4 0x%p ddp init failed %d.\n", cdev, rc);
- 		goto err_out;
- 	}
- 	rc = cxgb4i_ofld_init(cdev);
-diff --git a/drivers/scsi/cxgbi/libcxgbi.c b/drivers/scsi/cxgbi/libcxgbi.c
-index 8b915d4..ad586c1 100644
---- a/drivers/scsi/cxgbi/libcxgbi.c
-+++ b/drivers/scsi/cxgbi/libcxgbi.c
-@@ -1281,14 +1281,15 @@ EXPORT_SYMBOL_GPL(cxgbi_ddp_set_one_ppod);
- 
- static unsigned char padding[4];
- 
--void cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
--			 struct cxgbi_tag_format *tformat, unsigned int ppmax,
--			 unsigned int llimit, unsigned int start,
--			 unsigned int rsvd_factor)
-+int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
-+			struct cxgbi_tag_format *tformat,
-+			unsigned int iscsi_size, unsigned int llimit,
-+			unsigned int start, unsigned int rsvd_factor,
-+			unsigned int edram_start, unsigned int edram_size)
- {
- 	int err = cxgbi_ppm_init(ppm_pp, cdev->ports[0], cdev->pdev,
--				cdev->lldev, tformat, ppmax, llimit, start,
--				rsvd_factor);
-+				cdev->lldev, tformat, iscsi_size, llimit, start,
-+				rsvd_factor, edram_start, edram_size);
- 
- 	if (err >= 0) {
- 		struct cxgbi_ppm *ppm = (struct cxgbi_ppm *)(*ppm_pp);
-@@ -1300,6 +1301,8 @@ void cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
- 	} else {
- 		cdev->flags |= CXGBI_FLAG_DDP_OFF;
- 	}
-+
-+	return err;
- }
- EXPORT_SYMBOL_GPL(cxgbi_ddp_ppm_setup);
- 
-diff --git a/drivers/scsi/cxgbi/libcxgbi.h b/drivers/scsi/cxgbi/libcxgbi.h
-index 1917ff5..84b96af 100644
---- a/drivers/scsi/cxgbi/libcxgbi.h
-+++ b/drivers/scsi/cxgbi/libcxgbi.h
-@@ -617,8 +617,9 @@ void cxgbi_ddp_page_size_factor(int *);
- void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *,
- 			    struct cxgbi_task_tag_info *,
- 			    struct scatterlist **sg_pp, unsigned int *sg_off);
--void cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *,
--			 struct cxgbi_tag_format *, unsigned int ppmax,
--			 unsigned int llimit, unsigned int start,
--			 unsigned int rsvd_factor);
-+int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
-+			struct cxgbi_tag_format *tformat,
-+			unsigned int iscsi_size, unsigned int llimit,
-+			unsigned int start, unsigned int rsvd_factor,
-+			unsigned int edram_start, unsigned int edram_size);
- #endif	/*__LIBCXGBI_H__*/
-diff --git a/drivers/target/iscsi/cxgbit/cxgbit_ddp.c b/drivers/target/iscsi/cxgbit/cxgbit_ddp.c
-index d57fd3e..1443ef0 100644
---- a/drivers/target/iscsi/cxgbit/cxgbit_ddp.c
-+++ b/drivers/target/iscsi/cxgbit/cxgbit_ddp.c
-@@ -318,8 +318,10 @@ int cxgbit_ddp_init(struct cxgbit_device *cdev)
- 
- 	ret = cxgbi_ppm_init(lldi->iscsi_ppm, cdev->lldi.ports[0],
- 			     cdev->lldi.pdev, &cdev->lldi, &tformat,
--			     ppmax, lldi->iscsi_llimit,
--			     lldi->vr->iscsi.start, 2);
-+			     lldi->vr->iscsi.size, lldi->iscsi_llimit,
-+			     lldi->vr->iscsi.start, 2,
-+			     lldi->vr->ppod_edram.start,
-+			     lldi->vr->ppod_edram.size);
- 	if (ret >= 0) {
- 		struct cxgbi_ppm *ppm = (struct cxgbi_ppm *)(*lldi->iscsi_ppm);
- 
+The most recent patch I know is David Howells' work:
+https://patchwork.kernel.org/patch/10590203/
+
+I agree that we need better tests for UAPI headers,
+but I want to integrate it in a clean way.
+
+The idea that has been in my mind is to compile each header
+to make sure the selfcontainedness.
+
+Recently, Jani Nikula proposed a new syntax 'header-test-y'.
+https://patchwork.kernel.org/patch/10947005/
+
+So, I implemented UAPI compile-testing on top of that.
+
+When adding a new feature, cleaning the code first is a
+good practice.
+
+[1] Remove headers_install_all
+
+This target installs UAPI headers of all architectures
+in a single tree.
+It does not make sense to compile test of headers from
+multiple arches at the same time. Hence, removed.
+
+[2] Split header installation into 'make headers' and 'make headers_install'
+
+To compile-test UAPI headers, we need a work-directory somewhere
+to save objects and .*.cmd files.
+
+usr/include/ will be the work-directory.
+
+Since we cannot pollute the final destination of headers_install,
+
+I split the header installation into two stages.
+
+'make headers' will build up
+the ready-to-install headers in usr/include,
+which will be also used as a work-directory for the compile-test.
+
+'make headers_install' will copy headers
+from usr/include to $(INSTALL_HDR_PATH)/include.
+
+[3] Support compile-test of UAPI headers
+
+This is implemented in usr/include/Makefile
+
+
+Jani Nikula (1):
+  kbuild: add support for ensuring headers are self-contained
+
+Masahiro Yamada (14):
+  kbuild: remove headers_{install,check}_all
+  kbuild: remove stale dependency between Documentation/ and
+    headers_install
+  kbuild: make gdb_script depend on prepare0 instead of prepare
+  kbuild: fix Kconfig prompt of CONFIG_HEADERS_CHECK
+  kbuild: add CONFIG_HEADERS_INSTALL and loosen the dependency of
+    samples
+  kbuild: remove build_unifdef target in scripts/Makefile
+  kbuild: build all prerequisite of headers_install simultaneously
+  kbuild: add 'headers' target to build up ready-to-install uapi headers
+  kbuild: re-implement Makefile.headersinst without directory descending
+  kbuild: move hdr-inst shorthand to top Makefile
+  kbuild: simplify scripts/headers_install.sh
+  kbuild: deb-pkg: do not run headers_check
+  fixup: kbuild: add support for ensuring headers are self-contained
+  kbuild: compile test UAPI headers to ensure they are self-contained
+
+ Documentation/kbuild/headers_install.txt |   7 --
+ Documentation/kbuild/makefiles.txt       |  13 ++-
+ Makefile                                 |  56 +++++-----
+ arch/arc/configs/tb10x_defconfig         |   1 +
+ arch/nds32/configs/defconfig             |   1 +
+ arch/parisc/configs/a500_defconfig       |   1 +
+ arch/parisc/configs/b180_defconfig       |   1 +
+ arch/parisc/configs/c3000_defconfig      |   1 +
+ arch/parisc/configs/default_defconfig    |   1 +
+ arch/powerpc/configs/ppc6xx_defconfig    |   1 +
+ arch/s390/configs/debug_defconfig        |   1 +
+ include/uapi/{linux => }/Kbuild          |   6 +-
+ init/Kconfig                             |  20 ++++
+ lib/Kconfig.debug                        |  25 +++--
+ samples/Kconfig                          |  14 ++-
+ samples/Makefile                         |   4 +-
+ scripts/Kbuild.include                   |   6 --
+ scripts/Makefile                         |   5 -
+ scripts/Makefile.build                   |   9 ++
+ scripts/Makefile.headersinst             | 132 ++++++++++-------------
+ scripts/Makefile.lib                     |   3 +
+ scripts/cc-system-headers.sh             |   8 ++
+ scripts/headers.sh                       |  29 -----
+ scripts/headers_install.sh               |  48 ++++-----
+ scripts/package/builddeb                 |   2 +-
+ usr/.gitignore                           |   1 -
+ usr/Makefile                             |   2 +
+ usr/include/.gitignore                   |   3 +
+ usr/include/Makefile                     | 132 +++++++++++++++++++++++
+ 29 files changed, 329 insertions(+), 204 deletions(-)
+ rename include/uapi/{linux => }/Kbuild (77%)
+ create mode 100755 scripts/cc-system-headers.sh
+ delete mode 100755 scripts/headers.sh
+ create mode 100644 usr/include/.gitignore
+ create mode 100644 usr/include/Makefile
+
 -- 
-2.0.2
+2.17.1
 
