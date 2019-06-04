@@ -2,126 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2183D34620
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 14:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E77334646
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 14:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727394AbfFDMES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 08:04:18 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35573 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727248AbfFDMES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 08:04:18 -0400
-Received: by mail-lj1-f195.google.com with SMTP id h11so19445366ljb.2;
-        Tue, 04 Jun 2019 05:04:16 -0700 (PDT)
+        id S1727599AbfFDMKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 08:10:31 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44643 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726847AbfFDMKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 08:10:30 -0400
+Received: by mail-pg1-f196.google.com with SMTP id n2so10237829pgp.11;
+        Tue, 04 Jun 2019 05:10:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=EwJYsf92ydp+RtKiuVnWST5ck78zmLqyjDy58wjkNzk=;
+        b=ALgMXYShkAFuscaf0G46Fe8IyL9l9sUJz35RiyTWOUtl+VQsGb3VE5G+kAFvWHJ989
+         PzhD5ZvYnLcVx7VNy5G7ZxMWsPJ/EA4GdjGBTj1eyxgm7wi0fDim3GgYKIWP/UAlIHcK
+         by1KonlJQhDWsjNTw4RJeeVd5uhcc9sFoTQe7jao13cWC/Lt2s6+rj4QdFK+EsLmCjsh
+         Q9+fhsv77zWy4VweL+38l6VUado93b+f40sn8S2SE7dd8s1QPImSyoLhsooGIbYugyVS
+         NNWrMuWwmz/yqigNzN2eRjfMiBv82P35nWrrgwBObfCb4jilxaFSQvDH0Pq3pLG/mElZ
+         1hDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s3J1gXJ8WrBLFRAI1dgrNYQJUNQV1AcqpuGg+T5+KPk=;
-        b=h/ZxBNfgtyojJEWdl1prRJA5WkBOT2fM+xWmUMbKNBQN9DeEkdDumnOAdSIxJoSg0B
-         e5YAujz/3HUcr+KR5AEDbRYdCXb85osWwBGm7YrNT5QCxes2s0mb57IU5oUD7enutrH5
-         j1UYIdBRLSQI4EZ+dOif7mnSPnjkpeMiFr2rnUnCmnRH3zNUN1t5uEQAojPHuB2oCf9F
-         XhDJyalwA6BDO52C0jtR25f0B0Ns3c+j9XqFEdopj8W9wUOeomA2vcjREaVIR2p2rKE3
-         hRfWyt3aOdG4UY27QFxRugFf7O6caU+pUVjFkIyAe/9wSVKLasd45qhJJuS0Ix2Iq/9v
-         Hihw==
-X-Gm-Message-State: APjAAAVoJYEffN3C/ypYsFgGVr2+cgqhi95Qk3Dz1EH4pF9sBlms7s3A
-        uotBPHOQJEN6e0ukUyR4jUsNnJBU2Tqh+4/aEd8=
-X-Google-Smtp-Source: APXvYqz5/3pzap8ZE3WMM30TBQVT+VfiRL9u2vQiwVXG2dfHIRAikYK0s02dYmEOvbTJdR7Bi3vtAJqvSmijM8vUFoo=
-X-Received: by 2002:a2e:6e01:: with SMTP id j1mr16411083ljc.135.1559649856163;
- Tue, 04 Jun 2019 05:04:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <f42c7b44b3f694056c4216e9d9ba914b44e72ab9.1559648367.git.baruch@tkos.co.il>
-In-Reply-To: <f42c7b44b3f694056c4216e9d9ba914b44e72ab9.1559648367.git.baruch@tkos.co.il>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 4 Jun 2019 14:04:03 +0200
-Message-ID: <CAMuHMdWbcSUyYo1sJ81qojmbB_g595dVnzQycZq0Yh5BdQYCEg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: fix uapi bpf_prog_info fields alignment
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EwJYsf92ydp+RtKiuVnWST5ck78zmLqyjDy58wjkNzk=;
+        b=fEvvYOCdPKfih0B/zLavoAx9/khF/4apjKuFyimkfam3BTSFJF4vgAIx9JklsOdeP5
+         TJ0LxnNbhwhmmX1rrvnd+rfAwGA4+15opld29ChdLrQCikHgniapZHplDRz3RU+r55VC
+         T5YUcP9ZD4r0oHMMxmdAjqNuh/vxc2PoecV9MCPgOtGvDCK+z09k2/j0hv9fENa+e5F7
+         LXDsmdxoCcub0PoL9E0SnsSEJ6OvvrZJwhKkYkCGSg78iwNCd3dGjVMpELpiuTbid7rJ
+         Ym+iq7olOUFHcfHWNM2YV/arYPZAJjWN+Z0lBhk+yeYpN51UDvN4GWG/CpDFjfXdR9j4
+         JuJA==
+X-Gm-Message-State: APjAAAUOGZHtEtpRMshMYS0L5Et3/29BxeSo3jUYxBuWzBO6xQ7ierYl
+        I8pKliTYgtRbLb133dM494BIuIdSf1asFQ==
+X-Google-Smtp-Source: APXvYqw5pE1KuL3N0NnrEDYlsEeAPn8xPJJRq+laPDZyZTkLXt4pZDqinvcFRcOBNQeq0UQqQktwtQ==
+X-Received: by 2002:a63:5d45:: with SMTP id o5mr35305514pgm.40.1559650229927;
+        Tue, 04 Jun 2019 05:10:29 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id s1sm14168708pgp.94.2019.06.04.05.10.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 04 Jun 2019 05:10:28 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     ralf@linux-mips.org, davem@davemloft.net,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] rose: af_rose: avoid overflows in rose_setsockopt()
+Date:   Tue,  4 Jun 2019 20:11:30 +0800
+Message-Id: <1559650290-17054-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Baruch,
+Check setsockopt arguments to avoid overflows and return -EINVAL for
+too large arguments.
 
-On Tue, Jun 4, 2019 at 1:40 PM Baruch Siach <baruch@tkos.co.il> wrote:
-> Merge commit 1c8c5a9d38f60 ("Merge
-> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undid the
-> fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
-> applications") by taking the gpl_compatible 1-bit field definition from
-> commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
-> bpf_prog_info") as is. That breaks architectures with 16-bit alignment
-> like m68k. Widen gpl_compatible to 32-bit to restore alignment of the
-> following fields.
->
-> Thanks to Dmitry V. Levin his analysis of this bug history.
->
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+See commit 32288eb4d940 ("netrom: avoid overflows in nr_setsockopt()")
+for details.
 
-Thanks for your patch!
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+---
+ net/rose/af_rose.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3140,7 +3140,7 @@ struct bpf_prog_info {
->         __aligned_u64 map_ids;
->         char name[BPF_OBJ_NAME_LEN];
->         __u32 ifindex;
-> -       __u32 gpl_compatible:1;
-> +       __u32 gpl_compatible;
->         __u64 netns_dev;
->         __u64 netns_ino;
-
-Wouldn't it be better to change the types of the fields that require
-8-byte alignment from __u64 to __aligned_u64, like is already used
-for the map_ids fields?
-
-Without that, some day people will need to add a new flag, and will
-convert the 32-bit flag to a bitfield again to make space, reintroducing
-the issue.
-
->         __u32 nr_jited_ksyms;
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 63e0cf66f01a..fe73829b5b1c 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3140,7 +3140,7 @@ struct bpf_prog_info {
->         __aligned_u64 map_ids;
->         char name[BPF_OBJ_NAME_LEN];
->         __u32 ifindex;
-> -       __u32 gpl_compatible:1;
-> +       __u32 gpl_compatible;
->         __u64 netns_dev;
->         __u64 netns_ino;
-
-Same here.
-
->         __u32 nr_jited_ksyms;
-> --
-> 2.20.1
->
-
-
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index e274bc6..af831ee9 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -372,15 +372,15 @@ static int rose_setsockopt(struct socket *sock, int level, int optname,
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct rose_sock *rose = rose_sk(sk);
+-	int opt;
++	unsigned long opt;
+ 
+ 	if (level != SOL_ROSE)
+ 		return -ENOPROTOOPT;
+ 
+-	if (optlen < sizeof(int))
++	if (optlen < sizeof(unsigned int))
+ 		return -EINVAL;
+ 
+-	if (get_user(opt, (int __user *)optval))
++	if (get_user(opt, (unsigned int __user *)optval))
+ 		return -EFAULT;
+ 
+ 	switch (optname) {
+@@ -389,31 +389,31 @@ static int rose_setsockopt(struct socket *sock, int level, int optname,
+ 		return 0;
+ 
+ 	case ROSE_T1:
+-		if (opt < 1)
++		if (opt < 1 || opt > ULONG_MAX / HZ)
+ 			return -EINVAL;
+ 		rose->t1 = opt * HZ;
+ 		return 0;
+ 
+ 	case ROSE_T2:
+-		if (opt < 1)
++		if (opt < 1 || opt > ULONG_MAX / HZ)
+ 			return -EINVAL;
+ 		rose->t2 = opt * HZ;
+ 		return 0;
+ 
+ 	case ROSE_T3:
+-		if (opt < 1)
++		if (opt < 1 || opt > ULONG_MAX / HZ)
+ 			return -EINVAL;
+ 		rose->t3 = opt * HZ;
+ 		return 0;
+ 
+ 	case ROSE_HOLDBACK:
+-		if (opt < 1)
++		if (opt < 1 || opt > ULONG_MAX / HZ)
+ 			return -EINVAL;
+ 		rose->hb = opt * HZ;
+ 		return 0;
+ 
+ 	case ROSE_IDLE:
+-		if (opt < 0)
++		if (opt < 0 || opt > ULONG_MAX / HZ)
+ 			return -EINVAL;
+ 		rose->idle = opt * 60 * HZ;
+ 		return 0;
 -- 
-Gr{oetje,eeting}s,
+2.7.4
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
