@@ -2,108 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 892E634F46
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:47:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C653B34F4A
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbfFDRrw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 13:47:52 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:60596 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725929AbfFDRrw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 13:47:52 -0400
-Received: from tarshish (unknown [10.0.8.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 6B57B44059C;
-        Tue,  4 Jun 2019 20:47:33 +0300 (IDT)
-References: <602128d22db86bd67e11dec8fe40a73832c222c9.1559230347.git.baruch@tkos.co.il> <20190604094718.0a56d7a5@hermes.lan>
-User-agent: mu4e 1.0; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>
-Subject: Re: [PATCH] devlink: fix libc and kernel headers collision
-In-reply-to: <20190604094718.0a56d7a5@hermes.lan>
-Date:   Tue, 04 Jun 2019 20:47:50 +0300
-Message-ID: <87ef49nsxl.fsf@tarshish>
+        id S1726406AbfFDRsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:48:06 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38718 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfFDRsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:48:06 -0400
+Received: by mail-pf1-f194.google.com with SMTP id a186so12425380pfa.5
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WO/pU2tXKcWaOz/Mz8XljUSgZVyxjPQIhAnHQSTWhKk=;
+        b=xswXLDjNe6Jf8a386sadmYdZwL+QReS4MtQ+UfRYLrhTIRzkvqzQ03azY36uhAFiZ6
+         VUlZKPeFui2lSXPN/A1Ld5L6ikHcGCXM0hfmX2/Daawvc4dvYRdpTQNj2TB11YyjMros
+         4yJDUHelpg3r8bdjufBbLRnEpioOFwufDjlJU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WO/pU2tXKcWaOz/Mz8XljUSgZVyxjPQIhAnHQSTWhKk=;
+        b=nmzSnLweJvinKvVcGDaBJoyco2t5BCBO37fKqrmNNueEmHAz5L1XT8fTP8+4KNMpiW
+         T8T4hhj5t8DTsCfmzlWw4UQBCFK/cmmTidIToWs9DkO8NVQhe2unVLgSW7WiBYkdYXFu
+         19oNJsy6mU8ka79Og8lDIuDsImupJ2OqJEFgJFmmYeD3iFChxsnUe8s69pcCCzhQ/uR3
+         Thc8a1f72vPiSsdbxAKsMFr+aU8tGfPHvSMDG6+GSVkb8S0WNt/5s5ZYaEA1ZYLYnkRR
+         m9tWqt1X3ev0HgCqVY7x2RouGMC3j2PxbGgEL+FgnF69HC+GZm795qnSdNWL1R38ZB1H
+         ECvw==
+X-Gm-Message-State: APjAAAXj1mm0BUT5cguYzIhrAGvqND9Os6G+ndCPNG9ZrHBFGswk5gFa
+        /9aGvwDUgFlvxSuj+FLpiPMr1w==
+X-Google-Smtp-Source: APXvYqx8jMof6CsO9RKVykzVQR/GUv12PGEyjyOIN6xEEzRdygdf09yxJH05WCP0zIpQf4tWt1xQtQ==
+X-Received: by 2002:a62:5487:: with SMTP id i129mr38037550pfb.68.1559670484899;
+        Tue, 04 Jun 2019 10:48:04 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id v4sm24304610pff.45.2019.06.04.10.48.03
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 10:48:03 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 13:48:02 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Triplett <josh@joshtriplett.org>, keescook@chromium.org,
+        kernel-hardening@lists.openwall.com,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        neilb@suse.com, netdev@vger.kernel.org, oleg@redhat.com,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu@vger.kernel.org,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: [RFC 1/6] rcu: Add support for consolidated-RCU reader checking
+Message-ID: <20190604174802.GB228607@google.com>
+References: <20190601222738.6856-1-joel@joelfernandes.org>
+ <20190601222738.6856-2-joel@joelfernandes.org>
+ <20190603080128.GA3436@hirez.programming.kicks-ass.net>
+ <20190603141847.GA94186@google.com>
+ <20190604065358.73347ced@oasis.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190604065358.73347ced@oasis.local.home>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+On Tue, Jun 04, 2019 at 06:53:58AM -0400, Steven Rostedt wrote:
+> On Mon, 3 Jun 2019 10:18:47 -0400
+> Joel Fernandes <joel@joelfernandes.org> wrote:
+> 
+> > On Mon, Jun 03, 2019 at 10:01:28AM +0200, Peter Zijlstra wrote:
+> > > On Sat, Jun 01, 2019 at 06:27:33PM -0400, Joel Fernandes (Google) wrote:  
+> > > > +#define list_for_each_entry_rcu(pos, head, member, cond...)		\
+> > > > +	if (COUNT_VARGS(cond) != 0) {					\
+> > > > +		__list_check_rcu_cond(0, ## cond);			\
+> > > > +	} else {							\
+> > > > +		__list_check_rcu();					\
+> > > > +	}								\
+> > > > +	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
+> > > > +		&pos->member != (head);					\
+> > > >  		pos = list_entry_rcu(pos->member.next, typeof(*pos), member))
+> > > >  
+> > > >  /**
+> > > > @@ -621,7 +648,12 @@ static inline void hlist_add_behind_rcu(struct hlist_node *n,
+> > > >   * the _rcu list-mutation primitives such as hlist_add_head_rcu()
+> > > >   * as long as the traversal is guarded by rcu_read_lock().
+> > > >   */
+> > > > +#define hlist_for_each_entry_rcu(pos, head, member, cond...)		\
+> > > > +	if (COUNT_VARGS(cond) != 0) {					\
+> > > > +		__list_check_rcu_cond(0, ## cond);			\
+> > > > +	} else {							\
+> > > > +		__list_check_rcu();					\
+> > > > +	}								\
+> > > >  	for (pos = hlist_entry_safe (rcu_dereference_raw(hlist_first_rcu(head)),\
+> > > >  			typeof(*(pos)), member);			\
+> > > >  		pos;							\  
+> > > 
+> > > 
+> > > This breaks code like:
+> > > 
+> > > 	if (...)
+> > > 		list_for_each_entry_rcu(...);
+> > > 
+> > > as they are no longer a single statement. You'll have to frob it into
+> > > the initializer part of the for statement.  
+> > 
+> > Thanks a lot for that. I fixed it as below (diff is on top of the patch):
+> > 
+> > If not for that '##' , I could have abstracted the whole if/else
+> > expression into its own macro and called it from list_for_each_entry_rcu() to
+> > keep it more clean.
+> > 
+> > ---8<-----------------------
+> > 
+> > diff --git a/include/linux/rculist.h b/include/linux/rculist.h
+> > index b641fdd9f1a2..cc742d294bb0 100644
+> > --- a/include/linux/rculist.h
+> > +++ b/include/linux/rculist.h
+> > @@ -371,12 +372,15 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
+> >   * as long as the traversal is guarded by rcu_read_lock().
+> >   */
+> >  #define list_for_each_entry_rcu(pos, head, member, cond...)		\
+> > -	if (COUNT_VARGS(cond) != 0) {					\
+> > -		__list_check_rcu_cond(0, ## cond);			\
+> > -	} else {							\
+> > -		__list_check_rcu();					\
+> > -	}								\
+> > -	for (pos = list_entry_rcu((head)->next, typeof(*pos), member);	\
+> > +	for (								\
+> > +	     ({								\
+> > +		if (COUNT_VARGS(cond) != 0) {				\
+> > +			__list_check_rcu_cond(0, ## cond);		\
+> > +		} else {						\
+> > +			__list_check_rcu_nocond();			\
+> > +		}							\
+> > +	      }),							\
+> 
+> For easier to read I would do something like this:
+> 
+> #define check_rcu_list(cond)						\
+> 	({								\
+> 		if (COUNT_VARGS(cond) != 0)				\
+> 			__list_check_rcu_cond(0, ## cond);		\
+> 		else							\
+> 			__list_check_rcu_nocond();			\
+> 	})
+> 
+> #define list_for_each_entry_rcu(pos, head, member, cond...)		\
+> 	for (check_rcu_list(cond),					\
 
-On Tue, Jun 04 2019, Stephen Hemminger wrote:
-> On Thu, 30 May 2019 18:32:27 +0300
-> Baruch Siach <baruch@tkos.co.il> wrote:
->
->> Since commit 2f1242efe9d ("devlink: Add devlink health show command") we
->> use the sys/sysinfo.h header for the sysinfo(2) system call. But since
->> iproute2 carries a local version of the kernel struct sysinfo, this
->> causes a collision with libc that do not rely on kernel defined sysinfo
->> like musl libc:
->> 
->> In file included from devlink.c:25:0:
->> .../sysroot/usr/include/sys/sysinfo.h:10:8: error: redefinition of 'struct sysinfo'
->>  struct sysinfo {
->>         ^~~~~~~
->> In file included from ../include/uapi/linux/kernel.h:5:0,
->>                  from ../include/uapi/linux/netlink.h:5,
->>                  from ../include/uapi/linux/genetlink.h:6,
->>                  from devlink.c:21:
->> ../include/uapi/linux/sysinfo.h:8:8: note: originally defined here
->>  struct sysinfo {
->> 		^~~~~~~
->> 
->> Rely on the kernel header alone to avoid kernel and userspace headers
->> collision of definitions.
->> 
->> Cc: Aya Levin <ayal@mellanox.com>
->> Cc: Moshe Shemesh <moshe@mellanox.com>
->> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->
-> Sorry this breaks the glibc build.
->
->
->     CC       devlink.o
-> devlink.c: In function ‘format_logtime’:
-> devlink.c:6124:8: warning: implicit declaration of function ‘sysinfo’; did you mean ‘psiginfo’? [-Wimplicit-function-declaration]
->   err = sysinfo(&s_info);
->         ^~~~~~~
->         psiginfo
->
-> I backed out the patch now (before pushing it).
-> Please fix and resubmit.
+Yes, already doing it this way as I replied to Peter here:
+https://lore.kernel.org/patchwork/patch/1082846/#1278489
 
-I can't think of anything better than this ugly fix:
+Thanks!
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 436935f88bda..02e648ef64b3 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -18,11 +18,12 @@
- #include <limits.h>
- #include <errno.h>
- #include <inttypes.h>
-+#include <sys/sysinfo.h>
-+#define _LINUX_SYSINFO_H
- #include <linux/genetlink.h>
- #include <linux/devlink.h>
- #include <libmnl/libmnl.h>
- #include <netinet/ether.h>
--#include <sys/sysinfo.h>
- #include <sys/queue.h>
- 
- #include "SNAPSHOT.h"
+ - Joel
 
-Would that be acceptable?
 
-baruch
-
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
