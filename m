@@ -2,138 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B9E34A63
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 16:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1655334AA7
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 16:44:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbfFDO2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 10:28:22 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45700 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727169AbfFDO2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 10:28:22 -0400
-Received: by mail-pg1-f196.google.com with SMTP id w34so10443878pga.12
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 07:28:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Xf7g+dcunb9BHC7qV5paewQDka8pa9Aq/arV6lYtUn0=;
-        b=qJTPxVUSMQYUC5G5bYEqrwVwv3yUaeRypGu1J8BdmpuCdNRBAHbuKfU9GUUl744gNa
-         1Rmj/tmoV1r2OJljFqaYqlXzIjQ22TTHYAdJ+fbQatAG43cHZBHjmK4xkPXZA8xlBrev
-         DI/WUILnK8VNZ12Mo6YM8LFACBqjKCkezO+vCyNJA9v+9vR7gBhsAV5IdfKUDi1LrTdw
-         e8nXntdky11VjEOQ27+C3qGRPLp0IM27V7Dgi5aF7Whmjz+o+Sjet9s1+TrUHmBtu2l1
-         nIqKCdDm6vNhcjW8kU5Gx2BWGAeNbsm0vaG69qnjYtmkTJO33yDep+CIRCK4TdADHLww
-         D13A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Xf7g+dcunb9BHC7qV5paewQDka8pa9Aq/arV6lYtUn0=;
-        b=oZ0MLm73kNaNR3RlK1JGU8g1uV5lWE4TxsP57ZAD4I8+j5B6Fe8A0a8uIV6oTNGoU0
-         oFV3NpK6Gds07HpaboF36cBhRkMyajlupvfjutRuAdPHhYGa3xxEWmgl9mjMlJ4R0aNy
-         QSaKbjPp+k3u0cSKvDHwEYMyfU9TzjiIe/SkTQ1GnF/yrfaWalK3cQjXQXi+GVpokscs
-         Fb4ohTr3XEoHa+sysBtaYYb6Sapbgr5x5xQ1sKluTU/DSjO2cHQ6J6z1lGJdA1rBPgJm
-         pThfsho68fYD+quNSsz55cD7yP66wO9OSaIwS+99IUDjSOYAigFsHfyQlcsUlWCR7zU8
-         tKAQ==
-X-Gm-Message-State: APjAAAXKZYVO34Wj5SgpWmAOTaIIYHTJE8hnArCsWVF09p5440igmHrk
-        M4U1p/XZP7BRdQFIeEBJ1ig5AXlV
-X-Google-Smtp-Source: APXvYqwLLbisylcuLra8nHg6HiKWBi2qD5PCnX7fxiccrlrp4VcCc9oace8mIs3WbGCIt1t9pCYjqg==
-X-Received: by 2002:a17:90a:21cc:: with SMTP id q70mr9738067pjc.56.1559658502048;
-        Tue, 04 Jun 2019 07:28:22 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id 5sm6574917pgi.28.2019.06.04.07.28.20
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 07:28:21 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 07:28:19 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        shalomt@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
- physical hardware clock operations
-Message-ID: <20190604142819.cml2tbkmcj2mvkpl@localhost>
-References: <20190603121244.3398-1-idosch@idosch.org>
- <20190603121244.3398-8-idosch@idosch.org>
+        id S1727771AbfFDOoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 10:44:19 -0400
+Received: from iolanthe.rowland.org ([192.131.102.54]:49324 "HELO
+        iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1727562AbfFDOoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 10:44:19 -0400
+Received: (qmail 3471 invoked by uid 2102); 4 Jun 2019 10:44:18 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+  by localhost with SMTP; 4 Jun 2019 10:44:18 -0400
+Date:   Tue, 4 Jun 2019 10:44:18 -0400 (EDT)
+From:   Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@iolanthe.rowland.org
+To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
+cc:     Boqun Feng <boqun.feng@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Jade Alglave <j.alglave@ucl.ac.uk>
+Subject: Re: rcu_read_lock lost its compiler barrier
+In-Reply-To: <20190603200301.GM28207@linux.ibm.com>
+Message-ID: <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190603121244.3398-8-idosch@idosch.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 03:12:42PM +0300, Ido Schimmel wrote:
+On Mon, 3 Jun 2019, Paul E. McKenney wrote:
 
-> +static int
-> +mlxsw_sp1_ptp_update_phc_settime(struct mlxsw_sp_ptp_clock *clock, u64 nsec)
+> On Mon, Jun 03, 2019 at 02:42:00PM +0800, Boqun Feng wrote:
+> > On Mon, Jun 03, 2019 at 01:26:26PM +0800, Herbert Xu wrote:
+> > > On Sun, Jun 02, 2019 at 08:47:07PM -0700, Paul E. McKenney wrote:
+> > > > 
+> > > > 1.	These guarantees are of full memory barriers, -not- compiler
+> > > > 	barriers.
+> > > 
+> > > What I'm saying is that wherever they are, they must come with
+> > > compiler barriers.  I'm not aware of any synchronisation mechanism
+> > > in the kernel that gives a memory barrier without a compiler barrier.
+> > > 
+> > > > 2.	These rules don't say exactly where these full memory barriers
+> > > > 	go.  SRCU is at one extreme, placing those full barriers in
+> > > > 	srcu_read_lock() and srcu_read_unlock(), and !PREEMPT Tree RCU
+> > > > 	at the other, placing these barriers entirely within the callback
+> > > > 	queueing/invocation, grace-period computation, and the scheduler.
+> > > > 	Preemptible Tree RCU is in the middle, with rcu_read_unlock()
+> > > > 	sometimes including a full memory barrier, but other times with
+> > > > 	the full memory barrier being confined as it is with !PREEMPT
+> > > > 	Tree RCU.
+> > > 
+> > > The rules do say that the (full) memory barrier must precede any
+> > > RCU read-side that occur after the synchronize_rcu and after the
+> > > end of any RCU read-side that occur before the synchronize_rcu.
+> > > 
+> > > All I'm arguing is that wherever that full mb is, as long as it
+> > > also carries with it a barrier() (which it must do if it's done
+> > > using an existing kernel mb/locking primitive), then we're fine.
+> > > 
+> > > > Interleaving and inserting full memory barriers as per the rules above:
+> > > > 
+> > > > 	CPU1: WRITE_ONCE(a, 1)
+> > > > 	CPU1: synchronize_rcu	
+> > > > 	/* Could put a full memory barrier here, but it wouldn't help. */
+> > > 
+> > > 	CPU1: smp_mb();
+> > > 	CPU2: smp_mb();
+> > > 
+> > > Let's put them in because I think they are critical.  smp_mb() also
+> > > carries with it a barrier().
+> > > 
+> > > > 	CPU2: rcu_read_lock();
+> > > > 	CPU1: b = 2;	
+> > > > 	CPU2: if (READ_ONCE(a) == 0)
+> > > > 	CPU2:         if (b != 1)  /* Weakly ordered CPU moved this up! */
+> > > > 	CPU2:                 b = 1;
+> > > > 	CPU2: rcu_read_unlock
+> > > > 
+> > > > In fact, CPU2's load from b might be moved up to race with CPU1's store,
+> > > > which (I believe) is why the model complains in this case.
+> > > 
+> > > Let's put aside my doubt over how we're even allowing a compiler
+> > > to turn
+> > > 
+> > > 	b = 1
+> > > 
+> > > into
+> > > 
+> > > 	if (b != 1)
+> > > 		b = 1
 
-Six words ^^^
+Even if you don't think the compiler will ever do this, the C standard
+gives compilers the right to invent read accesses if a plain (i.e.,
+non-atomic and non-volatile) write is present.  The Linux Kernel Memory
+Model has to assume that compilers will sometimes do this, even if it
+doesn't take the exact form of checking a variable's value before
+writing to it.
 
-What is wrong with "mlxsw_phc_settime" ?
+(Incidentally, regardless of whether the compiler will ever do this, I 
+have seen examples in the kernel where people did exactly this 
+manually, in order to avoid dirtying a cache line unnecessarily.)
 
-> +{
-> +	struct mlxsw_core *mlxsw_core = clock->core;
-> +	char mtutc_pl[MLXSW_REG_MTUTC_LEN];
-> +	char mtpps_pl[MLXSW_REG_MTPPS_LEN];
-> +	u64 next_sec_in_nsec, cycles;
-> +	u32 next_sec;
-> +	int err;
-> +
-> +	next_sec = nsec / NSEC_PER_SEC + 1;
-> +	next_sec_in_nsec = next_sec * NSEC_PER_SEC;
-> +
-> +	spin_lock(&clock->lock);
-> +	cycles = mlxsw_sp1_ptp_ns2cycles(&clock->tc, next_sec_in_nsec);
-> +	spin_unlock(&clock->lock);
-> +
-> +	mlxsw_reg_mtpps_vpin_pack(mtpps_pl, cycles);
-> +	err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(mtpps), mtpps_pl);
-> +	if (err)
-> +		return err;
-> +
-> +	mlxsw_reg_mtutc_pack(mtutc_pl,
-> +			     MLXSW_REG_MTUTC_OPERATION_SET_TIME_AT_NEXT_SEC,
-> +			     0, next_sec);
-> +	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(mtutc), mtutc_pl);
-> +}
-> +
-> +static int mlxsw_sp1_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-> +{
-> +	struct mlxsw_sp_ptp_clock *clock =
-> +		container_of(ptp, struct mlxsw_sp_ptp_clock, ptp_info);
-> +	int neg_adj = 0;
-> +	u32 diff;
-> +	u64 adj;
-> +	s32 ppb;
-> +
-> +	ppb = ptp_clock_scaled_ppm_to_ppb(scaled_ppm);
+> > > Since you seem to be assuming that (a == 0) is true in this case
+> > 
+> > I think Paul's example assuming (a == 0) is false, and maybe
+> 
+> Yes, otherwise, P0()'s write to "b" cannot have happened.
+> 
+> > speculative writes (by compilers) needs to added into consideration?
 
-Now I see why you did this.  Nice try.
+On the other hand, the C standard does not allow compilers to add
+speculative writes.  The LKMM assumes they will never occur.
 
-The 'scaled_ppm' has a finer resolution than ppb.  Please make use of
-the finer resolution in your calculation.  It does make a difference.
+> I would instead call it the compiler eliminating needless writes
+> by inventing reads -- if the variable already has the correct value,
+> no write happens.  So no compiler speculation.
+> 
+> However, it is difficult to create a solid defensible example.  Yes,
+> from LKMM's viewpoint, the weakly reordered invented read from "b"
+> can be concurrent with P0()'s write to "b", but in that case the value
+> loaded would have to manage to be equal to 1 for anything bad to happen.
+> This does feel wrong to me, but again, it is difficult to create a solid
+> defensible example.
+> 
+> > Please consider the following case (I add a few smp_mb()s), the case may
+> > be a little bit crasy, you have been warned ;-)
+> > 
+> >  	CPU1: WRITE_ONCE(a, 1)
+> >  	CPU1: synchronize_rcu called
+> > 
+> >  	CPU1: smp_mb(); /* let assume there is one here */
+> > 
+> >  	CPU2: rcu_read_lock();
+> >  	CPU2: smp_mb(); /* let assume there is one here */
+> > 
+> > 	/* "if (b != 1) b = 1" reordered  */
+> >  	CPU2: r0 = b;       /* if (b != 1) reordered here, r0 == 0 */
+> >  	CPU2: if (r0 != 1)  /* true */
+> > 	CPU2:     b = 1;    /* b == 1 now, this is a speculative write
+> > 	                       by compiler
+> > 			     */
+> > 
+> > 	CPU1: b = 2;        /* b == 2 */
+> > 
+> >  	CPU2: if (READ_ONCE(a) == 0) /* false */
+> > 	CPU2: ...
+> > 	CPU2  else                   /* undo the speculative write */
+> > 	CPU2:	  b = r0;   /* b == 0 */
+> > 
+> >  	CPU2: smp_mb();
+> > 	CPU2: read_read_unlock();
+> > 
+> > I know this is too crasy for us to think a compiler like this, but this
+> > might be the reason why the model complain about this.
+> > 
+> > Paul, did I get this right? Or you mean something else?
+> 
+> Mostly there, except that I am not yet desperate enough to appeal to
+> compilers speculating stores.  ;-)
 
-> +
-> +	if (ppb < 0) {
-> +		neg_adj = 1;
-> +		ppb = -ppb;
-> +	}
-> +
-> +	adj = clock->nominal_c_mult;
-> +	adj *= ppb;
-> +	diff = div_u64(adj, NSEC_PER_SEC);
-> +
-> +	spin_lock(&clock->lock);
-> +	timecounter_read(&clock->tc);
-> +	clock->cycles.mult = neg_adj ? clock->nominal_c_mult - diff :
-> +				       clock->nominal_c_mult + diff;
-> +	spin_unlock(&clock->lock);
-> +
-> +	return mlxsw_sp1_ptp_update_phc_adjfreq(clock, neg_adj ? -ppb : ppb);
-> +}
+This example really does point out a weakness in the LKMM's handling of 
+data races.  Herbert's litmus test is a great starting point:
 
-Thanks,
-Richard
+
+C xu
+
+{}
+
+P0(int *a, int *b)
+{
+	WRITE_ONCE(*a, 1);
+	synchronize_rcu();
+	*b = 2;
+}
+
+P1(int *a, int *b)
+{
+	rcu_read_lock();
+	if (READ_ONCE(*a) == 0)
+		*b = 1;
+	rcu_read_unlock();
+}
+
+exists (~b=2)
+
+
+Currently the LKMM says the test is allowed and there is a data race, 
+but this answer clearly is wrong since it would violate the RCU 
+guarantee.
+
+The problem is that the LKMM currently requires all ordering/visibility
+of plain accesses to be mediated by marked accesses.  But in this case,
+the visibility is mediated by RCU.  Technically, we need to add a
+relation like
+
+	([M] ; po ; rcu-fence ; po ; [M])
+
+into the definitions of ww-vis, wr-vis, and rw-xbstar.  Doing so
+changes the litmus test's result to "not allowed" and no data race.  
+However, I'm not certain that this single change is the entire fix;  
+more thought is needed.
+
+Alan
+
