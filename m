@@ -2,142 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8513443F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3E53446A
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727341AbfFDKRR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 06:17:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41948 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727246AbfFDKRQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 06:17:16 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A877E3082DCE;
-        Tue,  4 Jun 2019 10:17:15 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F399E5C89D;
-        Tue,  4 Jun 2019 10:17:04 +0000 (UTC)
-Date:   Tue, 4 Jun 2019 12:17:03 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "bjorn.topel@gmail.com" <bjorn.topel@gmail.com>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>, brouer@redhat.com,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
- to netdev
-Message-ID: <20190604121703.2baa0c0c@carbon>
-In-Reply-To: <f7e9b1c8f358a4bb83f01ab76dcc95195083e2bf.camel@mellanox.com>
-References: <20190531094215.3729-1-bjorn.topel@gmail.com>
-        <20190531094215.3729-2-bjorn.topel@gmail.com>
-        <b0a9c3b198bdefd145c34e52aa89d33aa502aaf5.camel@mellanox.com>
-        <20190601124233.5a130838@cakuba.netronome.com>
-        <CAJ+HfNjbALzf4SaopKe3pA4dV6n9m30doai_CLEDB9XG2RzjOg@mail.gmail.com>
-        <f7e9b1c8f358a4bb83f01ab76dcc95195083e2bf.camel@mellanox.com>
+        id S1727240AbfFDKcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 06:32:06 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:53825 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727118AbfFDKcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 06:32:05 -0400
+Received: by mail-it1-f198.google.com with SMTP id p19so13064777itm.3
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 03:32:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=1m6TKgfavLqedI80h4GeN37aD/ishsl+xGNUcBpfgL0=;
+        b=NMDMInXtMAjeQw488wWjsJCeJeiNXjdetg8jXZSm4dF7hNVETvsYG1uOSUl4M5qFz5
+         k6eOmYLUhAskwgVCEVGJ8r37y7XhEq03lgzvyazjeNVH9AXVIUD4WeSeaOWNwo9735dD
+         iNBK483GZ/9KH+evVIoFptSFGsP9IKJN/w2wWhbNkwlD/6CgGveVt1QPdqwFD5tcx7BB
+         DKygVGO9kBkrZQr2iXo0CUM+bVUCkNOtDORiHIlGXBtVqic6RKvaSPjJGhyRL6xikhO2
+         87Tac1v+lmakmTsOm+P3ZizXu18Lil5R4sczPjkWZyBD8Q3U9aTPVT7a66ODQ9GnuSE4
+         mXMQ==
+X-Gm-Message-State: APjAAAW0o5plKwPg02K7TX58sNx9k+Iq/8ipUgsrmkAx6B71Qogjx0pR
+        5uTlSdfCnqinK9rO3Xfnc6OYmjGD9HuAp8qIPtVws5cH1lvA
+X-Google-Smtp-Source: APXvYqz2/2fnshkYs6p86u1DujGRHTgNt/I+YtkkqZxQ6GXhexSSXm33EBXprTu9rgy7GjmXUxriRXm1tThlAuwpzgzyKIk/U8EK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 04 Jun 2019 10:17:16 +0000 (UTC)
+X-Received: by 2002:a24:3cb:: with SMTP id e194mr19206965ite.132.1559644324957;
+ Tue, 04 Jun 2019 03:32:04 -0700 (PDT)
+Date:   Tue, 04 Jun 2019 03:32:04 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f71859058a7cfdc8@google.com>
+Subject: KMSAN: uninit-value in mii_nway_restart
+From:   syzbot <syzbot+1f53a30781af65d2c955@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jun 2019 21:20:30 +0000
-Saeed Mahameed <saeedm@mellanox.com> wrote:
+Hello,
 
-> On Mon, 2019-06-03 at 11:04 +0200, Björn Töpel wrote:
-> > On Sat, 1 Jun 2019 at 21:42, Jakub Kicinski
-> > <jakub.kicinski@netronome.com> wrote:  
-> > > On Fri, 31 May 2019 19:18:17 +0000, Saeed Mahameed wrote:  
-> > > > On Fri, 2019-05-31 at 11:42 +0200, Björn Töpel wrote:  
-> > > > > From: Björn Töpel <bjorn.topel@intel.com>
-> > > > > 
-> > > > > All XDP capable drivers need to implement the
-> > > > > XDP_QUERY_PROG{,_HW} command of ndo_bpf. The query code is
-> > > > > fairly generic. This commit refactors the query code up from
-> > > > > the drivers to the netdev level.
-> > > > > 
-> > > > > The struct net_device has gained two new members: xdp_prog_hw
-> > > > > and xdp_flags. The former is the offloaded XDP program, if
-> > > > > any, and the latter tracks the flags that the supplied when
-> > > > > attaching the XDP  program. The flags only apply to SKB_MODE
-> > > > > or DRV_MODE, not HW_MODE.
-> > > > > 
-> > > > > The xdp_prog member, previously only used for SKB_MODE, is
-> > > > > shared with DRV_MODE. This is OK, due to the fact that
-> > > > > SKB_MODE and DRV_MODE are mutually exclusive. To
-> > > > > differentiate between the two modes, a new internal flag is
-> > > > > introduced as well.  
-> > > > 
-> > > > Just thinking out loud, why can't we allow any combination of
-> > > > HW/DRV/SKB modes? they are totally different attach points in a
-> > > > totally different checkpoints in a frame life cycle.  
+syzbot found the following crash on:
 
-The DRV_MODE and SKB_MODE is tricky to run concurrently. The XDP-redirect
-scheme (designed by John) use a BPF helper (bpf_xdp_redirect_map) that
-set global per-CPU state (this_cpu_ptr(&bpf_redirect_info)).
+HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
+git tree:       kmsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=1180360ea00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
+dashboard link: https://syzkaller.appspot.com/bug?extid=1f53a30781af65d2c955
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16a2b4f2a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=107f4e86a00000
 
-The tricky part (which I warned about, and we already have some fixes
-for) is that the XDP/BPF-prog can call bpf_redirect_map, which update
-the per-CPU state, but it can still choose not to return XDP_REDIRECT,
-which then miss an invocation of xdp_do_redirect().  
- Later, your SKB_MODE XDP/BPF-prog can return XDP_REDIRECT without
-calling the helper, and then use/reach to the per-CPU info set by the
-DRV_MODE program, which is NOT something I want us to "support".
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+1f53a30781af65d2c955@syzkaller.appspotmail.com
+
+ax88179_178a 1-1:0.186 (unnamed net_device) (uninitialized): Failed to  
+write reg index 0x000d: -71
+ax88179_178a 1-1:0.186 (unnamed net_device) (uninitialized): Failed to  
+write reg index 0x000e: -71
+ax88179_178a 1-1:0.186 (unnamed net_device) (uninitialized): Failed to  
+write reg index 0x000d: -71
+ax88179_178a 1-1:0.186 (unnamed net_device) (uninitialized): Failed to  
+write reg index 0x000e: -71
+ax88179_178a 1-1:0.186 (unnamed net_device) (uninitialized): Failed to read  
+reg index 0x0000: -71
+==================================================================
+BUG: KMSAN: uninit-value in mii_nway_restart+0x141/0x260  
+drivers/net/mii.c:467
+CPU: 1 PID: 3353 Comm: kworker/1:2 Not tainted 5.1.0+ #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
+  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+  mii_nway_restart+0x141/0x260 drivers/net/mii.c:467
+  ax88179_bind+0xee3/0x1a10 drivers/net/usb/ax88179_178a.c:1329
+  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
+  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
+  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
+  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
+  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+  port_event drivers/usb/core/hub.c:5350 [inline]
+  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
+  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
+  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
+  kthread+0x4b5/0x4f0 kernel/kthread.c:254
+  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+
+Local variable description: ----buf.i@ax88179_mdio_read
+Variable was created at:
+  __ax88179_read_cmd drivers/net/usb/ax88179_178a.c:199 [inline]
+  ax88179_read_cmd drivers/net/usb/ax88179_178a.c:311 [inline]
+  ax88179_mdio_read+0x7b/0x240 drivers/net/usb/ax88179_178a.c:369
+  mii_nway_restart+0xcf/0x260 drivers/net/mii.c:465
+==================================================================
 
 
-> > > FWIW see Message-ID: <20190201080236.446d84d4@redhat.com>
-> > 
-> > I've always seen the SKB-mode as something that will eventually be
-> > removed.
-> 
-> I don't think so, we are too deep into SKB-mode.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-I wish we could remove it.  After we got native XDP support in veth,
-then its original purpose is gone, which were making it easier for
-developers to get something working on their laptop, without having to
-deploy it to the server with physical hardware all the time.
-
-
-> > Clickable link:
-> >  https://lore.kernel.org/netdev/20190201080236.446d84d4@redhat.com/
-> > 
-> 
-> So we are all hanging on Jesper's refactoring ideas that are not
-> getting any priority for now :).
-
-Well, that is not true.  This patchset _is_ the refactor idea that
-Bjørn is taking over and working on.  Specifically [2] from above link.
-
-[2] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp_per_rxq01.org#refactor-idea-xdpbpf_prog-into-netdev_rx_queuenet_device
- 
-> > > > Down the road i think we will utilize this fact and start
-> > > > introducing SKB helpers for SKB mode and driver helpers for DRV
-> > > > mode..  
-> > > 
-> > > Any reason why we would want the extra complexity?  There is
-> > > cls_bpf if someone wants skb features after all..  
-> 
-> Donno, SKB mode is earlier in the stack maybe .. 
-
-From a BPF perspective you cannot introduce SKB helpers for SKB mode.
-An XDP-prog have bpf prog type XDP (BPF_PROG_TYPE_XDP), and the program
-itself is identical regardless of attaching for DRV_MODE or SKB_MODE.
-You cannot detect this at attach time, due to tail-calls (which have
-painted us into a corner).
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
