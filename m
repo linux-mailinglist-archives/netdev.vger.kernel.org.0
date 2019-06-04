@@ -2,130 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B19BE34F5D
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 892E634F46
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726538AbfFDRzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:55:15 -0400
-Received: from mail.digineo.de ([185.162.250.191]:45480 "EHLO mail.digineo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726336AbfFDRzP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 13:55:15 -0400
-X-Greylist: delayed 546 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 Jun 2019 13:55:13 EDT
-Received: from [IPv6:2a06:8780:dead:0:916e:fb41:1544:e6e6] (unknown [IPv6:2a06:8780:dead:0:916e:fb41:1544:e6e6])
-        by mail.digineo.de (Postfix) with ESMTPSA id C5305930;
-        Tue,  4 Jun 2019 17:46:06 +0000 (UTC)
-To:     Netdev <netdev@vger.kernel.org>
-From:   Arthur Skowronek <ags@digineo.de>
-Subject: gue6 bad checksums in udp header
-Message-ID: <8260b8a8-fb9f-f9a4-f756-9ef04b67f954@digineo.de>
-Date:   Tue, 4 Jun 2019 19:46:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:69.0) Gecko/20100101
- Thunderbird/69.0a1
+        id S1726179AbfFDRrw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 13:47:52 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:60596 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725929AbfFDRrw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 13:47:52 -0400
+Received: from tarshish (unknown [10.0.8.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 6B57B44059C;
+        Tue,  4 Jun 2019 20:47:33 +0300 (IDT)
+References: <602128d22db86bd67e11dec8fe40a73832c222c9.1559230347.git.baruch@tkos.co.il> <20190604094718.0a56d7a5@hermes.lan>
+User-agent: mu4e 1.0; emacs 26.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: Re: [PATCH] devlink: fix libc and kernel headers collision
+In-reply-to: <20190604094718.0a56d7a5@hermes.lan>
+Date:   Tue, 04 Jun 2019 20:47:50 +0300
+Message-ID: <87ef49nsxl.fsf@tarshish>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+Hi Stephen,
 
-it appears that there is an issue with the content of the checksum field 
-in udp packets which are transmitted through a gue encapsulated ipip 
-tunnel over ipv6.
+On Tue, Jun 04 2019, Stephen Hemminger wrote:
+> On Thu, 30 May 2019 18:32:27 +0300
+> Baruch Siach <baruch@tkos.co.il> wrote:
+>
+>> Since commit 2f1242efe9d ("devlink: Add devlink health show command") we
+>> use the sys/sysinfo.h header for the sysinfo(2) system call. But since
+>> iproute2 carries a local version of the kernel struct sysinfo, this
+>> causes a collision with libc that do not rely on kernel defined sysinfo
+>> like musl libc:
+>> 
+>> In file included from devlink.c:25:0:
+>> .../sysroot/usr/include/sys/sysinfo.h:10:8: error: redefinition of 'struct sysinfo'
+>>  struct sysinfo {
+>>         ^~~~~~~
+>> In file included from ../include/uapi/linux/kernel.h:5:0,
+>>                  from ../include/uapi/linux/netlink.h:5,
+>>                  from ../include/uapi/linux/genetlink.h:6,
+>>                  from devlink.c:21:
+>> ../include/uapi/linux/sysinfo.h:8:8: note: originally defined here
+>>  struct sysinfo {
+>> 		^~~~~~~
+>> 
+>> Rely on the kernel header alone to avoid kernel and userspace headers
+>> collision of definitions.
+>> 
+>> Cc: Aya Levin <ayal@mellanox.com>
+>> Cc: Moshe Shemesh <moshe@mellanox.com>
+>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+>
+> Sorry this breaks the glibc build.
+>
+>
+>     CC       devlink.o
+> devlink.c: In function ‘format_logtime’:
+> devlink.c:6124:8: warning: implicit declaration of function ‘sysinfo’; did you mean ‘psiginfo’? [-Wimplicit-function-declaration]
+>   err = sysinfo(&s_info);
+>         ^~~~~~~
+>         psiginfo
+>
+> I backed out the patch now (before pushing it).
+> Please fix and resubmit.
 
-I spent the past few days with experimenting around with the gue 
-encapsulation capabilities for ipip tunnels in the linux kernel. The 
-first system is running the version 4.14.121 from openwrt on an ubiquiti 
-edgerouter x and the second system is my workstation PC which is running 
-the linux kernel 4.19.47 and arch linux.
+I can't think of anything better than this ugly fix:
 
-The gue feature on the edgerouter x seems to be broken though.  All 
-packets originating from this system have a bad UDP checksum.  Packets 
-coming from my workstation are fine though. I assume that the problem 
-lies somewhere in the kernel because all operations involving the ip 
-tunnel are handled in kernel and it doesn't seem like userspace is 
-involved at all. I don't think it's an exact issue with the embedded 
-device itself since other UDP packets which are sent over ipv6 are fine. 
-It seems to be an isolated issue with the gue implementation of the 
-kernel in combination with this device.
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 436935f88bda..02e648ef64b3 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -18,11 +18,12 @@
+ #include <limits.h>
+ #include <errno.h>
+ #include <inttypes.h>
++#include <sys/sysinfo.h>
++#define _LINUX_SYSINFO_H
+ #include <linux/genetlink.h>
+ #include <linux/devlink.h>
+ #include <libmnl/libmnl.h>
+ #include <netinet/ether.h>
+-#include <sys/sysinfo.h>
+ #include <sys/queue.h>
+ 
+ #include "SNAPSHOT.h"
 
-This is the script I use to set up the tunneling:
+Would that be acceptable?
 
-	# To be executed on the router
-	export systemA='2a06:redacted::163'
-	export systemB='2a06:redacted::21'
+baruch
 
-	ip fou add port 9191 gue -6
-	ip link add name fou type ip6tnl \
-	    remote "$systemB" local "$systemA" \
-	    encap gue encap-dport 9191 encap-sport 9191 mode any
-	ip link set up dev fou
-	ip addr add 'fe80::1' dev fou
-
-	# To be executed on the workstation
-	export systemA='2a06:redacted::163'
-	export systemB='2a06:redacted::21'
-
-	ip fou add port 9191 gue -6
-	ip link add name fou type ip6tnl \
-	    remote "$systemA" local "$systemB" \
-	    encap gue encap-dport 9191 encap-sport 9191 mode any
-	ip link set up dev fou
-	ip addr add 'fe80::2' dev fou
-
-This works and the interfaces are allocated properly. When I try to ping 
-the workstation from the ERX device now it seems that the packets sent 
-by the router have the wrong UDP checksum though. This is taken from 
-wireshark:
-
-	Internet Protocol Version 6, Src: 2a06:redacted::163, Dst: 
-2a06:redacted::21
-	    0110 .... = Version: 6
-	    .... 0000 0000 .... .... .... .... .... = Traffic Class: 0x00 
-(DSCP: CS0, ECN: Not-ECT)
-	    .... .... .... 1101 0000 1111 0000 0001 = Flow Label: 0xd0f01
-	    Payload Length: 124
-	    Next Header: Destination Options for IPv6 (60)
-	    Hop Limit: 64
-	    Source: 2a06:redacted::163
-	    Destination: 2a06:redacted::21
-	    Destination Options for IPv6
-		Next Header: UDP (17)
-		Length: 0
-		[Length: 8 bytes]
-		Tunnel Encapsulation Limit
-		PadN
-	User Datagram Protocol, Src Port: 9191, Dst Port: 9191
-	    Source Port: 9191
-	    Destination Port: 9191
-	    Length: 116
-	    Checksum: 0x2272 incorrect, should be 0xec0d (maybe caused by "UDP 
-checksum offload"?)
-	    [Checksum Status: Bad]
-	    [Stream index: 69]
-	    [Timestamps]
-	Data (108 bytes)
-	    Data: 00290000600d0f0100403a40fe8000000000000000000000…
-	    [Length: 108]
-
-Unfortunatelly I'm not particularly well versed in the internals of the 
-Linux networking code so it's a little bit difficult for me to debug the 
-problem in greater detail.  From what I can tell it seems like the the 
-checksum is only computed over the pseudo IP header, missing out the UDP 
-Header and the GUE header.  As far as I understand the documents 
-describing UDP in ip6 it seems that the checksum needs to be generated 
-over the entire payload for UDP in ip6 though.
-
-I don't know how to solve this problem in a way that works nicely with 
-the checksum offloading capabilities in the kernel though.  I have no 
-experience in developing directly in the Linux kernel and this subsystem 
-looks really intimidating to me.  Any help in solving this problem would 
-be greatly appreciated.  Thank you very much.
-
-
-Greetings,
-Arthur Skowronek
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
