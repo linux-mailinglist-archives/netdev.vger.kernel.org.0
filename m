@@ -2,331 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4CD34439
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8513443F
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727271AbfFDKQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 06:16:57 -0400
-Received: from conuserg-08.nifty.com ([210.131.2.75]:41277 "EHLO
-        conuserg-08.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727061AbfFDKQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 06:16:57 -0400
-Received: from localhost.localdomain (p14092-ipngnfx01kyoto.kyoto.ocn.ne.jp [153.142.97.92]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id x54AEC7L032511;
-        Tue, 4 Jun 2019 19:14:27 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com x54AEC7L032511
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1559643268;
-        bh=89f4NG7T3lIJUXbh+crgcBM9ot/TW/l/GBiNZdH3IcE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7YyTeOIkyiLbhjHLtqXLb1VWv2GjQYy5cTgkr8C8U/cyucPCS5tXvbLRRzUzJ6TE
-         ziZe0sTaCI7+AxfD4MJh54gQr0L1AJ9WvpLuV36i+x53I9JXcPBPn6xdvR2dHK9sML
-         qN05UgT7qHP1pTja6UhXNVyhMW7EtydbRoefYU98Pxmufa5LHg6DmGwKMpHVw/LZeo
-         NqkT9Opk4Tm0y8mmDzNavtG4fIOGm8Jcj2d55/G7CYHnGI/2KymFZgUTQCOWVome3q
-         +O5FFmRsXenLxnlozqVJcD5GQPFx2xNzow+Ov8ya3wThpyW5MD5etP34fHH+iOnJbP
-         iI8KUO3jj3lDg==
-X-Nifty-SrcIP: [153.142.97.92]
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Palmer Dabbelt <palmer@sifive.com>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Subject: [PATCH 15/15] kbuild: compile test UAPI headers to ensure they are self-contained
-Date:   Tue,  4 Jun 2019 19:14:09 +0900
-Message-Id: <20190604101409.2078-16-yamada.masahiro@socionext.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190604101409.2078-1-yamada.masahiro@socionext.com>
-References: <20190604101409.2078-1-yamada.masahiro@socionext.com>
+        id S1727341AbfFDKRR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 06:17:17 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41948 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727246AbfFDKRQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 06:17:16 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A877E3082DCE;
+        Tue,  4 Jun 2019 10:17:15 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F399E5C89D;
+        Tue,  4 Jun 2019 10:17:04 +0000 (UTC)
+Date:   Tue, 4 Jun 2019 12:17:03 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "bjorn.topel@gmail.com" <bjorn.topel@gmail.com>,
+        "toke@redhat.com" <toke@redhat.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "bjorn.topel@intel.com" <bjorn.topel@intel.com>, brouer@redhat.com,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
+ to netdev
+Message-ID: <20190604121703.2baa0c0c@carbon>
+In-Reply-To: <f7e9b1c8f358a4bb83f01ab76dcc95195083e2bf.camel@mellanox.com>
+References: <20190531094215.3729-1-bjorn.topel@gmail.com>
+        <20190531094215.3729-2-bjorn.topel@gmail.com>
+        <b0a9c3b198bdefd145c34e52aa89d33aa502aaf5.camel@mellanox.com>
+        <20190601124233.5a130838@cakuba.netronome.com>
+        <CAJ+HfNjbALzf4SaopKe3pA4dV6n9m30doai_CLEDB9XG2RzjOg@mail.gmail.com>
+        <f7e9b1c8f358a4bb83f01ab76dcc95195083e2bf.camel@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 04 Jun 2019 10:17:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multiple people have suggested compile-testing UAPI headers to ensure
-they can be really included from user-space. "make headers_check" is
-obviously not enough to catch bugs, and we often leak references to
-kernel-space definition to user-space.
+On Mon, 3 Jun 2019 21:20:30 +0000
+Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-The most recent patch I know is David Howells' work:
+> On Mon, 2019-06-03 at 11:04 +0200, Björn Töpel wrote:
+> > On Sat, 1 Jun 2019 at 21:42, Jakub Kicinski
+> > <jakub.kicinski@netronome.com> wrote:  
+> > > On Fri, 31 May 2019 19:18:17 +0000, Saeed Mahameed wrote:  
+> > > > On Fri, 2019-05-31 at 11:42 +0200, Björn Töpel wrote:  
+> > > > > From: Björn Töpel <bjorn.topel@intel.com>
+> > > > > 
+> > > > > All XDP capable drivers need to implement the
+> > > > > XDP_QUERY_PROG{,_HW} command of ndo_bpf. The query code is
+> > > > > fairly generic. This commit refactors the query code up from
+> > > > > the drivers to the netdev level.
+> > > > > 
+> > > > > The struct net_device has gained two new members: xdp_prog_hw
+> > > > > and xdp_flags. The former is the offloaded XDP program, if
+> > > > > any, and the latter tracks the flags that the supplied when
+> > > > > attaching the XDP  program. The flags only apply to SKB_MODE
+> > > > > or DRV_MODE, not HW_MODE.
+> > > > > 
+> > > > > The xdp_prog member, previously only used for SKB_MODE, is
+> > > > > shared with DRV_MODE. This is OK, due to the fact that
+> > > > > SKB_MODE and DRV_MODE are mutually exclusive. To
+> > > > > differentiate between the two modes, a new internal flag is
+> > > > > introduced as well.  
+> > > > 
+> > > > Just thinking out loud, why can't we allow any combination of
+> > > > HW/DRV/SKB modes? they are totally different attach points in a
+> > > > totally different checkpoints in a frame life cycle.  
 
-  https://patchwork.kernel.org/patch/10590203/
+The DRV_MODE and SKB_MODE is tricky to run concurrently. The XDP-redirect
+scheme (designed by John) use a BPF helper (bpf_xdp_redirect_map) that
+set global per-CPU state (this_cpu_ptr(&bpf_redirect_info)).
 
-While I agree that we should do this, we must consider how it can be
-integrated cleanly. That is why it has not been supported in the
-mainline yet.
+The tricky part (which I warned about, and we already have some fixes
+for) is that the XDP/BPF-prog can call bpf_redirect_map, which update
+the per-CPU state, but it can still choose not to return XDP_REDIRECT,
+which then miss an invocation of xdp_do_redirect().  
+ Later, your SKB_MODE XDP/BPF-prog can return XDP_REDIRECT without
+calling the helper, and then use/reach to the per-CPU info set by the
+DRV_MODE program, which is NOT something I want us to "support".
 
-The idea that has been in my mind is to compile every UAPI header
-so that it can be included without relying on any include order.
 
-Please note usr/include/ is built with a completely different set of
-compiler flags. The header search path is set to $(objtree)/usr/include
-since UAPI headers should not include unexported headers.
+> > > FWIW see Message-ID: <20190201080236.446d84d4@redhat.com>
+> > 
+> > I've always seen the SKB-mode as something that will eventually be
+> > removed.
+> 
+> I don't think so, we are too deep into SKB-mode.
 
-We use -std=gnu89 for the kernel space since the kernel code highly
-depends on GNU extensions. On the other hand, UAPI headers should be
-written in somewhat strict C, so they are compiled with -std=c89. This
-will catch C++ style comments, the keyword 'inline', etc. ('__inline__'
-should be used instead).
+I wish we could remove it.  After we got native XDP support in veth,
+then its original purpose is gone, which were making it easier for
+developers to get something working on their laptop, without having to
+deploy it to the server with physical hardware all the time.
 
-There is additional compiler requirement for building under usr/include.
-because many of UAPI headers include <stdlib.h>, <sys/ioctl.h>,
-<sys/time.h>, etc. directly or indirectly.
 
-You can use kernel.org prebuilt toolchains for building the kernel
-(https://mirrors.edge.kernel.org/pub/tools/crosstool/index.html)
-but they do not provide <stdlib.h> etc.
+> > Clickable link:
+> >  https://lore.kernel.org/netdev/20190201080236.446d84d4@redhat.com/
+> > 
+> 
+> So we are all hanging on Jesper's refactoring ideas that are not
+> getting any priority for now :).
 
-If you want to compile test UAPI headers, you need to use full-featured
-compilers, which are usually provided by distributions.
+Well, that is not true.  This patchset _is_ the refactor idea that
+Bjørn is taking over and working on.  Specifically [2] from above link.
 
-I added scripts/cc-system-headers.sh to check if necessary system
-headers are available, which CONFIG_UAPI_HEADER_TEST depends on.
-
-For now, a lot of headers need to be excluded because they cannot
-be compiled standalone, but this is a good start point.
-
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
-
- Makefile                     |   2 +-
- init/Kconfig                 |  11 +++
- scripts/cc-system-headers.sh |   8 +++
- usr/.gitignore               |   1 -
- usr/Makefile                 |   2 +
- usr/include/.gitignore       |   3 +
- usr/include/Makefile         | 132 +++++++++++++++++++++++++++++++++++
- 7 files changed, 157 insertions(+), 2 deletions(-)
- create mode 100755 scripts/cc-system-headers.sh
- create mode 100644 usr/include/.gitignore
- create mode 100644 usr/include/Makefile
-
-diff --git a/Makefile b/Makefile
-index 48bac02fb72d..0d54b073c415 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1363,7 +1363,7 @@ CLEAN_DIRS  += $(MODVERDIR) include/ksym
- CLEAN_FILES += modules.builtin.modinfo
+[2] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp_per_rxq01.org#refactor-idea-xdpbpf_prog-into-netdev_rx_queuenet_device
  
- # Directories & files removed with 'make mrproper'
--MRPROPER_DIRS  += include/config usr/include include/generated          \
-+MRPROPER_DIRS  += include/config include/generated          \
- 		  arch/$(SRCARCH)/include/generated .tmp_objdiff
- MRPROPER_FILES += .config .config.old .version \
- 		  Module.symvers tags TAGS cscope* GPATH GTAGS GRTAGS GSYMS \
-diff --git a/init/Kconfig b/init/Kconfig
-index 02d8897b91fb..9a26f0e7e3fb 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -105,6 +105,17 @@ config HEADER_TEST
- 	  If you are a developer or tester and want to ensure the requested
- 	  headers are self-contained, say Y here. Otherwise, choose N.
- 
-+config UAPI_HEADER_TEST
-+	bool "Compile test UAPI headers"
-+	depends on HEADER_TEST && HEADERS_INSTALL
-+	depends on $(success,$(srctree)/scripts/cc-system-headers.sh $(CC))
-+	help
-+	  Compile test headers exported to user-space to ensure they are
-+	  self-contained, i.e. compilable as standalone units.
-+
-+	  If you are a developer or tester and want to ensure the UAPI
-+	  headers are self-contained, say Y here. Otherwise, choose N.
-+
- config LOCALVERSION
- 	string "Local version - append to kernel release"
- 	help
-diff --git a/scripts/cc-system-headers.sh b/scripts/cc-system-headers.sh
-new file mode 100755
-index 000000000000..1b3db369828c
---- /dev/null
-+++ b/scripts/cc-system-headers.sh
-@@ -0,0 +1,8 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+cat << "END" | $@ -E -x c - -o /dev/null >/dev/null 2>&1
-+#include <stdlib.h>
-+#include <sys/ioctl.h>
-+#include <sys/time.h>
-+END
-diff --git a/usr/.gitignore b/usr/.gitignore
-index 8e48117a3f3d..be5eae1df7eb 100644
---- a/usr/.gitignore
-+++ b/usr/.gitignore
-@@ -7,4 +7,3 @@ initramfs_data.cpio.gz
- initramfs_data.cpio.bz2
- initramfs_data.cpio.lzma
- initramfs_list
--include
-diff --git a/usr/Makefile b/usr/Makefile
-index 4a70ae43c9cb..6a89eb019275 100644
---- a/usr/Makefile
-+++ b/usr/Makefile
-@@ -56,3 +56,5 @@ $(deps_initramfs): klibcdirs
- $(obj)/$(datafile_y): $(obj)/gen_init_cpio $(deps_initramfs) klibcdirs
- 	$(Q)$(initramfs) -l $(ramfs-input) > $(obj)/$(datafile_d_y)
- 	$(call if_changed,initfs)
-+
-+subdir-$(CONFIG_UAPI_HEADER_TEST) += include
-diff --git a/usr/include/.gitignore b/usr/include/.gitignore
-new file mode 100644
-index 000000000000..a0991ff4402b
---- /dev/null
-+++ b/usr/include/.gitignore
-@@ -0,0 +1,3 @@
-+*
-+!.gitignore
-+!Makefile
-diff --git a/usr/include/Makefile b/usr/include/Makefile
-new file mode 100644
-index 000000000000..8cba20ba4edb
---- /dev/null
-+++ b/usr/include/Makefile
-@@ -0,0 +1,132 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+# Unlike the kernel space, uapi headers are written in more strict C.
-+#  - Forbid C++ style comments
-+#  - Use '__inline', '__asm__' instead of 'inline', 'asm'
-+#
-+# -std=c90 (equivalent to -ansi) catches the violation of those.
-+# We cannot go as far as adding -Wpedantic since it emits too many warnings.
-+#
-+# REVISIT: re-consider the proper set of compiler flags for uapi compile-test.
-+
-+UAPI_CFLAGS := -std=c90 -Wall -Werror=implicit-function-declaration
-+
-+override c_flags = $(UAPI_CFLAGS) -Wp,-MD,$(depfile) -I$(objtree)/usr/include
-+
-+# We want to compile as many headers as possible. We collect all headers
-+# by using the wildcard, then filter-out some later.
-+all-uapi-headers = $(shell cd $(obj) && find * -name '*.h')
-+
-+# asm-generic/*.h is used by asm/*.h, and should not be included directly
-+no-header-test += asm-generic/%.h
-+
-+# The following are excluded for now just because they fail to build.
-+# The cause of errors are mostly missing include directives.
-+# Check one by one, and send a patch to each subsystem.
-+#
-+# Do not add a new header to the list without legitimate reason.
-+# Please consider to fix the header first.
-+no-header-test += asm/ipcbuf.h
-+no-header-test += asm/msgbuf.h
-+no-header-test += asm/sembuf.h
-+no-header-test += asm/shmbuf.h
-+no-header-test += asm/signal.h
-+no-header-test += asm/ucontext.h
-+no-header-test += drm/vmwgfx_drm.h
-+no-header-test += linux/am437x-vpfe.h
-+no-header-test += linux/android/binderfs.h
-+no-header-test += linux/android/binder.h
-+no-header-test += linux/coda.h
-+no-header-test += linux/coda_psdev.h
-+no-header-test += linux/dvb/audio.h
-+no-header-test += linux/dvb/osd.h
-+no-header-test += linux/elfcore.h
-+no-header-test += linux/errqueue.h
-+no-header-test += linux/fsmap.h
-+no-header-test += linux/hdlc/ioctl.h
-+no-header-test += linux/jffs2.h
-+no-header-test += linux/kexec.h
-+no-header-test += linux/matroxfb.h
-+no-header-test += linux/netfilter_bridge/ebtables.h
-+no-header-test += linux/netfilter_ipv4/ipt_LOG.h
-+no-header-test += linux/netfilter_ipv6/ip6t_LOG.h
-+no-header-test += linux/nfc.h
-+no-header-test += linux/nilfs2_ondisk.h
-+no-header-test += linux/omap3isp.h
-+no-header-test += linux/omapfb.h
-+no-header-test += linux/patchkey.h
-+no-header-test += linux/phonet.h
-+no-header-test += linux/reiserfs_xattr.h
-+no-header-test += linux/scc.h
-+no-header-test += linux/sctp.h
-+no-header-test += linux/signal.h
-+no-header-test += linux/sysctl.h
-+no-header-test += linux/usb/audio.h
-+no-header-test += linux/ivtv.h
-+no-header-test += linux/v4l2-mediabus.h
-+no-header-test += linux/v4l2-subdev.h
-+no-header-test += linux/videodev2.h
-+no-header-test += linux/vm_sockets.h
-+no-header-test += misc/ocxl.h
-+no-header-test += scsi/scsi_bsg_fc.h
-+no-header-test += scsi/scsi_netlink_fc.h
-+no-header-test += scsi/scsi_netlink.h
-+no-header-test += sound/asequencer.h
-+no-header-test += sound/asound.h
-+no-header-test += sound/asoc.h
-+no-header-test += sound/compress_offload.h
-+no-header-test += sound/emu10k1.h
-+no-header-test += sound/sfnt_info.h
-+no-header-test += sound/sof/eq.h
-+no-header-test += sound/sof/fw.h
-+no-header-test += sound/sof/header.h
-+no-header-test += sound/sof/manifest.h
-+no-header-test += sound/sof/trace.h
-+no-header-test += xen/evtchn.h
-+no-header-test += xen/gntdev.h
-+no-header-test += xen/privcmd.h
-+
-+# more headers are broken in some architectures
-+
-+ifeq ($(SRCARCH),arc)
-+no-header-test += linux/bpf_perf_event.h
-+endif
-+
-+ifeq ($(SRCARCH),ia64)
-+no-header-test += asm/setup.h
-+no-header-test += asm/sigcontext.h
-+no-header-test += asm/perfmon.h
-+no-header-test += asm/perfmon_default_smpl.h
-+no-header-test += linux/if_bonding.h
-+endif
-+
-+ifeq ($(SRCARCH),mips)
-+no-header-test += asm/stat.h
-+endif
-+
-+ifeq ($(SRCARCH),powerpc)
-+no-header-test += asm/stat.h
-+no-header-test += linux/bpf_perf_event.h
-+endif
-+
-+ifeq ($(SRCARCH),riscv)
-+no-header-test += linux/bpf_perf_event.h
-+endif
-+
-+ifeq ($(SRCARCH),s390)
-+no-header-test += asm/runtime_instr.h
-+no-header-test += asm/zcrypt.h
-+endif
-+
-+ifeq ($(SRCARCH),sparc)
-+no-header-test += asm/stat.h
-+no-header-test += asm/uctx.h
-+no-header-test += asm/fbio.h
-+no-header-test += asm/openpromio.h
-+endif
-+
-+# Use '=' instead of ':=' to avoid $(shell ...) evaluation when cleaning
-+header-test-y = $(filter-out $(no-header-test), $(all-uapi-headers))
-+
-+# Use '=' instead of ':=' to avoid $(shell ...) evaluation when building
-+clean-dirs = $(shell cd $(obj) 2>/dev/null && find * -maxdepth 0 -type d)
+> > > > Down the road i think we will utilize this fact and start
+> > > > introducing SKB helpers for SKB mode and driver helpers for DRV
+> > > > mode..  
+> > > 
+> > > Any reason why we would want the extra complexity?  There is
+> > > cls_bpf if someone wants skb features after all..  
+> 
+> Donno, SKB mode is earlier in the stack maybe .. 
+
+From a BPF perspective you cannot introduce SKB helpers for SKB mode.
+An XDP-prog have bpf prog type XDP (BPF_PROG_TYPE_XDP), and the program
+itself is identical regardless of attaching for DRV_MODE or SKB_MODE.
+You cannot detect this at attach time, due to tail-calls (which have
+painted us into a corner).
+
 -- 
-2.17.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
