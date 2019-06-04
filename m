@@ -2,100 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2BA5352B4
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 00:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4592352C7
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 00:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726416AbfFDWa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 18:30:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44044 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726293AbfFDWa2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 18:30:28 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 304F918DF7A;
-        Tue,  4 Jun 2019 22:30:28 +0000 (UTC)
-Received: from new-host.redhat.com (ovpn-204-40.brq.redhat.com [10.40.204.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7170C6014C;
-        Tue,  4 Jun 2019 22:30:25 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Andrea Claudi <aclaudi@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 v2] tc: simple: don't hardcode the control action
-Date:   Wed,  5 Jun 2019 00:30:16 +0200
-Message-Id: <ea2fbb2d36828188d11090d73b648d97988cdcf6.1559687259.git.dcaratti@redhat.com>
+        id S1726427AbfFDWjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 18:39:08 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:28449 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbfFDWjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 18:39:08 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x54Md5D6003811
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 4 Jun 2019 16:39:05 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Md5NA040768
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Tue, 4 Jun 2019 16:39:05 -0600
+Subject: Re: [PATCH net-next v3 07/19] net: axienet: Re-initialize MDIO
+ registers properly after reset
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
+References: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
+ <1559684626-24775-8-git-send-email-hancock@sedsystems.ca>
+ <20190604221856.GB19627@lunn.ch>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <b687d9b9-ea38-151e-3311-9e8efdf337a2@sedsystems.ca>
+Date:   Tue, 4 Jun 2019 16:39:05 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Tue, 04 Jun 2019 22:30:28 +0000 (UTC)
+In-Reply-To: <20190604221856.GB19627@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the following TDC test case:
+On 2019-06-04 4:18 p.m., Andrew Lunn wrote:
+>> -	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
+>> -		    (mdio_mcreg & (~XAE_MDIO_MC_MDIOEN_MASK)));
+>> +	mutex_lock(&lp->mii_bus->mdio_lock);
+>> +	axienet_mdio_disable(lp);
+> 
+> I wonder if it would look better structured if the lock was in
+> axienet_mdio_disable() and the unlock in axienet_mdio_enable(lp)?
+> 
+> As you said, you are trying to refactor all the MDIO code it mdio.c.
 
- b776 - Replace simple action with invalid goto chain control
+Acquiring a lock and not releasing it in a disable() method would seem a
+little bit evil.. not sure if there is another way to handle that
+better. The code in _mdio.c doesn't do anything with the mdio_lock so
+it's not going to conflict between the code in the two files at least.
 
-checks if the kernel correctly validates the 'goto chain' control action,
-when it is specified in 'act_simple' rules. The test systematically fails
-because the control action is hardcoded in parse_simple(), i.e. it is not
-parsed by command line arguments, so its value is constantly TC_ACT_PIPE.
-Because of that, the following command:
-
- # tc action add action simple sdata "test" drop index 7
-
-installs an 'act_simple' rule that never drops packets, and whose 'index'
-is the first IDR available, plus an 'act_gact' rule with 'index' equal to
-7, that drops packets.
-
-Use parse_action_control_dflt(), like we did on many other TC actions, to
-make the control action configurable also with 'act_simple'. The expected
-results of test b776 are summarized below:
-
- iproute2
-   v       kernel->| 5.1-rc2 (and previous)  | 5.1-rc3 (and subsequent)
- ------------------+-------------------------+-------------------------
- 5.1.0             | FAIL (bad IDR)          | FAIL (bad IDR)
- 5.1.0(patched)    | FAIL (no rule/bad sdata)| PASS
-
-Changes since v1:
- - reword commit message, thanks Stephen Hemminger
-
-Fixes: 087f46ee4ebd ("tc: introduce simple action")
-CC: Andrea Claudi <aclaudi@redhat.com>
-CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- tc/m_simple.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/tc/m_simple.c b/tc/m_simple.c
-index 886606f9f8b4..e3c8a60ff64a 100644
---- a/tc/m_simple.c
-+++ b/tc/m_simple.c
-@@ -119,6 +119,9 @@ parse_simple(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
- 		}
- 	}
- 
-+	parse_action_control_dflt(&argc, &argv, &sel.action, false,
-+				  TC_ACT_PIPE);
-+
- 	if (argc) {
- 		if (matches(*argv, "index") == 0) {
- 			NEXT_ARG();
-@@ -144,8 +147,6 @@ parse_simple(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
- 		return -1;
- 	}
- 
--	sel.action = TC_ACT_PIPE;
--
- 	tail = addattr_nest(n, MAX_MSG, tca_id);
- 	addattr_l(n, MAX_MSG, TCA_DEF_PARMS, &sel, sizeof(sel));
- 	if (simpdata)
 -- 
-2.20.1
-
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
