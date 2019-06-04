@@ -2,67 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F399F34B5F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C564834B73
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727909AbfFDPCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 11:02:25 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35557 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727737AbfFDPCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 11:02:25 -0400
-Received: by mail-wr1-f66.google.com with SMTP id m3so375162wrv.2
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 08:02:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oXElFlC1nmJaL3v6YFn53FxqpyRpE/8xy6Xrh90NmJo=;
-        b=NeCu1OH1LzaV/yOeHCfh2AQGBi3uaCFpfL6P3u8pWVkHeu1M3nK1tN2/n6gYIjSf3s
-         WSQm7bbGbeTF+4cl9p6Dv8YMNgZzpXUgak0HYZiDkqXv2y2+56jl2sX4dzcvHd0UjvYN
-         znYt1rVYIDekmGkzZqeH7VWe0WABgbAz+qMG0r3pGOWqrgYc69GzxEadF7k3FG1vH7Tz
-         t0OVUj3AHe+vd3StVy74He+1f8oAve8bWLfBBJ/o+28QWMzZkXBt6Ah3jvi4o6paY9qG
-         mrGe038tCPVPyvoxMn6P+nQodcrvmz1bdJR8l2L09Vq6xoc1wLmJK/69EQ9oqddKukKo
-         6pNQ==
-X-Gm-Message-State: APjAAAVmwSgkOBF/2PJSCeLO25sRe/1Zbh0Od8gPEdQyPTUOKg3OCORJ
-        dHUjJv5gqKbZEVYWSEMvtFQm8g==
-X-Google-Smtp-Source: APXvYqzEmwcG0d8lQX/kl0QdpL4L3hcIIUwoksIwqLVAG+qxWZ32BNihUk7BC4wUe4xNai/y/ebwjA==
-X-Received: by 2002:adf:ef09:: with SMTP id e9mr7072720wro.79.1559660543558;
-        Tue, 04 Jun 2019 08:02:23 -0700 (PDT)
-Received: from linux.home (aputeaux-655-1-151-164.w86-217.abo.wanadoo.fr. [86.217.126.164])
-        by smtp.gmail.com with ESMTPSA id q9sm22413544wmq.9.2019.06.04.08.02.22
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 04 Jun 2019 08:02:22 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 17:02:21 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Peter Oskolkov <posk@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] netfilter: ipv6: nf_defrag: fix leakage of unqueued
- fragments
-Message-ID: <20190604150218.GA12962@linux.home>
-References: <51d82a9bd6312e51a56ccae54e00452a0ef957dd.1559480671.git.gnault@redhat.com>
- <20190604132605.jlhxljrzaqkw4f2j@salvia>
+        id S1728007AbfFDPES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 11:04:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55992 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727920AbfFDPER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 11:04:17 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYAyz-0007QG-Sc; Tue, 04 Jun 2019 17:04:13 +0200
+Received: from [178.197.249.21] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYAyz-000J7F-Lb; Tue, 04 Jun 2019 17:04:13 +0200
+Subject: Re: [PATCH][next] bpf: hbm: fix spelling mistake "notifcations" ->
+ "notificiations"
+To:     Colin King <colin.king@canonical.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190603133653.18185-1-colin.king@canonical.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <aa66f68c-81c2-d2c1-8b95-a7673dc1f89f@iogearbox.net>
+Date:   Tue, 4 Jun 2019 17:04:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190604132605.jlhxljrzaqkw4f2j@salvia>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190603133653.18185-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25470/Tue Jun  4 10:01:16 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 03:26:05PM +0200, Pablo Neira Ayuso wrote:
-> On Sun, Jun 02, 2019 at 03:13:47PM +0200, Guillaume Nault wrote:
-> > With commit 997dd9647164 ("net: IP6 defrag: use rbtrees in
-> > nf_conntrack_reasm.c"), nf_ct_frag6_reasm() is now called from
-> > nf_ct_frag6_queue(). With this change, nf_ct_frag6_queue() can fail
-> > after the skb has been added to the fragment queue and
-> > nf_ct_frag6_gather() was adapted to handle this case.
+On 06/03/2019 03:36 PM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Applied, thanks.
+> There is a spelling mistake in the help information, fix this.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Thanks. Can you also please queue it for -stable?
+Applied, thanks!
