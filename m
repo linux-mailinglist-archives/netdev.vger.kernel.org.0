@@ -2,130 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D31C334DD2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1166F34DD6
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 18:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727623AbfFDQjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 12:39:08 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:9976 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727451AbfFDQjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 12:39:08 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x54Gd3v3005323
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 4 Jun 2019 10:39:03 -0600 (CST)
-Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Gd3sQ056352
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 4 Jun 2019 10:39:03 -0600
-Subject: Re: [PATCH net-next v2] net: phy: xilinx: add Xilinx PHY driver
-To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
- <d8c22bc3-0a20-2c24-88bb-b1f5f8cc907a@gmail.com>
-From:   Robert Hancock <hancock@sedsystems.ca>
-Openpgp: preference=signencrypt
-Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
- 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
-Organization: SED Systems
-Message-ID: <7684776f-2bec-e9e2-1a79-dbc3e9844f7e@sedsystems.ca>
-Date:   Tue, 4 Jun 2019 10:39:03 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727626AbfFDQlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 12:41:10 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34302 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727451AbfFDQlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 12:41:09 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c85so4233531pfc.1
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 09:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=E35jc+uAOqXLXpmUJ3PTU6SSnWfiQJ5YDsalNFzboww=;
+        b=d8bTqoMh/tYxD/p6FSHM09MtcT4FHUU5W2rJQLLR27h16ADz7QK5V/bWwGyQazZryJ
+         mX3v5MlYcuyw1qtFNlF9FdX/5RSWgFAjeKFouGA9xFAeI4h+OEQd4CSfO1003eBgUUaT
+         AW1rN934G8w93lwB8xGdb3K4YvQzdiHBXNzc9PB3y+4AUZPJCO8FrggqFHnLuFhxRhQe
+         lth6tndmZnhALotfM9zMU+iWinJCt+xgJHXY34lfc06Qtvk9BuROarcwVsib7l55/zem
+         kA3UpmhypS7N28UVeoTTHKhTHnVXuq9FWjv3xhJ8X57wmBMTj4ENscZZH9xsWHtotfxM
+         z0FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=E35jc+uAOqXLXpmUJ3PTU6SSnWfiQJ5YDsalNFzboww=;
+        b=Fo0OLGGhNIHPv3ZTZg34RUQ2v94TYuQjDPzP5HGfA9Ls0V11HJoHwJUlVscxhl2RUI
+         F1BfUAxDdf1GhrT2UP8o5Q22wSY8i3a/NCK6+BPGHHljSfbUAZO35p6fAC5ZVdmISJ3G
+         XRNDnjDgcjlXmYhn5iUQhuuCKinhLioQib7rTENJsSPkIWOrVblTLJIxLILwmsp+T4yi
+         gfTWkcQ92JcpXYTcDIbLVwY0zky48nuZbSB7UILhuKqTwpa4gwcetW1QDVUtn0ibbJ9V
+         DjJxtbklpnFREAhvji3luDKb/8WV86GGYHI2OamhGCceGLe15PaosAMuLdIbdZt7wKnr
+         S/Ww==
+X-Gm-Message-State: APjAAAWC/F29lmoNiqHzcEmOu0g91BobQt+46V7hOlcpfxaXfZ2BgJ7Q
+        n/4DFgROW45hHFZ70h18+OdasplE5UU=
+X-Google-Smtp-Source: APXvYqxYv4VP74XzTHBiE1vEUbErcDYDhdq52maUcdYCuGTTLYSSE1PpxGqPuVU1okYrM3AigReyGg==
+X-Received: by 2002:aa7:82d6:: with SMTP id f22mr40566452pfn.151.1559666469053;
+        Tue, 04 Jun 2019 09:41:09 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b15sm18255474pfi.141.2019.06.04.09.41.08
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 09:41:08 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 09:41:07 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     netdev@vger.kernel.org, aclaudi@redhat.com,
+        Qiaobin Fu <qiaobinf@bu.edu>
+Subject: Re: [PATCH iproute2] man: tc-skbedit.8: document 'inheritdsfield'
+Message-ID: <20190604094107.6834422e@hermes.lan>
+In-Reply-To: <7d450cb1d7bc1cde70b530930e0a5d73e39f4fdf.1559304622.git.dcaratti@redhat.com>
+References: <7d450cb1d7bc1cde70b530930e0a5d73e39f4fdf.1559304622.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <d8c22bc3-0a20-2c24-88bb-b1f5f8cc907a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-03 11:37 p.m., Heiner Kallweit wrote:
->> +	/* Xilinx PHY wrongly indicates BMSR_ESTATEN = 0 even though
->> +	 * extended status registers are supported. So we force the PHY
->> +	 * features to PHY_GBIT_FEATURES in order to allow gigabit support
->> +	 * to be detected.
->> +	 */
->> +	.features	= PHY_GBIT_FEATURES,
+On Fri, 31 May 2019 14:12:15 +0200
+Davide Caratti <dcaratti@redhat.com> wrote:
+
+> while at it, fix missing square bracket near 'ptype' and a typo in the
+> action description (it's -> its).
 > 
-> BMSR_ESTATEN is used by genphy_config_advert() too. Means you would
-> need to implement your own config_aneg callback and basically
-> copy 99% of genphy_config_advert().
-> 
-> I think the better alternative is to implement a quirk flag in phylib
-> similar to PHY_RST_AFTER_CLK_EN. Let me come up with a proposal.
-> 
-> Last but not least: Not setting BMSR_ESTATEN for a GBit PHY violates
-> the standard. Any intention from Xilinx to fix this?
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-My apologies, it seems like my initial diagnosis of this was incorrect.
-ESTATEN is indeed set to 1. The problem is that in the configuration of
-the PHY that we are using, which is set up for 1000Base-X mode, ESTATUS
-returns 0x8000 indicating support for 1000Base-X full duplex and not
-ESTATUS_1000_TFULL or ESTATUS_1000_THALF, which are the only bits that
-genphy_config_init checks for. Therefore, genphy_config_init comes back
-with no modes supported for the PHY, and phydev therefore rejects
-attaching the PHY to the network device.
-
-Adding PHY_GBIT_FEATURES in causes 1000Base-T half and full duplex to be
-added into the mix, which fakes things out enough for it to work, it
-appears.
-
-So it seems like what is missing is the ability of genphy_config_init to
-detect the bits in the extended status register for 1000Base-X and add
-the corresponding mode flags. It appears bit 15 for 1000Base-X full
-duplex is standardized in 802.3 Clause 22, so I would expect Linux
-should be able to detect that and add it as a supported mode for the
-PHY. genphy_config_init is dealing with the "legacy" 32-bit mode masks
-that have no bit for 1000BaseX though.. how is that intended to work?
-
--- 
-Robert Hancock
-Senior Software Developer
-SED Systems, a division of Calian Ltd.
-Email: hancock@sedsystems.ca
+Applied. Thanks
