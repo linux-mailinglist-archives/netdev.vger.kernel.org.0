@@ -2,204 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07449344F5
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 12:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F4F35016
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 21:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbfFDK6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 06:58:53 -0400
-Received: from mga07.intel.com ([134.134.136.100]:62569 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727484AbfFDK6w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 06:58:52 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jun 2019 03:58:51 -0700
-X-ExtLoop1: 1
-Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
-  by orsmga008.jf.intel.com with ESMTP; 04 Jun 2019 03:58:47 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [PATCH net-next v6 5/5] net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
-Date:   Wed,  5 Jun 2019 02:58:56 +0800
-Message-Id: <1559674736-2190-6-git-send-email-weifeng.voon@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
-References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
+        id S1726286AbfFDTAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 15:00:25 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42460 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbfFDTAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 15:00:25 -0400
+Received: by mail-qk1-f195.google.com with SMTP id b18so3542694qkc.9
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 12:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LM7aaYP/01BDzRnX5iKBabEgiyBZDUAQI4ilgGYCG0s=;
+        b=c4um6PNTUMgDpwzVlTFqnObbS2VoDfouT+LfCRrBMPKvtD16w7qhrCyBLzGY2dPYyT
+         x3zq1BysJc2/ZYfKfz3PszhIDt8iEvOs7IUNvoPSdpLJD1YHX8WX3Yu6B0exnvgaWQHi
+         A4/3LZqcrBEo+TLI1hP23nw20LxTVgp96KcxSr7x6NbcyickVx4SAtsIRmmFnqrOQt1w
+         iKpHmDJJRKU3g4QaKefMgmbiUR4bjU1Oxs+YVpvIm6UUk41vl+d2Okxh13IB6yoSRXbk
+         NTDGWfFNbsbWVLqCakTMWM/jCscH3FpshTSTaqRgSJ3XCJ9Y8opkvdY6tIpaWGgOtxvT
+         R8ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LM7aaYP/01BDzRnX5iKBabEgiyBZDUAQI4ilgGYCG0s=;
+        b=rEhwzL9u/XEZTY2VVPNJvFspx1jnTgY+1IbLz9I2qEH60AJ5Qa5aYfKzwEa/XOtmWG
+         xqy0p7GHTz6PCF6sbCFhfMPQziwlmfs8wpfKi0dpX1R1y4uJXHkKxUpTGICw+Gsj7imt
+         2AjoiH2WhAHbG5Pu8CKoDdnn5px4YxEvBntMKoSHG6DXOt23zvKoZohcf3Rbzngdz0jN
+         ffFZXDYIrDQvWiaRE095yuVg7CMmDiPgz42mCpZb5FFemOXjTUsYr/P7b5fYVZq5kjCt
+         sq3yDhVieurpC3FSfBjakmkrQgKh75nU58ZaCxNaDXj3noo6wa0pNRx837fEDSyuFJm9
+         Qfsw==
+X-Gm-Message-State: APjAAAVCedJCXn2oQaGxgLCK87TtLrEzqPJmxd4zvPe/fOLDLC5MyDBw
+        01PnzCaU69+MO3Xy1+VFQeGPBw==
+X-Google-Smtp-Source: APXvYqxOe8KqGtnlg5MBGeyMydJrhDW5DUGWOE5kcs+xuCtM4E9QLSJX4dIc4znWTM5dW5kXekstmw==
+X-Received: by 2002:a37:4d41:: with SMTP id a62mr26127409qkb.99.1559674824260;
+        Tue, 04 Jun 2019 12:00:24 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e66sm11011893qtb.55.2019.06.04.12.00.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 12:00:23 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        alexei.starovoitov@gmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net v2 0/2] net/tls: redo the RX resync locking
+Date:   Tue,  4 Jun 2019 12:00:10 -0700
+Message-Id: <20190604190012.6327-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added EHL SGMII 1Gbps PCI ID. Different MII and speed will have
-different PCI ID.
+Hi!
 
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 111 +++++++++++++++++++++++
- 1 file changed, 111 insertions(+)
+Take two of making sure we don't use a NULL netdev pointer
+for RX resync.  This time using a bit and an open coded
+wait loop.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 7cbc01f316fa..1bdf716bfcbb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -23,6 +23,7 @@
- #include <linux/dmi.h>
- 
- #include "stmmac.h"
-+#include "dwxpcs.h"
- 
- /*
-  * This struct is used to associate PCI Function of MAC controller on a board,
-@@ -118,6 +119,113 @@ static int stmmac_default_data(struct pci_dev *pdev,
- 	.setup = stmmac_default_data,
- };
- 
-+static int ehl_common_data(struct pci_dev *pdev,
-+			   struct plat_stmmacenet_data *plat)
-+{
-+	int i;
-+
-+	plat->bus_id = 1;
-+	plat->phy_addr = 0;
-+	plat->clk_csr = 5;
-+	plat->has_gmac = 0;
-+	plat->has_gmac4 = 1;
-+	plat->xpcs_phy_addr = 0x16;
-+	plat->pcs_mode = AN_CTRL_PCS_MD_C37_SGMII;
-+	plat->force_sf_dma_mode = 0;
-+	plat->tso_en = 1;
-+
-+	plat->rx_queues_to_use = 8;
-+	plat->tx_queues_to_use = 8;
-+	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
-+
-+	for (i = 0; i < plat->rx_queues_to_use; i++) {
-+		plat->rx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+		plat->rx_queues_cfg[i].chan = i;
-+
-+		/* Disable Priority config by default */
-+		plat->rx_queues_cfg[i].use_prio = false;
-+
-+		/* Disable RX queues routing by default */
-+		plat->rx_queues_cfg[i].pkt_route = 0x0;
-+	}
-+
-+	for (i = 0; i < plat->tx_queues_to_use; i++) {
-+		plat->tx_queues_cfg[i].mode_to_use = MTL_QUEUE_DCB;
-+
-+		/* Disable Priority config by default */
-+		plat->tx_queues_cfg[i].use_prio = false;
-+	}
-+
-+	plat->tx_sched_algorithm = MTL_TX_ALGORITHM_WRR;
-+	plat->tx_queues_cfg[0].weight = 0x09;
-+	plat->tx_queues_cfg[1].weight = 0x0A;
-+	plat->tx_queues_cfg[2].weight = 0x0B;
-+	plat->tx_queues_cfg[3].weight = 0x0C;
-+	plat->tx_queues_cfg[4].weight = 0x0D;
-+	plat->tx_queues_cfg[5].weight = 0x0E;
-+	plat->tx_queues_cfg[6].weight = 0x0F;
-+	plat->tx_queues_cfg[7].weight = 0x10;
-+
-+	plat->mdio_bus_data->phy_reset = NULL;
-+	plat->mdio_bus_data->phy_mask = 0;
-+
-+	plat->dma_cfg->pbl = 32;
-+	plat->dma_cfg->pblx8 = true;
-+	plat->dma_cfg->fixed_burst = 0;
-+	plat->dma_cfg->mixed_burst = 0;
-+	plat->dma_cfg->aal = 0;
-+
-+	plat->axi = devm_kzalloc(&pdev->dev, sizeof(*plat->axi),
-+				 GFP_KERNEL);
-+	if (!plat->axi)
-+		return -ENOMEM;
-+
-+	plat->axi->axi_lpi_en = 0;
-+	plat->axi->axi_xit_frm = 0;
-+	plat->axi->axi_wr_osr_lmt = 1;
-+	plat->axi->axi_rd_osr_lmt = 1;
-+	plat->axi->axi_blen[0] = 4;
-+	plat->axi->axi_blen[1] = 8;
-+	plat->axi->axi_blen[2] = 16;
-+
-+	/* Set default value for multicast hash bins */
-+	plat->multicast_filter_bins = HASH_TABLE_SIZE;
-+
-+	/* Set default value for unicast filter entries */
-+	plat->unicast_filter_entries = 1;
-+
-+	/* Set the maxmtu to a default of JUMBO_LEN */
-+	plat->maxmtu = JUMBO_LEN;
-+
-+	/* Set 32KB fifo size as the advertised fifo size in
-+	 * the HW features is not the same as the HW implementation
-+	 */
-+	plat->tx_fifo_size = 32768;
-+	plat->rx_fifo_size = 32768;
-+
-+	return 0;
-+}
-+
-+static int ehl_sgmii1g_data(struct pci_dev *pdev,
-+			    struct plat_stmmacenet_data *plat)
-+{
-+	int ret;
-+
-+	/* Set common default data first */
-+	ret = ehl_common_data(pdev, plat);
-+	if (ret)
-+		return ret;
-+
-+	plat->interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->has_xpcs = 1;
-+
-+	return 0;
-+}
-+
-+static struct stmmac_pci_info ehl_sgmii1g_pci_info = {
-+	.setup = ehl_sgmii1g_data,
-+};
-+
- static const struct stmmac_pci_func_data galileo_stmmac_func_data[] = {
- 	{
- 		.func = 6,
-@@ -290,6 +398,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 	res.addr = pcim_iomap_table(pdev)[i];
- 	res.wol_irq = pdev->irq;
- 	res.irq = pdev->irq;
-+	res.xpcs_irq = 0;
- 
- 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
- }
-@@ -359,6 +468,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 
- #define STMMAC_QUARK_ID  0x0937
- #define STMMAC_DEVICE_ID 0x1108
-+#define STMMAC_EHL_SGMII1G_ID   0x4b31
- 
- #define STMMAC_DEVICE(vendor_id, dev_id, info)	{	\
- 	PCI_VDEVICE(vendor_id, dev_id),			\
-@@ -369,6 +479,7 @@ static int __maybe_unused stmmac_pci_resume(struct device *dev)
- 	STMMAC_DEVICE(STMMAC, STMMAC_DEVICE_ID, stmmac_pci_info),
- 	STMMAC_DEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_MAC, stmmac_pci_info),
- 	STMMAC_DEVICE(INTEL, STMMAC_QUARK_ID, quark_pci_info),
-+	STMMAC_DEVICE(INTEL, STMMAC_EHL_SGMII1G_ID, ehl_sgmii1g_pci_info),
- 	{}
- };
- 
+v2:
+ - fix build warning (DaveM).
+
+Jakub Kicinski (2):
+  Revert "net/tls: avoid NULL-deref on resync during device removal"
+  net/tls: replace the sleeping lock around RX resync with a bit lock
+
+ include/net/tls.h    |  4 ++++
+ net/tls/tls_device.c | 26 ++++++++++++++++++--------
+ 2 files changed, 22 insertions(+), 8 deletions(-)
+
 -- 
-1.9.1
+2.21.0
 
