@@ -2,108 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4592352C7
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 00:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC181352CF
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 00:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfFDWjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 18:39:08 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:28449 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbfFDWjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 18:39:08 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x54Md5D6003811
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 4 Jun 2019 16:39:05 -0600 (CST)
-Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Md5NA040768
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 4 Jun 2019 16:39:05 -0600
-Subject: Re: [PATCH net-next v3 07/19] net: axienet: Re-initialize MDIO
- registers properly after reset
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
-References: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
- <1559684626-24775-8-git-send-email-hancock@sedsystems.ca>
- <20190604221856.GB19627@lunn.ch>
-From:   Robert Hancock <hancock@sedsystems.ca>
-Openpgp: preference=signencrypt
-Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
- 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
-Organization: SED Systems
-Message-ID: <b687d9b9-ea38-151e-3311-9e8efdf337a2@sedsystems.ca>
-Date:   Tue, 4 Jun 2019 16:39:05 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726633AbfFDWoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 18:44:22 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:45817 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfFDWoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 18:44:22 -0400
+Received: by mail-ed1-f67.google.com with SMTP id f20so2738178edt.12
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 15:44:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WVnKZKlGN/grA9fxMqAIVelECIra3fPhXTKIrCAzUBk=;
+        b=VoCP6QrWi4PLvMHeZ2ekp2zL7jg9qiHEo2zUOf/1E5yHwaj0gPDexwF2cURTjtTrM8
+         GLSEIaiyYNdlCUhk5ObZDakxLhjtI/vwMZ6WhR9UxFPlyLzpoeRXxdg0yxgQNZ1A4r1f
+         AkhvhGmKBQcEhjDWww4FgZcWlx2QGFSfgjlXb3FQfRDDHaND2iU7CeqipGqAX+NRmWIY
+         j5JdyqJizGVtjJX1Jt5aU1TVvP/kicVdNpeP0KxeYdHGNhXCIeNSpPD0scutdjeejUB0
+         1WiI1sWB2Qb834lBRzwebblmG4oBuIWCqlmDP1FA6OFpBzhoETDwTZR6bTi02cIWTTk7
+         OjBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WVnKZKlGN/grA9fxMqAIVelECIra3fPhXTKIrCAzUBk=;
+        b=DXa/BkSqjVYwc7XAYgcd1kqt/3nq4sApcRf6VMjF8IKIVz+1kagMwMzYy/SdCHHhXM
+         TDeCBYPwQqdXZKMts6c3d1fycnVbMLuLymcs8/xqR8Y6sswo7WqS4RvxO2e6b2tgbaL8
+         Gp7xPKzQP+8XZjlauwWxBr6yHmlGEeyFZqbOkGLjCcl5YGOdWK31AGz5p4JUHA3D+h2L
+         8g3XtM6s7VDBPXno6D/gP6rxqL/hwKDUtmfjwFejjDdwncXOOLhyUhgxBm9pifmPUnqw
+         UC/S/FpdqI92r6gFQqxcZuwE/j/fz+BdW0yEcP6Nzjheg1vKkDzZzZjJ+075ATM0uPak
+         05AQ==
+X-Gm-Message-State: APjAAAWlJHrVNEQogPhi3v87Bs0pOPd7QJL+TOKBd0eeXv6HYJ5TgQRx
+        jbLIrOQyJ8aJSjQ+OSu5MbQ7eB9AtYyaitjlZtg=
+X-Google-Smtp-Source: APXvYqx1enCOcghmhKpIHTArZJ1uPhmuSMAikQ7Hl1MbsCwVD/ZcnX0lyG+wCVcXzLHxeVHUBJEN/Zzq47AKwn8cxKw=
+X-Received: by 2002:a05:6402:1543:: with SMTP id p3mr39459997edx.108.1559688259583;
+ Tue, 04 Jun 2019 15:44:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190604221856.GB19627@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+ <20190604200713.GV19627@lunn.ch> <CA+h21hrJPAoieooUKY=dBxoteJ32DfAXHYtfm0rVi25g9gKuxg@mail.gmail.com>
+ <20190604211221.GW19627@lunn.ch> <CA+h21hrqsH9FYtTOrCV+Bb0YANQvSnW9Uq=SoS7AJv9Wcw3A3w@mail.gmail.com>
+ <31cc0e5e-810c-86ea-7766-ec37008c5f9d@gmail.com> <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
+ <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com> <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk>
+In-Reply-To: <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 5 Jun 2019 01:44:08 +0300
+Message-ID: <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-04 4:18 p.m., Andrew Lunn wrote:
->> -	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
->> -		    (mdio_mcreg & (~XAE_MDIO_MC_MDIOEN_MASK)));
->> +	mutex_lock(&lp->mii_bus->mdio_lock);
->> +	axienet_mdio_disable(lp);
-> 
-> I wonder if it would look better structured if the lock was in
-> axienet_mdio_disable() and the unlock in axienet_mdio_enable(lp)?
-> 
-> As you said, you are trying to refactor all the MDIO code it mdio.c.
+On Wed, 5 Jun 2019 at 01:16, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Wed, Jun 05, 2019 at 01:03:27AM +0300, Vladimir Oltean wrote:
+> > On Wed, 5 Jun 2019 at 00:48, Russell King - ARM Linux admin
+> > <linux@armlinux.org.uk> wrote:
+> > >
+> > > On Tue, Jun 04, 2019 at 02:37:31PM -0700, Florian Fainelli wrote:
+> > > > The firmware/boot loader transition to a full fledged OS with a switch
+> > > > is a tricky one to answer though, and there are no perfect answers
+> > > > AFAICT. If your SW is totally hosed, you might want the switch to
+> > > > forward traffic between all LAN ports (excluding WAN, otherwise you
+> > > > expose your home devices to the outside world, whoops).
+> > > >
+> > > > If your SW is fully operational, then the questions are:
+> > > >
+> > > > - do you want a DSA like behavior in your boot loader, in that all ports
+> > > > are separated but fully usable or do you want a dumb switch model where
+> > > > any port can forward to the CPU/management port, without any tags or
+> > > > anything (unmanaged mode)
+> > > >
+> > > > - what happens during bootloader to OS handover, should the switch be
+> > > > held in reset so as to avoid any possible indirect DMA into main memory
+> > > > as much as power saving? Should nothing happen and let the OS wipe out
+> > > > clean the setting left by the boot loader?
+> > > >
+> > > > All of these are in the realm of policy and trade offs as far as
+> > > > initializing/disruption goes, so there are no hard and fast answers.
+> > >
+> > > For a switch, there are four stages, not two:
+> > >
+> > > 1. The out-of-reset state, which from what I've seen seems to be to
+> > >    behave like a dumb switch.
+> > >
+> > > 2. The boot loader state, which is generally the same as the
+> > >    out-of-reset state.
+> > >
+> > > 3. The OS-booting state, which for a DSA switch in Linux isolates each
+> > >    port from each other.
+> > >
+> > > 4. The OS-booted state, which depends on the system configuration.
+> > >
+> > > If you are setting up a switch in a STP environment, you _have_ to be
+> > > aware of all of those states, and plan your network accordingly.
+> > > While it's possible to argue that the boot loader should isolate the
+> > > ports, it may be that the system gets hosed to the point that the boot
+> > > loader is unable to run - then you have a switch operating in a STP
+> > > environment acting as a dumb switch.
+> > >
+> > > The same actually goes for many switches - consider your typical DSL
+> > > router integrated with a four port switch.  By default, that switch
+> > > forwards traffic between each port.  If you've setup the ports to be
+> > > isolated, each time the router is rebooted (e.g., due to a
+> > > configuration change) it will forward traffic between all ports until
+> > > the routers OS has finished booting and applied the switch
+> > > configuration.
+> > >
+> > > What I'm basically saying is that if you're going to the point of
+> > > using such hardware in a STP environment, you _must_ pay attention
+> > > to the behaviour of the hardware through all phases of its operation
+> > > and consider the consequences should it fail in any of those phases.
+> > >
+> > > --
+> > > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> > > FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> > > According to speedtest.net: 11.9Mbps down 500kbps up
+> >
+> > Hi Russell,
+> >
+> > The dumb switch was just an example. The absolute same thing (unwanted
+> > PHY connection) applies to regular NICs. I am not aware of any setting
+> > that makes the MAC ignore frames as long as they observe the
+> > appropriate MII spec. And the hardware will go on to process those
+> > frames, potentially calling into the operating system and making it
+> > susceptible to denial of service.
+>
+> Having authored several network device drivers, and worked on several
+> others, I think you have a misunderstanding somewhere.
+>
 
-Acquiring a lock and not releasing it in a disable() method would seem a
-little bit evil.. not sure if there is another way to handle that
-better. The code in _mdio.c doesn't do anything with the mdio_lock so
-it's not going to conflict between the code in the two files at least.
+You caught me.
 
--- 
-Robert Hancock
-Senior Software Developer
-SED Systems, a division of Calian Ltd.
-Email: hancock@sedsystems.ca
+But even ignoring the NIC case, isn't the PHY state machine
+inconsistent with itself? It is ok with callink phy_suspend upon
+ndo_stop, but it won't call phy_suspend after phy_connect, when the
+netdev is implicitly stopped?
+
+> It is not expected that the MAC will be "alive" while the network
+> interface is down - it is expected that the MAC will be disabled, and
+> memory necessary for buffer rings etc will not be claimed.
+>
+> > That is unless you set up your
+> > buffer rings/queues/whatever in the ndo_open/ndo_close callbacks.
+>
+> So yes, that is what is expected - so that when the interface is down,
+> the memory needed for the buffer rings and packet buffers is given
+> back to the system for other uses.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
+
+Regards,
+-Vladimir
