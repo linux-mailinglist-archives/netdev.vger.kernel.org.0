@@ -2,104 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FD134BE4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C7434BF8
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 17:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbfFDPRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 11:17:06 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:42480 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727907AbfFDPRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 11:17:06 -0400
-Received: by mail-lf1-f65.google.com with SMTP id y13so16739043lfh.9;
-        Tue, 04 Jun 2019 08:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oM5zNGPnurm7yPSxaho1MdyH9LKNKrlHCh4tchbxYqw=;
-        b=W7VtXexADvrzOM+E8oMUc8sy4q9xuyrKHt/e8eSrCVXnyGFvII6lxB1k3PVIb0wUXg
-         ZzATStGRM6nrg2kuIY0Bzz0uVoG+dtB2jemY8lTFc2IqUHDyRUNyEhT87V0T6tBld4bV
-         r9V3zzEr8vWkJOoRgAP0K9t5+cj8NA3T57K8Uq4XvLxRINMH7RfIWLrrTzGo8rUxvWcl
-         ZqqCmJIFWU5Iig5QuJP5GkEnr2b2MGFwqVNQZDrLu5oO1lEIaC2JsiR8KOlQaESo/HU6
-         63Lm2e3qrb4L44r+qF2MJMRgd3mMGv0v8pA3ojOhe8bA6f+0GA24r2zPjPsKZlW4hhH1
-         gFRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oM5zNGPnurm7yPSxaho1MdyH9LKNKrlHCh4tchbxYqw=;
-        b=GNX0tBrG0UV5oGnebZnm726dQmQ+B8FvlsOCwgYpgsNz2NP+ebplkVZwgimIlylnIS
-         9M/6dbxxA+qeaDsu5FmYIRl4XdxVqdZgDIo/fKx48GEmK3dO6y/2CESsBL0QtmSFGEkw
-         r61kC3BRAkMoWRz5PRqrgiSlWlX0QR41mwZuDtiK4LaP7bZnxj4gG9oDu36TeA9NcKbA
-         sqHjN8WvDpCKDYEQO96IK0YAhcQMaBbtZJHjsYAH2zCoYVcCgLW7b8iNx3s4jNJ8qv8T
-         NgkSULgD5Vij1CqmWsBZ1wYH5TT1aEB6pQAC2DuDla3zdiAq1R/GdrnCz7W6RjbFgjk+
-         iK6Q==
-X-Gm-Message-State: APjAAAVXaSS2Mlv+gpy3cD4OVf+WxqZJdmhQY8H0k2Ai6UtEMiDuvswd
-        ouaNFoS2eSxBF8quiMPJd4VXmS4ISojP4mt3/3UAMQ==
-X-Google-Smtp-Source: APXvYqx9ZbwUe1MPp7QDT3gljawQmWKB2HVLFzTEpB8y0FZxpPLN4iD9RWoXr0JkK3YGAt+h5Yz8H3875JeJnRWmLXo=
-X-Received: by 2002:ac2:46f9:: with SMTP id q25mr18319324lfo.181.1559661423930;
- Tue, 04 Jun 2019 08:17:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <f42c7b44b3f694056c4216e9d9ba914b44e72ab9.1559648367.git.baruch@tkos.co.il>
-In-Reply-To: <f42c7b44b3f694056c4216e9d9ba914b44e72ab9.1559648367.git.baruch@tkos.co.il>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 4 Jun 2019 08:16:52 -0700
-Message-ID: <CAADnVQJ1vRvqNFsWjvwmzSc_-OY51HTsVa13XhgK1v9NbYY2_A@mail.gmail.com>
-Subject: Re: [PATCH] bpf: fix uapi bpf_prog_info fields alignment
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, "Dmitry V . Levin" <ldv@altlinux.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
+        id S1728088AbfFDPSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 11:18:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37322 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727783AbfFDPSy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 11:18:54 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 254043087BA9;
+        Tue,  4 Jun 2019 15:18:37 +0000 (UTC)
+Received: from ovpn-112-67.rdu2.redhat.com (ovpn-112-67.rdu2.redhat.com [10.10.112.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 08F1F52C4;
+        Tue,  4 Jun 2019 15:18:27 +0000 (UTC)
+Message-ID: <b26cf34c0d3fa1a7a700cee935244d7a2a7e1388.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Alex Elder <elder@linaro.org>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        evgreen@chromium.org, Ben Chan <benchan@google.com>,
+        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, abhishek.esse@gmail.com,
+        Networking <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org
+Date:   Tue, 04 Jun 2019 10:18:26 -0500
+In-Reply-To: <CAK8P3a2U=RzfpVaAgRP1QwPhRpZiBNsG5qdWjzwG=tCKZefYHA@mail.gmail.com>
+References: <20190531035348.7194-1-elder@linaro.org>
+         <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
+         <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org>
+         <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
+         <a28c5e13-59bc-144d-4153-9d104cfa9188@linaro.org>
+         <20190531233306.GB25597@minitux>
+         <d76a710d45dd7df3a28afb12fc62cf14@codeaurora.org>
+         <CAK8P3a0brT0zyZGNWiS2R0RMHHFF2JG=_ixQyvjhj3Ky39o0UA@mail.gmail.com>
+         <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org>
+         <CAK8P3a2U=RzfpVaAgRP1QwPhRpZiBNsG5qdWjzwG=tCKZefYHA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 04 Jun 2019 15:18:53 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 4, 2019 at 4:40 AM Baruch Siach <baruch@tkos.co.il> wrote:
->
-> Merge commit 1c8c5a9d38f60 ("Merge
-> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undid the
-> fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
-> applications") by taking the gpl_compatible 1-bit field definition from
-> commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
-> bpf_prog_info") as is. That breaks architectures with 16-bit alignment
-> like m68k. Widen gpl_compatible to 32-bit to restore alignment of the
-> following fields.
+On Tue, 2019-06-04 at 10:13 +0200, Arnd Bergmann wrote:
+> On Mon, Jun 3, 2019 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
+> > On 6/3/19 5:04 AM, Arnd Bergmann wrote:
+> > > On Sat, Jun 1, 2019 at 1:59 AM Subash Abhinov Kasiviswanathan
+> > > 
+> > > - What I'm worried about most here is the flow control handling
+> > > on the
+> > >   transmit side. The IPA driver now uses the modern BQL method to
+> > >   control how much data gets submitted to the hardware at any
+> > > time.
+> > >   The rmnet driver also uses flow control using the
+> > >   rmnet_map_command() function, that blocks tx on the higher
+> > >   level device when the remote side asks us to.
+> > >   I fear that doing flow control for a single physical device on
+> > > two
+> > >   separate netdev instances is counterproductive and confuses
+> > >   both sides.
+> > 
+> > I understand what you're saying here, and instinctively I think
+> > you're right.
+> > 
+> > But BQL manages the *local* interface's ability to get rid of
+> > packets, whereas the QMAP flow control is initiated by the other
+> > end of the connection (the modem in this case).
+> > 
+> > With multiplexing, it's possible that one of several logical
+> > devices on the modem side has exhausted a resource and must
+> > ask the source of the data on the host side to suspend the
+> > flow.  Meanwhile the other logical devices sharing the physical
+> > link might be fine, and should not be delayed by the first one.
+> > 
+> > It is the multiplexing itself that confuses the BQL algorithm.
+> > The abstraction obscures the *real* rates at which individual
+> > logical connections are able to transmit data.
+> 
+> I would assume that the real rate constantly changes, at least
+> for wireless interfaces that are also shared with other users
+> on the same network. BQL is meant to deal with that, at least
+> when using a modern queuing algorithm.
+> 
+> > Even if the multiple logical interfaces implemented BQL, they
+> > would not get the feedback they need directly from the IPA
+> > driver, because transmitting over the physical interface might
+> > succeed even if the logical interface on the modem side can't
+> > handle more data.  So I think the flow control commands may be
+> > necessary, given multiplexing.
+> 
+> Can you describe what kind of multiplexing is actually going on?
+> I'm still unclear about what we actually use multiple logical
+> interfaces for here, and how they relate to one another.
 
-The commit log is misleading and incorrect.
-Since compiler makes it into 16-bit field, it's a compiler bug.
-u32 in C should stay as u32 regardless of architecture.
+Each logical interface represents a different "connection" (PDP/EPS
+context) to the provider network with a distinct IP address and QoS.
+VLANs may be a suitable analogy but here they are L3+QoS.
 
-> Thanks to Dmitry V. Levin his analysis of this bug history.
->
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
->  include/uapi/linux/bpf.h       | 2 +-
->  tools/include/uapi/linux/bpf.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 63e0cf66f01a..fe73829b5b1c 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3140,7 +3140,7 @@ struct bpf_prog_info {
->         __aligned_u64 map_ids;
->         char name[BPF_OBJ_NAME_LEN];
->         __u32 ifindex;
-> -       __u32 gpl_compatible:1;
-> +       __u32 gpl_compatible;
->         __u64 netns_dev;
+In realistic example the main interface (say rmnet0) would be used for
+web browsing and have best-effort QoS. A second interface (say rmnet1)
+would be used for VOIP and have certain QoS guarantees from both the
+modem and the network itself.
 
-No need.
+QMAP can also aggregate frames for a given channel (connection/EPS/PDP
+context/rmnet interface/etc) to better support LTE speeds.
+
+Dan
+
+> > The rmnet driver could use BQL, and could return NETDEV_TX_BUSY
+> > for a logical interface when its TX flow has been stopped by a
+> > QMAP command.  That way the feedback for BQL on the logical
+> > interfaces would be provided in the right place.
+> > 
+> > I have no good intuition about the interaction between
+> > two layered BQL managed queues though.
+> 
+> Returning NETDEV_TX_BUSY is usually a bad idea as that
+> leads to unnecessary frame drop.
+> 
+> I do think that using BQL and the QMAP flow command on
+> the /same/ device would be best, as that throttles the connection
+> when either of the two algorithms wants us to slow down.
+> 
+> The question is mainly which of the two devices that should be.
+> Doing it in the ipa driver is probably easier to implement here,
+> but ideally I think we'd only have a single queue visible to the
+> network stack, if we can come up with a way to do that.
+> 
+> > > - I was a little confused by the location of the rmnet driver in
+> > >   drivers/net/ethernet/... More conventionally, I think as a
+> > > protocol
+> > >   handler it should go into net/qmap/, with the ipa driver going
+> > >   into drivers/net/qmap/ipa/, similar to what we have fo
+> > > ethernet,
+> > >   wireless, ppp, appletalk, etc.
+> > > 
+> > > - The rx_handler uses gro_cells, which as I understand is meant
+> > >   for generic tunnelling setups and takes another loop through
+> > >   NAPI to aggregate data from multiple queues, but in case of
+> > >   IPA's single-queue receive calling gro directly would be
+> > > simpler
+> > >   and more efficient.
+> > 
+> > I have been planning to investigate some of the generic GRO
+> > stuff for IPA but was going to wait on that until the basic
+> > code was upstream.
+> 
+> That's ok, that part can easily be changed after the fact, as it
+> does not impact the user interface or the general design.
+> 
+> > >   From the overall design and the rmnet Kconfig description, it
+> > >   appears as though the intention as that rmnet could be a
+> > >   generic wrapper on top of any device, but from the
+> > >   implementation it seems that IPA is not actually usable that
+> > >   way and would always go through IPA.
+> > 
+> > As far as I know *nothing* upstream currently uses rmnet; the
+> > IPA driver will be the first, but as Bjorn said others seem to
+> > be on the way.  I'm not sure what you mean by "IPA is not
+> > usable that way."  Currently the IPA driver assumes a fixed
+> > configuration, and that configuration assumes the use of QMAP,
+> > and therefore assumes the rmnet driver is layered above it.
+> > That doesn't preclude rmnet from using a different back end.
+> 
+> Yes, that's what I meant above: IPA can only be used through
+> rmnet (I wrote "through IPA", sorry for the typo), but cannot be
+> used by itself.
+> 
+>        Arnd
+
