@@ -2,181 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 215E733E72
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 07:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9307A33E76
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 07:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbfFDFhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 01:37:22 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39463 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbfFDFhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 01:37:21 -0400
-Received: by mail-qk1-f193.google.com with SMTP id i125so2055776qkd.6;
-        Mon, 03 Jun 2019 22:37:20 -0700 (PDT)
+        id S1726578AbfFDFhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 01:37:53 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:55743 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726410AbfFDFhx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 01:37:53 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 16so8972398wmg.5
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 22:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=36J3I7Fuugme+mq6p4mk4Ngg78eCdJB/76haz5JE75s=;
-        b=m5ewveizZ8GMYQ4T78LySwh+5lInoyktPCXEG5LudhnWLgmzcoxp898J1dDdVeOtod
-         bxFsOkq5nHwT+ZkbqbDML1djROlLvB8yCqINCIZLNeBAiXQmlJUM1dQXRUO6pIvFzJbg
-         x7HEbSHFuJeLzh4zJkk+qsUTsfbo5owDlTHw0v1tjYQOZnAamjxyxi8hODxWGTr4xItf
-         aH3KaRIosM/5sfGe/0MvEtM6NFZZ2PzRCKgqr7dQ7maj8pSDHD5/jPRqWvArb2aemODw
-         +PdzG8ZrwxKlPmvZ18YpK7zocAg8Q14cogpzsZqJa8sYynTgyXAPhYa2t+YxU8sILQfk
-         OEqA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=e76xViDNQk0bhQoAbZugdImBNTpHXT0zgCtjznge9R4=;
+        b=QU3dznp5N5DarshMP3iP/UKha7PvLNDeY4fWdZ1wr0anDND8Hn8/DYur0WcOUL8+id
+         jpN+K94MRUa0KLrt+0Q8Zr4msJKD8gBX4XyrXwZ0f7asBXE53wRls6O7C01VAjfMkYpJ
+         bYRmZLwMEnxGQ82y1Nb2IGKlCOa+uXOg6lCT6+zHQMraF0/kkuPWZsz3d4UejqbFM5mX
+         Cl3q0SwHoWgeeYQ6eGUYNYp5APi3afm2pu48uYmSePPP7ftoXqnIhaZsd/+ogPGwmVNY
+         d89bVNwmSWL2ggPMqDD9OIEGAugmimnede5/7Azv0jhWDK4wWNXpuaO4dTlu3sDanTIg
+         6S8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=36J3I7Fuugme+mq6p4mk4Ngg78eCdJB/76haz5JE75s=;
-        b=me/Bp3vAcuj3iQJhYFxc+PEpminvf2rzEc0UQI0x8kNDKSA6CEvzEu5ROTJ4JmpwJ7
-         Z6T94tnhKJ4Y0l0qKL4G3Py8Fc440nhXAt6B3lr7Qz9kjpl14Aq01ANzpSFFHeO1sxTg
-         z9mP1v/j49uOEYdRKi5tlpVZvlRcjVlBV4XdFo6byVUJ0tRiMjNTVp+Qo+O/jd3T6K70
-         qlLpiv+oDaq2LMukhKMYjiUxOpafpXkwOabBwHYwUvBvuER/aw5qxB7M8M3j7nu1v0hP
-         FKVeLDAMM6X0RfGvBuaRsjKckCUVhfwtBQst2ZbwXpDvO7VRxrZzqMcYZcRhxkT+4nGz
-         QqMg==
-X-Gm-Message-State: APjAAAVaegFaqT9Xy8q2WR7aIb0SJNt6pZQlqDYwjScyOzZ7411ODqVW
-        9/bIK6h9+nvWCjvaVvtznXsJ/xG+YXjbK315Ujo=
-X-Google-Smtp-Source: APXvYqwwZfIzPzJ/9wzDwWVYTlppF0yZUkCQJEaPMWzc87FrKCSy+qUelljfh7rYkYgEO4Vrow0lfcDJ/PXWnbWh3iI=
-X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr25993787qkj.39.1559626639747;
- Mon, 03 Jun 2019 22:37:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e76xViDNQk0bhQoAbZugdImBNTpHXT0zgCtjznge9R4=;
+        b=PL/Nn3dQYS6LKfDw1ci+rY8gId1nzzXVAVAyijWcBxjafi7WAdz0e/leCm5Ou47K+a
+         exy9lWqZaXX8Lr+dmo2EWe9HUit6S7Fw+wpAV0xXZDjiNRemIzYoC2wCXdt3jSe9IgWS
+         6IVuVNoAIUFHSb1nvedQwmVJK4BzUuUwRZR0G3sqBZ47RnRCqf3nqd6K4rnfrAed/2z1
+         KCaociZGeZ2QIC0AXdKOT39PvMxrqwzRpOxzyAnXU0V2Be+DA7vAW3Mxtcp1TTnVjMeJ
+         KNyhaeEzQJMjIncwwQVq5aa4mYy53eLgv0wxtTSLaumwaM3pXj4JeAZT+zPAGiE7aISM
+         /fNg==
+X-Gm-Message-State: APjAAAX3dp8AktxcvrrXeBwwJrKNHOD3QAKHLGPcFtAYmYg4nZWNHJQM
+        uJt+aPjaMr6rBX/4AI+CeHU=
+X-Google-Smtp-Source: APXvYqzu6YyM9LBURjTikT8I4ZrJpEmaWnKoSeWOHZiAHhcz8YXhge3uoJmQGo58SqK1FhLnnu6PJA==
+X-Received: by 2002:a1c:b757:: with SMTP id h84mr11668172wmf.127.1559626669880;
+        Mon, 03 Jun 2019 22:37:49 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:15c:4632:d703:a1f7? (p200300EA8BF3BD00015C4632D703A1F7.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:15c:4632:d703:a1f7])
+        by smtp.googlemail.com with ESMTPSA id x11sm11776878wmg.23.2019.06.03.22.37.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 03 Jun 2019 22:37:49 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] net: phy: xilinx: add Xilinx PHY driver
+To:     Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d8c22bc3-0a20-2c24-88bb-b1f5f8cc907a@gmail.com>
+Date:   Tue, 4 Jun 2019 07:37:43 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190531094215.3729-1-bjorn.topel@gmail.com> <20190531094215.3729-2-bjorn.topel@gmail.com>
- <E5650E49-81B5-4F36-B931-E433A0BD210D@flugsvamp.com> <CAJ+HfNj=h1Ns_Q4tzmK-5q8jr5icVLA9-tiH7-tQTXx0hATZ0A@mail.gmail.com>
- <a9c3be97-6c74-6491-199f-219bd4c2c631@iogearbox.net>
-In-Reply-To: <a9c3be97-6c74-6491-199f-219bd4c2c631@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 4 Jun 2019 07:37:08 +0200
-Message-ID: <CAJ+HfNiMksZg2yyGcPV-njA4NmXmeW_70MDpoPugBtD8pHsYZw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW}
- to netdev
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jonathan Lemon <jlemon@flugsvamp.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1559603524-18288-1-git-send-email-hancock@sedsystems.ca>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Jun 2019 at 01:11, Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 06/03/2019 10:39 AM, Bj=C3=B6rn T=C3=B6pel wrote:
-> > On Sat, 1 Jun 2019 at 20:12, Jonathan Lemon <jlemon@flugsvamp.com> wrot=
-e:
-> >> On 31 May 2019, at 2:42, Bj=C3=B6rn T=C3=B6pel wrote:
-> >>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>>
-> >>> All XDP capable drivers need to implement the XDP_QUERY_PROG{,_HW}
-> >>> command of ndo_bpf. The query code is fairly generic. This commit
-> >>> refactors the query code up from the drivers to the netdev level.
-> >>>
-> >>> The struct net_device has gained two new members: xdp_prog_hw and
-> >>> xdp_flags. The former is the offloaded XDP program, if any, and the
-> >>> latter tracks the flags that the supplied when attaching the XDP
-> >>> program. The flags only apply to SKB_MODE or DRV_MODE, not HW_MODE.
-> >>>
-> >>> The xdp_prog member, previously only used for SKB_MODE, is shared wit=
-h
-> >>> DRV_MODE. This is OK, due to the fact that SKB_MODE and DRV_MODE are
-> >>> mutually exclusive. To differentiate between the two modes, a new
-> >>> internal flag is introduced as well.
-> >>
-> >> I'm not entirely clear why this new flag is needed - GENERIC seems to
-> >> be an alias for SKB_MODE, so why just use SKB_MODE directly?
-> >>
-> >> If the user does not explicitly specify a type (skb|drv|hw), then the
-> >> command should choose the correct type and then behave as if this type
-> >> was specified.
-> >
-> > Yes, this is kind of hairy.
-> >
-> > SKB and DRV are mutually exclusive, but HW is not. IOW, valid options a=
-re:
-> > SKB, DRV, HW, SKB+HW DRV+HW.
->
-> Correct, HW is a bit special here in that it helps offloading parts of
-> the DRV XDP program to NIC, but also do RSS steering in BPF etc, hence
-> this combo is intentionally allowed (see also git log).
->
-> > What complicates things further, is that SKB and DRV can be implicitly
-> > (auto/no flags) or explicitly enabled (flags).
->
-> Mainly out of historic context: originally the fallback to SKB mode was
-> implicit if the ndo_bpf was missing. But there are use cases where we
-> want to fail if the driver does not support native XDP to avoid surprises=
-.
->
-> > If a user doesn't pass any flags, the "best supported mode" should be
-> > selected. If this "auto mode" is used, it should be seen as a third
-> > mode. E.g.
-> >
-> > ip link set dev eth0 xdp on -- OK
-> > ip link set dev eth0 xdp off -- OK
-> >
-> > ip link set dev eth0 xdp on -- OK # generic auto selected
-> > ip link set dev eth0 xdpgeneric off -- NOK, bad flags
->
-> This would work if the auto selection would have selected XDP generic.
->
-> > ip link set dev eth0 xdp on -- OK # drv auto selected
-> > ip link set dev eth0 xdpdrv off -- NOK, bad flags
->
-> This would work if the auto selection chose native XDP previously. Are
-> you saying it's not the case?
->
+On 04.06.2019 01:12, Robert Hancock wrote:
+> This adds a driver for the PHY device implemented in the Xilinx PCS/PMA
+> Core logic. This is mostly a generic gigabit PHY, except that the
+> features are explicitly set because the PHY wrongly indicates it has no
+> extended status register when it actually does.
+> 
+> This version is a simplified version of the GPL 2+ version from the
+> Xilinx kernel tree.
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> ---
+> 
+> Differences from v1:
+> -Removed unnecessary config_init method
+> -Added comment to explain why features are explicitly set
+> 
+>  drivers/net/phy/Kconfig  |  6 ++++++
+>  drivers/net/phy/Makefile |  1 +
+>  drivers/net/phy/xilinx.c | 51 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 58 insertions(+)
+>  create mode 100644 drivers/net/phy/xilinx.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index db5645b..101c794 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -462,6 +462,12 @@ config VITESSE_PHY
+>  	---help---
+>  	  Currently supports the vsc8244
+>  
+> +config XILINX_PHY
+> +	tristate "Drivers for Xilinx PHYs"
+> +	help
+> +	  This module provides a driver for the PHY implemented in the
+> +	  Xilinx PCS/PMA Core.
+> +
+>  config XILINX_GMII2RGMII
+>  	tristate "Xilinx GMII2RGMII converter driver"
+>  	---help---
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index bac339e..3ee9cdb 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -91,4 +91,5 @@ obj-$(CONFIG_SMSC_PHY)		+= smsc.o
+>  obj-$(CONFIG_STE10XP)		+= ste10Xp.o
+>  obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
+>  obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
+> +obj-$(CONFIG_XILINX_PHY)	+= xilinx.o
+>  obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
+> diff --git a/drivers/net/phy/xilinx.c b/drivers/net/phy/xilinx.c
+> new file mode 100644
+> index 0000000..0e5509b
+> --- /dev/null
+> +++ b/drivers/net/phy/xilinx.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/* Xilinx PCS/PMA Core phy driver
+> + *
+> + * Copyright (C) 2019 SED Systems, a division of Calian Ltd.
+> + *
+> + * Based upon Xilinx version of this driver:
+> + * Copyright (C) 2015 Xilinx, Inc.
+> + *
+> + * Description:
+> + * This driver is developed for PCS/PMA Core.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/mii.h>
+> +#include <linux/phy.h>
+> +
+> +/* Mask used for ID comparisons */
+> +#define XILINX_PHY_ID_MASK		0xfffffff0
+> +
+> +/* Known PHY IDs */
+> +#define XILINX_PHY_ID			0x01740c00
+> +
+> +static struct phy_driver xilinx_drivers[] = {
+> +{
+> +	.phy_id		= XILINX_PHY_ID,
+> +	.phy_id_mask	= XILINX_PHY_ID_MASK,
+> +	.name		= "Xilinx PCS/PMA PHY",
 
-Yes, that is *not* the case for some drivers. With the Intel drivers
-we didn't check the flags at all at XDP attachment (check out the
-usage of xdp_attachment_flags_ok), but e.g. nfp and netdevsim does.
-Grep for 'program loaded with different flags' in the test_offload.py
-selftest. I like this approach, and my patch does this flag check in
-dev_change_xdp_fd.
+Please no slash in the name. This breaks sysfs.
 
-> Also, what is the use case in mixing these commands? It should be xdp
-> on+off, xdpdrv on+off, and so on. Are you saying you would prefer a
-> xdp{,any} off that uninstalls everything? Isn't this mostly a user space
-> issue to whatever orchestrates XDP?
->
+> +	/* Xilinx PHY wrongly indicates BMSR_ESTATEN = 0 even though
+> +	 * extended status registers are supported. So we force the PHY
+> +	 * features to PHY_GBIT_FEATURES in order to allow gigabit support
+> +	 * to be detected.
+> +	 */
+> +	.features	= PHY_GBIT_FEATURES,
 
-No, I'm not suggesting a change. There is no use-case mixing them.
-What the flags ok checks do is returning an error (like nfp and
-netdevsim does) if a user tries to mix, say,  "xdp" and explicit
-xdpdrv/xdpgeneric". This patch moves this check to the generic
-function dev_change_xdp_fd.
+BMSR_ESTATEN is used by genphy_config_advert() too. Means you would
+need to implement your own config_aneg callback and basically
+copy 99% of genphy_config_advert().
 
-There seems to be a confusion about how this is supposed to be used.
-It was for me, e.g. I though using "enable with xdp and disable with
-xdpdrv" was OK. This was the reason why I added an error on "disable
-with xdpgeneric off, if xdpdrv is active" in my first revision of the
-series. I removed this in v2, after Jakub pointed out the
-test_offload.py test, which is a great showcase/test of what should be
-allowed and what shouldn't in terms of flags.
+I think the better alternative is to implement a quirk flag in phylib
+similar to PHY_RST_AFTER_CLK_EN. Let me come up with a proposal.
 
-TL;DR: Let's stick to what test_offload.py asserts, for all XDP.
+Last but not least: Not setting BMSR_ESTATEN for a GBit PHY violates
+the standard. Any intention from Xilinx to fix this?
 
+> +	.resume		= genphy_resume,
+> +	.suspend	= genphy_suspend,
+> +	.set_loopback   = genphy_loopback,
+> +},
+> +};
+> +
+> +module_phy_driver(xilinx_drivers);
+> +
+> +static struct mdio_device_id __maybe_unused xilinx_tbl[] = {
+> +	{ XILINX_PHY_ID, XILINX_PHY_ID_MASK },
+> +	{ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(mdio, xilinx_tbl);
+> +MODULE_DESCRIPTION("Xilinx PCS/PMA PHY driver");
+> +MODULE_LICENSE("GPL");
+> +
+> 
 
-> > ...and so on. The idea is that a user should use the same set of flags =
-always.
-> >
-> > The internal "GENERIC" flag is only to determine if the xdp_prog
-> > represents a DRV version or SKB version. Maybe it would be clearer
-> > just to add an additional xdp_prog_drv to the net_device, instead?
-> >
-> >> The logic in dev_change_xdp_fd() is too complicated.  It disallows
-> >> setting (drv|skb), but allows (hw|skb), which I'm not sure is
-> >> intentional.
-> >>
-> >> It should be clearer as to which combinations are allowed.
-> >
-> > Fair point. I'll try to clean it up further.
-> >
