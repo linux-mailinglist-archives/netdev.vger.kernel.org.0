@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24AF534E72
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D991134E6C
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbfFDRIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:08:06 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37153 "EHLO
+        id S1728042AbfFDRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:08:10 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:45364 "EHLO
         mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727757AbfFDRIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:08:06 -0400
-Received: by mail-wr1-f68.google.com with SMTP id h1so16648344wro.4;
-        Tue, 04 Jun 2019 10:08:05 -0700 (PDT)
+        with ESMTP id S1727848AbfFDRIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:08:07 -0400
+Received: by mail-wr1-f68.google.com with SMTP id f9so1917705wre.12;
+        Tue, 04 Jun 2019 10:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=U5siZUAA5ZHmsavSrnq/Yb6jigFUfw9klIPK+hJh9mI=;
-        b=JrcoW3EcXnKWIWVaL3Vq2WgZ6zJiNmJU5WkMSP8ycQo+lr4qpW5tZDW3UUISVI3t0L
-         kDKZEPaxkqYxU2c93MaFzi+CP4+IQwEOXH6QqJ7hlvz0P8xSQhW3r6zK6gYhhBsOoaJe
-         lR6gUFMtmdgJjGwbvt4x0FDh+7O86VjLKBba52VsoHz3DrGChuNmL180BJq8Z/2EkrhG
-         Qxlhk30uKQNuW1YcNRnJ7MqN48WOpDyYPeUvHWKPhE+9am26WLZbUaX8b/Kd6Tfxvky2
-         3C541Z2FB1eRC47Phu5w1sfUO2idS7OqQa754tZs+UcSoTAf7ItuER8eIMYijVbd1Fq/
-         Qj4g==
+        bh=vuvZzizp1G0cVCZViE7O7i65Bt526Td+PC5RJmQRqkQ=;
+        b=Bg/LpytX7B47GPGFTPty7Uy7c+wUDG2IyFYwOH0pnjqszdhEmtQPwMCAJ/ityjQJcG
+         XnKTkGW2P0MA+ildUrvqoi3IpFuWUMSd+35Oyxy48PxW6NwxHFg8/UyHuBlmT4+aYgnR
+         Z6k2pN9Qb/LG6HQqyFRunD5UIh7lNZlU5uKq25qE2yvVvCuR2PM54SQrbcaPRwvPFbx8
+         1vNrN96T26jmIwK5rFpV9+yAYcTfb9NDuMKmZaJw9W2GilE+OzFyNFcxUtivnCX2O7OL
+         HNCc6dIopvhuniFoEaqtDTQZZGNR/CKWhet4dAiIr7G+eCDebVPxh91MauKuglJfVod8
+         EjSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=U5siZUAA5ZHmsavSrnq/Yb6jigFUfw9klIPK+hJh9mI=;
-        b=Wyrfw75o9vp7RxJhlEEaXWjEwAU4Hnin8ThCEmqfWg/14N59Ph4qdYCmKxpzuhcrXm
-         aorO+LJmddsmiuVTzc4uwbD+4L9ahxpgyB5rOjccckURdRJMs0o6LJPWJwwEGRGzJZk/
-         E8556h0pPlf4oRVUI5BQIsvv1JxJJS0sBMdkDimj/FFS4exqkZYaVAufIY8Rozqfchn1
-         NPpjfFnYkIUJAL92LG4c6hTKpXKQ1W18bclYsO/b6tTMAG5Sd6DI0vHnKCdIMM8ym7AH
-         hgECRCNvhL/R1kxCzl2wA73Vc9sj0l4Kkafgb8KzxwpBG46bTY0vYocSMp7EnaIbCQcb
-         qjjA==
-X-Gm-Message-State: APjAAAVEgm5Op1nbXf9BrvTsscwprvrnpyn+6KHrWNjO2/gaE37G7VWC
-        90dxDx+1hygk6NQEygd1FUE=
-X-Google-Smtp-Source: APXvYqwSz7KH8VAUyIQE7ycOa/iSHPnLUZQHkTO9OA09PoXiLao30HB8bGfL/ok3GQY+BbXtabHrMg==
-X-Received: by 2002:a5d:6207:: with SMTP id y7mr3455983wru.265.1559668084339;
-        Tue, 04 Jun 2019 10:08:04 -0700 (PDT)
+        bh=vuvZzizp1G0cVCZViE7O7i65Bt526Td+PC5RJmQRqkQ=;
+        b=ivZIvMYQuPIXmHss1KyR86ntX9aKP7ulDgfu3qIW3al6wz1/oz4E61UM6hqy9lmilZ
+         i2OlW14zDHoWS36mO01dy5WINLeOqHhISmQRxNwmiyvBaUXasljYOcfqZnK2+HMxb8mz
+         WglkgTU4aRkH2XihjdnsRiiiKgs+X0GrgChOmQGehGvIg6w0RcAZUOfsq77blfAkKP6c
+         JHCaVOp3TInRpdpbqhqqWUJV55gcGYRuiCZ15/L+s7pTcRP2s3MegROHcljgl1qZRCfX
+         6/NIHBLI4wi+FmYin0sQ2iflNNs3n0RZ/MB0zDF1hL4lraomgpUC2vAenGYmhrqMrNGy
+         +amw==
+X-Gm-Message-State: APjAAAWa14knNH98D+1dOzow2mjuH4hPyhDXhuBVyIIgkqSChpKAs+yV
+        6pp4VUA+sbia9V9VPOZZiJU=
+X-Google-Smtp-Source: APXvYqwkm6qK86qSGIcBn+OCuG9ltQsON8KuBofrkExsQlmLyTp7h4tCj9Gd8HDYLEhWeJkHQsGs7w==
+X-Received: by 2002:a5d:4e46:: with SMTP id r6mr5820557wrt.290.1559668085584;
+        Tue, 04 Jun 2019 10:08:05 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id f2sm19692218wme.12.2019.06.04.10.08.03
+        by smtp.gmail.com with ESMTPSA id f2sm19692218wme.12.2019.06.04.10.08.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 10:08:03 -0700 (PDT)
+        Tue, 04 Jun 2019 10:08:05 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, richardcochran@gmail.com,
         john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v3 net-next 01/17] net: dsa: Keep a pointer to the skb clone for TX timestamping
-Date:   Tue,  4 Jun 2019 20:07:40 +0300
-Message-Id: <20190604170756.14338-2-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 02/17] net: dsa: Add teardown callback for drivers
+Date:   Tue,  4 Jun 2019 20:07:41 +0300
+Message-Id: <20190604170756.14338-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190604170756.14338-1-olteanv@gmail.com>
 References: <20190604170756.14338-1-olteanv@gmail.com>
@@ -60,48 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For drivers that use deferred_xmit for PTP frames (such as sja1105),
-there is no need to perform matching between PTP frames and their egress
-timestamps, since the sending process can be serialized.
-
-In that case, it makes sense to have the pointer to the skb clone that
-DSA made directly in the skb->cb. It will be used for pushing the egress
-timestamp back in the application socket's error queue.
+This is helpful for e.g. draining per-driver (not per-port) tagger
+queues.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
 Changes in v3:
 
-None.
+Moved after dsa_switch_unregister_notifier, which is symmetrical to
+where the setup callback is.
 
 Changes in v2:
 
-Patch is new. Forgot to send in v1.
+Patch is new.
 
- net/dsa/slave.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/net/dsa.h | 1 +
+ net/dsa/dsa2.c    | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 1e2ae9d59b88..59d7c9e0270f 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -427,6 +427,8 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
- 	if (!clone)
- 		return;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index a7f36219904f..4033e0677be4 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -361,6 +361,7 @@ struct dsa_switch_ops {
+ 						  int port);
  
-+	DSA_SKB_CB(skb)->clone = clone;
+ 	int	(*setup)(struct dsa_switch *ds);
++	void	(*teardown)(struct dsa_switch *ds);
+ 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
+ 
+ 	/*
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index b70befe8a3c8..d98e0e8ee8aa 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -412,6 +412,9 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
+ 
+ 	dsa_switch_unregister_notifier(ds);
+ 
++	if (ds->ops->teardown)
++		ds->ops->teardown(ds);
 +
- 	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type))
- 		return;
- 
-@@ -464,6 +466,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
- 	u64_stats_update_end(&s->syncp);
- 
- 	DSA_SKB_CB(skb)->deferred_xmit = false;
-+	DSA_SKB_CB(skb)->clone = NULL;
- 
- 	/* Identify PTP protocol packets, clone them, and pass them to the
- 	 * switch driver
+ 	if (ds->devlink) {
+ 		devlink_unregister(ds->devlink);
+ 		devlink_free(ds->devlink);
 -- 
 2.17.1
 
