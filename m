@@ -2,110 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC39D34EAC
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F20F234EAD
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbfFDRXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:23:31 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39965 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbfFDRXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:23:30 -0400
-Received: by mail-pg1-f196.google.com with SMTP id d30so10737058pgm.7
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:23:30 -0700 (PDT)
+        id S1726416AbfFDRYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:24:15 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:39461 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfFDRYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:24:14 -0400
+Received: by mail-vs1-f68.google.com with SMTP id n2so5615773vso.6
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 10:24:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rGcQVMW0fl0747wGN/wBm81XIYeH3j1OT8rxKvWO9OQ=;
-        b=m+ctwRTctdutVQx24X3Gs7FuURvap6cu6wYrnEq+2aAobkQB3co58DZWT4P7iIHlvJ
-         kdUdanyucypLJaOoHkhmS/+NA2V5OZ3KjuuWaaJsCNFHbGQ5gsCmoAbiVLtJUaGcU6O6
-         jcJQ8sln+Ai5E6m+Qoh3KPGlq7dzGmhkfIdWocBjASeLlNaHIDilSAfIluN+0uQawgBu
-         UFCdaTS/tUfjMNJNuM6FPSwYyy65sNptG4cGLZTWlSBt22751X+Utg2aCK/hdNxVFhVU
-         +8qMNujt30rqQBME50g9tuCcqo27ln1RztTzj5JK61trwaL5Mk1TacD7VLxWoAF3Qqld
-         wCSA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=6vF6vWczRo15d9MqKsV2duT9QJCGYYTgyMWR73TsF80=;
+        b=qXj2fEFbDpyNV4UDZETcc/GsGAv9STePtlJRWGY34hgl8S05eYp+oSfWqiXS1IF/Mo
+         Dv/InP68lPrTjLcF2xN6sOixosfKr+9j4jkxpgyyuCX7hBtcQ220pj94ih9koLPERtKS
+         KwERlT1l0IzuaJ81OafcayHIFTXbQmHSCz3oInyzCm9wnBecODrxAHGDcRJNa79xF6c9
+         TxxVN0kHHt8Zd9aGtAwvfj9XxnAF9Ktlt13hUCgF1a0OU3XPelSOdLdv7M6W0rU5pWW4
+         Z2mIqmY/7Wi/njBh2MtQrEbk8kh3CnGoTC+8OWAKWBrzz1z9+XS62zKSVUZWs91Y7KIc
+         IzMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rGcQVMW0fl0747wGN/wBm81XIYeH3j1OT8rxKvWO9OQ=;
-        b=mDVnEkYPVvp5jvSamO/DI/Yx9KsiFugWPAsM7dHia7lLIV5iWCKCkdXwgRbslmSFMi
-         EhUBPiCLfTex6DpTa8z+j2cnUdKunBeHn+bunn/Aeewx1h7Rp80KO1C+aa/iuEbN1z+b
-         UkTaAnC2bjCd3RQDzhTGcV1/CZ+Ktaeft6MuhQiEwZ3/y1KGgSImeY5LgHw9pDPLv9Rp
-         878Y7j0NFsmRiKjAkkUbAh89UKJO/W989m376hxX8zLG0fpugeVuYJhtjw9UR9CH0yi7
-         w7Jb6/6dzPBccphIPqnvQIjDPjJJXl8QGtS3D0l+3JcBuUX6lNqTGoDvaLcZdP15Fzc0
-         o90g==
-X-Gm-Message-State: APjAAAXxUNFpd9zikTeaYSBUXmeOafJL35LgPcVmnBAMNpnkxsk7mu/Z
-        L2VpzZ+F+SKbay1PtYwNUbY=
-X-Google-Smtp-Source: APXvYqy0WDvMlaIoP14Xf+XQq4nf0kurR5jiI0WNLYB4J/5jry71UXVSoIY5AsRTPQ2VZ60f3WkMbw==
-X-Received: by 2002:a17:90a:1541:: with SMTP id y1mr3266292pja.88.1559669010210;
-        Tue, 04 Jun 2019 10:23:30 -0700 (PDT)
-Received: from [172.27.227.158] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id y7sm36682983pja.26.2019.06.04.10.23.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 10:23:29 -0700 (PDT)
-Subject: Re: [PATCH net] udp: only choose unbound UDP socket for multicast
- when not in a VRF
-To:     Tim Beale <timbeale@catalyst.net.nz>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-References: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e9d20a8f-146d-e9f3-4ef5-22a2f882146f@gmail.com>
-Date:   Tue, 4 Jun 2019 11:23:27 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=6vF6vWczRo15d9MqKsV2duT9QJCGYYTgyMWR73TsF80=;
+        b=T4hNKM1WzqMB1oNYKUzE7pDsrctAri4E5sLyfU/P+tR3AppIzaNVzcFr3JEHcOMDDR
+         9OYs+NfhrGcaStkUSshlZe5JxHqfxyVExPsKzmcFPXEWptGghS023ATgXLVlVkzxzhHl
+         zQ0K+jcO6D9+jK3etrlJcU912mPcKSl9qSe6cXkxCdFvauP6wlGCBqerHrV2SIhIPo/o
+         +Mxh4Uo6AVh+pbNf6qXS5wG2dhwXx+CRJiaogaBv0uJ5xBmFbKVUDhupbsBVnVzK9Lbv
+         N+jd0oNagX0IW3+b2kcXs0KoyuFa4EnWS+eL5lrmWS/n+0BGJJcHFf7P/32fBynOzJR3
+         R3Yg==
+X-Gm-Message-State: APjAAAUT5RBwSd3G+MSyv0xzDTH3hMEiYYvUkyUxvBwbKPpzrXpU4W16
+        CyIDDqavf+7WYH67tVoPDSho+g==
+X-Google-Smtp-Source: APXvYqzEM0c5GRunKAju7RXx11uoW+0HNABigQjs4vBGHoJ3IUXOEP0JmnE8cfQsDGnELwaN8skeQQ==
+X-Received: by 2002:a67:688f:: with SMTP id d137mr7834366vsc.198.1559669053791;
+        Tue, 04 Jun 2019 10:24:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id d79sm6461664vkd.23.2019.06.04.10.24.11
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 04 Jun 2019 10:24:13 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 10:24:06 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     "Bshara, Nafea" <nafea@amazon.com>, Andrew Lunn <andrew@lunn.ch>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Message-ID: <20190604102406.1f426339@cakuba.netronome.com>
+In-Reply-To: <af79f238465ebe069bc41924a2ae2efbcdbd6e38.camel@infradead.org>
+References: <20190603144329.16366-1-sameehj@amazon.com>
+        <20190603143205.1d95818e@cakuba.netronome.com>
+        <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
+        <20190603160351.085daa91@cakuba.netronome.com>
+        <20190604015043.GG17267@lunn.ch>
+        <D26B5448-1E74-44E8-83DA-FC93E5520325@amazon.com>
+        <af79f238465ebe069bc41924a2ae2efbcdbd6e38.camel@infradead.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/19 7:56 PM, Tim Beale wrote:
-> By default, packets received in another VRF should not be passed to an
-> unbound socket in the default VRF. This patch updates the IPv4 UDP
-> multicast logic to match the unicast VRF logic (in compute_score()),
-> as well as the IPv6 mcast logic (in __udp_v6_is_mcast_sock()).
-> 
-> The particular case I noticed was DHCP discover packets going
-> to the 255.255.255.255 address, which are handled by
-> __udp4_lib_mcast_deliver(). The previous code meant that running
-> multiple different DHCP server or relay agent instances across VRFs
-> did not work correctly - any server/relay agent in the default VRF
-> received DHCP discover packets for all other VRFs.
-> 
-> Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
-> ---
->  net/ipv4/udp.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 8fb250e..efe9283 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -538,8 +538,7 @@ static inline bool __udp_is_mcast_sock(struct net *net, struct sock *sk,
->  	    (inet->inet_dport != rmt_port && inet->inet_dport) ||
->  	    (inet->inet_rcv_saddr && inet->inet_rcv_saddr != loc_addr) ||
->  	    ipv6_only_sock(sk) ||
-> -	    (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
-> -	     sk->sk_bound_dev_if != sdif))
-> +	    !udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif))
->  		return false;
->  	if (!ip_mc_sf_allow(sk, loc_addr, rmt_addr, dif, sdif))
->  		return false;
-> 
+On Tue, 04 Jun 2019 07:57:48 +0100, David Woodhouse wrote:
+> On Tue, 2019-06-04 at 02:15 +0000, Bshara, Nafea wrote:
+> > On Jun 3, 2019, at 6:52 PM, Andrew Lunn <andrew@lunn.ch> wrote:
+> > > > Any "SmartNIC" vendor has temptation of uAPI-level hand off to the
+> > > > firmware (including my employer), we all run pretty beefy processors
+> > > > inside "the NIC" after all.  The device centric ethtool configurati=
+on
+> > > > can be implemented by just forwarding the uAPI structures as they a=
+re
+> > > > to the FW.  I'm sure Andrew and others who would like to see Linux
+> > > > takes more control over PHYs etc. would not like this scenario, eit=
+her. =20
+> > >=20
+> > > No, i would not. There are a few good examples of both firmware and
+> > > open drivers being used to control the same PHY, on different
+> > > boards. The PHY driver was developed by the community, and has more
+> > > features than the firmware driver. And it keeps gaining features. The
+> > > firmware i stuck, no updates. The community driver can be debugged,
+> > > the firmware is a black box, no chance of the community fixing any
+> > > bugs in it.
+> > >=20
+> > > And PHYs are commodity devices. I doubt there is any value add in the
+> > > firmware for a PHY, any real IPR which makes the product better, magic
+> > > sauce related to the PHY. So just save the cost of writing and
+> > > maintaining firmware, export the MDIO bus, and let Linux control it.
+> > > Concentrate the engineers on the interesting parts of the NIC, the
+> > > Smart parts, where there can be real IPR.
+> > >=20
+> > > And i would say this is true for any NIC. Let Linux control the PHY.
+> >=20
+> > It may be true for old GbE PHYs where it=E2=80=99s a discrete chip from=
+ the
+> > likes of Marvell or broadcom
+> >=20
+> > But at 25/50/100G, the PHy is actually part of the nic. It=E2=80=99s a =
+very
+> > complex SERDES.  Cloud providers like us spend enormous amount of
+> > time testing the PHY across process and voltage variations, all cable
+> > types, length and manufacturing variations, and against all switches
+> > we use.  Community drivers won=E2=80=99t be able to validate and tune a=
+ll
+> > this.
+> >=20
+> > Plus we would need exact same setting for Linux, including all
+> > distributions even 10year old like RHEL6, for all Windows, ESX, DPDK,
+> > FreeBSD,  and support millions of different customers with different
+> > sets of Machine images.=20
+> >=20
+> > In this case, there is no practical choice by have the firmware to
+> > manage the PHY =20
+>=20
+> I don't quite know why we're talking about PHYs in this context.
+> ENA is basically a virtio NIC. It has no PHY.
 
-Thanks for the fix.
+I brought it up as an example, to illustrate that we'd rather see less
+trust and control being blindly handed over to the firmware.
 
-Really should have been apart of this commit:
-
-Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen
-when not in a VRF")
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
-IPv6 mcast socket lookup was converted to udp_sk_bound_dev_eq, so v6
-seems ok.
+Would you mind answering what are the examples of very important flags
+you need to expose to users with 10yo kernels?  Or any examples for that
+matter..
