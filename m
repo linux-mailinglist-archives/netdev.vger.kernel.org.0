@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0912034FEE
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 20:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A9234FF1
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 20:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbfFDSk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 14:40:56 -0400
-Received: from mail-eopbgr80081.outbound.protection.outlook.com ([40.107.8.81]:57247
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725933AbfFDSk4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 14:40:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OZRgYljs8XlZcuYMFAdhUnodZ3KZ7f+ncoeuXH0YEXQ=;
- b=b+C6OdQLVjilkwBGrHaUryKqY0MAV5DFfJ9O8X8kbU2OCfxiAPcW1MxAU5ezfwWqFMLA4F6JTuPsNqt7zqvM9rZyXK1/VMG+x6jTtk/1Sbj8Vuv9FtQXLkWjMgcjgg8fOjNukiXnwSDMC1M03FWSdndfC3rjKCUvmPAa5nvLv3c=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6138.eurprd05.prod.outlook.com (20.179.10.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.21; Tue, 4 Jun 2019 18:40:52 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1943.018; Tue, 4 Jun 2019
- 18:40:52 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jiri@resnulli.us" <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        mlxsw <mlxsw@mellanox.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [patch net-next v3 2/8] mlx5: Move firmware flash implementation
- to devlink
-Thread-Topic: [patch net-next v3 2/8] mlx5: Move firmware flash implementation
- to devlink
-Thread-Index: AQHVGtsf50Caa2JOGEWD8EIf6iZ4uKaL1FkA
-Date:   Tue, 4 Jun 2019 18:40:52 +0000
-Message-ID: <efee9e7278d3864384f7165255a2388deb5919c0.camel@mellanox.com>
-References: <20190604134044.2613-1-jiri@resnulli.us>
-         <20190604134044.2613-3-jiri@resnulli.us>
-In-Reply-To: <20190604134044.2613-3-jiri@resnulli.us>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d8042d9e-b326-4f03-58f3-08d6e91c2bef
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6138;
-x-ms-traffictypediagnostic: DB8PR05MB6138:
-x-microsoft-antispam-prvs: <DB8PR05MB6138F3AE0A011EA97550BFE2BE150@DB8PR05MB6138.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2657;
-x-forefront-prvs: 0058ABBBC7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(366004)(39860400002)(396003)(346002)(199004)(189003)(14454004)(6486002)(6246003)(64756008)(36756003)(73956011)(76116006)(66556008)(14444005)(68736007)(66946007)(91956017)(86362001)(25786009)(81166006)(118296001)(54906003)(53936002)(66446008)(6512007)(58126008)(99286004)(110136005)(8936002)(26005)(229853002)(256004)(2906002)(8676002)(186003)(7736002)(4326008)(66066001)(6436002)(66476007)(5660300002)(81156014)(316002)(6116002)(305945005)(558084003)(2501003)(476003)(3846002)(486006)(6506007)(71200400001)(102836004)(71190400001)(11346002)(446003)(508600001)(2616005)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6138;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: XXvGIMHHFSZurq3nY10GfkQcZBLNrXarMiQ0pkQUejCou/dhsF/13OX3NjGwBDyjLalri8UGnBKq0XW1oBVDaGiNfMREzFY9R3aCFM73kznDZFUk3bmcXl4KuWBhfI+B9Rq920kcV8svG0aZYQEm61RQcZN2dNlJvXFD1CTzTII+GWkIz4jme4Jvg7uinJtDXbP7NNQf+yfsrj7Fxl6l5y9SkYyvDG5EYyDG4p3+FYCl+CtwSROPqRh5l9zZvCefmoLIXU5Mh+cAH8+GyRuKRhabCcu0iPcdjMcQhvdGMNEAwnTrekgwdQfPQccXZrRhjHUnXhL8V2qUhypP0Syi6Ne1kIpV5hORQaXkxHFs+f3jahQIR2UY0rCgwBDM00qx4tR26xpH9iwMMO7vNEtlZ3LOHdDMUFA5qyyohKuHcig=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <34F7F1BEC142894E8C42EC3BD7793F7A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726427AbfFDSmx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 14:42:53 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:42145 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbfFDSmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 14:42:52 -0400
+Received: by mail-ed1-f68.google.com with SMTP id z25so1844269edq.9
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 11:42:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=GpKPDwRz+Iojpy+xD8QiMBUFJ/F4qJbSQkdkAm63KAs=;
+        b=gSxgR1/Tw4x4C2GzcotdkkYkeV+H2gAwk4bqe+sFC35VzJmBBGhqhmcjYWWEgZYIDX
+         Y28AxH6X3ipC/xa3oWtE7HMx6/s0pn/0Y7q5PM8AF5T6R2AzzjC5Kgorc8IxYz0AzyQp
+         SSWR0MQci1mH4IpRu9cJiq22WVCrI0Q1/BwWZEH0znqqf2KxgyjrsaLo8b1ONbRLndWY
+         haoZgnQFYFBO/gbqIZkVH8txeD42ovtcIq6ex7WVlnoaMNRn6/UmuNr9Jubg+4f/quvV
+         ZOgaAbDOO1bVabDVVOnHGQsKn/W7cZOW2L13iRHMgoGa/O6aTEtRWH/krx6W+ju0HLD2
+         51aQ==
+X-Gm-Message-State: APjAAAUmfjNmW5U/oOHE3v2EQHlh8oad6fUKtzMbkV/uPTQpE6cQ2PdO
+        nC+NH3xZj+a76IU3bI/FG29MJwFz0Zc=
+X-Google-Smtp-Source: APXvYqxVm3D9aWr8bjZYYZZPUTbpTAOUJyim0b63UdnzhNNwSiOVoJ3e7BER1Jdi8OzwohbFy0fMEQ==
+X-Received: by 2002:a17:906:7712:: with SMTP id q18mr30199032ejm.133.1559673771147;
+        Tue, 04 Jun 2019 11:42:51 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id m6sm481491ede.2.2019.06.04.11.42.50
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 11:42:50 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C5B711800F7; Tue,  4 Jun 2019 20:42:49 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, brouer@redhat.com,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@redhat.com>
+Subject: Re: [PATCH net-next 2/2] devmap: Allow map lookups from eBPF
+In-Reply-To: <20190604183559.10db09d2@carbon>
+References: <155966185058.9084.14076895203527880808.stgit@alrua-x1> <155966185078.9084.7775851923786129736.stgit@alrua-x1> <20190604183559.10db09d2@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 04 Jun 2019 20:42:49 +0200
+Message-ID: <87blzdfaza.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8042d9e-b326-4f03-58f3-08d6e91c2bef
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2019 18:40:52.3147
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6138
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA2LTA0IGF0IDE1OjQwICswMjAwLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiBG
-cm9tOiBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT4NCj4gDQo+IEJlbmVmaXQgZnJvbSB0
-aGUgZGV2bGluayBmbGFzaCB1cGRhdGUgaW1wbGVtZW50YXRpb24gYW5kIGV0aHRvb2wNCj4gZmFs
-bGJhY2sgdG8gaXQgYW5kIG1vdmUgZmlybXdhcmUgZmxhc2ggaW1wbGVtZW50YXRpb24gdGhlcmUu
-DQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT4NCg0K
-QWNrZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0K
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
+
+> On Tue, 04 Jun 2019 17:24:10 +0200
+> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>
+>> We don't currently allow lookups into a devmap from eBPF, because the map
+>> lookup returns a pointer directly to the dev->ifindex, which shouldn't be
+>> modifiable from eBPF.
+>> 
+>> However, being able to do lookups in devmaps is useful to know (e.g.)
+>> whether forwarding to a specific interface is enabled. Currently, programs
+>> work around this by keeping a shadow map of another type which indicates
+>> whether a map index is valid.
+>> 
+>> To allow lookups, simply copy the ifindex into a scratch variable and
+>> return a pointer to this. If an eBPF program does modify it, this doesn't
+>> matter since it will be overridden on the next lookup anyway. While this
+>> does add a write to every lookup, the overhead of this is negligible
+>> because the cache line is hot when both the write and the subsequent
+>> read happens.
+>
+> When we choose the return value, here the ifindex, then this basically
+> becomes UABI, right?
+
+Well, we already have UABI on the insert side, where the value being
+inserted has to be an ifindex. And we enforce value_size==4 when
+creating the map. So IMO I'm just keeping to the already established
+UAPI here.
+
+That being said...
+
+> Can we somehow use BTF to help us to make this extensible?
+
+... this would not necessarily be a bad thing, it just needs to be done
+on both the insert and lookup sides.
+
+But I think this is a separate issue, which we need to solve anyway. And
+I'm still not convinced that the map value is the right place to specify
+what resources we want ;)
+
+-Toke
