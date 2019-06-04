@@ -2,99 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8020834ED8
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E2B34EE8
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 19:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbfFDRb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 13:31:56 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37287 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726238AbfFDRbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:31:55 -0400
-Received: by mail-qt1-f196.google.com with SMTP id y57so14747319qtk.4;
-        Tue, 04 Jun 2019 10:31:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zJnxPdRpWzmfxe+qO01hEsUxQR7B5VRieYI9l4HL0hw=;
-        b=hbMub1XJvDBbCsoaH5KGDyqmUp0NR3GUNFvjfKmiimwldwmhrwoVtUqLQORruNrCmj
-         w7JQKn7W7ixQNXN24entIwk5XtPP7mgzd5t844lJlydgzaHER7Unhzgw2gUWBO2Xomca
-         pxyRb1tyWBbBYfYr1aTYYTJEa+wi1Fc1pMHrcX72HVDJ4fiUvEuEgD5WYJfli5UGIRlT
-         xbZkPEqd3bGe1gyHaMUcqr6R4rouKnNHbNDyTeDS6HvqDkmwkypdc+D6IusNkORAn4vH
-         OximtY/+EWz+n0hFoopcx1bkYasUbBI3unnemUTJrrdTRNppU5etYGg4B6BZTn91V3uA
-         MKuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zJnxPdRpWzmfxe+qO01hEsUxQR7B5VRieYI9l4HL0hw=;
-        b=PZGD1t++o4DItoFsOG9J3IcGfBC6pHAZcN0YA1V9wsvBbtVhp48H9iohDM7bkjsdjJ
-         VrKq/1MKtzzmdG+OnkqGChln8sZtW4qzAaSqEPE53AKSXfAhmrVtMp+UYHGCg02HEtcd
-         rNUnudWPLXrY/RVrQzPjRdsITdzS6ORjVvl1707Mv8bJhdwU4ovdtr99iQkhPcUrzpgj
-         +8ib3PHcKMhAWVfjyzErdXcufIno5Bd7Sbhj0cLzHJFZWoXBuC4by0UthBiyKfrLMcgX
-         BKDczU4PF2CQsFTTmZ21eaG7XRQdJ9NIRFjgMmP24N0C6QrMnJKEVTU2NlN8i4PXZdZF
-         MwYw==
-X-Gm-Message-State: APjAAAUOVqb0V2vrc01/z9pQanTQBy/Z4Fv0zSrCeoh9fczuVDAMqXwd
-        CUuegnlRXUpkntyDjM3Y/kVJlB2fp5saVIWfrfg=
-X-Google-Smtp-Source: APXvYqziBQFDSNppDpSZ8bhQsWAypHLSo8gVVWnQaey1o3FGVoP6XxBi/WCBV0JdNcpTyToP+rrVd+CFD1MCAxWuO78=
-X-Received: by 2002:ac8:21b7:: with SMTP id 52mr12395203qty.59.1559669514650;
- Tue, 04 Jun 2019 10:31:54 -0700 (PDT)
+        id S1726645AbfFDRcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 13:32:42 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:43884 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726312AbfFDRcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 13:32:42 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EAC25A4022A;
+        Tue,  4 Jun 2019 17:32:39 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 4 Jun
+ 2019 10:32:35 -0700
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [RFC PATCH v4 net-next 0/4] flow_offload: Re-add per-action
+ statistics
+To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Message-ID: <a3f0a79a-7e2c-4cdc-8c97-dfebe959ab1f@solarflare.com>
+Date:   Tue, 4 Jun 2019 18:32:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
- <20190531212835.GA31612@mini-arch> <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
- <20190603163222.GA14556@mini-arch> <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
- <20190604010254.GB14556@mini-arch> <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
- <20190604042902.GA2014@mini-arch> <20190604134538.GB2014@mini-arch>
-In-Reply-To: <20190604134538.GB2014@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 4 Jun 2019 10:31:43 -0700
-Message-ID: <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
- using BTF
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Alexei Starovoitov <ast@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24656.005
+X-TM-AS-Result: No-5.930000-4.000000-10
+X-TMASE-MatchedRID: gic6L41wNEbVF+EKi1OPX7BZAi3nrnzbSExQHIFQcStjLp8Cm8vwF1Xa
+        1b4xhOVhF0rcil/c7qTZvRLZPkAeRvUpgL+KeT+3SVHYMTQ1F1pDxJKuWK52WumUIoKlWHoQoT0
+        8d5VvAtkrocpt5QAsnDQWn+y/cgJKaaJAtxI1t/C5kFk6DtF9fyYof8qPjr5VzVgwP7ZMYf/PQk
+        XuCrkdG3W8QOI06wMmH9v81ygotTt1/5vgSD8T3++JTqKfC3nfx0jmFKfRxcgb9oq6FrYQ3Pm8t
+        yRwJQtUEtuR7TIdaKV45d+OV6248Iaw96TXEsdWnMQdNQ64xffpVMb1xnESMpGhAvBSa2i/EeWU
+        GBiCoDXQWWA/y0oJPUNlKQGEMWqK6jHbEaTIvGGeAiCmPx4NwLTrdaH1ZWqC1kTfEkyaZdz6C0e
+        Ps7A07b5LO7CI0nt7wQ1v8MORL+amyZF9SXZx/O014BcM2LDA0fE/Wu2MhUJWXGvUUmKP2w==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.930000-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24656.005
+X-MDID: 1559669561-RImqQTZe6x3L
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 4, 2019 at 6:45 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 06/03, Stanislav Fomichev wrote:
-> > > BTF is mandatory for _any_ new feature.
-> > If something is easy to support without asking everyone to upgrade to
-> > a bleeding edge llvm, why not do it?
-> > So much for backwards compatibility and flexibility.
-> >
-> > > It's for introspection and debuggability in the first place.
-> > > Good debugging is not optional.
-> > Once llvm 8+ is everywhere, sure, but we are not there yet (I'm talking
-> > about upstream LTS distros like ubuntu/redhat).
-> But putting this aside, one thing that I didn't see addressed in the
-> cover letter is: what is the main motivation for the series?
-> Is it to support iproute2 map definitions (so cilium can switch to libbpf)?
+When the flow_offload infrastructure was added, per-action statistics,
+ which were previously possible for drivers to support in TC offload,
+ were not plumbed through, perhaps because the drivers in the tree did
+ not implement them.
+In TC (and in the previous offload API) statistics are per-action,
+ though generally only on 'delivery' actions like mirred, ok and shot.
+ Actions also have an index, which may be supplied by the user, which
+ allows the sharing of entities such as counters between multiple rules.
+The existing driver implementations did not support this, however,
+ instead allocating a single counter per rule.  The flow_offload API did
+ not support this either, as (a) the information that two actions were
+ actually the same action never reached the driver, and (b) the
+ TC_CLSFLOWER_STATS callback is only able to return a single set of
+ stats, which are added to all counters for actions on the rule.
+Patch #1 of this series fixes (a) by adding a cookie member to struct
+ flow_action_entry, while the remaining patches fix (b) by adding a per-
+ action offload callback (TC_SETUP_ACTION/TC_ACTION_STATS) for
+ RTM_GETACTION, and also (patch #4) calling it for each action when
+ dumping a rule.
+For drivers supporting per-action stats (of which none yet exist
+ upstream, hence RFC), this also means that RTM_GETACTION will return
+ up-to-date stats, rather than stale values from the last time the rule
+ was dumped.
 
-In general, the motivation is to arrive at a way to support
-declaratively defining maps in such a way, that:
-- captures type information (for debuggability/introspection) in
-coherent and hard-to-screw-up way;
-- allows to support missing useful features w/ good syntax (e.g.,
-natural map-in-map case vs current completely manual non-declarative
-way for libbpf);
-- ultimately allow iproute2 to use libbpf as unified loader (and thus
-the need to support its existing features, like
-BPF_MAP_TYPE_PROG_ARRAY initialization, pinning, map-in-map);
+Changed in v4:
+* Incorporated RTM_GETACTION offload series
+* Replaced TC_CLSFLOWER_STATS stats-array with multiple TC_SETUP_ACTION
+  callbacks
+* dropped header inclusion fix (submitted separately)
+* re-added RFC tags
 
-The only missing feature that can be supported reasonably with
-bpf_map_def is pinning (as it's just another int field), but all the
-other use cases requires awkward approach of matching arbitrary IDs,
-which feels like a bad way forward.
+Changed in v3:
+* replaced action_index with cookie, so drivers don't have to look at
+  flow_action_id to distinguish shared actions
+* removed RFC tags
 
+Changed in v2:
+* use array instead of new callback for getting stats
+* remove CVLAN patch (posted separately for net)
+* add header inclusion fix
 
-> If that's the case, maybe explicitly focus on that? Once we have
-> proof-of-concept working for iproute2 mode, we can extend it to everything.
+Edward Cree (4):
+  flow_offload: add a cookie to flow_action_entry
+  net/sched: add callback to get stats on an action from clsflower
+    offload
+  net/sched: add action block binding to other classifiers
+  net/sched: call action stats offload in flower or mall dump
+
+ include/linux/netdevice.h  |  1 +
+ include/net/act_api.h      |  7 +++++-
+ include/net/flow_offload.h |  2 ++
+ include/net/pkt_cls.h      | 18 ++++++++++++++
+ net/sched/act_api.c        | 51 ++++++++++++++++++++++++++++++++++++++
+ net/sched/cls_api.c        |  2 ++
+ net/sched/cls_bpf.c        | 10 +++++++-
+ net/sched/cls_flower.c     | 13 ++++++++++
+ net/sched/cls_matchall.c   | 12 +++++++++
+ net/sched/cls_u32.c        |  7 ++++++
+ 10 files changed, 121 insertions(+), 2 deletions(-)
+
