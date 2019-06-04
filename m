@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B817433E20
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 06:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFDE333E22
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 07:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfFDE7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 00:59:06 -0400
-Received: from mail-it1-f197.google.com ([209.85.166.197]:54560 "EHLO
-        mail-it1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbfFDE7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 00:59:06 -0400
-Received: by mail-it1-f197.google.com with SMTP id k8so16999767itd.4
-        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 21:59:05 -0700 (PDT)
+        id S1726595AbfFDFAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 01:00:06 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:56156 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726136AbfFDFAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 01:00:06 -0400
+Received: by mail-io1-f72.google.com with SMTP id f22so15570568ioh.22
+        for <netdev@vger.kernel.org>; Mon, 03 Jun 2019 22:00:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TTDReImnbsPUfsbHC9WPWZEbpuEYQR4VhJJHGQELGSY=;
-        b=lpTFAbaUTgQ4CM6M5FAGkC233g0ewPx/rJbXUKA3YAwLu9jPGMLUqIkD/+NBFUAcNO
-         YuCrgOsIaCnQGq/RnmOFjatdrAM4DpL197lweHo4vYUtZGqKgCqxL5WoF/Aot7Zm7wvp
-         MBpMFvsNu0sDZ4pHObW4f2CtmRj4Amy/NkUdAI+EOJL5yQqWKskhUh8t/NqVS5BLPJvI
-         3bmgxhhfYsbD25Rq9ZzrNVpsXUZwQ8Isz5Lfo/sdXiNnTd7skL7Nh9g5Q4l5UZo30ZNM
-         fwdmd53rPUum0841dfB62v7qbMyRIYQExO3+Rs1v2wjqybpmkRofSWrK1wgAFh5CEFtr
-         V+3Q==
-X-Gm-Message-State: APjAAAWYpYQaaCeAM/wBJiBY0g8svwl2sISpXJn8whyNIQqY8536Mi/u
-        8yyD5Re2BBglq1bFG+TpVyMQsAxsfACxJzo/S2euuFQwntjD
-X-Google-Smtp-Source: APXvYqxhOTHCxmPPGUlRYIewZVdGpcmTCrQduA2Xdse33/kHj/bIPyHrvD0dun9841nI60bFqTIyH3BCmNbfMgaNz9JLeN4NfBWQ
+        bh=m0H82qKPLGC08pNSWqS6+ZK1CGm7k8VrXyLDBQA714Y=;
+        b=j+qedqlvK7U+h+BuOXj5fUNp+zMLG+zC/rDqiREJSW3y8BTy4B1LrPM2vB7JFzxJ+h
+         /Bjn8ipUnzMU3IMGhg1ajMkWk19zqL95Ni712DepPbaTPYo2V7Rj6EDPVOtTlQINbImr
+         t+I3mS4jNhSLfjN03mY+LX7YXEIvJfV7jG/dcsyWa3/ty2u+L457OPeEAttzJ6UdEpct
+         PJORTCoJjpED+CeeYOFdcNB6LClgfnt5F6DtcHRtA1fxI4aHcsSOQf09/YBk/p0eQFSD
+         k75yxx9eM2FBa3qiBqEW6aPMi+E2yd7F3p5Oe28/0VohIgNtM58BaaekVTk/uChLIugm
+         1KUQ==
+X-Gm-Message-State: APjAAAXbvsQB2NuGl/tnrMuelZLafeZNHvO37ZU/z9scoS/8CrXGO1UF
+        89O14aewQvtO2bbjZFqUm5HfIqutOI54AaGbctbJvIrwiH+y
+X-Google-Smtp-Source: APXvYqzVTdF+nUlZMoiTaz4uhlaL49pZ3SxefQ1UTW2tT6mB4oLBn7rj41EBT4xmvubc5sURYW/gA+eeGwXDEooOy/rAyb5iYBPX
 MIME-Version: 1.0
-X-Received: by 2002:a02:c492:: with SMTP id t18mr14002910jam.67.1559624345428;
- Mon, 03 Jun 2019 21:59:05 -0700 (PDT)
-Date:   Mon, 03 Jun 2019 21:59:05 -0700
+X-Received: by 2002:a05:6602:2285:: with SMTP id d5mr145802iod.196.1559624405610;
+ Mon, 03 Jun 2019 22:00:05 -0700 (PDT)
+Date:   Mon, 03 Jun 2019 22:00:05 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000017b026058a785790@google.com>
-Subject: INFO: rcu detected stall in rose_connect
-From:   syzbot <syzbot+af81c7a21a31b18bec0e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+Message-ID: <000000000000ae08b2058a785a4c@google.com>
+Subject: KASAN: slab-out-of-bounds Read in icmpv6_xrlim_allow
+From:   syzbot <syzbot+14536436e78408172703@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,93 +49,132 @@ Hello,
 syzbot found the following crash on:
 
 HEAD commit:    0462eaac Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12fda636a00000
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c82772a00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=b7b54c66298f8420
-dashboard link: https://syzkaller.appspot.com/bug?extid=af81c7a21a31b18bec0e
+dashboard link: https://syzkaller.appspot.com/bug?extid=14536436e78408172703
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+af81c7a21a31b18bec0e@syzkaller.appspotmail.com
+Reported-by: syzbot+14536436e78408172703@syzkaller.appspotmail.com
 
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	0-...!: (10499 ticks this GP) idle=5fa/1/0x4000000000000002  
-softirq=44473/44473 fqs=15
-	(t=10501 jiffies g=63393 q=282)
-rcu: rcu_preempt kthread starved for 10470 jiffies! g63393 f0x0  
-RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=1
-rcu: RCU grace-period kthread stack dump:
-rcu_preempt     I29056    10      2 0x80004000
-Call Trace:
-  context_switch kernel/sched/core.c:2818 [inline]
-  __schedule+0x7cb/0x1560 kernel/sched/core.c:3445
-  schedule+0xa8/0x260 kernel/sched/core.c:3509
-  schedule_timeout+0x486/0xc50 kernel/time/timer.c:1807
-  rcu_gp_fqs_loop kernel/rcu/tree.c:1589 [inline]
-  rcu_gp_kthread+0x9b2/0x18b0 kernel/rcu/tree.c:1746
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-NMI backtrace for cpu 0
-CPU: 0 PID: 25729 Comm: syz-executor.0 Not tainted 5.2.0-rc2+ #9
+==================================================================
+BUG: KASAN: slab-out-of-bounds in icmpv6_xrlim_allow+0x409/0x440  
+net/ipv6/icmp.c:216
+Read of size 8 at addr ffff8880973ed8bf by task swapper/1/0
+
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.2.0-rc2+ #12
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
 Call Trace:
   <IRQ>
   __dump_stack lib/dump_stack.c:77 [inline]
   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  nmi_cpu_backtrace.cold+0x63/0xa4 lib/nmi_backtrace.c:101
-  nmi_trigger_cpumask_backtrace+0x1be/0x236 lib/nmi_backtrace.c:62
-  arch_trigger_cpumask_backtrace+0x14/0x20 arch/x86/kernel/apic/hw_nmi.c:38
-  trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
-  rcu_dump_cpu_stacks+0x183/0x1cf kernel/rcu/tree_stall.h:254
-  print_cpu_stall kernel/rcu/tree_stall.h:455 [inline]
-  check_cpu_stall kernel/rcu/tree_stall.h:529 [inline]
-  rcu_pending kernel/rcu/tree.c:2625 [inline]
-  rcu_sched_clock_irq.cold+0x4d1/0xbfd kernel/rcu/tree.c:2161
-  update_process_times+0x32/0x80 kernel/time/timer.c:1639
-  tick_sched_handle+0xa2/0x190 kernel/time/tick-sched.c:167
-  tick_sched_timer+0x47/0x130 kernel/time/tick-sched.c:1298
-  __run_hrtimer kernel/time/hrtimer.c:1389 [inline]
-  __hrtimer_run_queues+0x33b/0xdd0 kernel/time/hrtimer.c:1451
-  hrtimer_interrupt+0x314/0x770 kernel/time/hrtimer.c:1509
-  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1041 [inline]
-  smp_apic_timer_interrupt+0x111/0x550 arch/x86/kernel/apic/apic.c:1066
+  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
+  __kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
+  kasan_report+0x12/0x20 mm/kasan/common.c:614
+  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  icmpv6_xrlim_allow+0x409/0x440 net/ipv6/icmp.c:216
+  icmp6_send+0x1107/0x1e50 net/ipv6/icmp.c:540
+  icmpv6_send+0xec/0x230 net/ipv6/ip6_icmp.c:43
+  ip6_link_failure+0x2b/0x530 net/ipv6/route.c:2367
+  dst_link_failure include/net/dst.h:416 [inline]
+  ndisc_error_report+0xce/0x1c0 net/ipv6/ndisc.c:712
+  neigh_invalidate+0x245/0x570 net/core/neighbour.c:1000
+  neigh_timer_handler+0xc33/0xf30 net/core/neighbour.c:1086
+  call_timer_fn+0x193/0x720 kernel/time/timer.c:1322
+  expire_timers kernel/time/timer.c:1366 [inline]
+  __run_timers kernel/time/timer.c:1685 [inline]
+  __run_timers kernel/time/timer.c:1653 [inline]
+  run_timer_softirq+0x66f/0x1740 kernel/time/timer.c:1698
+  __do_softirq+0x25c/0x94c kernel/softirq.c:293
+  invoke_softirq kernel/softirq.c:374 [inline]
+  irq_exit+0x180/0x1d0 kernel/softirq.c:414
+  exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+  smp_apic_timer_interrupt+0x13b/0x550 arch/x86/kernel/apic/apic.c:1068
   apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:806
   </IRQ>
-RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:26 [inline]
-RIP: 0010:check_kcov_mode kernel/kcov.c:68 [inline]
-RIP: 0010:__sanitizer_cov_trace_pc+0x11/0x50 kernel/kcov.c:102
-Code: 48 c7 05 8e 89 f5 08 00 00 00 00 e9 a4 e9 ff ff 90 90 90 90 90 90 90  
-90 90 55 48 89 e5 48 8b 75 08 65 48 8b 04 25 c0 fd 01 00 <65> 8b 15 b0 57  
-91 7e 81 e2 00 01 1f 00 75 2b 8b 90 e0 12 00 00 83
-RSP: 0018:ffff888062d17c00 EFLAGS: 00000297 ORIG_RAX: ffffffffffffff13
-RAX: ffff8880875ce680 RBX: dffffc0000000000 RCX: ffffffff864bdd76
-RDX: 0000000000000001 RSI: ffffffff864bdd14 RDI: 0000000000000004
-RBP: ffff888062d17c00 R08: ffff8880875ce680 R09: ffffed100c5a2f70
-R10: ffffed100c5a2f6f R11: 0000000000000003 R12: ffff88808ce48600
-R13: 0000000000000001 R14: ffff888216685300 R15: 0000000000000000
-  rose_find_socket+0x54/0x120 net/rose/af_rose.c:281
-  rose_new_lci net/rose/af_rose.c:302 [inline]
-  rose_new_lci+0xca/0x140 net/rose/af_rose.c:296
-  rose_connect+0x3b8/0x1510 net/rose/af_rose.c:776
-  __sys_connect+0x264/0x330 net/socket.c:1840
-  __do_sys_connect net/socket.c:1851 [inline]
-  __se_sys_connect net/socket.c:1848 [inline]
-  __x64_sys_connect+0x73/0xb0 net/socket.c:1848
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459279
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007eff2ff64c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459279
-RDX: 0000000000000040 RSI: 0000000020000040 RDI: 0000000000000004
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007eff2ff656d4
-R13: 00000000004bf7f6 R14: 00000000004d0d38 R15: 00000000ffffffff
+RIP: 0010:__raw_spin_unlock_irq include/linux/spinlock_api_smp.h:169  
+[inline]
+RIP: 0010:_raw_spin_unlock_irq+0x54/0x90 kernel/locking/spinlock.c:199
+Code: c0 00 74 b2 88 48 ba 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00  
+75 33 48 83 3d 85 ee 94 01 00 74 20 fb 66 0f 1f 44 00 00 <bf> 01 00 00 00  
+e8 52 f5 2f fa 65 8b 05 f3 77 e4 78 85 c0 74 06 41
+RSP: 0018:ffff8880a98e7c88 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff1164e80 RBX: ffff8880a98d4340 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000006 RDI: ffff8880a98d4bbc
+RBP: ffff8880a98e7c90 R08: ffff8880a98d4340 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880ae935080
+R13: ffff888096ef0640 R14: 0000000000000000 R15: 0000000000000001
+  finish_lock_switch kernel/sched/core.c:2568 [inline]
+  finish_task_switch+0x146/0x730 kernel/sched/core.c:2668
+  context_switch kernel/sched/core.c:2821 [inline]
+  __schedule+0x7d3/0x1560 kernel/sched/core.c:3445
+  schedule_idle+0x58/0x80 kernel/sched/core.c:3537
+  do_idle+0x192/0x560 kernel/sched/idle.c:287
+  cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:354
+  start_secondary+0x34e/0x4c0 arch/x86/kernel/smpboot.c:265
+  secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
+
+Allocated by task 0:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_kmalloc mm/kasan/common.c:489 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
+  kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:497
+  slab_post_alloc_hook mm/slab.h:437 [inline]
+  slab_alloc mm/slab.c:3326 [inline]
+  kmem_cache_alloc+0x11a/0x6f0 mm/slab.c:3488
+  dst_alloc+0x10e/0x200 net/core/dst.c:93
+  ip6_dst_alloc+0x34/0xa0 net/ipv6/route.c:356
+  icmp6_dst_alloc+0x1a9/0x660 net/ipv6/route.c:2806
+  ndisc_send_skb+0xfc1/0x14a0 net/ipv6/ndisc.c:488
+  ndisc_send_rs+0x134/0x6d0 net/ipv6/ndisc.c:702
+  addrconf_rs_timer+0x30f/0x680 net/ipv6/addrconf.c:3880
+  call_timer_fn+0x193/0x720 kernel/time/timer.c:1322
+  expire_timers kernel/time/timer.c:1366 [inline]
+  __run_timers kernel/time/timer.c:1685 [inline]
+  __run_timers kernel/time/timer.c:1653 [inline]
+  run_timer_softirq+0x66f/0x1740 kernel/time/timer.c:1698
+  __do_softirq+0x25c/0x94c kernel/softirq.c:293
+
+Freed by task 0:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
+  __cache_free mm/slab.c:3432 [inline]
+  kmem_cache_free+0x86/0x260 mm/slab.c:3698
+  dst_destroy+0x29e/0x3c0 net/core/dst.c:129
+  dst_destroy_rcu+0x16/0x19 net/core/dst.c:142
+  __rcu_reclaim kernel/rcu/rcu.h:222 [inline]
+  rcu_do_batch kernel/rcu/tree.c:2092 [inline]
+  invoke_rcu_callbacks kernel/rcu/tree.c:2310 [inline]
+  rcu_core+0xba5/0x1500 kernel/rcu/tree.c:2291
+  __do_softirq+0x25c/0x94c kernel/softirq.c:293
+
+The buggy address belongs to the object at ffff8880973ed780
+  which belongs to the cache ip6_dst_cache of size 224
+The buggy address is located 95 bytes to the right of
+  224-byte region [ffff8880973ed780, ffff8880973ed860)
+The buggy address belongs to the page:
+page:ffffea00025cfb40 refcount:1 mapcount:0 mapping:ffff88809b0b8cc0  
+index:0xffff8880973ed000
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea00017a6288 ffffea00022d3f88 ffff88809b0b8cc0
+raw: ffff8880973ed000 ffff8880973ed000 0000000100000002 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff8880973ed780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8880973ed800: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> ffff8880973ed880: fc fc fc fc fc fc fc fc 00 00 00 00 00 00 00 00
+                                         ^
+  ffff8880973ed900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  ffff8880973ed980: 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
 
 ---
