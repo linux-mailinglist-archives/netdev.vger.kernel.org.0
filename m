@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0753537C
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE8135388
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbfFDXZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 19:25:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37260 "EHLO mail.kernel.org"
+        id S1727008AbfFDXZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 19:25:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728012AbfFDXZa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 19:25:30 -0400
+        id S1728099AbfFDXZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 19:25:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DABE12085A;
-        Tue,  4 Jun 2019 23:25:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4A4D20859;
+        Tue,  4 Jun 2019 23:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559690728;
-        bh=TRhb4bn5sZlQ1o7SrEF3J/f2N5alQl++5ijQez+ggKA=;
+        s=default; t=1559690739;
+        bh=KNMly4FSFRitfs2KSBTfLDGh7hzE78tZnEm0Ph1XrBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7dAFa301wbOeAptVNGitfi2KdpbzErm1z949HoogjT48hSx8M4a/XJsjwDo3yO1n
-         m6ukr29VwlN/ZX2EB2i7FHijWgwDiHfSpXfaIKkXb+i2I5kMtsSsfMHEOcF0SrAceL
-         JeTH7PwABwVwhCC17MmCOzfZ7EB1GHHHFPYuhZsc=
+        b=Az/ZBeFaVHVwg5+VMjC6k4HcOCgSc4GZRKETMG+bn35wSMJ+X8MbSHR3wm/rtA+5A
+         /b6vQ6G0tTZST8od8MVTk5u6KERtm5KTjclR5quIl64iz01x2Dx7xqANJdd1bXJCje
+         Icv7yBY5z0JG/HR3jQ9f/mUvzvP+W0zu2yfv+oEw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kloetzke Jan <Jan.Kloetzke@preh.de>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Li Rongqing <lirongqing@baidu.com>, Zhang Yu <zhangyu31@baidu.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/17] usbnet: fix kernel crash after disconnect
-Date:   Tue,  4 Jun 2019 19:24:56 -0400
-Message-Id: <20190604232459.7745-15-sashal@kernel.org>
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 04/10] ipc: prevent lockup on alloc_msg and free_msg
+Date:   Tue,  4 Jun 2019 19:25:25 -0400
+Message-Id: <20190604232532.7953-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190604232459.7745-1-sashal@kernel.org>
-References: <20190604232459.7745-1-sashal@kernel.org>
+In-Reply-To: <20190604232532.7953-1-sashal@kernel.org>
+References: <20190604232532.7953-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,93 +48,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kloetzke Jan <Jan.Kloetzke@preh.de>
+From: Li Rongqing <lirongqing@baidu.com>
 
-[ Upstream commit ad70411a978d1e6e97b1e341a7bde9a79af0c93d ]
+[ Upstream commit d6a2946a88f524a47cc9b79279667137899db807 ]
 
-When disconnecting cdc_ncm the kernel sporadically crashes shortly
-after the disconnect:
+msgctl10 of ltp triggers the following lockup When CONFIG_KASAN is
+enabled on large memory SMP systems, the pages initialization can take a
+long time, if msgctl10 requests a huge block memory, and it will block
+rcu scheduler, so release cpu actively.
 
-  [   57.868812] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-  ...
-  [   58.006653] PC is at 0x0
-  [   58.009202] LR is at call_timer_fn+0xec/0x1b4
-  [   58.013567] pc : [<0000000000000000>] lr : [<ffffff80080f5130>] pstate: 00000145
-  [   58.020976] sp : ffffff8008003da0
-  [   58.024295] x29: ffffff8008003da0 x28: 0000000000000001
-  [   58.029618] x27: 000000000000000a x26: 0000000000000100
-  [   58.034941] x25: 0000000000000000 x24: ffffff8008003e68
-  [   58.040263] x23: 0000000000000000 x22: 0000000000000000
-  [   58.045587] x21: 0000000000000000 x20: ffffffc68fac1808
-  [   58.050910] x19: 0000000000000100 x18: 0000000000000000
-  [   58.056232] x17: 0000007f885aff8c x16: 0000007f883a9f10
-  [   58.061556] x15: 0000000000000001 x14: 000000000000006e
-  [   58.066878] x13: 0000000000000000 x12: 00000000000000ba
-  [   58.072201] x11: ffffffc69ff1db30 x10: 0000000000000020
-  [   58.077524] x9 : 8000100008001000 x8 : 0000000000000001
-  [   58.082847] x7 : 0000000000000800 x6 : ffffff8008003e70
-  [   58.088169] x5 : ffffffc69ff17a28 x4 : 00000000ffff138b
-  [   58.093492] x3 : 0000000000000000 x2 : 0000000000000000
-  [   58.098814] x1 : 0000000000000000 x0 : 0000000000000000
-  ...
-  [   58.205800] [<          (null)>]           (null)
-  [   58.210521] [<ffffff80080f5298>] expire_timers+0xa0/0x14c
-  [   58.215937] [<ffffff80080f542c>] run_timer_softirq+0xe8/0x128
-  [   58.221702] [<ffffff8008081120>] __do_softirq+0x298/0x348
-  [   58.227118] [<ffffff80080a6304>] irq_exit+0x74/0xbc
-  [   58.232009] [<ffffff80080e17dc>] __handle_domain_irq+0x78/0xac
-  [   58.237857] [<ffffff8008080cf4>] gic_handle_irq+0x80/0xac
-  ...
+After adding schedule() in free_msg, free_msg can not be called when
+holding spinlock, so adding msg to a tmp list, and free it out of
+spinlock
 
-The crash happens roughly 125..130ms after the disconnect. This
-correlates with the 'delay' timer that is started on certain USB tx/rx
-errors in the URB completion handler.
+  rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+  rcu:     Tasks blocked on level-1 rcu_node (CPUs 16-31): P32505
+  rcu:     Tasks blocked on level-1 rcu_node (CPUs 48-63): P34978
+  rcu:     (detected by 11, t=35024 jiffies, g=44237529, q=16542267)
+  msgctl10        R  running task    21608 32505   2794 0x00000082
+  Call Trace:
+   preempt_schedule_irq+0x4c/0xb0
+   retint_kernel+0x1b/0x2d
+  RIP: 0010:__is_insn_slot_addr+0xfb/0x250
+  Code: 82 1d 00 48 8b 9b 90 00 00 00 4c 89 f7 49 c1 ee 03 e8 59 83 1d 00 48 b8 00 00 00 00 00 fc ff df 4c 39 eb 48 89 9d 58 ff ff ff <41> c6 04 06 f8 74 66 4c 8d 75 98 4c 89 f1 48 c1 e9 03 48 01 c8 48
+  RSP: 0018:ffff88bce041f758 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+  RAX: dffffc0000000000 RBX: ffffffff8471bc50 RCX: ffffffff828a2a57
+  RDX: dffffc0000000000 RSI: dffffc0000000000 RDI: ffff88bce041f780
+  RBP: ffff88bce041f828 R08: ffffed15f3f4c5b3 R09: ffffed15f3f4c5b3
+  R10: 0000000000000001 R11: ffffed15f3f4c5b2 R12: 000000318aee9b73
+  R13: ffffffff8471bc50 R14: 1ffff1179c083ef0 R15: 1ffff1179c083eec
+   kernel_text_address+0xc1/0x100
+   __kernel_text_address+0xe/0x30
+   unwind_get_return_address+0x2f/0x50
+   __save_stack_trace+0x92/0x100
+   create_object+0x380/0x650
+   __kmalloc+0x14c/0x2b0
+   load_msg+0x38/0x1a0
+   do_msgsnd+0x19e/0xcf0
+   do_syscall_64+0x117/0x400
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-The problem is a race of usbnet_stop() with usbnet_start_xmit(). In
-usbnet_stop() we call usbnet_terminate_urbs() to cancel all URBs in
-flight. This only makes sense if no new URBs are submitted
-concurrently, though. But the usbnet_start_xmit() can run at the same
-time on another CPU which almost unconditionally submits an URB. The
-error callback of the new URB will then schedule the timer after it was
-already stopped.
+  rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+  rcu:     Tasks blocked on level-1 rcu_node (CPUs 0-15): P32170
+  rcu:     (detected by 14, t=35016 jiffies, g=44237525, q=12423063)
+  msgctl10        R  running task    21608 32170  32155 0x00000082
+  Call Trace:
+   preempt_schedule_irq+0x4c/0xb0
+   retint_kernel+0x1b/0x2d
+  RIP: 0010:lock_acquire+0x4d/0x340
+  Code: 48 81 ec c0 00 00 00 45 89 c6 4d 89 cf 48 8d 6c 24 20 48 89 3c 24 48 8d bb e4 0c 00 00 89 74 24 0c 48 c7 44 24 20 b3 8a b5 41 <48> c1 ed 03 48 c7 44 24 28 b4 25 18 84 48 c7 44 24 30 d0 54 7a 82
+  RSP: 0018:ffff88af83417738 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
+  RAX: dffffc0000000000 RBX: ffff88bd335f3080 RCX: 0000000000000002
+  RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88bd335f3d64
+  RBP: ffff88af83417758 R08: 0000000000000000 R09: 0000000000000000
+  R10: 0000000000000001 R11: ffffed13f3f745b2 R12: 0000000000000000
+  R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000000000
+   is_bpf_text_address+0x32/0xe0
+   kernel_text_address+0xec/0x100
+   __kernel_text_address+0xe/0x30
+   unwind_get_return_address+0x2f/0x50
+   __save_stack_trace+0x92/0x100
+   save_stack+0x32/0xb0
+   __kasan_slab_free+0x130/0x180
+   kfree+0xfa/0x2d0
+   free_msg+0x24/0x50
+   do_msgrcv+0x508/0xe60
+   do_syscall_64+0x117/0x400
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-The fix adds a check if the tx queue is stopped after the tx list lock
-has been taken. This should reliably prevent the submission of new URBs
-while usbnet_terminate_urbs() does its job. The same thing is done on
-the rx side even though it might be safe due to other flags that are
-checked there.
+Davidlohr said:
+ "So after releasing the lock, the msg rbtree/list is empty and new
+  calls will not see those in the newly populated tmp_msg list, and
+  therefore they cannot access the delayed msg freeing pointers, which
+  is good. Also the fact that the node_cache is now freed before the
+  actual messages seems to be harmless as this is wanted for
+  msg_insert() avoiding GFP_ATOMIC allocations, and after releasing the
+  info->lock the thing is freed anyway so it should not change things"
 
-Signed-off-by: Jan Klötzke <Jan.Kloetzke@preh.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: http://lkml.kernel.org/r/1552029161-4957-1-git-send-email-lirongqing@baidu.com
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
+Reviewed-by: Davidlohr Bueso <dbueso@suse.de>
+Cc: Manfred Spraul <manfred@colorfullife.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/usbnet.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ ipc/mqueue.c  | 10 ++++++++--
+ ipc/msgutil.c |  6 ++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 4ab82b998a0f..a5acbcb3c044 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -508,6 +508,7 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
+diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+index 5e24eb0ab5dd..6ed74825ab54 100644
+--- a/ipc/mqueue.c
++++ b/ipc/mqueue.c
+@@ -373,7 +373,8 @@ static void mqueue_evict_inode(struct inode *inode)
+ 	struct user_struct *user;
+ 	unsigned long mq_bytes, mq_treesize;
+ 	struct ipc_namespace *ipc_ns;
+-	struct msg_msg *msg;
++	struct msg_msg *msg, *nmsg;
++	LIST_HEAD(tmp_msg);
  
- 	if (netif_running (dev->net) &&
- 	    netif_device_present (dev->net) &&
-+	    test_bit(EVENT_DEV_OPEN, &dev->flags) &&
- 	    !test_bit (EVENT_RX_HALT, &dev->flags) &&
- 	    !test_bit (EVENT_DEV_ASLEEP, &dev->flags)) {
- 		switch (retval = usb_submit_urb (urb, GFP_ATOMIC)) {
-@@ -1394,6 +1395,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
- 		spin_unlock_irqrestore(&dev->txq.lock, flags);
- 		goto drop;
- 	}
-+	if (netif_queue_stopped(net)) {
-+		usb_autopm_put_interface_async(dev->intf);
-+		spin_unlock_irqrestore(&dev->txq.lock, flags);
-+		goto drop;
+ 	clear_inode(inode);
+ 
+@@ -384,10 +385,15 @@ static void mqueue_evict_inode(struct inode *inode)
+ 	info = MQUEUE_I(inode);
+ 	spin_lock(&info->lock);
+ 	while ((msg = msg_get(info)) != NULL)
+-		free_msg(msg);
++		list_add_tail(&msg->m_list, &tmp_msg);
+ 	kfree(info->node_cache);
+ 	spin_unlock(&info->lock);
+ 
++	list_for_each_entry_safe(msg, nmsg, &tmp_msg, m_list) {
++		list_del(&msg->m_list);
++		free_msg(msg);
 +	}
++
+ 	/* Total amount of bytes accounted for the mqueue */
+ 	mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
+ 		min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
+diff --git a/ipc/msgutil.c b/ipc/msgutil.c
+index ed81aafd2392..9467307487f7 100644
+--- a/ipc/msgutil.c
++++ b/ipc/msgutil.c
+@@ -18,6 +18,7 @@
+ #include <linux/utsname.h>
+ #include <linux/proc_ns.h>
+ #include <linux/uaccess.h>
++#include <linux/sched.h>
  
- #ifdef CONFIG_PM
- 	/* if this triggers the device is still a sleep */
+ #include "util.h"
+ 
+@@ -66,6 +67,9 @@ static struct msg_msg *alloc_msg(size_t len)
+ 	pseg = &msg->next;
+ 	while (len > 0) {
+ 		struct msg_msgseg *seg;
++
++		cond_resched();
++
+ 		alen = min(len, DATALEN_SEG);
+ 		seg = kmalloc(sizeof(*seg) + alen, GFP_KERNEL);
+ 		if (seg == NULL)
+@@ -178,6 +182,8 @@ void free_msg(struct msg_msg *msg)
+ 	kfree(msg);
+ 	while (seg != NULL) {
+ 		struct msg_msgseg *tmp = seg->next;
++
++		cond_resched();
+ 		kfree(seg);
+ 		seg = tmp;
+ 	}
 -- 
 2.20.1
 
