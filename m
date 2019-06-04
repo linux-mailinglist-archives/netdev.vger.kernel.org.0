@@ -2,55 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A70D34FB5
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 20:15:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B90034FBB
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 20:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbfFDSPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 14:15:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55874 "EHLO vps0.lunn.ch"
+        id S1726460AbfFDSSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 14:18:13 -0400
+Received: from mga06.intel.com ([134.134.136.31]:13341 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726399AbfFDSPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 14:15:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=sgH5Y5zz0cDqAoPiD35f5G5smL2HNGy5LnHl3LCfjrE=; b=pHIZz0vYjIPSl4G9DDAX0kw9w0
-        GweQcbjHPCv69ArX30958gmqBJG8SBLY1rn0Bi7GraPZGEIT7lnson+QRYpu5MSnueGVejFP3u0Uh
-        igo5Pevig5rVoKo6cf94VcyrvNp/5yQa6tzeypxcr7bTG6LTYkgPr2FNi3few9Kqfpak=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hYDy8-00078C-7C; Tue, 04 Jun 2019 20:15:32 +0200
-Date:   Tue, 4 Jun 2019 20:15:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, richardcochran@gmail.com,
-        john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 02/17] net: dsa: Add teardown callback for
- drivers
-Message-ID: <20190604181532.GG16951@lunn.ch>
-References: <20190604170756.14338-1-olteanv@gmail.com>
- <20190604170756.14338-3-olteanv@gmail.com>
+        id S1725933AbfFDSSM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 14:18:12 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jun 2019 11:18:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,550,1549958400"; 
+   d="scan'208";a="181646409"
+Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.255.41.153])
+  by fmsmga002.fm.intel.com with ESMTP; 04 Jun 2019 11:18:09 -0700
+Subject: Re: [PATCH v4 bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an
+ xskmap
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net
+References: <20190603163852.2535150-1-jonathan.lemon@gmail.com>
+ <20190603163852.2535150-2-jonathan.lemon@gmail.com>
+ <20190604184306.362d9d8e@carbon>
+ <87399C88-4388-4857-AD77-E98527DEFDA4@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <d45c6fe7-853f-1113-62db-b8da68078940@intel.com>
+Date:   Tue, 4 Jun 2019 20:18:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190604170756.14338-3-olteanv@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <87399C88-4388-4857-AD77-E98527DEFDA4@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 08:07:41PM +0300, Vladimir Oltean wrote:
-> This is helpful for e.g. draining per-driver (not per-port) tagger
-> queues.
+On 2019-06-04 19:25, Jonathan Lemon wrote:
+> On 4 Jun 2019, at 9:43, Jesper Dangaard Brouer wrote:
 > 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+>> On Mon, 3 Jun 2019 09:38:51 -0700
+>> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>>
+>>> Currently, the AF_XDP code uses a separate map in order to
+>>> determine if an xsk is bound to a queue.  Instead of doing this,
+>>> have bpf_map_lookup_elem() return the queue_id, as a way of
+>>> indicating that there is a valid entry at the map index.
+>>
+>> Just a reminder, that once we choose a return value, there the
+>> queue_id, then it basically becomes UAPI, and we cannot change it.
+> 
+> Yes - Alexei initially wanted to return the sk_cookie instead, but
+> that's 64 bits and opens up a whole other can of worms.
+>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hmm, what other info would be useful? ifindex? Or going the the
+other way, with read-only and just returning boolean?
 
-    Andrew
+> 
+>> Can we somehow use BTF to allow us to extend this later?
+>>
+>> I was also going to point out that, you cannot return a direct pointer
+>> to queue_id, as BPF-prog side can modify this... but Daniel already
+>> pointed this out.
+>
+
+Ugh, good thing Daniel found this!
+
+
+Björn
+
+> So, I see three solutions here (for this and Toke's patchset also,
+> which is encountering the same problem).
+> 
+> 1) add a scratch register (Toke's approach)
+> 2) add a PTR_TO_<type>, which has the access checked.  This is the most
+>     flexible approach, but does seem a bit overkill at the moment.
+> 3) add another helper function, say, bpf_map_elem_present() which just
+>     returns a boolean value indicating whether there is a valid map entry
+>     or not.
+> 
+> I was starting to do 2), but wanted to get some more feedback first.
+> 
