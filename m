@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4194349D3
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 16:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D7D349E3
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 16:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727413AbfFDOLu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jun 2019 10:11:50 -0400
-Received: from mail02.inet.sy ([212.11.196.40]:50433 "HELO mail02.inet.sy"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-        id S1727033AbfFDOLt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 10:11:49 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail02.inet.sy (Postfix) with ESMTP id 7BCE2164CE0;
-        Tue,  4 Jun 2019 17:11:08 +0300 (EEST)
-X-Virus-Scanned: Debian amavisd-new at mail03.inet.sy
-X-Spam-Flag: NO
-X-Spam-Score: 6.358
-X-Spam-Level: ******
-X-Spam-Status: No, score=6.358 tagged_above=-999 required=7
-        tests=[BAYES_50=0.8, FREEMAIL_FROM=0.001, FREEMAIL_REPLYTO=1,
-        LOTS_OF_MONEY=0.001, MONEY_FRAUD_5=0.001, SPF_FAIL=0.001,
-        SPF_HELO_NONE=0.001, SPOOFED_FREEM_REPTO=2.499,
-        TO_EQ_FM_DOM_SPF_FAIL=0.053, TO_EQ_FM_SPF_FAIL=0.001, US_DOLLARS_3=2]
-        autolearn=unavailable
-Received: from mail02.inet.sy ([127.0.0.1])
-        by localhost (mail02.inet.sy [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3Csuqq+4avJB; Tue,  4 Jun 2019 17:11:08 +0300 (EEST)
-Received: from mail01.inet.sy (mail.inet.sy [212.11.196.115])
-        by mail02.inet.sy (Postfix) with ESMTP id 63F96164CDF;
-        Tue,  4 Jun 2019 17:11:08 +0300 (EEST)
-Received: from Mail-Exchange.firefite.local (unknown [212.11.218.206])
-        by mail01.inet.sy (Postfix) with ESMTP id 223588EC025;
-        Tue,  4 Jun 2019 17:12:16 +0300 (EEST)
-Received: from Mail-Exchange.firefite.local (192.168.0.19) by
- Mail-Exchange.firefite.local (192.168.0.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1466.3; Tue, 4 Jun 2019 17:11:12 +0300
-Received: from Admin.localhost (105.186.0.15) by Mail-Exchange.firefite.local
- (192.168.0.19) with Microsoft SMTP Server (version=TLS1_0,
- cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.1.1466.3 via Frontend Transport;
- Tue, 4 Jun 2019 17:11:06 +0300
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727506AbfFDOR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 10:17:28 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:46784 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727456AbfFDOR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 10:17:28 -0400
+Received: by mail-pl1-f194.google.com with SMTP id e5so6663392pls.13
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 07:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=t53c+g29++aufg4ku8oGeYVqZy53q2Ilie5wLRkOmRg=;
+        b=Y23DOg92uOseSKrqphJ1LBe/t1OfwAthyY36qfUO6wHN+GtJn76iApBsbrZzkyogsV
+         R0PSRnKPyp00cQSi++or5XVsReQwKoCczE6fTqcQrSS8aKDiGl8LtI+VyL8/0LaEICXY
+         MJ71wte3avee2EZoa1TOZ0EBZp/dBM0F9OG5sTa4n/yr06tT+ZtFj0bpRLJp78OfhXR+
+         L1aINjU0UsbJc+F3f3kxR3YDDg9HgCd3N46SppbF1/ghDrcp8GJMWPSuhiJ38PQBU7Eh
+         m6crbITz6op8lyMUQca/10TN+tHY1tSgMd3o0g5lpmhovQZCvnBz6KsNWyFkIwB80YzT
+         kg1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=t53c+g29++aufg4ku8oGeYVqZy53q2Ilie5wLRkOmRg=;
+        b=MS7CZd76BMDvNzmI2HrABWYpQQzqC5CwjqEoTSyDX6ubDusIUAJUh/y9VjLUVITlRX
+         ERHIp6N9pFWPlU6LbWm4fPvGtyMwVWiT8CDINPEDPr8dBpSJAeWBafoVj4+1psO4x8ZU
+         mwQu3IWgpu7rqG8ocDaH0WM7BvO0CudGPBxChlxy27NfmA8aquaZdHqeabD3zZqDIoF8
+         FW8xaUDSf0L+IEn5urA3MSfcRa7fx1Eq5Y4CY/H8Mr2VRRSR0J94uGpBe371F83Q39K8
+         sIfFRv07bd3TImzRnOlqDuJEl84QYLIQKOUsdtEVE3TWGk8oLjA7FF4gn+oMJcJGyiBy
+         kBoQ==
+X-Gm-Message-State: APjAAAW0TfiCID/ZJBuPsK54HZv7sBbn3VgCFRB8rqqVUKsT+zN6c4at
+        bB/UN2d1g+0l4lt/Phl0e1+/cQAW
+X-Google-Smtp-Source: APXvYqzd18Y9PoumZkrKpWO0f9BZ2oSsSBKru/9UEushvMh0gd/eJnEwCYJcAMnCwu1JA4YgDwVN6Q==
+X-Received: by 2002:a17:902:12f:: with SMTP id 44mr36678969plb.137.1559657847909;
+        Tue, 04 Jun 2019 07:17:27 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id 2sm19038983pff.174.2019.06.04.07.17.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 07:17:27 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 07:17:24 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        shalomt@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 4/9] mlxsw: reg: Add Management UTC Register
+Message-ID: <20190604141724.rwzthxdrcnvjboen@localhost>
+References: <20190603121244.3398-1-idosch@idosch.org>
+ <20190603121244.3398-5-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Award Notice
-To:     Recipients <hnkglobalpromo@brew-meister.com>
-From:   "Mrs. Vera Donald" <hnkglobalpromo@brew-meister.com>
-Date:   Tue, 4 Jun 2019 22:10:59 +0800
-Reply-To: <hp-fudiciaryagent@brew-meister.com>
-X-Antivirus: Avast (VPS 190604-2, 06/04/2019), Outbound message
-X-Antivirus-Status: Clean
-Message-ID: <189b0292-7bcc-4511-8392-816d24096ae8@Mail-Exchange.firefite.local>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603121244.3398-5-idosch@idosch.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are gleeful to inform you that your e-mail address eventually entered our 2019 online promotion that won you C$3,780,000.00 Canadian Dollars. Claim No:HGP/748/89-3PL. Keep your claim number confidential until claim.
+On Mon, Jun 03, 2019 at 03:12:39PM +0300, Ido Schimmel wrote:
+> From: Shalom Toledo <shalomt@mellanox.com>
+> 
+> The MTUTC register configures the HW UTC counter.
 
-Contact our office immediately with details below to commence release of your winning prize by providing your winning details above.
+Why is this called the "UTC" counter?
 
-Mr. Vorst Paxton
-Email: hp-fudiciaryagent@brew-meister.com
-Alternative e-Mail: heinekenglobalpromo@gmail.com
-Office: +1-438-700-9141
+The PTP time scale is TAI.  Is this counter intended to reflect the
+Linux CLOCK_REALTIME system time?
 
-Congratulations!!!
+> +/* MTUTC - Management UTC Register
+> + * -------------------------------
+> + * Configures the HW UTC counter.
+> + */
+> +#define MLXSW_REG_MTUTC_ID 0x9055
+> +#define MLXSW_REG_MTUTC_LEN 0x1C
 
-Yours Sincerely,
-
-Mrs. Vera Donald
-Head of Award Department
-Heineken Global Promotion
-
----
-This email has been checked for viruses by Avast antivirus software.
-https://www.avast.com/antivirus
-
+Thanks,
+Richard
