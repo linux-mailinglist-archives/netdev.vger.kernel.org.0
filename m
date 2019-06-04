@@ -2,90 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7B634943
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 15:45:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9A23495C
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 15:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727223AbfFDNpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 09:45:41 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36266 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727129AbfFDNpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 09:45:41 -0400
-Received: by mail-pl1-f195.google.com with SMTP id d21so8378584plr.3
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 06:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FXYFlU4Gtt1sNdAjVggynhOg2dbU2oGefZAnt6fsu2U=;
-        b=Tbi2u/FdtK2E7K6ejc7yZJ6aQwkZSm4xxiryFDGQGrEwZfBVxEHdBm4bD0GbunlEQV
-         C9WyPnVDv44be2dPO6UFVC3wBkhhViqTF+aNOPKGAPTDYDZ83OOoJAq/cDlT3NF1UEoy
-         cSRAoePj1itruwChupXGNcG9QHk5zdVTEFV2UmmdCzIhvGIDAQkTBb6Mx6SvaMaqRFv0
-         QuFaUMxvrFoAi5JszAmfSds89ycyvC60JeynIyoEFq5RsPYkI1JFzbNmRBKoXAqsX6Lf
-         3AU9OjOGcMFXK2JbEQ0yuML5ABluZ8KFSgjQvizUQpQF74sL56XGTz5sVcz1C2XyJpj+
-         kvPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FXYFlU4Gtt1sNdAjVggynhOg2dbU2oGefZAnt6fsu2U=;
-        b=uItHpkqjmRkGo2lg0CisibMwwqzQMOd8f6KE9ffIhNonWQEosVWONd4q2/+WT12f5M
-         /n6z16jVzZXYbezSDUuAzRcoA91CFQ51aBrl0+VyFZXkHA1Hk2mxmfcHpsMd5Q95/11Z
-         OFjeQig9yK5SNwaAgzAEgYUPJYOJu2MGbz/3VR2hCOA1cpi/QJqyUtE/Zb8UmuP+mfvJ
-         aEE8gSHRfrCFXi3jj2IP5g4K5fpZFyon7mPwIrDoGLMri3pH4A8uuZlWwSPsYiFy9Cb6
-         KNYHkVBW21B92Ky+6lNUpR0XIZvOv12FnEumw/ZyJXyER2IdQI0qSblAMOKMVw/SrF6G
-         rgzw==
-X-Gm-Message-State: APjAAAUcGW5eHPTXE7E1vNwgHT/DoRjAAeUXOKYuE4ijxzbe8UUpwKJ5
-        JvUTXu+VtsTqsaImkhu6UMX0Gg==
-X-Google-Smtp-Source: APXvYqz3ZTxtw1bpsSszcQ7p1WSYVxLQleNdZtVgGMEWXWNgB0CDoMCghRH63hN6aZmoPosAFXZiuQ==
-X-Received: by 2002:a17:902:2869:: with SMTP id e96mr35514488plb.203.1559655940367;
-        Tue, 04 Jun 2019 06:45:40 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id g8sm2377205pfi.8.2019.06.04.06.45.39
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 06:45:39 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 06:45:38 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map
- definitions using BTF
-Message-ID: <20190604134538.GB2014@mini-arch>
-References: <20190531202132.379386-1-andriin@fb.com>
- <20190531202132.379386-7-andriin@fb.com>
- <20190531212835.GA31612@mini-arch>
- <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
- <20190603163222.GA14556@mini-arch>
- <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
- <20190604010254.GB14556@mini-arch>
- <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
- <20190604042902.GA2014@mini-arch>
+        id S1727149AbfFDNuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 09:50:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54776 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727503AbfFDNuC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 09:50:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=SnirIPJjHpjqRgzAfrMLyWGPEmM8TanyWnI8Nkm/r18=; b=XytRgNnw6lOS3SaU+/fTEITCX9
+        gmUQ14zhBBEv3SdMMlfOZN+sQK12Ke2s5jFmp2dWDEYL6UYdIvHy9sbfS0nQ/57KeJzdqC4dMAT5q
+        YyHpKzwywWpUp9M5oNOY3rNVKNHOlCl1VzlT9sgU543Waewg1jmiU2xF6A3tX8p3dmpw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hY9pA-00055t-QT; Tue, 04 Jun 2019 15:50:00 +0200
+Date:   Tue, 4 Jun 2019 15:50:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: DSA with MV88E6321 and imx28
+Message-ID: <20190604135000.GD16951@lunn.ch>
+References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190604042902.GA2014@mini-arch>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/03, Stanislav Fomichev wrote:
-> > BTF is mandatory for _any_ new feature.
-> If something is easy to support without asking everyone to upgrade to
-> a bleeding edge llvm, why not do it?
-> So much for backwards compatibility and flexibility.
+On Tue, Jun 04, 2019 at 03:07:25PM +0200, Benjamin Beckmeyer wrote:
+> Hi all,
 > 
-> > It's for introspection and debuggability in the first place.
-> > Good debugging is not optional.
-> Once llvm 8+ is everywhere, sure, but we are not there yet (I'm talking
-> about upstream LTS distros like ubuntu/redhat).
-But putting this aside, one thing that I didn't see addressed in the
-cover letter is: what is the main motivation for the series?
-Is it to support iproute2 map definitions (so cilium can switch to libbpf)?
-If that's the case, maybe explicitly focus on that? Once we have
-proof-of-concept working for iproute2 mode, we can extend it to everything.
+> I'm working on a custom board with a 88E6321 and an i.MX28. Port 5 is directly connected per RMII to the CPU. 
+> The switch is running in CPU attached mode. On Port 2 and 6 we have 2 external Micrel KSZ9031 PHYs.
+> Here is the snip of my device tree:
+> 
+> &mac0 {
+> 	pinctrl-0 = <&mac0_pins_a &mac0_freigabe &mac0_lcd_d04>;
+> 	phy-supply = <&reg_3p3v>;
+> 	status = "okay";
+> 
+> 	fixed-link = <1 1 100 0 0>;
+
+Hi Benjamin
+
+That is the old format for a fixed-link. Please use the new one.
+
+> 
+> 	/* this is done to remove enet_out */
+> 	clocks = <&clks 57>, <&clks 57>;
+> 	clock-names = "ipg", "ahb";
+> 
+> 	/delete-property/ phy-reset-gpios;
+> 	/delete-property/ phy-reset-duration;
+> 	freigabe-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+
+German in device tree? 
+
+> 	trigger-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+> 
+> 	mdio {
+>                 #address-cells = <1>;
+>                 #size-cells = <0>;
+> 
+> 		switch0: switch0@10 {
+>                         compatible = "marvell,mv88e6085";
+>                         reg = <0x10>;
+
+So you have the switch strapped to use a single address?
+
+> 			pinctrl-0 = <&lcd_d06_pins>;
+
+lcd ?
+
+> 			reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+> 
+>                         dsa,member = <0 0>;
+> 
+>                         ports {
+>                                 #address-cells = <1>;
+>                                 #size-cells = <0>;
+> 
+>                                 port@0 {
+>                                         reg = <0x0>;
+>                                         label = "Serdes0";
+>                                         phy-handle = <&switch0phy0>;
+>                                 };
+> 
+>                                 port@1 {
+>                                         reg = <0x1>;
+>                                         label = "Serdes1";
+>                                         phy-handle = <&switch0phy1>;
+>                                 };
+> 
+>                                 port@2 {
+> 					reg = <0x2>;
+>                                         label = "lan1";
+>                                         phy-handle = <&switch0phy2>;
+>                                 };
+> 
+>                                 port@3 {
+>                                         reg = <0x3>;
+>                                         label = "lan2";
+>                                         phy-handle = <&switch0phy3>;
+>                                 };
+> 
+>                                 port@4 {
+>                                         reg = <0x4>;
+>                                         label = "lan3";
+>                                         phy-handle = <&switch0phy4>;
+>                                 };
+> 
+>                                 port5 {
+>                                         reg = <0x5>;
+>                                         label = "cpu";
+>                                         ethernet = <&mac0>;
+>                                         phy-mode = "rmii";
+>                                         fixed-link {
+>                                                 speed = <100>;
+>                                                 full-duplex;
+>                                         };
+>                                 };
+> 
+> 				port@6 {
+>                                         reg = <0x6>;
+>                                         label = "lan4";
+>                                         phy-handle = <&switch0phy6>;
+>                                 };
+>                         };
+> 
+> 			mdio {
+> 				#address-cells = <1>;
+> 				#size-cells = <0>;
+> 				switch0phy0: switch0phy0@0 {
+> 					reg = <0xc>;
+> 				};
+> 				switch0phy1: switch0phy1@1 {
+> 				        reg = <0xd>;
+> 				};
+> 				switch0phy2: switch0phy2@2 {
+> 				        reg = <0x2>;
+> 				};
+> 				switch0phy3: switch0phy3@3 {
+> 				        reg = <0x3>;
+> 				};
+> 				switch0phy4: switch0phy4@4 {
+> 				        reg = <0x4>;
+> 				};
+> 				switch0phy6: switch0phy6@6 {
+> 				        reg = <0x6>;
+> 				};
+> 			};
+> 		};
+>         };
+> }; 
+> 
+> I'm sure it must be wrong. Does the mdio part in between the switch part is for the internal
+> mdio bus? 
+
+It is for the switch MDIO bus. For this generation of switch, it is
+both internal and external. Later generations have two MDIO busses,
+one internal and one external.
+
+> >From the outside I can read and write the SMI Register 0x10-0x16. 
+> 
+> Here is a snip from the bootup
+> 
+> [    1.377362] at24 0-0051: 256 byte 24c02 EEPROM, writable, 32 bytes/write
+> [    1.391046] libphy: Fixed MDIO Bus: probed
+> [    1.396763] libphy: mdio_driver_register: mv88e6085
+> [    1.407168] fec 800f0000.ethernet (unnamed net_device) (uninitialized): Invalid MAC address: 00:00:00:00:00:00
+> [    1.417279] fec 800f0000.ethernet (unnamed net_device) (uninitialized): Using random MAC address: 86:50:72:5d:79:ad
+> [    1.429918] libphy: fec_enet_mii_bus: probed
+> [    1.434374] mdio_bus 800f0000.ethernet-1:10: mdio_device_register
+> ---
+> [   18.735835] Generic PHY fixed-0:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=fixed-0:00, irq=-1)
+
+You probably want to put some printk mv88e6xxx_detect(). Is it getting
+called? What value does id have? When these switches are held in
+reset, they don't respond on the bus at all, so you will get MDIO
+reads of 0xffff.
+
+      Andrew
