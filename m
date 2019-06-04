@@ -2,167 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81ABD3414C
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:14:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E9234187
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 10:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbfFDIN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 04:13:56 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:41658 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbfFDIN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 04:13:56 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s57so5580411qte.8;
-        Tue, 04 Jun 2019 01:13:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OlXBKw7HgP4DZult/XowRKn8oIkzj5I8Bd8HMNjnVco=;
-        b=WM6UY//u3gKrc0uo6AsfF8nChVGhf0xjC7EpAbk4VMYXb4/+tNYkyOb+YzQp5QDF+F
-         eATXSb0zT4e1tS4eHVzdmlE5htmqXImNh17u+QbK07ea8zHYXMfc93UVZD9mzC5lkgFf
-         jW2YyBnearx5ncMLRsP6hmF4VtuyxzyJJTuHiEYTY4rjTctXn9T4FojidVlcmEbO+Czk
-         KK2JY7zq6/hFcHFAk4At6DYq5ooPpxWGllOO6r4CyuS+0gAIIovda48sgtxPPWjB5B7W
-         VhJcL99+Maezi626WOXoV0bAmEn2WArGh7xclwN9Rr5nyhNpkMi+fYWMGLUiFkvwvqk9
-         ebOA==
-X-Gm-Message-State: APjAAAUHRFZifjj64hotD1DGUzR/OQaMQ02RxR15vu9da26nwDX0TW9L
-        AZyCatY999QurzjVJu5CvU59YVNFTrjc+vSH80c=
-X-Google-Smtp-Source: APXvYqz5kir33J5AjmzplbKAfH30cVdEZ3sEoQzuyfFO20zuGZF8LYiKII1TI8KuvJglH3idinfKAhZ4lWT5LqRWGgc=
-X-Received: by 2002:ac8:3ff5:: with SMTP id v50mr24492574qtk.142.1559636034539;
- Tue, 04 Jun 2019 01:13:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190531035348.7194-1-elder@linaro.org> <e75cd1c111233fdc05f47017046a6b0f0c97673a.camel@redhat.com>
- <065c95a8-7b17-495d-f225-36c46faccdd7@linaro.org> <CAK8P3a05CevRBV3ym+pnKmxv+A0_T+AtURW2L4doPAFzu3QcJw@mail.gmail.com>
- <a28c5e13-59bc-144d-4153-9d104cfa9188@linaro.org> <20190531233306.GB25597@minitux>
- <d76a710d45dd7df3a28afb12fc62cf14@codeaurora.org> <CAK8P3a0brT0zyZGNWiS2R0RMHHFF2JG=_ixQyvjhj3Ky39o0UA@mail.gmail.com>
- <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org>
-In-Reply-To: <040ce9cc-7173-d10a-a82c-5186d2fcd737@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 4 Jun 2019 10:13:37 +0200
-Message-ID: <CAK8P3a2U=RzfpVaAgRP1QwPhRpZiBNsG5qdWjzwG=tCKZefYHA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Alex Elder <elder@linaro.org>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dan Williams <dcbw@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        evgreen@chromium.org, Ben Chan <benchan@google.com>,
-        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
-        syadagir@codeaurora.org, abhishek.esse@gmail.com,
-        Networking <netdev@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1727299AbfFDIPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 04:15:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39988 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726788AbfFDIPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 04:15:23 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x548D64L047349
+        for <netdev@vger.kernel.org>; Tue, 4 Jun 2019 04:15:22 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2swkqk3jjb-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 04:15:21 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Tue, 4 Jun 2019 09:15:20 +0100
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 4 Jun 2019 09:15:18 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x548FHB854657038
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 4 Jun 2019 08:15:17 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E5FC042056;
+        Tue,  4 Jun 2019 08:15:16 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8CED34205F;
+        Tue,  4 Jun 2019 08:15:16 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  4 Jun 2019 08:15:16 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH v2 net 0/4] s390/qeth: fixes 2019-06-04
+Date:   Tue,  4 Jun 2019 10:15:05 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19060408-0012-0000-0000-00000322E70F
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060408-0013-0000-0000-0000215BC4BB
+Message-Id: <20190604081509.56160-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-04_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906040056
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 3, 2019 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
-> On 6/3/19 5:04 AM, Arnd Bergmann wrote:
-> > On Sat, Jun 1, 2019 at 1:59 AM Subash Abhinov Kasiviswanathan
-> >
-> > - What I'm worried about most here is the flow control handling on the
-> >   transmit side. The IPA driver now uses the modern BQL method to
-> >   control how much data gets submitted to the hardware at any time.
-> >   The rmnet driver also uses flow control using the
-> >   rmnet_map_command() function, that blocks tx on the higher
-> >   level device when the remote side asks us to.
-> >   I fear that doing flow control for a single physical device on two
-> >   separate netdev instances is counterproductive and confuses
-> >   both sides.
->
-> I understand what you're saying here, and instinctively I think
-> you're right.
->
-> But BQL manages the *local* interface's ability to get rid of
-> packets, whereas the QMAP flow control is initiated by the other
-> end of the connection (the modem in this case).
->
-> With multiplexing, it's possible that one of several logical
-> devices on the modem side has exhausted a resource and must
-> ask the source of the data on the host side to suspend the
-> flow.  Meanwhile the other logical devices sharing the physical
-> link might be fine, and should not be delayed by the first one.
->
-> It is the multiplexing itself that confuses the BQL algorithm.
-> The abstraction obscures the *real* rates at which individual
-> logical connections are able to transmit data.
+Hi Dave,
 
-I would assume that the real rate constantly changes, at least
-for wireless interfaces that are also shared with other users
-on the same network. BQL is meant to deal with that, at least
-when using a modern queuing algorithm.
+same patch series as yesterday, except that patch 2 has been adjusted
+as per your review to use dst_check(). Please have another look.
 
-> Even if the multiple logical interfaces implemented BQL, they
-> would not get the feedback they need directly from the IPA
-> driver, because transmitting over the physical interface might
-> succeed even if the logical interface on the modem side can't
-> handle more data.  So I think the flow control commands may be
-> necessary, given multiplexing.
 
-Can you describe what kind of multiplexing is actually going on?
-I'm still unclear about what we actually use multiple logical
-interfaces for here, and how they relate to one another.
+From the v1 cover letter:
 
-> The rmnet driver could use BQL, and could return NETDEV_TX_BUSY
-> for a logical interface when its TX flow has been stopped by a
-> QMAP command.  That way the feedback for BQL on the logical
-> interfaces would be provided in the right place.
->
-> I have no good intuition about the interaction between
-> two layered BQL managed queues though.
+Please apply the following set of qeth fixes to -net.
 
-Returning NETDEV_TX_BUSY is usually a bad idea as that
-leads to unnecessary frame drop.
+- The first two patches fix issues in the L3 driver's cast type
+  selection for transmitted skbs.
+- Alexandra adds a sanity check when retrieving VLAN information from
+  neighbour address events.
+- The last patch adds some missing error handling for qeth's new
+  multiqueue code.
 
-I do think that using BQL and the QMAP flow command on
-the /same/ device would be best, as that throttles the connection
-when either of the two algorithms wants us to slow down.
+Thanks,
+Julian
 
-The question is mainly which of the two devices that should be.
-Doing it in the ipa driver is probably easier to implement here,
-but ideally I think we'd only have a single queue visible to the
-network stack, if we can come up with a way to do that.
 
-> > - I was a little confused by the location of the rmnet driver in
-> >   drivers/net/ethernet/... More conventionally, I think as a protocol
-> >   handler it should go into net/qmap/, with the ipa driver going
-> >   into drivers/net/qmap/ipa/, similar to what we have fo ethernet,
-> >   wireless, ppp, appletalk, etc.
-> >
-> > - The rx_handler uses gro_cells, which as I understand is meant
-> >   for generic tunnelling setups and takes another loop through
-> >   NAPI to aggregate data from multiple queues, but in case of
-> >   IPA's single-queue receive calling gro directly would be simpler
-> >   and more efficient.
->
-> I have been planning to investigate some of the generic GRO
-> stuff for IPA but was going to wait on that until the basic
-> code was upstream.
+Alexandra Winter (1):
+  s390/qeth: fix VLAN attribute in bridge_hostnotify udev event
 
-That's ok, that part can easily be changed after the fact, as it
-does not impact the user interface or the general design.
+Julian Wiedmann (3):
+  s390/qeth: handle limited IPv4 broadcast in L3 TX path
+  s390/qeth: check dst entry before use
+  s390/qeth: handle error when updating TX queue count
 
-> >   From the overall design and the rmnet Kconfig description, it
-> >   appears as though the intention as that rmnet could be a
-> >   generic wrapper on top of any device, but from the
-> >   implementation it seems that IPA is not actually usable that
-> >   way and would always go through IPA.
->
-> As far as I know *nothing* upstream currently uses rmnet; the
-> IPA driver will be the first, but as Bjorn said others seem to
-> be on the way.  I'm not sure what you mean by "IPA is not
-> usable that way."  Currently the IPA driver assumes a fixed
-> configuration, and that configuration assumes the use of QMAP,
-> and therefore assumes the rmnet driver is layered above it.
-> That doesn't preclude rmnet from using a different back end.
+ drivers/s390/net/qeth_core_main.c | 22 ++++++++++++++++------
+ drivers/s390/net/qeth_l2_main.c   |  2 +-
+ drivers/s390/net/qeth_l3_main.c   | 20 +++++++++++++++++---
+ 3 files changed, 34 insertions(+), 10 deletions(-)
 
-Yes, that's what I meant above: IPA can only be used through
-rmnet (I wrote "through IPA", sorry for the typo), but cannot be
-used by itself.
+-- 
+2.17.1
 
-       Arnd
