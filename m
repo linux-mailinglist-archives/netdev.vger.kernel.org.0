@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE463521F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F2F35223
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 23:44:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbfFDVo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 17:44:26 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:6676 "EHLO
+        id S1726793AbfFDVof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 17:44:35 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:37590 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726693AbfFDVoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:44:10 -0400
+        with ESMTP id S1726638AbfFDVoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 17:44:08 -0400
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x54Li2Wa003099
+        by sed198n136.sedsystems.ca  with ESMTP id x54Li2Mu013098
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 4 Jun 2019 15:44:05 -0600 (CST)
+        Tue, 4 Jun 2019 15:44:06 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Lhw3f020053
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x54Lhw3g020053
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
         Tue, 4 Jun 2019 15:44:02 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com, andrew@lunn.ch,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next v3 07/19] net: axienet: Re-initialize MDIO registers properly after reset
-Date:   Tue,  4 Jun 2019 15:43:34 -0600
-Message-Id: <1559684626-24775-8-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next v3 08/19] net: axienet: Cleanup DMA device reset and halt process
+Date:   Tue,  4 Jun 2019 15:43:35 -0600
+Message-Id: <1559684626-24775-9-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
 References: <1559684626-24775-1-git-send-email-hancock@sedsystems.ca>
@@ -35,209 +35,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO clock divisor register setting was only applied on the initial
-startup when the driver was loaded. However, this setting is cleared
-when the device is reset, such as would occur when the interface was
-taken down and brought up again, and so the MDIO bus would be
-non-functional afterwards.
+The Xilinx DMA blocks each have their own reset register, but they both
+reset the entire DMA engine, so only one of them needs to be reset.
 
-Split up the MDIO bus setup and enable into separate functions and
-re-enable the bus after a device reset, to ensure that the MDIO
-registers are set properly. This also allows us to remove direct access
-to MDIO registers in xilinx_axienet_main.c and centralize them all in
-xilinx_axienet_mdio.c.
-
-Also, lock the MDIO bus lock around the device reset process, to avoid
-MDIO accesses from occurring while the MDIO is disabled during the
-reset.
+Also, when stopping the device, we need to not just command the DMA
+blocks to stop, but wait for them to stop, and trigger a device reset
+to ensure that they are completely stopped.
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h      |  3 +-
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 38 +++++++----------
- drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c | 50 +++++++++++++++++------
- 3 files changed, 55 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet.h      |  2 +
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 54 +++++++++++++++++------
+ 2 files changed, 42 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index f240ff1..4a135ed 100644
+index 4a135ed..1ffb113 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -505,8 +505,9 @@ static inline void axienet_iow(struct axienet_local *lp, off_t offset,
- }
+@@ -83,6 +83,8 @@
+ #define XAXIDMA_CR_RUNSTOP_MASK	0x00000001 /* Start/stop DMA channel */
+ #define XAXIDMA_CR_RESET_MASK	0x00000004 /* Reset DMA engine */
  
- /* Function prototypes visible in xilinx_axienet_mdio.c for other files */
-+int axienet_mdio_enable(struct axienet_local *lp);
-+void axienet_mdio_disable(struct axienet_local *lp);
- int axienet_mdio_setup(struct axienet_local *lp);
--int axienet_mdio_wait_until_ready(struct axienet_local *lp);
- void axienet_mdio_teardown(struct axienet_local *lp);
- 
- #endif /* XILINX_AXI_ENET_H */
++#define XAXIDMA_SR_HALT_MASK	0x00000001 /* Indicates DMA channel halted */
++
+ #define XAXIDMA_BD_NDESC_OFFSET		0x00 /* Next descriptor pointer */
+ #define XAXIDMA_BD_BUFA_OFFSET		0x08 /* Buffer address */
+ #define XAXIDMA_BD_CTRL_LEN_OFFSET	0x18 /* Control/buffer length */
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 5cb39de..e735ca7 100644
+index e735ca7..bdc6e80 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -914,27 +914,23 @@ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
-  */
- static int axienet_open(struct net_device *ndev)
- {
--	int ret, mdio_mcreg;
-+	int ret;
- 	struct axienet_local *lp = netdev_priv(ndev);
- 	struct phy_device *phydev = NULL;
- 
- 	dev_dbg(&ndev->dev, "axienet_open()\n");
- 
--	mdio_mcreg = axienet_ior(lp, XAE_MDIO_MC_OFFSET);
--	ret = axienet_mdio_wait_until_ready(lp);
--	if (ret < 0)
--		return ret;
- 	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
- 	 * When we do an Axi Ethernet reset, it resets the complete core
--	 * including the MDIO. If MDIO is not disabled when the reset
--	 * process is started, MDIO will be broken afterwards.
-+	 * including the MDIO. MDIO must be disabled before resetting
-+	 * and re-enabled afterwards.
-+	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
- 	 */
--	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
--		    (mdio_mcreg & (~XAE_MDIO_MC_MDIOEN_MASK)));
-+	mutex_lock(&lp->mii_bus->mdio_lock);
-+	axienet_mdio_disable(lp);
- 	axienet_device_reset(ndev);
--	/* Enable the MDIO */
--	axienet_iow(lp, XAE_MDIO_MC_OFFSET, mdio_mcreg);
--	ret = axienet_mdio_wait_until_ready(lp);
-+	ret = axienet_mdio_enable(lp);
-+	mutex_unlock(&lp->mii_bus->mdio_lock);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1316,28 +1312,24 @@ static void axienet_dma_err_handler(unsigned long data)
- {
- 	u32 axienet_status;
- 	u32 cr, i;
--	int mdio_mcreg;
- 	struct axienet_local *lp = (struct axienet_local *) data;
- 	struct net_device *ndev = lp->ndev;
- 	struct axidma_bd *cur_p;
- 
- 	axienet_setoptions(ndev, lp->options &
- 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
--	mdio_mcreg = axienet_ior(lp, XAE_MDIO_MC_OFFSET);
--	axienet_mdio_wait_until_ready(lp);
- 	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
- 	 * When we do an Axi Ethernet reset, it resets the complete core
--	 * including the MDIO. So if MDIO is not disabled when the reset
--	 * process is started, MDIO will be broken afterwards.
-+	 * including the MDIO. MDIO must be disabled before resetting
-+	 * and re-enabled afterwards.
-+	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
- 	 */
--	axienet_iow(lp, XAE_MDIO_MC_OFFSET, (mdio_mcreg &
--		    ~XAE_MDIO_MC_MDIOEN_MASK));
--
-+	mutex_lock(&lp->mii_bus->mdio_lock);
-+	axienet_mdio_disable(lp);
- 	__axienet_device_reset(lp, XAXIDMA_TX_CR_OFFSET);
- 	__axienet_device_reset(lp, XAXIDMA_RX_CR_OFFSET);
--
--	axienet_iow(lp, XAE_MDIO_MC_OFFSET, mdio_mcreg);
--	axienet_mdio_wait_until_ready(lp);
-+	axienet_mdio_enable(lp);
-+	mutex_unlock(&lp->mii_bus->mdio_lock);
- 
- 	for (i = 0; i < TX_BD_NUM; i++) {
- 		cur_p = &lp->tx_bd_v[i];
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-index 88469c7..9985ca6 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-@@ -5,6 +5,7 @@
-  * Copyright (c) 2009 Secret Lab Technologies, Ltd.
-  * Copyright (c) 2010 - 2011 Michal Simek <monstr@monstr.eu>
-  * Copyright (c) 2010 - 2011 PetaLogix
-+ * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
-  * Copyright (c) 2010 - 2012 Xilinx, Inc. All rights reserved.
-  */
- 
-@@ -20,7 +21,7 @@
- #define DEFAULT_CLOCK_DIVISOR	XAE_MDIO_DIV_DFT
- 
- /* Wait till MDIO interface is ready to accept a new transaction.*/
--int axienet_mdio_wait_until_ready(struct axienet_local *lp)
-+static int axienet_mdio_wait_until_ready(struct axienet_local *lp)
- {
- 	u32 val;
- 
-@@ -113,21 +114,17 @@ static int axienet_mdio_write(struct mii_bus *bus, int phy_id, int reg,
+@@ -434,17 +434,20 @@ static void axienet_setoptions(struct net_device *ndev, u32 options)
+ 	lp->options |= options;
  }
  
- /**
-- * axienet_mdio_setup - MDIO setup function
-+ * axienet_mdio_enable - MDIO hardware setup function
-  * @lp:		Pointer to axienet local data structure.
-  *
-- * Return:	0 on success, -ETIMEDOUT on a timeout, -ENOMEM when
-- *		mdiobus_alloc (to allocate memory for mii bus structure) fails.
-+ * Return:	0 on success, -ETIMEDOUT on a timeout.
-  *
-  * Sets up the MDIO interface by initializing the MDIO clock and enabling the
-- * MDIO interface in hardware. Register the MDIO interface.
-+ * MDIO interface in hardware.
-  **/
--int axienet_mdio_setup(struct axienet_local *lp)
-+int axienet_mdio_enable(struct axienet_local *lp)
+-static void __axienet_device_reset(struct axienet_local *lp, off_t offset)
++static void __axienet_device_reset(struct axienet_local *lp)
  {
--	int ret;
- 	u32 clk_div, host_clock;
--	struct mii_bus *bus;
--	struct device_node *mdio_node;
+ 	u32 timeout;
+ 	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The reset
+ 	 * process of Axi DMA takes a while to complete as all pending
+ 	 * commands/transfers will be flushed or completed during this
+ 	 * reset process.
++	 * Note that even though both TX and RX have their own reset register,
++	 * they both reset the entire DMA core, so only one needs to be used.
+ 	 */
+-	axienet_dma_out32(lp, offset, XAXIDMA_CR_RESET_MASK);
++	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, XAXIDMA_CR_RESET_MASK);
+ 	timeout = DELAY_OF_ONE_MILLISEC;
+-	while (axienet_dma_in32(lp, offset) & XAXIDMA_CR_RESET_MASK) {
++	while (axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET) &
++				XAXIDMA_CR_RESET_MASK) {
+ 		udelay(1);
+ 		if (--timeout == 0) {
+ 			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
+@@ -470,8 +473,7 @@ static void axienet_device_reset(struct net_device *ndev)
+ 	u32 axienet_status;
+ 	struct axienet_local *lp = netdev_priv(ndev);
  
- 	if (lp->clk) {
- 		host_clock = clk_get_rate(lp->clk);
-@@ -196,10 +193,39 @@ int axienet_mdio_setup(struct axienet_local *lp)
- 		   clk_div, host_clock);
+-	__axienet_device_reset(lp, XAXIDMA_TX_CR_OFFSET);
+-	__axienet_device_reset(lp, XAXIDMA_RX_CR_OFFSET);
++	__axienet_device_reset(lp);
  
- issue:
--	axienet_iow(lp, XAE_MDIO_MC_OFFSET,
--		    (((u32) clk_div) | XAE_MDIO_MC_MDIOEN_MASK));
-+	axienet_iow(lp, XAE_MDIO_MC_OFFSET, clk_div | XAE_MDIO_MC_MDIOEN_MASK);
+ 	lp->max_frm_size = XAE_MAX_VLAN_FRAME_SIZE;
+ 	lp->options |= XAE_OPTION_VLAN;
+@@ -981,20 +983,45 @@ static int axienet_open(struct net_device *ndev)
+  */
+ static int axienet_stop(struct net_device *ndev)
+ {
+-	u32 cr;
++	u32 cr, sr;
++	int count;
+ 	struct axienet_local *lp = netdev_priv(ndev);
  
--	ret = axienet_mdio_wait_until_ready(lp);
-+	return axienet_mdio_wait_until_ready(lp);
-+}
+ 	dev_dbg(&ndev->dev, "axienet_close()\n");
+ 
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET,
+-			  cr & (~XAXIDMA_CR_RUNSTOP_MASK));
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+-			  cr & (~XAXIDMA_CR_RUNSTOP_MASK));
+ 	axienet_setoptions(ndev, lp->options &
+ 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
+ 
++	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
++	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
++	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
 +
-+/**
-+ * axienet_mdio_disable - MDIO hardware disable function
-+ * @lp:		Pointer to axienet local data structure.
-+ *
-+ * Disable the MDIO interface in hardware.
-+ **/
-+void axienet_mdio_disable(struct axienet_local *lp)
-+{
-+	axienet_iow(lp, XAE_MDIO_MC_OFFSET, 0);
-+}
++	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
++	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
++	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
 +
-+/**
-+ * axienet_mdio_setup - MDIO setup function
-+ * @lp:		Pointer to axienet local data structure.
-+ *
-+ * Return:	0 on success, -ETIMEDOUT on a timeout, -ENOMEM when
-+ *		mdiobus_alloc (to allocate memory for mii bus structure) fails.
-+ *
-+ * Sets up the MDIO interface by initializing the MDIO clock and enabling the
-+ * MDIO interface in hardware. Register the MDIO interface.
-+ **/
-+int axienet_mdio_setup(struct axienet_local *lp)
-+{
-+	int ret;
-+	struct mii_bus *bus;
-+	struct device_node *mdio_node;
++	axienet_iow(lp, XAE_IE_OFFSET, 0);
 +
-+	ret = axienet_mdio_enable(lp);
- 	if (ret < 0)
- 		return ret;
++	/* Give DMAs a chance to halt gracefully */
++	sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
++	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
++		msleep(20);
++		sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
++	}
++
++	sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
++	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
++		msleep(20);
++		sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
++	}
++
++	/* Do a reset to ensure DMA is really stopped */
++	mutex_lock(&lp->mii_bus->mdio_lock);
++	axienet_mdio_disable(lp);
++	__axienet_device_reset(lp);
++	axienet_mdio_enable(lp);
++	mutex_unlock(&lp->mii_bus->mdio_lock);
++
+ 	tasklet_kill(&lp->dma_err_tasklet);
+ 
+ 	free_irq(lp->tx_irq, ndev);
+@@ -1326,8 +1353,7 @@ static void axienet_dma_err_handler(unsigned long data)
+ 	 */
+ 	mutex_lock(&lp->mii_bus->mdio_lock);
+ 	axienet_mdio_disable(lp);
+-	__axienet_device_reset(lp, XAXIDMA_TX_CR_OFFSET);
+-	__axienet_device_reset(lp, XAXIDMA_RX_CR_OFFSET);
++	__axienet_device_reset(lp);
+ 	axienet_mdio_enable(lp);
+ 	mutex_unlock(&lp->mii_bus->mdio_lock);
  
 -- 
 1.8.3.1
