@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E21350E2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA68350F6
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 22:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbfFDUbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 16:31:18 -0400
-Received: from mail-pf1-f177.google.com ([209.85.210.177]:38473 "EHLO
-        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726238AbfFDUbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:31:17 -0400
-Received: by mail-pf1-f177.google.com with SMTP id a186so12676032pfa.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 13:31:17 -0700 (PDT)
+        id S1726726AbfFDUcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 16:32:03 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41607 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbfFDUcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 16:32:02 -0400
+Received: by mail-pg1-f195.google.com with SMTP id 83so4191270pgg.8;
+        Tue, 04 Jun 2019 13:32:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZsgMFONiVfdPOcu1gytSVjl67JQ44Kfo5GzCrRDGW2s=;
-        b=cSo7UgENw5e/CcstkyW/L+mtAIie5U7tNh/Uu5PoREBrhl0VN9Mljk5MiBLEXYkXlZ
-         QxqRNZnIR6gLDbb46FZGNhLeFEJRxEe3z1CQZMMQ0/4b/eanC5dup+jmpJJNgVvBrPoZ
-         +rsWXtf8+JGDitBZgDZm39rWhbROUjmckdagAisyEw6BxxX7q9YK/gduIqKmvILlgLM9
-         soLS8PR2N6+RztKlXqV+b8gXCx71oCDXTas5pR+eznm/sWgaymlyL+QazgU4GS46sL5C
-         zHRYTTXIs09L1vCpSCg/QCKePemyyGRINX+8IWhCbJVYQps5PN2oo32rslc5ZUoFxRZf
-         Eq8Q==
+        bh=zbEJVcqozWzcoFlbBXS+TBjzcZ1OHQOrJK+1Yv2WO0M=;
+        b=HRlw7T5HrC1sd0EEVOlmxMYcEUW9P5KTISto8J7IBxGP2yzW843P+jIUL6NelNXstQ
+         D8XvyAu7QYkVM2IoDDAyXp0sXS8xF/4nek3GpocF8G24lBfn+qkMCPRMzavEVNOXYxUS
+         caDzOhvPXLTgk6tZ5FH5SExn8kXr6oRHichMbXB+1pXtfQAeOzS6hzAFhuj9GxP+9+u7
+         1MxY+6w7didSa+HdOpJgnxJyixl31HmTrorgBWGTOJn7mqweLkxAtOiQGsSWN27LxrQ6
+         /nep/j/MTr041ex5XXhL5vuRtS5auX0MrPKYLZLgV9nKexEMj1k4O+JnxZY9SKOhOJ10
+         lmSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ZsgMFONiVfdPOcu1gytSVjl67JQ44Kfo5GzCrRDGW2s=;
-        b=XKYUk4F0e9fqD8U3GhrA77+LIaL9TXdutijz75h7eY9nyhVANJreXXj7l+EEbutlbj
-         txTO/UNt0wDE2Ts9PTrRLQgq7Arpxe8CSkurk/ozEDivJ4GbymvsG6MMBMN5ssLvu58s
-         rUlYBBbTB4CK54tJkxORZc9oVBXeceAFop8tjENPoFOL+BXHBusYtwGDzKv2RbioYPXf
-         FIu7qId5XkEHOgZtY8whZ5tACKmLZ6oSzN7jW0LRadQ+9cpUWAFeArtyb6cNXTld9BRH
-         B3KlQjzQdrf5gm86G7d/Y7cnBli/bvEah7lNF+oepsZSWT7oqN9IkZcHkGbXRXdXE93d
-         Gx0Q==
-X-Gm-Message-State: APjAAAXBY1xFOsL4wK5ePUtaye8E82Yeuyng+giUAUzZ4HvU9SV7D0Qv
-        Tn5a/igLWvOIOAayoDk8SBQ=
-X-Google-Smtp-Source: APXvYqyazo4D/X/Ka6hFWPbws3hlZRipi+VfGS3HpW8mTSHjvqrBLF7q11IDvl9TOVzj7xVHZMwDhg==
-X-Received: by 2002:a62:5252:: with SMTP id g79mr4934283pfb.18.1559679949571;
-        Tue, 04 Jun 2019 13:25:49 -0700 (PDT)
+        bh=zbEJVcqozWzcoFlbBXS+TBjzcZ1OHQOrJK+1Yv2WO0M=;
+        b=Q9HToEZbMPE+z6IK7xHp3ROZL6kFAXebrllzx25/lcQe/grjEtEBCpRH/UUOzhT2Hl
+         8thYKZmENmspg9YgqkGygQ+D6gD59E75yWBgIRpuEi3tMz3FN1z0zsEls3YO/in3K/eh
+         l3eu3gRxYujvKsv4lHMdGdAFF+MZ4caPzTwGab8oGYouv9jQsJiVdceysOqW6geJDsnP
+         R4ai5S+y3S57jHXM4ELs/CE74jIt3HlNEivQHDUXE7Q2khcNx5xSdbR3tBetn5zY98ui
+         lT6ucpCyOaMCa01JCoW3Su4OixTJ6y9WawbuYuJEUqF6EbLPX4nI05KzAVE4fuUjtbJI
+         8gyA==
+X-Gm-Message-State: APjAAAXM3Nnb04i+hNJRdxImGrFoxPZEn+seBrSUC0DGeauxezLRwd5n
+        bvOvYTwAYZgstcM9yU6nUVhbD8Tz
+X-Google-Smtp-Source: APXvYqxbc/5j0N2mBryM3d+Q+6XQAi6sKwhl0NsA7+dyfcwjUGgCtsj58EypLAOnavta0iGS1MPgqA==
+X-Received: by 2002:a63:e616:: with SMTP id g22mr562455pgh.61.1559680321272;
+        Tue, 04 Jun 2019 13:32:01 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id ce3sm7051161pjb.11.2019.06.04.13.25.48
+        by smtp.gmail.com with ESMTPSA id c16sm1004134pfp.91.2019.06.04.13.31.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 13:25:48 -0700 (PDT)
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+        Tue, 04 Jun 2019 13:32:00 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 01/17] net: dsa: Keep a pointer to the skb
+ clone for TX timestamping
+To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net, richardcochran@gmail.com,
+        john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20190604170756.14338-1-olteanv@gmail.com>
+ <20190604170756.14338-2-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <3a408f0f-418a-918d-bc9a-29085cdf1636@gmail.com>
-Date:   Tue, 4 Jun 2019 13:25:47 -0700
+Message-ID: <fed60662-e66d-5d5b-fec8-52e4373630b2@gmail.com>
+Date:   Tue, 4 Jun 2019 13:31:59 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+In-Reply-To: <20190604170756.14338-2-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,30 +71,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/4/2019 12:58 PM, Vladimir Oltean wrote:
-> Hi,
+On 6/4/2019 10:07 AM, Vladimir Oltean wrote:
+> For drivers that use deferred_xmit for PTP frames (such as sja1105),
+> there is no need to perform matching between PTP frames and their egress
+> timestamps, since the sending process can be serialized.
 > 
-> I've been wondering what is the correct approach to cut the Ethernet
-> link when the user requests it to be administratively down (aka ip link
-> set dev eth0 down).
-> Most of the Ethernet drivers simply call phy_stop or the phylink
-> equivalent. This leaves an Ethernet link between the PHY and its link
-> partner.
-> The Freescale gianfar driver (authored by Andy Fleming who also authored
-> the phylib) does a phy_disconnect here. It may seem a bit overkill, but
-> of the extra things it does, it calls phy_suspend where most PHY drivers
-> set the BMCR_PDOWN bit. Only this achieves the intended purpose of also
-> cutting the link partner's link on 'ip link set dev eth0 down'.
-> What is the general consensus here?
-> I see the ability to be able to put the PHY link administratively down a
-> desirable feat. If it's left to negotiate/receive traffic etc while the
-> MAC driver isn't completely set up and ready, in theory a lot of
-> processing can happen outside of the operating system's control.
+> In that case, it makes sense to have the pointer to the skb clone that
+> DSA made directly in the skb->cb. It will be used for pushing the egress
+> timestamp back in the application socket's error queue.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-What would seem sensible from my perspective is the following: upon
-ndo_stop() the PHY is brought into the lowest power mode available,
-unless the device is used for Wake-on-LAN, in which case, an appropriate
-low power mode (e.g.: 10Mbps/half receive only) allowing WoL to function
-can be selected.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
