@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D4A35417
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A87B3532F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 01:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfFDXW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 19:22:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33292 "EHLO mail.kernel.org"
+        id S1727281AbfFDXXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 19:23:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727089AbfFDXW5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 19:22:57 -0400
+        id S1727168AbfFDXXO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 19:23:14 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 176B9206C1;
-        Tue,  4 Jun 2019 23:22:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA3BD20859;
+        Tue,  4 Jun 2019 23:23:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559690577;
-        bh=UJSfZQyM0mKU3h4AXbdeOkP5roVDYNSWhjBQZXUeuNo=;
+        s=default; t=1559690593;
+        bh=R+U34QDjnbvzga4XGmLNL/k+3w/+2gAKs+xr5z/CtIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J4I8yIrNk+bj/99etosDpKCSCLk5HXLPALhKobk46TfBiCUXIEfJwEnvXKkHGup9x
-         oQmelra/XGjWXVmlZ8Z+Iac28We0DNvGUramPUIzdFVN2OZ8HFnTjNSDJIeAV2kcBI
-         llL4Nb8JtjI51eFeRvxmcJa4IfBCP1C6vWKrZ/7c=
+        b=w/Iq6y8Kv2ye1dhrZ1hv3i7RfyTP+jmxVRr22M1aDU+8pMEGsaoX7+M+EJ1XSdaiz
+         EbDE7aiMTdoH55d2kv4Udz+5r7CwRUaj7je7S0iO7kWo+a7ewtfEV/BFopWcmv5lBz
+         qwGqW0h3En8OQTmyFGotz46DWUu36KJkvVCJz29c=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 27/60] selftests/bpf: fix bpf_get_current_task
-Date:   Tue,  4 Jun 2019 19:21:37 -0400
-Message-Id: <20190604232212.6753-27-sashal@kernel.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 40/60] selftests: fib_rule_tests: fix local IPv4 address typo
+Date:   Tue,  4 Jun 2019 19:21:50 -0400
+Message-Id: <20190604232212.6753-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190604232212.6753-1-sashal@kernel.org>
 References: <20190604232212.6753-1-sashal@kernel.org>
@@ -46,33 +45,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 7ed4b4e60bb1dd3df7a45dfbde3a96efce9df7eb ]
+[ Upstream commit fc82d93e57e3d41f79eff19031588b262fc3d0b6 ]
 
-Fix bpf_get_current_task() declaration.
+The IPv4 testing address are all in 192.51.100.0 subnet. It doesn't make
+sense to set a 198.51.100.1 local address. Should be a typo.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Fixes: 65b2b4939a64 ("selftests: net: initial fib rule tests")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/bpf_helpers.h | 2 +-
+ tools/testing/selftests/net/fib_rule_tests.sh | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-index c81fc350f7ad..a43a52cdd3f0 100644
---- a/tools/testing/selftests/bpf/bpf_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_helpers.h
-@@ -246,7 +246,7 @@ static int (*bpf_skb_change_type)(void *ctx, __u32 type) =
- 	(void *) BPF_FUNC_skb_change_type;
- static unsigned int (*bpf_get_hash_recalc)(void *ctx) =
- 	(void *) BPF_FUNC_get_hash_recalc;
--static unsigned long long (*bpf_get_current_task)(void *ctx) =
-+static unsigned long long (*bpf_get_current_task)(void) =
- 	(void *) BPF_FUNC_get_current_task;
- static int (*bpf_skb_change_tail)(void *ctx, __u32 len, __u64 flags) =
- 	(void *) BPF_FUNC_skb_change_tail;
+diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
+index 4b7e107865bf..1ba069967fa2 100755
+--- a/tools/testing/selftests/net/fib_rule_tests.sh
++++ b/tools/testing/selftests/net/fib_rule_tests.sh
+@@ -55,7 +55,7 @@ setup()
+ 
+ 	$IP link add dummy0 type dummy
+ 	$IP link set dev dummy0 up
+-	$IP address add 198.51.100.1/24 dev dummy0
++	$IP address add 192.51.100.1/24 dev dummy0
+ 	$IP -6 address add 2001:db8:1::1/64 dev dummy0
+ 
+ 	set +e
 -- 
 2.20.1
 
