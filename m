@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A02342FD
-	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 11:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B483437A
+	for <lists+netdev@lfdr.de>; Tue,  4 Jun 2019 11:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727153AbfFDJQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 05:16:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36020 "EHLO mx1.redhat.com"
+        id S1727076AbfFDJpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 05:45:06 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42174 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726948AbfFDJQB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 05:16:01 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        id S1726937AbfFDJpF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 05:45:05 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D27393091D73;
-        Tue,  4 Jun 2019 09:15:59 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 26750105B202;
-        Tue,  4 Jun 2019 09:15:55 +0000 (UTC)
-Date:   Tue, 4 Jun 2019 11:15:54 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Tom Barbette <barbette@kth.se>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>, brouer@redhat.com,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Bad XDP performance with mlx5
-Message-ID: <20190604111554.749ddd87@carbon>
-In-Reply-To: <9f116335-0fad-079b-4070-89f24af4ab55@kth.se>
-References: <d7968b89-7218-1e76-86bf-c452b2f8d0c2@kth.se>
-        <20190529191602.71eb6c87@carbon>
-        <0836bd30-828a-9126-5d99-1d35b931e3ab@kth.se>
-        <20190530094053.364b1147@carbon>
-        <d695d08a-9ee1-0228-2cbb-4b2538a1d2f8@kth.se>
-        <2218141a-7026-1cb8-c594-37e38eef7b15@kth.se>
-        <20190531181817.34039c9f@carbon>
-        <19ca7cd9a878b2ecc593cd2838b8ae0412463593.camel@mellanox.com>
-        <9f116335-0fad-079b-4070-89f24af4ab55@kth.se>
+        by mx1.redhat.com (Postfix) with ESMTPS id 8DA9130C0DCF;
+        Tue,  4 Jun 2019 09:45:05 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A4F460579;
+        Tue,  4 Jun 2019 09:45:04 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Edward Cree <ecree@solarflare.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net v2] net: fix indirect calls helpers for ptype list hooks.
+Date:   Tue,  4 Jun 2019 11:44:06 +0200
+Message-Id: <678856f4fc73bbcd0de07a97c9d59996b6b8b585.1559641396.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Tue, 04 Jun 2019 09:16:01 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 04 Jun 2019 09:45:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Jun 2019 09:28:22 +0200
-Tom Barbette <barbette@kth.se> wrote:
+As Eric noted, the current wrapper for ptype func hook inside
+__netif_receive_skb_list_ptype() has no chance of avoiding the indirect
+call: we enter such code path only for protocols other than ipv4 and
+ipv6.
 
-> Thanks Jesper for looking into this!
-> 
-> I don't think I will be of much help further on this matter. My take
-> out would be: as a first-time user looking into XDP after watching a
-> dozen of XDP talks, I would have expected XDP default settings to be
-> identical to SKB, so I don't have to watch out for a set of
-> per-driver parameter checklist to avoid increasing my CPU consumption
-> by 15% when inserting "a super efficient and light BPF program". But
-> I understand it's not that easy...
+Instead we can wrap the list_func invocation.
 
-The gap should not be this large, but as I demonstrated it was primarily
-because you hit an unfortunate interaction with TCP and how the mlx5
-driver does page-caching (p.s. we are working on removing this driver
-local recycle-cache).
-  When loading an XDP/eBPF-prog then the driver change the underlying RX
-memory model, which waste memory to gain packets-per-sec speed, but TCP
-sees this memory waste and gives us a penalty.
+v1 -> v2:
+ - use the correct fix tag
 
-It is important to understand, that XDP is not optimized for TCP.  XDP
-is designed and optimized for L2-L3 handling of packets (TCP is L4).
-Before XDP these L2-L3 use-cases were "slow", because the kernel
-netstack assumes a L4/socket use-case (full SKB), when less was really
-needed.
+Fixes: f5737cbadb7d ("net: use indirect calls helpers for ptype hook")
+Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
+---
+ net/core/dev.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-This is actually another good example of why XDP programs per RX-queue,
-will be useful (notice: which is not implemented upstream, yet...).
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 66f7508825bd..1c4593ec4409 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5025,12 +5025,12 @@ static inline void __netif_receive_skb_list_ptype(struct list_head *head,
+ 	if (list_empty(head))
+ 		return;
+ 	if (pt_prev->list_func != NULL)
+-		pt_prev->list_func(head, pt_prev, orig_dev);
++		INDIRECT_CALL_INET(pt_prev->list_func, ipv6_list_rcv,
++				   ip_list_rcv, head, pt_prev, orig_dev);
+ 	else
+ 		list_for_each_entry_safe(skb, next, head, list) {
+ 			skb_list_del_init(skb);
+-			INDIRECT_CALL_INET(pt_prev->func, ipv6_rcv, ip_rcv, skb,
+-					   skb->dev, pt_prev, orig_dev);
++			pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
+ 		}
+ }
+ 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.20.1
+
