@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6425635FAC
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 16:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D94FC35FDF
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbfFEOzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 10:55:21 -0400
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:40052 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728303AbfFEOzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 10:55:21 -0400
-Received: by mail-pl1-f202.google.com with SMTP id 91so16226950pla.7
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 07:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=J009BEsnAJ6BP+DWpLDdQufdYROONhE5OW4Uf4sR39k=;
-        b=oc35DxmuYbINUAb9zJLgKb578zI5fwcJiaG6UjZ83qhPeegQ3RIT0HjZLeC/qi+H3v
-         A6txzkbC/igXICz8P0pr5fea5+6FbOMunYrEO4ho3hXrU/iIaN1Pqj1qLqY6TMQR9upa
-         8VcPHEY4jSt8ylq0wXFktfZ1cEMCGhKOcLuCvvg/6O6z+izSjk9djHgzElTqOy7NeCLv
-         P83qZ0l2jiRYVpQIJJGxLHsk7ef/lZVxnYJ1u9nOp/dF+VED0QAfQ4DAHbGHGRH8vvpA
-         3ajTpQg1WgVy/I8m5WFtuRiYsiT7uoDBSlTaiUFYQyptrI/F8smxZNArmuWnxaIExL8q
-         xm7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=J009BEsnAJ6BP+DWpLDdQufdYROONhE5OW4Uf4sR39k=;
-        b=Huw7opGS55kEWPsd1I16SzRehZkBvTKr+z3z092kUyRGbd9Sv8D2jP5Ay112GYroCK
-         1Le5z/CfpjzaZvbZ+AjnFLJd0nfzaHc5qre/FYScsamIK9COwu0erzNN6tIeh7HnWDIM
-         h+LMciIaW7zybIzu0CjQbXVaHi7J9U3nD3b4BqWnJwjWbFbYfyIdRpB9afSqlS5nt5ZG
-         ms0klMx/Kzoa4t5y/S694G8D+C5ejrCU4EBPtq1j5pS7WEDjjklVnK3+b+LN7jw1s6oG
-         9h8oIWljBkMFaMjFcZTXLWqINLdaY4O8vfIUYRtrL4NG+SvquttJ5q8EJIjDboTjx9Eb
-         BUWA==
-X-Gm-Message-State: APjAAAU+n5XawL0ADwAP+T/SgK1TuHNcM6zMmM++PjBNUWMuVxlflaos
-        VHUCl0maI2as2C0L3SRJw5qQFlds1HDNjg==
-X-Google-Smtp-Source: APXvYqywEdr3GDXpKYXn3jaD7UDrUfK2P+lk+zCn8syn9komMbv1/0ah3vGGcYbhDOo7fxZy1cwHrbfKHzvVEQ==
-X-Received: by 2002:a63:4820:: with SMTP id v32mr4843115pga.89.1559746520255;
- Wed, 05 Jun 2019 07:55:20 -0700 (PDT)
-Date:   Wed,  5 Jun 2019 07:55:10 -0700
-In-Reply-To: <20190605145510.74527-1-edumazet@google.com>
-Message-Id: <20190605145510.74527-3-edumazet@google.com>
-Mime-Version: 1.0
-References: <20190605145510.74527-1-edumazet@google.com>
-X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
-Subject: [PATCH v2 net-next 2/2] ipv6: tcp: send consistent flowlabel in
- TIME_WAIT state
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728591AbfFEPHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 11:07:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34974 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728441AbfFEPHM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 11:07:12 -0400
+Received: from localhost.localdomain (cpe-70-114-128-244.austin.res.rr.com [70.114.128.244])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 70967206B8;
+        Wed,  5 Jun 2019 15:07:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559747232;
+        bh=jTuxwfiyzlsodkekfsVqkS5weGze46oKt3QO2PxxZY0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PX4xbXsX040MmeYF2bNX6uKAbUwyW/fcFzjfX18GtHrjE3G/dtHw1tl+tAS1KWqCj
+         RIhxHVe4vCoiCC0HBtPF1BshJbbXZYn6TQNsSmnn2F/Iv+uuHYWo99yXSGtLYvgkOS
+         1+wDLozxca9hC4MUZeUVtQ8qR4V1hYkHMZbfYpuA=
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     dinguyen@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        davem@davemloft.net, dalon.westergreen@intel.com
+Subject: [PATCH 1/2] dt-bindings: socfpga-dwmac: add "altr,socfpga-stmmac-a10-s10" binding
+Date:   Wed,  5 Jun 2019 10:05:50 -0500
+Message-Id: <20190605150551.12791-1-dinguyen@kernel.org>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 1d13a96c74fc ("ipv6: tcp: fix flowlabel value in ACK
-messages"), we stored in tw_flowlabel the flowlabel, in the
-case ACK packets needed to be sent on behalf of a TIME_WAIT socket.
+Add the "altr,socfpga-stmmac-a10-s10" binding for Arria10/Agilex/Stratix10
+implementation of the stmmac ethernet controller.
 
-We can use the same field so that RST packets sent from
-TIME_WAIT state also use a consistent flowlabel.
+On the Arria10, Agilex, and Stratix10 SoCs, there are a few differences from
+the Cyclone5 and Arria5:
+     - The emac PHY setup bits are in separate registers.
+     - The PTP reference clock select mask is different.
+     - The register to enable the emac signal from FPGA is different.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Florent Fourcot <florent.fourcot@wifirst.fr>
+Because of these differences, the dwmac-socfpga glue logic driver will
+use this new binding to set the appropriate bits for PHY, PTP reference
+clock, and signal from FPGA.
+
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 ---
- net/ipv6/tcp_ipv6.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../devicetree/bindings/net/socfpga-dwmac.txt          | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 4ccb06ea8ce32d614fc0848e1c4e74b441fa1f2c..f4e609a48e68442693936050c2336ca1e80e1710 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -982,6 +982,8 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 		oif = sk->sk_bound_dev_if;
- 		if (sk_fullsock(sk))
- 			trace_tcp_send_reset(sk, skb);
-+		if (sk->sk_state == TCP_TIME_WAIT)
-+			label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
- 	} else {
- 		if (net->ipv6.sysctl.flowlabel_reflect & 2)
- 			label = ip6_flowlabel(ipv6h);
+diff --git a/Documentation/devicetree/bindings/net/socfpga-dwmac.txt b/Documentation/devicetree/bindings/net/socfpga-dwmac.txt
+index 17d6819669c8..612a8e8abc88 100644
+--- a/Documentation/devicetree/bindings/net/socfpga-dwmac.txt
++++ b/Documentation/devicetree/bindings/net/socfpga-dwmac.txt
+@@ -6,11 +6,17 @@ present in Documentation/devicetree/bindings/net/stmmac.txt.
+ The device node has additional properties:
+ 
+ Required properties:
+- - compatible	: Should contain "altr,socfpga-stmmac" along with
+-		  "snps,dwmac" and any applicable more detailed
++ - compatible	: For Cyclone5/Arria5 SoCs it should contain
++		  "altr,socfpga-stmmac". For Arria10/Agilex/Stratix10 SoCs
++		  "altr,socfpga-stmmac-a10-s10".
++		  Along with "snps,dwmac" and any applicable more detailed
+ 		  designware version numbers documented in stmmac.txt
+  - altr,sysmgr-syscon : Should be the phandle to the system manager node that
+    encompasses the glue register, the register offset, and the register shift.
++   On Cyclone5/Arria5, the register shift represents the PHY mode bits, while
++   on the Arria10/Stratix10/Agilex platforms, the register shift represents
++   bit for each emac to enable/disable signals from the FPGA fabric to the
++   EMAC modules.
+  - altr,f2h_ptp_ref_clk use f2h_ptp_ref_clk instead of default eosc1 clock
+    for ptp ref clk. This affects all emacs as the clock is common.
+ 
 -- 
-2.22.0.rc1.311.g5d7573a151-goog
+2.20.0
 
