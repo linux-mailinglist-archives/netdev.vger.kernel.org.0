@@ -2,150 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51FC735CF5
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD15D35CF6
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727642AbfFEMfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 08:35:55 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55420 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727273AbfFEMfz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 08:35:55 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8ABA585541;
-        Wed,  5 Jun 2019 12:35:54 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B0E117CE5;
-        Wed,  5 Jun 2019 12:35:53 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, mcroce@redhat.com
-Subject: [PATCH net] pktgen: do not sleep with the thread lock held.
-Date:   Wed,  5 Jun 2019 14:34:46 +0200
-Message-Id: <7fed17636f7a9d51b0603c8a4cfdd2111cd946e1.1559737968.git.pabeni@redhat.com>
+        id S1727674AbfFEMgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 08:36:07 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:56410 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727663AbfFEMgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 08:36:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Jkh8aFGc1DIz53Nb1XQcPJN2NV8vK8Jl7GsP7J3fylo=; b=Os/wu0P1h69AAY1YbEgWZ/oba
+        Msw4RJTG7mhF/TJHYmzGkYaWa1RO/YFyte+vedhgcaddt6WQf+Hoxe8Zlb08VOYsj+f11iik59tyO
+        4VAmMVPxNOYcqLCYbVUOrk5465mIqxpPpUI8X5p1EDiEnHFPrZrL68aVNCr63tbKIcnzK4e97dqND
+        ycBxfwaKmBOm8DEyvwWKr0b6i6wWJFNs4oN7d8xs2aywb0kg7jMMBywUvD6hmpEWLOyNgs4uOGhse
+        c2GQVZmDe2kXMR/846kNKaSDL9FGKjBtsks69RYrHHocHDihk/IJNPMxpTEV8bFfCohNAYqOr5hSo
+        cHA0A3LbQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56226)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hYV97-0007q7-2D; Wed, 05 Jun 2019 13:36:01 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hYV95-0002Pg-KA; Wed, 05 Jun 2019 13:35:59 +0100
+Date:   Wed, 5 Jun 2019 13:35:59 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+Message-ID: <20190605123559.kpvapvmr7uwwpzif@shell.armlinux.org.uk>
+References: <31cc0e5e-810c-86ea-7766-ec37008c5f9d@gmail.com>
+ <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
+ <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com>
+ <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk>
+ <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
+ <20190604225919.xpkykt2z3a7utiet@shell.armlinux.org.uk>
+ <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
+ <20190604232433.4v2qqxyihqi2rmjl@shell.armlinux.org.uk>
+ <CA+h21hpDyDLChzrqX19bU81+ss3psVesNftCqN7+7+GFkMe_-A@mail.gmail.com>
+ <20190605121631.47icyavtcrnwddlg@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Wed, 05 Jun 2019 12:35:54 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190605121631.47icyavtcrnwddlg@shell.armlinux.org.uk>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the process issuing a "start" command on the pktgen procfs
-interface, acquires the pktgen thread lock and never release it, until
-all pktgen threads are completed. The above can blocks indefinitely any
-other pktgen command and any (even unrelated) netdevice removal - as
-the pktgen netdev notifier acquires the same lock.
+On Wed, Jun 05, 2019 at 01:16:31PM +0100, Russell King - ARM Linux admin wrote:
+> On Wed, Jun 05, 2019 at 02:46:13AM +0300, Vladimir Oltean wrote:
+> > On Wed, 5 Jun 2019 at 02:24, Russell King - ARM Linux admin
+> > <linux@armlinux.org.uk> wrote:
+> > > No - but that has nothing to do with phylib internals, more to do with
+> > > the higher levels of networking.  ndo_stop() will not be called unless
+> > > ndo_open() has already been called.  In other words, setting an already
+> > > down device down via "ip link set dev eth0 down" is a no-op.
+> > >
+> > > So, let's a common scenario.  You power up a board.  The PHY comes up
+> > > and establishes a link.  The boot loader runs, loads the kernel, which
+> > > then boots.  Your network driver is a module, and hasn't been loaded
+> > > yet.  The link is still up.
+> > >
+> > > The modular network driver gets loaded, and initialises.  Userspace
+> > > does not bring the network device up, and the network driver does not
+> > > attach or connect to the PHY (which is actually quite common).  So,
+> > > the link is still up.
+> > >
+> > > The modular PHY driver gets loaded, and binds to the PHY.  The link
+> > > is still up.
+> > 
+> > I would rather say, 'even if the link is not up, Linux brings it up
+> > (possibly prematurely) via phy_resume'.
+> > But let's consider the case where the link *was* up. The general idea
+> > is 'implement your workarounds in whatever other way, that link is
+> > welcome!'.
+> 
+> I think you've missed some of the nuances about my example scenario.
+> 
+> If your MAC driver expects the MII pins to be silent after it probes,
+> this will not be the case in the scenario that I've given you.  The
+> PHY won't be silenced here, even with your proposed changes.
+> 
+> > > Userspace configures the network interface, which causes the PHY
+> > > device to be attached to the network device, and phy_start() to be
+> > > called on it - the negotiation advertisement is configured, and
+> > > negotiation restarted if necessary.
+> 
+> This is where your suggested modifications first take effect.
+> 
+> What I'm stating is that if you write your network driver to require
+> that the PHY link is down after the network driver is probed but before
+> ndo_open is called, in the above exact scenario, that will not be the
+> case and your network driver may malfunction.
+> 
+> Having the kernel rely on a certain boot loader behaviour is very bad.
+> 
+> You also have to consider that the previous context to the kernel
+> booting may _not_ be the boot loader - for example, if the kernel
+> supports crash dump kexec, then the previous context to the crash
+> kernel is the kernel which crashed, which may well have established a
+> link on the network interface.
+> 
+> So, relying on the state of the hardware from the boot loader is a
+> recipe for a buggy driver.
 
-The issue is demonstrated by the following script, reported by Matteo:
+There is another reason to avoid having the MAC active while the PHY
+is in low power mode.  From 802.3-2015 clause 45.2.1.1.2 Low power
+(1.0.11):
 
-ip -b - <<'EOF'
-	link add type dummy
-	link add type veth
-	link set dummy0 up
-EOF
-modprobe pktgen
-echo reset >/proc/net/pktgen/pgctrl
-{
-	echo rem_device_all
-	echo add_device dummy0
-} >/proc/net/pktgen/kpktgend_0
-echo count 0 >/proc/net/pktgen/dummy0
-echo start >/proc/net/pktgen/pgctrl &
-sleep 1
-rmmod veth
+"The behavior of the PMA/PMD in transition to and from the low-power
+mode is implementation specific and any interface signals should not
+be relied upon."
 
-Fix the above releasing the thread lock around the sleep call.
-After re-acquiring the lock we must check again for the relevant
-thread existence, as some other pktgen command could have
-terminated it meanwhile.
+which is different to clause 22.2.4.1.5 Power down:
 
-In the caller, we can't continue walking the threads list, for the
-same reason. Instead, let's pick the first running thread 'till we
-can find any of them.
+"During the transition to the power-down state and while in the
+power-down state, the PHY shall not generate spurious signals on the
+MII or GMII."
 
-Note: the issue predates the commit reported in the fixes tag, but
-this fix can't be applied before the mentioned commit.
+Since Clause 45 PHYs are supported by phylib, and can respond to
+Clause 22 management frames, this is another reason why the MAC should
+ignore any signals it receives from the PHY while the network interface
+is down.
 
-Fixes: 6146e6a43b35 ("[PKTGEN]: Removes thread_{un,}lock() macros.")
-Reported-and-tested-by: Matteo Croce <mcroce@redhat.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/core/pktgen.c | 38 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 35 insertions(+), 3 deletions(-)
+Of course, your specific situation, you may have a PHY that is compliant
+with 22.2.4.1.5 rather than 45.2.1.1.2, but if you're writing a network
+driver, you can't make that assumption, especially if you're going to be
+submitting it to mainline.
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 319ad5490fb3..09ce399986e2 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -3062,20 +3062,49 @@ static int thread_is_running(const struct pktgen_thread *t)
- 	return 0;
- }
- 
--static int pktgen_wait_thread_run(struct pktgen_thread *t)
-+static bool pktgen_lookup_thread(struct pktgen_net *pn, struct pktgen_thread *t)
-+{
-+	struct pktgen_thread *tmp;
-+
-+	list_for_each_entry(tmp, &pn->pktgen_threads, th_list)
-+		if (tmp == t)
-+			return true;
-+	return false;
-+}
-+
-+static int pktgen_wait_thread_run(struct pktgen_net *pn,
-+				  struct pktgen_thread *t)
- {
- 	while (thread_is_running(t)) {
- 
-+		mutex_unlock(&pktgen_thread_lock);
- 		msleep_interruptible(100);
-+		mutex_lock(&pktgen_thread_lock);
- 
- 		if (signal_pending(current))
- 			goto signal;
-+
-+		/* in the meanwhile 't' can be dead, removed, etc, check again
-+		 * its existence
-+		 */
-+		if (!pktgen_lookup_thread(pn, t))
-+			break;
- 	}
- 	return 1;
- signal:
- 	return 0;
- }
- 
-+static struct pktgen_thread *pktgen_find_first_running(struct pktgen_net *pn)
-+{
-+	struct pktgen_thread *t;
-+
-+	list_for_each_entry(t, &pn->pktgen_threads, th_list)
-+		if (thread_is_running(t))
-+			return t;
-+	return NULL;
-+}
-+
- static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
- {
- 	struct pktgen_thread *t;
-@@ -3083,8 +3112,11 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
- 
- 	mutex_lock(&pktgen_thread_lock);
- 
--	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
--		sig = pktgen_wait_thread_run(t);
-+	while (1) {
-+		t = pktgen_find_first_running(pn);
-+		if (!t)
-+			break;
-+		sig = pktgen_wait_thread_run(pn, t);
- 		if (sig == 0)
- 			break;
- 	}
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
