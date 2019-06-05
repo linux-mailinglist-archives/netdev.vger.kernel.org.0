@@ -2,55 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C5235CC6
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51FC735CF5
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbfFEM02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 08:26:28 -0400
-Received: from smtp3.ono.com ([62.42.230.163]:64598 "EHLO smtp3.ono.com"
+        id S1727642AbfFEMfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 08:35:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55420 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727337AbfFEM02 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 08:26:28 -0400
-X-Junkmail-Premium-Raw: score=35/50,refid=2.7.2:2019.6.5.113916:17:35.434,ip=62.42.230.132,rules=__HAS_MSGID,
- __SANE_MSGID, MSGID_JMAIL_DEFAULT, INVALID_MSGID_NO_FQDN, __HAS_FROM,
- __HAS_REPLYTO, __FRAUD_WEBMAIL_REPLYTO, __PHISH_SPEAR_SUBJ_ALERT,
- __MIME_VERSION, __CT, __CT_TEXT_PLAIN, __CTE, MISSING_HEADERS, __FRAUD_INTRO,
- __STOCK_PHRASE_7, __FRAUD_MONEY_BIG_COIN_DIG, __OEM_PRICE,
- __FRAUD_MONEY_CURRENCY_DOLLAR, __NO_HTML_TAG_RAW, BODYTEXTP_SIZE_400_LESS,
- BODY_SIZE_200_299, BODYTEXTP_SIZE_3000_LESS, __MIME_TEXT_P1,
- __MIME_TEXT_ONLY, HTML_00_01, HTML_00_10, __FRAUD_MONEY_CURRENCY,
- __FRAUD_MONEY_BIG_COIN, __FRAUD_MONEY_VALUE, __PHISH_SPEAR_GREETING,
- __FRAUD_MONEY, FRAUD_X3, BODY_SIZE_5000_LESS, __FRAUD_WEBMAIL,
- WEBMAIL_REPLYTO_NOT_FROM, FRAUD_WEBMAIL_R_NOT_F, __MIME_TEXT_P, NO_URI_FOUND,
- NO_CTA_URI_FOUND, FRAUD_LITTLE_BODY, __PHISH_SPEAR_STRUCTURE_1,
- BODY_SIZE_1000_LESS, BODY_SIZE_2000_LESS, SMALL_BODY,
- __PHISH_SPEAR_STRUCTURE_2, REPLYTO_FROM_DIFF_ADDY, NO_URI_HTTPS,
- BODY_SIZE_7000_LESS, TO_MALFORMED
-Received: from resprs02 (62.42.230.132) by smtp3.ono.com (9.0.019.09-1)
-        id 5CC0A28F01BA9EB1; Wed, 5 Jun 2019 14:26:17 +0200
-Received: from (149.126.76.27) by webmailcpr02n.ono.com;  Wed, 5 Jun 2019 14:26:17 +0200
-Message-ID: <8939512.63301559737577303.JavaMail.defaultUser@defaultHost>
-Date:   Wed, 5 Jun 2019 14:26:17 +0200 (CEST)
-From:   Mrs M Compola <oposicionesayudantes@ono.com>
-Reply-To: mrsmcompola444@gmail.com
-Subject: Compliment of the day to you Dear Friend.
+        id S1727273AbfFEMfz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 08:35:55 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8ABA585541;
+        Wed,  5 Jun 2019 12:35:54 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B0E117CE5;
+        Wed,  5 Jun 2019 12:35:53 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, mcroce@redhat.com
+Subject: [PATCH net] pktgen: do not sleep with the thread lock held.
+Date:   Wed,  5 Jun 2019 14:34:46 +0200
+Message-Id: <7fed17636f7a9d51b0603c8a4cfdd2111cd946e1.1559737968.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Wed, 05 Jun 2019 12:35:54 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Compliment of the day to you Dear Friend.
+Currently, the process issuing a "start" command on the pktgen procfs
+interface, acquires the pktgen thread lock and never release it, until
+all pktgen threads are completed. The above can blocks indefinitely any
+other pktgen command and any (even unrelated) netdevice removal - as
+the pktgen netdev notifier acquires the same lock.
 
-Dear Friend.
+The issue is demonstrated by the following script, reported by Matteo:
 
-  I am Mrs.M Compola. am sending this brief letter to solicit your
-partnership to transfer $5 million US Dollars. I shall send you
-more information and procedures when I receive positive response from
-you.
+ip -b - <<'EOF'
+	link add type dummy
+	link add type veth
+	link set dummy0 up
+EOF
+modprobe pktgen
+echo reset >/proc/net/pktgen/pgctrl
+{
+	echo rem_device_all
+	echo add_device dummy0
+} >/proc/net/pktgen/kpktgend_0
+echo count 0 >/proc/net/pktgen/dummy0
+echo start >/proc/net/pktgen/pgctrl &
+sleep 1
+rmmod veth
 
+Fix the above releasing the thread lock around the sleep call.
+After re-acquiring the lock we must check again for the relevant
+thread existence, as some other pktgen command could have
+terminated it meanwhile.
 
-Mrs M Compola 
+In the caller, we can't continue walking the threads list, for the
+same reason. Instead, let's pick the first running thread 'till we
+can find any of them.
+
+Note: the issue predates the commit reported in the fixes tag, but
+this fix can't be applied before the mentioned commit.
+
+Fixes: 6146e6a43b35 ("[PKTGEN]: Removes thread_{un,}lock() macros.")
+Reported-and-tested-by: Matteo Croce <mcroce@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/pktgen.c | 38 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 35 insertions(+), 3 deletions(-)
+
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 319ad5490fb3..09ce399986e2 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -3062,20 +3062,49 @@ static int thread_is_running(const struct pktgen_thread *t)
+ 	return 0;
+ }
+ 
+-static int pktgen_wait_thread_run(struct pktgen_thread *t)
++static bool pktgen_lookup_thread(struct pktgen_net *pn, struct pktgen_thread *t)
++{
++	struct pktgen_thread *tmp;
++
++	list_for_each_entry(tmp, &pn->pktgen_threads, th_list)
++		if (tmp == t)
++			return true;
++	return false;
++}
++
++static int pktgen_wait_thread_run(struct pktgen_net *pn,
++				  struct pktgen_thread *t)
+ {
+ 	while (thread_is_running(t)) {
+ 
++		mutex_unlock(&pktgen_thread_lock);
+ 		msleep_interruptible(100);
++		mutex_lock(&pktgen_thread_lock);
+ 
+ 		if (signal_pending(current))
+ 			goto signal;
++
++		/* in the meanwhile 't' can be dead, removed, etc, check again
++		 * its existence
++		 */
++		if (!pktgen_lookup_thread(pn, t))
++			break;
+ 	}
+ 	return 1;
+ signal:
+ 	return 0;
+ }
+ 
++static struct pktgen_thread *pktgen_find_first_running(struct pktgen_net *pn)
++{
++	struct pktgen_thread *t;
++
++	list_for_each_entry(t, &pn->pktgen_threads, th_list)
++		if (thread_is_running(t))
++			return t;
++	return NULL;
++}
++
+ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
+ {
+ 	struct pktgen_thread *t;
+@@ -3083,8 +3112,11 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
+ 
+ 	mutex_lock(&pktgen_thread_lock);
+ 
+-	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
+-		sig = pktgen_wait_thread_run(t);
++	while (1) {
++		t = pktgen_find_first_running(pn);
++		if (!t)
++			break;
++		sig = pktgen_wait_thread_run(pn, t);
+ 		if (sig == 0)
+ 			break;
+ 	}
+-- 
+2.20.1
+
