@@ -2,142 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D2B36784
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 00:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C35C63679F
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 00:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfFEWbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 18:31:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46022 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726510AbfFEWbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 18:31:50 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x55MVFFR018208;
-        Wed, 5 Jun 2019 15:31:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=6j7vpSvSiDYY9IH9/wBwCX0diYbT/eJGELH4MxsjmbM=;
- b=Sldww/YkWyfU1Jfp3qX9UwC+owaFELDgYCidW9/2i23ScUosqj86vS6kkzWG1mFZboQp
- Q0vMiIn4vYjBDNd0MiPxbjL/HguFa4TkgUWGQuqIAorU0JtqRv2szqu4uZlOnJSyrrQ1
- sKYZtzUkF+RwcNi9F9GArbx1YK6s5/2B2Pk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sxdvpj1yu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 05 Jun 2019 15:31:19 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 5 Jun 2019 15:31:17 -0700
-Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 5 Jun 2019 15:31:16 -0700
-Received: from NAM01-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 5 Jun 2019 15:31:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6j7vpSvSiDYY9IH9/wBwCX0diYbT/eJGELH4MxsjmbM=;
- b=e/xVmgI6JEPyjIsGVvIjET+oWz8BXcxaOuAyZFWO1wTFV5ZMx7tlZDTqZCVWKD0IAny0iaDaRbPGj2ChCSUG1AqpyhzpD8va57/DP3vFgbPLzNCoZ8v99hoDaTWKkUaPBPerD/ISp2e87ApJ7PCfAiwVo1XXz4EZkeasJofZZvc=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
- MWHPR15MB1711.namprd15.prod.outlook.com (10.174.254.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.13; Wed, 5 Jun 2019 22:31:14 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1943.023; Wed, 5 Jun 2019
- 22:31:14 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-CC:     "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "ast@kernel.org" <ast@kernel.org>
-Subject: Re: [PATCH 1/1] bpf: Allow bpf_map_lookup_elem() on an xskmap
-Thread-Topic: [PATCH 1/1] bpf: Allow bpf_map_lookup_elem() on an xskmap
-Thread-Index: AQHVG7eCV7MKSsPZgkW3+/mLD2Xff6aNpVGA
-Date:   Wed, 5 Jun 2019 22:31:14 +0000
-Message-ID: <20190605223111.rgsd3tyl7jvahvgc@kafai-mbp.dhcp.thefacebook.com>
-References: <20190605155756.3779466-1-jonathan.lemon@gmail.com>
- <20190605155756.3779466-2-jonathan.lemon@gmail.com>
-In-Reply-To: <20190605155756.3779466-2-jonathan.lemon@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1301CA0035.namprd13.prod.outlook.com
- (2603:10b6:301:29::48) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:53::10)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::1:b7bf]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a871879-357a-4145-f507-08d6ea058474
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1711;
-x-ms-traffictypediagnostic: MWHPR15MB1711:
-x-microsoft-antispam-prvs: <MWHPR15MB1711DED9A5128781735BD9FAD5160@MWHPR15MB1711.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 00594E8DBA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(396003)(346002)(366004)(39860400002)(189003)(199004)(99286004)(86362001)(6916009)(8936002)(2906002)(4326008)(66946007)(76176011)(53936002)(5660300002)(316002)(52116002)(54906003)(6116002)(386003)(81166006)(6506007)(102836004)(66446008)(66556008)(305945005)(7736002)(66476007)(4744005)(64756008)(229853002)(478600001)(81156014)(8676002)(486006)(476003)(68736007)(9686003)(6512007)(1076003)(73956011)(256004)(6436002)(6486002)(71200400001)(71190400001)(6246003)(46003)(14444005)(14454004)(186003)(446003)(25786009)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1711;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: tidX0EhjpECynAYatESLY/bCMaPgx1bhpDY65iZ6Zsdv7RYRw9yrV68bTrJaNnHEUIE5kWKTUPj04KJz1wsyNEpU8cepb/S2R1NvnLuaBGDf+4fN/mLHDB8qkzJEmRMQddCydTrcrbX7WDHDhtZCLG+9lG8452BNRwIyUaoC/QAQaxjWiWGzqrBpDaeyEibbdi0xKudLsBBsPjoctfehR7N7T0OSpQDJWD1TYU1UzQcgXr2oo7O+PWBNW2uKzYioMq9biMTA7V7wU0Bw6rB4Jn/ebzLa/RJbm4F13pbtHiTMn5eS1GpfOlp10LpgqdkiyBw7UTwydHLWAQ5a0+BE5Q1DuHq+o15vtEjy+/Pkdo1zRdPmZ6quFZYkRJ+ptN2qY5SGSWBx711igv7rX9/Dx2rrFcLyXsr2b8bxug45cZg=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B1D6EC19BC4ABA4A8288857EC27CFBB7@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726761AbfFEWve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 18:51:34 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:50750 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726532AbfFEWve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 18:51:34 -0400
+Received: by mail-it1-f195.google.com with SMTP id a186so198195itg.0
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 15:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5exRdrUtbUyeCW9OHOiVQExue5bAGFVKBlO3hebfXgU=;
+        b=Dk9RMmCtQVXIS7madhd1BjIGxlHFetVfq7sbOV3EWXN3IwSUE/DPrHYpsPphGlpZdp
+         BHeovziL9pxxS+tTeP0xK6McUug95q9Bg8Y37gyXYPKSOVcLIUnCYGxCzJPSw9Vl+yKo
+         zIUCOhcg+0KFEG0qvEm7ONy/Tn4TbWmjqw05s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5exRdrUtbUyeCW9OHOiVQExue5bAGFVKBlO3hebfXgU=;
+        b=hNpfBM1ntWnpnK9ACg2++R73+lWu9gc+m7E80pms7/C43f+20BmmyT6P3MPzKSq8SL
+         xmH8moA5XviuqPcBul402fu+/zCgBL5tJavaUEIuFC/U0ZOJigAW73whngC8E7F4gdIr
+         UH8RFIOFdh+uCmfS3uP6LpwToeArqGK4lgmWD+G4DcKPBbVv6E+UXXzYqmG9aeKyr++c
+         kXIqXSm2UlY9EI+XrmU9Jjk80/sPr0OZNS7iTJ24+WXlh8TfcOIIPC9jd61nlGrfhChc
+         L4wn5RCBexvUQzye502fJV54eCotnzl8mHYtlpqSsW9CC/d+Av5/7ooFrF6+KCvDK5Cp
+         sVRw==
+X-Gm-Message-State: APjAAAV3asWZD+BO4n0Py4dsLajPVR326AvqeYFDMRjJNk/dFA2Sm6xx
+        jw0DFqcNDFd02bkOrXhI40WsiyMgwC4=
+X-Google-Smtp-Source: APXvYqxq3Wlrdbkeg4upspIRXis0dXUzQenDWShbo2VFYOP1Ko6TL5wJQIqSmZjMJVcLisYU+GBbxQ==
+X-Received: by 2002:a24:378b:: with SMTP id r133mr26292318itr.154.1559775092713;
+        Wed, 05 Jun 2019 15:51:32 -0700 (PDT)
+Received: from mail-it1-f179.google.com (mail-it1-f179.google.com. [209.85.166.179])
+        by smtp.gmail.com with ESMTPSA id p130sm103177itd.19.2019.06.05.15.51.30
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Jun 2019 15:51:31 -0700 (PDT)
+Received: by mail-it1-f179.google.com with SMTP id j204so175788ite.4
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 15:51:30 -0700 (PDT)
+X-Received: by 2002:a24:5a06:: with SMTP id v6mr14776129ita.160.1559775090284;
+ Wed, 05 Jun 2019 15:51:30 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a871879-357a-4145-f507-08d6ea058474
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2019 22:31:14.2421
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1711
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-05_14:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=490 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906050143
-X-FB-Internal: deliver
+References: <20190603183740.239031-1-dianders@chromium.org>
+ <20190603183740.239031-3-dianders@chromium.org> <25fe1725-76fa-2739-1427-b0e8823ea4ae@broadcom.com>
+In-Reply-To: <25fe1725-76fa-2739-1427-b0e8823ea4ae@broadcom.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 5 Jun 2019 15:51:19 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Vu3p_Y=Q3PLj37nSOU2WH-SyaG5K=f0O_UKu1==Zj-eA@mail.gmail.com>
+Message-ID: <CAD=FV=Vu3p_Y=Q3PLj37nSOU2WH-SyaG5K=f0O_UKu1==Zj-eA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] mmc: core: API for temporarily disabling
+ auto-retuning due to errors
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Avri Altman <avri.altman@wdc.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 08:57:56AM -0700, Jonathan Lemon wrote:
-> Currently, the AF_XDP code uses a separate map in order to
-> determine if an xsk is bound to a queue.  Instead of doing this,
-> have bpf_map_lookup_elem() return a xdp_sock.
->=20
-> Rearrange some xdp_sock members to eliminate structure holes.
->=20
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/linux/bpf.h                           |  8 ++++
->  include/net/xdp_sock.h                        |  4 +-
->  include/uapi/linux/bpf.h                      |  4 ++
->  kernel/bpf/verifier.c                         | 26 +++++++++++-
->  kernel/bpf/xskmap.c                           |  7 ++++
->  net/core/filter.c                             | 40 +++++++++++++++++++
->  tools/include/uapi/linux/bpf.h                |  4 ++P
-The convention is to submit this uapi's bpf.h sync to tools/ in
-a separate patch to make conflicts easier to be dealt with.
-It will be the 2nd patch.
+Hi,
 
->  .../bpf/verifier/prevent_map_lookup.c         | 15 -------
->  tools/testing/selftests/bpf/verifier/sock.c   | 18 +++++++++
-Hence, the selftest changes will be in the 3rd patch.
+On Wed, Jun 5, 2019 at 12:54 AM Arend Van Spriel
+<arend.vanspriel@broadcom.com> wrote:
+>
+> On 6/3/2019 8:37 PM, Douglas Anderson wrote:
+> > Normally when the MMC core sees an "-EILSEQ" error returned by a host
+> > controller then it will trigger a retuning of the card.  This is
+> > generally a good idea.
+> >
+> > However, if a command is expected to sometimes cause transfer errors
+> > then these transfer errors shouldn't cause a re-tuning.  This
+> > re-tuning will be a needless waste of time.  One example case where a
+> > transfer is expected to cause errors is when transitioning between
+> > idle (sometimes referred to as "sleep" in Broadcom code) and active
+> > state on certain Broadcom WiFi cards.  Specifically if the card was
+> > already transitioning between states when the command was sent it
+> > could cause an error on the SDIO bus.
+> >
+> > Let's add an API that the SDIO card drivers can call that will
+> > temporarily disable the auto-tuning functionality.  Then we can add a
+> > call to this in the Broadcom WiFi driver and any other driver that
+> > might have similar needs.
+> >
+> > NOTE: this makes the assumption that the card is already tuned well
+> > enough that it's OK to disable the auto-retuning during one of these
+> > error-prone situations.  Presumably the driver code performing the
+> > error-prone transfer knows how to recover / retry from errors.  ...and
+> > after we can get back to a state where transfers are no longer
+> > error-prone then we can enable the auto-retuning again.  If we truly
+> > find ourselves in a case where the card needs to be retuned sometimes
+> > to handle one of these error-prone transfers then we can always try a
+> > few transfers first without auto-retuning and then re-try with
+> > auto-retuning if the first few fail.
+> >
+> > Without this change on rk3288-veyron-minnie I periodically see this in
+> > the logs of a machine just sitting there idle:
+> >    dwmmc_rockchip ff0d0000.dwmmc: Successfully tuned phase to XYZ
+> >
+> > Fixes: bd11e8bd03ca ("mmc: core: Flag re-tuning is needed on CRC errors")
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> > Note that are are a whole boatload of different ways that we could
+> > provide an API for the Broadcom WiFi SDIO driver.  This patch
+> > illustrates one way but if maintainers feel strongly that this is too
+> > ugly and have a better idea then I can give it a shot too.  From a
+> > purist point of view I kinda felt that the "expect errors" really
+> > belonged as part of the mmc_request structure, but getting it into
+> > there meant changing a whole pile of core SD/MMC APIs.  Simply adding
+> > it to the host seemed to match the current style better and was a less
+> > intrusive change.
+>
+> Hi Doug,
+>
+> Sorry for bringing this up, but there used to be an issue with retuning
+> in general, ie. the device handled tuning command 19 only once after
+> startup. I guess that is no longer an issue given your results.
 
-Others LGTM,
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+Right.  It definitely used to just happen once at bootup and you were
+out of luck if that value was bad for some reason or if conditions
+changed.  In cases in my own personal experience it was actually fine
+to just tune once at bootup once all the tuning bugs in the controller
+were fixed.  ...but I can imagine that some controllers could use
+delay elements that drift more.  ...and in any case if you're getting
+CRC errors trying a re-tuning seems a sensible thing to do anyway
+(unless the CRC error was expected).
+
+Looking at commit bd11e8bd03ca ("mmc: core: Flag re-tuning is needed
+on CRC errors") you can definitely see evidence that tuning can happen
+again after bootup.
+
+
+> I guess
+> the problem goes away when you disable device sleep functionality. No
+> what you want in terms of power consumption, but would be good to know.
+> You can disable it with below patch.
+
+I can try testing this if it's useful, but I'm not sure what it will
+prove.  I definitely don't want to disable device sleep, so it's not a
+long term solution.  Are you just looking for extra evidence that this
+is indeed my problem?  I don't think I need any extra evidence, do I?
+The fact that patch #3 in this series fixes my problems (plus
+debugging I did to arrive at that patch) means we absolutely know that
+brcmf_sdio_kso_control() is responsible for the CRC errors that caused
+the unneeded tuning.  Setting BRCMF_IDLE_INTERVAL to 0 will
+effectively prevent brcmf_sdio_kso_control() from doing anything
+useful (except in full system suspend, but that's not the case I was
+testing anyway).
+
+-Doug
