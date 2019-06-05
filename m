@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A15335C07
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 13:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF8E35C01
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 13:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfFELtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 07:49:15 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33784 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727461AbfFELtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 07:49:12 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x55BlFSc081991
-        for <netdev@vger.kernel.org>; Wed, 5 Jun 2019 07:49:11 -0400
+        id S1727320AbfFELtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 07:49:10 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37208 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727381AbfFELtJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 07:49:09 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x55BlCZG061494
+        for <netdev@vger.kernel.org>; Wed, 5 Jun 2019 07:49:08 -0400
 Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2sxb4an3yq-1
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2sxat6658b-1
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 07:49:10 -0400
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 07:49:08 -0400
 Received: from localhost
         by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
         for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
         Wed, 5 Jun 2019 12:49:06 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
         by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
         (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 5 Jun 2019 12:49:04 +0100
+        Wed, 5 Jun 2019 12:49:05 +0100
 Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x55Bn2sX59834544
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x55Bn3F963045734
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 5 Jun 2019 11:49:03 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BEA994204F;
-        Wed,  5 Jun 2019 11:49:02 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 3098542049;
+        Wed,  5 Jun 2019 11:49:03 +0000 (GMT)
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7092A4203F;
+        by IMSVA (Postfix) with ESMTP id CE49D42041;
         Wed,  5 Jun 2019 11:49:02 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -45,17 +45,18 @@ Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
         Heiko Carstens <heiko.carstens@de.ibm.com>,
         Stefan Raspl <raspl@linux.ibm.com>,
         Ursula Braun <ubraun@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH v3 net 2/4] s390/qeth: check dst entry before use
-Date:   Wed,  5 Jun 2019 13:48:49 +0200
+Subject: [PATCH v3 net 3/4] s390/qeth: fix VLAN attribute in bridge_hostnotify udev event
+Date:   Wed,  5 Jun 2019 13:48:50 +0200
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190605114851.56641-1-jwi@linux.ibm.com>
 References: <20190605114851.56641-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
-x-cbid: 19060511-0020-0000-0000-000003461485
+x-cbid: 19060511-0020-0000-0000-000003461486
 X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060511-0021-0000-0000-00002199234B
-Message-Id: <20190605114851.56641-3-jwi@linux.ibm.com>
+x-cbparentid: 19060511-0021-0000-0000-00002199234D
+Message-Id: <20190605114851.56641-4-jwi@linux.ibm.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-05_07:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
@@ -68,99 +69,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While qeth_l3 uses netif_keep_dst() to hold onto the dst, a skb's dst
-may still have been obsoleted (via dst_dev_put()) by the time that we
-end up using it. The dst then points to the loopback interface, which
-means the neighbour lookup in qeth_l3_get_cast_type() determines a bogus
-cast type of RTN_BROADCAST.
-For IQD interfaces this causes us to place such skbs on the wrong
-HW queue, resulting in TX errors.
+From: Alexandra Winter <wintera@linux.ibm.com>
 
-Fix-up the various call sites to first validate the dst entry with
-dst_check(), and fall back accordingly.
+Enabling sysfs attribute bridge_hostnotify triggers a series of udev events
+for the MAC addresses of all currently connected peers. In case no VLAN is
+set for a peer, the device reports the corresponding MAC addresses with
+VLAN ID 4096. This currently results in attribute VLAN=4096 for all
+non-VLAN interfaces in the initial series of events after host-notify is
+enabled.
 
+Instead, no VLAN attribute should be reported in the udev event for
+non-VLAN interfaces.
+
+Only the initial events face this issue. For dynamic changes that are
+reported later, the device uses a validity flag.
+
+This also changes the code so that it now sets the VLAN attribute for
+MAC addresses with VID 0. On Linux, no qeth interface will ever be
+registered with VID 0: Linux kernel registers VID 0 on all network
+interfaces initially, but qeth will drop .ndo_vlan_rx_add_vid for VID 0.
+Peers with other OSs could register MACs with VID 0.
+
+Fixes: 9f48b9db9a22 ("qeth: bridgeport support - address notifications")
+Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
-v1 -> v2: prefer dst_check() over dst->obsolete (davem)
-v2 -> v3: use the dst entry that dst_check() returns (davem)
+ drivers/s390/net/qeth_l2_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/s390/net/qeth_l3_main.c | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 2df67abdfde7..13bf3e2e9cea 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1888,13 +1888,20 @@ static int qeth_l3_do_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 218801232ca2..ff8a6cd790b1 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -1680,7 +1680,7 @@ static void qeth_bridgeport_an_set_cb(void *priv,
  
- static int qeth_l3_get_cast_type(struct sk_buff *skb)
- {
-+	int ipv = qeth_get_ip_version(skb);
- 	struct neighbour *n = NULL;
- 	struct dst_entry *dst;
- 
- 	rcu_read_lock();
- 	dst = skb_dst(skb);
--	if (dst)
--		n = dst_neigh_lookup_skb(dst, skb);
-+	if (dst) {
-+		struct rt6_info *rt = (struct rt6_info *) dst;
-+
-+		dst = dst_check(dst, (ipv == 6) ? rt6_get_cookie(rt) : 0);
-+		if (dst)
-+			n = dst_neigh_lookup_skb(dst, skb);
-+	}
-+
- 	if (n) {
- 		int cast_type = n->type;
- 
-@@ -1909,7 +1916,7 @@ static int qeth_l3_get_cast_type(struct sk_buff *skb)
- 	rcu_read_unlock();
- 
- 	/* no neighbour (eg AF_PACKET), fall back to target's IP address ... */
--	switch (qeth_get_ip_version(skb)) {
-+	switch (ipv) {
- 	case 4:
- 		if (ipv4_is_lbcast(ip_hdr(skb)->daddr))
- 			return RTN_BROADCAST;
-@@ -1942,6 +1949,7 @@ static void qeth_l3_fill_header(struct qeth_qdio_out_q *queue,
- 	struct qeth_hdr_layer3 *l3_hdr = &hdr->hdr.l3;
- 	struct vlan_ethhdr *veth = vlan_eth_hdr(skb);
- 	struct qeth_card *card = queue->card;
-+	struct dst_entry *dst;
- 
- 	hdr->hdr.l3.length = data_len;
- 
-@@ -1987,15 +1995,27 @@ static void qeth_l3_fill_header(struct qeth_qdio_out_q *queue,
- 	}
- 
- 	rcu_read_lock();
-+	dst = skb_dst(skb);
-+
- 	if (ipv == 4) {
--		struct rtable *rt = skb_rtable(skb);
-+		struct rtable *rt;
-+
-+		if (dst)
-+			dst = dst_check(dst, 0);
-+		rt = (struct rtable *) dst;
- 
- 		*((__be32 *) &hdr->hdr.l3.next_hop.ipv4.addr) = (rt) ?
- 				rt_nexthop(rt, ip_hdr(skb)->daddr) :
- 				ip_hdr(skb)->daddr;
- 	} else {
- 		/* IPv6 */
--		const struct rt6_info *rt = skb_rt6_info(skb);
-+		struct rt6_info *rt;
-+
-+		if (dst) {
-+			rt = (struct rt6_info *) dst;
-+			dst = dst_check(dst, rt6_get_cookie(rt));
-+		}
-+		rt = (struct rt6_info *) dst;
- 
- 		if (rt && !ipv6_addr_any(&rt->rt6i_gateway))
- 			l3_hdr->next_hop.ipv6_addr = rt->rt6i_gateway;
+ 	l2entry = (struct qdio_brinfo_entry_l2 *)entry;
+ 	code = IPA_ADDR_CHANGE_CODE_MACADDR;
+-	if (l2entry->addr_lnid.lnid)
++	if (l2entry->addr_lnid.lnid < VLAN_N_VID)
+ 		code |= IPA_ADDR_CHANGE_CODE_VLANID;
+ 	qeth_bridge_emit_host_event(card, anev_reg_unreg, code,
+ 		(struct net_if_token *)&l2entry->nit,
 -- 
 2.17.1
 
