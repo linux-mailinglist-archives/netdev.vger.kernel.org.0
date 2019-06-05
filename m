@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F22E935D76
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C3D035D8A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727903AbfFENE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 09:04:58 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39907 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727744AbfFENE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:04:57 -0400
-Received: by mail-lj1-f195.google.com with SMTP id v18so1923047ljh.6
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 06:04:56 -0700 (PDT)
+        id S1727938AbfFENKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 09:10:53 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34007 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727917AbfFENKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:10:53 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m29so12592392qtu.1
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 06:10:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NRvNKqXzZztvQh3qtkPJBNz3Y41PCmY2mwresCdihvw=;
-        b=Dvb5lvHNFy/YlX9VOpbVuAXgLc/Bkqb9FHL1QfulyPL3Nfu7LNFUDi2bdtRN38UIDB
-         kpsq1w0ZNYuzjO5QiRB/VNBh4B2zYpwznNXZ2BcTi+m6xeubmV2GNyYxBYFe52W8b6at
-         WcDyZ7BR4dByy2KBn+q2kg8uW24xdyRPcakrY=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=SjKvcJWT1qJCrA2qzNlNAA6sWjwD+zejUCYiVMbFumQ=;
+        b=nnxZV8sjkfa/CeMUMAEqRt75XKu8G5xT0ZXRi/HwQvL+4mPVa6BvegS/lNI1TkluMz
+         r+oU7d61O2qncv76ET2XCQEdxPftr8b/WBq60uBOBE8QeaXte7sDJUjpzlQzBYbZIGzN
+         I3ElCyNlAOR1upHoa5CboX/IT3EHznusAcuBJBamSZqjHu/ObcAeF8J9syYyanUULGHJ
+         WhcEgLYRwk3TDeZYu6Pjj5KSdqdw9qD6wGSHW7aXS7Wn1i5M+G/08vDwobsi3UiDgaBj
+         xIO3eCMriA0FdvUbYRNUP9tM+OmYJvBrrL7r6K84V9AXGJKOooiG0nXyX1+P25XF3ble
+         rQjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NRvNKqXzZztvQh3qtkPJBNz3Y41PCmY2mwresCdihvw=;
-        b=aIaxvH03oinE4EsbPQ5B79AS6UayWsthIIS12h40+/D2/JJUoAAeAxCofhi70nXlHg
-         RwGJuIcXlGpI0jAQ43WFL9VpsE+D6p9bzBTJ+aQbtrcWJs8X2ClVkE9A7voqs4uLew1Z
-         evuMk/Oy/LYpe0Hlu7mgkm0uMIoRO7qb5zoAZ1RNPZrpXG9c30P0rH64nP491X7xbde+
-         0SYOJM6yU7bcM6tFQq3N7uEl4RGpS6gUMpB8K0pErhe275Fcojd+p6SA7LTUwY/iFew1
-         0eoFJdoQn8LXuNw/UTviMXfnwRVeANdrJfBxbiPJvtlJhzzWwO4oKgjhmfnGsFOXjJX2
-         uWWA==
-X-Gm-Message-State: APjAAAUdjGhjyLp67CaYIBXgpddxTqGgGM/XHmsCuDe1/6GXDWFzSdBL
-        ApBwUbIaIeYGO9orn4TBYzoTdlASS0GNuedbnDeLyA==
-X-Google-Smtp-Source: APXvYqyt7OLKBZ4DAerRqhiAeTPqPshOGmAnuk0KkZaQmyvMV/dwuVHzpUT44mnRI2A50tJlbF4XhdP85jTinsVz67M=
-X-Received: by 2002:a05:651c:87:: with SMTP id 7mr3383290ljq.184.1559739895494;
- Wed, 05 Jun 2019 06:04:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190601222738.6856-1-joel@joelfernandes.org> <20190601222738.6856-5-joel@joelfernandes.org>
- <20190605012429.wmlvlgn4mb4jkvua@ca-dmjordan1.us.oracle.com>
-In-Reply-To: <20190605012429.wmlvlgn4mb4jkvua@ca-dmjordan1.us.oracle.com>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Wed, 5 Jun 2019 09:04:44 -0400
-Message-ID: <CAEXW_YTsT5BY5Qbc6Jju2XmbHSQFELrGM9UaPPXY-ETmJaBrsA@mail.gmail.com>
-Subject: Re: [RFC 4/6] workqueue: Convert for_each_wq to use built-in list check
-To:     Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Neil Brown <neilb@suse.com>, netdev <netdev@vger.kernel.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Zilstra <peterz@infradead.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, rcu <rcu@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SjKvcJWT1qJCrA2qzNlNAA6sWjwD+zejUCYiVMbFumQ=;
+        b=ePX9k6IVqbs3qfCTaJ0MhzHsFbmJ9vUHm47nmjJeOaifvrry8xAGFkAYWc5tCpeEyf
+         PlhwY8e7AzdMNfdhEKlTUePDOxg37aCfPw/UZB5wNrlVtS/xlY+6W8tyMb4baz976GYS
+         tvZFus18bdYTNrwQFpMALlhb3ocgP2Py0Tf9e97buLz/0+nM3s0UmLbV2rE+mFbALU92
+         0lxRX61Qpm185BSHgjIQFGP9aU6DLwpebpQ2biNyCoODHnXpE5mZnKbe+Ie5uC5iwN7W
+         z/Gnmb77+mDwBU7Iuv2NSLNw9D//8kQSfn5WgboPxBYD03BMJgv31hsEJakCPkM0olD9
+         2v2g==
+X-Gm-Message-State: APjAAAWfpwe9fa96IDfYuQr6Bq9iSar6d0GwX4ISNQrkdT8L7KZ4O5ze
+        jUlHZM0odquzyCehd/BbHuubPYBa
+X-Google-Smtp-Source: APXvYqzpXU4sY4/ehOVOwwFuGQIbT53ACRj6Op6agUKuOXlxHM2bUzSYo6keodGObOldQCI/46otSg==
+X-Received: by 2002:ac8:3267:: with SMTP id y36mr33671173qta.293.1559740252210;
+        Wed, 05 Jun 2019 06:10:52 -0700 (PDT)
+Received: from fabio-Latitude-E5450.am.freescale.net ([2804:14c:482:3c8:56cb:1049:60d2:137b])
+        by smtp.gmail.com with ESMTPSA id q36sm7447819qtc.12.2019.06.05.06.10.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Jun 2019 06:10:51 -0700 (PDT)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     davem@davemloft.net
+Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH v3 net-next] net: fec_ptp: Use dev_err() instead of pr_err()
+Date:   Wed,  5 Jun 2019 10:10:35 -0300
+Message-Id: <20190605131035.9267-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 4, 2019 at 9:25 PM Daniel Jordan <daniel.m.jordan@oracle.com> wrote:
->
-> On Sat, Jun 01, 2019 at 06:27:36PM -0400, Joel Fernandes (Google) wrote:
-> > list_for_each_entry_rcu now has support to check for RCU reader sections
-> > as well as lock. Just use the support in it, instead of explictly
-> > checking in the caller.
-> >
-> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > ---
-> >  kernel/workqueue.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> > index 9657315405de..91ed7aca16e5 100644
-> > --- a/kernel/workqueue.c
-> > +++ b/kernel/workqueue.c
-> > @@ -424,9 +424,8 @@ static void workqueue_sysfs_unregister(struct workqueue_struct *wq);
-> >   * ignored.
-> >   */
-> >  #define for_each_pwq(pwq, wq)                                                \
-> > -     list_for_each_entry_rcu((pwq), &(wq)->pwqs, pwqs_node)          \
-> > -             if (({ assert_rcu_or_wq_mutex(wq); false; })) { }       \
-> > -             else
-> > +     list_for_each_entry_rcu((pwq), &(wq)->pwqs, pwqs_node,          \
-> > +                              lock_is_held(&(wq->mutex).dep_map))
-> >
->
-> I think the definition of assert_rcu_or_wq_mutex can also be deleted.
+dev_err() is more appropriate for printing error messages inside
+drivers, so switch to dev_err().
 
-Sure, will do. Thank you.
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Acked-by: Fugang Duan <fugang.duan@nxp.com>
+---
+Changes since v2:
+- Made it a standalone patch
+- Collected Andy's Ack
+
+ drivers/net/ethernet/freescale/fec_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 7e892b1cbd3d..19e2365be7d8 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -617,7 +617,7 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
+ 	fep->ptp_clock = ptp_clock_register(&fep->ptp_caps, &pdev->dev);
+ 	if (IS_ERR(fep->ptp_clock)) {
+ 		fep->ptp_clock = NULL;
+-		pr_err("ptp_clock_register failed\n");
++		dev_err(&pdev->dev, "ptp_clock_register failed\n");
+ 	}
+ 
+ 	schedule_delayed_work(&fep->time_keep, HZ);
+-- 
+2.17.1
+
