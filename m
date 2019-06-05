@@ -2,29 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE929365AA
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25492365AB
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbfFEUlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:41:13 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43794 "EHLO
+        id S1726670AbfFEUlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:41:14 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43788 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbfFEUlL (ORCPT
+        with ESMTP id S1726305AbfFEUlL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:41:11 -0400
 Received: from [178.197.249.21] (helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1hYcia-0005Bg-D3; Wed, 05 Jun 2019 22:41:08 +0200
+        id 1hYcia-0005Bj-SP; Wed, 05 Jun 2019 22:41:08 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     alexei.starovoitov@gmail.com
 Cc:     rdna@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martynas Pumputis <m@lambda.lt>
-Subject: [PATCH bpf 1/2] bpf: fix unconnected udp hooks
-Date:   Wed,  5 Jun 2019 22:40:49 +0200
-Message-Id: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf 2/2] bpf: add further msg_name rewrite tests to test_sock_addr
+Date:   Wed,  5 Jun 2019 22:40:50 +0200
+Message-Id: <5048ab83a91b990842690611b59a23e85d4a0547.1559767053.git.daniel@iogearbox.net>
 X-Mailer: git-send-email 2.9.5
+In-Reply-To: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
+References: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
+In-Reply-To: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
+References: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
 X-Authenticated-Sender: daniel@iogearbox.net
 X-Virus-Scanned: Clear (ClamAV 0.100.3/25471/Wed Jun  5 10:12:21 2019)
 Sender: netdev-owner@vger.kernel.org
@@ -32,353 +35,376 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Intention of cgroup bind/connect/sendmsg BPF hooks is to act transparently
-to applications as also stated in original motivation in 7828f20e3779 ("Merge
-branch 'bpf-cgroup-bind-connect'"). When recently integrating the latter
-two hooks into Cilium to enable host based load-balancing with Kubernetes,
-I ran into the issue that pods couldn't start up as DNS got broken. Kubernetes
-typically sets up DNS as a service and is thus subject to load-balancing.
+Extend test_sock_addr for recvmsg test cases, bigger parts of the
+sendmsg code can be reused for this. Below are the strace view of
+the recvmsg rewrites; the sendmsg side does not have a BPF prog
+connected to it for the context of this test:
 
-Upon further debugging, it turns out that the cgroupv2 sendmsg BPF hooks API
-is currently insufficent and thus not usable as-is for standard applications
-shipped with most distros. To break down the issue we ran into with a simple
-example:
+IPv4 test case:
 
-  # cat /etc/resolv.conf
-  nameserver 147.75.207.207
-  nameserver 147.75.207.208
+  [pid  4846] bpf(BPF_PROG_ATTACH, {target_fd=3, attach_bpf_fd=4, attach_type=0x13 /* BPF_??? */, attach_flags=BPF_F_ALLOW_OVERRIDE}, 112) = 0
+  [pid  4846] socket(AF_INET, SOCK_DGRAM, IPPROTO_IP) = 5
+  [pid  4846] bind(5, {sa_family=AF_INET, sin_port=htons(4444), sin_addr=inet_addr("127.0.0.1")}, 128) = 0
+  [pid  4846] socket(AF_INET, SOCK_DGRAM, IPPROTO_IP) = 6
+  [pid  4846] sendmsg(6, {msg_name={sa_family=AF_INET, sin_port=htons(4444), sin_addr=inet_addr("127.0.0.1")}, msg_namelen=128, msg_iov=[{iov_base="a", iov_len=1}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 1
+  [pid  4846] select(6, [5], NULL, NULL, {tv_sec=2, tv_usec=0}) = 1 (in [5], left {tv_sec=1, tv_usec=999995})
+  [pid  4846] recvmsg(5, {msg_name={sa_family=AF_INET, sin_port=htons(4040), sin_addr=inet_addr("192.168.1.254")}, msg_namelen=128->16, msg_iov=[{iov_base="a", iov_len=64}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 1
+  [pid  4846] close(6)                    = 0
+  [pid  4846] close(5)                    = 0
+  [pid  4846] bpf(BPF_PROG_DETACH, {target_fd=3, attach_type=0x13 /* BPF_??? */}, 112) = 0
 
-For the purpose of a simple test, we set up above IPs as service IPs and
-transparently redirect traffic to a different DNS backend server for that
-node:
+IPv6 test case:
 
-  # cilium service list
-  ID   Frontend            Backend
-  1    147.75.207.207:53   1 => 8.8.8.8:53
-  2    147.75.207.208:53   1 => 8.8.8.8:53
+  [pid  4846] bpf(BPF_PROG_ATTACH, {target_fd=3, attach_bpf_fd=4, attach_type=0x14 /* BPF_??? */, attach_flags=BPF_F_ALLOW_OVERRIDE}, 112) = 0
+  [pid  4846] socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 5
+  [pid  4846] bind(5, {sa_family=AF_INET6, sin6_port=htons(6666), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=htonl(0), sin6_scope_id=0}, 128) = 0
+  [pid  4846] socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP) = 6
+  [pid  4846] sendmsg(6, {msg_name={sa_family=AF_INET6, sin6_port=htons(6666), inet_pton(AF_INET6, "::1", &sin6_addr), sin6_flowinfo=htonl(0), sin6_scope_id=0}, msg_namelen=128, msg_iov=[{iov_base="a", iov_len=1}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 1
+  [pid  4846] select(6, [5], NULL, NULL, {tv_sec=2, tv_usec=0}) = 1 (in [5], left {tv_sec=1, tv_usec=999996})
+  [pid  4846] recvmsg(5, {msg_name={sa_family=AF_INET6, sin6_port=htons(6060), inet_pton(AF_INET6, "face:b00c:1234:5678::abcd", &sin6_addr), sin6_flowinfo=htonl(0), sin6_scope_id=0}, msg_namelen=128->28, msg_iov=[{iov_base="a", iov_len=64}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 1
+  [pid  4846] close(6)                    = 0
+  [pid  4846] close(5)                    = 0
+  [pid  4846] bpf(BPF_PROG_DETACH, {target_fd=3, attach_type=0x14 /* BPF_??? */}, 112) = 0
 
-The attached BPF program is basically selecting one of the backends if the
-service IP/port matches on the cgroup hook. DNS breaks here, because the
-hooks are not transparent enough to applications which have built-in msg_name
-address checks:
+test_sock_addr run w/o strace view:
 
-  # nslookup 1.1.1.1
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.207#53
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.208#53
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.207#53
+  # ./test_sock_addr.sh
   [...]
-  ;; connection timed out; no servers could be reached
-
-  # dig 1.1.1.1
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.207#53
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.208#53
-  ;; reply from unexpected source: 8.8.8.8#53, expected 147.75.207.207#53
-  [...]
-
-  ; <<>> DiG 9.11.3-1ubuntu1.7-Ubuntu <<>> 1.1.1.1
-  ;; global options: +cmd
-  ;; connection timed out; no servers could be reached
-
-For comparison, if none of the service IPs is used, and we tell nslookup
-to use 8.8.8.8 directly it works just fine, of course:
-
-  # nslookup 1.1.1.1 8.8.8.8
-  1.1.1.1.in-addr.arpa	name = one.one.one.one.
-
-In order to fix this and thus act more transparent to the application,
-this needs reverse translation on recvmsg() side. A minimal fix for this
-API is to add similar recvmsg() hooks behind the BPF cgroups static key
-such that the program can track state and replace the current sockaddr_in{,6}
-with the original service IP. From BPF side, this basically tracks the
-service tuple plus socket cookie in an LRU map where the reverse NAT can
-then be retrieved via map value as one example. Side-note: the BPF cgroups
-static key should be converted to a per-hook static key in future.
-
-Same example after this fix:
-
-  # cilium service list
-  ID   Frontend            Backend
-  1    147.75.207.207:53   1 => 8.8.8.8:53
-  2    147.75.207.208:53   1 => 8.8.8.8:53
-
-Lookups work fine now:
-
-  # nslookup 1.1.1.1
-  1.1.1.1.in-addr.arpa    name = one.one.one.one.
-
-  Authoritative answers can be found from:
-
-  # dig 1.1.1.1
-
-  ; <<>> DiG 9.11.3-1ubuntu1.7-Ubuntu <<>> 1.1.1.1
-  ;; global options: +cmd
-  ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 51550
-  ;; flags: qr rd ra ad; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
-
-  ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 512
-  ;; QUESTION SECTION:
-  ;1.1.1.1.                       IN      A
-
-  ;; AUTHORITY SECTION:
-  .                       23426   IN      SOA     a.root-servers.net. nstld.verisign-grs.com. 2019052001 1800 900 604800 86400
-
-  ;; Query time: 17 msec
-  ;; SERVER: 147.75.207.207#53(147.75.207.207)
-  ;; WHEN: Tue May 21 12:59:38 UTC 2019
-  ;; MSG SIZE  rcvd: 111
-
-And from an actual packet level it shows that we're using the back end
-server when talking via 147.75.207.20{7,8} front end:
-
-  # tcpdump -i any udp
-  [...]
-  12:59:52.698732 IP foo.42011 > google-public-dns-a.google.com.domain: 18803+ PTR? 1.1.1.1.in-addr.arpa. (38)
-  12:59:52.698735 IP foo.42011 > google-public-dns-a.google.com.domain: 18803+ PTR? 1.1.1.1.in-addr.arpa. (38)
-  12:59:52.701208 IP google-public-dns-a.google.com.domain > foo.42011: 18803 1/0/0 PTR one.one.one.one. (67)
-  12:59:52.701208 IP google-public-dns-a.google.com.domain > foo.42011: 18803 1/0/0 PTR one.one.one.one. (67)
+  Test case: recvmsg4: return code ok .. [PASS]
+  Test case: recvmsg4: return code !ok .. [PASS]
+  Test case: recvmsg6: return code ok .. [PASS]
+  Test case: recvmsg6: return code !ok .. [PASS]
+  Test case: recvmsg4: rewrite IP & port (asm) .. [PASS]
+  Test case: recvmsg6: rewrite IP & port (asm) .. [PASS]
   [...]
 
-In order to be flexible and to have same semantics as in sendmsg BPF
-programs, we only allow return codes in [1,1] range. In the sendmsg case
-the program is called if msg->msg_name is present which can be the case
-in both, connected and unconnected UDP.
-
-The former only relies on the sockaddr_in{,6} passed via connect(2) if
-passed msg->msg_name was NULL. Therefore, on recvmsg side, we act in similar
-way to call into the BPF program whenever a non-NULL msg->msg_name was
-passed independent of sk->sk_state being TCP_ESTABLISHED or not. Note
-that for TCP case, the msg->msg_name is ignored in the regular recvmsg
-path and therefore not relevant.
-
-For the case of ip{,v6}_recv_error() paths, picked up via MSG_ERRQUEUE,
-the hook is not called. This is intentional as it aligns with the same
-semantics as in case of TCP cgroup BPF hooks right now. This might be
-better addressed in future through a different bpf_attach_type such
-that this case can be distinguished from the regular recvmsg paths,
-for example.
-
-Fixes: 1cedee13d25a ("bpf: Hooks for sys_sendmsg")
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrey Ignatov <rdna@fb.com>
-Cc: Martynas Pumputis <m@lambda.lt>
 ---
- include/linux/bpf-cgroup.h     |  8 ++++++++
- include/uapi/linux/bpf.h       |  2 ++
- kernel/bpf/syscall.c           |  8 ++++++++
- kernel/bpf/verifier.c          | 12 ++++++++----
- net/core/filter.c              |  2 ++
- net/ipv4/udp.c                 |  4 ++++
- net/ipv6/udp.c                 |  4 ++++
- tools/bpf/bpftool/cgroup.c     |  5 ++++-
- tools/include/uapi/linux/bpf.h |  2 ++
- 9 files changed, 42 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/test_sock_addr.c | 213 +++++++++++++++++++++++++--
+ 1 file changed, 197 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index cb3c6b3..a7f7a98 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -238,6 +238,12 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_UDP6_SENDMSG_LOCK(sk, uaddr, t_ctx)		       \
- 	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_UDP6_SENDMSG, t_ctx)
- 
-+#define BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk, uaddr)			\
-+	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_UDP4_RECVMSG, NULL)
+diff --git a/tools/testing/selftests/bpf/test_sock_addr.c b/tools/testing/selftests/bpf/test_sock_addr.c
+index 3f110ea..4ecde23 100644
+--- a/tools/testing/selftests/bpf/test_sock_addr.c
++++ b/tools/testing/selftests/bpf/test_sock_addr.c
+@@ -76,6 +76,7 @@ struct sock_addr_test {
+ 	enum {
+ 		LOAD_REJECT,
+ 		ATTACH_REJECT,
++		ATTACH_OKAY,
+ 		SYSCALL_EPERM,
+ 		SYSCALL_ENOTSUPP,
+ 		SUCCESS,
+@@ -88,9 +89,13 @@ static int connect4_prog_load(const struct sock_addr_test *test);
+ static int connect6_prog_load(const struct sock_addr_test *test);
+ static int sendmsg_allow_prog_load(const struct sock_addr_test *test);
+ static int sendmsg_deny_prog_load(const struct sock_addr_test *test);
++static int recvmsg_allow_prog_load(const struct sock_addr_test *test);
++static int recvmsg_deny_prog_load(const struct sock_addr_test *test);
+ static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test);
++static int recvmsg4_rw_asm_prog_load(const struct sock_addr_test *test);
+ static int sendmsg4_rw_c_prog_load(const struct sock_addr_test *test);
+ static int sendmsg6_rw_asm_prog_load(const struct sock_addr_test *test);
++static int recvmsg6_rw_asm_prog_load(const struct sock_addr_test *test);
+ static int sendmsg6_rw_c_prog_load(const struct sock_addr_test *test);
+ static int sendmsg6_rw_v4mapped_prog_load(const struct sock_addr_test *test);
+ static int sendmsg6_rw_wildcard_prog_load(const struct sock_addr_test *test);
+@@ -507,6 +512,92 @@ static struct sock_addr_test tests[] = {
+ 		SRC6_REWRITE_IP,
+ 		SYSCALL_EPERM,
+ 	},
 +
-+#define BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk, uaddr)			\
-+	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_UDP6_RECVMSG, NULL)
-+
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops)				       \
- ({									       \
- 	int __ret = 0;							       \
-@@ -339,6 +345,8 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
- #define BPF_CGROUP_RUN_PROG_INET6_CONNECT_LOCK(sk, uaddr) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk, uaddr, t_ctx) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_UDP6_SENDMSG_LOCK(sk, uaddr, t_ctx) ({ 0; })
-+#define BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk, uaddr) ({ 0; })
-+#define BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk, uaddr) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type,major,minor,access) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_SYSCTL(head,table,write,buf,count,pos,nbuf) ({ 0; })
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 63e0cf6..e4114a7 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -192,6 +192,8 @@ enum bpf_attach_type {
- 	BPF_LIRC_MODE2,
- 	BPF_FLOW_DISSECTOR,
- 	BPF_CGROUP_SYSCTL,
-+	BPF_CGROUP_UDP4_RECVMSG,
-+	BPF_CGROUP_UDP6_RECVMSG,
- 	__MAX_BPF_ATTACH_TYPE
++	/* recvmsg */
++	{
++		"recvmsg4: return code ok",
++		recvmsg_allow_prog_load,
++		BPF_CGROUP_UDP4_RECVMSG,
++		BPF_CGROUP_UDP4_RECVMSG,
++		AF_INET,
++		SOCK_DGRAM,
++		NULL,
++		0,
++		NULL,
++		0,
++		NULL,
++		ATTACH_OKAY,
++	},
++	{
++		"recvmsg4: return code !ok",
++		recvmsg_deny_prog_load,
++		BPF_CGROUP_UDP4_RECVMSG,
++		BPF_CGROUP_UDP4_RECVMSG,
++		AF_INET,
++		SOCK_DGRAM,
++		NULL,
++		0,
++		NULL,
++		0,
++		NULL,
++		LOAD_REJECT,
++	},
++	{
++		"recvmsg6: return code ok",
++		recvmsg_allow_prog_load,
++		BPF_CGROUP_UDP6_RECVMSG,
++		BPF_CGROUP_UDP6_RECVMSG,
++		AF_INET6,
++		SOCK_DGRAM,
++		NULL,
++		0,
++		NULL,
++		0,
++		NULL,
++		ATTACH_OKAY,
++	},
++	{
++		"recvmsg6: return code !ok",
++		recvmsg_deny_prog_load,
++		BPF_CGROUP_UDP6_RECVMSG,
++		BPF_CGROUP_UDP6_RECVMSG,
++		AF_INET6,
++		SOCK_DGRAM,
++		NULL,
++		0,
++		NULL,
++		0,
++		NULL,
++		LOAD_REJECT,
++	},
++	{
++		"recvmsg4: rewrite IP & port (asm)",
++		recvmsg4_rw_asm_prog_load,
++		BPF_CGROUP_UDP4_RECVMSG,
++		BPF_CGROUP_UDP4_RECVMSG,
++		AF_INET,
++		SOCK_DGRAM,
++		SERV4_REWRITE_IP,
++		SERV4_REWRITE_PORT,
++		SERV4_REWRITE_IP,
++		SERV4_REWRITE_PORT,
++		SERV4_IP,
++		SUCCESS,
++	},
++	{
++		"recvmsg6: rewrite IP & port (asm)",
++		recvmsg6_rw_asm_prog_load,
++		BPF_CGROUP_UDP6_RECVMSG,
++		BPF_CGROUP_UDP6_RECVMSG,
++		AF_INET6,
++		SOCK_DGRAM,
++		SERV6_REWRITE_IP,
++		SERV6_REWRITE_PORT,
++		SERV6_REWRITE_IP,
++		SERV6_REWRITE_PORT,
++		SERV6_IP,
++		SUCCESS,
++	},
  };
  
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index cb5440b..e8ba3a15 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1581,6 +1581,8 @@ bpf_prog_load_check_attach_type(enum bpf_prog_type prog_type,
- 		case BPF_CGROUP_INET6_CONNECT:
- 		case BPF_CGROUP_UDP4_SENDMSG:
- 		case BPF_CGROUP_UDP6_SENDMSG:
-+		case BPF_CGROUP_UDP4_RECVMSG:
-+		case BPF_CGROUP_UDP6_RECVMSG:
- 			return 0;
- 		default:
- 			return -EINVAL;
-@@ -1875,6 +1877,8 @@ static int bpf_prog_attach(const union bpf_attr *attr)
- 	case BPF_CGROUP_INET6_CONNECT:
- 	case BPF_CGROUP_UDP4_SENDMSG:
- 	case BPF_CGROUP_UDP6_SENDMSG:
-+	case BPF_CGROUP_UDP4_RECVMSG:
-+	case BPF_CGROUP_UDP6_RECVMSG:
- 		ptype = BPF_PROG_TYPE_CGROUP_SOCK_ADDR;
+ static int mk_sockaddr(int domain, const char *ip, unsigned short port,
+@@ -765,8 +856,8 @@ static int connect6_prog_load(const struct sock_addr_test *test)
+ 	return load_path(test, CONNECT6_PROG_PATH);
+ }
+ 
+-static int sendmsg_ret_only_prog_load(const struct sock_addr_test *test,
+-				      int32_t rc)
++static int xmsg_ret_only_prog_load(const struct sock_addr_test *test,
++				   int32_t rc)
+ {
+ 	struct bpf_insn insns[] = {
+ 		/* return rc */
+@@ -778,12 +869,22 @@ static int sendmsg_ret_only_prog_load(const struct sock_addr_test *test,
+ 
+ static int sendmsg_allow_prog_load(const struct sock_addr_test *test)
+ {
+-	return sendmsg_ret_only_prog_load(test, /*rc*/ 1);
++	return xmsg_ret_only_prog_load(test, /*rc*/ 1);
+ }
+ 
+ static int sendmsg_deny_prog_load(const struct sock_addr_test *test)
+ {
+-	return sendmsg_ret_only_prog_load(test, /*rc*/ 0);
++	return xmsg_ret_only_prog_load(test, /*rc*/ 0);
++}
++
++static int recvmsg_allow_prog_load(const struct sock_addr_test *test)
++{
++	return xmsg_ret_only_prog_load(test, /*rc*/ 1);
++}
++
++static int recvmsg_deny_prog_load(const struct sock_addr_test *test)
++{
++	return xmsg_ret_only_prog_load(test, /*rc*/ 0);
+ }
+ 
+ static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
+@@ -838,6 +939,47 @@ static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
+ 	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
+ }
+ 
++static int recvmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
++{
++	struct sockaddr_in src4_rw_addr;
++
++	if (mk_sockaddr(AF_INET, SERV4_IP, SERV4_PORT,
++			(struct sockaddr *)&src4_rw_addr,
++			sizeof(src4_rw_addr)) == -1)
++		return -1;
++
++	struct bpf_insn insns[] = {
++		BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++
++		/* if (sk.family == AF_INET && */
++		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++			    offsetof(struct bpf_sock_addr, family)),
++		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, AF_INET, 6),
++
++		/*     sk.type == SOCK_DGRAM)  { */
++		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++			    offsetof(struct bpf_sock_addr, type)),
++		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, SOCK_DGRAM, 4),
++
++		/*      user_ip4 = src4_rw_addr.sin_addr */
++		BPF_MOV32_IMM(BPF_REG_7, src4_rw_addr.sin_addr.s_addr),
++		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
++			    offsetof(struct bpf_sock_addr, user_ip4)),
++
++		/*      user_port = src4_rw_addr.sin_port */
++		BPF_MOV32_IMM(BPF_REG_7, src4_rw_addr.sin_port),
++		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
++			    offsetof(struct bpf_sock_addr, user_port)),
++		/* } */
++
++		/* return 1 */
++		BPF_MOV64_IMM(BPF_REG_0, 1),
++		BPF_EXIT_INSN(),
++	};
++
++	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
++}
++
+ static int sendmsg4_rw_c_prog_load(const struct sock_addr_test *test)
+ {
+ 	return load_path(test, SENDMSG4_PROG_PATH);
+@@ -901,6 +1043,39 @@ static int sendmsg6_rw_asm_prog_load(const struct sock_addr_test *test)
+ 	return sendmsg6_rw_dst_asm_prog_load(test, SERV6_REWRITE_IP);
+ }
+ 
++static int recvmsg6_rw_asm_prog_load(const struct sock_addr_test *test)
++{
++	struct sockaddr_in6 src6_rw_addr;
++
++	if (mk_sockaddr(AF_INET6, SERV6_IP, SERV6_PORT,
++			(struct sockaddr *)&src6_rw_addr,
++			sizeof(src6_rw_addr)) == -1)
++		return -1;
++
++	struct bpf_insn insns[] = {
++		BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++
++		/* if (sk.family == AF_INET6) { */
++		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++			    offsetof(struct bpf_sock_addr, family)),
++		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, AF_INET6, 10),
++
++		STORE_IPV6(user_ip6, src6_rw_addr.sin6_addr.s6_addr32),
++
++		/*      user_port = dst6_rw_addr.sin6_port */
++		BPF_MOV32_IMM(BPF_REG_7, src6_rw_addr.sin6_port),
++		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
++			    offsetof(struct bpf_sock_addr, user_port)),
++		/* } */
++
++		/* return 1 */
++		BPF_MOV64_IMM(BPF_REG_0, 1),
++		BPF_EXIT_INSN(),
++	};
++
++	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
++}
++
+ static int sendmsg6_rw_v4mapped_prog_load(const struct sock_addr_test *test)
+ {
+ 	return sendmsg6_rw_dst_asm_prog_load(test, SERV6_V4MAPPED_IP);
+@@ -1282,13 +1457,13 @@ static int run_connect_test_case(const struct sock_addr_test *test)
+ 	return err;
+ }
+ 
+-static int run_sendmsg_test_case(const struct sock_addr_test *test)
++static int run_xmsg_test_case(const struct sock_addr_test *test, int max_cmsg)
+ {
+ 	socklen_t addr_len = sizeof(struct sockaddr_storage);
+-	struct sockaddr_storage expected_src_addr;
+-	struct sockaddr_storage requested_addr;
+ 	struct sockaddr_storage expected_addr;
+-	struct sockaddr_storage real_src_addr;
++	struct sockaddr_storage server_addr;
++	struct sockaddr_storage sendmsg_addr;
++	struct sockaddr_storage recvmsg_addr;
+ 	int clientfd = -1;
+ 	int servfd = -1;
+ 	int set_cmsg;
+@@ -1297,20 +1472,19 @@ static int run_sendmsg_test_case(const struct sock_addr_test *test)
+ 	if (test->type != SOCK_DGRAM)
+ 		goto err;
+ 
+-	if (init_addrs(test, &requested_addr, &expected_addr,
+-		       &expected_src_addr))
++	if (init_addrs(test, &sendmsg_addr, &server_addr, &expected_addr))
+ 		goto err;
+ 
+ 	/* Prepare server to sendmsg to */
+-	servfd = start_server(test->type, &expected_addr, addr_len);
++	servfd = start_server(test->type, &server_addr, addr_len);
+ 	if (servfd == -1)
+ 		goto err;
+ 
+-	for (set_cmsg = 0; set_cmsg <= 1; ++set_cmsg) {
++	for (set_cmsg = 0; set_cmsg <= max_cmsg; ++set_cmsg) {
+ 		if (clientfd >= 0)
+ 			close(clientfd);
+ 
+-		clientfd = sendmsg_to_server(test->type, &requested_addr,
++		clientfd = sendmsg_to_server(test->type, &sendmsg_addr,
+ 					     addr_len, set_cmsg, /*flags*/0,
+ 					     &err);
+ 		if (err)
+@@ -1330,10 +1504,10 @@ static int run_sendmsg_test_case(const struct sock_addr_test *test)
+ 		 * specific packet may differ from the one used by default and
+ 		 * returned by getsockname(2).
+ 		 */
+-		if (recvmsg_from_client(servfd, &real_src_addr) == -1)
++		if (recvmsg_from_client(servfd, &recvmsg_addr) == -1)
+ 			goto err;
+ 
+-		if (cmp_addr(&real_src_addr, &expected_src_addr, /*cmp_port*/0))
++		if (cmp_addr(&recvmsg_addr, &expected_addr, /*cmp_port*/0))
+ 			goto err;
+ 	}
+ 
+@@ -1366,6 +1540,9 @@ static int run_test_case(int cgfd, const struct sock_addr_test *test)
+ 		goto out;
+ 	} else if (test->expected_result == ATTACH_REJECT || err) {
+ 		goto err;
++	} else if (test->expected_result == ATTACH_OKAY) {
++		err = 0;
++		goto out;
+ 	}
+ 
+ 	switch (test->attach_type) {
+@@ -1379,7 +1556,11 @@ static int run_test_case(int cgfd, const struct sock_addr_test *test)
  		break;
- 	case BPF_CGROUP_SOCK_OPS:
-@@ -1960,6 +1964,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
- 	case BPF_CGROUP_INET6_CONNECT:
  	case BPF_CGROUP_UDP4_SENDMSG:
  	case BPF_CGROUP_UDP6_SENDMSG:
+-		err = run_sendmsg_test_case(test);
++		err = run_xmsg_test_case(test, 1);
++		break;
 +	case BPF_CGROUP_UDP4_RECVMSG:
 +	case BPF_CGROUP_UDP6_RECVMSG:
- 		ptype = BPF_PROG_TYPE_CGROUP_SOCK_ADDR;
++		err = run_xmsg_test_case(test, 0);
  		break;
- 	case BPF_CGROUP_SOCK_OPS:
-@@ -2011,6 +2017,8 @@ static int bpf_prog_query(const union bpf_attr *attr,
- 	case BPF_CGROUP_INET6_CONNECT:
- 	case BPF_CGROUP_UDP4_SENDMSG:
- 	case BPF_CGROUP_UDP6_SENDMSG:
-+	case BPF_CGROUP_UDP4_RECVMSG:
-+	case BPF_CGROUP_UDP6_RECVMSG:
- 	case BPF_CGROUP_SOCK_OPS:
- 	case BPF_CGROUP_DEVICE:
- 	case BPF_CGROUP_SYSCTL:
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 95f93544..d2c8a66 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -5361,9 +5361,12 @@ static int check_return_code(struct bpf_verifier_env *env)
- 	struct tnum range = tnum_range(0, 1);
- 
- 	switch (env->prog->type) {
-+	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
-+		if (env->prog->expected_attach_type == BPF_CGROUP_UDP4_RECVMSG ||
-+		    env->prog->expected_attach_type == BPF_CGROUP_UDP6_RECVMSG)
-+			range = tnum_range(1, 1);
- 	case BPF_PROG_TYPE_CGROUP_SKB:
- 	case BPF_PROG_TYPE_CGROUP_SOCK:
--	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
- 	case BPF_PROG_TYPE_SOCK_OPS:
- 	case BPF_PROG_TYPE_CGROUP_DEVICE:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-@@ -5380,16 +5383,17 @@ static int check_return_code(struct bpf_verifier_env *env)
- 	}
- 
- 	if (!tnum_in(range, reg->var_off)) {
-+		char tn_buf[48];
-+
- 		verbose(env, "At program exit the register R0 ");
- 		if (!tnum_is_unknown(reg->var_off)) {
--			char tn_buf[48];
--
- 			tnum_strn(tn_buf, sizeof(tn_buf), reg->var_off);
- 			verbose(env, "has value %s", tn_buf);
- 		} else {
- 			verbose(env, "has unknown scalar value");
- 		}
--		verbose(env, " should have been 0 or 1\n");
-+		tnum_strn(tn_buf, sizeof(tn_buf), range);
-+		verbose(env, " should have been in %s\n", tn_buf);
- 		return -EINVAL;
- 	}
- 	return 0;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index fdcc504..2814d78 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6748,6 +6748,7 @@ static bool sock_addr_is_valid_access(int off, int size,
- 		case BPF_CGROUP_INET4_BIND:
- 		case BPF_CGROUP_INET4_CONNECT:
- 		case BPF_CGROUP_UDP4_SENDMSG:
-+		case BPF_CGROUP_UDP4_RECVMSG:
- 			break;
- 		default:
- 			return false;
-@@ -6758,6 +6759,7 @@ static bool sock_addr_is_valid_access(int off, int size,
- 		case BPF_CGROUP_INET6_BIND:
- 		case BPF_CGROUP_INET6_CONNECT:
- 		case BPF_CGROUP_UDP6_SENDMSG:
-+		case BPF_CGROUP_UDP6_RECVMSG:
- 			break;
- 		default:
- 			return false;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 85db0e3..2d862823 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1783,6 +1783,10 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		sin->sin_addr.s_addr = ip_hdr(skb)->saddr;
- 		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
- 		*addr_len = sizeof(*sin);
-+
-+		if (cgroup_bpf_enabled)
-+			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-+							(struct sockaddr *)sin);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 4e52c37..15570d7 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -369,6 +369,10 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 						    inet6_iif(skb));
- 		}
- 		*addr_len = sizeof(*sin6);
-+
-+		if (cgroup_bpf_enabled)
-+			BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
-+						(struct sockaddr *)sin6);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index 7e22f11..f3047d1 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -25,7 +25,8 @@
- 	"       ATTACH_TYPE := { ingress | egress | sock_create |\n"	       \
- 	"                        sock_ops | device | bind4 | bind6 |\n"	       \
- 	"                        post_bind4 | post_bind6 | connect4 |\n"       \
--	"                        connect6 | sendmsg4 | sendmsg6 | sysctl }"
-+	"                        connect6 | sendmsg4 | sendmsg6 |\n"           \
-+	"                        sysctl | recvmsg4 | recvmsg6 }"
- 
- static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_INET_INGRESS] = "ingress",
-@@ -42,6 +43,8 @@ static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_UDP4_SENDMSG] = "sendmsg4",
- 	[BPF_CGROUP_UDP6_SENDMSG] = "sendmsg6",
- 	[BPF_CGROUP_SYSCTL] = "sysctl",
-+	[BPF_CGROUP_UDP4_RECVMSG] = "recvmsg4",
-+	[BPF_CGROUP_UDP6_RECVMSG] = "recvmsg6",
- 	[__MAX_BPF_ATTACH_TYPE] = NULL,
- };
- 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 63e0cf6..e4114a7 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -192,6 +192,8 @@ enum bpf_attach_type {
- 	BPF_LIRC_MODE2,
- 	BPF_FLOW_DISSECTOR,
- 	BPF_CGROUP_SYSCTL,
-+	BPF_CGROUP_UDP4_RECVMSG,
-+	BPF_CGROUP_UDP6_RECVMSG,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
+ 	default:
+ 		goto err;
 -- 
 2.9.5
 
