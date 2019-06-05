@@ -2,85 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E85BC3627A
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 19:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE0C362B3
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 19:32:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbfFER1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 13:27:04 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:35799 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbfFER1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 13:27:04 -0400
-Received: by mail-lj1-f196.google.com with SMTP id h11so23937145ljb.2
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 10:27:02 -0700 (PDT)
+        id S1726530AbfFERb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 13:31:56 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37379 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbfFERbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 13:31:55 -0400
+Received: by mail-pg1-f194.google.com with SMTP id 20so12778816pgr.4
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 10:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uPR5ZsfuFUf9C+Xfxa0HBx/qqmGHuh9ku3HhTnzm9SE=;
-        b=JBhhYcbz3yRLzCbu5Yx9QYNdhM5zCDK+k75RCW/Lsgy6Essr24xS7r0J0CEiNKkkPL
-         sA3bueboQ2lIeIzoMvQCylo9mo9b8fphwMoGvE/v2ev1Ek6fT0IHGvjFccn3/ACOQcjJ
-         IJGd1mVTZ2BUj9kNUpvWwO+VlUP60DQlrVZy0Wp3VqeR4QeOUhS11GwuUUqJPZN0I0qW
-         KdryzK+LC44q71QMqA6eKfKjT0fojptEJRQS341XiVUms9iD8vSpjwD8CHV2ZWhLQZwu
-         cMA48LMNOJNvqCMYkWbUf2oEUUdpbyLwuXFA7aTvYDBm7d2CwqOSjsJ7jgw5iPxjIrSm
-         fl0w==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=i1A/MIFpERyy1X0HJILKq3+OpgfCrT2ihHliA/0bnyw=;
+        b=S7bg7aNPRFBfPCcu2XKCYmQFuDfXsUQ7EILAQtd/1hxZte47pT/+bZmQPUnj/S4CcL
+         F0tkaQqShoUEuddijBatxTvVDdCrbu5xbhX9VHEPGsgHPDYWyYVWFqwLqTwAjCwcb0Y5
+         y1TKpX3ZBmg9U1oltV3GPoWEDaQTMqOs39jkCLuqYGXViD852k3qedPRvrotbdsgS8lH
+         3JDyQmu/lqtu323+a9pmAlloP07TbB7D9qtTECSk1x7WmoLn++DsW8Lv5FFz/nDctXkr
+         /T8IT8DAUJ2aEikPoFzxZF6yYwAHaZ0t5TzfgqrjDb82QlkNTAMntBr4apSKkhCm3XCa
+         BmXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=uPR5ZsfuFUf9C+Xfxa0HBx/qqmGHuh9ku3HhTnzm9SE=;
-        b=OtWyR9bPMaqPknlTv1dnBaGbnkcuGuT6PTfzNFdhEdxi9mbGK2ST2oH/+7f/W+d4Ue
-         GtjxbuSTQnP42jxtNBM/EgeFcdtKmxkzWaaHON4OuBHwWrRFJBlAvynd/nYwNNQLnREs
-         CPBZpo2CySfmnC5Bd9d3MhhmlJU5GudZS9qclBaJlN5q9nyhBhMKhZCP8uzXIqznM98j
-         F6rMFdLZFmU3sGfR3AEIwM8AKJzHk5Y6Rct4eXfsoeoCOjsTbDwETzRaRv5aCY5lkR88
-         LRumnQT0z3NxGXMGH6L08hrCMCoZeXF0Cc7KJs5xu2kEtxrQvV5JLomI2xOSA3nU27ZX
-         QzGQ==
-X-Gm-Message-State: APjAAAU6ytilowAa6g+HjPbnQMiOls/etipILBfu898iH/3spiq6MQGJ
-        WqqBbPZ4FP0jy1htsR4wrcejlw==
-X-Google-Smtp-Source: APXvYqzi33O8O+NqvuKNhyi36qg2WWf4gwQroIUxY2/SjrPHN3kXuBdIP9OeLaaBFLx1cAu9uPwHrg==
-X-Received: by 2002:a2e:8116:: with SMTP id d22mr9941237ljg.8.1559755622358;
-        Wed, 05 Jun 2019 10:27:02 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([31.173.84.82])
-        by smtp.gmail.com with ESMTPSA id z26sm1501850ljz.64.2019.06.05.10.27.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 10:27:01 -0700 (PDT)
-Subject: Re: [PATCH v2] ravb: implement MTU change while device is up
-To:     Ulrich Hecht <uli+renesas@fpond.eu>,
-        linux-renesas-soc@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        niklas.soderlund@ragnatech.se, wsa@the-dreams.de,
-        horms@verge.net.au, magnus.damm@gmail.com
-References: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <dab9e22e-446f-b08a-86df-4ffa22a107c1@cogentembedded.com>
-Date:   Wed, 5 Jun 2019 20:27:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=i1A/MIFpERyy1X0HJILKq3+OpgfCrT2ihHliA/0bnyw=;
+        b=OOl0vPk6x7OpdDOGaXM2WYpfy20nGFv659NTabWJBUJwtfV41DEx0pVPON2+B/FbRM
+         2PdUYaWsXQVHnLnKfhY3B5scJzw1FpIRPN4J7EJ+dSbo6zVhJehjez3BVE6ANbD7ULLx
+         diKJeHwfnY+Ingtb/fc3plOZIvGX/4HHOb+MUTZGFVQ3NeG343SaE4LJzfWEOkm5Qhp4
+         K7Ja1Y2eezDysj/bvbDywT9obw/vgFOC+LR7Q55pJzos2dHZCYN1GNftNr7hdDHXppGm
+         7Tj8wtmiZOCvsIBHtyi1ck95vc7nNdfMG6FgBEq5LKFCpxWmKd8aVzlNiWsYD2/c1byN
+         AlXg==
+X-Gm-Message-State: APjAAAUs8n58WFvjaS3WjKy7S/NRrgE8CDPcZ3QHV94vbOsFk3M0nIid
+        0ljUlvGi3ji4d7mlKn4Hfxo=
+X-Google-Smtp-Source: APXvYqzYA7fhPQ0+GNgV07Cb6j75wgiDyDkNiAESn+671b48eUwc5Li1NrC7FrHdi4kxS2oGDt+Oqw==
+X-Received: by 2002:a17:90a:22c6:: with SMTP id s64mr13796428pjc.5.1559755915303;
+        Wed, 05 Jun 2019 10:31:55 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id 188sm12015565pfg.11.2019.06.05.10.31.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 05 Jun 2019 10:31:54 -0700 (PDT)
+Date:   Wed, 5 Jun 2019 10:31:52 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Shalom Toledo <shalomt@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
+ physical hardware clock operations
+Message-ID: <20190605173152.4lsfx7a5cvyzatww@localhost>
+References: <20190603121244.3398-1-idosch@idosch.org>
+ <20190603121244.3398-8-idosch@idosch.org>
+ <20190604170349.wqsocilmlaisyzar@localhost>
+ <87muiwxv8o.fsf@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87muiwxv8o.fsf@mellanox.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Wed, Jun 05, 2019 at 09:00:09AM +0000, Petr Machata wrote:
+> We don't build the PTP module at all unless CONFIG_PTP_1588_CLOCK is
+> enabled, and fall back to inline stubs unless it IS_REACHABLE. I believe
+> this should be OK.
 
-On 06/05/2019 06:14 PM, Ulrich Hecht wrote:
+Please use "imply PTP_1588_CLOCK" in your kconfig, just like the other
+PTP drivers do.
 
-> Uses the same method as various other drivers: shut the device down,
-> change the MTU, then bring it back up again.
-> 
-> Tested on Renesas D3 Draak board.
-> 
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-> Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-
-MBR, Sergei
+Thanks,
+Richard
