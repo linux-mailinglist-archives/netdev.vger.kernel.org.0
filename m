@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9405D365C7
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 559DB365D3
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbfFEUnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:43:11 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:46090 "EHLO
+        id S1726723AbfFEUnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:43:25 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:4384 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbfFEUnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:43:01 -0400
+        with ESMTP id S1726305AbfFEUm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:42:59 -0400
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x55Kgq9M001299
+        by sed198n136.sedsystems.ca  with ESMTP id x55Kgqhi004538
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Wed, 5 Jun 2019 14:42:57 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x55KghjA021149
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x55KghjB021149
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
         Wed, 5 Jun 2019 14:42:52 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com, andrew@lunn.ch,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next v4 18/20] net: axienet: document axistream-connected attribute
-Date:   Wed,  5 Jun 2019 14:42:31 -0600
-Message-Id: <1559767353-17301-19-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next v4 19/20] net: axienet: make use of axistream-connected attribute optional
+Date:   Wed,  5 Jun 2019 14:42:32 -0600
+Message-Id: <1559767353-17301-20-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559767353-17301-1-git-send-email-hancock@sedsystems.ca>
 References: <1559767353-17301-1-git-send-email-hancock@sedsystems.ca>
@@ -35,63 +35,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The axienet driver requires the use of an axistream-connected attribute,
-but this isn't documented in the devicetree bindings. Document how this
-attribute is supposed to be used, including the upcoming change to make
-the usage of this attribute optional.
+Currently the axienet driver requires the use of a second devicetree
+node, referenced by an axistream-connected attribute on the Ethernet
+device node, which contains the resources for the AXI DMA block used by the
+device. This setup is problematic for a use case we have where the Ethernet
+and DMA cores are behind a PCIe to AXI bridge and the memory resources for
+the nodes are injected into the platform devices using the multifunction
+device subsystem - it's not easily possible for the driver to obtain the
+platform-level resources from the linked device.
+
+In order to simplify that usage model, and simplify the overall use of
+this driver in general, allow for all of the resources to be kept on one
+node where the resources are retrieved using platform device APIs rather
+than device-tree-specific ones. The previous usage setup is still
+supported if the axistream-connected attribute is specified.
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 ---
- .../devicetree/bindings/net/xilinx_axienet.txt        | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 43 +++++++++++++++--------
+ 1 file changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-index a8be67b..7360617 100644
---- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-+++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-@@ -17,9 +17,15 @@ For more details about mdio please refer phy.txt file in the same directory.
- Required properties:
- - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
- 		  "xlnx,axi-ethernet-1.01.a", "xlnx,axi-ethernet-2.01.a"
--- reg		: Address and length of the IO space.
-+- reg		: Address and length of the IO space, as well as the address
-+                  and length of the AXI DMA controller IO space, unless
-+                  axistream-connected is specified, in which case the reg
-+                  attribute of the node referenced by it is used.
- - interrupts	: Should be a list of 2 or 3 interrupts: TX DMA, RX DMA,
--		  and optionally Ethernet core.
-+		  and optionally Ethernet core. If axistream-connected is
-+		  specified, the TX/RX DMA interrupts should be on that node
-+		  instead, and only the Ethernet core interrupt is optionally
-+		  specified here.
- - phy-handle	: Should point to the external phy device.
- 		  See ethernet.txt file in the same directory.
- - xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
-@@ -37,6 +43,11 @@ Optional properties:
- 		  auto-detected from the CPU clock (but only on platforms where
- 		  this is possible). New device trees should specify this - the
- 		  auto detection is only for backward compatibility.
-+- axistream-connected: Reference to another node which contains the resources
-+		       for the AXI DMA controller used by this device.
-+		       If this is specified, the DMA-related resources from that
-+		       device (DMA registers and DMA TX/RX interrupts) rather
-+		       than this one will be used.
-  - mdio		: Child node for MDIO bus. Must be defined if PHY access is
- 		  required through the core's MDIO interface (i.e. always,
- 		  unless the PHY is accessed through a different bus).
-@@ -46,10 +57,10 @@ Example:
- 		compatible = "xlnx,axi-ethernet-1.00.a";
- 		device_type = "network";
- 		interrupt-parent = <&microblaze_0_axi_intc>;
--		interrupts = <2 0>;
-+		interrupts = <2 0 1>;
- 		clocks = <&axi_clk>;
- 		phy-mode = "mii";
--		reg = <0x40c00000 0x40000>;
-+		reg = <0x40c00000 0x40000 0x50c00000 0x40000>;
- 		xlnx,rxcsum = <0x2>;
- 		xlnx,rxmem = <0x800>;
- 		xlnx,txcsum = <0x2>;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index eb4318d..58b06fc 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1580,7 +1580,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	struct axienet_local *lp;
+ 	struct net_device *ndev;
+ 	const void *mac_addr;
+-	struct resource *ethres, dmares;
++	struct resource *ethres;
+ 	u32 value;
+ 
+ 	ndev = alloc_etherdev(sizeof(*lp));
+@@ -1698,28 +1698,41 @@ static int axienet_probe(struct platform_device *pdev)
+ 
+ 	/* Find the DMA node, map the DMA registers, and decode the DMA IRQs */
+ 	np = of_parse_phandle(pdev->dev.of_node, "axistream-connected", 0);
+-	if (!np) {
+-		dev_err(&pdev->dev, "could not find DMA node\n");
+-		ret = -ENODEV;
+-		goto free_netdev;
+-	}
+-	ret = of_address_to_resource(np, 0, &dmares);
+-	if (ret) {
+-		dev_err(&pdev->dev, "unable to get DMA resource\n");
++	if (np) {
++		struct resource dmares;
++
++		ret = of_address_to_resource(np, 0, &dmares);
++		if (ret) {
++			dev_err(&pdev->dev,
++				"unable to get DMA resource\n");
++			of_node_put(np);
++			goto free_netdev;
++		}
++		lp->dma_regs = devm_ioremap_resource(&pdev->dev,
++						     &dmares);
++		lp->rx_irq = irq_of_parse_and_map(np, 1);
++		lp->tx_irq = irq_of_parse_and_map(np, 0);
+ 		of_node_put(np);
+-		goto free_netdev;
++		lp->eth_irq = platform_get_irq(pdev, 0);
++	} else {
++		/* Check for these resources directly on the Ethernet node. */
++		struct resource *res = platform_get_resource(pdev,
++							     IORESOURCE_MEM, 1);
++		if (!res) {
++			dev_err(&pdev->dev, "unable to get DMA memory resource\n");
++			goto free_netdev;
++		}
++		lp->dma_regs = devm_ioremap_resource(&pdev->dev, res);
++		lp->rx_irq = platform_get_irq(pdev, 1);
++		lp->tx_irq = platform_get_irq(pdev, 0);
++		lp->eth_irq = platform_get_irq(pdev, 2);
+ 	}
+-	lp->dma_regs = devm_ioremap_resource(&pdev->dev, &dmares);
+ 	if (IS_ERR(lp->dma_regs)) {
+ 		dev_err(&pdev->dev, "could not map DMA regs\n");
+ 		ret = PTR_ERR(lp->dma_regs);
+ 		of_node_put(np);
+ 		goto free_netdev;
+ 	}
+-	lp->rx_irq = irq_of_parse_and_map(np, 1);
+-	lp->tx_irq = irq_of_parse_and_map(np, 0);
+-	lp->eth_irq = irq_of_parse_and_map(np, 2);
+-	of_node_put(np);
+ 	if ((lp->rx_irq <= 0) || (lp->tx_irq <= 0)) {
+ 		dev_err(&pdev->dev, "could not determine irqs\n");
+ 		ret = -ENOMEM;
 -- 
 1.8.3.1
 
