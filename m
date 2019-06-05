@@ -2,115 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9794235A02
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 11:57:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7057A35A6E
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 12:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727193AbfFEJ5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 05:57:31 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:57192 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727134AbfFEJ5a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 05:57:30 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 71590200772;
-        Wed,  5 Jun 2019 11:57:28 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 641A920076D;
-        Wed,  5 Jun 2019 11:57:28 +0200 (CEST)
-Received: from fsr-ub1664-019.ea.freescale.net (fsr-ub1664-019.ea.freescale.net [10.171.71.230])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2AE90205FA;
-        Wed,  5 Jun 2019 11:57:28 +0200 (CEST)
-From:   Ioana Radulescu <ruxandra.radulescu@nxp.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     ioana.ciornei@nxp.com
-Subject: [PATCH net-next 3/3] dpaa2-eth: Add mqprio support
-Date:   Wed,  5 Jun 2019 12:57:26 +0300
-Message-Id: <1559728646-4332-4-git-send-email-ruxandra.radulescu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1559728646-4332-1-git-send-email-ruxandra.radulescu@nxp.com>
-References: <1559728646-4332-1-git-send-email-ruxandra.radulescu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727126AbfFEK3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 06:29:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35820 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbfFEK3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 06:29:15 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYTAP-0005Js-2B; Wed, 05 Jun 2019 12:29:13 +0200
+Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYTAO-000L8e-TK; Wed, 05 Jun 2019 12:29:12 +0200
+Subject: Re: [PATCH bpf] selftests/bpf: move test_lirc_mode2_user to
+ TEST_GEN_PROGS_EXTENDED
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     Sean Young <sean@mess.org>, Yonghong Song <yhs@fb.com>
+References: <20190604023505.27390-1-liuhangbin@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <04229133-6bd1-2f80-fc1b-8a3e70cd523c@iogearbox.net>
+Date:   Wed, 5 Jun 2019 12:29:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <20190604023505.27390-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25471/Wed Jun  5 10:12:21 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement mqprio qdisc support by mapping traffic classes to
-different hardware enqueue priorities. The maximum number of
-supported traffic classes is an attribute of each DPNI object.
+On 06/04/2019 04:35 AM, Hangbin Liu wrote:
+> test_lirc_mode2_user is included in test_lirc_mode2.sh test and should
+> not be run directly.
+> 
+> Fixes: 6bdd533cee9a ("bpf: add selftest for lirc_mode2 type program")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-The traffic classes map to hardware priorities from highest (0)
-to lowest (highest prio number). The driver assigns num_queues
-to each traffic class, for a total of num_queues x num_tcs
-hardware frame queues.
-
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Signed-off-by: Bogdan Purcareata <bogdan.purcareata@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 43 ++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 0f6d15c..cd34898 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1915,6 +1915,48 @@ static int update_xps(struct dpaa2_eth_priv *priv)
- 	return err;
- }
- 
-+static int dpaa2_eth_setup_tc(struct net_device *net_dev,
-+			      enum tc_setup_type type, void *type_data)
-+{
-+	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-+	struct tc_mqprio_qopt *mqprio = type_data;
-+	u8 num_tc, num_queues;
-+	int i;
-+
-+	if (type != TC_SETUP_QDISC_MQPRIO)
-+		return -EINVAL;
-+
-+	mqprio->hw = TC_MQPRIO_HW_OFFLOAD_TCS;
-+	num_queues = dpaa2_eth_queue_count(priv);
-+	num_tc = mqprio->num_tc;
-+
-+	if (num_tc == net_dev->num_tc)
-+		return 0;
-+
-+	if (num_tc  > dpaa2_eth_tc_count(priv)) {
-+		netdev_err(net_dev, "Max %d traffic classes supported\n",
-+			   dpaa2_eth_tc_count(priv));
-+		return -EINVAL;
-+	}
-+
-+	if (!num_tc) {
-+		netdev_reset_tc(net_dev);
-+		netif_set_real_num_tx_queues(net_dev, num_queues);
-+		goto out;
-+	}
-+
-+	netdev_set_num_tc(net_dev, num_tc);
-+	netif_set_real_num_tx_queues(net_dev, num_tc * num_queues);
-+
-+	for (i = 0; i < num_tc; i++)
-+		netdev_set_tc_queue(net_dev, i, num_queues, i * num_queues);
-+
-+out:
-+	update_xps(priv);
-+
-+	return 0;
-+}
-+
- static const struct net_device_ops dpaa2_eth_ops = {
- 	.ndo_open = dpaa2_eth_open,
- 	.ndo_start_xmit = dpaa2_eth_tx,
-@@ -1927,6 +1969,7 @@ static const struct net_device_ops dpaa2_eth_ops = {
- 	.ndo_change_mtu = dpaa2_eth_change_mtu,
- 	.ndo_bpf = dpaa2_eth_xdp,
- 	.ndo_xdp_xmit = dpaa2_eth_xdp_xmit,
-+	.ndo_setup_tc = dpaa2_eth_setup_tc,
- };
- 
- static void cdan_cb(struct dpaa2_io_notification_ctx *ctx)
--- 
-2.7.4
-
+Applied, thanks!
