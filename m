@@ -2,69 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A77035CAE
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C5235CC6
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727615AbfFEMYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 08:24:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58126 "EHLO vps0.lunn.ch"
+        id S1727566AbfFEM02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 08:26:28 -0400
+Received: from smtp3.ono.com ([62.42.230.163]:64598 "EHLO smtp3.ono.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727172AbfFEMYH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 08:24:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=4oWPZj0Wa51huFxiPKzXFmh7QlniWG9vWBBiN/IhkKk=; b=E7cHf83+Stia4Q6LSVDkVKJHTI
-        pn0AjAJBWnkNrNeqGrEf1PJRTlP/t22WP8Z/mKAM/qMXUhtLXzmRfPgN2hbgMXZX4NXeGrBbiEy2T
-        ZvvXa0/B8F4SwTb39XU4H3JpqsKrMSBOJaqtGLSFscn28L1b4F6zubMRlu/8aokQs9SM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hYUxY-00046t-S7; Wed, 05 Jun 2019 14:24:04 +0200
-Date:   Wed, 5 Jun 2019 14:24:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: DSA with MV88E6321 and imx28
-Message-ID: <20190605122404.GH16951@lunn.ch>
-References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
- <20190604135000.GD16951@lunn.ch>
- <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
+        id S1727337AbfFEM02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 08:26:28 -0400
+X-Junkmail-Premium-Raw: score=35/50,refid=2.7.2:2019.6.5.113916:17:35.434,ip=62.42.230.132,rules=__HAS_MSGID,
+ __SANE_MSGID, MSGID_JMAIL_DEFAULT, INVALID_MSGID_NO_FQDN, __HAS_FROM,
+ __HAS_REPLYTO, __FRAUD_WEBMAIL_REPLYTO, __PHISH_SPEAR_SUBJ_ALERT,
+ __MIME_VERSION, __CT, __CT_TEXT_PLAIN, __CTE, MISSING_HEADERS, __FRAUD_INTRO,
+ __STOCK_PHRASE_7, __FRAUD_MONEY_BIG_COIN_DIG, __OEM_PRICE,
+ __FRAUD_MONEY_CURRENCY_DOLLAR, __NO_HTML_TAG_RAW, BODYTEXTP_SIZE_400_LESS,
+ BODY_SIZE_200_299, BODYTEXTP_SIZE_3000_LESS, __MIME_TEXT_P1,
+ __MIME_TEXT_ONLY, HTML_00_01, HTML_00_10, __FRAUD_MONEY_CURRENCY,
+ __FRAUD_MONEY_BIG_COIN, __FRAUD_MONEY_VALUE, __PHISH_SPEAR_GREETING,
+ __FRAUD_MONEY, FRAUD_X3, BODY_SIZE_5000_LESS, __FRAUD_WEBMAIL,
+ WEBMAIL_REPLYTO_NOT_FROM, FRAUD_WEBMAIL_R_NOT_F, __MIME_TEXT_P, NO_URI_FOUND,
+ NO_CTA_URI_FOUND, FRAUD_LITTLE_BODY, __PHISH_SPEAR_STRUCTURE_1,
+ BODY_SIZE_1000_LESS, BODY_SIZE_2000_LESS, SMALL_BODY,
+ __PHISH_SPEAR_STRUCTURE_2, REPLYTO_FROM_DIFF_ADDY, NO_URI_HTTPS,
+ BODY_SIZE_7000_LESS, TO_MALFORMED
+Received: from resprs02 (62.42.230.132) by smtp3.ono.com (9.0.019.09-1)
+        id 5CC0A28F01BA9EB1; Wed, 5 Jun 2019 14:26:17 +0200
+Received: from (149.126.76.27) by webmailcpr02n.ono.com;  Wed, 5 Jun 2019 14:26:17 +0200
+Message-ID: <8939512.63301559737577303.JavaMail.defaultUser@defaultHost>
+Date:   Wed, 5 Jun 2019 14:26:17 +0200 (CEST)
+From:   Mrs M Compola <oposicionesayudantes@ono.com>
+Reply-To: mrsmcompola444@gmail.com
+Subject: Compliment of the day to you Dear Friend.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain;charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I got the devicetree from somebody that is why German is in it. But
-> first I wanted to get it running before I tidy it up.  The switch is
-> strapped to single mode (so I can read SMI addresses 0x10-0x16 and
-> 0x1b-0x1e directly).
+Compliment of the day to you Dear Friend.
 
-Hi Benjamin
+Dear Friend.
 
-You have miss-understood what reg means.
+  I am Mrs.M Compola. am sending this brief letter to solicit your
+partnership to transfer $5 million US Dollars. I shall send you
+more information and procedures when I receive positive response from
+you.
 
-There are three addressing modes used by the various switches,
-although most only support two.
 
-In multi-chip mode, it occupies one address, and there are two
-registers used to multiplex access to the underlying registers.  In
-this setup, you use reg=<X> to indicate the switch is using address X.
-
-In single mode, it occupies all addresses on the MDIO bus, but many
-are reserved. In this mode you use reg=<0>.
-
-A few chips support dual mode, where you can have two switches on one
-MDIO bus, one using 0x0-0xf, and the second using 0x10-0x1f. Here you
-use reg=<0> or reg=<16>.
-
-Try setting reg=<0> if you have it in single mode.
-
-    Andrew
+Mrs M Compola 
