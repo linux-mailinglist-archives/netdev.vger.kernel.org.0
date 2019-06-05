@@ -2,113 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A97836856
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0504D3685E
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbfFEXrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 19:47:33 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:38125 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbfFEXrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 19:47:32 -0400
-Received: by mail-qk1-f194.google.com with SMTP id a27so384443qkk.5
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 16:47:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zDO2mA6fGgwBFEtaCPfqOVF59ce/1l1R+5nsTwEvF18=;
-        b=emQP+MAUVJ6jrjNPeievvDvRIuGf83Osn1ssObVjt06c80uJp8BQ46N2dVFJxBuKEd
-         RtEihoxVQFt8P5GmInUbcD8qfczNElF5cretS4H97/v7Q0v48aqg4oWcOFT0MiR5dZsD
-         +lhRw0mIWwdGF3+HYB0hPYvu/t96ThKrS5LmTv8C3YpGR/0U6jxjTl7w5PWY7nMN8VZW
-         SsuvShPepbD51E2Ctd8+x6x/cNrE41tYiouvyggT7yX+ar/LW0wP2O3e7TOR3QseL/fc
-         tPs93cWcN+jw/61W/URqlbGT5BB2U0TZoQPdpYsnT2GKhFdWFv5TkwsvrnRkvOJ4HcnI
-         Nbyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zDO2mA6fGgwBFEtaCPfqOVF59ce/1l1R+5nsTwEvF18=;
-        b=bLWPjtgrJyBQdcMl/WYbmywVLVNWhWRXXXl339+RgVtD1WwVQU93qV9h+mXR9PsfKw
-         G2+Hfyxl7KNkAPH1gAxVN8qfeI88Ewc1wfIN9WB1b+jSHhf2tKyGjnS/x85GUNse1Ks2
-         UyknqjA9i5Pth2zuAA86m0z8Q1OVg5bkarxkqhPh0SM2taHH9xFCUp0M0Nvt8s7L0hYB
-         A8lEOC2BasQnALYiIx1CCEZFwp7gaEFAEpWHZkzWFzSZhGTPF8V3wF2b9ovFA5iIsJ9g
-         Mlm7EK3Nq2HxWwWxHXzvIlSXclRqgjRDGgtU3ldyaGLVpk/KhqaAqyRzbn5pbQ2CaXFD
-         d6QA==
-X-Gm-Message-State: APjAAAV4riQkFgRynrDvvqjxlvAnnTjUi9qspJon83Ejb+QKjZEoWX1n
-        bIw8jMo8dcMEKZAvD3HIWbGcNA==
-X-Google-Smtp-Source: APXvYqye2z2dcXK8nboELfTbsqistA9JDReSMEzQbkON9cN4avYgZ4GqaLSR14phd34dURsPT5RvrA==
-X-Received: by 2002:a05:620a:12f8:: with SMTP id f24mr16085988qkl.202.1559778451748;
-        Wed, 05 Jun 2019 16:47:31 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id o54sm264988qtb.63.2019.06.05.16.47.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 16:47:30 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH bpf-next v2] samples: bpf: print a warning about headers_install
-Date:   Wed,  5 Jun 2019 16:47:22 -0700
-Message-Id: <20190605234722.2291-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726652AbfFEXxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 19:53:45 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42474 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbfFEXxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 19:53:45 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C1E78143B8003;
+        Wed,  5 Jun 2019 16:53:44 -0700 (PDT)
+Date:   Wed, 05 Jun 2019 16:53:44 -0700 (PDT)
+Message-Id: <20190605.165344.1148251680371473480.davem@davemloft.net>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     lihong.yang@intel.com, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, andrewx.bowers@intel.com
+Subject: Re: [net-next 1/2] i40e: Do not check VF state in
+ i40e_ndo_get_vf_config
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190605194516.10125-1-jeffrey.t.kirsher@intel.com>
+References: <20190605194516.10125-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Jun 2019 16:53:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems like periodically someone posts patches to "fix"
-header includes.  The issue is that samples expect the
-include path to have the uAPI headers (from usr/) first,
-and then tools/ headers, so that locally installed uAPI
-headers take precedence.  This means that if users didn't
-run headers_install they will see all sort of strange
-compilation errors, e.g.:
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Date: Wed,  5 Jun 2019 12:45:15 -0700
 
-  HOSTCC  samples/bpf/test_lru_dist
-  samples/bpf/test_lru_dist.c:39:8: error: redefinition of ‘struct list_head’
-   struct list_head {
-          ^~~~~~~~~
-   In file included from samples/bpf/test_lru_dist.c:9:0:
-   ../tools/include/linux/types.h:69:8: note: originally defined here
-    struct list_head {
-           ^~~~~~~~~
+> From: Lihong Yang <lihong.yang@intel.com>
+> 
+> The VF configuration returned in i40e_ndo_get_vf_config is
+> already stored by the PF. There is no dependency on any
+> specific state of the VF to return the configuration.
+> Drop the check against I40E_VF_STATE_INIT since it is not
+> needed.
+> 
+> Signed-off-by: Lihong Yang <lihong.yang@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-Try to detect this situation, and print a helpful warning.
-
-v2: just use HOSTCC (Jiong).
-
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
----
- samples/bpf/Makefile | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 253e5a2856be..4074a66a70ca 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -206,6 +206,15 @@ HOSTCC = $(CROSS_COMPILE)gcc
- CLANG_ARCH_ARGS = -target $(ARCH)
- endif
- 
-+HDR_PROBE := $(shell echo "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
-+	$(HOSTCC) $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
-+	echo okay)
-+
-+ifeq ($(HDR_PROBE),)
-+$(warning WARNING: Detected possible issues with include path.)
-+$(warning WARNING: Please install kernel headers locally (make headers_install).)
-+endif
-+
- BTF_LLC_PROBE := $(shell $(LLC) -march=bpf -mattr=help 2>&1 | grep dwarfris)
- BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
- BTF_OBJCOPY_PROBE := $(shell $(LLVM_OBJCOPY) --help 2>&1 | grep -i 'usage.*llvm')
--- 
-2.21.0
-
+Applied.
