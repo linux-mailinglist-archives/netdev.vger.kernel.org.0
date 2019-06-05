@@ -2,120 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC370358E5
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0875A35905
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbfFEIqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 04:46:10 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44063 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbfFEIqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 04:46:09 -0400
-Received: by mail-qt1-f195.google.com with SMTP id x47so17011849qtk.11
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 01:46:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=B0y/WxuAU3yeQ3Aesz+vtVfvhCNtGHIL8s7vHvFgqiA=;
-        b=NViDpWtBe7V/aZszKVHDFomL5i8CKwbQmeabb2SU7Z7K8DpFDf08Onw9vBbAnMB6l4
-         vSjgSu+hcRBcncirz5PM+u7NHjFLUOF3as2BOUsa9BjbMaR9Qsx5Nj9oFGXypDYy5S4V
-         U+ZAMD3OmVhx2T0C0Cx6Ju68JcURQMR7wo8le8seo9rjsR2gBLw+1w/msxPW2HnT3zjb
-         yBIfHmrp4pDdhoZokzgcqtAdZpSJ0igazbq3vrFpx2LtvN22zwOxQyfux5A+4QBqT6oC
-         a/USnf44VuVwbR0FLTBjW9UC1kRx1Nw1b7QyBnite4vxE+4n7pxUjiiGDogXcQfBss9G
-         2Y7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=B0y/WxuAU3yeQ3Aesz+vtVfvhCNtGHIL8s7vHvFgqiA=;
-        b=qK5Iazk6ErRQ3LxeXlLULqBknINN/22c6h0eZ31LjDXHRmGPZsoQB3WbKrwS269GdM
-         kzl+XPfV+VUlo6yzFEZw7l4aBhUZKviQq4d6CKF/f5NB5+3E0XyGkmiNuMwT/ggFlpYU
-         2fKsojiesyxeC4aPJoOvRrQHj3xyilZC/cDRekY4P2OwsKsCF9obKJ9MVKanZGCxJLPf
-         ek1lTxvSSqaXbwIlYTDCQuYBynTpzLTW3YO0OrSxpaBdlsiseXmtCTrXc7sj2EiDueAT
-         NLF70QjqDiRPRxpdm+6PBMMTrtIfnRbfNQV44pM7c96LucITlueRwjfWUNPlbHtcVYyq
-         yDEQ==
-X-Gm-Message-State: APjAAAWotHHeXAcAqAsJEUK0PWJoDWGCMMPnPwirYQGbdStaHzg9PK+O
-        OPDqpmJ6b29GVRtybBzcdnOiuRCd9yfIpBDNoYY=
-X-Google-Smtp-Source: APXvYqwtvvVfuQzGWe8VTBI0qVGfwUEQfBrkYkbfSkz635q54Xa9yKgppTRoHNmnymhs6acsdiEgt6BFx4VeUsOphfQ=
-X-Received: by 2002:ac8:19ac:: with SMTP id u41mr15768882qtj.46.1559724368023;
- Wed, 05 Jun 2019 01:46:08 -0700 (PDT)
+        id S1726855AbfFEIwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 04:52:49 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:42314 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726690AbfFEIwt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 04:52:49 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 1C767CAD2F3FF6741F4C;
+        Wed,  5 Jun 2019 16:52:45 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Wed, 5 Jun 2019
+ 16:52:35 +0800
+Subject: Re: [PATCH net] tcp: avoid creating multiple req socks with the same
+ tuples
+To:     Eric Dumazet <edumazet@google.com>, Mao Wenan <maowenan@huawei.com>
+CC:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20190604145543.61624-1-maowenan@huawei.com>
+ <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Message-ID: <40f32663-f100-169c-4d1b-79d64d68a5f9@huawei.com>
+Date:   Wed, 5 Jun 2019 16:52:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-References: <20190603163852.2535150-1-jonathan.lemon@gmail.com>
- <20190603163852.2535150-2-jonathan.lemon@gmail.com> <20190604184306.362d9d8e@carbon>
- <87399C88-4388-4857-AD77-E98527DEFDA4@gmail.com> <20190604181202.bose7inhbhfgb2rc@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190604181202.bose7inhbhfgb2rc@kafai-mbp.dhcp.thefacebook.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 5 Jun 2019 10:45:56 +0200
-Message-ID: <CAJ+HfNiQ-wO+sT_6FHAMHw7eDv-kMNjg0ecUmHa_TKg-gPXCyA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
-To:     Martin Lau <kafai@fb.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Jun 2019 at 20:13, Martin Lau <kafai@fb.com> wrote:
->
-> On Tue, Jun 04, 2019 at 10:25:23AM -0700, Jonathan Lemon wrote:
-> > On 4 Jun 2019, at 9:43, Jesper Dangaard Brouer wrote:
-> >
-> > > On Mon, 3 Jun 2019 09:38:51 -0700
-> > > Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> > >
-> > >> Currently, the AF_XDP code uses a separate map in order to
-> > >> determine if an xsk is bound to a queue.  Instead of doing this,
-> > >> have bpf_map_lookup_elem() return the queue_id, as a way of
-> > >> indicating that there is a valid entry at the map index.
-> > >
-> > > Just a reminder, that once we choose a return value, there the
-> > > queue_id, then it basically becomes UAPI, and we cannot change it.
-> >
-> > Yes - Alexei initially wanted to return the sk_cookie instead, but
-> > that's 64 bits and opens up a whole other can of worms.
-> >
-> >
-> > > Can we somehow use BTF to allow us to extend this later?
-> > >
-> > > I was also going to point out that, you cannot return a direct pointe=
-r
-> > > to queue_id, as BPF-prog side can modify this... but Daniel already
-> > > pointed this out.
-> >
-> > So, I see three solutions here (for this and Toke's patchset also,
-> > which is encountering the same problem).
-> >
-> > 1) add a scratch register (Toke's approach)
-> > 2) add a PTR_TO_<type>, which has the access checked.  This is the most
-> >    flexible approach, but does seem a bit overkill at the moment.
-> I think it would be nice and more extensible to have PTR_TO_xxx.
-> It could start with the existing PTR_TO_SOCKET
->
-> or starting with a new PTR_TO_XDP_SOCK from the beginning is also fine.
->
-
-Doesn't the PTR_TO_SOCKET path involve taking a ref and mandating
-sk_release() from the fast path? :-(
 
 
-Bj=C3=B6rn
+在 2019/6/4 23:24, Eric Dumazet 写道:
+> On Tue, Jun 4, 2019 at 7:47 AM Mao Wenan <maowenan@huawei.com> wrote:
+>>
+>> There is one issue about bonding mode BOND_MODE_BROADCAST, and
+>> two slaves with diffierent affinity, so packets will be handled
+>> by different cpu. These are two pre-conditions in this case.
+
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+>> --
+> 
+> This issue has been discussed last year.
+> 
+> I am afraid your patch does not solve all races.
+> 
+> The lookup you add is lockless, so this is racy.
+> 
+> Really the only way to solve this is to make sure that _when_ the
+> bucket lock is held,
+> we do not insert a request socket if the 4-tuple is already in the
+> chain (probably in inet_ehash_insert())
+> 
+> This needs more tricky changes than your patch.
+> 
+
+This kind case is rarely used, and the condition of the issue is strict.
+If we add the "lookup" before or in inet_ehash_insert func for each reqsk,
+overall performance will be affected.
+
+We may solve the small probability issue with a trick in the tcp_v4_rcv.
+If the ACK is invalid checked by tcp_check_req func, the req could be dropped,
+and then goto the lookup for searching another avaliable reqsk. In this way,
+the performance will not be affected in the normal process.
+
+The patch is given as following:
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index a2896944aa37..9d0491587ed2 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1874,8 +1874,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+                        goto discard_and_relse;
+                }
+                if (nsk == sk) {
+-                       reqsk_put(req);
++                       inet_csk_reqsk_queue_drop_and_put(sk, req);
+                        tcp_v4_restore_cb(skb);
++                       sock_put(sk);
++                       goto lookup;
+                } else if (tcp_child_process(sk, nsk, skb)) {
+                        tcp_v4_send_reset(nsk, skb);
+                        goto discard_and_relse;
 
 
-> > 3) add another helper function, say, bpf_map_elem_present() which just
-> >    returns a boolean value indicating whether there is a valid map entr=
-y
-> >    or not.
-> >
-> > I was starting to do 2), but wanted to get some more feedback first.
-> > --
-> > Jonathan
+
+
+
+
