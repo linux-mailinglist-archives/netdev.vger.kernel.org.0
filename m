@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C2B367BB
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B4D367BC
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbfFEXPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 19:15:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59382 "EHLO mail.kernel.org"
+        id S1726774AbfFEXPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 19:15:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726708AbfFEXP3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726714AbfFEXP3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 Jun 2019 19:15:29 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8488B20B7C;
+        by mail.kernel.org (Postfix) with ESMTPSA id CD92B21019;
         Wed,  5 Jun 2019 23:15:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559776528;
-        bh=gH5lSvZ4ldWrE6w9Z7E3kiQl6Q59FDAbIdrVu6DL7GU=;
+        s=default; t=1559776529;
+        bh=jIcp4Y+cij4oPKn5TgQBIlzjMCjaYL0v90rpONl+bw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YnCaNPffUttBd/lAUhCFm8ohr0FpCchQbsIHaWhT2xOR3eV02utt7SjiiNg63xsJ5
-         /q2rI67cF6jt8GNsM8UQ7XmE633h2LVuUfTicmkvsk7gcF5d0eI60jH8z+OkyTDnlO
-         M/KoBijC+OZ81PKDsgedTbGW70d3/xuGI8sl07rk=
+        b=xAtsbGfwA2qYRF7oF9X0u9WMM5CMU3LvKnB8zy3ZHHY/az20xz0Ek32g+UiwiijUd
+         V2+9B1h5Nc7PMSoohKiSXzyknk+G68KRlCFVN6mHgOiMF4s+I5GfYC7Te04PsyIkC9
+         p/ouhw9sLTkYIrgcMVz5J8rmbpAAWkV/boiVEvqU=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 13/19] ipv6: Allow routes to use nexthop objects
-Date:   Wed,  5 Jun 2019 16:15:17 -0700
-Message-Id: <20190605231523.18424-14-dsahern@kernel.org>
+Subject: [PATCH net-next 14/19] nexthops: add support for replace
+Date:   Wed,  5 Jun 2019 16:15:18 -0700
+Message-Id: <20190605231523.18424-15-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190605231523.18424-1-dsahern@kernel.org>
 References: <20190605231523.18424-1-dsahern@kernel.org>
@@ -40,186 +40,406 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add support for RTA_NH_ID attribute to allow a user to specify a
-nexthop id to use with a route. fc_nh_id is added to fib6_config to
-hold the value passed in the RTA_NH_ID attribute. If a nexthop id
-is given, the gateway, device, encap and multipath attributes can
-not be set.
+Add support for atomically upating a nexthop config.
 
-Update ip6_route_del to check metric and protocol before nexthop
-specs. If fc_nh_id is set, then it must match the id in the route
-entry. Since IPv6 allows delete of a cached entry (an exception),
-add ip6_del_cached_rt_nh to cycle through all of the fib6_nh in
-a fib entry if it is using a nexthop.
+When updating a nexthop, walk the lists of associated fib entries and
+verify the new config is valid. After replace, bump the sequence counters
+for FIB entries to invalidate any dst entries.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- include/net/ip6_fib.h |  1 +
- net/ipv6/route.c      | 89 ++++++++++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 82 insertions(+), 8 deletions(-)
+ net/ipv4/nexthop.c | 244 +++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 227 insertions(+), 17 deletions(-)
 
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 1a8acd51b277..ef946578341f 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -53,6 +53,7 @@ struct fib6_config {
- 	u16		fc_delete_all_nh : 1,
- 			fc_ignore_dev_down:1,
- 			__unused : 14;
-+	u32		fc_nh_id;
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 6d1c8927e6d3..92aeff6ffe26 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -17,7 +17,7 @@
+ #include <net/sock.h>
  
- 	struct in6_addr	fc_dst;
- 	struct in6_addr	fc_src;
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 6f4b5fa6159b..d0441cefbc74 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3533,6 +3533,16 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
- 		goto out;
- 	}
- #endif
-+	if (cfg->fc_nh_id) {
-+		nh = nexthop_find_by_id(net, cfg->fc_nh_id);
-+		if (!nh) {
-+			NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
-+			goto out;
-+		}
-+		err = fib6_check_nexthop(nh, cfg, extack);
-+		if (err)
-+			goto out;
+ static void remove_nexthop(struct net *net, struct nexthop *nh,
+-			   struct nl_info *nlinfo);
++			   bool skip_fib, struct nl_info *nlinfo);
+ 
+ #define NH_DEV_HASHBITS  8
+ #define NH_DEV_HASHSIZE (1U << NH_DEV_HASHBITS)
+@@ -548,6 +548,16 @@ int nexthop_for_each_fib6_nh(struct nexthop *nh,
+ }
+ EXPORT_SYMBOL_GPL(nexthop_for_each_fib6_nh);
+ 
++static int check_src_addr(const struct in6_addr *saddr,
++			  struct netlink_ext_ack *extack)
++{
++	if (!ipv6_addr_any(saddr)) {
++		NL_SET_ERR_MSG(extack, "IPv6 routes using source address can not use nexthop objects");
++		return -EINVAL;
 +	}
++	return 0;
++}
++
+ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+ 		       struct netlink_ext_ack *extack)
+ {
+@@ -559,10 +569,8 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+ 	 * routing it can not use nexthop objects. mlxsw also does not allow
+ 	 * fib6_src on routes.
+ 	 */
+-	if (!ipv6_addr_any(&cfg->fc_src)) {
+-		NL_SET_ERR_MSG(extack, "IPv6 routes using source address can not use nexthop objects");
++	if (cfg && check_src_addr(&cfg->fc_src, extack) < 0)
+ 		return -EINVAL;
+-	}
  
- 	err = -ENOBUFS;
- 	if (cfg->fc_nlinfo.nlh &&
-@@ -3764,6 +3774,30 @@ static int ip6_del_cached_rt(struct fib6_config *cfg, struct fib6_info *rt,
- 	return 0;
+ 	if (nh->is_group) {
+ 		struct nh_group *nhg;
+@@ -583,6 +591,25 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+ }
+ EXPORT_SYMBOL_GPL(fib6_check_nexthop);
+ 
++/* if existing nexthop has ipv6 routes linked to it, need
++ * to verify this new spec works with ipv6
++ */
++static int fib6_check_nh_list(struct nexthop *old, struct nexthop *new,
++			      struct netlink_ext_ack *extack)
++{
++	struct fib6_info *f6i;
++
++	if (list_empty(&old->f6i_list))
++		return 0;
++
++	list_for_each_entry(f6i, &old->f6i_list, nh_list) {
++		if (check_src_addr(&f6i->fib6_src.addr, extack) < 0)
++			return -EINVAL;
++	}
++
++	return fib6_check_nexthop(new, NULL, extack);
++}
++
+ static int nexthop_check_scope(struct nexthop *nh, u8 scope,
+ 			       struct netlink_ext_ack *extack)
+ {
+@@ -631,6 +658,21 @@ int fib_check_nexthop(struct nexthop *nh, u8 scope,
+ 	return err;
  }
  
-+struct fib6_nh_del_cached_rt_arg {
-+	struct fib6_config *cfg;
-+	struct fib6_info *f6i;
-+};
-+
-+static int fib6_nh_del_cached_rt(struct fib6_nh *nh, void *_arg)
++static int fib_check_nh_list(struct nexthop *old, struct nexthop *new,
++			     struct netlink_ext_ack *extack)
 +{
-+	struct fib6_nh_del_cached_rt_arg *arg = _arg;
-+	int rc;
++	struct fib_info *fi;
 +
-+	rc = ip6_del_cached_rt(arg->cfg, arg->f6i, nh);
-+	return rc != -ESRCH ? rc : 0;
-+}
++	list_for_each_entry(fi, &old->fi_list, nh_list) {
++		int err;
 +
-+static int ip6_del_cached_rt_nh(struct fib6_config *cfg, struct fib6_info *f6i)
-+{
-+	struct fib6_nh_del_cached_rt_arg arg = {
-+		.cfg = cfg,
-+		.f6i = f6i
-+	};
-+
-+	return nexthop_for_each_fib6_nh(f6i->nh, fib6_nh_del_cached_rt, &arg);
-+}
-+
- static int ip6_route_del(struct fib6_config *cfg,
- 			 struct netlink_ext_ack *extack)
- {
-@@ -3789,11 +3823,20 @@ static int ip6_route_del(struct fib6_config *cfg,
- 		for_each_fib6_node_rt_rcu(fn) {
- 			struct fib6_nh *nh;
- 
--			nh = rt->fib6_nh;
--			if (cfg->fc_flags & RTF_CACHE) {
--				int rc;
-+			if (rt->nh && rt->nh->id != cfg->fc_nh_id)
-+				continue;
- 
--				rc = ip6_del_cached_rt(cfg, rt, nh);
-+			if (cfg->fc_flags & RTF_CACHE) {
-+				int rc = 0;
-+
-+				if (rt->nh) {
-+					rc = ip6_del_cached_rt_nh(cfg, rt);
-+				} else if (cfg->fc_nh_id) {
-+					continue;
-+				} else {
-+					nh = rt->fib6_nh;
-+					rc = ip6_del_cached_rt(cfg, rt, nh);
-+				}
- 				if (rc != -ESRCH) {
- 					rcu_read_unlock();
- 					return rc;
-@@ -3801,6 +3844,23 @@ static int ip6_route_del(struct fib6_config *cfg,
- 				continue;
- 			}
- 
-+			if (cfg->fc_metric && cfg->fc_metric != rt->fib6_metric)
-+				continue;
-+			if (cfg->fc_protocol &&
-+			    cfg->fc_protocol != rt->fib6_protocol)
-+				continue;
-+
-+			if (rt->nh) {
-+				if (!fib6_info_hold_safe(rt))
-+					continue;
-+				rcu_read_unlock();
-+
-+				return __ip6_del_rt(rt, &cfg->fc_nlinfo);
-+			}
-+			if (cfg->fc_nh_id)
-+				continue;
-+
-+			nh = rt->fib6_nh;
- 			if (cfg->fc_ifindex &&
- 			    (!nh->fib_nh_dev ||
- 			     nh->fib_nh_dev->ifindex != cfg->fc_ifindex))
-@@ -3808,10 +3868,6 @@ static int ip6_route_del(struct fib6_config *cfg,
- 			if (cfg->fc_flags & RTF_GATEWAY &&
- 			    !ipv6_addr_equal(&cfg->fc_gateway, &nh->fib_nh_gw6))
- 				continue;
--			if (cfg->fc_metric && cfg->fc_metric != rt->fib6_metric)
--				continue;
--			if (cfg->fc_protocol && cfg->fc_protocol != rt->fib6_protocol)
--				continue;
- 			if (!fib6_info_hold_safe(rt))
- 				continue;
- 			rcu_read_unlock();
-@@ -4711,6 +4767,7 @@ static const struct nla_policy rtm_ipv6_policy[RTA_MAX+1] = {
- 	[RTA_IP_PROTO]		= { .type = NLA_U8 },
- 	[RTA_SPORT]		= { .type = NLA_U16 },
- 	[RTA_DPORT]		= { .type = NLA_U16 },
-+	[RTA_NH_ID]		= { .type = NLA_U32 },
- };
- 
- static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
-@@ -4757,6 +4814,16 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	cfg->fc_flags |= (rtm->rtm_flags & RTNH_F_ONLINK);
- 
-+	if (tb[RTA_NH_ID]) {
-+		if (tb[RTA_GATEWAY]   || tb[RTA_OIF] ||
-+		    tb[RTA_MULTIPATH] || tb[RTA_ENCAP]) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Nexthop specification and nexthop id are mutually exclusive");
-+			goto errout;
-+		}
-+		cfg->fc_nh_id = nla_get_u32(tb[RTA_NH_ID]);
++		err = fib_check_nexthop(new, fi->fib_scope, extack);
++		if (err)
++			return err;
 +	}
++	return 0;
++}
 +
- 	if (tb[RTA_GATEWAY]) {
- 		cfg->fc_gateway = nla_get_in6_addr(tb[RTA_GATEWAY]);
- 		cfg->fc_flags |= RTF_GATEWAY;
-@@ -5091,6 +5158,12 @@ static int inet6_rtm_delroute(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err < 0)
- 		return err;
+ static void nh_group_rebalance(struct nh_group *nhg)
+ {
+ 	int total = 0;
+@@ -688,7 +730,7 @@ static void remove_nh_grp_entry(struct nh_grp_entry *nhge,
+ }
  
-+	if (cfg.fc_nh_id &&
-+	    !nexthop_find_by_id(sock_net(skb->sk), cfg.fc_nh_id)) {
-+		NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
+ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
+-				       struct nl_info *nlinfo)
++				       bool skip_fib, struct nl_info *nlinfo)
+ {
+ 	struct nh_grp_entry *nhge, *tmp;
+ 
+@@ -701,7 +743,7 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
+ 
+ 		/* if this group has no more entries then remove it */
+ 		if (!nhg->num_nh)
+-			remove_nexthop(net, nhge->nh_parent, nlinfo);
++			remove_nexthop(net, nhge->nh_parent, skip_fib, nlinfo);
+ 	}
+ }
+ 
+@@ -723,6 +765,7 @@ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
+ 	}
+ }
+ 
++/* not called for nexthop replace */
+ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
+ {
+ 	struct fib6_info *f6i, *tmp;
+@@ -745,9 +788,10 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
+ }
+ 
+ static void __remove_nexthop(struct net *net, struct nexthop *nh,
+-			     struct nl_info *nlinfo)
++			     bool skip_fib, struct nl_info *nlinfo)
+ {
+-	__remove_nexthop_fib(net, nh);
++	if (!skip_fib)
++		__remove_nexthop_fib(net, nh);
+ 
+ 	if (nh->is_group) {
+ 		remove_nexthop_group(nh, nlinfo);
+@@ -758,12 +802,12 @@ static void __remove_nexthop(struct net *net, struct nexthop *nh,
+ 		if (nhi->fib_nhc.nhc_dev)
+ 			hlist_del(&nhi->dev_hash);
+ 
+-		remove_nexthop_from_groups(net, nh, nlinfo);
++		remove_nexthop_from_groups(net, nh, skip_fib, nlinfo);
+ 	}
+ }
+ 
+ static void remove_nexthop(struct net *net, struct nexthop *nh,
+-			   struct nl_info *nlinfo)
++			   bool skip_fib, struct nl_info *nlinfo)
+ {
+ 	/* remove from the tree */
+ 	rb_erase(&nh->rb_node, &net->nexthop.rb_root);
+@@ -771,16 +815,177 @@ static void remove_nexthop(struct net *net, struct nexthop *nh,
+ 	if (nlinfo)
+ 		nexthop_notify(RTM_DELNEXTHOP, nh, nlinfo);
+ 
+-	__remove_nexthop(net, nh, nlinfo);
++	__remove_nexthop(net, nh, skip_fib, nlinfo);
+ 	nh_base_seq_inc(net);
+ 
+ 	nexthop_put(nh);
+ }
+ 
++/* if any FIB entries reference this nexthop, any dst entries
++ * need to be regenerated
++ */
++static void nh_rt_cache_flush(struct net *net, struct nexthop *nh)
++{
++	struct fib6_info *f6i;
++
++	if (!list_empty(&nh->fi_list))
++		rt_cache_flush(net);
++
++	list_for_each_entry(f6i, &nh->f6i_list, nh_list)
++		ipv6_stub->fib6_update_sernum(net, f6i);
++}
++
++static int replace_nexthop_grp(struct net *net, struct nexthop *old,
++			       struct nexthop *new,
++			       struct netlink_ext_ack *extack)
++{
++	struct nh_group *oldg, *newg;
++	int i;
++
++	if (!new->is_group) {
++		NL_SET_ERR_MSG(extack, "Can not replace a nexthop group with a nexthop.");
 +		return -EINVAL;
 +	}
 +
- 	if (cfg.fc_mp)
- 		return ip6_route_multipath_del(&cfg, extack);
- 	else {
++	oldg = rtnl_dereference(old->nh_grp);
++	newg = rtnl_dereference(new->nh_grp);
++
++	/* update parents - used by nexthop code for cleanup */
++	for (i = 0; i < newg->num_nh; ++i)
++		newg->nh_entries[i].nh_parent = old;
++
++	rcu_assign_pointer(old->nh_grp, newg);
++
++	for (i = 0; i < oldg->num_nh; ++i)
++		oldg->nh_entries[i].nh_parent = new;
++
++	rcu_assign_pointer(new->nh_grp, oldg);
++
++	return 0;
++}
++
++static int replace_nexthop_single(struct net *net, struct nexthop *old,
++				  struct nexthop *new,
++				  struct netlink_ext_ack *extack)
++{
++	struct nh_info *oldi, *newi;
++
++	if (new->is_group) {
++		NL_SET_ERR_MSG(extack, "Can not replace a nexthop with a nexthop group.");
++		return -EINVAL;
++	}
++
++	oldi = rtnl_dereference(old->nh_info);
++	newi = rtnl_dereference(new->nh_info);
++
++	newi->nh_parent = old;
++	oldi->nh_parent = new;
++
++	old->protocol = new->protocol;
++	old->nh_flags = new->nh_flags;
++
++	rcu_assign_pointer(old->nh_info, newi);
++	rcu_assign_pointer(new->nh_info, oldi);
++
++	return 0;
++}
++
++static void __nexthop_replace_notify(struct net *net, struct nexthop *nh,
++				     struct nl_info *info)
++{
++	struct fib6_info *f6i;
++
++	if (!list_empty(&nh->fi_list)) {
++		struct fib_info *fi;
++
++		/* expectation is a few fib_info per nexthop and then
++		 * a lot of routes per fib_info. So mark the fib_info
++		 * and then walk the fib tables once
++		 */
++		list_for_each_entry(fi, &nh->fi_list, nh_list)
++			fi->nh_updated = true;
++
++		fib_info_notify_update(net, info);
++
++		list_for_each_entry(fi, &nh->fi_list, nh_list)
++			fi->nh_updated = false;
++	}
++
++	list_for_each_entry(f6i, &nh->f6i_list, nh_list)
++		ipv6_stub->fib6_rt_update(net, f6i, info);
++}
++
++/* send RTM_NEWROUTE with REPLACE flag set for all FIB entries
++ * linked to this nexthop and for all groups that the nexthop
++ * is a member of
++ */
++static void nexthop_replace_notify(struct net *net, struct nexthop *nh,
++				   struct nl_info *info)
++{
++	struct nh_grp_entry *nhge;
++
++	__nexthop_replace_notify(net, nh, info);
++
++	list_for_each_entry(nhge, &nh->grp_list, nh_list)
++		__nexthop_replace_notify(net, nhge->nh_parent, info);
++}
++
+ static int replace_nexthop(struct net *net, struct nexthop *old,
+ 			   struct nexthop *new, struct netlink_ext_ack *extack)
+ {
+-	return -EEXIST;
++	bool new_is_reject = false;
++	struct nh_grp_entry *nhge;
++	int err;
++
++	/* check that existing FIB entries are ok with the
++	 * new nexthop definition
++	 */
++	err = fib_check_nh_list(old, new, extack);
++	if (err)
++		return err;
++
++	err = fib6_check_nh_list(old, new, extack);
++	if (err)
++		return err;
++
++	if (!new->is_group) {
++		struct nh_info *nhi = rtnl_dereference(new->nh_info);
++
++		new_is_reject = nhi->reject_nh;
++	}
++
++	list_for_each_entry(nhge, &old->grp_list, nh_list) {
++		/* if new nexthop is a blackhole, any groups using this
++		 * nexthop cannot have more than 1 path
++		 */
++		if (new_is_reject &&
++		    nexthop_num_path(nhge->nh_parent) > 1) {
++			NL_SET_ERR_MSG(extack, "Blackhole nexthop can not be a member of a group with more than one path");
++			return -EINVAL;
++		}
++
++		err = fib_check_nh_list(nhge->nh_parent, new, extack);
++		if (err)
++			return err;
++
++		err = fib6_check_nh_list(nhge->nh_parent, new, extack);
++		if (err)
++			return err;
++	}
++
++	if (old->is_group)
++		err = replace_nexthop_grp(net, old, new, extack);
++	else
++		err = replace_nexthop_single(net, old, new, extack);
++
++	if (!err) {
++		nh_rt_cache_flush(net, old);
++
++		__remove_nexthop(net, new, true, NULL);
++		nexthop_put(new);
++	}
++
++	return err;
+ }
+ 
+ /* called with rtnl_lock held */
+@@ -792,6 +997,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+ 	bool replace = !!(cfg->nlflags & NLM_F_REPLACE);
+ 	bool create = !!(cfg->nlflags & NLM_F_CREATE);
+ 	u32 new_id = new_nh->id;
++	int replace_notify = 0;
+ 	int rc = -EEXIST;
+ 
+ 	pp = &root->rb_node;
+@@ -811,8 +1017,10 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+ 			pp = &next->rb_right;
+ 		} else if (replace) {
+ 			rc = replace_nexthop(net, nh, new_nh, extack);
+-			if (!rc)
++			if (!rc) {
+ 				new_nh = nh; /* send notification with old nh */
++				replace_notify = 1;
++			}
+ 			goto out;
+ 		} else {
+ 			/* id already exists and not a replace */
+@@ -833,6 +1041,8 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+ 	if (!rc) {
+ 		nh_base_seq_inc(net);
+ 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
++		if (replace_notify)
++			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
+ 	}
+ 
+ 	return rc;
+@@ -852,7 +1062,7 @@ static void nexthop_flush_dev(struct net_device *dev)
+ 		if (nhi->fib_nhc.nhc_dev != dev)
+ 			continue;
+ 
+-		remove_nexthop(net, nhi->nh_parent, NULL);
++		remove_nexthop(net, nhi->nh_parent, false, NULL);
+ 	}
+ }
+ 
+@@ -865,7 +1075,7 @@ static void flush_all_nexthops(struct net *net)
+ 
+ 	while ((node = rb_first(root))) {
+ 		nh = rb_entry(node, struct nexthop, rb_node);
+-		remove_nexthop(net, nh, NULL);
++		remove_nexthop(net, nh, false, NULL);
+ 		cond_resched();
+ 	}
+ }
+@@ -1079,7 +1289,7 @@ static struct nexthop *nexthop_add(struct net *net, struct nh_config *cfg,
+ 
+ 	err = insert_nexthop(net, nh, cfg, extack);
+ 	if (err) {
+-		__remove_nexthop(net, nh, NULL);
++		__remove_nexthop(net, nh, false, NULL);
+ 		nexthop_put(nh);
+ 		nh = ERR_PTR(err);
+ 	}
+@@ -1339,7 +1549,7 @@ static int rtm_del_nexthop(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (!nh)
+ 		return -ENOENT;
+ 
+-	remove_nexthop(net, nh, &nlinfo);
++	remove_nexthop(net, nh, false, &nlinfo);
+ 
+ 	return 0;
+ }
 -- 
 2.11.0
 
