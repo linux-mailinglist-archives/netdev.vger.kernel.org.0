@@ -2,219 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D7A35DAC
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B48D35D9B
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbfFENUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 09:20:10 -0400
-Received: from mx-relay02-hz1.antispameurope.com ([94.100.132.202]:40717 "EHLO
-        mx-relay02-hz1.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727642AbfFENUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:20:10 -0400
-X-Greylist: delayed 464 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Jun 2019 09:20:08 EDT
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay02-hz1.antispameurope.com;
- Wed, 05 Jun 2019 15:12:17 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Wed, 5 Jun
- 2019 15:12:16 +0200
-Subject: Re: DSA with MV88E6321 and imx28
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>
-References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
- <20190604135000.GD16951@lunn.ch>
- <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
- <20190605122404.GH16951@lunn.ch>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Message-ID: <414bd616-9383-073d-b3f3-6b6138c8b163@eks-engel.de>
-Date:   Wed, 5 Jun 2019 15:12:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190605122404.GH16951@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S1727980AbfFENNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 09:13:32 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:43600 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727740AbfFENNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:13:32 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C0627C0B50;
+        Wed,  5 Jun 2019 13:13:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559740422; bh=mh42QUvXWlbA4/Dvy1RLLMUvXyOiaZoLvd+Q77x88KU=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=et+aK2S7dIEvIxkpfYu0ZdcdLWn8dgGITMkaVMFivs6/u52mZiqr+BGxXAK2lvAC9
+         d8rYQTkZzzvVSJ8iDq7qF3FNT8ju49oFg3+X1xFmxuHKttMpBY2/z3M2YOQenYPSze
+         hyUETVKNawbMK9vCcI1OKHNodNZ4dmp3SIvhDG0Q7wVhU1w6k16jw9Bge0q+pqEoUy
+         qY9EDKwBmVwnSVqg9/D4JiTU8Lsk9muibY5Q393I5czBTw/62w7EZCni8GvTGYy5LE
+         tIGd2TnoqwZW/XM+h7qxwXgPecdKwvNhGLvvBr3Op/vtyd2BfiBZ0QeArYtXw4FMQa
+         2AIIyW0USLnrQ==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 17C24A0070;
+        Wed,  5 Jun 2019 13:13:27 +0000 (UTC)
+Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 5 Jun 2019 06:13:26 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
+ 5 Jun 2019 15:13:24 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        "Kweh Hock Leong" <hock.leong.kweh@intel.com>
+Subject: RE: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Topic: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Index: AQHVGsR5qibwMaoNx0yOto7uqjBITaaL1fgAgAE08AA=
+Date:   Wed, 5 Jun 2019 13:13:22 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B93EF69@DE02WEMBXB.internal.synopsys.com>
+References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
+ <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
+ <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
+In-Reply-To: <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay02-hz1.antispameurope.com with 38CAD11C7563
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:.1659
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> I got the devicetree from somebody that is why German is in it. But
->> first I wanted to get it running before I tidy it up.  The switch is
->> strapped to single mode (so I can read SMI addresses 0x10-0x16 and
->> 0x1b-0x1e directly).
-> Hi Benjamin
->
-> You have miss-understood what reg means.
->
-> There are three addressing modes used by the various switches,
-> although most only support two.
->
-> In multi-chip mode, it occupies one address, and there are two
-> registers used to multiplex access to the underlying registers.  In
-> this setup, you use reg=<X> to indicate the switch is using address X.
->
-> In single mode, it occupies all addresses on the MDIO bus, but many
-> are reserved. In this mode you use reg=<0>.
->
-> A few chips support dual mode, where you can have two switches on one
-> MDIO bus, one using 0x0-0xf, and the second using 0x10-0x1f. Here you
-> use reg=<0> or reg=<16>.
->
-> Try setting reg=<0> if you have it in single mode.
->
->     Andrew
-
-Hi Andrew, 
-
-thanks a lot. That was the hint I needed. Now the DSA ist recognized. 
-But the external PHYs are not recognized and the Serdes Ports neither.
-
-Here is my device tree
-
-mdio { 
-                #address-cells = <1>;
-                #size-cells = <0>;
-
-                switch0: switch0@0 {
-                        compatible = "marvell,mv88e6085";
-                        reg = <0x0>;
-                        pinctrl-0 = <&lcd_d06_pins>;
-                        reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
-
-                        dsa,member = <0 0>;
-
-                        ports {
-                                #address-cells = <1>;
-                                #size-cells = <0>;
-
-                                port@0 {
-/* Changed reg to 0xc too, same error message */
-                                        reg = <0x0>;
-                                        label = "Serdes0";
-                                        phy-handle = <&switch0phy0>;
-                                };
-
-                                port@1 {
-/* Changed reg to 0xd too, same error message */
-                                        reg = <0x1>;
-                                        label = "Serdes1";
-                                        phy-handle = <&switch0phy1>;
-                                };
-				
-				port@2 {
-                                        reg = <0x2>;
-                                        label = "lan1";
-                                        phy-handle = <&switch0phy2>;
-                                };
-
-                                port@3 {
-                                        reg = <0x3>;
-                                        label = "lan2";
-                                        phy-handle = <&switch0phy3>;
-                                };
-
-                                port@4 {
-                                        reg = <0x4>;
-                                        label = "lan3";
-                                        phy-handle = <&switch0phy4>;
-                                };
-
-                                port5 {
-                                        reg = <0x5>;
-                                        label = "cpu";
-                                        ethernet = <&mac0>;
-                                        phy-mode = "rmii";
-                                        fixed-link {
-                                                speed = <100>;
-                                                full-duplex;
-                                        };
-				};
-
-                                port@6 {
-                                        reg = <0x6>;
-                                        label = "lan4";
-                                        phy-handle = <&switch0phy6>;
-                                };
-                        };
-
-                        mdio {
-                                #address-cells = <1>;
-                                #size-cells = <0>;
-                                switch0phy0: switch0phy0@0 {
-/* Changed reg to 0 too, same error message */
-					 reg = <0xc>;
-                                };
-                                switch0phy1: switch0phy1@1 {
-/* Changed reg to 1 too, same error message */
-                                        reg = <0xd>;
-                                };
-                                switch0phy3: switch0phy3@3 {
-                                        reg = <0x3>;
-                                };
-                                switch0phy4: switch0phy4@4 {
-                                        reg = <0x4>;
-                                };
-                        };
-
-                        mdio1 {
-				compatible = "marvell,mv88e6xxx-mdio-external";
-                                #address-cells = <1>;
-                                #size-cells = <0>;
-
-                                switch0phy2: switch0phy2@2 {
-                                        reg = <0x2>;
-                                };
-                                switch0phy6: switch0phy6@6 {
-                                        reg = <0x6>;
-                                };
-                        };
-                };
-        };
-				
-and here the bootup.
---snip
-mv88e6085 800f0000.ethernet-1:00: switch 0x310 detected: Marvell 88E6321, revision 2
-[    1.737480] libphy: /ahb@80080000/ethernet@800f0000/mdio/switch0@10: probed
-[    1.754443] DSA: switch 0 0 parsed
-[    1.757915] DSA: tree 0 parsed
-[    1.825228] random: fast init done
-[    1.847046] mv88e6085 800f0000.ethernet-1:00 Serdes0 (uninitialized): no phy at 0
-[    1.854597] mv88e6085 800f0000.ethernet-1:00 Serdes0 (uninitialized): failed to connect to port 0: -19
-[    1.863968] fec 800f0000.ethernet eth0: error -19 setting up slave phy
-[    1.870591] mv88e6085 800f0000.ethernet-1:00: Failed to create slave 0: -19
-[    1.877821] mv88e6085 800f0000.ethernet-1:00 Serdes1 (uninitialized): no phy at 1
-[    1.885365] mv88e6085 800f0000.ethernet-1:00 Serdes1 (uninitialized): failed to connect to port 1: -19
-[    1.894736] fec 800f0000.ethernet eth0: error -19 setting up slave phy
-[    1.901359] mv88e6085 800f0000.ethernet-1:00: Failed to create slave 1: -19
-[    1.908568] mv88e6085 800f0000.ethernet-1:00 lan1 (uninitialized): no phy at 2
-[    1.915849] mv88e6085 800f0000.ethernet-1:00 lan1 (uninitialized): failed to connect to phy2: -19
-[    1.925106] fec 800f0000.ethernet eth0: error -19 setting up slave phy
-[    1.931721] mv88e6085 800f0000.ethernet-1:00: Failed to create slave 2: -19
-[    1.943446] Generic PHY !ahb@80080000!ethernet@800f0000!mdio!switch0@10:03: attached PHY driver [Generic PHY] (mii_bus:phy_addr=!ahb@80080000!ethernet@800f0000!mdio!switch0@10:03, irq=-1)
-[    1.973026] Generic PHY !ahb@80080000!ethernet@800f0000!mdio!switch0@10:04: attached PHY driver [Generic PHY] (mii_bus:phy_addr=!ahb@80080000!ethernet@800f0000!mdio!switch0@10:04, irq=-1)
-[    1.993580] mv88e6085 800f0000.ethernet-1:00 lan4 (uninitialized): no phy at 6
-[    2.000896] mv88e6085 800f0000.ethernet-1:00 lan4 (uninitialized): failed to connect to phy6: -19
-[    2.009848] fec 800f0000.ethernet eth0: error -19 setting up slave phy
-[    2.016475] mv88e6085 800f0000.ethernet-1:00: Failed to create slave 6: -19
---snip
-
-Same error occurs when I put PHY 2 and 6 into the mdio part above 
-(the PHYs are working properly in forwarding mode without DSA).
-
-But I can read the internal PHY Identifier register (0x2 and 0x3)
-over indirect mode per mdio. But I can't read the registers of the external PHYs.
-
-Thanks in advance.
-Benjamin 
-
+RnJvbTogRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQoNCj4gK1J1c3Nl
+bGwsDQo+IA0KPiBPbiA2LzQvMjAxOSAxMTo1OCBBTSwgVm9vbiBXZWlmZW5nIHdyb3RlOg0KPiA+
+IEZyb206IE9uZyBCb29uIExlb25nIDxib29uLmxlb25nLm9uZ0BpbnRlbC5jb20+DQo+ID4gDQo+
+ID4geFBDUyBpcyBEV0MgRXRoZXJuZXQgUGh5c2ljYWwgQ29kaW5nIFN1YmxheWVyIHRoYXQgbWF5
+IGJlIGludGVncmF0ZWQNCj4gPiBpbnRvIGEgR2JFIGNvbnRyb2xsZXIgdGhhdCB1c2VzIERXQyBF
+UW9TIE1BQyBjb250cm9sbGVyLiBBbiBleGFtcGxlIG9mDQo+ID4gSFcgY29uZmlndXJhdGlvbiBp
+cyBzaG93biBiZWxvdzotDQo+ID4gDQo+ID4gICA8LS0tLS0tLS0tLS0tLS0tLS1HQkUgQ29udHJv
+bGxlci0tLS0tLS0tLS0+fDwtLUV4dGVybmFsIFBIWSBjaGlwLS0+DQo+ID4gDQo+ID4gICArLS0t
+LS0tLS0tLSsgICAgICAgICArLS0tLSsgICAgKy0tLSsgICAgICAgICAgICAgICArLS0tLS0tLS0t
+LS0tLS0rDQo+ID4gICB8ICAgRVFvUyAgIHwgPC1HTUlJLT58IERXIHw8LS0+fFBIWXwgPC0tIFNH
+TUlJIC0tPiB8IEV4dGVybmFsIEdiRSB8DQo+ID4gICB8ICAgTUFDICAgIHwgICAgICAgICB8eFBD
+U3wgICAgfElGIHwgICAgICAgICAgICAgICB8IFBIWSBDaGlwICAgICB8DQo+ID4gICArLS0tLS0t
+LS0tLSsgICAgICAgICArLS0tLSsgICAgKy0tLSsgICAgICAgICAgICAgICArLS0tLS0tLS0tLS0t
+LS0rDQo+ID4gICAgICAgICAgXiAgICAgICAgICAgICAgIF4gICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgXg0KPiA+ICAgICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHwNCj4gPiAgICAgICAgICArLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tTURJTy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rDQo+ID4gDQo+ID4geFBDUyBpcyBhIENs
+YXVzZS00NSBNRElPIE1hbmFnZWFibGUgRGV2aWNlIChNTUQpIGFuZCB3ZSBuZWVkIGEgd2F5IHRv
+DQo+ID4gZGlmZmVyZW50aWF0ZSBpdCBmcm9tIGV4dGVybmFsIFBIWSBjaGlwIHRoYXQgaXMgZGlz
+Y292ZXJlZCBvdmVyIE1ESU8uDQo+ID4gVGhlcmVmb3JlLCB4cGNzX3BoeV9hZGRyIGlzIGludHJv
+ZHVjZWQgaW4gc3RtbWFjIHBsYXRmb3JtIGRhdGENCj4gPiAocGxhdF9zdG1tYWNlbmV0X2RhdGEp
+IGZvciBkaWZmZXJlbnRpYXRpbmcgeFBDUyBmcm9tICdwaHlfYWRkcicgdGhhdA0KPiA+IGJlbG9u
+Z3MgdG8gZXh0ZXJuYWwgUEhZLg0KPiANCj4gQXNzdW1pbmcgdGhpcyBEVyB4UENTIGNhbiBiZSBm
+b3VuZCB3aXRoIGRlc2lnbnMgb3RoZXIgdGhhbiBTVE1NQUMgd291bGQNCj4gbm90IGl0IG1ha2Ug
+c2Vuc2UgdG8gbW9kZWwgdGhpcyBhcyBzb21lIGtpbmQgb2YgUEhZL01ESU8gYnJpZGdlPyBBDQo+
+IGxpdHRsZSBiaXQgbGlrZSB3aGF0IGRyaXZlcnMvbmV0L3BoeS94aWxpbnhfZ21paTJyZ21paS5j
+IHRyaWVzIHRvIGRvPw0KDQpZZXMsIERXIFhQQ1MgaXMgYSBzZXBhcmF0ZSBJUCB0aGF0IGNhbiBi
+ZSBzb2xkIHdpdGhvdXQgdGhlIE1BQy4NCg0KVGhhbmtzLA0KSm9zZSBNaWd1ZWwgQWJyZXUNCg==
