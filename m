@@ -2,214 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F0035607
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 06:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 376F93560F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 06:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726056AbfFEEwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 00:52:22 -0400
-Received: from mx-relay06-hz2.antispameurope.com ([83.246.65.92]:33347 "EHLO
-        mx-relay06-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725268AbfFEEwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 00:52:22 -0400
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay06-hz2.antispameurope.com;
- Wed, 05 Jun 2019 06:52:18 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Wed, 5 Jun
- 2019 06:52:17 +0200
-Subject: Re: DSA with MV88E6321 and imx28
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>
-References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
- <20190604135000.GD16951@lunn.ch>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Message-ID: <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
-Date:   Wed, 5 Jun 2019 06:52:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726179AbfFEE6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 00:58:33 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33162 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbfFEE6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 00:58:33 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v19so864835wmh.0
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 21:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tvZ0sXc7T+PfuYrXldyLNvmzWS0RxOt+TFpjmhqi7iY=;
+        b=Ce6uT+rSj9byp1iphLj+PvFUcXE4c9IZ7n90+TpSWkTGiqj3QikS46XQC9HwI30Rqh
+         F2h91arNPZRohyYSAqfvwPHzcF0d5vND/ceOpMxI8Lfyan8vc9iTeofYdKHfhI9PfXxD
+         rpWfXOJvYsQT+0SyWsgOa8Py3dgrhURPw2WVPNlJkawAilI04eR2Fc2XzixPezt979TR
+         xERAFSwPiI/VY4phslX8F98I6yHsc4LW/vUhT5Nyx28dHSRyCEk38q/xz/YWkDEjCuwO
+         qSw6dptsShDauZN97+Pk+vtmaAMYb4Gm9b852omnpSRqOuTqjcMVr/81TrsAWZ2gpXYf
+         Iqow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tvZ0sXc7T+PfuYrXldyLNvmzWS0RxOt+TFpjmhqi7iY=;
+        b=jihxVrhF3X9Jq5Ze+PcglizlaxtSxk5HgpQ9nfeJn2jD0NmKQjqbgVhw5Bn5AwbMo6
+         BIVTAJhDuPxWFRHK1hZi2V64dT7R7k8hTIoX12fwKkWL5gSiabKqglLUaiGb/SkGkTh6
+         VULb5+87uTSYYKtVW4hm7UfrBrnwekpejhAxCS9CxKmalAc3fV91MpZcxU0wevODq+Io
+         ByFsPfjNxco8p6hKSjWpCcLp45x04iJ2us+gO1LIojXiV7UWCe77CTsJerr7eMvRjs5i
+         kI6OAxAmTRqzj+d1kP0aJk8Xue2k7wDKRaO6fDenJwJdN4jvSCf3z+/clq1pVJtk2gh4
+         MFHA==
+X-Gm-Message-State: APjAAAXy3VgtDo0+3X5j/cCDGnxgrQw81Uz0vpiE8EynWspZoA2Hxx4F
+        OaBGyMNrs0bk+KVXzmsldPek7jHhVZhKJ0ul9fwDAQ==
+X-Google-Smtp-Source: APXvYqw9RLrse0P7VjccV/LhirPa6MoDx3BCgDbjB0A9EMgsAq5O+rPAKND21GC8a5C7yEX4Wfsxb7BCrAB/0lcPSL8=
+X-Received: by 2002:a05:600c:23d2:: with SMTP id p18mr10838383wmb.108.1559710710540;
+ Tue, 04 Jun 2019 21:58:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190604135000.GD16951@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay06-hz2.antispameurope.com with 754AA260C68
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:.1670
+References: <20190507091118.24324-1-liuhangbin@gmail.com> <20190508.093541.1274244477886053907.davem@davemloft.net>
+ <CAHo-OozeC3o9avh5kgKpXq1koRH0fVtNRaM9mb=vduYRNX0T7g@mail.gmail.com>
+ <20190605014344.GY18865@dhcp-12-139.nay.redhat.com> <eef3b598-2590-5c62-e79d-76eb46fae5ff@cumulusnetworks.com>
+In-Reply-To: <eef3b598-2590-5c62-e79d-76eb46fae5ff@cumulusnetworks.com>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Wed, 5 Jun 2019 13:58:18 +0900
+Message-ID: <CAKD1Yr30Wj+Kk-ao2tFLU5apNjAVNYKeYJ+jZsb=5HTtd3+5-Q@mail.gmail.com>
+Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same rule
+ exists when NLM_F_EXCL not supplied
+To:     David Ahern <dsa@cumulusnetworks.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Yaro Slav <yaro330@gmail.com>,
+        Thomas Haller <thaller@redhat.com>,
+        Alistair Strachan <astrachan@google.com>,
+        Greg KH <greg@kroah.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Mateusz Bajorski <mateusz.bajorski@nokia.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Andrew,
-thanks for you reply. 
-I got the devicetree from somebody that is why German is in it. But first I wanted to get it running before I tidy it up.
-The switch is strapped to single mode (so I can read SMI addresses 0x10-0x16 and 0x1b-0x1e directly). Do I have to
-tell this the devicetree? I thought the driver will recognized that and I only give it the start SMI address of the switch?
-I can read the internal PHYs with the indirectly read over the SMI COMMAND and SMI DATA registers.
+On Wed, Jun 5, 2019 at 12:58 PM David Ahern <dsa@cumulusnetworks.com> wrote:
+> I think it is crazy to add multiple identical rules given the linear
+> effect on performance.
 
-The switch is not held in reset anymore, I take it out of reset in barebox manually every start, not a good solution but
-for the moment to get it running it is okay.
+Not sure if this is what you were implying or not, but our code
+doesn't maintain multiple identical rules in steady state. It only
+uses them for make-before-break when something changes.
 
-The LCD port is just a GPIO. Like I said before, the devicetree is not completely from me. I've already started to write 
-a new one but then the MDIO bus can't be accessed anymore.
+> But, since it breaks Android, it has to be reverted.
 
-I will put some printk's in that function and see what is happening. What I think is confusing me, the switch is working 
-with internal addresses from 0-6 for the ports and you can read the port status registers at 0x10-0x16. And I'm not sure
-which addresses should be in the switch mdio part.
+Well... the immediate problem on Android is that we cannot live with
+this going to LTS, since it is going to break devices in the field.
 
-Cheers,
-Benjamin
-
-> On Tue, Jun 04, 2019 at 03:07:25PM +0200, Benjamin Beckmeyer wrote:
->> Hi all,
->>
->> I'm working on a custom board with a 88E6321 and an i.MX28. Port 5 is directly connected per RMII to the CPU. 
->> The switch is running in CPU attached mode. On Port 2 and 6 we have 2 external Micrel KSZ9031 PHYs.
->> Here is the snip of my device tree:
->>
->> &mac0 {
->> 	pinctrl-0 = <&mac0_pins_a &mac0_freigabe &mac0_lcd_d04>;
->> 	phy-supply = <&reg_3p3v>;
->> 	status = "okay";
->>
->> 	fixed-link = <1 1 100 0 0>;
-> Hi Benjamin
->
-> That is the old format for a fixed-link. Please use the new one.
->
->> 	/* this is done to remove enet_out */
->> 	clocks = <&clks 57>, <&clks 57>;
->> 	clock-names = "ipg", "ahb";
->>
->> 	/delete-property/ phy-reset-gpios;
->> 	/delete-property/ phy-reset-duration;
->> 	freigabe-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
-> German in device tree? 
->
->> 	trigger-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
->>
->> 	mdio {
->>                 #address-cells = <1>;
->>                 #size-cells = <0>;
->>
->> 		switch0: switch0@10 {
->>                         compatible = "marvell,mv88e6085";
->>                         reg = <0x10>;
-> So you have the switch strapped to use a single address?
->
->> 			pinctrl-0 = <&lcd_d06_pins>;
-> lcd ?
->
->> 			reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
->>
->>                         dsa,member = <0 0>;
->>
->>                         ports {
->>                                 #address-cells = <1>;
->>                                 #size-cells = <0>;
->>
->>                                 port@0 {
->>                                         reg = <0x0>;
->>                                         label = "Serdes0";
->>                                         phy-handle = <&switch0phy0>;
->>                                 };
->>
->>                                 port@1 {
->>                                         reg = <0x1>;
->>                                         label = "Serdes1";
->>                                         phy-handle = <&switch0phy1>;
->>                                 };
->>
->>                                 port@2 {
->> 					reg = <0x2>;
->>                                         label = "lan1";
->>                                         phy-handle = <&switch0phy2>;
->>                                 };
->>
->>                                 port@3 {
->>                                         reg = <0x3>;
->>                                         label = "lan2";
->>                                         phy-handle = <&switch0phy3>;
->>                                 };
->>
->>                                 port@4 {
->>                                         reg = <0x4>;
->>                                         label = "lan3";
->>                                         phy-handle = <&switch0phy4>;
->>                                 };
->>
->>                                 port5 {
->>                                         reg = <0x5>;
->>                                         label = "cpu";
->>                                         ethernet = <&mac0>;
->>                                         phy-mode = "rmii";
->>                                         fixed-link {
->>                                                 speed = <100>;
->>                                                 full-duplex;
->>                                         };
->>                                 };
->>
->> 				port@6 {
->>                                         reg = <0x6>;
->>                                         label = "lan4";
->>                                         phy-handle = <&switch0phy6>;
->>                                 };
->>                         };
->>
->> 			mdio {
->> 				#address-cells = <1>;
->> 				#size-cells = <0>;
->> 				switch0phy0: switch0phy0@0 {
->> 					reg = <0xc>;
->> 				};
->> 				switch0phy1: switch0phy1@1 {
->> 				        reg = <0xd>;
->> 				};
->> 				switch0phy2: switch0phy2@2 {
->> 				        reg = <0x2>;
->> 				};
->> 				switch0phy3: switch0phy3@3 {
->> 				        reg = <0x3>;
->> 				};
->> 				switch0phy4: switch0phy4@4 {
->> 				        reg = <0x4>;
->> 				};
->> 				switch0phy6: switch0phy6@6 {
->> 				        reg = <0x6>;
->> 				};
->> 			};
->> 		};
->>         };
->> }; 
->>
->> I'm sure it must be wrong. Does the mdio part in between the switch part is for the internal
->> mdio bus? 
-> It is for the switch MDIO bus. For this generation of switch, it is
-> both internal and external. Later generations have two MDIO busses,
-> one internal and one external.
->
->> >From the outside I can read and write the SMI Register 0x10-0x16. 
->>
->> Here is a snip from the bootup
->>
->> [    1.377362] at24 0-0051: 256 byte 24c02 EEPROM, writable, 32 bytes/write
->> [    1.391046] libphy: Fixed MDIO Bus: probed
->> [    1.396763] libphy: mdio_driver_register: mv88e6085
->> [    1.407168] fec 800f0000.ethernet (unnamed net_device) (uninitialized): Invalid MAC address: 00:00:00:00:00:00
->> [    1.417279] fec 800f0000.ethernet (unnamed net_device) (uninitialized): Using random MAC address: 86:50:72:5d:79:ad
->> [    1.429918] libphy: fec_enet_mii_bus: probed
->> [    1.434374] mdio_bus 800f0000.ethernet-1:10: mdio_device_register
->> ---
->> [   18.735835] Generic PHY fixed-0:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=fixed-0:00, irq=-1)
-> You probably want to put some printk mv88e6xxx_detect(). Is it getting
-> called? What value does id have? When these switches are held in
-> reset, they don't respond on the bus at all, so you will get MDIO
-> reads of 0xffff.
->
->       Andrew
+As for making this change in 5.3: we might be able to structure the
+code differently in a future Android release, assuming the same
+userspace code can work on kernels back to 4.4 (not sure it can, since
+the semantics changed in 4.8). But even if we can fix this in Android,
+this change is still breaking compatibility with existing other
+userspace code. Are there concrete performance optimizations that
+you'd like to make that can't be made unless you change the semantics
+here? Are those optimizations worth breaking the backwards
+compatibility guarantees for?
