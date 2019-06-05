@@ -2,82 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E4935D0C
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:40:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43EFB35FD3
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727763AbfFEMkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 08:40:49 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:55178 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727273AbfFEMkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 08:40:49 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hYVDh-0005pc-KN; Wed, 05 Jun 2019 14:40:45 +0200
-Date:   Wed, 5 Jun 2019 14:40:45 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Florian Westphal <fw@strlen.de>, kbuild-all@01.org,
-        netdev@vger.kernel.org
-Subject: Re: [ipsec-next:testing 4/6] net/xfrm/xfrm_state.c:1792:9: error:
- '__xfrm6_tmpl_sort_cmp' undeclared; did you mean 'xfrm_tmpl_sort'?
-Message-ID: <20190605124045.gzkafkixihwu7447@breakpoint.cc>
-References: <201906052002.P2x8MWme%lkp@intel.com>
+        id S1728483AbfFEPDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 11:03:20 -0400
+Received: from 313717.com ([176.126.78.19]:60479 "EHLO treehousetv.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726442AbfFEPDT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 11:03:19 -0400
+X-Greylist: delayed 6556 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Jun 2019 11:03:18 EDT
+To:     netdev@vger.kernel.org
+Subject: Get your USB drives
+Message-ID: <4d7b32fb49a76ed316c8cdd2c5106dde@vecteezy.com>
+Date:   Wed, 05 Jun 2019 14:41:20 +0200
+From:   "Stacy" <schssereutz@aol.jp>
+Reply-To: halsyid@sina.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201906052002.P2x8MWme%lkp@intel.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; format=flowed; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kbuild test robot <lkp@intel.com> wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git testing
-> head:   ca78a3eaad69bd08ba41c144c21881dc694d4a32
-> commit: 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e [4/6] xfrm: remove state and template sort indirections from xfrm_state_afinfo
-> config: i386-randconfig-x003-201922 (attached as .config)
-> compiler: gcc-7 (Debian 7.3.0-1) 7.3.0
-> reproduce:
->         git checkout 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e
->         # save the attached .config to linux build tree
->         make ARCH=i386 
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->    net/xfrm/xfrm_state.c: In function 'xfrm_tmpl_sort':
-> >> net/xfrm/xfrm_state.c:1792:9: error: '__xfrm6_tmpl_sort_cmp' undeclared (first use in this function); did you mean 'xfrm_tmpl_sort'?
->             __xfrm6_tmpl_sort_cmp, 5);
->             ^~~~~~~~~~~~~~~~~~~~~
->             xfrm_tmpl_sort
->    net/xfrm/xfrm_state.c:1792:9: note: each undeclared identifier is reported only once for each function it appears in
->    net/xfrm/xfrm_state.c: In function 'xfrm_state_sort':
-> >> net/xfrm/xfrm_state.c:1806:9: error: '__xfrm6_state_sort_cmp' undeclared (first use in this function); did you mean '__xfrm6_state_addr_cmp'?
->             __xfrm6_state_sort_cmp, 6);
->             ^~~~~~~~~~~~~~~~~~~~~~
->             __xfrm6_state_addr_cmp
+Hi,
 
-this lacks stubs for CONFIG_IPV6=n case.
+I wanted to follow up from last week. Did you receive the email I sent you?
 
-Steffen, as this is still only in your testing branch, I suggest you
-squash this snipped into commit 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e
-("xfrm: remove state and template sort indirections from xfrm_state_afinfo"),
-it resolves this problem for me.  Otherwise, I can make a formal submit,
-just let me know.
+Our company manufactures USB Flash Drives, printed with your logo.  They
+make the perfect marketing tool for your business or organization.
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1845,6 +1845,9 @@ static int __xfrm6_tmpl_sort_cmp(const void *p)
- 	return 4;
- }
- #else
-+static inline int __xfrm6_state_sort_cmp(const void *p) { return 5; }
-+static inline int __xfrm6_tmpl_sort_cmp(const void *p) { return 4; }
-+
- static inline void
- __xfrm6_sort(void **dst, void **src, int n,
- 	     int (*cmp)(const void *p), int maxclass)
+We offer low minimum quantities, and all memory sizes. Over 150 Stock
+Models as well as 100 % custom shaped USB drives.  Memory sizes include up
+to 128GB !
+
+We can pre-load your media files, images, presentations and files onto the
+drives for you.  These are ideal handouts for trade shows, branding,
+corporate gifts and employees.
+Our USB Pricing is at an ALL TIME LOW - now is the time to get your USB
+drives.
+
+Let us send you a quote!   We will EARN your business!
+* Please reply back and let me know what quantity and memory size
+you need for a Fast Quote! *
+
+Are you a school or nonprofit?  Please let us know for even further
+discounts.
+
+Thanks!
+
+Stacy King
+National Account Rep
+Promo / Branded Flash Drives
+
