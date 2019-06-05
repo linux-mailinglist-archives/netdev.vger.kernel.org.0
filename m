@@ -2,99 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BB3355A6
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 05:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3F3355A8
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 05:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbfFED3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 23:29:38 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33240 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfFED3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 23:29:38 -0400
-Received: by mail-pf1-f193.google.com with SMTP id x15so4196128pfq.0
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 20:29:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4Ef0nirmEraBXGoO/xfex12g/MC3WpaxrMid1law3SI=;
-        b=ZD5czFcKcKBnQWJbG/uXtkMM1EDw9WCmG9EevCTnOiKLjTTKCjwOb5CiGE+mvp71qU
-         useFGWgVoe3SwyF8fyhGMe+dovFxBTRzHSRetR9tc4qfXJOZQFs7h9Kwk2+zd4PfLfcH
-         RWD8G/kCfqkPHpas/ymLffbqP/oUvp1MITp2vYgf1qd2VMZaG+SGs4wDPM8iW1a66gL1
-         QmX4X7lydkfaXnqzD0Uz+6va5DUPVj0pP2Dbh4038bvjhlaXzQYbRCrON2SS4ZNDTus6
-         le+sd75E2TiOEBe0iZ5W0tPy0E+RC/I9JYsvPxc9UfcbMU/ka/VkBgq7j5PhzCM1Ja3y
-         +Ctw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4Ef0nirmEraBXGoO/xfex12g/MC3WpaxrMid1law3SI=;
-        b=gimzuDGXfbmFZmrF85Nzt5NDcaP9mN+qvwvzQdVfHRaoagSkfaAsq1u6ncemonj6fi
-         WCHhYV3ANX+cofYqEhrBZk77kB5MK9omI7JD6Fl3O+jRtlucVYBWPnNuzVHL9jixz3YB
-         JAcL13NNtqIWZ9b4gtWA7e8daVg5ukArnreUBlUZbQK2vOI1dcu+CJ5wW6DVYOmKYIko
-         C52LfQ8EC6EeLsjYFACbVRu8sF/HpXps0H8UMj+ce268JSSvVl1oTA1UZJx1xBIqRZ0H
-         ziwOvX1xABjlbXuWlyBrvekZK5clxFEjwSocj9hSfMadKdO4TnZZTSuV7BA4uKEHzHUB
-         YoVg==
-X-Gm-Message-State: APjAAAUFPnMITNN6+afLN5HE/Zw2rt143bGnoz++bD1wzJbfkTAIhsVP
-        +8wZgsmZX1yj3J6zF/kbtdU=
-X-Google-Smtp-Source: APXvYqzZZowMQwwaMKEojynwz5YeUxLqHWSN0760GZwAcvnGe+FV8pDiCQO1gfR70CS6drH04nerrg==
-X-Received: by 2002:a63:8dc4:: with SMTP id z187mr1242157pgd.337.1559705377828;
-        Tue, 04 Jun 2019 20:29:37 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 12sm8841482pfi.60.2019.06.04.20.29.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 04 Jun 2019 20:29:36 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 11:29:26 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Lorenzo Colitti <lorenzo@google.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Yaro Slav <yaro330@gmail.com>,
-        Thomas Haller <thaller@redhat.com>,
-        Alistair Strachan <astrachan@google.com>,
-        Greg KH <greg@kroah.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same rule
- exists when NLM_F_EXCL not supplied
-Message-ID: <20190605032926.GA18865@dhcp-12-139.nay.redhat.com>
-References: <20190507091118.24324-1-liuhangbin@gmail.com>
- <20190508.093541.1274244477886053907.davem@davemloft.net>
- <CAHo-OozeC3o9avh5kgKpXq1koRH0fVtNRaM9mb=vduYRNX0T7g@mail.gmail.com>
- <20190605014344.GY18865@dhcp-12-139.nay.redhat.com>
- <CAKD1Yr3px5vCAmmW7vgh4v6AX_gSRiGFcS0m+iKW9YEYZ2wG8w@mail.gmail.com>
- <20190605021533.GZ18865@dhcp-12-139.nay.redhat.com>
- <CAKD1Yr1UNV-rzM3tPgcsmTRok7fSb43cmb4bGktxNsU0Bx3Hzw@mail.gmail.com>
+        id S1726555AbfFEDar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 23:30:47 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:44540 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726532AbfFEDaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 23:30:46 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x553M5RW044551
+        for <netdev@vger.kernel.org>; Tue, 4 Jun 2019 23:30:45 -0400
+Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2sx3krm9yn-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 23:30:45 -0400
+Received: from localhost
+        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
+        Wed, 5 Jun 2019 04:30:44 +0100
+Received: from b01cxnp23032.gho.pok.ibm.com (9.57.198.27)
+        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 5 Jun 2019 04:30:40 +0100
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x553UdK632375164
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 5 Jun 2019 03:30:39 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D7A60B2066;
+        Wed,  5 Jun 2019 03:30:39 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A5469B205F;
+        Wed,  5 Jun 2019 03:30:39 +0000 (GMT)
+Received: from paulmck-ThinkPad-W541 (unknown [9.80.212.108])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  5 Jun 2019 03:30:39 +0000 (GMT)
+Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
+        id 848C816C3783; Tue,  4 Jun 2019 20:30:39 -0700 (PDT)
+Date:   Tue, 4 Jun 2019 20:30:39 -0700
+From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: rcu_read_lock lost its compiler barrier
+Reply-To: paulmck@linux.ibm.com
+References: <20150921204327.GH4029@linux.vnet.ibm.com>
+ <20190602055607.bk5vgmwjvvt4wejd@gondor.apana.org.au>
+ <20190603000617.GD28207@linux.ibm.com>
+ <20190603030324.kl3bckqmebzis2vw@gondor.apana.org.au>
+ <CAHk-=wj2t+GK+DGQ7Xy6U7zMf72e7Jkxn4_-kGyfH3WFEoH+YQ@mail.gmail.com>
+ <CAHk-=wgZcrb_vQi5rwpv+=wwG+68SRDY16HcqcMtgPFL_kdfyQ@mail.gmail.com>
+ <20190603195304.GK28207@linux.ibm.com>
+ <CAHk-=whXb-QGZqOZ7S9YdjvQf7FNymzceinzJegvRALqXm3=FQ@mail.gmail.com>
+ <20190604211449.GU28207@linux.ibm.com>
+ <20190605022117.kw6tldcwhdkyqd6u@gondor.apana.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKD1Yr1UNV-rzM3tPgcsmTRok7fSb43cmb4bGktxNsU0Bx3Hzw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190605022117.kw6tldcwhdkyqd6u@gondor.apana.org.au>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19060503-0072-0000-0000-000004379A56
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011217; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01213397; UDB=6.00637747; IPR=6.00994469;
+ MB=3.00027186; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-05 03:30:43
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060503-0073-0000-0000-00004C7F4EC0
+Message-Id: <20190605033039.GY28207@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-05_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=918 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906050019
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 11:25:11AM +0900, Lorenzo Colitti wrote:
-> On Wed, Jun 5, 2019 at 11:15 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
-> > How do you add the rules? with ip cmd it should has NLM_F_EXCL flag and
-> > you will get -EEXIST error out.
+On Wed, Jun 05, 2019 at 10:21:17AM +0800, Herbert Xu wrote:
+> On Tue, Jun 04, 2019 at 02:14:49PM -0700, Paul E. McKenney wrote:
+> >
+> > Yeah, I know, even with the "volatile" keyword, it is not entirely clear
+> > how much reordering the compiler is allowed to do.  I was relying on
+> > https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html, which says:
 > 
-> The fact that the code worked before this commit implies that it was
-> *not* using NLM_F_EXCL. :-)
+> The volatile keyword doesn't give any guarantees of this kind.
+> The key to ensuring ordering between unrelated variable/register
+> reads/writes is the memory clobber:
+> 
+> 	6.47.2.6 Clobbers and Scratch Registers
+> 
+> 	...
+> 
+> 	"memory" The "memory" clobber tells the compiler that the assembly
+> 	code performs memory reads or writes to items other than those
+> 	listed in the input and output operands (for example, accessing
+> 	the memory pointed to by one of the input parameters). To ensure
+> 	memory contains correct values, GCC may need to flush specific
+> 	register values to memory before executing the asm. Further,
+> 	the compiler does not assume that any values read from memory
+> 	before an asm remain unchanged after that asm; it reloads them as
+> 	needed. Using the "memory" clobber effectively forms a read/write
+> 	memory barrier for the compiler.
+> 
+> 	Note that this clobber does not prevent the processor from
+> 	doing speculative reads past the asm statement. To prevent that,
+> 	you need processor-specific fence instructions.
+> 
+> IOW you need a barrier().
 
-Yes, that's why you got the issue.
+Understood.  Does the patch I sent out a few hours ago cover it?  Or is
+something else needed?
 
-> We rely on being able to add a rule and either have a dup be created
-> (in which case we'll remove it later) or have it fail with EEXIST (in
-> which case we won't remove it later).
+Other than updates to the RCU requirements documentation, which is
+forthcoming.
 
-With Maciej said, how about add NLM_F_EXCL flag when you add a new rule.
-If it returned EEXIST, which means there is an dup rule, you just do not
-remove it later.
+							Thanx, Paul
 
-Would that fix your issue?
-
-Thanks
-Hangbin
