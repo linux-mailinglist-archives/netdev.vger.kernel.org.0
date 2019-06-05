@@ -2,94 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA703602F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E86B3602B
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728560AbfFEPRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 11:17:36 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:29877 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728089AbfFEPRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:17:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1559747853;
-        s=strato-dkim-0002; d=fpond.eu;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=6QLl30ammr5VgUAthBs6M8MMgp7CqG1eEV3tOWy5HEY=;
-        b=qoFRHxGHp53AQmgISodvVDNMSOSLUdX6M9m9eJ+Dm/dJSk9CbKFDxXNx53v7AzFEXG
-        K8+CCILEv62y/kXeOAcLqRzp2lwi3mK1Jr/4/JwkIULrpCyNMOiKJVMXSs/Qhs0ytkhn
-        YBb3CB8tN8QuJsvhJlnqtrw51AVEi7wAGRzuenbTbB0oa+dLFNs/9MjJBdZAhcLAj7XU
-        bX4V6+b1gjB49eZgnfH7mGPSSy/QWH2uT44RgaUg0bb158djjWXJaKywl1dVXdWYM4tu
-        1a1oA+UHT93iYOAwWDHtpsbRE9XRjVp4p0f3H24TDYX+7mfF4lBDzGCWbnt9tVeHo9H+
-        Y7Xw==
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73dmm4I5W0/AvA67Ot4fvR82VcdxqguoQ="
-X-RZG-CLASS-ID: mo00
-Received: from groucho.site
-        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
-        with ESMTPSA id y08c83v55FEOvhb
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Wed, 5 Jun 2019 17:14:24 +0200 (CEST)
-From:   Ulrich Hecht <uli+renesas@fpond.eu>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        sergei.shtylyov@cogentembedded.com, niklas.soderlund@ragnatech.se,
-        wsa@the-dreams.de, horms@verge.net.au, magnus.damm@gmail.com,
-        Ulrich Hecht <uli+renesas@fpond.eu>
-Subject: [PATCH v2] ravb: implement MTU change while device is up
-Date:   Wed,  5 Jun 2019 17:14:20 +0200
-Message-Id: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
-X-Mailer: git-send-email 2.7.4
+        id S1728477AbfFEPRH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jun 2019 11:17:07 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:33804 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728089AbfFEPRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:17:07 -0400
+Received: by mail-lf1-f65.google.com with SMTP id y198so8894799lfa.1;
+        Wed, 05 Jun 2019 08:17:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2ZDwihMraH0/UeXMGo6VxX/h+FGTCHAr18lAotP3W/o=;
+        b=EMyFJ9Fm50n5fMj2Uwl+/MzyCU1Hpss0wfXITPTe0r2+sNWQ5L5tq8ZWAhP34FRDRD
+         WKQVS/p2n7w+py/9nFT84A80tp0oKd2WrZ8aFyMyUEnkHS6gFgbzZqc8IOlbRGbOIAsM
+         g7T8KGSfdBRwdRh1+ldDsXpjTUpOZgvTPx0/OA2qU5E5mm+9PSUF5VDC3elk+CujrAZd
+         0nW/sAA5ia549CABKnjEzlwx0q50F3DaCJICJoDqpwj4izGayVSAk46p+e+ReX7JzDwW
+         xjJupANV9Cy8JJhdhJLwAqgiJNZuuzm/yjShgdW1oiLW0Oa2kms0UVFSbfcazQ7v3lyc
+         IOVg==
+X-Gm-Message-State: APjAAAXSnCX0IZHjKvfr+NxhpUg3b0fRZIyjk5nw/GETex/vavKKgYlc
+        iQDbNZ2Bmg5/2ZEP10Dwb0Ebmybu2pr/I0ngHKc=
+X-Google-Smtp-Source: APXvYqwnahJWRbBNqZloWzQgYOc8LotxrUUSMRWrJGEacaPDeMBX02rjSlhg9N1zdQ1iLajO5cX9nUc2wicrIbTApGo=
+X-Received: by 2002:a19:6e41:: with SMTP id q1mr12977958lfk.20.1559747825230;
+ Wed, 05 Jun 2019 08:17:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
+In-Reply-To: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 5 Jun 2019 17:16:52 +0200
+Message-ID: <CAMuHMdWi2F5K9yf009F-6wj_5eqZ-9ueyhKpAVZvEUheWS-4Zw@mail.gmail.com>
+Subject: Re: [PATCH v2] ravb: implement MTU change while device is up
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Simon Horman <horms@verge.net.au>,
+        Magnus Damm <magnus.damm@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Uses the same method as various other drivers: shut the device down,
-change the MTU, then bring it back up again.
+On Wed, Jun 5, 2019 at 5:15 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
+> Uses the same method as various other drivers: shut the device down,
+> change the MTU, then bring it back up again.
+>
+> Tested on Renesas D3 Draak board.
+>
+> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-Tested on Renesas D3 Draak board.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
----
+Gr{oetje,eeting}s,
 
-Hi!
+                        Geert
 
-This revision incorporates Simon's and Sergei's suggestions, namely calling
-netdev_update_features() whether the device is up or not. Thanks to
-reviewers!
-
-CU
-Uli
-
-
- drivers/net/ethernet/renesas/ravb_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index ef8f089..00427e7 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1811,11 +1811,14 @@ static int ravb_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
- static int ravb_change_mtu(struct net_device *ndev, int new_mtu)
- {
- 	if (netif_running(ndev))
--		return -EBUSY;
-+		ravb_close(ndev);
- 
- 	ndev->mtu = new_mtu;
- 	netdev_update_features(ndev);
- 
-+	if (netif_running(ndev))
-+		return ravb_open(ndev);
-+
- 	return 0;
- }
- 
 -- 
-2.7.4
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
