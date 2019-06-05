@@ -2,108 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE67F35922
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 11:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9805D3593D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 11:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbfFEJAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 05:00:14 -0400
-Received: from mail-eopbgr20051.outbound.protection.outlook.com ([40.107.2.51]:14412
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726690AbfFEJAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 05:00:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+0mNXQIgLVZZ1DJgaP2cOp5eG9hSGobtrdzn4HJHtK0=;
- b=Bfwdt0HNTmE7J68ezRfcZa6vs9zm+y/orGmiaug3zttWfq7WyjdRNQqsHQk7T8TjWhcLO7kM/CbiEtdjxkrEll0+oUAsPiBvN0dS8hEdLlBZSNf2hV44uoE5PGJ7h+bXb1cdwmiu73eWB5VsvMGMUoVv0pIXQoP0FRdw6O0DPCA=
-Received: from AM6PR05MB6133.eurprd05.prod.outlook.com (20.179.3.144) by
- AM6PR05MB4486.eurprd05.prod.outlook.com (52.135.162.159) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.22; Wed, 5 Jun 2019 09:00:09 +0000
-Received: from AM6PR05MB6133.eurprd05.prod.outlook.com
- ([fe80::1cec:5ce0:adab:7a12]) by AM6PR05MB6133.eurprd05.prod.outlook.com
- ([fe80::1cec:5ce0:adab:7a12%7]) with mapi id 15.20.1943.023; Wed, 5 Jun 2019
- 09:00:09 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
- physical hardware clock operations
-Thread-Topic: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
- physical hardware clock operations
-Thread-Index: AQHVGgXT+S72SiTw0kK+/hqBqs3YWaaLuumAgAELMIA=
-Date:   Wed, 5 Jun 2019 09:00:09 +0000
-Message-ID: <87muiwxv8o.fsf@mellanox.com>
-References: <20190603121244.3398-1-idosch@idosch.org>
- <20190603121244.3398-8-idosch@idosch.org>
- <20190604170349.wqsocilmlaisyzar@localhost>
-In-Reply-To: <20190604170349.wqsocilmlaisyzar@localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM5PR0202CA0007.eurprd02.prod.outlook.com
- (2603:10a6:203:69::17) To AM6PR05MB6133.eurprd05.prod.outlook.com
- (2603:10a6:20b:af::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [78.45.160.211]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 225b1fd5-d8a6-4636-b1ad-08d6e9943626
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM6PR05MB4486;
-x-ms-traffictypediagnostic: AM6PR05MB4486:
-x-microsoft-antispam-prvs: <AM6PR05MB448692DAEDD2E5A98E7D0BF9DB160@AM6PR05MB4486.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 00594E8DBA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(366004)(136003)(39860400002)(199004)(189003)(2616005)(99286004)(52116002)(476003)(11346002)(5660300002)(446003)(1411001)(36756003)(66066001)(14454004)(6436002)(186003)(486006)(2906002)(26005)(305945005)(6486002)(76176011)(66946007)(73956011)(316002)(66476007)(66556008)(64756008)(66446008)(102836004)(508600001)(8676002)(386003)(4326008)(25786009)(81156014)(6506007)(86362001)(7736002)(71190400001)(8936002)(71200400001)(53936002)(14444005)(54906003)(229853002)(6116002)(6246003)(6916009)(107886003)(3846002)(256004)(6512007)(81166006)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4486;H:AM6PR05MB6133.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: cgZ9kpMgrYs1ouz83JKGEnfiYW867oCUASz/q+I0He7mFU2y7OyeoR5aDYWhMUmSANP7zDSfGHWYBvaE9MZbFo4BFSBspqSvUBp2R9tzyWws3KxswuqxAM1iO5PVntFGJQeVtKhg8xTmGfTffm2f4L7iMPPX/gvg1rcvlISgDc4id+ysh0R4p/jd4vj5POIszgwLbhjo5897c9dxyu+kOBbOPh690HpaWSDQBDLbw9HwCIUyTjEni0DSxxripFnOPXpb2kyesC0dR05GNs71yge+WwZ3e+e9cTcb3plCPLiuVqCoSB3bahAahEnKq4zJ1kcojosywiSgkFtovQ/GNSQh9835b2z8sqBheNfdmM3Wkzbcv1n9uOUejW0ABGVnGAoI9wE+0eCOl5gaqOcVud+kmc1YfagK0YBLHHLXMuY=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726930AbfFEJD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 05:03:58 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40024 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbfFEJD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 05:03:58 -0400
+Received: by mail-qt1-f193.google.com with SMTP id a15so2600160qtn.7;
+        Wed, 05 Jun 2019 02:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8CSfDI3ilg7cS9jedAIbPBMKBAeGpTM8vhgFEc0r9qc=;
+        b=ZD7iX2R9+JaUc18Hket6tYk/XWh2la6v0NCJfdMPg3dEWEaNMXI+snnxZmFfboJzfy
+         7oMED9afeum0LT5cORNdr8/fJjlWw9oXO4fOzcQKNljlEbaHCp9kfuXaYuxQi2pLjhQu
+         3BQC6D5Iq9hcy84/6+F86g7cxxGlPveHU79Ft0VzOpIFvOy8JFrlbx9GcL7bSBfghFZ+
+         o0hZ1Ba8BppYvkaYJ0gd5QxanblzNtwNlRYhPW0XLHErjDHo5qdtkUgm+QsbIN9Pb6VC
+         GQzivuC0QoGXw1N95KY9fQjQzE9mzfoOvkjpNFppU6PAhflij201Xf2blfNdl+FDxBEY
+         nssQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8CSfDI3ilg7cS9jedAIbPBMKBAeGpTM8vhgFEc0r9qc=;
+        b=UqlrmVgSLihv66vmOkE4AjCEqUDtVdZlqTskaeaoKp5VVgAlY0F1iGig4kUwbEylXy
+         KB1qaJ1Dm0yocmc4/5ajLgDg/kGdVJimG5qmpnY8oaXKu2GhwAV69+cgpA4gDupzvTuC
+         ghFbf8bltQ4yODb+XDzCOFP07y7OAOi9n1y00mYqweMe1dMB+LpMyG3/xgSD9RlHcctu
+         zG5SZXqzvr4bFrc9/GpEiNgnRNOoVx3lxX8Wa5IoZkSGOJL4A3r1lEE6P3k+w3RDpYAP
+         pYLFFqsu18cpDXo4n/VcwlXosZKdgiiMGWk1Qu8R0boVuaYQarxQwFbOGvC+vPzeG5AI
+         6WQA==
+X-Gm-Message-State: APjAAAVL2dFs5/G/9j0HvH9oOvR7xrdB7bMt42wyBj9LIXdQgk9xhpKw
+        TedtxVjEd5LbBKYTKPHNiIpCNrN6wbbD8qcjUNc=
+X-Google-Smtp-Source: APXvYqyE7wEOcDGlclehYg1z18cYSvNh1uQ5UTDk4qXeNXAwb96b2BUyoTXa2yog8A1SB5KdShoreX58fls0ADltjys=
+X-Received: by 2002:ac8:25b1:: with SMTP id e46mr13738972qte.36.1559725436835;
+ Wed, 05 Jun 2019 02:03:56 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 225b1fd5-d8a6-4636-b1ad-08d6e9943626
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2019 09:00:09.5609
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4486
+References: <20190603131907.13395-1-maciej.fijalkowski@intel.com>
+ <20190603131907.13395-4-maciej.fijalkowski@intel.com> <cf7cf390-39b4-7430-107e-97f068f9c3d9@intel.com>
+ <20190604170657.000060ac@gmail.com>
+In-Reply-To: <20190604170657.000060ac@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 5 Jun 2019 11:03:44 +0200
+Message-ID: <CAJ+HfNiOh+2_tLmjhbbGC2H3gMhfr57uhCYho5OcfVwty0TWvg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/4] libbpf: move xdp program removal to libbpf
+To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpSaWNoYXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4gd3JpdGVzOg0KDQo+
-IE9uIE1vbiwgSnVuIDAzLCAyMDE5IGF0IDAzOjEyOjQyUE0gKzAzMDAsIElkbyBTY2hpbW1lbCB3
-cm90ZToNCj4+ICtzdHJ1Y3QgbWx4c3dfc3BfcHRwX2Nsb2NrICoNCj4+ICttbHhzd19zcDFfcHRw
-X2Nsb2NrX2luaXQoc3RydWN0IG1seHN3X3NwICptbHhzd19zcCwgc3RydWN0IGRldmljZSAqZGV2
-KQ0KDQpbLi4uXQ0KDQo+PiArCWNsb2NrLT5wdHBfaW5mbyA9IG1seHN3X3NwMV9wdHBfY2xvY2tf
-aW5mbzsNCj4+ICsJY2xvY2stPnB0cCA9IHB0cF9jbG9ja19yZWdpc3RlcigmY2xvY2stPnB0cF9p
-bmZvLCBkZXYpOw0KPj4gKwlpZiAoSVNfRVJSKGNsb2NrLT5wdHApKSB7DQo+PiArCQllcnIgPSBQ
-VFJfRVJSKGNsb2NrLT5wdHApOw0KPj4gKwkJZGV2X2VycihkZXYsICJwdHBfY2xvY2tfcmVnaXN0
-ZXIgZmFpbGVkICVkXG4iLCBlcnIpOw0KPj4gKwkJZ290byBlcnJfcHRwX2Nsb2NrX3JlZ2lzdGVy
-Ow0KPj4gKwl9DQo+PiArDQo+PiArCXJldHVybiBjbG9jazsNCj4NCj4gWW91IG5lZWQgdG8gaGFu
-ZGxlIHRoZSBjYXNlIHdoZXJlIHB0cF9jbG9ja19yZWdpc3RlcigpIHJldHVybnMgTlVMTC4uLg0K
-Pg0KPiAvKioNCj4gICogcHRwX2Nsb2NrX3JlZ2lzdGVyKCkgLSByZWdpc3RlciBhIFBUUCBoYXJk
-d2FyZSBjbG9jayBkcml2ZXINCj4gICoNCj4gICogQGluZm86ICAgU3RydWN0dXJlIGRlc2NyaWJp
-bmcgdGhlIG5ldyBjbG9jay4NCj4gICogQHBhcmVudDogUG9pbnRlciB0byB0aGUgcGFyZW50IGRl
-dmljZSBvZiB0aGUgbmV3IGNsb2NrLg0KPiAgKg0KPiAgKiBSZXR1cm5zIGEgdmFsaWQgcG9pbnRl
-ciBvbiBzdWNjZXNzIG9yIFBUUl9FUlIgb24gZmFpbHVyZS4gIElmIFBIQw0KPiAgKiBzdXBwb3J0
-IGlzIG1pc3NpbmcgYXQgdGhlIGNvbmZpZ3VyYXRpb24gbGV2ZWwsIHRoaXMgZnVuY3Rpb24NCj4g
-ICogcmV0dXJucyBOVUxMLCBhbmQgZHJpdmVycyBhcmUgZXhwZWN0ZWQgdG8gZ3JhY2VmdWxseSBo
-YW5kbGUgdGhhdA0KPiAgKiBjYXNlIHNlcGFyYXRlbHkuDQo+ICAqLw0KDQpXZSBkb24ndCBidWls
-ZCB0aGUgUFRQIG1vZHVsZSBhdCBhbGwgdW5sZXNzIENPTkZJR19QVFBfMTU4OF9DTE9DSyBpcw0K
-ZW5hYmxlZCwgYW5kIGZhbGwgYmFjayB0byBpbmxpbmUgc3R1YnMgdW5sZXNzIGl0IElTX1JFQUNI
-QUJMRS4gSSBiZWxpZXZlDQp0aGlzIHNob3VsZCBiZSBPSy4NCg==
+On Tue, 4 Jun 2019 at 17:07, Maciej Fijalkowski
+<maciejromanfijalkowski@gmail.com> wrote:
+>
+> On Tue, 4 Jun 2019 10:07:25 +0200
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> wrote:
+>
+> >
+> > On 2019-06-03 15:19, Maciej Fijalkowski wrote:
+> > > Since xsk support in libbpf loads the xdp program interface, make it
+> > > also responsible for its removal. Store the prog id in xsk_socket_con=
+fig
+> > > so when removing the program we are still able to compare the current
+> > > program id with the id from the attachment time and make a decision
+> > > onward.
+> > >
+> > > While at it, remove the socket/umem in xdpsock's error path.
+> > >
+> >
+> > We're loading a new, or reusing an existing XDP program at socket
+> > creation, but tearing it down at *socket delete* is explicitly left to
+> > the application.
+>
+> Are you describing here the old behavior?
+>
+> >
+> > For a per-queue XDP program (tied to the socket), this kind cleanup wou=
+ld
+> > make sense.
+> >
+> > The intention with the libbpf AF_XDP support was to leave the XDP
+> > handling to whatever XDP orchestration process availble. It's not part
+> > of libbpf. For convenience, *loading/lookup of the XDP program* was
+> > added even though this was an asymmetry.
+>
+> Hmmm ok and I tried to make it symmetric :p
+>
+
+Thought a bit more about this, and I think you're right here. It
+should be symmetric! Please continue this work! (But keep in mind that
+it might go away if/once per-queue programs appear. :-P)
+
+> >
+> > For the sample application, this makes sense, but for larger/real
+> > applications?
+> >
+>
+> Tough questions on those real apps!
+>
+
+:-D
+
+>
+> > OTOH I like the idea of a scoped cleanup "when all sockets are gone",
+> > the XDP program + maps are removed.
+>
+> That's happening with patch 4 included from this set (in case it gets fix=
+ed :))
+>
+
+Ok!
+
+Bj=C3=B6rn
+
+> >
+> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > ---
+> > >   samples/bpf/xdpsock_user.c | 33 ++++++++++-----------------------
+> > >   tools/lib/bpf/xsk.c        | 32 ++++++++++++++++++++++++++++++++
+> > >   tools/lib/bpf/xsk.h        |  1 +
+> > >   3 files changed, 43 insertions(+), 23 deletions(-)
+> > >
+> > > diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> > > index e9dceb09b6d1..123862b16dd4 100644
+> > > --- a/samples/bpf/xdpsock_user.c
+> > > +++ b/samples/bpf/xdpsock_user.c
+> > > @@ -68,7 +68,6 @@ static int opt_queue;
+> > >   static int opt_poll;
+> > >   static int opt_interval =3D 1;
+> > >   static u32 opt_xdp_bind_flags;
+> > > -static __u32 prog_id;
+> > >
+> > >   struct xsk_umem_info {
+> > >     struct xsk_ring_prod fq;
+> > > @@ -170,22 +169,6 @@ static void *poller(void *arg)
+> > >     return NULL;
+> > >   }
+> > >
+> > > -static void remove_xdp_program(void)
+> > > -{
+> > > -   __u32 curr_prog_id =3D 0;
+> > > -
+> > > -   if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags=
+)) {
+> > > -           printf("bpf_get_link_xdp_id failed\n");
+> > > -           exit(EXIT_FAILURE);
+> > > -   }
+> > > -   if (prog_id =3D=3D curr_prog_id)
+> > > -           bpf_set_link_xdp_fd(opt_ifindex, -1, opt_xdp_flags);
+> > > -   else if (!curr_prog_id)
+> > > -           printf("couldn't find a prog id on a given interface\n");
+> > > -   else
+> > > -           printf("program on interface changed, not removing\n");
+> > > -}
+> > > -
+> > >   static void int_exit(int sig)
+> > >   {
+> > >     struct xsk_umem *umem =3D xsks[0]->umem->umem;
+> > > @@ -195,7 +178,6 @@ static void int_exit(int sig)
+> > >     dump_stats();
+> > >     xsk_socket__delete(xsks[0]->xsk);
+> > >     (void)xsk_umem__delete(umem);
+> > > -   remove_xdp_program();
+> > >
+> > >     exit(EXIT_SUCCESS);
+> > >   }
+> > > @@ -206,7 +188,16 @@ static void __exit_with_error(int error, const c=
+har *file, const char *func,
+> > >     fprintf(stderr, "%s:%s:%i: errno: %d/\"%s\"\n", file, func,
+> > >             line, error, strerror(error));
+> > >     dump_stats();
+> > > -   remove_xdp_program();
+> > > +
+> > > +   if (xsks[0]->xsk)
+> > > +           xsk_socket__delete(xsks[0]->xsk);
+> > > +
+> > > +   if (xsks[0]->umem) {
+> > > +           struct xsk_umem *umem =3D xsks[0]->umem->umem;
+> > > +
+> > > +           (void)xsk_umem__delete(umem);
+> > > +   }
+> > > +
+> > >     exit(EXIT_FAILURE);
+> > >   }
+> > >
+> > > @@ -312,10 +303,6 @@ static struct xsk_socket_info *xsk_configure_soc=
+ket(struct xsk_umem_info *umem)
+> > >     if (ret)
+> > >             exit_with_error(-ret);
+> > >
+> > > -   ret =3D bpf_get_link_xdp_id(opt_ifindex, &prog_id, opt_xdp_flags)=
+;
+> > > -   if (ret)
+> > > -           exit_with_error(-ret);
+> > > -
+> > >     return xsk;
+> > >   }
+> > >
+> > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > index 514ab3fb06f4..e28bedb0b078 100644
+> > > --- a/tools/lib/bpf/xsk.c
+> > > +++ b/tools/lib/bpf/xsk.c
+> > > @@ -259,6 +259,8 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, =
+void *umem_area, __u64 size,
+> > >   static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+> > >   {
+> > >     static const int log_buf_size =3D 16 * 1024;
+> > > +   struct bpf_prog_info info =3D {};
+> > > +   __u32 info_len =3D sizeof(info);
+> > >     char log_buf[log_buf_size];
+> > >     int err, prog_fd;
+> > >
+> > > @@ -321,6 +323,14 @@ static int xsk_load_xdp_prog(struct xsk_socket *=
+xsk)
+> > >             return err;
+> > >     }
+> > >
+> > > +   err =3D bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
+> > > +   if (err) {
+> > > +           pr_warning("can't get prog info - %s\n", strerror(errno))=
+;
+> > > +           close(prog_fd);
+> > > +           return err;
+> > > +   }
+> > > +   xsk->config.prog_id =3D info.id;
+> > > +
+> > >     xsk->prog_fd =3D prog_fd;
+> > >     return 0;
+> > >   }
+> > > @@ -483,6 +493,25 @@ static int xsk_set_bpf_maps(struct xsk_socket *x=
+sk)
+> > >     return err;
+> > >   }
+> > >
+> > > +static void xsk_remove_xdp_prog(struct xsk_socket *xsk)
+> > > +{
+> > > +   __u32 prog_id =3D xsk->config.prog_id;
+> > > +   __u32 curr_prog_id =3D 0;
+> > > +   int err;
+> > > +
+> > > +   err =3D bpf_get_link_xdp_id(xsk->ifindex, &curr_prog_id,
+> > > +                             xsk->config.xdp_flags);
+> > > +   if (err)
+> > > +           return;
+> > > +
+> > > +   if (prog_id =3D=3D curr_prog_id)
+> > > +           bpf_set_link_xdp_fd(xsk->ifindex, -1, xsk->config.xdp_fla=
+gs);
+> > > +   else if (!curr_prog_id)
+> > > +           pr_warning("couldn't find a prog id on a given interface\=
+n");
+> > > +   else
+> > > +           pr_warning("program on interface changed, not removing\n"=
+);
+> > > +}
+> > > +
+> > >   static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+> > >   {
+> > >     __u32 prog_id =3D 0;
+> > > @@ -506,6 +535,7 @@ static int xsk_setup_xdp_prog(struct xsk_socket *=
+xsk)
+> > >             err =3D xsk_lookup_bpf_maps(xsk);
+> > >             if (err)
+> > >                     goto out_load;
+> > > +           xsk->config.prog_id =3D prog_id;
+> > >     }
+> > >
+> > >     err =3D xsk_set_bpf_maps(xsk);
+> > > @@ -744,6 +774,8 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+> > >
+> > >     }
+> > >
+> > > +   xsk_remove_xdp_prog(xsk);
+> > > +
+> > >     xsk->umem->refcount--;
+> > >     /* Do not close an fd that also has an associated umem connected
+> > >      * to it.
+> > > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> > > index 82ea71a0f3ec..e1b23e9432c9 100644
+> > > --- a/tools/lib/bpf/xsk.h
+> > > +++ b/tools/lib/bpf/xsk.h
+> > > @@ -186,6 +186,7 @@ struct xsk_socket_config {
+> > >     __u32 tx_size;
+> > >     __u32 libbpf_flags;
+> > >     __u32 xdp_flags;
+> > > +   __u32 prog_id;
+> > >     __u16 bind_flags;
+> > >   };
+> > >
+> > >
+>
