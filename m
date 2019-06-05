@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 988C335FE6
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA703602F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:17:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728485AbfFEPJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 11:09:54 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:47075 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728348AbfFEPJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:09:53 -0400
-Received: by mail-pl1-f195.google.com with SMTP id e5so8053747pls.13
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 08:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jIHJSbXsT9mMaQRHMFiZLTirKsEkNa2IxOc/BaBDrjQ=;
-        b=OmEKBuRHH3JwRGmFDqSRCIRvJf1W0+7M/i/GDHJrsR08btBfFFrwJmFuTd0FY0d1Tc
-         J5d3YcY4yosSh9Fb9r1/4KaFkBubbvpmZucrFzcP++h5eV/wCTVr5vXZ7NK6kQZZhrg6
-         QMfSUQRPZTpdWLhVw71C3I8eG8yKhR0ShFMZBSuUnKfpKNLO8gR2bwd0woTkBmYBmw1L
-         1c5WCqYmN0/c2+7KxD2971/gjSQPUK7sT9T4+G7Tk4ip5WhVTrn5ggRkxsa7ajZQyeTz
-         xQZLqpnXFQdFmuNpyj6utRJ9JRtfIb+Vash8WmhztamBGEYR0v8/PQusrOyQgj50vmS3
-         Igwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jIHJSbXsT9mMaQRHMFiZLTirKsEkNa2IxOc/BaBDrjQ=;
-        b=awYZDfqHvFKGV7x6g3jaHZny1EH8CDsPLrJbsju1+jtxlXQ4IOr7Cto78mEtILsFsl
-         knnm/BBtTUyNwdhIF8l7fXVt47XetNaD5i5yIFfc9It1MbI7EBbQGnAD+VTGHn2vGwP3
-         GFIfvdkQDbGitYWIeewl5N91v+Y61Aroxt1p69bhSPJ11q/GKWj6Hg96ox33Qk2YPPBv
-         qEvSOoCQVmuvhSgjNf5k5bUJX37g1W7AGMIedh8WLP9L7hHH9Hl193PbwUz8uCfE4FJX
-         kCb7oZhsjT8eHGAeC3JIHdq3MY1DzJZx3RXHgNE7iw12xFSLoDOiZnxacRgDe4GTDdAs
-         etZg==
-X-Gm-Message-State: APjAAAWQ53EZKcPcOCgjR8fYyqraYyGy4+JzWv3QjsFPulP6PS0t1blF
-        mNSFHpMw77gyy7DCc9REQGw=
-X-Google-Smtp-Source: APXvYqw+KH2gaw49Srq7YEpSzcuyAxXQ68YxPlaunS4TFeU3UoGKHdDik9nAMNqm7J/PIJbv7tft5A==
-X-Received: by 2002:a17:902:b58f:: with SMTP id a15mr43921327pls.201.1559747393301;
-        Wed, 05 Jun 2019 08:09:53 -0700 (PDT)
-Received: from [172.20.85.241] ([2620:10d:c090:180::1:bf6])
-        by smtp.gmail.com with ESMTPSA id t15sm20823506pjb.6.2019.06.05.08.09.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 08:09:52 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
-        "David Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Alexei Starovoitov" <ast@kernel.org>
-Subject: Re: [PATCH net-next 1/2] bpf_xdp_redirect_map: Add flag to return
- XDP_PASS on map lookup failure
-Date:   Wed, 05 Jun 2019 08:09:50 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <30778336-BD88-4959-95CC-79443152EC7F@gmail.com>
-In-Reply-To: <20190605123941.5b1d36ab@carbon>
-References: <155966185058.9084.14076895203527880808.stgit@alrua-x1>
- <155966185069.9084.1926498690478259792.stgit@alrua-x1>
- <20190605123941.5b1d36ab@carbon>
+        id S1728560AbfFEPRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 11:17:36 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:29877 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728089AbfFEPRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:17:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1559747853;
+        s=strato-dkim-0002; d=fpond.eu;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=6QLl30ammr5VgUAthBs6M8MMgp7CqG1eEV3tOWy5HEY=;
+        b=qoFRHxGHp53AQmgISodvVDNMSOSLUdX6M9m9eJ+Dm/dJSk9CbKFDxXNx53v7AzFEXG
+        K8+CCILEv62y/kXeOAcLqRzp2lwi3mK1Jr/4/JwkIULrpCyNMOiKJVMXSs/Qhs0ytkhn
+        YBb3CB8tN8QuJsvhJlnqtrw51AVEi7wAGRzuenbTbB0oa+dLFNs/9MjJBdZAhcLAj7XU
+        bX4V6+b1gjB49eZgnfH7mGPSSy/QWH2uT44RgaUg0bb158djjWXJaKywl1dVXdWYM4tu
+        1a1oA+UHT93iYOAwWDHtpsbRE9XRjVp4p0f3H24TDYX+7mfF4lBDzGCWbnt9tVeHo9H+
+        Y7Xw==
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73dmm4I5W0/AvA67Ot4fvR82VcdxqguoQ="
+X-RZG-CLASS-ID: mo00
+Received: from groucho.site
+        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
+        with ESMTPSA id y08c83v55FEOvhb
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Wed, 5 Jun 2019 17:14:24 +0200 (CEST)
+From:   Ulrich Hecht <uli+renesas@fpond.eu>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        sergei.shtylyov@cogentembedded.com, niklas.soderlund@ragnatech.se,
+        wsa@the-dreams.de, horms@verge.net.au, magnus.damm@gmail.com,
+        Ulrich Hecht <uli+renesas@fpond.eu>
+Subject: [PATCH v2] ravb: implement MTU change while device is up
+Date:   Wed,  5 Jun 2019 17:14:20 +0200
+Message-Id: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Uses the same method as various other drivers: shut the device down,
+change the MTU, then bring it back up again.
+
+Tested on Renesas D3 Draak board.
+
+Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+---
+
+Hi!
+
+This revision incorporates Simon's and Sergei's suggestions, namely calling
+netdev_update_features() whether the device is up or not. Thanks to
+reviewers!
+
+CU
+Uli
 
 
-On 5 Jun 2019, at 3:39, Jesper Dangaard Brouer wrote:
+ drivers/net/ethernet/renesas/ravb_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-> On Tue, 04 Jun 2019 17:24:10 +0200
-> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->
->> The bpf_redirect_map() helper used by XDP programs doesn't return any
->> indication of whether it can successfully redirect to the map index 
->> it was
->> given. Instead, BPF programs have to track this themselves, leading 
->> to
->> programs using duplicate maps to track which entries are populated in 
->> the
->> devmap.
->>
->> This adds a flag to the XDP version of the bpf_redirect_map() helper, 
->> which
->> makes the helper do a lookup in the map when called, and return 
->> XDP_PASS if
->> there is no value at the provided index. This enables two use cases:
->
-> To Jonathan Lemon, notice this approach of adding a flag to the helper
-> call, it actually also works for your use-case of XSK AF_XDP maps.c
-
-Hmm, yes, that should work also.
-
-I have a patch which returns a XDP_SOCK type from the xskmap.
-This could be used with a new helper for redirection directly to a 
-socket
-(instead of looking the socket up a second time).
-
-While flexible, the downside is that this won't apply to devmaps.
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index ef8f089..00427e7 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1811,11 +1811,14 @@ static int ravb_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
+ static int ravb_change_mtu(struct net_device *ndev, int new_mtu)
+ {
+ 	if (netif_running(ndev))
+-		return -EBUSY;
++		ravb_close(ndev);
+ 
+ 	ndev->mtu = new_mtu;
+ 	netdev_update_features(ndev);
+ 
++	if (netif_running(ndev))
++		return ravb_open(ndev);
++
+ 	return 0;
+ }
+ 
 -- 
-Jonathan
+2.7.4
+
