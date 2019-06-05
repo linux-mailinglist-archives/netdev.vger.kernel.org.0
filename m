@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD023656A
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F0D36567
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbfFEUYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:24:06 -0400
+        id S1726715AbfFEUXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:23:47 -0400
 Received: from mga18.intel.com ([134.134.136.126]:4309 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726714AbfFEUXr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726501AbfFEUXr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 Jun 2019 16:23:47 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -22,12 +22,11 @@ From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Bruce Allan <bruce.w.allan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 09/15] net: Add a define for LLDP ethertype
-Date:   Wed,  5 Jun 2019 13:23:52 -0700
-Message-Id: <20190605202358.2767-10-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 10/15] i40e: Use LLDP ethertype define ETH_P_LLDP
+Date:   Wed,  5 Jun 2019 13:23:53 -0700
+Message-Id: <20190605202358.2767-11-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
 References: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
@@ -40,29 +39,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Add a new define ETH_P_LLDP for Link Layer Discovery Protocol (LLDP)
-ethertype.
+Remove references to I40E_ETH_P_LLDP and use ETH_P_LLDP instead.
 
-Suggested-by: Bruce Allan <bruce.w.allan@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- include/uapi/linux/if_ether.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/i40e/i40e.h         | 2 --
+ drivers/net/ethernet/intel/i40e/i40e_debugfs.c | 4 ++--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
-index 3158ba672b72..f6ceb2e63d1e 100644
---- a/include/uapi/linux/if_ether.h
-+++ b/include/uapi/linux/if_ether.h
-@@ -91,6 +91,7 @@
- #define ETH_P_802_EX1	0x88B5		/* 802.1 Local Experimental 1.  */
- #define ETH_P_PREAUTH	0x88C7		/* 802.11 Preauthentication */
- #define ETH_P_TIPC	0x88CA		/* TIPC 			*/
-+#define ETH_P_LLDP	0x88CC		/* Link Layer Discovery Protocol */
- #define ETH_P_MACSEC	0x88E5		/* 802.1ae MACsec */
- #define ETH_P_8021AH	0x88E7          /* 802.1ah Backbone Service Tag */
- #define ETH_P_MVRP	0x88F5          /* 802.1Q MVRP                  */
+diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+index 7ce42040b851..8dc98d1d2e86 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -295,8 +295,6 @@ struct i40e_cloud_filter {
+ 	u8 tunnel_type;
+ };
+ 
+-#define I40E_ETH_P_LLDP			0x88cc
+-
+ #define I40E_DCB_PRIO_TYPE_STRICT	0
+ #define I40E_DCB_PRIO_TYPE_ETS		1
+ #define I40E_DCB_STRICT_PRIO_CREDITS	127
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+index 7ea4f09229e4..dc5b40013e61 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+@@ -1330,7 +1330,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
+ 			}
+ 			ret = i40e_aq_add_rem_control_packet_filter(&pf->hw,
+ 						pf->hw.mac.addr,
+-						I40E_ETH_P_LLDP, 0,
++						ETH_P_LLDP, 0,
+ 						pf->vsi[pf->lan_vsi]->seid,
+ 						0, true, NULL, NULL);
+ 			if (ret) {
+@@ -1348,7 +1348,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
+ 
+ 			ret = i40e_aq_add_rem_control_packet_filter(&pf->hw,
+ 						pf->hw.mac.addr,
+-						I40E_ETH_P_LLDP, 0,
++						ETH_P_LLDP, 0,
+ 						pf->vsi[pf->lan_vsi]->seid,
+ 						0, false, NULL, NULL);
+ 			if (ret) {
 -- 
 2.21.0
 
