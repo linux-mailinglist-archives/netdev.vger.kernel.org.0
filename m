@@ -2,152 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC033606D
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B94836071
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728534AbfFEPkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 11:40:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41470 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728200AbfFEPkC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 11:40:02 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0200A300C230;
-        Wed,  5 Jun 2019 15:40:02 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7A51717D53;
-        Wed,  5 Jun 2019 15:40:00 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Dave Watson <davejwatson@fb.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Subject: [RFC PATCH net-next 2/2] net: tls: export protocol version and cipher to socket diag
-Date:   Wed,  5 Jun 2019 17:39:23 +0200
-Message-Id: <4262dd2617a24b66f24ec5ddc73f817e683e14e0.1559747691.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1559747691.git.dcaratti@redhat.com>
-References: <cover.1559747691.git.dcaratti@redhat.com>
+        id S1728593AbfFEPk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 11:40:59 -0400
+Received: from gateway36.websitewelcome.com ([50.116.127.2]:21947 "EHLO
+        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728570AbfFEPk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:40:56 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway36.websitewelcome.com (Postfix) with ESMTP id D1D8A400C5A3C
+        for <netdev@vger.kernel.org>; Wed,  5 Jun 2019 10:01:47 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id YY23hEO6kYTGMYY23hCWJe; Wed, 05 Jun 2019 10:40:55 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.127.120] (port=54884 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hYY21-001MOH-RR; Wed, 05 Jun 2019 10:40:54 -0500
+Date:   Wed, 5 Jun 2019 10:40:52 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] i40e/i40e_virtchnl_pf: Use struct_size() in kzalloc()
+Message-ID: <20190605154052.GA7571@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 05 Jun 2019 15:40:02 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.127.120
+X-Source-L: No
+X-Exim-ID: 1hYY21-001MOH-RR
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.250.127.120]:54884
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 4
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an application configures kernel TLS on top of a TCP socket, it's
-now possible for inet_diag_handler to collect information regarding the
-protocol version and the cipher, in case INET_DIAG_INFO is requested.
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+struct virtchnl_iwarp_qvlist_info {
+	...
+        struct virtchnl_iwarp_qv_info qv_info[1];
+};
+
+size = sizeof(struct virtchnl_iwarp_qvlist_info) + (sizeof(struct virtchnl_iwarp_qv_info) * count;
+instance = kzalloc(size, GFP_KERNEL);
+
+and
+
+struct virtchnl_vf_resource {
+	...
+        struct virtchnl_vsi_resource vsi_res[1];
+};
+
+size = sizeof(struct virtchnl_vf_resource) + sizeof(struct virtchnl_vsi_resource) * count;
+instance = kzalloc(size, GFP_KERNEL);
+
+Instead of leaving these open-coded and prone to type mistakes, we can
+now use the new struct_size() helper:
+
+instance = kzalloc(struct_size(instance, qv_info, count), GFP_KERNEL);
+
+and
+
+instance = kzalloc(struct_size(instance, vsi_res, count), GFP_KERNEL);
+
+Notice that, in the first case above, variable size is not necessary, hence it
+is removed.
+
+This code was detected with the help of Coccinelle.
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/uapi/linux/inet_diag.h |  1 +
- include/uapi/linux/tls.h       |  8 +++++++
- net/tls/tls_main.c             | 43 ++++++++++++++++++++++++++++++++++
- 3 files changed, 52 insertions(+)
+ .../net/ethernet/intel/i40e/i40e_virtchnl_pf.c    | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index 844133de3212..92208535c096 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -161,6 +161,7 @@ enum {
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 479bc60c8f71..1d6e65fc8a7e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -440,7 +440,7 @@ static int i40e_config_iwarp_qvlist(struct i40e_vf *vf,
+ 	struct virtchnl_iwarp_qv_info *qv_info;
+ 	u32 v_idx, i, reg_idx, reg;
+ 	u32 next_q_idx, next_q_type;
+-	u32 msix_vf, size;
++	u32 msix_vf;
+ 	int ret = 0;
  
- enum {
- 	ULP_INFO_NAME,
-+	ULP_INFO_TLS,
- 	__ULP_INFO_MAX,
- };
+ 	msix_vf = pf->hw.func_caps.num_msix_vectors_vf;
+@@ -454,11 +454,10 @@ static int i40e_config_iwarp_qvlist(struct i40e_vf *vf,
+ 		goto err_out;
+ 	}
  
-diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
-index 5b9c26753e46..442348bd2e54 100644
---- a/include/uapi/linux/tls.h
-+++ b/include/uapi/linux/tls.h
-@@ -109,4 +109,12 @@ struct tls12_crypto_info_aes_ccm_128 {
- 	unsigned char rec_seq[TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE];
- };
+-	size = sizeof(struct virtchnl_iwarp_qvlist_info) +
+-	       (sizeof(struct virtchnl_iwarp_qv_info) *
+-						(qvlist_info->num_vectors - 1));
+ 	kfree(vf->qvlist_info);
+-	vf->qvlist_info = kzalloc(size, GFP_KERNEL);
++	vf->qvlist_info = kzalloc(struct_size(vf->qvlist_info, qv_info,
++					      qvlist_info->num_vectors - 1),
++				  GFP_KERNEL);
+ 	if (!vf->qvlist_info) {
+ 		ret = -ENOMEM;
+ 		goto err_out;
+@@ -1845,7 +1844,7 @@ static int i40e_vc_get_vf_resources_msg(struct i40e_vf *vf, u8 *msg)
+ 	i40e_status aq_ret = 0;
+ 	struct i40e_vsi *vsi;
+ 	int num_vsis = 1;
+-	int len = 0;
++	size_t len = 0;
+ 	int ret;
  
-+enum {
-+	TLS_INFO_VERSION,
-+	TLS_INFO_CIPHER,
-+	__TLS_INFO_MAX,
-+};
-+
-+#define TLS_INFO_MAX (__TLS_INFO_MAX - 1)
-+
- #endif /* _UAPI_LINUX_TLS_H */
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index fc81ae18cc44..14597526981c 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -39,6 +39,7 @@
- #include <linux/netdevice.h>
- #include <linux/sched/signal.h>
- #include <linux/inetdevice.h>
-+#include <linux/inet_diag.h>
+ 	if (!test_bit(I40E_VF_STATE_INIT, &vf->vf_states)) {
+@@ -1853,9 +1852,7 @@ static int i40e_vc_get_vf_resources_msg(struct i40e_vf *vf, u8 *msg)
+ 		goto err;
+ 	}
  
- #include <net/tls.h>
- 
-@@ -798,6 +799,46 @@ static int tls_init(struct sock *sk)
- 	return rc;
- }
- 
-+static int tls_get_info(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+	struct nlattr *start = 0;
-+	int err = 0;
-+
-+	if (sk->sk_state != TCP_ESTABLISHED)
-+		goto end;
-+	start = nla_nest_start_noflag(skb, ULP_INFO_TLS);
-+	if (!start) {
-+		err = -EMSGSIZE;
-+		goto nla_failure;
-+	}
-+	err = nla_put_u16(skb, TLS_INFO_VERSION, ctx->prot_info.version);
-+	if (err < 0)
-+		goto nla_failure;
-+	err = nla_put_u16(skb, TLS_INFO_CIPHER, ctx->prot_info.cipher_type);
-+	if (err < 0)
-+		goto nla_failure;
-+	nla_nest_end(skb, start);
-+end:
-+	return err;
-+nla_failure:
-+	nla_nest_cancel(skb, start);
-+	goto end;
-+}
-+
-+static size_t tls_get_info_size(struct sock *sk)
-+{
-+	size_t size = 0;
-+
-+	if (sk->sk_state != TCP_ESTABLISHED)
-+		return size;
-+
-+	size +=   nla_total_size(0) /* ULP_INFO_TLS */
-+		+ nla_total_size(sizeof(__u16))	/* TLS_INFO_VERSION */
-+		+ nla_total_size(sizeof(__u16)); /* TLS_INFO_CIPHER */
-+	return size;
-+}
-+
- void tls_register_device(struct tls_device *device)
- {
- 	spin_lock_bh(&device_spinlock);
-@@ -818,6 +859,8 @@ static struct tcp_ulp_ops tcp_tls_ulp_ops __read_mostly = {
- 	.name			= "tls",
- 	.owner			= THIS_MODULE,
- 	.init			= tls_init,
-+	.get_info		= tls_get_info,
-+	.get_info_size		= tls_get_info_size,
- };
- 
- static int __init tls_register(void)
+-	len = (sizeof(struct virtchnl_vf_resource) +
+-	       sizeof(struct virtchnl_vsi_resource) * num_vsis);
+-
++	len = struct_size(vfres, vsi_res, num_vsis);
+ 	vfres = kzalloc(len, GFP_KERNEL);
+ 	if (!vfres) {
+ 		aq_ret = I40E_ERR_NO_MEMORY;
 -- 
-2.20.1
+2.21.0
 
