@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AB0A36689
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 23:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 148EC3668A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 23:13:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726859AbfFEVMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 17:12:21 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41754 "EHLO
+        id S1726870AbfFEVMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 17:12:23 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41759 "EHLO
         mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726788AbfFEVMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 17:12:19 -0400
-Received: by mail-qt1-f196.google.com with SMTP id s57so223477qte.8
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 14:12:18 -0700 (PDT)
+        with ESMTP id S1726851AbfFEVMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 17:12:21 -0400
+Received: by mail-qt1-f196.google.com with SMTP id s57so223560qte.8
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 14:12:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nKi3QVx46vMwLCyhP46A6+oWwEaywdjwqRcWLaG3ljo=;
-        b=0o2WLjzzCVOmv6CHkZYxyMWh1Fu60IPmV7RcSJxvBTevbi4r6p/SqYeWMeWXOoeKAn
-         3FXUAzgxLEaC9ZHJIn5+IN1/7Sdq3ExW+p8REnQIFZlJaz79qLAIZ/9khW4Av1pnzLtK
-         u3df3bYFrIx2tYiSzkuyOOMS0qn2KYtcNPk2DqbKUkT41c3O3PgThb7MoxNU+d/wujc8
-         kcfiuhcL6+NyfPajlSLFgPwmXoXb94Aka+5sodQV4RAhdcAQUEC8q5cxBCoEtDZEdoqD
-         FzzeahZbTvQjBD97Q+WDBE8/UVIGj1IRAeTbwxJzAR8dS75J4n7f1oZQ6j9cZuTcIYI5
-         ZNkA==
+        bh=Wtjn18KGDSkMBtHgyLJiZkRqhJk2ccyxlrQk1FDA35Q=;
+        b=eNcBOACoVXX2/8dFVE44W62umPs9shBSJ320mSSlVZ1r52Kth7OXa+EI6DUmOdv0Y6
+         FuTdPt6bZ2XUdlWw0WschDhkDhrR3ATluiLfbr8hLM5G/4pRnb4CQQy+GYmeU5mkMoeJ
+         EXyDu3hu11P8uMKrDhletoko8YmNEI8DbacFVqGkra95umAr7Ufvl0wyNhgSfLoZ7cZZ
+         32I+T78x2JQJv45Yd0se4NlKgeWGk3hVPKjse2x4Yqz+PyjVu/qp6P/ZffbwfuAedII4
+         m6+8puKXyh0p8fE1O6Nlh7+xzq8yc5VUnAn+2lFPO2gv+mik2McG6BrXs8xQe7IdK9mC
+         b/9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nKi3QVx46vMwLCyhP46A6+oWwEaywdjwqRcWLaG3ljo=;
-        b=SeDkgszhK3rYjQ8cEdjv4MVWQVkFfiUuLljHZD/FOFF+SdqOfjaOCDD6hXSCTkRlgh
-         VkSG3cu97O8nqhPvT3PYbh/smodDR3CNJ92TUjzI0jznQnJ1RUC3F6ik2JFuZ6p+gyDc
-         3R9JLL2nyZKs6SHTtOyZG2q4XPutWaKU0xF0eSC1eFzuqIOv0hhyKfgenSO+WHHy7qn2
-         fwfn8LjhXepGjKAdi3Hj3JU3XI5YC49+Q4rO5H/Ikv8ZJ4N7GsZQzvu/O+ICbVa6rtjb
-         6QTVyVMd2FYq2ZdcrrtyWJBSa6V/tr4qguHicJAESUDf1t42zq5reAHWtlgLE/M+uweO
-         tvmQ==
-X-Gm-Message-State: APjAAAXGzd/tacO4IpW+ziv3AgrQQFUzcQZsZsl2IclkPlmSND5SgA3e
-        jDaTBYXQJgaSITnJRQnx+9LBIg==
-X-Google-Smtp-Source: APXvYqzJeQ8SggvkKYxGAG2qXkZ/Kw33BAfYkGdDFRmHZ2EhzuFQBmT1gcRBzLTADNfkACNbbB9T8A==
-X-Received: by 2002:ac8:25e7:: with SMTP id f36mr25035783qtf.139.1559769138478;
-        Wed, 05 Jun 2019 14:12:18 -0700 (PDT)
+        bh=Wtjn18KGDSkMBtHgyLJiZkRqhJk2ccyxlrQk1FDA35Q=;
+        b=p2OzU9xXRVHjIZoM2P/otdp2gxWxeJKQVMc1cpOjH+KlI7JHxvM/bvQO+x2BSEziYD
+         3JEJuaLzW7/SkzSDS2lia5szBZnqnHeHKTdRsK6IZGIHXpjKDXbLyJ/BbNggf1EUNDjH
+         6V/4ra1sDcnSTESsodYXrbFYJu+/gSISZXTb/8XQ5v6UwIIGw43aWC7wDbEaSexe9ejN
+         /vY+eroya7ZJnkM2t/qh3JZV/wiejAr9L2kBgmh/2Q2YPii+3BLad7GGmeLeiwHMpTKD
+         Q+XQy/SgCFwvwkWE962hj1i1uxredRU/0v/5APSOC+zlDCUoKjuXmLzhPApaZmtIBaO5
+         Unww==
+X-Gm-Message-State: APjAAAU72f1Q3ipsysFU71QYhREBSTupoHq77HA0NkOeVoJX7GOxVmJZ
+        3oexCqEZ1NcKFKmN8G4YY2r+UA==
+X-Google-Smtp-Source: APXvYqySR35F8SaKCQm2ggOP/xOQHJ8kszZH5WNVe9qX2Tf+diLOfP5R+jJwWAhYVLkRAtla+Vu8Ig==
+X-Received: by 2002:ac8:2734:: with SMTP id g49mr9597099qtg.228.1559769140215;
+        Wed, 05 Jun 2019 14:12:20 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t20sm2933807qtr.7.2019.06.05.14.12.17
+        by smtp.gmail.com with ESMTPSA id t20sm2933807qtr.7.2019.06.05.14.12.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 14:12:17 -0700 (PDT)
+        Wed, 05 Jun 2019 14:12:19 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 11/13] nfp: tls: add datapath support for TLS TX
-Date:   Wed,  5 Jun 2019 14:11:41 -0700
-Message-Id: <20190605211143.29689-12-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 12/13] nfp: tls: add/delete TLS TX connections
+Date:   Wed,  5 Jun 2019 14:11:42 -0700
+Message-Id: <20190605211143.29689-13-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190605211143.29689-1-jakub.kicinski@netronome.com>
 References: <20190605211143.29689-1-jakub.kicinski@netronome.com>
@@ -65,139 +65,393 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 
-Prepend connection handle to each transmitted TLS packet.
+This patch adds the functionality to add and delete TLS connections on
+the NFP, received from the kernel TLS callbacks.
 
-For each connection, the driver tracks the next sequence number
-expected. If an out of order packet is observed, the driver calls into
-the TLS kernel code to reencrypt that particular skb.
+Make use of the common control message (CCM) infrastructure to propagate
+the kernel state to firmware.
 
 Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- .../ethernet/netronome/nfp/crypto/crypto.h    |  7 +++
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |  2 +
- .../ethernet/netronome/nfp/nfp_net_common.c   | 56 +++++++++++++++++++
- 3 files changed, 65 insertions(+)
+ .../net/ethernet/netronome/nfp/crypto/tls.c   | 300 +++++++++++++++++-
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  |   5 +-
+ 2 files changed, 303 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-index 43aed51a8769..1f97fb443134 100644
---- a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-+++ b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-@@ -4,6 +4,13 @@
- #ifndef NFP_CRYPTO_H
- #define NFP_CRYPTO_H 1
+diff --git a/drivers/net/ethernet/netronome/nfp/crypto/tls.c b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
+index c5909f069ee8..3e079c8469a2 100644
+--- a/drivers/net/ethernet/netronome/nfp/crypto/tls.c
++++ b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /* Copyright (C) 2019 Netronome Systems, Inc. */
  
-+struct nfp_net_tls_offload_ctx {
-+	__be32 fw_handle[2];
++#include <linux/bitfield.h>
++#include <linux/ipv6.h>
+ #include <linux/skbuff.h>
+ #include <net/tls.h>
+ 
+@@ -24,6 +26,71 @@
+ #define NFP_NET_TLS_OPCODE_MASK						\
+ 	(NFP_NET_TLS_OPCODE_MASK_RX | NFP_NET_TLS_OPCODE_MASK_TX)
+ 
++static void nfp_net_crypto_set_op(struct nfp_net *nn, u8 opcode, bool on)
++{
++	u32 off, val;
 +
-+	u32 next_seq;
-+	bool out_of_sync;
-+};
++	off = nn->tlv_caps.crypto_enable_off + round_down(opcode / 8, 4);
 +
- #ifdef CONFIG_TLS_DEVICE
- int nfp_net_tls_init(struct nfp_net *nn);
- #else
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index 7010c9f1e676..689e9e1938c8 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -459,6 +459,7 @@ struct nfp_stat_pair {
-  * @netdev:		Backpointer to net_device structure
-  * @is_vf:		Is the driver attached to a VF?
-  * @chained_metadata_format:  Firemware will use new metadata format
-+ * @ktls_tx:		Is kTLS TX enabled?
-  * @rx_dma_dir:		Mapping direction for RX buffers
-  * @rx_dma_off:		Offset at which DMA packets (for XDP headroom)
-  * @rx_offset:		Offset in the RX buffers where packet data starts
-@@ -483,6 +484,7 @@ struct nfp_net_dp {
- 
- 	u8 is_vf:1;
- 	u8 chained_metadata_format:1;
-+	u8 ktls_tx:1;
- 
- 	u8 rx_dma_dir;
- 	u8 rx_offset;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index df21effec320..52f20f191eed 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -36,6 +36,7 @@
- #include <linux/vmalloc.h>
- #include <linux/ktime.h>
- 
-+#include <net/tls.h>
- #include <net/vxlan.h>
- 
- #include "nfpcore/nfp_nsp.h"
-@@ -801,6 +802,55 @@ static void nfp_net_tx_csum(struct nfp_net_dp *dp,
- 	u64_stats_update_end(&r_vec->tx_sync);
++	val = nn_readl(nn, off);
++	if (on)
++		val |= BIT(opcode & 31);
++	else
++		val &= ~BIT(opcode & 31);
++	nn_writel(nn, off, val);
++}
++
++static bool
++__nfp_net_tls_conn_cnt_changed(struct nfp_net *nn, int add,
++			       enum tls_offload_ctx_dir direction)
++{
++	u8 opcode;
++	int cnt;
++
++	opcode = NFP_NET_CRYPTO_OP_TLS_1_2_AES_GCM_128_ENC;
++	nn->ktls_tx_conn_cnt += add;
++	cnt = nn->ktls_tx_conn_cnt;
++	nn->dp.ktls_tx = !!nn->ktls_tx_conn_cnt;
++
++	/* Care only about 0 -> 1 and 1 -> 0 transitions */
++	if (cnt > 1)
++		return false;
++
++	nfp_net_crypto_set_op(nn, opcode, cnt);
++	return true;
++}
++
++static int
++nfp_net_tls_conn_cnt_changed(struct nfp_net *nn, int add,
++			     enum tls_offload_ctx_dir direction)
++{
++	int ret = 0;
++
++	/* Use the BAR lock to protect the connection counts */
++	nn_ctrl_bar_lock(nn);
++	if (__nfp_net_tls_conn_cnt_changed(nn, add, direction)) {
++		ret = __nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_CRYPTO);
++		/* Undo the cnt adjustment if failed */
++		if (ret)
++			__nfp_net_tls_conn_cnt_changed(nn, -add, direction);
++	}
++	nn_ctrl_bar_unlock(nn);
++
++	return ret;
++}
++
++static int
++nfp_net_tls_conn_add(struct nfp_net *nn, enum tls_offload_ctx_dir direction)
++{
++	return nfp_net_tls_conn_cnt_changed(nn, 1, direction);
++}
++
++static int
++nfp_net_tls_conn_remove(struct nfp_net *nn, enum tls_offload_ctx_dir direction)
++{
++	return nfp_net_tls_conn_cnt_changed(nn, -1, direction);
++}
++
+ static struct sk_buff *
+ nfp_net_tls_alloc_simple(struct nfp_net *nn, size_t req_sz, gfp_t flags)
+ {
+@@ -56,19 +123,245 @@ nfp_net_tls_communicate_simple(struct nfp_net *nn, struct sk_buff *skb,
+ 	return err;
  }
  
-+#ifdef CONFIG_TLS_DEVICE
-+static struct sk_buff *
-+nfp_net_tls_tx(struct nfp_net_dp *dp, struct sk_buff *skb, u64 *tls_handle,
-+	       int *nr_frags)
++static void nfp_net_tls_del_fw(struct nfp_net *nn, __be32 *fw_handle)
 +{
-+	struct nfp_net_tls_offload_ctx *ntls;
-+	struct sk_buff *nskb;
-+	u32 datalen, seq;
++	struct nfp_crypto_req_del *req;
++	struct sk_buff *skb;
 +
-+	if (likely(!dp->ktls_tx))
-+		return skb;
-+	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
-+		return skb;
++	skb = nfp_net_tls_alloc_simple(nn, sizeof(*req), GFP_KERNEL);
++	if (!skb)
++		return;
 +
-+	datalen = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
-+	seq = ntohl(tcp_hdr(skb)->seq);
-+	ntls = tls_driver_ctx(skb->sk, TLS_OFFLOAD_CTX_DIR_TX);
-+	if (unlikely(ntls->next_seq != seq || ntls->out_of_sync)) {
-+		/* Pure ACK out of order already */
-+		if (!datalen)
-+			return skb;
++	req = (void *)skb->data;
++	req->ep_id = 0;
++	memcpy(req->handle, fw_handle, sizeof(req->handle));
 +
-+		nskb = tls_encrypt_skb(skb);
-+		if (!nskb)
-+			return NULL;
-+		/* encryption wasn't necessary */
-+		if (nskb == skb)
-+			return skb;
-+		/* we don't re-check ring space */
-+		if (unlikely(skb_is_nonlinear(nskb))) {
-+			nn_dp_warn(dp, "tls_encrypt_skb() produced fragmented frame\n");
-+			dev_kfree_skb_any(nskb);
-+			return NULL;
-+		}
++	nfp_net_tls_communicate_simple(nn, skb, "delete",
++				       NFP_CCM_TYPE_CRYPTO_DEL);
++}
 +
-+		/* jump forward, a TX may have gotten lost, need to sync TX */
-+		if (!ntls->out_of_sync && seq - ntls->next_seq < U32_MAX / 4)
-+			ntls->out_of_sync = true;
++static struct nfp_crypto_req_add_back *
++nfp_net_tls_set_ipv4(struct nfp_crypto_req_add_v4 *req, struct sock *sk,
++		     int direction)
++{
++	struct inet_sock *inet = inet_sk(sk);
 +
-+		*nr_frags = 0;
-+		return nskb;
++	req->front.key_len += sizeof(__be32) * 2;
++	req->front.ipver_vlan = cpu_to_be16(FIELD_PREP(NFP_NET_TLS_IPVER, 4) |
++					    FIELD_PREP(NFP_NET_TLS_VLAN,
++						       NFP_NET_TLS_VLAN_UNUSED));
++
++	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
++		req->src_ip = inet->inet_saddr;
++		req->dst_ip = inet->inet_daddr;
++	} else {
++		req->src_ip = inet->inet_daddr;
++		req->dst_ip = inet->inet_saddr;
 +	}
 +
-+	memcpy(tls_handle, ntls->fw_handle, sizeof(ntls->fw_handle));
-+	ntls->next_seq += datalen;
-+	return skb;
++	return &req->back;
 +}
-+#endif
 +
- static void nfp_net_tx_xmit_more_flush(struct nfp_net_tx_ring *tx_ring)
++static struct nfp_crypto_req_add_back *
++nfp_net_tls_set_ipv6(struct nfp_crypto_req_add_v6 *req, struct sock *sk,
++		     int direction)
++{
++#if IS_ENABLED(CONFIG_IPV6)
++	struct ipv6_pinfo *np = inet6_sk(sk);
++
++	req->front.key_len += sizeof(struct in6_addr) * 2;
++	req->front.ipver_vlan = cpu_to_be16(FIELD_PREP(NFP_NET_TLS_IPVER, 6) |
++					    FIELD_PREP(NFP_NET_TLS_VLAN,
++						       NFP_NET_TLS_VLAN_UNUSED));
++
++	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
++		memcpy(req->src_ip, &np->saddr, sizeof(req->src_ip));
++		memcpy(req->dst_ip, &sk->sk_v6_daddr, sizeof(req->dst_ip));
++	} else {
++		memcpy(req->src_ip, &sk->sk_v6_daddr, sizeof(req->src_ip));
++		memcpy(req->dst_ip, &np->saddr, sizeof(req->dst_ip));
++	}
++
++#endif
++	return &req->back;
++}
++
++static void
++nfp_net_tls_set_l4(struct nfp_crypto_req_add_front *front,
++		   struct nfp_crypto_req_add_back *back, struct sock *sk,
++		   int direction)
++{
++	struct inet_sock *inet = inet_sk(sk);
++
++	front->l4_proto = IPPROTO_TCP;
++
++	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
++		back->src_port = inet->inet_sport;
++		back->dst_port = inet->inet_dport;
++	} else {
++		back->src_port = inet->inet_dport;
++		back->dst_port = inet->inet_sport;
++	}
++}
++
++static u8 nfp_tls_1_2_dir_to_opcode(enum tls_offload_ctx_dir direction)
++{
++	switch (direction) {
++	case TLS_OFFLOAD_CTX_DIR_TX:
++		return NFP_NET_CRYPTO_OP_TLS_1_2_AES_GCM_128_ENC;
++	case TLS_OFFLOAD_CTX_DIR_RX:
++		return NFP_NET_CRYPTO_OP_TLS_1_2_AES_GCM_128_DEC;
++	default:
++		WARN_ON_ONCE(1);
++		return 0;
++	}
++}
++
++static bool
++nfp_net_cipher_supported(struct nfp_net *nn, u16 cipher_type,
++			 enum tls_offload_ctx_dir direction)
++{
++	u8 bit;
++
++	switch (cipher_type) {
++	case TLS_CIPHER_AES_GCM_128:
++		if (direction == TLS_OFFLOAD_CTX_DIR_TX)
++			bit = NFP_NET_CRYPTO_OP_TLS_1_2_AES_GCM_128_ENC;
++		else
++			return false;
++		break;
++	default:
++		return false;
++	}
++
++	return nn->tlv_caps.crypto_ops & BIT(bit);
++}
++
+ static int
+ nfp_net_tls_add(struct net_device *netdev, struct sock *sk,
+ 		enum tls_offload_ctx_dir direction,
+ 		struct tls_crypto_info *crypto_info,
+ 		u32 start_offload_tcp_sn)
  {
- 	wmb();
-@@ -893,6 +943,12 @@ static int nfp_net_tx(struct sk_buff *skb, struct net_device *netdev)
- 		return NETDEV_TX_BUSY;
- 	}
- 
-+#ifdef CONFIG_TLS_DEVICE
-+	skb = nfp_net_tls_tx(dp, skb, &tls_handle, &nr_frags);
-+	if (unlikely(!skb))
-+		goto err_flush;
-+#endif
+-	return -EOPNOTSUPP;
++	struct tls12_crypto_info_aes_gcm_128 *tls_ci;
++	struct nfp_net *nn = netdev_priv(netdev);
++	struct nfp_crypto_req_add_front *front;
++	struct nfp_net_tls_offload_ctx *ntls;
++	struct nfp_crypto_req_add_back *back;
++	struct nfp_crypto_reply_add *reply;
++	struct sk_buff *skb;
++	size_t req_sz;
++	bool ipv6;
++	int err;
 +
- 	md_bytes = nfp_net_prep_tx_meta(skb, tls_handle);
- 	if (unlikely(md_bytes < 0))
- 		goto err_flush;
++	BUILD_BUG_ON(sizeof(struct nfp_net_tls_offload_ctx) >
++		     TLS_DRIVER_STATE_SIZE_TX);
++
++	if (!nfp_net_cipher_supported(nn, crypto_info->cipher_type, direction))
++		return -EOPNOTSUPP;
++
++	switch (sk->sk_family) {
++#if IS_ENABLED(CONFIG_IPV6)
++	case AF_INET6:
++		if (sk->sk_ipv6only ||
++		    ipv6_addr_type(&sk->sk_v6_daddr) != IPV6_ADDR_MAPPED) {
++			req_sz = sizeof(struct nfp_crypto_req_add_v6);
++			ipv6 = true;
++			break;
++		}
++#endif
++		/* fall through */
++	case AF_INET:
++		req_sz = sizeof(struct nfp_crypto_req_add_v4);
++		ipv6 = false;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	err = nfp_net_tls_conn_add(nn, direction);
++	if (err)
++		return err;
++
++	skb = nfp_ccm_mbox_alloc(nn, req_sz, sizeof(*reply), GFP_KERNEL);
++	if (!skb) {
++		err = -ENOMEM;
++		goto err_conn_remove;
++	}
++
++	front = (void *)skb->data;
++	front->ep_id = 0;
++	front->key_len = 8;
++	front->opcode = nfp_tls_1_2_dir_to_opcode(direction);
++	memset(front->resv, 0, sizeof(front->resv));
++
++	if (ipv6)
++		back = nfp_net_tls_set_ipv6((void *)skb->data, sk, direction);
++	else
++		back = nfp_net_tls_set_ipv4((void *)skb->data, sk, direction);
++
++	nfp_net_tls_set_l4(front, back, sk, direction);
++
++	back->counter = 0;
++	back->tcp_seq = cpu_to_be32(start_offload_tcp_sn);
++
++	tls_ci = (struct tls12_crypto_info_aes_gcm_128 *)crypto_info;
++	memcpy(back->key, tls_ci->key, TLS_CIPHER_AES_GCM_128_KEY_SIZE);
++	memset(&back->key[TLS_CIPHER_AES_GCM_128_KEY_SIZE / 4], 0,
++	       sizeof(back->key) - TLS_CIPHER_AES_GCM_128_KEY_SIZE);
++	memcpy(back->iv, tls_ci->iv, TLS_CIPHER_AES_GCM_128_IV_SIZE);
++	memcpy(&back->salt, tls_ci->salt, TLS_CIPHER_AES_GCM_128_SALT_SIZE);
++	memcpy(back->rec_no, tls_ci->rec_seq, sizeof(tls_ci->rec_seq));
++
++	err = nfp_ccm_mbox_communicate(nn, skb, NFP_CCM_TYPE_CRYPTO_ADD,
++				       sizeof(*reply), sizeof(*reply));
++	if (err) {
++		nn_dp_warn(&nn->dp, "failed to add TLS: %d\n", err);
++		/* communicate frees skb on error */
++		goto err_conn_remove;
++	}
++
++	reply = (void *)skb->data;
++	err = -be32_to_cpu(reply->error);
++	if (err) {
++		if (err != -ENOSPC)
++			nn_dp_warn(&nn->dp,
++				   "failed to add TLS, FW replied: %d\n", err);
++		goto err_free_skb;
++	}
++
++	if (!reply->handle[0] && !reply->handle[1]) {
++		nn_dp_warn(&nn->dp, "FW returned NULL handle\n");
++		goto err_fw_remove;
++	}
++
++	ntls = tls_driver_ctx(sk, direction);
++	memcpy(ntls->fw_handle, reply->handle, sizeof(ntls->fw_handle));
++	ntls->next_seq = start_offload_tcp_sn;
++	dev_consume_skb_any(skb);
++
++	return 0;
++
++err_fw_remove:
++	nfp_net_tls_del_fw(nn, reply->handle);
++err_free_skb:
++	dev_consume_skb_any(skb);
++err_conn_remove:
++	nfp_net_tls_conn_remove(nn, direction);
++	return err;
+ }
+ 
+ static void
+ nfp_net_tls_del(struct net_device *netdev, struct tls_context *tls_ctx,
+ 		enum tls_offload_ctx_dir direction)
+ {
++	struct nfp_net *nn = netdev_priv(netdev);
++	struct nfp_net_tls_offload_ctx *ntls;
++
++	nfp_net_tls_conn_remove(nn, direction);
++
++	ntls = __tls_driver_ctx(tls_ctx, direction);
++	nfp_net_tls_del_fw(nn, ntls->fw_handle);
+ }
+ 
+ static const struct tlsdev_ops nfp_net_tls_ops = {
+@@ -121,6 +414,11 @@ int nfp_net_tls_init(struct nfp_net *nn)
+ 	if (err)
+ 		return err;
+ 
++	if (nn->tlv_caps.crypto_ops & NFP_NET_TLS_OPCODE_MASK_TX) {
++		netdev->hw_features |= NETIF_F_HW_TLS_TX;
++		netdev->features |= NETIF_F_HW_TLS_TX;
++	}
++
+ 	netdev->tlsdev_ops = &nfp_net_tls_ops;
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+index 689e9e1938c8..8c1639a83fd4 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+@@ -552,7 +552,7 @@ struct nfp_net_dp {
+  * @reconfig_timer:	Timer for async reading of reconfig results
+  * @reconfig_in_progress_update:	Update FW is processing now (debug only)
+  * @bar_lock:		vNIC config BAR access lock, protects: update,
+- *			mailbox area
++ *			mailbox area, crypto TLV
+  * @link_up:            Is the link up?
+  * @link_status_lock:	Protects @link_* and ensures atomicity with BAR reading
+  * @rx_coalesce_usecs:      RX interrupt moderation usecs delay parameter
+@@ -565,6 +565,7 @@ struct nfp_net_dp {
+  * @tx_bar:             Pointer to mapped TX queues
+  * @rx_bar:             Pointer to mapped FL/RX queues
+  * @tlv_caps:		Parsed TLV capabilities
++ * @ktls_tx_conn_cnt:	Number of offloaded kTLS TX connections
+  * @mbox_cmsg:		Common Control Message via vNIC mailbox state
+  * @mbox_cmsg.queue:	CCM mbox queue of pending messages
+  * @mbox_cmsg.wq:	CCM mbox wait queue of waiting processes
+@@ -644,6 +645,8 @@ struct nfp_net {
+ 
+ 	struct nfp_net_tlv_caps tlv_caps;
+ 
++	unsigned int ktls_tx_conn_cnt;
++
+ 	struct {
+ 		struct sk_buff_head queue;
+ 		wait_queue_head_t wq;
 -- 
 2.21.0
 
