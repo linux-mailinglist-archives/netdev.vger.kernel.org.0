@@ -2,301 +2,761 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2683668D
+	by mail.lfdr.de (Postfix) with ESMTP id 300473668C
 	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 23:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbfFEVM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 17:12:26 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35462 "EHLO
+        id S1726875AbfFEVMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 17:12:24 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43982 "EHLO
         mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726862AbfFEVMX (ORCPT
+        with ESMTP id S1726788AbfFEVMX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 17:12:23 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d23so268001qto.2
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 14:12:22 -0700 (PDT)
+Received: by mail-qt1-f195.google.com with SMTP id z24so204167qtj.10;
+        Wed, 05 Jun 2019 14:12:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nLzaazMHvcijCpMcqbIMPQOAnCt6vLhhD70+49EGVDA=;
-        b=Re3GvNpRFcqudFAD3s5uxqJDRhgRQgS5g2wXC/R+3pQDkAe9po3af5WcRVj9K+I4XW
-         sSS8sN+SBfvIfrCboamg6KRmdxCY4EvGumGTUZIfLn5f4BjioIiHPXCgFu3KxerguijC
-         uuIEM+I2KNQ07dQxPE5iQiKwel1W8lzLkNal+vUUaTKii7xT1kuZMt+NGEVhWHlwP2j5
-         9ZFILQez1I/N1OD5u2V+AxIRT5sjLDEOtHDojJUaQleypAUWzsD5bYX/QP/SQyy8nn0F
-         BJw1qLwt+aoiY0ZVX0gaKVprDSyimNVyYw+Fhs3KK1HI8n44dSuZGdhD/Xx0oKrr8xuP
-         HYWw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zyE4/iuagSK/vzmDEVyWJCevaujWW2Te3lgd5bFzPUo=;
+        b=TM1wSO2UPt+jWzoftYiqu4DxBZbCx9zec3JCEoCS4XUCB/DW14JOHOEQMv93bo05D+
+         OPGo4tRh89/kOTbi3zmFE2GqDz7+7DqieKmORixTOlkxpUFCkz9sbSRLJuqdCvpVlFgs
+         6+jid82GwGQ7yZ6nHpYwSqd3QCRTIqz7gNs6+uBCzmh0V4s5MW6QhUC2r0dd8adFX1I+
+         Xk75iy/Rh4zgaCJH8BpnJHhjc61vx2zLv6nVhT0rN/xJsGAdZnrabOQX63T7Bs+CBEUF
+         BJYCGiZrJpHag+ZYhj1X3CRt1kc8vGZTqptqIE0EiTQk53Ro9XCZ41WRqrW6zQAwxSsv
+         QHZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nLzaazMHvcijCpMcqbIMPQOAnCt6vLhhD70+49EGVDA=;
-        b=Z8wY88t3j/IRHBYcduUB8oPWx8BuaF9ZwhDS8BieyupM0CzfgWYR3tq+w/2DclzMrF
-         ln7MdHWMXYNAw+bFj1eXVubf7GeIEva6DoFxUmSO0ykix9aMUQ0H/gdYzy25GFkCpVOF
-         +PCK/aznFGhS+wi2WFiCoFkVh759o9/0dH3CkYa1JahFA2vErrX7toi1PzriSe64DCAO
-         uR/Yu2RMU1SvmTTW4MxJwv8zjQ+xUNXpaX2EOIU6R6DSr0fDnuGDWtc0xYY4IsUvhyA6
-         CRvthbUYra3VVbHsdhMagBB/x/oM1V90xPDif40qMb2vuYpn5uCHonQTzK37sOZT3ICM
-         hfIw==
-X-Gm-Message-State: APjAAAVoJVzyxVPCFyVWufWuPh4j/aoNtfolUOxFbjs4OHfoAssrw1LH
-        /VTJs1FOwW5MQzSgmEG5FVtKqw==
-X-Google-Smtp-Source: APXvYqwNPPDmGkdE3lJnXQ5mJHa6AHAm3HtZUKOlNHipv0YRQHNLUmFYh9h/5KcIa2R5RVHlsRffMw==
-X-Received: by 2002:ac8:2fa8:: with SMTP id l37mr35820064qta.358.1559769141791;
-        Wed, 05 Jun 2019 14:12:21 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t20sm2933807qtr.7.2019.06.05.14.12.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 14:12:21 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        alexei.starovoitov@gmail.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net-next 13/13] nfp: tls: add basic statistics
-Date:   Wed,  5 Jun 2019 14:11:43 -0700
-Message-Id: <20190605211143.29689-14-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190605211143.29689-1-jakub.kicinski@netronome.com>
-References: <20190605211143.29689-1-jakub.kicinski@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zyE4/iuagSK/vzmDEVyWJCevaujWW2Te3lgd5bFzPUo=;
+        b=Vmh5nHR0T5e+REBeo3/A1ScSx2OE7EnU4LiMKVCwtwdsJp806soETobJ72BwSlM6Jc
+         44u37+cTZ4OQHNmw+31ALHr5V3MQ+hFA80yeqW1fWkffGCvgcusnJZY+tm0I4yaKo/cN
+         3BCFM6amWHxo+8P//ed7fy+ta6O9Hw6x0bNkfuvP1hizTIsj9mhZDVpjWWQvMFapKUyb
+         oyNaXWZCj+zvpphbJQzZrbzXCrzHjRkiBQBgEGWeb9DpOo0n/IDQPub4NgsCvhTryyjl
+         SY7qhXnLH81GnoDFyJZ4LcSc4OSJY8wOkJ/vM2OyWuiqTNzEWiLsFK+tiE4/mdPs0O0r
+         B+2A==
+X-Gm-Message-State: APjAAAUmbHwG5ARI6IlW7/soF3oLzK86/+QXq0qpdhrsJfI4eVhF102+
+        d1L0M6QnPQXF2KBu5cOTR3PBn+w1xzWQT9wJxsc=
+X-Google-Smtp-Source: APXvYqyLYZmEH4LpiU6EOz1wMiUEU3MOMEJpQOWq/J7BsMEI5SeZzbIIfpT21NDt6cMB9OdPX2edxQ/7qDRLyw5Sq+U=
+X-Received: by 2002:ac8:1087:: with SMTP id a7mr24694666qtj.141.1559769141272;
+ Wed, 05 Jun 2019 14:12:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190604213524.76347-1-sdf@google.com> <20190604213524.76347-2-sdf@google.com>
+ <CAEf4BzZ-LK8_8ansWaeKFqXPiPfFpoQ5jsE=QhtNK94C0A2vUQ@mail.gmail.com> <20190605205446.GC17053@mini-arch>
+In-Reply-To: <20190605205446.GC17053@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 5 Jun 2019 14:12:08 -0700
+Message-ID: <CAEf4BzYuvzt7N3rya5T5o0SadO7TB5BROaaqhhrMJbF_Vxoz_A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/7] bpf: implement getsockopt and setsockopt hooks
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Count TX TLS packets: successes, out of order, and dropped due to
-missing record info.  Make sure the RX and TX completion statistics
-don't share cache lines with TX ones as much as possible.  With TLS
-stats they are no longer reasonably aligned.
+On Wed, Jun 5, 2019 at 1:54 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 06/05, Andrii Nakryiko wrote:
+> > On Tue, Jun 4, 2019 at 2:35 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > > Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
+> > > BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
+> > >
+> > > BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
+> > > BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
+> > > Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
+> > >
+> > > The buffer memory is pre-allocated (because I don't think there is
+> > > a precedent for working with __user memory from bpf). This might be
+> >
+> > Is there any harm or technical complication in allowing BPF to read
+> > user memory directly? Or is it just uncharted territory, so there is
+> > no "guideline"? If it's the latter, it could be a good time to discuss
+> > that :)
+> The naive implementation would have two helpers: one to copy from user,
+> another to copy back to user; both of them would use something like
+> get_user/put_user which can fault. Since we are running bpf progs with
+> preempt disabled and in the rcu read section, we would need to do
+> something like we currently do in bpf_probe_read where we disable pagefaults.
+>
+> To me it felt a bit excessive for socket options hook, simple data buffer is
+> easier to work with from BPF program and we have all the machinery
+> in place in the verifier. But I'm open to suggestions :-)
 
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- .../net/ethernet/netronome/nfp/crypto/tls.c   |  6 +++-
- drivers/net/ethernet/netronome/nfp/nfp_net.h  | 23 ++++++++++++--
- .../ethernet/netronome/nfp/nfp_net_common.c   | 31 +++++++++++++++----
- .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 16 ++++++++--
- 4 files changed, 64 insertions(+), 12 deletions(-)
+It's more like I'm discovering what's the implication is :) I don't
+have suggestions, was just curious. It seems like reading/writing to
+user memory is a whole can of worms, so yeah, I'd stick to buffer.
 
-diff --git a/drivers/net/ethernet/netronome/nfp/crypto/tls.c b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-index 3e079c8469a2..c638223e9f60 100644
---- a/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-+++ b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-@@ -324,9 +324,13 @@ nfp_net_tls_add(struct net_device *netdev, struct sock *sk,
- 	reply = (void *)skb->data;
- 	err = -be32_to_cpu(reply->error);
- 	if (err) {
--		if (err != -ENOSPC)
-+		if (err == -ENOSPC) {
-+			if (!atomic_fetch_inc(&nn->ktls_no_space))
-+				nn_info(nn, "HW TLS table full\n");
-+		} else {
- 			nn_dp_warn(&nn->dp,
- 				   "failed to add TLS, FW replied: %d\n", err);
-+		}
- 		goto err_free_skb;
- 	}
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index 8c1639a83fd4..661fa5941b91 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -12,6 +12,7 @@
- #ifndef _NFP_NET_H_
- #define _NFP_NET_H_
- 
-+#include <linux/atomic.h>
- #include <linux/interrupt.h>
- #include <linux/list.h>
- #include <linux/netdevice.h>
-@@ -373,6 +374,11 @@ struct nfp_net_rx_ring {
-  * @hw_csum_tx_inner:	 Counter of inner TX checksum offload requests
-  * @tx_gather:	    Counter of packets with Gather DMA
-  * @tx_lso:	    Counter of LSO packets sent
-+ * @hw_tls_tx:	    Counter of TLS packets sent with crypto offloaded to HW
-+ * @tls_tx_fallback:	Counter of TLS packets sent which had to be encrypted
-+ *			by the fallback path because packets came out of order
-+ * @tls_tx_no_fallback:	Counter of TLS packets not sent because the fallback
-+ *			path could not encrypt them
-  * @tx_errors:	    How many TX errors were encountered
-  * @tx_busy:        How often was TX busy (no space)?
-  * @rx_replace_buf_alloc_fail:	Counter of RX buffer allocation failures
-@@ -410,21 +416,28 @@ struct nfp_net_r_vector {
- 	u64 hw_csum_rx_inner_ok;
- 	u64 hw_csum_rx_complete;
- 
-+	u64 hw_csum_rx_error;
-+	u64 rx_replace_buf_alloc_fail;
-+
- 	struct nfp_net_tx_ring *xdp_ring;
- 
- 	struct u64_stats_sync tx_sync;
- 	u64 tx_pkts;
- 	u64 tx_bytes;
--	u64 hw_csum_tx;
-+
-+	u64 ____cacheline_aligned_in_smp hw_csum_tx;
- 	u64 hw_csum_tx_inner;
- 	u64 tx_gather;
- 	u64 tx_lso;
-+	u64 hw_tls_tx;
- 
--	u64 hw_csum_rx_error;
--	u64 rx_replace_buf_alloc_fail;
-+	u64 tls_tx_fallback;
-+	u64 tls_tx_no_fallback;
- 	u64 tx_errors;
- 	u64 tx_busy;
- 
-+	/* Cold data follows */
-+
- 	u32 irq_vector;
- 	irq_handler_t handler;
- 	char name[IFNAMSIZ + 8];
-@@ -566,6 +579,8 @@ struct nfp_net_dp {
-  * @rx_bar:             Pointer to mapped FL/RX queues
-  * @tlv_caps:		Parsed TLV capabilities
-  * @ktls_tx_conn_cnt:	Number of offloaded kTLS TX connections
-+ * @ktls_no_space:	Counter of firmware rejecting kTLS connection due to
-+ *			lack of space
-  * @mbox_cmsg:		Common Control Message via vNIC mailbox state
-  * @mbox_cmsg.queue:	CCM mbox queue of pending messages
-  * @mbox_cmsg.wq:	CCM mbox wait queue of waiting processes
-@@ -647,6 +662,8 @@ struct nfp_net {
- 
- 	unsigned int ktls_tx_conn_cnt;
- 
-+	atomic_t ktls_no_space;
-+
- 	struct {
- 		struct sk_buff_head queue;
- 		wait_queue_head_t wq;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 52f20f191eed..e221847d9a3e 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -804,8 +804,8 @@ static void nfp_net_tx_csum(struct nfp_net_dp *dp,
- 
- #ifdef CONFIG_TLS_DEVICE
- static struct sk_buff *
--nfp_net_tls_tx(struct nfp_net_dp *dp, struct sk_buff *skb, u64 *tls_handle,
--	       int *nr_frags)
-+nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
-+	       struct sk_buff *skb, u64 *tls_handle, int *nr_frags)
- {
- 	struct nfp_net_tls_offload_ctx *ntls;
- 	struct sk_buff *nskb;
-@@ -824,15 +824,26 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct sk_buff *skb, u64 *tls_handle,
- 		if (!datalen)
- 			return skb;
- 
-+		u64_stats_update_begin(&r_vec->tx_sync);
-+		r_vec->tls_tx_fallback++;
-+		u64_stats_update_end(&r_vec->tx_sync);
-+
- 		nskb = tls_encrypt_skb(skb);
--		if (!nskb)
-+		if (!nskb) {
-+			u64_stats_update_begin(&r_vec->tx_sync);
-+			r_vec->tls_tx_no_fallback++;
-+			u64_stats_update_end(&r_vec->tx_sync);
- 			return NULL;
-+		}
- 		/* encryption wasn't necessary */
- 		if (nskb == skb)
- 			return skb;
- 		/* we don't re-check ring space */
- 		if (unlikely(skb_is_nonlinear(nskb))) {
- 			nn_dp_warn(dp, "tls_encrypt_skb() produced fragmented frame\n");
-+			u64_stats_update_begin(&r_vec->tx_sync);
-+			r_vec->tx_errors++;
-+			u64_stats_update_end(&r_vec->tx_sync);
- 			dev_kfree_skb_any(nskb);
- 			return NULL;
- 		}
-@@ -845,6 +856,12 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct sk_buff *skb, u64 *tls_handle,
- 		return nskb;
- 	}
- 
-+	if (datalen) {
-+		u64_stats_update_begin(&r_vec->tx_sync);
-+		r_vec->hw_tls_tx++;
-+		u64_stats_update_end(&r_vec->tx_sync);
-+	}
-+
- 	memcpy(tls_handle, ntls->fw_handle, sizeof(ntls->fw_handle));
- 	ntls->next_seq += datalen;
- 	return skb;
-@@ -944,9 +961,11 @@ static int nfp_net_tx(struct sk_buff *skb, struct net_device *netdev)
- 	}
- 
- #ifdef CONFIG_TLS_DEVICE
--	skb = nfp_net_tls_tx(dp, skb, &tls_handle, &nr_frags);
--	if (unlikely(!skb))
--		goto err_flush;
-+	skb = nfp_net_tls_tx(dp, r_vec, skb, &tls_handle, &nr_frags);
-+	if (unlikely(!skb)) {
-+		nfp_net_tx_xmit_more_flush(tx_ring);
-+		return NETDEV_TX_OK;
-+	}
- #endif
- 
- 	md_bytes = nfp_net_prep_tx_meta(skb, tls_handle);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 851e31e0ba8e..3a8e1af7042d 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -150,8 +150,9 @@ static const struct nfp_et_stat nfp_mac_et_stats[] = {
- 
- #define NN_ET_GLOBAL_STATS_LEN ARRAY_SIZE(nfp_net_et_stats)
- #define NN_ET_SWITCH_STATS_LEN 9
--#define NN_RVEC_GATHER_STATS	9
-+#define NN_RVEC_GATHER_STATS	12
- #define NN_RVEC_PER_Q_STATS	3
-+#define NN_CTRL_PATH_STATS	1
- 
- #define SFP_SFF_REV_COMPLIANCE	1
- 
-@@ -423,7 +424,8 @@ static unsigned int nfp_vnic_get_sw_stats_count(struct net_device *netdev)
- {
- 	struct nfp_net *nn = netdev_priv(netdev);
- 
--	return NN_RVEC_GATHER_STATS + nn->max_r_vecs * NN_RVEC_PER_Q_STATS;
-+	return NN_RVEC_GATHER_STATS + nn->max_r_vecs * NN_RVEC_PER_Q_STATS +
-+		NN_CTRL_PATH_STATS;
- }
- 
- static u8 *nfp_vnic_get_sw_stats_strings(struct net_device *netdev, u8 *data)
-@@ -446,6 +448,11 @@ static u8 *nfp_vnic_get_sw_stats_strings(struct net_device *netdev, u8 *data)
- 	data = nfp_pr_et(data, "hw_tx_inner_csum");
- 	data = nfp_pr_et(data, "tx_gather");
- 	data = nfp_pr_et(data, "tx_lso");
-+	data = nfp_pr_et(data, "tx_tls_encrypted");
-+	data = nfp_pr_et(data, "tx_tls_ooo");
-+	data = nfp_pr_et(data, "tx_tls_drop_no_sync_data");
-+
-+	data = nfp_pr_et(data, "hw_tls_no_space");
- 
- 	return data;
- }
-@@ -478,6 +485,9 @@ static u64 *nfp_vnic_get_sw_stats(struct net_device *netdev, u64 *data)
- 			tmp[6] = nn->r_vecs[i].hw_csum_tx_inner;
- 			tmp[7] = nn->r_vecs[i].tx_gather;
- 			tmp[8] = nn->r_vecs[i].tx_lso;
-+			tmp[9] = nn->r_vecs[i].hw_tls_tx;
-+			tmp[10] = nn->r_vecs[i].tls_tx_fallback;
-+			tmp[11] = nn->r_vecs[i].tls_tx_no_fallback;
- 		} while (u64_stats_fetch_retry(&nn->r_vecs[i].tx_sync, start));
- 
- 		data += NN_RVEC_PER_Q_STATS;
-@@ -489,6 +499,8 @@ static u64 *nfp_vnic_get_sw_stats(struct net_device *netdev, u64 *data)
- 	for (j = 0; j < NN_RVEC_GATHER_STATS; j++)
- 		*data++ = gathered_stats[j];
- 
-+	*data++ = atomic_read(&nn->ktls_no_space);
-+
- 	return data;
- }
- 
--- 
-2.21.0
+>
+> > > slow to do for each {s,g}etsockopt call, that's why I've added
+> > > __cgroup_bpf_has_prog_array that exits early if there is nothing
+> > > attached to a cgroup. Note, however, that there is a race between
+> > > __cgroup_bpf_has_prog_array and BPF_PROG_RUN_ARRAY where cgroup
+> > > program layout might have changed; this should not be a problem
+> > > because in general there is a race between multiple calls to
+> > > {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
+> > >
+> > > By default, kernel code path is executed after the hook (to let
+> > > BPF handle only a subset of the options). There is new
+> > > bpf_sockopt_handled handler that returns control to the userspace
+> > > instead (bypassing the kernel handling).
+> > >
+> > > The return code is either 1 (success) or 0 (EPERM).
+> >
+> > Why not having 3 return values: success, disallow, consumed/bypass
+> > kernel logic? Instead of having extra side-effecting helper?
+> That is an option. I didn't go that route because I wanted to
+> reuse BPF_PROG_RUN_ARRAY which has the following inside:
+>
+>         ret = 1;
+>         while (prog)
+>                 ret &= bpf_prog..()
+>
+> But given the fact that we now have BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY
+> precedent, maybe that's worth it (essentially, have
+> BPF_PROG_CGROUP_SOCKOPS_RUN_ARRAY that handles 0, 1 and 2)?
+> I don't have a strong opinion here to be honest.
 
+We are getting more types of BPF programs that are of "controlling
+type", which communicate back some decision to kernel
+(allow/deny/default handling, etc). In all of those cases
+communicating this "decision" using return code feels much cleaner and
+straight-forward, than through some custom one-off helpers. So yeah,
+I'm voting for using return code for that. I'd say using helper for
+those cases would make sense only if BPF program has to provide some
+complex information back to kernel (e.g, default string or whatever).
+
+
+>
+> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > ---
+> > >  include/linux/bpf-cgroup.h |  29 ++++
+> > >  include/linux/bpf.h        |   2 +
+> > >  include/linux/bpf_types.h  |   1 +
+> > >  include/linux/filter.h     |  19 +++
+> > >  include/uapi/linux/bpf.h   |  17 ++-
+> > >  kernel/bpf/cgroup.c        | 288 +++++++++++++++++++++++++++++++++++++
+> > >  kernel/bpf/syscall.c       |  19 +++
+> > >  kernel/bpf/verifier.c      |  12 ++
+> > >  net/core/filter.c          |   4 +-
+> > >  net/socket.c               |  18 +++
+> > >  10 files changed, 406 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> > > index b631ee75762d..406f1ba82531 100644
+> > > --- a/include/linux/bpf-cgroup.h
+> > > +++ b/include/linux/bpf-cgroup.h
+> > > @@ -124,6 +124,13 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+> > >                                    loff_t *ppos, void **new_buf,
+> > >                                    enum bpf_attach_type type);
+> > >
+> > > +int __cgroup_bpf_run_filter_setsockopt(struct sock *sock, int level,
+> > > +                                      int optname, char __user *optval,
+> > > +                                      unsigned int optlen);
+> > > +int __cgroup_bpf_run_filter_getsockopt(struct sock *sock, int level,
+> > > +                                      int optname, char __user *optval,
+> > > +                                      int __user *optlen);
+> > > +
+> > >  static inline enum bpf_cgroup_storage_type cgroup_storage_type(
+> > >         struct bpf_map *map)
+> > >  {
+> > > @@ -280,6 +287,26 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+> > >         __ret;                                                                 \
+> > >  })
+> > >
+> > > +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen)   \
+> > > +({                                                                            \
+> > > +       int __ret = 0;                                                         \
+> > > +       if (cgroup_bpf_enabled)                                                \
+> > > +               __ret = __cgroup_bpf_run_filter_setsockopt(sock, level,        \
+> > > +                                                          optname, optval,    \
+> > > +                                                          optlen);            \
+> > > +       __ret;                                                                 \
+> > > +})
+> > > +
+> > > +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen)   \
+> > > +({                                                                            \
+> > > +       int __ret = 0;                                                         \
+> > > +       if (cgroup_bpf_enabled)                                                \
+> > > +               __ret = __cgroup_bpf_run_filter_getsockopt(sock, level,        \
+> > > +                                                          optname, optval,    \
+> > > +                                                          optlen);            \
+> > > +       __ret;                                                                 \
+> > > +})
+> > > +
+> > >  int cgroup_bpf_prog_attach(const union bpf_attr *attr,
+> > >                            enum bpf_prog_type ptype, struct bpf_prog *prog);
+> > >  int cgroup_bpf_prog_detach(const union bpf_attr *attr,
+> > > @@ -349,6 +376,8 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
+> > >  #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops) ({ 0; })
+> > >  #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type,major,minor,access) ({ 0; })
+> > >  #define BPF_CGROUP_RUN_PROG_SYSCTL(head,table,write,buf,count,pos,nbuf) ({ 0; })
+> > > +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
+> > > +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
+> > >
+> > >  #define for_each_cgroup_storage_type(stype) for (; false; )
+> > >
+> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > index e5a309e6a400..fb4e6ef5a971 100644
+> > > --- a/include/linux/bpf.h
+> > > +++ b/include/linux/bpf.h
+> > > @@ -1054,6 +1054,8 @@ extern const struct bpf_func_proto bpf_spin_unlock_proto;
+> > >  extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> > >  extern const struct bpf_func_proto bpf_strtol_proto;
+> > >  extern const struct bpf_func_proto bpf_strtoul_proto;
+> > > +extern const struct bpf_func_proto bpf_sk_fullsock_proto;
+> > > +extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > >
+> > >  /* Shared helpers among cBPF and eBPF. */
+> > >  void bpf_user_rnd_init_once(void);
+> > > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> > > index 5a9975678d6f..eec5aeeeaf92 100644
+> > > --- a/include/linux/bpf_types.h
+> > > +++ b/include/linux/bpf_types.h
+> > > @@ -30,6 +30,7 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE, raw_tracepoint_writable)
+> > >  #ifdef CONFIG_CGROUP_BPF
+> > >  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_DEVICE, cg_dev)
+> > >  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl)
+> > > +BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt)
+> > >  #endif
+> > >  #ifdef CONFIG_BPF_LIRC_MODE2
+> > >  BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
+> > > diff --git a/include/linux/filter.h b/include/linux/filter.h
+> > > index 43b45d6db36d..7a07fd2e14d3 100644
+> > > --- a/include/linux/filter.h
+> > > +++ b/include/linux/filter.h
+> > > @@ -1199,4 +1199,23 @@ struct bpf_sysctl_kern {
+> > >         u64 tmp_reg;
+> > >  };
+> > >
+> > > +struct bpf_sockopt_kern {
+> > > +       struct sock     *sk;
+> > > +       s32             level;
+> > > +       s32             optname;
+> > > +       u32             optlen;
+> > > +       u8              *optval;
+> > > +       u8              *optval_end;
+> > > +
+> > > +       /* If true, BPF program had consumed the sockopt request.
+> > > +        * Control is returned to the userspace (i.e. kernel doesn't
+> > > +        * handle this option).
+> > > +        */
+> > > +       bool            handled;
+> > > +
+> > > +       /* Small on-stack optval buffer to avoid small allocations.
+> > > +        */
+> > > +       u8 buf[64];
+> > > +};
+> > > +
+> > >  #endif /* __LINUX_FILTER_H__ */
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index 7c6aef253173..b6c3891241ef 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -170,6 +170,7 @@ enum bpf_prog_type {
+> > >         BPF_PROG_TYPE_FLOW_DISSECTOR,
+> > >         BPF_PROG_TYPE_CGROUP_SYSCTL,
+> > >         BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
+> > > +       BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> > >  };
+> > >
+> > >  enum bpf_attach_type {
+> > > @@ -192,6 +193,8 @@ enum bpf_attach_type {
+> > >         BPF_LIRC_MODE2,
+> > >         BPF_FLOW_DISSECTOR,
+> > >         BPF_CGROUP_SYSCTL,
+> > > +       BPF_CGROUP_GETSOCKOPT,
+> > > +       BPF_CGROUP_SETSOCKOPT,
+> > >         __MAX_BPF_ATTACH_TYPE
+> > >  };
+> > >
+> > > @@ -2815,7 +2818,8 @@ union bpf_attr {
+> > >         FN(strtoul),                    \
+> > >         FN(sk_storage_get),             \
+> > >         FN(sk_storage_delete),          \
+> > > -       FN(send_signal),
+> > > +       FN(send_signal),                \
+> > > +       FN(sockopt_handled),
+> > >
+> > >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > >   * function eBPF program intends to call
+> > > @@ -3533,4 +3537,15 @@ struct bpf_sysctl {
+> > >                                  */
+> > >  };
+> > >
+> > > +struct bpf_sockopt {
+> > > +       __bpf_md_ptr(struct bpf_sock *, sk);
+> > > +
+> > > +       __s32   level;
+> > > +       __s32   optname;
+> > > +
+> > > +       __u32   optlen;
+> > > +       __u32   optval;
+> > > +       __u32   optval_end;
+> > > +};
+> > > +
+> > >  #endif /* _UAPI__LINUX_BPF_H__ */
+> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > > index 1b65ab0df457..4ec99ea97023 100644
+> > > --- a/kernel/bpf/cgroup.c
+> > > +++ b/kernel/bpf/cgroup.c
+> > > @@ -18,6 +18,7 @@
+> > >  #include <linux/bpf.h>
+> > >  #include <linux/bpf-cgroup.h>
+> > >  #include <net/sock.h>
+> > > +#include <net/bpf_sk_storage.h>
+> > >
+> > >  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
+> > >  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
+> > > @@ -924,6 +925,142 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+> > >  }
+> > >  EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
+> > >
+> > > +static bool __cgroup_bpf_has_prog_array(struct cgroup *cgrp,
+> > > +                                       enum bpf_attach_type attach_type)
+> > > +{
+> > > +       struct bpf_prog_array *prog_array;
+> > > +       int nr;
+> > > +
+> > > +       rcu_read_lock();
+> > > +       prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
+> > > +       nr = bpf_prog_array_length(prog_array);
+> > > +       rcu_read_unlock();
+> > > +
+> > > +       return nr > 0;
+> > > +}
+> > > +
+> > > +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> > > +{
+> > > +       if (unlikely(max_optlen > PAGE_SIZE))
+> > > +               return -EINVAL;
+> > > +
+> > > +       if (likely(max_optlen <= sizeof(ctx->buf))) {
+> > > +               ctx->optval = ctx->buf;
+> > > +       } else {
+> > > +               ctx->optval = kzalloc(max_optlen, GFP_USER);
+> > > +               if (!ctx->optval)
+> > > +                       return -ENOMEM;
+> > > +       }
+> > > +
+> > > +       ctx->optval_end = ctx->optval + max_optlen;
+> > > +       ctx->optlen = max_optlen;
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
+> > > +{
+> > > +       if (unlikely(ctx->optval != ctx->buf))
+> > > +               kfree(ctx->optval);
+> > > +}
+> > > +
+> > > +int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int level,
+> > > +                                      int optname, char __user *optval,
+> > > +                                      unsigned int optlen)
+> > > +{
+> > > +       struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> > > +       struct bpf_sockopt_kern ctx = {
+> > > +               .sk = sk,
+> > > +               .level = level,
+> > > +               .optname = optname,
+> > > +       };
+> > > +       int ret;
+> > > +
+> > > +       /* Opportunistic check to see whether we have any BPF program
+> > > +        * attached to the hook so we don't waste time allocating
+> > > +        * memory and locking the socket.
+> > > +        */
+> > > +       if (!__cgroup_bpf_has_prog_array(cgrp, BPF_CGROUP_SETSOCKOPT))
+> > > +               return 0;
+> > > +
+> > > +       ret = sockopt_alloc_buf(&ctx, optlen);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +
+> > > +       if (copy_from_user(ctx.optval, optval, optlen) != 0) {
+> > > +               sockopt_free_buf(&ctx);
+> > > +               return -EFAULT;
+> > > +       }
+> > > +
+> > > +       lock_sock(sk);
+> > > +       ret = BPF_PROG_RUN_ARRAY(cgrp->bpf.effective[BPF_CGROUP_SETSOCKOPT],
+> > > +                                &ctx, BPF_PROG_RUN);
+> > > +       release_sock(sk);
+> > > +
+> > > +       sockopt_free_buf(&ctx);
+> > > +
+> > > +       if (!ret)
+> > > +               return -EPERM;
+> > > +
+> > > +       return ctx.handled ? 1 : 0;
+> > > +}
+> > > +EXPORT_SYMBOL(__cgroup_bpf_run_filter_setsockopt);
+> > > +
+> > > +int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+> > > +                                      int optname, char __user *optval,
+> > > +                                      int __user *optlen)
+> > > +{
+> > > +       struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> > > +       struct bpf_sockopt_kern ctx = {
+> > > +               .sk = sk,
+> > > +               .level = level,
+> > > +               .optname = optname,
+> > > +       };
+> > > +       int max_optlen;
+> > > +       char buf[64];
+> > > +       int ret;
+> > > +
+> > > +       /* Opportunistic check to see whether we have any BPF program
+> > > +        * attached to the hook so we don't waste time allocating
+> > > +        * memory and locking the socket.
+> > > +        */
+> > > +       if (!__cgroup_bpf_has_prog_array(cgrp, BPF_CGROUP_GETSOCKOPT))
+> > > +               return 0;
+> > > +
+> > > +       if (get_user(max_optlen, optlen))
+> > > +               return -EFAULT;
+> > > +
+> > > +       ret = sockopt_alloc_buf(&ctx, max_optlen);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +
+> > > +       lock_sock(sk);
+> > > +       ret = BPF_PROG_RUN_ARRAY(cgrp->bpf.effective[BPF_CGROUP_GETSOCKOPT],
+> > > +                                &ctx, BPF_PROG_RUN);
+> > > +       release_sock(sk);
+> > > +
+> > > +       if (ctx.optlen > max_optlen) {
+> > > +               sockopt_free_buf(&ctx);
+> > > +               return -EFAULT;
+> > > +       }
+> > > +
+> > > +       if (copy_to_user(optval, ctx.optval, ctx.optlen) != 0) {
+> > > +               sockopt_free_buf(&ctx);
+> > > +               return -EFAULT;
+> > > +       }
+> > > +
+> > > +       sockopt_free_buf(&ctx);
+> > > +
+> > > +       if (put_user(ctx.optlen, optlen))
+> > > +               return -EFAULT;
+> > > +
+> > > +       if (!ret)
+> > > +               return -EPERM;
+> > > +
+> > > +       return ctx.handled ? 1 : 0;
+> > > +}
+> > > +EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
+> > > +
+> > >  static ssize_t sysctl_cpy_dir(const struct ctl_dir *dir, char **bufp,
+> > >                               size_t *lenp)
+> > >  {
+> > > @@ -1184,3 +1321,154 @@ const struct bpf_verifier_ops cg_sysctl_verifier_ops = {
+> > >
+> > >  const struct bpf_prog_ops cg_sysctl_prog_ops = {
+> > >  };
+> > > +
+> > > +BPF_CALL_1(bpf_sockopt_handled, struct bpf_sockopt_kern *, ctx)
+> > > +{
+> > > +       ctx->handled = true;
+> > > +       return 1;
+> > > +}
+> > > +
+> > > +static const struct bpf_func_proto bpf_sockopt_handled_proto = {
+> > > +       .func           = bpf_sockopt_handled,
+> > > +       .gpl_only       = false,
+> > > +       .arg1_type      = ARG_PTR_TO_CTX,
+> > > +       .ret_type       = RET_INTEGER,
+> > > +};
+> > > +
+> > > +static const struct bpf_func_proto *
+> > > +cg_sockopt_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > > +{
+> > > +       switch (func_id) {
+> > > +       case BPF_FUNC_sockopt_handled:
+> > > +               return &bpf_sockopt_handled_proto;
+> > > +       case BPF_FUNC_sk_fullsock:
+> > > +               return &bpf_sk_fullsock_proto;
+> > > +       case BPF_FUNC_sk_storage_get:
+> > > +               return &bpf_sk_storage_get_proto;
+> > > +       case BPF_FUNC_sk_storage_delete:
+> > > +               return &bpf_sk_storage_delete_proto;
+> > > +#ifdef CONFIG_INET
+> > > +       case BPF_FUNC_tcp_sock:
+> > > +               return &bpf_tcp_sock_proto;
+> > > +#endif
+> > > +       default:
+> > > +               return cgroup_base_func_proto(func_id, prog);
+> > > +       }
+> > > +}
+> > > +
+> > > +static bool cg_sockopt_is_valid_access(int off, int size,
+> > > +                                      enum bpf_access_type type,
+> > > +                                      const struct bpf_prog *prog,
+> > > +                                      struct bpf_insn_access_aux *info)
+> > > +{
+> > > +       const int size_default = sizeof(__u32);
+> > > +
+> > > +       if (off < 0 || off >= sizeof(struct bpf_sockopt))
+> > > +               return false;
+> > > +
+> > > +       if (off % size != 0)
+> > > +               return false;
+> > > +
+> > > +       if (type == BPF_WRITE) {
+> > > +               switch (off) {
+> > > +               case offsetof(struct bpf_sockopt, optlen):
+> > > +                       if (size != size_default)
+> > > +                               return false;
+> > > +                       return prog->expected_attach_type ==
+> > > +                               BPF_CGROUP_GETSOCKOPT;
+> > > +               default:
+> > > +                       return false;
+> > > +               }
+> > > +       }
+> > > +
+> > > +       switch (off) {
+> > > +       case offsetof(struct bpf_sockopt, sk):
+> > > +               if (size != sizeof(__u64))
+> > > +                       return false;
+> > > +               info->reg_type = PTR_TO_SOCK_COMMON_OR_NULL;
+> > > +               break;
+> > > +       case bpf_ctx_range(struct bpf_sockopt, optval):
+> > > +               if (size != size_default)
+> > > +                       return false;
+> > > +               info->reg_type = PTR_TO_PACKET;
+> > > +               break;
+> > > +       case bpf_ctx_range(struct bpf_sockopt, optval_end):
+> > > +               if (size != size_default)
+> > > +                       return false;
+> > > +               info->reg_type = PTR_TO_PACKET_END;
+> > > +               break;
+> > > +       default:
+> > > +               if (size != size_default)
+> > > +                       return false;
+> > > +               break;
+> >
+> > nit, just:
+> >
+> > return size == size_default
+> >
+> > ?
+> >
+> > > +       }
+> > > +       return true;
+> > > +}
+> > > +
+> > > +static u32 cg_sockopt_convert_ctx_access(enum bpf_access_type type,
+> > > +                                        const struct bpf_insn *si,
+> > > +                                        struct bpf_insn *insn_buf,
+> > > +                                        struct bpf_prog *prog,
+> > > +                                        u32 *target_size)
+> > > +{
+> > > +       struct bpf_insn *insn = insn_buf;
+> > > +
+> > > +       switch (si->off) {
+> > > +       case offsetof(struct bpf_sockopt, sk):
+> > > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_sockopt_kern, sk),
+> > > +                                     si->dst_reg, si->src_reg,
+> > > +                                     offsetof(struct bpf_sockopt_kern, sk));
+> > > +               break;
+> > > +       case offsetof(struct bpf_sockopt, level):
+> > > +               *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->src_reg,
+> > > +                                     bpf_target_off(struct bpf_sockopt_kern,
+> > > +                                                    level, 4, target_size));
+> > > +               break;
+> > > +       case offsetof(struct bpf_sockopt, optname):
+> > > +               *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->src_reg,
+> > > +                                     bpf_target_off(struct bpf_sockopt_kern,
+> > > +                                                    optname, 4, target_size));
+> > > +               break;
+> > > +       case offsetof(struct bpf_sockopt, optlen):
+> > > +               if (type == BPF_WRITE)
+> > > +                       *insn++ = BPF_STX_MEM(BPF_W, si->dst_reg, si->src_reg,
+> > > +                                             bpf_target_off(struct bpf_sockopt_kern,
+> > > +                                                            optlen, 4, target_size));
+> > > +               else
+> > > +                       *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->src_reg,
+> > > +                                             bpf_target_off(struct bpf_sockopt_kern,
+> > > +                                                            optlen, 4, target_size));
+> > > +               break;
+> > > +       case offsetof(struct bpf_sockopt, optval):
+> > > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_sockopt_kern, optval),
+> > > +                                     si->dst_reg, si->src_reg,
+> > > +                                     offsetof(struct bpf_sockopt_kern, optval));
+> > > +               break;
+> > > +       case offsetof(struct bpf_sockopt, optval_end):
+> > > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_sockopt_kern, optval_end),
+> > > +                                     si->dst_reg, si->src_reg,
+> > > +                                     offsetof(struct bpf_sockopt_kern, optval_end));
+> > > +               break;
+> > > +       }
+> > > +
+> > > +       return insn - insn_buf;
+> > > +}
+> > > +
+> > > +static int cg_sockopt_get_prologue(struct bpf_insn *insn_buf,
+> > > +                                  bool direct_write,
+> > > +                                  const struct bpf_prog *prog)
+> > > +{
+> > > +       /* Nothing to do for sockopt argument. The data is kzalloc'ated.
+> > > +        */
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +const struct bpf_verifier_ops cg_sockopt_verifier_ops = {
+> > > +       .get_func_proto         = cg_sockopt_func_proto,
+> > > +       .is_valid_access        = cg_sockopt_is_valid_access,
+> > > +       .convert_ctx_access     = cg_sockopt_convert_ctx_access,
+> > > +       .gen_prologue           = cg_sockopt_get_prologue,
+> > > +};
+> > > +
+> > > +const struct bpf_prog_ops cg_sockopt_prog_ops = {
+> > > +};
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index 4c53cbd3329d..4ad2b5f1905f 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -1596,6 +1596,14 @@ bpf_prog_load_check_attach_type(enum bpf_prog_type prog_type,
+> > >                 default:
+> > >                         return -EINVAL;
+> > >                 }
+> > > +       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
+> > > +               switch (expected_attach_type) {
+> > > +               case BPF_CGROUP_SETSOCKOPT:
+> > > +               case BPF_CGROUP_GETSOCKOPT:
+> > > +                       return 0;
+> > > +               default:
+> > > +                       return -EINVAL;
+> > > +               }
+> > >         default:
+> > >                 return 0;
+> > >         }
+> > > @@ -1846,6 +1854,7 @@ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
+> > >         switch (prog->type) {
+> > >         case BPF_PROG_TYPE_CGROUP_SOCK:
+> > >         case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
+> > > +       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
+> > >                 return attach_type == prog->expected_attach_type ? 0 : -EINVAL;
+> > >         case BPF_PROG_TYPE_CGROUP_SKB:
+> > >                 return prog->enforce_expected_attach_type &&
+> > > @@ -1916,6 +1925,10 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+> > >         case BPF_CGROUP_SYSCTL:
+> > >                 ptype = BPF_PROG_TYPE_CGROUP_SYSCTL;
+> > >                 break;
+> > > +       case BPF_CGROUP_GETSOCKOPT:
+> > > +       case BPF_CGROUP_SETSOCKOPT:
+> > > +               ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
+> > > +               break;
+> > >         default:
+> > >                 return -EINVAL;
+> > >         }
+> > > @@ -1997,6 +2010,10 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+> > >         case BPF_CGROUP_SYSCTL:
+> > >                 ptype = BPF_PROG_TYPE_CGROUP_SYSCTL;
+> > >                 break;
+> > > +       case BPF_CGROUP_GETSOCKOPT:
+> > > +       case BPF_CGROUP_SETSOCKOPT:
+> > > +               ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
+> > > +               break;
+> > >         default:
+> > >                 return -EINVAL;
+> > >         }
+> > > @@ -2031,6 +2048,8 @@ static int bpf_prog_query(const union bpf_attr *attr,
+> > >         case BPF_CGROUP_SOCK_OPS:
+> > >         case BPF_CGROUP_DEVICE:
+> > >         case BPF_CGROUP_SYSCTL:
+> > > +       case BPF_CGROUP_GETSOCKOPT:
+> > > +       case BPF_CGROUP_SETSOCKOPT:
+> > >                 break;
+> > >         case BPF_LIRC_MODE2:
+> > >                 return lirc_prog_query(attr, uattr);
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 5c2cb5bd84ce..b91fde10e721 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -1717,6 +1717,18 @@ static bool may_access_direct_pkt_data(struct bpf_verifier_env *env,
+> > >
+> > >                 env->seen_direct_write = true;
+> > >                 return true;
+> > > +
+> > > +       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
+> > > +               if (t == BPF_WRITE) {
+> > > +                       if (env->prog->expected_attach_type ==
+> > > +                           BPF_CGROUP_GETSOCKOPT) {
+> > > +                               env->seen_direct_write = true;
+> > > +                               return true;
+> > > +                       }
+> > > +                       return false;
+> > > +               }
+> > > +               return true;
+> > > +
+> > >         default:
+> > >                 return false;
+> > >         }
+> > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > index 55bfc941d17a..4652c0a005ca 100644
+> > > --- a/net/core/filter.c
+> > > +++ b/net/core/filter.c
+> > > @@ -1835,7 +1835,7 @@ BPF_CALL_1(bpf_sk_fullsock, struct sock *, sk)
+> > >         return sk_fullsock(sk) ? (unsigned long)sk : (unsigned long)NULL;
+> > >  }
+> > >
+> > > -static const struct bpf_func_proto bpf_sk_fullsock_proto = {
+> > > +const struct bpf_func_proto bpf_sk_fullsock_proto = {
+> > >         .func           = bpf_sk_fullsock,
+> > >         .gpl_only       = false,
+> > >         .ret_type       = RET_PTR_TO_SOCKET_OR_NULL,
+> > > @@ -5636,7 +5636,7 @@ BPF_CALL_1(bpf_tcp_sock, struct sock *, sk)
+> > >         return (unsigned long)NULL;
+> > >  }
+> > >
+> > > -static const struct bpf_func_proto bpf_tcp_sock_proto = {
+> > > +const struct bpf_func_proto bpf_tcp_sock_proto = {
+> > >         .func           = bpf_tcp_sock,
+> > >         .gpl_only       = false,
+> > >         .ret_type       = RET_PTR_TO_TCP_SOCK_OR_NULL,
+> > > diff --git a/net/socket.c b/net/socket.c
+> > > index 72372dc5dd70..e8654f1f70e6 100644
+> > > --- a/net/socket.c
+> > > +++ b/net/socket.c
+> > > @@ -2069,6 +2069,15 @@ static int __sys_setsockopt(int fd, int level, int optname,
+> > >                 if (err)
+> > >                         goto out_put;
+> > >
+> > > +               err = BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock->sk, level, optname,
+> > > +                                                    optval, optlen);
+> > > +               if (err < 0) {
+> > > +                       goto out_put;
+> > > +               } else if (err > 0) {
+> > > +                       err = 0;
+> > > +                       goto out_put;
+> > > +               }
+> > > +
+> > >                 if (level == SOL_SOCKET)
+> > >                         err =
+> > >                             sock_setsockopt(sock, level, optname, optval,
+> > > @@ -2106,6 +2115,15 @@ static int __sys_getsockopt(int fd, int level, int optname,
+> > >                 if (err)
+> > >                         goto out_put;
+> > >
+> > > +               err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname,
+> > > +                                                    optval, optlen);
+> > > +               if (err < 0) {
+> > > +                       goto out_put;
+> > > +               } else if (err > 0) {
+> > > +                       err = 0;
+> > > +                       goto out_put;
+> > > +               }
+> > > +
+> > >                 if (level == SOL_SOCKET)
+> > >                         err =
+> > >                             sock_getsockopt(sock, level, optname, optval,
+> > > --
+> > > 2.22.0.rc1.311.g5d7573a151-goog
+> > >
