@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F0D36567
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2223655B
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbfFEUXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:23:47 -0400
+        id S1726725AbfFEUXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:23:48 -0400
 Received: from mga18.intel.com ([134.134.136.126]:4309 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726501AbfFEUXr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726527AbfFEUXr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 Jun 2019 16:23:47 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -24,9 +24,9 @@ Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 10/15] i40e: Use LLDP ethertype define ETH_P_LLDP
-Date:   Wed,  5 Jun 2019 13:23:53 -0700
-Message-Id: <20190605202358.2767-11-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 11/15] ixgbe: Use LLDP ethertype define ETH_P_LLDP
+Date:   Wed,  5 Jun 2019 13:23:54 -0700
+Message-Id: <20190605202358.2767-12-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
 References: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
@@ -39,51 +39,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Remove references to I40E_ETH_P_LLDP and use ETH_P_LLDP instead.
+Remove references to IXGBE_ETH_P_LLD and use ETH_P_LLDP instead.
 
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h         | 2 --
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c | 4 ++--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 2 --
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 7ce42040b851..8dc98d1d2e86 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -295,8 +295,6 @@ struct i40e_cloud_filter {
- 	u8 tunnel_type;
- };
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index aa923d6d596b..39e73ad60352 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -50,8 +50,6 @@
+ #define IXGBE_MAX_RXD			   4096
+ #define IXGBE_MIN_RXD			     64
  
--#define I40E_ETH_P_LLDP			0x88cc
+-#define IXGBE_ETH_P_LLDP		 0x88CC
 -
- #define I40E_DCB_PRIO_TYPE_STRICT	0
- #define I40E_DCB_PRIO_TYPE_ETS		1
- #define I40E_DCB_STRICT_PRIO_CREDITS	127
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-index 7ea4f09229e4..dc5b40013e61 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -1330,7 +1330,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
- 			}
- 			ret = i40e_aq_add_rem_control_packet_filter(&pf->hw,
- 						pf->hw.mac.addr,
--						I40E_ETH_P_LLDP, 0,
-+						ETH_P_LLDP, 0,
- 						pf->vsi[pf->lan_vsi]->seid,
- 						0, true, NULL, NULL);
- 			if (ret) {
-@@ -1348,7 +1348,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
+ /* flow control */
+ #define IXGBE_MIN_FCRTL			   0x40
+ #define IXGBE_MAX_FCRTL			0x7FF80
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index 345701af7749..537dfff585e0 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1645,7 +1645,7 @@ int ixgbe_ndo_set_vf_spoofchk(struct net_device *netdev, int vf, bool setting)
+ 		IXGBE_WRITE_REG(hw, IXGBE_ETQF(IXGBE_ETQF_FILTER_LLDP),
+ 				(IXGBE_ETQF_FILTER_EN    |
+ 				 IXGBE_ETQF_TX_ANTISPOOF |
+-				 IXGBE_ETH_P_LLDP));
++				 ETH_P_LLDP));
  
- 			ret = i40e_aq_add_rem_control_packet_filter(&pf->hw,
- 						pf->hw.mac.addr,
--						I40E_ETH_P_LLDP, 0,
-+						ETH_P_LLDP, 0,
- 						pf->vsi[pf->lan_vsi]->seid,
- 						0, false, NULL, NULL);
- 			if (ret) {
+ 		IXGBE_WRITE_REG(hw, IXGBE_ETQF(IXGBE_ETQF_FILTER_FC),
+ 				(IXGBE_ETQF_FILTER_EN |
 -- 
 2.21.0
 
