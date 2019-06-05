@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E96E8365CE
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3D1365D1
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:44:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbfFEUm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:42:58 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:42832 "EHLO
+        id S1726818AbfFEUnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:43:21 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:7822 "EHLO
         sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbfFEUm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:42:58 -0400
+        with ESMTP id S1726699AbfFEUnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:43:00 -0400
 Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x55KgqXQ017186
+        by sed198n136.sedsystems.ca  with ESMTP id x55Kgqd7013352
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 5 Jun 2019 14:42:56 -0600 (CST)
+        Wed, 5 Jun 2019 14:42:57 -0600 (CST)
 Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x55Kghit021149
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x55Kghiu021149
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
         Wed, 5 Jun 2019 14:42:52 -0600
 From:   Robert Hancock <hancock@sedsystems.ca>
 To:     netdev@vger.kernel.org
 Cc:     anirudh@xilinx.com, John.Linn@xilinx.com, andrew@lunn.ch,
         Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next v4 03/20] net: axienet: fix MDIO bus naming
-Date:   Wed,  5 Jun 2019 14:42:16 -0600
-Message-Id: <1559767353-17301-4-git-send-email-hancock@sedsystems.ca>
+Subject: [PATCH net-next v4 04/20] net: axienet: add X86 and ARM as supported platforms
+Date:   Wed,  5 Jun 2019 14:42:17 -0600
+Message-Id: <1559767353-17301-5-git-send-email-hancock@sedsystems.ca>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1559767353-17301-1-git-send-email-hancock@sedsystems.ca>
 References: <1559767353-17301-1-git-send-email-hancock@sedsystems.ca>
@@ -35,87 +35,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO bus for this driver was being named using the result of
-of_address_to_resource on a node which may not have any resource on it,
-but the return value of that call was not checked so it was using some
-random value in the bus name. Change to name the MDIO bus based on the
-resource start of the actual Ethernet register block.
+This driver should now build on (at least) X86 and ARM platforms, so add
+them as supported platforms for the driver in Kconfig.
 
 Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h      |  2 ++
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |  1 +
- drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c | 11 +++++------
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/xilinx/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index d82e3b6..f9078bd 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -380,6 +380,7 @@ struct axidma_bd {
-  * @dev:	Pointer to device structure
-  * @phy_node:	Pointer to device node structure
-  * @mii_bus:	Pointer to MII bus structure
-+ * @regs_start: Resource start for axienet device addresses
-  * @regs:	Base address for the axienet_local device address space
-  * @dma_regs:	Base address for the axidma device address space
-  * @dma_err_tasklet: Tasklet structure to process Axi DMA errors
-@@ -421,6 +422,7 @@ struct axienet_local {
- 	struct mii_bus *mii_bus;	/* MII bus reference */
+diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+index af96e05..5f50764 100644
+--- a/drivers/net/ethernet/xilinx/Kconfig
++++ b/drivers/net/ethernet/xilinx/Kconfig
+@@ -6,7 +6,7 @@
+ config NET_VENDOR_XILINX
+ 	bool "Xilinx devices"
+ 	default y
+-	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || COMPILE_TEST
++	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || ARM || COMPILE_TEST
+ 	---help---
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
  
- 	/* IO registers, dma functions and IRQs */
-+	resource_size_t regs_start;
- 	void __iomem *regs;
- 	void __iomem *dma_regs;
+@@ -26,7 +26,7 @@ config XILINX_EMACLITE
  
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 55beca1..ffbd4d7 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -1480,6 +1480,7 @@ static int axienet_probe(struct platform_device *pdev)
- 	lp->options = XAE_OPTION_DEFAULTS;
- 	/* Map device registers */
- 	ethres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	lp->regs_start = ethres->start;
- 	lp->regs = devm_ioremap_resource(&pdev->dev, ethres);
- 	if (IS_ERR(lp->regs)) {
- 		dev_err(&pdev->dev, "could not map Axi Ethernet regs.\n");
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-index 704babd..665ae1d 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-@@ -127,7 +127,7 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
- 	int ret;
- 	u32 clk_div, host_clock;
- 	struct mii_bus *bus;
--	struct resource res;
-+	struct device_node *mdio_node;
- 	struct device_node *np1;
- 
- 	/* clk_div can be calculated by deriving it from the equation:
-@@ -199,10 +199,9 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
- 	if (!bus)
- 		return -ENOMEM;
- 
--	np1 = of_get_parent(lp->phy_node);
--	of_address_to_resource(np1, 0, &res);
--	snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
--		 (unsigned long long) res.start);
-+	mdio_node = of_get_parent(lp->phy_node);
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "axienet-%.8llx",
-+		 (unsigned long long)lp->regs_start);
- 
- 	bus->priv = lp;
- 	bus->name = "Xilinx Axi Ethernet MDIO";
-@@ -211,7 +210,7 @@ int axienet_mdio_setup(struct axienet_local *lp, struct device_node *np)
- 	bus->parent = lp->dev;
- 	lp->mii_bus = bus;
- 
--	ret = of_mdiobus_register(bus, np1);
-+	ret = of_mdiobus_register(bus, mdio_node);
- 	if (ret) {
- 		mdiobus_free(bus);
- 		lp->mii_bus = NULL;
+ config XILINX_AXI_EMAC
+ 	tristate "Xilinx 10/100/1000 AXI Ethernet support"
+-	depends on MICROBLAZE
++	depends on MICROBLAZE || X86 || ARM || COMPILE_TEST
+ 	select PHYLIB
+ 	---help---
+ 	  This driver supports the 10/100/1000 Ethernet from Xilinx for the
 -- 
 1.8.3.1
 
