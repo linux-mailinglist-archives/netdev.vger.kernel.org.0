@@ -2,192 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA57358A3
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C15358E1
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfFEIfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 04:35:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49024 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726537AbfFEIfh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 04:35:37 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1B239C05D419;
-        Wed,  5 Jun 2019 08:35:30 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DDDE85C224;
-        Wed,  5 Jun 2019 08:35:28 +0000 (UTC)
-Message-ID: <f54d5ea4ae3a704c88f1867cd5713c06ac7930c4.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/3] indirect call wrappers: add helpers for 3
- and 4 ways switch
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>
-Date:   Wed, 05 Jun 2019 10:35:28 +0200
-In-Reply-To: <10e134ce6b8c0e2060cecf57527cc52a99d4d6a5.camel@mellanox.com>
-References: <cover.1559304330.git.pabeni@redhat.com>
-         <7dc56c32624fd102473fc66ffdda6ebfcdfe6ad0.1559304330.git.pabeni@redhat.com>
-         <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
-         <141f34bb8d1505783b4f939faac5223200deeb13.camel@redhat.com>
-         <10e134ce6b8c0e2060cecf57527cc52a99d4d6a5.camel@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1726761AbfFEIpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 04:45:12 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:53378 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726690AbfFEIpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 04:45:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=zAEKAkaJlWSdynEyHK37EvVVVoaBFWEA4Jbok8Skl2E=; b=OY/Khl/nFLTM0SWuQIKwRiFx5
+        Gi5dVUrCyvIvldyo2/lhvWmfOLbioe9NiGhpqLBIzkp1EZnoxr0iSnRJPULoBDxHe6q11Uas7zDPj
+        mLo0NY2vRsqQugXXy+5lRWNMYPbU2CsVnPVNI4+eNQSt7cpdCzYc/nEOl/layS4GLpnvc+9JViCEu
+        TdEhKtBNXLW2mF+hFvo5SGfNGrQaEEwqjCWrnzXnq2wIffJyAsRPwBPpu8vqZ6sUyf5VHVZ/1YZ+Y
+        zAqnn1IN5LoIMlMEmq3j0DUPJ2LvbnrD/skI99E28FLKDkcWeW6B1AHUIkBHVrzfnDEEW3QfLfdP5
+        roJ9iSTXA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52866)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hYRXc-0006j2-0p; Wed, 05 Jun 2019 09:45:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hYRXY-0002IP-Ly; Wed, 05 Jun 2019 09:45:00 +0100
+Date:   Wed, 5 Jun 2019 09:45:00 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+Message-ID: <20190605084500.pjkq43l4aaepznon@shell.armlinux.org.uk>
+References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+ <20190604213624.yw72vzdxarksxk33@shell.armlinux.org.uk>
+ <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Wed, 05 Jun 2019 08:35:36 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-06-03 at 22:27 +0000, Saeed Mahameed wrote:
-> On Mon, 2019-06-03 at 11:51 +0200, Paolo Abeni wrote:
-> > On Fri, 2019-05-31 at 18:30 +0000, Saeed Mahameed wrote:
-> > > On Fri, 2019-05-31 at 14:53 +0200, Paolo Abeni wrote:
-> > > > Experimental results[1] has shown that resorting to several
-> > > > branches
-> > > > and a direct-call is faster than indirect call via retpoline,
-> > > > even
-> > > > when the number of added branches go up 5.
-> > > > 
-> > > > This change adds two additional helpers, to cope with indirect
-> > > > calls
-> > > > with up to 4 available direct call option. We will use them
-> > > > in the next patch.
-> > > > 
-> > > > [1] 
-> > > > https://linuxplumbersconf.org/event/2/contributions/99/attachments/98/117/lpc18_paper_af_xdp_perf-v2.pdf
-> > > > 
-> > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > > ---
-> > > >  include/linux/indirect_call_wrapper.h | 12 ++++++++++++
-> > > >  1 file changed, 12 insertions(+)
-> > > > 
-> > > > diff --git a/include/linux/indirect_call_wrapper.h
-> > > > b/include/linux/indirect_call_wrapper.h
-> > > > index 00d7e8e919c6..7c4cac87eaf7 100644
-> > > > --- a/include/linux/indirect_call_wrapper.h
-> > > > +++ b/include/linux/indirect_call_wrapper.h
-> > > > @@ -23,6 +23,16 @@
-> > > >  		likely(f == f2) ? f2(__VA_ARGS__) :			
-> > > > \
-> > > >  				  INDIRECT_CALL_1(f, f1, __VA_ARGS__);	
-> > > > \
-> > > >  	})
-> > > > +#define INDIRECT_CALL_3(f, f3, f2, f1, ...)			
-> > > > 	
-> > > > \
-> > > > +	({								
-> > > > \
-> > > > +		likely(f == f3) ? f3(__VA_ARGS__) :			
-> > > > \
-> > > > +				  INDIRECT_CALL_2(f, f2, f1,
-> > > > __VA_ARGS__); \
-> > > > +	})
-> > > > +#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...)			
-> > > > 	\
-> > > > +	({								
-> > > > \
-> > > > +		likely(f == f4) ? f4(__VA_ARGS__) :		
-> > > 
-> > > do we really want "likely" here ? in our cases there is no
-> > > preference
-> > > on whuch fN is going to have the top priority, all of them are
-> > > equally
-> > > important and statically configured and guranteed to not change on
-> > > data
-> > > path .. 
+On Tue, Jun 04, 2019 at 07:25:46PM -0700, Florian Fainelli wrote:
+> On 6/4/2019 2:36 PM, Russell King - ARM Linux admin wrote:
+> > Normally the PHY receives traffic, and passes it to the MAC which
+> > just ignores the signals it receives from the PHY, so no processing
+> > beyond the PHY receiving the traffic happens.
 > > 
-> > I was a little undecided about that, too. 'likely()' is there mainly
-> > for simmetry with the already existing _1 and _2 variants. In such
-> > macros the branch prediction hint represent a real priority of the
-> > available choices.
-> > 
+> > Ultimately, whether you want the PHY to stay linked or not linked
+> > is, imho, a policy that should be set by the administrator (consider
+> > where a system needs to become available quickly after boot vs a
+> > system where power saving is important.)  We don't, however, have
+> > a facility to specify that policy though.
 > 
-> For macro _1 it make sense to have the likely keyword but for _2 it
-> doesn't, by looking at most of the usecases of INDIRECT_CALL_2, they
-> seem to be all around improving tcp/udp related indirection calls in
-> the protocol stack, and they seem to prefer tcp over udp. But IMHO at
-> least for the above usecase I think the likely keyword is being misused
-> here and should be remove from all INDIRECT_CALL_N where N > 1;
+> Maybe that's what we need, something like:
+> 
+> ip link set dev eth0 phy [on|off|wake]
+> 
+> or whatever we deem appropriate such that people willing to maintain the
+> PHY on can do that.
 
-I experimented a bit with gcc 8.3.1 and some BP hint variations:
+How would that work when the PHY isn't bound to the network device until
+the network device is brought up?
 
-* with current macros we have single test for fN and an incresing
-number of conditional jumps and tests for the following functions, as
-the generated code looks somehow alike:
-
-	cmp f4, function_ptr
-	jne test_f3
-	call f4
-post_call:
-	// ...
-
-	// ...
-test_f3:
-	cmp f3, function_ptr
-	jne test_f2
-	call f3
-	jmp post_call
-
-test_f2:
-	cmp f2, function_ptr
-	//...
-
-* keeping 'likely' only on INDIRECT_CALL_1 we get a conditinal jump for
-fN and the number of conditional jumps and tests grows for the next
-functions, as the generated code looks somehow alike:
-
-	cmp f4, function_ptr
-	je call_f4
-	cmp f3, function_ptr
-	je call_f3
-	//...
-	cmp f1, function_ptr
-	jne indirect_call
-	call f1
-post_call:
-	// ...
-
-	// ...
-call_f4:
-	call f4
-	jmp post_call
-call_f3:
-	call f3
-	jmp post_call
-	// ...
-
-
-* without any BP hints, is quite alike the above, except for the last
-test, the indirect call don't need an additional jump: 
-
-	cmp f4, function_ptr
-	je call_f4
-	cmp f3, function_ptr
-	je call_f3
-	//...
-	cmp f1, function_ptr
-	je call_f1
-	call retpoline_helper
-
-I think the first option should be overall better then the 2nd. The 3rd
-one is the worse.
-
-> In any case, just make sure to use the order i suggested in next
-> patch with: MLX5_RX_INDIRECT_CALL_LIST
-
-Sure! will do in next iteration, as soon as the above topic is settled.
-
-Thanks!
-
-Paolo
-
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
