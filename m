@@ -2,53 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F48F35CF9
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E4935D0C
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 14:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727709AbfFEMhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 08:37:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58246 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727663AbfFEMhH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 08:37:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=7/7P3JCHAuuiB2vCg35zQk4+bCLJOJBCLvZkIg/WITQ=; b=UGLK1R+yPSQx2k8uPrcuVg09jQ
-        EH7OTbU9JhzaFJe1+2s/gLUZZUusDcN22yOoiSxNAfC3tQ+3sCnpf2KrLpXSiU5tCXq0eLGknLXx/
-        KtIio9bonk1p9ZnmyKMl9yw0FhTNcaXdyWvtN6Hr4ihV7qDkDgY4n4dj9nvaN+9V9nvM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hYVA6-0004PN-CN; Wed, 05 Jun 2019 14:37:02 +0200
-Date:   Wed, 5 Jun 2019 14:37:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell10g: allow PHY to probe without firmware
-Message-ID: <20190605123702.GI16951@lunn.ch>
-References: <E1hYTO0-0000MZ-2d@rmk-PC.armlinux.org.uk>
+        id S1727763AbfFEMkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 08:40:49 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:55178 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727273AbfFEMkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 08:40:49 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@strlen.de>)
+        id 1hYVDh-0005pc-KN; Wed, 05 Jun 2019 14:40:45 +0200
+Date:   Wed, 5 Jun 2019 14:40:45 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Florian Westphal <fw@strlen.de>, kbuild-all@01.org,
+        netdev@vger.kernel.org
+Subject: Re: [ipsec-next:testing 4/6] net/xfrm/xfrm_state.c:1792:9: error:
+ '__xfrm6_tmpl_sort_cmp' undeclared; did you mean 'xfrm_tmpl_sort'?
+Message-ID: <20190605124045.gzkafkixihwu7447@breakpoint.cc>
+References: <201906052002.P2x8MWme%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1hYTO0-0000MZ-2d@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <201906052002.P2x8MWme%lkp@intel.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 11:43:16AM +0100, Russell King wrote:
-> Allow the PHY to probe when there is no firmware, but do not allow the
-> link to come up by forcing the PHY state to PHY_HALTED in a similar way
-> to phy_error().
+kbuild test robot <lkp@intel.com> wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git testing
+> head:   ca78a3eaad69bd08ba41c144c21881dc694d4a32
+> commit: 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e [4/6] xfrm: remove state and template sort indirections from xfrm_state_afinfo
+> config: i386-randconfig-x003-201922 (attached as .config)
+> compiler: gcc-7 (Debian 7.3.0-1) 7.3.0
+> reproduce:
+>         git checkout 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e
+>         # save the attached .config to linux build tree
+>         make ARCH=i386 
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> All errors (new ones prefixed by >>):
+> 
+>    net/xfrm/xfrm_state.c: In function 'xfrm_tmpl_sort':
+> >> net/xfrm/xfrm_state.c:1792:9: error: '__xfrm6_tmpl_sort_cmp' undeclared (first use in this function); did you mean 'xfrm_tmpl_sort'?
+>             __xfrm6_tmpl_sort_cmp, 5);
+>             ^~~~~~~~~~~~~~~~~~~~~
+>             xfrm_tmpl_sort
+>    net/xfrm/xfrm_state.c:1792:9: note: each undeclared identifier is reported only once for each function it appears in
+>    net/xfrm/xfrm_state.c: In function 'xfrm_state_sort':
+> >> net/xfrm/xfrm_state.c:1806:9: error: '__xfrm6_state_sort_cmp' undeclared (first use in this function); did you mean '__xfrm6_state_addr_cmp'?
+>             __xfrm6_state_sort_cmp, 6);
+>             ^~~~~~~~~~~~~~~~~~~~~~
+>             __xfrm6_state_addr_cmp
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+this lacks stubs for CONFIG_IPV6=n case.
 
-    Andrew
+Steffen, as this is still only in your testing branch, I suggest you
+squash this snipped into commit 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e
+("xfrm: remove state and template sort indirections from xfrm_state_afinfo"),
+it resolves this problem for me.  Otherwise, I can make a formal submit,
+just let me know.
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1845,6 +1845,9 @@ static int __xfrm6_tmpl_sort_cmp(const void *p)
+ 	return 4;
+ }
+ #else
++static inline int __xfrm6_state_sort_cmp(const void *p) { return 5; }
++static inline int __xfrm6_tmpl_sort_cmp(const void *p) { return 4; }
++
+ static inline void
+ __xfrm6_sort(void **dst, void **src, int n,
+ 	     int (*cmp)(const void *p), int maxclass)
