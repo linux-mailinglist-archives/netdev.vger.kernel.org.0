@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC06F367B9
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:15:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 567B5367C0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbfFEXPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 19:15:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59530 "EHLO mail.kernel.org"
+        id S1726813AbfFEXPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 19:15:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59542 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726671AbfFEXP3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 19:15:29 -0400
+        id S1726723AbfFEXPa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 19:15:30 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 27FC3212F5;
+        by mail.kernel.org (Postfix) with ESMTPSA id 719DC2133D;
         Wed,  5 Jun 2019 23:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1559776529;
-        bh=XZMdw6bawNXq9CrWS8caCSn4zATtXzv+tZODYwnIyKk=;
+        bh=5NSGpExZNt0wzn7Pwx4r39olG24/HqatDMclYX1Xud8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vRfdJLB7glI9gF2CpBk0Cloa/SmFvGrgbYia60H8ClZf4naAyhDoMumKHpJehytK6
-         O/skyN6icBLJSckY7arGD/FHk5pjimciAvDneO/tz20joYWhjacreb2W8/FNV6ldKb
-         BvGTDmnfpUWmqkQ24eXcamlAmsL/BUeYGyNfWJ7w=
+        b=lWsCTD+HdovTLAnye0sseS/UuCn484PQ2lFCZBarAQSktoTMzKDZXqoItB+laLzq8
+         HRxZcg1dkE8AxsvwGzKl2RAeFo3AeI9TxNqr2nP0K42hqmkBqN8BMKYIs+PQR2S8oB
+         lXA20SX4lCoUNvJTvbVoKWy18ijhGS+BusoYt3T8=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 15/19] selftests: pmtu: Move running of test into a new function
-Date:   Wed,  5 Jun 2019 16:15:19 -0700
-Message-Id: <20190605231523.18424-16-dsahern@kernel.org>
+Subject: [PATCH net-next 16/19] selftests: pmtu: Move route installs to a new function
+Date:   Wed,  5 Jun 2019 16:15:20 -0700
+Message-Id: <20190605231523.18424-17-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190605231523.18424-1-dsahern@kernel.org>
 References: <20190605231523.18424-1-dsahern@kernel.org>
@@ -40,95 +40,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Move the block of code that runs a test and prints the verdict to a
-new function, run_test.
+Move the route add commands to a new function called setup_routing_old.
+The '_old' refers to the classic way of installing routes.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/pmtu.sh | 63 +++++++++++++++++++++----------------
- 1 file changed, 36 insertions(+), 27 deletions(-)
+ tools/testing/selftests/net/pmtu.sh | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
 
 diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 4a1275990d7e..3d6b21c4b1db 100755
+index 3d6b21c4b1db..14ffcf490032 100755
 --- a/tools/testing/selftests/net/pmtu.sh
 +++ b/tools/testing/selftests/net/pmtu.sh
-@@ -1090,6 +1090,41 @@ test_cleanup_ipv4_exception() {
- 	test_cleanup_vxlanX_exception 4
+@@ -448,6 +448,20 @@ setup_xfrm6() {
+ 	setup_xfrm 6 ${veth6_a_addr} ${veth6_b_addr}
  }
  
-+run_test() {
-+	(
-+	tname="$1"
-+	tdesc="$2"
++setup_routing_old() {
++	for i in ${routes}; do
++		[ "${ns}" = "" ]	&& ns="${i}"		&& continue
++		[ "${addr}" = "" ]	&& addr="${i}"		&& continue
++		[ "${gw}" = "" ]	&& gw="${i}"
 +
-+	unset IFS
++		ns_name="$(nsname ${ns})"
 +
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "\n##########################################################################\n\n"
-+	fi
++		ip -n ${ns_name} route add ${addr} via ${gw}
 +
-+	eval test_${tname}
-+	ret=$?
-+
-+	if [ $ret -eq 0 ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${tdesc}"
-+	elif [ $ret -eq 1 ]; then
-+		printf "TEST: %-60s  [FAIL]\n" "${tdesc}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "Pausing. Hit enter to continue"
-+			read a
-+		fi
-+		err_flush
-+		exit 1
-+	elif [ $ret -eq 2 ]; then
-+		printf "TEST: %-60s  [SKIP]\n" "${tdesc}"
-+		err_flush
-+	fi
-+
-+	return $ret
-+	)
-+	[ $? -ne 0 ] && exitcode=1
++		ns=""; addr=""; gw=""
++	done
 +}
 +
- usage() {
- 	echo
- 	echo "$0 [OPTIONS] [TEST]..."
-@@ -1147,33 +1182,7 @@ for t in ${tests}; do
+ setup_routing() {
+ 	for i in ${NS_R1} ${NS_R2}; do
+ 		ip netns exec ${i} sysctl -q net/ipv4/ip_forward=1
+@@ -478,17 +492,7 @@ setup_routing() {
+ 		ns=""; peer=""; segment=""
  	done
- 	[ $run_this -eq 0 ] && continue
  
--	(
--		unset IFS
+-	for i in ${routes}; do
+-		[ "${ns}" = "" ]	&& ns="${i}"		&& continue
+-		[ "${addr}" = "" ]	&& addr="${i}"		&& continue
+-		[ "${gw}" = "" ]	&& gw="${i}"
 -
--		if [ "$VERBOSE" = "1" ]; then
--			printf "\n##########################################################################\n\n"
--		fi
+-		ns_name="$(nsname ${ns})"
 -
--		eval test_${name}
--		ret=$?
+-		ip -n ${ns_name} route add ${addr} via ${gw}
 -
--		if [ $ret -eq 0 ]; then
--			printf "TEST: %-60s  [ OK ]\n" "${t}"
--		elif [ $ret -eq 1 ]; then
--			printf "TEST: %-60s  [FAIL]\n" "${t}"
--			if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
--				echo
--				echo "Pausing. Hit enter to continue"
--				read a
--			fi
--			err_flush
--			exit 1
--		elif [ $ret -eq 2 ]; then
--			printf "TEST: %-60s  [SKIP]\n" "${t}"
--			err_flush
--		fi
--	)
--	[ $? -ne 0 ] && exitcode=1
-+	run_test "${name}" "${t}"
- done
+-		ns=""; addr=""; gw=""
+-	done
++	setup_routing_old
+ }
  
- exit ${exitcode}
+ setup() {
 -- 
 2.11.0
 
