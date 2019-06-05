@@ -2,216 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C86367B5
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:14:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 737C8367B6
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 01:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbfFEXOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 19:14:08 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35486 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726502AbfFEXOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 19:14:07 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d23so594053qto.2
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 16:14:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=LIAHeZZ3YBveAzjt6IYo5okl7d9OCweBrPfpual66ns=;
-        b=UP3fT7jHA9KAz8dPOFMarqwl+LYRYAaZzCYzFwo7oJ6hq8UPgsMQO5HHTQXU4lmmIk
-         TP4IJIT2y3SDanKIpvLCLwQ3qjRAosGSMlfo8v2j6z0wDXw4GRvQcneXuilTkZTC1fZq
-         PyjLACmG9M0OA4cSd2JYUsMHt+sH8fN9E3XUtuo9tD+Trv4JGR1OwSuY+GIHOD7rDFBT
-         rF1m1tcm1GFNaqaUbWXZ7/wpi15CyiqNRiJ/Da9IjJXQa7BnuvEh3nn/e9cu4/64CHOp
-         0ZV7vItW6T7UP3D+04b7NZRch5yOP6ozbln/8w+jmQfq9ZeKZAB1BM2FVhi+YWmxjyJ/
-         boKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=LIAHeZZ3YBveAzjt6IYo5okl7d9OCweBrPfpual66ns=;
-        b=OUtJlgppb1dsZvspROJcESGYdd3ZNOkQlD/5OUwD5IDW1S+JEVyMmfiqmyLVyuifu0
-         2yC+IWosfokkbCjpKvnIdh5OX8CjKCvIcsR3V7fy+d8iF0djJ4fzH/ifveMDUsNAVNyu
-         vcZaQTWQmvHwxDyq2KGOZxjrGASmzRir0f2JKdVvxJdB1JgPXn6eeth6ePOI+plt+8s5
-         i3GpFaqigPgOeDqA/hdmHzf1GJZVnjDrS3WbFXLo4ga9AJSHQURJ+BbLpVjigtm0p6ct
-         DFI22YGE9nyebUfbYqtZoZuBpCSlE9FmoYdKg5UMG7d5ikxU1amgE/h0jh1YYzDCCMhX
-         c3kg==
-X-Gm-Message-State: APjAAAXAhn2ae1io3VVaJCQEBVWMI9o0My7N/2+cKLXm8ekjf6tfY/yf
-        bKD9tkPDJvq571qh9t1zBbzx2A==
-X-Google-Smtp-Source: APXvYqyqzPs//2zqhBUmDvL2u+8ygp1eP/zwz1ByeM8zJIUgBbXDLYgzmCckNUqW0zOxY+ba1b19VQ==
-X-Received: by 2002:ac8:644:: with SMTP id e4mr29406455qth.173.1559776446219;
-        Wed, 05 Jun 2019 16:14:06 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e5sm6970qkg.81.2019.06.05.16.14.04
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 05 Jun 2019 16:14:05 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 16:14:00 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Dave Watson <davejwatson@fb.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 1/2] tcp: ulp: add functions to dump
- ulp-specific information
-Message-ID: <20190605161400.6c87d173@cakuba.netronome.com>
-In-Reply-To: <a1feba1a1c03a331047d3a7a3a7acefdbee51735.1559747691.git.dcaratti@redhat.com>
-References: <cover.1559747691.git.dcaratti@redhat.com>
-        <a1feba1a1c03a331047d3a7a3a7acefdbee51735.1559747691.git.dcaratti@redhat.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726593AbfFEXPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 19:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59322 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726502AbfFEXPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 19:15:25 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9B0F32075B;
+        Wed,  5 Jun 2019 23:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559776524;
+        bh=vXf4DU6KcezCrkyOKRXv+hipC5GR2EtxiHb0mUqOvN8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OFMdnwZs66OlUOKPhTRjIxLPjRq8cm0pQYOJtPYljFrNAJKdv18XsLYaYCXt1hbKn
+         /KPPkuiLUg1toOzOtZ0Apa+KhhSbbio44YUTY9XOYbN5gZoMDKZk98so6nXtyrzGkK
+         piHoHKZJdLnud+BHDpI0iyXEIZ6ZjJ2bj1c2ltWk=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
+        sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next 00/19] net: Enable nexthop objects with IPv4 and IPv6 routes
+Date:   Wed,  5 Jun 2019 16:15:04 -0700
+Message-Id: <20190605231523.18424-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  5 Jun 2019 17:39:22 +0200, Davide Caratti wrote:
-> currently, only getsockopt(TCP_ULP) can be invoked to know if a ULP is on
-> top of a TCP socket. Extend idiag_get_aux() and idiag_get_aux_size(),
-> introduced by commit b37e88407c1d ("inet_diag: allow protocols to provide
-> additional data"), to report the ULP name and other information that can
-> be made available by the ULP through optional functions.
-> 
-> Users having CAP_NET_ADMIN privileges will then be able to retrieve this
-> information through inet_diag_handler, if they specify INET_DIAG_INFO in
-> the request.
-> 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  include/net/tcp.h              |  3 +++
->  include/uapi/linux/inet_diag.h |  8 ++++++++
->  net/ipv4/tcp_diag.c            | 34 ++++++++++++++++++++++++++++++++--
->  3 files changed, 43 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 0083a14fb64f..94431562c4b4 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -2108,6 +2108,9 @@ struct tcp_ulp_ops {
->  	int (*init)(struct sock *sk);
->  	/* cleanup ulp */
->  	void (*release)(struct sock *sk);
-> +	/* diagnostic */
-> +	int (*get_info)(struct sock *sk, struct sk_buff *skb);
-> +	size_t (*get_info_size)(struct sock *sk);
->  
->  	char		name[TCP_ULP_NAME_MAX];
->  	struct module	*owner;
-> diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-> index e8baca85bac6..844133de3212 100644
-> --- a/include/uapi/linux/inet_diag.h
-> +++ b/include/uapi/linux/inet_diag.h
-> @@ -153,11 +153,19 @@ enum {
->  	INET_DIAG_BBRINFO,	/* request as INET_DIAG_VEGASINFO */
->  	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
->  	INET_DIAG_MD5SIG,
-> +	INET_DIAG_ULP_INFO,
->  	__INET_DIAG_MAX,
->  };
->  
->  #define INET_DIAG_MAX (__INET_DIAG_MAX - 1)
->  
-> +enum {
+From: David Ahern <dsahern@gmail.com>
 
-Value of 0 is commonly defined as UNSPEC (or NONE), so:
+This is the final set of the initial nexthop object work. When I
+started this idea almost 2 years ago, it took 18 seconds to inject
+700k+ IPv4 routes with 1 hop and about 28 seconds for 4-paths. Some
+of that time was due to inefficiencies in 'ip', but most of it was
+kernel side with excessive synchronize_rcu calls in ipv4, and redundant
+processing validating a nexthop spec (device, gateway, encap). Worse,
+the time increased dramatically as the number of legs in the routes
+increased; for example, taking over 72 seconds for 16-path routes.
 
-	ULP_UNSPEC,
+After this set, with increased dirty memory limits (fib_sync_mem sysctl),
+an improved ip and nexthop objects a full internet fib (743,799 routes
+based on a pull in January 2019) can be pushed to the kernel in 4.3
+seconds. Even better, the time to insert is "almost" constant with
+increasing number of paths. The 'almost constant' time is due to
+expanding the nexthop definitions when generating notifications. A
+follow on patch will be sent adding a sysctl that allows an admin to
+avoid the nexthop expansion and truly get constant route insert time
+regardless of the number of paths in a route! (Useful once all programs
+used for a deployment that care about routes understand nexthop objects).
 
-here.  Also perhaps INET_ULP_..?
+To be clear, 'ip' is used for benchmarking for no other reason than
+'ip -batch' is a trivial to use for the tests. FRR, for example, better
+manages nexthops and route changes and the way those are pushed to the
+kernel and thus will have less userspace processing times than 'ip -batch'.
 
-> +	ULP_INFO_NAME,
-> +	__ULP_INFO_MAX,
-> +};
-> +
-> +#define ULP_INFO_MAX (__ULP_INFO_MAX - 1)
-> +
->  /* INET_DIAG_MEM */
->  
->  struct inet_diag_meminfo {
-> diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-> index 81148f7a2323..de2e9e75b8e0 100644
-> --- a/net/ipv4/tcp_diag.c
-> +++ b/net/ipv4/tcp_diag.c
-> @@ -88,10 +88,12 @@ static int tcp_diag_put_md5sig(struct sk_buff *skb,
->  static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
->  			    struct sk_buff *skb)
->  {
-> +	struct inet_connection_sock *icsk = inet_csk(sk);
-> +	int err = 0;
-> +
->  #ifdef CONFIG_TCP_MD5SIG
->  	if (net_admin) {
->  		struct tcp_md5sig_info *md5sig;
-> -		int err = 0;
->  
->  		rcu_read_lock();
->  		md5sig = rcu_dereference(tcp_sk(sk)->md5sig_info);
-> @@ -103,11 +105,33 @@ static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
->  	}
->  #endif
->  
-> -	return 0;
-> +	if (net_admin && icsk->icsk_ulp_ops) {
-> +		struct nlattr *nest;
-> +
-> +		nest = nla_nest_start_noflag(skb, INET_DIAG_ULP_INFO);
-> +		if (!nest) {
-> +			err = -EMSGSIZE;
-> +			goto nla_failure;
-> +		}
-> +		err = nla_put_string(skb, ULP_INFO_NAME,
-> +				     icsk->icsk_ulp_ops->name);
-> +		if (err < 0)
+Patches 1-10 iterate over fib6_nh with a nexthop invoke a processing
+function per fib6_nh. Prior to nexthop objects, a fib6_info referenced
+a single fib6_nh. Multipath routes were added as separate fib6_info for
+each leg of the route and linked as siblings:
 
-nit: nla_put_string() does not return positive non-zero codes
+    f6i -> sibling -> sibling ... -> sibling
+     |                                   |
+     +--------- multipath route ---------+
 
-> +			goto nla_failure;
-> +		if (icsk->icsk_ulp_ops->get_info)
-> +			err = icsk->icsk_ulp_ops->get_info(sk, skb);
+With nexthop objects a single fib6_info references an external
+nexthop which may have a series of fib6_nh:
 
-And neither should this, probably.
+     f6i ---> nexthop ---> fib6_nh
+                           ...
+                           fib6_nh
 
-> +		if (err < 0) {
-> +nla_failure:
-> +			nla_nest_cancel(skb, nest);
-> +			return err;
-> +		}
-> +		nla_nest_end(skb, nest);
-> +	}
-> +	return err;
+making IPv6 routes similar to IPv4. The side effect is that a single
+fib6_info now indirectly references a series of fib6_nh so the code
+needs to walk each entry and call the local, per-fib6_nh processing
+function.
 
-So just return 0 here.
+Patches 11 and 13 wire up use of nexthops with fib entries for IPv4
+and IPv6. With these commits you can actually use nexthops with routes.
 
->  }
->  
->  static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
->  {
-> +	struct inet_connection_sock *icsk = inet_csk(sk);
->  	size_t size = 0;
->  
->  #ifdef CONFIG_TCP_MD5SIG
-> @@ -128,6 +152,12 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
->  	}
->  #endif
->  
-> +	if (net_admin && icsk->icsk_ulp_ops) {
-> +		size +=   nla_total_size(0) /* INET_DIAG_ULP_INFO */
+Patch 12 is an optimization for IPv4 when using nexthops in the most
+predominant use case (no metrics).
 
-                       ^^^ not sure we want those multiple spaces here.
+Patches 14 handles replace of a nexthop config.
 
-> +			+ nla_total_size(TCP_ULP_NAME_MAX); /* ULP_INFO_NAME */
+Patches 15-18 add update pmtu and redirect tests to use both old and
+new routing.
 
-+ usually goes at the end of previous line
+Patches 19 adds new test for the nexthop infrastructure where a single
+nexthop is used by multiple prefixes to communicate with remote hosts.
+This is on top of the functional tests already committed.
 
-> +		if (icsk->icsk_ulp_ops->get_info_size)
-> +			size += icsk->icsk_ulp_ops->get_info_size(sk);
+David Ahern (19):
+  nexthops: Add ipv6 helper to walk all fib6_nh in a nexthop struct
+  ipv6: Handle all fib6_nh in a nexthop in fib6_drop_pcpu_from
+  ipv6: Handle all fib6_nh in a nexthop in rt6_device_match
+  ipv6: Handle all fib6_nh in a nexthop in __find_rr_leaf
+  ipv6: Handle all fib6_nh in a nexthop in rt6_nlmsg_size
+  ipv6: Handle all fib6_nh in a nexthop in fib6_info_uses_dev
+  ipv6: Handle all fib6_nh in a nexthop in exception handling
+  ipv6: Handle all fib6_nh in a nexthop in __ip6_route_redirect
+  ipv6: Handle all fib6_nh in a nexthop in rt6_do_redirect
+  ipv6: Handle all fib6_nh in a nexthop in mtu updates
+  ipv4: Allow routes to use nexthop objects
+  ipv4: Optimization for fib_info lookup with nexthops
+  ipv6: Allow routes to use nexthop objects
+  nexthops: add support for replace
+  selftests: pmtu: Move running of test into a new function
+  selftests: pmtu: Move route installs to a new function
+  selftests: pmtu: Add support for routing via nexthop objects
+  selftests: icmp_redirect: Add support for routing via nexthop objects
+  selftests: Add test with multiple prefixes using single nexthop
 
-I don't know the diag code, is the socket locked at this point?
+ include/net/ip6_fib.h                              |   1 +
+ include/net/ip_fib.h                               |   1 +
+ include/net/nexthop.h                              |   4 +
+ net/ipv4/fib_frontend.c                            |  19 +
+ net/ipv4/fib_semantics.c                           |  86 +++-
+ net/ipv4/nexthop.c                                 | 275 ++++++++++++-
+ net/ipv6/ip6_fib.c                                 |  31 +-
+ net/ipv6/route.c                                   | 456 +++++++++++++++++++--
+ .../selftests/net/fib_nexthop_multiprefix.sh       | 290 +++++++++++++
+ tools/testing/selftests/net/icmp_redirect.sh       |  49 +++
+ tools/testing/selftests/net/pmtu.sh                | 237 ++++++++---
+ 11 files changed, 1324 insertions(+), 125 deletions(-)
+ create mode 100755 tools/testing/selftests/net/fib_nexthop_multiprefix.sh
 
-> +	}
->  	return size;
->  }
->  
+-- 
+2.11.0
