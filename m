@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3CF364E0
+	by mail.lfdr.de (Postfix) with ESMTP id D1720364E1
 	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 21:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbfFETpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726502AbfFETpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 5 Jun 2019 15:45:07 -0400
 Received: from mga09.intel.com ([134.134.136.24]:35209 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbfFETpH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726305AbfFETpH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 Jun 2019 15:45:07 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -22,12 +22,13 @@ From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Lihong Yang <lihong.yang@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 1/2] i40e: Do not check VF state in i40e_ndo_get_vf_config
-Date:   Wed,  5 Jun 2019 12:45:15 -0700
-Message-Id: <20190605194516.10125-1-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 2/2] i40e: Check and set the PF driver state first in i40e_ndo_set_vf_mac
+Date:   Wed,  5 Jun 2019 12:45:16 -0700
+Message-Id: <20190605194516.10125-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190605194516.10125-1-jeffrey.t.kirsher@intel.com>
+References: <20190605194516.10125-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -37,36 +38,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lihong Yang <lihong.yang@intel.com>
 
-The VF configuration returned in i40e_ndo_get_vf_config is
-already stored by the PF. There is no dependency on any
-specific state of the VF to return the configuration.
-Drop the check against I40E_VF_STATE_INIT since it is not
-needed.
+The PF driver state flag __I40E_VIRTCHNL_OP_PENDING needs to be
+checked and set at the beginning of i40e_ndo_set_vf_mac. Otherwise,
+if there are error conditions before it, the flag will be cleared
+unexpectedly by this function to cause potential race conditions.
+Hence move the check to the top of this function.
 
 Signed-off-by: Lihong Yang <lihong.yang@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 479bc60c8f71..f14367834318 100644
+index f14367834318..09a7fd4d24e8 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -4302,10 +4302,8 @@ int i40e_ndo_get_vf_config(struct net_device *netdev,
- 	vf = &pf->vf[vf_id];
- 	/* first vsi is always the LAN vsi */
- 	vsi = pf->vsi[vf->lan_vsi_idx];
--	if (!test_bit(I40E_VF_STATE_INIT, &vf->vf_states)) {
--		dev_err(&pf->pdev->dev, "VF %d still in reset. Try again.\n",
--			vf_id);
--		ret = -EAGAIN;
-+	if (!vsi) {
-+		ret = -ENOENT;
+@@ -3943,6 +3943,11 @@ int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
+ 	int bkt;
+ 	u8 i;
+ 
++	if (test_and_set_bit(__I40E_VIRTCHNL_OP_PENDING, pf->state)) {
++		dev_warn(&pf->pdev->dev, "Unable to configure VFs, other operation is pending.\n");
++		return -EAGAIN;
++	}
++
+ 	/* validate the request */
+ 	ret = i40e_validate_vf(pf, vf_id);
+ 	if (ret)
+@@ -3967,11 +3972,6 @@ int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
  		goto error_param;
  	}
  
+-	if (test_and_set_bit(__I40E_VIRTCHNL_OP_PENDING, pf->state)) {
+-		dev_warn(&pf->pdev->dev, "Unable to configure VFs, other operation is pending.\n");
+-		return -EAGAIN;
+-	}
+-
+ 	if (is_multicast_ether_addr(mac)) {
+ 		dev_err(&pf->pdev->dev,
+ 			"Invalid Ethernet address %pM for VF %d\n", mac, vf_id);
 -- 
 2.21.0
 
