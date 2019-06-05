@@ -2,77 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44ED836381
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A1D536387
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfFESob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 14:44:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:37998 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbfFESob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 14:44:31 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2147215104E6D;
-        Wed,  5 Jun 2019 11:44:30 -0700 (PDT)
-Date:   Wed, 05 Jun 2019 11:44:29 -0700 (PDT)
-Message-Id: <20190605.114429.1672040440449676386.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        richardcochran@gmail.com, john.stultz@linaro.org,
-        tglx@linutronix.de, sboyd@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA
- driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
-References: <20190604170756.14338-1-olteanv@gmail.com>
-        <20190604.202258.1443410652869724565.davem@davemloft.net>
-        <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Jun 2019 11:44:30 -0700 (PDT)
+        id S1726461AbfFESrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 14:47:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58926 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725950AbfFESrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 14:47:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=la0R5ezIHlgwQHPGw+iIQ0xWeX72WN8h/IOAyDQTieU=; b=2fcLxo0Oder1V17d5Cd5ZWrfEA
+        TXauDjbQ9HgdPLX7dp8yZFPaCbn1IltKlRg3bq/+HhPXP8MpxhnPDrdxDJKpYAAmNffBavtrjlFfc
+        dFOglStCudIE6WCLd8hl546drhKGeThsDAskX8cDOiMCiaKXXktsCb+sHbF95VokHD2c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hYawW-0006qk-9N; Wed, 05 Jun 2019 20:47:24 +0200
+Date:   Wed, 5 Jun 2019 20:47:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: DSA with MV88E6321 and imx28
+Message-ID: <20190605184724.GB19590@lunn.ch>
+References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
+ <20190604135000.GD16951@lunn.ch>
+ <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
+ <20190605122404.GH16951@lunn.ch>
+ <414bd616-9383-073d-b3f3-6b6138c8b163@eks-engel.de>
+ <20190605133102.GF19627@lunn.ch>
+ <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Wed, 5 Jun 2019 12:13:59 +0300
+> I removed all phy-handle for the internal ports and in the mdio part 
+> is only port 2 and 6 by now. But the Serdes ports are still not be
+> recognized. So maybe there is still something wrong?
 
-> On Wed, 5 Jun 2019 at 06:23, David Miller <davem@davemloft.net> wrote:
->>
->> From: Vladimir Oltean <olteanv@gmail.com>
->> Date: Tue,  4 Jun 2019 20:07:39 +0300
->>
->> > This patchset adds the following:
->> >
->> >  - A timecounter/cyclecounter based PHC for the free-running
->> >    timestamping clock of this switch.
->> >
->> >  - A state machine implemented in the DSA tagger for SJA1105, which
->> >    keeps track of metadata follow-up Ethernet frames (the switch's way
->> >    of transmitting RX timestamps).
->>
->> This series doesn't apply cleanly to net-next, please respin.
->>
->> Thank you.
-> 
-> Hi Dave,
-> 
-> It is conflicting because net-next at the moment lacks this patch that
-> I submitted to net:
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=e8d67fa5696e2fcaf956dae36d11e6eff5246101
-> What would you like me to do: resubmit after you merge net into
-> net-next, add the above patch to this series (which you'll have to
-> skip upon the next merge), or you can just cherry-pick it and then the
-> series will apply?
+What do you mean by SERDES? Do you mean they are connected to an SFP
+cage? If so, you need to add an SFP node. Take a look at
+vf610-zii-dev-rev-c.dts for an example.
 
-So let me bring this series back to state "Under Review" and I'll apply it
-after I next merge net into net-next.
-
-Thanks for letting me know.
+	Andrew
