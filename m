@@ -2,182 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A31C635882
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:28:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA57358A3
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfFEI2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 04:28:13 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:34148 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726554AbfFEI2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 04:28:13 -0400
-Received: by mail-ed1-f68.google.com with SMTP id c26so4596383edt.1
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 01:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M5BJY7mKfMEZc55BPbrjce9iYBalQVczOu+KzN18nxE=;
-        b=pYBWaZUkG/Qbcp1qBwraHMm1LXZFjb9N6ViH7nxpfhVKY7MP2ky3st/5f/1tfmr1Ur
-         g+wss28ICA73VlnVOVoMgoykwazJdAQWme97lY8wskuWpumN1JVG/lqfVwYMAxl35tET
-         kzVt3clHhg2bkb5OS0syMmBShOXOj2deuxk6HfqqZ0CDfADp5y2Ig67jIq9ALZ0Fc+xe
-         M++qk6720r8t1G1qUV/XwvvYYZUIph9q5jt0HUz98OI2KIr+tauFMd0TJVutqci7UcoK
-         sgN6w0XuzpDVyQ7UZ9Sawc7yn90mR2z93kqrRAHgF0QKFlFat8S8vIo6lRVdkkiUVxno
-         4fJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M5BJY7mKfMEZc55BPbrjce9iYBalQVczOu+KzN18nxE=;
-        b=rA2NYBWocBQPtSfP1bCghWHD60SZ5QfCv84RYQufzIzSaHBAjw2Ta+AFkMnXBZq4dN
-         M1JWzwOa94ljGkUW/AuJFPgn7GRdyeLORne8qbkRet4HBAelhg/9VH+mFxpWTWcSd2L4
-         dP05zsp4HLqsK/ovuYJ5D47GAgrOg2c/c+aHY3wkvZpxpkzGGjvjNKtlrTjQev4fokLv
-         gWUoKTCFZGTW1Y3GMJf5zKSWqvmwdXg+XP7I3UynqkqrIgHOjGj1R1mvBclXRlN65jYG
-         PIqKLWlWrmu/dkyHpAsxi3BmKBzRDC3/hlbL5ugyXnufBXxmef9XAmMt6VTRH0g2fpdN
-         ox1w==
-X-Gm-Message-State: APjAAAU+n1se2+3REzfRu79Z05aSqTOLYFKTzRmTsPzb3K9FEgynsado
-        Bd3cLIMFs17QwD5HcC75lpoUJXZs2UYYBs97hHs=
-X-Google-Smtp-Source: APXvYqwnoS0V9b7YkTGQ/2lfZs0DZRmQ3WUaPj1PbPXnFqsxSH7fS6qoUp7CDHlaRLeu6JQi/zkrzRZRm+8uOcILDC0=
-X-Received: by 2002:a50:c985:: with SMTP id w5mr39607934edh.140.1559723290952;
- Wed, 05 Jun 2019 01:28:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <CA+h21hrJPAoieooUKY=dBxoteJ32DfAXHYtfm0rVi25g9gKuxg@mail.gmail.com>
- <20190604211221.GW19627@lunn.ch> <CA+h21hrqsH9FYtTOrCV+Bb0YANQvSnW9Uq=SoS7AJv9Wcw3A3w@mail.gmail.com>
- <31cc0e5e-810c-86ea-7766-ec37008c5f9d@gmail.com> <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
- <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com>
- <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk> <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
- <20190604225919.xpkykt2z3a7utiet@shell.armlinux.org.uk> <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
- <20190604232433.4v2qqxyihqi2rmjl@shell.armlinux.org.uk> <CA+h21hpDyDLChzrqX19bU81+ss3psVesNftCqN7+7+GFkMe_-A@mail.gmail.com>
- <262dfc0e-c248-23e7-cd34-d13e104afe91@gmail.com>
-In-Reply-To: <262dfc0e-c248-23e7-cd34-d13e104afe91@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 5 Jun 2019 11:27:59 +0300
-Message-ID: <CA+h21howazOwxZ840kYKS_cCaGB6_B1f0e=2NMHY1y8zDw7iug@mail.gmail.com>
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
+        id S1726791AbfFEIfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 04:35:37 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49024 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726537AbfFEIfh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 04:35:37 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1B239C05D419;
+        Wed,  5 Jun 2019 08:35:30 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DDDE85C224;
+        Wed,  5 Jun 2019 08:35:28 +0000 (UTC)
+Message-ID: <f54d5ea4ae3a704c88f1867cd5713c06ac7930c4.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/3] indirect call wrappers: add helpers for 3
+ and 4 ways switch
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "leon@kernel.org" <leon@kernel.org>
+Date:   Wed, 05 Jun 2019 10:35:28 +0200
+In-Reply-To: <10e134ce6b8c0e2060cecf57527cc52a99d4d6a5.camel@mellanox.com>
+References: <cover.1559304330.git.pabeni@redhat.com>
+         <7dc56c32624fd102473fc66ffdda6ebfcdfe6ad0.1559304330.git.pabeni@redhat.com>
+         <1133f7e92cffb7ade5249e6d6ac0dd430549bf14.camel@mellanox.com>
+         <141f34bb8d1505783b4f939faac5223200deeb13.camel@redhat.com>
+         <10e134ce6b8c0e2060cecf57527cc52a99d4d6a5.camel@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Wed, 05 Jun 2019 08:35:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 5 Jun 2019 at 06:06, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 6/4/2019 4:46 PM, Vladimir Oltean wrote:
-> > On Wed, 5 Jun 2019 at 02:24, Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk> wrote:
-> >>
-> >> On Wed, Jun 05, 2019 at 02:03:19AM +0300, Vladimir Oltean wrote:
-> >>> On Wed, 5 Jun 2019 at 01:59, Russell King - ARM Linux admin
-> >>> <linux@armlinux.org.uk> wrote:
-> >>>>
-> >>>> On Wed, Jun 05, 2019 at 01:44:08AM +0300, Vladimir Oltean wrote:
-> >>>>> You caught me.
-> >>>>>
-> >>>>> But even ignoring the NIC case, isn't the PHY state machine
-> >>>>> inconsistent with itself? It is ok with callink phy_suspend upon
-> >>>>> ndo_stop, but it won't call phy_suspend after phy_connect, when the
-> >>>>> netdev is implicitly stopped?
-> >>>>
-> >>>> The PHY state machine isn't inconsistent with itself, but it does
-> >>>> have strange behaviour.
-> >>>>
-> >>>> When the PHY is attached, the PHY is resumed and the state machine
-> >>>> is in PHY_READY state.  If it goes through a start/stop cycle, the
-> >>>> state machine transitions to PHY_HALTED and attempts to place the
-> >>>> PHY into a low power state.  So the PHY state is consistent with
-> >>>> the state machine state (we don't end up in the same state but with
-> >>>> the PHY in a different state.)
-> >>>>
-> >>>> What we do have is a difference between the PHY state (and state
-> >>>> machine state) between the boot scenario, and the interface up/down
-> >>>> scenario, the latter behaviour having been introduced by a commit
-> >>>> back in 2013:
-> >>>>
-> >>>>     net: phy: suspend phydev when going to HALTED
-> >>>>
-> >>>>     When phydev is going to HALTED state, we can try to suspend it to
-> >>>>     safe more power. phy_suspend helper will check if PHY can be suspended,
-> >>>>     so just call it when entering HALTED state.
-> >>>>
-> >>>> --
-> >>>> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> >>>> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> >>>> According to speedtest.net: 11.9Mbps down 500kbps up
-> >>>
-> >>> I am really not into the PHYLIB internals, but basically what you're
-> >>> telling me is that running "ip link set dev eth0 down" is a
-> >>> stronger/more imperative condition than not running "ip link set dev
-> >>> eth0 up"... Does it also suspend the PHY if I put the interface down
-> >>> while it was already down?
-> >>
-> >> No - but that has nothing to do with phylib internals, more to do with
-> >> the higher levels of networking.  ndo_stop() will not be called unless
-> >> ndo_open() has already been called.  In other words, setting an already
-> >> down device down via "ip link set dev eth0 down" is a no-op.
-> >>
-> >> So, let's a common scenario.  You power up a board.  The PHY comes up
-> >> and establishes a link.  The boot loader runs, loads the kernel, which
-> >
-> > This may or may not be the case. As you pointed out a few emails back,
-> > this is a system-level issue that requires a system-level solution -
-> > so cutting the link in U-boot is not out of the question.
-> >
-> >> then boots.  Your network driver is a module, and hasn't been loaded
-> >> yet.  The link is still up.
-> >>
-> >> The modular network driver gets loaded, and initialises.  Userspace
-> >> does not bring the network device up, and the network driver does not
-> >> attach or connect to the PHY (which is actually quite common).  So,
-> >> the link is still up.
-> >>
-> >> The modular PHY driver gets loaded, and binds to the PHY.  The link
-> >> is still up.
-> >
-> > I would rather say, 'even if the link is not up, Linux brings it up
-> > (possibly prematurely) via phy_resume'.
-> > But let's consider the case where the link *was* up. The general idea
-> > is 'implement your workarounds in whatever other way, that link is
-> > welcome!'.
->
-> With the systems that I work with, we have enforced the following
-> behavior to happen: the boot loader and kernel only turn on what they
-> needs, at the time they need it, and nothing more, once done, they put
-> the blocks back into lowest power mode (clock and power gated if
-> available). So yes, there are multiple link re-negotiations throughput
-> the boot process, but when there is no device bound to a driver the
-> system conserves power by default which is deemed a higher goal than
-> speed. Your mileage may vary of course.
->
-> There is not exactly a simple way of enforcing that kind (or another
-> kind for that matter) of policy kernel wide, so it's unfortunately up to
-> the driver writer to propose something that is deemed sensible.
->
-> We could however, extend existing tools like iproute2 to offer the
-> ability to control whether the PHY should be completely powered off, in
-> a low power state allowing WoL, or remain UP when the network device is
-> brought down. That would not cover the case that Russell explained, but
-> it would be another monkey wrench you can throw at the system.
-> --
-> Florian
+On Mon, 2019-06-03 at 22:27 +0000, Saeed Mahameed wrote:
+> On Mon, 2019-06-03 at 11:51 +0200, Paolo Abeni wrote:
+> > On Fri, 2019-05-31 at 18:30 +0000, Saeed Mahameed wrote:
+> > > On Fri, 2019-05-31 at 14:53 +0200, Paolo Abeni wrote:
+> > > > Experimental results[1] has shown that resorting to several
+> > > > branches
+> > > > and a direct-call is faster than indirect call via retpoline,
+> > > > even
+> > > > when the number of added branches go up 5.
+> > > > 
+> > > > This change adds two additional helpers, to cope with indirect
+> > > > calls
+> > > > with up to 4 available direct call option. We will use them
+> > > > in the next patch.
+> > > > 
+> > > > [1] 
+> > > > https://linuxplumbersconf.org/event/2/contributions/99/attachments/98/117/lpc18_paper_af_xdp_perf-v2.pdf
+> > > > 
+> > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > > ---
+> > > >  include/linux/indirect_call_wrapper.h | 12 ++++++++++++
+> > > >  1 file changed, 12 insertions(+)
+> > > > 
+> > > > diff --git a/include/linux/indirect_call_wrapper.h
+> > > > b/include/linux/indirect_call_wrapper.h
+> > > > index 00d7e8e919c6..7c4cac87eaf7 100644
+> > > > --- a/include/linux/indirect_call_wrapper.h
+> > > > +++ b/include/linux/indirect_call_wrapper.h
+> > > > @@ -23,6 +23,16 @@
+> > > >  		likely(f == f2) ? f2(__VA_ARGS__) :			
+> > > > \
+> > > >  				  INDIRECT_CALL_1(f, f1, __VA_ARGS__);	
+> > > > \
+> > > >  	})
+> > > > +#define INDIRECT_CALL_3(f, f3, f2, f1, ...)			
+> > > > 	
+> > > > \
+> > > > +	({								
+> > > > \
+> > > > +		likely(f == f3) ? f3(__VA_ARGS__) :			
+> > > > \
+> > > > +				  INDIRECT_CALL_2(f, f2, f1,
+> > > > __VA_ARGS__); \
+> > > > +	})
+> > > > +#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...)			
+> > > > 	\
+> > > > +	({								
+> > > > \
+> > > > +		likely(f == f4) ? f4(__VA_ARGS__) :		
+> > > 
+> > > do we really want "likely" here ? in our cases there is no
+> > > preference
+> > > on whuch fN is going to have the top priority, all of them are
+> > > equally
+> > > important and statically configured and guranteed to not change on
+> > > data
+> > > path .. 
+> > 
+> > I was a little undecided about that, too. 'likely()' is there mainly
+> > for simmetry with the already existing _1 and _2 variants. In such
+> > macros the branch prediction hint represent a real priority of the
+> > available choices.
+> > 
+> 
+> For macro _1 it make sense to have the likely keyword but for _2 it
+> doesn't, by looking at most of the usecases of INDIRECT_CALL_2, they
+> seem to be all around improving tcp/udp related indirection calls in
+> the protocol stack, and they seem to prefer tcp over udp. But IMHO at
+> least for the above usecase I think the likely keyword is being misused
+> here and should be remove from all INDIRECT_CALL_N where N > 1;
 
-Hi Florian,
+I experimented a bit with gcc 8.3.1 and some BP hint variations:
 
-By going to HALTED on phy_stop, the system already achieves what I am
-looking after - although maybe it is an unintended consequence for
-you.
-I'm only trying to make an argument for removing the phy_resume from
-phy_attach_direct now. If there was a link, and it doesn't need
-re-negociation, fine, use it in phy_start, but at most leave U-boot to
-put that link down and don't force it up prior to the netdev's
-ndo_open.
+* with current macros we have single test for fN and an incresing
+number of conditional jumps and tests for the following functions, as
+the generated code looks somehow alike:
 
-Regards,
--Vladimir
+	cmp f4, function_ptr
+	jne test_f3
+	call f4
+post_call:
+	// ...
+
+	// ...
+test_f3:
+	cmp f3, function_ptr
+	jne test_f2
+	call f3
+	jmp post_call
+
+test_f2:
+	cmp f2, function_ptr
+	//...
+
+* keeping 'likely' only on INDIRECT_CALL_1 we get a conditinal jump for
+fN and the number of conditional jumps and tests grows for the next
+functions, as the generated code looks somehow alike:
+
+	cmp f4, function_ptr
+	je call_f4
+	cmp f3, function_ptr
+	je call_f3
+	//...
+	cmp f1, function_ptr
+	jne indirect_call
+	call f1
+post_call:
+	// ...
+
+	// ...
+call_f4:
+	call f4
+	jmp post_call
+call_f3:
+	call f3
+	jmp post_call
+	// ...
+
+
+* without any BP hints, is quite alike the above, except for the last
+test, the indirect call don't need an additional jump: 
+
+	cmp f4, function_ptr
+	je call_f4
+	cmp f3, function_ptr
+	je call_f3
+	//...
+	cmp f1, function_ptr
+	je call_f1
+	call retpoline_helper
+
+I think the first option should be overall better then the 2nd. The 3rd
+one is the worse.
+
+> In any case, just make sure to use the order i suggested in next
+> patch with: MLX5_RX_INDIRECT_CALL_LIST
+
+Sure! will do in next iteration, as soon as the above topic is settled.
+
+Thanks!
+
+Paolo
+
+
+
