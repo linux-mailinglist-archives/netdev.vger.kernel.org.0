@@ -2,95 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1243551D
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3255B3551F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbfFECGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 22:06:03 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:44680 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbfFECGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:06:02 -0400
-Received: by mail-pl1-f193.google.com with SMTP id c5so9080709pll.11
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 19:06:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=m+rRMCjHR6VZHbkoJXjJIdErttpII88SWS9j+suw/xE=;
-        b=Oy1Lew1b8vz4WxkjYnYSeqbhMRM/MIrMVNb/HiUEgiL7FNZkZHbSVJ6bHMVHxFOop9
-         +WSQeyMFHkCTXE0hzyGfiEFhNH9W3co5nqa35yX3aGi1wrmU8lwYzpj9sexOArLcchxG
-         fZ+WdtmQB1mFnftRyevGCuWxexwYExe4/1iYQME/8HkZ8FbTlEyIsQDWd8Kos6z+9jcD
-         v1+GGa1rovW32EM2VHCvzD8rHgW81n0RROAniE/76gdStcSDxUQnr6t5ZxCisLuWuCyf
-         HK7gsOfLjz5d6oyhXh3t1YRSihIUGynMn0WBFeMtpu/oobJUXXMwzpHyG/PAheiyJ2Lc
-         FOWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=m+rRMCjHR6VZHbkoJXjJIdErttpII88SWS9j+suw/xE=;
-        b=OImbAyumvbm3ZxoclDgiIg3XmN45CXmSlvgAXAqEI2uj/+29EGe5mB0SvLsP4qT6/U
-         Gz2OH7UqStcmisIpEDfE8/7I8dYDjCWsxQUpHpCOchG8lk6cOzzwfipkt7ZrXZUfRxEI
-         VfhkcZYGmPP+X1gIZaX9JVezIEIdNM4UYFxtWpUNBCNuQ05jg43HqOVcKH+9m10zaKub
-         bCzdJndwH4hGZK6KUnaUwVToAgwYPHk6R1lR2jUVKlS+g9bc9iXKZCC8RcCUcrms+aDK
-         1vGY1LvstUX4Vtmy1OpDO6NXe5E9Cjbtf9c3cJRpE8FlzoplSMHrLdEyF5KeQZHJlB0d
-         yFKQ==
-X-Gm-Message-State: APjAAAWDUm9MZgFLh2Uda5E+ZhaxNa6MaPkOdm8lhL59iOGMbajZj2Cn
-        IrH44R1AqdjAn5nUQv0QW3U=
-X-Google-Smtp-Source: APXvYqw74Cp9wOetU/7TLy8+OjvGSrmMGghsEmSC7yRZRxUytkUzYFG8fhmCUmKZbJ3kW0PCg/GzWQ==
-X-Received: by 2002:a17:902:6bc8:: with SMTP id m8mr39216503plt.227.1559700362013;
-        Tue, 04 Jun 2019 19:06:02 -0700 (PDT)
-Received: from [172.27.227.186] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id x128sm22173486pfd.186.2019.06.04.19.05.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 19:06:00 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 4/7] ipv6: Plumb support for nexthop object in
- a fib6_info
-To:     Martin Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>
-References: <5263d3ae-1865-d935-cb03-f6dfd4604d15@gmail.com>
- <CAEA6p_CixzdRNUa46YZusFg-37MFAVqQ8D09rxVU5Nja6gO1SA@mail.gmail.com>
- <4cdcdf65-4d34-603e-cb21-d649b399d760@gmail.com>
- <20190604005840.tiful44xo34lpf6d@kafai-mbp.dhcp.thefacebook.com>
- <453565b0-d08a-be96-3cd7-5608d4c21541@gmail.com>
- <20190604052929.4mlxa5sswm46mwrq@kafai-mbp.dhcp.thefacebook.com>
- <c7fb6999-16a2-001d-8e9a-ac44ed9e9fa2@gmail.com>
- <20190604210619.kq5jnkinak7izn2u@kafai-mbp.dhcp.thefacebook.com>
- <0c307c47-4cde-1e55-8168-356b2ef30298@gmail.com>
- <CAEA6p_AAP10bXOQPfOqY253H7BQYgksP_iDXDi-RKguLcKh0SA@mail.gmail.com>
- <20190605003903.zxxrebpzq2rfzy52@kafai-mbp.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a5838766-529c-75dd-5793-3abe4e56ed1c@gmail.com>
-Date:   Tue, 4 Jun 2019 20:05:58 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726528AbfFECHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 22:07:47 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17667 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726293AbfFECHr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jun 2019 22:07:47 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id A6FC6F678460A6BB1D76;
+        Wed,  5 Jun 2019 10:07:44 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Wed, 5 Jun 2019
+ 10:07:40 +0800
+Subject: Re: [PATCH net] tcp: avoid creating multiple req socks with the same
+ tuples
+To:     Eric Dumazet <edumazet@google.com>
+References: <20190604145543.61624-1-maowenan@huawei.com>
+ <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <4d406802-d8a2-2d92-90c3-d56b8a23c2b2@huawei.com>
+Date:   Wed, 5 Jun 2019 10:06:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-In-Reply-To: <20190605003903.zxxrebpzq2rfzy52@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/4/19 6:39 PM, Martin Lau wrote:
-> IMO, ip6_create_rt_rcu(), which returns untracked rt, was a mistake
-> and removing it has been overdue.  Tracking down the unregister dev
-> bug is not easy.
 
-I must be missing something because I don't have the foggiest idea why
-you are barking up this tree.
 
-If code calls a function that returns a dst_entry with a refcount taken,
-that code is responsible for releasing it. Using a pcpu cached dst
-versus a new one in no way tells you who took the dst and bumped the
-refcnt on the netdev. Either way the dst refcount is bumped. Tracking
-netdev refcnt is the only way to methodically figure it out.
+On 2019/6/4 23:24, Eric Dumazet wrote:
+> On Tue, Jun 4, 2019 at 7:47 AM Mao Wenan <maowenan@huawei.com> wrote:
+>>
+>> There is one issue about bonding mode BOND_MODE_BROADCAST, and
+>> two slaves with diffierent affinity, so packets will be handled
+>> by different cpu. These are two pre-conditions in this case.
+>>
+>> When two slaves receive the same syn packets at the same time,
+>> two request sock(reqsk) will be created if below situation happens:
+>> 1. syn1 arrived tcp_conn_request, create reqsk1 and have not yet called
+>> inet_csk_reqsk_queue_hash_add.
+>> 2. syn2 arrived tcp_v4_rcv, it goes to tcp_conn_request and create reqsk2
+>> because it can't find reqsk1 in the __inet_lookup_skb.
+>>
+>> Then reqsk1 and reqsk2 are added to establish hash table, and two synack with different
+>> seq(seq1 and seq2) are sent to client, then tcp ack arrived and will be
+>> processed in tcp_v4_rcv and tcp_check_req, if __inet_lookup_skb find the reqsk2, and
+>> tcp ack packet is ack_seq is seq1, it will be failed after checking:
+>> TCP_SKB_CB(skb)->ack_seq != tcp_rsk(req)->snt_isn + 1)
+>> and then tcp rst will be sent to client and close the connection.
+>>
+>> To fix this, do lookup before calling inet_csk_reqsk_queue_hash_add
+>> to add reqsk2 to hash table, if it finds the existed reqsk1 with the same five tuples,
+>> it removes reqsk2 and does not send synack to client.
+>>
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+>> ---
+>>  net/ipv4/tcp_input.c | 9 +++++++++
+>>  1 file changed, 9 insertions(+)
+>>
+>> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+>> index 08a477e74cf3..c75eeb1fe098 100644
+>> --- a/net/ipv4/tcp_input.c
+>> +++ b/net/ipv4/tcp_input.c
+>> @@ -6569,6 +6569,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>>                 bh_unlock_sock(fastopen_sk);
+>>                 sock_put(fastopen_sk);
+>>         } else {
+>> +               struct sock *sk1 = req_to_sk(req);
+>> +               struct sock *sk2 = NULL;
+>> +               sk2 = __inet_lookup_established(sock_net(sk1), &tcp_hashinfo,
+>> +                                                                       sk1->sk_daddr, sk1->sk_dport,
+>> +                                                                       sk1->sk_rcv_saddr, sk1->sk_num,
+>> +                                                                       inet_iif(skb),inet_sdif(skb));
+>> +               if (sk2 != NULL)
+>> +                       goto drop_and_release;
+>> +
+>>                 tcp_rsk(req)->tfo_listener = false;
+>>                 if (!want_cookie)
+>>                         inet_csk_reqsk_queue_hash_add(sk, req,
+> 
+> This issue has been discussed last year.
+Can you share discussion information?
 
-What am I overlooking here?
+> 
+> I am afraid your patch does not solve all races.
+> 
+> The lookup you add is lockless, so this is racy.
+it's right, it has already in race region.
+> 
+> Really the only way to solve this is to make sure that _when_ the
+> bucket lock is held,
+> we do not insert a request socket if the 4-tuple is already in the
+> chain (probably in inet_ehash_insert())
+> 
+
+put lookup code in spin_lock() of inet_ehash_insert(), is it ok like this?
+will it affect performance?
+
+in inet_ehash_insert():
+...
+        spin_lock(lock);
++       reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
++                                                       sk->sk_daddr, sk->sk_dport,
++                                                       sk->sk_rcv_saddr, sk->sk_num,
++                                                       sk_bound_dev_if, sk_bound_dev_if);
++       if (reqsk) {
++               spin_unlock(lock);
++               return ret;
++       }
++
+        if (osk) {
+                WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+                ret = sk_nulls_del_node_init_rcu(osk);
+	}
+	if (ret)
+		__sk_nulls_add_node_rcu(sk, list);
+	spin_unlock(lock);
+...
+
+> This needs more tricky changes than your patch.
+> 
+> .
+> 
+
