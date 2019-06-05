@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B123E356FA
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 08:30:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF1635726
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 08:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbfFEGaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 02:30:25 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53423 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726086AbfFEGaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 02:30:25 -0400
-Received: by mail-wm1-f67.google.com with SMTP id d17so974308wmb.3
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 23:30:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kurgYOyX3jnQd2CwmBmUOfCkz5QArXnn37OgMbFPaKg=;
-        b=Fvjha0kmfYiRgZrsNyxnpBbn5W31rfj8yDFdyEFMHL0EbHhU/vDq8YueT6IJkd6jCY
-         6d/z6kPsxX/1a6+CRzDJqbaz0zLlYZgyT3s9ArV2AflhLUbhHUC682wMUF+ZHjqd5XWz
-         9aUtyGJlHJbs2R+h7lK97A8MvTBhe0T+pAP7XrP+xgT5myJorbYkB9/LjgTuE7oPf87k
-         1jA/Tb8qAF7ry/YyPBWNL9HPE04jGTtyUiEO/v1iLIXCivQ07LYnrCpuoVn70E/IGBZI
-         mc92RLpQf9XwBv6Gw9/HIr9WvyerCyJk/XW3BL0FlWRxAeEbS7u34yZelKV0QSHXKeQh
-         UwMw==
+        id S1726530AbfFEGrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 02:47:02 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:38806 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726050AbfFEGrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 02:47:01 -0400
+Received: by mail-io1-f72.google.com with SMTP id h4so9103716iol.5
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 23:47:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kurgYOyX3jnQd2CwmBmUOfCkz5QArXnn37OgMbFPaKg=;
-        b=aydvQdSpbhchz9rifCUNVkuwdSp624IQWpw8D9gmXyagp9Lv+UVRP9MrBRSGy20ouG
-         D5/cnGkWUlmEcRcy0yvl2aapS70R6fYUnfxJUK91n7EdNAHsrVeCdY282xRW4jZliGmk
-         bQytLRTa7R3t9WEsEI2GxQaAXu0n5jEcE+R4Uc48qIlYEp6Gm3Kv6/jXViuEXvNQF71n
-         jKDGQbAhIMS/EndY1Iz+7mNpahhi/LXRUk+nOo3P9MoGDxEJw7patDJEsXEb6PAvKCfy
-         Ft5UH0lBiJE+gY7WDcWPbmK/nMDi5UJKzf4iS92hdQZvgdfC0KP9gCbMVpIDGfEnswJh
-         botQ==
-X-Gm-Message-State: APjAAAW3GTz4wlMdXDWDUIFCKqR85forG5sK/iBSGn41+N2TTdLg74J+
-        Y/sfGyUNfsJ5fi2mo0pjhKqH9g==
-X-Google-Smtp-Source: APXvYqyjKByjjy3SspperzVdyjGyRM2XvOWXjjDArECetwIHjbybJahsktcR170enj1V59FSIT5CgQ==
-X-Received: by 2002:a1c:e715:: with SMTP id e21mr9291935wmh.16.1559716223192;
-        Tue, 04 Jun 2019 23:30:23 -0700 (PDT)
-Received: from localhost (ip-62-245-91-87.net.upcbroadband.cz. [62.245.91.87])
-        by smtp.gmail.com with ESMTPSA id t6sm12174719wmb.29.2019.06.04.23.30.22
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 04 Jun 2019 23:30:22 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 08:30:21 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
-        petrm@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
- physical hardware clock operations
-Message-ID: <20190605063021.GC3202@nanopsycho>
-References: <20190603121244.3398-1-idosch@idosch.org>
- <20190603121244.3398-8-idosch@idosch.org>
- <20190604142819.cml2tbkmcj2mvkpl@localhost>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=0DTPebv5NG8S97eb6NYfGtH6s2XhZbJcgpOSN9G3WRc=;
+        b=fKAak/vqgbACwxPEZRjJU+Vaa53PKwleq18KKhwmfhqnLJQZo02K0Ds4kSoSOXZG2Q
+         fjTLdc/sBo79c710QycFFq4tc7VxNdGEGJh2IaqXsNPnGNaUPokgP2Jm5I5u26m9iXbh
+         59g4JxQWfUQRBg24jS19mYp2gRnIbfxTCcxPsfxqb6gLSOOPyqBAUopru+/5IJW/6KvY
+         CESOtCqvdaPjkSJkrSpiOKukGCDhapACv4tClTwtP92gtiQL60ZS+d6VI/02ha8oJLYB
+         yZfzdAwcbmKBngoN3ZaUl2Qj6p1RGS1QxVl/REKdr0jvfOML6vUX1M2KRo9vdgUmcLVo
+         oDJw==
+X-Gm-Message-State: APjAAAXYbWCk5BnjlsaOpJh+pglRBs1wFGY5Wp1jWPTCd1iG1bPuKmKu
+        3T858afYX72iKb/69Dk1gFYjxzb1aBU5zL+YQ9w4KH0DfMwE
+X-Google-Smtp-Source: APXvYqxcRwKznu5s/WF30ioOt1OAX+adyD0fCRP3X69hk9R87NnszpPYpCAzlAXH7mBu0a2hct/HG73f5mTEx1ANoDYrvg/aI0Iv
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190604142819.cml2tbkmcj2mvkpl@localhost>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Received: by 2002:a24:2b8f:: with SMTP id h137mr7710740ita.162.1559717221001;
+ Tue, 04 Jun 2019 23:47:01 -0700 (PDT)
+Date:   Tue, 04 Jun 2019 23:47:00 -0700
+In-Reply-To: <00000000000097025d058a7fd785@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e878a9058a8df684@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in css_task_iter_advance
+From:   syzbot <syzbot+9343b7623bc03dc680c1@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        daniel@iogearbox.net, hannes@cmpxchg.org, kafai@fb.com,
+        linux-kernel@vger.kernel.org, lizefan@huawei.com,
+        netdev@vger.kernel.org, oleg@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jun 04, 2019 at 04:28:19PM CEST, richardcochran@gmail.com wrote:
->On Mon, Jun 03, 2019 at 03:12:42PM +0300, Ido Schimmel wrote:
->
->> +static int
->> +mlxsw_sp1_ptp_update_phc_settime(struct mlxsw_sp_ptp_clock *clock, u64 nsec)
->
->Six words ^^^
+syzbot has bisected this bug to:
 
-It is aligned with the rest of mlxsw code.
+commit b636fd38dc40113f853337a7d2a6885ad23b8811
+Author: Tejun Heo <tj@kernel.org>
+Date:   Fri May 31 17:38:58 2019 +0000
+
+     cgroup: Implement css_task_iter_skip()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1256fcd2a00000
+start commit:   56b697c6 Add linux-next specific files for 20190604
+git tree:       linux-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1156fcd2a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1656fcd2a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4248d6bc70076f7d
+dashboard link: https://syzkaller.appspot.com/bug?extid=9343b7623bc03dc680c1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=102ab292a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15f0e27ca00000
+
+Reported-by: syzbot+9343b7623bc03dc680c1@syzkaller.appspotmail.com
+Fixes: b636fd38dc40 ("cgroup: Implement css_task_iter_skip()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
