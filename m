@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 058DF3656B
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F051D36569
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfFEUYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:24:12 -0400
-Received: from mga18.intel.com ([134.134.136.126]:4309 "EHLO mga18.intel.com"
+        id S1726789AbfFEUYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:24:01 -0400
+Received: from mga18.intel.com ([134.134.136.126]:4314 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726631AbfFEUXr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 16:23:47 -0400
+        id S1726729AbfFEUXt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 16:23:49 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
@@ -20,11 +20,13 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 05 Jun 2019 13:23:45 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 12/15] ice: Use LLDP ethertype define ETH_P_LLDP
-Date:   Wed,  5 Jun 2019 13:23:55 -0700
-Message-Id: <20190605202358.2767-13-jeffrey.t.kirsher@intel.com>
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 13/15] net: hns3: Use LLDP ethertype define ETH_P_LLDP
+Date:   Wed,  5 Jun 2019 13:23:56 -0700
+Message-Id: <20190605202358.2767-14-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
 References: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
@@ -35,36 +37,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using a local define for the LLDP ethertype, use the kernel
-define ETH_P_LLDP.
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
+Remove references to HCLGE_MAC_ETHERTYPE_LLDP and use ETH_P_LLDP instead.
+
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 1 -
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 35c5ff910afa..a19f5920733b 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2345,8 +2345,6 @@ ice_vsi_add_rem_eth_mac(struct ice_vsi *vsi, bool add_rule)
- 	ice_free_fltr_list(&pf->pdev->dev, &tmp_add_list);
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 61cb10dc2b9b..7a14d806744c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -677,7 +677,6 @@ struct hclge_umv_spc_alc_cmd {
+ #define HCLGE_MAC_MGR_MASK_VLAN_B		BIT(0)
+ #define HCLGE_MAC_MGR_MASK_MAC_B		BIT(1)
+ #define HCLGE_MAC_MGR_MASK_ETHERTYPE_B		BIT(2)
+-#define HCLGE_MAC_ETHERTYPE_LLDP		0x88cc
  
--#define ICE_ETH_P_LLDP	0x88CC
--
- /**
-  * ice_cfg_sw_lldp - Config switch rules for LLDP packet handling
-  * @vsi: the VSI being configured
-@@ -2366,7 +2364,7 @@ void ice_cfg_sw_lldp(struct ice_vsi *vsi, bool tx, bool create)
- 
- 	list->fltr_info.lkup_type = ICE_SW_LKUP_ETHERTYPE;
- 	list->fltr_info.vsi_handle = vsi->idx;
--	list->fltr_info.l_data.ethertype_mac.ethertype = ICE_ETH_P_LLDP;
-+	list->fltr_info.l_data.ethertype_mac.ethertype = ETH_P_LLDP;
- 
- 	if (tx) {
- 		list->fltr_info.fltr_act = ICE_DROP_PACKET;
+ struct hclge_mac_mgr_tbl_entry_cmd {
+ 	u8      flags;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 35d2a454bf66..cda1b3d096cd 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -292,7 +292,7 @@ static const struct hclge_comm_stats_str g_mac_stats_string[] = {
+ static const struct hclge_mac_mgr_tbl_entry_cmd hclge_mgr_table[] = {
+ 	{
+ 		.flags = HCLGE_MAC_MGR_MASK_VLAN_B,
+-		.ethter_type = cpu_to_le16(HCLGE_MAC_ETHERTYPE_LLDP),
++		.ethter_type = cpu_to_le16(ETH_P_LLDP),
+ 		.mac_addr_hi32 = cpu_to_le32(htonl(0x0180C200)),
+ 		.mac_addr_lo16 = cpu_to_le16(htons(0x000E)),
+ 		.i_port_bitmap = 0x1,
 -- 
 2.21.0
 
