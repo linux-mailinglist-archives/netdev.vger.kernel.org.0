@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F30362E8
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 19:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0764D362F9
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 19:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfFERpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 13:45:51 -0400
-Received: from mail-pg1-f175.google.com ([209.85.215.175]:45974 "EHLO
-        mail-pg1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbfFERpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 13:45:51 -0400
-Received: by mail-pg1-f175.google.com with SMTP id w34so12769658pga.12;
-        Wed, 05 Jun 2019 10:45:51 -0700 (PDT)
+        id S1726543AbfFERu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 13:50:27 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:34138 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbfFERu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 13:50:27 -0400
+Received: by mail-ed1-f65.google.com with SMTP id c26so7006333edt.1;
+        Wed, 05 Jun 2019 10:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KYW9KV6F1PtzowYTWfsmNqq6dd/6chryOsDLvsNtyTo=;
-        b=sL8inHr1zWJMoN1ayK98BtdafqYf8wYCNcQFNbzFl8NqJW6oj3f0drmAK2osJPuKsG
-         iVSu5cJx2YBZY9AcNPyHhMCltwE/iLIt8Af2UB6BJC89r+qhLtcbJFUGPaFFnCjQWgYp
-         jEzt4fnwW94T7h62EnLnRGtAuu9Zk6G7ub6t8ChMwWLkD3xu9gCOqlpv46VQdy5lz12B
-         5/n2OkcT9OtNsFlXQr8lppCWFjUrGz1hpaD1JPsRlu/5rRBwzpx4FbPfhoguIElSI6Ze
-         Ib5DKJS33FK+vLSLBPRXQgGJ/6AgO8JfPMqhftWNRHyrBU8UHpZgOqI1gk0/uVuj++R6
-         4UsQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iSoLQiJZbq8dHcU25ejXYMgL717M98Dzet05yZNBEC4=;
+        b=IkSPWEcb9lK0vrQWFLFk1f8zEUYj6D4LaQaoRypmVUM5h9FoTEkre8MDJA9t9uNYgA
+         V5h2tA9SB3s5BCt4vAvlvv7IeN0xwdr069qmsBruMW2IpGiF0E+fDu5MKSXr1iXuzT/q
+         S1vqU0xVY4WkkxKO9ZN15tGcaXXn7OmTJHl4OGkCsXDvKY1WWFdlwmzteM62RKz6QYBs
+         u0ojHCsbDjW1m08PY5dQoerlxtq71lVAvaZ8E4NtOw2qbndRK8Bh0O+RS08hWdqSl3pL
+         FWdzpnCD83/S/a/33NFRLyMoRCoAevaIkr1/cAL0XxKniSa3WKK0luCgt+8Xn0ElzP0e
+         HDrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KYW9KV6F1PtzowYTWfsmNqq6dd/6chryOsDLvsNtyTo=;
-        b=cpIxNC2CqfEwgFlgyVyB1e9MAIRxPSNHT2O3c79Xppi+wZiBbVxW9XiyCQRKPn7DO1
-         XQryOs4/LzUjAsQsZlJJtGN2VF4cVWlkMRMgRV2i6jkyHQ+hc7l35H+6CtpE32xUf+Nq
-         jnXODPCUqyvMoQVobeXVU1w5Ov+h6H68IIorCchTnpS+OFBxt6EhDCGQR1IGx9STB2gQ
-         1beZBOpQi90aHjzr4TA5SFuPo3tPwz/H0fdCgFpfDPgWE6RN3s+vEsc7DMrWOKUBYVCn
-         hWTEphoktS0rKrUwixvK0DAmStqKyHtQ4hvziFy8lO0t4Y3ZzB/YoEcBhstOFG/qmcjM
-         /1ig==
-X-Gm-Message-State: APjAAAXhJsx++bqMfOKjqJ91lUsrx81RATTZZl1oiewsZSrXO6aChqZ0
-        DpVxf6Du5r+OaLHxBejwFEY=
-X-Google-Smtp-Source: APXvYqzwc5YfCZGZcbV6OFOIE293LbKgnSaHgJ29Xl7c7xf+ElXIfPjKBkNxpPDSEeSdXjTu5TjcxA==
-X-Received: by 2002:a62:1412:: with SMTP id 18mr14544166pfu.135.1559756750934;
-        Wed, 05 Jun 2019 10:45:50 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id l1sm21086073pgj.67.2019.06.05.10.45.49
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 05 Jun 2019 10:45:50 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 10:45:47 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iSoLQiJZbq8dHcU25ejXYMgL717M98Dzet05yZNBEC4=;
+        b=UgxeWGNGH2r8kJSNoTBfzCK08NZRKKBIDj9fs6xkI9QHbFHbylWo7jQFFJmIfi4VU5
+         aYFAJvAPO9IfRxYLBbA7BXF0XJs4c+KwkLH90NRU1S9CvQIk/3p0QbshKLv53NuLeMZt
+         9uH779G2PccIQ093BUPFaNfFDlQOJ4M8LI2YUTRkeiXk3xuIWCV09JgPu0mC5rzEJY5Z
+         MkKi03FbwL/SG4Hnd0Y/Jgh4q8DE+kmqm36lXGONpJ5FhoURCBy7iivig7+Fo5ylAyxF
+         ybwdnTlEcahOveW28pdYtxtjCF80Jdw4R/pNUfQJF3vJBpxHJEcq1OayW7DgCp915K7T
+         WfJg==
+X-Gm-Message-State: APjAAAXkpE0pe6uhxxWJqKjE3jwtj24TdoE8H51B8NSlZyBRPdThti3d
+        vU/7w9f4YdxsduDyBYMgf/E7v+r8eZE/IMTuepo=
+X-Google-Smtp-Source: APXvYqxEeVMukTXCt/WHBCYPweUbBJwy2Is7cZq2g5+bjr+Xi2N2XRz/7kmUH407ao+FnY27WfLdei6BaKCBQ1Czw9o=
+X-Received: by 2002:a50:fd0a:: with SMTP id i10mr43800313eds.117.1559757025835;
+ Wed, 05 Jun 2019 10:50:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190604170756.14338-1-olteanv@gmail.com> <20190604.202258.1443410652869724565.davem@davemloft.net>
+ <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
+ <CA+h21hrJYm4GLn+LpJ623_dpgxE2z-k3xTMD=z1QQ9WqXg7zrQ@mail.gmail.com> <20190605174547.b4rwbfrzjqzujxno@localhost>
+In-Reply-To: <20190605174547.b4rwbfrzjqzujxno@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 5 Jun 2019 20:50:15 +0300
+Message-ID: <CA+h21hqeWSqZ0JmoC_w0gu+UJqCxpN7yWktRZsppe8LZ5Q_wMg@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA driver
+To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     David Miller <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,33 +59,38 @@ Cc:     David Miller <davem@davemloft.net>,
         Stephen Boyd <sboyd@kernel.org>,
         lkml <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA driver
-Message-ID: <20190605174547.b4rwbfrzjqzujxno@localhost>
-References: <20190604170756.14338-1-olteanv@gmail.com>
- <20190604.202258.1443410652869724565.davem@davemloft.net>
- <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
- <CA+h21hrJYm4GLn+LpJ623_dpgxE2z-k3xTMD=z1QQ9WqXg7zrQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrJYm4GLn+LpJ623_dpgxE2z-k3xTMD=z1QQ9WqXg7zrQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 02:33:52PM +0300, Vladimir Oltean wrote:
-> In the meantime: Richard, do you have any objections to this patchset?
+On Wed, 5 Jun 2019 at 20:45, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Wed, Jun 05, 2019 at 02:33:52PM +0300, Vladimir Oltean wrote:
+> > In the meantime: Richard, do you have any objections to this patchset?
+>
+> I like the fact that you didn't have to change the dsa or ptp
+> frameworks this time around.  I haven't taken a closer look than that
+> yet.
+>
+> > I was wondering whether the path delay difference between E2E and P2P
+> > rings any bell to you.
+>
+> Can it be that the switch applies corrections in HW?
+>
 
-I like the fact that you didn't have to change the dsa or ptp
-frameworks this time around.  I haven't taken a closer look than that
-yet.
+Yes it can be. It was one of the first things I thought of.
+Normally it updates the correction field with its own residence time
+in 1-step L2 event messages (but I use 2 step).
+It also has a bit called IGNORE2STF (ignore 2-step flag) by which it
+updates the correction field in all L2 event messages (including sync,
+thereby violating the spec for a switch, as far as I'm aware). But I'm
+not setting it.
+I also looked at egress frames with wireshark and the correction field is zero.
 
-> I was wondering whether the path delay difference between E2E and P2P
-> rings any bell to you.
-
-Can it be that the switch applies corrections in HW?
+> Thanks,
+> Richard
 
 Thanks,
-Richard
+-Vladimir
