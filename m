@@ -2,219 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AEDC35B1E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 13:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 380B735B2D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 13:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727423AbfFELT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 07:19:27 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:45542 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbfFELT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 07:19:27 -0400
-Received: by mail-ed1-f67.google.com with SMTP id f20so5213140edt.12
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 04:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RNoNjeW4LQWj6gyAYxEI2/POlgIa1Imd6nMlL91Ac3Q=;
-        b=iU9bVPrlTUjxWJi7JHzQqo1evyL4vUXAJWFgIGRG7TOgUVuYMBeWJPbHawEoB67J6Q
-         oU90Zjeqg8fluMKBsknJRzYnm35K5lQlTzh1HERakpv6poYQtz91XopCkislg/Z/0TYn
-         qtGco/+LtvGXV26neuJrQNIaGDjl3KsNNaItRcyZdgekbkhILL1nAJHlJ0TxU2xgaFpx
-         u/BkJl0jYb3/bjblByqfF+Q7TAIZ9lloVpyOSS2qeSyiSHlrdPDuM3JoUHaRmipHPjk4
-         HH+P8zLl0ojFZzpjsNNU5bZtw94xHVJa3mFPjw/nBmfetYhDrrmXT5G19VCteHOyh94r
-         4dcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RNoNjeW4LQWj6gyAYxEI2/POlgIa1Imd6nMlL91Ac3Q=;
-        b=RoiWA+80eRap4NmTYF0sNIhtKnzsgxIX4wk28l2bTx+dmcAuokIN02fbqDLhBuTjjP
-         S2imf3OFTKoABNtpjDK5/oL2IcqedGjEgdEMlKynyNcHAQXFTyrO09dXRzF6CAPxua9+
-         hdab463uHNSCnNYfLcjOgbwYN4IyOUI55oNly3aGtHxsanJwuNyhqPf4p12z9tCrODh2
-         NyH9pmt5SDAJ7p1mRR8EonU46YocX0z82BfqTwX8TJRWeopgBPG9x+7ihd7QGTA4i4YW
-         amxXiD0NsP1g+DYNcP+WOgeY4yom5Xm9zXoCdooma2qmCabE9IGFEmgd7qTSw2fBakH9
-         ve4Q==
-X-Gm-Message-State: APjAAAXn19bDZ3bHqr/oiSOIZ+ePpOVfj//vD31noQIlFg0AJ+PHc6XK
-        UCgkZ+M/edIsjb08KFve+cz+ReXpJPsQILVm/tA=
-X-Google-Smtp-Source: APXvYqxZv4uE4I4+6WoYC0mreyGKsvdPALj/IfWgdZZFVWMVQ+GD8Q1cmZiG7YBHCr/6Re4h1P7u711yiV6RS3AGrp8=
-X-Received: by 2002:a17:906:5855:: with SMTP id h21mr2615975ejs.15.1559733564086;
- Wed, 05 Jun 2019 04:19:24 -0700 (PDT)
+        id S1727395AbfFELU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 07:20:56 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:56032 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727330AbfFELU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 07:20:56 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hYTyA-0007Jy-DZ; Wed, 05 Jun 2019 07:20:46 -0400
+Date:   Wed, 5 Jun 2019 07:20:10 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     linux-sctp@vger.kernel.org,
+        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        network dev <netdev@vger.kernel.org>
+Subject: Re: [PATCH V2] Fix memory leak in sctp_process_init
+Message-ID: <20190605112010.GA554@hmswarspite.think-freely.org>
+References: <00000000000097abb90589e804fd@google.com>
+ <20190603203259.21508-1-nhorman@tuxdriver.com>
+ <CADvbK_c6Ym2pbKqGQD8WUmUPX_PtAa6RGde7AQwhRZzUr_emiw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
- <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com>
- <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk> <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
- <20190604225919.xpkykt2z3a7utiet@shell.armlinux.org.uk> <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
- <20190604232433.4v2qqxyihqi2rmjl@shell.armlinux.org.uk> <CA+h21hpDyDLChzrqX19bU81+ss3psVesNftCqN7+7+GFkMe_-A@mail.gmail.com>
- <262dfc0e-c248-23e7-cd34-d13e104afe91@gmail.com> <CA+h21howazOwxZ840kYKS_cCaGB6_B1f0e=2NMHY1y8zDw7iug@mail.gmail.com>
- <20190605093055.sry7mcwefdiawvlc@shell.armlinux.org.uk>
-In-Reply-To: <20190605093055.sry7mcwefdiawvlc@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 5 Jun 2019 14:19:12 +0300
-Message-ID: <CA+h21hpSFxv89AAyKOQ5um4z+sUx4=hW7Ri698JgwMdTfnxxPg@mail.gmail.com>
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_c6Ym2pbKqGQD8WUmUPX_PtAa6RGde7AQwhRZzUr_emiw@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 5 Jun 2019 at 12:31, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Jun 05, 2019 at 11:27:59AM +0300, Vladimir Oltean wrote:
-> > On Wed, 5 Jun 2019 at 06:06, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> > >
-> > >
-> > >
-> > > On 6/4/2019 4:46 PM, Vladimir Oltean wrote:
-> > > > On Wed, 5 Jun 2019 at 02:24, Russell King - ARM Linux admin
-> > > > <linux@armlinux.org.uk> wrote:
-> > > >>
-> > > >> On Wed, Jun 05, 2019 at 02:03:19AM +0300, Vladimir Oltean wrote:
-> > > >>> On Wed, 5 Jun 2019 at 01:59, Russell King - ARM Linux admin
-> > > >>> <linux@armlinux.org.uk> wrote:
-> > > >>>>
-> > > >>>> On Wed, Jun 05, 2019 at 01:44:08AM +0300, Vladimir Oltean wrote:
-> > > >>>>> You caught me.
-> > > >>>>>
-> > > >>>>> But even ignoring the NIC case, isn't the PHY state machine
-> > > >>>>> inconsistent with itself? It is ok with callink phy_suspend upon
-> > > >>>>> ndo_stop, but it won't call phy_suspend after phy_connect, when the
-> > > >>>>> netdev is implicitly stopped?
-> > > >>>>
-> > > >>>> The PHY state machine isn't inconsistent with itself, but it does
-> > > >>>> have strange behaviour.
-> > > >>>>
-> > > >>>> When the PHY is attached, the PHY is resumed and the state machine
-> > > >>>> is in PHY_READY state.  If it goes through a start/stop cycle, the
-> > > >>>> state machine transitions to PHY_HALTED and attempts to place the
-> > > >>>> PHY into a low power state.  So the PHY state is consistent with
-> > > >>>> the state machine state (we don't end up in the same state but with
-> > > >>>> the PHY in a different state.)
-> > > >>>>
-> > > >>>> What we do have is a difference between the PHY state (and state
-> > > >>>> machine state) between the boot scenario, and the interface up/down
-> > > >>>> scenario, the latter behaviour having been introduced by a commit
-> > > >>>> back in 2013:
-> > > >>>>
-> > > >>>>     net: phy: suspend phydev when going to HALTED
-> > > >>>>
-> > > >>>>     When phydev is going to HALTED state, we can try to suspend it to
-> > > >>>>     safe more power. phy_suspend helper will check if PHY can be suspended,
-> > > >>>>     so just call it when entering HALTED state.
-> > > >>>>
-> > > >>>> --
-> > > >>>> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > > >>>> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> > > >>>> According to speedtest.net: 11.9Mbps down 500kbps up
-> > > >>>
-> > > >>> I am really not into the PHYLIB internals, but basically what you're
-> > > >>> telling me is that running "ip link set dev eth0 down" is a
-> > > >>> stronger/more imperative condition than not running "ip link set dev
-> > > >>> eth0 up"... Does it also suspend the PHY if I put the interface down
-> > > >>> while it was already down?
-> > > >>
-> > > >> No - but that has nothing to do with phylib internals, more to do with
-> > > >> the higher levels of networking.  ndo_stop() will not be called unless
-> > > >> ndo_open() has already been called.  In other words, setting an already
-> > > >> down device down via "ip link set dev eth0 down" is a no-op.
-> > > >>
-> > > >> So, let's a common scenario.  You power up a board.  The PHY comes up
-> > > >> and establishes a link.  The boot loader runs, loads the kernel, which
-> > > >
-> > > > This may or may not be the case. As you pointed out a few emails back,
-> > > > this is a system-level issue that requires a system-level solution -
-> > > > so cutting the link in U-boot is not out of the question.
-> > > >
-> > > >> then boots.  Your network driver is a module, and hasn't been loaded
-> > > >> yet.  The link is still up.
-> > > >>
-> > > >> The modular network driver gets loaded, and initialises.  Userspace
-> > > >> does not bring the network device up, and the network driver does not
-> > > >> attach or connect to the PHY (which is actually quite common).  So,
-> > > >> the link is still up.
-> > > >>
-> > > >> The modular PHY driver gets loaded, and binds to the PHY.  The link
-> > > >> is still up.
-> > > >
-> > > > I would rather say, 'even if the link is not up, Linux brings it up
-> > > > (possibly prematurely) via phy_resume'.
-> > > > But let's consider the case where the link *was* up. The general idea
-> > > > is 'implement your workarounds in whatever other way, that link is
-> > > > welcome!'.
-> > >
-> > > With the systems that I work with, we have enforced the following
-> > > behavior to happen: the boot loader and kernel only turn on what they
-> > > needs, at the time they need it, and nothing more, once done, they put
-> > > the blocks back into lowest power mode (clock and power gated if
-> > > available). So yes, there are multiple link re-negotiations throughput
-> > > the boot process, but when there is no device bound to a driver the
-> > > system conserves power by default which is deemed a higher goal than
-> > > speed. Your mileage may vary of course.
-> > >
-> > > There is not exactly a simple way of enforcing that kind (or another
-> > > kind for that matter) of policy kernel wide, so it's unfortunately up to
-> > > the driver writer to propose something that is deemed sensible.
-> > >
-> > > We could however, extend existing tools like iproute2 to offer the
-> > > ability to control whether the PHY should be completely powered off, in
-> > > a low power state allowing WoL, or remain UP when the network device is
-> > > brought down. That would not cover the case that Russell explained, but
-> > > it would be another monkey wrench you can throw at the system.
-> > > --
-> > > Florian
+On Wed, Jun 05, 2019 at 04:16:24AM +0800, Xin Long wrote:
+> On Tue, Jun 4, 2019 at 4:34 AM Neil Horman <nhorman@tuxdriver.com> wrote:
 > >
-> > Hi Florian,
+> > syzbot found the following leak in sctp_process_init
+> > BUG: memory leak
+> > unreferenced object 0xffff88810ef68400 (size 1024):
+> >   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
+> >   hex dump (first 32 bytes):
+> >     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >   backtrace:
+> >     [<00000000a02cebbd>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
+> > [inline]
+> >     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
+> >     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
+> >     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
+> >     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
+> >     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
+> >     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
+> >     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
+> > net/sctp/sm_make_chunk.c:2437
+> >     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
+> > [inline]
+> >     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
+> > [inline]
+> >     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
+> > [inline]
+> >     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60 net/sctp/sm_sideeffect.c:1165
+> >     [<0000000044e11f96>] sctp_assoc_bh_rcv+0x13c/0x200
+> > net/sctp/associola.c:1074
+> >     [<00000000ec43804d>] sctp_inq_push+0x7f/0xb0 net/sctp/inqueue.c:95
+> >     [<00000000726aa954>] sctp_backlog_rcv+0x5e/0x2a0 net/sctp/input.c:354
+> >     [<00000000d9e249a8>] sk_backlog_rcv include/net/sock.h:950 [inline]
+> >     [<00000000d9e249a8>] __release_sock+0xab/0x110 net/core/sock.c:2418
+> >     [<00000000acae44fa>] release_sock+0x37/0xd0 net/core/sock.c:2934
+> >     [<00000000963cc9ae>] sctp_sendmsg+0x2c0/0x990 net/sctp/socket.c:2122
+> >     [<00000000a7fc7565>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
+> >     [<00000000b732cbd3>] sock_sendmsg_nosec net/socket.c:652 [inline]
+> >     [<00000000b732cbd3>] sock_sendmsg+0x54/0x70 net/socket.c:671
+> >     [<00000000274c57ab>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2292
+> >     [<000000008252aedb>] __sys_sendmsg+0x80/0xf0 net/socket.c:2330
+> >     [<00000000f7bf23d1>] __do_sys_sendmsg net/socket.c:2339 [inline]
+> >     [<00000000f7bf23d1>] __se_sys_sendmsg net/socket.c:2337 [inline]
+> >     [<00000000f7bf23d1>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2337
+> >     [<00000000a8b4131f>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:3
 > >
-> > By going to HALTED on phy_stop, the system already achieves what I am
-> > looking after - although maybe it is an unintended consequence for
-> > you.
-> > I'm only trying to make an argument for removing the phy_resume from
-> > phy_attach_direct now.
->
-> Merely doing that will create problems.  You may remember a few emails
-> ago, we discussed whether the physical PHY state was consistent with
-> the PHY state machine state.  By making that change, the PHY state
-> machine vs the physical PHY state becomes inconsistent.
->
-> Removing phy_resume() from phy_attach_direct() means that the PHY may
-> not be in a resumed state at this point, yet we set the PHY state
-> machine to PHY_READY.  When phy_start() is called, the state will be
-> transitioned to PHY_UP rather than PHY_RESUMING, and we will try to
-> update the advertisement into the PHY (as I've previously described.)
->
-> If the PHY is powered down, but the state machine transitions from
-> PHY_READY to PHY_UP state, programming the advertisement will have no
-> effect, and the PHY will remain in power-down mode.
->
-> So, the PHY state machine state needs to also be set according to the
-> PHY mode.  The same is true for phy_probe(), which also assumes that
-> the PHY is not powered down.
->
-> > If there was a link, and it doesn't need
-> > re-negociation, fine, use it in phy_start, but at most leave U-boot to
-> > put that link down and don't force it up prior to the netdev's
-> > ndo_open.
-> >
-> > Regards,
-> > -Vladimir
-> >
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+> > The problem was that the peer.cookie value points to an skb allocated
+> > area on the first pass through this function, at which point it is
+> > overwritten with a heap allocated value, but in certain cases, where a
+> > COOKIE_ECHO chunk is included in the packet, a second pass through
+> > sctp_process_init is made, where the cookie value is re-allocated,
+> > leaking the first allocation.
+> This's not gonna happen, as after processing INIT, the temp asoc will be
+> deleted on the server side. Besides, from the reproducer:
+> 
+>   https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
+> 
+> Packet(INIT|COOKIE_ECHO) can't be made in here.
+> 
+> The call trace says the leak happened when processing INIT_ACK on the
+> client side, as Marcelo noticed.  Then it can be triggered by:
+> 
+> 1. sctp_sf_do_5_1C_ack() -> SCTP_CMD_PEER_INIT -> sctp_process_init():
+>    where it "goto clean_up" after sctp_process_param(), but in 'cleanup'
+>    path, it doesn't do any freeup for the memdups of sctp_process_param().
+>    then the client T1 retrans INIT, and later get INIT_ACK again from the
+>    peer, and go to sctp_process_init() to memdup().
+> 
+> 2. sctp_sf_cookie_echoed_err() -> sctp_sf_do_5_2_6_stale():
+>    where the asoc state will go from COOKIE_ECHOED back to COOKIE_WAIT,
+>    and T1 starts to retrans INIT, and later it will get INIT_ACK again
+>    to sctp_process_init() and memdup().
+> 
+ok, you may well be right as to the path that we take to get here, but the root
+cause is the same, multiple passes through sctp_process_init without freeing the
+previously memduped memory.  Thats why I would think my patch is fixing the
+issue, because now we're always duping the cookie memory and always freeing it
+when we transition to the ESTABLISHED state.
 
-Thanks for explaining this to me in a neutral way. I need to take some
-time to figure whether changing the state machine has any value for
-anyone.
+As for the other variables (peer_[random|chunks|hmacs]), I'm not sure why we're
+not seeing leak reports of those variables.
 
-Regards,
--Vladimir
+Neil
+
+> As on either above, asoc's never been to ESTABLISHED state,
+> asoc->peer.cookie can be not freed, and this patch won't work.
+> But yes, it's nice to have this patch, just not to fix this memleak.
+> 
+> I tracked the code, this memleak was triggered by case 2, so I think
+> you also need to add something like:
+> 
+> @@ -881,6 +893,18 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
+>                                                 asoc->rto_initial;
+>                 asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_COOKIE] =
+>                                                 asoc->rto_initial;
+> +
+> +               if (asoc->peer.cookie) {
+> +                       kfree(asoc->peer.cookie);
+> +                       kfree(asoc->peer.peer_random);
+> +                       kfree(asoc->peer.peer_chunks);
+> +                       kfree(asoc->peer.peer_hmacs);
+> +
+> +                       asoc->peer.cookie = NULL;
+> +                       asoc->peer.peer_random = NULL;
+> +                       asoc->peer.peer_random = NULL;
+> +                       asoc->peer.peer_hmacs = NULL;
+> +               }
+>         }
+> 
+> and the same thing may also be needed in sctp_cmd_process_init() on the
+> err path for case 1.
+> 
+> >
+> > Fix is to always allocate the cookie value, and free it when we are done
+> > using it.
+> >
+> > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> > Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
+> > CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > CC: "David S. Miller" <davem@davemloft.net>
+> > CC: netdev@vger.kernel.org
+> >
+> > ---
+> > Change notes
+> >
+> > V1->V2:
+> >   * Removed an accidental double free I let slip in in
+> > sctp_association_free
+> >   * Removed now unused cookie variable
+> > ---
+> >  net/sctp/sm_make_chunk.c | 13 +++----------
+> >  net/sctp/sm_sideeffect.c |  5 +++++
+> >  2 files changed, 8 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+> > index 72e74503f9fc..8e12e19fe42d 100644
+> > --- a/net/sctp/sm_make_chunk.c
+> > +++ b/net/sctp/sm_make_chunk.c
+> > @@ -2327,7 +2327,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+> >         union sctp_addr addr;
+> >         struct sctp_af *af;
+> >         int src_match = 0;
+> > -       char *cookie;
+> >
+> >         /* We must include the address that the INIT packet came from.
+> >          * This is the only address that matters for an INIT packet.
+> > @@ -2431,14 +2430,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+> >         /* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
+> >         asoc->peer.rwnd = asoc->peer.i.a_rwnd;
+> >
+> > -       /* Copy cookie in case we need to resend COOKIE-ECHO. */
+> > -       cookie = asoc->peer.cookie;
+> > -       if (cookie) {
+> > -               asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
+> > -               if (!asoc->peer.cookie)
+> > -                       goto clean_up;
+> > -       }
+> > -
+> >         /* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
+> >          * high (for example, implementations MAY use the size of the receiver
+> >          * advertised window).
+> > @@ -2607,7 +2598,9 @@ static int sctp_process_param(struct sctp_association *asoc,
+> >         case SCTP_PARAM_STATE_COOKIE:
+> >                 asoc->peer.cookie_len =
+> >                         ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
+> > -               asoc->peer.cookie = param.cookie->body;
+> > +               asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
+> > +               if (!asoc->peer.cookie)
+> > +                       retval = 0;
+> >                 break;
+> >
+> >         case SCTP_PARAM_HEARTBEAT_INFO:
+> > diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+> > index 4aa03588f87b..27ddf2d8f001 100644
+> > --- a/net/sctp/sm_sideeffect.c
+> > +++ b/net/sctp/sm_sideeffect.c
+> > @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
+> >                                                 asoc->rto_initial;
+> >         }
+> >
+> > +       if (sctp_state(asoc, ESTABLISHED)) {
+> > +               kfree(asoc->peer.cookie);
+> > +               asoc->peer.cookie = NULL;
+> > +       }
+> > +
+> >         if (sctp_state(asoc, ESTABLISHED) ||
+> >             sctp_state(asoc, CLOSED) ||
+> >             sctp_state(asoc, SHUTDOWN_RECEIVED)) {
+> > --
+> > 2.20.1
+> >
+> 
