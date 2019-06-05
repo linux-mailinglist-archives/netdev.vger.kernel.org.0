@@ -2,205 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7504359AF
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 11:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C529535A00
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 11:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfFEJbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 05:31:01 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:53962 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726785AbfFEJbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 05:31:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UxuxuMMhDod5gLKTtEb4SCIHyl/6GQrbGrNXB4JxzcM=; b=ow9xnoOi6KCnfUsWDw/MVy+Jh
-        9xWS22BEu7LdoIiYiKO2rTa8sJoaoFBzpQeNAWbqgeuv+Rrf/ZE7Qhf4i+ayywIBE/Vj4fAY6m64M
-        vx0z828c3sM1ghfrRBUUwDcd3cYiElxNFWGryHJe27jWOJZ2Z2kaxpL7QM2mRbOfaozEwAT8aTvmr
-        lzicjucQixNqbf4eHDkR2sb3X2ukyLDk+aOuBRSnpN5KQz9OShTG5IOXZNHBctzn1M5R/WQdAL4xn
-        n750ySn4nBXaxBTvnTPER0WF3Bm/Cfr+RNvVC3cvP7AN+Y0EoYHoTyqJJGa5zqc2ovDy6mK+eY86L
-        lTE4XlX9A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56222)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hYSG1-0006wF-NC; Wed, 05 Jun 2019 10:30:57 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hYSFz-0002JZ-RO; Wed, 05 Jun 2019 10:30:55 +0100
-Date:   Wed, 5 Jun 2019 10:30:55 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-Message-ID: <20190605093055.sry7mcwefdiawvlc@shell.armlinux.org.uk>
-References: <20190604214845.wlelh454qfnrs42s@shell.armlinux.org.uk>
- <CA+h21hrOPCVoDwbQa9uFVu3uVWtoP+2Vp2z94An2qtv=u8wWKg@mail.gmail.com>
- <20190604221626.4vjtsexoutqzblkl@shell.armlinux.org.uk>
- <CA+h21hrkQkBocwigiemhN_H+QJ3yWZaJt+aoBWhZiW3BNNQOXw@mail.gmail.com>
- <20190604225919.xpkykt2z3a7utiet@shell.armlinux.org.uk>
- <CA+h21hrT+XPfqePouzKB4UUfUawck831bKhAY6-BOunnvbmT1g@mail.gmail.com>
- <20190604232433.4v2qqxyihqi2rmjl@shell.armlinux.org.uk>
- <CA+h21hpDyDLChzrqX19bU81+ss3psVesNftCqN7+7+GFkMe_-A@mail.gmail.com>
- <262dfc0e-c248-23e7-cd34-d13e104afe91@gmail.com>
- <CA+h21howazOwxZ840kYKS_cCaGB6_B1f0e=2NMHY1y8zDw7iug@mail.gmail.com>
+        id S1727146AbfFEJ4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 05:56:40 -0400
+Received: from mail-lj1-f182.google.com ([209.85.208.182]:34670 "EHLO
+        mail-lj1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727012AbfFEJ4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 05:56:40 -0400
+Received: by mail-lj1-f182.google.com with SMTP id j24so22591233ljg.1
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 02:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=aTpgLOLiOcdUseee8sGCuUVr8+ArZkun+6MaGgEufC8=;
+        b=xYcIR3XRYyaHaraWVu3zdo2mKco43ufVFoy+mPt8RfbdAleN3jO/ctNr+7eRIHGQi/
+         wRpa+L3/6L4t1W79cAyYZQ1iky5uU+cC1yT7/nfYSVjbaxocW0PVoz6Fv9AW+dCt2aMv
+         Ampk9dRzdgf7PGveMId9ZlwTO0of3LcOIFhc2zOVC0LMn0X9sunpCPt3kK4JQ5+k+xPX
+         8ucoO+ut5voMT6ZKJuYgHAA7PhUC5nF0oEgarKytBoPastbd2PTqhUc68I9mgzEIfp0I
+         2CZRuvkbwkgrsuG/SJDQ8dBx58HxDd0Sszq7REXxi3M9SRvH8Fs5U8HJEPTmklYQ7K+h
+         gMFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=aTpgLOLiOcdUseee8sGCuUVr8+ArZkun+6MaGgEufC8=;
+        b=n9D7PsOiIFsrgFr5ZzEI+YNzUOjOU0wE0jVypFTkjru5jluP0+GS1ZAe+PeBRN/cHr
+         Vvt9Aph2vtomuR5w0b9fBG8s3cYP4hvCe/7BsAowY5ul13DuJUM7D/f8Z4KexYkh8hed
+         bcrobP31lEzbAoR74rgYUOQ809Sdmp8oS47+AHCnOEl9Cwr+g+ai2aF8RIaCZhPCxUe/
+         cA6J1l1DdBFDlDo178uXd5IlKQ4e9hoF1ObztUJNLUCEXAFmMCUTnia9B27+esq/usgr
+         my7RRkboF4VPsCzB6eAS0iTGBKwvPVj/W8WiqV9Q2tmLcVryGuCyjlkPaZQYa90P3YJv
+         U5pw==
+X-Gm-Message-State: APjAAAVdIPIuiQ0HPGdajcKaX7iUhlmLQAWrYBJ6hFz91fhLRV719Op/
+        37utESxMrxryrW0vo/JsxP9za6nL+gFnLwf/BtgCiw==
+X-Google-Smtp-Source: APXvYqwnWF5l3td0n7SMWT3OVQ35nHkAIuh7b6vyqeeLI2XK8i46f9Yz0Qu8nSqskWQfhfDgC8spm6+/DFSkJFI6178=
+X-Received: by 2002:a2e:2b11:: with SMTP id q17mr20580986lje.23.1559728597600;
+ Wed, 05 Jun 2019 02:56:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21howazOwxZ840kYKS_cCaGB6_B1f0e=2NMHY1y8zDw7iug@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 5 Jun 2019 15:26:26 +0530
+Message-ID: <CA+G9fYtTcV9Xa65COdNfA9O+BvZV64fWBvdaamRLZphWEn7FXA@mail.gmail.com>
+Subject: selftests: bpf: test_sock_fields: Error: in_bpf_create_map_xattr(sk_pkt_out_cnt)Invalid
+To:     ast@kernel.org, kafai@fb.com, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 11:27:59AM +0300, Vladimir Oltean wrote:
-> On Wed, 5 Jun 2019 at 06:06, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >
-> >
-> >
-> > On 6/4/2019 4:46 PM, Vladimir Oltean wrote:
-> > > On Wed, 5 Jun 2019 at 02:24, Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > >>
-> > >> On Wed, Jun 05, 2019 at 02:03:19AM +0300, Vladimir Oltean wrote:
-> > >>> On Wed, 5 Jun 2019 at 01:59, Russell King - ARM Linux admin
-> > >>> <linux@armlinux.org.uk> wrote:
-> > >>>>
-> > >>>> On Wed, Jun 05, 2019 at 01:44:08AM +0300, Vladimir Oltean wrote:
-> > >>>>> You caught me.
-> > >>>>>
-> > >>>>> But even ignoring the NIC case, isn't the PHY state machine
-> > >>>>> inconsistent with itself? It is ok with callink phy_suspend upon
-> > >>>>> ndo_stop, but it won't call phy_suspend after phy_connect, when the
-> > >>>>> netdev is implicitly stopped?
-> > >>>>
-> > >>>> The PHY state machine isn't inconsistent with itself, but it does
-> > >>>> have strange behaviour.
-> > >>>>
-> > >>>> When the PHY is attached, the PHY is resumed and the state machine
-> > >>>> is in PHY_READY state.  If it goes through a start/stop cycle, the
-> > >>>> state machine transitions to PHY_HALTED and attempts to place the
-> > >>>> PHY into a low power state.  So the PHY state is consistent with
-> > >>>> the state machine state (we don't end up in the same state but with
-> > >>>> the PHY in a different state.)
-> > >>>>
-> > >>>> What we do have is a difference between the PHY state (and state
-> > >>>> machine state) between the boot scenario, and the interface up/down
-> > >>>> scenario, the latter behaviour having been introduced by a commit
-> > >>>> back in 2013:
-> > >>>>
-> > >>>>     net: phy: suspend phydev when going to HALTED
-> > >>>>
-> > >>>>     When phydev is going to HALTED state, we can try to suspend it to
-> > >>>>     safe more power. phy_suspend helper will check if PHY can be suspended,
-> > >>>>     so just call it when entering HALTED state.
-> > >>>>
-> > >>>> --
-> > >>>> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > >>>> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> > >>>> According to speedtest.net: 11.9Mbps down 500kbps up
-> > >>>
-> > >>> I am really not into the PHYLIB internals, but basically what you're
-> > >>> telling me is that running "ip link set dev eth0 down" is a
-> > >>> stronger/more imperative condition than not running "ip link set dev
-> > >>> eth0 up"... Does it also suspend the PHY if I put the interface down
-> > >>> while it was already down?
-> > >>
-> > >> No - but that has nothing to do with phylib internals, more to do with
-> > >> the higher levels of networking.  ndo_stop() will not be called unless
-> > >> ndo_open() has already been called.  In other words, setting an already
-> > >> down device down via "ip link set dev eth0 down" is a no-op.
-> > >>
-> > >> So, let's a common scenario.  You power up a board.  The PHY comes up
-> > >> and establishes a link.  The boot loader runs, loads the kernel, which
-> > >
-> > > This may or may not be the case. As you pointed out a few emails back,
-> > > this is a system-level issue that requires a system-level solution -
-> > > so cutting the link in U-boot is not out of the question.
-> > >
-> > >> then boots.  Your network driver is a module, and hasn't been loaded
-> > >> yet.  The link is still up.
-> > >>
-> > >> The modular network driver gets loaded, and initialises.  Userspace
-> > >> does not bring the network device up, and the network driver does not
-> > >> attach or connect to the PHY (which is actually quite common).  So,
-> > >> the link is still up.
-> > >>
-> > >> The modular PHY driver gets loaded, and binds to the PHY.  The link
-> > >> is still up.
-> > >
-> > > I would rather say, 'even if the link is not up, Linux brings it up
-> > > (possibly prematurely) via phy_resume'.
-> > > But let's consider the case where the link *was* up. The general idea
-> > > is 'implement your workarounds in whatever other way, that link is
-> > > welcome!'.
-> >
-> > With the systems that I work with, we have enforced the following
-> > behavior to happen: the boot loader and kernel only turn on what they
-> > needs, at the time they need it, and nothing more, once done, they put
-> > the blocks back into lowest power mode (clock and power gated if
-> > available). So yes, there are multiple link re-negotiations throughput
-> > the boot process, but when there is no device bound to a driver the
-> > system conserves power by default which is deemed a higher goal than
-> > speed. Your mileage may vary of course.
-> >
-> > There is not exactly a simple way of enforcing that kind (or another
-> > kind for that matter) of policy kernel wide, so it's unfortunately up to
-> > the driver writer to propose something that is deemed sensible.
-> >
-> > We could however, extend existing tools like iproute2 to offer the
-> > ability to control whether the PHY should be completely powered off, in
-> > a low power state allowing WoL, or remain UP when the network device is
-> > brought down. That would not cover the case that Russell explained, but
-> > it would be another monkey wrench you can throw at the system.
-> > --
-> > Florian
-> 
-> Hi Florian,
-> 
-> By going to HALTED on phy_stop, the system already achieves what I am
-> looking after - although maybe it is an unintended consequence for
-> you.
-> I'm only trying to make an argument for removing the phy_resume from
-> phy_attach_direct now.
+Do you see this failure at your end?
+Our environment is build on host and install them on target device and
+run on Device under test (DUT).
 
-Merely doing that will create problems.  You may remember a few emails
-ago, we discussed whether the physical PHY state was consistent with
-the PHY state machine state.  By making that change, the PHY state
-machine vs the physical PHY state becomes inconsistent.
+Did i miss any kernel config fragments ?
 
-Removing phy_resume() from phy_attach_direct() means that the PHY may
-not be in a resumed state at this point, yet we set the PHY state
-machine to PHY_READY.  When phy_start() is called, the state will be
-transitioned to PHY_UP rather than PHY_RESUMING, and we will try to
-update the advertisement into the PHY (as I've previously described.)
+bpf: test_sock_fields_ #
+# libbpf Error in bpf_create_map_xattr(sk_pkt_out_cnt)Invalid
+argument(22). Retrying without BTF.
+Error: in_bpf_create_map_xattr(sk_pkt_out_cnt)Invalid #
+# libbpf failed to create map (name 'sk_pkt_out_cnt') Invalid argument
+failed: to_create #
+# libbpf failed to load object 'test_sock_fields_kern.o'
+failed: to_load #
+# main(439)FAILbpf_prog_load_xattr() err-22
+err-22: _ #
+[FAIL] 22 selftests bpf test_sock_fields
+selftests: bpf_test_sock_fields [FAIL]
 
-If the PHY is powered down, but the state machine transitions from
-PHY_READY to PHY_UP state, programming the advertisement will have no
-effect, and the PHY will remain in power-down mode.
+Full test log,
+https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190605/testrun/761646/log
 
-So, the PHY state machine state needs to also be set according to the
-PHY mode.  The same is true for phy_probe(), which also assumes that
-the PHY is not powered down.
+Config:
+http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/intel-corei7-64/lkft/linux-next/536/config
 
-> If there was a link, and it doesn't need
-> re-negociation, fine, use it in phy_start, but at most leave U-boot to
-> put that link down and don't force it up prior to the netdev's
-> ndo_open.
-> 
-> Regards,
-> -Vladimir
-> 
+Test results for comparison,
+https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_sock_fields
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Best regards
+Naresh Kamboju
