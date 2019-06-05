@@ -2,154 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2FE35816
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 09:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE48A35839
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 09:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726543AbfFEHy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 03:54:56 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42422 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725294AbfFEHy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 03:54:56 -0400
-Received: by mail-pl1-f194.google.com with SMTP id go2so9387957plb.9
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 00:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aiue8tHWiumr4g0nytcyTjYaJHwPhuqRgFXgCDSDwM0=;
-        b=KGG4kw7mp5EISlgpPMNpn5iOHG3+VLhZMDhZ+778rosnxJtQ2DdjdZ5tkcWiWRFGGX
-         13t7oW58cPGQVxfvPViY7GfglNUiaobpnuA5U9Lhk/zaJJvJa8iiwJxVGhf39no86EP+
-         tHTVDIzoVY5+6E11qiOyJvAD7RzmosldNH4nY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aiue8tHWiumr4g0nytcyTjYaJHwPhuqRgFXgCDSDwM0=;
-        b=IRKtHcbC3Ehez5exwnnmN4AXGMEVv5+7d9p7Zq5xogTcPj5hkf2tGegkVCKicx2MD2
-         9y8GX+P8jRX6xkNClYKvkMlOTdo5n7pkTLt/cnWEoGljQGxROEIYeOCqfYArxxYiCPOW
-         SZlIfadh7cjDPVYvlTcAR3PhHcft7AmGCcTYWuKZE0HHG1huefU6oWjKoD7kkhvss/UQ
-         nWfuTCZcEcgQ3WfLlEG2kpCw40nAvqrv7ZgPU5UPfLeQ3ht7gYkywLuz+7LLP+m1MrqB
-         /V1iPR7kR3KerZ+NpTQTxQsPfnpxL/8LBEnjrrpXJDfNbFmYvJHzB2FncKLKs3ziX6vx
-         Zl+Q==
-X-Gm-Message-State: APjAAAU5pLjxhopG7Fzw7Rw9R78g8qHmBga4CSw0UquK0aXaNSztVIsA
-        3LznjuLuXi8z9VIa4sv+75VreQ==
-X-Google-Smtp-Source: APXvYqx1Gbz9qsU2PuuHu8YloVvKfIX0ptj4e8Hzpp+GXSquNY3RQsHEhI2ABswO9YBHJkaCFOSHnA==
-X-Received: by 2002:a17:902:8a87:: with SMTP id p7mr25322779plo.124.1559721294846;
-        Wed, 05 Jun 2019 00:54:54 -0700 (PDT)
-Received: from [10.230.40.234] ([192.19.215.250])
-        by smtp.gmail.com with ESMTPSA id 11sm28366590pfu.155.2019.06.05.00.54.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 00:54:54 -0700 (PDT)
-Subject: Re: [PATCH v2 2/3] mmc: core: API for temporarily disabling
- auto-retuning due to errors
-To:     Douglas Anderson <dianders@chromium.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        linux-wireless@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Avri Altman <avri.altman@wdc.com>
-References: <20190603183740.239031-1-dianders@chromium.org>
- <20190603183740.239031-3-dianders@chromium.org>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <25fe1725-76fa-2739-1427-b0e8823ea4ae@broadcom.com>
-Date:   Wed, 5 Jun 2019 09:54:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726656AbfFEH7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 03:59:44 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47792 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725950AbfFEH7o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 03:59:44 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8322EB59B1;
+        Wed,  5 Jun 2019 07:59:43 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F7475D9CD;
+        Wed,  5 Jun 2019 07:59:32 +0000 (UTC)
+Date:   Wed, 5 Jun 2019 09:59:31 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, brouer@redhat.com,
+        Brendan Gregg <brendan.d.gregg@gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/2] xdp: Add tracepoint for bulk XDP_TX
+Message-ID: <20190605095931.5d90b69c@carbon>
+In-Reply-To: <20190605053613.22888-2-toshiaki.makita1@gmail.com>
+References: <20190605053613.22888-1-toshiaki.makita1@gmail.com>
+        <20190605053613.22888-2-toshiaki.makita1@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190603183740.239031-3-dianders@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Wed, 05 Jun 2019 07:59:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/2019 8:37 PM, Douglas Anderson wrote:
-> Normally when the MMC core sees an "-EILSEQ" error returned by a host
-> controller then it will trigger a retuning of the card.  This is
-> generally a good idea.
-> 
-> However, if a command is expected to sometimes cause transfer errors
-> then these transfer errors shouldn't cause a re-tuning.  This
-> re-tuning will be a needless waste of time.  One example case where a
-> transfer is expected to cause errors is when transitioning between
-> idle (sometimes referred to as "sleep" in Broadcom code) and active
-> state on certain Broadcom WiFi cards.  Specifically if the card was
-> already transitioning between states when the command was sent it
-> could cause an error on the SDIO bus.
-> 
-> Let's add an API that the SDIO card drivers can call that will
-> temporarily disable the auto-tuning functionality.  Then we can add a
-> call to this in the Broadcom WiFi driver and any other driver that
-> might have similar needs.
-> 
-> NOTE: this makes the assumption that the card is already tuned well
-> enough that it's OK to disable the auto-retuning during one of these
-> error-prone situations.  Presumably the driver code performing the
-> error-prone transfer knows how to recover / retry from errors.  ...and
-> after we can get back to a state where transfers are no longer
-> error-prone then we can enable the auto-retuning again.  If we truly
-> find ourselves in a case where the card needs to be retuned sometimes
-> to handle one of these error-prone transfers then we can always try a
-> few transfers first without auto-retuning and then re-try with
-> auto-retuning if the first few fail.
-> 
-> Without this change on rk3288-veyron-minnie I periodically see this in
-> the logs of a machine just sitting there idle:
->    dwmmc_rockchip ff0d0000.dwmmc: Successfully tuned phase to XYZ
-> 
-> Fixes: bd11e8bd03ca ("mmc: core: Flag re-tuning is needed on CRC errors")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+On Wed,  5 Jun 2019 14:36:12 +0900
+Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+
+> This is introduced for admins to check what is happening on XDP_TX when
+> bulk XDP_TX is in use, which will be first introduced in veth in next
+> commit.
+
+Is the plan that this tracepoint 'xdp:xdp_bulk_tx' should be used by
+all drivers?
+
+(more below)
+
+> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 > ---
-> Note that are are a whole boatload of different ways that we could
-> provide an API for the Broadcom WiFi SDIO driver.  This patch
-> illustrates one way but if maintainers feel strongly that this is too
-> ugly and have a better idea then I can give it a shot too.  From a
-> purist point of view I kinda felt that the "expect errors" really
-> belonged as part of the mmc_request structure, but getting it into
-> there meant changing a whole pile of core SD/MMC APIs.  Simply adding
-> it to the host seemed to match the current style better and was a less
-> intrusive change.
+>  include/trace/events/xdp.h | 25 +++++++++++++++++++++++++
+>  kernel/bpf/core.c          |  1 +
+>  2 files changed, 26 insertions(+)
+> 
+> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> index e95cb86..e06ea65 100644
+> --- a/include/trace/events/xdp.h
+> +++ b/include/trace/events/xdp.h
+> @@ -50,6 +50,31 @@
+>  		  __entry->ifindex)
+>  );
+>  
+> +TRACE_EVENT(xdp_bulk_tx,
+> +
+> +	TP_PROTO(const struct net_device *dev,
+> +		 int sent, int drops, int err),
+> +
+> +	TP_ARGS(dev, sent, drops, err),
+> +
+> +	TP_STRUCT__entry(
 
-Hi Doug,
+All other tracepoints in this file starts with:
 
-Sorry for bringing this up, but there used to be an issue with retuning 
-in general, ie. the device handled tuning command 19 only once after 
-startup. I guess that is no longer an issue given your results. I guess 
-the problem goes away when you disable device sleep functionality. No 
-what you want in terms of power consumption, but would be good to know. 
-You can disable it with below patch.
+		__field(int, prog_id)
+		__field(u32, act)
+or
+		__field(int, map_id)
+		__field(u32, act)
 
-Regards,
-Arend
----
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c 
-b/drivers
-index 15a40fd..18e90bd 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -307,7 +307,7 @@ struct rte_console {
-  #define BRCMF_IDLE_ACTIVE      0       /* Do not request any SD clock 
-change
-                                          * when idle
-                                          */
--#define BRCMF_IDLE_INTERVAL    1
-+#define BRCMF_IDLE_INTERVAL    0
+Could you please add those?
 
-  #define KSO_WAIT_US 50
-  #define MAX_KSO_ATTEMPTS (PMU_MAX_TRANSITION_DLY/KSO_WAIT_US)
+> +		__field(int, ifindex)
+> +		__field(int, drops)
+> +		__field(int, sent)
+> +		__field(int, err)
+> +	),
 
+The reason is that this make is easier to attach to multiple
+tracepoints, and extract the same value.
+
+Example with bpftrace oneliner:
+
+$ sudo bpftrace -e 'tracepoint:xdp:xdp_* { @action[args->act] = count(); }'
+Attaching 8 probes...
+^C
+
+@action[4]: 30259246
+@action[0]: 34489024
+
+XDP_ABORTED = 0 	 
+XDP_REDIRECT= 4
+
+
+> +
+> +	TP_fast_assign(
+
+		__entry->act		= XDP_TX;
+
+> +		__entry->ifindex	= dev->ifindex;
+> +		__entry->drops		= drops;
+> +		__entry->sent		= sent;
+> +		__entry->err		= err;
+> +	),
+> +
+> +	TP_printk("ifindex=%d sent=%d drops=%d err=%d",
+> +		  __entry->ifindex, __entry->sent, __entry->drops, __entry->err)
+> +);
+> +
+
+Other fun bpftrace stuff:
+
+sudo bpftrace -e 'tracepoint:xdp:xdp_*map* { @map_id[comm, args->map_id] = count(); }'
+Attaching 5 probes...
+^C
+
+@map_id[swapper/2, 113]: 1428
+@map_id[swapper/0, 113]: 2085
+@map_id[ksoftirqd/4, 113]: 2253491
+@map_id[ksoftirqd/2, 113]: 25677560
+@map_id[ksoftirqd/0, 113]: 29004338
+@map_id[ksoftirqd/3, 113]: 31034885
+
+
+$ bpftool map list id 113
+113: devmap  name tx_port  flags 0x0
+	key 4B  value 4B  max_entries 100  memlock 4096B
+
+
+p.s. People should look out for Brendan Gregg's upcoming book on BPF
+performance tools, from which I learned to use bpftrace :-)
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
