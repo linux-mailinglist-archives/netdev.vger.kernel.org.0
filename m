@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E24E435539
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD343553A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbfFECZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 22:25:27 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40080 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfFECZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:25:27 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v19so618959wmj.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 19:25:26 -0700 (PDT)
+        id S1726532AbfFECZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 22:25:52 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:35735 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726460AbfFECZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:25:52 -0400
+Received: by mail-pf1-f176.google.com with SMTP id d126so13913035pfd.2
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 19:25:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SnYR6UZNsIvvezN/6trGEygcm/uVduKyboqjmbEpP9c=;
-        b=ultpNBTaJe8wTr2RMZjxbkkAHpcs+N5Qbak1KbsiqMtl4gzjHFdM3RVb14kGvH+zCx
-         st1ppCYB+VD6eAs+XHKXu1AIi+vV3eA7VcK0JpV1vV0t9NgsTniggY2oVAB7umjlQeS0
-         7Kdq7zVpVq3adlId/zIcr+ga3ASd20C7cUSOvwjJFbJ/HFnyWneTxd5cub/0zBTxbJ/Z
-         0jDM345kodlVKkwBHp59Po/AEBE5Nons9o974ASL2Y+4ZxvOhT1Zkcpv5dLitG7oiAFk
-         n0WuzYguAYR/B8nNHHOxs9J3f22s0va9mhcFGMClWs4TNGpISboO/E9fVhDVaB8og4R3
-         TB9Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Rm5dZAs+aVhJQMUa7wbZZA6Tf+1dhoq3D+GnrhZV+0c=;
+        b=MH5cmAEiyyqp/9oQ8moVImZjns0Ib6HEWie9Jbe33rwSY+kaQ7IWceoR99LYkim7sS
+         WV7F3Jf0g1RgyMNgcngTIpbtOGKQg/7lXjjzB6YZ1rKbZk2OWo77IEOmr4Gdg1pw0R0C
+         vWRcz0EU8pfec9wEhyENZxff02tfgAMA5jjo273O4iG1VsIvVX+ao18WqUFOAWvodLv5
+         0EhNNMeK+bThfarhaMn4XOBPGSV+9s/V0LThJXjWVuekcupG4/mXDC0tAxATxH46OITt
+         JkwlQD1VYYouhreiijtnQlGclV278sJLxewqOeVqid/nYCQuV/tR5A0+tT+KUR6e44yq
+         rKWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SnYR6UZNsIvvezN/6trGEygcm/uVduKyboqjmbEpP9c=;
-        b=eKBifxVCSO4JprW8383342lhADc8EpRtaQMw1q+z3EvwThbK+r8NVlpNwM7yrMQ2By
-         L8RWWwNRCU634cAxwuxAW1tTwdKjKf2BqPiv6m4bI7skAcrXielmI8lF4gsNmcb/uA/N
-         BsmCWDdTVvl5YYPasTTGvKrubTla75rOcAN+enTEY0CVusBbwwDeTjceHjJCVWaFDgpu
-         UIwqVtuJR8LUCaC4zOFUilMUcrTPNo7ogoAiIAZdZkskP1tPXjDxvrcTGsMYgX+wENq4
-         YimStQC/1Xtrj0VKOtk0Ukux15Eh/szbDXkeD1jPPW17tP5ZBUVynomZkXjfaqALOi7O
-         Ds4A==
-X-Gm-Message-State: APjAAAUpJ9SlftulSwkC/qYNsjUQSd1TSqsBDLWldkxqd3ZPmO6SQbrb
-        1+DyW+YU/oE2kYq2gpiq/Y6w4rFa4yh3Um7I4/M+aA==
-X-Google-Smtp-Source: APXvYqzrkj4SrglYfwm2m8irSGKyjWgmAMoRYHzLGbNogklt6ZQGQnKoULwjcAA8pSaU4VYQO16wXtOgifHiJhRHdR4=
-X-Received: by 2002:a7b:c444:: with SMTP id l4mr8285341wmi.15.1559701524983;
- Tue, 04 Jun 2019 19:25:24 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Rm5dZAs+aVhJQMUa7wbZZA6Tf+1dhoq3D+GnrhZV+0c=;
+        b=VC95ERefGtsGRmm3IEsqwYJISzlaiQcqjpf70OUVyPIKsGnAJbL2ud0tNU/FWOzbFR
+         YgyslyJCl0xxWbi1euGSqFyvfTpSUvhTzYkvQMmRlc89NSIS5l3GnLdVw3ff39GCZrTn
+         N7iJE2jt6wrKTSa4TMY/QV66YJW7TZvwNs6hqphucVv0EueU92YBof4EQiPbTspHsLCp
+         7l8LSSUUfyO5nG9Q/GFfJJQ8Z3tvpu6bFdyM3SbVbTg8xUu2+0T1fOKc3feEu67hRQw7
+         G+Qxi1t7XKrZ3tEyPn/CvMKiyaSOWOVGOesvvK988NmYWJmi/qZAVP/DqssCo+1rfYfZ
+         WauA==
+X-Gm-Message-State: APjAAAW8xichkW/Vt0viiwi5VEzN31pXrP2gSOmGKxs6wI7SyBrKKZUi
+        S4Tzd8Hxvyq+kr6yC6M4K+g=
+X-Google-Smtp-Source: APXvYqzWkRJppz8FfPjJEc0+cMw/7CVGzBV1wqcPaeSn/ZyORHI7cH+YMSGHNo5Ts98rNQxQgrUibA==
+X-Received: by 2002:a17:90a:2ec5:: with SMTP id h5mr40127931pjs.93.1559701551018;
+        Tue, 04 Jun 2019 19:25:51 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id i22sm19113591pfa.127.2019.06.04.19.25.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 19:25:50 -0700 (PDT)
+Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
+ <20190604213624.yw72vzdxarksxk33@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
+Date:   Tue, 4 Jun 2019 19:25:46 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190507091118.24324-1-liuhangbin@gmail.com> <20190508.093541.1274244477886053907.davem@davemloft.net>
- <CAHo-OozeC3o9avh5kgKpXq1koRH0fVtNRaM9mb=vduYRNX0T7g@mail.gmail.com>
- <20190605014344.GY18865@dhcp-12-139.nay.redhat.com> <CAKD1Yr3px5vCAmmW7vgh4v6AX_gSRiGFcS0m+iKW9YEYZ2wG8w@mail.gmail.com>
- <20190605021533.GZ18865@dhcp-12-139.nay.redhat.com>
-In-Reply-To: <20190605021533.GZ18865@dhcp-12-139.nay.redhat.com>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Wed, 5 Jun 2019 11:25:11 +0900
-Message-ID: <CAKD1Yr1UNV-rzM3tPgcsmTRok7fSb43cmb4bGktxNsU0Bx3Hzw@mail.gmail.com>
-Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same rule
- exists when NLM_F_EXCL not supplied
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Yaro Slav <yaro330@gmail.com>,
-        Thomas Haller <thaller@redhat.com>,
-        Alistair Strachan <astrachan@google.com>,
-        Greg KH <greg@kroah.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190604213624.yw72vzdxarksxk33@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 5, 2019 at 11:15 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
-> How do you add the rules? with ip cmd it should has NLM_F_EXCL flag and
-> you will get -EEXIST error out.
+On 6/4/2019 2:36 PM, Russell King - ARM Linux admin wrote:
+> Normally the PHY receives traffic, and passes it to the MAC which
+> just ignores the signals it receives from the PHY, so no processing
+> beyond the PHY receiving the traffic happens.
+> 
+> Ultimately, whether you want the PHY to stay linked or not linked
+> is, imho, a policy that should be set by the administrator (consider
+> where a system needs to become available quickly after boot vs a
+> system where power saving is important.)  We don't, however, have
+> a facility to specify that policy though.
 
-The fact that the code worked before this commit implies that it was
-*not* using NLM_F_EXCL. :-)
-The code is here if you want to take a look.
+Maybe that's what we need, something like:
 
-https://android.googlesource.com/platform/system/netd/+/master/server/RouteController.cpp#576
-https://android.googlesource.com/platform/system/netd/+/master/server/NetlinkCommands.h#33
+ip link set dev eth0 phy [on|off|wake]
+
+or whatever we deem appropriate such that people willing to maintain the
+PHY on can do that.
+-- 
+Florian
