@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 547B43553E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C6563554D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbfFEC1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 22:27:44 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55970 "EHLO
+        id S1726465AbfFECfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 22:35:55 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56052 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfFEC1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:27:44 -0400
+        with ESMTP id S1726293AbfFECfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:35:55 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E737615045645;
-        Tue,  4 Jun 2019 19:27:43 -0700 (PDT)
-Date:   Tue, 04 Jun 2019 19:27:41 -0700 (PDT)
-Message-Id: <20190604.192741.471970699001122583.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, idosch@mellanox.com, saeedm@mellanox.com,
-        kafai@fb.com, weiwan@google.com, dsahern@gmail.com
-Subject: Re: [PATCH v3 net-next 0/7] net: add struct nexthop to fib{6}_info
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7AC121504566D;
+        Tue,  4 Jun 2019 19:35:54 -0700 (PDT)
+Date:   Tue, 04 Jun 2019 19:35:53 -0700 (PDT)
+Message-Id: <20190604.193553.2005995029161038338.davem@davemloft.net>
+To:     hkallweit1@gmail.com
+Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] r8169: factor out firmware handling
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190604031955.26949-1-dsahern@kernel.org>
-References: <20190604031955.26949-1-dsahern@kernel.org>
+In-Reply-To: <3e2e0491-8b0f-17e1-b163-e47fcb931eb5@gmail.com>
+References: <3e2e0491-8b0f-17e1-b163-e47fcb931eb5@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Jun 2019 19:27:44 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Jun 2019 19:35:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Mon,  3 Jun 2019 20:19:48 -0700
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Tue, 4 Jun 2019 07:44:53 +0200
 
-> Set 10 of 11 to improve route scalability via support for nexthops as
-> standalone objects for fib entries.
->     https://lwn.net/Articles/763950/
+> Let's factor out firmware handling into a separate source code file.
+> This simplifies reading the code and makes clearer what the interface
+> between driver and firmware handling is.
 
-Series applied, thanks David.
+This doesn't apply cleanly to net-next, specifically the hunks that move code
+out of r8169_main.c
