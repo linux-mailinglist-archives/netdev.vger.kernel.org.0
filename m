@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF4A35AAD
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 12:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 839A335ABA
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 12:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727196AbfFEKv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 06:51:26 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:43120 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726502AbfFEKv0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 06:51:26 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D5B5F720BB82724F2207;
-        Wed,  5 Jun 2019 18:50:15 +0800 (CST)
-Received: from [127.0.0.1] (10.184.225.177) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 5 Jun 2019
- 18:50:07 +0800
-Subject: [PATCH net] inet_connection_sock: remove unused parameter of
- reqsk_queue_unlink func
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Mingfangsen <mingfangsen@huawei.com>,
-        "Zhoukang (A)" <zhoukang7@huawei.com>,
-        "wangxiaogang (F)" <wangxiaogang3@huawei.com>
-References: <20190604145543.61624-1-maowenan@huawei.com>
- <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
- <40f32663-f100-169c-4d1b-79d64d68a5f9@huawei.com>
-Message-ID: <546c6d2f-39ca-521d-7009-d80df735bd9e@huawei.com>
-Date:   Wed, 5 Jun 2019 18:49:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.0
+        id S1727250AbfFEK5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 06:57:06 -0400
+Received: from hermes.domdv.de ([193.102.202.1]:4818 "EHLO hermes.domdv.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727231AbfFEK5G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 06:57:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=domdv.de;
+         s=dk3; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=g9z0TXmehP4FPwwFmO5FLEJXe/ruNzMFClnflml+DVg=; b=rGsTGowx4HeGdXPDTcQLDV/9vi
+        prlEgDGGzWAnLvKXK+HZ1Rzn98ekX1MfKBiUs+yoaY2YUysRT6LXqCRGsH8d0mLqpco4ulHpjxsBi
+        E92dYpmM40pOqec2/0AH66nOhfPDDYU7PgnE2uN8Bsah9pJWwEpSws55kYceBEfCdXsg=;
+Received: from [fd06:8443:81a1:74b0::212] (port=1712 helo=castor.lan.domdv.de)
+        by zeus.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.91)
+        (envelope-from <ast@domdv.de>)
+        id 1hYTbO-0002dQ-Kl; Wed, 05 Jun 2019 12:57:06 +0200
+Received: from woody.lan.domdv.de ([10.1.9.28] helo=host028-server-9.lan.domdv.de)
+        by castor.lan.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.91)
+        (envelope-from <ast@domdv.de>)
+        id 1hYTai-0007LQ-DG; Wed, 05 Jun 2019 12:56:24 +0200
+Message-ID: <7b488768fb9ce1825597b510550ed6f8e9c88193.camel@domdv.de>
+Subject: Re: [RFC][PATCH kernel_bpf] honor CAP_NET_ADMIN for BPF_PROG_LOAD
+From:   Andreas Steinmetz <ast@domdv.de>
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Date:   Wed, 05 Jun 2019 12:56:39 +0200
+In-Reply-To: <CAPhsuW4TV5m_E3iO7FNyFoKwsKzGSZizbPfciHOJtun-=H_biA@mail.gmail.com>
+References: <56c1f2f89428b49dad615fc13cc8c120d4ca4abf.camel@domdv.de>
+         <CAPhsuW4TV5m_E3iO7FNyFoKwsKzGSZizbPfciHOJtun-=H_biA@mail.gmail.com>
+Organization: D.O.M. Datenverarbeitung GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 
 MIME-Version: 1.0
-In-Reply-To: <40f32663-f100-169c-4d1b-79d64d68a5f9@huawei.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.225.177]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-small cleanup: "struct request_sock_queue *queue" parameter of reqsk_queue_unlink
-func is never used in the func, so we can remove it.
+On Tue, 2019-05-28 at 14:04 -0700, Song Liu wrote:
+> >          if (type != BPF_PROG_TYPE_SOCKET_FILTER &&
+> >              type != BPF_PROG_TYPE_CGROUP_SKB &&
+> 
+> You should extend this if () statement instead of adding another
+> if () below.
 
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
----
- net/ipv4/inet_connection_sock.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Reworking the if-statement is possible but the result is something like:
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 6ea523d71947..632855a8abb3 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -653,8 +653,7 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
- EXPORT_SYMBOL(inet_rtx_syn_ack);
+        if ((type != BPF_PROG_TYPE_SOCKET_FILTER &&
+             type != BPF_PROG_TYPE_CGROUP_SKB &&
+             !capable(CAP_SYS_ADMIN)) &&
+            !((type == BPF_PROG_TYPE_SCHED_CLS ||
+               type == BPF_PROG_TYPE_XDP) &&
+              capable(CAP_NET_ADMIN)))
+                return -EPERM;
 
- /* return true if req was found in the ehash table */
--static bool reqsk_queue_unlink(struct request_sock_queue *queue,
--			       struct request_sock *req)
-+static bool reqsk_queue_unlink(struct request_sock *req)
- {
- 	struct inet_hashinfo *hashinfo = req_to_sk(req)->sk_prot->h.hashinfo;
- 	bool found = false;
-@@ -673,7 +672,7 @@ static bool reqsk_queue_unlink(struct request_sock_queue *queue,
+This is not really readable and I do prefer an easy to verify code
+when it comes to security, so how about the following version:
 
- void inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req)
- {
--	if (reqsk_queue_unlink(&inet_csk(sk)->icsk_accept_queue, req)) {
-+	if (reqsk_queue_unlink(req)) {
- 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
- 		reqsk_put(req);
- 	}
--- 
+Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+
+--- a/kernel/bpf/syscall.c	2019-05-28 18:00:40.472841432 +0200
++++ b/kernel/bpf/syscall.c	2019-06-05 12:34:48.197107612 +0200
+@@ -1559,10 +1559,18 @@ static int bpf_prog_load(union bpf_attr
+ 
+ 	if (attr->insn_cnt == 0 || attr->insn_cnt > BPF_MAXINSNS)
+ 		return -E2BIG;
+-	if (type != BPF_PROG_TYPE_SOCKET_FILTER &&
+-	    type != BPF_PROG_TYPE_CGROUP_SKB &&
+-	    !capable(CAP_SYS_ADMIN))
+-		return -EPERM;
++	switch (type) {
++	case BPF_PROG_TYPE_SOCKET_FILTER:
++	case BPF_PROG_TYPE_CGROUP_SKB:
++		break;
++	case BPF_PROG_TYPE_SCHED_CLS:
++	case BPF_PROG_TYPE_XDP:
++		if (capable(CAP_NET_ADMIN))
++			break;
++	default:
++		if (!capable(CAP_SYS_ADMIN))
++			return -EPERM;
++	}
+ 
+ 	bpf_prog_load_fixup_attach_type(attr);
+ 	if (bpf_prog_load_check_attach_type(type, attr->expected_attach_type))
 
