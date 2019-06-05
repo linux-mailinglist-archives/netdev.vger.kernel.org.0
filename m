@@ -2,99 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B7C36521
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7FE36526
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbfFEUKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:10:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36612 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726501AbfFEUKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 16:10:35 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hYcEx-0002kS-Qb; Wed, 05 Jun 2019 22:10:31 +0200
-Received: from [178.197.249.21] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hYcEx-000Xli-JO; Wed, 05 Jun 2019 22:10:31 +0200
-Subject: Re: [BPF v1] tools: bpftool: Fix JSON output when lookup fails
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>, bpf@vger.kernel.org
-Cc:     Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=c3=b3pez_Galeiras?= <iago@kinvolk.io>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Prashant Bhole <bhole_prashant_q7@lab.ntt.co.jp>,
-        Okash Khawaja <osk@fb.com>,
-        David Calavera <david.calavera@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190605191707.24429-1-krzesimir@kinvolk.io>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bd439a28-fed1-b35c-79b0-2100c58584ed@iogearbox.net>
-Date:   Wed, 5 Jun 2019 22:10:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726593AbfFEUMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:12:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60674 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726502AbfFEUMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 16:12:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 29CF3AECA;
+        Wed,  5 Jun 2019 20:12:29 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 83571E00E3; Wed,  5 Jun 2019 22:12:28 +0200 (CEST)
+Date:   Wed, 5 Jun 2019 22:12:28 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, linville@redhat.com,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net v2] ethtool: fix potential userspace buffer overflow
+Message-ID: <20190605201228.GA21536@unicorn.suse.cz>
+References: <20190603205713.28121-1-vivien.didelot@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190605191707.24429-1-krzesimir@kinvolk.io>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25471/Wed Jun  5 10:12:21 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190603205713.28121-1-vivien.didelot@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/05/2019 09:17 PM, Krzesimir Nowak wrote:
-> In commit 9a5ab8bf1d6d ("tools: bpftool: turn err() and info() macros
-> into functions") one case of error reporting was special cased, so it
-> could report a lookup error for a specific key when dumping the map
-> element. What the code forgot to do is to wrap the key and value keys
-> into a JSON object, so an example output of pretty JSON dump of a
-> sockhash map (which does not support looking up its values) is:
+On Mon, Jun 03, 2019 at 04:57:13PM -0400, Vivien Didelot wrote:
+> ethtool_get_regs() allocates a buffer of size ops->get_regs_len(),
+> and pass it to the kernel driver via ops->get_regs() for filling.
 > 
-> [
->     "key": ["0x0a","0x41","0x00","0x02","0x1f","0x78","0x00","0x00"
->     ],
->     "value": {
->         "error": "Operation not supported"
->     },
->     "key": ["0x0a","0x41","0x00","0x02","0x1f","0x78","0x00","0x01"
->     ],
->     "value": {
->         "error": "Operation not supported"
->     }
-> ]
+> There is no restriction about what the kernel drivers can or cannot do
+> with the open ethtool_regs structure. They usually set regs->version
+> and ignore regs->len or set it to the same size as ops->get_regs_len().
 > 
-> Note the key-value pairs inside the toplevel array. They should be
-> wrapped inside a JSON object, otherwise it is an invalid JSON. This
-> commit fixes this, so the output now is:
+> But if userspace allocates a smaller buffer for the registers dump,
+> we would cause a userspace buffer overflow in the final copy_to_user()
+> call, which uses the regs.len value potentially reset by the driver.
 > 
-> [{
->         "key": ["0x0a","0x41","0x00","0x02","0x1f","0x78","0x00","0x00"
->         ],
->         "value": {
->             "error": "Operation not supported"
->         }
->     },{
->         "key": ["0x0a","0x41","0x00","0x02","0x1f","0x78","0x00","0x01"
->         ],
->         "value": {
->             "error": "Operation not supported"
->         }
->     }
-> ]
+> To fix this, make this case obvious and store regs.len before calling
+> ops->get_regs(), to only copy as much data as requested by userspace,
+> up to the value returned by ops->get_regs_len().
 > 
-> Fixes: 9a5ab8bf1d6d ("tools: bpftool: turn err() and info() macros into functions")
-> Cc: Quentin Monnet <quentin.monnet@netronome.com>
-> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> While at it, remove the redundant check for non-null regbuf.
+> 
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
-Applied, thanks!
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+
+I believe we should also unify returned regs.len value as discussed
+before. While the easiest way to do that would be copying regs.len to
+reglen uncoditionally and restoring regs.len after the call to
+ops->get_regs(), we should also clarify the documentation and clean up
+in-tree drivers modifying regs.len (probably also add a warning); this
+would be rather material for net-next.
+
+Michal Kubecek
+
+> ---
+>  net/core/ethtool.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> index 43e9add58340..1a0196fbb49c 100644
+> --- a/net/core/ethtool.c
+> +++ b/net/core/ethtool.c
+> @@ -1338,38 +1338,41 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
+>  static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
+>  {
+>  	struct ethtool_regs regs;
+>  	const struct ethtool_ops *ops = dev->ethtool_ops;
+>  	void *regbuf;
+>  	int reglen, ret;
+>  
+>  	if (!ops->get_regs || !ops->get_regs_len)
+>  		return -EOPNOTSUPP;
+>  
+>  	if (copy_from_user(&regs, useraddr, sizeof(regs)))
+>  		return -EFAULT;
+>  
+>  	reglen = ops->get_regs_len(dev);
+>  	if (reglen <= 0)
+>  		return reglen;
+>  
+>  	if (regs.len > reglen)
+>  		regs.len = reglen;
+>  
+>  	regbuf = vzalloc(reglen);
+>  	if (!regbuf)
+>  		return -ENOMEM;
+>  
+> +	if (regs.len < reglen)
+> +		reglen = regs.len;
+> +
+>  	ops->get_regs(dev, &regs, regbuf);
+>  
+>  	ret = -EFAULT;
+>  	if (copy_to_user(useraddr, &regs, sizeof(regs)))
+>  		goto out;
+>  	useraddr += offsetof(struct ethtool_regs, data);
+> -	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
+> +	if (copy_to_user(useraddr, regbuf, reglen))
+>  		goto out;
+>  	ret = 0;
+>  
+>   out:
+>  	vfree(regbuf);
+>  	return ret;
+>  }
+> -- 
+> 2.21.0
+> 
