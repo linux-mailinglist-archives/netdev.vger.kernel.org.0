@@ -2,103 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B48D35D9B
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A2C35DCA
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 15:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727980AbfFENNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 09:13:32 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:43600 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727740AbfFENNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:13:32 -0400
-Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C0627C0B50;
-        Wed,  5 Jun 2019 13:13:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1559740422; bh=mh42QUvXWlbA4/Dvy1RLLMUvXyOiaZoLvd+Q77x88KU=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=et+aK2S7dIEvIxkpfYu0ZdcdLWn8dgGITMkaVMFivs6/u52mZiqr+BGxXAK2lvAC9
-         d8rYQTkZzzvVSJ8iDq7qF3FNT8ju49oFg3+X1xFmxuHKttMpBY2/z3M2YOQenYPSze
-         hyUETVKNawbMK9vCcI1OKHNodNZ4dmp3SIvhDG0Q7wVhU1w6k16jw9Bge0q+pqEoUy
-         qY9EDKwBmVwnSVqg9/D4JiTU8Lsk9muibY5Q393I5czBTw/62w7EZCni8GvTGYy5LE
-         tIGd2TnoqwZW/XM+h7qxwXgPecdKwvNhGLvvBr3Op/vtyd2BfiBZ0QeArYtXw4FMQa
-         2AIIyW0USLnrQ==
-Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 17C24A0070;
-        Wed,  5 Jun 2019 13:13:27 +0000 (UTC)
-Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 5 Jun 2019 06:13:26 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Wed,
- 5 Jun 2019 15:13:24 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        "Kweh Hock Leong" <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH net-next v6 2/5] net: stmmac: introducing support for
- DWC xPCS logics
-Thread-Topic: [PATCH net-next v6 2/5] net: stmmac: introducing support for
- DWC xPCS logics
-Thread-Index: AQHVGsR5qibwMaoNx0yOto7uqjBITaaL1fgAgAE08AA=
-Date:   Wed, 5 Jun 2019 13:13:22 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B93EF69@DE02WEMBXB.internal.synopsys.com>
-References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
- <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
- <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
-In-Reply-To: <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726442AbfFENUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 09:20:15 -0400
+Received: from mail-lf1-f50.google.com ([209.85.167.50]:40562 "EHLO
+        mail-lf1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727936AbfFENUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 09:20:15 -0400
+Received: by mail-lf1-f50.google.com with SMTP id a9so17646471lff.7
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 06:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=DO7D5eGfZPh8QvxGU3q/q3NaNXnYXn2zGQBCFbLpPDQ=;
+        b=beh0BL6GcCR20DqoSBbg1q9zX26ZweZ4cxqvK5XqGFC0YgWE/zUAtf+vzocqFqAIHf
+         +igysvAnFP/0stEjHfGRV72UA6kNEUpVGbCzR3PunExIPEXd6unoE674F+AGlXHFzjt/
+         8NS8uRWNaYDT5IEMzIG4H/1OrTlsYliyj9CMuWA3HV2gmUUm8nkj0WSfjqpm8QvMEYDf
+         ix2UPw83lTFBZPdU+RN6oQSq2xahk63I0at4HboglznNRiRVGqfb0tpfTTbAJFa3W6ie
+         rWnoXpoAqfhBQV0B3Gt9Rmf2ZdMqqT6SxcIjX/TfwnfvKy6cQ6loTHwJFwOZwDI0ayWQ
+         X+nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DO7D5eGfZPh8QvxGU3q/q3NaNXnYXn2zGQBCFbLpPDQ=;
+        b=XKPoA99Xb5ZcSwv9pDcQ8iRGiNrxiwOxQgupbQt5UISEGz0QwVS2KLU8puoKSbMG9r
+         XBEjPFkfJJZnm/eBP63ET2sVt8do4JWZDLMWMNw0gGpvQX4VukZy9Z9eLbWw7HbGL9C/
+         Lw+G+Md0w0XYk0zsLGH7cCxJVhoTsR6ChFtnqSvAQzNZm4LW8eRU/6eD5/O9cAl71Bdp
+         Zixt9uLsWxCaU0i2av5QJpD0kubyVj3QzlHPSg5UcZK3aepV1T8L8GrGCKJfE/5a8VMu
+         5xzVo7x28fkBZkvc3oOYRhpo7J5Eii9M4j/TkH+dTIgj/0wTFDyOiZ/HdjbqUaZJKuJh
+         bHZQ==
+X-Gm-Message-State: APjAAAUvHLFYMs+NdCDbaSBsfaw8Hx7XxzcNAgg+cbeTkIop7Fyq2NAU
+        68lMu7xkqws2qCiNYGL5hjHplQ==
+X-Google-Smtp-Source: APXvYqxnMEac5uvICE+jqkJZ0l9bWQ/ao8lR2Ti7ZO064/CZvxjhrADWlHRjdVyo1QEdZZg6tDX8AA==
+X-Received: by 2002:ac2:59c6:: with SMTP id x6mr17692240lfn.169.1559740813157;
+        Wed, 05 Jun 2019 06:20:13 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id t3sm1893259lfk.59.2019.06.05.06.20.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Jun 2019 06:20:12 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net
+Cc:     ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v3 net-next 0/7] net: ethernet: ti: cpsw: Add XDP support
+Date:   Wed,  5 Jun 2019 16:20:02 +0300
+Message-Id: <20190605132009.10734-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQoNCj4gK1J1c3Nl
-bGwsDQo+IA0KPiBPbiA2LzQvMjAxOSAxMTo1OCBBTSwgVm9vbiBXZWlmZW5nIHdyb3RlOg0KPiA+
-IEZyb206IE9uZyBCb29uIExlb25nIDxib29uLmxlb25nLm9uZ0BpbnRlbC5jb20+DQo+ID4gDQo+
-ID4geFBDUyBpcyBEV0MgRXRoZXJuZXQgUGh5c2ljYWwgQ29kaW5nIFN1YmxheWVyIHRoYXQgbWF5
-IGJlIGludGVncmF0ZWQNCj4gPiBpbnRvIGEgR2JFIGNvbnRyb2xsZXIgdGhhdCB1c2VzIERXQyBF
-UW9TIE1BQyBjb250cm9sbGVyLiBBbiBleGFtcGxlIG9mDQo+ID4gSFcgY29uZmlndXJhdGlvbiBp
-cyBzaG93biBiZWxvdzotDQo+ID4gDQo+ID4gICA8LS0tLS0tLS0tLS0tLS0tLS1HQkUgQ29udHJv
-bGxlci0tLS0tLS0tLS0+fDwtLUV4dGVybmFsIFBIWSBjaGlwLS0+DQo+ID4gDQo+ID4gICArLS0t
-LS0tLS0tLSsgICAgICAgICArLS0tLSsgICAgKy0tLSsgICAgICAgICAgICAgICArLS0tLS0tLS0t
-LS0tLS0rDQo+ID4gICB8ICAgRVFvUyAgIHwgPC1HTUlJLT58IERXIHw8LS0+fFBIWXwgPC0tIFNH
-TUlJIC0tPiB8IEV4dGVybmFsIEdiRSB8DQo+ID4gICB8ICAgTUFDICAgIHwgICAgICAgICB8eFBD
-U3wgICAgfElGIHwgICAgICAgICAgICAgICB8IFBIWSBDaGlwICAgICB8DQo+ID4gICArLS0tLS0t
-LS0tLSsgICAgICAgICArLS0tLSsgICAgKy0tLSsgICAgICAgICAgICAgICArLS0tLS0tLS0tLS0t
-LS0rDQo+ID4gICAgICAgICAgXiAgICAgICAgICAgICAgIF4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgXg0KPiA+ICAgICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHwNCj4gPiAgICAgICAgICArLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tTURJTy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rDQo+ID4gDQo+ID4geFBDUyBpcyBhIENs
-YXVzZS00NSBNRElPIE1hbmFnZWFibGUgRGV2aWNlIChNTUQpIGFuZCB3ZSBuZWVkIGEgd2F5IHRv
-DQo+ID4gZGlmZmVyZW50aWF0ZSBpdCBmcm9tIGV4dGVybmFsIFBIWSBjaGlwIHRoYXQgaXMgZGlz
-Y292ZXJlZCBvdmVyIE1ESU8uDQo+ID4gVGhlcmVmb3JlLCB4cGNzX3BoeV9hZGRyIGlzIGludHJv
-ZHVjZWQgaW4gc3RtbWFjIHBsYXRmb3JtIGRhdGENCj4gPiAocGxhdF9zdG1tYWNlbmV0X2RhdGEp
-IGZvciBkaWZmZXJlbnRpYXRpbmcgeFBDUyBmcm9tICdwaHlfYWRkcicgdGhhdA0KPiA+IGJlbG9u
-Z3MgdG8gZXh0ZXJuYWwgUEhZLg0KPiANCj4gQXNzdW1pbmcgdGhpcyBEVyB4UENTIGNhbiBiZSBm
-b3VuZCB3aXRoIGRlc2lnbnMgb3RoZXIgdGhhbiBTVE1NQUMgd291bGQNCj4gbm90IGl0IG1ha2Ug
-c2Vuc2UgdG8gbW9kZWwgdGhpcyBhcyBzb21lIGtpbmQgb2YgUEhZL01ESU8gYnJpZGdlPyBBDQo+
-IGxpdHRsZSBiaXQgbGlrZSB3aGF0IGRyaXZlcnMvbmV0L3BoeS94aWxpbnhfZ21paTJyZ21paS5j
-IHRyaWVzIHRvIGRvPw0KDQpZZXMsIERXIFhQQ1MgaXMgYSBzZXBhcmF0ZSBJUCB0aGF0IGNhbiBi
-ZSBzb2xkIHdpdGhvdXQgdGhlIE1BQy4NCg0KVGhhbmtzLA0KSm9zZSBNaWd1ZWwgQWJyZXUNCg==
+This patchset adds XDP support for TI cpsw driver and base it on
+page_pool allocator. It was verified on af_xdp socket drop,
+af_xdp l2f, ebpf XDP_DROP, XDP_REDIRECT, XDP_PASS, XDP_TX.
+
+It was verified with following configs enabled:
+CONFIG_JIT=y
+CONFIG_BPFILTER=y
+CONFIG_BPF_SYSCALL=y
+CONFIG_XDP_SOCKETS=y
+CONFIG_BPF_EVENTS=y
+CONFIG_HAVE_EBPF_JIT=y
+CONFIG_BPF_JIT=y
+CONFIG_CGROUP_BPF=y
+
+Link on previous v2:
+https://lkml.org/lkml/2019/5/30/1315
+
+Also regular tests with iperf2 were done in order to verify impact on
+regular netstack performance, compared with base commit:
+https://pastebin.com/JSMT0iZ4
+
+v2..v3:
+- each rxq and ndev has its own page pool
+
+v1..v2:
+- combined xdp_xmit functions
+- used page allocation w/o refcnt juggle
+- unmapped page for skb netstack
+- moved rxq/page pool allocation to open/close pair
+- added several preliminary patches:
+  net: page_pool: add helper function to retrieve dma addresses
+  net: page_pool: add helper function to unmap dma addresses
+  net: ethernet: ti: cpsw: use cpsw as drv data
+  net: ethernet: ti: cpsw_ethtool: simplify slave loops
+
+
+Based on net-next/master
+
+Ilias Apalodimas (2):
+  net: page_pool: add helper function to retrieve dma addresses
+  net: page_pool: add helper function to unmap dma addresses
+
+Ivan Khoronzhuk (5):
+  net: ethernet: ti: cpsw: use cpsw as drv data
+  net: ethernet: ti: cpsw_ethtool: simplify slave loops
+  net: ethernet: ti: davinci_cpdma: add dma mapped submit
+  net: ethernet: ti: davinci_cpdma: return handler status
+  net: ethernet: ti: cpsw: add XDP support
+
+ drivers/net/ethernet/ti/Kconfig         |   1 +
+ drivers/net/ethernet/ti/cpsw.c          | 555 ++++++++++++++++++++----
+ drivers/net/ethernet/ti/cpsw_ethtool.c  | 100 ++++-
+ drivers/net/ethernet/ti/cpsw_priv.h     |   9 +-
+ drivers/net/ethernet/ti/davinci_cpdma.c | 122 ++++--
+ drivers/net/ethernet/ti/davinci_cpdma.h |   6 +-
+ drivers/net/ethernet/ti/davinci_emac.c  |  18 +-
+ include/net/page_pool.h                 |   6 +
+ net/core/page_pool.c                    |   7 +
+ 9 files changed, 685 insertions(+), 139 deletions(-)
+
+-- 
+2.17.1
+
