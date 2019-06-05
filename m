@@ -2,92 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0793564A
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 07:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC8C35670
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 07:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726464AbfFEFoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 01:44:07 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40728 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFEFoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 01:44:06 -0400
-Received: by mail-ed1-f67.google.com with SMTP id r18so3942363edo.7
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 22:44:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=srvvTMEF7VeOZbqpJYOkX9xtsBYqtvkVmQdohK0b0YM=;
-        b=lJ74uPzDKGhJvHRjsvN7l/re3bVGpd9C6IflLkmXDVLBIhTpAczXB37oV4qXrT6eDH
-         FpcFzOWbEyd/SL/P/534V3wAuIWmvGd6onLtqnRt28m0wVqamSa8+uxPr2UkqD00Ke8t
-         kpmwBi01Yw5ze3BhuRUFTGOXkSzz5DOWH9ckBRe5j62Kxk/67+OC5OtvznJHoXP+mh2S
-         z+d+xbzFZ9cB/ooCxDylQ/tXV0nXfyCacqKJliVLXIW99POFW2XMHJ7MOt6CZe8xDxLg
-         BuNQC/iZRR33+MzmgarJBCrdgkpWs3ec4YHuPLy4q88mP4BCY2GS/om1A7OsNMDCVl/q
-         ld6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=srvvTMEF7VeOZbqpJYOkX9xtsBYqtvkVmQdohK0b0YM=;
-        b=BZLGDkeP/1ia2Z6/jtNMfFd6qkDSR9mmJkB8BcukDjiRlCiInG0qn3t43WzS8iVNmM
-         oQ922PTSQjrE7DN42e6Hmo7vb4plFNY++iJXsmVKOBbA9MY92SafcTZcjkJo45evrw7C
-         DENw4e9Yazu8Q3n5zm9iGS6wZK2HrTQ16XHwAz2su4VQcf45qqwL6x6XAehj6Eidc6xn
-         ba5CPqEQ6k32kEzEGQH59zaHKjgYIi/CJxxqjczqkbYyDOAEr884Y/FbBPKqEUvn8BAp
-         1tUB/aLX8C4PNFkUlQagXipEJQqjd/ZFkWvMjG5LhKsP1GAkTUvKkR/g8OeGFBpAypQi
-         YSjw==
-X-Gm-Message-State: APjAAAVjDpKqYBD+GE5Au/iAWEnpI0ctO9kQp0Ni8uegN4fE/DMHh3/J
-        BZCxOyl+3/yvXzpPe9XW9As=
-X-Google-Smtp-Source: APXvYqxnFonArExmHSbIjRSJhIH7/ANxWdxYNLq7la0URHgNlncp9rQaKfgZQSucT4shbW8+irdGCA==
-X-Received: by 2002:a50:ca06:: with SMTP id d6mr1340320edi.16.1559713445211;
-        Tue, 04 Jun 2019 22:44:05 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id a6sm3422343eda.57.2019.06.04.22.44.04
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 04 Jun 2019 22:44:04 -0700 (PDT)
-Date:   Tue, 4 Jun 2019 22:44:02 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        zenczykowski@gmail.com, Lorenzo Colitti <lorenzo@google.com>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Thomas Haller <thaller@redhat.com>,
-        Yaro Slav <yaro330@gmail.com>
-Subject: Re: [PATCH net] Revert "fib_rules: return 0 directly if an exactly
- same rule exists when NLM_F_EXCL not supplied"
-Message-ID: <20190605054402.GA39560@archlinux-epyc>
-References: <20190605042714.28532-1-liuhangbin@gmail.com>
+        id S1726537AbfFEFwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 01:52:15 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:52902 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726050AbfFEFwP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 01:52:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=mQPnxrhp5YNAxbcRHunQ2loi4lsOMm2nCJapuHt3yu8=; b=PIJl5hSe98LLKx79uZ1dqZsNg
+        b2rndQ5ZR8VcWAZeunlR8hh5a5sMcO8TUDiKi+ddHBvHfo49KDV+Wt5b7npFln+CQ6BC8G7/76nmP
+        Iorz+ZIr/BBYin/WF+R7snd+9qpPsajI1isSocXkdQ6ed/FKCltCJsufpjfi8FPmir+YW+f15hwjN
+        pPyk1fwo3QRljg46ofS8KUKwwHPJPh3TuKYqaWqIkzJrnfPu4XZ2R1VxBXz21NZ9MXdsMDDK8Ohlc
+        TmrfGKrzenAu7LFttfAqfYLyTW/947yKE9E2vxqkajbskJ53kpTt/7UILS0lD2aCWUu6vMTLK2d23
+        wFmcyw+nw==;
+Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
+        by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hYOqK-0005Zc-T9; Wed, 05 Jun 2019 05:52:12 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        John Crispin <blogic@openwrt.org>,
+        Felix Fietkau <nbd@openwrt.org>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        kbuild test robot <lkp@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH -next] net: ethernet: mediatek: fix mtk_eth_soc build errors &
+ warnings
+Message-ID: <85d9fdd9-4b7f-6a51-b885-b3a43f199ec9@infradead.org>
+Date:   Tue, 4 Jun 2019 22:52:10 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190605042714.28532-1-liuhangbin@gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 12:27:14PM +0800, Hangbin Liu wrote:
-> This reverts commit e9919a24d3022f72bcadc407e73a6ef17093a849.
-> 
-> Nathan reported the new behaviour breaks Android, as Android just add
-> new rules and delete old ones.
-> 
-> If we return 0 without adding dup rules, Android will remove the new
-> added rules and causing system to soft-reboot.
-> 
-> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> Fixes: e9919a24d302 ("fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
-Tested-by: Nathan Chancellor <natechancellor@gmail.com>
+Fix build errors in Mediatek mtk_eth_soc driver.
 
-I verified a revert on my OP6 when I initially ran into this issue.
+It looks like these 3 source files were meant to be linked together
+since 2 of them are library-like functions,
+but they are currently being built as 3 loadable modules.
 
-Thanks for this. I would recommend that Yaro and Maciej also be given
-reported by credit as I am not the only one to bring this up :)
+Fixes these build errors:
 
-Cheers,
-Nathan
+  WARNING: modpost: missing MODULE_LICENSE() in drivers/net/ethernet/mediatek/mtk_eth_path.o
+  WARNING: modpost: missing MODULE_LICENSE() in drivers/net/ethernet/mediatek/mtk_sgmii.o
+  ERROR: "mtk_sgmii_init" [drivers/net/ethernet/mediatek/mtk_eth_soc.ko] undefined!
+  ERROR: "mtk_setup_hw_path" [drivers/net/ethernet/mediatek/mtk_eth_soc.ko] undefined!
+  ERROR: "mtk_sgmii_setup_mode_force" [drivers/net/ethernet/mediatek/mtk_eth_soc.ko] undefined!
+  ERROR: "mtk_sgmii_setup_mode_an" [drivers/net/ethernet/mediatek/mtk_eth_soc.ko] undefined!
+  ERROR: "mtk_w32" [drivers/net/ethernet/mediatek/mtk_eth_path.ko] undefined!
+  ERROR: "mtk_r32" [drivers/net/ethernet/mediatek/mtk_eth_path.ko] undefined!
+
+This changes the loadable module name from mtk_eth_soc to mtk_eth.
+I didn't see a way to leave it as mtk_eth_soc.
+
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: John Crispin <blogic@openwrt.org>
+Cc: Felix Fietkau <nbd@openwrt.org>
+Cc: Nelson Chang <nelson.chang@mediatek.com>
+---
+ drivers/net/ethernet/mediatek/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- linux-next-20190604.orig/drivers/net/ethernet/mediatek/Makefile
++++ linux-next-20190604/drivers/net/ethernet/mediatek/Makefile
+@@ -3,5 +3,5 @@
+ # Makefile for the Mediatek SoCs built-in ethernet macs
+ #
+ 
+-obj-$(CONFIG_NET_MEDIATEK_SOC)                 += mtk_eth_soc.o mtk_sgmii.o \
+-						  mtk_eth_path.o
++obj-$(CONFIG_NET_MEDIATEK_SOC)                 += mtk_eth.o
++mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o
+
+
