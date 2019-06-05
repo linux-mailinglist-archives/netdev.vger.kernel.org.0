@@ -2,139 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3255B3551F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF2F035524
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 04:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfFECHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 22:07:47 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17667 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726293AbfFECHr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jun 2019 22:07:47 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A6FC6F678460A6BB1D76;
-        Wed,  5 Jun 2019 10:07:44 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Wed, 5 Jun 2019
- 10:07:40 +0800
-Subject: Re: [PATCH net] tcp: avoid creating multiple req socks with the same
- tuples
-To:     Eric Dumazet <edumazet@google.com>
-References: <20190604145543.61624-1-maowenan@huawei.com>
- <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <4d406802-d8a2-2d92-90c3-d56b8a23c2b2@huawei.com>
-Date:   Wed, 5 Jun 2019 10:06:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1726477AbfFECPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 22:15:45 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41560 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfFECPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 22:15:45 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q17so13884172pfq.8
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 19:15:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=k/uRXrNm9b2m5iQtOpDOFOP7OyhVOSzwWx2c+KdNsiU=;
+        b=a7AZiORkC4I8oKw2NA49yTfX9pJliyZmLyQWKoAlrTzIDhK2OOCztBZSoy33k3XvhE
+         VWs4EkTBhYcdIV4F6GcEDTO7JiHsKwaGF0ByOHGBEdt+6eQ2xH5+unStf9qdDnoRZTUT
+         t12Og8lfLS1LDMDWo3t0/7TJ5aOeJtMTFOfQfP99f3eihvyw1hRZ6i8/uTR4UxZff/29
+         PNwx4sCbIyjoHhINbTgUz8CKuB1aDdo/gqvArGzERcuLoIAZlhjW41Rh6KWoEvJKPxW3
+         OFADdqr8EYdZHC5KrMN7ArxCxwMBer5SXYVaXjcgBzkLVkmQ4UO0HIe1wLcwxqGFQzrX
+         u5Gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=k/uRXrNm9b2m5iQtOpDOFOP7OyhVOSzwWx2c+KdNsiU=;
+        b=OWwCv1UDUxUdVAtHZS9VB1fqXoqkGVHYuFDeibVSgdsNL++eIRIFVmwNJr/um61nFV
+         ykhM6QWz0+/4O7s6Y1VJ/eQd8V5Hb2MnFbhLjC6q/A26A1paobR1kBMSf0NZOjStxzgG
+         xY1HoU7mMiLZbTL58C8Yh+1ufrIZyI97VE51zE3qa5aNtpcYjlkp4ikKkavqu1ED+VWd
+         /lW1d56BoEbHzBAxmrr/OLWBYN6uxOLlM1U0kZl5YDYF+e9VQLE/0SWHU5L5zHpkDC1F
+         BfhYPvb3Odopkm3cqInntJqy1LIHdtBeZ6ys6NMlF/+jGexknGkvKIkv3pc1gWhzqMd8
+         2qhw==
+X-Gm-Message-State: APjAAAUut1983AkH3w/8UdnEXh6rDE+wCO28ZHCmpvp51WaIRTHe1aJB
+        Gy4ROyVwvq+bXH0gsVn+TBk=
+X-Google-Smtp-Source: APXvYqyhZEcQeQzy+rUrffEUFxCUgx94hnWrVaXWeLxKRNJsXYPD7tJkPI59/aV5SIGm1eOW8hOHtg==
+X-Received: by 2002:a63:4006:: with SMTP id n6mr966048pga.424.1559700944964;
+        Tue, 04 Jun 2019 19:15:44 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id n21sm18826084pff.92.2019.06.04.19.15.41
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 04 Jun 2019 19:15:44 -0700 (PDT)
+Date:   Wed, 5 Jun 2019 10:15:33 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Lorenzo Colitti <lorenzo@google.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Yaro Slav <yaro330@gmail.com>,
+        Thomas Haller <thaller@redhat.com>,
+        Alistair Strachan <astrachan@google.com>,
+        Greg KH <greg@kroah.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        David Ahern <dsa@cumulusnetworks.com>,
+        Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same rule
+ exists when NLM_F_EXCL not supplied
+Message-ID: <20190605021533.GZ18865@dhcp-12-139.nay.redhat.com>
+References: <20190507091118.24324-1-liuhangbin@gmail.com>
+ <20190508.093541.1274244477886053907.davem@davemloft.net>
+ <CAHo-OozeC3o9avh5kgKpXq1koRH0fVtNRaM9mb=vduYRNX0T7g@mail.gmail.com>
+ <20190605014344.GY18865@dhcp-12-139.nay.redhat.com>
+ <CAKD1Yr3px5vCAmmW7vgh4v6AX_gSRiGFcS0m+iKW9YEYZ2wG8w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iK+4QC7bbku5MUczzKnWgL6HG9JAT6+03Q2paxBKhC4Xw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKD1Yr3px5vCAmmW7vgh4v6AX_gSRiGFcS0m+iKW9YEYZ2wG8w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2019/6/4 23:24, Eric Dumazet wrote:
-> On Tue, Jun 4, 2019 at 7:47 AM Mao Wenan <maowenan@huawei.com> wrote:
->>
->> There is one issue about bonding mode BOND_MODE_BROADCAST, and
->> two slaves with diffierent affinity, so packets will be handled
->> by different cpu. These are two pre-conditions in this case.
->>
->> When two slaves receive the same syn packets at the same time,
->> two request sock(reqsk) will be created if below situation happens:
->> 1. syn1 arrived tcp_conn_request, create reqsk1 and have not yet called
->> inet_csk_reqsk_queue_hash_add.
->> 2. syn2 arrived tcp_v4_rcv, it goes to tcp_conn_request and create reqsk2
->> because it can't find reqsk1 in the __inet_lookup_skb.
->>
->> Then reqsk1 and reqsk2 are added to establish hash table, and two synack with different
->> seq(seq1 and seq2) are sent to client, then tcp ack arrived and will be
->> processed in tcp_v4_rcv and tcp_check_req, if __inet_lookup_skb find the reqsk2, and
->> tcp ack packet is ack_seq is seq1, it will be failed after checking:
->> TCP_SKB_CB(skb)->ack_seq != tcp_rsk(req)->snt_isn + 1)
->> and then tcp rst will be sent to client and close the connection.
->>
->> To fix this, do lookup before calling inet_csk_reqsk_queue_hash_add
->> to add reqsk2 to hash table, if it finds the existed reqsk1 with the same five tuples,
->> it removes reqsk2 and does not send synack to client.
->>
->> Signed-off-by: Mao Wenan <maowenan@huawei.com>
->> ---
->>  net/ipv4/tcp_input.c | 9 +++++++++
->>  1 file changed, 9 insertions(+)
->>
->> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
->> index 08a477e74cf3..c75eeb1fe098 100644
->> --- a/net/ipv4/tcp_input.c
->> +++ b/net/ipv4/tcp_input.c
->> @@ -6569,6 +6569,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->>                 bh_unlock_sock(fastopen_sk);
->>                 sock_put(fastopen_sk);
->>         } else {
->> +               struct sock *sk1 = req_to_sk(req);
->> +               struct sock *sk2 = NULL;
->> +               sk2 = __inet_lookup_established(sock_net(sk1), &tcp_hashinfo,
->> +                                                                       sk1->sk_daddr, sk1->sk_dport,
->> +                                                                       sk1->sk_rcv_saddr, sk1->sk_num,
->> +                                                                       inet_iif(skb),inet_sdif(skb));
->> +               if (sk2 != NULL)
->> +                       goto drop_and_release;
->> +
->>                 tcp_rsk(req)->tfo_listener = false;
->>                 if (!want_cookie)
->>                         inet_csk_reqsk_queue_hash_add(sk, req,
+On Wed, Jun 05, 2019 at 10:47:58AM +0900, Lorenzo Colitti wrote:
+> On Wed, Jun 5, 2019 at 10:43 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> > Although I'm still not clear what's the difference between
+> >
+> > a) adding a dup rule and remove it later
+> > and
+> > b) return 0 directly if the rule exactally the same.
 > 
-> This issue has been discussed last year.
-Can you share discussion information?
+> The Android code updates ip rules by adding the new rule and then
+> deleting the old rule. Before this patch, the result of the operation
+> is that the old rule is deleted and the new rule exists. After this
+> patch, if the new rule is the same as the old rule, then the add does
+> nothing and the delete deletes the old rule. The result of the
+> operation is that the old rule is deleted and the new rule is no
+> longer there, and the rules are broken.
 
-> 
-> I am afraid your patch does not solve all races.
-> 
-> The lookup you add is lockless, so this is racy.
-it's right, it has already in race region.
-> 
-> Really the only way to solve this is to make sure that _when_ the
-> bucket lock is held,
-> we do not insert a request socket if the 4-tuple is already in the
-> chain (probably in inet_ehash_insert())
-> 
+Hi Lorenzo,
 
-put lookup code in spin_lock() of inet_ehash_insert(), is it ok like this?
-will it affect performance?
+How do you add the rules? with ip cmd it should has NLM_F_EXCL flag and
+you will get -EEXIST error out.
 
-in inet_ehash_insert():
-...
-        spin_lock(lock);
-+       reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
-+                                                       sk->sk_daddr, sk->sk_dport,
-+                                                       sk->sk_rcv_saddr, sk->sk_num,
-+                                                       sk_bound_dev_if, sk_bound_dev_if);
-+       if (reqsk) {
-+               spin_unlock(lock);
-+               return ret;
-+       }
-+
-        if (osk) {
-                WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
-                ret = sk_nulls_del_node_init_rcu(osk);
-	}
-	if (ret)
-		__sk_nulls_add_node_rcu(sk, list);
-	spin_unlock(lock);
-...
-
-> This needs more tricky changes than your patch.
-> 
-> .
-> 
-
+Thanks
+Hangbin
