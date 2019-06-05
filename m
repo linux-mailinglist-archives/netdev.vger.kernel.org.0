@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BAE536568
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E9D3655C
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 22:24:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbfFEUXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 16:23:47 -0400
-Received: from mga18.intel.com ([134.134.136.126]:4309 "EHLO mga18.intel.com"
+        id S1726743AbfFEUXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 16:23:50 -0400
+Received: from mga18.intel.com ([134.134.136.126]:4313 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726501AbfFEUXq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 16:23:46 -0400
+        id S1726527AbfFEUXs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 16:23:48 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
@@ -20,12 +20,16 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 05 Jun 2019 13:23:45 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 00/15][pull request] 10GbE Intel Wired LAN Driver Updates 2019-06-05
-Date:   Wed,  5 Jun 2019 13:23:43 -0700
-Message-Id: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
+Cc:     Jan Sokolowski <jan.sokolowski@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 01/15] ixgbe: add tracking of AF_XDP zero-copy state for each queue pair
+Date:   Wed,  5 Jun 2019 13:23:44 -0700
+Message-Id: <20190605202358.2767-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
+References: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -33,79 +37,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to mainly ixgbe, with a few updates to
-i40e, net, ice and hns2 driver.
+From: Jan Sokolowski <jan.sokolowski@intel.com>
 
-Jan adds support for tracking each queue pair for whether or not AF_XDP
-zero copy is enabled.  Also updated the ixgbe driver to use the
-netdev-provided umems so that we do not need to contain these structures
-in our own adapter structure.
+Here, we add a bitmap to the ixgbe_adapter that tracks if a
+certain queue pair has been "zero-copy enabled" via the ndo_bpf.
+The bitmap is used in ixgbe_xsk_umem, and enables zero-copy if
+and only if XDP is enabled, the corresponding qid in the bitmap
+is set, and the umem is non-NULL;
 
-William Tu provides two fixes for AF_XDP statistics which were causing
-incorrect counts.
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 6 ++++++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 5 ++++-
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
-Jake reduces the PTP transmit timestamp timeout from 15 seconds to 1 second,
-which is still well after the maximum expected delay.  Also fixes an
-issues with the PTP SDP pin setup which was not properly aligning on a
-full second, so updated the code to account for the cyclecounter
-multiplier and simplify the code to make the intent of the calculations
-more clear.  Updated the function header comments to help with the code
-documentation.  Added support for SDP/PPS output for x550 devices, which
-is slightly different than x540 devices that currently have this
-support.
-
-Anirudh adds a new define for Link Layer Discovery Protocol to the
-networking core, so that drivers do not have to create and use their own
-definitions.  In addition, update all the drivers currently defining
-their own LLDP define to use the new networking core define.
-
-The following are changes since commit 11694b03616b2a03cd7e3f0897d4d086c7fbc4b5:
-  net: fec_ptp: Use dev_err() instead of pr_err()
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 10GbE
-
-Anirudh Venkataramanan (4):
-  net: Add a define for LLDP ethertype
-  i40e: Use LLDP ethertype define ETH_P_LLDP
-  ixgbe: Use LLDP ethertype define ETH_P_LLDP
-  net: hns3: Use LLDP ethertype define ETH_P_LLDP
-
-Jacob Keller (5):
-  ixgbe: reduce PTP Tx timestamp timeout to 1 second
-  ixgbe: fix PTP SDP pin setup on X540 hardware
-  ixgbe: use 'cc' instead of 'hw_cc' for local variable
-  ixgbe: add a kernel documentation comment for ixgbe_ptp_get_ts_config
-  ixgbe: implement support for SDP/PPS output on X550 hardware
-
-Jan Sokolowski (2):
-  ixgbe: add tracking of AF_XDP zero-copy state for each queue pair
-  ixgbe: remove umem from adapter
-
-Jeff Kirsher (1):
-  ice: Use LLDP ethertype define ETH_P_LLDP
-
-Kangjie Lu (1):
-  net: ixgbevf: fix a missing check of ixgbevf_write_msg_read_ack
-
-William Tu (2):
-  ixgbe: fix AF_XDP tx byte count
-  ixgbe: fix AF_XDP tx packet count
-
- .../hisilicon/hns3/hns3pf/hclge_cmd.h         |   1 -
- .../hisilicon/hns3/hns3pf/hclge_main.c        |   2 +-
- drivers/net/ethernet/intel/i40e/i40e.h        |   2 -
- .../net/ethernet/intel/i40e/i40e_debugfs.c    |   4 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |   4 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |  14 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   6 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  | 187 ++++++++++++++----
- .../net/ethernet/intel/ixgbe/ixgbe_sriov.c    |   2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  14 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  82 ++------
- drivers/net/ethernet/intel/ixgbevf/vf.c       |   5 +-
- include/uapi/linux/if_ether.h                 |   1 +
- 13 files changed, 200 insertions(+), 124 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index 08d85e336bd4..5f5db6eb261e 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -635,6 +635,7 @@ struct ixgbe_adapter {
+ 	/* XDP */
+ 	int num_xdp_queues;
+ 	struct ixgbe_ring *xdp_ring[MAX_XDP_QUEUES];
++	unsigned long *af_xdp_zc_qps; /* tracks AF_XDP ZC enabled rings */
+ 
+ 	/* TX */
+ 	struct ixgbe_ring *tx_ring[MAX_TX_QUEUES] ____cacheline_aligned_in_smp;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 57fd9ee6de66..b613e72c8ee4 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6288,6 +6288,10 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 	if (ixgbe_init_rss_key(adapter))
+ 		return -ENOMEM;
+ 
++	adapter->af_xdp_zc_qps = bitmap_zalloc(MAX_XDP_QUEUES, GFP_KERNEL);
++	if (!adapter->af_xdp_zc_qps)
++		return -ENOMEM;
++
+ 	/* Set MAC specific capability flags and exceptions */
+ 	switch (hw->mac.type) {
+ 	case ixgbe_mac_82598EB:
+@@ -11161,6 +11165,7 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	kfree(adapter->jump_tables[0]);
+ 	kfree(adapter->mac_table);
+ 	kfree(adapter->rss_key);
++	bitmap_free(adapter->af_xdp_zc_qps);
+ err_ioremap:
+ 	disable_dev = !test_and_set_bit(__IXGBE_DISABLED, &adapter->state);
+ 	free_netdev(netdev);
+@@ -11249,6 +11254,7 @@ static void ixgbe_remove(struct pci_dev *pdev)
+ 
+ 	kfree(adapter->mac_table);
+ 	kfree(adapter->rss_key);
++	bitmap_free(adapter->af_xdp_zc_qps);
+ 	disable_dev = !test_and_set_bit(__IXGBE_DISABLED, &adapter->state);
+ 	free_netdev(netdev);
+ 
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index bfe95ce0bd7f..b9f05fbdbf67 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -15,7 +15,8 @@ struct xdp_umem *ixgbe_xsk_umem(struct ixgbe_adapter *adapter,
+ 	int qid = ring->ring_idx;
+ 
+ 	if (!adapter->xsk_umems || !adapter->xsk_umems[qid] ||
+-	    qid >= adapter->num_xsk_umems || !xdp_on)
++	    qid >= adapter->num_xsk_umems || !xdp_on ||
++	    !test_bit(qid, adapter->af_xdp_zc_qps))
+ 		return NULL;
+ 
+ 	return adapter->xsk_umems[qid];
+@@ -143,6 +144,7 @@ static int ixgbe_xsk_umem_enable(struct ixgbe_adapter *adapter,
+ 	if (if_running)
+ 		ixgbe_txrx_ring_disable(adapter, qid);
+ 
++	set_bit(qid, adapter->af_xdp_zc_qps);
+ 	err = ixgbe_add_xsk_umem(adapter, umem, qid);
+ 	if (err)
+ 		return err;
+@@ -173,6 +175,7 @@ static int ixgbe_xsk_umem_disable(struct ixgbe_adapter *adapter, u16 qid)
+ 	if (if_running)
+ 		ixgbe_txrx_ring_disable(adapter, qid);
+ 
++	clear_bit(qid, adapter->af_xdp_zc_qps);
+ 	ixgbe_xsk_umem_dma_unmap(adapter, adapter->xsk_umems[qid]);
+ 	ixgbe_remove_xsk_umem(adapter, qid);
+ 
 -- 
 2.21.0
 
