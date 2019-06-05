@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B33D354FE
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 03:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE6A35507
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 03:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbfFEBbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jun 2019 21:31:22 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55438 "EHLO
+        id S1726464AbfFEBex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jun 2019 21:34:53 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55456 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFEBbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 21:31:21 -0400
+        with ESMTP id S1726341AbfFEBex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jun 2019 21:34:53 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D907114FB1D9F;
-        Tue,  4 Jun 2019 18:31:18 -0700 (PDT)
-Date:   Tue, 04 Jun 2019 18:31:16 -0700 (PDT)
-Message-Id: <20190604.183116.1573562404756340727.davem@davemloft.net>
-To:     eric.dumazet@gmail.com
-Cc:     edumazet@google.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] ipv6: tcp: enable flowlabel reflection in some RST
- packets
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id ABD4315042E97;
+        Tue,  4 Jun 2019 18:34:52 -0700 (PDT)
+Date:   Tue, 04 Jun 2019 18:34:52 -0700 (PDT)
+Message-Id: <20190604.183452.368761665430431543.davem@davemloft.net>
+To:     timbeale@catalyst.net.nz
+Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org
+Subject: Re: [PATCH net] udp: only choose unbound UDP socket for multicast
+ when not in a VRF
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <5ce53efb-1a9c-86a8-2b78-e79d670db9bd@gmail.com>
-References: <20190604192942.118949-1-edumazet@google.com>
-        <5ce53efb-1a9c-86a8-2b78-e79d670db9bd@gmail.com>
+In-Reply-To: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
+References: <1559613383-6086-1-git-send-email-timbeale@catalyst.net.nz>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Jun 2019 18:31:19 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Jun 2019 18:34:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <eric.dumazet@gmail.com>
-Date: Tue, 4 Jun 2019 18:16:00 -0700
+From: Tim Beale <timbeale@catalyst.net.nz>
+Date: Tue,  4 Jun 2019 13:56:23 +1200
 
-> On 6/4/19 12:29 PM, Eric Dumazet wrote:
->> This extends commit 22b6722bfa59 ("ipv6: Add sysctl for per
->> namespace flow label reflection"), for some TCP RST packets.
->> 
->> When RST packets are sent because no socket could be found,
->> it makes sense to use flowlabel_reflect sysctl to decide
->> if a reflection of the flowlabel is requested.
->> 
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> By default, packets received in another VRF should not be passed to an
+> unbound socket in the default VRF. This patch updates the IPv4 UDP
+> multicast logic to match the unicast VRF logic (in compute_score()),
+> as well as the IPv6 mcast logic (in __udp_v6_is_mcast_sock()).
 > 
-> Please wait for a V2, I will use another bit from the sysctl to limit the
-> risk of regressions.
+> The particular case I noticed was DHCP discover packets going
+> to the 255.255.255.255 address, which are handled by
+> __udp4_lib_mcast_deliver(). The previous code meant that running
+> multiple different DHCP server or relay agent instances across VRFs
+> did not work correctly - any server/relay agent in the default VRF
+> received DHCP discover packets for all other VRFs.
+> 
+> Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
 
-Ok.
+Applied and queued up for -stable, thanks.
