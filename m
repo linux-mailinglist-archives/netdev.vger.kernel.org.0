@@ -2,92 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2497636091
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:53:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0D93609D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 17:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728476AbfFEPxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 11:53:10 -0400
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:42535 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbfFEPxK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:53:10 -0400
-Received: by mail-pl1-f171.google.com with SMTP id go2so9831736plb.9;
-        Wed, 05 Jun 2019 08:53:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=b/A6amxgGsaMi5e6lYvOcmDbkuB6qV1wDTVAsO9soAo=;
-        b=HF0oX4GoizXaqFveRN0w+AdvmpoRPfcJEj2QWQPAAikUxO3E5MhSys+ftd+F4GdQnA
-         C7N3z2QxGpOrM/vmTLJvjZ34g9cpScZcxD+7A2r96crKQo7jp7SiZLU/uvKA38yDBAvL
-         TmrqIJuV+CMX/yYJY2yqNdIvrrCj/y0cH0O089lydcDg1OG8EkYMVB6NVwA5dts259O6
-         VRtrgU0hINVN2WZ2/8YD6D8cdonMAjiolDKuyaQ3+tmpDzUF7ow5KeLJizbKWQVT4JM2
-         MrA2itSy0bu4vhG1A4WDEKq/JTQwGSWlxSy34SNjBBE14zkCUQMPhbQIQrZclTV1yd4m
-         Z3mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=b/A6amxgGsaMi5e6lYvOcmDbkuB6qV1wDTVAsO9soAo=;
-        b=rrml6b5L3XVN3VaBB4MUfltT630R4qw2jofukfl3LXAEtMWljiqQkB6OW+1TJOOmMN
-         yKiaY/0j2/5NxqI+L2LXS6JUi8jh4XaZ8aMLneNsBocFC4Pi4+Hdro1Xp8OXmxSVHWHz
-         sz2/Uw/8IrPDXOweEmnk/puIYN2Y/lcVLO5yJx899EgRHBR+r/ddk8VgLgiRdx7pbRNj
-         aK8UYsrvfdb21UQXBq+S3j2DsbKFl05kkImj8Z+jepZm/uvkcs6xKOqyMoc4W6nABDaH
-         sOpDj1JxJg7nYZZ+jGp5XAn5i9vHcIiwP0IOzlegcjxEpD/vaY0FSG1tJeceY+WyoDju
-         vX6w==
-X-Gm-Message-State: APjAAAVO06CbwMgThwhZFIptbvUe6YqjHoMwp4EYGSTLlKnp1UeycEtp
-        bXUSGVlHxWYZ6tYkT3YUqrM=
-X-Google-Smtp-Source: APXvYqxgWZ2/4dL8gag6+o+Uvf4y2RkFKHmnXsUUxDCJ5qeHofTWkkWqQtuN6I4poQZrn5o2ydx3tw==
-X-Received: by 2002:a17:902:27a8:: with SMTP id d37mr44949235plb.150.1559749989277;
-        Wed, 05 Jun 2019 08:53:09 -0700 (PDT)
-Received: from [172.27.227.204] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id b8sm5919398pfr.93.2019.06.05.08.53.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 08:53:08 -0700 (PDT)
-Subject: Re: general protection fault in fib6_nh_init
-To:     syzbot <syzbot+1b2927fda48c5bf2e931@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-References: <0000000000008ee293058a787e2d@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cfea6086-4416-7e3c-f456-26ff44bf55a5@gmail.com>
-Date:   Wed, 5 Jun 2019 09:53:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1728526AbfFEP6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 11:58:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32844 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726421AbfFEP6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 11:58:00 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x55Flqmg011963
+        for <netdev@vger.kernel.org>; Wed, 5 Jun 2019 08:57:59 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sx4muj17c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 08:57:59 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 5 Jun 2019 08:57:58 -0700
+Received: by devvm34215.prn1.facebook.com (Postfix, from userid 172786)
+        id E8B2923248ABB; Wed,  5 Jun 2019 08:57:56 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm34215.prn1.facebook.com
+To:     <bjorn.topel@intel.com>, <magnus.karlsson@intel.com>,
+        <toke@redhat.com>, <brouer@redhat.com>
+CC:     <kernel-team@fb.com>, <netdev@vger.kernel.org>,
+        <daniel@iogearbox.net>, <ast@kernel.org>
+Smtp-Origin-Cluster: prn1c35
+Subject: [PATCH bpf-next 0/1] bpf: add XDP_SOCK type
+Date:   Wed, 5 Jun 2019 08:57:55 -0700
+Message-ID: <20190605155756.3779466-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <0000000000008ee293058a787e2d@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-05_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=575 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906050099
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/19 11:10 PM, syzbot wrote:
-> 
-> general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 4498 Comm: syz-executor.4 Not tainted 5.2.0-rc2+ #10
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:ipv6_addr_any include/net/ipv6.h:626 [inline]
-> RIP: 0010:ip6_route_check_nh_onlink net/ipv6/route.c:2910 [inline]
-> RIP: 0010:ip6_validate_gw net/ipv6/route.c:3013 [inline]
-> RIP: 0010:fib6_nh_init+0x47e/0x1c80 net/ipv6/route.c:3121
-> Code: 89 de e8 45 9f 4e fb 48 85 db 0f 84 fb 10 00 00 e8 97 9d 4e fb 48
-> 8d 7b 40 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02
-> 00 0f 85 bf 16 00 00 48 8d 7b 48 48 8b 4b 40 48 b8 00 00
-> RSP: 0018:ffff888060e277c0 EFLAGS: 00010a02
-> RAX: dffffc0000000000 RBX: ff8880a43d5cc000 RCX: ffffc90012a9f000
-> RDX: 1ff1101487ab9808 RSI: ffffffff86220829 RDI: ff8880a43d5cc040
+Have the xskmap version of bpf_map_lookup_elem() return
+an XDP_SOCK type.  This can be used to verify the existence
+of an entry, and then check the sock properties.
 
-This one to me is falls into the corruption of the rt6_info in pcpu memory.
+Further improvements would include passing the pointer 
+directly to a helper for redirrection instead of referencing
+the map again.
 
-ip6_route_check_nh_onlink has already checked that 'from' is non-NULL
-and fib6_dst falls within that memory.
+Jonathan Lemon (1):
+  bpf: Allow bpf_map_lookup_elem() on an xskmap
 
-RDI is the first input arg and appears to point to an invalid memory
-address. In my tests all mallocs (f6i, nexthops, pcpu routesm etc) start
-with 0xffff but RDI is 0xff88 which seems wrong.
+ include/linux/bpf.h                           |  8 ++++
+ include/net/xdp_sock.h                        |  4 +-
+ include/uapi/linux/bpf.h                      |  4 ++
+ kernel/bpf/verifier.c                         | 26 +++++++++++-
+ kernel/bpf/xskmap.c                           |  7 ++++
+ net/core/filter.c                             | 40 +++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  4 ++
+ .../bpf/verifier/prevent_map_lookup.c         | 15 -------
+ tools/testing/selftests/bpf/verifier/sock.c   | 18 +++++++++
+ 9 files changed, 107 insertions(+), 19 deletions(-)
+
+-- 
+2.17.1
+
