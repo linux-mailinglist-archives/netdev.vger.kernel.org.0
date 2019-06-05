@@ -2,80 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E67C0366FC
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 23:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D2B36784
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 00:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbfFEVub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 17:50:31 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35897 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbfFEVub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 17:50:31 -0400
-Received: by mail-qt1-f195.google.com with SMTP id u12so375543qth.3;
-        Wed, 05 Jun 2019 14:50:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WQ5JRyCDowKpl8zLlB65ZzG3/Cp1//VKS0bBza/BbT4=;
-        b=e5TGtQLRuTbhUtn4I1z36JYKoYZVk3cg/VegzFa6DfJWpPOinGMCpqhcZrGX2akxbU
-         ddYLF0uQQnCsvz6kjGS6xxRShYQewg1ZRwkGoC9pKF8qzAdgWKdygEFXFV4JT2hhPWkr
-         Q3JzpQ0kC5lktTkoKJ7D8FH4jMdVKlmKzgODgHe1B565wYBVs9lZy7UBWDLwKCRg2yTg
-         rqqiNhRiVGAKLDODJyhP+PUFn//xeilz+O1csa2JjTMfkpowPTtsxJc57T1JTZxSgr69
-         kW92bplLVAAjnaeKQZymu2TVUz/KBOdNtG0p9csNEU7AaRVKL3XpCygGcdjk8oHLSRFe
-         +xaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WQ5JRyCDowKpl8zLlB65ZzG3/Cp1//VKS0bBza/BbT4=;
-        b=MozfhwhtYzEnqve0OOTc3Df/awUCh4+Z2AL5MsVg6VV+T3kUCMLznxVhKGr9dPpS97
-         eGgnI7Qkioq0RGpUnJ7BAzaoq3NiN26CCC9oWMLZi6fYvgiBiY30kd8GdqUx9ZDOv9qu
-         gOUKTCUwrHMnNOeLF6BZAZcUIHKp0bhUZdCC7TM8+jtBDe9PR3+VkhdzT6h3+GFZrvos
-         1KnHl9BjHjyLjQkQVxMAOX8OVCdT/xLRNK1kU6tCp36G41PVIT4K3/cgFkSHwyMvsjRd
-         LuJgsH3i6iZsqLCl9by7z85iBJCGks2majyy5y824rYnXCfgt83iEGP3ka7D8uEzPvM4
-         6Hrw==
-X-Gm-Message-State: APjAAAUc37hblmFSEoqzEWPTYM3ofqH4+RU1BOg9Wgwh+C7UJ6hBRY6h
-        P59TyZ2sCv/mExJv1QFvLuo=
-X-Google-Smtp-Source: APXvYqwUmBs+e/Uo1U55vDroOcihm98LUfZeCzfLEsnJdrDM1nK8YuSyqn5mKBipleNxACRTmDPH6g==
-X-Received: by 2002:a0c:aecd:: with SMTP id n13mr35457870qvd.182.1559771429920;
-        Wed, 05 Jun 2019 14:50:29 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f019:e1f5:82ba:9aab:a373:4cb8])
-        by smtp.gmail.com with ESMTPSA id 1sm31407qtg.11.2019.06.05.14.50.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 05 Jun 2019 14:50:29 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 83B8BC087C; Wed,  5 Jun 2019 18:50:26 -0300 (-03)
-Date:   Wed, 5 Jun 2019 18:50:26 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     linux-kernel@vger.kernel.org, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, davem@davemloft.net,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: sctp: drop unneeded likely() call around IS_ERR()
-Message-ID: <20190605215026.GB3778@localhost.localdomain>
-References: <1559768607-17439-1-git-send-email-info@metux.net>
+        id S1726674AbfFEWbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 18:31:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46022 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726510AbfFEWbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 18:31:50 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x55MVFFR018208;
+        Wed, 5 Jun 2019 15:31:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=6j7vpSvSiDYY9IH9/wBwCX0diYbT/eJGELH4MxsjmbM=;
+ b=Sldww/YkWyfU1Jfp3qX9UwC+owaFELDgYCidW9/2i23ScUosqj86vS6kkzWG1mFZboQp
+ Q0vMiIn4vYjBDNd0MiPxbjL/HguFa4TkgUWGQuqIAorU0JtqRv2szqu4uZlOnJSyrrQ1
+ sKYZtzUkF+RwcNi9F9GArbx1YK6s5/2B2Pk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sxdvpj1yu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 05 Jun 2019 15:31:19 -0700
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 5 Jun 2019 15:31:17 -0700
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 5 Jun 2019 15:31:16 -0700
+Received: from NAM01-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 5 Jun 2019 15:31:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6j7vpSvSiDYY9IH9/wBwCX0diYbT/eJGELH4MxsjmbM=;
+ b=e/xVmgI6JEPyjIsGVvIjET+oWz8BXcxaOuAyZFWO1wTFV5ZMx7tlZDTqZCVWKD0IAny0iaDaRbPGj2ChCSUG1AqpyhzpD8va57/DP3vFgbPLzNCoZ8v99hoDaTWKkUaPBPerD/ISp2e87ApJ7PCfAiwVo1XXz4EZkeasJofZZvc=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
+ MWHPR15MB1711.namprd15.prod.outlook.com (10.174.254.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.13; Wed, 5 Jun 2019 22:31:14 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1943.023; Wed, 5 Jun 2019
+ 22:31:14 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+CC:     "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "toke@redhat.com" <toke@redhat.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "ast@kernel.org" <ast@kernel.org>
+Subject: Re: [PATCH 1/1] bpf: Allow bpf_map_lookup_elem() on an xskmap
+Thread-Topic: [PATCH 1/1] bpf: Allow bpf_map_lookup_elem() on an xskmap
+Thread-Index: AQHVG7eCV7MKSsPZgkW3+/mLD2Xff6aNpVGA
+Date:   Wed, 5 Jun 2019 22:31:14 +0000
+Message-ID: <20190605223111.rgsd3tyl7jvahvgc@kafai-mbp.dhcp.thefacebook.com>
+References: <20190605155756.3779466-1-jonathan.lemon@gmail.com>
+ <20190605155756.3779466-2-jonathan.lemon@gmail.com>
+In-Reply-To: <20190605155756.3779466-2-jonathan.lemon@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR1301CA0035.namprd13.prod.outlook.com
+ (2603:10b6:301:29::48) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:53::10)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:b7bf]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6a871879-357a-4145-f507-08d6ea058474
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1711;
+x-ms-traffictypediagnostic: MWHPR15MB1711:
+x-microsoft-antispam-prvs: <MWHPR15MB1711DED9A5128781735BD9FAD5160@MWHPR15MB1711.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 00594E8DBA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(396003)(346002)(366004)(39860400002)(189003)(199004)(99286004)(86362001)(6916009)(8936002)(2906002)(4326008)(66946007)(76176011)(53936002)(5660300002)(316002)(52116002)(54906003)(6116002)(386003)(81166006)(6506007)(102836004)(66446008)(66556008)(305945005)(7736002)(66476007)(4744005)(64756008)(229853002)(478600001)(81156014)(8676002)(486006)(476003)(68736007)(9686003)(6512007)(1076003)(73956011)(256004)(6436002)(6486002)(71200400001)(71190400001)(6246003)(46003)(14444005)(14454004)(186003)(446003)(25786009)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1711;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: tidX0EhjpECynAYatESLY/bCMaPgx1bhpDY65iZ6Zsdv7RYRw9yrV68bTrJaNnHEUIE5kWKTUPj04KJz1wsyNEpU8cepb/S2R1NvnLuaBGDf+4fN/mLHDB8qkzJEmRMQddCydTrcrbX7WDHDhtZCLG+9lG8452BNRwIyUaoC/QAQaxjWiWGzqrBpDaeyEibbdi0xKudLsBBsPjoctfehR7N7T0OSpQDJWD1TYU1UzQcgXr2oo7O+PWBNW2uKzYioMq9biMTA7V7wU0Bw6rB4Jn/ebzLa/RJbm4F13pbtHiTMn5eS1GpfOlp10LpgqdkiyBw7UTwydHLWAQ5a0+BE5Q1DuHq+o15vtEjy+/Pkdo1zRdPmZ6quFZYkRJ+ptN2qY5SGSWBx711igv7rX9/Dx2rrFcLyXsr2b8bxug45cZg=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B1D6EC19BC4ABA4A8288857EC27CFBB7@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559768607-17439-1-git-send-email-info@metux.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a871879-357a-4145-f507-08d6ea058474
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2019 22:31:14.2421
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1711
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-05_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=490 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906050143
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 11:03:27PM +0200, Enrico Weigelt, metux IT consult wrote:
-> From: Enrico Weigelt <info@metux.net>
-> 
-> IS_ERR() already calls unlikely(), so this extra unlikely() call
-> around IS_ERR() is not needed.
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
+On Wed, Jun 05, 2019 at 08:57:56AM -0700, Jonathan Lemon wrote:
+> Currently, the AF_XDP code uses a separate map in order to
+> determine if an xsk is bound to a queue.  Instead of doing this,
+> have bpf_map_lookup_elem() return a xdp_sock.
+>=20
+> Rearrange some xdp_sock members to eliminate structure holes.
+>=20
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> ---
+>  include/linux/bpf.h                           |  8 ++++
+>  include/net/xdp_sock.h                        |  4 +-
+>  include/uapi/linux/bpf.h                      |  4 ++
+>  kernel/bpf/verifier.c                         | 26 +++++++++++-
+>  kernel/bpf/xskmap.c                           |  7 ++++
+>  net/core/filter.c                             | 40 +++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h                |  4 ++P
+The convention is to submit this uapi's bpf.h sync to tools/ in
+a separate patch to make conflicts easier to be dealt with.
+It will be the 2nd patch.
 
-Hi,
+>  .../bpf/verifier/prevent_map_lookup.c         | 15 -------
+>  tools/testing/selftests/bpf/verifier/sock.c   | 18 +++++++++
+Hence, the selftest changes will be in the 3rd patch.
 
-This patch overlaps with
-Jun 05 Kefeng Wang     (4.4K) [PATCH net-next] net: Drop unlikely before IS_ERR(_OR_NULL)
-
-  Marcelo
+Others LGTM,
+Acked-by: Martin KaFai Lau <kafai@fb.com>
