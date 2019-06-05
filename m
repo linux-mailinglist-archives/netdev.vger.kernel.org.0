@@ -2,81 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4C15358E1
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:45:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC370358E5
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 10:46:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfFEIpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 04:45:12 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:53378 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726690AbfFEIpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 04:45:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=zAEKAkaJlWSdynEyHK37EvVVVoaBFWEA4Jbok8Skl2E=; b=OY/Khl/nFLTM0SWuQIKwRiFx5
-        Gi5dVUrCyvIvldyo2/lhvWmfOLbioe9NiGhpqLBIzkp1EZnoxr0iSnRJPULoBDxHe6q11Uas7zDPj
-        mLo0NY2vRsqQugXXy+5lRWNMYPbU2CsVnPVNI4+eNQSt7cpdCzYc/nEOl/layS4GLpnvc+9JViCEu
-        TdEhKtBNXLW2mF+hFvo5SGfNGrQaEEwqjCWrnzXnq2wIffJyAsRPwBPpu8vqZ6sUyf5VHVZ/1YZ+Y
-        zAqnn1IN5LoIMlMEmq3j0DUPJ2LvbnrD/skI99E28FLKDkcWeW6B1AHUIkBHVrzfnDEEW3QfLfdP5
-        roJ9iSTXA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52866)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hYRXc-0006j2-0p; Wed, 05 Jun 2019 09:45:04 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hYRXY-0002IP-Ly; Wed, 05 Jun 2019 09:45:00 +0100
-Date:   Wed, 5 Jun 2019 09:45:00 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-Message-ID: <20190605084500.pjkq43l4aaepznon@shell.armlinux.org.uk>
-References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
- <20190604213624.yw72vzdxarksxk33@shell.armlinux.org.uk>
- <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
+        id S1726797AbfFEIqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 04:46:10 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:44063 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbfFEIqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 04:46:09 -0400
+Received: by mail-qt1-f195.google.com with SMTP id x47so17011849qtk.11
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 01:46:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=B0y/WxuAU3yeQ3Aesz+vtVfvhCNtGHIL8s7vHvFgqiA=;
+        b=NViDpWtBe7V/aZszKVHDFomL5i8CKwbQmeabb2SU7Z7K8DpFDf08Onw9vBbAnMB6l4
+         vSjgSu+hcRBcncirz5PM+u7NHjFLUOF3as2BOUsa9BjbMaR9Qsx5Nj9oFGXypDYy5S4V
+         U+ZAMD3OmVhx2T0C0Cx6Ju68JcURQMR7wo8le8seo9rjsR2gBLw+1w/msxPW2HnT3zjb
+         yBIfHmrp4pDdhoZokzgcqtAdZpSJ0igazbq3vrFpx2LtvN22zwOxQyfux5A+4QBqT6oC
+         a/USnf44VuVwbR0FLTBjW9UC1kRx1Nw1b7QyBnite4vxE+4n7pxUjiiGDogXcQfBss9G
+         2Y7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=B0y/WxuAU3yeQ3Aesz+vtVfvhCNtGHIL8s7vHvFgqiA=;
+        b=qK5Iazk6ErRQ3LxeXlLULqBknINN/22c6h0eZ31LjDXHRmGPZsoQB3WbKrwS269GdM
+         kzl+XPfV+VUlo6yzFEZw7l4aBhUZKviQq4d6CKF/f5NB5+3E0XyGkmiNuMwT/ggFlpYU
+         2fKsojiesyxeC4aPJoOvRrQHj3xyilZC/cDRekY4P2OwsKsCF9obKJ9MVKanZGCxJLPf
+         ek1lTxvSSqaXbwIlYTDCQuYBynTpzLTW3YO0OrSxpaBdlsiseXmtCTrXc7sj2EiDueAT
+         NLF70QjqDiRPRxpdm+6PBMMTrtIfnRbfNQV44pM7c96LucITlueRwjfWUNPlbHtcVYyq
+         yDEQ==
+X-Gm-Message-State: APjAAAWotHHeXAcAqAsJEUK0PWJoDWGCMMPnPwirYQGbdStaHzg9PK+O
+        OPDqpmJ6b29GVRtybBzcdnOiuRCd9yfIpBDNoYY=
+X-Google-Smtp-Source: APXvYqwtvvVfuQzGWe8VTBI0qVGfwUEQfBrkYkbfSkz635q54Xa9yKgppTRoHNmnymhs6acsdiEgt6BFx4VeUsOphfQ=
+X-Received: by 2002:ac8:19ac:: with SMTP id u41mr15768882qtj.46.1559724368023;
+ Wed, 05 Jun 2019 01:46:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190603163852.2535150-1-jonathan.lemon@gmail.com>
+ <20190603163852.2535150-2-jonathan.lemon@gmail.com> <20190604184306.362d9d8e@carbon>
+ <87399C88-4388-4857-AD77-E98527DEFDA4@gmail.com> <20190604181202.bose7inhbhfgb2rc@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190604181202.bose7inhbhfgb2rc@kafai-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 5 Jun 2019 10:45:56 +0200
+Message-ID: <CAJ+HfNiQ-wO+sT_6FHAMHw7eDv-kMNjg0ecUmHa_TKg-gPXCyA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
+To:     Martin Lau <kafai@fb.com>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 07:25:46PM -0700, Florian Fainelli wrote:
-> On 6/4/2019 2:36 PM, Russell King - ARM Linux admin wrote:
-> > Normally the PHY receives traffic, and passes it to the MAC which
-> > just ignores the signals it receives from the PHY, so no processing
-> > beyond the PHY receiving the traffic happens.
-> > 
-> > Ultimately, whether you want the PHY to stay linked or not linked
-> > is, imho, a policy that should be set by the administrator (consider
-> > where a system needs to become available quickly after boot vs a
-> > system where power saving is important.)  We don't, however, have
-> > a facility to specify that policy though.
-> 
-> Maybe that's what we need, something like:
-> 
-> ip link set dev eth0 phy [on|off|wake]
-> 
-> or whatever we deem appropriate such that people willing to maintain the
-> PHY on can do that.
+On Tue, 4 Jun 2019 at 20:13, Martin Lau <kafai@fb.com> wrote:
+>
+> On Tue, Jun 04, 2019 at 10:25:23AM -0700, Jonathan Lemon wrote:
+> > On 4 Jun 2019, at 9:43, Jesper Dangaard Brouer wrote:
+> >
+> > > On Mon, 3 Jun 2019 09:38:51 -0700
+> > > Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> > >
+> > >> Currently, the AF_XDP code uses a separate map in order to
+> > >> determine if an xsk is bound to a queue.  Instead of doing this,
+> > >> have bpf_map_lookup_elem() return the queue_id, as a way of
+> > >> indicating that there is a valid entry at the map index.
+> > >
+> > > Just a reminder, that once we choose a return value, there the
+> > > queue_id, then it basically becomes UAPI, and we cannot change it.
+> >
+> > Yes - Alexei initially wanted to return the sk_cookie instead, but
+> > that's 64 bits and opens up a whole other can of worms.
+> >
+> >
+> > > Can we somehow use BTF to allow us to extend this later?
+> > >
+> > > I was also going to point out that, you cannot return a direct pointe=
+r
+> > > to queue_id, as BPF-prog side can modify this... but Daniel already
+> > > pointed this out.
+> >
+> > So, I see three solutions here (for this and Toke's patchset also,
+> > which is encountering the same problem).
+> >
+> > 1) add a scratch register (Toke's approach)
+> > 2) add a PTR_TO_<type>, which has the access checked.  This is the most
+> >    flexible approach, but does seem a bit overkill at the moment.
+> I think it would be nice and more extensible to have PTR_TO_xxx.
+> It could start with the existing PTR_TO_SOCKET
+>
+> or starting with a new PTR_TO_XDP_SOCK from the beginning is also fine.
+>
 
-How would that work when the PHY isn't bound to the network device until
-the network device is brought up?
+Doesn't the PTR_TO_SOCKET path involve taking a ref and mandating
+sk_release() from the fast path? :-(
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+
+Bj=C3=B6rn
+
+
+> > 3) add another helper function, say, bpf_map_elem_present() which just
+> >    returns a boolean value indicating whether there is a valid map entr=
+y
+> >    or not.
+> >
+> > I was starting to do 2), but wanted to get some more feedback first.
+> > --
+> > Jonathan
