@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4983F3639C
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1043F363A0
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfFESvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 14:51:20 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42142 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbfFESvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 14:51:20 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q10so5145231pff.9
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 11:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=avnH/rTOKRMkgxFUDWDVsgJ2ihOT3G2xoITfG7gj3qA=;
-        b=LJvajUz6kOCmKIvRa9mXKVaL4E/MUcumUj4nqHD4mOVPjPVTDcK5v/F44sicMM0qnE
-         RYsFTKA7+88OCVGnQYWS2hFkJ3MwQFPuX+Xx07GJTqk/72ka5RI6RTUKV/7Wk4njlK27
-         1aZPOSx1/q01z8mvg52O2XTg1t6blV5QxgB/4n/vlJQuo6zd65XuLpkaja6u94YS1XWk
-         EgWGXhehBde80hiZiS40uTuXtqziiMFotJXXtZuNGSCP5fZTgGSAN4U/5ssOq356KhNu
-         YUPkuf/NAOLOm5vzVu0hK3289JQJSccDlrD36EQ20hFSotnx+rvKNPUEK73oVWKmqXX9
-         mURQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=avnH/rTOKRMkgxFUDWDVsgJ2ihOT3G2xoITfG7gj3qA=;
-        b=RQvGA9Y4mIVqpJF8OE68LUYZA9qBWEMId0+P0GTIGDH8lJJUTQlI3NtyhjDhKVW9t4
-         tAeztZfRbalJ0tCQWm5Q5T864iukfrf9FpJkdKLX/vrkVI/zmYpYPnIxkITmu8zQz1gz
-         2XlKeqmJz9aHcPheU6cSMPrSbyzYMJXTUjZhpjftw8kOjL9Ex0laDZ2VHjmlXJSxcx8r
-         sE72B3g7mZNl/3mIgeuMWd2iiEere4MGH3FmW+ndNnYdyWOuzF0MeoUowRZoXi2BA0HO
-         1oGsKfPpJXm2VPLXmWeZQJnWTm3m2vkgBvglL8xMtjOXfqU+B64jSG39cCgU/cFG/szV
-         JxRA==
-X-Gm-Message-State: APjAAAXNshKm+dbow8Qn9gr1jpZtmaQ0ULGXzifMr71B8Qe4+yl0UTRo
-        jqSkbZ9lMk6rX7bBgxwj+dkN4DZMcD0=
-X-Google-Smtp-Source: APXvYqyV/VN+NomYp9iM62pXrywv+7KniaTRJNmOSaONG6DQ0PAUNDOq/b6pUKqKobKqIXPFxCEkxg==
-X-Received: by 2002:a62:7990:: with SMTP id u138mr4592791pfc.191.1559760679194;
-        Wed, 05 Jun 2019 11:51:19 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id l7sm27713688pfl.9.2019.06.05.11.51.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 05 Jun 2019 11:51:18 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-hyperv@vger.kernel.org,
+        id S1726510AbfFESyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 14:54:21 -0400
+Received: from mail-eopbgr760128.outbound.protection.outlook.com ([40.107.76.128]:37701
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726240AbfFESyV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 14:54:21 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=pwAy9mI4fq0pLmirdVvA1Lhd1JDm6KRg4Bjh0V52HIuyiiq0O8CD0iCMAFbWauixPzg4Kge8JrULoLUZSsi6VQHvJWAmnRZ3Pkf7tzK9pDkurUf+7YECo/W3lxzPLizECFZRgfmi+ebmuE3Vh8oDqYGj0d7+pHtFr/k9HrBFMwg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UqzLo/XfLaHhOWewkYDN2s6cQTv3V5UVwX9i2ALwYds=;
+ b=yM3NROrpamqc7t4WvV/RjQC/L9mg+4LHwvVCsmgpRj/R3hYnpbKg1kOfUF89DmJvLlwQNBTy4oqIih4eaVDuYwGeM+4lXJKAfgUfd9rF79RXf5bh3K9q7V1i/w/r/EMqJmzJM0vvyhvokZdRpWKClCRZWz0uUd8Y2aL+j7ji/y8=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UqzLo/XfLaHhOWewkYDN2s6cQTv3V5UVwX9i2ALwYds=;
+ b=WsiHm2Z2TPZQC57Ars1g1p1o4rwzvwfo+lUsmGT1uF+BuMww/HCoSMXA/w4MqMclAcnpK2VQeghAWMVeglmbuQpXyvmtFHv8nz56KABaGQft813Z1f7ylz6hpSxdvPbpdidf2S7pdaUmwG0z1VlhnOC+utzAE9z8M+Ob8l2zdvE=
+Received: from DM6PR21MB1337.namprd21.prod.outlook.com (2603:10b6:5:175::16)
+ by DM6PR21MB1179.namprd21.prod.outlook.com (2603:10b6:5:161::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1987.3; Wed, 5 Jun
+ 2019 18:54:18 +0000
+Received: from DM6PR21MB1337.namprd21.prod.outlook.com
+ ([fe80::942:899a:9cfa:ef99]) by DM6PR21MB1337.namprd21.prod.outlook.com
+ ([fe80::942:899a:9cfa:ef99%5]) with mapi id 15.20.1987.003; Wed, 5 Jun 2019
+ 18:54:18 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
         Stephen Hemminger <sthemmin@microsoft.com>
-Subject: [PATCH] revert async probing of VMBus network devices.
-Date:   Wed,  5 Jun 2019 11:51:14 -0700
-Message-Id: <20190605185114.12456-1-sthemmin@microsoft.com>
-X-Mailer: git-send-email 2.20.1
+Subject: RE: [PATCH] revert async probing of VMBus network devices.
+Thread-Topic: [PATCH] revert async probing of VMBus network devices.
+Thread-Index: AQHVG8+rB8TiUWhGvE2+WaKfaYLfe6aNZ/mg
+Date:   Wed, 5 Jun 2019 18:54:18 +0000
+Message-ID: <DM6PR21MB13371A9EEDB55BFF96B8CA7BCA160@DM6PR21MB1337.namprd21.prod.outlook.com>
+References: <20190605185114.12456-1-sthemmin@microsoft.com>
+In-Reply-To: <20190605185114.12456-1-sthemmin@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-06-05T18:54:16.3518715Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=2f4015a8-1723-4eec-a720-8682a16c483b;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=haiyangz@microsoft.com; 
+x-originating-ip: [96.61.92.94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7db79d20-9051-44b4-6182-08d6e9e73690
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DM6PR21MB1179;
+x-ms-traffictypediagnostic: DM6PR21MB1179:
+x-microsoft-antispam-prvs: <DM6PR21MB11790675C5E1C003CD2200CCCA160@DM6PR21MB1179.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 00594E8DBA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(136003)(376002)(39860400002)(346002)(13464003)(199004)(189003)(8936002)(476003)(229853002)(2906002)(76176011)(71200400001)(68736007)(4326008)(53546011)(2501003)(186003)(7736002)(55016002)(478600001)(14454004)(99286004)(74316002)(7696005)(52396003)(6436002)(256004)(3846002)(316002)(86362001)(6116002)(14444005)(22452003)(4744005)(6506007)(6246003)(33656002)(10290500003)(76116006)(107886003)(81166006)(73956011)(486006)(305945005)(66946007)(71190400001)(52536014)(25786009)(66476007)(66446008)(53936002)(11346002)(8676002)(64756008)(66066001)(110136005)(66556008)(446003)(26005)(81156014)(8990500004)(54906003)(5660300002)(102836004)(10090500001)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1179;H:DM6PR21MB1337.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 4zvEAXOGxEohKmYzhXr46+UpPvTLtNuhuvD+/Jz/L9fcapucPBDdnAg2A0JAf+mUt9mDuwYpcB1hfgye0FxmaCfU5A/5rDUBunzfgn/HtgcfOKqsfEeWxSg9uEBPag0PmgdD3otBx6n06q74mEI8ZN2dkewghRFvy+ct6gDxt7JSPOcUDBnA7SKNthH6n2GPhr1oYDNWCUXeOSjycfhNWJIW3p3U7qpv1+MhbLkt5IVtPKkPHrxBaYl3FTd4qkv683+AxxVmFLm6KgY+COQzzbd3Ln+a3H8gQQCrpUL+hiecuaMgPs9IB+A3KJWLEbJD1kw2hnCiwwz3v3cQyQxn0s42G9+xfRA4oAg+T/yb5kjEvbeRfiNl/RSmQGKcBNRlbJYgv1LYl2g6da+w0cqV6CrIJIZQFhuQZahMdF0mFAA=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7db79d20-9051-44b4-6182-08d6e9e73690
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2019 18:54:18.0522
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: haiyangz@microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Doing asynchronous probing can lead to reordered network device names.
-And because udev doesn't have any useful information to construct a
-persistent name, this causes VM's to sporadically boot with reordered
-device names and no connectivity.
 
-This shows up on the Ubuntu image on larger VM's where 30% of the
-time eth0 and eth1 get swapped.
 
-Note: udev MAC address policy is disabled on Azure images
-because the netvsc and PCI VF will have the same mac address.
+> -----Original Message-----
+> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-
+> owner@vger.kernel.org> On Behalf Of Stephen Hemminger
+> Sent: Wednesday, June 5, 2019 2:51 PM
+> To: netdev@vger.kernel.org
+> Cc: linux-hyperv@vger.kernel.org; Stephen Hemminger
+> <sthemmin@microsoft.com>
+> Subject: [PATCH] revert async probing of VMBus network devices.
+>=20
+> Doing asynchronous probing can lead to reordered network device names.
+> And because udev doesn't have any useful information to construct a
+> persistent name, this causes VM's to sporadically boot with reordered dev=
+ice
+> names and no connectivity.
+>=20
+> This shows up on the Ubuntu image on larger VM's where 30% of the time
+> eth0 and eth1 get swapped.
+>=20
+> Note: udev MAC address policy is disabled on Azure images because the
+> netvsc and PCI VF will have the same mac address.
+>=20
+> Fixes: af0a5646cb8d ("use the new async probing feature for the hyperv
+> drivers")
+> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+> ---
 
-Fixes: af0a5646cb8d ("use the new async probing feature for the hyperv drivers")
-Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
----
- drivers/net/hyperv/netvsc_drv.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 06393b215102..1a2c32111106 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2411,9 +2411,6 @@ static struct  hv_driver netvsc_drv = {
- 	.id_table = id_table,
- 	.probe = netvsc_probe,
- 	.remove = netvsc_remove,
--	.driver = {
--		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
--	},
- };
- 
- /*
--- 
-2.20.1
-
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
