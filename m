@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 981083567A
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 07:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F073567B
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 07:59:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbfFEF5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 01:57:49 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50813 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbfFEF5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 01:57:49 -0400
-Received: by mail-wm1-f65.google.com with SMTP id f204so920918wme.0
-        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 22:57:48 -0700 (PDT)
+        id S1726407AbfFEF7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 01:59:12 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:39659 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbfFEF7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 01:59:11 -0400
+Received: by mail-wr1-f65.google.com with SMTP id x4so18104722wrt.6
+        for <netdev@vger.kernel.org>; Tue, 04 Jun 2019 22:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DA/gHQEskkU0upcOS5+E5efHOYupq+ZEpDFft7GQELg=;
-        b=aGRg/Abwd39zaE696uZHGtsY0KadyB6m5rLR9LHXSCc0BD2rfBlcxZf/aijCsmDAKf
-         aaqyByJRALd7rhALfHwbwrx3ygJJ1QGcS0N2OMGCoNQ6yCkLWgDtkReIOsOj+paBjvdJ
-         GbM26HL5OXyYMswzp60CF6+36xnHb7H7ki+NUG7O43kanUidTlWU774M9Y02nbCrYuaA
-         G49F0y5hvQKnr2rnqchkUIP01PR+D2NTzf5lgikzwzcjbV4r6RlUafbGg/sRBGsGa4qE
-         9Z06ll09AKDAKI9+5t+vlmCXACtK94fKEaaSymhARLg0YUcvo2fQroL+JIrJxhGAS4IN
-         GCow==
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=E3PmNvUOt509UAPa8pmeQr0tDoKWZlSXD6TLuZ+DrPM=;
+        b=tHnDWbm4yy9u1ldr0zpcWsqlyYBin+GsTCf3V8noGaz3UmRj2ugfbCpwkdMBDoo59P
+         b6KvSymYg7WBFZEkoe17cLsFPzuqNWbkccnqypGki7AN9+5XV0BJHzCEd/hxuJdNiLsg
+         +c5lCuFTS3ojN8RP3hCZR4Dkk3qPlz3Za2BwZ7j2EguIs79Ka5SLa/CugIH/k+felZV7
+         KwiQJnqj0W/M4XSmrk96So69CEKIuljozHpV8mFEEJbeq1V3kMzS6fzWz0F7K9lTi+lL
+         wq1c5u+/8zF1pN/a/SNm8WoOx//yKlwtsAbaJXZ6j0h/f0JfxXrGT9opMvHMOSbsb9CO
+         u2FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DA/gHQEskkU0upcOS5+E5efHOYupq+ZEpDFft7GQELg=;
-        b=XSiE1caDnwBsxG2RKWrSzz4u9GWL5FGHVADANlBBruBZqz7AFGpAkkpdCkDzBZEvKb
-         +nkCgHAUSVVszMusNHamTk5wgHsB5xi+BLNgmR1/ZJbePsAXMp+u+ieCx50tnkQ+rr3I
-         iKJp+2OKPhvojOuaVeGpqGi3r1d3Pybw7MbqJ35OraxX7tcymf5SldHCJsiYVqn/oyIR
-         dmhWBc0/Krr3at3Q+ODL7IrBoQRSJoAGL4XpkesKpXU4LpiB2pKWBdYKfMINVYy7Sh1O
-         Hsvt2dVvlkTEx7bfJuG6KKMZWCvcqLuDpr7TVPQ1qxKJcXDQt8zAHinFL62qQQ4bayNZ
-         bXPA==
-X-Gm-Message-State: APjAAAVKM7ZnOuNcUyVZ/oxpyGyXf1WmISARNmbN8ldkT1NwkqcHN/8i
-        xG+HYEVdGrUOKmXSJGqVuZXW1GCF
-X-Google-Smtp-Source: APXvYqys8SjCk0faa9XlRT/srvjOZGKSiBQcEI5LWzb1wTUUMz+STchJrRl8Pi6YMMF6494VgtKTgQ==
-X-Received: by 2002:a7b:c748:: with SMTP id w8mr8247654wmk.36.1559714267182;
-        Tue, 04 Jun 2019 22:57:47 -0700 (PDT)
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=E3PmNvUOt509UAPa8pmeQr0tDoKWZlSXD6TLuZ+DrPM=;
+        b=RvuuZ+4EBtQAkbVtaVWOXXyrqJVgh3B05KnAcDLAgI1rd+bTcRlg00UYM5eEqioDWW
+         Vtoi8bwA7OsxfEzuaoiASUqYxRgR1weOcUp4JF90HuRu67RcbL0YjMRnKivIRKgUnO3y
+         FHK3whz/oucN/aNTHVzCT3HaePo/80ihoOj9neADAK7zRc0Hb+k263X+zVkp8Dgg89I4
+         ijkdrjTejEPgugJoGWiRtt1NTulk+dux1netnVTVumOYlQiEb5Q8cYZWLQgoHhD5Imif
+         /u/otD8TZW8yRbsLRTIbz2We28yFztEU67YLhXbcI3EyEmhrt4jKFjYysfdVFDni0s1N
+         RwwA==
+X-Gm-Message-State: APjAAAUhjutlCvEBXlDcAxJNg3n3P2OeNzHFZlcU13hn91VV2VTNKXqp
+        qa7n0mxJ7FUuaYYTvdloPA4ra2TF
+X-Google-Smtp-Source: APXvYqz+b8FLT+70+tyvpOLuwuR4CwiMBXIDzDrmpXlSp1WPj7Wk43HSlFSdq+oAJygZ7wD/DgpqyA==
+X-Received: by 2002:a5d:5342:: with SMTP id t2mr5999649wrv.126.1559714350087;
+        Tue, 04 Jun 2019 22:59:10 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bf3:bd00:8871:c3cd:95c8:45d1? (p200300EA8BF3BD008871C3CD95C845D1.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:8871:c3cd:95c8:45d1])
-        by smtp.googlemail.com with ESMTPSA id n4sm17579715wrp.61.2019.06.04.22.57.46
+        by smtp.googlemail.com with ESMTPSA id f3sm19025534wre.93.2019.06.04.22.59.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Jun 2019 22:57:46 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/2] r8169: factor out firmware handling
-To:     David Miller <davem@davemloft.net>
-Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org
-References: <3e2e0491-8b0f-17e1-b163-e47fcb931eb5@gmail.com>
- <20190604.193553.2005995029161038338.davem@davemloft.net>
+        Tue, 04 Jun 2019 22:59:09 -0700 (PDT)
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a3990c4d-ae69-9e23-bcd0-a554cb020985@gmail.com>
-Date:   Wed, 5 Jun 2019 07:57:37 +0200
+Subject: [PATCH net-next v2 0/2] r8169: factor out firmware handling
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <58ea4445-954f-4a97-397f-5d681125b9bb@gmail.com>
+Date:   Wed, 5 Jun 2019 07:59:02 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190604.193553.2005995029161038338.davem@davemloft.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -65,15 +62,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.06.2019 04:35, David Miller wrote:
-> From: Heiner Kallweit <hkallweit1@gmail.com>
-> Date: Tue, 4 Jun 2019 07:44:53 +0200
-> 
->> Let's factor out firmware handling into a separate source code file.
->> This simplifies reading the code and makes clearer what the interface
->> between driver and firmware handling is.
-> 
-> This doesn't apply cleanly to net-next, specifically the hunks that move code
-> out of r8169_main.c
-> 
-Ah, sorry. Will check and resubmit.
+Let's factor out firmware handling into a separate source code file.
+This simplifies reading the code and makes clearer what the interface
+between driver and firmware handling is.
+
+v2:
+- fix small whitespace issue in patch 2
+
+Heiner Kallweit (2):
+  r8169: rename r8169.c to r8169_main.c
+  r8169: factor out firmware handling
+
+ drivers/net/ethernet/realtek/Makefile         |   1 +
+ drivers/net/ethernet/realtek/r8169_firmware.c | 231 +++++++++++++++++
+ drivers/net/ethernet/realtek/r8169_firmware.h |  39 +++
+ .../realtek/{r8169.c => r8169_main.c}         | 243 +-----------------
+ 4 files changed, 274 insertions(+), 240 deletions(-)
+ create mode 100644 drivers/net/ethernet/realtek/r8169_firmware.c
+ create mode 100644 drivers/net/ethernet/realtek/r8169_firmware.h
+ rename drivers/net/ethernet/realtek/{r8169.c => r8169_main.c} (97%)
+
+-- 
+2.21.0
+
