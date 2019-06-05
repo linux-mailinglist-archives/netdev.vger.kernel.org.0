@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B378D36311
-	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855273631D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jun 2019 20:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbfFESBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 14:01:15 -0400
-Received: from mail-pg1-f176.google.com ([209.85.215.176]:37616 "EHLO
-        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbfFESBP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 14:01:15 -0400
-Received: by mail-pg1-f176.google.com with SMTP id 20so12825032pgr.4
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 11:01:15 -0700 (PDT)
+        id S1726600AbfFESJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 14:09:08 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:43127 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725950AbfFESJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 14:09:07 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w33so6987306edb.10;
+        Wed, 05 Jun 2019 11:09:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nCBpf1kBhCmG4QHupEtuYpq50FOnwRrpCvJOnsjX7kI=;
-        b=Tdh/CqqpDRKG/wo3ox8XWC3+ufCK/spg5kUbj1pZuNOWeJ/LomAT62pI4LmGyPcRo8
-         u74INxFGVfj/uhfPucPd2rnLIUq5hcHLKsalDI6kn0P3R1qSpczE1RPMYFKzLQHZaU//
-         eTkPZaZ7xGr2kTJRILLMezInEuobF3nX3jrhSOd/1sUlZqQ39mrYbh9rO3v7J6WA/xvE
-         UYo3dCHivAb03WLQodyp1wNHfHLCU1v7KqWQWpCZ97ob228yH/icdKoR2tprjp+ho8MP
-         OG33Hn2LHVnCcTBViZg1/UdZfJpL5SKE7jhhwVjHOKc4c1dzYu2yciofL92Mp6nL9iOd
-         dS6w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3kkJoePojOH2DqUPlKLHgq3td/DufBzIP3M2ebsRF7c=;
+        b=VK6nFpjuXkMWNTERySkphfawJotFUYOdP0wGWCujtfEpKSLNB+6bgIiLCPvDndUyAZ
+         MMJwEvm79kVuVrno3nFwfntAReb3567GHUVpsLnUTFqDih8eDDr+rdN2iCkKruYFgfoA
+         qNzyzwT3PRIRvid3RWRl7OwDT+j2Vr7dVx42+iO1jQMbyPUC6aHw0C/T7hZaOuFL1dNI
+         6o4vTq9T9nKtVIOSfFdnLDpktt9IMUuh6wIm4f6phrK+ztxicqMX5OyHHDLGXFR5HO4w
+         6CLSJaW20N4VGu6P/c5UKEHb2abUbvlBEhSAXZyPk0TwEX6bakluGxB4ncuSUkY362y9
+         MBrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nCBpf1kBhCmG4QHupEtuYpq50FOnwRrpCvJOnsjX7kI=;
-        b=OsKs7gSS+t1wxqfQuV0gxil76PRdLlajgog8/sWZVWuMhI+Oc3HMzVj9a3u+ZeSKJ0
-         zeHY01IHv+GjOU2Fi57Bde2smNjIiZvbCfRlj4hlOuxW3N/e89vRAyeEilO4/M8jA2Hn
-         eEBnpOg9jT1hvKeXn22AxX0i3PsMXpGhkPj1JTBFNWjsKWzFVInPo7xqpodaeetZ8TAQ
-         rruFGu1uy9ezMXELsD5wxHeIicZqAI0VYA18EkebY1Jgp/KEyvPfE6du9jW3EL6cFwQs
-         /430edfeYpXpyOVP/VeRZzkNR2a9FmLq/RC0PImNZ3LZvqs31yVaAO2a1mUItwag0Ipt
-         SByg==
-X-Gm-Message-State: APjAAAUIdHWEcRzucyq1z/kU7AJEnJ5q8EC3DVF8se7hBCCYU1n1j+Pb
-        oj07WLCERq+F0CfDwUEyaT4=
-X-Google-Smtp-Source: APXvYqwhgEJQrmMn6OeplWwvUK8jxBcat6MiHuU4j1pRxXJlkwBJB+rXQ6Ay0D9eWn+G3bNKZ3Su8Q==
-X-Received: by 2002:a63:4c1f:: with SMTP id z31mr6442059pga.334.1559757674832;
-        Wed, 05 Jun 2019 11:01:14 -0700 (PDT)
-Received: from [10.69.78.41] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d3sm17433855pfa.176.2019.06.05.11.01.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 11:01:13 -0700 (PDT)
-Subject: Re: Cutting the link on ndo_stop - phy_stop or phy_disconnect?
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-References: <52888d1f-2f7d-bfa1-ca05-73887b68153d@gmail.com>
- <20190604213624.yw72vzdxarksxk33@shell.armlinux.org.uk>
- <33c5afc8-f35a-b586-63a3-8409cd0049a2@gmail.com>
- <20190605084500.pjkq43l4aaepznon@shell.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <a96c1e26-6b44-7fc4-feab-d381d7d4c3d3@gmail.com>
-Date:   Wed, 5 Jun 2019 11:01:10 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3kkJoePojOH2DqUPlKLHgq3td/DufBzIP3M2ebsRF7c=;
+        b=uNJMEYhpOZkPjRaQ5v4kUq7SORoOkql52EIEJtGWWNQmNkWZkaZmdRZhT3ijm0oO87
+         aPOaZgfabH98xkG7UDwm4pSrMdKV98b6O+lLHLdB8WN7lpbF8AtShZ2txpx7YPltRSF6
+         irfXYcgY8WtXtmLrcqu+oHIuNLJHiWzdIWUJg+za3GtCugAWE9uk0+tvxENzyOvR9lfi
+         fhl/TYx52M13Tf/4kutLy71Lk6fSY/7GE/oz1Jqdive50N2e9ATZixNXR9dPxeJ3rvXG
+         pBaoayCokv3mfyUzWv/Er6JuKry5JhO8sBoHBArTGjs2BxsLsjRFL0Q8lk+J+tAUl3Rw
+         /68w==
+X-Gm-Message-State: APjAAAWRpcpF2PE6yOxFGg+093YpKCR6GHYUz5SJlVLdtEq7sLu8vbvA
+        RmaqX1I5BtXnkeEJFSh9wa22DUY+S30RZJU2KXg=
+X-Google-Smtp-Source: APXvYqyhcKLFHtdseQURsMnPIeyQTO3UV+kTb27MHsqATshvfpU+hXz9sgAp8FqkWUKc1jLYewuy52l6zEXrtVoAHl4=
+X-Received: by 2002:aa7:da4b:: with SMTP id w11mr37188183eds.36.1559758145636;
+ Wed, 05 Jun 2019 11:09:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190605084500.pjkq43l4aaepznon@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190604170756.14338-1-olteanv@gmail.com> <20190604.202258.1443410652869724565.davem@davemloft.net>
+ <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
+ <CA+h21hrJYm4GLn+LpJ623_dpgxE2z-k3xTMD=z1QQ9WqXg7zrQ@mail.gmail.com> <20190605174547.b4rwbfrzjqzujxno@localhost>
+In-Reply-To: <20190605174547.b4rwbfrzjqzujxno@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 5 Jun 2019 21:08:54 +0300
+Message-ID: <CA+h21hqdmu3+YQVMXyvckrUjXW7mstjG1MDafWGy4qFHB9zdtg@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA driver
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 5 Jun 2019 at 20:45, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Wed, Jun 05, 2019 at 02:33:52PM +0300, Vladimir Oltean wrote:
+> > In the meantime: Richard, do you have any objections to this patchset?
+>
+> I like the fact that you didn't have to change the dsa or ptp
+> frameworks this time around.  I haven't taken a closer look than that
+> yet.
+>
 
+There's one more thing I wanted to ask you if you get the chance to
+take a closer look.
+Currently I'm using a cyclecounter, but I *will* need actual PHC
+manipulations for the time-based shaping and policing features that
+the switch has in hardware. On the other hand I get much tighter sync
+offset using the free-running counter than with hardware-corrected
+timestamps. So as far as I see it, I'll need to have two sets of
+operations.
+How should I design such a dual-PHC device driver? Just register two
+separate clocks, one for the timestamping counter, the other for the
+scheduling/policing PTP clock, and have phc2sys keep them in sync
+externally to the driver? Or implement the hardware corrections
+alongside the timecounter ones, and expose a single PHC (and for
+clock_gettime, just pick one of the time sources)?
 
-On 6/5/2019 1:45 AM, Russell King - ARM Linux admin wrote:
-> On Tue, Jun 04, 2019 at 07:25:46PM -0700, Florian Fainelli wrote:
->> On 6/4/2019 2:36 PM, Russell King - ARM Linux admin wrote:
->>> Normally the PHY receives traffic, and passes it to the MAC which
->>> just ignores the signals it receives from the PHY, so no processing
->>> beyond the PHY receiving the traffic happens.
->>>
->>> Ultimately, whether you want the PHY to stay linked or not linked
->>> is, imho, a policy that should be set by the administrator (consider
->>> where a system needs to become available quickly after boot vs a
->>> system where power saving is important.)  We don't, however, have
->>> a facility to specify that policy though.
->>
->> Maybe that's what we need, something like:
->>
->> ip link set dev eth0 phy [on|off|wake]
->>
->> or whatever we deem appropriate such that people willing to maintain the
->> PHY on can do that.
-> 
-> How would that work when the PHY isn't bound to the network device until
-> the network device is brought up?
+> > I was wondering whether the path delay difference between E2E and P2P
+> > rings any bell to you.
+>
+> Can it be that the switch applies corrections in HW?
+>
+> Thanks,
+> Richard
 
-There was supposed to be a down somewhere, something like:
-
-ip link set dev eth0 down phy [on|off|wake]
-
-such that we have been guaranteed to be connected to the PHY at some
-point. Maybe this is not such a great idea after all, since not all
-drivers would be able to support the optional "phy" argument.
--- 
-Florian
+Thanks,
+-Vladimir
