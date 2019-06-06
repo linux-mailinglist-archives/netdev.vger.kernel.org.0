@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 346993726B
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 13:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB6B1372C9
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 13:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbfFFLGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 07:06:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57286 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727683AbfFFLGV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 07:06:21 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728354AbfFFL06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 07:26:58 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:60812 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726961AbfFFL06 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 07:26:58 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6662420883;
-        Thu,  6 Jun 2019 11:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559819181;
-        bh=CvqbHKleLHjrzzlgjNnvg0hqRbQZoOuKz8ED6/lrYPs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Vha5tg4naOHvUbcpsd0bDdGR9W6MWD9g2BQ9GLfxFQ058P3vZWlmcozco82VFKpk
-         j7LCoGtI53I9aUe9gLw9I1rx/3caybcg2oAdR95OYrAy82cb8aR+pQt/GziaL6TVDy
-         ekPirZj5njlaTvv5hBr5EecqCZit9szZoIIDGYgg=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next 3/3] RDMA/mlx5: Enable decap and packet reformat on FDB
-Date:   Thu,  6 Jun 2019 14:06:09 +0300
-Message-Id: <20190606110609.11588-4-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190606110609.11588-1-leon@kernel.org>
-References: <20190606110609.11588-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 7E3F8C0B66;
+        Thu,  6 Jun 2019 11:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559820429; bh=LYlsmuhYso763N/RO39um+ScxW0aMyDOSjQIC78SHBQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iFLGbuSjEvG5FT0C04tHTBa3IbPDhVG0rW4E+2tKwEUu9NCL/0C6LP2WvrQT2x4nh
+         8VL4aFFxBHLG353m89erGIIUiRcexRD+tPX1HG+XkPGEqJTIgXz5m0NzM672oo3I4P
+         +TWiB5UVRpIH5yVWYX+qqPfAWzPl87pFMQ5I7kqA08t/XGt2ePZ6Thea/m9ZpB6La4
+         gPu0k1rnHm9+8Az+mwbYkjIoCiNK00p9G+AXTo/0o/JWPTdT9rJpNwrPzM71UA2wDs
+         dq4aFn25X+cWftdVq4Ay4DTWLxYV9aykKyVXfKcQWVmfzc9RV16nxXxoZj8umPbLez
+         JU1nOqYo9Q5QA==
+Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 54354A005D;
+        Thu,  6 Jun 2019 11:26:54 +0000 (UTC)
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by de02.synopsys.com (Postfix) with ESMTP id 1DDD43E9E1;
+        Thu,  6 Jun 2019 13:26:54 +0200 (CEST)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [RFC net-next 0/2] net: stmmac: Convert to phylink
+Date:   Thu,  6 Jun 2019 13:26:49 +0200
+Message-Id: <cover.1559741195.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@mellanox.com>
+[ Resending with PHYLIB maintainer (Russell) in cc plus some PHY experts ]
 
-If FDB flow tables support decap operation, enable it on creation,
-This allows to perform decapsulation of tunnelled packets by steering
-rules. If FDB flow tables support reformat operation, enable it on
-creation as well.
+For review and testing only.
 
-Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/infiniband/hw/mlx5/main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+This converts stmmac to use phylink. Besides the code redution this will
+allow to gain more flexibility.
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 70d565283508..cd0c005d1120 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -3917,6 +3917,11 @@ _get_flow_table(struct mlx5_ib_dev *dev,
- 	} else if (fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB) {
- 		max_table_size = BIT(
- 			MLX5_CAP_ESW_FLOWTABLE_FDB(dev->mdev, log_max_ft_size));
-+		if (MLX5_CAP_ESW_FLOWTABLE_FDB(dev->mdev, decap) && esw_encap)
-+			flags |= MLX5_FLOW_TABLE_TUNNEL_EN_DECAP;
-+		if (MLX5_CAP_ESW_FLOWTABLE_FDB(dev->mdev, reformat_l3_tunnel_to_l2) &&
-+		    esw_encap)
-+			flags |= MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
- 		priority = FDB_BYPASS_PATH;
- 	}
- 
+Cc: Joao Pinto <jpinto@synopsys.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+
+Jose Abreu (2):
+  net: stmmac: Prepare to convert to phylink
+  net: stmmac: Convert to phylink
+
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |   3 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |   4 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  72 +---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 389 +++++++++------------
+ .../net/ethernet/stmicro/stmmac/stmmac_platform.c  |  21 +-
+ 5 files changed, 189 insertions(+), 300 deletions(-)
+
 -- 
-2.20.1
+2.7.4
 
