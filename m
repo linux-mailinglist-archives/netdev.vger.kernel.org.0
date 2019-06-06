@@ -2,131 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51830381AD
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C2F381B2
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726998AbfFFXOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 19:14:07 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:35524 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726950AbfFFXOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 19:14:07 -0400
-Received: by mail-it1-f198.google.com with SMTP id 137so328464itf.0
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 16:14:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=l9pinidd/tGKCpjMseqDc7ZTsfhvn4wdVbMaTBOdGOM=;
-        b=SfXGQoFZM20PuBT88xD+IqM+MgILYxJrCcdye3Cq1LxGJoRWiVtSca36rcdyt73I6c
-         GDCqHYkOshyGN/swM0U2hs1o0ZQPQOA14ZF3srSJZXLe5R6UMEiPfjVzLQy2ljS9316r
-         pwSwHo38512lTfSBTo9CsN3JpKXVHWf3m3tLLUv/CRRmOth94mSe0ZHTbtmgRADmU+r8
-         wwEmqmr0OxFZDAKLMeg/QDdEl3vKH+ix7Tj3KvjXIFdgPcr/SGei9zhPlmmFygC/rtTn
-         6A+hLdZZQsPA2WVrsBzcCtprbukbrZNVJCAehll/MSsUnaIIDs9NUYOTzLsdnoG1ee3k
-         Cjhg==
-X-Gm-Message-State: APjAAAXgMtDYbcXu6N9FFi+251y6pyQ+tiiwHZ8oDEcHD2QrUKfZQVt2
-        heWC99Ssag6DXQh1bDaDFcjJdnYqWDArPUuifOf21QFLqrGb
-X-Google-Smtp-Source: APXvYqxXzf2VfP3HezFCUmwxAxPbzY6848/Uvr4YiHxacLFlLIXnL5YVIpNhLVk/FcFtL6Fq36VBeprvCc22BZWMQ22t5eaKQNia
+        id S1727067AbfFFXPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 19:15:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57080 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726305AbfFFXPd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 19:15:33 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3CF13308FC4B;
+        Thu,  6 Jun 2019 23:15:28 +0000 (UTC)
+Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E62907E66E;
+        Thu,  6 Jun 2019 23:15:25 +0000 (UTC)
+Date:   Fri, 7 Jun 2019 01:15:21 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        "Wei Wang" <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
+ rt6_dump_route()
+Message-ID: <20190607011521.4c049d54@redhat.com>
+In-Reply-To: <20190607005852.2aee8784@redhat.com>
+References: <cover.1559851514.git.sbrivio@redhat.com>
+        <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
+        <20190606214456.orxy6274xryxyfww@kafai-mbp.dhcp.thefacebook.com>
+        <20190607001747.4ced02c7@redhat.com>
+        <20190606223707.s2fyhnqnt3ygdtdj@kafai-mbp.dhcp.thefacebook.com>
+        <20190607005852.2aee8784@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c705:: with SMTP id f5mr33202129iop.113.1559862846161;
- Thu, 06 Jun 2019 16:14:06 -0700 (PDT)
-Date:   Thu, 06 Jun 2019 16:14:06 -0700
-In-Reply-To: <0000000000006b30f30587a5b569@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d810c9058aafdeb9@google.com>
-Subject: Re: general protection fault in ip6_dst_lookup_tail (2)
-From:   syzbot <syzbot+58d8f704b86e4e3fb4d3@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, dvyukov@google.com, edumazet@google.com,
-        kafai@fb.com, kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 06 Jun 2019 23:15:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On Fri, 7 Jun 2019 00:58:52 +0200
+Stefano Brivio <sbrivio@redhat.com> wrote:
 
-HEAD commit:    07c3bbdb samples: bpf: print a warning about headers_install
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14424e2ea00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b7b54c66298f8420
-dashboard link: https://syzkaller.appspot.com/bug?extid=58d8f704b86e4e3fb4d3
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=117f50e1a00000
+> On Thu, 6 Jun 2019 22:37:11 +0000
+> Martin Lau <kafai@fb.com> wrote:
+> 
+> > On Fri, Jun 07, 2019 at 12:17:47AM +0200, Stefano Brivio wrote:  
+> > > On Thu, 6 Jun 2019 21:44:58 +0000
+> > > Martin Lau <kafai@fb.com> wrote:
+> > >     
+> > > > > +	if (!(filter->flags & RTM_F_CLONED)) {
+> > > > > +		err = rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL, 0,
+> > > > > +				    RTM_NEWROUTE,
+> > > > > +				    NETLINK_CB(arg->cb->skb).portid,
+> > > > > +				    arg->cb->nlh->nlmsg_seq, flags);
+> > > > > +		if (err)
+> > > > > +			return err;
+> > > > > +	} else {
+> > > > > +		flags |= NLM_F_DUMP_FILTERED;
+> > > > > +	}
+> > > > > +
+> > > > > +	bucket = rcu_dereference(rt->rt6i_exception_bucket);
+> > > > > +	if (!bucket)
+> > > > > +		return 0;
+> > > > > +
+> > > > > +	for (i = 0; i < FIB6_EXCEPTION_BUCKET_SIZE; i++) {
+> > > > > +		hlist_for_each_entry(rt6_ex, &bucket->chain, hlist) {
+> > > > > +			if (rt6_check_expired(rt6_ex->rt6i))
+> > > > > +				continue;
+> > > > > +
+> > > > > +			err = rt6_fill_node(net, arg->skb, rt,
+> > > > > +					    &rt6_ex->rt6i->dst,
+> > > > > +					    NULL, NULL, 0, RTM_NEWROUTE,
+> > > > > +					    NETLINK_CB(arg->cb->skb).portid,
+> > > > > +					    arg->cb->nlh->nlmsg_seq, flags);      
+> > > > Thanks for the patch.
+> > > > 
+> > > > A question on when rt6_fill_node() returns -EMSGSIZE while dumping the
+> > > > exception bucket here.  Where will the next inet6_dump_fib() start?    
+> > > 
+> > > And thanks for reviewing.
+> > > 
+> > > It starts again from the same node, see fib6_dump_node(): w->leaf = rt;
+> > > where rt is the fib6_info where we failed dumping, so we won't skip
+> > > dumping any node.    
+> > If the same node will be dumped, does it mean that it will go through this
+> > loop and iterate all exceptions again?  
+> 
+> Yes (well, all the exceptions for that node).
+> 
+> > > This also means that to avoid sending duplicates in the case where at
+> > > least one rt6_fill_node() call goes through and one fails, we would
+> > > need to track the last bucket and entry sent, or, alternatively, to
+> > > make sure we can fit the whole node before dumping.    
+> > My another concern is the dump may never finish.  
+> 
+> That's not a guarantee in general, even without this, because in theory
+> the skb passed might be small enough that we can't even fit a single
+> node without exceptions.
+> 
+> We could add a guard on w->leaf not being the same before and after the
+> walk in inet6_dump_fib() and, if it is, terminate the dump. I just
+> wonder if we have to do this at all -- I can't find this being done
+> anywhere else (at a quick look at least).
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+58d8f704b86e4e3fb4d3@syzkaller.appspotmail.com
+I still can't convince myself this is an actual issue, but... somewhat
+simpler: let's add a field to fib6_walker, that counts the entries
+(both from FIB and exceptions) already dumped for the current node:
 
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 14003 Comm: syz-executor.4 Not tainted 5.2.0-rc2+ #14
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:ip6_route_get_saddr include/net/ip6_route.h:120 [inline]
-RIP: 0010:ip6_dst_lookup_tail+0xf0e/0x1b30 net/ipv6/ip6_output.c:1032
-Code: e6 07 e8 75 66 55 fb 48 85 db 0f 84 83 08 00 00 e8 67 66 55 fb 48 8d  
-7b 7c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48  
-89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 07
-RSP: 0018:ffff888079027480 EFLAGS: 00010a07
-RAX: dffffc0000000000 RBX: ff8880990716c000 RCX: 0000000000000000
-RDX: 1ff1101320e2d80f RSI: ffffffff861b3f59 RDI: ff8880990716c07c
-RBP: ffff8880790275d8 R08: ffff8880855b43c0 R09: ffffed1015d26be8
-R10: ffffed1015d26be7 R11: ffff8880ae935f3b R12: ffff888079027740
-R13: 0000000000000000 R14: 0000000000000000 R15: ffff888079027768
-FS:  00007f7158009700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd85cf4eb8 CR3: 00000000a96aa000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  ip6_dst_lookup_flow+0xa8/0x220 net/ipv6/ip6_output.c:1155
-  tcp_v6_connect+0xda3/0x20a0 net/ipv6/tcp_ipv6.c:282
-  __inet_stream_connect+0x834/0xe90 net/ipv4/af_inet.c:659
-  tcp_sendmsg_fastopen net/ipv4/tcp.c:1143 [inline]
-  tcp_sendmsg_locked+0x2318/0x3920 net/ipv4/tcp.c:1185
-  tcp_sendmsg+0x30/0x50 net/ipv4/tcp.c:1419
-  inet_sendmsg+0x141/0x5d0 net/ipv4/af_inet.c:802
-  sock_sendmsg_nosec net/socket.c:652 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:671
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2292
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2330
-  __do_sys_sendmsg net/socket.c:2339 [inline]
-  __se_sys_sendmsg net/socket.c:2337 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2337
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459279
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f7158008c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459279
-RDX: 0000000020008844 RSI: 0000000020000240 RDI: 0000000000000005
-RBP: 000000000075bfc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f71580096d4
-R13: 00000000004c6ccc R14: 00000000004dbb30 R15: 00000000ffffffff
-Modules linked in:
----[ end trace c968f232eacd4c70 ]---
-RIP: 0010:ip6_route_get_saddr include/net/ip6_route.h:120 [inline]
-RIP: 0010:ip6_dst_lookup_tail+0xf0e/0x1b30 net/ipv6/ip6_output.c:1032
-Code: e6 07 e8 75 66 55 fb 48 85 db 0f 84 83 08 00 00 e8 67 66 55 fb 48 8d  
-7b 7c 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48  
-89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 07
-RSP: 0018:ffff888079027480 EFLAGS: 00010a07
-RAX: dffffc0000000000 RBX: ff8880990716c000 RCX: 0000000000000000
-RDX: 1ff1101320e2d80f RSI: ffffffff861b3f59 RDI: ff8880990716c07c
-RBP: ffff8880790275d8 R08: ffff8880855b43c0 R09: ffffed1015d26be8
-R10: ffffed1015d26be7 R11: ffff8880ae935f3b R12: ffff888079027740
-R13: 0000000000000000 R14: 0000000000000000 R15: ffff888079027768
-FS:  00007f7158009700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000015523b8 CR3: 00000000a96aa000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+		res = rt6_dump_route(rt, w->args);
+		if (res) {
+			/* Frame is full, suspend walking */
+			w->leaf = rt;
+			w->skip_node = res;
+			return 1;
+		}
 
+if the current leaf changes (tree changed), we reset it. And we use that
+to skip rt6_fill_node() calls in rt6_dump_route(). What do you think?
+
+-- 
+Stefano
