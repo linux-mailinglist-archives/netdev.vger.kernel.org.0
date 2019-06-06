@@ -2,104 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC51F37B95
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DAB37BC2
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 20:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730391AbfFFRwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 13:52:32 -0400
-Received: from mga14.intel.com ([192.55.52.115]:41369 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728857AbfFFRwb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 13:52:31 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jun 2019 10:52:31 -0700
-X-ExtLoop1: 1
-Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga007.jf.intel.com with ESMTP; 06 Jun 2019 10:52:31 -0700
-From:   Vedang Patel <vedang.patel@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        stephen@networkplumber.org, vinicius.gomes@intel.com,
-        leandro.maciel.dorileo@intel.com, jakub.kicinski@netronome.com,
-        m-karicheri2@ti.com, Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH iproute2 net-next v1 6/6] tc: taprio: Update documentation
-Date:   Thu,  6 Jun 2019 10:52:21 -0700
-Message-Id: <1559843541-12695-6-git-send-email-vedang.patel@intel.com>
-X-Mailer: git-send-email 2.7.3
-In-Reply-To: <1559843541-12695-1-git-send-email-vedang.patel@intel.com>
-References: <1559843541-12695-1-git-send-email-vedang.patel@intel.com>
+        id S1730364AbfFFSCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 14:02:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55052 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727559AbfFFSCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 14:02:36 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2BC4314DDE290;
+        Thu,  6 Jun 2019 11:02:36 -0700 (PDT)
+Date:   Thu, 06 Jun 2019 11:02:33 -0700 (PDT)
+Message-Id: <20190606.110233.2117483278297401420.davem@davemloft.net>
+To:     ruxandra.radulescu@nxp.com
+Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com
+Subject: Re: [PATCH net-next v2 2/3] dpaa2-eth: Support multiple traffic
+ classes on Tx
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1559811029-28002-3-git-send-email-ruxandra.radulescu@nxp.com>
+References: <1559811029-28002-1-git-send-email-ruxandra.radulescu@nxp.com>
+        <1559811029-28002-3-git-send-email-ruxandra.radulescu@nxp.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 06 Jun 2019 11:02:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the latest options, offload and txtime-delay, to the
-taprio manpage.
+From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Date: Thu,  6 Jun 2019 11:50:28 +0300
 
-This also adds an example to run tc in txtime offload mode.
+> DPNI objects can have multiple traffic classes, as reflected by
+> the num_tc attribute. Until now we ignored its value and only
+> used traffic class 0.
+> 
+> This patch adds support for multiple Tx traffic classes; the skb
+> priority information received from the stack is used to select the
+> hardware Tx queue on which to enqueue the frame.
+> 
+> Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+> ---
+> v2: Extra processing on the fast path happens only when TC is used
+> 
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 47 ++++++++++++++++--------
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h |  9 ++++-
+>  2 files changed, 40 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index a12fc45..98de092 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -757,6 +757,7 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+>  	u16 queue_mapping;
+>  	unsigned int needed_headroom;
+>  	u32 fd_len;
+> +	u8 prio = 0;
+>  	int err, i;
+>  
+>  	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+> @@ -814,6 +815,18 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+>  	 * a queue affined to the same core that processed the Rx frame
+>  	 */
+>  	queue_mapping = skb_get_queue_mapping(skb);
+> +
+> +	if (net_dev->num_tc) {
+> +		prio = netdev_txq_to_tc(net_dev, queue_mapping);
+> +		/* Hardware interprets priority level 0 as being the highest,
+> +		 * so we need to do a reverse mapping to the netdev tc index
+> +		 */
+> +		prio = net_dev->num_tc - prio - 1;
+> +		/* We have only one FQ array entry for all Tx hardware queues
+> +		 * with the same flow id (but different priority levels)
+> +		 */
+> +		queue_mapping %= dpaa2_eth_queue_count(priv);
 
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
----
- man/man8/tc-taprio.8 | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+This doesn't make any sense.
 
-diff --git a/man/man8/tc-taprio.8 b/man/man8/tc-taprio.8
-index 850be9b0..5209c6ad 100644
---- a/man/man8/tc-taprio.8
-+++ b/man/man8/tc-taprio.8
-@@ -112,6 +112,23 @@ means that traffic class 0 is "active" for that schedule entry.
- long that state defined by <command> and <gate mask> should be held
- before moving to the next entry.
- 
-+.TP
-+offload
-+.br
-+Specifies the offload mode for taprio. If set to 1, it will try to offload the
-+schedule to be run on the network controller. Hardware and driver support
-+needed. If set to 2, txtime offload mode is enabled which will
-+utilize the ETF qdisc to set the transmit of the packets.
-+
-+.TP
-+txtime-delay
-+.br
-+This parameter is specific to the txtime offload mode. It specifies the maximum
-+time a packet might take to reach the network card from the taprio qdisc. The
-+value should always be greater than the delta specified in the
-+.BR etf(8)
-+qdisc.
-+
- .SH EXAMPLES
- 
- The following example shows how an traffic schedule with three traffic
-@@ -137,6 +154,26 @@ reference CLOCK_TAI. The schedule is composed of three entries each of
-               clockid CLOCK_TAI
- .EE
- 
-+Following is an example to enable the txtime offload mode in taprio. See
-+.BR etf(8)
-+for more information about configuring the ETF qdisc.
-+
-+.EX
-+# tc qdisc replace dev eth0 parent root handle 100 taprio \\
-+              num_tc 3 \\
-+              map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
-+              queues 1@0 1@0 1@0 \\
-+              base-time 1528743495910289987 \\
-+              sched-entry S 01 300000 \\
-+              sched-entry S 02 300000 \\
-+              sched-entry S 04 400000 \\
-+              offload 2 \\
-+              txtime-delay 200000 \\
-+              clockid CLOCK_TAI
-+
-+# tc qdisc replace dev $IFACE parent 100:1 etf skip_skb_check \\
-+              offload delta 200000 clockid CLOCK_TAI
-+.EE
- 
- .SH AUTHORS
- Vinicius Costa Gomes <vinicius.gomes@intel.com>
--- 
-2.17.0
+queue_mapping came from skb_get_queue_mapping().
 
+The core limits the queue mapping value to whatever you told the
+generic networking layer was the maximum number of queues.
+
+And you set that to dpaa2_eth_queue_count():
+
+	/* Set actual number of queues in the net device */
+	num_queues = dpaa2_eth_queue_count(priv);
+	err = netif_set_real_num_tx_queues(net_dev, num_queues);
+
+Therfore the modulus cannot be needed.
