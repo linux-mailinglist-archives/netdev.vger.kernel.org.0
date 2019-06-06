@@ -2,72 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7809368A4
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 167BF368A7
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfFFAOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 20:14:04 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:44668 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbfFFAOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 20:14:04 -0400
-Received: by mail-lf1-f68.google.com with SMTP id r15so173630lfm.11;
-        Wed, 05 Jun 2019 17:14:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aXrDN3EGoMNOai3xNClZPIzc6tnDf+HKd0phCU3s7tU=;
-        b=F6lRlbd10IcIoKchBpSGeanqhBOXnHVi+4WteJiHZcWYMYpPLyW9ZJMhl4ISQxY6rR
-         I+6i4gG5srqlwQaLpbVzXC/L3w4zv/IxIdPdINvJOqMyDFL2WmOekaYtliNxcv7p9JS7
-         2ycLIJR5YQsy/VJgx5n/9SXHnv5c9mQkVWbwk2krQ0IgTGYxoGorO4s+bprNYcy4TXVb
-         CmWsqMQvZuDw6pDrpycvAFsToHiQD4uj17IjE3A7wlT+DrJisyTYTkaOL+NSEsfSmfF1
-         g8IR7xwQ61wwBfNnqWg6HF16Bxv7Ayo7lDPLeQjp0MdUeCitP6pW78LuXtczeNA8ZocB
-         8AZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aXrDN3EGoMNOai3xNClZPIzc6tnDf+HKd0phCU3s7tU=;
-        b=GMJaMO9NTVFijMdFsC5e1OSXBXZhwPcUnUYExKJ0oYS6m426sXQyeE1hznE2R3yUjR
-         ox/cL/F/hqBd1FvA05IKtr69xWwO8Mw7Tem1pwMRVxw4Zw8wSFy4Gdml3ISi91Odfr7p
-         R9UmgzM9UrXwvewUlpqD+n/4vTa9GY1BMdDwk09aU0f6K/WeZx6EUKGps/cn535Cck0H
-         DqrX/1x+AU2qaEX7KcmXDF1YwSA8Xa+aGbrWGyWq5dBRWFfjupY+5iltuFboxNhwnrTm
-         kgZx4EXGjIaJwzVheg1NhShwQVhofE1h7M9t6Gfyxr9+Qkp9rP4/kgGbZyftLO+2vzV4
-         ZUlw==
-X-Gm-Message-State: APjAAAVdHT4Sp8lqqB12GpY+kr76yc9IJKQ05N6y2XOfpjZjG2y74Irw
-        Pe32njssULIHdBmIDpAdAvS19cDr7WCvRP0Wv6U=
-X-Google-Smtp-Source: APXvYqxMXfxvz5dtkY2Jcgv/Al3NCEeVsKuYHWMMcvilTML82tvagnn/uHV8Q0bpPJ20rR7KrlL3kvF0XDwZLLK7tDU=
-X-Received: by 2002:a19:e05c:: with SMTP id g28mr7340408lfj.167.1559780042420;
- Wed, 05 Jun 2019 17:14:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <3d59d0458a8a3a050d24f81e660fcccde3479a05.1559767053.git.daniel@iogearbox.net>
- <20190605235451.lqas2jgbur2sre4z@kafai-mbp.dhcp.thefacebook.com> <bcdc5ced-5bf0-a9c2-eeaf-01459e1d5b62@iogearbox.net>
-In-Reply-To: <bcdc5ced-5bf0-a9c2-eeaf-01459e1d5b62@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 5 Jun 2019 17:13:51 -0700
-Message-ID: <CAADnVQ+nraxxKw8=ues8W3odoLx5JR3JwAjCqW3AA3W64XY77w@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: fix unconnected udp hooks
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin Lau <kafai@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Martynas Pumputis <m@lambda.lt>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726642AbfFFAOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 20:14:49 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:43128 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726532AbfFFAOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 20:14:49 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2288113AEF259;
+        Wed,  5 Jun 2019 17:14:49 -0700 (PDT)
+Date:   Wed, 05 Jun 2019 17:14:48 -0700 (PDT)
+Message-Id: <20190605.171448.1980183910828510087.davem@davemloft.net>
+To:     nhorman@tuxdriver.com
+Cc:     linux-sctp@vger.kernel.org,
+        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH V2] Fix memory leak in sctp_process_init
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190603203259.21508-1-nhorman@tuxdriver.com>
+References: <00000000000097abb90589e804fd@google.com>
+        <20190603203259.21508-1-nhorman@tuxdriver.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Jun 2019 17:14:49 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 5, 2019 at 5:09 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> >>  tools/bpf/bpftool/cgroup.c     |  5 ++++-
-> >>  tools/include/uapi/linux/bpf.h |  2 ++
-> > Should the bpf.h sync to tools/ be in a separate patch?
->
-> I was thinking about it, but concluded for such small change, it's not
-> really worth it. If there's a strong opinion, I could do it, but I think
-> that 2-liner sync patch just adds noise.
+From: Neil Horman <nhorman@tuxdriver.com>
+Date: Mon,  3 Jun 2019 16:32:59 -0400
 
-it's not about the size. It breaks the sync of libbpf.
-we should really enforce user vs kernel to be separate patches.
+> syzbot found the following leak in sctp_process_init
+> BUG: memory leak
+> unreferenced object 0xffff88810ef68400 (size 1024):
+ ...
+> The problem was that the peer.cookie value points to an skb allocated
+> area on the first pass through this function, at which point it is
+> overwritten with a heap allocated value, but in certain cases, where a
+> COOKIE_ECHO chunk is included in the packet, a second pass through
+> sctp_process_init is made, where the cookie value is re-allocated,
+> leaking the first allocation.
+> 
+> Fix is to always allocate the cookie value, and free it when we are done
+> using it.
+> 
+> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
+
+Applied and queued up for -stable.
