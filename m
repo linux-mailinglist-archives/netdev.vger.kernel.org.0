@@ -2,102 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4968038014
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 23:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4417038023
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728831AbfFFV5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 17:57:24 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55892 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727441AbfFFV5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 17:57:24 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DD1EB356EA;
-        Thu,  6 Jun 2019 21:57:23 +0000 (UTC)
-Received: from dhcppc1.redhat.com (ovpn-116-49.ams2.redhat.com [10.36.116.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 951887C45F;
-        Thu,  6 Jun 2019 21:57:22 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH net-next v2 3/3] net/mlx5e: use indirect calls wrapper for the rx packet handler
-Date:   Thu,  6 Jun 2019 23:56:50 +0200
-Message-Id: <fe1dffe13521e0b89969301f7b34fdb19964dbdb.1559857734.git.pabeni@redhat.com>
-In-Reply-To: <cover.1559857734.git.pabeni@redhat.com>
-References: <cover.1559857734.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Thu, 06 Jun 2019 21:57:23 +0000 (UTC)
+        id S1728842AbfFFWAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 18:00:12 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58688 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbfFFWAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:00:12 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8AF3714DA8187;
+        Thu,  6 Jun 2019 15:00:11 -0700 (PDT)
+Date:   Thu, 06 Jun 2019 15:00:10 -0700 (PDT)
+Message-Id: <20190606.150010.895828876779567389.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 06 Jun 2019 15:00:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can avoid another indirect call per packet wrapping the rx
-handler call with the proper helper.
 
-To ensure that even the last listed direct call experience
-measurable gain, despite the additional conditionals we must
-traverse before reaching it, I tested reversing the order of the
-listed options, with performance differences below noise level.
+1) Free AF_PACKET po->rollover properly, from Willem de Bruijn.
 
-Together with the previous indirect call patch, this gives
-~6% performance improvement in raw UDP tput.
+2) Read SFP eeprom in max 16 byte increments to avoid problems with
+   some SFP modules, from Russell King.
 
-v1 -> v2:
- - update the direct call list and use a macro to define it,
-   as per Saeed suggestion. An intermediated additional
-   macro is needed to allow arg list expansion
+3) Fix UDP socket lookup wrt. VRF, from Tim Beale.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en.h    | 4 ++++
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 5 ++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+4) Handle route invalidation properly in s390 qeth driver, from Julian
+   Wiedmann.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 3a183d690e23..52bcdc87cbe2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -148,6 +148,10 @@ struct page_pool;
- 
- #define MLX5E_MSG_LEVEL			NETIF_MSG_LINK
- 
-+#define MLX5_RX_INDIRECT_CALL_LIST \
-+	mlx5e_handle_rx_cqe_mpwrq, mlx5e_handle_rx_cqe, mlx5i_handle_rx_cqe, \
-+	mlx5e_ipsec_handle_rx_cqe
-+
- #define mlx5e_dbg(mlevel, priv, format, ...)                    \
- do {                                                            \
- 	if (NETIF_MSG_##mlevel & (priv)->msglevel)              \
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 0fe5f13d07cc..7faf643eb1b9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1303,6 +1303,8 @@ void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	mlx5_wq_ll_pop(wq, cqe->wqe_id, &wqe->next.next_wqe_index);
- }
- 
-+#define INDIRECT_CALL_LIST(f, list, ...) INDIRECT_CALL_4(f, list, __VA_ARGS__)
-+
- int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- {
- 	struct mlx5e_rq *rq = container_of(cq, struct mlx5e_rq, cq);
-@@ -1333,7 +1335,8 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 
- 		mlx5_cqwq_pop(cqwq);
- 
--		rq->handle_rx_cqe(rq, cqe);
-+		INDIRECT_CALL_LIST(rq->handle_rx_cqe,
-+				   MLX5_RX_INDIRECT_CALL_LIST, rq, cqe);
- 	} while ((++work_done < budget) && (cqe = mlx5_cqwq_get_cqe(cqwq)));
- 
- out:
--- 
-2.20.1
+5) Memory leak on unload in RDS, from Zhu Yanjun.
 
+6) sctp_process_init leak, from Neil HOrman.
+
+7) Fix fib_rules rule insertion semantic change that broke Android,
+   from Hangbin Liu.
+
+Please pull, thank you!
+
+The following changes since commit 036e34310931e64ce4f1edead435708cd517db10:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net (2019-05-30 21:11:22 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/davem/net 
+
+for you to fetch changes up to 720f1de4021f09898b8c8443f3b3e995991b6e3a:
+
+  pktgen: do not sleep with the thread lock held. (2019-06-06 11:31:35 -0700)
+
+----------------------------------------------------------------
+Alexandra Winter (1):
+      s390/qeth: fix VLAN attribute in bridge_hostnotify udev event
+
+David S. Miller (3):
+      Merge branch 'net-tls-redo-the-RX-resync-locking'
+      Merge branch 's390-qeth-fixes'
+      Merge branch 'ipv6-fix-EFAULT-on-sendto-with-icmpv6-and-hdrincl'
+
+Hangbin Liu (1):
+      Revert "fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied"
+
+Ivan Khoronzhuk (1):
+      net: ethernet: ti: cpsw_ethtool: fix ethtool ring param set
+
+Jakub Kicinski (2):
+      Revert "net/tls: avoid NULL-deref on resync during device removal"
+      net/tls: replace the sleeping lock around RX resync with a bit lock
+
+Julian Wiedmann (3):
+      s390/qeth: handle limited IPv4 broadcast in L3 TX path
+      s390/qeth: check dst entry before use
+      s390/qeth: handle error when updating TX queue count
+
+Maxime Chevallier (1):
+      net: mvpp2: Use strscpy to handle stat strings
+
+Miaohe Lin (1):
+      net: ipvlan: Fix ipvlan device tso disabled while NETIF_F_IP_CSUM is set
+
+Neil Horman (1):
+      Fix memory leak in sctp_process_init
+
+Nikita Danilov (1):
+      net: aquantia: fix wol configuration not applied sometimes
+
+Nikita Yushchenko (1):
+      net: dsa: mv88e6xxx: avoid error message on remove from VLAN 0
+
+Olivier Matz (2):
+      ipv6: use READ_ONCE() for inet->hdrincl as in ipv4
+      ipv6: fix EFAULT on sendto with icmpv6 and hdrincl
+
+Paolo Abeni (2):
+      net: fix indirect calls helpers for ptype list hooks.
+      pktgen: do not sleep with the thread lock held.
+
+Russell King (2):
+      net: sfp: read eeprom in maximum 16 byte increments
+      net: phylink: avoid reducing support mask
+
+Sean Wang (2):
+      net: ethernet: mediatek: Use hw_feature to judge if HWLRO is supported
+      net: ethernet: mediatek: Use NET_IP_ALIGN to judge if HW RX_2BYTE_OFFSET is enabled
+
+Tim Beale (1):
+      udp: only choose unbound UDP socket for multicast when not in a VRF
+
+Vivien Didelot (1):
+      ethtool: fix potential userspace buffer overflow
+
+Vladimir Oltean (2):
+      net: dsa: sja1105: Don't store frame type in skb->cb
+      net: dsa: sja1105: Fix link speed not working at 100 Mbps and below
+
+Wei Liu (1):
+      Update my email address
+
+Willem de Bruijn (1):
+      packet: unconditionally free po->rollover
+
+Xin Long (3):
+      selftests: set sysctl bc_forwarding properly in router_broadcast.sh
+      ipv4: not do cache for local delivery if bc_forwarding is enabled
+      ipv6: fix the check before getting the cookie in rt6_get_cookie
+
+Yonglong Liu (1):
+      net: hns: Fix loopback test failed at copper ports
+
+Zhu Yanjun (2):
+      net: rds: fix memory leak when unload rds_rdma
+      net: rds: fix memory leak in rds_ib_flush_mr_pool
+
+ MAINTAINERS                                                       |  2 +-
+ drivers/net/dsa/mv88e6xxx/chip.c                                  |  2 +-
+ drivers/net/dsa/sja1105/sja1105_main.c                            | 32 ++++++++++++++++----------------
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c      | 14 +++++++-------
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c |  4 +++-
+ drivers/net/ethernet/hisilicon/hns/hns_ethtool.c                  |  4 ++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c                   |  4 ++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c                       | 15 ++++++++-------
+ drivers/net/ethernet/ti/cpsw_ethtool.c                            |  2 +-
+ drivers/net/ipvlan/ipvlan_main.c                                  |  2 +-
+ drivers/net/phy/phylink.c                                         | 13 +++++++++----
+ drivers/net/phy/sfp.c                                             | 24 ++++++++++++++++++++----
+ drivers/s390/net/qeth_core_main.c                                 | 22 ++++++++++++++++------
+ drivers/s390/net/qeth_l2_main.c                                   |  2 +-
+ drivers/s390/net/qeth_l3_main.c                                   | 32 +++++++++++++++++++++++++++-----
+ include/linux/dsa/sja1105.h                                       | 12 ------------
+ include/net/ip6_fib.h                                             |  3 +--
+ include/net/tls.h                                                 |  4 ++++
+ net/core/dev.c                                                    |  6 +++---
+ net/core/ethtool.c                                                |  5 ++++-
+ net/core/fib_rules.c                                              |  6 +++---
+ net/core/pktgen.c                                                 | 11 +++++++++++
+ net/dsa/tag_sja1105.c                                             | 10 +++-------
+ net/ipv4/route.c                                                  | 24 ++++++++++++------------
+ net/ipv4/udp.c                                                    |  3 +--
+ net/ipv6/raw.c                                                    | 25 ++++++++++++++++++-------
+ net/packet/af_packet.c                                            |  2 +-
+ net/rds/ib.c                                                      |  2 +-
+ net/rds/ib_rdma.c                                                 | 10 ++++++----
+ net/rds/ib_recv.c                                                 |  3 +++
+ net/sctp/sm_make_chunk.c                                          | 13 +++----------
+ net/sctp/sm_sideeffect.c                                          |  5 +++++
+ net/tls/tls_device.c                                              | 26 ++++++++++++++++++--------
+ tools/testing/selftests/net/forwarding/router_broadcast.sh        |  5 ++++-
+ 34 files changed, 218 insertions(+), 131 deletions(-)
