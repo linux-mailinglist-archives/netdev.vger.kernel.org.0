@@ -2,99 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 825DD370A3
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FC2370BF
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728234AbfFFJro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 05:47:44 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:45391 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728193AbfFFJrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 05:47:42 -0400
-Received: by mail-lf1-f65.google.com with SMTP id u10so298040lfm.12
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 02:47:41 -0700 (PDT)
+        id S1727882AbfFFJtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 05:49:03 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:38062 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727846AbfFFJtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 05:49:03 -0400
+Received: by mail-yw1-f67.google.com with SMTP id r128so616965ywe.5
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 02:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NsVvPiBY4yVAfgVoOW5rwqcEUi8304y5zEW51I3/QB0=;
-        b=Wdoh2MpFPPwEGDiEjo9yNWPvFiF5rNlEHiZaJf0n9Vg6FS4VUU2cc68GaQl4o2gqwy
-         4dbJ3g7WEmat/ufCpfazLVbgV6ySmza2gxaYFAenGQnggpEoKYT0NNP+fPKzDviOplly
-         V4mMdAPS/XxX37EVSGdaX+UcmhdKT4IrRkVpNMAbgC2gt8VMNs9PsvD/GD6B5RuHKt5c
-         t/UzHJLvzB8BJNgCgTBSJ9KsV9zFkV8hfU8Yx2nTgZ+yWZl6uY6MS8YPGXRBG1hDMj9x
-         L4RXjgeGsIVpXYaTYCaIyZyu1UZI8FSwWNUppmzZdyqw0fFmoG4R/pcy23fAlNtrw2K/
-         yzkw==
+        h=from:to:cc:subject:date:message-id;
+        bh=yNb0Fj6n9km2JVdDN9Uekf1sOIr2hggzzvNxUDiKBF4=;
+        b=SdjqbUbT1cHno2hjuwgq87mWDphOAtQJ3FRy/UQjLOeTmvC55V0Paqyc5eIT5UTaMj
+         kaJ3QT3w1DVNOSN5D3oLm0P4DQzS510cF7JEkzDKyuyjahqcyCWY12YOxQNf5R7lU6xF
+         3pp+d5hH3tKDwybV4X5mikJ9G/i4ePHmNy6EQaA++MHvQ+BPipVeCGbbBFA8uJ6VWxyq
+         +vmRcD0ZEJjSlUQrWXH7zTk1ibmyZe7vX7oG8jggMKi1h3yxgWTKiPyxX8aIJyXL7ESV
+         etzXHJHh9udMFILd7limdtRD6uX4XryAKpHGZfke5kvmeTxtsFcSugKCsKeu9KI++MPf
+         BL9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NsVvPiBY4yVAfgVoOW5rwqcEUi8304y5zEW51I3/QB0=;
-        b=ToOVNVYGVYuzQArEZQ94wa32BOml2jm5RR0H6ewKux+ZpNbzCMIcjmROeAWF9uM8VN
-         Usqp73aWzPCwdyQ88b6Vd3q5adgYU1sg9UmHjrzdiprToUYaDXYDUgz7tGrE3c5PhwxF
-         QinliO/g5qJ1x0WWAWn9f9iJTtKgKxYi419lYtb3gZlSEMDDj51h77YdYQnMI+mBT3sM
-         tHKOY266RpnNnxYQc6CCEaM9uzxk1ixNcIvU8MrtVvDILXuCaKvpfQHw2jjrkpvGO0wD
-         iVLg6nNiA9mXYTsQZnH2df5eAXLpbVk+lruu0ylnpebTE9t3mwNRSt8w9vxPC7FgswfZ
-         2bFQ==
-X-Gm-Message-State: APjAAAXvEPH5oKriZY5pCU4A4HL9BNZLA0y+PEJx/lJkd+de0jI3yU54
-        hLS92ZILr4JF4BG60v8aZyD6Hw==
-X-Google-Smtp-Source: APXvYqwC1lw0i+elxeAauVlnzExuJPoAeIohV6gRyR/H/KWYyVWxRDSoL1E/QIVDRnsweZyms/BPzA==
-X-Received: by 2002:ac2:4ac5:: with SMTP id m5mr22449224lfp.95.1559814460755;
-        Thu, 06 Jun 2019 02:47:40 -0700 (PDT)
-Received: from localhost (c-1c3670d5.07-21-73746f28.bbcust.telenor.se. [213.112.54.28])
-        by smtp.gmail.com with ESMTPSA id d23sm258143ljj.38.2019.06.06.02.47.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 02:47:40 -0700 (PDT)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     lgirdwood@gmail.com, broonie@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        marex@denx.de, stefan@agner.ch, airlied@linux.ie, daniel@ffwll.ch,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        b.zolnierkie@samsung.com, a.hajda@samsung.com, mchehab@kernel.org,
-        p.zabel@pengutronix.de, hkallweit1@gmail.com, lee.jones@linaro.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH 8/8] drivers: regulator: 88pm800: fix warning same module names
-Date:   Thu,  6 Jun 2019 11:47:36 +0200
-Message-Id: <20190606094736.23970-1-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yNb0Fj6n9km2JVdDN9Uekf1sOIr2hggzzvNxUDiKBF4=;
+        b=rw1OUFd0ZyEHBwdKvflTCaKgr0nzItXkIlQxDT8nXjqSIpueoiVsuA5OpTsmruGSxh
+         SHS2s3lnGuddOoJ88i6sJwBhuFJYb2LHnpX020m9bFVDX9WXDgVsCsJmQ3aCr94wVjrU
+         Yn/TTfzG9vOIp19mKXU3wJWMNCJSDnWN5Exw54Xi3/a+ay7TQbQ7261TRkz5/JS75oyx
+         vweKUjs9RkF4YEcxMHtO6p8mVRieBia6adURbDxygLVEKatjWVbKGHE5n3+S8RA5F1i+
+         S876iFQ4gYRmSetrF0gYJXdCYLBwj9SWxZ9/7Drr99EPBcLk7Ykht1NC+kFmdS8kErXn
+         Cqmw==
+X-Gm-Message-State: APjAAAXCQ1sr8AqBTX7Eo6jemC6j3nUN1UMIIeSTl02k0K49xuqG2Gh4
+        Ldp64uI6XGFA5+25IKgfWDV93A==
+X-Google-Smtp-Source: APXvYqxz0XWfsmbzfDmzbRe2redmsNqGmSe1BzZBfwxV8y9htux3O/q5LgublDbdDBqLOTH72HI2fA==
+X-Received: by 2002:a81:1d13:: with SMTP id d19mr22128098ywd.490.1559814542843;
+        Thu, 06 Jun 2019 02:49:02 -0700 (PDT)
+Received: from localhost.localdomain (li1322-146.members.linode.com. [45.79.223.146])
+        by smtp.gmail.com with ESMTPSA id 85sm357652ywm.64.2019.06.06.02.48.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Jun 2019 02:49:02 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v2 0/4] perf augmented_raw_syscalls: Support for arm64
+Date:   Thu,  6 Jun 2019 17:48:41 +0800
+Message-Id: <20190606094845.4800-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building with CONFIG_MFD_88PM800 and CONFIG_REGULATOR_88PM800
-enabled as loadable modules, we see the following warning:
+When I tried to run the trace on arm64 platform with eBPF program
+augmented_raw_syscalls, it reports several failures for eBPF program
+compilation.  So tried to resolve these issues and this patch set is
+the working result.
 
-warning: same module names found:
-  drivers/regulator/88pm800.ko
-  drivers/mfd/88pm800.ko
+0001 patch lets perf command to exit directly if find eBPF program
+building failure.
 
-Rework to rename the name.
+0002 patch is minor refactoring code to remove duplicate macro.
 
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- drivers/regulator/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+0003 patch is to add support arm64 raw syscalls numbers.
 
-diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
-index 76e78fa449a2..6906938071f5 100644
---- a/drivers/regulator/Makefile
-+++ b/drivers/regulator/Makefile
-@@ -11,7 +11,8 @@ obj-$(CONFIG_REGULATOR_VIRTUAL_CONSUMER) += virtual.o
- obj-$(CONFIG_REGULATOR_USERSPACE_CONSUMER) += userspace-consumer.o
- 
- obj-$(CONFIG_REGULATOR_88PG86X) += 88pg86x.o
--obj-$(CONFIG_REGULATOR_88PM800) += 88pm800.o
-+obj-$(CONFIG_REGULATOR_88PM800) += 88pm800-regulator.o
-+88pm800-regulator-objs		:= 88pm800.o
- obj-$(CONFIG_REGULATOR_88PM8607) += 88pm8607.o
- obj-$(CONFIG_REGULATOR_CPCAP) += cpcap-regulator.o
- obj-$(CONFIG_REGULATOR_AAT2870) += aat2870-regulator.o
+0004 patch is to document clang configuration so that can easily use
+this program on both x86_64 and aarch64 platforms.
+
+Changes from v1:
+* Removed duplicated macro and aligned the numbers indention for arm64.
+
+Leo Yan (4):
+  perf trace: Exit when build eBPF program failure
+  perf augmented_raw_syscalls: Remove duplicate macros
+  perf augmented_raw_syscalls: Support arm64 raw syscalls
+  perf augmented_raw_syscalls: Document clang configuration
+
+ tools/perf/builtin-trace.c                    |   8 ++
+ .../examples/bpf/augmented_raw_syscalls.c     | 101 +++++++++++++++++-
+ 2 files changed, 108 insertions(+), 1 deletion(-)
+
 -- 
-2.20.1
+2.17.1
 
