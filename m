@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 802513805C
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3379F38067
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729086AbfFFWOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 18:14:01 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:32900 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729055AbfFFWOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:14:00 -0400
-Received: by mail-qt1-f193.google.com with SMTP id 14so115364qtf.0
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 15:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wnCP9LHM/9q0T5YeodyvkG+3NIqd4AJlc0R/psluHCw=;
-        b=rkRXhFjoWZ55fC7yOH0kqTaTRrdB3k1BaYHKrXwOKlqO3Lj8E6y/3m1kxlPHJqvDuB
-         HNe1HZo/hCsDKBHtjOvQROjpjNuFhCqgVO7E1LX8Q5+Geiicmg9mBwYI+ORkSAoVoy4I
-         1ZkXqeaN2WWOdhlzsnngXpW4Ia72ASBbOYQfvxQ+rQFbMv+LQztxgzoK43w8G5eDI9fP
-         tucUOZ4RXAh9xTMuR0M2NH9GcDV14lib62h28GA9yhBw2zzDbJEnjjaB+5ihjRKTMKUe
-         cbO26PuTtbkDvEHYWS6DX3xlj4q6Ht1GFJ/IshA9ckkHTGXw9/wN9eD+chib8Npf95xN
-         9FZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wnCP9LHM/9q0T5YeodyvkG+3NIqd4AJlc0R/psluHCw=;
-        b=DGB0itXx93COMMJBgg1hmmTNatKCZ+7UBO/FgGrDixn2MelWgEubiKqr9e3eyhkPbV
-         p7SqpDmx9NaNI59+y+8uFL1aXTwPcbC5PrPSGeQKXLV6RREoobBQuS+rDA47lwAqnCED
-         ER+UKNzZPIr9d9qjjvFAKoo9Bmq+Dp89LmBNuvlEre+GMcNrhFq/IkJvGVNsUU/zY+jB
-         o4MXp57JMPOSm6/cjZ2pi66trhfXwRq61X35h70tacLRI9+YXQhVQVhy2CD4S7UKR1RG
-         WwHgZjMWwtE05UGeQ29zlUeFz4kP3mXOUJrIzwwAM1OwQ1qJ4GbQR4O3bP/2GBtbk5aC
-         W61A==
-X-Gm-Message-State: APjAAAVCyzPy8M339NIQasRNZxnaW8FLkSKiPJ9XYf4pYlP1N00N+Hdy
-        FoeDCVOyW3CKQAM5cAB0BAO4Rg==
-X-Google-Smtp-Source: APXvYqw1rzC6OTnpZ+39/hsG12pO3JpYun3yNbCTLHGF4Q6Fiw2lxqwEaCapVXUEIan7qToQI0uIKg==
-X-Received: by 2002:ac8:2e84:: with SMTP id h4mr42663472qta.267.1559859238493;
-        Thu, 06 Jun 2019 15:13:58 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s23sm187901qtj.56.2019.06.06.15.13.55
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 15:13:58 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 15:13:46 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Matt Mullins <mmullins@fb.com>
-Cc:     <hall@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Ingo Molnar" <mingo@redhat.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf] bpf: fix nested bpf tracepoints with per-cpu data
-Message-ID: <20190606151346.6a9ed27e@cakuba.netronome.com>
-In-Reply-To: <20190606185427.7558-1-mmullins@fb.com>
-References: <a6a31da39debb8bde6ca5085b0f4e43a96a88ea5.camel@fb.com>
-        <20190606185427.7558-1-mmullins@fb.com>
-Organization: Netronome Systems, Ltd.
+        id S1729055AbfFFWRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 18:17:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43848 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726837AbfFFWRz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 18:17:55 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E59C390B93;
+        Thu,  6 Jun 2019 22:17:54 +0000 (UTC)
+Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A42627E68A;
+        Thu,  6 Jun 2019 22:17:52 +0000 (UTC)
+Date:   Fri, 7 Jun 2019 00:17:47 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        "Wei Wang" <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
+ rt6_dump_route()
+Message-ID: <20190607001747.4ced02c7@redhat.com>
+In-Reply-To: <20190606214456.orxy6274xryxyfww@kafai-mbp.dhcp.thefacebook.com>
+References: <cover.1559851514.git.sbrivio@redhat.com>
+        <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
+        <20190606214456.orxy6274xryxyfww@kafai-mbp.dhcp.thefacebook.com>
+Organization: Red Hat
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Thu, 06 Jun 2019 22:17:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Jun 2019 11:54:27 -0700, Matt Mullins wrote:
-> BPF_PROG_TYPE_RAW_TRACEPOINTs can be executed nested on the same CPU, as
-> they do not increment bpf_prog_active while executing.
-> 
-> This enables three levels of nesting, to support
->   - a kprobe or raw tp or perf event,
->   - another one of the above that irq context happens to call, and
->   - another one in nmi context
-> (at most one of which may be a kprobe or perf event).
-> 
-> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_data")
+On Thu, 6 Jun 2019 21:44:58 +0000
+Martin Lau <kafai@fb.com> wrote:
 
-No comment on the code, but you're definitely missing a sign-off.
-
-> ---
-> This is more lines of code, but possibly less intrusive than the
-> per-array-element approach.
+> > +	if (!(filter->flags & RTM_F_CLONED)) {
+> > +		err = rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL, 0,
+> > +				    RTM_NEWROUTE,
+> > +				    NETLINK_CB(arg->cb->skb).portid,
+> > +				    arg->cb->nlh->nlmsg_seq, flags);
+> > +		if (err)
+> > +			return err;
+> > +	} else {
+> > +		flags |= NLM_F_DUMP_FILTERED;
+> > +	}
+> > +
+> > +	bucket = rcu_dereference(rt->rt6i_exception_bucket);
+> > +	if (!bucket)
+> > +		return 0;
+> > +
+> > +	for (i = 0; i < FIB6_EXCEPTION_BUCKET_SIZE; i++) {
+> > +		hlist_for_each_entry(rt6_ex, &bucket->chain, hlist) {
+> > +			if (rt6_check_expired(rt6_ex->rt6i))
+> > +				continue;
+> > +
+> > +			err = rt6_fill_node(net, arg->skb, rt,
+> > +					    &rt6_ex->rt6i->dst,
+> > +					    NULL, NULL, 0, RTM_NEWROUTE,
+> > +					    NETLINK_CB(arg->cb->skb).portid,
+> > +					    arg->cb->nlh->nlmsg_seq, flags);  
+> Thanks for the patch.
 > 
-> I don't necessarily like that I duplicated the nest_level logic in two
-> places, but I don't see a way to unify them:
->   - kprobes' bpf_perf_event_output doesn't use bpf_raw_tp_regs, and does
->     use the perf_sample_data,
->   - raw tracepoints' bpf_get_stackid uses bpf_raw_tp_regs, but not
->     the perf_sample_data, and
->   - raw tracepoints' bpf_perf_event_output uses both...
+> A question on when rt6_fill_node() returns -EMSGSIZE while dumping the
+> exception bucket here.  Where will the next inet6_dump_fib() start?
 
+And thanks for reviewing.
+
+It starts again from the same node, see fib6_dump_node(): w->leaf = rt;
+where rt is the fib6_info where we failed dumping, so we won't skip
+dumping any node.
+
+This also means that to avoid sending duplicates in the case where at
+least one rt6_fill_node() call goes through and one fails, we would
+need to track the last bucket and entry sent, or, alternatively, to
+make sure we can fit the whole node before dumping.
+
+I don't think that can happen in practice, or at least I haven't found a
+way to create enough valid exceptions for the same node.
+
+Anyway, I guess that would be nicer, but the fix is going to be much
+bigger, and I don't think we even have to guarantee that. I'd rather
+take care of that as a follow-up. Any preferred solution by the way?
+
+-- 
+Stefano
