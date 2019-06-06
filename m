@@ -2,128 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C4837B77
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEC937B7D
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730339AbfFFRvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 13:51:18 -0400
-Received: from mga06.intel.com ([134.134.136.31]:29832 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730326AbfFFRvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 13:51:16 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jun 2019 10:51:15 -0700
-X-ExtLoop1: 1
-Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga003.jf.intel.com with ESMTP; 06 Jun 2019 10:51:15 -0700
-From:   Vedang Patel <vedang.patel@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
-        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH net-next v2 6/6] taprio: Adjust timestamps for TCP packets.
-Date:   Thu,  6 Jun 2019 10:50:58 -0700
-Message-Id: <1559843458-12517-7-git-send-email-vedang.patel@intel.com>
-X-Mailer: git-send-email 2.7.3
-In-Reply-To: <1559843458-12517-1-git-send-email-vedang.patel@intel.com>
-References: <1559843458-12517-1-git-send-email-vedang.patel@intel.com>
+        id S1728862AbfFFRvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 13:51:50 -0400
+Received: from mail-ua1-f74.google.com ([209.85.222.74]:38156 "EHLO
+        mail-ua1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728816AbfFFRvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 13:51:49 -0400
+Received: by mail-ua1-f74.google.com with SMTP id j22so607885uaq.5
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 10:51:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=JCwv+UD4yQBiRat0LbHtuxWmZ8WThdMX43Z60hYFlcA=;
+        b=dcY56VPlNU1UmmXBB1IyITcEr//sUVUAdlNZy9SuAbRjX9y/SMTDEDPQdr+g7EEB6r
+         ZOuf2dPmD+E495d2hfhPWCPPRFRjlcU/DTvh2Pk7IyB+gEv7RfzDUT8aDXbEHdyCTXvF
+         z4vog1tCuslJzLz6rXp2mWCcUFzQFzP6RYPHdLKubVpNeu7vov1uJuaqh0r/hwYAfuMS
+         TxD7DtwiEFKZuMOyDGk/Qf0dPM0wMbUGPvpkOctCJQY5/8/3XvBegwbdYwJOuitgeKh3
+         Y4DiV2dI12XrTScKe6FWTXOIal8kgoQ148W17MaI+j3LDfY6xtJrJwWZgoD6RfegEbxZ
+         NCfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=JCwv+UD4yQBiRat0LbHtuxWmZ8WThdMX43Z60hYFlcA=;
+        b=fwlmGMEMJp5JD044niAtJ4pn/BnvZHScB/oTkTADlBSIWug2ZmERdUAoaBrWjbysD3
+         X9mHIelbcz09PL9v50SFfcPgMIZUHGBzhDTcS5k948pBC18x5hUds+YlT3wBW0OAcYfV
+         4/hlQJlP/JissyRCmUPcDF934yAA9xKDoScwCN9/29j34A+x9xxu/fBFHjczPri2X5Zr
+         PqlyJvN+EUQOAIHRly/QCTiESjvdLKmBpBphwuxxfh+QsW6eekhhp/vmy+0ImxKe2RQq
+         eTOE9elofeE09vRSntXX5PDA/y0gq8pe8bxb52kZqVK9uQ/0z0pvuufRE+WrH38w/kEB
+         xVVw==
+X-Gm-Message-State: APjAAAXbJNT57vGDUIkFIgWZQSmNWJYT+cR4zHFX4Wj22YhjOLGnI5Yi
+        7hVWFwovLZysoZvQrCVgrHupRuZVZTfgkxnYmCGEwb9cAWWy/f4AWGjQe7yxMdwOIIt3FDrX7t8
+        H778YRpc8Es8JrokhO/BQl6dv+D37CXDpDJRBSfxoniKY2a9x2HFQ8A==
+X-Google-Smtp-Source: APXvYqwKk+I4HbuA4RcglkP8o46iI6xbteS+/MuFwJyr/XWMftq/+pw8TuJDIwz+Yidoj+OgCKZAOXQ=
+X-Received: by 2002:a1f:a1c8:: with SMTP id k191mr6874449vke.77.1559843508489;
+ Thu, 06 Jun 2019 10:51:48 -0700 (PDT)
+Date:   Thu,  6 Jun 2019 10:51:38 -0700
+Message-Id: <20190606175146.205269-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
+Subject: [PATCH bpf-next v2 0/8] bpf: getsockopt and setsockopt hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the taprio qdisc is running in "txtime offload" mode, it will
-set the launchtime value (in skb->tstamp) for all the packets which do
-not have the SO_TXTIME socket option. But, the TCP packets already have
-this value set and it indicates the earliest departure time represented
-in CLOCK_MONOTONIC clock.
+This series implements two new per-cgroup hooks: getsockopt and
+setsockopt along with a new sockopt program type. The idea is pretty
+similar to recently introduced cgroup sysctl hooks, but
+implementation is simpler (no need to convert to/from strings).
 
-We need to respect the timestamp set by the TCP subsystem. So, convert
-this time to the clock which taprio is using and ensure that the packet
-is not transmitted before the deadline set by TCP.
+What this can be applied to:
+* move business logic of what tos/priority/etc can be set by
+  containers (either pass or reject)
+* handle existing options (or introduce new ones) differently by
+  propagating some information in cgroup/socket local storage
 
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
----
- net/sched/sch_taprio.c | 41 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+Compared to a simple syscall/{g,s}etsockopt tracepoint, those
+hooks are context aware. Meaning, they can access underlying socket
+and use cgroup and socket local storage.
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 9f621e6c2503..5dba9e0bac1a 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -22,6 +22,7 @@
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
- #include <net/sock.h>
-+#include <net/tcp.h>
- 
- static LIST_HEAD(taprio_list);
- static DEFINE_SPINLOCK(taprio_list_lock);
-@@ -278,6 +279,41 @@ static inline ktime_t get_cycle_start(struct sched_gate_list *sched,
- 	return ktime_sub(time, cycle_elapsed);
- }
- 
-+/* This returns the tstamp value set by TCP in terms of the set clock. */
-+static ktime_t get_tcp_tstamp(struct taprio_sched *q, struct sk_buff *skb)
-+{
-+	unsigned int offset = skb_network_offset(skb);
-+	const struct ipv6hdr *ipv6h;
-+	const struct iphdr *iph;
-+	struct ipv6hdr _ipv6h;
-+
-+	ipv6h = skb_header_pointer(skb, offset, sizeof(_ipv6h), &_ipv6h);
-+	if (!ipv6h)
-+		return 0;
-+
-+	if (ipv6h->version == 4) {
-+		iph = (struct iphdr *)ipv6h;
-+		offset += iph->ihl * 4;
-+
-+		/* special-case 6in4 tunnelling, as that is a common way to get
-+		 * v6 connectivity in the home
-+		 */
-+		if (iph->protocol == IPPROTO_IPV6) {
-+			ipv6h = skb_header_pointer(skb, offset,
-+						   sizeof(_ipv6h), &_ipv6h);
-+
-+			if (!ipv6h || ipv6h->nexthdr != IPPROTO_TCP)
-+				return 0;
-+		} else if (iph->protocol != IPPROTO_TCP) {
-+			return 0;
-+		}
-+	} else if (ipv6h->version == 6 && ipv6h->nexthdr != IPPROTO_TCP) {
-+		return 0;
-+	}
-+
-+	return ktime_mono_to_any(skb->skb_mstamp_ns, q->tk_offset);
-+}
-+
- /* There are a few scenarios where we will have to modify the txtime from
-  * what is read from next_txtime in sched_entry. They are:
-  * 1. If txtime is in the past,
-@@ -295,7 +331,7 @@ static inline ktime_t get_cycle_start(struct sched_gate_list *sched,
-  */
- static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
- {
--	ktime_t transmit_end_time, interval_end, interval_start;
-+	ktime_t transmit_end_time, interval_end, interval_start, tcp_tstamp;
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct sched_gate_list *sched, *admin;
- 	ktime_t minimum_time, now, txtime;
-@@ -306,6 +342,9 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
- 	now = taprio_get_time(q);
- 	minimum_time = ktime_add_ns(now, q->txtime_delay);
- 
-+	tcp_tstamp = get_tcp_tstamp(q, skb);
-+	minimum_time = max_t(ktime_t, minimum_time, tcp_tstamp);
-+
- 	rcu_read_lock();
- 	admin = rcu_dereference(q->admin_sched);
- 	sched = rcu_dereference(q->oper_sched);
+Stanislav Fomichev (8):
+  bpf: implement getsockopt and setsockopt hooks
+  bpf: sync bpf.h to tools/
+  libbpf: support sockopt hooks
+  selftests/bpf: test sockopt section name
+  selftests/bpf: add sockopt test
+  selftests/bpf: add sockopt test that exercises sk helpers
+  bpf: add sockopt documentation
+  bpftool: support cgroup sockopt
+
+ Documentation/bpf/index.rst                   |   1 +
+ Documentation/bpf/prog_cgroup_sockopt.rst     |  39 +
+ include/linux/bpf-cgroup.h                    |  29 +
+ include/linux/bpf.h                           |  46 ++
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/filter.h                        |  13 +
+ include/uapi/linux/bpf.h                      |  14 +
+ kernel/bpf/cgroup.c                           | 277 +++++++
+ kernel/bpf/core.c                             |   9 +
+ kernel/bpf/syscall.c                          |  19 +
+ kernel/bpf/verifier.c                         |  15 +
+ net/core/filter.c                             |   4 +-
+ net/socket.c                                  |  18 +
+ .../bpftool/Documentation/bpftool-cgroup.rst  |   7 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   2 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   8 +-
+ tools/bpf/bpftool/cgroup.c                    |   5 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      |   3 +-
+ tools/include/uapi/linux/bpf.h                |  14 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   2 +
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  77 ++
+ .../selftests/bpf/test_section_names.c        |  10 +
+ tools/testing/selftests/bpf/test_sockopt.c    | 773 ++++++++++++++++++
+ tools/testing/selftests/bpf/test_sockopt_sk.c | 156 ++++
+ 28 files changed, 1542 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/bpf/prog_cgroup_sockopt.rst
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_sk.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_sk.c
+
 -- 
-2.7.3
-
+2.22.0.rc1.311.g5d7573a151-goog
