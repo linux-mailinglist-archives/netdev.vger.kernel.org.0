@@ -2,30 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FB636E7D
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 10:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0200C36E88
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 10:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbfFFIWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 04:22:45 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:41834 "EHLO huawei.com"
+        id S1727407AbfFFIXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 04:23:35 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:41894 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726926AbfFFIWp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 04:22:45 -0400
+        id S1727236AbfFFIWr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 04:22:47 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 902BAE2A83E486A484FC;
+        by Forcepoint Email with ESMTP id B13CE1AC1713FA364F00;
         Thu,  6 Jun 2019 16:22:43 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 6 Jun 2019 16:22:34 +0800
+ 14.3.439.0; Thu, 6 Jun 2019 16:22:35 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 00/12] net: hns3: some code optimizations & cleanups & bugfixes
-Date:   Thu, 6 Jun 2019 16:20:55 +0800
-Message-ID: <1559809267-53805-1-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@huawei.com>, Xiaofei Tan <tanxiaofei@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 01/12] net: hns3: log detail error info of ROCEE ECC and AXI errors
+Date:   Thu, 6 Jun 2019 16:20:56 +0800
+Message-ID: <1559809267-53805-2-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1559809267-53805-1-git-send-email-tanhuazhong@huawei.com>
+References: <1559809267-53805-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.212.132]
@@ -35,68 +38,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch-set includes code optimizations, cleanups and bugfixes for
-the HNS3 ethernet controller driver.
+From: Xiaofei Tan <tanxiaofei@huawei.com>
 
-[patch 1/12] logs more detail error info for ROCE RAS errors.
+This patch logs detail error info of ROCEE ECC and AXI errors for
+debug purpose, and remove unnecessary reset for ROCEE overflow
+errors.
 
-[patch 2/12] fixes a wrong size issue for mailbox responding.
+Signed-off-by: Xiaofei Tan <tanxiaofei@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  2 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 87 ++++++++++++++++++++--
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |  1 +
+ 3 files changed, 83 insertions(+), 7 deletions(-)
 
-[patch 3/12] makes HW GRO handing compliant with SW one.
-
-[patch 4/12] refactors hns3_get_new_int_gl.
-
-[patch 5/12] adds handling for VF's over_8bd_nfe_err.
-
-[patch 6/12 - 12/12] adds some code optimizations and cleanups, to
-make the code more readable and compliant with some static code
-analysis tools, these modifications do not change the logic of
-the code.
-
-Jian Shen (1):
-  net: hns3: small changes for magic numbers
-
-Weihang Li (2):
-  net: hns3: trigger VF reset if a VF has an over_8bd_nfe_err
-  net: hns3: fix some coding style issues
-
-Xiaofei Tan (1):
-  net: hns3: log detail error info of ROCEE ECC and AXI errors
-
-Yonglong Liu (1):
-  net: hns3: Delete the redundant user nic codes
-
-Yufeng Mo (3):
-  net: hns3: use macros instead of magic numbers
-  net: hns3: refactor PF/VF RSS hash key configuration
-  net: hns3: some modifications to simplify and optimize code
-
-Yunsheng Lin (3):
-  net: hns3: make HW GRO handling compliant with SW GRO
-  net: hns3: replace numa_node_id with numa_mem_id for buffer reusing
-  net: hns3: refactor hns3_get_new_int_gl function
-
-Zhongzhu Liu (1):
-  net: hns3: fix wrong size of mailbox responding data
-
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |   2 +-
- drivers/net/ethernet/hisilicon/hns3/hnae3.c        |  21 +-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   7 -
- drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c   |  12 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 199 ++++++-----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  43 +--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  24 ++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  19 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 181 +++++++++-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |   4 +-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 391 +++++++++++----------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  26 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |   4 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 140 ++++----
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  85 ++---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |   3 +
- 16 files changed, 682 insertions(+), 479 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 61cb10d..5e6c749 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -268,6 +268,8 @@ enum hclge_opcode_type {
+ 	HCLGE_CONFIG_ROCEE_RAS_INT_EN	= 0x1580,
+ 	HCLGE_QUERY_CLEAR_ROCEE_RAS_INT = 0x1581,
+ 	HCLGE_ROCEE_PF_RAS_INT_CMD	= 0x1584,
++	HCLGE_QUERY_ROCEE_ECC_RAS_INFO_CMD	= 0x1585,
++	HCLGE_QUERY_ROCEE_AXI_RAS_INFO_CMD	= 0x1586,
+ 	HCLGE_IGU_EGU_TNL_INT_EN	= 0x1803,
+ 	HCLGE_IGU_COMMON_INT_EN		= 0x1806,
+ 	HCLGE_TM_QCN_MEM_INT_CFG	= 0x1A14,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
+index 784512d..64defd3 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
+@@ -1388,6 +1388,66 @@ static int hclge_handle_all_ras_errors(struct hclge_dev *hdev)
+ 	return ret;
+ }
+ 
++static int hclge_log_rocee_axi_error(struct hclge_dev *hdev)
++{
++	struct device *dev = &hdev->pdev->dev;
++	struct hclge_desc desc[3];
++	int ret;
++
++	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_QUERY_ROCEE_AXI_RAS_INFO_CMD,
++				   true);
++	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_QUERY_ROCEE_AXI_RAS_INFO_CMD,
++				   true);
++	hclge_cmd_setup_basic_desc(&desc[2], HCLGE_QUERY_ROCEE_AXI_RAS_INFO_CMD,
++				   true);
++	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
++	desc[1].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
++
++	ret = hclge_cmd_send(&hdev->hw, &desc[0], 3);
++	if (ret) {
++		dev_err(dev, "failed(%d) to query ROCEE AXI error sts\n", ret);
++		return ret;
++	}
++
++	dev_info(dev, "AXI1: %08X %08X %08X %08X %08X %08X\n",
++		 le32_to_cpu(desc[0].data[0]), le32_to_cpu(desc[0].data[1]),
++		 le32_to_cpu(desc[0].data[2]), le32_to_cpu(desc[0].data[3]),
++		 le32_to_cpu(desc[0].data[4]), le32_to_cpu(desc[0].data[5]));
++	dev_info(dev, "AXI2: %08X %08X %08X %08X %08X %08X\n",
++		 le32_to_cpu(desc[1].data[0]), le32_to_cpu(desc[1].data[1]),
++		 le32_to_cpu(desc[1].data[2]), le32_to_cpu(desc[1].data[3]),
++		 le32_to_cpu(desc[1].data[4]), le32_to_cpu(desc[1].data[5]));
++	dev_info(dev, "AXI3: %08X %08X %08X %08X\n",
++		 le32_to_cpu(desc[2].data[0]), le32_to_cpu(desc[2].data[1]),
++		 le32_to_cpu(desc[2].data[2]), le32_to_cpu(desc[2].data[3]));
++
++	return 0;
++}
++
++static int hclge_log_rocee_ecc_error(struct hclge_dev *hdev)
++{
++	struct device *dev = &hdev->pdev->dev;
++	struct hclge_desc desc[2];
++	int ret;
++
++	ret = hclge_cmd_query_error(hdev, &desc[0],
++				    HCLGE_QUERY_ROCEE_ECC_RAS_INFO_CMD,
++				    HCLGE_CMD_FLAG_NEXT, 0, 0);
++	if (ret) {
++		dev_err(dev, "failed(%d) to query ROCEE ECC error sts\n", ret);
++		return ret;
++	}
++
++	dev_info(dev, "ECC1: %08X %08X %08X %08X %08X %08X\n",
++		 le32_to_cpu(desc[0].data[0]), le32_to_cpu(desc[0].data[1]),
++		 le32_to_cpu(desc[0].data[2]), le32_to_cpu(desc[0].data[3]),
++		 le32_to_cpu(desc[0].data[4]), le32_to_cpu(desc[0].data[5]));
++	dev_info(dev, "ECC2: %08X %08X %08X\n", le32_to_cpu(desc[1].data[0]),
++		 le32_to_cpu(desc[1].data[1]), le32_to_cpu(desc[1].data[2]));
++
++	return 0;
++}
++
+ static int hclge_log_rocee_ovf_error(struct hclge_dev *hdev)
+ {
+ 	struct device *dev = &hdev->pdev->dev;
+@@ -1456,19 +1516,33 @@ hclge_log_and_clear_rocee_ras_error(struct hclge_dev *hdev)
+ 
+ 	status = le32_to_cpu(desc[0].data[0]);
+ 
+-	if (status & HCLGE_ROCEE_RERR_INT_MASK) {
+-		dev_warn(dev, "ROCEE RAS AXI rresp error\n");
+-		reset_type = HNAE3_FUNC_RESET;
+-	}
++	if (status & HCLGE_ROCEE_AXI_ERR_INT_MASK) {
++		if (status & HCLGE_ROCEE_RERR_INT_MASK)
++			dev_warn(dev, "ROCEE RAS AXI rresp error\n");
++
++		if (status & HCLGE_ROCEE_BERR_INT_MASK)
++			dev_warn(dev, "ROCEE RAS AXI bresp error\n");
+ 
+-	if (status & HCLGE_ROCEE_BERR_INT_MASK) {
+-		dev_warn(dev, "ROCEE RAS AXI bresp error\n");
+ 		reset_type = HNAE3_FUNC_RESET;
++
++		ret = hclge_log_rocee_axi_error(hdev);
++		if (ret) {
++			dev_err(dev, "failed(%d) to process axi error\n", ret);
++			/* reset everything for now */
++			return HNAE3_GLOBAL_RESET;
++		}
+ 	}
+ 
+ 	if (status & HCLGE_ROCEE_ECC_INT_MASK) {
+ 		dev_warn(dev, "ROCEE RAS 2bit ECC error\n");
+ 		reset_type = HNAE3_GLOBAL_RESET;
++
++		ret = hclge_log_rocee_ecc_error(hdev);
++		if (ret) {
++			dev_err(dev, "failed(%d) to process ecc error\n", ret);
++			/* reset everything for now */
++			return HNAE3_GLOBAL_RESET;
++		}
+ 	}
+ 
+ 	if (status & HCLGE_ROCEE_OVF_INT_MASK) {
+@@ -1478,7 +1552,6 @@ hclge_log_and_clear_rocee_ras_error(struct hclge_dev *hdev)
+ 			/* reset everything for now */
+ 			return HNAE3_GLOBAL_RESET;
+ 		}
+-		reset_type = HNAE3_FUNC_RESET;
+ 	}
+ 
+ 	/* clear error status */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+index 81d115a..6684733 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+@@ -94,6 +94,7 @@
+ #define HCLGE_ROCEE_RAS_CE_INT_EN_MASK		0x1
+ #define HCLGE_ROCEE_RERR_INT_MASK		BIT(0)
+ #define HCLGE_ROCEE_BERR_INT_MASK		BIT(1)
++#define HCLGE_ROCEE_AXI_ERR_INT_MASK		GENMASK(1, 0)
+ #define HCLGE_ROCEE_ECC_INT_MASK		BIT(2)
+ #define HCLGE_ROCEE_OVF_INT_MASK		BIT(3)
+ #define HCLGE_ROCEE_OVF_ERR_INT_MASK		0x10000
 -- 
 2.7.4
 
