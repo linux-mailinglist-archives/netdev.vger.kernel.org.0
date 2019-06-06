@@ -2,86 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A85A36A20
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 04:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBFF36A61
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 05:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfFFCnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 22:43:24 -0400
-Received: from mail-pg1-f182.google.com ([209.85.215.182]:43386 "EHLO
-        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfFFCnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 22:43:23 -0400
-Received: by mail-pg1-f182.google.com with SMTP id f25so426561pgv.10
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 19:43:23 -0700 (PDT)
+        id S1726608AbfFFDLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 23:11:39 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34269 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfFFDLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 23:11:39 -0400
+Received: by mail-pf1-f194.google.com with SMTP id c85so578114pfc.1;
+        Wed, 05 Jun 2019 20:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=Wtx/ay8rxT5oBiwe2uyoiL58LmPn8mBpS58ceLCxLn8=;
-        b=KqBZba7thrDVTDCtnpYh6BfGTmOi2XTd0Pm7pJIngu8Kj+T1I9x6We4q9CVNten/W1
-         6EFsZP0y+kgKeLaK6MlT0TzzchiqbGVZ2FTjHKsbi7QqKIDpChM9lQQnfrxkeLDfOlk/
-         H9knxGbW//7pyKq0P9cYQ2lhZmJUeGUXN/GWTOIH64CweiQrI9AiaWDCocU19yzMywA8
-         l9Qeg571ME9HsjwiqBll3Nod+ZBbc+xbIe5VjSBF2Xv5KtQ7T7n1Web5kipNTpEUK4/C
-         d/xN7vPRXgbVDcK3BbQDcSDUjiFI1Dv4ek+PW2OMKRBskJ++nOqHWDqwQQxrIxRCNSKR
-         Kbyw==
+        bh=byYiJvNP4AxdA2O/8mxFX8VRov3AhPWtzZd3XGwmlWg=;
+        b=lGep7+d0NNYi/YAvvVgwhuv40j6jvzY2L4a4KGYUwhLgxTMlMMwWvkut09fFpbN4tA
+         tdT3FNqqXz+MUA5ZnksOUb8Izvmwu6OfKBVGZIBlqodfxernYkrz9/rBo22cHiIl08MW
+         tAXaJL+NedxDWUUqdLDruCLCraLV9hhDyUo4wSUH0AfZtYPw4CNymuS7SvaawG9NS8BD
+         t/RdKk1JtDrgSvTWNDOpi+dCxhGSigruuxyr8A9nrnOEvcRGSbUp57P8EJUiiBf3MewN
+         GwwRjDWpjjCUdW2A/9LoMe0kWQLWlOkJLALE13vrDdL0sGdE5k8RJ8RFJg6gbVpgtfZi
+         qj+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Wtx/ay8rxT5oBiwe2uyoiL58LmPn8mBpS58ceLCxLn8=;
-        b=GK1TBNQu+LcJ7THmzxOnJC6Po2t/oN0hbWwDpZFgENt9lFPan+5FWwbNit00CccL9G
-         eMzqCyoxNfBFgow0hb53KcQh6a/gtXTMPTeIy+hVBbAMtA4cQm4bDboRzBtfOOopcPAb
-         IdUqX007StlLO+1j25N9maU3lvbqSyP2uwYt6HzBxVWhEn589bAHcuT0LHr9TP9DYJ3I
-         spW4GQN4KXDrDET9KFeqr1ByGt8zbX/u3AyGxFmsFiHNrszJoGCRvuRva6zb2ITuL7FU
-         oBOL3W1svV8gIr37Wy3jbjaYuZqqJC5UP7ScXkJM//pFUT+7Ea6cn2Kck/yxbguG3x/+
-         HflQ==
-X-Gm-Message-State: APjAAAV0uvf1kPuAp/BbN7ld0tb5EAe+/cjGCVbcTXqkLP8fzrYLhRyu
-        3SNIpJysHfxzWftvnWNRmJ/xFduG
-X-Google-Smtp-Source: APXvYqzstIaXWjeWoJrta1vNHr+PphvW04vA125KWSOnDfNi19IvNZG9ynTlI3MXTbWC8hDuI9MSOA==
-X-Received: by 2002:a62:b40f:: with SMTP id h15mr44586742pfn.57.1559789003301;
-        Wed, 05 Jun 2019 19:43:23 -0700 (PDT)
+        bh=byYiJvNP4AxdA2O/8mxFX8VRov3AhPWtzZd3XGwmlWg=;
+        b=a+vljzX1UaERm4B/kopE+VBYNrw0+VXRcvUjq1j6QkVNByoN1RmXoyNymV33osjrkI
+         m7PMe1Qc3Q23HzMoySBbj2twnrymviW25rnxuWptlkxFuyLwlUGYLIOf3I4smKAjZi4c
+         /Hkj3t/oAV+4mxiT/HflEby50BfllaOq1JbibsUI3PAY5F1ByONEIWxItcUYo64StPCQ
+         J++C0Asn2YPW/gnmvVnBN2lA1Wj0KnLLq0/Yo/H+0dUyrHPZymMS1UCuUUZ+8+67BmC5
+         tf4nUQBEfPW+jWjYfhW9hDEe95UrplHNNY4bBDGZrzONkyaAbt6IhwAWWK0KmdBqv7vz
+         Zc9A==
+X-Gm-Message-State: APjAAAVGPtosNKLqmq9a+tzQmmn5zFG9PdNIOnZKbWOPYSI4F0FfO0zB
+        qKxYFoMkux9DDZSxQQcsG4Q=
+X-Google-Smtp-Source: APXvYqy0rvpd15LSjyqjmCQ4NDFc+S4YFjV824Gdn7DHQzju5dPXxF8WJY+++qEgI1EtEvmHWKJ1XQ==
+X-Received: by 2002:a17:90a:2e87:: with SMTP id r7mr46756167pjd.112.1559790698793;
+        Wed, 05 Jun 2019 20:11:38 -0700 (PDT)
 Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id k22sm271488pfk.178.2019.06.05.19.43.21
+        by smtp.gmail.com with ESMTPSA id s2sm346080pfe.105.2019.06.05.20.11.37
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 05 Jun 2019 19:43:22 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 19:43:20 -0700
+        Wed, 05 Jun 2019 20:11:37 -0700 (PDT)
+Date:   Wed, 5 Jun 2019 20:11:35 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shalom Toledo <shalomt@mellanox.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
- physical hardware clock operations
-Message-ID: <20190606024320.6ilfk5ur3a3d6ead@localhost>
-References: <20190603121244.3398-1-idosch@idosch.org>
- <20190603121244.3398-8-idosch@idosch.org>
- <20190604142819.cml2tbkmcj2mvkpl@localhost>
- <5c757fb9-8b47-c03a-6b78-45ac2b2140f3@mellanox.com>
- <20190605174025.uwy2u7z55v3c2opm@localhost>
- <be656773-93e8-2f95-ad63-bfec18c9523a@mellanox.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA driver
+Message-ID: <20190606031135.6lyydjb6hqfeuzt3@localhost>
+References: <20190604170756.14338-1-olteanv@gmail.com>
+ <20190604.202258.1443410652869724565.davem@davemloft.net>
+ <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
+ <CA+h21hrJYm4GLn+LpJ623_dpgxE2z-k3xTMD=z1QQ9WqXg7zrQ@mail.gmail.com>
+ <20190605174547.b4rwbfrzjqzujxno@localhost>
+ <CA+h21hqdmu3+YQVMXyvckrUjXW7mstjG1MDafWGy4qFHB9zdtg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <be656773-93e8-2f95-ad63-bfec18c9523a@mellanox.com>
+In-Reply-To: <CA+h21hqdmu3+YQVMXyvckrUjXW7mstjG1MDafWGy4qFHB9zdtg@mail.gmail.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 07:28:38PM +0000, Shalom Toledo wrote:
-> So, there is an HW machine which responsible for adding UTC timestamp on
-> R-SPAN mirror packets and there is no connection to the HW free running
-> counter.
+On Wed, Jun 05, 2019 at 09:08:54PM +0300, Vladimir Oltean wrote:
+> Currently I'm using a cyclecounter, but I *will* need actual PHC
+> manipulations for the time-based shaping and policing features that
+> the switch has in hardware.
 
-If there is no connection, then the frequency adjustments to the HW
-clock will not work as expected.
+Okay.
 
-Perhaps the free running counter and the HW clock share the same clock
-source?
+> On the other hand I get much tighter sync
+> offset using the free-running counter than with hardware-corrected
+> timestamps.
 
-Thanks,
+Why?  The time stamps come from the very same counter, don't they?
+
+> So as far as I see it, I'll need to have two sets of
+> operations.
+
+I doubt very much that this will work well.
+
+> How should I design such a dual-PHC device driver? Just register two
+> separate clocks, one for the timestamping counter, the other for the
+> scheduling/policing PTP clock, and have phc2sys keep them in sync
+> externally to the driver?
+
+But how would phc2sys do this?  By comparing clock_gettime() values?
+That would surely introduce unnecessary time error.
+
+> Or implement the hardware corrections
+> alongside the timecounter ones, and expose a single PHC (and for
+> clock_gettime, just pick one of the time sources)?
+
+I would implement the hardware clock and drop the timecounter
+altogether.
+
+HTH,
 Richard
