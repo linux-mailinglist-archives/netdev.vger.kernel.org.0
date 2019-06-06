@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DDBD3759C
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D60DE3759D
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728247AbfFFNqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 09:46:30 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33288 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfFFNqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:46:30 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 14so2717331qtf.0;
-        Thu, 06 Jun 2019 06:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sxuZRg/a5BwwLpOXc2E8P4g4IXtD5jAKIRcm5GraeZs=;
-        b=XHOrwfS8/mtrMMyB0x5R2qAgNUAIbmokPuEjYslAfmR42hmTwX6mUmvqN0qJVubtIA
-         apBbNQEYjXPml15lz6BHEJTV10xXUF5a6sDyMzyaiyne5WyQLcBKqZPkonlIeHJsVGeM
-         m7wlYApzbK9DFyYGaWuyjgPUexcb9gM9Z78ysaRPD5M+FgS52C8hZJ85gec5f0OUj1Q1
-         IODc0tO8cks0OwbkxIrpk1JLV8DGd0RTdzDZW7beSOlIe6BEMRk9LukdwPPTrpWmbjVh
-         XKBQfQNgo+jLan7eW+FMPE3CY69AggrgnhF2KWAH2HBjK7a15UvDrlnFSJoQNGGeekgW
-         RdEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sxuZRg/a5BwwLpOXc2E8P4g4IXtD5jAKIRcm5GraeZs=;
-        b=oelqLTW1K7m53dxWmCWg1ZGiFuJ11gOzPgnirEc7Aw7yacMZ7z+JpDr82iAVum/i/B
-         RWqv/7MNKk4SJzJTM61manXDTSEpjPTFepGAD85KaxWzfQ890X9T5EYwmv0Yk02GAoHA
-         KwzaWEhRF8//CegcFoYH2oLUXkYdOAbbKbUREfezGJ8yMjNbCXP2S53aCymH1/7/GYnV
-         M0QLC6ohokP47Z5p+CRVdUaTI8oYuLrYFb7pUcPDL1auQyeHkriz/MOwGYPj4JWjRnkd
-         pWYlA1h+Yf+9iNrz/CyXpCqc3oPVTeEFekovRjuda8fJQ682keN1ia3F9mccmY5SeR1b
-         O0RQ==
-X-Gm-Message-State: APjAAAXNjo7Kdvq3B8YH2Z7W8iXNc5hibQFfCAokE53vc7yMdrtzNtXj
-        oefYbCwIvmJRKp3PzR8rJDI=
-X-Google-Smtp-Source: APXvYqzvYPqMM+pY1ADNXKjLo3mWNDAGhRI7ulZ41cG+60iOZwW/XVjlNwg0XL5s/YODyp1GiDnkwg==
-X-Received: by 2002:a0c:99d8:: with SMTP id y24mr38959520qve.74.1559828789107;
-        Thu, 06 Jun 2019 06:46:29 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([177.195.208.82])
-        by smtp.gmail.com with ESMTPSA id d38sm1344329qtb.95.2019.06.06.06.46.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 06:46:27 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 41B7441149; Thu,  6 Jun 2019 10:46:24 -0300 (-03)
-Date:   Thu, 6 Jun 2019 10:46:24 -0300
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] perf augmented_raw_syscalls: Support arm64 raw
- syscalls
-Message-ID: <20190606134624.GD30166@kernel.org>
-References: <20190606094845.4800-1-leo.yan@linaro.org>
- <20190606094845.4800-4-leo.yan@linaro.org>
- <20190606133838.GC30166@kernel.org>
+        id S1728284AbfFFNrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 09:47:10 -0400
+Received: from mx-relay59-hz2.antispameurope.com ([94.100.136.159]:39312 "EHLO
+        mx-relay59-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726877AbfFFNrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:47:10 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay59-hz2.antispameurope.com;
+ Thu, 06 Jun 2019 15:47:08 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Thu, 6 Jun
+ 2019 15:47:06 +0200
+Subject: Re: DSA with MV88E6321 and imx28
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <20190604135000.GD16951@lunn.ch>
+ <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
+ <20190605122404.GH16951@lunn.ch>
+ <414bd616-9383-073d-b3f3-6b6138c8b163@eks-engel.de>
+ <20190605133102.GF19627@lunn.ch>
+ <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
+ <20190605184724.GB19590@lunn.ch>
+ <c27f2b9b-90d7-db63-f01c-2dfaef7a014b@eks-engel.de>
+ <20190606122437.GA20899@lunn.ch>
+ <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
+ <20190606133501.GC19590@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
+Date:   Thu, 6 Jun 2019 15:47:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606133838.GC30166@kernel.org>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190606133501.GC19590@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay59-hz2.antispameurope.com with 50353C00C0B
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:.2335
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Thu, Jun 06, 2019 at 10:38:38AM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Thu, Jun 06, 2019 at 05:48:44PM +0800, Leo Yan escreveu:
-> > This patch adds support for arm64 raw syscall numbers so that we can use
-> > it on arm64 platform.
-> > 
-> > After applied this patch, we need to specify macro -D__aarch64__ or
-> > -D__x86_64__ in compilation option so Clang can use the corresponding
-> > syscall numbers for arm64 or x86_64 respectively, other architectures
-> > will report failure when compilation.
-> 
-> So, please check what I have in my perf/core branch, I've completely
-> removed arch specific stuff from augmented_raw_syscalls.c.
-> 
-> What is done now is use a map to specify what to copy, that same map
-> that is used to state which syscalls should be traced.
-> 
-> It uses that tools/perf/arch/arm64/entry/syscalls/mksyscalltbl to figure
-> out the mapping of syscall names to ids, just like is done for x86_64
-> and other arches, falling back to audit-libs when that syscalltbl thing
-> is not present.
 
-Also added:
+On 06.06.19 15:35, Andrew Lunn wrote:
+>> >From our hardware developer I know now that we are using a "mini" SFF 
+>> which has no i2c eeprom. 
+> O.K. Does this mini SFF have LOS, TX-Disable, etc? Are these connected
+> to GPIOs? I assume the SFF is fibre? And it needs the SERDES to speak
+> 1000BaseX, not SGMII?
 
-Fixes: ac96287cae08 ("perf trace: Allow specifying a set of events to add in perfconfig")
+Nope, no LOS no tx-disable etc. Yeah, the SFF is fibre. Exactly, it needs 
+SERDES to speak 1000BaseX.
 
-For the stable@kernel.org folks to automagically pick this.
+>
+>> Switch				|	external
+>> Port 0 - internal serdes 0x0c --|-------Mini SFF 1x8 Transceiver
+>> 				|
+>> Port 0 - internal serdes 0x0d --|-------Mini SFF 1x8 Transceiver
+>> 				|
+>> Port 2 ----------RGMII----------|-------KSZ9031 PHY 0x02(strap)--Transceiver
+>> 				|
+>> Port 3 - internal PHY 0x03 -----|-------Transceiver
+>> 				|
+>> Port 3 - internal PHY 0x04 -----|-------Transceiver
+>> 				|			
+>> Port 5 - CPU-Port RMII ---------|-------CPU
+>> 				|
+>> Port 6 ----------RGMII----------|-------KSZ9031 PHY 0x06(strap)--Transceiver
+> So the current state is that just the SFF ports are not working? All
+> the copper PHYs are O.K.
+>
+>     Andrew
+>
+The external copper PHYs are still not working properly, but if I set them to
+fixed-link, I see data coming in with I start tcpdump on my device. Just with
+some odd header but I'm not that far with DSA-tags and these stuff.
+ 
+Just at that moment we found out that we have a problem with our MDC timing.
+After we fixed that the external PHY registers could be read correctly over SMI
+Command registers. But I haven't tested it with the DSA driver yet.
 
-- Arnaldo
