@@ -2,81 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E8236DF7
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A775D36DD0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfFFH73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 03:59:29 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:41030 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725769AbfFFH72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 03:59:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JwIMyrVBhIYWhjRuHJS4Kzfpl9Qg+/jH5ojnMnzX9+A=; b=M79ZKW8HgcdQ6V86A7mjwI9C+
-        OVoWdKu82toGfIML7DESIAh0rsy6vY3L+njPj4FMTQfp6nVnQqkK67fffSD4y4f0scY49quGvYuYR
-        SpdPE+ieUMttj/laABErW9z+YwFBpthFPhwo4Jtj1+miWCK9RH46vrZrlkagKpuiFi6LsPf8oC/6D
-        8cpZeM1dWPDOSeRFMVSUn/WmDtoZiepx6cNv3E+4kdEMYoucC+UpwXkpoy07RqBDnjZvCaoMXZptu
-        FI6RXurrJu00y4/tPoF5Sq5rEhX3lW86YbLEyKW4oQ6HwZRUz3JoHk6XYciDt3cirM6bb8yNhkgZc
-        3VbL/usaQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52878)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hYnIw-0004c7-Hm; Thu, 06 Jun 2019 08:59:22 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hYnIt-000366-Sh; Thu, 06 Jun 2019 08:59:19 +0100
-Date:   Thu, 6 Jun 2019 08:59:19 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell10g: allow PHY to probe without firmware
-Message-ID: <20190606075919.ysofpcpnu2rp3bh4@shell.armlinux.org.uk>
-References: <E1hYTO0-0000MZ-2d@rmk-PC.armlinux.org.uk>
- <20190605.184827.1552392791102735448.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190605.184827.1552392791102735448.davem@davemloft.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726631AbfFFHxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 03:53:14 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:37078 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfFFHxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 03:53:13 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x567nGAG166670;
+        Thu, 6 Jun 2019 07:53:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id; s=corp-2018-07-02;
+ bh=l68XanI+OC3EWntQIT4zAcW5wK4/464skn+jfLx0LX8=;
+ b=Gje7F8vXB09EJWvYdCI2pTt2XJ5UCZB1W+UAuHPvOd2KPHTdP9UZRcKD7viJusS2yipk
+ vtZ6VWuWE8w7ZjEfK7ct14ZGBwgla2ciSX4Yp8iAC++wUZ1r0ELwkurkvuJw8DtU98tK
+ JPzR6ZqzQZcOK9jBMZbYsGksCyrGStg5WGRXY6G1P1fYgvHOwg5OipmuwwB+GEkLwgSQ
+ z3KuG/1/F21OyJudCryMG9kfR0+78H3l6F2y+ua+GeoOQ3NS35AGEb/lRm/zzXOl17HL
+ J0HHvlz5v+oMehFovqnEYsHqOKC4dd7zykOINdPAtHZ4S+YWvID5REJ92+BNl/9Du9m8 Ig== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2suj0qpr2v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jun 2019 07:53:03 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x567qbHF133661;
+        Thu, 6 Jun 2019 07:53:03 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2swnhambqk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 06 Jun 2019 07:53:03 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x567r3Nm134193;
+        Thu, 6 Jun 2019 07:53:03 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2swnhambqh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jun 2019 07:53:03 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x567r2TY006851;
+        Thu, 6 Jun 2019 07:53:02 GMT
+Received: from shipfan.cn.oracle.com (/10.113.210.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 06 Jun 2019 00:53:01 -0700
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+To:     santosh.shilimkar@oracle.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Subject: [PATCH 1/1] net: rds: fix memory leak in rds_ib_flush_mr_pool
+Date:   Thu,  6 Jun 2019 04:00:03 -0400
+Message-Id: <1559808003-1030-1-git-send-email-yanjun.zhu@oracle.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9279 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906060057
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 06:48:27PM -0700, David Miller wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
-> Date: Wed, 05 Jun 2019 11:43:16 +0100
-> 
-> > +	    (state == PHY_UP || state == PHY_RESUMING)) {
-> 
-> drivers/net/phy/marvell10g.c: In function ‘mv3310_link_change_notify’:
-> drivers/net/phy/marvell10g.c:268:35: error: ‘PHY_RESUMING’ undeclared (first use in this function); did you mean ‘RPM_RESUMING’?
->       (state == PHY_UP || state == PHY_RESUMING)) {
->                                    ^~~~~~~~~~~~
->                                    RPM_RESUMING
-> drivers/net/phy/marvell10g.c:268:35: note: each undeclared identifier is reported only once for each function it appears in
-> At top level:
-> drivers/net/phy/marvell10g.c:262:13: warning: ‘mv3310_link_change_notify’ defined but not used [-Wunused-function]
->  static void mv3310_link_change_notify(struct phy_device *phydev)
->              ^~~~~~~~~~~~~~~~~~~~~~~~~
+When the following tests last for several hours, the problem will occur.
 
-Hmm. Looks like Heiner's changes in net-next _totally_ screw this
-approach - it's not just about PHY_RESUMING being removed, it's
-also about the link change notifier being moved. :(
+Server:
+    rds-stress -r 1.1.1.16 -D 1M
+Client:
+    rds-stress -r 1.1.1.14 -s 1.1.1.16 -D 1M -T 30
 
-This link notifier change also screws up my long-standing patches
-to add support for SFP for the PHYs on Macchiatobin which I was
-going to post next.
+The following will occur.
 
+"
+Starting up....
+tsks   tx/s   rx/s  tx+rx K/s    mbi K/s    mbo K/s tx us/c   rtt us cpu
+%
+  1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+  1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+  1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+  1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+"
+From vmcore, we can find that clean_list is NULL.
+
+From the source code, rds_mr_flushd calls rds_ib_mr_pool_flush_worker.
+Then rds_ib_mr_pool_flush_worker calls
+"
+ rds_ib_flush_mr_pool(pool, 0, NULL);
+"
+Then in function
+"
+int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+                         int free_all, struct rds_ib_mr **ibmr_ret)
+"
+ibmr_ret is NULL.
+
+In the source code,
+"
+...
+list_to_llist_nodes(pool, &unmap_list, &clean_nodes, &clean_tail);
+if (ibmr_ret)
+        *ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
+
+/* more than one entry in llist nodes */
+if (clean_nodes->next)
+        llist_add_batch(clean_nodes->next, clean_tail, &pool->clean_list);
+...
+"
+When ibmr_ret is NULL, llist_entry is not executed. clean_nodes->next
+instead of clean_nodes is added in clean_list.
+So clean_nodes is discarded. It can not be used again.
+The workqueue is executed periodically. So more and more clean_nodes are
+discarded. Finally the clean_list is NULL.
+Then this problem will occur.
+
+Fixes: 1bc144b62524 ("net, rds, Replace xlist in net/rds/xlist.h with llist")
+Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+---
+ net/rds/ib_rdma.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
+index d664e9a..0b347f4 100644
+--- a/net/rds/ib_rdma.c
++++ b/net/rds/ib_rdma.c
+@@ -428,12 +428,14 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+ 		wait_clean_list_grace();
+ 
+ 		list_to_llist_nodes(pool, &unmap_list, &clean_nodes, &clean_tail);
+-		if (ibmr_ret)
++		if (ibmr_ret) {
+ 			*ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
+-
++			clean_nodes = clean_nodes->next;
++		}
+ 		/* more than one entry in llist nodes */
+-		if (clean_nodes->next)
+-			llist_add_batch(clean_nodes->next, clean_tail, &pool->clean_list);
++		if (clean_nodes)
++			llist_add_batch(clean_nodes, clean_tail,
++					&pool->clean_list);
+ 
+ 	}
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.7.4
+
