@@ -2,92 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9859A374F9
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E83E37514
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727551AbfFFNQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 09:16:52 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:48924 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfFFNQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:16:52 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x56DGdCd105057;
-        Thu, 6 Jun 2019 08:16:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1559826999;
-        bh=gNc+oO3ghLaZB8nWHGiSN1D1nntyfITwOC+PGqY/I1k=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=mE2ExLrE3/z+ERYMtKdRwxxRLxrBNtzLfvEQW9tj0sHNpBVfJ7/gXaz2FtqzuHYS/
-         6pWZsakqdawZlgCx59JV0lYaQk54WnTjbIIoxdJ30/KR1EhA03hHDEzZtpfGljubKK
-         iTRpCdvBYn+VfgaGgIkWT9bJdrXjGd2lqwWOLBAo=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x56DGdP1099326
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 6 Jun 2019 08:16:39 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 6 Jun
- 2019 08:16:38 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Thu, 6 Jun 2019 08:16:39 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x56DGcRS034254;
-        Thu, 6 Jun 2019 08:16:38 -0500
-Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190509161109.10499-1-dmurphy@ti.com>
- <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
- <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
-Message-ID: <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
-Date:   Thu, 6 Jun 2019 08:16:37 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727512AbfFFNYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 09:24:18 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:42200 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbfFFNYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:24:17 -0400
+Received: by mail-ed1-f66.google.com with SMTP id z25so3294710edq.9
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 06:24:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=ZLOnqOQOn7yVGMMSF2Nh8xUeM9eyb4HUL/9Xvzm3css=;
+        b=QxMPNqcWqOQ6KPwwpAxhS9EXmQ1ZJRa+zfXUQSTy0RU4OkkJYPhEBInsjehdCaR9zR
+         xbmSvh4Hnjf2ujvzGUHA/hnUiG/NyuRSePmNBUD1QJJ7Ry919PLk/CLIiWJ2saNvjbdb
+         sJztQTFbHemKLezUbbhsxybk6UG5d6WiyBhKBoBKuly3Qh4AfC8zgemqQoI4t+HCY4nI
+         EMs54va576mh0FUSGeyqx5N360yx+qKMbzmiBUuY0NKF5VR1F/2Erq4W+pBT84w1N86R
+         rSoW0ArWpxTqrCMZerXMYPhz427+dnSvz5piltTD50bz60mH917fbMxaz60xPOkfUJXh
+         p0Tg==
+X-Gm-Message-State: APjAAAUv1PeYzJLfKVGIMmNrafjVK4pZ6P3jroHkCwjGajQ+x4dHy9u3
+        FKQxRLQBje3Uy0re4FqeOCqnloygOw8=
+X-Google-Smtp-Source: APXvYqySDst7LtBMFWXNdEWxZbgPljIpOf6zrSu7mJ45QSyI66kU3uH8816YFJml6TqeSaweghcmmg==
+X-Received: by 2002:a50:cac9:: with SMTP id f9mr19484545edi.51.1559827456074;
+        Thu, 06 Jun 2019 06:24:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id w21sm334887eja.74.2019.06.06.06.24.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 06:24:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B1688181CC3; Thu,  6 Jun 2019 15:24:14 +0200 (CEST)
+Subject: [PATCH net-next v2 2/2] devmap: Allow map lookups from eBPF
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Date:   Thu, 06 Jun 2019 15:24:14 +0200
+Message-ID: <155982745466.30088.16226777266948206538.stgit@alrua-x1>
+In-Reply-To: <155982745450.30088.1132406322084580770.stgit@alrua-x1>
+References: <155982745450.30088.1132406322084580770.stgit@alrua-x1>
+User-Agent: StGit/0.19-dirty
 MIME-Version: 1.0
-In-Reply-To: <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marc
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Bump
+We don't currently allow lookups into a devmap from eBPF, because the map
+lookup returns a pointer directly to the dev->ifindex, which shouldn't be
+modifiable from eBPF.
 
-On 5/31/19 6:51 AM, Dan Murphy wrote:
-> Marc
->
-> On 5/15/19 3:54 PM, Dan Murphy wrote:
->> Marc
->>
->> On 5/9/19 11:11 AM, Dan Murphy wrote:
->>> Create a m_can platform framework that peripheral
->>> devices can register to and use common code and register sets.
->>> The peripheral devices may provide read/write and configuration
->>> support of the IP.
->>>
->>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
->>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->>> ---
->>>
->>> v12 - Update the m_can_read/write functions to create a backtrace if 
->>> the callback
->>> pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
->>>
->> Is this able to be merged now?
->
-> ping
->
->
->> Dan
->>
->> <snip>
+However, being able to do lookups in devmaps is useful to know (e.g.)
+whether forwarding to a specific interface is enabled. Currently, programs
+work around this by keeping a shadow map of another type which indicates
+whether a map index is valid.
+
+Since we now have a flag to make maps read-only from the eBPF side, we can
+simply lift the lookup restriction if we make sure this flag is always set.
+
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ kernel/bpf/devmap.c   |    5 +++++
+ kernel/bpf/verifier.c |    7 ++-----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index 5ae7cce5ef16..0e6875a462ef 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -99,6 +99,11 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+ 	    attr->value_size != 4 || attr->map_flags & ~DEV_CREATE_FLAG_MASK)
+ 		return ERR_PTR(-EINVAL);
+ 
++	/* Lookup returns a pointer straight to dev->ifindex, so make sure the
++	 * verifier prevents writes from the BPF side
++	 */
++	attr->map_flags |= BPF_F_RDONLY_PROG;
++
+ 	dtab = kzalloc(sizeof(*dtab), GFP_USER);
+ 	if (!dtab)
+ 		return ERR_PTR(-ENOMEM);
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 5c2cb5bd84ce..7128a9821481 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2893,12 +2893,9 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 		if (func_id != BPF_FUNC_get_local_storage)
+ 			goto error;
+ 		break;
+-	/* devmap returns a pointer to a live net_device ifindex that we cannot
+-	 * allow to be modified from bpf side. So do not allow lookup elements
+-	 * for now.
+-	 */
+ 	case BPF_MAP_TYPE_DEVMAP:
+-		if (func_id != BPF_FUNC_redirect_map)
++		if (func_id != BPF_FUNC_redirect_map &&
++		    func_id != BPF_FUNC_map_lookup_elem)
+ 			goto error;
+ 		break;
+ 	/* Restrict bpf side of cpumap and xskmap, open when use-cases
+
