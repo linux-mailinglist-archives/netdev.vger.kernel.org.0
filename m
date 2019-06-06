@@ -2,111 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 800EB381BC
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:19:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C670381BF
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbfFFXTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 19:19:53 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42751 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727074AbfFFXTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 19:19:53 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so39503pff.9
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 16:19:53 -0700 (PDT)
+        id S1727693AbfFFXVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 19:21:31 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:9314 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbfFFXVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 19:21:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Iaybzo7g/TOa4vOli49PMioeP8KMnjuQ4j1zCyButBo=;
-        b=E7vbiDM/DlWscA9EOlPagNhpw3lwg+Erdi8HSP688ovzglqVXET4tR3TJZxP+CH79T
-         HNqkTcIF8PLzB4tc6dgBUPIQ0S9QUOvZqGC6+UI9Az6aig5fjNvb77r2d6QDsARGf+VI
-         c1mxyW8K/1i6HRDEk+4/oopd+sfmUTbgWrIlx+bMUXq0MWjhUC9daumd1K0aPybhRKet
-         Pptbp9pP9K0nFM5MOkumUSO8mC92xZF+D4HuMiTRbLHTCQiXAnil7bTS7W9uXSVDVxJ8
-         gLvqOqJddCjtPOm0XpJrJT2TVRziFD4sIouHkEQeUeRUq1U9CqMSSuFaQ42xiHoDP2Uw
-         rt7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Iaybzo7g/TOa4vOli49PMioeP8KMnjuQ4j1zCyButBo=;
-        b=kHPKommLv5qg3cBA9sNmZHJBuvWh4ukKwavL7nZCR3QYmoxKDLiV7B+MkvgQcfbsAP
-         43NcRJd7M0IwZRkKr3N0NuVXVvdNgjb+/+dQ4OzqMiTrq5hSCQYfCwmXsTGSlruPJvNf
-         o/0tzOx1rsg1rl3KDjbJW+CSvdo+GvyLOv78Pd+bcDBkFG4Tkp5rUogYL6qCMp/jfroK
-         dHaH+W499xZoEtK0UCAObfR7XGDel37MUpxXYrC5sqxm2toGfiJzdhkcuMdeq1XfM04U
-         qZQfIjjI5mmTFrlB/MSy0+g+D2sXSBtWLj6f16tr/CIinWkrZV86IF4KFD3jr7nZNQGq
-         X7XQ==
-X-Gm-Message-State: APjAAAUHoKD7RqWa8MS1b8EyjdxdwMlVjZ7PdKgXuou+ie86IdgjG45h
-        rP5/tjqvdZfRn/0RMB7krhSxQ0sw2/0=
-X-Google-Smtp-Source: APXvYqwqDbUbE9cuFsIeBgmIqAc/eatX9Bq/x6lKEaQTXtEdcKyk2fME/Hc1WNfkj0IOln6ORVTafA==
-X-Received: by 2002:a17:90a:9f8e:: with SMTP id o14mr2300225pjp.82.1559863192387;
-        Thu, 06 Jun 2019 16:19:52 -0700 (PDT)
-Received: from [172.27.227.171] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id a64sm212119pgc.53.2019.06.06.16.19.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 16:19:51 -0700 (PDT)
-Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-To:     Stefano Brivio <sbrivio@redhat.com>, Martin Lau <kafai@fb.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <cover.1559851514.git.sbrivio@redhat.com>
- <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
- <20190606214456.orxy6274xryxyfww@kafai-mbp.dhcp.thefacebook.com>
- <20190607001747.4ced02c7@redhat.com>
- <20190606223707.s2fyhnqnt3ygdtdj@kafai-mbp.dhcp.thefacebook.com>
- <20190607005852.2aee8784@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <fb2cb639-6e7b-ca3b-3ae3-e575a8e51d92@gmail.com>
-Date:   Thu, 6 Jun 2019 17:19:49 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190607005852.2aee8784@redhat.com>
-Content-Type: text/plain; charset=utf-8
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1559863290; x=1591399290;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=IdYGVoInfzzoWz1AMrqj4yuZIDKIT5ISkrJ/D75VbHo=;
+  b=PuWwx2YsjUjxozB3T8djBoJa0tcT7pivOoINUwU8SO7am2UcgSMM1aF7
+   ZU1/vI3qCr/ORxhY6iExqAudJ3It0YEln2/miO3TqojG3JynuuEP+9DkI
+   7A2lXZn30xUujVTJlDGBCPXBYLBoYrTSsla+I803oRSOr9MPCgqjJOU6d
+   c=;
+X-IronPort-AV: E=Sophos;i="5.60,561,1549929600"; 
+   d="scan'208";a="769343721"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-baacba05.us-west-2.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 06 Jun 2019 23:21:28 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-baacba05.us-west-2.amazon.com (Postfix) with ESMTPS id B97C0A24A6;
+        Thu,  6 Jun 2019 23:21:27 +0000 (UTC)
+Received: from EX13D22EUB001.ant.amazon.com (10.43.166.145) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 6 Jun 2019 23:21:27 +0000
+Received: from EX13D04EUB002.ant.amazon.com (10.43.166.51) by
+ EX13D22EUB001.ant.amazon.com (10.43.166.145) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 6 Jun 2019 23:21:26 +0000
+Received: from EX13D04EUB002.ant.amazon.com ([10.43.166.51]) by
+ EX13D04EUB002.ant.amazon.com ([10.43.166.51]) with mapi id 15.00.1367.000;
+ Thu, 6 Jun 2019 23:21:26 +0000
+From:   "Bshara, Nafea" <nafea@amazon.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     David Woodhouse <dwmw2@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Jubran, Samih" <sameehj@amazon.com>, Andrew Lunn <andrew@lunn.ch>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Thread-Topic: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Thread-Index: AQHVGhq67AG/toDzFEuJgXAZxcdpDaaKc16AgAAPeQCAAAorgIAALp+AgAAG49KAAE7pAIAArv0AgAKvMgCAAHNcAP//1FmAgAB8GACAAA7HaYAAAvQAgAADxoc=
+Date:   Thu, 6 Jun 2019 23:21:25 +0000
+Message-ID: <35E875B8-FAE8-4C6A-BA30-FB3E2F7BA66B@amazon.com>
+References: <20190603144329.16366-1-sameehj@amazon.com>
+        <20190603143205.1d95818e@cakuba.netronome.com>
+        <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
+        <20190603160351.085daa91@cakuba.netronome.com>
+        <20190604015043.GG17267@lunn.ch>
+        <D26B5448-1E74-44E8-83DA-FC93E5520325@amazon.com>
+        <af79f238465ebe069bc41924a2ae2efbcdbd6e38.camel@infradead.org>
+        <20190604102406.1f426339@cakuba.netronome.com>
+        <7f697af8f31f4bc7ba30ef643e7b3921@EX13D11EUB003.ant.amazon.com>
+        <20190606100945.49ceb657@cakuba.netronome.com>
+        <D9B372D5-1B71-4387-AA8D-E38B22B44D8D@amazon.com>
+        <20190606150428.2e55eb08@cakuba.netronome.com>
+        <861B5CF2-878E-4610-8671-9D66AB61ABD7@amazon.com>,<20190606160756.73fe4c06@cakuba.netronome.com>
+In-Reply-To: <20190606160756.73fe4c06@cakuba.netronome.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/6/19 4:58 PM, Stefano Brivio wrote:
->>> This also means that to avoid sending duplicates in the case where at
->>> least one rt6_fill_node() call goes through and one fails, we would
->>> need to track the last bucket and entry sent, or, alternatively, to
->>> make sure we can fit the whole node before dumping.  
->> My another concern is the dump may never finish.
-> 
-> That's not a guarantee in general, even without this, because in theory
-> the skb passed might be small enough that we can't even fit a single
-> node without exceptions.
-
-That should be handled by skb->len = 0 and then returning the err back
-to caller. See inet_dump_fib.
-
-> 
-> We could add a guard on w->leaf not being the same before and after the
-> walk in inet6_dump_fib() and, if it is, terminate the dump. I just
-> wonder if we have to do this at all -- I can't find this being done
-> anywhere else (at a quick look at least).
-> 
-> By the way, we can also trigger a never-ending dump by touching the
-> tree frequently enough during a dump: it would always start again from
-> the root, see fib6_dump_table().
-> 
-
-that should be a userspace problem on a sequence mismatch. In-kernel
-notifiers do restart for offload drivers (seeregister_fib_notifier), but
-as I recall the kernel should not restart a dump.
-
-libnl reference is nl_cache_refill,
-
-                err = nl_cache_pickup(sk, cache);
-                if (err == -NLE_DUMP_INTR) {
-                        NL_DBG(2, "Dump interrupted, restarting!\n");
-                        goto restart;
-                } else if (err < 0)
-                        break;
+DQoNClNlbnQgZnJvbSBteSBpUGhvbmUNCg0KPiBPbiBKdW4gNiwgMjAxOSwgYXQgNDowOCBQTSwg
+SmFrdWIgS2ljaW5za2kgPGpha3ViLmtpY2luc2tpQG5ldHJvbm9tZS5jb20+IHdyb3RlOg0KPiAN
+Cj4gT24gVGh1LCA2IEp1biAyMDE5IDIyOjU3OjIxICswMDAwLCBCc2hhcmEsIE5hZmVhIHdyb3Rl
+Og0KPj4+IEhhdmluZyBzYWlkIHRoYXQsIGl0J3MgZW50aXJlbHkgdW5jbGVhciB0byBtZSB3aGF0
+IHRoZSB1c2VyIHNjZW5hcmlvIGlzDQo+Pj4gaGVyZS4gIFlvdSBzYXkgIndoaWNoIHR3byBkZXZp
+Y2VzIHJlbGF0ZWQiLCB5ZXQgeW91IG9ubHkgaGF2ZSBvbmUgYml0LA0KPj4+IHNvIGl0IGNhbiBp
+bmRpY2F0ZSB0aGF0IHRoZXJlIGlzIGFub3RoZXIgZGV2aWNlLCBub3QgX3doaWNoXyBkZXZpY2Ug
+aXMNCj4+PiByZWxhdGVkLiAgSW5mb3JtYXRpb24geW91IGNhbiBmdWxsIHdlbGwgZ2V0IGZyb20g
+cnVubmluZyBsc3BjaSDwn6S3DQo+Pj4gRG8gdGhlIGRldmljZXMgaGF2ZSB0aGUgc2FtZSBQQ0kg
+SUQvdmVuZG9yOm1vZGVsPyAgDQo+PiANCj4+IERpZmZlcmVudCBtb2RlbCBpZA0KPiANCj4gT2th
+eSwgdGhlbiB5b3Uga25vdyB3aGljaCBvbmUgaXMgd2hpY2guICBBcmUgdGhlcmUgbXVsdGlwbGUg
+RU5BcyBidXQNCj4gb25lIEVGQT8NCj4gDQoNClllcywgIHZlcnkgcG9zc2libGUuIFZlcnkgY29t
+bW9uDQoNClR5cGljYWwgdXNlIGNhc2UgdGhhdCBpbnN0YW5jZXMgaGF2ZSBvbmUgZW5hIGZvciBj
+b250cm9sIHBsYW5lLCBvbmUgZm9yIGludGVybmV0IGZhY2luZyAsIGFuZCBvbmUgMTAwRyBlbmEg
+dGhhdCBhbHNvIGhhdmUgZWZhIGNhcGFiaWxpdGllcw0KDQo+PiBXaWxsIGxvb2sgaW50byBzeXNm
+cyANCj4gDQo+IEkgc3RpbGwgZG9uJ3QgdW5kZXJzdGFuZCB3aGF0IGlzIHRoZSBwcm9ibGVtIHlv
+dSdyZSB0cnlpbmcgdG8gc29sdmUsDQo+IHBlcmhhcHMgcGh5c19wb3J0X2lkIGlzIHRoZSB3YXkg
+dG8gZ28uLi4NCj4gDQo+IA0KPiBUaGUgbGFyZ2VyIHBvaW50IGhlcmUgaXMgdGhhdCB3ZSBjYW4n
+dCBndWlkZSB5b3UgdG8gdGhlIHJpZ2h0IEFQSQ0KPiB1bmxlc3Mgd2Uga25vdyB3aGF0IHlvdSdy
+ZSB0cnlpbmcgdG8gYWNoaWV2ZS4gIEFuZCB3ZSBkb24ndCBoYXZlIA0KPiB0aGUgc2xpZ2h0ZXN0
+IGNsdWUgb2Ygd2hhdCdyZSB0cnlpbmcgdG8gYWNoaWV2ZSBpZiB1QVBJIGlzIGZvcndhcmRlZCAN
+Cj4gdG8gdGhlIGRldmljZS4gIA0KPiANCj4gSG9uZXN0bHkgdGhpcyBpcyB3b3JzZSwgYW5kIHdh
+eSBtb3JlIGJhc2ljIHRoYW4gSSB0aG91Z2h0LCBJIHRoaW5rDQo+IDMxNWMyOGQyYjcxNCAoIm5l
+dDogZW5hOiBldGh0b29sOiBhZGQgZXh0cmEgcHJvcGVydGllcyByZXRyaWV2YWwgdmlhIGdldF9w
+cml2X2ZsYWdzIikNCj4gbmVlZHMgdG8gYmUgcmV2ZXJ0ZWQuDQoNCkxldOKAmXMgbm90IGRvIHRo
+YXQgdW50aWwgd2UgZmluaXNoIHRoaXMgZGlzY3Vzc2lvbiBhbmQgZXhwbGFpbiB0aGUgdmFyaW91
+cyB1c2UgY2FzZXM=
