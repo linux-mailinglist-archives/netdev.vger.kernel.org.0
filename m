@@ -2,79 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA5A37C5A
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 20:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A6737C5B
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 20:36:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729577AbfFFSft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 14:35:49 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55568 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726719AbfFFSft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 14:35:49 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 30A8F14DE4E1A;
-        Thu,  6 Jun 2019 11:35:48 -0700 (PDT)
-Date:   Thu, 06 Jun 2019 11:35:47 -0700 (PDT)
-Message-Id: <20190606.113547.1877303546486591185.davem@davemloft.net>
-To:     dsahern@gmail.com
-Cc:     info@metux.net, linux-kernel@vger.kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: ipv4: fib_semantics: fix uninitialized variable
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <0ba84175-49be-9023-271d-516c93e2d83e@gmail.com>
-References: <1559832197-22758-1-git-send-email-info@metux.net>
-        <0ba84175-49be-9023-271d-516c93e2d83e@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 06 Jun 2019 11:35:48 -0700 (PDT)
+        id S1729680AbfFFSgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 14:36:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34068 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726719AbfFFSgR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 14:36:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=dkXIVs69UZqZh8xaiaCOI/l9/rIFkkaEF3WcG61H0jA=; b=CdTAYMGcl7X50Hzj2Klxdy8svw
+        aGXDAIXczFUV32tZqBNpFFquRW5/wzFlrv6lnYPNWIeWo5Cz7bCy6dw2xTYWwDp23h1eqid4M00Ms
+        X7NlDEdVmf/VwknU6nSuRYIJ4iUsK60xurA8gyL7VQbcbh8xJyYKiwQpBuk7f/rTDMDA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hYxFD-0000WR-S5; Thu, 06 Jun 2019 20:36:11 +0200
+Date:   Thu, 6 Jun 2019 20:36:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell10g: allow PHY to probe without firmware
+Message-ID: <20190606183611.GD28371@lunn.ch>
+References: <E1hYTO0-0000MZ-2d@rmk-PC.armlinux.org.uk>
+ <20190605.184827.1552392791102735448.davem@davemloft.net>
+ <20190606075919.ysofpcpnu2rp3bh4@shell.armlinux.org.uk>
+ <20190606124218.GD20899@lunn.ch>
+ <16971900-e6b9-e4b7-fbf6-9ea2cdb4dc8b@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16971900-e6b9-e4b7-fbf6-9ea2cdb4dc8b@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
-Date: Thu, 6 Jun 2019 09:47:34 -0600
+65;5402;1c> I don't like too much state changes outside control of the state machine,
+> like in phy_start / phy_stop / phy_error. I think it would be better
+> if a state change request is sent to the state machine, and the state
+> machine decides whether the requested transition is allowed.
 
-> On 6/6/19 8:43 AM, Enrico Weigelt, metux IT consult wrote:
->> From: Enrico Weigelt <info@metux.net>
->> 
->> fix an uninitialized variable:
->> 
->>   CC      net/ipv4/fib_semantics.o
->> net/ipv4/fib_semantics.c: In function 'fib_check_nh_v4_gw':
->> net/ipv4/fib_semantics.c:1027:12: warning: 'err' may be used uninitialized in this function [-Wmaybe-uninitialized]
->>    if (!tbl || err) {
->>             ^~
->> 
->> Signed-off-by: Enrico Weigelt <info@metux.net>
->> ---
->>  net/ipv4/fib_semantics.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->> 
->> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
->> index b804106..bfa49a8 100644
->> --- a/net/ipv4/fib_semantics.c
->> +++ b/net/ipv4/fib_semantics.c
->> @@ -964,7 +964,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
->>  {
->>  	struct net_device *dev;
->>  	struct fib_result res;
->> -	int err;
->> +	int err = 0;
->>  
->>  	if (nh->fib_nh_flags & RTNH_F_ONLINK) {
->>  		unsigned int addr_type;
->> 
-> 
-> what compiler version?
-> 
-> if tbl is set, then err is set.
+Hi Heiner
 
-It's unfortunate that it can't walk through that simple logic and set
-of dependencies but we'll have to quiet this warning whether we like it
-or not.
+I initially though that phy_error() would be a good way to do what
+Russell wants. But the locks get in the way. Maybe add an unlocked
+version which PHY drivers can use to indicate something fatal has
+happened?
+
+	Andrew
