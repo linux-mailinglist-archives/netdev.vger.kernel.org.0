@@ -2,161 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F34737D6B
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 21:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7929F37D54
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 21:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfFFTnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 15:43:13 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48902 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726830AbfFFTnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 15:43:11 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hYxza-0001X3-FW; Thu, 06 Jun 2019 21:24:06 +0200
-Received: from [178.197.249.21] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hYxza-0003h6-9P; Thu, 06 Jun 2019 21:24:06 +0200
-Subject: Re: [PATCH net-next v2 1/2] bpf_xdp_redirect_map: Add flag to return
- XDP_PASS on map lookup failure
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-References: <155982745450.30088.1132406322084580770.stgit@alrua-x1>
- <155982745460.30088.2745998912845128889.stgit@alrua-x1>
- <400a6093-6e9c-a1b4-0594-5b74b20a3d6b@iogearbox.net>
- <CAADnVQKZG6nOZUvqzvxz5xjZZLieQB4DvbkP=AjDF25FQB8Jfg@mail.gmail.com>
- <877e9yd70i.fsf@toke.dk> <9EC7B894-B076-46FA-BD2B-FFE12E55722B@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <709e80ae-a08a-f00e-8f42-50289495d0de@iogearbox.net>
-Date:   Thu, 6 Jun 2019 21:24:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726697AbfFFTjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 15:39:52 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60464 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726152AbfFFTjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 15:39:51 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x56JX1JX016700
+        for <netdev@vger.kernel.org>; Thu, 6 Jun 2019 12:39:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=38DQ+3g934vYUYobAs/hM6beyrP80BjTsmtytCr1cbU=;
+ b=XJrjjhfwR4ZGogPYQQ4gEk1c9EPNEDJ9Ne/LVP3/cU8fdMKSVs4ALxE3gWkgV7xu1JBh
+ mMhVJkptHcL9I/wRWtpGmmYeshi9lvMFgWctctwNgR4VCGrurWg84n3Xe9vMpDTKza3O
+ X0sQQVXBuOYIbVGgtNO6wej+H3LpiruI1us= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sy7pu8cye-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 12:39:50 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 6 Jun 2019 12:39:49 -0700
+Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
+        id 8C35BCCF2569; Thu,  6 Jun 2019 12:39:47 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Hechao Li <hechaol@fb.com>
+Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v3 bpf-next 0/2] bpf: Add a new API libbpf_num_possible_cpus()
+Date:   Thu, 6 Jun 2019 12:39:25 -0700
+Message-ID: <20190606193927.2489147-1-hechaol@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <9EC7B894-B076-46FA-BD2B-FFE12E55722B@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25472/Thu Jun  6 10:09:59 2019)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=700 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906060131
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/06/2019 08:15 PM, Jonathan Lemon wrote:
-> On 6 Jun 2019, at 9:15, Toke Høiland-Jørgensen wrote:
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>> On Thu, Jun 6, 2019 at 8:51 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> On 06/06/2019 03:24 PM, Toke Høiland-Jørgensen wrote:
->>>>> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>>
->>>>> The bpf_redirect_map() helper used by XDP programs doesn't return any
->>>>> indication of whether it can successfully redirect to the map index it was
->>>>> given. Instead, BPF programs have to track this themselves, leading to
->>>>> programs using duplicate maps to track which entries are populated in the
->>>>> devmap.
->>>>>
->>>>> This patch adds a flag to the XDP version of the bpf_redirect_map() helper,
->>>>> which makes the helper do a lookup in the map when called, and return
->>>>> XDP_PASS if there is no value at the provided index.
->>>>>
->>>>> With this, a BPF program can check the return code from the helper call and
->>>>> react if it is XDP_PASS (by, for instance, substituting a different
->>>>> redirect). This works for any type of map used for redirect.
->>>>>
->>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>> ---
->>>>>  include/uapi/linux/bpf.h |    8 ++++++++
->>>>>  net/core/filter.c        |   10 +++++++++-
->>>>>  2 files changed, 17 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>>>> index 7c6aef253173..d57df4f0b837 100644
->>>>> --- a/include/uapi/linux/bpf.h
->>>>> +++ b/include/uapi/linux/bpf.h
->>>>> @@ -3098,6 +3098,14 @@ enum xdp_action {
->>>>>       XDP_REDIRECT,
->>>>>  };
->>>>>
->>>>> +/* Flags for bpf_xdp_redirect_map helper */
->>>>> +
->>>>> +/* If set, the help will check if the entry exists in the map and return
->>>>> + * XDP_PASS if it doesn't.
->>>>> + */
->>>>> +#define XDP_REDIRECT_F_PASS_ON_INVALID BIT(0)
->>>>> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_F_PASS_ON_INVALID
->>>>> +
->>>>>  /* user accessible metadata for XDP packet hook
->>>>>   * new fields must be added to the end of this structure
->>>>>   */
->>>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>>> index 55bfc941d17a..2e532a9b2605 100644
->>>>> --- a/net/core/filter.c
->>>>> +++ b/net/core/filter.c
->>>>> @@ -3755,9 +3755,17 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>>>>  {
->>>>>       struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>>>>
->>>>> -     if (unlikely(flags))
->>>>> +     if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
->>>>>               return XDP_ABORTED;
->>>>>
->>>>> +     if (flags & XDP_REDIRECT_F_PASS_ON_INVALID) {
->>>>> +             void *val;
->>>>> +
->>>>> +             val = __xdp_map_lookup_elem(map, ifindex);
->>>>> +             if (unlikely(!val))
->>>>> +                     return XDP_PASS;
->>>>
->>>> Generally looks good to me, also the second part with the flag. Given we store into
->>>> the per-CPU scratch space and function like xdp_do_redirect() pick this up again, we
->>>> could even propagate val onwards and save a second lookup on the /same/ element (which
->>>> also avoids a race if the val was dropped from the map in the meantime). Given this
->>>> should all still be within RCU it should work. Perhaps it even makes sense to do the
->>>> lookup unconditionally inside bpf_xdp_redirect_map() helper iff we manage to do it
->>>> only once anyway?
->>>
->>> +1
->>>
->>> also I don't think we really need a new flag here.
->>> Yes, it could be considered an uapi change, but it
->>> looks more like bugfix in uapi to me.
->>> Since original behavior was so clunky to use.
->>
->> Hmm, the problem with this is that eBPF programs generally do something
->> like:
->>
->> return bpf_redirect_map(map, idx, 0);
->>
->> after having already modified the packet headers. This will get them a
->> return code of XDP_REDIRECT, and the lookup will then subsequently fail,
->> which returns in XDP_ABORTED in the driver, which you can catch with
->> tracing.
->>
->> However, if we just change it to XDP_PASS, the packet will go up the
->> stack, but because it has already been modified the stack will drop it,
->> more or less invisibly.
->>
->> So the question becomes, is that behaviour change really OK?
-> 
-> Another option would be treating the flags (or the lower bits of flags)
-> as the default xdp action taken if the lookup fails.  0 just happens to
-> map to XDP_ABORTED, which gives the initial behavior.  Then the new behavior
-> would be:
-> 
->     return bpf_redirect_map(map, index, XDP_PASS);
+Getting number of possible CPUs is commonly used for per-CPU BPF maps
+and perf_event_maps. Add a new API libbpf_num_possible_cpus() that
+helps user with per-CPU related operations and remove duplicate
+implementations in bpftool and selftests.
 
-Makes sense, that should work, but as default (flags == 0), you'd have
-to return XDP_REDIRECT to stay consistent with existing behavior.
+Hechao Li (2):
+  bpf: add a new API libbpf_num_possible_cpus()
+  bpf: use libbpf_num_possible_cpus in bpftool and selftests
 
-Thanks,
-Daniel
+ tools/bpf/bpftool/common.c             | 53 +++---------------------
+ tools/lib/bpf/libbpf.c                 | 57 ++++++++++++++++++++++++++
+ tools/lib/bpf/libbpf.h                 | 16 ++++++++
+ tools/lib/bpf/libbpf.map               |  1 +
+ tools/testing/selftests/bpf/bpf_util.h | 37 +++--------------
+ 5 files changed, 84 insertions(+), 80 deletions(-)
+
+-- 
+2.17.1
+
