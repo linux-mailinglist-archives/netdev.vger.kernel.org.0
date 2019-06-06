@@ -2,131 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CAB83711D
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E723C3714A
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbfFFKBK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jun 2019 06:01:10 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45989 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727948AbfFFKBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 06:01:10 -0400
-Received: by mail-ed1-f68.google.com with SMTP id f20so2434153edt.12
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 03:01:09 -0700 (PDT)
+        id S1727948AbfFFKJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 06:09:18 -0400
+Received: from mail-wm1-f43.google.com ([209.85.128.43]:38900 "EHLO
+        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727846AbfFFKJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 06:09:18 -0400
+Received: by mail-wm1-f43.google.com with SMTP id t5so1777906wmh.3
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 03:09:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Lu5o7unG8OuOdKW8qyYJJHMQHmPgMxzq8A1CmTaMqHI=;
-        b=B6kXplvV7dUHb/K8hGfbS5LBivxKfCAUcBZDG9VYslmCcKOLecGNX4ROX9uY4auEFs
-         sxvr9qJ9hnVJrRZnqoB5KCpgSh0OveT6jm9qgYwYzYTocG5KL5oSFe4oKWKgJiP+oMo7
-         OTl/Ti+q1MJtjwEhBnShposAEn232RwNMw2TT4nqAJ6yGW9bmxyM362RTOIN/dt3ZKw9
-         QI+IACBMSivPczZcnyNTFYJkPWOfa9ldvEd7kiqLmUBd6jQ5pS59W2enLrGZEq6r1BhB
-         zZAVPg7yQQ+MHPVovLNELCcbQg6dKZ0f1eqUWBr/K46RlFjCkRPIWIdY2t81emUi0/zw
-         ODOw==
-X-Gm-Message-State: APjAAAWvUQLBjWepVWQCpQ7ZPu4s5qCd/a6HB7EXfwYXRiikXApBn8pJ
-        UuDvFhr2j8OhSFNQR2KeG6jvTw==
-X-Google-Smtp-Source: APXvYqx0jQYRiogyGxTU5ySCL+4iT2vyx65gYRiGYO07dxedg73jrNw7bqDIwOYBGzNLsjV8HgTvqg==
-X-Received: by 2002:a17:906:3444:: with SMTP id d4mr19001659ejb.111.1559815268534;
-        Thu, 06 Jun 2019 03:01:08 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id u13sm335879edb.45.2019.06.06.03.01.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jun 2019 03:01:08 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 2E330181CC1; Thu,  6 Jun 2019 12:01:07 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, brouer@redhat.com,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH net-next 1/2] bpf_xdp_redirect_map: Add flag to return XDP_PASS on map lookup failure
-In-Reply-To: <20190605123941.5b1d36ab@carbon>
-References: <155966185058.9084.14076895203527880808.stgit@alrua-x1> <155966185069.9084.1926498690478259792.stgit@alrua-x1> <20190605123941.5b1d36ab@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 06 Jun 2019 12:01:07 +0200
-Message-ID: <87o93bdod8.fsf@toke.dk>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=FZ1QMnc0d0X8al9RBTmx1RL+tFKEs14dZ4ijHmJImUQ=;
+        b=D8yu2aBPDdLgKkVhkad4E1hXYw/tNP2DotSN9mZUEI2RRv4B9xvSpZacyb29amZJ2H
+         7mSohXLlFTyNcYpCIsF8BdtgTHKMwtLBE3C7fPQVEKcTxiigCT3ww6evSCj1DmqLOcyy
+         I1Kz8O8pK3XlBx5oGCdPtYt/Foy/Crxl0Jg2B4DHH7XtoCstqR1RX3+AWPg7p4Wi3BhM
+         snX8kCNw3f4sOGvzt2+A9Xy2thc8BlzzhjQVUF3h3pIfxMYvHTlBg0qiV1BDnNLbbsRf
+         HQBzyqrG8hUqAJMlYuW8GXJP1F3mK7NvpWl/qjSNV7HNYIUBYV9pYGPlgtM8YzQvMAik
+         0t/g==
+X-Gm-Message-State: APjAAAUT8dqzixfiXPOkXS4BhFEttaW+tWNGzma7F0q8hhq7i74HEAYB
+        mVh7F0TVLJy6OPxr61uub8zhQTv+ckI=
+X-Google-Smtp-Source: APXvYqwVnMNpjI8hGfgqQIjU9FuHZhCPmvg+E4X00dfzuxanDaaaWrelx/9FaYCZutNtVR1+sc1Ymg==
+X-Received: by 2002:a1c:1b81:: with SMTP id b123mr22325156wmb.144.1559815755453;
+        Thu, 06 Jun 2019 03:09:15 -0700 (PDT)
+Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
+        by smtp.gmail.com with ESMTPSA id r2sm1328122wma.26.2019.06.06.03.09.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 03:09:14 -0700 (PDT)
+Date:   Thu, 6 Jun 2019 12:09:12 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [RFC v2] vsock: proposal to support multiple transports at runtime
+Message-ID: <20190606100912.f2zuzrkgmdyxckog@steredhat>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-> On Tue, 04 Jun 2019 17:24:10 +0200
-> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->
->> The bpf_redirect_map() helper used by XDP programs doesn't return any
->> indication of whether it can successfully redirect to the map index it was
->> given. Instead, BPF programs have to track this themselves, leading to
->> programs using duplicate maps to track which entries are populated in the
->> devmap.
->> 
->> This adds a flag to the XDP version of the bpf_redirect_map() helper, which
->> makes the helper do a lookup in the map when called, and return XDP_PASS if
->> there is no value at the provided index. This enables two use cases:
->
-> To Jonathan Lemon, notice this approach of adding a flag to the helper
-> call, it actually also works for your use-case of XSK AF_XDP maps.
->
->> - A BPF program can check the return code from the helper call and react if
->>   it is XDP_PASS (by, for instance, redirecting out a different interface).
->> 
->> - Programs that just return the value of the bpf_redirect() call will
->>   automatically fall back to the regular networking stack, simplifying
->>   programs that (for instance) build a router with the fib_lookup() helper.
->> 
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>  include/uapi/linux/bpf.h |    8 ++++++++
->>  net/core/filter.c        |   10 +++++++++-
->>  2 files changed, 17 insertions(+), 1 deletion(-)
->> 
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 7c6aef253173..4c41482b7604 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -3098,6 +3098,14 @@ enum xdp_action {
->>  	XDP_REDIRECT,
->>  };
->>  
->> +/* Flags for bpf_xdp_redirect_map helper */
->> +
->> +/* If set, the help will check if the entry exists in the map and return
->> + * XDP_PASS if it doesn't.
->> + */
->> +#define XDP_REDIRECT_PASS_ON_INVALID BIT(0)
->> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_PASS_ON_INVALID
->> +
->>  /* user accessible metadata for XDP packet hook
->>   * new fields must be added to the end of this structure
->>   */
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 55bfc941d17a..dfab8478f66c 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -3755,9 +3755,17 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>  {
->>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>  
->> -	if (unlikely(flags))
->> +	if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
->>  		return XDP_ABORTED;
->>  
->> +	if (flags & XDP_REDIRECT_PASS_ON_INVALID) {
->> +		struct net_device *fwd;
->
-> It is slightly misguiding that '*fwd' is a 'struct net_device', as the
-> __xdp_map_lookup_elem() call works for all the supported redirect-map
-> types.
->
-> People should realize that this patch is a general approach for all the
-> redirect-map types.
+Hi all,
+this is a v2 of a proposal addressing the comments made by Dexuan, Stefan,
+and Jorgen.
 
-Good point, will fix! :)
+v1: https://www.spinics.net/lists/netdev/msg570274.html
 
--Toke
+
+
+We can define two types of transport that we have to handle at the same time
+(e.g. in a nested VM we would have both types of transport running together):
+
+- 'host->guest' transport, it runs in the host and it is used to communicate
+  with the guests of a specific hypervisor (KVM, VMWare or Hyper-V). It also
+  runs in the guest who has nested guests, to communicate with them.
+
+  [Phase 2]
+  We can support multiple 'host->guest' transport running at the same time,
+  but on x86 only one hypervisor uses VMX at any given time.
+
+- 'guest->host' transport, it runs in the guest and it is used to communicate
+  with the host.
+
+
+The main goal is to find a way to decide what transport use in these cases:
+1. connect() / sendto()
+
+   a. use the 'host->guest' transport, if the destination is the guest
+      (dest_cid > VMADDR_CID_HOST).
+
+      [Phase 2]
+      In order to support multiple 'host->guest' transports running at the same
+      time, we should assign CIDs uniquely across all transports. In this way,
+      a packet generated by the host side will get directed to the appropriate
+      transport based on the CID.
+
+   b. use the 'guest->host' transport, if the destination is the host or the
+      hypervisor.
+      (dest_cid == VMADDR_CID_HOST || dest_cid == VMADDR_CID_HYPERVISOR)
+
+
+2. listen() / recvfrom()
+
+   a. use the 'host->guest' transport, if the socket is bound to
+      VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
+      'guest->host' transport.
+      We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
+      address this case.
+
+      [Phase 2]
+      We can support network namespaces to create independent AF_VSOCK
+      addressing domains:
+      - could be used to partition VMs between hypervisors or at a finer
+   	 granularity;
+      - could be used to isolate host applications from guest applications
+   	 using the same ports with CID_ANY;
+
+   b. use the 'guest->host' transport, if the socket is bound to local CID
+      different from the VMADDR_CID_HOST (guest CID get with
+      IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY (to be
+      backward compatible).
+      Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
+
+   c. shared port space between transports
+      For incoming requests or packets, we should be able to choose which
+      transport use, looking at the 'port' requested.
+
+      - stream sockets already support shared port space between transports
+        (one port can be assigned to only one transport)
+
+      [Phase 2]
+      - datagram sockets will support it, but for now VMCI transport is the
+        default transport for any host side datagram socket (KVM and Hyper-V
+        do not yet support datagrams sockets)
+
+We will make the loading of af_vsock.ko independent of the transports to
+allow to:
+   - create a AF_VSOCK socket without any loaded transports;
+   - listen on a socket (e.g. bound to VMADDR_CID_ANY) without any loaded
+     transports;
+
+Hopefully, we could move MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
+vmci_transport.ko to the af_vsock.ko.
+[Jorgen will check if this will impact the existing VMware products]
+
+Notes:
+   - For Hyper-V sockets, the host can only be Windows. No changes should
+     be required on the Windows host to support the changes on this proposal.
+
+   - Communication between guests are not allowed on any transports, so we can
+     drop packets sent from a guest to another guest (dest_cid >
+     VMADDR_CID_HOST) if the 'host->guest' transport is not available.
+
+   - [Phase 2] tag used to identify things that can be done at a later stage,
+     but that should be taken into account during this design.
+
+   - Namespace support will be developed in [Phase 2] or in a separate project.
+
+
+
+Comments and suggestions are welcome.
+I'll be on PTO for next two weeks, so sorry in advance if I'll answer later.
+
+If we agree on this proposal, when I get back, I'll start working on the code
+to get a first PATCH RFC.
+
+Cheers,
+Stefano
