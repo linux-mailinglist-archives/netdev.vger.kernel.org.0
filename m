@@ -2,119 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0C6379E8
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA80B37A86
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727610AbfFFQnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 12:43:02 -0400
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:44914 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727593AbfFFQnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 12:43:01 -0400
-Received: by mail-ot1-f52.google.com with SMTP id b7so2551252otl.11
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 09:43:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4MrkfoYZoYG57aLnatnkGbEbCVRXNHEiYzY3rceOg/0=;
-        b=NWYFb+j3HCi6G1WnKBoYCehDrTq0lkgOtTtNjNlA5xMOa9ZOn6I7YsjOGTlmGvsVxU
-         qwqLU/WLfaBlKMXZglNjRmzKHn4ejIhZkT95IAfg1VZBdOUILzmw01vfnI+g1ruZFY8E
-         vh9ZZLyfw2Li7CxRYtqs1XtAu+hq6/nWERXmg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4MrkfoYZoYG57aLnatnkGbEbCVRXNHEiYzY3rceOg/0=;
-        b=clGT0Pw18L5zDeQzi7KnK1ZEO28J0UCui7XRyz8I79krD7AGtY4LNgFNMiL6d3ziTj
-         BGXBOscS6U2Uyze04JVBdoNen2kdoFMZyxAT46zgyl2ySk8D2On0wJ7ZN+NsDTKgr8F4
-         Kjp8Uk7Eug7Tor9ksaDSei79LQzamauhiTE3PaKHPDM3Qe+I5sliQlTy9ZSEra+VJ4HU
-         yWCQB5o41PDpu2qSbAyEsu/s8j2VOOuwA0YSrzoHUS1MgcR6rLa1vSca8ypeqKQ+8QQl
-         c0d5govJxCC7TakLIxk5Ckjc5hDcxErqsUVAsaTKMRUBpndqZqeamtFFXNeMI4ZUf1JG
-         afkg==
-X-Gm-Message-State: APjAAAV6jXvfksD+xSKlGIB6OVgmMRYPzjCqcEI5421Cw6g6De5V72dG
-        G3c1Bd6GszSlM+YE4lzDP0BIxm7/lk+MhA5270NPjw==
-X-Google-Smtp-Source: APXvYqzImCMc02u0bQfiNkPHOa4YJ0osGVZhHakje4u2A30dMqohZn9op4WkY86l4taKjqgKJFJMQXo6Oe1JETQc43I=
-X-Received: by 2002:a9d:1b21:: with SMTP id l30mr9931635otl.5.1559839381032;
- Thu, 06 Jun 2019 09:43:01 -0700 (PDT)
+        id S1729845AbfFFRHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 13:07:43 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59566 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728459AbfFFRHm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 13:07:42 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9D4EC6EB97;
+        Thu,  6 Jun 2019 17:07:37 +0000 (UTC)
+Received: from laptop.jcline.org (ovpn-124-165.rdu2.redhat.com [10.10.124.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 804D316917;
+        Thu,  6 Jun 2019 17:07:36 +0000 (UTC)
+Received: from laptop.jcline.org (localhost [IPv6:::1])
+        by laptop.jcline.org (Postfix) with ESMTPS id 9304D7045B19;
+        Thu,  6 Jun 2019 13:07:30 -0400 (EDT)
+Date:   Thu, 6 Jun 2019 13:07:29 -0400
+From:   Jeremy Cline <jcline@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     dsahern@kernel.org, netdev@vger.kernel.org, ian.kumlien@gmail.com,
+        alan.maguire@oracle.com, dsahern@gmail.com
+Subject: Re: [PATCH net] neighbor: Reset gc_entries counter if new entry is
+ released before insert
+Message-ID: <20190606170729.GA15882@laptop.jcline.org>
+References: <20190502010834.25519-1-dsahern@kernel.org>
+ <20190504.004100.415091334346243894.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
-In-Reply-To: <20190531202132.379386-7-andriin@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Thu, 6 Jun 2019 17:42:49 +0100
-Message-ID: <CACAyw99wD+7mXXeger6WoBTTu3aYHDW8EJV9_tP7MfXOnT0ODg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
- using BTF
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190504.004100.415091334346243894.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Thu, 06 Jun 2019 17:07:42 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for sending this RFC! For me, the biggest draw is that map-in-map
-would be so much nicer to use, plus automatic dumping of map values.
+Hi,
 
-Others on the thread have raised this point already: not everybody lives
-on the bleeding edge or can control all of their dependencies. To me this means
-that having a good compatibility story is paramount. I'd like to have very clear
-rules how the presence / absence of fields is handled.
+On Sat, May 04, 2019 at 12:41:00AM -0400, David Miller wrote:
+> From: David Ahern <dsahern@kernel.org>
+> Date: Wed,  1 May 2019 18:08:34 -0700
+> 
+> > From: David Ahern <dsahern@gmail.com>
+> > 
+> > Ian and Alan both reported seeing overflows after upgrades to 5.x kernels:
+> >   neighbour: arp_cache: neighbor table overflow!
+> > 
+> > Alan's mpls script helped get to the bottom of this bug. When a new entry
+> > is created the gc_entries counter is bumped in neigh_alloc to check if a
+> > new one is allowed to be created. ___neigh_create then searches for an
+> > existing entry before inserting the just allocated one. If an entry
+> > already exists, the new one is dropped in favor of the existing one. In
+> > this case the cleanup path needs to drop the gc_entries counter. There
+> > is no memory leak, only a counter leak.
+> > 
+> > Fixes: 58956317c8d ("neighbor: Improve garbage collection")
+> > Reported-by: Ian Kumlien <ian.kumlien@gmail.com>
+> > Reported-by: Alan Maguire <alan.maguire@oracle.com>
+> > Signed-off-by: David Ahern <dsahern@gmail.com>
+> 
+> Applied and queued up for -stable.
 
-For example:
-- Fields that are present but not understood are an error. This makes
-sense because
-  the user can simply omit the field in their definition if they do
-not use it. It's also necessary
-  to preserve the freedom to add new fields in the future without
-risking user breakage.
-- If libbpf adds support for a new field, it must be optional. Seems
-like this is what current
-  map extensions already do, so maybe a no-brainer.
+Did this get lost in the shuffle? I see it in mainline, but I don't see
+it in stable. Folks are encountering it with recent 5.1 kernels in
+Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1708717.
 
-Somewhat related to this: I really wish that BTF was self-describing,
-e.g. possible
-to parse without understanding all types. I mentioned this in another
-thread of yours,
-but the more we add features where BTF is required the more important it becomes
-IMO.
-
-Finally, some nits inline:
-
-On Fri, 31 May 2019 at 21:22, Andrii Nakryiko <andriin@fb.com> wrote:
->
-> The outline of the new map definition (short, BTF-defined maps) is as follows:
-> 1. All the maps should be defined in .maps ELF section. It's possible to
->    have both "legacy" map definitions in `maps` sections and BTF-defined
->    maps in .maps sections. Everything will still work transparently.
-
-I'd prefer using a new map section "btf_maps" or whatever. No need to
-worry about code that deals with either type.
-
-> 3. Key/value fields should be **a pointer** to a type describing
->    key/value. The pointee type is assumed (and will be recorded as such
->    and used for size determination) to be a type describing key/value of
->    the map. This is done to save excessive amounts of space allocated in
->    corresponding ELF sections for key/value of big size.
-
-My biggest concern with the pointer is that there are cases when we want
-to _not_ use a pointer, e.g. your proposal for map in map and tail calling.
-There we need value to be a struct, an array, etc. The burden on the user
-for this is very high.
-
-> 4. As some maps disallow having BTF type ID associated with key/value,
->    it's possible to specify key/value size explicitly without
->    associating BTF type ID with it. Use key_size and value_size fields
->    to do that (see example below).
-
-Why not just make them use the legacy map?
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+Thanks,
+Jeremy
