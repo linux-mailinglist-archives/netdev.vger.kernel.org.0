@@ -2,118 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 385AD37904
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4583937902
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:57:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729583AbfFFP5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 11:57:45 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47238 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729165AbfFFP5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:57:45 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x56Fql8s015370;
-        Thu, 6 Jun 2019 08:57:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=WPRjPadkciujUXvvkMr8e21baC3JQsnVvZD5I/AUh34=;
- b=Rs56/fSiLCdDjHvb68OFFZ5xt3OI/GOxyshDTZ/7capI7qT4HpjPhV/jGkuo+dKpxUSJ
- RFCwBFiaqvER+ueCeniTIidZVaYMZQ2+zB0YTwG5Q1gQLrmlECZ45Y1ZECIZrd4Qwf7U
- 3DCuDD42fJunLTchbVN4D0PvxFN8D5JyK3Y= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sxsmr2e8b-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 06 Jun 2019 08:57:21 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 6 Jun 2019 08:57:20 -0700
-Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 6 Jun 2019 08:57:20 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 6 Jun 2019 08:57:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WPRjPadkciujUXvvkMr8e21baC3JQsnVvZD5I/AUh34=;
- b=dgKuVZrvha7KX4Z9X67Oo6veX6ayhvl73OY1IV466CVSOTJ9dHDF6aKDZAzBj1Hg+QcdkG34CmEjDWWXxYmUZ2NSfylXmF84TK48V5pnq8XBgcHh+qQRX9jCliDfe7XIMxIDg5O3WI/Qk0SANm9qHM1YYRosBAKNnw/dUWAQr38=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
- MWHPR15MB1728.namprd15.prod.outlook.com (10.174.254.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.12; Thu, 6 Jun 2019 15:57:18 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1943.023; Thu, 6 Jun 2019
- 15:57:18 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-CC:     "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
-        "Andrey Ignatov" <rdna@fb.com>, "m@lambda.lt" <m@lambda.lt>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf v2 0/4] Fix unconnected bpf cgroup hooks
-Thread-Topic: [PATCH bpf v2 0/4] Fix unconnected bpf cgroup hooks
-Thread-Index: AQHVHHUuaWSShmAwL0eAUhYynE5lcqaOyBqA
-Date:   Thu, 6 Jun 2019 15:57:18 +0000
-Message-ID: <20190606155715.gxxbr7f4odxv4zxb@kafai-mbp.dhcp.thefacebook.com>
-References: <20190606143517.25710-1-daniel@iogearbox.net>
-In-Reply-To: <20190606143517.25710-1-daniel@iogearbox.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR03CA0022.namprd03.prod.outlook.com
- (2603:10b6:a02:a8::35) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:53::10)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:5827]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4e701fc3-b87e-421e-41e3-08d6ea97a6c5
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1728;
-x-ms-traffictypediagnostic: MWHPR15MB1728:
-x-microsoft-antispam-prvs: <MWHPR15MB17289E509013CADF2ADDF582D5170@MWHPR15MB1728.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 00603B7EEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(376002)(346002)(39860400002)(396003)(189003)(199004)(4744005)(81166006)(7736002)(8936002)(6512007)(5660300002)(71190400001)(1076003)(6486002)(8676002)(52116002)(6116002)(99286004)(486006)(2906002)(4326008)(76176011)(71200400001)(305945005)(476003)(14444005)(11346002)(6916009)(102836004)(446003)(6506007)(386003)(46003)(186003)(478600001)(256004)(68736007)(561944003)(53936002)(9686003)(64756008)(81156014)(6246003)(25786009)(316002)(229853002)(86362001)(66476007)(54906003)(66556008)(66946007)(14454004)(6436002)(66446008)(73956011);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1728;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: locX88bMSHfisJkzUUhpJDzpJHu9hB3rHtoR7xjbpZHucyENdO8KprUmNiexB8zObqBuroc0wdsT1erW/1GZqHewse6gqQV/4k2e5fwwDF1nVF7jyM9BBCCUFKcZhZ5j51b2JpuI9shYbTc6j9LknnDTMvIbhhPer0e4KaeMp2NywVxXAt9szvCYfInrYguojRjy4w5VV2P4wUk8Gd8RpmaJfkokej+G7uC8azYjqPq7OTR59/PYOgneZ/g7VA7ajTZ16XGxbaO87sTKMbCN6jpbMZUWP5gY7LxNGcZd26SeZIarSfGlzZp9OGas+PuwzzTyGEn4F6VP0hp1s6FKBwDftWCUFefEHC+hu4f0fYpidQ+1DutMj6vHmKFNe8XPISRFVliUWfkvOE22PZry4uwATsbBsKMp/DB2k7DNHq0=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <822A7FA3A73517458604B4BEEF462A39@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729572AbfFFP5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 11:57:34 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:45524 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729165AbfFFP5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:57:34 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x56FsPE1183115;
+        Thu, 6 Jun 2019 15:57:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=e9tXhqutf+gIjtNsdxE4py+UbQk4Ifj4FQBivnfx9gE=;
+ b=5g6BZRVcdkbheb3LC5qCuHWNU8OGlLKxY1A5JmHiMFgm3DZ2Mc0xgZxUscJGuCk0f1K1
+ /uFjeNnTvFvsk+vAJA/PY7bFCnZthzyu74gC1ww948P3kQousQ4IFqjUFAtvB96fhDJI
+ PMKdf9G8XRzElDN2ybIwciN8GI/6Ti6cKBVwxH8VBn0HCDxgOrC9/cZtfyaUDj2kbqBv
+ XIXQAqdB5YzOlYTFHQiaB8V14/CVYfewaEU3Pg+0K56RcDPqKg87CZWpD1qJZC1s3/gk
+ 6d1UtXIq0tvUI3o4v6QK4fAakWC/iHCos6EIe1QkIqHV8mxzeaL/RqIxi1ZMQpWUoRRb +A== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2suj0qsa7w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jun 2019 15:57:27 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x56Fv5hg016481;
+        Thu, 6 Jun 2019 15:57:27 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2swngmk2f5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 06 Jun 2019 15:57:27 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x56FvRw7017402;
+        Thu, 6 Jun 2019 15:57:27 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 2swngmk2f0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jun 2019 15:57:27 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x56FvPUu024299;
+        Thu, 6 Jun 2019 15:57:25 GMT
+Received: from [10.11.0.40] (/10.11.0.40)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 06 Jun 2019 08:57:25 -0700
+Subject: Re: [PATCH 1/1] net: rds: fix memory leak in rds_ib_flush_mr_pool
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+References: <1559808003-1030-1-git-send-email-yanjun.zhu@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <7519cb35-07b3-e530-0402-67f76c16a6b4@oracle.com>
+Date:   Thu, 6 Jun 2019 08:57:24 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e701fc3-b87e-421e-41e3-08d6ea97a6c5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2019 15:57:18.2113
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1728
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=593 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060108
-X-FB-Internal: deliver
+In-Reply-To: <1559808003-1030-1-git-send-email-yanjun.zhu@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9280 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906060108
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 04:35:13PM +0200, Daniel Borkmann wrote:
-> Please refer to the patch 1/4 as the main patch with the details
-> on the current sendmsg hook API limitations and proposal to fix
-> it in order to work with basic applications like DNS. Remaining
-> patches are the usual uapi and tooling updates as well as test
-> cases. Thanks a lot!
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+On 6/6/19 1:00 AM, Zhu Yanjun wrote:
+> When the following tests last for several hours, the problem will occur.
+> 
+> Server:
+>      rds-stress -r 1.1.1.16 -D 1M
+> Client:
+>      rds-stress -r 1.1.1.14 -s 1.1.1.16 -D 1M -T 30
+> 
+> The following will occur.
+> 
+> "
+> Starting up....
+> tsks   tx/s   rx/s  tx+rx K/s    mbi K/s    mbo K/s tx us/c   rtt us cpu
+> %
+>    1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+>    1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+>    1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+>    1      0      0       0.00       0.00       0.00    0.00 0.00 -1.00
+> "
+>  From vmcore, we can find that clean_list is NULL.
+> 
+>  From the source code, rds_mr_flushd calls rds_ib_mr_pool_flush_worker.
+> Then rds_ib_mr_pool_flush_worker calls
+> "
+>   rds_ib_flush_mr_pool(pool, 0, NULL);
+> "
+> Then in function
+> "
+> int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+>                           int free_all, struct rds_ib_mr **ibmr_ret)
+> "
+> ibmr_ret is NULL.
+> 
+> In the source code,
+> "
+> ...
+> list_to_llist_nodes(pool, &unmap_list, &clean_nodes, &clean_tail);
+> if (ibmr_ret)
+>          *ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
+> 
+> /* more than one entry in llist nodes */
+> if (clean_nodes->next)
+>          llist_add_batch(clean_nodes->next, clean_tail, &pool->clean_list);
+> ...
+> "
+> When ibmr_ret is NULL, llist_entry is not executed. clean_nodes->next
+> instead of clean_nodes is added in clean_list.
+> So clean_nodes is discarded. It can not be used again.
+> The workqueue is executed periodically. So more and more clean_nodes are
+> discarded. Finally the clean_list is NULL.
+> Then this problem will occur.
+> 
+> Fixes: 1bc144b62524 ("net, rds, Replace xlist in net/rds/xlist.h with llist")
+> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+> ---
+Thanks.
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
