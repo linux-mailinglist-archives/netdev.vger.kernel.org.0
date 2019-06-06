@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D345A374E6
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9859A374F9
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbfFFNK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 09:10:59 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51951 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFFNK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:10:59 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hYsAP-0007iC-RR; Thu, 06 Jun 2019 13:10:53 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ixgbe: fix potential u32 overflow on shift
-Date:   Thu,  6 Jun 2019 14:10:53 +0100
-Message-Id: <20190606131053.25103-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727551AbfFFNQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 09:16:52 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:48924 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726877AbfFFNQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:16:52 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x56DGdCd105057;
+        Thu, 6 Jun 2019 08:16:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1559826999;
+        bh=gNc+oO3ghLaZB8nWHGiSN1D1nntyfITwOC+PGqY/I1k=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=mE2ExLrE3/z+ERYMtKdRwxxRLxrBNtzLfvEQW9tj0sHNpBVfJ7/gXaz2FtqzuHYS/
+         6pWZsakqdawZlgCx59JV0lYaQk54WnTjbIIoxdJ30/KR1EhA03hHDEzZtpfGljubKK
+         iTRpCdvBYn+VfgaGgIkWT9bJdrXjGd2lqwWOLBAo=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x56DGdP1099326
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 6 Jun 2019 08:16:39 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 6 Jun
+ 2019 08:16:38 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Thu, 6 Jun 2019 08:16:39 -0500
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x56DGcRS034254;
+        Thu, 6 Jun 2019 08:16:38 -0500
+Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+ <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
+ <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
+Message-ID: <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
+Date:   Thu, 6 Jun 2019 08:16:37 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Marc
 
-The u32 variable rem is being shifted using u32 arithmetic however
-it is being passed to div_u64 that expects the expression to be a u64.
-The 32 bit shift may potentially overflow, so cast rem to a u64 before
-shifting to avoid this.
+Bump
 
-Addresses-Coverity: ("Unintentional integer overflow")
-Fixes: cd4583206990 ("ixgbe: implement support for SDP/PPS output on X550 hardware")
-Fixes: 68d9676fc04e ("ixgbe: fix PTP SDP pin setup on X540 hardware")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index 2c4d327fcc2e..ff229d0e9146 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -209,7 +209,7 @@ static void ixgbe_ptp_setup_sdp_X540(struct ixgbe_adapter *adapter)
- 	 * assumes that the cycle counter shift is small enough to avoid
- 	 * overflowing when shifting the remainder.
- 	 */
--	clock_edge += div_u64((rem << cc->shift), cc->mult);
-+	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
- 	trgttiml = (u32)clock_edge;
- 	trgttimh = (u32)(clock_edge >> 32);
- 
-@@ -295,7 +295,7 @@ static void ixgbe_ptp_setup_sdp_X550(struct ixgbe_adapter *adapter)
- 	 * assumes that the cycle counter shift is small enough to avoid
- 	 * overflowing when shifting the remainder.
- 	 */
--	clock_edge += div_u64((rem << cc->shift), cc->mult);
-+	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
- 
- 	/* X550 hardware stores the time in 32bits of 'billions of cycles' and
- 	 * 32bits of 'cycles'. There's no guarantee that cycles represents
--- 
-2.20.1
-
+On 5/31/19 6:51 AM, Dan Murphy wrote:
+> Marc
+>
+> On 5/15/19 3:54 PM, Dan Murphy wrote:
+>> Marc
+>>
+>> On 5/9/19 11:11 AM, Dan Murphy wrote:
+>>> Create a m_can platform framework that peripheral
+>>> devices can register to and use common code and register sets.
+>>> The peripheral devices may provide read/write and configuration
+>>> support of the IP.
+>>>
+>>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>> ---
+>>>
+>>> v12 - Update the m_can_read/write functions to create a backtrace if 
+>>> the callback
+>>> pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
+>>>
+>> Is this able to be merged now?
+>
+> ping
+>
+>
+>> Dan
+>>
+>> <snip>
