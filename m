@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2720A37162
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:13:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB0F3717F
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728249AbfFFKNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 06:13:24 -0400
-Received: from lb3-smtp-cloud7.xs4all.net ([194.109.24.31]:59569 "EHLO
-        lb3-smtp-cloud7.xs4all.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726972AbfFFKNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 06:13:24 -0400
-Received: from [192.168.2.10] ([46.9.252.75])
-        by smtp-cloud7.xs4all.net with ESMTPA
-        id YpOXhyGU13qlsYpOahlotZ; Thu, 06 Jun 2019 12:13:21 +0200
-Subject: Re: [PATCH 5/8] drivers: media: coda: fix warning same module names
-To:     Anders Roxell <anders.roxell@linaro.org>, mchehab@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        marex@denx.de, stefan@agner.ch, airlied@linux.ie, daniel@ffwll.ch,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        b.zolnierkie@samsung.com, a.hajda@samsung.com,
-        hkallweit1@gmail.com, lee.jones@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-media@vger.kernel.org
-References: <20190606094722.23816-1-anders.roxell@linaro.org>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-Message-ID: <d6b79ee0-07c6-ad81-16b0-8cf929cc214d@xs4all.nl>
-Date:   Thu, 6 Jun 2019 12:13:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190606094722.23816-1-anders.roxell@linaro.org>
-Content-Type: text/plain; charset=utf-8
+        id S1728259AbfFFKV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 06:21:59 -0400
+Received: from mail-eopbgr130070.outbound.protection.outlook.com ([40.107.13.70]:57155
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727469AbfFFKV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 06:21:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jB+5TjA6SAqA+jiM9tZXVSUfmYyvCzuD/lt3syhXnbg=;
+ b=ZwMiHyLGHjXt8ne8eNMwggQ9rqx+H2XxZ7fxVJBnv3dat6wQ2YrFytBRMqvKaoSU5kNhfg6lXBp9/wzqvvE49t1a0Swc8AuY+T17/B0jhfZcBbabaorOBtEQsWOoMZpyVCBC4mFBPSJaVZmE8VxO0urJZ7Q/aL1MFizgoxktLXA=
+Received: from AM6PR05MB6133.eurprd05.prod.outlook.com (20.179.3.144) by
+ AM6PR05MB4246.eurprd05.prod.outlook.com (52.135.161.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.14; Thu, 6 Jun 2019 10:21:54 +0000
+Received: from AM6PR05MB6133.eurprd05.prod.outlook.com
+ ([fe80::1cec:5ce0:adab:7a12]) by AM6PR05MB6133.eurprd05.prod.outlook.com
+ ([fe80::1cec:5ce0:adab:7a12%7]) with mapi id 15.20.1965.011; Thu, 6 Jun 2019
+ 10:21:54 +0000
+From:   Petr Machata <petrm@mellanox.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Shalom Toledo <shalomt@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
+ physical hardware clock operations
+Thread-Topic: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
+ physical hardware clock operations
+Thread-Index: AQHVGgXT+S72SiTw0kK+/hqBqs3YWaaLuumAgAELMICAAI77AIABGjEA
+Date:   Thu, 6 Jun 2019 10:21:54 +0000
+Message-ID: <87imtjxbcv.fsf@mellanox.com>
+References: <20190603121244.3398-1-idosch@idosch.org>
+ <20190603121244.3398-8-idosch@idosch.org>
+ <20190604170349.wqsocilmlaisyzar@localhost> <87muiwxv8o.fsf@mellanox.com>
+ <20190605173152.4lsfx7a5cvyzatww@localhost>
+In-Reply-To: <20190605173152.4lsfx7a5cvyzatww@localhost>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CMAE-Envelope: MS4wfF4tKlHxT213q5iKkMxyEhwvsl3wRabWeNLK5xiL8WKLAag63A3TOZyGmKvKw2GQ0WfyjxjXTEd9W8wEzukVk+psIlgFMWLll5pj2JsOATa9DeAuydvZ
- ddjJv6cbw+Yx00MItRjqmMci92xnhEnHpv1M2w59zA1NDNGjmRLSq3cAdtQxlM27/Up8XeGggGd09JeaXKionqZ4Ox8OkYGd75CEkMLwS0I9oFo2oaXlp2qm
- zHxHG7t/dsOA8w/WL8cjzmpNJprbOGialY+uHK0qhAd6ngo3E2+LWOtDMpiv8+29lafVg2h2MXmbJqTrD08YPp+dHbGmMooIEajhJOaXAsTO9DMXSW1DnGgb
- Mi+uPtNhxzXZNVHnKkgZylEAS1Gj9Btw1D2qstbFAGFqawel2DS7gaY7PnQwOyvQDUehTrtumQUrh09usYJrS95kgXOPsOuu9vdTrS9bCu3XLxvP83rFa7K4
- iRkei2i0QauBZ+765x4Q0YbU2MzvUEyEC/yU99imriRBIOT799HstalWgtztqFMWEOMUBGV6QT9McaXUQxxn1zJjzrhgJj6CwFejoRwRWeYKwsW9fgpwBWwy
- NgSZjZuEljrA0R8Der2ECk2NLkklIrPaIzz4+7f45/5Rg3AxiqHLmyd3gj/w7qDJjczZSXQntVVEXmhKhlGVziBa2olD9SYqZW5ea+F4y5ryBoJJXKeRqJdT
- tylLYuM7/v98g46LHLxat4QbrH4tbb0OQ6PVAoOzoPM+fU4eOOTZ318lqx8uL7K4w+bXwy6AyagH24lDBaWhhE6Ak0oPkTiWkzj+zIMgcHnUBVj2qyaZ+tGz
- 49QGEH34eopVfAjGrY27QDYRwjAXHkE34k/PrX5pFSdpYBaRZmp7Cy7hsJ65WK3Eqac5SwfaayWzyuqV27vo48JIPhsH5LTGMqwPFbq3mOKKvs5I0+GRKlB3
- Xzk7eNEZqr4/hN04KmzKR9jYfWw=
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM5PR0602CA0020.eurprd06.prod.outlook.com
+ (2603:10a6:203:a3::30) To AM6PR05MB6133.eurprd05.prod.outlook.com
+ (2603:10a6:20b:af::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [78.45.160.211]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e06557ad-6822-4bf3-e5ba-08d6ea68cc3a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB4246;
+x-ms-traffictypediagnostic: AM6PR05MB4246:
+x-microsoft-antispam-prvs: <AM6PR05MB424684CF65BA33F7F75CD1E9DB170@AM6PR05MB4246.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 00603B7EEF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(396003)(136003)(366004)(39860400002)(346002)(199004)(189003)(54906003)(76176011)(68736007)(386003)(6506007)(6512007)(6916009)(316002)(99286004)(229853002)(66446008)(73956011)(66946007)(66476007)(66556008)(64756008)(52116002)(36756003)(14454004)(1411001)(6486002)(81166006)(6436002)(8676002)(81156014)(8936002)(476003)(2616005)(446003)(86362001)(4326008)(256004)(3846002)(6116002)(6246003)(7736002)(11346002)(305945005)(2906002)(53936002)(486006)(107886003)(4744005)(5660300002)(186003)(478600001)(66066001)(26005)(71190400001)(71200400001)(102836004)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4246;H:AM6PR05MB6133.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: C6MWvMOkwvM+JCpCvyJkIODt7wbLkygYbvToQemn2+ahJygIXRsMA9CM+7j9rfzxlmHEpy6jaHZycpmkocsYmuqSiT8RXEzkte0EWntWnIK8Ii2ugtClKfeCkTCoWZ/rMAc06JAXSEW02aS7JaawACUiFYD35vH3okecvoDLB2xwyEBDg7wh90+5cVozwh8Viyjtl4H/GhQhyD7e5KraaR4a/5VEbhq0gNUw8Ixl9HkEWgDbQTCpFcsGigw96EyLCpusDl/IPHh1yVR37SNs6FCLsLwXLnYk2QgmlZSxpipwdgsDbI5+vgRZ7ML23TMfF5jHnulIhv8i/Q5t4uqsg/VzWPm+XuM1ZZwwoImxtFg9Nf9zXdhfMR+XRRXII0G7gn/OXxcz9z4fiZo91aPEvadigomDi/xncI0OpjMeCac=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e06557ad-6822-4bf3-e5ba-08d6ea68cc3a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2019 10:21:54.6042
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4246
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/6/19 11:47 AM, Anders Roxell wrote:
-> When building with CONFIG_VIDEO_CODA and CONFIG_CODA_FS enabled as
-> loadable modules, we see the following warning:
-> 
-> warning: same module names found:
->   fs/coda/coda.ko
->   drivers/media/platform/coda/coda.ko
-> 
-> Rework so media coda matches the config fragment. Leaving CODA_FS as is
-> since thats a well known module.
-> 
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-> ---
->  drivers/media/platform/coda/Makefile | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/media/platform/coda/Makefile b/drivers/media/platform/coda/Makefile
-> index 54e9a73a92ab..588e6bf7c190 100644
-> --- a/drivers/media/platform/coda/Makefile
-> +++ b/drivers/media/platform/coda/Makefile
-> @@ -1,6 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  
-> -coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
-> +video-coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
->  
-> -obj-$(CONFIG_VIDEO_CODA) += coda.o
-> +obj-$(CONFIG_VIDEO_CODA) += video-coda.o
-
-How about imx-coda? video-coda suggests it is part of the video subsystem,
-which it isn't.
-
-Regards,
-
-	Hans
-
->  obj-$(CONFIG_VIDEO_IMX_VDOA) += imx-vdoa.o
-> 
-
+DQpSaWNoYXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4gd3JpdGVzOg0KDQo+
+IE9uIFdlZCwgSnVuIDA1LCAyMDE5IGF0IDA5OjAwOjA5QU0gKzAwMDAsIFBldHIgTWFjaGF0YSB3
+cm90ZToNCj4+IFdlIGRvbid0IGJ1aWxkIHRoZSBQVFAgbW9kdWxlIGF0IGFsbCB1bmxlc3MgQ09O
+RklHX1BUUF8xNTg4X0NMT0NLIGlzDQo+PiBlbmFibGVkLCBhbmQgZmFsbCBiYWNrIHRvIGlubGlu
+ZSBzdHVicyB1bmxlc3MgaXQgSVNfUkVBQ0hBQkxFLiBJIGJlbGlldmUNCj4+IHRoaXMgc2hvdWxk
+IGJlIE9LLg0KPg0KPiBQbGVhc2UgdXNlICJpbXBseSBQVFBfMTU4OF9DTE9DSyIgaW4geW91ciBr
+Y29uZmlnLCBqdXN0IGxpa2UgdGhlIG90aGVyDQo+IFBUUCBkcml2ZXJzIGRvLg0KDQpBbGwgcmln
+aHQuDQo=
