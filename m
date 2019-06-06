@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80ED937D57
+	by mail.lfdr.de (Postfix) with ESMTP id EBA5B37D58
 	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 21:40:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfFFTjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 15:39:55 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:57106 "EHLO
+        id S1726723AbfFFTj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 15:39:56 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42292 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726701AbfFFTjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 15:39:55 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x56Jbtnu000661
+        by vger.kernel.org with ESMTP id S1726707AbfFFTj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 15:39:56 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x56JQV2B019500
         for <netdev@vger.kernel.org>; Thu, 6 Jun 2019 12:39:54 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=2vhxn1Z5C6mcXvCbtZO7iykmxbEzJx5ZYlgxEecbM+E=;
- b=Mek0zok6cLKVpECPRGgFvMapc9BpMQSmqRJwjlZHbHlT76HtwZWIVVEK1c2rDV9b82KH
- JTofqleIfwTvXrqx+gs+sX/TT5tmS63kYMzIAe1jsu4zlm+4rHxDjuWpyC5WTGw2nzlr
- iTtQ4E2UfQCCpLTaUB6c2FHULmtswgeaLDg= 
+ content-type; s=facebook; bh=+ApTMcU/Sm8oJx7JeyP7JZlR+uLKAI9IuQNgua6JEoY=;
+ b=dA2m9xFeFGMLaGV759ZzpOEaeFjlrUtf30oDUzsFh3PyPLYDEpQXTCZaLWTtjs0VRxMt
+ 2nB13kcUbkQONjzOo6yzRgHgppUhAqSx2SmGu8PbQogMNpGYuhjP/2hG8Gct9xYXLa6E
+ 1IVLR689EWPBKwoxC8/vm6CYZwrz88I9GJc= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sy6mj0p97-3
+        by mx0a-00082601.pphosted.com with ESMTP id 2sy5fh10a5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 12:39:53 -0700
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 12:39:54 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 6 Jun 2019 12:39:51 -0700
+ 15.1.1713.5; Thu, 6 Jun 2019 12:39:53 -0700
 Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
-        id 6F749CCF256C; Thu,  6 Jun 2019 12:39:49 -0700 (PDT)
+        id 74426CCF2577; Thu,  6 Jun 2019 12:39:52 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Hechao Li <hechaol@fb.com>
 Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
@@ -37,140 +37,165 @@ To:     <bpf@vger.kernel.org>
 CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>,
         <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v3 bpf-next 1/2] bpf: add a new API libbpf_num_possible_cpus()
-Date:   Thu, 6 Jun 2019 12:39:26 -0700
-Message-ID: <20190606193927.2489147-2-hechaol@fb.com>
+Subject: [PATCH v3 bpf-next 2/2] bpf: use libbpf_num_possible_cpus in bpftool and selftests
+Date:   Thu, 6 Jun 2019 12:39:27 -0700
+Message-ID: <20190606193927.2489147-3-hechaol@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190606193927.2489147-1-hechaol@fb.com>
 References: <20190606193927.2489147-1-hechaol@fb.com>
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_14:,,
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_13:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=729 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060131
+ mlxlogscore=703 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906060130
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding a new API libbpf_num_possible_cpus() that helps user with
-per-CPU map operations.
+Use the newly added bpf_num_possible_cpus() in bpftool and selftests
+and remove duplicate implementations.
 
 Signed-off-by: Hechao Li <hechaol@fb.com>
 ---
- tools/lib/bpf/libbpf.c   | 57 ++++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.h   | 16 +++++++++++
- tools/lib/bpf/libbpf.map |  1 +
- 3 files changed, 74 insertions(+)
+ tools/bpf/bpftool/common.c             | 53 +++-----------------------
+ tools/testing/selftests/bpf/bpf_util.h | 37 +++---------------
+ 2 files changed, 10 insertions(+), 80 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ba89d9727137..06497c8a3372 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3827,3 +3827,60 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
- 					     desc->array_offset, addr);
- 	}
- }
-+
-+int libbpf_num_possible_cpus(void)
-+{
-+	static const char *fcpu = "/sys/devices/system/cpu/possible";
-+	int len = 0, n = 0, il = 0, ir = 0;
-+	unsigned int start = 0, end = 0;
-+	static int cpus;
-+	char buf[128];
-+	int error = 0;
-+	int fd = -1;
-+
-+	if (cpus > 0)
-+		return cpus;
-+
-+	fd = open(fcpu, O_RDONLY);
-+	if (fd < 0) {
-+		error = errno;
-+		pr_warning("Failed to open file %s: %s\n",
-+			   fcpu, strerror(error));
-+		return -error;
-+	}
-+	len = read(fd, buf, sizeof(buf));
-+	close(fd);
-+	if (len <= 0) {
-+		error = errno;
-+		pr_warning("Failed to read # of possible cpus from %s: %s\n",
-+			   fcpu, strerror(error));
-+		return -error;
-+	}
-+	if (len == sizeof(buf)) {
-+		pr_warning("File %s size overflow\n", fcpu);
-+		return -EOVERFLOW;
-+	}
-+	buf[len] = '\0';
-+
-+	for (ir = 0, cpus = 0; ir <= len; ir++) {
-+		/* Each sub string separated by ',' has format \d+-\d+ or \d+ */
-+		if (buf[ir] == ',' || buf[ir] == '\0') {
-+			buf[ir] = '\0';
-+			n = sscanf(&buf[il], "%u-%u", &start, &end);
-+			if (n <= 0) {
-+				pr_warning("Failed to get # CPUs from %s\n",
-+					   &buf[il]);
-+				return -EINVAL;
-+			} else if (n == 1) {
-+				end = start;
-+			}
-+			cpus += end - start + 1;
-+			il = ir + 1;
-+		}
-+	}
-+	if (cpus <= 0) {
-+		pr_warning("Invalid #CPUs %d from %s\n", cpus, fcpu);
-+		return -EINVAL;
-+	}
-+	return cpus;
-+}
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 1af0d48178c8..f5e82eb2e5d4 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -454,6 +454,22 @@ bpf_program__bpil_addr_to_offs(struct bpf_prog_info_linear *info_linear);
- LIBBPF_API void
- bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear);
+diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+index f7261fad45c1..5215e0870bcb 100644
+--- a/tools/bpf/bpftool/common.c
++++ b/tools/bpf/bpftool/common.c
+@@ -21,6 +21,7 @@
+ #include <sys/vfs.h>
  
-+/*
-+ * A helper function to get the number of possible CPUs before looking up
-+ * per-CPU maps. Negative errno is returned on failure.
-+ *
-+ * Example usage:
-+ *
-+ *     int ncpus = libbpf_num_possible_cpus();
-+ *     if (ncpus <= 0) {
-+ *          // error handling
-+ *     }
-+ *     long values[ncpus];
-+ *     bpf_map_lookup_elem(per_cpu_map_fd, key, values);
-+ *
-+ */
-+LIBBPF_API int libbpf_num_possible_cpus(void);
-+
- #ifdef __cplusplus
- } /* extern "C" */
- #endif
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 46dcda89df21..2c6d835620d2 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -172,4 +172,5 @@ LIBBPF_0.0.4 {
- 		btf_dump__new;
- 		btf__parse_elf;
- 		bpf_object__load_xattr;
-+		libbpf_num_possible_cpus;
- } LIBBPF_0.0.3;
+ #include <bpf.h>
++#include <libbpf.h> /* libbpf_num_possible_cpus */
+ 
+ #include "main.h"
+ 
+@@ -439,57 +440,13 @@ unsigned int get_page_size(void)
+ 
+ unsigned int get_possible_cpus(void)
+ {
+-	static unsigned int result;
+-	char buf[128];
+-	long int n;
+-	char *ptr;
+-	int fd;
+-
+-	if (result)
+-		return result;
+-
+-	fd = open("/sys/devices/system/cpu/possible", O_RDONLY);
+-	if (fd < 0) {
+-		p_err("can't open sysfs possible cpus");
+-		exit(-1);
+-	}
+-
+-	n = read(fd, buf, sizeof(buf));
+-	if (n < 2) {
+-		p_err("can't read sysfs possible cpus");
+-		exit(-1);
+-	}
+-	close(fd);
++	int cpus = libbpf_num_possible_cpus();
+ 
+-	if (n == sizeof(buf)) {
+-		p_err("read sysfs possible cpus overflow");
++	if (cpus < 0) {
++		p_err("Can't get # of possible cpus: %s", strerror(-cpus));
+ 		exit(-1);
+ 	}
+-
+-	ptr = buf;
+-	n = 0;
+-	while (*ptr && *ptr != '\n') {
+-		unsigned int a, b;
+-
+-		if (sscanf(ptr, "%u-%u", &a, &b) == 2) {
+-			n += b - a + 1;
+-
+-			ptr = strchr(ptr, '-') + 1;
+-		} else if (sscanf(ptr, "%u", &a) == 1) {
+-			n++;
+-		} else {
+-			assert(0);
+-		}
+-
+-		while (isdigit(*ptr))
+-			ptr++;
+-		if (*ptr == ',')
+-			ptr++;
+-	}
+-
+-	result = n;
+-
+-	return result;
++	return cpus;
+ }
+ 
+ static char *
+diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
+index a29206ebbd13..6231eafd4a5a 100644
+--- a/tools/testing/selftests/bpf/bpf_util.h
++++ b/tools/testing/selftests/bpf/bpf_util.h
+@@ -6,44 +6,17 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
++#include <libbpf.h>
+ 
+ static inline unsigned int bpf_num_possible_cpus(void)
+ {
+-	static const char *fcpu = "/sys/devices/system/cpu/possible";
+-	unsigned int start, end, possible_cpus = 0;
+-	char buff[128];
+-	FILE *fp;
+-	int len, n, i, j = 0;
++	int possible_cpus = libbpf_num_possible_cpus();
+ 
+-	fp = fopen(fcpu, "r");
+-	if (!fp) {
+-		printf("Failed to open %s: '%s'!\n", fcpu, strerror(errno));
++	if (possible_cpus < 0) {
++		printf("Failed to get # of possible cpus: '%s'!\n",
++		       strerror(-possible_cpus));
+ 		exit(1);
+ 	}
+-
+-	if (!fgets(buff, sizeof(buff), fp)) {
+-		printf("Failed to read %s!\n", fcpu);
+-		exit(1);
+-	}
+-
+-	len = strlen(buff);
+-	for (i = 0; i <= len; i++) {
+-		if (buff[i] == ',' || buff[i] == '\0') {
+-			buff[i] = '\0';
+-			n = sscanf(&buff[j], "%u-%u", &start, &end);
+-			if (n <= 0) {
+-				printf("Failed to retrieve # possible CPUs!\n");
+-				exit(1);
+-			} else if (n == 1) {
+-				end = start;
+-			}
+-			possible_cpus += end - start + 1;
+-			j = i + 1;
+-		}
+-	}
+-
+-	fclose(fp);
+-
+ 	return possible_cpus;
+ }
+ 
 -- 
 2.17.1
 
