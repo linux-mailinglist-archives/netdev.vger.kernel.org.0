@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D6937973
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B7A37989
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728024AbfFFQZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 12:25:40 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34646 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727862AbfFFQZk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 12:25:40 -0400
-Received: by mail-pf1-f195.google.com with SMTP id c85so1838103pfc.1
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 09:25:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=54g1qCHnqWUExp8cO530YyqnwPyJ1hfkMkpyQdkc4FA=;
-        b=JWNjXL8mDIltcl5k1i9fQ3f4LqhHiBNdN2UiLT3pnI2n2MMO9OnffwwdbAf+vmKPSX
-         f7KvBhSWIal375rH0lI4pUFjEQ41h8FSeGxLYlIVcQvly5BNI3x4ORkn4YLuBxKNL2tX
-         oQPf7TU4b/BkoWhqMNAuzSRDMeWh/3IglGNoBSKRbi38esePAX2weUyuPqPWn55Eb/hy
-         tg60PnfnwHNipGBORl7irumwmuS87bNNmZsMgJVp/r78q/cR+SpwEEi46VqcjMKXaTfY
-         gwHk4CwD9KQnCkXAfUTLXNrGPv38kSsYLKFYcO5LSRmTRFZcQ19+3Xf7FINfmnJbwnTc
-         Wa0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=54g1qCHnqWUExp8cO530YyqnwPyJ1hfkMkpyQdkc4FA=;
-        b=PkARp/NbIvDkYalRE5cvAxXUD0myXnxcKrAsTenSrFLT99nG++JJinb+nvDcp1cRls
-         6IStpUgSDnffDe5ysle33Zbwifi5CQbV80O4Jf1XazdnI2uHJMlgH9RmPbTHheTTVobN
-         DIxWMpjw5YdEHywLMTiPcdbi/921NWVJhuqRSEerPXrggoIalLQk/rPSVmzyuYkDqcQA
-         yINp/SFrPoyAVZ/TZi+I086lmYHz7i7l99fejDJbF7ebrdOo2gh+JhazXR/xD34CGAtp
-         aDJg1TYKyjZbyIoGiJSwsmHYVHGKKWqUYCkJP3RNqYk/2w+dnNu7y4UErJ6OadRqhQVU
-         PyuQ==
-X-Gm-Message-State: APjAAAVoRZABjWvpKcPNFqHYDL4+mgIgDzNt1FC3jsRjEYk4bqFfZiYn
-        CWJMGn+nfO+4PpEs5lWKcbQ/eObGAh4=
-X-Google-Smtp-Source: APXvYqz1T9BRb/XmGIylzi2A6g49wcptCZn96sE1dsejyzJouxOHtx+N1jrRxWulEU5rcPeDn2jDgw==
-X-Received: by 2002:a63:49:: with SMTP id 70mr4171852pga.163.1559838339100;
-        Thu, 06 Jun 2019 09:25:39 -0700 (PDT)
-Received: from [172.27.227.242] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id e66sm2888300pfe.50.2019.06.06.09.25.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 09:25:38 -0700 (PDT)
-Subject: Re: [PATCH net] vrf: Increment Icmp6InMsgs on the original netdev
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20190530050815.20352-1-ssuryaextr@gmail.com>
- <c438f6b0-bb3c-7568-005e-68d7fcd406c3@gmail.com>
- <20190601181429.GB16560@ubuntu>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <892ec6a9-a85b-3d58-2598-b2aa169a3880@gmail.com>
-Date:   Thu, 6 Jun 2019 10:25:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1729512AbfFFQan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 12:30:43 -0400
+Received: from mail.us.es ([193.147.175.20]:43848 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727054AbfFFQan (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 12:30:43 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B56ACC1DFD
+        for <netdev@vger.kernel.org>; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A50BADA738
+        for <netdev@vger.kernel.org>; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 90936DA718; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3EA9CDA703;
+        Thu,  6 Jun 2019 18:30:37 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 06 Jun 2019 18:30:37 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 1B3CE4265A2F;
+        Thu,  6 Jun 2019 18:30:37 +0200 (CEST)
+Date:   Thu, 6 Jun 2019 18:30:35 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Christian Brauner <christian@brauner.io>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, tyhicks@canonical.com,
+        kadlec@blackhole.kfki.hu, fw@strlen.de, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, linux-kernel@vger.kernel.org,
+        richardrose@google.com, vapier@chromium.org, bhthompson@google.com,
+        smbarber@chromium.org, joelhockey@chromium.org,
+        ueberall@themenzentrisch.de
+Subject: Re: [PATCH RESEND net-next 1/2] br_netfilter: add struct netns_brnf
+Message-ID: <20190606163035.x7rvqdwubxiai5t6@salvia>
+References: <20190606114142.15972-1-christian@brauner.io>
+ <20190606114142.15972-2-christian@brauner.io>
+ <20190606081440.61ea1c62@hermes.lan>
+ <20190606151937.mdpalfk7urvv74ub@brauner.io>
 MIME-Version: 1.0
-In-Reply-To: <20190601181429.GB16560@ubuntu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190606151937.mdpalfk7urvv74ub@brauner.io>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/19 12:14 PM, Stephen Suryaputra wrote:
-> On Fri, May 31, 2019 at 05:06:16PM -0600, David Ahern wrote:
->> On 5/29/19 11:08 PM, Stephen Suryaputra wrote:
->>> diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
->>> index 1a832f5e190b..9b365c345c34 100644
->>> --- a/net/ipv6/reassembly.c
->>> +++ b/net/ipv6/reassembly.c
->>> @@ -260,6 +260,9 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
->>>  	int payload_len;
->>>  	u8 ecn;
->>>  
->>> +	if (netif_is_l3_master(dev))
->>> +		dev = dev_get_by_index_rcu(net, inet6_iif(skb));
->>> +
->>>  	inet_frag_kill(&fq->q);
->>>  
->>>  	ecn = ip_frag_ecn_table[fq->ecn];
->>>
->>
->> this part changes skb->dev. Seems like it has an unintended effect if
->> the packet is delivered locally.
+On Thu, Jun 06, 2019 at 05:19:39PM +0200, Christian Brauner wrote:
+> On Thu, Jun 06, 2019 at 08:14:40AM -0700, Stephen Hemminger wrote:
+> > On Thu,  6 Jun 2019 13:41:41 +0200
+> > Christian Brauner <christian@brauner.io> wrote:
+> > 
+> > > +struct netns_brnf {
+> > > +#ifdef CONFIG_SYSCTL
+> > > +	struct ctl_table_header *ctl_hdr;
+> > > +#endif
+> > > +
+> > > +	/* default value is 1 */
+> > > +	int call_iptables;
+> > > +	int call_ip6tables;
+> > > +	int call_arptables;
+> > > +
+> > > +	/* default value is 0 */
+> > > +	int filter_vlan_tagged;
+> > > +	int filter_pppoe_tagged;
+> > > +	int pass_vlan_indev;
+> > > +};
+> > 
+> > Do you really need to waste four bytes for each
+> > flag value. If you use a u8 that would work just as well.
 > 
-> Ah, right. How about this then?
-> 
+> I think we had discussed something like this but the problem why we
+> can't do this stems from how the sysctl-table stuff is implemented.
+> I distinctly remember that it couldn't be done with a flag due to that.
 
-looks ok to me.
+Could you define a pernet_operations object? I mean, define the id and size
+fields, then pass it to register_pernet_subsys() for registration.
+Similar to what we do in net/ipv4/netfilter/ipt_CLUSTER.c, see
+clusterip_net_ops and clusterip_pernet() for instance.
