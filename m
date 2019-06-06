@@ -2,69 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4798737A9F
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3E537AA0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729950AbfFFRLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 13:11:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58868 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727512AbfFFRLR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 13:11:17 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 24A37AD17;
-        Thu,  6 Jun 2019 17:11:16 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 597D3E00E3; Thu,  6 Jun 2019 19:11:15 +0200 (CEST)
-Date:   Thu, 6 Jun 2019 19:11:15 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     sameehj@amazon.com, davem@davemloft.net, dwmw@amazon.com,
-        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
-        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
-        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
-        benh@amazon.com, akiyano@amazon.com
-Subject: Re: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
- changing io queue sizes
-Message-ID: <20190606171115.GC21536@unicorn.suse.cz>
-References: <20190606115520.20394-1-sameehj@amazon.com>
- <20190606115520.20394-6-sameehj@amazon.com>
+        id S1729955AbfFFRL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 13:11:26 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37454 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727512AbfFFRLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 13:11:25 -0400
+Received: by mail-pg1-f194.google.com with SMTP id 20so1718024pgr.4
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 10:11:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VD+aymh6GZ1veAfpvpQZN9PDHAk+S4M50iwl1PJ81zg=;
+        b=aLqrCOM0xuK9HqBSICwXset/9bGlFBwr9JLYAuwEECP0wb3Jdoq+UrB2brYBXpM2Cu
+         DmXqc0ol3VB2gGQst6rpvBICxUEtiSz9Vwux2gOrHoeJaY+JQ9oF7tn0B+OegPwtC8Uz
+         HavAoYaVt42y5D69Ir/WZK1gW6B6nPWs9VuN0/kNYprPxccAtvckhl46oV+c/KypCUAE
+         QJQ+c5E5DbXhS0TsITZZNIg8tn65v07hgyXMysbArvWV9+3A8G2/jcyPU9OFSo+xYA0f
+         5kFNU7JVOSjbN2sbR4FJzwWBI7myGC7/uZFdtYsY9XRBjYCjtyj/Tsp9dyFyCabRnjFm
+         U/Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VD+aymh6GZ1veAfpvpQZN9PDHAk+S4M50iwl1PJ81zg=;
+        b=E59C5BuixMcfmC/zSO6Jqe4UD23udf95LwugJY26JXgkX6m0/PnBtS5kSDy4aCjCIN
+         tJilOsXp3WkwoeFrzzf50FGt1jCkoETKf5NT6zVbAI1uTzBY+Dr/hvPfHeDog0k77rQv
+         r39hV6tIoOwuTltKu/XNzZuHs4MzJfRqX+WZ3U6DutxYlZSXzMseKko7Q+O8+QMu7n2i
+         Pvvt0r0rpNk0SUz3LTMOwon614wVEv8UJ7YfbyxbXZfNpyn4mERad4SiKFWoDm6gBewV
+         w0uizQWizlwtZv599eN2sKyyvI3NZT3Q3ZnR4uJpa/GkFj4p1N7/r5QKCsVvfkhAB6js
+         SDmw==
+X-Gm-Message-State: APjAAAWdJ95JgHBLS4nyZg9cnH5hmZD8rh3NhV6WJmKknfWEdzWkQTWf
+        WogsT+S5G6TXxTOgvZt9IYI=
+X-Google-Smtp-Source: APXvYqwaPdMR4ExP1NfCL4a/66ZRL4WGLuLSVvMlQ5d1nTcr2XRiBu2KcNx2Xkyrqn+QmALoHTZ4wQ==
+X-Received: by 2002:aa7:8d85:: with SMTP id i5mr52866505pfr.242.1559841085433;
+        Thu, 06 Jun 2019 10:11:25 -0700 (PDT)
+Received: from [172.27.227.242] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id d28sm2151286pgd.79.2019.06.06.10.11.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Jun 2019 10:11:24 -0700 (PDT)
+Subject: Re: [PATCH net] neighbor: Reset gc_entries counter if new entry is
+ released before insert
+To:     Jeremy Cline <jcline@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     dsahern@kernel.org, netdev@vger.kernel.org, ian.kumlien@gmail.com,
+        alan.maguire@oracle.com
+References: <20190502010834.25519-1-dsahern@kernel.org>
+ <20190504.004100.415091334346243894.davem@davemloft.net>
+ <20190606170729.GA15882@laptop.jcline.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9c9ad9b0-d058-7f81-be5d-d37675cbd211@gmail.com>
+Date:   Thu, 6 Jun 2019 11:11:23 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606115520.20394-6-sameehj@amazon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190606170729.GA15882@laptop.jcline.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 02:55:19PM +0300, sameehj@amazon.com wrote:
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 938aca254..7d3837c13 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -2031,6 +2031,20 @@ static int ena_close(struct net_device *netdev)
->  	return 0;
->  }
->  
-> +int ena_update_queue_sizes(struct ena_adapter *adapter,
-> +			   int new_tx_size,
-> +			   int new_rx_size)
-> +{
-> +	bool dev_up;
-> +
-> +	dev_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-> +	ena_close(adapter->netdev);
-> +	adapter->requested_tx_ring_size = new_tx_size;
-> +	adapter->requested_rx_ring_size = new_rx_size;
-> +	ena_init_io_rings(adapter);
-> +	return dev_up ? ena_up(adapter) : 0;
-> +}
+On 6/6/19 11:07 AM, Jeremy Cline wrote:
+> 
+> Did this get lost in the shuffle? I see it in mainline, but I don't see
+> it in stable. Folks are encountering it with recent 5.1 kernels in
+> Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1708717.
+> 
+> Thanks,
+> Jeremy
+> 
 
-This function is called with u32 values as arguments by its only caller
-and copies them into u32 members of struct ena_adapter. Why are its
-arguments new_tx_size and new_rx_size declared as int?
-
-Michal Kubecek
+Still in the queue:
+https://patchwork.ozlabs.org/bundle/davem/stable/?series=&submitter=&state=*&q=&archive=
