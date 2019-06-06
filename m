@@ -2,76 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE29E368E2
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8CE368FC
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 03:03:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbfFFA4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 20:56:32 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17669 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726593AbfFFA4c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jun 2019 20:56:32 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 31B639C23D94B21963C8;
-        Thu,  6 Jun 2019 08:56:29 +0800 (CST)
-Received: from [127.0.0.1] (10.184.225.177) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Thu, 6 Jun 2019
- 08:56:21 +0800
-To:     <edumazet@google.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, maowenan <maowenan@huawei.com>,
-        <mingfangsen@huawei.com>, "Zhoukang (A)" <zhoukang7@huawei.com>,
-        "wangxiaogang (F)" <wangxiaogang3@huawei.com>
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Subject: [PATCH net v2] inet_connection_sock: remove unused parameter of
- reqsk_queue_unlink func
-Message-ID: <9bb489e8-89f2-6a0c-3996-6a7c992448e7@huawei.com>
-Date:   Thu, 6 Jun 2019 08:56:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.0
+        id S1726633AbfFFBDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 21:03:48 -0400
+Received: from mail-wm1-f53.google.com ([209.85.128.53]:37597 "EHLO
+        mail-wm1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726600AbfFFBDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 21:03:48 -0400
+Received: by mail-wm1-f53.google.com with SMTP id 22so643463wmg.2
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 18:03:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=quantonium-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1XSBFFGgW+iSXbmIatDZk2chQpORBxRrUZBGIeFkHr4=;
+        b=fJ0VrHTURaBu0wVhadZcUH6Oo1c0zSxzCLNUd+1hqQcBecRX4cJfJjG1F1gxKq91Cv
+         tgTp0NBQwNNhyVZyQyE2/MlFqfgF92Ajqttyol4POSdACLL/fo7yr5+lg2e/I+5xF6qc
+         E/34x/WEnGgsg23HwQyktVYqDBf4PtJ76mjydJEsQzce+JgyP2TsNwex7JpEn035OdSA
+         6IxUte7mdOBIRdgXeYwnInwHv4tRn2P7m6FP3WQ+13FMg64PNHsPNBSNQ05pwVnZPhzq
+         hKp6X+ul7FZm6cXZ9ntxduS2j8bmfXxB2w7BfrMAEzkG2bZLfnvHphmwm71P/TAfHTs/
+         c4zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1XSBFFGgW+iSXbmIatDZk2chQpORBxRrUZBGIeFkHr4=;
+        b=G3gpr/nY4seEQgqlAF82IoBKn7/0fF26cCgPkmfJdoN890VgDNr/XbYu0xQYHDGDY1
+         Ysk07S9hBi5A/2K/cjaMdu1+yiY52ZuBeSGIqTyv926avjgPSZFZetLF0XYjOxrVBccx
+         W97EvENxqSNmMgjWBP8Wyjaqh61TeWlB/Z7kCONxOuzGOwHFgZgtcF5PHBjhMcfi36mp
+         gJIKo3+6gL/6kBIQbJUpen6A1/halZc7d6oyRekSsKN2J+SC3o4a83MZg1t89uRsso9W
+         Uyr2xRankR6sJi2LMa8kpatSibqrZz+P4j2j9XEiJi6wQS5LJO9qa5H2WFu2p4md/AkK
+         Rxpg==
+X-Gm-Message-State: APjAAAUOto52gUDZ8P7KJNeItft1IwDluEAmlfpGmW8slFr/zjOjNYQy
+        lOD9SDMm42V5lBjnIGK2uXzCvjY6zhYqzmUK1ES2ip+P
+X-Google-Smtp-Source: APXvYqyQVJ1dStjGWqLP3Rj6YynBnhGVzbSwd/52Ll3tsiJek+5DWmD6VnkaHkv+fnq/6CJ8bpvf8G0rZBsM9DgqrI0=
+X-Received: by 2002:a05:600c:240e:: with SMTP id 14mr992394wmp.30.1559783026195;
+ Wed, 05 Jun 2019 18:03:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.225.177]
-X-CFilter-Loop: Reflected
+References: <1559576867-4241-1-git-send-email-tom@quantonium.net> <20190605.171118.681501460677717252.davem@davemloft.net>
+In-Reply-To: <20190605.171118.681501460677717252.davem@davemloft.net>
+From:   Tom Herbert <tom@quantonium.net>
+Date:   Wed, 5 Jun 2019 18:03:35 -0700
+Message-ID: <CAPDqMepSpAMP2ars86OOqnN8RFM=0PQC6grCn-tnVF-UJkVUig@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] ipv6: Send ICMP errors for exceeding
+ extension header limits
+To:     David Miller <davem@davemloft.net>
+Cc:     Tom Herbert <tom@herbertland.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-small cleanup: "struct request_sock_queue *queue" parameter of reqsk_queue_unlink
-func is never used in the func, so we can remove it.
+On Wed, Jun 5, 2019 at 5:11 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Tom Herbert <tom@herbertland.com>
+> Date: Mon,  3 Jun 2019 08:47:47 -0700
+>
+> > Define constants and add support to send ICMPv6 Parameter Problem
+> > errors as specified in draft-ietf-6man-icmp-limits-02.
+>
+> Tom, I've kinda had enough of this pushing your agenda by trying to
+> add support for ipv6 features that are in draft state with the IETF
+> and you are the author of said drafts.
+>
+I'm sorry, I had no idea that there were criteria that we had to
+follow with respect to patches and IETF. Please specify the criteria,
+which I will assume that apply to everyone and not to just me, so that
+we can avoid further instances of wasted time.
 
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
----
-V1->V2: add partner signatures
+Thanks,
+Tom
 
- net/ipv4/inet_connection_sock.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 6ea523d71947..632855a8abb3 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -653,8 +653,7 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
- EXPORT_SYMBOL(inet_rtx_syn_ack);
-
- /* return true if req was found in the ehash table */
--static bool reqsk_queue_unlink(struct request_sock_queue *queue,
--			       struct request_sock *req)
-+static bool reqsk_queue_unlink(struct request_sock *req)
- {
- 	struct inet_hashinfo *hashinfo = req_to_sk(req)->sk_prot->h.hashinfo;
- 	bool found = false;
-@@ -673,7 +672,7 @@ static bool reqsk_queue_unlink(struct request_sock_queue *queue,
-
- void inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req)
- {
--	if (reqsk_queue_unlink(&inet_csk(sk)->icsk_accept_queue, req)) {
-+	if (reqsk_queue_unlink(req)) {
- 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
- 		reqsk_put(req);
- 	}
--- 
-
+> I'm not applying this stuff, sorry.
