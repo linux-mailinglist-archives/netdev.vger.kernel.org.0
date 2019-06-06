@@ -2,154 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F06D37954
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D6937973
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729611AbfFFQQB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jun 2019 12:16:01 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45274 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729473AbfFFQQB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 12:16:01 -0400
-Received: by mail-ed1-f68.google.com with SMTP id f20so4107150edt.12
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 09:15:59 -0700 (PDT)
+        id S1728024AbfFFQZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 12:25:40 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34646 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727862AbfFFQZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 12:25:40 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c85so1838103pfc.1
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 09:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=54g1qCHnqWUExp8cO530YyqnwPyJ1hfkMkpyQdkc4FA=;
+        b=JWNjXL8mDIltcl5k1i9fQ3f4LqhHiBNdN2UiLT3pnI2n2MMO9OnffwwdbAf+vmKPSX
+         f7KvBhSWIal375rH0lI4pUFjEQ41h8FSeGxLYlIVcQvly5BNI3x4ORkn4YLuBxKNL2tX
+         oQPf7TU4b/BkoWhqMNAuzSRDMeWh/3IglGNoBSKRbi38esePAX2weUyuPqPWn55Eb/hy
+         tg60PnfnwHNipGBORl7irumwmuS87bNNmZsMgJVp/r78q/cR+SpwEEi46VqcjMKXaTfY
+         gwHk4CwD9KQnCkXAfUTLXNrGPv38kSsYLKFYcO5LSRmTRFZcQ19+3Xf7FINfmnJbwnTc
+         Wa0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=2b6yHtJ3G3U1hStJ1SzHHfHrOl1CLFVZvYptJFdXDY0=;
-        b=dozgnhq4y8xIa8+MeGJ8tiO02okKuvoInWp+/g4rIT9odjLVc1GpW0FXCLkIcouAYV
-         +4b6Qw7WHJtFhxIKrfhsEwEaRoWZMdbQf6ovOEv6y9akaPkt+8oyKtBR/IBRnrrMqXHH
-         K8NopSUfmxAIDo2MTOP6sYQqZUXkWxsuOx6DS3PM/xAJYr0pQBJQClyJQA5WhJuyHbz5
-         eUGiBhNCXg/e4DD6eivdXHEFaGdgrOLOomB6cbU4U8k+fuaJH/fk1iJeh8kk1MCRKblY
-         zfYIkpDzRTFsVXvW9zXdWxDcKVwry0IDsUKIsyV0CPDFubyIDNb2H1dcdnIhNehctdFL
-         E3yw==
-X-Gm-Message-State: APjAAAUdJmTLVw8mD42a/DR2tdq198foanrOseu9WAjVf0JHsSw5L0ts
-        YJQhMX0FMD5Z/ExBV939i32tBw==
-X-Google-Smtp-Source: APXvYqw+mEXWXQWqmjS944nMe1tfpjNSzFJOI78jpoEkEVofyh7cmIazICAgY7K+LW9zr7vi5V9z+g==
-X-Received: by 2002:a50:97da:: with SMTP id f26mr15727783edb.88.1559837759055;
-        Thu, 06 Jun 2019 09:15:59 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id m6sm553619ede.2.2019.06.06.09.15.58
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jun 2019 09:15:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 94739181CC1; Thu,  6 Jun 2019 18:15:57 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH net-next v2 1/2] bpf_xdp_redirect_map: Add flag to return XDP_PASS on map lookup failure
-In-Reply-To: <CAADnVQKZG6nOZUvqzvxz5xjZZLieQB4DvbkP=AjDF25FQB8Jfg@mail.gmail.com>
-References: <155982745450.30088.1132406322084580770.stgit@alrua-x1> <155982745460.30088.2745998912845128889.stgit@alrua-x1> <400a6093-6e9c-a1b4-0594-5b74b20a3d6b@iogearbox.net> <CAADnVQKZG6nOZUvqzvxz5xjZZLieQB4DvbkP=AjDF25FQB8Jfg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 06 Jun 2019 18:15:57 +0200
-Message-ID: <877e9yd70i.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=54g1qCHnqWUExp8cO530YyqnwPyJ1hfkMkpyQdkc4FA=;
+        b=PkARp/NbIvDkYalRE5cvAxXUD0myXnxcKrAsTenSrFLT99nG++JJinb+nvDcp1cRls
+         6IStpUgSDnffDe5ysle33Zbwifi5CQbV80O4Jf1XazdnI2uHJMlgH9RmPbTHheTTVobN
+         DIxWMpjw5YdEHywLMTiPcdbi/921NWVJhuqRSEerPXrggoIalLQk/rPSVmzyuYkDqcQA
+         yINp/SFrPoyAVZ/TZi+I086lmYHz7i7l99fejDJbF7ebrdOo2gh+JhazXR/xD34CGAtp
+         aDJg1TYKyjZbyIoGiJSwsmHYVHGKKWqUYCkJP3RNqYk/2w+dnNu7y4UErJ6OadRqhQVU
+         PyuQ==
+X-Gm-Message-State: APjAAAVoRZABjWvpKcPNFqHYDL4+mgIgDzNt1FC3jsRjEYk4bqFfZiYn
+        CWJMGn+nfO+4PpEs5lWKcbQ/eObGAh4=
+X-Google-Smtp-Source: APXvYqz1T9BRb/XmGIylzi2A6g49wcptCZn96sE1dsejyzJouxOHtx+N1jrRxWulEU5rcPeDn2jDgw==
+X-Received: by 2002:a63:49:: with SMTP id 70mr4171852pga.163.1559838339100;
+        Thu, 06 Jun 2019 09:25:39 -0700 (PDT)
+Received: from [172.27.227.242] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id e66sm2888300pfe.50.2019.06.06.09.25.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Jun 2019 09:25:38 -0700 (PDT)
+Subject: Re: [PATCH net] vrf: Increment Icmp6InMsgs on the original netdev
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <20190530050815.20352-1-ssuryaextr@gmail.com>
+ <c438f6b0-bb3c-7568-005e-68d7fcd406c3@gmail.com>
+ <20190601181429.GB16560@ubuntu>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <892ec6a9-a85b-3d58-2598-b2aa169a3880@gmail.com>
+Date:   Thu, 6 Jun 2019 10:25:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
+In-Reply-To: <20190601181429.GB16560@ubuntu>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Thu, Jun 6, 2019 at 8:51 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On 6/1/19 12:14 PM, Stephen Suryaputra wrote:
+> On Fri, May 31, 2019 at 05:06:16PM -0600, David Ahern wrote:
+>> On 5/29/19 11:08 PM, Stephen Suryaputra wrote:
+>>> diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+>>> index 1a832f5e190b..9b365c345c34 100644
+>>> --- a/net/ipv6/reassembly.c
+>>> +++ b/net/ipv6/reassembly.c
+>>> @@ -260,6 +260,9 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
+>>>  	int payload_len;
+>>>  	u8 ecn;
+>>>  
+>>> +	if (netif_is_l3_master(dev))
+>>> +		dev = dev_get_by_index_rcu(net, inet6_iif(skb));
+>>> +
+>>>  	inet_frag_kill(&fq->q);
+>>>  
+>>>  	ecn = ip_frag_ecn_table[fq->ecn];
+>>>
 >>
->> On 06/06/2019 03:24 PM, Toke Høiland-Jørgensen wrote:
->> > From: Toke Høiland-Jørgensen <toke@redhat.com>
->> >
->> > The bpf_redirect_map() helper used by XDP programs doesn't return any
->> > indication of whether it can successfully redirect to the map index it was
->> > given. Instead, BPF programs have to track this themselves, leading to
->> > programs using duplicate maps to track which entries are populated in the
->> > devmap.
->> >
->> > This patch adds a flag to the XDP version of the bpf_redirect_map() helper,
->> > which makes the helper do a lookup in the map when called, and return
->> > XDP_PASS if there is no value at the provided index.
->> >
->> > With this, a BPF program can check the return code from the helper call and
->> > react if it is XDP_PASS (by, for instance, substituting a different
->> > redirect). This works for any type of map used for redirect.
->> >
->> > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> > ---
->> >  include/uapi/linux/bpf.h |    8 ++++++++
->> >  net/core/filter.c        |   10 +++++++++-
->> >  2 files changed, 17 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> > index 7c6aef253173..d57df4f0b837 100644
->> > --- a/include/uapi/linux/bpf.h
->> > +++ b/include/uapi/linux/bpf.h
->> > @@ -3098,6 +3098,14 @@ enum xdp_action {
->> >       XDP_REDIRECT,
->> >  };
->> >
->> > +/* Flags for bpf_xdp_redirect_map helper */
->> > +
->> > +/* If set, the help will check if the entry exists in the map and return
->> > + * XDP_PASS if it doesn't.
->> > + */
->> > +#define XDP_REDIRECT_F_PASS_ON_INVALID BIT(0)
->> > +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_F_PASS_ON_INVALID
->> > +
->> >  /* user accessible metadata for XDP packet hook
->> >   * new fields must be added to the end of this structure
->> >   */
->> > diff --git a/net/core/filter.c b/net/core/filter.c
->> > index 55bfc941d17a..2e532a9b2605 100644
->> > --- a/net/core/filter.c
->> > +++ b/net/core/filter.c
->> > @@ -3755,9 +3755,17 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->> >  {
->> >       struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->> >
->> > -     if (unlikely(flags))
->> > +     if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
->> >               return XDP_ABORTED;
->> >
->> > +     if (flags & XDP_REDIRECT_F_PASS_ON_INVALID) {
->> > +             void *val;
->> > +
->> > +             val = __xdp_map_lookup_elem(map, ifindex);
->> > +             if (unlikely(!val))
->> > +                     return XDP_PASS;
->>
->> Generally looks good to me, also the second part with the flag. Given we store into
->> the per-CPU scratch space and function like xdp_do_redirect() pick this up again, we
->> could even propagate val onwards and save a second lookup on the /same/ element (which
->> also avoids a race if the val was dropped from the map in the meantime). Given this
->> should all still be within RCU it should work. Perhaps it even makes sense to do the
->> lookup unconditionally inside bpf_xdp_redirect_map() helper iff we manage to do it
->> only once anyway?
->
-> +1
->
-> also I don't think we really need a new flag here.
-> Yes, it could be considered an uapi change, but it
-> looks more like bugfix in uapi to me.
-> Since original behavior was so clunky to use.
+>> this part changes skb->dev. Seems like it has an unintended effect if
+>> the packet is delivered locally.
+> 
+> Ah, right. How about this then?
+> 
 
-Hmm, the problem with this is that eBPF programs generally do something
-like:
-
-return bpf_redirect_map(map, idx, 0);
-
-after having already modified the packet headers. This will get them a
-return code of XDP_REDIRECT, and the lookup will then subsequently fail,
-which returns in XDP_ABORTED in the driver, which you can catch with
-tracing.
-
-However, if we just change it to XDP_PASS, the packet will go up the
-stack, but because it has already been modified the stack will drop it,
-more or less invisibly.
-
-So the question becomes, is that behaviour change really OK?
-
--Toke
+looks ok to me.
