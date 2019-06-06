@@ -2,56 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C235E368E0
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE29E368E2
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:56:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726649AbfFFAz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 20:55:27 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:43524 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbfFFAz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 20:55:27 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A9E691401514F;
-        Wed,  5 Jun 2019 17:55:26 -0700 (PDT)
-Date:   Wed, 05 Jun 2019 17:55:26 -0700 (PDT)
-Message-Id: <20190605.175526.1448552541340120763.davem@davemloft.net>
-To:     liuhangbin@gmail.com
-Cc:     netdev@vger.kernel.org, natechancellor@gmail.com,
-        gregkh@linuxfoundation.org, zenczykowski@gmail.com,
-        lorenzo@google.com, dsa@cumulusnetworks.com, thaller@redhat.com,
-        yaro330@gmail.com
-Subject: Re: [PATCH net] Revert "fib_rules: return 0 directly if an exactly
- same rule exists when NLM_F_EXCL not supplied"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190605042714.28532-1-liuhangbin@gmail.com>
-References: <20190605042714.28532-1-liuhangbin@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726653AbfFFA4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 20:56:32 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17669 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726593AbfFFA4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 20:56:32 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 31B639C23D94B21963C8;
+        Thu,  6 Jun 2019 08:56:29 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Thu, 6 Jun 2019
+ 08:56:21 +0800
+To:     <edumazet@google.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, maowenan <maowenan@huawei.com>,
+        <mingfangsen@huawei.com>, "Zhoukang (A)" <zhoukang7@huawei.com>,
+        "wangxiaogang (F)" <wangxiaogang3@huawei.com>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Subject: [PATCH net v2] inet_connection_sock: remove unused parameter of
+ reqsk_queue_unlink func
+Message-ID: <9bb489e8-89f2-6a0c-3996-6a7c992448e7@huawei.com>
+Date:   Thu, 6 Jun 2019 08:56:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="gbk"
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Jun 2019 17:55:27 -0700 (PDT)
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
-Date: Wed,  5 Jun 2019 12:27:14 +0800
+small cleanup: "struct request_sock_queue *queue" parameter of reqsk_queue_unlink
+func is never used in the func, so we can remove it.
 
-> This reverts commit e9919a24d3022f72bcadc407e73a6ef17093a849.
-> 
-> Nathan reported the new behaviour breaks Android, as Android just add
-> new rules and delete old ones.
-> 
-> If we return 0 without adding dup rules, Android will remove the new
-> added rules and causing system to soft-reboot.
-> 
-> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> Fixes: e9919a24d302 ("fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+---
+V1->V2: add partner signatures
 
-Applied.
+ net/ipv4/inet_connection_sock.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 6ea523d71947..632855a8abb3 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -653,8 +653,7 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
+ EXPORT_SYMBOL(inet_rtx_syn_ack);
+
+ /* return true if req was found in the ehash table */
+-static bool reqsk_queue_unlink(struct request_sock_queue *queue,
+-			       struct request_sock *req)
++static bool reqsk_queue_unlink(struct request_sock *req)
+ {
+ 	struct inet_hashinfo *hashinfo = req_to_sk(req)->sk_prot->h.hashinfo;
+ 	bool found = false;
+@@ -673,7 +672,7 @@ static bool reqsk_queue_unlink(struct request_sock_queue *queue,
+
+ void inet_csk_reqsk_queue_drop(struct sock *sk, struct request_sock *req)
+ {
+-	if (reqsk_queue_unlink(&inet_csk(sk)->icsk_accept_queue, req)) {
++	if (reqsk_queue_unlink(req)) {
+ 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
+ 		reqsk_put(req);
+ 	}
+-- 
+
