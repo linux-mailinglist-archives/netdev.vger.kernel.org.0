@@ -2,69 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB0F37482
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 14:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C4837498
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 14:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbfFFMue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 08:50:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:32912 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727460AbfFFMue (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 08:50:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=C9AhrpQQzf2srSX2hULA4Orak17VDtxBq6HDzH2Jjk4=; b=R0T66vDOIrQJclydq9hXYnOiwq
-        YAumgGqzmJcLmP9aJNXd42LqTISLlbcWraZNMpkBqo9WtqfqJ3bIJ2u07rhsJn5X8mbg1b9hHJaRZ
-        BKZaVNH4ldecMPzVoVatIxa5X7bwV3AOGHcNeQgAviCh/zV+GlWg85Ly1t/ZjlGSKBuY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hYrqa-0005jD-V0; Thu, 06 Jun 2019 14:50:24 +0200
-Date:   Thu, 6 Jun 2019 14:50:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Anders Roxell <anders.roxell@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, hkallweit1@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/8] drivers: net: dsa: realtek: fix warning same module
- names
-Message-ID: <20190606125024.GE20899@lunn.ch>
-References: <20190606094707.23664-1-anders.roxell@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606094707.23664-1-anders.roxell@linaro.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1728007AbfFFM4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 08:56:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55634 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726040AbfFFM4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 08:56:09 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 08C4EAC9A;
+        Thu,  6 Jun 2019 12:56:08 +0000 (UTC)
+From:   Oliver Neukum <oneukum@suse.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 1/6] usb: hso: correct debug message
+Date:   Thu,  6 Jun 2019 14:55:43 +0200
+Message-Id: <20190606125548.18315-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 11:47:07AM +0200, Anders Roxell wrote:
-> When building with CONFIG_NET_DSA_REALTEK_SMI and CONFIG_REALTEK_PHY
-> enabled as loadable modules, we see the following warning:
-> 
-> warning: same module names found:
->   drivers/net/phy/realtek.ko
->   drivers/net/dsa/realtek.ko
-> 
-> Rework so the names matches the config fragment.
-> 
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+If you do not find the OUT endpoint, you should say so,
+rather than copy the error message for the IN endpoint.
+Presumably a copy and paste error.
 
-[Removes most of the Cc:]
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+---
+ drivers/net/usb/hso.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi Anders
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index d6916f787fce..6a0ecddff310 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2663,7 +2663,7 @@ static struct hso_device *hso_create_bulk_serial_device(
+ 	if (!
+ 	    (serial->out_endp =
+ 	     hso_get_ep(interface, USB_ENDPOINT_XFER_BULK, USB_DIR_OUT))) {
+-		dev_err(&interface->dev, "Failed to find BULK IN ep\n");
++		dev_err(&interface->dev, "Failed to find BULK OUT ep\n");
+ 		goto exit2;
+ 	}
+ 
+-- 
+2.16.4
 
-Please base this patch on net-next and submit it to David
-Miller/netdev.
-
-It would also be nice to state the new name of the module in the
-commit message.
-
-Linus, would you prefer this module is called rtl8366?
-
-       Andrew
