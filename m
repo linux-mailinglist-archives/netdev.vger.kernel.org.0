@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A44DE3781A
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:35:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEE337876
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:47:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfFFPfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 11:35:34 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44272 "EHLO
+        id S1729499AbfFFPri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 11:47:38 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45882 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727309AbfFFPfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:35:34 -0400
-Received: by mail-pf1-f196.google.com with SMTP id t16so1717170pfe.11
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 08:35:33 -0700 (PDT)
+        with ESMTP id S1729185AbfFFPrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:47:37 -0400
+Received: by mail-pf1-f196.google.com with SMTP id s11so1736039pfm.12;
+        Thu, 06 Jun 2019 08:47:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=l6FDxu9hyC/mGWOTQpbxThS/YbL/meYSzef/1Ox1fkM=;
-        b=D7YeS4hWqkDPToQ15Ey4Dx7kgxZyNjgoo5cU3LhYgwEoygNnKrRJ9dnBe+yNqAcN6x
-         9s8a3HY2INizWJ/Z1q0vKsf3rqOQW3SpFsJjAYnAIwNCHHZ83XMcUg7fbrwPRRZ8ns0z
-         E3v3HSoobu/eI0LyABAbi+vJsdRu5a5FyivdaptL9LFqsrozJ5Fxv+6nMtpyP3sXdBLM
-         s06rIT01ETyH5B3JV/5YnIVX8tNfEUxIIXFyNEtPy4zkUUXyWpwwwps05dUdhJZxsiYs
-         7EszFAD9JA4GFDbTnisISjWw0et7QMInSY/M62YWKhQC0gRls5JGBU1gYODWCUMHpMrM
-         v4VQ==
+        bh=NfifDdL+NpCO8qPZ1Q4+MMf9WNKJ6AKEbZR6EHDrCsM=;
+        b=olv0nqRUK9PV5cAJt8TjQa/fI6j8FDIWsOM0MUzfdeBXhSfGVgEIVByYGCkLjwtgk+
+         +pGDQd+d39un0hq1WxQ46aDqE2upjHH+eJEpqGggIehYndps9BvDkdqGdtNigdZPMNnp
+         xy9fTUnFVz+i8paHHEfSALaMX8art72kUgkd6E0Lt6SuWDooCZRmXoYvh40lz7OglTh+
+         WVNvGLXYg4I7RuosFCBH9wT0VIqjyyit8rLYFyOuvcijM7TFR9deJRS8CQOGzhOambs0
+         eQlqiMQmPaBTuNwyb25OuoUXBq3ao4zpNxl1A8c0srkJteNezNg4il06U0xTNTXvFbkj
+         Pvsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=l6FDxu9hyC/mGWOTQpbxThS/YbL/meYSzef/1Ox1fkM=;
-        b=sY3gVYgFQb/7GT2VufEdBPV1s959ra8aj0IQEb/DNXMUhrtS591esOES8al3ZCLoYK
-         fRrbK9JXJiWEwK8xmqp14dLd9QRrBkefF6WAsGHL82xjx598v7UTJrxXJcD26sMGbHrU
-         tB5QUfjqRNVL5BeyoOZRcv7P2F+7VlerwZTdeyfThUc/2fEDLnVuLe9NKg/tW5iPnuO5
-         6dv+wblFSy/A14lBpTdy0aZdQwCn+Jc+t3wLONCFMFDJkoxd7xfez027O/uIHs0/NL1K
-         HHL2XI+6sAFx5vumziS1oC+kcZbCi+s9TkTE05beSZUMfqrDct7PMVdj2g05jqMPG3Sz
-         ZiQA==
-X-Gm-Message-State: APjAAAUnXClf8j8TQsrZ82US4GgIjZ/0Fp4MsCw6SEchkfIin5wsOuEP
-        HKI2HdY+p3WG4l2J9Rc0Pr9Jdi4xAmA=
-X-Google-Smtp-Source: APXvYqxqVU9Gk6yDgVrx9HNJ7OIO7jq4PtVV6y6pqFIuszajQrtaPW4yrtjIOLVC1aTdhjF9r/5S2Q==
-X-Received: by 2002:a63:a449:: with SMTP id c9mr3945698pgp.149.1559835333429;
-        Thu, 06 Jun 2019 08:35:33 -0700 (PDT)
+        bh=NfifDdL+NpCO8qPZ1Q4+MMf9WNKJ6AKEbZR6EHDrCsM=;
+        b=FS0CRnbsvoI9Jbj9XHHgvytA7rXDE3eMpCfP9jByePxJW2VcMkGSH7kcJVxnH4UbrF
+         H6SZAbPCNSnsrSimvTBJgWZmBcoKTewg0bc7UmcqolzszKgPBuVAehX3fv1j+E5rE+hM
+         +kqUudb352m5F+pZyJ8EPgbdEyza5wEDoKNmObFePolLh3WRGmoA0s8KmVSIF0OrfPBC
+         LV7AZrk+NoM5cKsYv7mVmmv9kvEroQy2PHrYjXuoheTL4kCpYiayCGtbiO2FGignEzC4
+         cgFkooow1OpP0Y0slkEwUB3OIf+0/Whnqlm60vSn60bBi4POPnMmo1BKFrRu8gnLVy8D
+         p/uA==
+X-Gm-Message-State: APjAAAUElNFT5hEBG0axbk2zF9gmudOT7E+qpRwUWIWzk51VXYd6jI9p
+        YtPzS4/UXI0SQwRiEbAB/m3/f++BZYc=
+X-Google-Smtp-Source: APXvYqw8iqwBtgu4kHw/IqFnUk5XYB2C8guVbizPQGLMCgaOX2UvyGGjIhC6POUFeiQg0wkXP1cuMw==
+X-Received: by 2002:a62:fb0a:: with SMTP id x10mr31141215pfm.224.1559836057029;
+        Thu, 06 Jun 2019 08:47:37 -0700 (PDT)
 Received: from [172.27.227.242] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id y6sm6071115pfo.38.2019.06.06.08.35.31
+        by smtp.googlemail.com with ESMTPSA id u16sm2262264pje.6.2019.06.06.08.47.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 08:35:32 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: fix the check before getting the cookie in
- rt6_get_cookie
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net
-References: <49388c263f652f91bad8a0d3687df7bb4a18f0da.1559473846.git.lucien.xin@gmail.com>
+        Thu, 06 Jun 2019 08:47:36 -0700 (PDT)
+Subject: Re: [PATCH] net: ipv4: fib_semantics: fix uninitialized variable
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org
+References: <1559832197-22758-1-git-send-email-info@metux.net>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ea598247-5f96-2455-063a-dc23d7313f85@gmail.com>
-Date:   Thu, 6 Jun 2019 09:35:30 -0600
+Message-ID: <0ba84175-49be-9023-271d-516c93e2d83e@gmail.com>
+Date:   Thu, 6 Jun 2019 09:47:34 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <49388c263f652f91bad8a0d3687df7bb4a18f0da.1559473846.git.lucien.xin@gmail.com>
+In-Reply-To: <1559832197-22758-1-git-send-email-info@metux.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -66,11 +66,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/2/19 5:10 AM, Xin Long wrote:
-> In Jianlin's testing, netperf was broken with 'Connection reset by peer',
-> as the cookie check failed in rt6_check() and ip6_dst_check() always
-> returned NULL.
+On 6/6/19 8:43 AM, Enrico Weigelt, metux IT consult wrote:
+> From: Enrico Weigelt <info@metux.net>
+> 
+> fix an uninitialized variable:
+> 
+>   CC      net/ipv4/fib_semantics.o
+> net/ipv4/fib_semantics.c: In function 'fib_check_nh_v4_gw':
+> net/ipv4/fib_semantics.c:1027:12: warning: 'err' may be used uninitialized in this function [-Wmaybe-uninitialized]
+>    if (!tbl || err) {
+>             ^~
+> 
+> Signed-off-by: Enrico Weigelt <info@metux.net>
+> ---
+>  net/ipv4/fib_semantics.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index b804106..bfa49a8 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -964,7 +964,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
+>  {
+>  	struct net_device *dev;
+>  	struct fib_result res;
+> -	int err;
+> +	int err = 0;
+>  
+>  	if (nh->fib_nh_flags & RTNH_F_ONLINK) {
+>  		unsigned int addr_type;
+> 
 
-Any particular test or setup that is causing the reset? I do not see
-that problem in general.
+what compiler version?
 
+if tbl is set, then err is set.
