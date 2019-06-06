@@ -2,112 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C2437533
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A60137532
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbfFFN1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 09:27:39 -0400
-Received: from mx-relay56-hz2.antispameurope.com ([94.100.136.156]:59518 "EHLO
-        mx-relay56-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726014AbfFFN1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:27:38 -0400
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay56-hz2.antispameurope.com;
- Thu, 06 Jun 2019 15:27:26 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Thu, 6 Jun
- 2019 15:27:22 +0200
-Subject: Re: DSA with MV88E6321 and imx28
-To:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>
-References: <8812014c-1105-5fb6-bc20-bad0f86d33ea@eks-engel.de>
- <20190604135000.GD16951@lunn.ch>
- <854a0d9c-17a2-c502-458d-4d02a2cd90bb@eks-engel.de>
- <20190605122404.GH16951@lunn.ch>
- <414bd616-9383-073d-b3f3-6b6138c8b163@eks-engel.de>
- <20190605133102.GF19627@lunn.ch>
- <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
- <20190605184724.GB19590@lunn.ch>
- <c27f2b9b-90d7-db63-f01c-2dfaef7a014b@eks-engel.de>
- <20190606122437.GA20899@lunn.ch>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Message-ID: <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
-Date:   Thu, 6 Jun 2019 15:27:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727087AbfFFN1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 09:27:36 -0400
+Received: from mail-it1-f194.google.com ([209.85.166.194]:37340 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbfFFN1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 09:27:36 -0400
+Received: by mail-it1-f194.google.com with SMTP id x22so1696829itl.2
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 06:27:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XQnXG/+fQR7z7pvbTRBkLBV32G/MJ2J2jPpM5lMz6ww=;
+        b=UF6+jGbAhxxg495eFV290t3lknY+C7VmuDGd2DFEHRFdUT17JWbQb52+JouRsANs3r
+         CHzxWsUxFKw8zE1+nDsFXydQ3nq1vxlByDv/jFyNyleo3JpnGMuDzw6waiXG1d2BpjEw
+         ohsk5P1XlOLtmDZpBcyhwm1uN/13ROboF4ZctriGZbRVM6klYBrj1HuRlOSH3vhXxcDQ
+         B5ulyThjjbXwgReSv23IhOpE/5qYWIfYU7/CfzSEU1rwIfqAizZcojtOiM4MqJeX1vo8
+         GEhXZWkKvnyaXMBRT41ATbLoE1x29tbuPdI9r2ulw4OGNtJ+DmCu5umXMin4jpoQ75Ef
+         eWQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XQnXG/+fQR7z7pvbTRBkLBV32G/MJ2J2jPpM5lMz6ww=;
+        b=Uiojd7vgC4D7s4E/rF/rQ57kfiiUavtGWHBckw1m4BA2mryWWF4PPusyQmqhZOIccJ
+         yxs/vgEYuxSpLYqk+WmQPpU2JhixXXNzFh7Q4pYT27H48hLCSGCRd6ZUGXH0NjB7KBHz
+         Gh+tdJAUNkESccZ+iOMpSviqTVKDMaKrr4j2CkLOi2nUS6B1U3SsI7rMkfbXoOLr63ig
+         DWY/OGuzK2XzCFdoujEquhuxKpJxBlsa3JfUG37eT0WUFYHpJUg1pbDucaJ1pEEIR1A2
+         mi/buVecEJ5NK6sr1ie8MM5VSyWPoF+YuzWO1jAXmuRn2DfIFBINdyvcMOjVufAo1Cog
+         pWQQ==
+X-Gm-Message-State: APjAAAUtQpILNahrswqna5pQ0Y/YLdivAaSLfBwCtgEeEp2eJZunI/9S
+        6u0Q3uW8O53NN6E/x7QAIBC3iqmIE6I8qZRgr1eDn7vY
+X-Google-Smtp-Source: APXvYqwvkGyeeiFG9ivvSqs7VnHQRekE3lOOqRW6DrJGu0lyG2g0jGOzH8QwK5CyMk4MVseEHk1NY7XCpc7xqkzNfqQ=
+X-Received: by 2002:a24:5285:: with SMTP id d127mr17503itb.72.1559827655679;
+ Thu, 06 Jun 2019 06:27:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190606122437.GA20899@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay56-hz2.antispameurope.com with 282F34E1B0D
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:1.334
+References: <1559825374-32117-1-git-send-email-john.hurley@netronome.com> <20190606125818.bvo5im2wqj365tai@breakpoint.cc>
+In-Reply-To: <20190606125818.bvo5im2wqj365tai@breakpoint.cc>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Thu, 6 Jun 2019 14:27:24 +0100
+Message-ID: <CAK+XE=kQyq-ZW=DOaQq92zSmwcEi3BBwma1MydrdpnZ6F3Gp+A@mail.gmail.com>
+Subject: Re: [RFC net-next v2 1/1] net: sched: protect against loops in TC
+ filter hooks
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 06.06.19 14:24, Andrew Lunn wrote:
-> On Thu, Jun 06, 2019 at 10:49:08AM +0200, Benjamin Beckmeyer wrote:
->>>> I removed all phy-handle for the internal ports and in the mdio part 
->>>> is only port 2 and 6 by now. But the Serdes ports are still not be
->>>> recognized. So maybe there is still something wrong?
->>> What do you mean by SERDES? Do you mean they are connected to an SFP
->>> cage? If so, you need to add an SFP node. Take a look at
->>> vf610-zii-dev-rev-c.dts for an example.
->>>
->>> 	Andrew
->> Hey Andrew,
->> I've looked into the device tree. Why do they reference to i2c? We have
->> 1x8 SFF tranceivers. Should I just add an i2c entry for it, because the 
->> value is required?
-> Hi Benjamin
+On Thu, Jun 6, 2019 at 1:58 PM Florian Westphal <fw@strlen.de> wrote:
 >
-> Do you have a diagram of the board you can share with me. I'm confused
-> about which ports have external copper PHYs and which have SFF
-> connected to them., and if you are using copper PHYs with SERDES
-> interfaces not RGMII.
+> John Hurley <john.hurley@netronome.com> wrote:
+> > TC hooks allow the application of filters and actions to packets at both
+> > ingress and egress of the network stack. It is possible, with poor
+> > configuration, that this can produce loops whereby an ingress hook calls
+> > a mirred egress action that has an egress hook that redirects back to
+> > the first ingress etc. The TC core classifier protects against loops when
+> > doing reclassifies but there is no protection against a packet looping
+> > between multiple hooks. This can lead to stack overflow panics among other
+> > things.
+> >
+> > Previous versions of the kernel (<4.2) had a TTL count in the tc_verd skb
+> > member that protected against loops. This was removed and the tc_verd
+> > variable replaced by bit fields.
+> >
+> > Extend the TC fields in the skb with an additional 2 bits to store the TC
+> > hop count. This should use existing allocated memory in the skb.
+> >
+> > Add the checking and setting of the new hop count to the act_mirred file
+> > given that it is the source of the loops. This means that the code
+> > additions are not in the main datapath.
+> >
+> > v1->v2
+> > - change from per cpu counter to per skb tracking (Jamal)
+> > - move check/update from fast path to act_mirred (Daniel)
+> >
+> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> > ---
+> >  include/linux/skbuff.h | 2 ++
+> >  net/sched/act_mirred.c | 9 +++++++++
+> >  2 files changed, 11 insertions(+)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 2ee5e63..f0dbc5b 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -645,6 +645,7 @@ typedef unsigned char *sk_buff_data_t;
+> >   *   @tc_at_ingress: used within tc_classify to distinguish in/egress
+> >   *   @tc_redirected: packet was redirected by a tc action
+> >   *   @tc_from_ingress: if tc_redirected, tc_at_ingress at time of redirect
+> > + *   @tc_hop_count: hop counter to prevent packet loops
+> >   *   @peeked: this packet has been seen already, so stats have been
+> >   *           done for it, don't do them again
+> >   *   @nf_trace: netfilter packet trace flag
+> > @@ -827,6 +828,7 @@ struct sk_buff {
+> >       __u8                    tc_at_ingress:1;
+> >       __u8                    tc_redirected:1;
+> >       __u8                    tc_from_ingress:1;
+> > +     __u8                    tc_hop_count:2;
 >
-> Each port needs to have some sort of 'PHY' connected to it. Either a
-> copper PHY, an SFP/SFF, or a fake PHY using fixed-link.
+> I dislike this, why can't we just use a pcpu counter?
 >
->> Do you know which switch chip they use in the  vf610-zii-dev-rev-c?
-> That board uses two 6390X. There is also ZII CF1 is if i remember
-> correctly a 6352, and has one SFF.
+> The only problem is with recursion/nesting; whenever we
+> hit something that queues the skb for later we're safe.
 >
-> If you have an SFF connected to a port, you need its i2c bus, so that
-> PHYLINK can read the SFF EEPROM to determine its capabilities and
-> correctly configure the MAC to fit the SFF. Plus you get all the
-> diagnostics, etc.
->
->   Andrew
 
-Hi Andrew,
-From our hardware developer I know now that we are using a "mini" SFF 
-which has no i2c eeprom. 
+Hi Florian,
+The per cpu counter (initial proposal) should protect against
+recursion through loops and the potential stack overflows.
+It will not protect against a packet infinitely looping through a poor
+configuration if (as you say) the packet is queued at some point and
+the cpu counter reset.
+The per skb tracking seems to accommodate both issues.
+Do you see the how the cpu counter could stop infinite loops in the
+case of queuing?
+Or perhaps these are 2 different issues and should be treated differently?
 
-Switch				|	external
-Port 0 - internal serdes 0x0c --|-------Mini SFF 1x8 Transceiver
-				|
-Port 0 - internal serdes 0x0d --|-------Mini SFF 1x8 Transceiver
-				|
-Port 2 ----------RGMII----------|-------KSZ9031 PHY 0x02(strap)--Transceiver
-				|
-Port 3 - internal PHY 0x03 -----|-------Transceiver
-				|
-Port 3 - internal PHY 0x04 -----|-------Transceiver
-				|			
-Port 5 - CPU-Port RMII ---------|-------CPU
-				|
-Port 6 ----------RGMII----------|-------KSZ9031 PHY 0x06(strap)--Transceiver
+> We can't catch loops in real (physical) setups either,
+> e.g. bridge looping back on itself.
 
-
-Hopefully this makes it more clear to you. 
-
+yes, this is only targeted at 'internal' loops.
