@@ -2,90 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9A5C36926
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 03:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E55AE3694B
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 03:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfFFBX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 21:23:56 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:38810 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbfFFBXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 21:23:55 -0400
-Received: by mail-ed1-f53.google.com with SMTP id g13so771879edu.5
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 18:23:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Wb9Lji0MwOt7HNHV7EpUWkPpkz3wzruJNrB3gQYmPnw=;
-        b=ags/uuBlAZANxv8b5sCJmWCxA9UPb/l7PAm0vbzV6sdNC759VZ2ejzjRosy3z3rvT9
-         yXHp2jDxNckpzpAE4pexqyLElsYde5stO+YxYdET/yjlseMEQXT3+2/wdcE2uIpfFYrj
-         PXejjrrGJeumZG+Wck7PToLDJkQoL2G/ckUq10tV3FshSth44EmK7IXsjoj1G/TrdhV9
-         7LJLH7BwvwLtIzJIpJzX6qqvbOPCC2WaFm2JZil+JkfYDkBqCymB54h9W5yY0RkBPcnf
-         vfjiwrOkFLz6bNl3Bvl9bvAyMgg3Pm7FZKWwl6GQFIQTVEZ3ZVUGG5hSyWee7aIWrFhf
-         CuVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Wb9Lji0MwOt7HNHV7EpUWkPpkz3wzruJNrB3gQYmPnw=;
-        b=UeveNMRrrNoMyOfLr81sU+XkZk8RXH0CsE2IV0JxRLanj5ysBIHKmYkQEvV/3HD1Tf
-         6iUAbf37svF/WaP0rSn5R9vbDSzZzWdXYtj5mz8joFZJl1C88g67T1w/qPeCpO2H9nNc
-         YuSyi+nNsOIMGqndRnjJvVURINj7oZNObUQJscDKGAAiqewmIVIQdaIhDJfkH8nAIV02
-         ijrUHZjLglNjB9ZDD1qsUSqX/nFrIXIpwl/UlNBE9E3fWGWR0VCEjeclVJADujXHSal5
-         YRiT/aNEWcYQrBJ4KV+UzVDV2z5gHR+6ZhEVT//mqiRutq0eiv9SLb1QXstvAFwTzRUL
-         jimw==
-X-Gm-Message-State: APjAAAWuhQPc580mm3+D2oT+GvxSECTgSq48Txaj7vgGBlKBfMooxQm9
-        yTJVRma23brbSsNQzVcUP2I=
-X-Google-Smtp-Source: APXvYqxzDeG2s1kBmlS1tewE3tbZrwodVS725OKDVZnrIDK9qoH3Qs2IMlyJdfA/NuX9W1ZKH6j+pA==
-X-Received: by 2002:a17:906:7005:: with SMTP id n5mr2930135ejj.155.1559784233842;
-        Wed, 05 Jun 2019 18:23:53 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id i5sm84924edc.20.2019.06.05.18.23.52
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 05 Jun 2019 18:23:53 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 18:23:51 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     liuhangbin@gmail.com, netdev@vger.kernel.org,
-        gregkh@linuxfoundation.org, zenczykowski@gmail.com,
-        lorenzo@google.com, dsa@cumulusnetworks.com, thaller@redhat.com,
-        yaro330@gmail.com
-Subject: Re: [PATCH net] Revert "fib_rules: return 0 directly if an exactly
- same rule exists when NLM_F_EXCL not supplied"
-Message-ID: <20190606012351.GA29571@archlinux-epyc>
-References: <20190605042714.28532-1-liuhangbin@gmail.com>
- <20190605.175526.1448552541340120763.davem@davemloft.net>
+        id S1726653AbfFFBe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 21:34:59 -0400
+Received: from ozlabs.org ([203.11.71.1]:41939 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726581AbfFFBe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jun 2019 21:34:58 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45K7WL63NCz9s4Y;
+        Thu,  6 Jun 2019 11:34:54 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1559784895;
+        bh=k4EAmrNeiqAHWysyg68/7k/hn4qeEy3U/RBjhZrfVFs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=W57XLFxZjB0pcqNCK4HC8ScQt+iVCbcGfqBN3pZLPVgwYgrg4wHnSO5rHw64GYVsQ
+         kxjn6yBqgpKF0uU+y6pevfaN4XbUbXNK5qWKKTZhdQIQTT5w0Z6fnmaRZRp2XM0U9z
+         pJnMNU5c3KilYAbYF7fB/Zd08Pp5t+egXzOlQ1j/MnKM8+aEjJuMmXPKkHzzx7zM3z
+         SJfYgt/b6BRtYIHImX1mOUX2ba30n3Aq7NAMoObGqMxRM9b3rtbdWnOmfwEATkOx/T
+         L1TvzHMkyOb/yZx/P/6eewAzmCO1GR28EZr1jSnUYpyBeuzLrcYelFlB3vFrrLPMyE
+         E0Zu4EX6AZJ9w==
+Date:   Thu, 6 Jun 2019 11:34:37 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: linux-next: manual merge of the net-next tree with the bpf tree
+Message-ID: <20190606113437.7d5bb929@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190605.175526.1448552541340120763.davem@davemloft.net>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/iKHmU36oxS/Xg5SYhaFXmoo"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 05:55:26PM -0700, David Miller wrote:
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> Date: Wed,  5 Jun 2019 12:27:14 +0800
-> 
-> > This reverts commit e9919a24d3022f72bcadc407e73a6ef17093a849.
-> > 
-> > Nathan reported the new behaviour breaks Android, as Android just add
-> > new rules and delete old ones.
-> > 
-> > If we return 0 without adding dup rules, Android will remove the new
-> > added rules and causing system to soft-reboot.
-> > 
-> > Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> > Fixes: e9919a24d302 ("fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied")
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> 
-> Applied.
+--Sig_/iKHmU36oxS/Xg5SYhaFXmoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Please ensure this gets queued up for stable, as that is where I noticed
-the issue.
+Hi all,
 
-Thank you for applying it,
-Nathan
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  tools/testing/selftests/bpf/Makefile
+
+between commit:
+
+  25a7991c84f6 ("selftests/bpf: move test_lirc_mode2_user to TEST_GEN_PROGS=
+_EXTENDED")
+
+from the bpf tree and commit:
+
+  2d2a3ad872f8 ("selftests/bpf: add btf_dump BTF-to-C conversion tests")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/bpf/Makefile
+index e36356e2377e,2b426ae1cdc9..000000000000
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@@ -21,9 -23,10 +23,10 @@@ LDLIBS +=3D -lcap -lelf -lrt -lpthrea
+  # Order correspond to 'make run_tests' order
+  TEST_GEN_PROGS =3D test_verifier test_tag test_maps test_lru_map test_lpm=
+_map test_progs \
+  	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
+- 	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+- 	test_cgroup_storage test_select_reuseport test_section_names \
+- 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl
+ -	test_sock test_btf test_sockmap test_lirc_mode2_user get_cgroup_id_user \
+++	test_sock test_btf test_sockmap get_cgroup_id_user \
++ 	test_socket_cookie test_cgroup_storage test_select_reuseport test_sectio=
+n_names \
++ 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashma=
+p \
++ 	test_btf_dump test_cgroup_attach xdping
+ =20
+  BPF_OBJ_FILES =3D $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+  TEST_GEN_FILES =3D $(BPF_OBJ_FILES)
+
+--Sig_/iKHmU36oxS/Xg5SYhaFXmoo
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlz4ba0ACgkQAVBC80lX
+0GyHbAgAln49vKCDkQ3VGwN1IIYxfXnotkYxdi5uixRZJfmjdnhHpc2VWQsb8uYJ
+ui7lrin0L9RkWcdrxkr3jfQqBvD89Vqu+BXdijfkQoXR2vdxWHbN0VRcLJc9+ZV8
+ZDuCUiVcWfJPM06vJnqqpaUdq+sHp7lKnerrfGXxkoK64r76tFIJ5+Ca9Zta2wR5
+u1wLVwRfzQX/fsbulIzrr44+4e5NAC1gjS9VFju1QZe+Wzkl7nO3JCR9D5NlDuOt
+Z63noy2gUY2pShCUW5Rzl7F7WW9Y2RhokXVUOUSuRiklt8OhC9WlsSVhvaXW/HLO
+uiuELnaaxAjULvPns+03BrZwWxYw9w==
+=tqUs
+-----END PGP SIGNATURE-----
+
+--Sig_/iKHmU36oxS/Xg5SYhaFXmoo--
