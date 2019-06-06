@@ -2,182 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CF338052
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 802513805C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729013AbfFFWKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 18:10:32 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43338 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbfFFWKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:10:32 -0400
-Received: by mail-qk1-f195.google.com with SMTP id m14so67787qka.10;
-        Thu, 06 Jun 2019 15:10:31 -0700 (PDT)
+        id S1729086AbfFFWOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 18:14:01 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32900 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729055AbfFFWOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:14:00 -0400
+Received: by mail-qt1-f193.google.com with SMTP id 14so115364qtf.0
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 15:13:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/LujXWjuLgI657/H1Fpj9VSTX/GDsMHq5xxa6QyLxtM=;
-        b=NF11yP/kQAqzPK1Mx8mCL87pJdeMImMGwblZDS6MqWLhG8JDKNcAEYvPWmdlgTdZEn
-         wEWl28Kpx0hRQ8ioDr782uhuEwJhBX3weW1X/CwzdsrmwHxIObNYEIH2nMd7Zpg5fGmF
-         p2U4s+WpPx4T0L1HP85YT+Fx8wnzOMJN/GwtqLT0J6nh69NOcW+aju3fRZRiScD+cxgK
-         jGV5IgsgbCZwIt3CcV8KYIe+7VCQZYK/FOtoVffwPE2lZCIQWJK2WFsH6KU2jXptFtFT
-         VrxxshSnZkA761sqqlNC2ZY4mz3rpeeVFuvVVXVh7InJOj2OWhkGtIB+zS4jO6NJKYBg
-         FvEA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=wnCP9LHM/9q0T5YeodyvkG+3NIqd4AJlc0R/psluHCw=;
+        b=rkRXhFjoWZ55fC7yOH0kqTaTRrdB3k1BaYHKrXwOKlqO3Lj8E6y/3m1kxlPHJqvDuB
+         HNe1HZo/hCsDKBHtjOvQROjpjNuFhCqgVO7E1LX8Q5+Geiicmg9mBwYI+ORkSAoVoy4I
+         1ZkXqeaN2WWOdhlzsnngXpW4Ia72ASBbOYQfvxQ+rQFbMv+LQztxgzoK43w8G5eDI9fP
+         tucUOZ4RXAh9xTMuR0M2NH9GcDV14lib62h28GA9yhBw2zzDbJEnjjaB+5ihjRKTMKUe
+         cbO26PuTtbkDvEHYWS6DX3xlj4q6Ht1GFJ/IshA9ckkHTGXw9/wN9eD+chib8Npf95xN
+         9FZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/LujXWjuLgI657/H1Fpj9VSTX/GDsMHq5xxa6QyLxtM=;
-        b=a/Wxg9ykbuePe7qWEWhx6JZjZEJ4kXpzyVUHy5wJqPEOMD0Wsq+bfiqdl9U/OQNjgO
-         4yFfi3nVGCdNHgZdIly1tJ2kcPT2qNN1J9dHSsyg/Q89l16M79CEv3asv3Y4OP2wVAJT
-         zvnt7TrxrjCFnRc5A94c8Z74vROaPyCVkKyRtacSPDeY+7SMR9f+3ERqNzB19dhVSg0t
-         K97Fv9J1E+fovoj27NJRIGf5ysOYetliWyW1Z69IP4NdUKpjTr51tAQaAneJCtLDiREn
-         KnvL7Oc9k6oRkqxuH8xtLWXAtCeLcuSEOTdS23k21IV9g9EdCcG8qbevIxEQHAI9dbCb
-         39Cw==
-X-Gm-Message-State: APjAAAXLQTXa4BkdyRheM+GPue6dL7PVyQ2MJN5mepO+vPqYw9PfgUBh
-        aaewA82I5Ci38wA1NZEaqGRhYRTOsjEhZOOcPJo=
-X-Google-Smtp-Source: APXvYqzxPf6nE6QalwodBsIk4/iScixDIzdNN8Cp2oFXpMrDuy7t3CVTUaMm1bXNbH1h39TncE/oDQ6bCP8Gx2rMGIk=
-X-Received: by 2002:a05:620a:147:: with SMTP id e7mr40647458qkn.247.1559859030590;
- Thu, 06 Jun 2019 15:10:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=wnCP9LHM/9q0T5YeodyvkG+3NIqd4AJlc0R/psluHCw=;
+        b=DGB0itXx93COMMJBgg1hmmTNatKCZ+7UBO/FgGrDixn2MelWgEubiKqr9e3eyhkPbV
+         p7SqpDmx9NaNI59+y+8uFL1aXTwPcbC5PrPSGeQKXLV6RREoobBQuS+rDA47lwAqnCED
+         ER+UKNzZPIr9d9qjjvFAKoo9Bmq+Dp89LmBNuvlEre+GMcNrhFq/IkJvGVNsUU/zY+jB
+         o4MXp57JMPOSm6/cjZ2pi66trhfXwRq61X35h70tacLRI9+YXQhVQVhy2CD4S7UKR1RG
+         WwHgZjMWwtE05UGeQ29zlUeFz4kP3mXOUJrIzwwAM1OwQ1qJ4GbQR4O3bP/2GBtbk5aC
+         W61A==
+X-Gm-Message-State: APjAAAVCyzPy8M339NIQasRNZxnaW8FLkSKiPJ9XYf4pYlP1N00N+Hdy
+        FoeDCVOyW3CKQAM5cAB0BAO4Rg==
+X-Google-Smtp-Source: APXvYqw1rzC6OTnpZ+39/hsG12pO3JpYun3yNbCTLHGF4Q6Fiw2lxqwEaCapVXUEIan7qToQI0uIKg==
+X-Received: by 2002:ac8:2e84:: with SMTP id h4mr42663472qta.267.1559859238493;
+        Thu, 06 Jun 2019 15:13:58 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s23sm187901qtj.56.2019.06.06.15.13.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 15:13:58 -0700 (PDT)
+Date:   Thu, 6 Jun 2019 15:13:46 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Matt Mullins <mmullins@fb.com>
+Cc:     <hall@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ingo Molnar" <mingo@redhat.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf] bpf: fix nested bpf tracepoints with per-cpu data
+Message-ID: <20190606151346.6a9ed27e@cakuba.netronome.com>
+In-Reply-To: <20190606185427.7558-1-mmullins@fb.com>
+References: <a6a31da39debb8bde6ca5085b0f4e43a96a88ea5.camel@fb.com>
+        <20190606185427.7558-1-mmullins@fb.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190606193927.2489147-1-hechaol@fb.com> <20190606193927.2489147-2-hechaol@fb.com>
-In-Reply-To: <20190606193927.2489147-2-hechaol@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 6 Jun 2019 15:10:19 -0700
-Message-ID: <CAEf4Bza5EyUoEmo-mwQup7Zc_X5zM6p+LROVd04nJ-sjv588Mg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 1/2] bpf: add a new API libbpf_num_possible_cpus()
-To:     Hechao Li <hechaol@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 6, 2019 at 1:17 PM Hechao Li <hechaol@fb.com> wrote:
->
-> Adding a new API libbpf_num_possible_cpus() that helps user with
-> per-CPU map operations.
->
-> Signed-off-by: Hechao Li <hechaol@fb.com>
+On Thu, 6 Jun 2019 11:54:27 -0700, Matt Mullins wrote:
+> BPF_PROG_TYPE_RAW_TRACEPOINTs can be executed nested on the same CPU, as
+> they do not increment bpf_prog_active while executing.
+> 
+> This enables three levels of nesting, to support
+>   - a kprobe or raw tp or perf event,
+>   - another one of the above that irq context happens to call, and
+>   - another one in nmi context
+> (at most one of which may be a kprobe or perf event).
+> 
+> Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_data")
+
+No comment on the code, but you're definitely missing a sign-off.
+
 > ---
->  tools/lib/bpf/libbpf.c   | 57 ++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   | 16 +++++++++++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 74 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index ba89d9727137..06497c8a3372 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -3827,3 +3827,60 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
->                                              desc->array_offset, addr);
->         }
->  }
-> +
-> +int libbpf_num_possible_cpus(void)
-> +{
-> +       static const char *fcpu = "/sys/devices/system/cpu/possible";
-> +       int len = 0, n = 0, il = 0, ir = 0;
-> +       unsigned int start = 0, end = 0;
-> +       static int cpus;
-> +       char buf[128];
-> +       int error = 0;
-> +       int fd = -1;
-> +
-> +       if (cpus > 0)
-> +               return cpus;
-> +
-> +       fd = open(fcpu, O_RDONLY);
-> +       if (fd < 0) {
-> +               error = errno;
-> +               pr_warning("Failed to open file %s: %s\n",
-> +                          fcpu, strerror(error));
-> +               return -error;
-> +       }
-> +       len = read(fd, buf, sizeof(buf));
-> +       close(fd);
-> +       if (len <= 0) {
-> +               error = errno;
+> This is more lines of code, but possibly less intrusive than the
+> per-array-element approach.
+> 
+> I don't necessarily like that I duplicated the nest_level logic in two
+> places, but I don't see a way to unify them:
+>   - kprobes' bpf_perf_event_output doesn't use bpf_raw_tp_regs, and does
+>     use the perf_sample_data,
+>   - raw tracepoints' bpf_get_stackid uses bpf_raw_tp_regs, but not
+>     the perf_sample_data, and
+>   - raw tracepoints' bpf_perf_event_output uses both...
 
-As Martin mentioned, you should handle len == 0 case separately, as
-errno will be wrong in that case (read doesn't change errno in that
-case). So something like:
-
-error = len ? errno : EINVAL;
-
-> +               pr_warning("Failed to read # of possible cpus from %s: %s\n",
-> +                          fcpu, strerror(error));
-> +               return -error;
-> +       }
-> +       if (len == sizeof(buf)) {
-> +               pr_warning("File %s size overflow\n", fcpu);
-> +               return -EOVERFLOW;
-> +       }
-> +       buf[len] = '\0';
-> +
-> +       for (ir = 0, cpus = 0; ir <= len; ir++) {
-> +               /* Each sub string separated by ',' has format \d+-\d+ or \d+ */
-> +               if (buf[ir] == ',' || buf[ir] == '\0') {
-> +                       buf[ir] = '\0';
-> +                       n = sscanf(&buf[il], "%u-%u", &start, &end);
-> +                       if (n <= 0) {
-> +                               pr_warning("Failed to get # CPUs from %s\n",
-> +                                          &buf[il]);
-> +                               return -EINVAL;
-> +                       } else if (n == 1) {
-> +                               end = start;
-> +                       }
-> +                       cpus += end - start + 1;
-> +                       il = ir + 1;
-> +               }
-> +       }
-> +       if (cpus <= 0) {
-> +               pr_warning("Invalid #CPUs %d from %s\n", cpus, fcpu);
-> +               return -EINVAL;
-> +       }
-> +       return cpus;
-> +}
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 1af0d48178c8..f5e82eb2e5d4 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -454,6 +454,22 @@ bpf_program__bpil_addr_to_offs(struct bpf_prog_info_linear *info_linear);
->  LIBBPF_API void
->  bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear);
->
-> +/*
-> + * A helper function to get the number of possible CPUs before looking up
-> + * per-CPU maps. Negative errno is returned on failure.
-> + *
-> + * Example usage:
-> + *
-> + *     int ncpus = libbpf_num_possible_cpus();
-> + *     if (ncpus <= 0) {
-> + *          // error handling
-> + *     }
-> + *     long values[ncpus];
-> + *     bpf_map_lookup_elem(per_cpu_map_fd, key, values);
-> + *
-> + */
-> +LIBBPF_API int libbpf_num_possible_cpus(void);
-> +
->  #ifdef __cplusplus
->  } /* extern "C" */
->  #endif
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 46dcda89df21..2c6d835620d2 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -172,4 +172,5 @@ LIBBPF_0.0.4 {
->                 btf_dump__new;
->                 btf__parse_elf;
->                 bpf_object__load_xattr;
-> +               libbpf_num_possible_cpus;
->  } LIBBPF_0.0.3;
-> --
-> 2.17.1
->
