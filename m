@@ -2,154 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D92537038
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:43:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25AD337090
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728040AbfFFJmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 05:42:06 -0400
-Received: from mail-it1-f200.google.com ([209.85.166.200]:52939 "EHLO
-        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727740AbfFFJmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 05:42:05 -0400
-Received: by mail-it1-f200.google.com with SMTP id z128so1310093itb.2
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 02:42:05 -0700 (PDT)
+        id S1727972AbfFFJrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 05:47:13 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:36616 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727545AbfFFJrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 05:47:09 -0400
+Received: by mail-lf1-f65.google.com with SMTP id q26so1069667lfc.3
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 02:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZUJtTHTXNxu11uFgApSggUR6FUDtGDSUrwD5+2c4fw4=;
+        b=fjWTs+v9sRcacPTkE7/eRu/9lwuTPBz6IVARKm6m4Eq7OW7fr63Dg12tQgHVVCRbol
+         X9xJuP/JqN3cXHjJiC6f8ejkT+eMEcvNjqmDsSgH22spBK04YFEiIlwrHageUyfQp0xt
+         Dr0W1fN4Dhoc4Vs0e2dMfi84pDucPLYspHEx1qyBDNLoCiJIDHxXk89F7LxCZQIsKONd
+         8my/z5+M+Fr/vICw5e12GUeEZWFVwbkdPpr56GF9RuHraCzJOfRPTERnTkxQX5WMo6cS
+         EP4xY+CInGYsGcd/8/b+F6qjYG5PezinP4T3p0CCu/MDQ46QsZOu/D1w+p5MJ3axD+dR
+         KU2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=C/QbVAlBAgg/UuzgwU/C8xKEj8HudJCp6V+oPIiI0Pw=;
-        b=MfIiI7VfldEQt+aoP7f8V+SqjnSx538oQRYf6UaWSIzH740mW+VLnZfVpNl0rVxWfe
-         w82h7Jpl6wJ4pt4/2ptU7J6qw4yQG6C4j8bo/P5EsXbtYjJ11Ent0CViSFgOypvoN+HM
-         HuOh3LOBM9/4AICM2tXvQXPiWIJ29DS4SzG09/J5G8w/EQvKdAeZeEs81VS+TTplqdyY
-         BnvcruKTJK3c4eFApqf72QPDR7EHGMQhs3wBJmlKc6nvYRC9ZkX9SoMDwyrE8s3lJqbO
-         M26l2VZ+leX49Ry62TJxzsthbew+45A/9xgVWb5gqHuuKriqZi76ReDbGRtJUJdDWJGW
-         eP9Q==
-X-Gm-Message-State: APjAAAURGJ5xx2hGblZQZDFzGATGMhJJ6Bo9g+ltpX53v+A50PMeAnVn
-        EDCsKo521ozuxz4UNgIk0t/FkUyjHvcs5FCgxwEsQA0HgKQn
-X-Google-Smtp-Source: APXvYqwOJhbXNCC7cvoLr6vQcA/kxUlviAaQhZZvu32rd1jGFllr0Y6eLPIl4tji7avmxMkEpWSCCnddXjEUxekPkABZErr6e8LK
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZUJtTHTXNxu11uFgApSggUR6FUDtGDSUrwD5+2c4fw4=;
+        b=aiSce34xemD3kj4Rj/OWu/Kgy0zTldy7HIxoJmx+rEDGb0Q3b17eoUeMD0XHTZ1750
+         TvQ2Smg2QhkJVWHeo+0USuPGnObjJyNamg6vGafPsZ8Rb+6QcEgXLSzdgZWJ4CGF6KuU
+         S3s8ZL5gWMhCsSuTjeC8+T2v+tGkJ3mgXks/8jD1QPdqeP5+ypsmDZJ2+bDXtLOY1zdG
+         OUsF9RO46kAd205p2GZaZSQzMbCM1Qic9yrY2M1H/SxHEjenIBH5oD7rG0xkv7n6qhAa
+         kdIBq1D4/9bdB3VzWn4YqTaPSuwh2rk9t1gA224lB0oEhuG3e30gjRSIaDGhwau7gQZh
+         EX/Q==
+X-Gm-Message-State: APjAAAWnHIf7u3OfveLaLmOZIOCD53QwugPOkeM8H1ivJvcYWhDUXk20
+        JkRKKhkIjHv6xylZsHfB930jKA==
+X-Google-Smtp-Source: APXvYqyfSm4WZqLlK2FuAsUFqx7p2Ew9DH+2Np2QIeyhi9dQlGG8JR0BxiRPugpDfNWGd0YdYSALPA==
+X-Received: by 2002:ac2:5609:: with SMTP id v9mr15271221lfd.27.1559814426775;
+        Thu, 06 Jun 2019 02:47:06 -0700 (PDT)
+Received: from localhost (c-1c3670d5.07-21-73746f28.bbcust.telenor.se. [213.112.54.28])
+        by smtp.gmail.com with ESMTPSA id e8sm241763lfc.27.2019.06.06.02.47.05
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 02:47:06 -0700 (PDT)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        marex@denx.de, stefan@agner.ch, airlied@linux.ie, daniel@ffwll.ch,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        b.zolnierkie@samsung.com, a.hajda@samsung.com, mchehab@kernel.org,
+        p.zabel@pengutronix.de, hkallweit1@gmail.com, lee.jones@linaro.org,
+        lgirdwood@gmail.com, broonie@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-media@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH 0/8] fix warnings for same module names
+Date:   Thu,  6 Jun 2019 11:46:57 +0200
+Message-Id: <20190606094657.23612-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:660c:8f:: with SMTP id t15mr12219147itj.107.1559814124560;
- Thu, 06 Jun 2019 02:42:04 -0700 (PDT)
-Date:   Thu, 06 Jun 2019 02:42:04 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cf6a70058aa48695@google.com>
-Subject: KMSAN: uninit-value in rt2500usb_bbp_read
-From:   syzbot <syzbot+a106a5b084a6890d2607@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com,
-        helmut.schaa@googlemail.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, sgruszka@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following crash on:
-
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f8b01ea00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link: https://syzkaller.appspot.com/bug?extid=a106a5b084a6890d2607
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14f746f2a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=153072d2a00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+a106a5b084a6890d2607@syzkaller.appspotmail.com
-
-usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-usb 1-1: config 0 descriptor??
-usb 1-1: reset high-speed USB device number 2 using dummy_hcd
-usb 1-1: device descriptor read/64, error -71
-ieee80211 phy3: rt2x00usb_vendor_request: Error - Vendor Request 0x09  
-failed for offset 0x0000 with error -71
-ieee80211 phy3: rt2x00usb_vendor_request: Error - Vendor Request 0x07  
-failed for offset 0x04d0 with error -71
-==================================================================
-BUG: KMSAN: uninit-value in rt2500usb_regbusy_read  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:116 [inline]
-BUG: KMSAN: uninit-value in rt2500usb_bbp_read+0x174/0x640  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:172
-CPU: 1 PID: 4943 Comm: kworker/1:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  rt2500usb_regbusy_read drivers/net/wireless/ralink/rt2x00/rt2500usb.c:116  
-[inline]
-  rt2500usb_bbp_read+0x174/0x640  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:172
-  rt2500usb_validate_eeprom  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:1387 [inline]
-  rt2500usb_probe_hw+0x3b1/0x2230  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:1764
-  rt2x00lib_probe_dev+0xb81/0x3090  
-drivers/net/wireless/ralink/rt2x00/rt2x00dev.c:1427
-  rt2x00usb_probe+0x7c7/0xf70  
-drivers/net/wireless/ralink/rt2x00/rt2x00usb.c:837
-  rt2500usb_probe+0x50/0x60  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:1977
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
-Local variable description: ----reg.i.i@rt2500usb_bbp_read
-Variable was created at:
-  rt2500usb_register_read_lock  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:72 [inline]
-  rt2500usb_regbusy_read drivers/net/wireless/ralink/rt2x00/rt2500usb.c:115  
-[inline]
-  rt2500usb_bbp_read+0xa4/0x640  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:172
-  rt2500usb_validate_eeprom  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:1387 [inline]
-  rt2500usb_probe_hw+0x3b1/0x2230  
-drivers/net/wireless/ralink/rt2x00/rt2500usb.c:1764
-==================================================================
+This patch set addresses warnings that module names are named the
+same, this may lead to a problem that wrong module gets loaded or if one
+of the two same-name modules exports a symbol, this can confuse the
+dependency resolution. and the build may fail.
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Patch "drivers: net: dsa: realtek: fix warning same module names" and
+"drivers: net: phy: realtek: fix warning same module names" resolves the
+name clatch realtek.ko.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+warning: same module names found:
+  drivers/net/phy/realtek.ko
+  drivers/net/dsa/realtek.ko
+
+
+Patch  "drivers: (video|gpu): fix warning same module names" resolves
+the name clatch mxsfb.ko.
+
+warning: same module names found:
+  drivers/video/fbdev/mxsfb.ko
+  drivers/gpu/drm/mxsfb/mxsfb.ko
+
+Patch "drivers: media: i2c: fix warning same module names" resolves the
+name clatch adv7511.ko however, it seams to refer to the same device
+name in i2c_device_id, does anyone have any guidance how that should be
+solved?
+
+warning: same module names found:
+  drivers/gpu/drm/bridge/adv7511/adv7511.ko
+  drivers/media/i2c/adv7511.ko
+
+
+Patch "drivers: media: coda: fix warning same module names" resolves the
+name clatch coda.ko.
+
+warning: same module names found:
+  fs/coda/coda.ko
+  drivers/media/platform/coda/coda.ko
+
+
+Patch "drivers: net: phy: fix warning same module names" resolves the
+name clatch asix.ko.
+
+warning: same module names found:
+  drivers/net/phy/asix.ko
+  drivers/net/usb/asix.ko
+
+Patch "drivers: mfd: 88pm800: fix warning same module names" and
+"drivers: regulator: 88pm800: fix warning same module names" resolves
+the name clatch 88pm800.ko.
+
+warning: same module names found:
+  drivers/regulator/88pm800.ko
+  drivers/mfd/88pm800.ko
+
+
+Cheers,
+Anders
+
+Anders Roxell (8):
+  drivers: net: dsa: realtek: fix warning same module names
+  drivers: net: phy: realtek: fix warning same module names
+  drivers: (video|gpu): fix warning same module names
+  drivers: media: i2c: fix warning same module names
+  drivers: media: coda: fix warning same module names
+  drivers: net: phy: fix warning same module names
+  drivers: mfd: 88pm800: fix warning same module names
+  drivers: regulator: 88pm800: fix warning same module names
+
+ drivers/gpu/drm/bridge/adv7511/Makefile | 10 +++++-----
+ drivers/gpu/drm/mxsfb/Makefile          |  4 ++--
+ drivers/media/i2c/Makefile              |  3 ++-
+ drivers/media/platform/coda/Makefile    |  4 ++--
+ drivers/mfd/Makefile                    |  7 +++++--
+ drivers/net/dsa/Makefile                |  4 ++--
+ drivers/net/phy/Makefile                |  6 ++++--
+ drivers/regulator/Makefile              |  3 ++-
+ drivers/video/fbdev/Makefile            |  3 ++-
+ 9 files changed, 26 insertions(+), 18 deletions(-)
+
+-- 
+2.20.1
+
