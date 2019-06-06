@@ -2,103 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D843377AC
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB51377B0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 17:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbfFFPTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 11:19:03 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43210 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729015AbfFFPTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:19:03 -0400
-Received: by mail-pg1-f195.google.com with SMTP id f25so1529856pgv.10
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 08:19:03 -0700 (PDT)
+        id S1729276AbfFFPTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 11:19:51 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42856 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729054AbfFFPTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 11:19:51 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so1696338pff.9
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 08:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CV9bqQMfskAC1dqKTJPAClj4dW5bZBs9VjKWIEFQCKY=;
-        b=Ot+plG3jF61T0FMx24pUAzAl0xn19Nub6fnDZmGjqfp76d4TbbOQiz06Qqa7hs9Bwh
-         iBrqYDxf74WDy7g9P8Bf0fAQoeQs/IHKWBZlgqO8zqH+uK6NIYV6Qp4r8ts8u7+mtjWq
-         1WBNg5xvrDBOx7WlATNbJg2BaSXKhEqIuLZirBuzBNtUSQ/Hq6I97CJOSzn1jbitC+v6
-         x9FNFzP3+eJgXa1GXAHytQRPp8y4+fyTqPsmbWYJJG/5ZE/DuwZPkMBuK2iRud+LfHEY
-         h76Ljf8MePfEURStyBemOIjAJ/QFl/X2wUYks/ICFpONuyfbubYkyUIugqhsasq6A1Hh
-         Y7iQ==
+        d=brauner.io; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+dI5swD1+omNHneKtJgThPzt3z+a6zgCfryKXerEk+I=;
+        b=KpUcO0CnhBIu8G6mnGGrqCHe1Kkx45ZcW+oH2HZ2Kz7r+idRSFJWy0DVbMKv3k/uE/
+         M/nUZ0pa9SZekl54rp6x3Vwe/QiB8ICNkwPBthR6RzgpCENAMQ0CMK5v9H1NIKzq+olP
+         5EoyF3PiLb/LovgHPn8jgagX52/cJeJ6x4VhmFCbZD/1E1kCD/j6y9NP1SgkRn7jDKBX
+         TK7bIdcWa3UO/PLu8KRVgxtvdv0xe6UzdcZAcp8XWK6uKNBvP5XB89OZC2ssq/cjozdJ
+         MthlBYbsYBUoAD1Xr+9AYhFzp4WY04PuKZ3n1u8UdrzfLx0rRYn5pGDQVhNIHD2mHIES
+         RqjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CV9bqQMfskAC1dqKTJPAClj4dW5bZBs9VjKWIEFQCKY=;
-        b=GZ3NHrzd3ym3szpwI8mXJlde0ww/MnCbPkkSuI4SDgCOO8uBzX6vCSucJ1AILAGZZN
-         +TD45uEfJoyAlE2OPJG700BYYwMpDg4kIOqCoyRSzAZKzXYY0RXvx1U6xRT8kfXC7bde
-         ZchegxZnaAQguJuFyqpkrXxcAJtWwez5t12WKzU5cgdSkINfFtxZO0qgjwSQ/37ALj3H
-         HFPT7dCeZpTW7EuvQsJeLQvB2as1hTi/Ch8EJo2sgPsqS+60q/NFuin3WqJwjVHRPs/8
-         8aclprblh8y1D9Z9qC7xFjO/Kl349EoL4KUMKUa+MH7PmKeTR/EtEDSK1ca91cMH3o1c
-         zHgg==
-X-Gm-Message-State: APjAAAV9Iv+5ML/K09r2ZnuV7oUtxnx0GsODouZecMp5sdJTBiQaGphM
-        8KzacZpYGdaanq6lXA/2p1Rdqg==
-X-Google-Smtp-Source: APXvYqw6Gijr6xH8tFvlbxkaece80d567CnkJpA1nPve/i0fY53qVS4J/N8aOZdtO3brtmSCdH2sYw==
-X-Received: by 2002:a17:90a:c481:: with SMTP id j1mr412780pjt.96.1559834343009;
-        Thu, 06 Jun 2019 08:19:03 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q20sm2261577pgq.66.2019.06.06.08.19.02
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+dI5swD1+omNHneKtJgThPzt3z+a6zgCfryKXerEk+I=;
+        b=honq9D8FyNz0hpzNjN0H1Gg155nKrz7D3lbpJUvZGAWYV2ecUCWHBXgebAqKfmyk+X
+         mXWUR5inLyFTXA1tCDEU+Z1xJoq0W23rWIQ6Sb7o5U+2iAaTwGsj/WtmrmTdydvS/kxA
+         c7QDnAlyw/7BQDBAdnhTPrbm4NjWDg+LOMQX2n2LckZy2rxDRmEu0JJ+54j4wSdjHdvi
+         cyKvuwGypJ4J7ok12leBkgUX1O/JnSWT1rbQ83VP/iwBTqVZKmjSbA86v2U6qayaGrDS
+         GgR002ORKFuAaiA1Jd19wFfijmnsvsY0O3i+BFiOAhJe/D2JLQFIIsOmsLKDu34Mnp5p
+         /q6w==
+X-Gm-Message-State: APjAAAXuK9wPJ5qEdbHbyWSsC4ZxYcvo3cCCYPBEcFJ9+gt2h/caxYEc
+        kkrrmqtSJ/MXPZUlWkTXRJ3wxA==
+X-Google-Smtp-Source: APXvYqyJ6WKaIp3QZZDTH+D57pYIq7W1ryRZeSCGj3dL0yG9QANxq3U1mGe4wfmVIuc6w/W6v3LRNg==
+X-Received: by 2002:a62:1483:: with SMTP id 125mr53844216pfu.137.1559834390511;
+        Thu, 06 Jun 2019 08:19:50 -0700 (PDT)
+Received: from brauner.io ([172.56.30.175])
+        by smtp.gmail.com with ESMTPSA id i5sm4103104pfk.49.2019.06.06.08.19.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 08:19:02 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 08:18:59 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, jiri@mellanox.com
-Subject: Re: [PATCH iproute2-next] devlink: Increase bus,device buffer size
- to 64 bytes
-Message-ID: <20190606081859.1098a856@hermes.lan>
-In-Reply-To: <20190606114919.27811-1-parav@mellanox.com>
-References: <20190606114919.27811-1-parav@mellanox.com>
+        Thu, 06 Jun 2019 08:19:49 -0700 (PDT)
+Date:   Thu, 6 Jun 2019 17:19:39 +0200
+From:   Christian Brauner <christian@brauner.io>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, tyhicks@canonical.com,
+        pablo@netfilter.org, kadlec@blackhole.kfki.hu, fw@strlen.de,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        linux-kernel@vger.kernel.org, richardrose@google.com,
+        vapier@chromium.org, bhthompson@google.com, smbarber@chromium.org,
+        joelhockey@chromium.org, ueberall@themenzentrisch.de
+Subject: Re: [PATCH RESEND net-next 1/2] br_netfilter: add struct netns_brnf
+Message-ID: <20190606151937.mdpalfk7urvv74ub@brauner.io>
+References: <20190606114142.15972-1-christian@brauner.io>
+ <20190606114142.15972-2-christian@brauner.io>
+ <20190606081440.61ea1c62@hermes.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190606081440.61ea1c62@hermes.lan>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  6 Jun 2019 06:49:19 -0500
-Parav Pandit <parav@mellanox.com> wrote:
+On Thu, Jun 06, 2019 at 08:14:40AM -0700, Stephen Hemminger wrote:
+> On Thu,  6 Jun 2019 13:41:41 +0200
+> Christian Brauner <christian@brauner.io> wrote:
+> 
+> > +struct netns_brnf {
+> > +#ifdef CONFIG_SYSCTL
+> > +	struct ctl_table_header *ctl_hdr;
+> > +#endif
+> > +
+> > +	/* default value is 1 */
+> > +	int call_iptables;
+> > +	int call_ip6tables;
+> > +	int call_arptables;
+> > +
+> > +	/* default value is 0 */
+> > +	int filter_vlan_tagged;
+> > +	int filter_pppoe_tagged;
+> > +	int pass_vlan_indev;
+> > +};
+> 
+> Do you really need to waste four bytes for each
+> flag value. If you use a u8 that would work just as well.
 
-> Device name on mdev bus is 36 characters long which follow standard uuid
-> RFC 4122.
-> This is probably the longest name that a kernel will return for a
-> device.
-> 
-> Hence increase the buffer size to 64 bytes.
-> 
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> Signed-off-by: Parav Pandit <parav@mellanox.com>
-> 
-> ---
->  devlink/devlink.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index 436935f8..559f624e 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -1523,7 +1523,7 @@ static void __pr_out_handle_start(struct dl *dl, struct nlattr **tb,
->  {
->  	const char *bus_name = mnl_attr_get_str(tb[DEVLINK_ATTR_BUS_NAME]);
->  	const char *dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
-> -	char buf[32];
-> +	char buf[64];
->  
->  	sprintf(buf, "%s/%s", bus_name, dev_name);
->  
-> @@ -1616,7 +1616,7 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
->  				       uint32_t port_index, bool try_nice,
->  				       bool array)
->  {
-> -	static char buf[32];
-> +	static char buf[64];
->  	char *ifname = NULL;
->  
->  	if (dl->no_nice_names || !try_nice ||
+I think we had discussed something like this but the problem why we
+can't do this stems from how the sysctl-table stuff is implemented.
+I distinctly remember that it couldn't be done with a flag due to that.
 
-I will take this now no need to wait for next
+Christian
