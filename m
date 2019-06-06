@@ -2,160 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDEB937590
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73ABD37597
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 15:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728483AbfFFNpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 09:45:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33110 "EHLO vps0.lunn.ch"
+        id S1728207AbfFFNqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 09:46:00 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49818 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726877AbfFFNpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 09:45:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=sVhxnuTEL+ASO8R37ZHCwQE4/QWOi4bshU6Rq9FdZC4=; b=26rWKdQreTTF7+VEn7aEMEjhr7
-        P2Q5uT7VzDHA0TBoOd6hQ8KZo9YfeTEb4vcqLvg/LS9WwBU5UpjdbF82NDDL//Yc0BNu6uc5f8a0F
-        XYO1giz9jk+OgwmPpuHg2tSqB0si1SXLz06rxH1w5BvctFO+tAI0pAVbs1H/jlejo77s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hYshI-0006Hm-0s; Thu, 06 Jun 2019 15:44:52 +0200
-Date:   Thu, 6 Jun 2019 15:44:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 net-next] net: stmmac: move reset gpio parse & request
- to stmmac_mdio_register
-Message-ID: <20190606134452.GD19590@lunn.ch>
-References: <20190606182244.422e187f@xhacker.debian>
+        id S1727133AbfFFNqA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 09:46:00 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5E0AB7E428;
+        Thu,  6 Jun 2019 13:45:55 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D18868422;
+        Thu,  6 Jun 2019 13:45:53 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, mcroce@redhat.com
+Subject: [PATCH net v2] pktgen: do not sleep with the thread lock held.
+Date:   Thu,  6 Jun 2019 15:45:03 +0200
+Message-Id: <011e3de13ea55a66d55024b5555cefd9dd8ec4c3.1559828069.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606182244.422e187f@xhacker.debian>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Thu, 06 Jun 2019 13:46:00 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 10:31:56AM +0000, Jisheng Zhang wrote:
-> Move the reset gpio dt parse and request to stmmac_mdio_register(),
-> thus makes the mdio code straightforward.
-> 
-> This patch also replace stack var mdio_bus_data with data to simplify
-> the code.
+Currently, the process issuing a "start" command on the pktgen procfs
+interface, acquires the pktgen thread lock and never release it, until
+all pktgen threads are completed. The above can blocks indefinitely any
+other pktgen command and any (even unrelated) netdevice removal - as
+the pktgen netdev notifier acquires the same lock.
 
-Hi Jisheng
+The issue is demonstrated by the following script, reported by Matteo:
 
-Please split this into two patches.
+ip -b - <<'EOF'
+	link add type dummy
+	link add type veth
+	link set dummy0 up
+EOF
+modprobe pktgen
+echo reset >/proc/net/pktgen/pgctrl
+{
+	echo rem_device_all
+	echo add_device dummy0
+} >/proc/net/pktgen/kpktgend_0
+echo count 0 >/proc/net/pktgen/dummy0
+echo start >/proc/net/pktgen/pgctrl &
+sleep 1
+rmmod veth
 
-> 
-> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-> ---
-> Since v1:
->  - rebase on the latest net-next tree
-> 
->  .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 58 ++++++++-----------
->  1 file changed, 25 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> index 093a223fe408..7d1562ec1149 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> @@ -250,28 +250,7 @@ int stmmac_mdio_reset(struct mii_bus *bus)
->  	struct stmmac_mdio_bus_data *data = priv->plat->mdio_bus_data;
->  
->  #ifdef CONFIG_OF
-> -	if (priv->device->of_node) {
-> -		if (data->reset_gpio < 0) {
-> -			struct device_node *np = priv->device->of_node;
-> -
-> -			if (!np)
-> -				return 0;
-> -
-> -			data->reset_gpio = of_get_named_gpio(np,
-> -						"snps,reset-gpio", 0);
-> -			if (data->reset_gpio < 0)
-> -				return 0;
-> -
-> -			data->active_low = of_property_read_bool(np,
-> -						"snps,reset-active-low");
-> -			of_property_read_u32_array(np,
-> -				"snps,reset-delays-us", data->delays, 3);
-> -
-> -			if (devm_gpio_request(priv->device, data->reset_gpio,
-> -					      "mdio-reset"))
-> -				return 0;
-> -		}
-> -
-> +	if (gpio_is_valid(data->reset_gpio)) {
->  		gpio_direction_output(data->reset_gpio,
->  				      data->active_low ? 1 : 0);
->  		if (data->delays[0])
-> @@ -313,24 +292,38 @@ int stmmac_mdio_register(struct net_device *ndev)
->  	int err = 0;
->  	struct mii_bus *new_bus;
->  	struct stmmac_priv *priv = netdev_priv(ndev);
-> -	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
-> +	struct stmmac_mdio_bus_data *data = priv->plat->mdio_bus_data;
->  	struct device_node *mdio_node = priv->plat->mdio_node;
->  	struct device *dev = ndev->dev.parent;
->  	int addr, found, max_addr;
->  
-> -	if (!mdio_bus_data)
-> +	if (!data)
->  		return 0;
->  
->  	new_bus = mdiobus_alloc();
->  	if (!new_bus)
->  		return -ENOMEM;
->  
-> -	if (mdio_bus_data->irqs)
-> -		memcpy(new_bus->irq, mdio_bus_data->irqs, sizeof(new_bus->irq));
-> +	if (data->irqs)
-> +		memcpy(new_bus->irq, data->irqs, sizeof(new_bus->irq));
->  
->  #ifdef CONFIG_OF
-> -	if (priv->device->of_node)
-> -		mdio_bus_data->reset_gpio = -1;
-> +	if (priv->device->of_node) {
-> +		struct device_node *np = priv->device->of_node;
-> +
-> +		data->reset_gpio = of_get_named_gpio(np, "snps,reset-gpio", 0);
-> +		if (gpio_is_valid(data->reset_gpio)) {
-> +			data->active_low = of_property_read_bool(np,
-> +						"snps,reset-active-low");
-> +			of_property_read_u32_array(np,
-> +				"snps,reset-delays-us", data->delays, 3);
-> +
-> +			devm_gpio_request(priv->device, data->reset_gpio,
-> +					  "mdio-reset");
-> +		}
-> +	} else {
-> +		data->reset_gpio = -1;
-> +	}
+Fix the above releasing the thread lock around the sleep call.
 
-This seems like a good candidate to be a small helper
-function. Quoting the coding style:
+Additionally we must prevent racing with forcefull rmmod - as the
+thread lock no more protects from them. Instead, acquire a self-reference
+before waiting for any thread. As a side effect, running
 
-6) Functions
-------------
+rmmod pktgen
 
-Functions should be short and sweet, and do just one thing.  They should
-fit on one or two screenfuls of text (the ISO/ANSI screen size is 80x24,
-as we all know), and do one thing and do that well.
+while some thread is running now fails with "module in use" error,
+before this patch such command hanged indefinitely.
 
-stmmac_mdio_register() is not short and sweet, and this is making it
-bigger.
+Note: the issue predates the commit reported in the fixes tag, but
+this fix can't be applied before the mentioned commit.
 
-	Andrew
+v1 -> v2:
+ - no need to check for thread existence after flipping the lock,
+   pktgen threads are freed only at net exit time
+ -
+
+Fixes: 6146e6a43b35 ("[PKTGEN]: Removes thread_{un,}lock() macros.")
+Reported-and-tested-by: Matteo Croce <mcroce@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/pktgen.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 319ad5490fb3..a33d03c05ed6 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -3066,7 +3066,13 @@ static int pktgen_wait_thread_run(struct pktgen_thread *t)
+ {
+ 	while (thread_is_running(t)) {
+ 
++		/* note: 't' will still be around even after the unlock/lock
++		 * cycle because pktgen_thread threads are only cleared at
++		 * net exit
++		 */
++		mutex_unlock(&pktgen_thread_lock);
+ 		msleep_interruptible(100);
++		mutex_lock(&pktgen_thread_lock);
+ 
+ 		if (signal_pending(current))
+ 			goto signal;
+@@ -3081,6 +3087,10 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
+ 	struct pktgen_thread *t;
+ 	int sig = 1;
+ 
++	/* prevent from racing with rmmod */
++	if (!try_module_get(THIS_MODULE))
++		return sig;
++
+ 	mutex_lock(&pktgen_thread_lock);
+ 
+ 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
+@@ -3094,6 +3104,7 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
+ 			t->control |= (T_STOP);
+ 
+ 	mutex_unlock(&pktgen_thread_lock);
++	module_put(THIS_MODULE);
+ 	return sig;
+ }
+ 
+-- 
+2.20.1
+
