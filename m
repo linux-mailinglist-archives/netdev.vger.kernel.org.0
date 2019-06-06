@@ -2,82 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5123375F8
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 16:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC60375FE
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 16:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727551AbfFFOEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 10:04:12 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:51304 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726092AbfFFOEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 10:04:12 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hYszy-0001Sg-9o; Thu, 06 Jun 2019 16:04:10 +0200
-Date:   Thu, 6 Jun 2019 16:04:10 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     John Hurley <john.hurley@netronome.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        oss-drivers@netronome.com
-Subject: Re: [RFC net-next v2 1/1] net: sched: protect against loops in TC
- filter hooks
-Message-ID: <20190606140410.4rp3eudxamdtfme7@breakpoint.cc>
-References: <1559825374-32117-1-git-send-email-john.hurley@netronome.com>
- <20190606125818.bvo5im2wqj365tai@breakpoint.cc>
- <CAK+XE=kQyq-ZW=DOaQq92zSmwcEi3BBwma1MydrdpnZ6F3Gp+A@mail.gmail.com>
+        id S1728027AbfFFOFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 10:05:35 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39779 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726092AbfFFOFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 10:05:35 -0400
+Received: by mail-qk1-f194.google.com with SMTP id i125so1497581qkd.6;
+        Thu, 06 Jun 2019 07:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=VFoOhkDmeyxpQ0VL/b3qeqqcsErXzFhONvkE9YSl7p0=;
+        b=XLRnKqLJ2c5xlxKLWl1B9W390UsQ7YdE5zCNZX7uyaDJqjILsffH1nluCzDjnsrQJL
+         oGC5F5iet0bKcIsNdaEcBV5FY1yYn+mnM5Kw1RcSXsKlxuOV+KhvN+7AgYGvyasQdQQv
+         ldXfNejebjZej5uEWljcE06bYbOfkt2gSgmxyRy56GOJ1krJDsBOG+TUbGgr+NlsDN6w
+         iuvKIyDjNbym1VOxrawPjsVEaKnbvmxuuDCHhVf7/HjrcwCpxzBF8jgfQBGDdYsIhMz7
+         t9nNGe+XATJYBm95UyggYZQvaLvpJ9BK15o7hIPKgQHCxmWjwX9IeN+HgwddGMX7JVnq
+         uhZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=VFoOhkDmeyxpQ0VL/b3qeqqcsErXzFhONvkE9YSl7p0=;
+        b=Z/DkuRSrmIpujbsu43S5pIB3GVY5MEo/0mG1y19Upu7yFjo4PZg+RkMW7yS/jFh0EL
+         N6HiRU3myWpb/kimzJ5D8/+8RG0r3Y14XO41/RD6k1yqQBAKj3QMLkvpXOh257pyav+u
+         5OPb33xs0miE03pnmqjQZXW4Ro4hcxx+J98MQx/DlKmQW9wWdOewglXH0vF24P8D83BL
+         rgGajEOdu9iBQQcjnNJNuRT9bbjjixcnPmavtEpco0QkYL+kdvQ3nMiIbeN96B++1WJr
+         paK324MCBuf5HKIiAcS3vtb/UQiEaXblRfkAbyWwrBUGaftQgftVCn6uto7MBpnGLEfs
+         x3KQ==
+X-Gm-Message-State: APjAAAUrUWK/xB7jy/fiRoR2T6qBMHFRJ5nPRSGrqKhkwuJyDxeiX7mb
+        xYNc34UNBBYGpddKxCQINu0=
+X-Google-Smtp-Source: APXvYqyv+zwvXgaLo9yXntA4io8PpnrYtq77UL+OlxvFLLCuD6OlHphUd0A8P/Rdn/FWbbefgUj6Dg==
+X-Received: by 2002:a37:4a8a:: with SMTP id x132mr13715140qka.42.1559829933627;
+        Thu, 06 Jun 2019 07:05:33 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([177.195.208.82])
+        by smtp.gmail.com with ESMTPSA id j22sm1033635qtp.0.2019.06.06.07.05.31
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 07:05:32 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7C51A41149; Thu,  6 Jun 2019 11:05:28 -0300 (-03)
+Date:   Thu, 6 Jun 2019 11:05:28 -0300
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Taeung Song <treeze.taeung@gmail.com>
+Subject: Re: [PATCH v2 3/4] perf augmented_raw_syscalls: Support arm64 raw
+ syscalls
+Message-ID: <20190606140528.GE30166@kernel.org>
+References: <20190606094845.4800-1-leo.yan@linaro.org>
+ <20190606094845.4800-4-leo.yan@linaro.org>
+ <20190606133838.GC30166@kernel.org>
+ <20190606134624.GD30166@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK+XE=kQyq-ZW=DOaQq92zSmwcEi3BBwma1MydrdpnZ6F3Gp+A@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190606134624.GD30166@kernel.org>
+X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Hurley <john.hurley@netronome.com> wrote:
-> On Thu, Jun 6, 2019 at 1:58 PM Florian Westphal <fw@strlen.de> wrote:
-> > I dislike this, why can't we just use a pcpu counter?
-> >
-> > The only problem is with recursion/nesting; whenever we
-> > hit something that queues the skb for later we're safe.
-> >
-> 
-> Hi Florian,
-> The per cpu counter (initial proposal) should protect against
-> recursion through loops and the potential stack overflows.
-> It will not protect against a packet infinitely looping through a poor
-> configuration if (as you say) the packet is queued at some point and
-> the cpu counter reset.
+Em Thu, Jun 06, 2019 at 10:46:24AM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Thu, Jun 06, 2019 at 10:38:38AM -0300, Arnaldo Carvalho de Melo escreveu:
+> > Em Thu, Jun 06, 2019 at 05:48:44PM +0800, Leo Yan escreveu:
+> > > This patch adds support for arm64 raw syscall numbers so that we can use
+> > > it on arm64 platform.
 
-Yes, it won't help, but thats not harmful, such cycle will be
-broken/resolved as soon as the configuration is fixed.
+> > > After applied this patch, we need to specify macro -D__aarch64__ or
+> > > -D__x86_64__ in compilation option so Clang can use the corresponding
+> > > syscall numbers for arm64 or x86_64 respectively, other architectures
+> > > will report failure when compilation.
 
-> The per skb tracking seems to accommodate both issues.
+> > So, please check what I have in my perf/core branch, I've completely
+> > removed arch specific stuff from augmented_raw_syscalls.c.
 
-Yes, but I do not see the 'looping with queueing' as a problem,
-it can also occur for different reasons.
+> > What is done now is use a map to specify what to copy, that same map
+> > that is used to state which syscalls should be traced.
 
-> Do you see the how the cpu counter could stop infinite loops in the
-> case of queuing?
+> > It uses that tools/perf/arch/arm64/entry/syscalls/mksyscalltbl to figure
+> > out the mapping of syscall names to ids, just like is done for x86_64
+> > and other arches, falling back to audit-libs when that syscalltbl thing
+> > is not present.
+ 
+> Also added:
+ 
+> Fixes: ac96287cae08 ("perf trace: Allow specifying a set of events to add in perfconfig")
+ 
+> For the stable@kernel.org folks to automagically pick this.
 
-No, but I don't think it has to.
+And this extra patch is needed, with yours and this one we finally get
+what we want, which points to the kernel verifier blocking something,
+exactly what is it that is blocking
+(/home/acme/git/perf/tools/perf/examples/bpf/augmented_raw_syscalls.o)
+and who asked for it, (trace.add_events=...) in a config key-value pair:
 
-> Or perhaps these are 2 different issues and should be treated differently?
+[root@quaco ~]# perf trace ls
+event syntax error: '/home/acme/git/perf/tools/perf/examples/bpf/augmented_raw_syscalls.o'
+                     \___ Kernel verifier blocks program loading
 
-The recursion is a problem, so, yes, I think these are different issues.
+(add -v to see detail)
+Run 'perf list' for a list of valid events
+Error: wrong config key-value pair trace.add_events=/home/acme/git/perf/tools/perf/examples/bpf/augmented_raw_syscalls.o
+[root@quaco ~]#
 
-> > We can't catch loops in real (physical) setups either,
-> > e.g. bridge looping back on itself.
-> 
-> yes, this is only targeted at 'internal' loops.
 
-Right, however, I'm not sure we should bother with those, we can't
-prevent this (looping packets) from happening for other reasons.
+commit 6455f983af2657b950d5dd5c45783e31e41ead4a
+Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date:   Thu Jun 6 10:56:55 2019 -0300
 
-I'm sure you can make packets go in circles without tc, e.g. via
-veth+bridge+netns.
+    perf config: Bail out when a handler returns failure for a key-value pair
+    
+    So perf_config() uses:
+    
+      int ret = 0;
+    
+      perf_config_set__for_each_entry(config_set, section, item) {
+              ...
+              ret = fn();
+              if (ret < 0)
+                      break;
+      }
+    
+      return ret;
+    
+    Expecting that that break will imediatelly go to function exit to return
+    that error value (ret).
+    
+    The problem is that perf_config_set__for_each_entry() expands into two
+    nested for() loops, one traversing the sections in a config and the
+    second the items in each of those sections, so we have to change that
+    'break' to a goto label right before that final 'return ret'.
+    
+    With that, for instance 'perf trace' now correctly bails out when a
+    event that is requested to be added via its 'trace.add_events'
+    ~/.perfconfig entry gets rejected by the kernel BPF verifier:
+    
+      # perf trace ls
+      event syntax error: '/home/acme/git/perf/tools/perf/examples/bpf/augmented_raw_syscalls.o'
+                           \___ Kernel verifier blocks program loading
+    
+      (add -v to see detail)
+      Run 'perf list' for a list of valid events
+      Error: wrong config key-value pair trace.add_events=/home/acme/git/perf/tools/perf/examples/bpf/augmented_raw_syscalls.o
+      #
+    
+    While before it would continue and explode later, when trying to find
+    maps that would have been in place had that augmented_raw_syscalls.o
+    precompiled BPF proggie been accepted by the, humm, bast... rigorous
+    kernel BPF verifier 8-)
+    
+    Cc: Adrian Hunter <adrian.hunter@intel.com>
+    Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+    Cc: Alexei Starovoitov <ast@kernel.org>
+    Cc: Daniel Borkmann <daniel@iogearbox.net>
+    Cc: Jiri Olsa <jolsa@redhat.com>
+    Cc: Martin KaFai Lau <kafai@fb.com>
+    Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+    Cc: Mike Leach <mike.leach@linaro.org>
+    Cc: Namhyung Kim <namhyung@kernel.org>
+    Cc: Song Liu <songliubraving@fb.com>
+    Cc: Suzuki Poulouse <suzuki.poulose@arm.com>
+    Cc: Taeung Song <treeze.taeung@gmail.com>
+    Cc: Yonghong Song <yhs@fb.com>
+    Fixes: 8a0a9c7e9146 ("perf config: Introduce new init() and exit()")
+    Link: https://lkml.kernel.org/n/tip-qvqxfk9d0rn1l7lcntwiezrr@git.kernel.org
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+diff --git a/tools/perf/util/config.c b/tools/perf/util/config.c
+index 7e3c1b60120c..e7d2c08d263a 100644
+--- a/tools/perf/util/config.c
++++ b/tools/perf/util/config.c
+@@ -739,11 +739,15 @@ int perf_config(config_fn_t fn, void *data)
+ 			if (ret < 0) {
+ 				pr_err("Error: wrong config key-value pair %s=%s\n",
+ 				       key, value);
+-				break;
++				/*
++				 * Can't be just a 'break', as perf_config_set__for_each_entry()
++				 * expands to two nested for() loops.
++				 */
++				goto out;
+ 			}
+ 		}
+ 	}
+-
++out:
+ 	return ret;
+ }
+ 
