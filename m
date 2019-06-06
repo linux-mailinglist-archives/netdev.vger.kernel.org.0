@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D4336A12
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 04:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A85A36A20
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 04:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbfFFChr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 22:37:47 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38556 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbfFFChr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 22:37:47 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a186so520160pfa.5
-        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 19:37:47 -0700 (PDT)
+        id S1726541AbfFFCnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 22:43:24 -0400
+Received: from mail-pg1-f182.google.com ([209.85.215.182]:43386 "EHLO
+        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfFFCnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 22:43:23 -0400
+Received: by mail-pg1-f182.google.com with SMTP id f25so426561pgv.10
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 19:43:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=J6m54nz2yHoMtFBhFZ+6x0rfqKLIN6sXm7hx7e5TIvs=;
-        b=ZKvwUdaxX6Tj7J+LnHofjCaRZjhz/ExVmooLwAmtNY7hid5zcru4gmgtvj7F7xv+ty
-         N976+DmGCq45sK993DOCXYaAUZ5xfZu+vwVNr3fG6+6PQB6v5SfBR+X7Nc8e/dndBwuf
-         Ecxtt++bxPzh0QB+8670mFhYgm8aJCNO/+XtQ7oYeIlpdmj9lVgSaqCjkY0nPbIWvMZJ
-         f0MIPVi2qDjAB5o70Kjjbnnd+yT4gx/pjbjgWnX2BAk59W/IsFOCFivHcTkQsuc2hIkH
-         vCEj/er1BBWJcg2b+YGbPsWceYWu9Hkdb+iu64uPeB9njWvMr84+JAKPE1e3j3kvJcug
-         wnFQ==
+        bh=Wtx/ay8rxT5oBiwe2uyoiL58LmPn8mBpS58ceLCxLn8=;
+        b=KqBZba7thrDVTDCtnpYh6BfGTmOi2XTd0Pm7pJIngu8Kj+T1I9x6We4q9CVNten/W1
+         6EFsZP0y+kgKeLaK6MlT0TzzchiqbGVZ2FTjHKsbi7QqKIDpChM9lQQnfrxkeLDfOlk/
+         H9knxGbW//7pyKq0P9cYQ2lhZmJUeGUXN/GWTOIH64CweiQrI9AiaWDCocU19yzMywA8
+         l9Qeg571ME9HsjwiqBll3Nod+ZBbc+xbIe5VjSBF2Xv5KtQ7T7n1Web5kipNTpEUK4/C
+         d/xN7vPRXgbVDcK3BbQDcSDUjiFI1Dv4ek+PW2OMKRBskJ++nOqHWDqwQQxrIxRCNSKR
+         Kbyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=J6m54nz2yHoMtFBhFZ+6x0rfqKLIN6sXm7hx7e5TIvs=;
-        b=AmbMwPVcR1QMxVpVjhtQksDZO7nl8vzc/1qay0gjJjWvnwzvURjbovjf1SmPP8hSRA
-         BH3rkV+6XE7vlJDvdUNy7ApRFdsLMm078W+vUDJxqTrkx1/WbJyLNcIDTU5xHBWoBSwg
-         jgvWRcLWY9H/e5ouk/9o4s92CxdnC2Wb94OrUddO0wVL+GhNmRlJ9kE1dL2VJbUc8mOU
-         XzZVqIP+mK+yGU5G+SzfS4xGYlnB+AKASPw4IhDmlMDQ8PgZAcGuawdPlsUKg6JLZaTj
-         5mhGQ4qPtptZ7xY3/W0xcUp8k6w7E0AUxLgmH7paVEsxcf7qyX1n5xPjTCchLypxh+i8
-         rouA==
-X-Gm-Message-State: APjAAAX5IwKmEbWToha+rplqadtFiUQ2i7nmJinX7Xn70SNJY4/FALPs
-        73QBecuCAIh2OWcuA+TO1Wg=
-X-Google-Smtp-Source: APXvYqx5ecZ7ZCz4va+bZGMbMMCcqKi5Homi25smtEhAfis4ufpo7VN7SG4zdrbcVp5NEkcCOgfk5A==
-X-Received: by 2002:a63:5d45:: with SMTP id o5mr1069381pgm.40.1559788666922;
-        Wed, 05 Jun 2019 19:37:46 -0700 (PDT)
+        bh=Wtx/ay8rxT5oBiwe2uyoiL58LmPn8mBpS58ceLCxLn8=;
+        b=GK1TBNQu+LcJ7THmzxOnJC6Po2t/oN0hbWwDpZFgENt9lFPan+5FWwbNit00CccL9G
+         eMzqCyoxNfBFgow0hb53KcQh6a/gtXTMPTeIy+hVBbAMtA4cQm4bDboRzBtfOOopcPAb
+         IdUqX007StlLO+1j25N9maU3lvbqSyP2uwYt6HzBxVWhEn589bAHcuT0LHr9TP9DYJ3I
+         spW4GQN4KXDrDET9KFeqr1ByGt8zbX/u3AyGxFmsFiHNrszJoGCRvuRva6zb2ITuL7FU
+         oBOL3W1svV8gIr37Wy3jbjaYuZqqJC5UP7ScXkJM//pFUT+7Ea6cn2Kck/yxbguG3x/+
+         HflQ==
+X-Gm-Message-State: APjAAAV0uvf1kPuAp/BbN7ld0tb5EAe+/cjGCVbcTXqkLP8fzrYLhRyu
+        3SNIpJysHfxzWftvnWNRmJ/xFduG
+X-Google-Smtp-Source: APXvYqzstIaXWjeWoJrta1vNHr+PphvW04vA125KWSOnDfNi19IvNZG9ynTlI3MXTbWC8hDuI9MSOA==
+X-Received: by 2002:a62:b40f:: with SMTP id h15mr44586742pfn.57.1559789003301;
+        Wed, 05 Jun 2019 19:43:23 -0700 (PDT)
 Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id c25sm170898pfi.75.2019.06.05.19.37.45
+        by smtp.gmail.com with ESMTPSA id k22sm271488pfk.178.2019.06.05.19.43.21
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 05 Jun 2019 19:37:46 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 19:37:43 -0700
+        Wed, 05 Jun 2019 19:43:22 -0700 (PDT)
+Date:   Wed, 5 Jun 2019 19:43:20 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Shalom Toledo <shalomt@mellanox.com>
 Cc:     Ido Schimmel <idosch@idosch.org>,
@@ -53,46 +53,35 @@ Cc:     Ido Schimmel <idosch@idosch.org>,
         Jiri Pirko <jiri@mellanox.com>,
         Petr Machata <petrm@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 4/9] mlxsw: reg: Add Management UTC Register
-Message-ID: <20190606023743.s7im2d3zwgyd7xbp@localhost>
+Subject: Re: [PATCH net-next 7/9] mlxsw: spectrum_ptp: Add implementation for
+ physical hardware clock operations
+Message-ID: <20190606024320.6ilfk5ur3a3d6ead@localhost>
 References: <20190603121244.3398-1-idosch@idosch.org>
- <20190603121244.3398-5-idosch@idosch.org>
- <20190604141724.rwzthxdrcnvjboen@localhost>
- <05498adb-364e-18c9-f1d1-bb32462e4036@mellanox.com>
- <20190605172354.gixuid7t72yoxjks@localhost>
- <78632a57-3dc7-f290-329b-b0ead767c750@mellanox.com>
+ <20190603121244.3398-8-idosch@idosch.org>
+ <20190604142819.cml2tbkmcj2mvkpl@localhost>
+ <5c757fb9-8b47-c03a-6b78-45ac2b2140f3@mellanox.com>
+ <20190605174025.uwy2u7z55v3c2opm@localhost>
+ <be656773-93e8-2f95-ad63-bfec18c9523a@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <78632a57-3dc7-f290-329b-b0ead767c750@mellanox.com>
+In-Reply-To: <be656773-93e8-2f95-ad63-bfec18c9523a@mellanox.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 06:55:18PM +0000, Shalom Toledo wrote:
-> On 05/06/2019 20:23, Richard Cochran wrote:
-> > On Wed, Jun 05, 2019 at 11:30:06AM +0000, Shalom Toledo wrote:
-> >> On 04/06/2019 17:17, Richard Cochran wrote:
-> >>> On Mon, Jun 03, 2019 at 03:12:39PM +0300, Ido Schimmel wrote:
-> >>>> From: Shalom Toledo <shalomt@mellanox.com>
-> >>>>
-> >>>> The MTUTC register configures the HW UTC counter.
-> >>>
-> >>> Why is this called the "UTC" counter?
-> >>>
-> >>> The PTP time scale is TAI.  Is this counter intended to reflect the
-> >>> Linux CLOCK_REALTIME system time?
-> >>
-> >> Exactly. The hardware doesn't have the ability to convert the FRC to UTC, so
-> >> we, as a driver, need to do it and align the hardware with this value.
-> > 
-> > What does "FRC" mean?
-> 
-> Free Running Counter
+On Wed, Jun 05, 2019 at 07:28:38PM +0000, Shalom Toledo wrote:
+> So, there is an HW machine which responsible for adding UTC timestamp on
+> R-SPAN mirror packets and there is no connection to the HW free running
+> counter.
 
-Okay, so then you want to convert it into TAI (for PTP) rather than UTC.
+If there is no connection, then the frequency adjustments to the HW
+clock will not work as expected.
+
+Perhaps the free running counter and the HW clock share the same clock
+source?
 
 Thanks,
 Richard
