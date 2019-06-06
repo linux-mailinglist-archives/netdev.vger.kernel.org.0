@@ -2,202 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 472FD381D3
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD2F381E1
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 01:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbfFFXcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 19:32:32 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57226 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726305AbfFFXcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 19:32:31 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x56NM3AE010240;
-        Thu, 6 Jun 2019 16:31:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=vvtYJbms1RxBuOiUtWW/n9FR1pimoOLSBC44Vlbohmc=;
- b=FNXC1EchoKWlRvWmFl7jnFZ22Q+ELiEU53QwUVMRcVq6HU+BprirNtWmgJ3SzTtRbW6s
- A2w0KajjaeyCRqaMVk0LyTWGjjpZy+9clzZB9qBbhQH5GiYQNiLtAKrx1v4whPPnWteJ
- Vhs4mlzRphEB3HG2WBSCVqlCo58CFmGkviY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2sy0e8arj8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jun 2019 16:31:59 -0700
-Received: from prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 6 Jun 2019 16:31:57 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 6 Jun 2019 16:31:57 -0700
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 6 Jun 2019 16:31:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vvtYJbms1RxBuOiUtWW/n9FR1pimoOLSBC44Vlbohmc=;
- b=Xbm5TJ9eIQsAYU5f7+ZutfKNAJh2i2v/JuoAPcz2nhN8CZOw/t8Bo7Xh0C26+R3jbIRpAyJlUhOXgwSHNpck1Bw9+gh8/nESpxae0MpnTfssR53L8moSdxBUXa2N/4Vrk1kgEejdNYM55n87VSj9m0rgtoci4hrbmALVxVyHCUI=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
- MWHPR15MB1904.namprd15.prod.outlook.com (10.174.98.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.13; Thu, 6 Jun 2019 23:31:56 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1943.023; Thu, 6 Jun 2019
- 23:31:56 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Stefano Brivio <sbrivio@redhat.com>
-CC:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        "Wei Wang" <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Thread-Topic: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Thread-Index: AQHVHKR0wP/xeYS/HEuAq3WE7PiYfKaPKOAAgAAJLoCAAAVngIAABhMAgAAJOoA=
-Date:   Thu, 6 Jun 2019 23:31:55 +0000
-Message-ID: <20190606233153.rnuhm5jmkzqxdrfn@kafai-mbp.dhcp.thefacebook.com>
-References: <cover.1559851514.git.sbrivio@redhat.com>
- <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
- <20190606214456.orxy6274xryxyfww@kafai-mbp.dhcp.thefacebook.com>
- <20190607001747.4ced02c7@redhat.com>
- <20190606223707.s2fyhnqnt3ygdtdj@kafai-mbp.dhcp.thefacebook.com>
- <20190607005852.2aee8784@redhat.com>
-In-Reply-To: <20190607005852.2aee8784@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0166.namprd04.prod.outlook.com
- (2603:10b6:104:4::20) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:53::10)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::538e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7fe76127-e3ef-4d2c-baa9-08d6ead72986
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1904;
-x-ms-traffictypediagnostic: MWHPR15MB1904:
-x-microsoft-antispam-prvs: <MWHPR15MB1904B3C38EC85BC0B91CC142D5170@MWHPR15MB1904.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 00603B7EEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(346002)(39860400002)(136003)(366004)(376002)(43544003)(51914003)(189003)(199004)(25786009)(2906002)(6246003)(6436002)(6506007)(8936002)(54906003)(73956011)(99286004)(6512007)(68736007)(6916009)(66476007)(64756008)(66446008)(66556008)(9686003)(66946007)(4326008)(53936002)(229853002)(46003)(305945005)(6116002)(6486002)(5660300002)(7736002)(486006)(11346002)(476003)(446003)(386003)(14444005)(86362001)(256004)(102836004)(81166006)(52116002)(81156014)(316002)(76176011)(71190400001)(71200400001)(1076003)(186003)(8676002)(478600001)(14454004);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1904;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: XOIILSUfgfYckwDjyIvNKWbrt/FtzIUtP8RPX2BDyZC1x+9mvXvz3TSfa/TUTwf6CjjXdmV5KyYKseAZXB4oToiiR0rocOBYU8dBIWo3S3vbqp4NxoFnBSh4tOOBDMmA6cXUnuRVy0SjBhCd9A6IfdtRDmAlNxqVV5g1tkjKLhySvjwWALXm1E056upjxDcPdvqUqv4uxdiaoJ/cLPgWKQk950hj//ZYImMnYyEqH9rF5r5ENg2cchIYdd3GB2MBJaV8IEpsUSPCc1+kKWxuP9mGuSs+rvNenIWTV0iXZ6sqz01QQvWrhSXR72PdjZo2kfvTDgoEQ6NVs8LcNwuRzBsbkRiKSFcl/0W5X4nZ6ItPGWsTCwWP0bqWw06F0QnkjgdWtZV/ofeFxXO2RMpn5zX6niPIQoaqEBLKMvwx/kU=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9D1D38B7A0CA954FB8AED440099068A3@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727626AbfFFXm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 19:42:26 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33252 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726918AbfFFXmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 19:42:25 -0400
+Received: by mail-qt1-f193.google.com with SMTP id 14so318357qtf.0
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 16:42:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=nrpTl9nls/aO71I8CVqzWKsqdb5/V3yUjgXfNhaAIHs=;
+        b=KTprmGJis4vjAitKp8P3aROD8TpzAGq2N1CeHkNmYarkdEvaK13YAMBDKEu37JBBMd
+         LAFmKd29G5UNZOyhxfJBA99sQpJlK8HIaGI3ca47PxJRjs2hnn0EBtCwsL05I/7xlTGL
+         K+ZJXtwA+8qODOgWBnrdkODMmLB8EQRvp8sM1TFBp1j86IkU4dgycrcYMA27v/s9GtyZ
+         +EVBL8pFf95gF9uy3ZNbDkck5IUyL1dPq4CmdEzxuwxcs/qa1Il8ooJqq/RPptvsDnjy
+         z+uRs+B3u/kZyHcLvfVq3Apu+hNfZ0lua4YlwKoGpqTY4dD9BDyt4qi5oU65bg+FkHnx
+         vKHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=nrpTl9nls/aO71I8CVqzWKsqdb5/V3yUjgXfNhaAIHs=;
+        b=bJStOESIVMqPlfvk5zQaznHySATBdrB2dPiCjbeCGnV1z62nYzOX54HeDoDOZWV0Vf
+         XMP7hSjE/0wEeyUDA/KPStHhBhh9xKrYBECz4nVjrgOav5S2OGuFA1Lik7s/n0mhaWm4
+         xxLbuRXlq+QG2EKRCVBFV1fW2JhUo4oIVO4QNuByXB+6ihTmvMUviqgoG/o8dwKAWriv
+         slAVmI6+NlcXnK8HUsjUQMEfKwKL/M/cpOefINjnPxDGdCFep49LTQND/Ppg88/B2zJn
+         Mvee4zYnppap2BJ9pg8J0FKkQ2jagaZ8AxxV2FcRS6lB8pL9BQdVDmaaZLzlA53BLy0U
+         Nc0g==
+X-Gm-Message-State: APjAAAU+XjPM8tygxxGSxq+OzubXdBLd/0qH3Lon3pb0J9b+ggoblX0W
+        go9/4UuakpDPnpvRiimJFJvNXw==
+X-Google-Smtp-Source: APXvYqzYwIwrVP+ugsV9lnjTZ1X13KQJWE4RAevWJ3fdpc4RqNxOcKlK7GQcj2q6qww9NihVOeeHSg==
+X-Received: by 2002:ac8:7342:: with SMTP id q2mr2693256qtp.134.1559864544792;
+        Thu, 06 Jun 2019 16:42:24 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e133sm213045qkb.76.2019.06.06.16.42.22
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 06 Jun 2019 16:42:24 -0700 (PDT)
+Date:   Thu, 6 Jun 2019 16:42:19 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Bshara, Nafea" <nafea@amazon.com>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Jubran, Samih" <sameehj@amazon.com>, Andrew Lunn <andrew@lunn.ch>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
+ features and enhance performance
+Message-ID: <20190606164219.10dca54e@cakuba.netronome.com>
+In-Reply-To: <35E875B8-FAE8-4C6A-BA30-FB3E2F7BA66B@amazon.com>
+References: <20190603144329.16366-1-sameehj@amazon.com>
+        <20190603143205.1d95818e@cakuba.netronome.com>
+        <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
+        <20190603160351.085daa91@cakuba.netronome.com>
+        <20190604015043.GG17267@lunn.ch>
+        <D26B5448-1E74-44E8-83DA-FC93E5520325@amazon.com>
+        <af79f238465ebe069bc41924a2ae2efbcdbd6e38.camel@infradead.org>
+        <20190604102406.1f426339@cakuba.netronome.com>
+        <7f697af8f31f4bc7ba30ef643e7b3921@EX13D11EUB003.ant.amazon.com>
+        <20190606100945.49ceb657@cakuba.netronome.com>
+        <D9B372D5-1B71-4387-AA8D-E38B22B44D8D@amazon.com>
+        <20190606150428.2e55eb08@cakuba.netronome.com>
+        <861B5CF2-878E-4610-8671-9D66AB61ABD7@amazon.com>
+        <20190606160756.73fe4c06@cakuba.netronome.com>
+        <35E875B8-FAE8-4C6A-BA30-FB3E2F7BA66B@amazon.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fe76127-e3ef-4d2c-baa9-08d6ead72986
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2019 23:31:56.0161
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1904
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_16:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060159
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 12:58:52AM +0200, Stefano Brivio wrote:
-> On Thu, 6 Jun 2019 22:37:11 +0000
-> Martin Lau <kafai@fb.com> wrote:
+On Thu, 6 Jun 2019 23:21:25 +0000, Bshara, Nafea wrote:
+> > On Jun 6, 2019, at 4:08 PM, Jakub Kicinski <jakub.kicinski@netronome.co=
+m> wrote:
+> > On Thu, 6 Jun 2019 22:57:21 +0000, Bshara, Nafea wrote: =20
+> >>> Having said that, it's entirely unclear to me what the user scenario =
+is
+> >>> here.  You say "which two devices related", yet you only have one bit,
+> >>> so it can indicate that there is another device, not _which_ device is
+> >>> related.  Information you can full well get from running lspci =F0=9F=
+=A4=B7
+> >>> Do the devices have the same PCI ID/vendor:model?   =20
+> >>=20
+> >> Different model id =20
+> >=20
+> > Okay, then you know which one is which.  Are there multiple ENAs but
+> > one EFA?
 >=20
-> > On Fri, Jun 07, 2019 at 12:17:47AM +0200, Stefano Brivio wrote:
-> > > On Thu, 6 Jun 2019 21:44:58 +0000
-> > > Martin Lau <kafai@fb.com> wrote:
-> > >  =20
-> > > > > +	if (!(filter->flags & RTM_F_CLONED)) {
-> > > > > +		err =3D rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL, 0,
-> > > > > +				    RTM_NEWROUTE,
-> > > > > +				    NETLINK_CB(arg->cb->skb).portid,
-> > > > > +				    arg->cb->nlh->nlmsg_seq, flags);
-> > > > > +		if (err)
-> > > > > +			return err;
-> > > > > +	} else {
-> > > > > +		flags |=3D NLM_F_DUMP_FILTERED;
-> > > > > +	}
-> > > > > +
-> > > > > +	bucket =3D rcu_dereference(rt->rt6i_exception_bucket);
-> > > > > +	if (!bucket)
-> > > > > +		return 0;
-> > > > > +
-> > > > > +	for (i =3D 0; i < FIB6_EXCEPTION_BUCKET_SIZE; i++) {
-> > > > > +		hlist_for_each_entry(rt6_ex, &bucket->chain, hlist) {
-> > > > > +			if (rt6_check_expired(rt6_ex->rt6i))
-> > > > > +				continue;
-> > > > > +
-> > > > > +			err =3D rt6_fill_node(net, arg->skb, rt,
-> > > > > +					    &rt6_ex->rt6i->dst,
-> > > > > +					    NULL, NULL, 0, RTM_NEWROUTE,
-> > > > > +					    NETLINK_CB(arg->cb->skb).portid,
-> > > > > +					    arg->cb->nlh->nlmsg_seq, flags);   =20
-> > > > Thanks for the patch.
-> > > >=20
-> > > > A question on when rt6_fill_node() returns -EMSGSIZE while dumping =
-the
-> > > > exception bucket here.  Where will the next inet6_dump_fib() start?=
- =20
-> > >=20
-> > > And thanks for reviewing.
-> > >=20
-> > > It starts again from the same node, see fib6_dump_node(): w->leaf =3D=
- rt;
-> > > where rt is the fib6_info where we failed dumping, so we won't skip
-> > > dumping any node. =20
-> > If the same node will be dumped, does it mean that it will go through t=
-his
-> > loop and iterate all exceptions again?
+> Yes,  very possible. Very common
 >=20
-> Yes (well, all the exceptions for that node).
->=20
-> > > This also means that to avoid sending duplicates in the case where at
-> > > least one rt6_fill_node() call goes through and one fails, we would
-> > > need to track the last bucket and entry sent, or, alternatively, to
-> > > make sure we can fit the whole node before dumping. =20
-> > My another concern is the dump may never finish.
->=20
-> That's not a guarantee in general, even without this, because in theory
-> the skb passed might be small enough that we can't even fit a single
-> node without exceptions.
-That is arguably the caller's responsibility to retry
-with a larger buffer if it cannot even get a single route.
+> Typical use case that instances have one ena for control plane, one
+> for internet facing , and one 100G ena that also have efa capabilities
 
-If caller provides a large enough buffer for a single route,
-the kernel should guarantee forward progress.
+I see, and those are PCI devices..  Some form of platform data would
+seem like the best fit to me.  There is something called:
 
-I think the minimum is to remember how many exceptions have to be
-skipped.
+/sys/bus/pci/${dbdf}/label
 
+It seems to come from some ACPI table - DSM maybe?  I think you can put
+whatever string you want there =F0=9F=A4=94
+
+> >> Will look into sysfs  =20
+> >=20
+> > I still don't understand what is the problem you're trying to solve,
+> > perhaps phys_port_id is the way to go...
+> >=20
+> >=20
+> > The larger point here is that we can't guide you to the right API
+> > unless we know what you're trying to achieve.  And we don't have=20
+> > the slightest clue of what're trying to achieve if uAPI is forwarded=20
+> > to the device. =20
+> >=20
+> > Honestly this is worse, and way more basic than I thought, I think
+> > 315c28d2b714 ("net: ena: ethtool: add extra properties retrieval via ge=
+t_priv_flags")
+> > needs to be reverted. =20
 >=20
-> We could add a guard on w->leaf not being the same before and after the
-> walk in inet6_dump_fib() and, if it is, terminate the dump. I just
-> wonder if we have to do this at all -- I can't find this being done
-> anywhere else (at a quick look at least).
->=20
-> By the way, we can also trigger a never-ending dump by touching the
-> tree frequently enough during a dump: it would always start again from
-> the root, see fib6_dump_table().
-This case "cb->args[5] !=3D w->root->fn_sernum"?  It seems there is a w->sk=
-ip
-to take care of it.
+> Let=E2=80=99s not do that until we finish this discussion and explain the=
+ various use cases
 
-Regardless, I don't think we should make it worse.
+Whatever we decide is the right API for tagging interfaces in a virtual
+environment, it's definitely not going to be private feature flags.
