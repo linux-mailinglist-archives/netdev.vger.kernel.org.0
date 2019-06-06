@@ -2,99 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B7A37989
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E8837996
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 18:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729512AbfFFQan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 12:30:43 -0400
-Received: from mail.us.es ([193.147.175.20]:43848 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727054AbfFFQan (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 12:30:43 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id B56ACC1DFD
-        for <netdev@vger.kernel.org>; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A50BADA738
-        for <netdev@vger.kernel.org>; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 90936DA718; Thu,  6 Jun 2019 18:30:39 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3EA9CDA703;
-        Thu,  6 Jun 2019 18:30:37 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 06 Jun 2019 18:30:37 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1B3CE4265A2F;
-        Thu,  6 Jun 2019 18:30:37 +0200 (CEST)
-Date:   Thu, 6 Jun 2019 18:30:35 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Christian Brauner <christian@brauner.io>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, tyhicks@canonical.com,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, linux-kernel@vger.kernel.org,
-        richardrose@google.com, vapier@chromium.org, bhthompson@google.com,
-        smbarber@chromium.org, joelhockey@chromium.org,
-        ueberall@themenzentrisch.de
-Subject: Re: [PATCH RESEND net-next 1/2] br_netfilter: add struct netns_brnf
-Message-ID: <20190606163035.x7rvqdwubxiai5t6@salvia>
-References: <20190606114142.15972-1-christian@brauner.io>
- <20190606114142.15972-2-christian@brauner.io>
- <20190606081440.61ea1c62@hermes.lan>
- <20190606151937.mdpalfk7urvv74ub@brauner.io>
+        id S1729681AbfFFQbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 12:31:09 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:50110 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726719AbfFFQbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 12:31:09 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x56GUwAQ108009;
+        Thu, 6 Jun 2019 11:30:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1559838658;
+        bh=MXa33xhQsD/O4PCRwHx6hc+kme91RbO7C14UFiMrnmY=;
+        h=From:To:CC:Subject:Date;
+        b=M/+40rgEismw2eyuGbCucD/OFuCOcEuObIEBxksoQI8QkNKrd7U6hJz2N9feGlUp1
+         hdVZIEWZlAypWLaLYLK7GpkXkDGujdhCxYm405wyM2iLwyAX5WVwVS7KkzMrq5O4j/
+         b3HK/MSes6aSvkTQRBT4zPmWhM/a90aUr3uLIY1o=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x56GUwIl006832
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 6 Jun 2019 11:30:58 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 6 Jun
+ 2019 11:30:58 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Thu, 6 Jun 2019 11:30:58 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x56GUv0A054737;
+        Thu, 6 Jun 2019 11:30:57 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Wingman Kwok <w-kwok2@ti.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v2 00/10] net: ethernet: ti: netcp: update and enable cpts support
+Date:   Thu, 6 Jun 2019 19:30:37 +0300
+Message-ID: <20190606163047.31199-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606151937.mdpalfk7urvv74ub@brauner.io>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 05:19:39PM +0200, Christian Brauner wrote:
-> On Thu, Jun 06, 2019 at 08:14:40AM -0700, Stephen Hemminger wrote:
-> > On Thu,  6 Jun 2019 13:41:41 +0200
-> > Christian Brauner <christian@brauner.io> wrote:
-> > 
-> > > +struct netns_brnf {
-> > > +#ifdef CONFIG_SYSCTL
-> > > +	struct ctl_table_header *ctl_hdr;
-> > > +#endif
-> > > +
-> > > +	/* default value is 1 */
-> > > +	int call_iptables;
-> > > +	int call_ip6tables;
-> > > +	int call_arptables;
-> > > +
-> > > +	/* default value is 0 */
-> > > +	int filter_vlan_tagged;
-> > > +	int filter_pppoe_tagged;
-> > > +	int pass_vlan_indev;
-> > > +};
-> > 
-> > Do you really need to waste four bytes for each
-> > flag value. If you use a u8 that would work just as well.
-> 
-> I think we had discussed something like this but the problem why we
-> can't do this stems from how the sysctl-table stuff is implemented.
-> I distinctly remember that it couldn't be done with a flag due to that.
+Hi
 
-Could you define a pernet_operations object? I mean, define the id and size
-fields, then pass it to register_pernet_subsys() for registration.
-Similar to what we do in net/ipv4/netfilter/ipt_CLUSTER.c, see
-clusterip_net_ops and clusterip_pernet() for instance.
+The Keystone 2 66AK2HK/E/L 1G Ethernet Switch Subsystems contains The
+Common Platform Time Sync (CPTS) module which is in general compatible with
+CPTS module found on TI AM3/4/5 SoCs. So, the basic support for
+Keystone 2 CPTS is available by default, but not documented and has never been
+enabled inconfig files.
+
+The Keystone 2 CPTS module supports also some additional features like time
+sync reference (RFTCLK) clock selection through CPTS_RFTCLK_SEL register
+(offset: x08) in CPTS module, which can modelled as multiplexer clock
+(this was discussed some time ago [1]).
+
+This series adds missed binding documentation for Keystone 2 66AK2HK/E/L
+CPTS module and enables CPTS for TI Keystone 2 66AK2HK/E/L SoCs with possiblity
+to select CPTS reference clock.
+
+Patch 1: adds the CPTS binding documentation. CPTS bindings are defined in the
+way that allows CPTS properties to be grouped under "cpts" sub-node.
+It also defines "cpts-refclk-mux" clock for CPTS RFTCLK selection.
+Patches 2-3: implement CPTS properties grouping under "cpts" sub-node with
+backward compatibility support.
+Patch 4: adds support for time sync reference (RFTCLK) clock selection from DT
+by adding support for "cpts-refclk-mux" multiplexer clock.
+Patches 5-9: DT CPTS nodes update for TI Keystone 2 66AK2HK/E/L SoCs.
+Patch 10: enables CPTS for TI Keystone 2 66AK2HK/E/L SoCs.
+
+I grouped all patches in one series for better illustration of the changes,
+but in general Pateches 1-4 are netdev matarieal (first) and other patches
+are platform specific.
+
+Series can be found at:
+ git@git.ti.com:~gragst/ti-linux-kernel/gragsts-ti-linux-kernel.git
+branch:
+ net-next-k2e-cpts-refclk
+
+Changes in v2:
+ - do reverse christmas tree in cpts_of_mux_clk_setup()
+ - add ack from Richard Cochran
+
+v1: https://lkml.org/lkml/2019/6/1/77
+
+[1] https://www.spinics.net/lists/netdev/msg408931.html
+
+Grygorii Strashko (10):
+  dt-bindings: doc: net: keystone-netcp: document cpts
+  net: ethernet: ti: cpts: use devm_get_clk_from_child
+  net: ethernet: ti: netcp_ethss: add support for child cpts node
+  net: ethernet: ti: cpts: add support for ext rftclk selection
+  ARM: dts: keystone-clocks: add input fixed clocks
+  ARM: dts: k2e-clocks: add input ext. fixed clocks tsipclka/b
+  ARM: dts: k2e-netcp: add cpts refclk_mux node
+  ARM: dts: k2hk-netcp: add cpts refclk_mux node
+  ARM: dts: k2l-netcp: add cpts refclk_mux node
+  ARM: configs: keystone: enable cpts
+
+ .../bindings/net/keystone-netcp.txt           | 44 ++++++++++
+ arch/arm/boot/dts/keystone-clocks.dtsi        | 27 ++++++
+ arch/arm/boot/dts/keystone-k2e-clocks.dtsi    | 20 +++++
+ arch/arm/boot/dts/keystone-k2e-netcp.dtsi     | 21 ++++-
+ arch/arm/boot/dts/keystone-k2hk-netcp.dtsi    | 20 ++++-
+ arch/arm/boot/dts/keystone-k2l-netcp.dtsi     | 20 ++++-
+ arch/arm/configs/keystone_defconfig           |  1 +
+ drivers/net/ethernet/ti/cpts.c                | 88 ++++++++++++++++++-
+ drivers/net/ethernet/ti/cpts.h                |  2 +-
+ drivers/net/ethernet/ti/netcp_ethss.c         |  9 +-
+ 10 files changed, 240 insertions(+), 12 deletions(-)
+
+-- 
+2.17.1
+
