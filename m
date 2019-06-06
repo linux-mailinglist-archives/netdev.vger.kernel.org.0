@@ -2,97 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D77637462
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 14:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A48673746F
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 14:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728452AbfFFMkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 08:40:43 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:40412 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFFMkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 08:40:43 -0400
-Received: by mail-qt1-f196.google.com with SMTP id a15so2381211qtn.7
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 05:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Q7o8MEHM0E/dQmy1KlRXJNwDZmw22mKO7FhUymWTDSU=;
-        b=VBGDl16ly8z3TJFhrn+sOUW46y+zmGkRW7nUqOb/7bVXn4EC8VlTTFj4YPyXygaPmk
-         G+ZTImXCoFf5qbWNww0KAe6RP0id4UX+qS1rGQAj1iBo+FJL1kLf4YgnO6lmjwBq4w/C
-         1BEcDG6es13qJ1ceRS5Zs0uKhOk/dl8d/wgTrETwZa8Yqky8R44Cyv+G4LstxGRFY7yl
-         BDcQBbsAxRTCiN1ZZ8ZaRDkFRZKQsmyrb0riHhrYcqa6cPo92IV0koiQeUoAxD4cMkWy
-         wYDuwtqrNica+4WxJz3pK0Rdko6wJWLNgPq9PaBkqkfuT6cDNQgktzt5DEpAB76j0nHO
-         UAMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Q7o8MEHM0E/dQmy1KlRXJNwDZmw22mKO7FhUymWTDSU=;
-        b=sVcwrnsEyAak4oCeQFApQnnYGL+D9Wv/HzhiEOUdWkDzO+Xva8i1FrlC9A0vNcXVwy
-         Z9MzULF2hnytDGkhlAKIyouYJ7fzRxDg0Yxo1MQcGHpq2FE3MRUY8dPiEAZ/Zvu13wgN
-         /AN7Tg2XvIJrJySEViS4d8+vGsLyJdD9ig1qxV9SJ4chhxwKsrtI22khDNmlUJ5Ucqtv
-         JzfTBegci+4LO7/KSFENYfvESBUJzj8h+stKFl3VYnYTBhGIYxj+X1Z4aCc7u/er6/M8
-         yZulPLJVM27GoLjbd2V9s1qyn8rsMFNarmUJAK2LrwIwDBqvb8/1myrTJZm+plCrj4VI
-         nBMw==
-X-Gm-Message-State: APjAAAUPqYnvnhvcLA7mhdWqV7y/wLtKoFNAkvlU8eb8WvlqeyVewaeJ
-        rZC3cPO1UCSDIqzfFDjQKK8smyKX
-X-Google-Smtp-Source: APXvYqxOFpC38ldsYhwe2YQW2VM4DDi+lHlb3G0+j4SJ/bAFubcXSwi1O9/ctIVZrujnWPGCQI/7YQ==
-X-Received: by 2002:a0c:89a5:: with SMTP id 34mr17319499qvr.110.1559824842354;
-        Thu, 06 Jun 2019 05:40:42 -0700 (PDT)
-Received: from fabio-Latitude-E5450.am.freescale.net ([177.221.114.206])
-        by smtp.gmail.com with ESMTPSA id m4sm780014qka.70.2019.06.06.05.40.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 05:40:41 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     davem@davemloft.net
-Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
-        otavio@ossystems.com.br, Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH net-next] net: fec: Do not use netdev messages too early
-Date:   Thu,  6 Jun 2019 09:40:33 -0300
-Message-Id: <20190606124033.14264-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727315AbfFFMmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 08:42:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:32888 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726870AbfFFMmV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 08:42:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=yf+2kJuG6Nm4IGEGpPNiVHJv2buxOmnkj+VMHOYrIU4=; b=l4Ac7j1WAdE2oft5iXvNZrn6cj
+        NGHUwS60zUvsS5Ocrrs/mMCwDTacSpBURXSc6EEYK/E1X0gTn27dkIBOCNnPYDBNIMT9xazqUeirR
+        9E5BRT43/Hkqa8MxG4Z4MSS0iR379hA710gzZsnDTcBYKZBYRxiROo5i6X6kk8KapV7s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hYrik-0005eS-6b; Thu, 06 Jun 2019 14:42:18 +0200
+Date:   Thu, 6 Jun 2019 14:42:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     David Miller <davem@davemloft.net>, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell10g: allow PHY to probe without firmware
+Message-ID: <20190606124218.GD20899@lunn.ch>
+References: <E1hYTO0-0000MZ-2d@rmk-PC.armlinux.org.uk>
+ <20190605.184827.1552392791102735448.davem@davemloft.net>
+ <20190606075919.ysofpcpnu2rp3bh4@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190606075919.ysofpcpnu2rp3bh4@shell.armlinux.org.uk>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a valid MAC address is not found the current messages
-are shown:
+On Thu, Jun 06, 2019 at 08:59:19AM +0100, Russell King - ARM Linux admin wrote:
+> On Wed, Jun 05, 2019 at 06:48:27PM -0700, David Miller wrote:
+> > From: Russell King <rmk+kernel@armlinux.org.uk>
+> > Date: Wed, 05 Jun 2019 11:43:16 +0100
+> > 
+> > > +	    (state == PHY_UP || state == PHY_RESUMING)) {
+> > 
+> > drivers/net/phy/marvell10g.c: In function ‘mv3310_link_change_notify’:
+> > drivers/net/phy/marvell10g.c:268:35: error: ‘PHY_RESUMING’ undeclared (first use in this function); did you mean ‘RPM_RESUMING’?
+> >       (state == PHY_UP || state == PHY_RESUMING)) {
+> >                                    ^~~~~~~~~~~~
+> >                                    RPM_RESUMING
+> > drivers/net/phy/marvell10g.c:268:35: note: each undeclared identifier is reported only once for each function it appears in
+> > At top level:
+> > drivers/net/phy/marvell10g.c:262:13: warning: ‘mv3310_link_change_notify’ defined but not used [-Wunused-function]
+> >  static void mv3310_link_change_notify(struct phy_device *phydev)
+> >              ^~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Hmm. Looks like Heiner's changes in net-next _totally_ screw this
+> approach - it's not just about PHY_RESUMING being removed, it's
+> also about the link change notifier being moved. :(
 
-fec 2188000.ethernet (unnamed net_device) (uninitialized): Invalid MAC address: 00:00:00:00:00:00
-fec 2188000.ethernet (unnamed net_device) (uninitialized): Using random MAC address: aa:9f:25:eb:7e:aa
+Hi Russell
 
-Since the network device has not been registered at this point, it is better
-to use dev_err()/dev_info() instead, which will provide cleaner log
-messages like these:
+The link change notifier still seems to be called, and it is still
+part of the phy_driver structure.
 
-fec 2188000.ethernet: Invalid MAC address: 00:00:00:00:00:00
-fec 2188000.ethernet: Using random MAC address: aa:9f:25:eb:7e:aa
+Please could you be more specific about what changes Heiner made which
+causes this patch problems?
 
-Tested on a imx6dl-pico-pi board.
-
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 848defa33d3a..2ee72452ca76 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1689,10 +1689,10 @@ static void fec_get_mac(struct net_device *ndev)
- 	 */
- 	if (!is_valid_ether_addr(iap)) {
- 		/* Report it and use a random ethernet address instead */
--		netdev_err(ndev, "Invalid MAC address: %pM\n", iap);
-+		dev_err(&fep->pdev->dev, "Invalid MAC address: %pM\n", iap);
- 		eth_hw_addr_random(ndev);
--		netdev_info(ndev, "Using random MAC address: %pM\n",
--			    ndev->dev_addr);
-+		dev_info(&fep->pdev->dev, "Using random MAC address: %pM\n",
-+			 ndev->dev_addr);
- 		return;
- 	}
- 
--- 
-2.17.1
-
+       Thanks
+	Andrew
