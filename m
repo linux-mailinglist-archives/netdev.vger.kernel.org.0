@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5B236F79
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:06:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B123436F92
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 11:11:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727716AbfFFJG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 05:06:27 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:50986 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727540AbfFFJG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 05:06:26 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x568vcVS051289
-        for <netdev@vger.kernel.org>; Thu, 6 Jun 2019 05:06:25 -0400
-Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2sxyqvgpdk-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 05:06:25 -0400
-Received: from localhost
-        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-        Thu, 6 Jun 2019 10:06:24 +0100
-Received: from b01cxnp22033.gho.pok.ibm.com (9.57.198.23)
-        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 6 Jun 2019 10:06:20 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x5696Jn623396806
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 6 Jun 2019 09:06:19 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C52C3B2066;
-        Thu,  6 Jun 2019 09:06:19 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 92EA9B2064;
-        Thu,  6 Jun 2019 09:06:19 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.136.182])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu,  6 Jun 2019 09:06:19 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 157B316C15CF; Thu,  6 Jun 2019 02:06:19 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 02:06:19 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Reply-To: paulmck@linux.ibm.com
-References: <20190603200301.GM28207@linux.ibm.com>
- <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <20190606045109.zjfxxbkzq4wb64bj@gondor.apana.org.au>
- <20190606060511.GA28207@linux.ibm.com>
- <20190606061438.nyzaeppdbqjt3jbp@gondor.apana.org.au>
+        id S1727600AbfFFJLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 05:11:33 -0400
+Received: from mail-eopbgr50072.outbound.protection.outlook.com ([40.107.5.72]:49509
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727450AbfFFJLd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 05:11:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nZfgt2fsNPO4/UwN/nqlk8TNxXWs2Wte1N+3oIlaSDc=;
+ b=fDwgG3TkWFCr2L0k31Gf8ZlAo6SZga/Mpdxg6qYuoGuUSgkL2WfETgJZbfMz2LHdkqDWtzDOFPK+aHJTXo+G83NoaMRmt8/W/yGLm5FtsrbhUudNal/8nldYcx7LjhqijiIq03Al0ds1JZVShiwVQZdLLAa9SBXk13d2SHm4VPY=
+Received: from AM6PR05MB5524.eurprd05.prod.outlook.com (20.177.119.89) by
+ AM6SPR01MB0043.eurprd05.prod.outlook.com (20.177.199.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.12; Thu, 6 Jun 2019 09:11:29 +0000
+Received: from AM6PR05MB5524.eurprd05.prod.outlook.com
+ ([fe80::7c3e:66d:ba41:e9ae]) by AM6PR05MB5524.eurprd05.prod.outlook.com
+ ([fe80::7c3e:66d:ba41:e9ae%5]) with mapi id 15.20.1965.011; Thu, 6 Jun 2019
+ 09:11:29 +0000
+From:   Shalom Toledo <shalomt@mellanox.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 4/9] mlxsw: reg: Add Management UTC Register
+Thread-Topic: [PATCH net-next 4/9] mlxsw: reg: Add Management UTC Register
+Thread-Index: AQHVGgXQARZCv5VopEC1fl5DvasR4KaLjGoAgAFjk4CAAGLdAIAAGYUAgACBN4CAAG4BAA==
+Date:   Thu, 6 Jun 2019 09:11:29 +0000
+Message-ID: <98e33c30-2f9c-277a-6a6a-6d9668a6c8ba@mellanox.com>
+References: <20190603121244.3398-1-idosch@idosch.org>
+ <20190603121244.3398-5-idosch@idosch.org>
+ <20190604141724.rwzthxdrcnvjboen@localhost>
+ <05498adb-364e-18c9-f1d1-bb32462e4036@mellanox.com>
+ <20190605172354.gixuid7t72yoxjks@localhost>
+ <78632a57-3dc7-f290-329b-b0ead767c750@mellanox.com>
+ <20190606023743.s7im2d3zwgyd7xbp@localhost>
+In-Reply-To: <20190606023743.s7im2d3zwgyd7xbp@localhost>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
+x-clientproxiedby: AM6PR02CA0002.eurprd02.prod.outlook.com
+ (2603:10a6:20b:6e::15) To AM6PR05MB5524.eurprd05.prod.outlook.com
+ (2603:10a6:20b:5e::25)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shalomt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c09a7bb4-f13b-43ad-73d1-08d6ea5ef5c9
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6SPR01MB0043;
+x-ms-traffictypediagnostic: AM6SPR01MB0043:
+x-microsoft-antispam-prvs: <AM6SPR01MB004380BAACFA80EC1D28B245C5170@AM6SPR01MB0043.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 00603B7EEF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(366004)(376002)(39860400002)(396003)(189003)(199004)(6246003)(6436002)(6486002)(31686004)(107886003)(3846002)(6116002)(64126003)(26005)(14454004)(486006)(71200400001)(11346002)(65826007)(68736007)(4326008)(1411001)(25786009)(229853002)(65956001)(66066001)(65806001)(2906002)(58126008)(66446008)(31696002)(446003)(6506007)(53546011)(102836004)(8676002)(386003)(476003)(2616005)(86362001)(53936002)(256004)(478600001)(99286004)(52116002)(71190400001)(305945005)(76176011)(54906003)(7736002)(6512007)(5660300002)(8936002)(6916009)(186003)(66946007)(64756008)(81156014)(66476007)(66556008)(81166006)(36756003)(316002)(73956011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6SPR01MB0043;H:AM6PR05MB5524.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: sb7FwwGcVJcvLLQo0Sda88uBtiImp+HfBJgfG2lYhc+ACHO54Hu9IxA6Vq34W2itMWazIp4koVTDGm2NwL/0sDeK4v6oIUOodPQ7W8+95CB4VUkHIEOZVZzsrqesyW+6PmK8Eb27PegNX1M4uN6SRUcXkb644VuSSGE0bavw2VoYGXQHZKGmql21JDPJvXZg3M6Vl29zapo9T/YjhfAHo4GU3I7PQ75h/Y56ueO0QWuEZ5Y9kPabIehNCu+n3ba2tnO/ztpsrwPBgQpKtEJdtOeaq/e/2itV7VyA2mPEdjDoKTOBTjZvCY5Xl8lUYM0zYDAeXTz8ua2fjL2VKfKjRbp3PEnGYr7Ig7lIZej5HOe+I2gni9v0PoLJvztNmDBOO9qNCTcsbLAOLB4XxSkUPEvEiPeIZyOlrepxeKRgycc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DA00351296171C4BB2C4AE82268F4840@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606061438.nyzaeppdbqjt3jbp@gondor.apana.org.au>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19060609-0072-0000-0000-000004384692
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011223; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01213979; UDB=6.00638102; IPR=6.00995059;
- MB=3.00027204; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-06 09:06:23
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060609-0073-0000-0000-00004C856DA7
-Message-Id: <20190606090619.GC28207@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060066
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c09a7bb4-f13b-43ad-73d1-08d6ea5ef5c9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2019 09:11:29.3667
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: shalomt@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0043
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 02:14:38PM +0800, Herbert Xu wrote:
-> On Wed, Jun 05, 2019 at 11:05:11PM -0700, Paul E. McKenney wrote:
-> >
-> > In case you were wondering, the reason that I was giving you such
-> > a hard time was that from what I could see, you were pushing for no
-> > {READ,WRITE}_ONCE() at all.  ;-)
-> 
-> Hmm, that's exactly what it should be in net/ipv4/inet_fragment.c.
-> We don't need the READ_ONCE/WRITE_ONCE (or volatile marking) at
-> all.  Even if the compiler dices and slices the reads/writes of
-> "a" into a thousand pieces, it should still work if the RCU
-> primitives are worth their salt.
-
-OK, so I take it that there is additional synchronization in there
-somewhere that is not captured in your simplified example code?
-
-Or is your point instead that given the initial value of "a" being
-zero and the value stored to "a" being one, there is no way that
-any possible load and store tearing (your slicing and dicing) could
-possibly mess up the test of the value loaded from "a"?
-
-> But I do concede that in the general RCU case you must have the
-> READ_ONCE/WRITE_ONCE calls for rcu_dereference/rcu_assign_pointer.
-
-OK, good that we are in agreement on this part, at least!  ;-)
-
-							Thanx, Paul
-
+T24gMDYvMDYvMjAxOSA1OjM3LCBSaWNoYXJkIENvY2hyYW4gd3JvdGU6DQo+IE9uIFdlZCwgSnVu
+IDA1LCAyMDE5IGF0IDA2OjU1OjE4UE0gKzAwMDAsIFNoYWxvbSBUb2xlZG8gd3JvdGU6DQo+PiBP
+biAwNS8wNi8yMDE5IDIwOjIzLCBSaWNoYXJkIENvY2hyYW4gd3JvdGU6DQo+Pj4gT24gV2VkLCBK
+dW4gMDUsIDIwMTkgYXQgMTE6MzA6MDZBTSArMDAwMCwgU2hhbG9tIFRvbGVkbyB3cm90ZToNCj4+
+Pj4gT24gMDQvMDYvMjAxOSAxNzoxNywgUmljaGFyZCBDb2NocmFuIHdyb3RlOg0KPj4+Pj4gT24g
+TW9uLCBKdW4gMDMsIDIwMTkgYXQgMDM6MTI6MzlQTSArMDMwMCwgSWRvIFNjaGltbWVsIHdyb3Rl
+Og0KPj4+Pj4+IEZyb206IFNoYWxvbSBUb2xlZG8gPHNoYWxvbXRAbWVsbGFub3guY29tPg0KPj4+
+Pj4+DQo+Pj4+Pj4gVGhlIE1UVVRDIHJlZ2lzdGVyIGNvbmZpZ3VyZXMgdGhlIEhXIFVUQyBjb3Vu
+dGVyLg0KPj4+Pj4NCj4+Pj4+IFdoeSBpcyB0aGlzIGNhbGxlZCB0aGUgIlVUQyIgY291bnRlcj8N
+Cj4+Pj4+DQo+Pj4+PiBUaGUgUFRQIHRpbWUgc2NhbGUgaXMgVEFJLiAgSXMgdGhpcyBjb3VudGVy
+IGludGVuZGVkIHRvIHJlZmxlY3QgdGhlDQo+Pj4+PiBMaW51eCBDTE9DS19SRUFMVElNRSBzeXN0
+ZW0gdGltZT8NCj4+Pj4NCj4+Pj4gRXhhY3RseS4gVGhlIGhhcmR3YXJlIGRvZXNuJ3QgaGF2ZSB0
+aGUgYWJpbGl0eSB0byBjb252ZXJ0IHRoZSBGUkMgdG8gVVRDLCBzbw0KPj4+PiB3ZSwgYXMgYSBk
+cml2ZXIsIG5lZWQgdG8gZG8gaXQgYW5kIGFsaWduIHRoZSBoYXJkd2FyZSB3aXRoIHRoaXMgdmFs
+dWUuDQo+Pj4NCj4+PiBXaGF0IGRvZXMgIkZSQyIgbWVhbj8NCj4+DQo+PiBGcmVlIFJ1bm5pbmcg
+Q291bnRlcg0KPiANCj4gT2theSwgc28gdGhlbiB5b3Ugd2FudCB0byBjb252ZXJ0IGl0IGludG8g
+VEFJIChmb3IgUFRQKSByYXRoZXIgdGhhbiBVVEMuDQoNCk5vLCB0aGUgSFcgaW50ZXJmYWNlIGlz
+IGluIFVUQyBmb3JtYXQuIFRoaXMgaXMgcGFydCBvZiB0aGUgSFcgbWFjaGluZSB0aGF0DQpyZXNw
+b25zaWJsZSBmb3IgYWRkaW5nIHRoZSBVVEMgdGltZSBzdGFtcGluZyBvbiBSLVNQQU4gbWlycm9y
+IHBhY2tldHMuDQoNCj4gDQo+IFRoYW5rcywNCj4gUmljaGFyZA0KPiANCg0K
