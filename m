@@ -2,60 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B876368AB
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A19368B3
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 02:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbfFFAQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jun 2019 20:16:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:43144 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbfFFAQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 20:16:09 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0DC1B13AEF259;
-        Wed,  5 Jun 2019 17:16:09 -0700 (PDT)
-Date:   Wed, 05 Jun 2019 17:16:08 -0700 (PDT)
-Message-Id: <20190605.171608.657801050353966463.davem@davemloft.net>
-To:     vivien.didelot@gmail.com
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz, linville@redhat.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net v2] ethtool: fix potential userspace buffer overflow
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190603205713.28121-1-vivien.didelot@gmail.com>
-References: <20190603205713.28121-1-vivien.didelot@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Jun 2019 17:16:09 -0700 (PDT)
+        id S1726605AbfFFASG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jun 2019 20:18:06 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34756 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726532AbfFFASG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jun 2019 20:18:06 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYg6X-0006XH-9e; Thu, 06 Jun 2019 02:18:05 +0200
+Received: from [178.197.249.21] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hYg6X-000G5n-2O; Thu, 06 Jun 2019 02:18:05 +0200
+Subject: Re: [PATCH bpf-next v2] samples: bpf: print a warning about
+ headers_install
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        alexei.starovoitov@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Quentin Monnet <quentin.monnet@netronome.com>
+References: <20190605234722.2291-1-jakub.kicinski@netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <aacd31df-0b4b-a7ec-62b2-18c098a320d6@iogearbox.net>
+Date:   Thu, 6 Jun 2019 02:18:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <20190605234722.2291-1-jakub.kicinski@netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25471/Wed Jun  5 10:12:21 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vivien Didelot <vivien.didelot@gmail.com>
-Date: Mon,  3 Jun 2019 16:57:13 -0400
+On 06/06/2019 01:47 AM, Jakub Kicinski wrote:
+> It seems like periodically someone posts patches to "fix"
+> header includes.  The issue is that samples expect the
+> include path to have the uAPI headers (from usr/) first,
+> and then tools/ headers, so that locally installed uAPI
+> headers take precedence.  This means that if users didn't
+> run headers_install they will see all sort of strange
+> compilation errors, e.g.:
+> 
+>   HOSTCC  samples/bpf/test_lru_dist
+>   samples/bpf/test_lru_dist.c:39:8: error: redefinition of ‘struct list_head’
+>    struct list_head {
+>           ^~~~~~~~~
+>    In file included from samples/bpf/test_lru_dist.c:9:0:
+>    ../tools/include/linux/types.h:69:8: note: originally defined here
+>     struct list_head {
+>            ^~~~~~~~~
+> 
+> Try to detect this situation, and print a helpful warning.
+> 
+> v2: just use HOSTCC (Jiong).
+> 
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 
-> ethtool_get_regs() allocates a buffer of size ops->get_regs_len(),
-> and pass it to the kernel driver via ops->get_regs() for filling.
-> 
-> There is no restriction about what the kernel drivers can or cannot do
-> with the open ethtool_regs structure. They usually set regs->version
-> and ignore regs->len or set it to the same size as ops->get_regs_len().
-> 
-> But if userspace allocates a smaller buffer for the registers dump,
-> we would cause a userspace buffer overflow in the final copy_to_user()
-> call, which uses the regs.len value potentially reset by the driver.
-> 
-> To fix this, make this case obvious and store regs.len before calling
-> ops->get_regs(), to only copy as much data as requested by userspace,
-> up to the value returned by ops->get_regs_len().
-> 
-> While at it, remove the redundant check for non-null regbuf.
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-
-Applied and queued up for -stable, thanks.
+Applied, thanks!
