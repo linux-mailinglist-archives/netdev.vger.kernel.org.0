@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA86336DE2
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8552A36DE5
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:57:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbfFFH4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 03:56:41 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:46458 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbfFFH4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 03:56:40 -0400
-Received: by mail-yb1-f194.google.com with SMTP id p8so585081ybo.13
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 00:56:40 -0700 (PDT)
+        id S1726863AbfFFH4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 03:56:47 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:43075 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbfFFH4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 03:56:46 -0400
+Received: by mail-yb1-f195.google.com with SMTP id n145so593407ybg.10
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 00:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=5zxl/1kwHqAI4DRUEiMT/LtSxO6kWAE0NYYYjCPxIgw=;
-        b=JYJ+BH8ph9BynXcTk2T/3rfh/N0Ej+7xz1AMhk6isvVyWzHAuJc/sM8EEU+qAcYtvl
-         BAxgMC7pwl1YD2LI1XPyg1yT0FesASXKl7La/mTM9ibgfsmC/hJ3YYuBUQ76nPx1cXT8
-         /wxcxr4b/GImAmIEFcbo/ufvJh6kqnUJJbztB6Tk5TB/n2VYGPO/fXFEJ/edIwOm6mnK
-         hn7QrepywI0oofHP87M/f5zrj4UgwXMzpppSSCxAIu9s2tRr+IbB4g0APtILtcFMk/Ho
-         xYMPWajy77pzC5mzpW7AXUsZQSEgWcNeMcjl3lhMNJyldTfbD9Na5CsLCdbrV7wWpM0Z
-         gNqA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=TbM9vdATYDfk/+/NGyr5Ij8vLHhNayhJciB4ayq0pHE=;
+        b=MM6OcPwAJE1POnI9pGXHiBCNozL4ZBtxEn7ju0XByHG94g+QwzU/iiSy44DRpp3Unm
+         FYPVos2EGcDv26xHAbZRORvla6calNQz4bJPO419a6f/RVB0FqB0wnH1K0bpliXR0snw
+         7ot9cbH/X6rWk2AYvw88dVCramLl96KtBpZ1KfzV2MpsNBY4AyKGEvjdqNYoBwh/sjkW
+         gUEd8CXA/N5zkn4EkSVFtCQDgodRSQ8TkO+0BilrhFBNsCQ9aIwwObLfuDN5/Oj/vvQl
+         TW6ZP85+pOrzanq+88wrhLAf+HYTSw9GTGEEHwRyRLCTKy19juEFCNEovH81pwPXf6dP
+         ohkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5zxl/1kwHqAI4DRUEiMT/LtSxO6kWAE0NYYYjCPxIgw=;
-        b=nYs6jfWozrM9Z9eMgh4JtNXMvGpgNaoyQXVdhZTd7xDjm1u0mWdqC8LSq31BbcJAI4
-         Kx5Zit7Oh7m7fcm0In3Z63pNF1yfqpt18j7M/CKadxCRDiLx7p0i2MJH2Ibjv3i3RNtV
-         R3EdWAUbgVD77JI8SGQeiF/1/h+esGVtm4yscwV+rq5M4swrVmhbNonSQycY1UGM+NOE
-         676inHKoRZn3vZZqieE/YE1cTqz3bOKbZhDBXk3jV/s7LtySZI59Up307uwp9ujij7C8
-         78CiIvLB3NjiSQFuTkLSbXJdiTE0jfPNqpWfSFDg3XQ4PrQNZRI32i1oTEOCNE54wHy+
-         mfsQ==
-X-Gm-Message-State: APjAAAWAK8N2H1arEXhu6qJpji4kVygbLUUWzWJdfkzW7I5A7dcBdvyb
-        sZsHijIf8qoFJ1JgfE47MiMJMQ==
-X-Google-Smtp-Source: APXvYqzdoeciY6MLysk++kMEtzU9vvDXtgdZswYM+X9azUgBXZKQokrV4uheSAdrBO38BdvIhQn58A==
-X-Received: by 2002:a25:19d6:: with SMTP id 205mr3559544ybz.135.1559807799726;
-        Thu, 06 Jun 2019 00:56:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=TbM9vdATYDfk/+/NGyr5Ij8vLHhNayhJciB4ayq0pHE=;
+        b=jfMtuwrVp1Bck2nLxGVsXl3oGtHnHKyPNjWGxXHS+C2jUBcPNNTpYBE27mzFoxYj1V
+         zgcUupwERQ3gXYWifPkwg4twetEjVSOHRHrr13Xc2D2qY32FdOYnypYt3shoTiWd7OgF
+         fTKlYQXZfx2hjoCfpzCSKLAKkIOoXBeUM5aaLd69bCNGtrFKUJKho0qE5jvRRvCvGAtb
+         CmS3NeleoaakNEifVuO4qqkjPrXgkQCAM5ZsijkLWSZywD2igKM+fyWKwfeT6lMaDel7
+         LSFaAHhzlDZjZInFKAfdNM2T4mRh5Jv2oSlmGveCx4JaQPv43MDpVUITDvw9+LGNcPIz
+         2SIA==
+X-Gm-Message-State: APjAAAXetByE6s91mZ090LbB316F6T69P1qSdjqbQ9yGSzTBIWwZ3+75
+        nxl4l4guW/+3+SPVU+rRMOkS3w==
+X-Google-Smtp-Source: APXvYqyWosIZanguJxKE04Kd7LwXDfXHs6VXKz4KUpNZjHz3aUn6GagJhTSRzUxbsFQg51yD4tu8FA==
+X-Received: by 2002:a25:410f:: with SMTP id o15mr20004920yba.328.1559807806138;
+        Thu, 06 Jun 2019 00:56:46 -0700 (PDT)
 Received: from localhost.localdomain (li1322-146.members.linode.com. [45.79.223.146])
-        by smtp.gmail.com with ESMTPSA id 14sm316343yws.16.2019.06.06.00.56.31
+        by smtp.gmail.com with ESMTPSA id 14sm316343yws.16.2019.06.06.00.56.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 00:56:38 -0700 (PDT)
+        Thu, 06 Jun 2019 00:56:45 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
@@ -58,41 +59,66 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 0/4] perf augmented_raw_syscalls: Support for arm64
-Date:   Thu,  6 Jun 2019 15:56:13 +0800
-Message-Id: <20190606075617.14327-1-leo.yan@linaro.org>
+Subject: [PATCH v1 1/4] perf trace: Exit when build eBPF program failure
+Date:   Thu,  6 Jun 2019 15:56:14 +0800
+Message-Id: <20190606075617.14327-2-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190606075617.14327-1-leo.yan@linaro.org>
+References: <20190606075617.14327-1-leo.yan@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When I tried to run the trace on arm64 platform with eBPF program
-augmented_raw_syscalls, it reports several failures for eBPF program
-compilation.  So tried to resolve these issues and this patch set is
-the working result.
+On my Juno board with ARM64 CPUs, perf trace command reports the eBPF
+program building failure but the command will not exit and continue to
+run.  If we define an eBPF event in config file, the event will be
+parsed with below flow:
 
-0001 patch lets perf command to exit directly if find eBPF program
-building failure.
+  perf_config()
+    `> trace__config()
+	 `> parse_events_option()
+	      `> parse_events__scanner()
+	           `-> parse_events_parse()
+	                 `> parse_events_load_bpf()
+	                      `> llvm__compile_bpf()
 
-0002 patch is minor refactoring code to remove duplicate macro.
+Though the low level functions return back error values when detect eBPF
+building failure, but parse_events_option() returns 1 for this case and
+trace__config() passes 1 to perf_config(); perf_config() doesn't treat
+the returned value 1 as failure and it continues to parse other
+configurations.  Thus the perf command continues to run even without
+enabling eBPF event successfully.
 
-0003 patch is to add support arm64 raw syscalls numbers.
+This patch changes error handling in trace__config(), when it detects
+failure it will return -1 rather than directly pass error value (1);
+finally, perf_config() will directly bail out and perf will exit for
+this case.
 
-0004 patch is to document clang configuration so that can easily use
-this program on both x86_64 and aarch64 platforms.
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
+ tools/perf/builtin-trace.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-
-Leo Yan (4):
-  perf trace: Exit when build eBPF program failure
-  perf augmented_raw_syscalls: Remove duplicate macros
-  perf augmented_raw_syscalls: Support arm64 raw syscalls
-  perf augmented_raw_syscalls: Document clang configuration
-
- tools/perf/builtin-trace.c                    |   8 ++
- .../examples/bpf/augmented_raw_syscalls.c     | 102 +++++++++++++++++-
- 2 files changed, 109 insertions(+), 1 deletion(-)
-
+diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+index 54b2d0fd0d02..4b5d004aab74 100644
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -3664,6 +3664,14 @@ static int trace__config(const char *var, const char *value, void *arg)
+ 					       "event selector. use 'perf list' to list available events",
+ 					       parse_events_option);
+ 		err = parse_events_option(&o, value, 0);
++
++		/*
++		 * When parse option successfully parse_events_option() will
++		 * return 0, otherwise means the paring failure.  And it
++		 * returns 1 for eBPF program building failure; so adjust the
++		 * err value to -1 for the failure.
++		 */
++		err = err ? -1 : 0;
+ 	} else if (!strcmp(var, "trace.show_timestamp")) {
+ 		trace->show_tstamp = perf_config_bool(var, value);
+ 	} else if (!strcmp(var, "trace.show_duration")) {
 -- 
 2.17.1
 
