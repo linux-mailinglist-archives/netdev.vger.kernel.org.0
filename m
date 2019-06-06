@@ -2,59 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9263037FCE
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 23:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645B337FD5
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 23:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbfFFVp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 17:45:27 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37091 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbfFFVp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 17:45:27 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 20so2091517pgr.4
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 14:45:26 -0700 (PDT)
+        id S1728673AbfFFVqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 17:46:48 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42579 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728665AbfFFVqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 17:46:47 -0400
+Received: by mail-pg1-f195.google.com with SMTP id e6so2078430pgd.9
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 14:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lYKqX1cnYQsUQg2Bfo9MumetZ7uF7DERt7J3r+3IDSA=;
-        b=wWEIzVKxOg/ixWa9eCV97aojRVcc98uaj+jESzD9V05u/+JC6rBN0Nt/n/kIEUv+5S
-         okgT7lMhv8Dtr0QRcPhR2+uw5rIVdb1D7213zzTo/MlEhx3fVvYBrpJ+wbZW0nruo969
-         ig93AwJSX0h62/aGOBdrLzlk5viPu0zJcGftMclWTBNZiq1NNK1Hxe1+vOS2jP3lkKXH
-         CxGXEAmVu58LTflSHjJLi465iUPMG3OK0xfZ5Jg7qnK13A3RLlS11p3BHFkhxEqg5sKw
-         zZXHoPMGRRkE8pvLVKMFPicxokw8rPcR4yUlEyWFRlmsBPG3oxfhq3Tf+wlQOZvljrRw
-         Oz5w==
+        bh=OcyALJXHO8dG3lOjKnND306wARQASlx5XvLP7GUnfIs=;
+        b=Eq+bR8LVFKRRLMd86r23CBS9gh4PdDUxZ9jX5Cg0YKgAKdyHCFXYt2xAW/jz1Et1nf
+         xWVSpj2W64pX68jDU4z4A5UwMMpuQ2wXPxXJZYwOBv5WL/FRmoRN9vG9HXvhNQY4zTJQ
+         EY+ASy/k1MrZYxYu5nlr/EkW077S0yCk6WQ0Z3eo5Gvtof4EX+sQT+GTFTdmK42TMfyf
+         AGcPSb42CPY5HMljh8pAd5bSTdJUHQc1rmNkeGJmu8LTpJb90cU5pDLLrX2n585dE1XZ
+         2Hde/klIc2YhOpiu1ysKnCi31vE6btU/XIXTGnKaK4SxrR1N8bsnQH07p2Fd9hVkrxfv
+         QUrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lYKqX1cnYQsUQg2Bfo9MumetZ7uF7DERt7J3r+3IDSA=;
-        b=Z7SO3YJyHunA4u1YLdngkg/aJpPlxB06Bg0Ra29Gm3dSzFVMr3mb37mlyVbxXZ6Ial
-         83kDCLUtCAoDpJJahRgYthHumMG2bAj/N1wJWTaZTStI9mApnyTRKLKF0B2ChdE/nCF1
-         S/j5hf45Z0qh+jwN6yqKVu1rIdMj8FksL3bUtKHyA1Rfk0rIxF99IGj1HFZ1Q/D/Yr0b
-         t0+11z2a/afO5aGRFzoHH4kSUxyhf6xqnZLqKJJ48ockXpYGbm9VHZR4AijUR77tMwBa
-         a4otc7ox/VA3neiRxF4RpaRAziQ6UeojPr3L1G3dQD+00Dp91jkX7CB+muYdi5tHBmdL
-         GLgw==
-X-Gm-Message-State: APjAAAXIH9s5WwVmH8nY/KVLboKVoCbIp/qofG7TgF3Sx4kdmq+yAsua
-        f3zyXJNjFljPpArZil92tbHNDw==
-X-Google-Smtp-Source: APXvYqwjqqHkanWZM6KUYXiHKnzQNwN/ezWoLo4eNtVB4T4ar59qjR8hjLaecuyeRQ3i+Cq+YXH3jQ==
-X-Received: by 2002:aa7:8143:: with SMTP id d3mr51999319pfn.143.1559857526485;
-        Thu, 06 Jun 2019 14:45:26 -0700 (PDT)
+        bh=OcyALJXHO8dG3lOjKnND306wARQASlx5XvLP7GUnfIs=;
+        b=ifENX96ni293hIML3F9NdGKPRq7P8lLeIeOMErDd0RciFKTgwfF6+Oo4RalCbDpb4R
+         2G48dw3F+COekSEM7BLhsoKf3bPr5H5WdhEMpVXHSH4WbUecOlVdmXo3/AyaRkZf2ouz
+         /l8n0ZUlyqUFdDe2Gqm95PF0jSbGrU7EKv/mVdxMTzOABemX0INro2+9OCT5SR6UTpLZ
+         e5omBbHHEj+yhY35LydSUF+bLJHmJKAHE7fFSE7pcSYTRJlfyiBSj7LZhqIuHiQAlk6b
+         eEA4WW2PRqbZglTiCN46thmFihKdLnqri+cIC5QVEfAoDN3oCxlqwUHW0xbnxE2E6x1w
+         ojhA==
+X-Gm-Message-State: APjAAAW44RW1MnFToLX7HUYH/TpmO6YjBORILUaGl/tORia+GFtuuaXk
+        CZoiG03Vskr+lEGeBdSYLd4gnw==
+X-Google-Smtp-Source: APXvYqyKyLRcFPTmz5edcKr/6jDhI8fqeZWN6X1O7En54SUb46iizLRFIQd5mQnhplU2t55AUwXYmA==
+X-Received: by 2002:a62:e917:: with SMTP id j23mr49939639pfh.55.1559857606596;
+        Thu, 06 Jun 2019 14:46:46 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 5sm101849pfh.109.2019.06.06.14.45.26
+        by smtp.gmail.com with ESMTPSA id y10sm107641pfm.68.2019.06.06.14.46.45
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 14:45:26 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 14:45:24 -0700
+        Thu, 06 Jun 2019 14:46:46 -0700 (PDT)
+Date:   Thu, 6 Jun 2019 14:46:40 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Andrea Claudi <aclaudi@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 v2] tc: simple: don't hardcode the control
- action
-Message-ID: <20190606144524.40e92046@hermes.lan>
-In-Reply-To: <ea2fbb2d36828188d11090d73b648d97988cdcf6.1559687259.git.dcaratti@redhat.com>
-References: <ea2fbb2d36828188d11090d73b648d97988cdcf6.1559687259.git.dcaratti@redhat.com>
+To:     "Patel, Vedang" <vedang.patel@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Dorileo, Leandro" <leandro.maciel.dorileo@intel.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>
+Subject: Re: [PATCH iproute2 net-next v1 3/6] taprio: Add support for
+ enabling offload mode
+Message-ID: <20190606144640.1611428d@hermes.lan>
+In-Reply-To: <E3C41041-64E5-4C95-9057-1F2A0E6ECEAC@intel.com>
+References: <1559843541-12695-1-git-send-email-vedang.patel@intel.com>
+        <1559843541-12695-3-git-send-email-vedang.patel@intel.com>
+        <20190606124349.653454ab@hermes.lan>
+        <E3C41041-64E5-4C95-9057-1F2A0E6ECEAC@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,41 +71,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  5 Jun 2019 00:30:16 +0200
-Davide Caratti <dcaratti@redhat.com> wrote:
+On Thu, 6 Jun 2019 21:13:50 +0000
+"Patel, Vedang" <vedang.patel@intel.com> wrote:
 
-> the following TDC test case:
-> 
->  b776 - Replace simple action with invalid goto chain control
-> 
-> checks if the kernel correctly validates the 'goto chain' control action,
-> when it is specified in 'act_simple' rules. The test systematically fails
-> because the control action is hardcoded in parse_simple(), i.e. it is not
-> parsed by command line arguments, so its value is constantly TC_ACT_PIPE.
-> Because of that, the following command:
-> 
->  # tc action add action simple sdata "test" drop index 7
-> 
-> installs an 'act_simple' rule that never drops packets, and whose 'index'
-> is the first IDR available, plus an 'act_gact' rule with 'index' equal to
-> 7, that drops packets.
-> 
-> Use parse_action_control_dflt(), like we did on many other TC actions, to
-> make the control action configurable also with 'act_simple'. The expected
-> results of test b776 are summarized below:
-> 
->  iproute2
->    v       kernel->| 5.1-rc2 (and previous)  | 5.1-rc3 (and subsequent)
->  ------------------+-------------------------+-------------------------
->  5.1.0             | FAIL (bad IDR)          | FAIL (bad IDR)
->  5.1.0(patched)    | FAIL (no rule/bad sdata)| PASS
-> 
-> Changes since v1:
->  - reword commit message, thanks Stephen Hemminger
-> 
-> Fixes: 087f46ee4ebd ("tc: introduce simple action")
-> CC: Andrea Claudi <aclaudi@redhat.com>
-> CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> > On Jun 6, 2019, at 12:43 PM, Stephen Hemminger <stephen@networkplumber.org> wrote:
+> > 
+> > On Thu,  6 Jun 2019 10:52:18 -0700
+> > Vedang Patel <vedang.patel@intel.com> wrote:
+> >   
+> >> @@ -405,6 +420,7 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+> >> 	struct rtattr *tb[TCA_TAPRIO_ATTR_MAX + 1];
+> >> 	struct tc_mqprio_qopt *qopt = 0;
+> >> 	__s32 clockid = CLOCKID_INVALID;
+> >> +	__u32 offload_flags = 0;
+> >> 	int i;
+> >> 
+> >> 	if (opt == NULL)
+> >> @@ -442,6 +458,11 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+> >> 
+> >> 	print_string(PRINT_ANY, "clockid", "clockid %s", get_clock_name(clockid));
+> >> 
+> >> +	if (tb[TCA_TAPRIO_ATTR_OFFLOAD_FLAGS])
+> >> +		offload_flags = rta_getattr_u32(tb[TCA_TAPRIO_ATTR_OFFLOAD_FLAGS]);
+> >> +
+> >> +	print_uint(PRINT_ANY, "offload", " offload %x", offload_flags);  
+> > 
+> > I don't think offload flags should be  printed at all if not present.
+> > 
+> > Why not?  
+> Will make this in the next version.
 
-Applied, thanks
+Mostly this is so that output doesn't change for users who aren't using offload or have old kernel.
