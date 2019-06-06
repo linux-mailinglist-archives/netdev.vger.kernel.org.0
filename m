@@ -2,251 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E9E380CE
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25493380E4
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 00:35:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfFFWby convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jun 2019 18:31:54 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39345 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbfFFWbx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:31:53 -0400
-Received: by mail-ed1-f65.google.com with SMTP id m10so5553977edv.6
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 15:31:52 -0700 (PDT)
+        id S1727045AbfFFWfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 18:35:02 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36795 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfFFWfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 18:35:02 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u12so151614qth.3;
+        Thu, 06 Jun 2019 15:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bOVE+jOrxCKVuPWywpTIeCbFCvu7FzWRnVzKwaQlDWk=;
+        b=iye5u7k/wgiF1zYIii7X0ePRYbRdzX5KpXeMNU2pgR730SGckd+97alZ7luCjU8c4G
+         wge35sfMDThX04Ic5k1gn/u+LMp8pV43SMCcimSs+w0DkvvJdeE2HNGpUhP8Kg5OpR0q
+         jI+qiLNzM7TsbiPHQ5fSHKtMGevM4jq6CwgGi8iihynmXad+eR0rkRJrMSrV5kMw3XyH
+         MqDsVm0bEYUDgeqLIEin+nSPTWVS1zBYiJ3r5j3yGVDqart2Rpd9U67zC+fwnwKr5ZJb
+         QpxV1N+SFe9mE6AoXNtFQdEvqsLB7zbdh792zXY7pu7ijI1J6U53SKuCt3SvBe/brYob
+         G+Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=io7y5EpxB+P68pNMlcAYTHu8k648Q7IgeIdFwtsLxzc=;
-        b=Uy5D7RgZF7H+6i6FSHR6xefbUm9qdNU0lBK73f72noijLRDKw0IL32AJgIQQcMpYIZ
-         t7KgRO9pl6flhBoyHi391kCZ2KWnuWkg8JSfmwiC7HTuEF/WgJW8gClDL/CbXY3kbTnL
-         5j8dzCDLJWiVT3yygwDy+N2FXOoaElPkeuRukiWfU8JMr6nxNhIjHleLKcHb5W7AMc7p
-         nvWOw9Y5RAfy1k8XTz92X3HMDqyvPVqx6gCP+rdU/ocLc/yM1JCP+4H9aGcnjNZYI0BH
-         y0RrAfrhfmiHKXIly0pCmXAbB1zJuULXSjNwH+1cg/lIoxbene/7d7TQltox70x5Ikps
-         WP3g==
-X-Gm-Message-State: APjAAAWFZtgVVNDbCH1cxarMJjrtkdgGMupkWN2rvYGeoxEph5yD91Uo
-        cEIlrWDPzg4FA5153+I8puPYLA==
-X-Google-Smtp-Source: APXvYqxiPlHi9ERmz8LX4tFr6Z11ErWEbmQxmiHUNGDVk+89JuehpX/fLE0x27VdFqJFHXtmH4Xa/Q==
-X-Received: by 2002:a50:ca89:: with SMTP id x9mr52224075edh.164.1559860311786;
-        Thu, 06 Jun 2019 15:31:51 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id m21sm53600edq.57.2019.06.06.15.31.51
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jun 2019 15:31:51 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 88097181CC1; Fri,  7 Jun 2019 00:31:50 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH net-next v2 1/2] bpf_xdp_redirect_map: Add flag to return XDP_PASS on map lookup failure
-In-Reply-To: <01288968-4BF8-48D6-81FB-3843AD1B41D6@gmail.com>
-References: <155982745450.30088.1132406322084580770.stgit@alrua-x1> <155982745460.30088.2745998912845128889.stgit@alrua-x1> <400a6093-6e9c-a1b4-0594-5b74b20a3d6b@iogearbox.net> <CAADnVQKZG6nOZUvqzvxz5xjZZLieQB4DvbkP=AjDF25FQB8Jfg@mail.gmail.com> <877e9yd70i.fsf@toke.dk> <9EC7B894-B076-46FA-BD2B-FFE12E55722B@gmail.com> <709e80ae-a08a-f00e-8f42-50289495d0de@iogearbox.net> <2319D5A1-22D6-409F-9570-6A135DB026E0@gmail.com> <87sgsmbelv.fsf@toke.dk> <01288968-4BF8-48D6-81FB-3843AD1B41D6@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 07 Jun 2019 00:31:50 +0200
-Message-ID: <87o93abb1l.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bOVE+jOrxCKVuPWywpTIeCbFCvu7FzWRnVzKwaQlDWk=;
+        b=MMOrkn5W8cmd1D9+XMeP/7W2EHnsJMKOY7/CaqILpqhC6SE7WtlFz75Ade0RK5fs1B
+         ySpvm053Qex+L6IINVeB4k4BctJBRKb1LjngKkpJkafFKu62/Z/CpYHGgRLiSIbiJnQY
+         PGECUysgGPLVkkXt7Wp2dwgVeaaAkiU8kFUUUXzoQ/WZSpOqt5vsuCbcWgueRwDh5zjQ
+         rSLNrGBUaUsUpDB/WO0IRlaGIqYDd3/daU+EPyNV1roAzxVpuV9T/WGMgb3s2Cws9Tka
+         E43jCFMX1D/YHqhYVRESNtF/EB9/qiU49vHjzijGV9o8/lsobtOYBzmQGlo8g+qRLmVX
+         phSg==
+X-Gm-Message-State: APjAAAWnYD3kJ9cRHtpTHgZWSC9IsuNtoDByDgoeEPfAUp6lJsZ6vQKr
+        ARGhrfGDkELqvstcbuKyt1R/hqBspn/nPGVAlZm1y+tw
+X-Google-Smtp-Source: APXvYqwgo3FHWF5X+iU8z6ytVkONar9zFTH3AHJ9n4IIQyt2Hx5dJ5Y9sXvcEx8YLoYK9XW3YuZp2c+qJmXsdPbk9Ek=
+X-Received: by 2002:ac8:2a63:: with SMTP id l32mr23163084qtl.117.1559860501098;
+ Thu, 06 Jun 2019 15:35:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
+ <CACAyw99wD+7mXXeger6WoBTTu3aYHDW8EJV9_tP7MfXOnT0ODg@mail.gmail.com>
+In-Reply-To: <CACAyw99wD+7mXXeger6WoBTTu3aYHDW8EJV9_tP7MfXOnT0ODg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 6 Jun 2019 15:34:50 -0700
+Message-ID: <CAEf4BzamSjSa-7ddzyVsqygbtT6WSwsWpCFGX-4Rav4Aev8UsA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
+ using BTF
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Lemon <jonathan.lemon@gmail.com> writes:
-
-> On 6 Jun 2019, at 14:14, Toke Høiland-Jørgensen wrote:
+On Thu, Jun 6, 2019 at 9:43 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
->> Jonathan Lemon <jonathan.lemon@gmail.com> writes:
->>
->>> On 6 Jun 2019, at 12:24, Daniel Borkmann wrote:
->>>
->>>> On 06/06/2019 08:15 PM, Jonathan Lemon wrote:
->>>>> On 6 Jun 2019, at 9:15, Toke Høiland-Jørgensen wrote:
->>>>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>>>>>> On Thu, Jun 6, 2019 at 8:51 AM Daniel Borkmann
->>>>>>> <daniel@iogearbox.net> wrote:
->>>>>>>> On 06/06/2019 03:24 PM, Toke Høiland-Jørgensen wrote:
->>>>>>>>> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>>>>>>
->>>>>>>>> The bpf_redirect_map() helper used by XDP programs doesn't return
->>>>>>>>> any
->>>>>>>>> indication of whether it can successfully redirect to the map
->>>>>>>>> index it was
->>>>>>>>> given. Instead, BPF programs have to track this themselves,
->>>>>>>>> leading to
->>>>>>>>> programs using duplicate maps to track which entries are
->>>>>>>>> populated in the
->>>>>>>>> devmap.
->>>>>>>>>
->>>>>>>>> This patch adds a flag to the XDP version of the
->>>>>>>>> bpf_redirect_map() helper,
->>>>>>>>> which makes the helper do a lookup in the map when called, and
->>>>>>>>> return
->>>>>>>>> XDP_PASS if there is no value at the provided index.
->>>>>>>>>
->>>>>>>>> With this, a BPF program can check the return code from the
->>>>>>>>> helper call and
->>>>>>>>> react if it is XDP_PASS (by, for instance, substituting a
->>>>>>>>> different
->>>>>>>>> redirect). This works for any type of map used for redirect.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>>>>>> ---
->>>>>>>>>  include/uapi/linux/bpf.h |    8 ++++++++
->>>>>>>>>  net/core/filter.c        |   10 +++++++++-
->>>>>>>>>  2 files changed, 17 insertions(+), 1 deletion(-)
->>>>>>>>>
->>>>>>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>>>>>>>> index 7c6aef253173..d57df4f0b837 100644
->>>>>>>>> --- a/include/uapi/linux/bpf.h
->>>>>>>>> +++ b/include/uapi/linux/bpf.h
->>>>>>>>> @@ -3098,6 +3098,14 @@ enum xdp_action {
->>>>>>>>>       XDP_REDIRECT,
->>>>>>>>>  };
->>>>>>>>>
->>>>>>>>> +/* Flags for bpf_xdp_redirect_map helper */
->>>>>>>>> +
->>>>>>>>> +/* If set, the help will check if the entry exists in the map
->>>>>>>>> and return
->>>>>>>>> + * XDP_PASS if it doesn't.
->>>>>>>>> + */
->>>>>>>>> +#define XDP_REDIRECT_F_PASS_ON_INVALID BIT(0)
->>>>>>>>> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_F_PASS_ON_INVALID
->>>>>>>>> +
->>>>>>>>>  /* user accessible metadata for XDP packet hook
->>>>>>>>>   * new fields must be added to the end of this structure
->>>>>>>>>   */
->>>>>>>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>>>>>>> index 55bfc941d17a..2e532a9b2605 100644
->>>>>>>>> --- a/net/core/filter.c
->>>>>>>>> +++ b/net/core/filter.c
->>>>>>>>> @@ -3755,9 +3755,17 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct
->>>>>>>>> bpf_map *, map, u32, ifindex,
->>>>>>>>>  {
->>>>>>>>>       struct bpf_redirect_info *ri =
->>>>>>>>> this_cpu_ptr(&bpf_redirect_info);
->>>>>>>>>
->>>>>>>>> -     if (unlikely(flags))
->>>>>>>>> +     if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
->>>>>>>>>               return XDP_ABORTED;
->>>>>>>>>
->>>>>>>>> +     if (flags & XDP_REDIRECT_F_PASS_ON_INVALID) {
->>>>>>>>> +             void *val;
->>>>>>>>> +
->>>>>>>>> +             val = __xdp_map_lookup_elem(map,
->>>>>>>>> ifindex);
->>>>>>>>> +             if (unlikely(!val))
->>>>>>>>> +                     return XDP_PASS;
->>>>>>>>
->>>>>>>> Generally looks good to me, also the second part with the flag.
->>>>>>>> Given we store into
->>>>>>>> the per-CPU scratch space and function like xdp_do_redirect() pick
->>>>>>>> this up again, we
->>>>>>>> could even propagate val onwards and save a second lookup on the
->>>>>>>> /same/ element (which
->>>>>>>> also avoids a race if the val was dropped from the map in the
->>>>>>>> meantime). Given this
->>>>>>>> should all still be within RCU it should work. Perhaps it even
->>>>>>>> makes sense to do the
->>>>>>>> lookup unconditionally inside bpf_xdp_redirect_map() helper iff we
->>>>>>>> manage to do it
->>>>>>>> only once anyway?
->>>>>>>
->>>>>>> +1
->>>>>>>
->>>>>>> also I don't think we really need a new flag here.
->>>>>>> Yes, it could be considered an uapi change, but it
->>>>>>> looks more like bugfix in uapi to me.
->>>>>>> Since original behavior was so clunky to use.
->>>>>>
->>>>>> Hmm, the problem with this is that eBPF programs generally do
->>>>>> something
->>>>>> like:
->>>>>>
->>>>>> return bpf_redirect_map(map, idx, 0);
->>>>>>
->>>>>> after having already modified the packet headers. This will get them
->>>>>> a
->>>>>> return code of XDP_REDIRECT, and the lookup will then subsequently
->>>>>> fail,
->>>>>> which returns in XDP_ABORTED in the driver, which you can catch with
->>>>>> tracing.
->>>>>>
->>>>>> However, if we just change it to XDP_PASS, the packet will go up the
->>>>>> stack, but because it has already been modified the stack will drop
->>>>>> it,
->>>>>> more or less invisibly.
->>>>>>
->>>>>> So the question becomes, is that behaviour change really OK?
->>>>>
->>>>> Another option would be treating the flags (or the lower bits of
->>>>> flags)
->>>>> as the default xdp action taken if the lookup fails.  0 just happens
->>>>> to
->>>>> map to XDP_ABORTED, which gives the initial behavior.  Then the new
->>>>> behavior
->>>>> would be:
->>>>>
->>>>>     return bpf_redirect_map(map, index, XDP_PASS);
->>>>
->>>> Makes sense, that should work, but as default (flags == 0), you'd have
->>>> to return XDP_REDIRECT to stay consistent with existing behavior.
->>>
->>> Right - I was thinking something along the lines of:
->>>
->>>     val = __xdp_map_lookup_elem(map, ifindex);
->>>     if (unlikely(!val))
->>>         return (flags & 3);
->>>     ...
->>>     return XDP_REDIRECT;
->>>
->>>
->>> Stated another way, if the map lookup succeeds, return REDIRECT,
->>> otherwise
->>> return one (ABORT, DROP, PASS, TX).
->>
->> But then we're still changing UAPI on flags==0?
+> Thanks for sending this RFC! For me, the biggest draw is that map-in-map
+> would be so much nicer to use, plus automatic dumping of map values.
 >
-> I believe your point (and Daniel's) is that for flags==0, it should always
-> return REDIRECT, which is the current behavior? I'm not seeing why it
-> matters.
+> Others on the thread have raised this point already: not everybody lives
+> on the bleeding edge or can control all of their dependencies. To me this means
+> that having a good compatibility story is paramount. I'd like to have very clear
+> rules how the presence / absence of fields is handled.
+
+I think that discussion was more about selftests being switched to
+BTF-defined maps rather than BPF users having to switch to latest
+compiler. struct bpf_map_def is still supported for those who can't
+use clang that supports BTF_KIND_VAR/BTF_KIND_DATASEC.
+So I don't think this enforces anyone to switch compiler, but
+certainly incentivizes them :)
+
 >
-> Returning REDIRECT indicates something was stored in redirect_info, and
-> xdp_do_redirect() is called.  This will fail the lookup (which was just done)
-> and return -EINVAL.  Callers treat this as XDP_DROP.
+> For example:
+> - Fields that are present but not understood are an error. This makes
+> sense because
+>   the user can simply omit the field in their definition if they do
+> not use it. It's also necessary
+>   to preserve the freedom to add new fields in the future without
+> risking user breakage.
+
+So you are arguing for strict-by-default behavior. It's fine by me,
+but exactly that strict-by-default behavior is the problem with BTF
+extensivility, that you care a lot about. You are advocating for
+skipping unknown BTF types (if it was possible), which is directly
+opposite to strict-by-default behavior. I have no strong preference
+here, but given amount of problem (and how many times we missed this
+problem in the past) w/ introducing new BTF feature and then
+forgetting about doing something for older kernels, kind of makes me
+lean towards skip-and-log behavior. But I'm happy to support both
+(through flags) w/ strict by default.
+
+> - If libbpf adds support for a new field, it must be optional. Seems
+> like this is what current
+>   map extensions already do, so maybe a no-brainer.
+
+Yeah, of course.
+
 >
-> On the other hand, returning XDP_ABORTED bypasses the xdp_do_redirect() call
-> and all callsites treat this as DROP.  The main difference seems to be the
-> tracing call - whether _trace_xdp_redirect_map_err or trace_xdp_exception gets
-> called.
+> Somewhat related to this: I really wish that BTF was self-describing,
+> e.g. possible
+> to parse without understanding all types. I mentioned this in another
+> thread of yours,
+> but the more we add features where BTF is required the more important it becomes
+> IMO.
+
+I relate, but have no new and better solution than previously
+discussed :) We should try to add new stuff to .BTF.ext as much as
+possible, which is self-describing.
+
 >
-> Is this really an UAPI breakage?
-
-Well, that's what I'm trying to figure out :)
-
-It will mean that the xdp_redirect_map_err() tracepoint is no longer
-triggered, and anyone who counts the number of different return codes
-seen by the program (as we do in the XDP tutorial, for instance[0]) is
-going to see different values all of a sudden.
-
-So it kinda feels dodgy to change it, I'd say? As in, I'm not vehemently
-opposed, just trying to be extra cautious?
-
->> Also, what would be the use case for this, wouldn't the program have
->> to react explicitly in any case (to, e.g., not modify the packet if
->> it decides to XDP_PASS)?
+> Finally, some nits inline:
 >
-> How is that any different from using XDP_REDIRECT_F_PASS_ON_INVALID?
+> On Fri, 31 May 2019 at 21:22, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > The outline of the new map definition (short, BTF-defined maps) is as follows:
+> > 1. All the maps should be defined in .maps ELF section. It's possible to
+> >    have both "legacy" map definitions in `maps` sections and BTF-defined
+> >    maps in .maps sections. Everything will still work transparently.
+>
+> I'd prefer using a new map section "btf_maps" or whatever. No need to
+> worry about code that deals with either type.
 
-My point is that it's not: If you have to check the return value anyway,
-we're not really gaining everything from making it possible to select
-what that return value is?
+We do use new map section. Its ".maps" vs "maps". Difference is
+subtle, but ".maps" looks a bit more "standardized" than "btf_maps" to
+me (and hopefully, eventually no one will use "maps" anymore :) ).
 
--Toke
+>
+> > 3. Key/value fields should be **a pointer** to a type describing
+> >    key/value. The pointee type is assumed (and will be recorded as such
+> >    and used for size determination) to be a type describing key/value of
+> >    the map. This is done to save excessive amounts of space allocated in
+> >    corresponding ELF sections for key/value of big size.
+>
+> My biggest concern with the pointer is that there are cases when we want
+> to _not_ use a pointer, e.g. your proposal for map in map and tail calling.
+> There we need value to be a struct, an array, etc. The burden on the user
+> for this is very high.
 
-[0] https://github.com/xdp-project/xdp-tutorial/blob/master/packet01-parsing/xdp_prog_kern.c#L94
+Well, map-in-map is still a special case and whichever syntax we go
+with, it will need to be of slightly different syntax to distinguish
+between those cases. Initialized maps fall into similar category,
+IMHO.
+
+Embedding full value just to capture type info/size is unacceptable,
+as we have use cases that cause too big ELF size increase, which will
+prevent users from switching to this.
+
+>
+> > 4. As some maps disallow having BTF type ID associated with key/value,
+> >    it's possible to specify key/value size explicitly without
+> >    associating BTF type ID with it. Use key_size and value_size fields
+> >    to do that (see example below).
+>
+> Why not just make them use the legacy map?
+
+For completeness' sake at the least. E.g., what if you want to use
+map-in-map, where inner map is stackmap or something like that, which
+requires key_size/value_size? I think we all agree that it's better if
+application uses just one style, instead of a mix of both, right?
+Btw, for map cases where map key can be arbitrary, but value is FD or
+some other opaque value, libbpf can automatically "derive" value size
+and still capture key type. I haven't done that, but it's very easy to
+do (and also we can keep adding per-map-type checks/niceties, to help
+users understand what's wrong with their map definition, instead of
+getting EINVAL from kernel on map creation).
+
+>
+> --
+> Lorenz Bauer  |  Systems Engineer
+> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+>
+> www.cloudflare.com
