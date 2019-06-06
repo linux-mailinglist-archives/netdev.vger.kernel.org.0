@@ -2,200 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBA5B37D58
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 21:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 322E437D64
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 21:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbfFFTj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 15:39:56 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42292 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726707AbfFFTj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 15:39:56 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x56JQV2B019500
-        for <netdev@vger.kernel.org>; Thu, 6 Jun 2019 12:39:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=+ApTMcU/Sm8oJx7JeyP7JZlR+uLKAI9IuQNgua6JEoY=;
- b=dA2m9xFeFGMLaGV759ZzpOEaeFjlrUtf30oDUzsFh3PyPLYDEpQXTCZaLWTtjs0VRxMt
- 2nB13kcUbkQONjzOo6yzRgHgppUhAqSx2SmGu8PbQogMNpGYuhjP/2hG8Gct9xYXLa6E
- 1IVLR689EWPBKwoxC8/vm6CYZwrz88I9GJc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sy5fh10a5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 12:39:54 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 6 Jun 2019 12:39:53 -0700
-Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
-        id 74426CCF2577; Thu,  6 Jun 2019 12:39:52 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Hechao Li <hechaol@fb.com>
-Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>,
-        <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v3 bpf-next 2/2] bpf: use libbpf_num_possible_cpus in bpftool and selftests
-Date:   Thu, 6 Jun 2019 12:39:27 -0700
-Message-ID: <20190606193927.2489147-3-hechaol@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190606193927.2489147-1-hechaol@fb.com>
-References: <20190606193927.2489147-1-hechaol@fb.com>
-X-FB-Internal: Safe
+        id S1726788AbfFFTl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 15:41:27 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39982 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726697AbfFFTl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 15:41:26 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E3DA12F8BE2;
+        Thu,  6 Jun 2019 19:41:15 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3968A6A253;
+        Thu,  6 Jun 2019 19:41:06 +0000 (UTC)
+Date:   Thu, 6 Jun 2019 21:41:05 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH v2 bpf-next 1/2] xdp: Add tracepoint for bulk XDP_TX
+Message-ID: <20190606214105.6bf2f873@carbon>
+In-Reply-To: <abd43c39-afb7-acd4-688a-553cec76f55c@gmail.com>
+References: <20190605053613.22888-1-toshiaki.makita1@gmail.com>
+        <20190605053613.22888-2-toshiaki.makita1@gmail.com>
+        <20190605095931.5d90b69c@carbon>
+        <abd43c39-afb7-acd4-688a-553cec76f55c@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_13:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=703 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060130
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 06 Jun 2019 19:41:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the newly added bpf_num_possible_cpus() in bpftool and selftests
-and remove duplicate implementations.
+On Thu, 6 Jun 2019 20:04:20 +0900
+Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
 
-Signed-off-by: Hechao Li <hechaol@fb.com>
----
- tools/bpf/bpftool/common.c             | 53 +++-----------------------
- tools/testing/selftests/bpf/bpf_util.h | 37 +++---------------
- 2 files changed, 10 insertions(+), 80 deletions(-)
+> On 2019/06/05 16:59, Jesper Dangaard Brouer wrote:
+> > On Wed,  5 Jun 2019 14:36:12 +0900
+> > Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+> >   
+> >> This is introduced for admins to check what is happening on XDP_TX when
+> >> bulk XDP_TX is in use, which will be first introduced in veth in next
+> >> commit.  
+> > 
+> > Is the plan that this tracepoint 'xdp:xdp_bulk_tx' should be used by
+> > all drivers?  
+> 
+> I guess you mean all drivers that implement similar mechanism should use 
+> this? Then yes.
+> (I don't think all drivers needs bulk tx mechanism though)
+> 
+> > (more below)
+> >   
+> >> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+> >> ---
+> >>   include/trace/events/xdp.h | 25 +++++++++++++++++++++++++
+> >>   kernel/bpf/core.c          |  1 +
+> >>   2 files changed, 26 insertions(+)
+> >>
+> >> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> >> index e95cb86..e06ea65 100644
+> >> --- a/include/trace/events/xdp.h
+> >> +++ b/include/trace/events/xdp.h
+> >> @@ -50,6 +50,31 @@
+> >>   		  __entry->ifindex)
+> >>   );
+> >>   
+> >> +TRACE_EVENT(xdp_bulk_tx,
+> >> +
+> >> +	TP_PROTO(const struct net_device *dev,
+> >> +		 int sent, int drops, int err),
+> >> +
+> >> +	TP_ARGS(dev, sent, drops, err),
+> >> +
+> >> +	TP_STRUCT__entry(  
+> > 
+> > All other tracepoints in this file starts with:
+> > 
+> > 		__field(int, prog_id)
+> > 		__field(u32, act)
+> > or
+> > 		__field(int, map_id)
+> > 		__field(u32, act)
+> > 
+> > Could you please add those?  
+> 
+> So... prog_id is the problem. The program can be changed while we are 
+> enqueueing packets to the bulk queue, so the prog_id at flush may be an 
+> unexpected one.
 
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index f7261fad45c1..5215e0870bcb 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -21,6 +21,7 @@
- #include <sys/vfs.h>
+Hmmm... that sounds problematic, if the XDP bpf_prog for veth can
+change underneath, before the flush.  Our redirect system, depend on
+things being stable until the xdp_do_flush_map() operation, as will
+e.g. set per-CPU (bpf_redirect_info) map_to_flush pointer (which depend
+on XDP prog), and expect it to be correct/valid.
+
+
+> It can be fixed by disabling NAPI when changing XDP programs. This stops 
+> packet processing while changing XDP programs, but I guess it is an 
+> acceptable compromise. Having said that, I'm honestly not so eager to 
+> make this change, since this will require refurbishment of one of the 
+> most delicate part of veth XDP, NAPI disabling/enabling mechanism.
+> 
+> WDYT?
+
+Sound like a bug, if XDP bpf_prog is not stable within the NAPI poll...
+
  
- #include <bpf.h>
-+#include <libbpf.h> /* libbpf_num_possible_cpus */
- 
- #include "main.h"
- 
-@@ -439,57 +440,13 @@ unsigned int get_page_size(void)
- 
- unsigned int get_possible_cpus(void)
- {
--	static unsigned int result;
--	char buf[128];
--	long int n;
--	char *ptr;
--	int fd;
--
--	if (result)
--		return result;
--
--	fd = open("/sys/devices/system/cpu/possible", O_RDONLY);
--	if (fd < 0) {
--		p_err("can't open sysfs possible cpus");
--		exit(-1);
--	}
--
--	n = read(fd, buf, sizeof(buf));
--	if (n < 2) {
--		p_err("can't read sysfs possible cpus");
--		exit(-1);
--	}
--	close(fd);
-+	int cpus = libbpf_num_possible_cpus();
- 
--	if (n == sizeof(buf)) {
--		p_err("read sysfs possible cpus overflow");
-+	if (cpus < 0) {
-+		p_err("Can't get # of possible cpus: %s", strerror(-cpus));
- 		exit(-1);
- 	}
--
--	ptr = buf;
--	n = 0;
--	while (*ptr && *ptr != '\n') {
--		unsigned int a, b;
--
--		if (sscanf(ptr, "%u-%u", &a, &b) == 2) {
--			n += b - a + 1;
--
--			ptr = strchr(ptr, '-') + 1;
--		} else if (sscanf(ptr, "%u", &a) == 1) {
--			n++;
--		} else {
--			assert(0);
--		}
--
--		while (isdigit(*ptr))
--			ptr++;
--		if (*ptr == ',')
--			ptr++;
--	}
--
--	result = n;
--
--	return result;
-+	return cpus;
- }
- 
- static char *
-diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
-index a29206ebbd13..6231eafd4a5a 100644
---- a/tools/testing/selftests/bpf/bpf_util.h
-+++ b/tools/testing/selftests/bpf/bpf_util.h
-@@ -6,44 +6,17 @@
- #include <stdlib.h>
- #include <string.h>
- #include <errno.h>
-+#include <libbpf.h>
- 
- static inline unsigned int bpf_num_possible_cpus(void)
- {
--	static const char *fcpu = "/sys/devices/system/cpu/possible";
--	unsigned int start, end, possible_cpus = 0;
--	char buff[128];
--	FILE *fp;
--	int len, n, i, j = 0;
-+	int possible_cpus = libbpf_num_possible_cpus();
- 
--	fp = fopen(fcpu, "r");
--	if (!fp) {
--		printf("Failed to open %s: '%s'!\n", fcpu, strerror(errno));
-+	if (possible_cpus < 0) {
-+		printf("Failed to get # of possible cpus: '%s'!\n",
-+		       strerror(-possible_cpus));
- 		exit(1);
- 	}
--
--	if (!fgets(buff, sizeof(buff), fp)) {
--		printf("Failed to read %s!\n", fcpu);
--		exit(1);
--	}
--
--	len = strlen(buff);
--	for (i = 0; i <= len; i++) {
--		if (buff[i] == ',' || buff[i] == '\0') {
--			buff[i] = '\0';
--			n = sscanf(&buff[j], "%u-%u", &start, &end);
--			if (n <= 0) {
--				printf("Failed to retrieve # possible CPUs!\n");
--				exit(1);
--			} else if (n == 1) {
--				end = start;
--			}
--			possible_cpus += end - start + 1;
--			j = i + 1;
--		}
--	}
--
--	fclose(fp);
--
- 	return possible_cpus;
- }
- 
+> >> +		__field(int, ifindex)
+> >> +		__field(int, drops)
+> >> +		__field(int, sent)
+> >> +		__field(int, err)
+> >> +	),  
+> > 
+> > The reason is that this make is easier to attach to multiple
+> > tracepoints, and extract the same value.
+> > 
+> > Example with bpftrace oneliner:
+> > 
+> > $ sudo bpftrace -e 'tracepoint:xdp:xdp_* { @action[args->act] = count(); }'
+
 -- 
-2.17.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
