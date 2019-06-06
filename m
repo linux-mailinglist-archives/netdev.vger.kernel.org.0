@@ -2,167 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0953137F28
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 22:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 643E937F29
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 22:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727693AbfFFU5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 16:57:31 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:16860 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727251AbfFFU5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 16:57:30 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x56KvMcQ022157
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 6 Jun 2019 14:57:23 -0600 (CST)
-Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x56KvMbE012277
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Thu, 6 Jun 2019 14:57:22 -0600
-Subject: Re: [PATCH net-next] net: sfp: Stop SFP polling and interrupt
- handling during shutdown
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-References: <1559844377-17188-1-git-send-email-hancock@sedsystems.ca>
- <20190606180908.ctoxi7c4i2uothzn@shell.armlinux.org.uk>
-From:   Robert Hancock <hancock@sedsystems.ca>
-Openpgp: preference=signencrypt
-Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
- 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
-Organization: SED Systems
-Message-ID: <1a329ee9-4292-44a2-90eb-a82ca3de03f3@sedsystems.ca>
-Date:   Thu, 6 Jun 2019 14:57:22 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727716AbfFFU5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 16:57:37 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39640 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727251AbfFFU5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 16:57:37 -0400
+Received: by mail-pg1-f195.google.com with SMTP id 196so2024691pgc.6
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 13:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VQ87MFDn9RBZMdC4cOZjQx2W0h4MJ1rc16jvev5N5Uo=;
+        b=samb4erRdSr/N95ks2k+xQtkZj+jnPshMaump2QbTNzmHIHMrwfBOy0K0AaUnTZwD2
+         uh+XedFKm8byziW3YNdDVlnJgU/sWSL6S2cumcY+mDyy9acAv3Vyzh+iQrMsHgZrwhPT
+         g/CmxUFfmEDuroymIP+KgPk6xi+MifSF81nv5k1oHbA0MyJpiMjDEOlw6RgopLMZAzOM
+         WU8xFlrxQjkJ6/yWRR1rlncLyLK72RPyguya4e7DctHUMFcXSTopi71uJVQsKOu3Mx6V
+         wLP0TPYn16sv43oXO9XMLHQJ7+TfmAs+X/n/1z4SARuPG4/Yd1FKK1RAoswwf3qC0B2h
+         +03Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VQ87MFDn9RBZMdC4cOZjQx2W0h4MJ1rc16jvev5N5Uo=;
+        b=fwyCLNM7+k7Tx1HRpYJqYeevIP7JY6xNQOtPoycXYS6hGkdCSjpBJCJQncxq1rqBWh
+         y4xXYl+DoFjPgLgWwOg0TeDZidwMZ7oBwQjpe+L4X3Ea8IncFqnOnrlfUkWkaaC7LKUx
+         9ZJqEQIPlbmOP/cu535aqztrOeItuUnnolQWajafYGox2ORdg0xT5NDdyvA+LGFMBMZ5
+         r5l5JX07lfeDFMR0q7UbIDVc+S9f9knz/Kf1YRV7wBXdXZCKJbX/3z/eJZT5dFckEUSr
+         FUc6/3somZgYp0W4j/J3NFMWCIlkyY5vdofTN6f4WPqRgpNwLfkRNUkb5UVSClmeUbVe
+         nWzQ==
+X-Gm-Message-State: APjAAAXlwpTcdMiNnZPIZC4C2p15BaviXUyuudiEcD3AO1C2G6A1FjuM
+        8z9N8vmLpiPUGtp3tpBAySkHT5QYHAY=
+X-Google-Smtp-Source: APXvYqwIymi+5ZNRTXSH73m/L1Yr/bQGxZ3ygSEoE3VvbHNXfiFyCK+4Ej2TeCZ+MXKuFMxOv7b41A==
+X-Received: by 2002:aa7:8b12:: with SMTP id f18mr54500712pfd.178.1559854656104;
+        Thu, 06 Jun 2019 13:57:36 -0700 (PDT)
+Received: from [172.27.227.242] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id g2sm57113pfb.95.2019.06.06.13.57.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Jun 2019 13:57:35 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
+ rt6_dump_route()
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+References: <cover.1559851514.git.sbrivio@redhat.com>
+ <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <fbe7cbf3-c298-48d5-ad1b-78690d4203b5@gmail.com>
+Date:   Thu, 6 Jun 2019 14:57:33 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190606180908.ctoxi7c4i2uothzn@shell.armlinux.org.uk>
+In-Reply-To: <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-06 12:09 p.m., Russell King - ARM Linux admin wrote:
->> @@ -1466,6 +1467,11 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
->>  static void sfp_sm_event(struct sfp *sfp, unsigned int event)
->>  {
->>  	mutex_lock(&sfp->sm_mutex);
->> +	if (unlikely(sfp->shutdown)) {
->> +		/* Do not handle any more state machine events. */
->> +		mutex_unlock(&sfp->sm_mutex);
->> +		return;
->> +	}
->>  
->>  	dev_dbg(sfp->dev, "SM: enter %s:%s:%s event %s\n",
->>  		mod_state_to_str(sfp->sm_mod_state),
->> @@ -1704,6 +1710,13 @@ static void sfp_check_state(struct sfp *sfp)
->>  {
->>  	unsigned int state, i, changed;
->>  
->> +	mutex_lock(&sfp->sm_mutex);
->> +	if (unlikely(sfp->shutdown)) {
->> +		/* No more state checks */
->> +		mutex_unlock(&sfp->sm_mutex);
->> +		return;
->> +	}
->> +
+On 6/6/19 2:13 PM, Stefano Brivio wrote:
+> Since commit 2b760fcf5cfb ("ipv6: hook up exception table to store dst
+> cache"), route exceptions reside in a separate hash table, and won't be
+> found by walking the FIB, so they won't be dumped to userspace on a
+> RTM_GETROUTE message.
 > 
-> I don't think you need to add the mutex locking - just check for
-> sfp->shutdown and be done with it...
-
-The idea there was to deal with the case where GPIO interrupts were
-previously raised before shutdown and not yet handled by the threaded
-interrupt handler by the time shutdown is called. After shutdown on the
-SFP completes, the bus the GPIO stuff is on could potentially be shut
-down at any moment, so we really don't want to be digging into the GPIO
-states after that. Locking the mutex there ensures that we don't read a
-stale value for the shutdown flag in the interrupt handler, since AFAIK
-there's no other synchronization around that value.
-
-It may also be helpful that the lock is now held for the subsequent code
-in sfp_check_state that's comparing the previous and new states - it
-seems like you could otherwise run into trouble if that function was
-being concurrently called from the polling thread and the interrupt
-handler (for example if you had an SFP where some GPIOs supported
-interrupts and some didn't).
-
+> This causes 'ip -6 route list cache' and 'ip -6 route flush cache' to
+> have no function anymore:
 > 
->> +static void sfp_shutdown(struct platform_device *pdev)
->> +{
->> +	struct sfp *sfp = platform_get_drvdata(pdev);
->> +
->> +	mutex_lock(&sfp->sm_mutex);
->> +	sfp->shutdown = true;
->> +	mutex_unlock(&sfp->sm_mutex);
->> +
->> +	cancel_delayed_work_sync(&sfp->poll);
->> +	cancel_delayed_work_sync(&sfp->timeout);
+>  # ip -6 route get fc00:3::1
+>  fc00:3::1 via fc00:1::2 dev veth_A-R1 src fc00:1::1 metric 1024 expires 539sec mtu 1400 pref medium
+>  # ip -6 route get fc00:4::1
+>  fc00:4::1 via fc00:2::2 dev veth_A-R2 src fc00:2::1 metric 1024 expires 536sec mtu 1500 pref medium
+>  # ip -6 route list cache
+>  # ip -6 route flush cache
+>  # ip -6 route get fc00:3::1
+>  fc00:3::1 via fc00:1::2 dev veth_A-R1 src fc00:1::1 metric 1024 expires 520sec mtu 1400 pref medium
+>  # ip -6 route get fc00:4::1
+>  fc00:4::1 via fc00:2::2 dev veth_A-R2 src fc00:2::1 metric 1024 expires 519sec mtu 1500 pref medium
 > 
-> Since the work cancellation will ensure that the works are not running
-> at the point they return, and should they then run again, they'll hit
-> the sfp->shutdown condition.
+> because iproute2 lists cached routes using RTM_GETROUTE, and flushes them
+> by listing all the routes, and deleting them with RTM_DELROUTE one by one.
 > 
->> +}
->> +
->>  static struct platform_driver sfp_driver = {
->>  	.probe = sfp_probe,
->>  	.remove = sfp_remove,
->> +	.shutdown = sfp_shutdown,
->>  	.driver = {
->>  		.name = "sfp",
->>  		.of_match_table = sfp_of_match,
->> -- 
->> 1.8.3.1
->>
->>
+> Look up exceptions in the hash table associated with the current fib6_info
+> in rt6_dump_route(), and, if present and not expired, add them to the
+> dump.
+> 
+> Re-allow userspace to get FIB results by passing the RTM_F_CLONED flag as
+> filter, by reverting commit 08e814c9e8eb ("net/ipv6: Bail early if user
+> only wants cloned entries").
+> 
+> As we do this, we also have to honour this flag while filtering routes in
+> rt6_dump_route() and, if this filter effectively causes some results to be
+> discarded, by passing the NLM_F_DUMP_FILTERED flag back.
+> 
+> To flush cached routes, a procfs entry could be introduced instead: that's
+> how it works for IPv4. We already have a rt6_flush_exception() function
+> ready to be wired to it. However, this would not solve the issue for
+> listing, and wouldn't fix the issue with current and previous versions of
+> iproute2.
+> 
+> Reported-by: Jianlin Shi <jishi@redhat.com>
+> Fixes: 2b760fcf5cfb ("ipv6: hook up exception table to store dst cache")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+> This will cause a non-trivial conflict with commit cc5c073a693f
+> ("ipv6: Move exception bucket to fib6_nh") on net-next. I can submit
+> an equivalent patch against net-next, if it helps.
 > 
 
--- 
-Robert Hancock
-Senior Software Developer
-SED Systems, a division of Calian Ltd.
-Email: hancock@sedsystems.ca
+Thanks for doing this. It is on my to-do list.
+
+Can you do the same for IPv4?
+
