@@ -2,164 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E723C3714A
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4604037152
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 12:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727948AbfFFKJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 06:09:18 -0400
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:38900 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727846AbfFFKJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 06:09:18 -0400
-Received: by mail-wm1-f43.google.com with SMTP id t5so1777906wmh.3
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 03:09:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=FZ1QMnc0d0X8al9RBTmx1RL+tFKEs14dZ4ijHmJImUQ=;
-        b=D8yu2aBPDdLgKkVhkad4E1hXYw/tNP2DotSN9mZUEI2RRv4B9xvSpZacyb29amZJ2H
-         7mSohXLlFTyNcYpCIsF8BdtgTHKMwtLBE3C7fPQVEKcTxiigCT3ww6evSCj1DmqLOcyy
-         I1Kz8O8pK3XlBx5oGCdPtYt/Foy/Crxl0Jg2B4DHH7XtoCstqR1RX3+AWPg7p4Wi3BhM
-         snX8kCNw3f4sOGvzt2+A9Xy2thc8BlzzhjQVUF3h3pIfxMYvHTlBg0qiV1BDnNLbbsRf
-         HQBzyqrG8hUqAJMlYuW8GXJP1F3mK7NvpWl/qjSNV7HNYIUBYV9pYGPlgtM8YzQvMAik
-         0t/g==
-X-Gm-Message-State: APjAAAUT8dqzixfiXPOkXS4BhFEttaW+tWNGzma7F0q8hhq7i74HEAYB
-        mVh7F0TVLJy6OPxr61uub8zhQTv+ckI=
-X-Google-Smtp-Source: APXvYqwVnMNpjI8hGfgqQIjU9FuHZhCPmvg+E4X00dfzuxanDaaaWrelx/9FaYCZutNtVR1+sc1Ymg==
-X-Received: by 2002:a1c:1b81:: with SMTP id b123mr22325156wmb.144.1559815755453;
-        Thu, 06 Jun 2019 03:09:15 -0700 (PDT)
-Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
-        by smtp.gmail.com with ESMTPSA id r2sm1328122wma.26.2019.06.06.03.09.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 03:09:14 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 12:09:12 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [RFC v2] vsock: proposal to support multiple transports at runtime
-Message-ID: <20190606100912.f2zuzrkgmdyxckog@steredhat>
+        id S1728122AbfFFKLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 06:11:20 -0400
+Received: from casper.infradead.org ([85.118.1.10]:53770 "EHLO
+        casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727469AbfFFKLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 06:11:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ntYG98vIw8SBks2+iwma4fYIuw+qJBNTLrhwVKHXBpE=; b=WzStA+HhR1uA1MUXet6UrpqTpy
+        6OWCYEZ2rzB7yeao3BJZlP9JARMqc03xXe16Pze/mZN+VfJDR3l+j6MblckY71dbh01iCmrk6hyEp
+        +TZ6ORl3qXfMGqCUwdk35jbb0lL+KzwQjxxYAbqa0MIXMzsvMKc2SB5RkSyLfPl64EbpLBN3FGBkH
+        06sOh9Ey2LlY65ZqrAjIDR7ZftncTdYx/5Dbv+f96ihOwBj+QMA+48U3ZdNDs1AsSN5zrKAhrJxS6
+        itveatFisKOxU6ltd2vsRJlfF2MzVklRTyxpj4f2ZXJhq7R6aNn1BeD4lVtW/gyLKbnNjMo9edQBO
+        edOlIAVA==;
+Received: from [179.182.172.34] (helo=coco.lan)
+        by casper.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hYpMM-0005DZ-4y; Thu, 06 Jun 2019 10:11:02 +0000
+Date:   Thu, 6 Jun 2019 07:10:52 -0300
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        marex@denx.de, stefan@agner.ch, airlied@linux.ie, daniel@ffwll.ch,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        b.zolnierkie@samsung.com, a.hajda@samsung.com,
+        p.zabel@pengutronix.de, hkallweit1@gmail.com, lee.jones@linaro.org,
+        lgirdwood@gmail.com, broonie@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: Re: [PATCH 0/8] fix warnings for same module names
+Message-ID: <20190606071052.412a766d@coco.lan>
+In-Reply-To: <20190606094657.23612-1-anders.roxell@linaro.org>
+References: <20190606094657.23612-1-anders.roxell@linaro.org>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Em Thu,  6 Jun 2019 11:46:57 +0200
+Anders Roxell <anders.roxell@linaro.org> escreveu:
 
-Hi all,
-this is a v2 of a proposal addressing the comments made by Dexuan, Stefan,
-and Jorgen.
+> Hi,
+> 
+> This patch set addresses warnings that module names are named the
+> same, this may lead to a problem that wrong module gets loaded or if one
+> of the two same-name modules exports a symbol, this can confuse the
+> dependency resolution. and the build may fail.
+> 
+> 
+> Patch "drivers: net: dsa: realtek: fix warning same module names" and
+> "drivers: net: phy: realtek: fix warning same module names" resolves the
+> name clatch realtek.ko.
+> 
+> warning: same module names found:
+>   drivers/net/phy/realtek.ko
+>   drivers/net/dsa/realtek.ko
+> 
+> 
+> Patch  "drivers: (video|gpu): fix warning same module names" resolves
+> the name clatch mxsfb.ko.
+> 
+> warning: same module names found:
+>   drivers/video/fbdev/mxsfb.ko
+>   drivers/gpu/drm/mxsfb/mxsfb.ko
+> 
+> Patch "drivers: media: i2c: fix warning same module names" resolves the
+> name clatch adv7511.ko however, it seams to refer to the same device
+> name in i2c_device_id, does anyone have any guidance how that should be
+> solved?
+> 
+> warning: same module names found:
+>   drivers/gpu/drm/bridge/adv7511/adv7511.ko
+>   drivers/media/i2c/adv7511.ko
+> 
+> 
+> Patch "drivers: media: coda: fix warning same module names" resolves the
+> name clatch coda.ko.
+> 
+> warning: same module names found:
+>   fs/coda/coda.ko
+>   drivers/media/platform/coda/coda.ko
 
-v1: https://www.spinics.net/lists/netdev/msg570274.html
+Media change look ok, and probably the other patches too, but the
+problem here is: who will apply it and when.
 
+The way you grouped the changes makes harder for subsystem maintainers
+to pick, as the same patch touches multiple subsystems.
 
+On the other hand, if this gets picked by someone else, it has the
+potential to cause conflicts between linux-next and the maintainer's
+tree.
 
-We can define two types of transport that we have to handle at the same time
-(e.g. in a nested VM we would have both types of transport running together):
-
-- 'host->guest' transport, it runs in the host and it is used to communicate
-  with the guests of a specific hypervisor (KVM, VMWare or Hyper-V). It also
-  runs in the guest who has nested guests, to communicate with them.
-
-  [Phase 2]
-  We can support multiple 'host->guest' transport running at the same time,
-  but on x86 only one hypervisor uses VMX at any given time.
-
-- 'guest->host' transport, it runs in the guest and it is used to communicate
-  with the host.
-
-
-The main goal is to find a way to decide what transport use in these cases:
-1. connect() / sendto()
-
-   a. use the 'host->guest' transport, if the destination is the guest
-      (dest_cid > VMADDR_CID_HOST).
-
-      [Phase 2]
-      In order to support multiple 'host->guest' transports running at the same
-      time, we should assign CIDs uniquely across all transports. In this way,
-      a packet generated by the host side will get directed to the appropriate
-      transport based on the CID.
-
-   b. use the 'guest->host' transport, if the destination is the host or the
-      hypervisor.
-      (dest_cid == VMADDR_CID_HOST || dest_cid == VMADDR_CID_HYPERVISOR)
-
-
-2. listen() / recvfrom()
-
-   a. use the 'host->guest' transport, if the socket is bound to
-      VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
-      'guest->host' transport.
-      We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
-      address this case.
-
-      [Phase 2]
-      We can support network namespaces to create independent AF_VSOCK
-      addressing domains:
-      - could be used to partition VMs between hypervisors or at a finer
-   	 granularity;
-      - could be used to isolate host applications from guest applications
-   	 using the same ports with CID_ANY;
-
-   b. use the 'guest->host' transport, if the socket is bound to local CID
-      different from the VMADDR_CID_HOST (guest CID get with
-      IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY (to be
-      backward compatible).
-      Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
-
-   c. shared port space between transports
-      For incoming requests or packets, we should be able to choose which
-      transport use, looking at the 'port' requested.
-
-      - stream sockets already support shared port space between transports
-        (one port can be assigned to only one transport)
-
-      [Phase 2]
-      - datagram sockets will support it, but for now VMCI transport is the
-        default transport for any host side datagram socket (KVM and Hyper-V
-        do not yet support datagrams sockets)
-
-We will make the loading of af_vsock.ko independent of the transports to
-allow to:
-   - create a AF_VSOCK socket without any loaded transports;
-   - listen on a socket (e.g. bound to VMADDR_CID_ANY) without any loaded
-     transports;
-
-Hopefully, we could move MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
-vmci_transport.ko to the af_vsock.ko.
-[Jorgen will check if this will impact the existing VMware products]
-
-Notes:
-   - For Hyper-V sockets, the host can only be Windows. No changes should
-     be required on the Windows host to support the changes on this proposal.
-
-   - Communication between guests are not allowed on any transports, so we can
-     drop packets sent from a guest to another guest (dest_cid >
-     VMADDR_CID_HOST) if the 'host->guest' transport is not available.
-
-   - [Phase 2] tag used to identify things that can be done at a later stage,
-     but that should be taken into account during this design.
-
-   - Namespace support will be developed in [Phase 2] or in a separate project.
+So, the best would be if you re-arrange this series to submit one
+patch per subsystem.
 
 
+> 
+> 
+> Patch "drivers: net: phy: fix warning same module names" resolves the
+> name clatch asix.ko.
+> 
+> warning: same module names found:
+>   drivers/net/phy/asix.ko
+>   drivers/net/usb/asix.ko
+> 
+> Patch "drivers: mfd: 88pm800: fix warning same module names" and
+> "drivers: regulator: 88pm800: fix warning same module names" resolves
+> the name clatch 88pm800.ko.
+> 
+> warning: same module names found:
+>   drivers/regulator/88pm800.ko
+>   drivers/mfd/88pm800.ko
+> 
+> 
+> Cheers,
+> Anders
+> 
+> Anders Roxell (8):
+>   drivers: net: dsa: realtek: fix warning same module names
+>   drivers: net: phy: realtek: fix warning same module names
+>   drivers: (video|gpu): fix warning same module names
+>   drivers: media: i2c: fix warning same module names
+>   drivers: media: coda: fix warning same module names
+>   drivers: net: phy: fix warning same module names
+>   drivers: mfd: 88pm800: fix warning same module names
+>   drivers: regulator: 88pm800: fix warning same module names
+> 
+>  drivers/gpu/drm/bridge/adv7511/Makefile | 10 +++++-----
+>  drivers/gpu/drm/mxsfb/Makefile          |  4 ++--
+>  drivers/media/i2c/Makefile              |  3 ++-
+>  drivers/media/platform/coda/Makefile    |  4 ++--
+>  drivers/mfd/Makefile                    |  7 +++++--
+>  drivers/net/dsa/Makefile                |  4 ++--
+>  drivers/net/phy/Makefile                |  6 ++++--
+>  drivers/regulator/Makefile              |  3 ++-
+>  drivers/video/fbdev/Makefile            |  3 ++-
+>  9 files changed, 26 insertions(+), 18 deletions(-)
+> 
 
-Comments and suggestions are welcome.
-I'll be on PTO for next two weeks, so sorry in advance if I'll answer later.
 
-If we agree on this proposal, when I get back, I'll start working on the code
-to get a first PATCH RFC.
 
-Cheers,
-Stefano
+Thanks,
+Mauro
