@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 648E136C08
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 08:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4E436C0A
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 08:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbfFFGFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 02:05:18 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42302 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725784AbfFFGFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 02:05:18 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x565vKPf042386
-        for <netdev@vger.kernel.org>; Thu, 6 Jun 2019 02:05:17 -0400
-Received: from e12.ny.us.ibm.com (e12.ny.us.ibm.com [129.33.205.202])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2sxuhavfhk-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 02:05:17 -0400
-Received: from localhost
-        by e12.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <paulmck@linux.vnet.ibm.com>;
-        Thu, 6 Jun 2019 07:05:15 +0100
-Received: from b01cxnp23032.gho.pok.ibm.com (9.57.198.27)
-        by e12.ny.us.ibm.com (146.89.104.199) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 6 Jun 2019 07:05:12 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x5665BTq20513192
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 6 Jun 2019 06:05:11 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ECEC0B2068;
-        Thu,  6 Jun 2019 06:05:10 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C47B4B206A;
-        Thu,  6 Jun 2019 06:05:10 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.226.118])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu,  6 Jun 2019 06:05:10 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 1841416C15CF; Wed,  5 Jun 2019 23:05:11 -0700 (PDT)
-Date:   Wed, 5 Jun 2019 23:05:11 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-Subject: Re: rcu_read_lock lost its compiler barrier
-Reply-To: paulmck@linux.ibm.com
-References: <20190603200301.GM28207@linux.ibm.com>
- <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <20190606045109.zjfxxbkzq4wb64bj@gondor.apana.org.au>
+        id S1726609AbfFFGFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 02:05:38 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:38240 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725769AbfFFGFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 02:05:38 -0400
+Received: by mail-wm1-f67.google.com with SMTP id t5so1048087wmh.3
+        for <netdev@vger.kernel.org>; Wed, 05 Jun 2019 23:05:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vxrK8jiKSv8pqhDDvbbITa8aPCtnQMNqCsxmQIQUkFo=;
+        b=JW0tz/dH6nSomBGh6yhBKuEbWfWFCOrccF+zQJhkmvxiwqNEBzgbfodpx9HeV+m+ch
+         uTlkF1Kl3oh5rqEG8CKidT1Vuuu3n7RRSAeBdXCJ5s1asmo8SNMDlZQZB7Goez94492q
+         UATTouY82XtOet5BS+pBg+NMbmU+0EYadgGGvBNOKBbiqbE40OeXBeCRGDSVo15FbJ5J
+         2Iiq+fWudr1Nr152wV35Txdpz2iZ5Xb1xYDbWaRg0Gh39ke2kAZNqSYObO1uKiSnxLpe
+         xu2MewByhdjK/GCyxNla1bfz9RACNSUTpPR0Xdh8oXDJKe67FaJ9uJ7HeQAxquxFsETU
+         8ngw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vxrK8jiKSv8pqhDDvbbITa8aPCtnQMNqCsxmQIQUkFo=;
+        b=Qq+QWMNA3Vo3FN9uIseJQ01gzl7eY4jE4VEOaodzUZzTMtmnU1BFmNj8P1ofBNY15D
+         OgtGyf1aT7Exs5HwJgjvua3ElTvrVjFsmZQlTYTYc7fI8Rh8DBgQsG2tx2SozZNQguk3
+         tXbK6xYrNFXT8eMLdalZjggKiwd7bGRUUGukemfOka2cflXUtdk1hqY8sfDJwXkovV+p
+         me+iLrCdOZf3w42Zd3/lqoJU23SHohLvVB37kSkWcl0attgxOZKw5wdLcJ2JwXmZFyK4
+         F5swvW9i1qNUbHaFBIgu4ezdfUbUkRPwkgUsWjiIi/KP2Agw56OVVHW1Vry8GCEvO3Mb
+         1JTA==
+X-Gm-Message-State: APjAAAWfYOLtEPCUUCz2sKmDNCSqPiGlGOin+ka8F+I8kp6FqpoB5+g5
+        7U3ebQWR5ONTcim+AnMCFc8=
+X-Google-Smtp-Source: APXvYqzRdBaqncNKnZmuCs5Ursxzr7Lspj//iQifJhP07kL+/H1B0uiLIP+fm/WWB5gxJUzRL4KILg==
+X-Received: by 2002:a1c:c8:: with SMTP id 191mr13147067wma.6.1559801136392;
+        Wed, 05 Jun 2019 23:05:36 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:4dec:a307:3343:e701? (p200300EA8BF3BD004DECA3073343E701.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:4dec:a307:3343:e701])
+        by smtp.googlemail.com with ESMTPSA id w185sm686405wma.39.2019.06.05.23.05.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Jun 2019 23:05:35 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: Add detection of 1000BaseX link mode
+ support
+To:     David Miller <davem@davemloft.net>, hancock@sedsystems.ca
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com
+References: <1559686501-25739-1-git-send-email-hancock@sedsystems.ca>
+ <20190605.184254.1047432851767426057.davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <20b0f19b-131d-2db0-dfa6-dac7e5b8d422@gmail.com>
+Date:   Thu, 6 Jun 2019 08:05:31 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606045109.zjfxxbkzq4wb64bj@gondor.apana.org.au>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19060606-0060-0000-0000-0000034CD5B4
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011222; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000286; SDB=6.01213919; UDB=6.00638066; IPR=6.00994998;
- MB=3.00027202; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-06 06:05:15
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19060606-0061-0000-0000-000049A75F2D
-Message-Id: <20190606060511.GA28207@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-06_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906060045
+In-Reply-To: <20190605.184254.1047432851767426057.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 12:51:09PM +0800, Herbert Xu wrote:
-> On Tue, Jun 04, 2019 at 10:44:18AM -0400, Alan Stern wrote:
-> >
-> > Currently the LKMM says the test is allowed and there is a data race, 
-> > but this answer clearly is wrong since it would violate the RCU 
-> > guarantee.
+On 06.06.2019 03:42, David Miller wrote:
+> From: Robert Hancock <hancock@sedsystems.ca>
+> Date: Tue,  4 Jun 2019 16:15:01 -0600
 > 
-> Thank you! This is what I tried to say all along in this thread
-> but you expressed it in a much better way :)
-
-In case you were wondering, the reason that I was giving you such
-a hard time was that from what I could see, you were pushing for no
-{READ,WRITE}_ONCE() at all.  ;-)
-
-							Thanx, Paul
-
+>> Add 1000BaseX to the link modes which are detected based on the
+>> MII_ESTATUS register as per 802.3 Clause 22. This allows PHYs which
+>> support 1000BaseX to work properly with drivers using phylink.
+>>
+>> Previously 1000BaseX support was not detected, and if that was the only
+>> mode the PHY indicated support for, phylink would refuse to attach it
+>> due to the list of supported modes being empty.
+>>
+>> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> 
+> Andrew/Florian/Heiner, is there a reason we left out the handling of these
+> ESTATUS bits?
+> 
+> 
+I can only guess here:
+In the beginning phylib took care of BaseT modes only. Once drivers for
+BaseX modes were added the authors dealt with it in the drivers directly
+instead of extending the core.
