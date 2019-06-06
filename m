@@ -2,100 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EBFB36C38
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 08:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6CE236C65
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 08:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbfFFGZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 02:25:49 -0400
-Received: from mail-eopbgr10082.outbound.protection.outlook.com ([40.107.1.82]:29710
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725267AbfFFGZs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 02:25:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6okJqbguMhu/7UCQQ6z6/dC9QmzsFlb27VntAyD0iBs=;
- b=GfyU+014Lzqd0xYpnBhUmhBrmiVcyPOEbRaKfy0EzSpeMTUeXz2tClZLD0RHylzBCw/EfHWh3p+ortmNmVvdmgicaGQVdtOBx1kDqMjH58mvp6Hf5/OgtcYsqo/nUYHrEJWTnLeAk6iKvflEaKqDV3a8mw6JpXxiuLBU0qS6XB0=
-Received: from AM0PR04MB4994.eurprd04.prod.outlook.com (20.177.40.15) by
- AM0PR04MB5955.eurprd04.prod.outlook.com (20.178.112.75) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.12; Thu, 6 Jun 2019 06:25:45 +0000
-Received: from AM0PR04MB4994.eurprd04.prod.outlook.com
- ([fe80::5cc8:5731:41ba:1709]) by AM0PR04MB4994.eurprd04.prod.outlook.com
- ([fe80::5cc8:5731:41ba:1709%7]) with mapi id 15.20.1943.018; Thu, 6 Jun 2019
- 06:25:45 +0000
-From:   Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: RE: [PATCH net-next 2/3] dpaa2-eth: Support multiple traffic classes
- on Tx
-Thread-Topic: [PATCH net-next 2/3] dpaa2-eth: Support multiple traffic classes
- on Tx
-Thread-Index: AQHVG4UWlYcUlbQxy0GdgO2+gYYloKaN3DwAgABNy3A=
-Date:   Thu, 6 Jun 2019 06:25:45 +0000
-Message-ID: <AM0PR04MB4994D6FBBAE9783800B9B1A594170@AM0PR04MB4994.eurprd04.prod.outlook.com>
-References: <1559728646-4332-1-git-send-email-ruxandra.radulescu@nxp.com>
-        <1559728646-4332-3-git-send-email-ruxandra.radulescu@nxp.com>
- <20190605.184620.1429935652147545143.davem@davemloft.net>
-In-Reply-To: <20190605.184620.1429935652147545143.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ruxandra.radulescu@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 40d3272f-ebe7-4587-64fb-08d6ea47cec6
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR04MB5955;
-x-ms-traffictypediagnostic: AM0PR04MB5955:
-x-microsoft-antispam-prvs: <AM0PR04MB595541EF9AE25448DCCB17E194170@AM0PR04MB5955.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2150;
-x-forefront-prvs: 00603B7EEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(346002)(39860400002)(396003)(136003)(189003)(13464003)(22813001)(199004)(8936002)(14454004)(6916009)(74316002)(25786009)(6436002)(6246003)(81166006)(256004)(5660300002)(7736002)(86362001)(68736007)(478600001)(446003)(476003)(486006)(11346002)(4326008)(4744005)(7696005)(76116006)(99286004)(305945005)(8676002)(81156014)(229853002)(3846002)(66556008)(66476007)(2906002)(66946007)(6116002)(66446008)(64756008)(55016002)(73956011)(9686003)(26005)(71200400001)(71190400001)(54906003)(186003)(53936002)(102836004)(53546011)(76176011)(316002)(6506007)(66066001)(52536014)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB5955;H:AM0PR04MB4994.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: TEcJObFpLL5OG85jjDRwfIXrKCYrWPvH8rMXc9RkYyyoij2YxCFbFKddRDIVDV/DtA29hWh6FC+lF8ennujU0VY6/qaK9bpjEXwHx+V1pKOAG4t72sblNpavP9oKw2XKM5lS1YhS0TTgWQ9Ukgj5TahAQ9qtptMQi5GhStDswGXb9pjyUtNHtzISDNgwzt/Rd9Mk80PKjCsrncE5JdlKN+BViNubOCjqPK8kXhvxW6fKGvggZ+cr7VwzxXtSzrfLD3JHSxqmeeiFXo2ZVPn/8puKXFnsCPaWFQ+0FdRknAdO23Jhal+FV2YOr0nHhT6wX7Qc607JLBWa4CFuj0R7nvYzFaFhVAz73woEpJKL9EGQ/bw+AuAcVl1hlnRUA8rdQTHhQ75Ok1uui/fIkDUts9Qr1OZQ64ga0aIKDl/dmRo=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726324AbfFFGif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 02:38:35 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48832 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725267AbfFFGie (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 02:38:34 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A8550201DA;
+        Thu,  6 Jun 2019 08:38:33 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id rXlrOWxfjswb; Thu,  6 Jun 2019 08:38:33 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 44FB2201BB;
+        Thu,  6 Jun 2019 08:38:33 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 6 Jun 2019
+ 08:38:33 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id CBD7631805C3;
+ Thu,  6 Jun 2019 08:38:32 +0200 (CEST)
+Date:   Thu, 6 Jun 2019 08:38:32 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <kbuild-all@01.org>, <netdev@vger.kernel.org>
+Subject: Re: [ipsec-next:testing 4/6] net/xfrm/xfrm_state.c:1792:9: error:
+ '__xfrm6_tmpl_sort_cmp' undeclared; did you mean 'xfrm_tmpl_sort'?
+Message-ID: <20190606063832.GC17989@gauss3.secunet.de>
+References: <201906052002.P2x8MWme%lkp@intel.com>
+ <20190605124045.gzkafkixihwu7447@breakpoint.cc>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40d3272f-ebe7-4587-64fb-08d6ea47cec6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2019 06:25:45.1050
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ruxandra.radulescu@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5955
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190605124045.gzkafkixihwu7447@breakpoint.cc>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Thursday, June 6, 2019 4:46 AM
-> To: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-> Cc: netdev@vger.kernel.org; Ioana Ciornei <ioana.ciornei@nxp.com>
-> Subject: Re: [PATCH net-next 2/3] dpaa2-eth: Support multiple traffic cla=
-sses
-> on Tx
->=20
-> From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-> Date: Wed,  5 Jun 2019 12:57:25 +0300
->=20
-> > +	queue_mapping %=3D dpaa2_eth_queue_count(priv);
->=20
-> You are now performing a very expensive modulus operation every single TX
-> packet, regardless of whether TC is in use or not.
->=20
-> The whole reason we store the queue mapping pre-cooked in the SKB is so
-> that you don't have to do this.
+On Wed, Jun 05, 2019 at 02:40:45PM +0200, Florian Westphal wrote:
+> 
+> Steffen, as this is still only in your testing branch, I suggest you
+> squash this snipped into commit 8dc6e3891a4be64c0cca5e8fe2c3ad33bc06543e
+> ("xfrm: remove state and template sort indirections from xfrm_state_afinfo"),
+> it resolves this problem for me.
 
-Good point, thanks. Will refactor and send a v2.
-
-Ioana
+Ok, I did that. Please doublecheck my work.
