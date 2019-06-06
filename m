@@ -2,77 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA80B37A86
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4798737A9F
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 19:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729845AbfFFRHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 13:07:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59566 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728459AbfFFRHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 13:07:42 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9D4EC6EB97;
-        Thu,  6 Jun 2019 17:07:37 +0000 (UTC)
-Received: from laptop.jcline.org (ovpn-124-165.rdu2.redhat.com [10.10.124.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 804D316917;
-        Thu,  6 Jun 2019 17:07:36 +0000 (UTC)
-Received: from laptop.jcline.org (localhost [IPv6:::1])
-        by laptop.jcline.org (Postfix) with ESMTPS id 9304D7045B19;
-        Thu,  6 Jun 2019 13:07:30 -0400 (EDT)
-Date:   Thu, 6 Jun 2019 13:07:29 -0400
-From:   Jeremy Cline <jcline@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org, ian.kumlien@gmail.com,
-        alan.maguire@oracle.com, dsahern@gmail.com
-Subject: Re: [PATCH net] neighbor: Reset gc_entries counter if new entry is
- released before insert
-Message-ID: <20190606170729.GA15882@laptop.jcline.org>
-References: <20190502010834.25519-1-dsahern@kernel.org>
- <20190504.004100.415091334346243894.davem@davemloft.net>
+        id S1729950AbfFFRLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 13:11:17 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58868 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727512AbfFFRLR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 13:11:17 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 24A37AD17;
+        Thu,  6 Jun 2019 17:11:16 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 597D3E00E3; Thu,  6 Jun 2019 19:11:15 +0200 (CEST)
+Date:   Thu, 6 Jun 2019 19:11:15 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     sameehj@amazon.com, davem@davemloft.net, dwmw@amazon.com,
+        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
+        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
+        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
+        benh@amazon.com, akiyano@amazon.com
+Subject: Re: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+ changing io queue sizes
+Message-ID: <20190606171115.GC21536@unicorn.suse.cz>
+References: <20190606115520.20394-1-sameehj@amazon.com>
+ <20190606115520.20394-6-sameehj@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190504.004100.415091334346243894.davem@davemloft.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Thu, 06 Jun 2019 17:07:42 +0000 (UTC)
+In-Reply-To: <20190606115520.20394-6-sameehj@amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Jun 06, 2019 at 02:55:19PM +0300, sameehj@amazon.com wrote:
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 938aca254..7d3837c13 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -2031,6 +2031,20 @@ static int ena_close(struct net_device *netdev)
+>  	return 0;
+>  }
+>  
+> +int ena_update_queue_sizes(struct ena_adapter *adapter,
+> +			   int new_tx_size,
+> +			   int new_rx_size)
+> +{
+> +	bool dev_up;
+> +
+> +	dev_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+> +	ena_close(adapter->netdev);
+> +	adapter->requested_tx_ring_size = new_tx_size;
+> +	adapter->requested_rx_ring_size = new_rx_size;
+> +	ena_init_io_rings(adapter);
+> +	return dev_up ? ena_up(adapter) : 0;
+> +}
 
-On Sat, May 04, 2019 at 12:41:00AM -0400, David Miller wrote:
-> From: David Ahern <dsahern@kernel.org>
-> Date: Wed,  1 May 2019 18:08:34 -0700
-> 
-> > From: David Ahern <dsahern@gmail.com>
-> > 
-> > Ian and Alan both reported seeing overflows after upgrades to 5.x kernels:
-> >   neighbour: arp_cache: neighbor table overflow!
-> > 
-> > Alan's mpls script helped get to the bottom of this bug. When a new entry
-> > is created the gc_entries counter is bumped in neigh_alloc to check if a
-> > new one is allowed to be created. ___neigh_create then searches for an
-> > existing entry before inserting the just allocated one. If an entry
-> > already exists, the new one is dropped in favor of the existing one. In
-> > this case the cleanup path needs to drop the gc_entries counter. There
-> > is no memory leak, only a counter leak.
-> > 
-> > Fixes: 58956317c8d ("neighbor: Improve garbage collection")
-> > Reported-by: Ian Kumlien <ian.kumlien@gmail.com>
-> > Reported-by: Alan Maguire <alan.maguire@oracle.com>
-> > Signed-off-by: David Ahern <dsahern@gmail.com>
-> 
-> Applied and queued up for -stable.
+This function is called with u32 values as arguments by its only caller
+and copies them into u32 members of struct ena_adapter. Why are its
+arguments new_tx_size and new_rx_size declared as int?
 
-Did this get lost in the shuffle? I see it in mainline, but I don't see
-it in stable. Folks are encountering it with recent 5.1 kernels in
-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1708717.
-
-Thanks,
-Jeremy
+Michal Kubecek
