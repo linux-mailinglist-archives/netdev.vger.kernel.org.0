@@ -2,135 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A64F837BC6
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 20:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3D637BD3
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 20:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730383AbfFFSDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 14:03:41 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39646 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727559AbfFFSDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 14:03:40 -0400
-Received: by mail-pf1-f196.google.com with SMTP id j2so1977662pfe.6;
-        Thu, 06 Jun 2019 11:03:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=vL/yJFjtKE26N8WppeIL8DymV0OTQcN/8h3vh7inQew=;
-        b=IFN7rlmIbyt4XlgxMONME0XVhDVkFm4/1VckRnhxVZgALeXceWARI58K7ZtGHpKwOy
-         L5Kr/+0Y6h16yPS6wINB6v5GwmzYnv8/ROmq8FDfXI2OChdFeehg5PTa+6E9rn07F1/c
-         86Bjl/RxTuS9675ElTVkQ08H1BugEjAEStdtVAFSEjn0vuy2IL1eeIigSXH53HnEmEiq
-         O6i/7I3Z30JHDLj6OZHCCYg49GCvhr+8x838/5cttfZtDVtgyFT6LKL92FY4YEHRFFAg
-         9NpjqI95GwWz7JrVJ2Vw4C8hvOYaqyfeKSUBWYLP0SIBqpnWSWHbOGeaVCQl9zRtEeDg
-         HQbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=vL/yJFjtKE26N8WppeIL8DymV0OTQcN/8h3vh7inQew=;
-        b=FfeP4oI6FbzcPEBgNw1/zXbxaI7M26EDyBDJFjgjnrgw5FchJID1TibeUOwMc7/wRm
-         IcA9TGA1lo0sSrdr8C3MOKPUtyBATiXb+IkcljQ10UMaBhGIPDPTCr9A+6poVcLtws/C
-         E0GPyEGzKy+0wFW/gT+VOYVosfls3TKpaEDnApQct7+EbPjsFJFBdb2g6EtAqLKk2zqS
-         bC78E4+4lQaPrA7Xt/T6Z3zKspulqB5DaI8euRiSopxfyxTPkC825lgiQWTB/whPeVi1
-         knUInvh8GaztguXc5MpUuc0Ama+Ii6ZO4EyZwrO64qvhd3CSNbdUbMF/Nd5X2sjfn1Xl
-         pLSg==
-X-Gm-Message-State: APjAAAUkkyzO3E+okDaSeLO3s7uufceCeZuEb38eaOFVrJNfFmHxsmVg
-        Q7A2mmCRVdzXCOefP6DJmEw=
-X-Google-Smtp-Source: APXvYqyfjbd021wZbVjBB+70qJRPXGTgTljHe/nVnBfkUy4Y3ButrRqFGUdwG5ulgCJppMyvpTGiDA==
-X-Received: by 2002:a62:1a93:: with SMTP id a141mr54671966pfa.72.1559844220056;
-        Thu, 06 Jun 2019 11:03:40 -0700 (PDT)
-Received: from [172.26.126.80] ([2620:10d:c090:180::1:627e])
-        by smtp.gmail.com with ESMTPSA id h2sm2125014pgs.17.2019.06.06.11.03.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 11:03:39 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Ilya Maximets" <i.maximets@samsung.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
-        "Magnus Karlsson" <magnus.karlsson@intel.com>
-Subject: Re: [PATCH] net: Fix hang while unregistering device bound to xdp
- socket
-Date:   Thu, 06 Jun 2019 11:03:38 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <4414B6B6-3FE2-4CF2-A67A-159FCF6B9ECF@gmail.com>
-In-Reply-To: <20190606124014.23231-1-i.maximets@samsung.com>
-References: <CGME20190606124020eucas1p2007396ae8f23a426a17e0e5481636187@eucas1p2.samsung.com>
- <20190606124014.23231-1-i.maximets@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1730398AbfFFSGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 14:06:38 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:36408 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730352AbfFFSGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 14:06:38 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x56I6QHD012438
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 6 Jun 2019 12:06:26 -0600 (CST)
+Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x56I6Pu2001518
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 6 Jun 2019 12:06:25 -0600
+From:   Robert Hancock <hancock@sedsystems.ca>
+To:     netdev@vger.kernel.org
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, Robert Hancock <hancock@sedsystems.ca>
+Subject: [PATCH net-next] net: sfp: Stop SFP polling and interrupt handling during shutdown
+Date:   Thu,  6 Jun 2019 12:06:17 -0600
+Message-Id: <1559844377-17188-1-git-send-email-hancock@sedsystems.ca>
+X-Mailer: git-send-email 1.8.3.1
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6 Jun 2019, at 5:40, Ilya Maximets wrote:
+SFP device polling can cause problems during the shutdown process if the
+parent devices of the network controller have been shut down already.
+This problem was seen on the iMX6 platform with PCIe devices, where
+accessing the device after the bus is shut down causes a hang.
 
-> Device that bound to XDP socket will not have zero refcount until the
-> userspace application will not close it. This leads to hang inside
-> 'netdev_wait_allrefs()' if device unregistering requested:
->
->   # ip link del p1
->   < hang on recvmsg on netlink socket >
->
->   # ps -x | grep ip
->   5126  pts/0    D+   0:00 ip link del p1
->
->   # journalctl -b
->
->   Jun 05 07:19:16 kernel:
->   unregister_netdevice: waiting for p1 to become free. Usage count = 1
->
->   Jun 05 07:19:27 kernel:
->   unregister_netdevice: waiting for p1 to become free. Usage count = 1
->   ...
->
-> Fix that by counting XDP references for the device and failing
-> RTM_DELLINK with EBUSY if device is still in use by any XDP socket.
->
-> With this change:
->
->   # ip link del p1
->   RTNETLINK answers: Device or resource busy
->
-> Fixes: 965a99098443 ("xsk: add support for bind for Rx")
-> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> ---
->
-> Another option could be to force closing all the corresponding AF_XDP
-> sockets, but I didn't figure out how to do this properly yet.
->
->  include/linux/netdevice.h | 25 +++++++++++++++++++++++++
->  net/core/dev.c            | 10 ++++++++++
->  net/core/rtnetlink.c      |  6 ++++++
->  net/xdp/xsk.c             |  7 ++++++-
->  4 files changed, 47 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 44b47e9df94a..24451cfc5590 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1705,6 +1705,7 @@ enum netdev_priv_flags {
->   *	@watchdog_timer:	List of timers
->   *
->   *	@pcpu_refcnt:		Number of references to this device
-> + *	@pcpu_xdp_refcnt:	Number of XDP socket references to this device
->   *	@todo_list:		Delayed register/unregister
->   *	@link_watch_list:	XXX: need comments on this one
->   *
-> @@ -1966,6 +1967,7 @@ struct net_device {
->  	struct timer_list	watchdog_timer;
->
->  	int __percpu		*pcpu_refcnt;
-> +	int __percpu		*pcpu_xdp_refcnt;
->  	struct list_head	todo_list;
+Stop all delayed work in the SFP driver during the shutdown process, and
+set a flag which causes any further state checks or state machine events
+(possibly triggered by previous GPIO IRQs) to be skipped.
 
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+---
 
-I understand the intention here, but don't think that putting a XDP reference
-into the generic netdev structure is the right way of doing this.  Likely the
-NETDEV_UNREGISTER notifier should be used so the socket and umem unbinds from
-the device.
+This is an updated version of a previous patch "net: sfp: Stop SFP polling
+during shutdown" with the addition of stopping handling of GPIO-triggered
+interrupts as well, as pointed out by Russell King.
+
+ drivers/net/phy/sfp.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 554acc8..5fdf573 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -191,6 +191,7 @@ struct sfp {
+ 	struct delayed_work poll;
+ 	struct delayed_work timeout;
+ 	struct mutex sm_mutex;
++	bool shutdown;
+ 	unsigned char sm_mod_state;
+ 	unsigned char sm_dev_state;
+ 	unsigned short sm_state;
+@@ -1466,6 +1467,11 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
+ static void sfp_sm_event(struct sfp *sfp, unsigned int event)
+ {
+ 	mutex_lock(&sfp->sm_mutex);
++	if (unlikely(sfp->shutdown)) {
++		/* Do not handle any more state machine events. */
++		mutex_unlock(&sfp->sm_mutex);
++		return;
++	}
+ 
+ 	dev_dbg(sfp->dev, "SM: enter %s:%s:%s event %s\n",
+ 		mod_state_to_str(sfp->sm_mod_state),
+@@ -1704,6 +1710,13 @@ static void sfp_check_state(struct sfp *sfp)
+ {
+ 	unsigned int state, i, changed;
+ 
++	mutex_lock(&sfp->sm_mutex);
++	if (unlikely(sfp->shutdown)) {
++		/* No more state checks */
++		mutex_unlock(&sfp->sm_mutex);
++		return;
++	}
++
+ 	state = sfp_get_state(sfp);
+ 	changed = state ^ sfp->state;
+ 	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
+@@ -1715,6 +1728,7 @@ static void sfp_check_state(struct sfp *sfp)
+ 
+ 	state |= sfp->state & (SFP_F_TX_DISABLE | SFP_F_RATE_SELECT);
+ 	sfp->state = state;
++	mutex_unlock(&sfp->sm_mutex);
+ 
+ 	rtnl_lock();
+ 	if (changed & SFP_F_PRESENT)
+@@ -1928,9 +1942,22 @@ static int sfp_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static void sfp_shutdown(struct platform_device *pdev)
++{
++	struct sfp *sfp = platform_get_drvdata(pdev);
++
++	mutex_lock(&sfp->sm_mutex);
++	sfp->shutdown = true;
++	mutex_unlock(&sfp->sm_mutex);
++
++	cancel_delayed_work_sync(&sfp->poll);
++	cancel_delayed_work_sync(&sfp->timeout);
++}
++
+ static struct platform_driver sfp_driver = {
+ 	.probe = sfp_probe,
+ 	.remove = sfp_remove,
++	.shutdown = sfp_shutdown,
+ 	.driver = {
+ 		.name = "sfp",
+ 		.of_match_table = sfp_of_match,
 -- 
-Jonathan
+1.8.3.1
+
