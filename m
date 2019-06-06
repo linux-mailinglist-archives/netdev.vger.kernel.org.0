@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2039D36D68
-	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 723FB36DB6
+	for <lists+netdev@lfdr.de>; Thu,  6 Jun 2019 09:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726223AbfFFHgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 03:36:16 -0400
-Received: from cassarossa.samfundet.no ([193.35.52.29]:35761 "EHLO
-        cassarossa.samfundet.no" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725769AbfFFHgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 03:36:16 -0400
-Received: from pannekake.samfundet.no ([2001:67c:29f4::50])
-        by cassarossa.samfundet.no with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <sesse@samfundet.no>)
-        id 1hYmwV-0007y5-IZ; Thu, 06 Jun 2019 09:36:12 +0200
-Received: from sesse by pannekake.samfundet.no with local (Exim 4.92)
-        (envelope-from <sesse@samfundet.no>)
-        id 1hYmwV-0003SS-D5; Thu, 06 Jun 2019 09:36:11 +0200
-Date:   Thu, 6 Jun 2019 09:36:11 +0200
-From:   "Steinar H. Gunderson" <steinar+kernel@gunderson.no>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: EoGRE sends undersized frames without padding
-Message-ID: <20190606073611.7n2w5n52pfh3jzks@sesse.net>
-References: <20190530083508.i52z5u25f2o7yigu@sesse.net>
- <CAM_iQpX-fJzVXc4sLndkZfD4L-XJHCwkndj8xG2p7zY04k616g@mail.gmail.com>
- <20190605072712.avp3svw27smrq2qx@sesse.net>
- <CAM_iQpXWM35ySoigS=TdsXr8+3Ws4ZMspJCBVdWngggCBi362g@mail.gmail.com>
+        id S1726581AbfFFHrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 03:47:19 -0400
+Received: from mga11.intel.com ([192.55.52.93]:56593 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725784AbfFFHrT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 03:47:19 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jun 2019 00:47:19 -0700
+X-ExtLoop1: 1
+Received: from scohe14-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.255.41.151])
+  by orsmga006.jf.intel.com with ESMTP; 06 Jun 2019 00:47:17 -0700
+Subject: Re: questions about AF_PACKET V4 and AF_XDP
+To:     "Junsong Zhao (junszhao)" <junszhao@cisco.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <77a8123886714daeb9d2518dce45da1e@XCH-ALN-014.cisco.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <95aaafdc-ef8a-c4b9-6104-a1a753c81820@intel.com>
+Date:   Thu, 6 Jun 2019 09:47:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpXWM35ySoigS=TdsXr8+3Ws4ZMspJCBVdWngggCBi362g@mail.gmail.com>
-X-Operating-System: Linux 5.1.2 on a x86_64
-User-Agent: NeoMutt/20180716
+In-Reply-To: <77a8123886714daeb9d2518dce45da1e@XCH-ALN-014.cisco.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 05, 2019 at 06:17:51PM -0700, Cong Wang wrote:
-> Hmm, sounds like openvswitch should pad the packets in this scenario,
-> like hardware switches padding those on real wires.
+On 2019-06-05 19:56, Junsong Zhao (junszhao) wrote:
+> Hi Magnus and Bjorn,
+> 
+> I saw your articles and presentation about AF_PACKET V4. It is exciting 
+> to know that the kernel socket can have 40G throughput.
+> 
+> But it seems the code is not in the 4.19 or 5.1 kernel. Instead there is 
+> a new feature AF_XDP in 4.19 kernel and it is kind of similar to 
+> AF_PACKET V4.
+> 
+> Can you clarify if AF_XDP is the successor of AF_PACKET V4? Apart from 
+> i40e driver, is there any other driver that supports the feature?
+>
 
-Well, openvswitch say that they just throw packets around and assume they're
-valid... :-)
+AF_PACKET v4 never made it to mainland, instead AF_XDP took that place.
 
-In any case, if you talk EoGRE to the vWLC directly, I doubt it accepts this,
-given that it doesn't accept it on the virtual NICs.
+Drivers with zero-copy support are i40e, ixgbe, and soon mlx5 and ice.
 
->> Yes, but that's just Linux accepting something invalid, no? It doesn't mean
->> it should be sending it out.
-> Well, we can always craft our own ill-formatted packets, right? :) Does
-> any standard say OS has to drop ethernet frames shorter than the
-> minimum?
+There's an LWN article on AF_XDP here: https://lwn.net/Articles/750845/
 
-I believe you're fully allowed to accept them (although it might be
-technically difficult on physical media). But that doesn't mean everybody
-else has to accept them. :-)
 
->>> Some hardware switches pad for ETH_ZLEN when it goes through a real wire.
->> All hardware switches should; it's a 802.1Q demand. (Some have traditionally
->> been buggy in that they haven't added extra padding back when they strip the
->> VLAN tag.)
-> If so, so is the software switch, that is openvswitch?
+Thanks,
+Björn
 
-What if the other end isn't a (virtual) switch, but a host?
 
-/* Steinar */
--- 
-Homepage: https://www.sesse.net/
+> Here is the link to the article:
+> 
+> https://lwn.net/Articles/737947/
+> 
+> Regards,
+> 
+> Junsong Zhao
+> 
+> Tech Lead
+> 
+> Stealthwatch
+> 
+> junszhao@cisco.com
+> 
+> Mobile: +1-410-530-1036
+> 
