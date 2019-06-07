@@ -2,207 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CBA396F8
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1894396FB
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729915AbfFGUm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 16:42:58 -0400
-Received: from mga14.intel.com ([192.55.52.115]:6339 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729584AbfFGUm6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 16:42:58 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Jun 2019 13:42:57 -0700
-X-ExtLoop1: 1
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2019 13:42:56 -0700
-Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
- ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Fri, 7 Jun 2019 13:42:56 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.13]) by
- ORSMSX161.amr.corp.intel.com ([169.254.4.126]) with mapi id 14.03.0415.000;
- Fri, 7 Jun 2019 13:42:56 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>,
-        Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH net-next v2 4/6] taprio: Add support for txtime-assist
- mode.
-Thread-Topic: [PATCH net-next v2 4/6] taprio: Add support for txtime-assist
- mode.
-Thread-Index: AQHVHJBzjS7vryb4PEKbp2Rx8Aj1tqaPuV4AgAFmBIA=
-Date:   Fri, 7 Jun 2019 20:42:55 +0000
-Message-ID: <FF3C8B8E-421E-4C93-8895-C21A38BB55EE@intel.com>
-References: <1559843458-12517-1-git-send-email-vedang.patel@intel.com>
- <1559843458-12517-5-git-send-email-vedang.patel@intel.com>
- <20190606162132.0591cc37@cakuba.netronome.com>
-In-Reply-To: <20190606162132.0591cc37@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.138]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <058E00E5E347B1488B761F0E146B0ABF@intel.com>
-Content-Transfer-Encoding: base64
+        id S1730242AbfFGUoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 16:44:24 -0400
+Received: from torres.zugschlus.de ([85.214.131.164]:50176 "EHLO
+        torres.zugschlus.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729640AbfFGUoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 16:44:24 -0400
+Received: from mh by torres.zugschlus.de with local (Exim 4.92)
+        (envelope-from <mh+netdev@zugschlus.de>)
+        id 1hZLin-0000Vd-Fc; Fri, 07 Jun 2019 22:44:21 +0200
+Date:   Fri, 7 Jun 2019 22:44:21 +0200
+From:   Marc Haber <mh+netdev@zugschlus.de>
+To:     Yussuf Khalil <dev@pp3345.net>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>
+Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
+Message-ID: <20190607204421.GK31088@torres.zugschlus.de>
+References: <20190530081257.GA26133@torres.zugschlus.de>
+ <20190602134842.GC3249@torres.zugschlus.de>
+ <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIEphY3ViIGZvciB0aGUgZmVlZGJhY2suIE15IGNvbW1lbnRzIGFyZSBpbmxpbmUuDQoN
-Ckkgd2lsbCB3YWl0IGEgZmV3IG1vcmUgZGF5cyBmb3IgbW9yZSBmZWVkYmFjay9kaXNjdXNzaW9u
-cyBvbiB0aGUgc2VyaWVzIGFuZCB0aGVuIHBvc3QgdGhlIG5leHQgdmVyc2lvbiBvZiB0aGUgc2Vy
-aWVzLiANCg0KPiBPbiBKdW4gNiwgMjAxOSwgYXQgNDoyMSBQTSwgSmFrdWIgS2ljaW5za2kgPGph
-a3ViLmtpY2luc2tpQG5ldHJvbm9tZS5jb20+IHdyb3RlOg0KPiANCj4gT24gVGh1LCAgNiBKdW4g
-MjAxOSAxMDo1MDo1NiAtMDcwMCwgVmVkYW5nIFBhdGVsIHdyb3RlOg0KPj4gQ3VycmVudGx5LCB3
-ZSBhcmUgc2VlaW5nIG5vbi1jcml0aWNhbCBwYWNrZXRzIGJlaW5nIHRyYW5zbWl0dGVkIG91dHNp
-ZGUgb2YNCj4+IHRoZWlyIHRpbWVzbGljZS4gV2UgY2FuIGNvbmZpcm0gdGhhdCB0aGUgcGFja2V0
-cyBhcmUgYmVpbmcgZGVxdWV1ZWQgYXQgdGhlDQo+PiByaWdodCB0aW1lLiBTbywgdGhlIGRlbGF5
-IGlzIGluZHVjZWQgaW4gdGhlIGhhcmR3YXJlIHNpZGUuICBUaGUgbW9zdCBsaWtlbHkNCj4+IHJl
-YXNvbiBpcyB0aGUgaGFyZHdhcmUgcXVldWVzIGFyZSBzdGFydmluZyB0aGUgbG93ZXIgcHJpb3Jp
-dHkgcXVldWVzLg0KPj4gDQo+PiBJbiBvcmRlciB0byBpbXByb3ZlIHRoZSBwZXJmb3JtYW5jZSBv
-ZiB0YXByaW8sIHdlIHdpbGwgYmUgbWFraW5nIHVzZSBvZiB0aGUNCj4+IHR4dGltZSBmZWF0dXJl
-IHByb3ZpZGVkIGJ5IHRoZSBFVEYgcWRpc2MuIEZvciBhbGwgdGhlIHBhY2tldHMgd2hpY2ggZG8g
-bm90DQo+PiBoYXZlIHRoZSBTT19UWFRJTUUgb3B0aW9uIHNldCwgdGFwcmlvIHdpbGwgc2V0IHRo
-ZSB0cmFuc21pdCB0aW1lc3RhbXAgKHNldA0KPj4gaW4gc2tiLT50c3RhbXApIGluIHRoaXMgbW9k
-ZS4gVEFQcmlvIFFkaXNjIHdpbGwgZW5zdXJlIHRoYXQgdGhlIHRyYW5zbWl0DQo+PiB0aW1lIGZv
-ciB0aGUgcGFja2V0IGlzIHNldCB0byB3aGVuIHRoZSBnYXRlIGlzIG9wZW4uIElmIFNPX1RYVElN
-RSBpcyBzZXQsDQo+PiB0aGUgVEFQcmlvIHFkaXNjIHdpbGwgdmFsaWRhdGUgd2hldGhlciB0aGUg
-dGltZXN0YW1wIChpbiBza2ItPnRzdGFtcCkNCj4+IG9jY3VycyB3aGVuIHRoZSBnYXRlIGNvcnJl
-c3BvbmRpbmcgdG8gc2tiJ3MgdHJhZmZpYyBjbGFzcyBpcyBvcGVuLg0KPj4gDQo+PiBGb2xsb3dp
-bmcgdHdvIHBhcmFtZXRlcnMgYWRkZWQgdG8gc3VwcG9ydCB0aGlzIG1vZGU6DQo+PiAtIGZsYWdz
-OiB1c2VkIHRvIGVuYWJsZSB0eHRpbWUtYXNzaXN0IG1vZGUuIFdpbGwgYWxzbyBiZSB1c2VkIHRv
-IGVuYWJsZQ0KPj4gIG90aGVyIG1vZGVzIChsaWtlIGhhcmR3YXJlIG9mZmxvYWRpbmcpIGxhdGVy
-Lg0KPj4gLSB0eHRpbWUtZGVsYXk6IFRoaXMgaW5kaWNhdGVzIHRoZSBtaW5pbXVtIHRpbWUgaXQg
-d2lsbCB0YWtlIGZvciB0aGUgcGFja2V0DQo+PiAgdG8gaGl0IHRoZSB3aXJlIGFmdGVyIGl0IHJl
-YWNoZXMgdGFwcmlvX2VucXVldWUoKS4gVGhpcyBpcyB1c2VmdWwgaW4NCj4+ICBkZXRlcm1pbmlu
-ZyB3aGV0aGVyIHdlIGNhbiB0cmFuc21pdCB0aGUgcGFja2V0IGluIHRoZSByZW1haW5pbmcgdGlt
-ZSBpZg0KPj4gIHRoZSBnYXRlIGNvcnJlc3BvbmRpbmcgdG8gdGhlIHBhY2tldCBpcyBjdXJyZW50
-bHkgb3Blbi4NCj4+IA0KPj4gQW4gZXhhbXBsZSBjb25maWd1cmF0aW9uIGZvciBlbmFibGluZyB0
-eHRpbWUtYXNzaXN0Og0KPj4gDQo+PiB0YyBxZGlzYyByZXBsYWNlIGRldiBldGgwIHBhcmVudCBy
-b290IGhhbmRsZSAxMDAgdGFwcmlvIFxcDQo+PiAgICAgIG51bV90YyAzIFxcDQo+PiAgICAgIG1h
-cCAyIDIgMSAwIDIgMiAyIDIgMiAyIDIgMiAyIDIgMiAyIFxcDQo+PiAgICAgIHF1ZXVlcyAxQDAg
-MUAwIDFAMCBcXA0KPj4gICAgICBiYXNlLXRpbWUgMTU1ODY1MzQyNDI3OTg0MjU2OCBcXA0KPj4g
-ICAgICBzY2hlZC1lbnRyeSBTIDAxIDMwMDAwMCBcXA0KPj4gICAgICBzY2hlZC1lbnRyeSBTIDAy
-IDMwMDAwMCBcXA0KPj4gICAgICBzY2hlZC1lbnRyeSBTIDA0IDQwMDAwMCBcXA0KPj4gICAgICBm
-bGFncyAweDEgXFwNCj4+ICAgICAgdHh0aW1lLWRlbGF5IDQwMDAwIFxcDQo+PiAgICAgIGNsb2Nr
-aWQgQ0xPQ0tfVEFJDQo+PiANCj4+IHRjIHFkaXNjIHJlcGxhY2UgZGV2ICRJRkFDRSBwYXJlbnQg
-MTAwOjEgZXRmIHNraXBfc29ja19jaGVjayBcXA0KPj4gICAgICBvZmZsb2FkIGRlbHRhIDIwMDAw
-MCBjbG9ja2lkIENMT0NLX1RBSQ0KPj4gDQo+PiBOb3RlIHRoYXQgYWxsIHRoZSB0cmFmZmljIGNs
-YXNzZXMgYXJlIG1hcHBlZCB0byB0aGUgc2FtZSBxdWV1ZS4gIFRoaXMgaXMNCj4+IG9ubHkgcG9z
-c2libGUgaW4gdGFwcmlvIHdoZW4gdHh0aW1lLWFzc2lzdCBpcyBlbmFibGVkLiBBbHNvLCBub3Rl
-IHRoYXQgdGhlDQo+PiBFVEYgUWRpc2MgaXMgZW5hYmxlZCB3aXRoIG9mZmxvYWQgbW9kZSBzZXQu
-DQo+PiANCj4+IEluIHRoaXMgbW9kZSwgaWYgdGhlIHBhY2tldCdzIHRyYWZmaWMgY2xhc3MgaXMg
-b3BlbiBhbmQgdGhlIGNvbXBsZXRlIHBhY2tldA0KPj4gY2FuIGJlIHRyYW5zbWl0dGVkLCB0YXBy
-aW8gd2lsbCB0cnkgdG8gdHJhbnNtaXQgdGhlIHBhY2tldCBpbW1lZGlhdGVseS4NCj4+IFRoaXMg
-d2lsbCBiZSBkb25lIGJ5IHNldHRpbmcgc2tiLT50c3RhbXAgdG8gY3VycmVudF90aW1lICsgdGhl
-IHRpbWUgZGVsdGENCj4+IGluZGljYXRlZCBpbiB0aGUgdHh0aW1lLWRlbGF5IHBhcmFtZXRlci4g
-VGhpcyBwYXJhbWV0ZXIgaW5kaWNhdGVzIHRoZSB0aW1lDQo+PiB0YWtlbiAoaW4gc29mdHdhcmUp
-IGZvciBwYWNrZXQgdG8gcmVhY2ggdGhlIG5ldHdvcmsgYWRhcHRlci4NCj4+IA0KPj4gSWYgdGhl
-IHBhY2tldCBjYW5ub3QgYmUgdHJhbnNtaXR0ZWQgaW4gdGhlIGN1cnJlbnQgaW50ZXJ2YWwgb3Ig
-aWYgdGhlDQo+PiBwYWNrZXQncyB0cmFmZmljIGlzIG5vdCBjdXJyZW50bHkgdHJhbnNtaXR0aW5n
-LCB0aGUgc2tiLT50c3RhbXAgaXMgc2V0IHRvDQo+PiB0aGUgbmV4dCBhdmFpbGFibGUgdGltZXN0
-YW1wIHZhbHVlLiBUaGlzIGlzIHRyYWNrZWQgaW4gdGhlIG5leHRfbGF1bmNodGltZQ0KPj4gcGFy
-YW1ldGVyIGluIHRoZSBzdHJ1Y3Qgc2NoZWRfZW50cnkuDQo+PiANCj4+IFRoZSBiZWhhdmlvdXIg
-dy5yLnQgYWRtaW4gYW5kIG9wZXIgc2NoZWR1bGVzIGlzIG5vdCBjaGFuZ2VkIGZyb20gd2hhdCBp
-cw0KPj4gcHJlc2VudCBpbiBzb2Z0d2FyZSBtb2RlLg0KPj4gDQo+PiBUaGUgdHJhbnNtaXQgdGlt
-ZSBpcyBhbHJlYWR5IGtub3duIGluIGFkdmFuY2UuIFNvLCB3ZSBkbyBub3QgbmVlZCB0aGUgSFIN
-Cj4+IHRpbWVycyB0byBhZHZhbmNlIHRoZSBzY2hlZHVsZSBhbmQgd2FrZXVwIHRoZSBkZXF1ZXVl
-IHNpZGUgb2YgdGFwcmlvLiAgU28sDQo+PiBIUiB0aW1lciB3b24ndCBiZSBydW4gd2hlbiB0aGlz
-IG1vZGUgaXMgZW5hYmxlZC4NCj4+IA0KPj4gU2lnbmVkLW9mZi1ieTogVmVkYW5nIFBhdGVsIDx2
-ZWRhbmcucGF0ZWxAaW50ZWwuY29tPg0KPj4gLS0tDQo+PiBpbmNsdWRlL3VhcGkvbGludXgvcGt0
-X3NjaGVkLmggfCAgIDQgKw0KPj4gbmV0L3NjaGVkL3NjaF90YXByaW8uYyAgICAgICAgIHwgMzQ0
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tDQo+PiAyIGZpbGVzIGNo
-YW5nZWQsIDMzMSBpbnNlcnRpb25zKCspLCAxNyBkZWxldGlvbnMoLSkNCj4+IA0KPj4gZGlmZiAt
-LWdpdCBhL2luY2x1ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaCBiL2luY2x1ZGUvdWFwaS9saW51
-eC9wa3Rfc2NoZWQuaA0KPj4gaW5kZXggNjlmYzUyZTRkNmJkLi5jMDg1ODYwZmY2MzcgMTAwNjQ0
-DQo+PiAtLS0gYS9pbmNsdWRlL3VhcGkvbGludXgvcGt0X3NjaGVkLmgNCj4+ICsrKyBiL2luY2x1
-ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaA0KPj4gQEAgLTExNTksNiArMTE1OSw4IEBAIGVudW0g
-ew0KPj4gICogICAgICAgW1RDQV9UQVBSSU9fQVRUUl9TQ0hFRF9FTlRSWV9JTlRFUlZBTF0NCj4+
-ICAqLw0KPj4gDQo+PiArI2RlZmluZSBUQ0FfVEFQUklPX0FUVFJfRkxBR19UWFRJTUVfQVNTSVNU
-IDB4MQ0KPj4gKw0KPj4gZW51bSB7DQo+PiAJVENBX1RBUFJJT19BVFRSX1VOU1BFQywNCj4+IAlU
-Q0FfVEFQUklPX0FUVFJfUFJJT01BUCwgLyogc3RydWN0IHRjX21xcHJpb19xb3B0ICovDQo+PiBA
-QCAtMTE3MCw2ICsxMTcyLDggQEAgZW51bSB7DQo+PiAJVENBX1RBUFJJT19BVFRSX0FETUlOX1ND
-SEVELCAvKiBUaGUgYWRtaW4gc2NoZWQsIG9ubHkgdXNlZCBpbiBkdW1wICovDQo+PiAJVENBX1RB
-UFJJT19BVFRSX1NDSEVEX0NZQ0xFX1RJTUUsIC8qIHM2NCAqLw0KPj4gCVRDQV9UQVBSSU9fQVRU
-Ul9TQ0hFRF9DWUNMRV9USU1FX0VYVEVOU0lPTiwgLyogczY0ICovDQo+PiArCVRDQV9UQVBSSU9f
-QVRUUl9GTEFHUywgLyogdTMyICovDQo+PiArCVRDQV9UQVBSSU9fQVRUUl9UWFRJTUVfREVMQVks
-IC8qIHMzMiAqLw0KPj4gCV9fVENBX1RBUFJJT19BVFRSX01BWCwNCj4+IH07DQo+PiANCj4+IGRp
-ZmYgLS1naXQgYS9uZXQvc2NoZWQvc2NoX3RhcHJpby5jIGIvbmV0L3NjaGVkL3NjaF90YXByaW8u
-Yw0KPj4gaW5kZXggYTQxZDdkNDQzNGVlLi5hNTY3NmZiMmIyZGQgMTAwNjQ0DQo+PiAtLS0gYS9u
-ZXQvc2NoZWQvc2NoX3RhcHJpby5jDQo+PiArKysgYi9uZXQvc2NoZWQvc2NoX3RhcHJpby5jDQo+
-PiBAQCAtMjEsMTIgKzIxLDE3IEBADQo+PiAjaW5jbHVkZSA8bmV0L3BrdF9zY2hlZC5oPg0KPj4g
-I2luY2x1ZGUgPG5ldC9wa3RfY2xzLmg+DQo+PiAjaW5jbHVkZSA8bmV0L3NjaF9nZW5lcmljLmg+
-DQo+PiArI2luY2x1ZGUgPG5ldC9zb2NrLmg+DQo+PiANCj4+IHN0YXRpYyBMSVNUX0hFQUQodGFw
-cmlvX2xpc3QpOw0KPj4gc3RhdGljIERFRklORV9TUElOTE9DSyh0YXByaW9fbGlzdF9sb2NrKTsN
-Cj4+IA0KPj4gI2RlZmluZSBUQVBSSU9fQUxMX0dBVEVTX09QRU4gLTENCj4+IA0KPj4gKyNkZWZp
-bmUgRkxBR1NfVkFMSUQoZmxhZ3MpICghKChmbGFncykgJiB+VENBX1RBUFJJT19BVFRSX0ZMQUdf
-VFhUSU1FX0FTU0lTVCkpDQo+PiArI2RlZmluZSBUWFRJTUVfQVNTSVNUX0lTX0VOQUJMRUQoZmxh
-Z3MpIChGTEFHU19WQUxJRCgoZmxhZ3MpKSAmJiBcDQo+PiArCQkJCSAoKGZsYWdzKSAmIFRDQV9U
-QVBSSU9fQVRUUl9GTEFHX1RYVElNRV9BU1NJU1QpKQ0KPiANCj4gVGhhbmtzIGZvciB0aGUgY2hh
-bmdlcywgc2luY2UgeW91IG5vdyB2YWxpZGF0ZSBubyB1bmtub3duIGZsYWdzIGFyZQ0KPiBwYXNz
-ZWQsIHBlcmhhcHMgdGhlcmUgaXMgbm8gbmVlZCB0byBjaGVjayBpZiBmbGFncyBhcmUgPT0gfjA/
-DQo+IA0KPiBJU19FTkFCTEVEKCkgY291bGQganVzdCBkbzogKGZsYWdzKSAmIFRDQV9UQVBSSU9f
-QVRUUl9GTEFHX1RYVElNRV9BU1NJU1QNCj4gTm8/DQo+IA0KVGhpcyBpcyBzcGVjaWZpY2FsbHkg
-ZG9uZSBzbyB0aGF0IHVzZXIgZG9lcyBub3QgaGF2ZSB0byBzcGVjaWZ5IHRoZSBvZmZsb2FkIGZs
-YWdzIHdoZW4gdHJ5aW5nIHRvIGluc3RhbGwgdGhlIGFub3RoZXIgc2NoZWR1bGUgd2hpY2ggd2ls
-bCBiZSBzd2l0Y2hlZCB0byBhdCBhIGxhdGVyIHBvaW50IG9mIHRpbWUgKGkuZS4gdGhlIGFkbWlu
-IHNjaGVkdWxlIGludHJvZHVjZWQgaW4gVmluaWNpdXPigJkgbGFzdCBzZXJpZXMpLiBTZXR0aW5n
-IHRhcHJpb19mbGFncyB0byB+MCB3aWxsbCBoZWxwIHVzIGRpc3Rpbmd1aXNoIGJldHdlZW4gdGhl
-IGZsYWdzIHBhcmFtZXRlciBub3Qgc3BlY2lmaWVkIGFuZCBmbGFncyBzZXQgdG8gMC4NCj4+IEBA
-IC03MDgsNiArOTc4LDcgQEAgc3RhdGljIGludCB0YXByaW9fY2hhbmdlKHN0cnVjdCBRZGlzYyAq
-c2NoLCBzdHJ1Y3QgbmxhdHRyICpvcHQsDQo+PiAJc3RydWN0IHRhcHJpb19zY2hlZCAqcSA9IHFk
-aXNjX3ByaXYoc2NoKTsNCj4+IAlzdHJ1Y3QgbmV0X2RldmljZSAqZGV2ID0gcWRpc2NfZGV2KHNj
-aCk7DQo+PiAJc3RydWN0IHRjX21xcHJpb19xb3B0ICptcXByaW8gPSBOVUxMOw0KPj4gKwl1MzIg
-dGFwcmlvX2ZsYWdzID0gVTMyX01BWDsNCj4gDQo+IFRoZW4gdGhpcyBzaG91bGQgZGVmYXVsdCB0
-byAwLCBpLmUuIG5vIGZsYWcgc2V0Li4NCj4gDQo+PiAJaW50IGksIGVyciwgY2xvY2tpZDsNCj4+
-IAl1bnNpZ25lZCBsb25nIGZsYWdzOw0KPj4gCWt0aW1lX3Qgc3RhcnQ7DQo+PiBAQCAtNzIwLDcg
-Kzk5MSwyMSBAQCBzdGF0aWMgaW50IHRhcHJpb19jaGFuZ2Uoc3RydWN0IFFkaXNjICpzY2gsIHN0
-cnVjdCBubGF0dHIgKm9wdCwNCj4+IAlpZiAodGJbVENBX1RBUFJJT19BVFRSX1BSSU9NQVBdKQ0K
-Pj4gCQltcXByaW8gPSBubGFfZGF0YSh0YltUQ0FfVEFQUklPX0FUVFJfUFJJT01BUF0pOw0KPj4g
-DQo+PiAtCWVyciA9IHRhcHJpb19wYXJzZV9tcXByaW9fb3B0KGRldiwgbXFwcmlvLCBleHRhY2sp
-Ow0KPj4gKwlpZiAodGJbVENBX1RBUFJJT19BVFRSX0ZMQUdTXSkgew0KPj4gKwkJdGFwcmlvX2Zs
-YWdzID0gbmxhX2dldF91MzIodGJbVENBX1RBUFJJT19BVFRSX0ZMQUdTXSk7DQo+PiArDQo+PiAr
-CQlpZiAocS0+ZmxhZ3MgIT0gMCkgew0KPj4gKwkJCU5MX1NFVF9FUlJfTVNHKGV4dGFjaywgIkNo
-YW5naW5nICdmbGFncycgb2YgYSBydW5uaW5nIHNjaGVkdWxlIGlzIG5vdCBzdXBwb3J0ZWQiKTsN
-Cj4gDQo+IFNvIHRoZSBwYXJhbWV0ZXIgbXVzdCBub3QgYmUgcGFzc2VkIGF0IGFsbD8gIFBlcmhh
-cHMgaXQncyBmaW5lIGlmOg0KPiANCj4gCXEtPmZsYWdzID09IHRhcHJpb19mbGFncw0KPiANCj4g
-Pw0KPiANClllcywgdGhhdCBpcyB0cnVlLiBJIHdpbGwgbWFrZSB0aGUgY2hhbmdlIGluIHRoZSBu
-ZXh0IHZlcnNpb24uDQo+IGFsc286IE5MX1NFVF9FUlJfTVNHX01PRCgpIGlzIGJldHRlciBoZXJl
-DQo+IA0KPj4gKwkJCXJldHVybiAtRU5PVFNVUFA7DQo+IA0KPiBQcm9iYWJseSBFSU5WQUwgb3Ig
-RU9QTk9UU1VQUCwgRU5PVFNVUFAgaXMgYSBoaWdoIGVycm9yIGNvZGUgd2hpY2ggbGliYw0KPiBk
-b2Vzbid0IHVuZGVyc3RhbmQsIGl0J3MgYmVzdCBhdm9pZGVkLg0KPiANCk9rIEkgd2lsbCBtYWtl
-IHRoYXQgY2hhbmdlIGluIHRoZSBuZXh0IHNlcmllcy4NCj4+ICsJCX0gZWxzZSBpZiAoIUZMQUdT
-X1ZBTElEKHRhcHJpb19mbGFncykpIHsNCj4+ICsJCQlOTF9TRVRfRVJSX01TRyhleHRhY2ssICJT
-cGVjaWZpZWQgJ2ZsYWdzJyBhcmUgbm90IHZhbGlkLiIpOw0KPiANCj4gbml0OiB5b3UgZGlkbid0
-IGhhdmUgYSBwZXJpb2QgYXQgdGhlIGVuZCBvZiB0aGUgcHJldmlvdXMgZXh0YWNrDQo+IA0KV2ls
-bCBpbmNsdWRlIGl0IGluIHRoZSBuZXh0IHNlcmllcy4NCj4+ICsJCQlyZXR1cm4gLUVOT1RTVVBQ
-Ow0KPj4gKwkJfQ0KPj4gKw0KPj4gKwkJcS0+ZmxhZ3MgPSB0YXByaW9fZmxhZ3M7DQo+PiArCX0N
-Cj4+ICsNCj4+ICsJZXJyID0gdGFwcmlvX3BhcnNlX21xcHJpb19vcHQoZGV2LCBtcXByaW8sIGV4
-dGFjaywgdGFwcmlvX2ZsYWdzKTsNCj4+IAlpZiAoZXJyIDwgMCkNCj4+IAkJcmV0dXJuIGVycjsN
-Cj4+IA0KPj4gQEAgLTc3OSw3ICsxMDY0LDExIEBAIHN0YXRpYyBpbnQgdGFwcmlvX2NoYW5nZShz
-dHJ1Y3QgUWRpc2MgKnNjaCwgc3RydWN0IG5sYXR0ciAqb3B0LA0KPj4gCS8qIFByb3RlY3RzIGFn
-YWluc3QgZW5xdWV1ZSgpL2RlcXVldWUoKSAqLw0KPj4gCXNwaW5fbG9ja19iaChxZGlzY19sb2Nr
-KHNjaCkpOw0KPj4gDQo+PiAtCWlmICghaHJ0aW1lcl9hY3RpdmUoJnEtPmFkdmFuY2VfdGltZXIp
-KSB7DQo+PiArCWlmICh0YltUQ0FfVEFQUklPX0FUVFJfVFhUSU1FX0RFTEFZXSkNCj4+ICsJCXEt
-PnR4dGltZV9kZWxheSA9IG5sYV9nZXRfczMyKHRiW1RDQV9UQVBSSU9fQVRUUl9UWFRJTUVfREVM
-QVldKTsNCj4gDQo+IFBlcmhhcHMgdGhpcyBhdHRyaWJ1dGUgc2hvdWxkIG9ubHkgYmUgYWxsb3dl
-ZCBpZiBmbGFncyBlbmFibGVkDQo+IHR4dGltZS1hc3Npc3Q/DQo+IA0KWWVzLCB0aGlzIGlzIHJl
-cXVpcmVkIGNoYW5nZSBmb3IgaW5jb3Jwb3JhdGluZyBmZWVkYmFjayBmcm9tIFN0ZXBoZW4gSGVt
-bWluZ2VyLiBJdCB3aWxsIGJlIGluY2x1ZGVkIGluIHRoZSBuZXh0IHZlcnNpb24uDQo+PiArCWlm
-ICghVFhUSU1FX0FTU0lTVF9JU19FTkFCTEVEKHRhcHJpb19mbGFncykgJiYNCj4+ICsJICAgICFo
-cnRpbWVyX2FjdGl2ZSgmcS0+YWR2YW5jZV90aW1lcikpIHsNCj4+IAkJaHJ0aW1lcl9pbml0KCZx
-LT5hZHZhbmNlX3RpbWVyLCBxLT5jbG9ja2lkLCBIUlRJTUVSX01PREVfQUJTKTsNCj4+IAkJcS0+
-YWR2YW5jZV90aW1lci5mdW5jdGlvbiA9IGFkdmFuY2Vfc2NoZWQ7DQo+PiAJfQ0KDQo=
+On Fri, Jun 07, 2019 at 10:20:56PM +0200, Yussuf Khalil wrote:
+> CC'ing iwlwifi maintainers to get some attention for this issue.
+> 
+> I am experiencing the very same bug on a ThinkPad T480s running 5.1.6 with
+> Fedora 30. A friend is seeing it on his X1 Carbon 6th Gen, too. Both have an
+> "Intel Corporation Wireless 8265 / 8275" card according to lspci.
+
+I have an older 04:00.0 Network controller [0280]: Intel Corporation
+Wireless 8260 [8086:24f3] (rev 3a) on a Thinkpad X260.
+
+> Notably, in all cases I've observed it occurred right after roaming from one
+> AP to another (though I can't guarantee this isn't a coincidence).
+
+I also have multiple Access Points broadcasting the same SSID in my
+house, and yes, I experience those issues often when I move from one
+part of the hose to another. I have, however, also experienced it in a
+hotel when I was using the mobile hotspot offered by my mobile, so that
+was clearly not a roaming situation.
+
+Greetings
+Marc
+
+-- 
+-----------------------------------------------------------------------------
+Marc Haber         | "I don't trust Computers. They | Mailadresse im Header
+Leimen, Germany    |  lose things."    Winona Ryder | Fon: *49 6224 1600402
+Nordisch by Nature |  How to make an American Quilt | Fax: *49 6224 1600421
