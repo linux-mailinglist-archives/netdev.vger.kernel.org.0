@@ -2,89 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2795B39703
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E68439746
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:04:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730251AbfFGUqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 16:46:13 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:36404 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729640AbfFGUqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 16:46:13 -0400
-Received: by mail-qk1-f194.google.com with SMTP id g18so2125343qkl.3;
-        Fri, 07 Jun 2019 13:46:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fRehPsNPEN/ECzbU8b7fuUn9KqNcRuRp0hIKZaFy6Ug=;
-        b=Y4c5SCaQfbBPk52YPTi7o4M2R3JAWZWzK6p8WRbz6/xgBQSaH7fHxZG29xgOkQJc1t
-         2NI3RNcgMTxZpyjWl1ILg0kQXBoPpUjaWA6QJoDMncoRU5mLR4HBbjkOq0udnqD5LUHw
-         GbXJvxdKZ04dHBRALWGB5ArybMie+IEqfmO7JSFpd6X1TUMboVcqj4qPHVguXItpTYmN
-         m4yeu02OexHattRSuOaA5GvB25TsZQyxTX16adMDm8ouiBWHPm9ZB2F6YRyFzXGem0eX
-         NAfYwsvRUFP9+PnbEhisXAB9LRu5qSivB5mIQJUmkRJrCzG1AFH8+1Y/mhgAtfgICnYJ
-         oBSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fRehPsNPEN/ECzbU8b7fuUn9KqNcRuRp0hIKZaFy6Ug=;
-        b=KngsJ4BBBIkK8zoRD114mcUan4W4U1OIX16ipUhfMuo/2ji/6gItM4EQSJdspTsXYe
-         hDP7dzKlSYM2zJTuct94yi+PW/H+XlS99HWtxS8j7vjsg0smoRAWXrei5bSz+H7CFseR
-         xO/2QTxB53hCHozH/kNH0pH419/SkHIxzqHpSk0UNUTeaVX8Yg/gwPMBmsakQEj6dTke
-         xQmmyIEFESC+cD7+OwIfk+WjJO74ZAYJBPoghULLZmSXR/GsnlL6I65uc0uO0Zru5GQV
-         Tuu9aCq1KWOqBadG8u6lFkmUomte79F5IoWAMGdpvCSYXdJJjc8pC5E/ewRyH5vU85vC
-         BtYA==
-X-Gm-Message-State: APjAAAVSyZtNbVjKXwqCt49MPD8fUvwDhU3wu5H6c3bmEgxuHUyBxO7i
-        DGkmI1d+s3NvyYhJCWM/8wZja+nW
-X-Google-Smtp-Source: APXvYqy6Qlb1MbiwtpuE9bC1TwrNvnsXqBqXwEVCqregplmHtCs75rJJPbqV7FPAiPbCGgAOB16vlg==
-X-Received: by 2002:a37:c45:: with SMTP id 66mr27122899qkm.31.1559940372089;
-        Fri, 07 Jun 2019 13:46:12 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id d23sm1437823qtq.6.2019.06.07.13.46.10
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 07 Jun 2019 13:46:11 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org, mkl@pengutronix.de,
-        wg@grandegger.com, patrick.ohly@intel.com,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com
-Subject: [PATCH net] can: purge socket error queue on sock destruct
-Date:   Fri,  7 Jun 2019 16:46:07 -0400
-Message-Id: <20190607204607.250375-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+        id S1731098AbfFGVEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 17:04:11 -0400
+Received: from mail.i8u.org ([75.148.87.25]:32160 "EHLO chris.i8u.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731059AbfFGVEI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 17:04:08 -0400
+X-Greylist: delayed 864 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Jun 2019 17:04:06 EDT
+Received: by chris.i8u.org (Postfix, from userid 1000)
+        id 51A8816C9402; Fri,  7 Jun 2019 13:49:38 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by chris.i8u.org (Postfix) with ESMTP id 5016416C9279;
+        Fri,  7 Jun 2019 13:49:38 -0700 (PDT)
+Date:   Fri, 7 Jun 2019 13:49:38 -0700 (PDT)
+From:   Hisashi T Fujinaka <htodd@twofifty.com>
+X-X-Sender: htodd@chris.i8u.org
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+cc:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>,
+        e1000-devel@lists.sourceforge.net, Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with
+ NAT-Traversal IPsec packets
+In-Reply-To: <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
+Message-ID: <alpine.NEB.2.21.9999.1906071343460.809@chris.i8u.org>
+References: <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca> <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com> <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com> <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
+ <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com> <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca> <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com> <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+ <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com> <20190522143956.quskqh33ko2wuf47@csclub.uwaterloo.ca> <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca> <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
+User-Agent: Alpine 2.21.9999 (NEB 344 2019-05-25)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Fri, 7 Jun 2019, Alexander Duyck wrote:
 
-CAN supports software tx timestamps as of the below commit. Purge
-any queued timestamp packets on socket destroy.
+> On Fri, Jun 7, 2019 at 7:39 AM Lennart Sorensen
+> <lsorense@csclub.uwaterloo.ca> wrote:
+>>
+>> On Wed, May 22, 2019 at 10:39:56AM -0400, Lennart Sorensen wrote:
+>>> OK I applied those two patches and get this:
+>>>
+>>> i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+>>> i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+>>> i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+>>> i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+>>> i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+>>> i40e 0000:3d:00.0: PFQF_HREGION[7]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[6]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[5]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[4]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[3]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[2]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[1]: 0x00000000
+>>> i40e 0000:3d:00.0: PFQF_HREGION[0]: 0x00000000
+>>> i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
+>>> i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
+>>> i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
+>>> i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
+>>> i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
+>>> i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
+>>> i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
+>>> i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
+>>> i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
+>>> i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
+>>> i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
+>>> i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
+>>> i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
+>>> i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
+>>> i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
+>>> i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
+>>> i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
+>>> i40e 0000:3d:00.0: flow_type: 27 input_mask:0x00000000002c0000
+>>> i40e 0000:3d:00.0: flow_type: 26 input_mask:0x00000000002c0000
+>>> i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
+>>> i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
+>>> i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
+>>> i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
+>>> i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
+>>> i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
+>>> i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
+>>> i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
+>>>
+>>> So seems the regions are all 0.
+>>>
+>>> All ipsec packets still hitting queue 0.
+>>
+>> So any news or more ideas to try or are we stuck hoping someone can fix
+>> the firmware?
+>
+> I had reached out to some folks over in the networking division hoping
+> that they can get a reproduction as I don't have the hardware that you
+> are seeing the issue on so I have no way to reproduce it.
+>
+> Maybe someone from that group can reply and tell us where they are on that?
+>
+> Thanks.
+>
+> - Alex
 
-Fixes: 51f31cabe3ce ("ip: support for TX timestamps on UDP and RAW sockets")
-Reported-by: syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/can/af_can.c | 1 +
- 1 file changed, 1 insertion(+)
+For some reason this isn't showing up in my work email. We had an
+internal conference this week and I think people are away. I'll see if I
+can chase some people down if they're still here and not on the way
+home.
 
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index e8fd5dc1780ae..189a6bf8f829c 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -99,6 +99,7 @@ EXPORT_SYMBOL(can_ioctl);
- static void can_sock_destruct(struct sock *sk)
- {
- 	skb_queue_purge(&sk->sk_receive_queue);
-+	skb_queue_purge(&sk->sk_error_queue);
- }
- 
- static const struct can_proto *can_get_proto(int protocol)
 -- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
-
+Hisashi T Fujinaka - htodd@twofifty.com
