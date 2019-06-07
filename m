@@ -2,152 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 257C4383AA
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 07:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDDD6383C7
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 07:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbfFGFMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 01:12:49 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35360 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfFGFMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 01:12:49 -0400
-Received: by mail-ed1-f67.google.com with SMTP id p26so1163399edr.2
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 22:12:47 -0700 (PDT)
+        id S1726167AbfFGFhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 01:37:42 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34369 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbfFGFhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 01:37:42 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c85so538958pfc.1
+        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 22:37:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
-         :subject:mime-version:content-transfer-encoding;
-        bh=X+VdyBkwWBj+A8nZ9fuV2ga0Yg8bfWjeExs0duLp7AE=;
-        b=CxTTI0DeptWFatbDZ0NKQsZsgCfYyHcMdaLCUqWl6S/Dn4R30qrCY9CJMCDiu7VBH/
-         rAFskPH7JRikj2/iwuLfUpyyppc2bj8wLBxLui+oJ0FA3tRDVdWE+Z97A5pqBRz5fyAz
-         E0NCsVFieCa7eiCBQh5lu4RhZCi2GE3zgGOg0=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references:to;
+        bh=Y10NLKD/ZqpLSEJSwJhGmqd2pbOsNMyfYz/FOU0gi+M=;
+        b=uNvyY1vp7pd0Gu+b7ZTTP/pVgawMmmM20MeRjDLaFvOjLB9JPticDFT8HYYZL40v8o
+         7BKuJKMNf/7Nu6ZK/5T4VcKgzRXv2TrTAsfuVOi0nP5aQePXfP5EThHgtMxOjwU+djDQ
+         qexPPskoL5GmFdk6pkE4EY0FffOt0pJmMAMcaURdrG39aly1DAnvfn33zgm57ASr83R4
+         pC89J13246T6m+AE5ninYik0/fD4FDPO9eL6uYEYV/vkIg1OOKY6IKoEWgwHMZs8gVID
+         bLatOhbhanWtNrQO9upuOqh8iNw2VZ5vlRJb71uyFshE2mGhgeIUJbVpSVrpAmSdR+eG
+         26rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:subject:mime-version
-         :content-transfer-encoding;
-        bh=X+VdyBkwWBj+A8nZ9fuV2ga0Yg8bfWjeExs0duLp7AE=;
-        b=XKb+pb8aj1Njp7YNZPkhcqdBmY3XK4MZV98dt4Dj+2C+/DPqubWSn3ehfGnT0FK6/w
-         leeI+LVMTdnn6Ekdw8EHUFJ/2wbHZfnqtEyehXw2ADC6VOkLIBwRpEeFUhFyXYCetauX
-         DT98Y9dNLCKTCQhlRhAMb/T3qAFsGB6FTRqK7PkpzLVxCWvzbd0K5vv+dRG/lLayMAQk
-         /xhDDlHj0fcrmoZmL3b5WOUxKi0tdclBLxf/l0JA/tTQoVNY8Spr9KxfPrktoQb0D4z3
-         sahPu+h85oqQvDNQQndk9WJptAFlZFMlKl2HPmyGnSHDoe9wb6HC2E/JRnudMzAQYX3F
-         xn2g==
-X-Gm-Message-State: APjAAAUQmRMhnIX2as88inQxgpIZJB7oq9zb0FYMuNMPN/wnWa+hJwxl
-        fO1NCc0AUoNBNLI8dwpeeLPAEA==
-X-Google-Smtp-Source: APXvYqxhvPHvkv9YaUOGfD7/SxyLMutkVvxNogtZJ3H6zoYCplrVkHX8Wbxd30gY39jSIR64FYZtnw==
-X-Received: by 2002:a17:906:1cc6:: with SMTP id i6mr34091753ejh.100.1559884367150;
-        Thu, 06 Jun 2019 22:12:47 -0700 (PDT)
-Received: from [192.168.178.17] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id 93sm234704edk.84.2019.06.06.22.12.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 06 Jun 2019 22:12:46 -0700 (PDT)
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-To:     Doug Anderson <dianders@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Double Lo <double.lo@cypress.com>,
-        Brian Norris <briannorris@chromium.org>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Wright Feng <wright.feng@cypress.com>,
-        "Chi-Hsien Lin" <chi-hsien.lin@cypress.com>,
-        netdev <netdev@vger.kernel.org>,
-        "brcm80211-dev-list" <brcm80211-dev-list@cypress.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Franky Lin <franky.lin@broadcom.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>
-Date:   Fri, 07 Jun 2019 07:12:42 +0200
-Message-ID: <16b305a7110.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-In-Reply-To: <CAD=FV=UPfCOr-syAbVZ-FjHQy7bgQf5BS5pdV-Bwd3hquRqEGg@mail.gmail.com>
-References: <20190603183740.239031-1-dianders@chromium.org>
- <20190603183740.239031-4-dianders@chromium.org>
- <42fc30b1-adab-7fa8-104c-cbb7855f2032@intel.com>
- <CAD=FV=UPfCOr-syAbVZ-FjHQy7bgQf5BS5pdV-Bwd3hquRqEGg@mail.gmail.com>
-User-Agent: AquaMail/1.20.0-1451 (build: 102000001)
-Subject: Re: [PATCH v2 3/3] brcmfmac: sdio: Disable auto-tuning around commands expected to fail
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:to;
+        bh=Y10NLKD/ZqpLSEJSwJhGmqd2pbOsNMyfYz/FOU0gi+M=;
+        b=gjiA1VkU13QWWQLWM0tVPEsBtMZ8dp3r/I/xj+HHtgSCupc0IwipSZOIemzdEY/s0r
+         9iJEqW69Obx6Ky25ZzKAukdAUPZG28BwUjNQmoNmzFVo6HW/yaBl5vMSqRVC7+34JIGn
+         XJYwUZP0cxNdJA3MiVui7+eSEG8DUXkGkXRG2/qJKbiRR0Z2XpCeBdrJeXzgpnm+34We
+         12Ye0SGIuPjnTZAgo4kVUMjlumY4ne8Xx7ZFn+bVCQX8uhBC+FVZYJKR0e80r9Jam3E1
+         TDT7A5FStAKZSt/aT05+MNm5Md6mZqh59xISqTG2k6iV0wgxW72fWexy3MMps71eUO3x
+         K9NQ==
+X-Gm-Message-State: APjAAAWufin699sAlLPxBIPQfUuLpLw17AwOtWfpz1wckBTXBnP/XQV6
+        ptbeOZ32q5UeScfPRp1vHtUEQium
+X-Google-Smtp-Source: APXvYqzocuznyQpMTNzmJ4QmW+0M9Sw9QFsmPxCjZA3gcf3MokEgQK3N9Njo4MBVVh0jBWgI5G87NQ==
+X-Received: by 2002:a17:90b:d8a:: with SMTP id bg10mr3630942pjb.92.1559885861950;
+        Thu, 06 Jun 2019 22:37:41 -0700 (PDT)
+Received: from xplor.waratah.dyndns.org (122-58-182-39-adsl.sparkbb.co.nz. [122.58.182.39])
+        by smtp.gmail.com with ESMTPSA id y185sm1193217pfy.110.2019.06.06.22.37.40
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Thu, 06 Jun 2019 22:37:41 -0700 (PDT)
+Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
+        id F09F2360079; Fri,  7 Jun 2019 17:37:36 +1200 (NZST)
+From:   Michael Schmitz <schmitzmic@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     anders.roxell@linaro.org, Michael Schmitz <schmitzmic@gmail.com>,
+        andrew@lunn.ch, davem@davemloft.net, sfr@canb.auug.org.au
+Subject: [PATCH net v3] net: phy: rename Asix Electronics PHY driver
+Date:   Fri,  7 Jun 2019 17:37:34 +1200
+Message-Id: <1559885854-15904-1-git-send-email-schmitzmic@gmail.com>
+X-Mailer: git-send-email 1.7.0.4
+In-Reply-To: <20190514105649.512267cd@canb.auug.org.au>
+References: <20190514105649.512267cd@canb.auug.org.au>
+To:     netdev@vger.kernel-org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On June 6, 2019 11:37:22 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> In the case of dw_mmc, which I'm most familiar with, we don't have any
-> sort of automated or timed-based retuning.  ...so we'll only re-tune
-> when we see the CRC error.  If I'm understanding things correctly then
-> that for dw_mmc my solution and yours behave the same.  That means the
-> difference is how we deal with other retuning requests, either ones
-> that come about because of an interrupt that the host controller
-> provided or because of a timer.  Did I get that right?
+[Resent to net instead of net-next - may clash with Anders Roxell's patch
+series addressing duplicate module names]
 
-Right.
+Commit 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
+introduced a new PHY driver drivers/net/phy/asix.c that causes a module
+name conflict with a pre-existiting driver (drivers/net/usb/asix.c).
 
-> ...and I guess the reason we have to deal specially with these cases
-> is because any time that SDIO card is "sleeping" we don't want to
-> retune because it won't work.  Right?  NOTE: the solution that would
-> come to my mind first to solve this would be to hold the retuning for
-> the whole time that the card was sleeping and then release it once the
-> card was awake again.  ...but I guess we don't truly need to do that
-> because tuning only happens as a side effect of sending a command to
-> the card and the only command we send to the card is the "wake up"
-> command.  That's why your solution to hold tuning while sending the
-> "wake up" command works, right?
+The PHY driver is used by the X-Surf 100 ethernet card driver, and loaded
+by that driver via its PHY ID. A rename of the driver looks unproblematic.
 
-Yup.
+Rename PHY driver to ax88796b.c in order to resolve name conflict. 
 
-> ---
->
-> OK, so assuming all the above is correct, I feel like we're actually
-> solving two problems and in fact I believe we actually need both our
-> approaches to solve everything correctly.  With just your patch in
-> place there's a problem because we will clobber any external retuning
-> requests that happened while we were waking up the card.  AKA, imagine
-> this:
->
-> A) brcmf_sdio_kso_control(on=True) gets called; need_retune starts as 0
->
-> B) We call sdio_retune_hold_now()
->
-> C) A retuning timer goes off or the SD Host controller tells us to retune
->
-> D) We get to the end of brcmf_sdio_kso_control() and clear the "retune
-> needed" since need_retune was 0 at the start.
->
-> ...so we dropped the retuning request from C), right?
->
->
-> What we truly need is:
->
-> 1. CRC errors shouldn't trigger a retuning request when we're in
-> brcmf_sdio_kso_control()
->
-> 2. A separate patch that holds any retuning requests while the SDIO
-> card is off.  This patch _shouldn't_ do any clearing of retuning
-> requests, just defer them.
->
->
-> Does that make sense to you?  If so, I can try to code it up...
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+Tested-by: Michael Schmitz <schmitzmic@gmail.com>
+Fixes: 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
+---
 
-FWIW it does make sense to me. However, I am still not sure if our sdio 
-hardware supports retuning. Have to track down an asic designer who can 
-tell or dive into vhdl myself.
+Changes from v1:
 
-So I want to disable device sleep and trigger retuning through debugfs or 
-some other hack.
+- merge into single commit (suggested by Andrew Lunn)
 
-Regards,
-Arend
+Changes from v2:
 
+- use rename flag for diff (suggested by Andrew Lunn)
+---
+ drivers/net/ethernet/8390/Kconfig      | 2 +-
+ drivers/net/phy/Kconfig                | 2 +-
+ drivers/net/phy/Makefile               | 2 +-
+ drivers/net/phy/{asix.c => ax88796b.c} | 0
+ 4 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+index f2f0264..443b34e 100644
+--- a/drivers/net/ethernet/8390/Kconfig
++++ b/drivers/net/ethernet/8390/Kconfig
+@@ -49,7 +49,7 @@ config XSURF100
+ 	tristate "Amiga XSurf 100 AX88796/NE2000 clone support"
+ 	depends on ZORRO
+ 	select AX88796
+-	select ASIX_PHY
++	select AX88796B_PHY
+ 	help
+ 	  This driver is for the Individual Computers X-Surf 100 Ethernet
+ 	  card (based on the Asix AX88796 chip). If you have such a card,
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index d629971..5496e5c 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -253,7 +253,7 @@ config AQUANTIA_PHY
+ 	---help---
+ 	  Currently supports the Aquantia AQ1202, AQ2104, AQR105, AQR405
+ 
+-config ASIX_PHY
++config AX88796B_PHY
+ 	tristate "Asix PHYs"
+ 	help
+ 	  Currently supports the Asix Electronics PHY found in the X-Surf 100
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index 27d7f9f..5b5c866 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -52,7 +52,7 @@ ifdef CONFIG_HWMON
+ aquantia-objs			+= aquantia_hwmon.o
+ endif
+ obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
+-obj-$(CONFIG_ASIX_PHY)		+= asix.o
++obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
+ obj-$(CONFIG_AT803X_PHY)	+= at803x.o
+ obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
+ obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
+diff --git a/drivers/net/phy/asix.c b/drivers/net/phy/ax88796b.c
+similarity index 100%
+rename from drivers/net/phy/asix.c
+rename to drivers/net/phy/ax88796b.c
+-- 
+1.9.1
 
