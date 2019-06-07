@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22566399BF
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:37:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C5A399C7
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730029AbfFGXhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 19:37:52 -0400
-Received: from mail-pl1-f169.google.com ([209.85.214.169]:37935 "EHLO
-        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729810AbfFGXhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 19:37:52 -0400
-Received: by mail-pl1-f169.google.com with SMTP id f97so1383804plb.5
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 16:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ACK/NfFFl41cKymew2w1DJmgIElM65sa88gYhGevkTI=;
-        b=W3uL2EUBTJjTiFKqo19UbB3pVslOpyKq9M0EeSZEUjSZbiy7TGCLGMkb8M+IcLRhVe
-         Rf/1+/QJLAwzYeclIUVJKLTIVkdNiLe40hhAugp2MxxPscZCssH33lrprmaUJPrBuwc/
-         onShRau1PeUq/vis4aO2QT8HrtsB9B5eAQR/F8IyjTrBLvMd6sV9dhQU9ZOTpSMQwyE4
-         19PsLBaCnQcslXSL7IXcagSppVUejEf8azG3lMgNyLbgM60Io/7Z+JgNPQV78wAgEnU2
-         YDW8/z6TSEF46557FBfKW1K7xQ3hh2KXF0yh7SCQqjJHLqLg0yfTgXNvC8VHZF2PC35g
-         uwQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ACK/NfFFl41cKymew2w1DJmgIElM65sa88gYhGevkTI=;
-        b=ehIOLp6it4PdHgl/FGIrakb971rHu8GVeYNHwUWr9tT8D/KJz7iJ/P0QWQ3EdSu2a8
-         ZXfkQqGRZiv89v/MUDr1yIOubZWt58x7BGkd5ckwf1dmSIcet5Uv5qCJBBApSLh/MG1P
-         yvSxR4dRv8u1GQ7mjKXb8jH1pmd1GQsLEyqQroDpSs8O0Bl6RuOjMGpcE9bup5JVMASL
-         zMoiQydWjztIXtloh6p5cUvvfA8zlJpS4qHPl61Cvk8SIWThtlD8hc7qGtsVoOxzBiw/
-         RxEwn1XJ/AR4t2iMXuVpXvXJdlOZMT3Tr62l0KkLyZLVFxBeS6lGCvyVC/o94gvKgRqw
-         D2uQ==
-X-Gm-Message-State: APjAAAX3wrpMC3JakPwmwDnTIK7xBZ8Syj9ONEbMAoiBie3x03S0IY57
-        /VUlWA8cfCKg//e36xcVIjxBZuaev/o=
-X-Google-Smtp-Source: APXvYqwYrmeaHd+6GeMfqTn4HT35qwoWdiIFuHjaE3atAOAhAz8kaNsnYlbg0RmB/PY+hDzNRP46HA==
-X-Received: by 2002:a17:902:2be8:: with SMTP id l95mr54900427plb.231.1559950671831;
-        Fri, 07 Jun 2019 16:37:51 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b2sm3074795pgk.50.2019.06.07.16.37.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 07 Jun 2019 16:37:51 -0700 (PDT)
-Date:   Fri, 7 Jun 2019 16:37:43 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH v2 iproute-next 10/10] ipmonitor: Add nexthop option to
- monitor
-Message-ID: <20190607163743.6c47c8d4@hermes.lan>
-In-Reply-To: <20190607223816.27512-11-dsahern@kernel.org>
-References: <20190607223816.27512-1-dsahern@kernel.org>
-        <20190607223816.27512-11-dsahern@kernel.org>
+        id S1730351AbfFGXrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 19:47:31 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60550 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727184AbfFGXrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 19:47:31 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hZOa0-00052O-Vv; Sat, 08 Jun 2019 01:47:29 +0200
+Received: from [178.197.248.32] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hZOa0-000QI0-QH; Sat, 08 Jun 2019 01:47:28 +0200
+Subject: Re: [PATCH v4 bpf-next 0/2] bpf: Add a new API
+To:     Roman Gushchin <guro@fb.com>, Hechao Li <hechaol@fb.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>, Kernel Team <Kernel-team@fb.com>
+References: <20190607232550.GA5472@tower.DHCP.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7b7c8e00-a0d5-7d45-017d-a8869cd8025c@iogearbox.net>
+Date:   Sat, 8 Jun 2019 01:47:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190607232550.GA5472@tower.DHCP.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25473/Fri Jun  7 10:00:31 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  7 Jun 2019 15:38:16 -0700
-David Ahern <dsahern@kernel.org> wrote:
-
-> From: David Ahern <dsahern@gmail.com>
+On 06/08/2019 01:25 AM, Roman Gushchin wrote:
+> On 06/07/2019 06:37 PM, Hechao Li wrote:
+>> Getting number of possible CPUs is commonly used for per-CPU BPF maps
+>> and perf_event_maps. Add a new API libbpf_num_possible_cpus() that
+>> helps user with per-CPU related operations and remove duplicate
+>> implementations in bpftool and selftests.
+>>
+>> v4: Fixed error code when reading 0 bytes from possible CPU file
+>>
+>> Hechao Li (2):
+>>   bpf: add a new API libbpf_num_possible_cpus()
+>>   bpf: use libbpf_num_possible_cpus in bpftool and selftests
+>>
+>>  tools/bpf/bpftool/common.c             | 53 +++---------------------
+>>  tools/lib/bpf/libbpf.c                 | 57 ++++++++++++++++++++++++++
+>>  tools/lib/bpf/libbpf.h                 | 16 ++++++++
+>>  tools/lib/bpf/libbpf.map               |  1 +
+>>  tools/testing/selftests/bpf/bpf_util.h | 37 +++--------------
+>>  5 files changed, 84 insertions(+), 80 deletions(-)
 > 
-> Add capability to ip-monitor to listen and dump nexthop messages.
-> Since the nexthop group = 32 which exceeds the max groups bit
-> field, 2 separate flags are needed - one that defaults on to indicate
-> nexthop group is joined by default and a second that indicates a
-> specific selection by the user (e.g, ip mon nexthop route).
+>> Series applied, thanks!
 > 
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+>> P.s.: Please retain full history (v1->v2->v3->v4) in cover letter next time as
+>> that is typical convention and helps readers of git log to follow what has been
+>> changed over time.
+> 
+> 
+> Hello!
+> 
+> I'm getting the following errors on an attempt to build bpf tests.
+> Reverting the last patch fixes it.
+> 
+[...]
+> 
+> clang -I. -I./include/uapi -I../../../include/uapi -idirafter /usr/local/include -idirafter /opt/fb/devtoolset/bin/../lib/clang/4.0.0/include -idirafter /usr/include -Wno-compare-distinct-pointer-types \
+> 	 -O2 -target bpf -emit-llvm -c progs/sockmap_parse_prog.c -o - |      \
+> llc -march=bpf -mcpu=generic  -filetype=obj -o /data/users/guro/linux/tools/testing/selftests/bpf/sockmap_parse_prog.o
+> In file included from progs/sockmap_parse_prog.c:3:
+> ./bpf_util.h:9:10: fatal error: 'libbpf.h' file not found
+> #include <libbpf.h>
+>          ^~~~~~~~~~
+> 1 error generated.
 
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+True, I've therefore tossed the series from bpf-next. Hechao, please fix and resubmit.
