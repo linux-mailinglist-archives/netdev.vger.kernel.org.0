@@ -2,76 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA6639487
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D81F53948E
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731888AbfFGSnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:43:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48226 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729449AbfFGSnP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 14:43:15 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 19B81308FC4E;
-        Fri,  7 Jun 2019 18:43:15 +0000 (UTC)
-Received: from oldenburg2.str.redhat.com (ovpn-116-64.ams2.redhat.com [10.36.116.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D2AD27856D;
-        Fri,  7 Jun 2019 18:43:05 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Joseph Myers <joseph@codesourcery.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Paul Burton <pburton@wavecomp.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] uapi: avoid namespace conflict in linux/posix_types.h
-References: <20190319165123.3967889-1-arnd@arndb.de>
-        <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
-        <87tvd2j9ye.fsf@oldenburg2.str.redhat.com>
-        <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
-Date:   Fri, 07 Jun 2019 20:43:03 +0200
-In-Reply-To: <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
-        (Linus Torvalds's message of "Fri, 7 Jun 2019 11:27:57 -0700")
-Message-ID: <871s05fd8o.fsf@oldenburg2.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
+        id S1731907AbfFGSon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:44:43 -0400
+Received: from casper.infradead.org ([85.118.1.10]:55408 "EHLO
+        casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728873AbfFGSon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:44:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=okj69MZGvSUR6PKRM1mo76QwPQAo0KpBD3JOl7izOGQ=; b=tkvWPXolFrV5gC6B/5s5iq8MdS
+        71AqKowXyuv3bN8SkI+l2hm+nntwA7kf9Vp1BZbYZ7a0zstKeUuQK4lQC4lL7Hf/lc9Qnhq/nADyG
+        oZpW6Uvw7OAz13o5FduofHVYHVUtVImMNlJ082ilSm5zr5jpHf0z+vlpbgt2oDx/I4RcAQym43m5b
+        /rAepyYSek6lQnoC10I5TM/3wYS5L00RHVmJ+gp+qSRzJhGgsVMWutpTVH0ns9VVtodda92tav6RA
+        eeqwTIvWGagPvmBIBDHO/e0ogkZerSFtXxQWrFNw9IdUifKf6NcumiewyU6UVX+vIx6FuKNMcCpa7
+        qorGd03g==;
+Received: from [179.181.119.115] (helo=coco.lan)
+        by casper.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hZJqw-0006VH-9M; Fri, 07 Jun 2019 18:44:38 +0000
+Date:   Fri, 7 Jun 2019 15:44:30 -0300
+From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 00/22] Some documentation fixes
+Message-ID: <20190607154430.4879976d@coco.lan>
+In-Reply-To: <20190607115521.6bf39030@lwn.net>
+References: <cover.1559656538.git.mchehab+samsung@kernel.org>
+        <20190607115521.6bf39030@lwn.net>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Fri, 07 Jun 2019 18:43:15 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Linus Torvalds:
+Em Fri, 7 Jun 2019 11:55:21 -0600
+Jonathan Corbet <corbet@lwn.net> escreveu:
 
-> If we're changing kernel header files, it's easy enough to change the
-> kernel users. I'd be more worried about user space that *uses* that
-> thing, and currently accesses 'val[]' by name.
->
-> So the patch looks a bit odd to me. How are people supposed to use
-> fsid_t if they can't look at it?
+> On Tue,  4 Jun 2019 11:17:34 -0300
+> Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
+> 
+> > Fix several warnings and broken links.
+> > 
+> > This series was generated against linux-next, but was rebased to be applied at
+> > docs-next. It should apply cleanly on either tree.
+> > 
+> > There's a git tree with all of them applied on the top of docs/docs-next
+> > at:
+> > 
+> > https://git.linuxtv.org/mchehab/experimental.git/log/?h=fix_doc_links_v2  
+> 
+> So I'll admit I've kind of lost track of which of these are applied, which
+> have comments, etc.  When you feel things have settled, can you get me an
+> updated set and I'll get them applied?
 
-The problem is that the header was previously not used pervasively in
-userspace headers.  See commit a623a7a1a5670c25a16881f5078072d272d96b71
-("y2038: fix socket.h header inclusion").  Very little code needed it
-before.
+What I usually do here to check what was already applied (besides
+looking e-mails) is to reset my tree against yours, then pull from
+linux-next and pull from my old branch with those patches.
 
-On the glibc side, we nowadays deal with this by splitting headers
-further.  (We used to suppress definitions with macros, but that tended
-to become convoluted.)  In this case, moving the definition of
-__kernel_long_t to its own header, so that
-include/uapi/asm-generic/socket.h can include that should fix it.
+Then, I reset again to your tree, in order to make easier for you
+to apply. It should be noticed that, due to this, you might actually
+see a few more warnings on your tree, if a patch on this series
+fix an issue that it is at linux next but didn't arrive your
+tree.
 
-> So now that I _do_ see the patch, there's no way I'll apply it.
+Yet, all patches apply cleanly on your tree.
 
-Fair enough.
+After doing that, there are 17 patches yet to be applied. Two new
+patches are now needed too, due to vfs.txt -> vfs.rst and
+pci.txt -> pci.rst renames.
+
+The patches against your tree are at:
+
+	https://git.linuxtv.org/mchehab/experimental.git/log/?h=fix_doc_links_v3.3
+
+For convenience, I'm sending them again as a new patch series
+(with the two extra patches fixing the recent issues).
+
 
 Thanks,
-Florian
+Mauro
