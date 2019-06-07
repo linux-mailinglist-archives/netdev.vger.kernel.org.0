@@ -2,156 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E01338EFD
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E57AD38F0B
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729897AbfFGP0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 11:26:15 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40726 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729878AbfFGP0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 11:26:15 -0400
-Received: by mail-pl1-f195.google.com with SMTP id a93so962164pla.7;
-        Fri, 07 Jun 2019 08:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XVGisPA/tmje+GMmiDK8OnPmVMVeg+5zpouDsmuezH0=;
-        b=Ng9VAdE1hknVxgMRmGjp2lDv/vnEMUT819mfzZMuI8Vo6TE0MQGzCyXQIXbFSQSR9d
-         mKrNlvkbRFOoWrF67ukGOUJy4jylKGdkI6hIa+PapCfYavrA91o8rolb+/2gcZ89PHi4
-         TCKXDiJaTwa1LK8hu36NqCpMeFdtpAHiDM4lDcBoesgsWJUQKalZSIuLylNn8fC6ZpPa
-         jrw8KWHCbIrHI4lj+eQDHSVFYpOVYAS1GI7rAz/OImckqC1LWeXKUjZlS5GZhLJXoIQy
-         Q7PudF+uPC57APLwcHvHZjgTe0n5U3Fn6YNewGQKV/dgVXu9sEBuf67YsfvDIaQIy+MF
-         eFNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XVGisPA/tmje+GMmiDK8OnPmVMVeg+5zpouDsmuezH0=;
-        b=e3CBz1lCutw2gZP9krwcp9x8ZSoI7pD4t8A+sFMv1QK8iRNJH9kDcXmYV0z1IGK+ER
-         1w7BalgPNMKxhl/R/4S9yQDA1LPW/KvsNRuNCoJBwTrmV+1g8rT1a7d/gpQq2Hxx5CfW
-         9N2hep08BUmdJ4nLLZ90l249s9YOBW2APIe4r67x72KkrOfKaSJkrm8aPq+9+e2EebU9
-         eZLg2v/k+8MM5Zp7JlB6DGwckvfIhVnOTQQ+vOHmHr7Yw1BzEambZ2tO0z2uAcrEzvtl
-         F1ciCatdsfK8+CJyoiSyBAPKYKj+qpmyNCTG8uRZq3Jk4C/J/DKc+3dEHI3GGuk9KUWZ
-         jV1w==
-X-Gm-Message-State: APjAAAWi1FHCt3IfbltsoEJ7c0eehGtAG0dJGabnOx8jK9wGHa37Zzz8
-        wg5swwcovmIgE7ttHj5apqyX1Brt
-X-Google-Smtp-Source: APXvYqyb+ly9dDrO0mjWbQvwYi45rypLj3ZwkYwj101gOR+IwU70sx8VUSNY5cgcVG4+h34ABuZAJw==
-X-Received: by 2002:a17:902:294a:: with SMTP id g68mr57385663plb.169.1559921174428;
-        Fri, 07 Jun 2019 08:26:14 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id j7sm2461679pfa.184.2019.06.07.08.26.13
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Jun 2019 08:26:13 -0700 (PDT)
-Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-References: <20190603200301.GM28207@linux.ibm.com>
- <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
- <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
-Date:   Fri, 7 Jun 2019 08:26:12 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1729427AbfFGPaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:30:08 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:53232 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728071AbfFGPaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 11:30:08 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x57FIvwc065415;
+        Fri, 7 Jun 2019 15:30:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=HgNb4Eaeuh7hnkrkenJhDs2+BF4CbcxcUHAitZN3w/I=;
+ b=2aE2myt9lxKrtAWQGQsrJSdJRybCJGmGQQpC3R6uE7I8ZZum7De8N6VtaySosY1snnA/
+ MBxV5e47d9h2bFAjtpafF8+7qYvaXr4KnlOFWSzSiPAyU687shnKjlO9OBGT1SqpCk6G
+ AwarIQ9FfMhQt605ozjEKcN5OiVoNZZStNjOtjruknuaNywDk0QzLtFNuu4A+5fXFVd0
+ l/DqrAe23r19ERMdSh3oQ2EINncL9/3zYWmTk8Me7i6K9h8FhPTuhhSz7CZbk5ARr1VV
+ k78TUgPIE70HeUuXiYk1skuy1gVxetMnhbc01jDTB/7tP6Cm4mp0DyBE26dAnJ/gWLsq 9Q== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 2sugstxxup-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jun 2019 15:30:00 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x57FT8rU180546;
+        Fri, 7 Jun 2019 15:29:59 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 2swngn4uf2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jun 2019 15:29:59 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x57FTwUe005099;
+        Fri, 7 Jun 2019 15:29:58 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 07 Jun 2019 08:29:57 -0700
+Date:   Fri, 7 Jun 2019 18:29:51 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH next] nexthop: off by one in nexthop_mpath_select()
+Message-ID: <20190607152951.GR31203@kadam>
+References: <20190607135636.GB16718@mwanda>
+ <0e02a744-f28e-e206-032b-a0ffac9f7311@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0e02a744-f28e-e206-032b-a0ffac9f7311@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9280 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=750
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906070107
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9280 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=800 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906070107
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/7/19 7:09 AM, Herbert Xu wrote:
-> On Tue, Jun 04, 2019 at 09:04:55AM -0700, Linus Torvalds wrote:
->>
->> In fact, the alpha port was always subtly buggy exactly because of the
->> "byte write turns into a read-and-masked-write", even if I don't think
->> anybody ever noticed (we did fix cases where people _did_ notice,
->> though, and we might still have some cases where we use 'int' for
->> booleans because of alpha issues.).
+On Fri, Jun 07, 2019 at 08:54:33AM -0600, David Ahern wrote:
+> On 6/7/19 7:56 AM, Dan Carpenter wrote:
+> > The nhg->nh_entries[] array is allocated in nexthop_grp_alloc() and it
+> > has nhg->num_nh elements so this check should be >= instead of >.
+> > 
+> > Fixes: f88d8ea67fbd ("ipv6: Plumb support for nexthop object in a fib6_info")
 > 
-> This is in fact a real bug in the code in question that no amount
-> of READ_ONCE/WRITE_ONCE would have caught.  The field fqdir->dead is
-> declared as boolean so writing to it is not atomic (on old Alphas).
+> Wrong fixes. The helper was added by 430a049190de so it should be
 > 
-> I don't think it currently matters because padding would ensure
-> that it is in fact 64 bits long.  However, should someone add another
-> char/bool/bitfield in this struct in future it could become an issue.
+> Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
 > 
-> So let's fix it.
 
+Sorry, my eyes must have gone squiffy.  I don't even know how I got that
+wrong.  Let me resend.
 
-There is common knowledge among us programmers that bit fields
-(or bool) sharing a common 'word' need to be protected
-with a common lock.
+regards,
+dan carpenter
 
-Converting all bit fields to plain int/long would be quite a waste of memory.
-
-In this case, fqdir_exit() is called right before the whole
-struct fqdir is dismantled, and the only cpu that could possibly
-change the thing is ourself, and we are going to start an RCU grace period.
-
-Note that first cache line in 'struct fqdir' is read-only.
-Only ->dead field is flipped to one at exit time.
-
-Your patch would send a strong signal to programmers to not even try using
-bit fields.
-
-Do we really want that ?
-
-> 
-> ---8<--
-> The field fqdir->dead is meant to be written (and read) atomically.
-> As old Alpha CPUs can't write a single byte atomically, we need at
-> least an int for it to work.
-> 
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> 
-> diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-> index e91b79ad4e4a..8c458fba74ad 100644
-> --- a/include/net/inet_frag.h
-> +++ b/include/net/inet_frag.h
-> @@ -14,7 +14,9 @@ struct fqdir {
->  	int			max_dist;
->  	struct inet_frags	*f;
->  	struct net		*net;
-> -	bool			dead;
-> +
-> +	/* We can't use boolean because this needs atomic writes. */
-> +	int			dead;
->  
->  	struct rhashtable       rhashtable ____cacheline_aligned_in_smp;
->  
-> diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
-> index 35e9784fab4e..05aa7c145817 100644
-> --- a/net/ipv4/inet_fragment.c
-> +++ b/net/ipv4/inet_fragment.c
-> @@ -193,7 +193,7 @@ void fqdir_exit(struct fqdir *fqdir)
->  {
->  	fqdir->high_thresh = 0; /* prevent creation of new frags */
->  
-> -	fqdir->dead = true;
-> +	fqdir->dead = 1;
->  
->  	/* call_rcu is supposed to provide memory barrier semantics,
->  	 * separating the setting of fqdir->dead with the destruction
-> 
