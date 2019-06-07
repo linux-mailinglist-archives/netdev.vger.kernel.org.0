@@ -2,169 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4ACC39572
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930C73957D
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730070AbfFGTVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 15:21:09 -0400
-Received: from Galois.linutronix.de ([146.0.238.70]:51142 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730018AbfFGTVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:21:06 -0400
-Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
-        by Galois.linutronix.de with esmtp (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1hZKQA-0004YF-5P; Fri, 07 Jun 2019 21:21:02 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     tglx@linutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 net-next 7/7] net: hwbm: Make the hwbm_pool lock a mutex
-Date:   Fri,  7 Jun 2019 21:20:40 +0200
-Message-Id: <20190607192040.19367-8-bigeasy@linutronix.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190607192040.19367-1-bigeasy@linutronix.de>
-References: <20190607192040.19367-1-bigeasy@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730162AbfFGTXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 15:23:52 -0400
+Received: from mail-yb1-f201.google.com ([209.85.219.201]:44307 "EHLO
+        mail-yb1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729989AbfFGTXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:23:52 -0400
+Received: by mail-yb1-f201.google.com with SMTP id v67so2887032yba.11
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 12:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=xyFfYdydnXCfgJvTY+Ob/2GyudKDAABAbq6RIj8n7eM=;
+        b=ETJ5P4q+CA6sKI9S+CsYHKGhvylLu8Fb6/1eHkPQb5O+PaSeLCHiRVzim36AqDxxa2
+         M0sG6EbKtmcH2X9zcQ6iMUMYxBw/XsJwNoH4DP9Y0U1m5a6TSb8reCC7UhDzU4Jwqiii
+         dcOmaz4OlTh8WcvbswsvouXAtN/tTotHU41sksF8cRwot8zox57YCNfxU0CvSUBAuXg5
+         OS9roKHFypEW0FksjEttp4GQyA1qS+qwa9viakMBQrZM4ekG4+si0O4OzYscK9UOUHy4
+         V/YRJhIm4hUuEHPOxiyO+gIFY3KGLJ3YhqlpbZt+y2cTeXNX+R6RpzQvMH2tfFyvMVOZ
+         m2wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=xyFfYdydnXCfgJvTY+Ob/2GyudKDAABAbq6RIj8n7eM=;
+        b=jBKnBnFWtWag1P+CL0oDt1Uo45baoZpdJmZlKjXF1ZbzMJezsHb9PLJvJjWxKIU8xh
+         qAN5zGtBi9EH3QUbNlTfSN4PjqxGHFY42FrsUWlg2aKpiUi/P8SEJFJdkMJzzXbeHGBo
+         e4XkwUMIzwjuARWuPI9AmqN+lHDnTb20ztNX2avoKmcRCG/MQBWnXL7xQOXbrtBFdYc7
+         WwXGjKm6e4Ym+T698oRNL5CHuUl7t+VptkOaPOHkLzAEAdFMRMysGd05QXC2ohoy6i4c
+         X9asU/S7MQwCtURhTQFwW+03X9d70VNXsQT5ZBVU7iBsF03wB+usrsP+lVJcrweHT7uo
+         lyFg==
+X-Gm-Message-State: APjAAAVTJtGHZk10oNJYIwh6+z9FH62MxlDjqU3lZGmjqSKp3addq9aF
+        Mh3qJaldJD/MU1HytLj9CjOKTY3GofYk+Q==
+X-Google-Smtp-Source: APXvYqwRJXf3IVei0QCfch/RJ8UXCoodvbAjAFHwAxkfthCNmhbMvKg6lBHdSLzOHdgwP8NSfUVIorZU02UUuw==
+X-Received: by 2002:a25:c654:: with SMTP id k81mr22123948ybf.514.1559935431241;
+ Fri, 07 Jun 2019 12:23:51 -0700 (PDT)
+Date:   Fri,  7 Jun 2019 12:23:48 -0700
+Message-Id: <20190607192348.189876-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+Subject: [PATCH net-next 1/1] ipv6: tcp: fix potential NULL deref in tcp_v6_send_reset()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on review, `lock' is only acquired in hwbm_pool_add() which is
-invoked via ->probe(), ->resume() and ->ndo_change_mtu(). Based on this
-the lock can become a mutex and there is no need to disable interrupts
-during the procedure.
-Now that the lock is a mutex, hwbm_pool_add() no longer invokes
-hwbm_pool_refill() in an atomic context so we can pass GFP_KERNEL to
-hwbm_pool_refill() and remove the `gfp' argument from hwbm_pool_add().
+syzbot found a crash in tcp_v6_send_reset() caused by my latest
+change.
 
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Problem is that if an skb has been queued to socket prequeue,
+skb_dst(skb)->dev can not anymore point to the device.
+
+Fortunately in this case the socket pointer is not NULL.
+
+A similar issue has been fixed in commit 0f85feae6b71 ("tcp: fix
+more NULL deref after prequeue changes"), I should have known better.
+
+Fixes: 323a53c41292 ("ipv6: tcp: enable flowlabel reflection in some RST packets")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c    |  2 +-
- drivers/net/ethernet/marvell/mvneta_bm.c |  4 ++--
- include/net/hwbm.h                       |  6 +++---
- net/core/hwbm.c                          | 15 +++++++--------
- 4 files changed, 13 insertions(+), 14 deletions(-)
+ net/ipv6/tcp_ipv6.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 269bd73be1a0a..fb9b27983b5e7 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1118,7 +1118,7 @@ static void mvneta_bm_update_mtu(struct mvneta_port *pp, int mtu)
- 			SKB_DATA_ALIGN(MVNETA_RX_BUF_SIZE(bm_pool->pkt_size));
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index d8d18386c99a82e112dd3a1aeee01e4c328ba5d7..c1da52c7f990f2fa3e020e3f3a33934149ad225e 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -934,7 +934,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 	if (!sk && !ipv6_unicast_destination(skb))
+ 		return;
  
- 	/* Fill entire long pool */
--	num = hwbm_pool_add(hwbm_pool, hwbm_pool->size, GFP_ATOMIC);
-+	num = hwbm_pool_add(hwbm_pool, hwbm_pool->size);
- 	if (num != hwbm_pool->size) {
- 		WARN(1, "pool %d: %d of %d allocated\n",
- 		     bm_pool->id, num, hwbm_pool->size);
-diff --git a/drivers/net/ethernet/marvell/mvneta_bm.c b/drivers/net/ethernet/marvell/mvneta_bm.c
-index de468e1bdba9f..82ee2bcca6fd2 100644
---- a/drivers/net/ethernet/marvell/mvneta_bm.c
-+++ b/drivers/net/ethernet/marvell/mvneta_bm.c
-@@ -190,7 +190,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
- 			SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 		hwbm_pool->construct = mvneta_bm_construct;
- 		hwbm_pool->priv = new_pool;
--		spin_lock_init(&hwbm_pool->lock);
-+		mutex_init(&hwbm_pool->buf_lock);
- 
- 		/* Create new pool */
- 		err = mvneta_bm_pool_create(priv, new_pool);
-@@ -201,7 +201,7 @@ struct mvneta_bm_pool *mvneta_bm_pool_use(struct mvneta_bm *priv, u8 pool_id,
- 		}
- 
- 		/* Allocate buffers for this pool */
--		num = hwbm_pool_add(hwbm_pool, hwbm_pool->size, GFP_ATOMIC);
-+		num = hwbm_pool_add(hwbm_pool, hwbm_pool->size);
- 		if (num != hwbm_pool->size) {
- 			WARN(1, "pool %d: %d of %d allocated\n",
- 			     new_pool->id, num, hwbm_pool->size);
-diff --git a/include/net/hwbm.h b/include/net/hwbm.h
-index 89085e2e2da5e..81643cf8a1c43 100644
---- a/include/net/hwbm.h
-+++ b/include/net/hwbm.h
-@@ -12,18 +12,18 @@ struct hwbm_pool {
- 	/* constructor called during alocation */
- 	int (*construct)(struct hwbm_pool *bm_pool, void *buf);
- 	/* protect acces to the buffer counter*/
--	spinlock_t lock;
-+	struct mutex buf_lock;
- 	/* private data */
- 	void *priv;
- };
- #ifdef CONFIG_HWBM
- void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf);
- int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp);
--int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num, gfp_t gfp);
-+int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num);
- #else
- void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}
- int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp) { return 0; }
--int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num, gfp_t gfp)
-+int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
- { return 0; }
- #endif /* CONFIG_HWBM */
- #endif /* _HWBM_H */
-diff --git a/net/core/hwbm.c b/net/core/hwbm.c
-index fd822ca5a2457..ac1a66df9adc0 100644
---- a/net/core/hwbm.c
-+++ b/net/core/hwbm.c
-@@ -43,34 +43,33 @@ int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp)
- }
- EXPORT_SYMBOL_GPL(hwbm_pool_refill);
- 
--int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num, gfp_t gfp)
-+int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num)
- {
- 	int err, i;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&bm_pool->lock, flags);
-+	mutex_lock(&bm_pool->buf_lock);
- 	if (bm_pool->buf_num == bm_pool->size) {
- 		pr_warn("pool already filled\n");
--		spin_unlock_irqrestore(&bm_pool->lock, flags);
-+		mutex_unlock(&bm_pool->buf_lock);
- 		return bm_pool->buf_num;
- 	}
- 
- 	if (buf_num + bm_pool->buf_num > bm_pool->size) {
- 		pr_warn("cannot allocate %d buffers for pool\n",
- 			buf_num);
--		spin_unlock_irqrestore(&bm_pool->lock, flags);
-+		mutex_unlock(&bm_pool->buf_lock);
- 		return 0;
- 	}
- 
- 	if ((buf_num + bm_pool->buf_num) < bm_pool->buf_num) {
- 		pr_warn("Adding %d buffers to the %d current buffers will overflow\n",
- 			buf_num,  bm_pool->buf_num);
--		spin_unlock_irqrestore(&bm_pool->lock, flags);
-+		mutex_unlock(&bm_pool->buf_lock);
- 		return 0;
- 	}
- 
- 	for (i = 0; i < buf_num; i++) {
--		err = hwbm_pool_refill(bm_pool, gfp);
-+		err = hwbm_pool_refill(bm_pool, GFP_KERNEL);
- 		if (err < 0)
- 			break;
- 	}
-@@ -79,7 +78,7 @@ int hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num, gfp_t gfp)
- 	bm_pool->buf_num += i;
- 
- 	pr_debug("hwpm pool: %d of %d buffers added\n", i, buf_num);
--	spin_unlock_irqrestore(&bm_pool->lock, flags);
-+	mutex_unlock(&bm_pool->buf_lock);
- 
- 	return i;
- }
+-	net = dev_net(skb_dst(skb)->dev);
++	net = sk ? sock_net(sk) : dev_net(skb_dst(skb)->dev);
+ #ifdef CONFIG_TCP_MD5SIG
+ 	rcu_read_lock();
+ 	hash_location = tcp_parse_md5sig_option(th);
 -- 
-2.20.1
+2.22.0.rc2.383.gf4fbbf30c2-goog
 
