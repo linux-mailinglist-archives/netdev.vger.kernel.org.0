@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C24538E7D
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F62F38E82
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729778AbfFGPJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 11:09:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51320 "EHLO mail.kernel.org"
+        id S1729795AbfFGPJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:09:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729323AbfFGPJs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729748AbfFGPJs (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 7 Jun 2019 11:09:48 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C99BA216F4;
-        Fri,  7 Jun 2019 15:09:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1EE9C21707;
+        Fri,  7 Jun 2019 15:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1559920188;
-        bh=vQLp9DD++oINzF5qe8zhaM73Q1ZtQS1Hocnu1l+UavE=;
+        bh=OrYyeWuD4KiQCCkkORqJqpNesxA4H9qBEy6LFlYpoCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dTJBs6p2BFvwEd7AXBMQ+JCXcu9exoe4fpL8+cIKTSgXQFGulQ/47MVMqEeRH1b5/
-         qq+HzECtEa+go7xra6bQqReMXPcvyz8klhYZufeoWWDDk5bwt7JeE+CpczivZ6wgFN
-         DVypY6CIwQWe/QARnbgMSDa7C2GWMXy09KevM4ic=
+        b=dmc4PmtAzhf6kliyPwSXCUcAxZLThAaMsTTqR4mFdTLufbSWar6GEhAWvkPgTJkZI
+         zMgynvRcUZ0y2Edx9+3sKBRZsOfcEtdS36BtcpY28yFG2IGZhX9I9pyD0K7nvUrmv1
+         G2hJu3JWygsMM1Ok9eB/HpV6f8GkCr0sX3m08lDg=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 net-next 19/20] selftests: Add test with multiple prefixes using single nexthop
-Date:   Fri,  7 Jun 2019 08:09:40 -0700
-Message-Id: <20190607150941.11371-20-dsahern@kernel.org>
+Subject: [PATCH v2 net-next 20/20] selftests: Add version of router_multipath.sh using nexthop objects
+Date:   Fri,  7 Jun 2019 08:09:41 -0700
+Message-Id: <20190607150941.11371-21-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190607150941.11371-1-dsahern@kernel.org>
 References: <20190607150941.11371-1-dsahern@kernel.org>
@@ -40,313 +40,383 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add tests where multiple FIB entries use the same nexthop object. Generate
-per-cpu cached routes for each by running ping on each cpu, and then
-generate exceptions unique to each prefix (remote host) with different
-mtus.
+Add a version of router_multipath.sh that uses nexthop objects for
+routes.
+
+Ido requested a version that does not cause regressions with mlxsw
+testing since it does not support nexthop objects yet.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- .../selftests/net/fib_nexthop_multiprefix.sh       | 290 +++++++++++++++++++++
- 1 file changed, 290 insertions(+)
- create mode 100755 tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+ .../selftests/net/forwarding/router_mpath_nh.sh    | 359 +++++++++++++++++++++
+ 1 file changed, 359 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/router_mpath_nh.sh
 
-diff --git a/tools/testing/selftests/net/fib_nexthop_multiprefix.sh b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+diff --git a/tools/testing/selftests/net/forwarding/router_mpath_nh.sh b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
 new file mode 100755
-index 000000000000..e6828732843e
+index 000000000000..cf3d26c233e8
 --- /dev/null
-+++ b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
-@@ -0,0 +1,290 @@
++++ b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
+@@ -0,0 +1,359 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
-+#
-+# Validate cached routes in fib{6}_nh that is used by multiple prefixes.
-+# Validate a different # exception is generated in h0 for each remote host.
-+#
-+#               h1
-+#            /
-+#    h0 - r1 -  h2
-+#            \
-+#               h3
-+#
-+# routing in h0 to hN is done with nexthop objects.
 +
-+PAUSE_ON_FAIL=no
-+VERBOSE=0
++ALL_TESTS="ping_ipv4 ping_ipv6 multipath_test"
++NUM_NETIFS=8
++source lib.sh
 +
-+################################################################################
-+# helpers
-+
-+log_test()
++h1_create()
 +{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
++	vrf_create "vrf-h1"
++	ip link set dev $h1 master vrf-h1
 +
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
++	ip link set dev vrf-h1 up
++	ip link set dev $h1 up
 +
-+	[ "$VERBOSE" = "1" ] && echo
++	ip address add 192.0.2.2/24 dev $h1
++	ip address add 2001:db8:1::2/64 dev $h1
++
++	ip route add 198.51.100.0/24 vrf vrf-h1 nexthop via 192.0.2.1
++	ip route add 2001:db8:2::/64 vrf vrf-h1 nexthop via 2001:db8:1::1
 +}
 +
-+run_cmd()
++h1_destroy()
 +{
-+	local cmd="$*"
-+	local out
-+	local rc
++	ip route del 2001:db8:2::/64 vrf vrf-h1
++	ip route del 198.51.100.0/24 vrf vrf-h1
 +
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "COMMAND: $cmd"
-+	fi
++	ip address del 2001:db8:1::2/64 dev $h1
++	ip address del 192.0.2.2/24 dev $h1
 +
-+	out=$(eval $cmd 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
-+		echo "$out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
++	ip link set dev $h1 down
++	vrf_destroy "vrf-h1"
 +}
 +
-+################################################################################
-+# config
-+
-+create_ns()
++h2_create()
 +{
-+	local ns=${1}
++	vrf_create "vrf-h2"
++	ip link set dev $h2 master vrf-h2
 +
-+	ip netns del ${ns} 2>/dev/null
++	ip link set dev vrf-h2 up
++	ip link set dev $h2 up
 +
-+	ip netns add ${ns}
-+	ip -netns ${ns} addr add 127.0.0.1/8 dev lo
-+	ip -netns ${ns} link set lo up
++	ip address add 198.51.100.2/24 dev $h2
++	ip address add 2001:db8:2::2/64 dev $h2
 +
-+	ip netns exec ${ns} sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
-+	case ${ns} in
-+	h*)
-+		ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=0
-+		;;
-+	r*)
-+		ip netns exec $ns sysctl -q -w net.ipv4.ip_forward=1
-+		ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=1
-+		;;
-+	esac
++	ip route add 192.0.2.0/24 vrf vrf-h2 nexthop via 198.51.100.1
++	ip route add 2001:db8:1::/64 vrf vrf-h2 nexthop via 2001:db8:2::1
 +}
 +
-+setup()
++h2_destroy()
 +{
-+	local ns
-+	local i
++	ip route del 2001:db8:1::/64 vrf vrf-h2
++	ip route del 192.0.2.0/24 vrf vrf-h2
 +
-+	#set -e
++	ip address del 2001:db8:2::2/64 dev $h2
++	ip address del 198.51.100.2/24 dev $h2
 +
-+	for ns in h0 r1 h1 h2 h3
-+	do
-+		create_ns ${ns}
++	ip link set dev $h2 down
++	vrf_destroy "vrf-h2"
++}
++
++router1_create()
++{
++	vrf_create "vrf-r1"
++	ip link set dev $rp11 master vrf-r1
++	ip link set dev $rp12 master vrf-r1
++	ip link set dev $rp13 master vrf-r1
++
++	ip link set dev vrf-r1 up
++	ip link set dev $rp11 up
++	ip link set dev $rp12 up
++	ip link set dev $rp13 up
++
++	ip address add 192.0.2.1/24 dev $rp11
++	ip address add 2001:db8:1::1/64 dev $rp11
++
++	ip address add 169.254.2.12/24 dev $rp12
++	ip address add fe80:2::12/64 dev $rp12
++
++	ip address add 169.254.3.13/24 dev $rp13
++	ip address add fe80:3::13/64 dev $rp13
++}
++
++router1_destroy()
++{
++	ip route del 2001:db8:2::/64 vrf vrf-r1
++	ip route del 198.51.100.0/24 vrf vrf-r1
++
++	ip address del fe80:3::13/64 dev $rp13
++	ip address del 169.254.3.13/24 dev $rp13
++
++	ip address del fe80:2::12/64 dev $rp12
++	ip address del 169.254.2.12/24 dev $rp12
++
++	ip address del 2001:db8:1::1/64 dev $rp11
++	ip address del 192.0.2.1/24 dev $rp11
++
++	ip nexthop del id 103
++	ip nexthop del id 101
++	ip nexthop del id 102
++	ip nexthop del id 106
++	ip nexthop del id 104
++	ip nexthop del id 105
++
++	ip link set dev $rp13 down
++	ip link set dev $rp12 down
++	ip link set dev $rp11 down
++
++	vrf_destroy "vrf-r1"
++}
++
++router2_create()
++{
++	vrf_create "vrf-r2"
++	ip link set dev $rp21 master vrf-r2
++	ip link set dev $rp22 master vrf-r2
++	ip link set dev $rp23 master vrf-r2
++
++	ip link set dev vrf-r2 up
++	ip link set dev $rp21 up
++	ip link set dev $rp22 up
++	ip link set dev $rp23 up
++
++	ip address add 198.51.100.1/24 dev $rp21
++	ip address add 2001:db8:2::1/64 dev $rp21
++
++	ip address add 169.254.2.22/24 dev $rp22
++	ip address add fe80:2::22/64 dev $rp22
++
++	ip address add 169.254.3.23/24 dev $rp23
++	ip address add fe80:3::23/64 dev $rp23
++}
++
++router2_destroy()
++{
++	ip route del 2001:db8:1::/64 vrf vrf-r2
++	ip route del 192.0.2.0/24 vrf vrf-r2
++
++	ip address del fe80:3::23/64 dev $rp23
++	ip address del 169.254.3.23/24 dev $rp23
++
++	ip address del fe80:2::22/64 dev $rp22
++	ip address del 169.254.2.22/24 dev $rp22
++
++	ip address del 2001:db8:2::1/64 dev $rp21
++	ip address del 198.51.100.1/24 dev $rp21
++
++	ip nexthop del id 201
++	ip nexthop del id 202
++	ip nexthop del id 204
++	ip nexthop del id 205
++
++	ip link set dev $rp23 down
++	ip link set dev $rp22 down
++	ip link set dev $rp21 down
++
++	vrf_destroy "vrf-r2"
++}
++
++routing_nh_obj()
++{
++	ip nexthop add id 101 via 169.254.2.22 dev $rp12
++	ip nexthop add id 102 via 169.254.3.23 dev $rp13
++	ip nexthop add id 103 group 101/102
++	ip route add 198.51.100.0/24 vrf vrf-r1 nhid 103
++
++	ip nexthop add id 104 via fe80:2::22 dev $rp12
++	ip nexthop add id 105 via fe80:3::23 dev $rp13
++	ip nexthop add id 106 group 104/105
++	ip route add 2001:db8:2::/64 vrf vrf-r1 nhid 106
++
++	ip nexthop add id 201 via 169.254.2.12 dev $rp22
++	ip nexthop add id 202 via 169.254.3.13 dev $rp23
++	ip nexthop add id 203 group 201/202
++	ip route add 192.0.2.0/24 vrf vrf-r2 nhid 203
++
++	ip nexthop add id 204 via fe80:2::12 dev $rp22
++	ip nexthop add id 205 via fe80:3::13 dev $rp23
++	ip nexthop add id 206 group 204/205
++	ip route add 2001:db8:1::/64 vrf vrf-r2 nhid 206
++}
++
++multipath4_test()
++{
++	local desc="$1"
++	local weight_rp12=$2
++	local weight_rp13=$3
++	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
++	local packets_rp12 packets_rp13
++
++	# Transmit multiple flows from h1 to h2 and make sure they are
++	# distributed between both multipath links (rp12 and rp13)
++	# according to the configured weights.
++	sysctl_set net.ipv4.fib_multipath_hash_policy 1
++	ip nexthop replace id 103 group 101,$weight_rp12/102,$weight_rp13
++
++	t0_rp12=$(link_stats_tx_packets_get $rp12)
++	t0_rp13=$(link_stats_tx_packets_get $rp13)
++
++	ip vrf exec vrf-h1 $MZ -q -p 64 -A 192.0.2.2 -B 198.51.100.2 \
++		-d 1msec -t udp "sp=1024,dp=0-32768"
++
++	t1_rp12=$(link_stats_tx_packets_get $rp12)
++	t1_rp13=$(link_stats_tx_packets_get $rp13)
++
++	let "packets_rp12 = $t1_rp12 - $t0_rp12"
++	let "packets_rp13 = $t1_rp13 - $t0_rp13"
++	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
++
++	# Restore settings.
++	ip nexthop replace id 103 group 101/102
++	sysctl_restore net.ipv4.fib_multipath_hash_policy
++}
++
++multipath6_l4_test()
++{
++	local desc="$1"
++	local weight_rp12=$2
++	local weight_rp13=$3
++	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
++	local packets_rp12 packets_rp13
++
++	# Transmit multiple flows from h1 to h2 and make sure they are
++	# distributed between both multipath links (rp12 and rp13)
++	# according to the configured weights.
++	sysctl_set net.ipv6.fib_multipath_hash_policy 1
++
++	ip nexthop replace id 106 group 104,$weight_rp12/105,$weight_rp13
++
++	t0_rp12=$(link_stats_tx_packets_get $rp12)
++	t0_rp13=$(link_stats_tx_packets_get $rp13)
++
++	$MZ $h1 -6 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
++		-d 1msec -t udp "sp=1024,dp=0-32768"
++
++	t1_rp12=$(link_stats_tx_packets_get $rp12)
++	t1_rp13=$(link_stats_tx_packets_get $rp13)
++
++	let "packets_rp12 = $t1_rp12 - $t0_rp12"
++	let "packets_rp13 = $t1_rp13 - $t0_rp13"
++	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
++
++	ip nexthop replace id 106 group 104/105
++
++	sysctl_restore net.ipv6.fib_multipath_hash_policy
++}
++
++multipath6_test()
++{
++	local desc="$1"
++	local weight_rp12=$2
++	local weight_rp13=$3
++	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
++	local packets_rp12 packets_rp13
++
++	ip nexthop replace id 106 group 104,$weight_rp12/105,$weight_rp13
++
++	t0_rp12=$(link_stats_tx_packets_get $rp12)
++	t0_rp13=$(link_stats_tx_packets_get $rp13)
++
++	# Generate 16384 echo requests, each with a random flow label.
++	for _ in $(seq 1 16384); do
++		ip vrf exec vrf-h1 $PING6 2001:db8:2::2 -F 0 -c 1 -q >/dev/null 2>&1
 +	done
 +
-+	#
-+	# create interconnects
-+	#
++	t1_rp12=$(link_stats_tx_packets_get $rp12)
++	t1_rp13=$(link_stats_tx_packets_get $rp13)
 +
-+	for i in 0 1 2 3
-+	do
-+		ip -netns h${i} li add eth0 type veth peer name r1h${i}
-+		ip -netns h${i} li set eth0 up
-+		ip -netns h${i} li set r1h${i} netns r1 name eth${i} up
++	let "packets_rp12 = $t1_rp12 - $t0_rp12"
++	let "packets_rp13 = $t1_rp13 - $t0_rp13"
++	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
 +
-+		ip -netns h${i}    addr add dev eth0 172.16.10${i}.1/24
-+		ip -netns h${i} -6 addr add dev eth0 2001:db8:10${i}::1/64
-+		ip -netns r1    addr add dev eth${i} 172.16.10${i}.254/24
-+		ip -netns r1 -6 addr add dev eth${i} 2001:db8:10${i}::64/64
-+	done
++	ip nexthop replace id 106 group 104/105
++}
 +
-+	ip -netns h0 nexthop add id 4 via 172.16.100.254 dev eth0
-+	ip -netns h0 nexthop add id 6 via 2001:db8:100::64 dev eth0
++multipath_test()
++{
++	log_info "Running IPv4 multipath tests"
++	multipath4_test "ECMP" 1 1
++	multipath4_test "Weighted MP 2:1" 2 1
++	multipath4_test "Weighted MP 11:45" 11 45
 +
-+	# routing from h0 to h1-h3 and back
-+	for i in 1 2 3
-+	do
-+		ip -netns h0    ro add 172.16.10${i}.0/24 nhid 4
-+		ip -netns h${i} ro add 172.16.100.0/24 via 172.16.10${i}.254
++	log_info "Running IPv6 multipath tests"
++	multipath6_test "ECMP" 1 1
++	multipath6_test "Weighted MP 2:1" 2 1
++	multipath6_test "Weighted MP 11:45" 11 45
 +
-+		ip -netns h0    -6 ro add 2001:db8:10${i}::/64 nhid 6
-+		ip -netns h${i} -6 ro add 2001:db8:100::/64 via 2001:db8:10${i}::64
-+	done
++	log_info "Running IPv6 L4 hash multipath tests"
++	multipath6_l4_test "ECMP" 1 1
++	multipath6_l4_test "Weighted MP 2:1" 2 1
++	multipath6_l4_test "Weighted MP 11:45" 11 45
++}
 +
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo
-+		echo "host 1 config"
-+		ip -netns h0 li sh
-+		ip -netns h0 ro sh
-+		ip -netns h0 -6 ro sh
-+	fi
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	rp11=${NETIFS[p2]}
 +
-+	#set +e
++	rp12=${NETIFS[p3]}
++	rp22=${NETIFS[p4]}
++
++	rp13=${NETIFS[p5]}
++	rp23=${NETIFS[p6]}
++
++	rp21=${NETIFS[p7]}
++	h2=${NETIFS[p8]}
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++
++	router1_create
++	router2_create
++	routing_nh_obj
++
++	forwarding_enable
 +}
 +
 +cleanup()
 +{
-+	for n in h1 r1 h2 h3 h4
-+	do
-+		ip netns del ${n} 2>/dev/null
-+	done
++	pre_cleanup
++
++	forwarding_restore
++
++	router2_destroy
++	router1_destroy
++
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
 +}
 +
-+change_mtu()
++ping_ipv4()
 +{
-+	local hostid=$1
-+	local mtu=$2
-+
-+	run_cmd ip -netns h${hostid} li set eth0 mtu ${mtu}
-+	run_cmd ip -netns r1 li set eth${hostid} mtu ${mtu}
++	ping_test $h1 198.51.100.2
 +}
 +
-+################################################################################
-+# validate exceptions
-+
-+validate_v4_exception()
++ping_ipv6()
 +{
-+	local i=$1
-+	local mtu=$2
-+	local ping_sz=$3
-+	local dst="172.16.10${i}.1"
-+	local h0=172.16.100.1
-+	local r1=172.16.100.254
-+	local rc
-+
-+	if [ ${ping_sz} != "0" ]; then
-+		run_cmd ip netns exec h0 ping -s ${ping_sz} -c5 -w5 ${dst}
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "Route get"
-+		ip -netns h0 ro get ${dst}
-+		echo "Searching for:"
-+		echo "    cache .* mtu ${mtu}"
-+		echo
-+	fi
-+
-+	ip -netns h0 ro get ${dst} | \
-+	grep -q "cache .* mtu ${mtu}"
-+	rc=$?
-+
-+	log_test $rc 0 "IPv4: host 0 to host ${i}, mtu ${mtu}"
++	ping6_test $h1 2001:db8:2::2
 +}
 +
-+validate_v6_exception()
-+{
-+	local i=$1
-+	local mtu=$2
-+	local ping_sz=$3
-+	local dst="2001:db8:10${i}::1"
-+	local h0=2001:db8:100::1
-+	local r1=2001:db8:100::64
-+	local rc
-+
-+	if [ ${ping_sz} != "0" ]; then
-+		run_cmd ip netns exec h0 ping6 -s ${ping_sz} -c5 -w5 ${dst}
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "Route get"
-+		ip -netns h0 -6 ro get ${dst}
-+		echo "Searching for:"
-+		echo "    ${dst} from :: via ${r1} dev eth0 src ${h0} .* mtu ${mtu}"
-+		echo
-+	fi
-+
-+	ip -netns h0 -6 ro get ${dst} | \
-+	grep -q "${dst} from :: via ${r1} dev eth0 src ${h0} .* mtu ${mtu}"
-+	rc=$?
-+
-+	log_test $rc 0 "IPv6: host 0 to host ${i}, mtu ${mtu}"
-+}
-+
-+################################################################################
-+# main
-+
-+while getopts :pv o
-+do
-+	case $o in
-+		p) PAUSE_ON_FAIL=yes;;
-+		v) VERBOSE=1;;
-+	esac
-+done
-+
-+cleanup
-+setup
-+sleep 2
-+
-+cpus=$(cat  /sys/devices/system/cpu/online)
-+cpus="$(seq ${cpus/-/ })"
-+ret=0
-+for i in 1 2 3
-+do
-+	# generate a cached route per-cpu
-+	for c in ${cpus}; do
-+		run_cmd taskset -c ${c} ip netns exec h0 ping -c1 -w1 172.16.10${i}.1
-+		[ $? -ne 0 ] && printf "\nERROR: ping to h${i} failed\n" && ret=1
-+
-+		run_cmd taskset -c ${c} ip netns exec h0 ping6 -c1 -w1 2001:db8:10${i}::1
-+		[ $? -ne 0 ] && printf "\nERROR: ping6 to h${i} failed\n" && ret=1
-+
-+		[ $ret -ne 0 ] && break
-+	done
-+	[ $ret -ne 0 ] && break
-+done
-+
-+if [ $ret -eq 0 ]; then
-+	# generate different exceptions in h0 for h1, h2 and h3
-+	change_mtu 1 1300
-+	validate_v4_exception 1 1300 1350
-+	validate_v6_exception 1 1300 1350
-+	echo
-+
-+	change_mtu 2 1350
-+	validate_v4_exception 2 1350 1400
-+	validate_v6_exception 2 1350 1400
-+	echo
-+
-+	change_mtu 3 1400
-+	validate_v4_exception 3 1400 1450
-+	validate_v6_exception 3 1400 1450
-+	echo
-+
-+	validate_v4_exception 1 1300 0
-+	validate_v6_exception 1 1300 0
-+	echo
-+
-+	validate_v4_exception 2 1350 0
-+	validate_v6_exception 2 1350 0
-+	echo
-+
-+	validate_v4_exception 3 1400 0
-+	validate_v6_exception 3 1400 0
-+
-+	# targeted deletes to trigger cleanup paths in kernel
-+	ip -netns h0 ro del 172.16.102.0/24 nhid 4
-+	ip -netns h0 -6 ro del 2001:db8:102::/64 nhid 6
-+
-+	ip -netns h0 nexthop del id 4
-+	ip -netns h0 nexthop del id 6
++ip nexthop ls >/dev/null 2>&1
++if [ $? -ne 0 ]; then
++	echo "Nexthop objects not supported; skipping tests"
++	exit 0
 +fi
 +
-+cleanup
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++routing_nh_obj
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.11.0
 
