@@ -2,126 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53921398D1
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:35:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 042D439909
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731331AbfFGWe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 18:34:58 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33162 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731164AbfFGWe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 18:34:58 -0400
-Received: by mail-pf1-f194.google.com with SMTP id x15so1963575pfq.0
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 15:34:57 -0700 (PDT)
+        id S1730270AbfFGWhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 18:37:41 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34006 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729960AbfFGWhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 18:37:41 -0400
+Received: by mail-pg1-f196.google.com with SMTP id h2so1877805pgg.1
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 15:37:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=LLvzHistUvG3tFIz6f+WFhmAnRXmHuTQs0YG9JoKNNc=;
-        b=b2GA7FeKu504lfwSTtY+Hzk6I9cS1bTN3cNZbLMyc9J57Oz4pC3d9fdBaVtf56cFPB
-         lxtzxDAc4P7sct0rcsb/a6zWuy9lEXyOH9YyxkiYB5tZqQ70b2IdhyLpryQ8L/HX4MNu
-         L/8LVgACGeYj8XaLgdKBWVxpYDhB4fGgPD3yqe0nV7SC4OfD6w3RFrpnVr0Zvw05Jttw
-         JjpshwuDTgqHGV4wlD8ZdvltM8u0bQycC79J/mAd0kLPXbyhkQiXfz08QlWrx0EemjTe
-         UOP1gQKwDPvee0Lpv+1BPpbIe7Z9G5tdF/lCeDqDhrK7SETRp42AZ2mywg16UbnrgX+Q
-         hUhg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UkQI8hX0vIUpVc3tfTJ4CpjSb/8p01+g0dvWePLdY08=;
+        b=e+vKvdKnQ/cr5CGuTa5EK01cZ+MfRnMYC41CccgXzHQwKg/POij2RhNAaHeGK5TdVM
+         NYenBPuQyROBou1KlsUskYhDUQCGPp4n4PkvdKpwxUNIuxqAaQD3sMzt3joDkZBHy1C5
+         6uAsWmd444nBt/Xf4T4r+T1ujKXJx+/0JVRuQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=LLvzHistUvG3tFIz6f+WFhmAnRXmHuTQs0YG9JoKNNc=;
-        b=CeEuyLNbKKB4mGkr5JU9lcWWEhd/qV2qhpuTpwdW6mVsuBTUqSZ/bdBarZY5US6sge
-         vZHPHgcXQCLxHHmP53dIiHoJLDNdvVGQ6QJXNkcxo6muQqRJfzuoNyEG/KZjR6iz5df5
-         K6MIz+bOWXzZNZyL4VLWLIL8zSbXndL2P7tVUgJ//u8aGDfwIwbI5p6jNiFvrKr7RWYa
-         ikuU1A69p+WT0MIix1RGjU4GKuLvkqjW5h8mwO5OaBXamEkvfrSLDQCdY96KYZn2iiQF
-         QcKreEiD10y3sVzW9Kqfgl0i/p45QnjnFue4V0yPUSEIJ/FLk9l9E4kn5Yrw474zFTvF
-         389g==
-X-Gm-Message-State: APjAAAVD58E80YIVkS/dcKq6TsziRV2V5f/8uy9Gbo98yzGBt+U8tdgO
-        El5alhcXubSMIo5/3G2fm2h3fQ==
-X-Google-Smtp-Source: APXvYqyF7j+Lr9Yvi3WvNYmTTdm0OCuF4PPqzAE/3N1Ldnu2toX8LFTn6cpgf4lj/3PyMhG8hs9zsw==
-X-Received: by 2002:a65:6210:: with SMTP id d16mr3709222pgv.180.1559946897341;
-        Fri, 07 Jun 2019 15:34:57 -0700 (PDT)
-Received: from cakuba.netronome.com (wsip-98-171-133-120.sd.sd.cox.net. [98.171.133.120])
-        by smtp.gmail.com with ESMTPSA id i22sm3022508pfa.127.2019.06.07.15.34.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UkQI8hX0vIUpVc3tfTJ4CpjSb/8p01+g0dvWePLdY08=;
+        b=fLu7aF8JW0Z5FN7CVX+fK51VepzA4gMCpn1eG6RYquD7HX9VJ6/rQ8z/tOTSE7mWIa
+         iCO/YjIAlUlUIRVhhTByIC/Cu/2TSd1WpFe3sU/xLFmVb5ZSKsNmhkD4Jdg4A3qtlmUX
+         Rk/tKGQq8D+YqeFMnozSZbfut5jYhYRGlzi3J6uI4x3dzEzyetymHjO0Q3v52TV/PP9H
+         jruindg5UAL5hUb2eD1GY2HnYwl5vSMFFAHPL4iY7lrO4k6vw2QtiAheZRRt3MSuSiIq
+         M2AYziS2wPxWNu1wnraZjsomcqrF1GNRj9NZeHedNnyI6Y4tXiMMihQ5mn2N7BF40Vqj
+         63GA==
+X-Gm-Message-State: APjAAAW7Fcdg76VYjYmkoBSuA+TwJcKf4T+bYA2aR0oJ1rOL54SJ+M5I
+        jtGmTrsJNL5e5M8d/xJa/hFiyA==
+X-Google-Smtp-Source: APXvYqwiSuAGcVzbwTvmm2ZIw/J7BlC5c609f8Ulw7reX7J6HoWIpxjWRSnpfKnbC7g5fUiN6hOMHQ==
+X-Received: by 2002:a63:2206:: with SMTP id i6mr2387516pgi.349.1559947060322;
+        Fri, 07 Jun 2019 15:37:40 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
+        by smtp.gmail.com with ESMTPSA id j23sm4185193pgb.63.2019.06.07.15.37.38
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 07 Jun 2019 15:34:57 -0700 (PDT)
-Date:   Fri, 7 Jun 2019 15:34:52 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Patel, Vedang" <vedang.patel@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>,
-        Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH net-next v2 4/6] taprio: Add support for txtime-assist
- mode.
-Message-ID: <20190607153452.53885f87@cakuba.netronome.com>
-In-Reply-To: <0ED5E88B-E95A-4899-975D-00912685CEEF@intel.com>
-References: <1559843458-12517-1-git-send-email-vedang.patel@intel.com>
-        <1559843458-12517-5-git-send-email-vedang.patel@intel.com>
-        <20190606162132.0591cc37@cakuba.netronome.com>
-        <FF3C8B8E-421E-4C93-8895-C21A38BB55EE@intel.com>
-        <20190607150243.369f6e2c@cakuba.netronome.com>
-        <0ED5E88B-E95A-4899-975D-00912685CEEF@intel.com>
-Organization: Netronome Systems, Ltd.
+        Fri, 07 Jun 2019 15:37:39 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        linux-rockchip@lists.infradead.org,
+        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
+        linux-wireless@vger.kernel.org,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-mmc@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ritesh Harjani <riteshh@codeaurora.org>,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Mathieu Malaterre <malat@debian.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Ondrej Jirman <megous@megous.com>,
+        Jiong Wu <lohengrin1024@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pan Bian <bianpan2016@163.com>, linux-kernel@vger.kernel.org,
+        Madhan Mohan R <MadhanMohan.R@cypress.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Avri Altman <avri.altman@wdc.com>, Pavel Machek <pavel@ucw.cz>
+Subject: [PATCH v3 0/5] brcmfmac: sdio: Deal better w/ transmission errors related to idle
+Date:   Fri,  7 Jun 2019 15:37:11 -0700
+Message-Id: <20190607223716.119277-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jun 2019 22:27:07 +0000, Patel, Vedang wrote:
-> Hi Jacub,=20
->=20
-> > On Jun 7, 2019, at 3:02 PM, Jakub Kicinski <jakub.kicinski@netronome.co=
-m> wrote:
-> >=20
-> > On Fri, 7 Jun 2019 20:42:55 +0000, Patel, Vedang wrote: =20
-> >>> Thanks for the changes, since you now validate no unknown flags are
-> >>> passed, perhaps there is no need to check if flags are =3D=3D ~0?
-> >>>=20
-> >>> IS_ENABLED() could just do: (flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASS=
-IST
-> >>> No?
-> >>>  =20
-> >> This is specifically done so that user does not have to specify the
-> >> offload flags when trying to install the another schedule which will
-> >> be switched to at a later point of time (i.e. the admin schedule
-> >> introduced in Vinicius=E2=80=99 last series). Setting taprio_flags to =
-~0
-> >> will help us distinguish between the flags parameter not specified
-> >> and flags set to 0. =20
-> >=20
-> > I'm not super clear on this, because of backward compat you have to
-> > treat attr not present as unset.  Let's see:
-> >=20
-> > new qdisc:
-> > - flags attr =3D 0 -> txtime not used
-> > - flags attr =3D 1 -> txtime used =20
-> > -> no flags attr -> txtime not used =20
-> > change qdisc:
-> > - flags attr =3D old flags attr -> leave unchanged
-> > - flags attr !=3D old flags attr -> error
-> > - no flags attr -> leave txtime unchanged
-> >=20
-> > Doesn't that cover the cases?  Were you planning to have no flag attr
-> > on change mean disabled rather than no change? =20
->=20
-> You covered all the cases above.
->=20
-> Thinking a bit more about it, yes you are right. Initiializing flags
-> to 0 will work.  I will incorporate this change in the next version.
+This series attempts to deal better with the expected transmission
+errors related to the idle states (handled by the Always-On-Subsystem
+or AOS) on the SDIO-based WiFi on rk3288-veyron-minnie,
+rk3288-veyron-speedy, and rk3288-veyron-mickey.
 
-Cool, thanks! =20
+Some details about those errors can be found in
+<https://crbug.com/960222>, but to summarize it here: if we try to
+send the wakeup command to the WiFi card at the same time it has
+decided to wake up itself then it will behave badly on the SDIO bus.
+This can cause timeouts or CRC errors.
 
-FWIW I think historically TC used to require all parameters specified
-and assumed 0 rather than not changed, but I think that was because C
-structs were passed as blobs instead of breaking things out per attr.
-So today I think its better to make full use of attrs and assume not
-present to mean not changed =F0=9F=91=8D
+When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
+re-tuning.  Since I am currently developing on 4.19 this was the
+original problem I attempted to solve.
+
+On mainline it turns out that you don't see the retuning errors but
+you see tons of spam about timeouts trying to wakeup from sleep.  I
+tracked down the commit that was causing that and have partially
+reverted it here.  I have no real knowledge about Broadcom WiFi, but
+the commit that was causing problems sounds (from the descriptioin) to
+be a hack commit penalizing all Broadcom WiFi users because of a bug
+in a Cypress SD controller.  I will let others comment if this is
+truly the case and, if so, what the right solution should be.
+
+For v3 of this series I have added 2 patches to the end of the series
+to address errors that would show up on systems with these same SDIO
+WiFi cards when used on controllers that do periodic retuning.  These
+systems need an extra fix to prevent the retuning from happening when
+the card is asleep.
+
+Changes in v3:
+- Took out the spinlock since I believe this is all in one context.
+- Expect errors for all of brcmf_sdio_kso_control() (Adrian).
+- ("mmc: core: Export mmc_retune_hold_now() mmc_retune_release()") new for v3.
+- ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
+
+Changes in v2:
+- A full revert, not just a partial one (Arend).  ...with explicit Cc.
+- Updated commit message to clarify based on discussion of v1.
+
+Douglas Anderson (5):
+  Revert "brcmfmac: disable command decode in sdio_aos"
+  mmc: core: API for temporarily disabling auto-retuning due to errors
+  brcmfmac: sdio: Disable auto-tuning around commands expected to fail
+  mmc: core: Export mmc_retune_hold_now() mmc_retune_release()
+  brcmfmac: sdio: Don't tune while the card is off
+
+ drivers/mmc/core/core.c                       | 19 +++++++++++++++++--
+ drivers/mmc/core/host.c                       |  7 +++++++
+ drivers/mmc/core/host.h                       |  7 -------
+ .../broadcom/brcm80211/brcmfmac/sdio.c        | 18 +++++++++++++-----
+ include/linux/mmc/core.h                      |  4 ++++
+ include/linux/mmc/host.h                      |  1 +
+ 6 files changed, 42 insertions(+), 14 deletions(-)
+
+-- 
+2.22.0.rc2.383.gf4fbbf30c2-goog
+
