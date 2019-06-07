@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F068394E8
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 573CE394ED
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:56:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732314AbfFGS4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:56:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32970 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731177AbfFGSz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:55:58 -0400
-Received: by mail-pf1-f193.google.com with SMTP id x15so1707210pfq.0
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 11:55:58 -0700 (PDT)
+        id S1732318AbfFGS4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:56:02 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35373 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732315AbfFGS4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:56:01 -0400
+Received: by mail-pl1-f195.google.com with SMTP id p1so1164868plo.2
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 11:56:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=F35bB8qVqL1kghXhAXBYlshqx70lIJ8NcnxFixYXJAU=;
-        b=Ft/i+yf7D1FV7srBVD2twGrAiihIseiixCo56nMmWEblW1UTMMzuXFbgPlLatUboz5
-         Zk7J+x6cXF0c7dovTTKOrLPrjbt0cfjHLPK67nLGFAxbO4kF399/poAPYnlsxjgR2nfk
-         N7EPdOFXghDhdIJlGovUAHyZCUhIZ5x8nWypF8UfChuypoUDr/Zk6n7McqUHlBMCFXYt
-         iRncdurmEs6W9pxzff5TkdTqOr8V6OnI71xgGmvxuM7cvHefYas41v/xGZZHYDxN/DGM
-         Ks/i0LpCtSVEK2cGLNFEu3qou62GPZL7GDXw8BxABbtMujbuJoEbLXoY8DJvK1QvxzaP
-         5/ig==
+        bh=dh0v8NlMU4slcGoO8w6KC0w7gjiaiNp9Ew5oQIG65tw=;
+        b=rEf7xZveRqzql7Sr4ZYdMBx5Cc6OCj6srDfgOWYvzkrvdMPqxUi8vG5nwsB1TL9ad+
+         ri4q5Eqd8aAgOPCKlySBcz3+vMHBlDSXpOUsS/gS4mygxBS0ZpXMF+GVE/QJ3uvZnkUB
+         cTyN3p95SONI9cuh6IgE8JJb1YUgctEM5P8wF/PyjOGJnvTr5QP52X5ApmpNo0upkuv8
+         KdXyQtZq1rA8ulYvNgIPq/MTmDY1Gx+B1l7NBJrfsryEebK4R+SEBA8fakZt7dcpChC6
+         KApXP2gyA9ggMZ3vX4wPnDWf19JQSPvVKLo+36NEyBPDYRQ0I2um8l4sv5pigo7k1/hj
+         cvnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=F35bB8qVqL1kghXhAXBYlshqx70lIJ8NcnxFixYXJAU=;
-        b=W+uN/dkWpBBiM98S3DyZiR9ewgeoI4PUEwVTel90k9TUylbrutrJEz+GFGhr92qyA2
-         J76y8UvrurAASur0nG3J9hbu4jnXyEC692Vjpw9zqvkdTVP5Xv1G2g1dNvbbc2N8Lm+B
-         UxQ/wu26UUchrMUkeGLwoiyLIv++hBBhwgKsD1b2dCqmTpX05frBTx5o/7NskLXhKmrO
-         0uo1zIJGFWV1F8xPohbkrJdICc405OA02UXTZRlhgzAnbcb/iorcQQ/LjLjsItQuBca0
-         klHtvCWbLS/yJy8FfYOp9vfEvTls+Wu6W9VdY+6/MBg1zB+f3uTrfD6X8A4HBxj4ID0a
-         +T1A==
-X-Gm-Message-State: APjAAAVplSmvBMHFxTlyPAyxwxIP13p3JuErqaOlp9V7LJ3HfGtwgVcQ
-        Lt5bFFkaKBcxkEeFF5SjF8V2lA==
-X-Google-Smtp-Source: APXvYqz5VXTkZ2jwl7gq+3TXtmmHUkYMDcEb/LTJi8uEugKY5fZV2RRwjIcFyOIqIbaV3394aS0ung==
-X-Received: by 2002:a63:a84c:: with SMTP id i12mr4473339pgp.115.1559933758058;
-        Fri, 07 Jun 2019 11:55:58 -0700 (PDT)
+        bh=dh0v8NlMU4slcGoO8w6KC0w7gjiaiNp9Ew5oQIG65tw=;
+        b=E86rTQ8NNAsyshln5wFrC5YrOoji+SnSWg3ywTGGRI81rkDjPR5UWPatu24q8V0qbY
+         E0sq7to1v6bAv7khDquZtl6yFYziliqMemBHZRkYTGi1G0WFZK6NGFU5H4/TObi1/zBV
+         3BRNhZaijOENm63+cAc3qxwDa3BlRuaGMR3CQ8ScBh+CSuzuwxoUHB5kCrz/xunPa7n3
+         /nHRNkW8R0d31zDoMlcVjbW+O3DiyOMZLjFWYaBt64beoD3LU+ZYqGykTDoxDNqgYTQU
+         RMxwbXudXGqDl/5/FldW6VtdRY/ab5Lw4Kz9WmiVwbNgNjxL6m8Hm9oUgbI5TPFu6PSb
+         RrnQ==
+X-Gm-Message-State: APjAAAX9CsRU2qr5VywJRHQ+A0vBBz5rSgK+TtQRMwGD3Q7cf3OkKDJf
+        KkOhfZ6G1oaYRFpTJRJoPk2uvg==
+X-Google-Smtp-Source: APXvYqzl1FEC6MmJrUUbOLYAG4TNevSltqYsAmaCuEOFMtnhDUQvWKv95vKV624FAkHTgLbJwkKatA==
+X-Received: by 2002:a17:902:8bc1:: with SMTP id r1mr56317333plo.163.1559933760609;
+        Fri, 07 Jun 2019 11:56:00 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id i25sm3181933pfr.73.2019.06.07.11.55.56
+        by smtp.gmail.com with ESMTPSA id i25sm3181933pfr.73.2019.06.07.11.55.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 07 Jun 2019 11:55:57 -0700 (PDT)
+        Fri, 07 Jun 2019 11:55:59 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [RFC v2 PATCH 3/5] ipv6: Paramterize TLV parsing
-Date:   Fri,  7 Jun 2019 11:55:06 -0700
-Message-Id: <1559933708-13947-4-git-send-email-tom@quantonium.net>
+Subject: [RFC v2 PATCH 4/5] seg6: Add sysctl limits for segment routing header
+Date:   Fri,  7 Jun 2019 11:55:07 -0700
+Message-Id: <1559933708-13947-5-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559933708-13947-1-git-send-email-tom@quantonium.net>
 References: <1559933708-13947-1-git-send-email-tom@quantonium.net>
@@ -58,96 +58,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add parameters to ip6_parse_tlv that will allow leveraging the function
-for parsing segment routing TLVs. The new parameters are offset of
-TLVs, length of the TLV block, and a function that is called in the case
-of an unrecognized option.
+These are analoguous to the sysctls that were defined for IPv6
+Destination and Hop-by-Hop Options.
 
 Signed-off-by: Tom Herbert <tom@quantonium.net>
 ---
- net/ipv6/exthdrs.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
+ include/net/ipv6.h         | 31 ++++++++++++++++++-------------
+ include/net/netns/ipv6.h   |  2 ++
+ net/ipv6/af_inet6.c        |  2 ++
+ net/ipv6/sysctl_net_ipv6.c | 16 ++++++++++++++++
+ 4 files changed, 38 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 20291c2..a394d20 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -112,15 +112,26 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
- 	return false;
- }
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 0d34f6e..0633e50 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -52,45 +52,50 @@
+ #define IPV6_DEFAULT_HOPLIMIT   64
+ #define IPV6_DEFAULT_MCASTHOPS	1
  
--/* Parse tlv encoded option header (hop-by-hop or destination) */
-+/* Parse tlv encoded option header (hop-by-hop or destination)
-+ *
-+ * Arguments:
-+ *   procs - TLV proc structure
-+ *   skb - skbuff containing TLVs
-+ *   max_count - absolute value is maximum nuber of TLVs. If less than zero
-+ *		 then unknown TLVs are disallowed regardless of disposition
-+ *		 indicated by TLV type
-+ *   off - offset of first TLV relative to the first byte of the extension
-+ *	   header which is transport header of the skb
-+ *   len - length of TLV block
-+ *   unknown_opt - function called when unknown option is encountered
-+ */
+-/* Limits on Hop-by-Hop and Destination options.
++/* Limits on Hop-by-Hop, Destination, and Segment Routing TLV options.
+  *
+  * Per RFC8200 there is no limit on the maximum number or lengths of options in
+  * Hop-by-Hop or Destination options other then the packet must fit in an MTU.
+- * We allow configurable limits in order to mitigate potential denial of
+- * service attacks.
++ * Similarly, TLVs in a segment routing header lack a specific limit. We allow
++ * configurable limits in order to mitigate potential denial of service attacks.
+  *
+  * There are three limits that may be set:
+  *   - Limit the number of options in a Hop-by-Hop or Destination options
+- *     extension header
++ *     extension header, or the number of TLVs in a Segment Routing Header.
+  *   - Limit the byte length of a Hop-by-Hop or Destination options extension
+- *     header
+- *   - Disallow unknown options
++ *     header, or the length of TLV block in a Segment Routing Header.
++ *   - Disallow unknown options.
+  *
+  * The limits are expressed in corresponding sysctls:
+  *
+  * ipv6.sysctl.max_dst_opts_cnt
+  * ipv6.sysctl.max_hbh_opts_cnt
++ * ipv6.sysctl.max_srh_opts_cnt
+  * ipv6.sysctl.max_dst_opts_len
+  * ipv6.sysctl.max_hbh_opts_len
++ * ipv6.sysctl.max_srh_opts_len
+  *
+  * max_*_opts_cnt is the number of TLVs that are allowed for Destination
+- * options or Hop-by-Hop options. If the number is less than zero then unknown
+- * TLVs are disallowed and the number of known options that are allowed is the
+- * absolute value. Setting the value to INT_MAX indicates no limit.
++ * Options or Hop-by-Hop Options, or the number of TLVs in Segment Routing
++ * TLVs. If the number is less than zero then unknown TLVs are disallowed and
++ * the number of known options that are allowed is the absolute value. Setting
++ * the value to INT_MAX indicates no limit.
+  *
+- * max_*_opts_len is the length limit in bytes of a Destination or
+- * Hop-by-Hop options extension header. Setting the value to INT_MAX
+- * indicates no length limit.
++ * max_*_opts_len is the length limit in bytes of a Destination or Hop-by-Hop,
++ * options extension header, or the length of the TLV block in a Segment
++ * Routing Header. Setting the value to INT_MAX indicates no length limit.
+  *
+  * If a limit is exceeded when processing an extension header the packet is
+- * silently discarded.
++ * discarded and an appropriate ICMP error is sent.
+  */
  
- static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
--			  struct sk_buff *skb,
--			  int max_count)
-+			  struct sk_buff *skb, int max_count, int off, int len,
-+			  bool (*unknown_opt)(struct sk_buff *skb, int optoff,
-+					      bool disallow_unknowns))
- {
--	int len = (skb_transport_header(skb)[1] + 1) << 3;
- 	const unsigned char *nh = skb_network_header(skb);
--	int off = skb_network_header_len(skb);
- 	const struct tlvtype_proc *curr;
- 	bool disallow_unknowns = false;
- 	int tlv_count = 0;
-@@ -131,11 +142,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 		max_count = -max_count;
- 	}
+ /* Default limits for Hop-by-Hop and Destination options */
+ #define IP6_DEFAULT_MAX_DST_OPTS_CNT	 8
+ #define IP6_DEFAULT_MAX_HBH_OPTS_CNT	 8
++#define IP6_DEFAULT_MAX_SRH_OPTS_CNT	 8
+ #define IP6_DEFAULT_MAX_DST_OPTS_LEN	 INT_MAX /* No limit */
+ #define IP6_DEFAULT_MAX_HBH_OPTS_LEN	 INT_MAX /* No limit */
++#define IP6_DEFAULT_MAX_SRH_OPTS_LEN	 INT_MAX /* No limit */
  
--	if (skb_transport_offset(skb) + len > skb_headlen(skb))
-+	if (skb_transport_offset(skb) + off + len > skb_headlen(skb))
- 		goto bad;
+ /*
+  *	Addr type
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 022a0fd..2cb53b3 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -47,8 +47,10 @@ struct netns_sysctl_ipv6 {
+ 	int flowlabel_reflect;
+ 	int max_dst_opts_cnt;
+ 	int max_hbh_opts_cnt;
++	int max_srh_opts_cnt;
+ 	int max_dst_opts_len;
+ 	int max_hbh_opts_len;
++	int max_srh_opts_len;
+ 	int seg6_flowlabel;
+ 	bool skip_notify_on_dev_down;
+ };
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index ceab2fe2..d8dc360 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -862,8 +862,10 @@ static int __net_init inet6_net_init(struct net *net)
+ 	net->ipv6.sysctl.flowlabel_state_ranges = 0;
+ 	net->ipv6.sysctl.max_dst_opts_cnt = IP6_DEFAULT_MAX_DST_OPTS_CNT;
+ 	net->ipv6.sysctl.max_hbh_opts_cnt = IP6_DEFAULT_MAX_HBH_OPTS_CNT;
++	net->ipv6.sysctl.max_srh_opts_cnt = IP6_DEFAULT_MAX_SRH_OPTS_CNT;
+ 	net->ipv6.sysctl.max_dst_opts_len = IP6_DEFAULT_MAX_DST_OPTS_LEN;
+ 	net->ipv6.sysctl.max_hbh_opts_len = IP6_DEFAULT_MAX_HBH_OPTS_LEN;
++	net->ipv6.sysctl.max_srh_opts_len = IP6_DEFAULT_MAX_SRH_OPTS_LEN;
+ 	atomic_set(&net->ipv6.fib6_sernum, 1);
  
--	off += 2;
--	len -= 2;
-+	/* Offset relative to network header for parse loop */
-+	off += skb_network_header_len(skb);
+ 	err = ipv6_init_mibs(net);
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index 6d86fac..5fee576 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -162,6 +162,20 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec
+ 	},
++	{
++		.procname	= "max_srh_opts_number",
++		.data		= &init_net.ipv6.sysctl.max_srh_opts_cnt,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "max_srh_tlvs_length",
++		.data		= &init_net.ipv6.sysctl.max_srh_opts_len,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
+ 	{ }
+ };
  
- 	while (len > 0) {
- 		int optlen = nh[off + 1] + 2;
-@@ -187,7 +198,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 				}
- 			}
- 			if (curr->type < 0 &&
--			    !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
-+			    !unknown_opt(skb, off, disallow_unknowns))
- 				return false;
+@@ -228,6 +242,8 @@ static int __net_init ipv6_sysctl_net_init(struct net *net)
+ 	ipv6_table[13].data = &net->ipv6.sysctl.max_hbh_opts_len;
+ 	ipv6_table[14].data = &net->ipv6.sysctl.multipath_hash_policy,
+ 	ipv6_table[15].data = &net->ipv6.sysctl.seg6_flowlabel;
++	ipv6_table[16].data = &net->ipv6.sysctl.max_srh_opts_cnt;
++	ipv6_table[17].data = &net->ipv6.sysctl.max_srh_opts_len;
  
- 			padlen = 0;
-@@ -309,7 +320,8 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
- #endif
- 
- 	if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
--			  init_net.ipv6.sysctl.max_dst_opts_cnt)) {
-+			  init_net.ipv6.sysctl.max_dst_opts_cnt,
-+			  2, extlen - 2, ip6_tlvopt_unknown)) {
- 		skb->transport_header += extlen;
- 		opt = IP6CB(skb);
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
-@@ -848,7 +860,8 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
- 
- 	opt->flags |= IP6SKB_HOPBYHOP;
- 	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
--			  init_net.ipv6.sysctl.max_hbh_opts_cnt)) {
-+			  init_net.ipv6.sysctl.max_hbh_opts_cnt,
-+			  2, extlen - 2, ip6_tlvopt_unknown)) {
- 		skb->transport_header += extlen;
- 		opt = IP6CB(skb);
- 		opt->nhoff = sizeof(struct ipv6hdr);
+ 	ipv6_route_table = ipv6_route_sysctl_init(net);
+ 	if (!ipv6_route_table)
 -- 
 2.7.4
 
