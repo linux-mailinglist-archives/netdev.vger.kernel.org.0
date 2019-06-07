@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF72387E4
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E0193881A
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:42:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727951AbfFGK0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 06:26:09 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:59280 "EHLO
+        id S1727736AbfFGKm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 06:42:56 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:59484 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727402AbfFGK0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 06:26:09 -0400
+        with ESMTP id S1726584AbfFGKm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 06:42:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=F+cmx8U5n/8qEwqbQeTYX++kAzFG2c+MvGfMXR4iJU4=; b=AwB2SMaPuA4QDOmbhfNmisJqj
-        1/UABtXOANTjtRgQMJGws2VS0U8lxCMQS8ZU+Tt2WdDlrxWJRmjzGT0R37HmQJGrc5uBNyaU42npg
-        sH4UPEy3urwwGgAQyvgywfvRc9GT3PytJ60DSBLo72Zh7qviMpR/2xaZWIXIqyeHg384sfWqyTxwb
-        0nbRbCpWHkOsIBmbrkOrGRZ27ZhxwXW744Hix+4V1abOD0TRSzjZaMM2CDBE0YxykrimsV1EGXCxs
-        /4cfeZmBbxSP24GIsOT2wwtfyBwO/56T5kMORCpfq2Pa4A0B7IDkntnSht25c9blwqjxyBQaWg8pT
-        7EXvfwWWw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56256)
+         bh=lj8DwDhTbmbeNcSNnHB80GkseCcsUA06K+/VjZ4a8a8=; b=vvrFYb31xcWsEJ5vf9iLUK8bV
+        Gsz7hLE7NNjam9vFRdkBAa5QULeW/rXEZ53SsnX2vCRCd0cATC4d6aZ2XUVsefiIONaWqF62MEXon
+        HrhTjIw1V8/d0bALhdPu45Z0BHeGfOgTOuplFdl3KWxq403DFeT6LdcPORB9YzWfq8zOrTuwhRyMq
+        /78j8kfqRoTy0hWBiDYx6hKqREwClWp4BiJGbiY2Vu1VWtCxLIfzXnhY4r7GT6ILDPf+cBiSl7b6r
+        A2xQ7aUrXmqzYZ1Wtz5mJ0+WUiD8qgMhXeEDFEjIUlVZlVQryGwvgjr3X3niaryN/YRjeoB139kTg
+        +e3EoKBMw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38560)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1hZC4T-0003bc-L4; Fri, 07 Jun 2019 11:26:05 +0100
+        id 1hZCKi-0003gD-JQ; Fri, 07 Jun 2019 11:42:52 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hZC4R-0004Ew-CM; Fri, 07 Jun 2019 11:26:03 +0100
-Date:   Fri, 7 Jun 2019 11:26:03 +0100
+        id 1hZCKh-0004Fy-EN; Fri, 07 Jun 2019 11:42:51 +0100
+Date:   Fri, 7 Jun 2019 11:42:51 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Robert Hancock <hancock@sedsystems.ca>
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
         hkallweit1@gmail.com
 Subject: Re: [PATCH net-next] net: sfp: Stop SFP polling and interrupt
  handling during shutdown
-Message-ID: <20190607102603.4fp4v5pidkhjcygt@shell.armlinux.org.uk>
+Message-ID: <20190607104251.opqdsgjbyweb2rfg@shell.armlinux.org.uk>
 References: <1559844377-17188-1-git-send-email-hancock@sedsystems.ca>
  <20190606180908.ctoxi7c4i2uothzn@shell.armlinux.org.uk>
  <1a329ee9-4292-44a2-90eb-a82ca3de03f3@sedsystems.ca>
@@ -53,57 +53,44 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Jun 06, 2019 at 02:57:22PM -0600, Robert Hancock wrote:
-> It may also be helpful that the lock is now held for the subsequent code
-> in sfp_check_state that's comparing the previous and new states - it
-> seems like you could otherwise run into trouble if that function was
-> being concurrently called from the polling thread and the interrupt
-> handler (for example if you had an SFP where some GPIOs supported
-> interrupts and some didn't).
+> The idea there was to deal with the case where GPIO interrupts were
+> previously raised before shutdown and not yet handled by the threaded
+> interrupt handler by the time shutdown is called. After shutdown on the
+> SFP completes, the bus the GPIO stuff is on could potentially be shut
+> down at any moment, so we really don't want to be digging into the GPIO
+> states after that. Locking the mutex there ensures that we don't read a
+> stale value for the shutdown flag in the interrupt handler, since AFAIK
+> there's no other synchronization around that value.
 
-That's a good point, one that we should address separately.  Rather
-than re-using the existing mutex (which would be difficult to hold
-across calling the state machine due to locking inversion) how about
-this:
+There are two cases:
 
- drivers/net/phy/sfp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+1) The interrupt is raised just as sfp_shutdown() is called but before
+   the mutex is taken.  We will get the full processing in this case.
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 8a21294d1ce8..5ff427dcbb31 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -190,6 +190,7 @@ struct sfp {
- 	struct delayed_work poll;
- 	struct delayed_work timeout;
- 	struct mutex sm_mutex;
-+	struct mutex st_mutex;
- 	unsigned char sm_mod_state;
- 	unsigned char sm_dev_state;
- 	unsigned short sm_state;
-@@ -1976,6 +1977,7 @@ static void sfp_check_state(struct sfp *sfp)
- {
- 	unsigned int state, i, changed;
- 
-+	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
- 	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-@@ -2001,6 +2003,7 @@ static void sfp_check_state(struct sfp *sfp)
- 		sfp_sm_event(sfp, state & SFP_F_LOS ?
- 				SFP_E_LOS_HIGH : SFP_E_LOS_LOW);
- 	rtnl_unlock();
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
- static irqreturn_t sfp_irq(int irq, void *data)
-@@ -2031,6 +2034,7 @@ static struct sfp *sfp_alloc(struct device *dev)
- 	sfp->dev = dev;
- 
- 	mutex_init(&sfp->sm_mutex);
-+	mutex_init(&sfp->st_mutex);
- 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
- 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
- 
+2) The interrupt is raised during the mutex-locked bit of sfp_shutdown()
+   or after the mutex in sfp_shutdown() is released.  We will get the
+   abbreviated processing.
+
+This means that the mutex doesn't provide any protection against full
+interrupt processing if it occurs just prior to or during the initial
+execution of sfp_shutdown().
+
+All that we need to ensure is that the state of sfp->shutdown is
+visible by the time sfp_shutdown() returns, and that none of the
+interrupt and worker functions are executing.  We have the worker
+functions covered by the synchronous cancelling of them, but not the
+interrupts, and as Florian points out, it's probably better to disable
+the interrupts, and again, that can be done synchronously to ensure
+that the handlers are not running.
+
+If the workers and interrupt handlers are synchronously disabled, we
+can be sure by the end of sfp_shutdown() that none of those paths are
+executing, so the next time something attempts to trigger them, they
+will see sfp->shutdown is set.
+
+I'm not convinced that we even need sfp->shutdown if we have cancelled
+the workers and disabled the interrupts.
+
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
 FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
