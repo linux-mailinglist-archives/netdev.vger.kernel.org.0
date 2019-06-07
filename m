@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F8D3995C
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF3443994D
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731658AbfFGXGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 19:06:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43814 "EHLO mail.kernel.org"
+        id S1731458AbfFGXGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 19:06:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730926AbfFGXGO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 19:06:14 -0400
+        id S1730998AbfFGXGP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 19:06:15 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 10CE02147A;
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B015214AF;
         Fri,  7 Jun 2019 23:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1559948774;
-        bh=pl7mNVGh7bdfSjJ5JhPOOQpdMgth4k01xj+KQnv9Sxs=;
+        bh=f4AkjFOIn0Gip+XazVZg69WWKUhXLR5+twcGRrKeoAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ozR5ejRfgNL04wvpzXxACtFgRqjo2WXupVMllsXkql1NBCvd55TeaRg0aDgZZbDxI
-         jmlyK+KZa7nrucf1bnfSJpcxoYb6SXg6v0SGa23aWnC7gM28sFGwdZ3IHiJELocFV9
-         KS0AUBR9YA2vgfgovhlySLrKNH/bjoVfo3Fg1vrw=
+        b=QY9m1Ul4shwJdOrKa+vSes+MtqHpV8CyCzjk0Fb19zpN26jnDpvfoAH4Eud2nUtPa
+         wtdGgczeQI9SAVpmcSJ4NPJnzpDeH6J1xSKgfIALE4Nf+sIU7IC+Jvzrqystx0kHTY
+         ucwNbCPf2xQ0nSPy5H7lbdOnLGcFWdgWWd0C++x4=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v3 net-next 09/20] ipv6: Handle all fib6_nh in a nexthop in rt6_do_redirect
-Date:   Fri,  7 Jun 2019 16:05:59 -0700
-Message-Id: <20190607230610.10349-10-dsahern@kernel.org>
+Subject: [PATCH v3 net-next 10/20] ipv6: Handle all fib6_nh in a nexthop in mtu updates
+Date:   Fri,  7 Jun 2019 16:06:00 -0700
+Message-Id: <20190607230610.10349-11-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190607230610.10349-1-dsahern@kernel.org>
 References: <20190607230610.10349-1-dsahern@kernel.org>
@@ -40,46 +40,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Use nexthop_for_each_fib6_nh and fib6_nh_find_match to find the
-fib6_nh in a nexthop that correlates to the device and gateway
+Use nexthop_for_each_fib6_nh to call fib6_nh_mtu_change for each
+fib6_nh in a nexthop for rt6_mtu_change_route. For __ip6_rt_update_pmtu,
+we need to find the nexthop that correlates to the device and gateway
 in the rt6_info.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- net/ipv6/route.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ net/ipv6/route.c | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 2eb6754c6d11..1c6cff699a76 100644
+index 1c6cff699a76..52ecd1ffde7e 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -3903,7 +3903,25 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
- 	if (!res.f6i)
- 		goto out;
+@@ -2683,10 +2683,31 @@ static void __ip6_rt_update_pmtu(struct dst_entry *dst, const struct sock *sk,
+ 			rcu_read_unlock();
+ 			return;
+ 		}
+-		res.nh = res.f6i->fib6_nh;
+ 		res.fib6_flags = res.f6i->fib6_flags;
+ 		res.fib6_type = res.f6i->fib6_type;
  
--	res.nh = res.f6i->fib6_nh;
-+	if (res.f6i->nh) {
-+		struct fib6_nh_match_arg arg = {
-+			.dev = dst->dev,
-+			.gw = &rt->rt6i_gateway,
-+		};
++		if (res.f6i->nh) {
++			struct fib6_nh_match_arg arg = {
++				.dev = dst->dev,
++				.gw = &rt6->rt6i_gateway,
++			};
 +
-+		nexthop_for_each_fib6_nh(res.f6i->nh,
-+					 fib6_nh_find_match, &arg);
++			nexthop_for_each_fib6_nh(res.f6i->nh,
++						 fib6_nh_find_match, &arg);
 +
-+		/* fib6_info uses a nexthop that does not have fib6_nh
-+		 * using the dst->dev. Should be impossible
-+		 */
-+		if (!arg.match)
-+			return;
-+		res.nh = arg.match;
-+	} else {
-+		res.nh = res.f6i->fib6_nh;
++			/* fib6_info uses a nexthop that does not have fib6_nh
++			 * using the dst->dev + gw. Should be impossible.
++			 */
++			if (!arg.match) {
++				rcu_read_unlock();
++				return;
++			}
++
++			res.nh = arg.match;
++		} else {
++			res.nh = res.f6i->fib6_nh;
++		}
++
+ 		nrt6 = ip6_rt_cache_alloc(&res, daddr, saddr);
+ 		if (nrt6) {
+ 			rt6_do_update_pmtu(nrt6, mtu);
+@@ -4654,6 +4675,12 @@ static int rt6_mtu_change_route(struct fib6_info *f6i, void *p_arg)
+ 		return 0;
+ 
+ 	arg->f6i = f6i;
++	if (f6i->nh) {
++		/* fib6_nh_mtu_change only returns 0, so this is safe */
++		return nexthop_for_each_fib6_nh(f6i->nh, fib6_nh_mtu_change,
++						arg);
 +	}
 +
- 	res.fib6_flags = res.f6i->fib6_flags;
- 	res.fib6_type = res.f6i->fib6_type;
- 	nrt = ip6_rt_cache_alloc(&res, &msg->dest, NULL);
+ 	return fib6_nh_mtu_change(f6i->fib6_nh, arg);
+ }
+ 
 -- 
 2.11.0
 
