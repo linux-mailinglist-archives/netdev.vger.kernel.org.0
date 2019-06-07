@@ -2,222 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4B6396D8
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3DD396DB
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730299AbfFGUbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 16:31:06 -0400
-Received: from saul.pp3345.net ([163.172.111.124]:55396 "EHLO saul.pp3345.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729482AbfFGUbG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 16:31:06 -0400
-X-Greylist: delayed 605 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Jun 2019 16:31:04 EDT
-Received: from localhost (localhost [127.0.0.1]) (Authenticated sender: dev@pp3345.net)
-        by saul.pp3345.net (Postcow) with ESMTPSA id A413E9A3D91;
-        Fri,  7 Jun 2019 22:20:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pp3345.net; s=saul;
-        t=1559938858; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:openpgp:autocrypt;
-        bh=QRpCL9CaNLwgsrXY1NZA4TdMi/3oB7KvdIXX0YrjYW4=;
-        b=fdzt7oke30OUze9bM1uFDrHICwBMcj2Xb5OE6igEmSU8WGzBuZOnxFbS2hi69p/4LBZK2v
-        ad+xSV6rcaWqpxW+XXyR/dc/Ine/IzM2BWL12gmB1Hhxyd3W32UFBfFa+Q/GRKro0I+e5+
-        wnZ4Cklk4kScuNtXaAemPLlHX7yWkh4LQ0sPUi3nrTmwFgm6ZjiyZEvVzF7kqYhJmeiifD
-        hdnZrvb0OffHj4ApU9lVJlCWw41N3DAt0JdZp/ID8/UdSOvKTA3wSUJk/V721nQCk7ZFSr
-        156lScAv76yjVogYk5oyvgFC60Dx9AhVtgP00wFUvirMFbaPDOiK8iq8tIuPEA==
-Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
-To:     Marc Haber <mh+netdev@zugschlus.de>, linux-wireless@vger.kernel.org
-References: <20190530081257.GA26133@torres.zugschlus.de>
- <20190602134842.GC3249@torres.zugschlus.de>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>
-From:   Yussuf Khalil <dev@pp3345.net>
-Message-ID: <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
-Date:   Fri, 7 Jun 2019 22:20:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1730381AbfFGUbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 16:31:51 -0400
+Received: from cassarossa.samfundet.no ([193.35.52.29]:59117 "EHLO
+        cassarossa.samfundet.no" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729153AbfFGUbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 16:31:50 -0400
+Received: from pannekake.samfundet.no ([2001:67c:29f4::50])
+        by cassarossa.samfundet.no with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <sesse@samfundet.no>)
+        id 1hZLWX-0008J9-R8; Fri, 07 Jun 2019 22:31:44 +0200
+Received: from sesse by pannekake.samfundet.no with local (Exim 4.92)
+        (envelope-from <sesse@samfundet.no>)
+        id 1hZLWX-0004jd-LP; Fri, 07 Jun 2019 22:31:41 +0200
+Date:   Fri, 7 Jun 2019 22:31:41 +0200
+From:   "Steinar H. Gunderson" <steinar+kernel@gunderson.no>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: EoGRE sends undersized frames without padding
+Message-ID: <20190607203141.tj5xnkjyitlfz5yl@sesse.net>
+References: <20190530083508.i52z5u25f2o7yigu@sesse.net>
+ <CAM_iQpX-fJzVXc4sLndkZfD4L-XJHCwkndj8xG2p7zY04k616g@mail.gmail.com>
+ <20190605072712.avp3svw27smrq2qx@sesse.net>
+ <CAM_iQpXWM35ySoigS=TdsXr8+3Ws4ZMspJCBVdWngggCBi362g@mail.gmail.com>
+ <20190606073611.7n2w5n52pfh3jzks@sesse.net>
+ <CAM_iQpVFq8TdnHSOsC7+6tK3KEoeyF1SFOQ-DheLW7Y=g77xxg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190602134842.GC3249@torres.zugschlus.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: base64
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=pp3345.net;
-        s=saul; t=1559938858; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:openpgp:autocrypt;
-        bh=QRpCL9CaNLwgsrXY1NZA4TdMi/3oB7KvdIXX0YrjYW4=;
-        b=P+u+KMtP8yJxrWnr4mtO2odyzc9Ix1jyBIGGLMSiRH0+Xv3h3SqlN9edXboQz/cQWFgZc1
-        3gT2GAeZI6jddEVhnt2U3FNvMllIph2tIxvA0S537jg8SxDSJtvdHjLfJE/0EENqP19jl3
-        hM+H/I7g/oGPtsrYsiHqzb2HV7ZbRpk2m24Ffjc/WfQ82R1ki7biOCaKcNUppjGkt46Gxn
-        LekfRPEhNy0uBgXp2rIHS8I6WB5BuiiUxlJoygfN8H+6pcMWPuDi9LPYx+D7tkc/Wbpe39
-        JkK/Hqkv8VJM/T5DNsSSZZLl6V6iL0ZtCuwVIDk7K9HQxpFqGe3cQzQMU2egLQ==
-ARC-Seal: i=1; s=saul; d=pp3345.net; t=1559938858; a=rsa-sha256; cv=none;
-        b=I2WdmbSXf4VLh7EYccieMDPkEMbTpRTppPE5ZGTaLgh2QnVxG9mIODyz2d+JImSMFdAMjM
-        E2lcb7LWngQtYNmkkB41H9kv8nOLZFwVCoK/D90aTwtguEkb17K3W2qzjgC4BTs+hTjdiO
-        esnNPNNls8PJU3jn7aZQKnkLbpzxSbJy/OgVw5b1vvNi8A22DLL8CBvurAPlslCk9O239q
-        TyHvffVJgpcotHK1Cv2rb0+s6+f/4X1pm70RIT/OEF13byC+PLWXpc4tZgdQzmvWPpfkOH
-        HKkiqk5wKlrCOa9Coc0pmPhLoU1n3+B/Nx65hrObqFSS/yaSjr4NNszOKtxONw==
-ARC-Authentication-Results: i=1;
-        saul.pp3345.net;
-        auth=pass smtp.auth=dev@pp3345.net smtp.mailfrom=dev@pp3345.net
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM_iQpVFq8TdnHSOsC7+6tK3KEoeyF1SFOQ-DheLW7Y=g77xxg@mail.gmail.com>
+X-Operating-System: Linux 5.1.2 on a x86_64
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Q0MnaW5nIGl3bHdpZmkgbWFpbnRhaW5lcnMgdG8gZ2V0IHNvbWUgYXR0ZW50aW9uIGZvciB0
-aGlzIGlzc3VlLg0KDQpJIGFtIGV4cGVyaWVuY2luZyB0aGUgdmVyeSBzYW1lIGJ1ZyBvbiBh
-IFRoaW5rUGFkIFQ0ODBzIHJ1bm5pbmcgNS4xLjYgDQp3aXRoIEZlZG9yYSAzMC4gQSBmcmll
-bmQgaXMgc2VlaW5nIGl0IG9uIGhpcyBYMSBDYXJib24gNnRoIEdlbiwgdG9vLiANCkJvdGgg
-aGF2ZSBhbiAiSW50ZWwgQ29ycG9yYXRpb24gV2lyZWxlc3MgODI2NSAvIDgyNzUiIGNhcmQg
-YWNjb3JkaW5nIHRvIA0KbHNwY2kuDQoNCk5vdGFibHksIGluIGFsbCBjYXNlcyBJJ3ZlIG9i
-c2VydmVkIGl0IG9jY3VycmVkIHJpZ2h0IGFmdGVyIHJvYW1pbmcgZnJvbSANCm9uZSBBUCB0
-byBhbm90aGVyICh0aG91Z2ggSSBjYW4ndCBndWFyYW50ZWUgdGhpcyBpc24ndCBhIGNvaW5j
-aWRlbmNlKS4gDQpIZXJlIGlzIHRoZSBkbWVzZyBvdXRwdXQgZnJvbSBteSBtYWNoaW5lOg0K
-DQo+IEp1biAwMiAwMDozODoyNSBwcDMzNDUtbGFwdG9wIGtlcm5lbDogd2xwNjFzMDogZGlz
-Y29ubmVjdCBmcm9tIEFQIDljOjFjOjEyOjgyOjVhOmIwIGZvciBuZXcgYXV0aCB0byBhYzph
-MzoxZTpkOTo1ZTpkMA0KDQo+IEp1biAwMiAwMDozODoyNSBwcDMzNDUtbGFwdG9wIGtlcm5l
-bDogd2xwNjFzMDogYXV0aGVudGljYXRlIHdpdGggYWM6YTM6MWU6ZDk6NWU6ZDANCg0KPiBK
-dW4gMDIgMDA6Mzg6MjUgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IHdscDYxczA6IHNlbmQgYXV0
-aCB0byBhYzphMzoxZTpkOTo1ZTpkMCAodHJ5IDEvMykNCg0KPiBKdW4gMDIgMDA6Mzg6MjUg
-cHAzMzQ1LWxhcHRvcCBrZXJuZWw6IHdscDYxczA6IHNlbmQgYXV0aCB0byBhYzphMzoxZTpk
-OTo1ZTpkMCAodHJ5IDIvMykNCg0KPiBKdW4gMDIgMDA6Mzg6MjUgcHAzMzQ1LWxhcHRvcCBr
-ZXJuZWw6IHdscDYxczA6IHNlbmQgYXV0aCB0byBhYzphMzoxZTpkOTo1ZTpkMCAodHJ5IDMv
-MykNCg0KPiBKdW4gMDIgMDA6Mzg6MjUgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IHdscDYxczA6
-IGF1dGhlbnRpY2F0aW9uIHdpdGggYWM6YTM6MWU6ZDk6NWU6ZDAgdGltZWQgb3V0DQoNCj4g
-SnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiB3bHA2MXMwOiBhdXRoZW50
-aWNhdGUgd2l0aCA5YzoxYzoxMjo4Mjo1YTpiMA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMz
-NDUtbGFwdG9wIGtlcm5lbDogd2xwNjFzMDogc2VuZCBhdXRoIHRvIDljOjFjOjEyOjgyOjVh
-OmIwICh0cnkgMS8zKQ0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9wIGtlcm5l
-bDogd2xwNjFzMDogYXV0aGVudGljYXRlZA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUt
-bGFwdG9wIGtlcm5lbDogd2xwNjFzMDogYXNzb2NpYXRlIHdpdGggOWM6MWM6MTI6ODI6NWE6
-YjAgKHRyeSAxLzMpDQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVs
-OiB3bHA2MXMwOiBSWCBBc3NvY1Jlc3AgZnJvbSA5YzoxYzoxMjo4Mjo1YTpiMCAoY2FwYWI9
-MHgxIHN0YXR1cz0wIGFpZD00KQ0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9w
-IGtlcm5lbDogd2xwNjFzMDogYXNzb2NpYXRlZA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMz
-NDUtbGFwdG9wIGtlcm5lbDogbGlzdF9kZWwgY29ycnVwdGlvbi4gbmV4dC0+cHJldiBzaG91
-bGQgYmUgZmZmZjlhOWY2NGU1MjdmOCwgYnV0IHdhcyBmZmZmOWE5ZjY0ZTUyMTA4DQoNCj4g
-SnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiAtLS0tLS0tLS0tLS1bIGN1
-dCBoZXJlIF0tLS0tLS0tLS0tLS0NCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRv
-cCBrZXJuZWw6IGtlcm5lbCBCVUcgYXQgbGliL2xpc3RfZGVidWcuYzo1NCENCg0KPiBKdW4g
-MDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IGludmFsaWQgb3Bjb2RlOiAwMDAw
-IFsjMV0gU01QIFBUSQ0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9wIGtlcm5l
-bDogQ1BVOiA1IFBJRDogMjEyOCBDb21tOiBrd29ya2VyLzU6MyBOb3QgdGFpbnRlZCA1LjEu
-Ni0zMDAuZmMzMC54ODZfNjQgIzENCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRv
-cCBrZXJuZWw6IEhhcmR3YXJlIG5hbWU6IExFTk9WTyAyMEw4UzAyRTAwLzIwTDhTMDJFMDAs
-IEJJT1MgTjIyRVQ1NFcgKDEuMzEgKSAwNC8yMi8yMDE5DQoNCj4gSnVuIDAyIDAwOjM4OjI2
-IHBwMzM0NS1sYXB0b3Aga2VybmVsOiBXb3JrcXVldWU6IGV2ZW50cyBpd2xfbXZtX2FkZF9u
-ZXdfZHFhX3N0cmVhbV93ayBbaXdsbXZtXQ0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUt
-bGFwdG9wIGtlcm5lbDogUklQOiAwMDEwOl9fbGlzdF9kZWxfZW50cnlfdmFsaWQuY29sZCsw
-eDFkLzB4NTUNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IENv
-ZGU6IGM3IGM3IDE4IDU1IDExIGI4IGU4IGY1IDBiIGM3IGZmIDBmIDBiIDQ4IDg5IGZlIDQ4
-IGM3IGM3IGE4IDU1IDExIGI4IGU4IGU0IDBiIGM3IGZmIDBmIDBiIDQ4IGM3IGM3IDU4IDU2
-IDExIGI4IGU4IGQ2IDBiIGM3IGZmIDwwZj4gMGIgNDggODkgZjIgNDggODkgZmUgNDggYzcg
-YzcgMTggNTYgMTEgYjggZTggYzIgMGIgYzcgZmYgMGYgMGINCg0KPiBKdW4gMDIgMDA6Mzg6
-MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IFJTUDogMDAwMDpmZmZmYThlYzRhZDczZGM4IEVG
-TEFHUzogMDAwMTAyNDYNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJu
-ZWw6IFJBWDogMDAwMDAwMDAwMDAwMDA1NCBSQlg6IGZmZmY5YTlmNjRlNTI3ZjggUkNYOiAw
-MDAwMDAwMDAwMDAwMDAwDQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2Vy
-bmVsOiBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiBmZmZmOWE5ZmNmMzU2OGM4IFJESTog
-ZmZmZjlhOWZjZjM1NjhjOA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9wIGtl
-cm5lbDogUkJQOiBmZmZmOWE5ZjY0ZTU2ODk4IFIwODogZmZmZjlhOWZjZjM1NjhjOCBSMDk6
-IDAwMDAwMDAwMDAwMDBjNmYNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBr
-ZXJuZWw6IFIxMDogZmZmZmZmZmZiODlmOTMwYyBSMTE6IDAwMDAwMDAwMDAwMDAwMDMgUjEy
-OiAwMDAwMDAwMDAwMDAwMDA0DQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Ag
-a2VybmVsOiBSMTM6IGZmZmY5YTlmYzg3OWEzODggUjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIx
-NTogZmZmZjlhOWZjODc5OTYwOA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9w
-IGtlcm5lbDogRlM6ICAwMDAwMDAwMDAwMDAwMDAwKDAwMDApIEdTOmZmZmY5YTlmY2YzNDAw
-MDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0KDQo+IEp1biAwMiAwMDozODoyNiBw
-cDMzNDUtbGFwdG9wIGtlcm5lbDogQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDog
-MDAwMDAwMDA4MDA1MDAzMw0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9wIGtl
-cm5lbDogQ1IyOiAwMDAwMWQzYTkxNmJmMDAwIENSMzogMDAwMDAwMDQ4N2M5NDAwMyBDUjQ6
-IDAwMDAwMDAwMDAzNjA2ZTANCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBr
-ZXJuZWw6IENhbGwgVHJhY2U6DQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Ag
-a2VybmVsOiAgaXdsX212bV9hZGRfbmV3X2RxYV9zdHJlYW1fd2srMHgyZjMvMHg4NzAgW2l3
-bG12bV0NCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6ICA/IF9f
-c3dpdGNoX3RvKzB4NDAvMHg0YzANCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRv
-cCBrZXJuZWw6ICBwcm9jZXNzX29uZV93b3JrKzB4MTlkLzB4MzgwDQoNCj4gSnVuIDAyIDAw
-OjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiAgd29ya2VyX3RocmVhZCsweDUwLzB4M2Iw
-DQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiAga3RocmVhZCsw
-eGZiLzB4MTMwDQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiAg
-PyBwcm9jZXNzX29uZV93b3JrKzB4MzgwLzB4MzgwDQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBw
-MzM0NS1sYXB0b3Aga2VybmVsOiAgPyBrdGhyZWFkX3BhcmsrMHg5MC8weDkwDQoNCj4gSnVu
-IDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Aga2VybmVsOiAgcmV0X2Zyb21fZm9yaysweDM1
-LzB4NDANCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IE1vZHVs
-ZXMgbGlua2VkIGluOiB4dF9DSEVDS1NVTSBpcHRfTUFTUVVFUkFERSB0dW4gYnJpZGdlIHN0
-cCBsbGMgbmZfY29ubnRyYWNrX25ldGJpb3NfbnMgbmZfY29ubnRyYWNrX2Jyb2FkY2FzdCB4
-dF9DVCBpcDZ0X3JwZmlsdGVyIGlwNnRfUkVKRUNUIG5mX3JlamVjdF9pcHY2IGlwdF9SRUpF
-Q1QgbmZfcmVqZWN0X2lwdjQgeHRfY29ubnRyYWNrIGVidGFibGVfbmF0IGlwNnRhYmxlX25h
-dCBpcDZ0YWJsZV9tYW5nbGUgaXA2dGFibGVfcmF3IGlwNnRhYmxlX3NlY3VyaXR5IGlwdGFi
-bGVfbmF0IG5mX25hdCBpcHRhYmxlX21hbmdsZSBpcHRhYmxlX3JhdyBpcHRhYmxlX3NlY3Vy
-aXR5IG5mX2Nvbm50cmFjayBuZl9kZWZyYWdfaXB2NiBuZl9kZWZyYWdfaXB2NCBsaWJjcmMz
-MmMgaXBfc2V0IG5mbmV0bGluayBlYnRhYmxlX2ZpbHRlciBlYnRhYmxlcyBpcDZ0YWJsZV9m
-aWx0ZXIgaXA2X3RhYmxlcyBpcHRhYmxlX2ZpbHRlciBpcF90YWJsZXMgYm5lcCBzdW5ycGMg
-dmZhdCBmYXQgYXJjNCBlbGFuX2kyYyBpd2xtdm0gbWFjODAyMTEgbWVpX2hkY3AgaVRDT193
-ZHQgaVRDT192ZW5kb3Jfc3VwcG9ydCBzbmRfc29jX3NrbCBzbmRfc29jX2hkYWNfaGRhIHNu
-ZF9oZGFfZXh0X2NvcmUgc25kX3NvY19za2xfaXBjIHNuZF9zb2Nfc3N0X2lwYyBpbnRlbF9y
-YXBsIHNuZF9zb2Nfc3N0X2RzcCBpd2x3aWZpIHNuZF9zb2NfYWNwaV9pbnRlbF9tYXRjaCBz
-bmRfc29jX2FjcGkgdXZjdmlkZW8gc25kX2hkYV9jb2RlY19oZG1pIHg4Nl9wa2dfdGVtcF90
-aGVybWFsIGludGVsX3Bvd2VyY2xhbXAgYnR1c2IgY29yZXRlbXAgYnRydGwgYnRiY20gc25k
-X3NvY19jb3JlIGJ0aW50ZWwga3ZtX2ludGVsIHZpZGVvYnVmMl92bWFsbG9jIGJsdWV0b290
-aCBzbmRfaGRhX2NvZGVjX3JlYWx0ZWsgdmlkZW9idWYyX21lbW9wcyB2aWRlb2J1ZjJfdjRs
-MiB2aWRlb2J1ZjJfY29tbW9uIHNuZF9oZGFfY29kZWNfZ2VuZXJpYyB2aWRlb2RldiBzbmRf
-Y29tcHJlc3MNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6ICBh
-Yzk3X2J1cyBzbmRfcGNtX2RtYWVuZ2luZSBqb3lkZXYgc25kX2hkYV9pbnRlbCBrdm0gY2Zn
-ODAyMTEgc25kX2hkYV9jb2RlYyBpbnRlbF93bWlfdGh1bmRlcmJvbHQgd21pX2Jtb2YgdGh1
-bmRlcmJvbHQgbWVkaWEgc25kX2hkYV9jb3JlIGVjZGhfZ2VuZXJpYyBzbmRfaHdkZXAgaXJx
-YnlwYXNzIHNuZF9zZXEgaW50ZWxfY3N0YXRlIGludGVsX3VuY29yZSBzbmRfc2VxX2Rldmlj
-ZSBpbnRlbF9yYXBsX3BlcmYgc25kX3BjbSBzbmRfdGltZXIgdGhpbmtwYWRfYWNwaSBtZWlf
-bWUgaW50ZWxfeGhjaV91c2Jfcm9sZV9zd2l0Y2ggaWRtYTY0IGkyY19pODAxIG1laSByb2xl
-cyBsZWR0cmlnX2F1ZGlvIHVjc2lfYWNwaSBzbmQgaW50ZWxfbHBzc19wY2kgdHlwZWNfdWNz
-aSBpbnRlbF9scHNzIHByb2Nlc3Nvcl90aGVybWFsX2RldmljZSBpbnRlbF9wY2hfdGhlcm1h
-bCB0eXBlYyBpbnRlbF9zb2NfZHRzX2lvc2Ygc291bmRjb3JlIHJma2lsbCBpbnQzNDAzX3Ro
-ZXJtYWwgaW50MzQweF90aGVybWFsX3pvbmUgaW50MzQwMF90aGVybWFsIGFjcGlfcGFkIGFj
-cGlfdGhlcm1hbF9yZWwgcGNjX2NwdWZyZXEgZG1fY3J5cHQgaTkxNSBub3V2ZWF1IG14bV93
-bWkgdHRtIGNyY3QxMGRpZl9wY2xtdWwgY3JjMzJfcGNsbXVsIGkyY19hbGdvX2JpdCBjcmMz
-MmNfaW50ZWwgZHJtX2ttc19oZWxwZXIgbnZtZSBkcm0gbnZtZV9jb3JlIGUxMDAwZSBnaGFz
-aF9jbG11bG5pX2ludGVsIHVhcyB1c2Jfc3RvcmFnZSBzZXJpb19yYXcgd21pIHZpZGVvIGZ1
-c2UNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IC0tLVsgZW5k
-IHRyYWNlIDcxOGIwMTIyMTU1ODUyYzUgXS0tLQ0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMz
-NDUtbGFwdG9wIGtlcm5lbDogUklQOiAwMDEwOl9fbGlzdF9kZWxfZW50cnlfdmFsaWQuY29s
-ZCsweDFkLzB4NTUNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6
-IENvZGU6IGM3IGM3IDE4IDU1IDExIGI4IGU4IGY1IDBiIGM3IGZmIDBmIDBiIDQ4IDg5IGZl
-IDQ4IGM3IGM3IGE4IDU1IDExIGI4IGU4IGU0IDBiIGM3IGZmIDBmIDBiIDQ4IGM3IGM3IDU4
-IDU2IDExIGI4IGU4IGQ2IDBiIGM3IGZmIDwwZj4gMGIgNDggODkgZjIgNDggODkgZmUgNDgg
-YzcgYzcgMTggNTYgMTEgYjggZTggYzIgMGIgYzcgZmYgMGYgMGINCg0KPiBKdW4gMDIgMDA6
-Mzg6MjYgcHAzMzQ1LWxhcHRvcCBrZXJuZWw6IFJTUDogMDAwMDpmZmZmYThlYzRhZDczZGM4
-IEVGTEFHUzogMDAwMTAyNDYNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRvcCBr
-ZXJuZWw6IFJBWDogMDAwMDAwMDAwMDAwMDA1NCBSQlg6IGZmZmY5YTlmNjRlNTI3ZjggUkNY
-OiAwMDAwMDAwMDAwMDAwMDAwDQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0b3Ag
-a2VybmVsOiBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiBmZmZmOWE5ZmNmMzU2OGM4IFJE
-STogZmZmZjlhOWZjZjM1NjhjOA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9w
-IGtlcm5lbDogUkJQOiBmZmZmOWE5ZjY0ZTU2ODk4IFIwODogZmZmZjlhOWZjZjM1NjhjOCBS
-MDk6IDAwMDAwMDAwMDAwMDBjNmYNCg0KPiBKdW4gMDIgMDA6Mzg6MjYgcHAzMzQ1LWxhcHRv
-cCBrZXJuZWw6IFIxMDogZmZmZmZmZmZiODlmOTMwYyBSMTE6IDAwMDAwMDAwMDAwMDAwMDMg
-UjEyOiAwMDAwMDAwMDAwMDAwMDA0DQoNCj4gSnVuIDAyIDAwOjM4OjI2IHBwMzM0NS1sYXB0
-b3Aga2VybmVsOiBSMTM6IGZmZmY5YTlmYzg3OWEzODggUjE0OiAwMDAwMDAwMDAwMDAwMDAw
-IFIxNTogZmZmZjlhOWZjODc5OTYwOA0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFw
-dG9wIGtlcm5lbDogRlM6ICAwMDAwMDAwMDAwMDAwMDAwKDAwMDApIEdTOmZmZmY5YTlmY2Yz
-NDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0KDQo+IEp1biAwMiAwMDozODoy
-NiBwcDMzNDUtbGFwdG9wIGtlcm5lbDogQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENS
-MDogMDAwMDAwMDA4MDA1MDAzMw0KDQo+IEp1biAwMiAwMDozODoyNiBwcDMzNDUtbGFwdG9w
-IGtlcm5lbDogQ1IyOiAwMDAwMWQzYTkxNmJmMDAwIENSMzogMDAwMDAwMDQ4N2M5NDAwMyBD
-UjQ6IDAwMDAwMDAwMDAzNjA2ZTANCg0KDQpBbSAwMi4wNi4xOSB1bSAxNTo0OCBzY2hyaWVi
-IE1hcmMgSGFiZXI6DQo+IE9uIFRodSwgTWF5IDMwLCAyMDE5IGF0IDEwOjEyOjU3QU0gKzAy
-MDAsIE1hcmMgSGFiZXIgd3JvdGU6DQo+PiBvbiBteSBwcmltYXJ5IG5vdGVib29rLCBhIExl
-bm92byBYMjYwLCB3aXRoIGFuIEludGVsIFdpcmVsZXNzIDgyNjANCj4+ICg4MDg2OjI0ZjMp
-LCBydW5uaW5nIERlYmlhbiB1bnN0YWJsZSwgSSBoYXZlIHN0YXJ0ZWQgdG8gc2VlIG5ldHdv
-cmsNCj4+IGhhbmdzIHNpbmNlIHVwZ3JhZGluZyB0byBrZXJuZWwgNS4xLiBJbiB0aGlzIHNp
-dHVhdGlvbiwgSSBjYW5ub3QNCj4+IHJlc3RhcnQgTmV0d29yay1NYW5hZ2VyICh0aGUgY2Fs
-bCBqdXN0IGhhbmdzKSwgSSBjYW4gbG9nIG91dCBvZiBYLCBidXQNCj4+IHRoZSBzeXN0ZW0g
-ZG9lcyBub3QgY2xlYW5seSBzaHV0IGRvd24gYW5kIEkgbmVlZCB0byBNYWdpYyBTeXNScSBt
-eXNlbGYNCj4+IG91dCBvZiB0aGUgcnVubmluZyBzeXN0ZW0uIFRoaXMgaGFwcGVucyBhYm91
-dCBvbmNlIGV2ZXJ5IHR3byBkYXlzLg0KPiANCj4gVGhlIGlzc3VlIGlzIGFsc28gcHJlc2Vu
-dCBpbiA1LjEuNSBhbmQgNS4xLjYuDQo+IA0KPiBHcmVldGluZ3MNCj4gTWFyYw0KPiANCg==
+On Fri, Jun 07, 2019 at 12:57:57PM -0700, Cong Wang wrote:
+>> Well, openvswitch say that they just throw packets around and assume they're
+>> valid... :-)
+> _If_ the hardware switch has to pad them (according to what you said),
+> why software switch doesn't?
+
+Trust me, I'm telling them they have to deal with this, too. :-)
+
+But you can't really assume there's a switch in the middle at all (whether
+hardware nor software). You can connect a NIC to a NIC with no switch in-between.
+
+Normally, it's not the switch that adds the padding; it's done in the NIC
+(MAC sublayer), so if the switch doesn't modify the packet, it can just send
+it on. However, there are situations where it has to, like for instance when
+stripping a VLAN tag (802.1Q-2005, section 6.5.1), since that makes the
+packet shorter.
+
+> Rather than arguing about this, please check what ethernet standard
+> says. It would be much easier to convince others with standard.
+
+The Ethernet standard? That's pretty clear; Ethernet frames are a minimum of
+64 bytes (including FCS at the end, so 60 payload bytes including MAC
+addresses etc.). IEEE 802.3-2015 4.2.3.3:
+
+  The CSMA/CD Media Access mechanism requires that a minimum frame length of
+  minFrameSize bits be transmitted. If frameSize is less than minFrameSize,
+  then the CSMA/CD MAC sublayer shall append extra bits in units of octets
+  (Pad), after the end of the MAC Client Data field but prior to calculating
+  and appending the FCS (if not provided by the MAC client). The number of
+  extra bits shall be sufficient to ensure that the frame, from the DA field
+  through the FCS field inclusive, is at least minFrameSize bits.
+
+4A.2.3.2.4 also says, without assuming anything about CSMA/CD:
+
+  The MAC requires that a minimum frame length of minFrameSize bits be
+  transmitted. If frameSize is less than minFrameSize, then the MAC sublayer
+  shall append extra bits in units of octets (pad), after the end of the MAC
+  client data field but prior to calculating, and appending, the FCS (if not
+  provided by the MAC client). The number of extra bits shall be sufficient
+  to ensure that the frame, from the DA field through the FCS field
+  inclusive, is at least minFrameSize bits. If the FCS is (optionally)
+  provided by the MAC client, the pad shall also be provided by the MAC
+  client. The content of the pad is unspecified.
+
+minFrameSize is defined in 4A.4.2:
+
+  minFrameSize   512 bits (64 octets)
+
+As for what to do on undersized packets, section 4.2.9 contains this
+pseudocode:
+
+  receiveSucceeding := (frameSize ≥ minFrameSize) {Reject frames too small}
+
+To be honest, I don't see that dropping undersized frames gives any
+real-world gains in the case of EoGRE, though. I'd say that the most
+reasonable thing to do would be to pad on transmit, and accept undersized
+frames on receive. You could argue that's wasteful for cases like the
+loopback interface, but honestly, you never really know what people are going
+to do with the packets (just consider the case of tcpreplay).
+
+/* Steinar */
+-- 
+Homepage: https://www.sesse.net/
