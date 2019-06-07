@@ -2,153 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A00DA3950D
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85AB539556
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729924AbfFGS5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:57:51 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33718 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729783AbfFGS5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:57:50 -0400
-Received: by mail-qt1-f194.google.com with SMTP id x2so2607711qtr.0
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 11:57:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YUXV9PM1gUReE/Arf4xImR2GHtQznOUBOXbDNdzr10w=;
-        b=aKo5RpQPx8pcoIQAryKpp0vXCouQLfC4wRIivD6RgKoW79W1aecSlZIfANLyfCs7Ch
-         Mw/0tY6fXxQoOMdVAo5xWFKFam24LWsX8wFYfdvqpEmbpbn7TZMlhb/T7xZm1QLL9I/X
-         mjBA5NWaUzc32uvkkzyQq739YLtL7/839gCjbXWzWW5OgBo7qP8gnhh67dzcRgKUhqPD
-         ruCqgtDODk7zKm4Q1V2pCFpAEn7bw/QT1Lzzuud6tHRqyiJ0/vDINoVwgcUp8/UBAonr
-         UcTsNhimOqVVG2SHyWPQoaTnl6dHCKEgxRmyGiPvocN6x//MOsFQithnUXEffo/3ou6I
-         S7EQ==
+        id S1728752AbfFGTNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 15:13:07 -0400
+Received: from mail-it1-f197.google.com ([209.85.166.197]:38870 "EHLO
+        mail-it1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729456AbfFGTNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:13:06 -0400
+Received: by mail-it1-f197.google.com with SMTP id j83so2630688ita.3
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 12:13:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YUXV9PM1gUReE/Arf4xImR2GHtQznOUBOXbDNdzr10w=;
-        b=sVy1bFaPswpvzTJNW9vorRjMGYPiGGWrSWyh+0epsNHXY1eCini3dqpTLyTqdVEt84
-         nCj034sIT4MNfADTCRY5Gtn5n/VWzaZmVTfO5y8KWgtuEWJsKLN47lzrJWL+wR/ia8tZ
-         E0s4tCdvtIZ5fKltSgesY8cPwVys3hZhKHZPRS+9sgwKPJFhakWpYfP7wlclw7Lxt+YK
-         BjFiVA0Rz8BIU6bG4eUe5mnT4P4/dQSPfyRjriFMxwgAIjp3FO9qA34mLuKTfzxJEXOM
-         No4Ysvfq/qcM01Mvs4kdNo5w2xWZWjWHqW8A+aF92B32WonoXVOpMYd5n7JaVryYDep5
-         ktkQ==
-X-Gm-Message-State: APjAAAWfJyzTXXwpsiedukJJYRT1YiN4lmhxNciw5qXIrVKlENYQbR7S
-        Yg//uBQQlS2VbJxtCrqW3cHVHA==
-X-Google-Smtp-Source: APXvYqx3TFzlyw4WzjMypOFIInBA68fRopnC9Mjfy4mwCrCnI6AM+xatVlTQmC3Ry788Y+OFyolYGw==
-X-Received: by 2002:a0c:ba20:: with SMTP id w32mr44748746qvf.152.1559933870086;
-        Fri, 07 Jun 2019 11:57:50 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id s23sm780234qtk.31.2019.06.07.11.57.49
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 07 Jun 2019 11:57:49 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hZK3h-00081s-2M; Fri, 07 Jun 2019 15:57:49 -0300
-Date:   Fri, 7 Jun 2019 15:57:49 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Max Gurtovoy <maxg@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        Tal Gilboa <talgi@mellanox.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>
-Subject: Re: [pull request][for-next 0/9] Generic DIM lib for netdev and RDMA
-Message-ID: <20190607185749.GQ14802@ziepe.ca>
-References: <20190605232348.6452-1-saeedm@mellanox.com>
- <20190606071427.GU5261@mtr-leonro.mtl.com>
- <898e0df0-b73c-c6d7-9cbe-084163643236@mellanox.com>
- <20190606130713.GC17392@mellanox.com>
- <9faeadac971aaf481b1066b1dde0fc9e77e893a5.camel@mellanox.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cyqCrDVt2dXVqI86R5kiLgCbIofZNHXYbbR1FIOGENY=;
+        b=Phx4bRZU4j1zJJMmrDa3Oinizc3NNI8D9wgOCulv+1BkSruAftXMiT8+3Z1dLyZuM2
+         09RuQ/yKK2amTcWpBkLe5rdc7Un3JZLZJz1gE4WHr8pCGiPM6PvLPVbHTjIErg9KTutE
+         PA0Z8gC5dK6O4/rqOz1CXvxUFx7aEcY71j5J7Sg2qolxjQ1DFC7dmG7j/BXJCv4tGeOt
+         sVftKEps82VYpZJQNrGH7xTAx4G/KlWVZsk5sbnjePjlSiD2JuBGZKyiU9aiHjsB177G
+         Ew4OUv2EC6Akdpnl3a5fEEVP6PS9H9qBaouwf7ux0MGzPAtoz8Gj88NziSupz/dX9Uzu
+         bLyQ==
+X-Gm-Message-State: APjAAAWcEs+AsNFL2cAtEfVI751VfyVCWIKVJCdi0uBsjob/LTIbfcEY
+        zg1cpk131Q+a+EKVji3sLApaszs+jKJMJeQbKDKl6kwGeDLC
+X-Google-Smtp-Source: APXvYqx/BdEP9lMOAedJ3yRv8lpTdqGerTLV44sx8ug8pFLGAgLn7Qp6CZoPRXvcthgfYfh0AMdPOBh/Q8emJuHLVG9uCw6Qhx3o
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9faeadac971aaf481b1066b1dde0fc9e77e893a5.camel@mellanox.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Received: by 2002:a5d:860e:: with SMTP id f14mr1413298iol.242.1559934786049;
+ Fri, 07 Jun 2019 12:13:06 -0700 (PDT)
+Date:   Fri, 07 Jun 2019 12:13:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cba2b6058ac09eeb@google.com>
+Subject: KMSAN: uninit-value in ax88178_bind
+From:   syzbot <syzbot+abd25d675d47f23f188c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        lynxis@fe80.eu, marcel.ziswiler@toradex.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        yang.wei9@zte.com.cn, zhang.run@zte.com.cn
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 06:14:11PM +0000, Saeed Mahameed wrote:
-> On Thu, 2019-06-06 at 13:07 +0000, Jason Gunthorpe wrote:
-> > On Thu, Jun 06, 2019 at 10:19:41AM +0300, Max Gurtovoy wrote:
-> > > > > Solution:
-> > > > > - Common logic is declared in include/linux/dim.h and
-> > > > > implemented in
-> > > > >    lib/dim/dim.c
-> > > > > - Net DIM (existing) logic is declared in
-> > > > > include/linux/net_dim.h and
-> > > > >    implemented in lib/dim/net_dim.c, which uses the common
-> > > > > logic from dim.h
-> > > > > - Any new DIM logic will be declared in
-> > > > > "/include/linux/new_dim.h" and
-> > > > >     implemented in "lib/dim/new_dim.c".
-> > > > > - This new implementation will expose modified versions of
-> > > > > profiles,
-> > > > >    dim_step() and dim_decision().
-> > > > > 
-> > > > > Pros for this solution are:
-> > > > > - Zero impact on existing net_dim implementation and usage
-> > > > > - Relatively more code reuse (compared to two separate
-> > > > > solutions)
-> > > > > - Increased extensibility
-> > > > > 
-> > > > > Tal Gilboa (6):
-> > > > >        linux/dim: Move logic to dim.h
-> > > > >        linux/dim: Remove "net" prefix from internal DIM members
-> > > > >        linux/dim: Rename externally exposed macros
-> > > > >        linux/dim: Rename net_dim_sample() to
-> > > > > net_dim_update_sample()
-> > > > >        linux/dim: Rename externally used net_dim members
-> > > > >        linux/dim: Move implementation to .c files
-> > > > > 
-> > > > > Yamin Friedman (3):
-> > > > >        linux/dim: Add completions count to dim_sample
-> > > > >        linux/dim: Implement rdma_dim
-> > > > >        RDMA/core: Provide RDMA DIM support for ULPs
-> > > > Saeed,
-> > > > 
-> > > > No, for the RDMA patches.
-> > > > We need to see usage of those APIs before merging.
-> > > 
-> > > I've asked Yamin to prepare patches for NVMeoF initiator and target
-> > > for
-> > > review, so I guess he has it on his plate (this is how he tested
-> > > it..).
-> > > 
-> > > It might cause conflict with NVMe/blk branch maintained by Sagi,
-> > > Christoph
-> > > and Jens.
-> > 
-> > It looks like nvme could pull this series + the RDMA patches into the
-> > nvme tree via PR? I'm not familiar with how that tree works.
-> > 
-> > But we need to get the patches posted right away..
-> > 
-> 
-> What do you suggest here ?
-> I think the netdev community also deserve to see the rdma patches, at
-> least with an external link, I can drop the last patch (or two ) ? but
-> i need an external rdma link for people who are going to review this
-> series.
+Hello,
 
-Yes, all the patches need to be posted. We should have a 'double
-branch' where you send the linux/dim & net stuff to net and then we
-add the RDMA stuff on top and send to nvme & rdma with the ULP
-patches
+syzbot found the following crash on:
 
-Assuming nvme takes pull requests.
+HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
+git tree:       kmsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b2622ea00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
+dashboard link: https://syzkaller.appspot.com/bug?extid=abd25d675d47f23f188c
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
 
-But the whole thing should be posted as a single series on the list to
-get acks before the PRs are generated.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-Similar to how we've run the mlx5 shared branch
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+abd25d675d47f23f188c@syzkaller.appspotmail.com
 
-Jason
+usb 2-1: Using ep0 maxpacket: 8
+usb 2-1: config 0 has an invalid interface number: 81 but max is 0
+usb 2-1: config 0 has no interface number 0
+usb 2-1: New USB device found, idVendor=04bb, idProduct=0930, bcdDevice=  
+f.22
+usb 2-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+usb 2-1: config 0 descriptor??
+==================================================================
+BUG: KMSAN: uninit-value in is_valid_ether_addr  
+include/linux/etherdevice.h:200 [inline]
+BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr  
+drivers/net/usb/asix_devices.c:73 [inline]
+BUG: KMSAN: uninit-value in ax88178_bind+0x635/0xad0  
+drivers/net/usb/asix_devices.c:1087
+CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0+ #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
+  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
+  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
+  ax88178_bind+0x635/0xad0 drivers/net/usb/asix_devices.c:1087
+  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
+  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
+  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
+  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
+  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
+  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
+  __device_attach+0x454/0x730 drivers/base/dd.c:844
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
+  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
+  device_add+0x288d/0x30e0 drivers/base/core.c:2106
+  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
+  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+  port_event drivers/usb/core/hub.c:5350 [inline]
+  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
+  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
+  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
+  kthread+0x4b5/0x4f0 kernel/kthread.c:254
+  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+
+Local variable description: ----buf@ax88178_bind
+Variable was created at:
+  ax88178_bind+0x60/0xad0 drivers/net/usb/asix_devices.c:1076
+  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
