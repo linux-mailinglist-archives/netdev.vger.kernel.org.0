@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C37B238F1B
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:31:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D2F38F22
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729923AbfFGPbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 11:31:20 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:59100 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728071AbfFGPbS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 11:31:18 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x57FIl1x087828;
-        Fri, 7 Jun 2019 15:31:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : sender
- : to : cc : subject : message-id : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=a3OkgmEzH6gqSwNclMouTxKHku5+xPAshN1b6v2wvBU=;
- b=Se0OGrfEzlE5W2rp8kutTudx+kqD2weKKQCLl+pp2DlatcDldXTCGowFs/+VfaewxQ/O
- ipl3Io88xLJCfpGHtHvLV0kg3STwY282psTb620PJwhDeRQZaAuEJQYFoqLp/Juo6ml0
- EmCkgjIUmIgZM6gi8gSwU0emA+xdjUjAosCE2KbIZfLD0vAuIK47hpn8VcOSXiZgzJbK
- t7yM1tPumj0DEr4D6snZIoINo0dzGiiFRsE0OeP17FIsT5SlGDCZvKCa093geC+qx6eB
- h7iZz1bPSYzSKWvyH3/2Txot4iMZhbgzVO89zw4RYhmeuNdB3ZLly1xhJKj/VBWRkX2V mg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 2suevdy7hw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 07 Jun 2019 15:31:14 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x57FUhCQ145050;
-        Fri, 7 Jun 2019 15:31:14 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2swnhdase8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 07 Jun 2019 15:31:14 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x57FVDC6031482;
-        Fri, 7 Jun 2019 15:31:13 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 07 Jun 2019 08:31:13 -0700
-Date:   Fri, 7 Jun 2019 18:31:07 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH v2 next] nexthop: off by one in nexthop_mpath_select()
-Message-ID: <20190607153107.GS31203@kadam>
+        id S1729723AbfFGPcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:32:47 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:44212 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728797AbfFGPcr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 11:32:47 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
+        id 1hZGr6-0000Wb-T4; Fri, 07 Jun 2019 23:32:36 +0800
+Received: from herbert by gondobar with local (Exim 4.89)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1hZGqw-0007N0-7k; Fri, 07 Jun 2019 23:32:26 +0800
+Date:   Fri, 7 Jun 2019 23:32:26 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Jade Alglave <j.alglave@ucl.ac.uk>
+Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
+Message-ID: <20190607153226.gzt4yeq5c5i6bpqd@gondor.apana.org.au>
+References: <20190603200301.GM28207@linux.ibm.com>
+ <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
+ <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
+ <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au>
+ <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0e02a744-f28e-e206-032b-a0ffac9f7311@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9280 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1906070107
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9280 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906070107
+In-Reply-To: <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The nhg->nh_entries[] array is allocated in nexthop_grp_alloc() and it
-has nhg->num_nh elements so this check should be >= instead of >.
+On Fri, Jun 07, 2019 at 08:26:12AM -0700, Eric Dumazet wrote:
+>
+> There is common knowledge among us programmers that bit fields
+> (or bool) sharing a common 'word' need to be protected
+> with a common lock.
+> 
+> Converting all bit fields to plain int/long would be quite a waste of memory.
+> 
+> In this case, fqdir_exit() is called right before the whole
+> struct fqdir is dismantled, and the only cpu that could possibly
+> change the thing is ourself, and we are going to start an RCU grace period.
+> 
+> Note that first cache line in 'struct fqdir' is read-only.
+> Only ->dead field is flipped to one at exit time.
+> 
+> Your patch would send a strong signal to programmers to not even try using
+> bit fields.
+> 
+> Do we really want that ?
 
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
----
-v2: Use the correct Fixes tag
+If this were a bitfield then I'd think it would be safer because
+anybody adding a new bitfield is unlikely to try modifying both
+fields without locking or atomic ops.
 
- include/net/nexthop.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+However, because this is a boolean, I can certainly see someone
+else coming along and adding another bool right next to it and
+expecting writes them to still be atomic.
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index aff7b2410057..e019ed9b3dc3 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -160,7 +160,7 @@ struct nexthop *nexthop_mpath_select(const struct nexthop *nh, int nhsel)
- 	/* for_nexthops macros in fib_semantics.c grabs a pointer to
- 	 * the nexthop before checking nhsel
- 	 */
--	if (nhsel > nhg->num_nh)
-+	if (nhsel >= nhg->num_nh)
- 		return NULL;
- 
- 	return nhg->nh_entries[nhsel].nh;
+As it stands, my patch has zero impact on memory usage because
+it's simply using existing padding.  Should this become an issue
+in future, we can always revisit this and use a more appropriate
+method of addressing it.
+
+But the point is to alert future developers that this field is
+not an ordinary boolean.
+
+Cheers,
 -- 
-2.20.1
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
