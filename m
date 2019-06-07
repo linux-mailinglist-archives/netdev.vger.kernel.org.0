@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D0E63832A
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 05:34:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A69513837B
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 06:28:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbfFGDeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 23:34:46 -0400
-Received: from mail-pl1-f170.google.com ([209.85.214.170]:39068 "EHLO
-        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726331AbfFGDeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 23:34:46 -0400
-Received: by mail-pl1-f170.google.com with SMTP id g9so264765plm.6
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 20:34:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lOp5EJCfwhs0qJjtk7SC+xnEgWvfC4b7BO3L96tNksk=;
-        b=hIznuvFQWVbTjjt+U7YIagCEncAqLRnHHBd4Ef/6kTqqLGqUAudcevosU6mKQKDMlM
-         TAiKabk7FFefC44RXyvRQICtqxAo0SUZzJ599p8RCrusNNTYe12JsKsP3u7mYzOIudjB
-         TgW7e4OopPhcQXCec3vrRoBtJ5Zq5Oo8VkQSEjCcxccFX3RR+ssqNQniPpxNd0zrHoxC
-         nBFjpI5hhCMPi8yitE3ePIIQGKCH3tiFeOt2B2SnznNk+oyam7d67QB0zHtImlGS6/Yn
-         DXL1Q7Lj+EEaFuNbe7RyFjk9Tyn3nL+UqTGnEk/dDctfDCPf0at3vvZHECHrcFthBMpc
-         6vlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lOp5EJCfwhs0qJjtk7SC+xnEgWvfC4b7BO3L96tNksk=;
-        b=Q0MPE3To0sq5vOgb0dX538R5S+JrHzm5OdKhOn46izpevNl59ZfVhevkPccKFn8Dgp
-         0iRTzScUrvMoTnB7dZTgSE6JvXGX+l0R66Ua95hLLqhpO/0TB9uMBnyy3gN2dPxWfAxl
-         j/wZnvjHsi2OE2wrD93JJLSte1mH92UArHA2rArVZwUv5ZQAzOq/ARZxZK2t3NxUI9ZD
-         yjUMmYQC9JKl8KwOgQ5Bo8ZkHeC/FX64stb2yWYR5RKuONrF7r0SI5gMufyF2Jf/qfzM
-         c1JT8DE+DxM4cnIVYvCbTYMqNfcvLOtaUX9s6vSL5j3KmYnMDAU0uMIf1rq3bjah71iC
-         G7rw==
-X-Gm-Message-State: APjAAAVLhmG5oUloDPgGKaNQVv7l4LStufzvvs7jh/JS49g+Knd0LYXw
-        Wd3wK9CLsuWJSP6ETyCmxsI=
-X-Google-Smtp-Source: APXvYqyBIPnzFOl6dDd13L/YIU8ohoN4opKa7PoHsi3MMzC5Xv1bkFveYD8NaTuh5ysymWreDkwYYw==
-X-Received: by 2002:a17:902:d717:: with SMTP id w23mr11579950ply.275.1559878485604;
-        Thu, 06 Jun 2019 20:34:45 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id y12sm520012pgi.10.2019.06.06.20.34.44
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jun 2019 20:34:44 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 20:34:42 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: Re: [net-next 06/15] ixgbe: fix PTP SDP pin setup on X540 hardware
-Message-ID: <20190607033442.t3d5gpddvne2m27k@localhost>
-References: <20190605202358.2767-1-jeffrey.t.kirsher@intel.com>
- <20190605202358.2767-7-jeffrey.t.kirsher@intel.com>
- <20190606032050.4uwzcc7rdx3dkw5x@localhost>
- <02874ECE860811409154E81DA85FBB5896745E05@ORSMSX121.amr.corp.intel.com>
+        id S1725902AbfFGE2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 00:28:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47514 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725372AbfFGE2Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 00:28:16 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id ECD05883BA;
+        Fri,  7 Jun 2019 04:28:15 +0000 (UTC)
+Received: from oldenburg2.str.redhat.com (ovpn-116-59.ams2.redhat.com [10.36.116.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7AE6280DB3;
+        Fri,  7 Jun 2019 04:28:11 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Joseph Myers <joseph@codesourcery.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, <linux-api@vger.kernel.org>,
+        <linux-arch@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Paul Burton <pburton@wavecomp.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        <linux-kernel@vger.kernel.org>, torvalds@linux-foundation.org
+Subject: Re: [PATCH] uapi: avoid namespace conflict in linux/posix_types.h
+References: <20190319165123.3967889-1-arnd@arndb.de>
+        <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
+Date:   Fri, 07 Jun 2019 06:28:09 +0200
+In-Reply-To: <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
+        (Joseph Myers's message of "Tue, 7 May 2019 22:50:49 +0000")
+Message-ID: <87tvd2j9ye.fsf@oldenburg2.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <02874ECE860811409154E81DA85FBB5896745E05@ORSMSX121.amr.corp.intel.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Fri, 07 Jun 2019 04:28:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 08:37:59PM +0000, Keller, Jacob E wrote:
-> No. We use the timecounter to track the time offset, not the
-> frequency. That is, our hardware can't represent 64bits of time, but
-> it can adjust frequency. The time counter is used to track the
-> adjustments from adjtime and set time, but not adjfreq.
+* Joseph Myers:
 
-Ah, okay.  Never mind then... carry on!
+> What happened with this patch (posted 19 March)?  I found today that we 
+> can't use Linux 5.1 headers in glibc testing because the namespace issues 
+> are still present in the headers as of the release.
+
+This regression fix still hasn't been merged into Linus' tree.  What is
+going on here?
+
+This might seem rather minor, but the namespace testing is actually
+relevant in practice.  It prevents accidental clashes with C/C++
+identifiers in user code.
+
+If this fairly central UAPI header is not made namespace-clean again,
+then we need to duplicate information from more UAPI headers in glibc,
+and I don't think that's something we'd want to do.
 
 Thanks,
-Richard
+Florian
