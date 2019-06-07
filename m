@@ -2,128 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 551E93820A
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 02:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ABAC38212
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 02:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728124AbfFGAKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 20:10:13 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36924 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728055AbfFGAKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jun 2019 20:10:13 -0400
-Received: by mail-qt1-f194.google.com with SMTP id y57so358197qtk.4
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 17:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=PQ2XAR6hZ/EY+FpEUrzo0/+MJOKvGMZ695YybUBi+EY=;
-        b=HiRQ+yygcHxstdNjp+cQvLUkx6aaUQjCRl87yWceOUutMelt+FZe4TlciS1OFslzkH
-         4IsoPgvB+a5fu/0YLTyQ0qtsknTDcLk9spS//TtVnP/HuD6nH2nraeDy0Lwg/V/LtRek
-         RTVzoGcVkNSqSQVwRxjGATRP2ZWaRw+lrg8CZN5mfbpc0X0gG9d/JsV6QTI0Qxau8ihK
-         Vkk9fzYHCSs/urbrNcThyQK7tPMqEbj0PnQPmfTG66kKwgkuJVrb/tYTnw7E4uVgOb06
-         HO7FvlQMiyUi/OtPc1GtqJ7/VVEmPBrT1qQoGlUSMnpCelp6ZeEkhfLgkGjXih6ZRCOR
-         eCSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=PQ2XAR6hZ/EY+FpEUrzo0/+MJOKvGMZ695YybUBi+EY=;
-        b=Z6lip316co6OMN4pbprBEzG4l7nFqsiTZs3d+DVcGY3tTdU1L1rm7GAENMhd2H5P63
-         J5EO4/SUVQxFzBWd/fxtWHPaAVA59HEp2d5mrNKIqwFXkbp7jaegsJ+2rrP7xsukTevD
-         paKpTM2AdjalEQ1c37KsemS+IghIneSK4vSCZx0XLDnONJVwtzAepHW6Ci+OLC4BcYLA
-         Ei9Rbf6jKBfG+jUfEdnL3ARSERr2g/iIFJt06Exla439jbG/PkuMsVXBTMOPCzZ/9VJv
-         hdaL9U+MYSLwTvwJ/RHJt1QaJLVcVEIg9lLlHA63Hk4i+ptKjd5PY2cuTr8Y5JCHwlJp
-         URoQ==
-X-Gm-Message-State: APjAAAUWs4YWTddQ0sCbCsnjISYG0Y0uouijd3nltWRRYc2aWeqVUfb5
-        clpuWaO3UEVSJZCyRmAcuP/Rqg==
-X-Google-Smtp-Source: APXvYqxhjp2q6w6Oi0tn04YexkBWRXpa051ZGZGco961wfnrsM592DrMfmE58IV09hSO2jvFbsB2VA==
-X-Received: by 2002:aed:3fc3:: with SMTP id w3mr16028620qth.168.1559866212082;
-        Thu, 06 Jun 2019 17:10:12 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v17sm350623qtc.23.2019.06.06.17.10.10
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 06 Jun 2019 17:10:11 -0700 (PDT)
-Date:   Thu, 6 Jun 2019 17:10:07 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map
- definitions using BTF
-Message-ID: <20190606171007.1e1eb808@cakuba.netronome.com>
-In-Reply-To: <9d0bff7f-3b9f-9d2c-36df-64569061edd6@fb.com>
-References: <20190531202132.379386-1-andriin@fb.com>
-        <20190531202132.379386-7-andriin@fb.com>
-        <20190531212835.GA31612@mini-arch>
-        <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
-        <20190603163222.GA14556@mini-arch>
-        <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
-        <20190604010254.GB14556@mini-arch>
-        <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
-        <20190604042902.GA2014@mini-arch>
-        <20190604134538.GB2014@mini-arch>
-        <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
-        <3ff873a8-a1a6-133b-fa20-ad8bc1d347ed@iogearbox.net>
-        <CAEf4BzYr_3heu2gb8U-rmbgMPu54ojcdjMZu7M_VaqOyCNGR5g@mail.gmail.com>
-        <9d0bff7f-3b9f-9d2c-36df-64569061edd6@fb.com>
-Organization: Netronome Systems, Ltd.
+        id S1728142AbfFGAXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 20:23:11 -0400
+Received: from mga09.intel.com ([134.134.136.24]:11184 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727659AbfFGAXL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 20:23:11 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Jun 2019 17:23:10 -0700
+X-ExtLoop1: 1
+Received: from pgsmsx105.gar.corp.intel.com ([10.221.44.96])
+  by fmsmga006.fm.intel.com with ESMTP; 06 Jun 2019 17:23:08 -0700
+Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.99]) by
+ PGSMSX105.gar.corp.intel.com ([169.254.4.53]) with mapi id 14.03.0415.000;
+ Fri, 7 Jun 2019 08:23:07 +0800
+From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Alexandre Torgue" <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+Subject: RE: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Topic: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Index: AQHVGsR8mZhQFRvu0EOiETyHTmqFxaaLcWMAgAET3gCAATg0IA==
+Date:   Fri, 7 Jun 2019 00:23:06 +0000
+Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C12D381@pgsmsx114.gar.corp.intel.com>
+References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
+ <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
+ <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
+ <78EB27739596EE489E55E81C33FEC33A0B93EF69@DE02WEMBXB.internal.synopsys.com>
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B93EF69@DE02WEMBXB.internal.synopsys.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMmQ4ZWFhNWMtOTIxZS00YmRmLWJhNDUtZTkxZDZkMTQ2ZDBmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiNzY2c2YxY0p5Z2RUcVwvM3RWOTFabHVBaHBvR3ZKZm1aUUV3dGNoWWsrdWtYSG1hRW5YcEpGc0lVWVVKUWxsclwvIn0=
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.206]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Jun 2019 23:27:36 +0000, Alexei Starovoitov wrote:
-> On 6/6/19 4:02 PM, Andrii Nakryiko wrote:
-> >> struct {
-> >>          int type;
-> >>          int max_entries;
-> >> } my_map __attribute__((map(int,struct my_value))) = {
-> >>          .type = BPF_MAP_TYPE_ARRAY,
-> >>          .max_entries = 16,
-> >> };
-> >>
-> >> Of course this would need BPF backend support, but at least that approach
-> >> would be more C like. Thus this would define types where we can automatically  
-> > I guess it's technically possible (not a compiler guru, but I don't
-> > see why it wouldn't be possible). But it will require at least two
-> > things:
-> > 1. Compiler support, obviously, as you mentioned.  
-> 
-> every time we're doing llvm common change it takes many months.
-> Adding BTF took 6 month, though the common changes were trivial.
-> Now we're already 1+ month into adding 4 intrinsics to support CO-RE.
-> 
-> In the past I was very much in favor of extending __attribute__
-> with bpf specific stuff. Now not so much.
-> __attribute__((map(int,struct my_value))) cannot be done as strings.
-> clang has to process the types, create new objects inside debug info.
-> It's not clear to me how this modified debug info will be associated
-> with the variable my_map.
-> So I suspect doing __attribute__ with actual C type inside (())
-> will not be possible.
-> I think in the future we might still add string based attributes,
-> but it's not going to be easy.
-> So... Unless somebody in the community who is doing full time llvm work
-> will not step in right now and says "I will code the above attr stuff",
-> we should not count on such clang+llvm feature.
-
-If nobody has resources to commit to this, perhaps we can just stick 
-to BPF_ANNOTATE_KV_PAIR()?
-
-Apologies, but I think I missed the memo on why that's considered 
-a hack.  Could someone point me to the relevant discussion?
-
-We could conceivably add BTF-based map_def for other features, and
-solve the K/V problem once a clean solution becomes apparent and
-tractable?  BPF_ANNOTATE_KV_PAIR() is not great, but we kinda already
-have it..
-
-Perhaps I'm not thinking clearly about this and I should stay quiet :)
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSm9zZSBBYnJldSBbbWFpbHRvOkpv
+c2UuQWJyZXVAc3lub3BzeXMuY29tXQ0KPlNlbnQ6IFdlZG5lc2RheSwgSnVuZSA1LCAyMDE5IDk6
+MTMgUE0NCj5UbzogRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+OyBWb29u
+LCBXZWlmZW5nDQo+PHdlaWZlbmcudm9vbkBpbnRlbC5jb20+OyBEYXZpZCBTLiBNaWxsZXIgPGRh
+dmVtQGRhdmVtbG9mdC5uZXQ+Ow0KPk1heGltZSBDb3F1ZWxpbiA8bWNvcXVlbGluLnN0bTMyQGdt
+YWlsLmNvbT47IFJ1c3NlbGwgS2luZw0KPjxsaW51eEBhcm1saW51eC5vcmcudWs+DQo+Q2M6IG5l
+dGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IEdpdXNl
+cHBlDQo+Q2F2YWxsYXJvIDxwZXBwZS5jYXZhbGxhcm9Ac3QuY29tPjsgQW5kcmV3IEx1bm4gPGFu
+ZHJld0BsdW5uLmNoPjsNCj5BbGV4YW5kcmUgVG9yZ3VlIDxhbGV4YW5kcmUudG9yZ3VlQHN0LmNv
+bT47IGJpYW8gaHVhbmcNCj48Ymlhby5odWFuZ0BtZWRpYXRlay5jb20+OyBPbmcsIEJvb24gTGVv
+bmcNCj48Ym9vbi5sZW9uZy5vbmdAaW50ZWwuY29tPjsgS3dlaCwgSG9jayBMZW9uZw0KPjxob2Nr
+Lmxlb25nLmt3ZWhAaW50ZWwuY29tPg0KPlN1YmplY3Q6IFJFOiBbUEFUQ0ggbmV0LW5leHQgdjYg
+Mi81XSBuZXQ6IHN0bW1hYzogaW50cm9kdWNpbmcgc3VwcG9ydCBmb3INCj5EV0MgeFBDUyBsb2dp
+Y3MNCj4NCj5Gcm9tOiBGbG9yaWFuIEZhaW5lbGxpIDxmLmZhaW5lbGxpQGdtYWlsLmNvbT4NCj4N
+Cj4+ICtSdXNzZWxsLA0KPj4NCj4+IE9uIDYvNC8yMDE5IDExOjU4IEFNLCBWb29uIFdlaWZlbmcg
+d3JvdGU6DQo+PiA+IEZyb206IE9uZyBCb29uIExlb25nIDxib29uLmxlb25nLm9uZ0BpbnRlbC5j
+b20+DQo+PiA+DQo+PiA+IHhQQ1MgaXMgRFdDIEV0aGVybmV0IFBoeXNpY2FsIENvZGluZyBTdWJs
+YXllciB0aGF0IG1heSBiZSBpbnRlZ3JhdGVkDQo+PiA+IGludG8gYSBHYkUgY29udHJvbGxlciB0
+aGF0IHVzZXMgRFdDIEVRb1MgTUFDIGNvbnRyb2xsZXIuIEFuIGV4YW1wbGUgb2YNCj4+ID4gSFcg
+Y29uZmlndXJhdGlvbiBpcyBzaG93biBiZWxvdzotDQo+PiA+DQo+PiA+ICAgPC0tLS0tLS0tLS0t
+LS0tLS0tR0JFIENvbnRyb2xsZXItLS0tLS0tLS0tPnw8LS1FeHRlcm5hbCBQSFkgY2hpcC0tPg0K
+Pj4gPg0KPj4gPiAgICstLS0tLS0tLS0tKyAgICAgICAgICstLS0tKyAgICArLS0tKyAgICAgICAg
+ICAgICAgICstLS0tLS0tLS0tLS0tLSsNCj4+ID4gICB8ICAgRVFvUyAgIHwgPC1HTUlJLT58IERX
+IHw8LS0+fFBIWXwgPC0tIFNHTUlJIC0tPiB8IEV4dGVybmFsIEdiRSB8DQo+PiA+ICAgfCAgIE1B
+QyAgICB8ICAgICAgICAgfHhQQ1N8ICAgIHxJRiB8ICAgICAgICAgICAgICAgfCBQSFkgQ2hpcCAg
+ICAgfA0KPj4gPiAgICstLS0tLS0tLS0tKyAgICAgICAgICstLS0tKyAgICArLS0tKyAgICAgICAg
+ICAgICAgICstLS0tLS0tLS0tLS0tLSsNCj4+ID4gICAgICAgICAgXiAgICAgICAgICAgICAgIF4g
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXg0KPj4gPiAgICAgICAgICB8ICAgICAg
+ICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8DQo+PiA+ICAgICAg
+ICAgICstLS0tLS0tLS0tLS0tLS0tLS0tLS1NRElPLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsN
+Cj4+ID4NCj4+ID4geFBDUyBpcyBhIENsYXVzZS00NSBNRElPIE1hbmFnZWFibGUgRGV2aWNlIChN
+TUQpIGFuZCB3ZSBuZWVkIGEgd2F5DQo+dG8NCj4+ID4gZGlmZmVyZW50aWF0ZSBpdCBmcm9tIGV4
+dGVybmFsIFBIWSBjaGlwIHRoYXQgaXMgZGlzY292ZXJlZCBvdmVyIE1ESU8uDQo+PiA+IFRoZXJl
+Zm9yZSwgeHBjc19waHlfYWRkciBpcyBpbnRyb2R1Y2VkIGluIHN0bW1hYyBwbGF0Zm9ybSBkYXRh
+DQo+PiA+IChwbGF0X3N0bW1hY2VuZXRfZGF0YSkgZm9yIGRpZmZlcmVudGlhdGluZyB4UENTIGZy
+b20gJ3BoeV9hZGRyJyB0aGF0DQo+PiA+IGJlbG9uZ3MgdG8gZXh0ZXJuYWwgUEhZLg0KPj4NCj4+
+IEFzc3VtaW5nIHRoaXMgRFcgeFBDUyBjYW4gYmUgZm91bmQgd2l0aCBkZXNpZ25zIG90aGVyIHRo
+YW4gU1RNTUFDDQo+d291bGQNCj4+IG5vdCBpdCBtYWtlIHNlbnNlIHRvIG1vZGVsIHRoaXMgYXMg
+c29tZSBraW5kIG9mIFBIWS9NRElPIGJyaWRnZT8gQQ0KPj4gbGl0dGxlIGJpdCBsaWtlIHdoYXQg
+ZHJpdmVycy9uZXQvcGh5L3hpbGlueF9nbWlpMnJnbWlpLmMgdHJpZXMgdG8gZG8/DQo+DQo+WWVz
+LCBEVyBYUENTIGlzIGEgc2VwYXJhdGUgSVAgdGhhdCBjYW4gYmUgc29sZCB3aXRob3V0IHRoZSBN
+QUMuDQoNCkhpIEZsb3JpYW4sIHRoYW5rcyBmb3IgcG9pbnRpbmcgb3V0IHRoZSBQSFkgZHJpdmVy
+IGZvciBHTUlJIHRvIFJHTUlJIGNvbnZlcnRlcg0KaW1wbGVtZW50YXRpb24uIEl0IHNlZW1zIGxp
+a2UgY29tbXVuaXR5IHdvdWxkIGxpa2UgZHd4cGNzIHRvIHRha2UgdGhlDQpjb252ZXJ0ZXIgcGh5
+IGRyaXZlciBkaXJlY3Rpb24uIA0KDQpXZSB3b3VsZCBsaWtlIHRvIGNoZWNrIHdpdGggY29tbXVu
+aXR5IHdoYXQgaXMgdGhlIE1BQyBjb250cm9sbGVyIHRoYXQgaXMNCnVzaW5nIGFib3ZlIFBIWSBk
+cml2ZXIgc28gdGhhdCB3ZSBjYW4gZGlnIGRlZXBlciBpbnRvIHRoZSBQSFkgJiBNQUMgZHJpdmVy
+DQphcmNoaXRlY3R1cmUuIFdlIHdvdWxkIGxpa2UgdG8gbWFwIHRoZSBleGlzdGluZyB1c2FnZSBv
+ZiBkd3hwY3MuYyBpbiAzLzUgb2YNCnRoaXMgc2VyaWVzIGlzIGFyY2hpdGVjdHVyYWxseSByZWFk
+eSBmb3IgUEhZIGRyaXZlciBmcmFtZXdvcmsgb3IgbmV3IEFQSXMNCndvdWxkIG5lZWQgdG8gYmUg
+ZGVmaW5lZC4gDQoNClRoYW5rcw0KQm9vbiBMZW9uZw0K
