@@ -2,143 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC9738778
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 11:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 993F438794
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727317AbfFGJ6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 05:58:43 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46018 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbfFGJ6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 05:58:42 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s22so825041qkj.12
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 02:58:42 -0700 (PDT)
+        id S1727321AbfFGKCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 06:02:21 -0400
+Received: from mail-eopbgr1410122.outbound.protection.outlook.com ([40.107.141.122]:36128
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726584AbfFGKCU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 06:02:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DYaslGuRCa44w27gCTBvwFQNPiCOo89j5a92HT1O398=;
-        b=gNCRPlL5SC+waW1M964joyZ8kMUdAunRd0kG2R0C3sWB5B8AwM4yXoHZDbl/s+VEtP
-         WYXbP6xATcoLWTTvcuy9SFgWcIg7JbxHPYcew0ZPeQ/QY3/fxBBsWrcpj0qPc8EpyRcM
-         nvhTc2y5F3BrqmiUNxdGpNx5vpDhO8OCPI6D555S9mzfUR5vAiGGYgarsFHsBdGccDiA
-         80LZRj2aZdhvOfLehAI5nE1cZz+Jy7Xm/Qe0HdCFW1Pj9z+sH+YhYHITYZaV8IRjkSjh
-         92oT/4VuYF9Ow5L2FyT4NqFYMe1hijDDrM1bJwUZ86MHz8CZlXfzrCKDYf7NEwdtHN5F
-         rwMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DYaslGuRCa44w27gCTBvwFQNPiCOo89j5a92HT1O398=;
-        b=gL7bBRX94oBj0f3F6ogCo7eQ60k9xxKgMVAvCeRsj6yZDvfOXLEPAYhz3qXXB88Rwm
-         vJ/uV8O35I9zQvBIjRuaAOJyvoCrabU2xQ24BUaORS7MoU58wFf/3o3R14wVMpGaKZJT
-         +1TD+s5upUlzlEn2gAQlJt9K9ilyTqjltGfhGPAzjAs+CKv4zvrG3ZupILYZv+g42OAZ
-         pdsSryC7bt0BMO7AwTONAV3BEFTu0S6U2NS+vWA47ZdmH0HAhqAnAMTOThxGfXztKHmG
-         WgJ5QnxFhcK+6pik3EjokWBcgvxit0N59Q4kIy8o8RLlCGNe4XYeCd+A6CsbTy9Ladqy
-         sunw==
-X-Gm-Message-State: APjAAAWXR5euLzZaETC4QJu6C0u9+z5lvTXLKJFMlMQRaQEZSnA+e/ZB
-        Z057Hqva4yxhsyNqSlXCmi2gSA==
-X-Google-Smtp-Source: APXvYqzuPCkCoJMd93+bmUPkXRWcKmfAOtQiwBn348DGiv4tPkZy2smKLzEhRZ2ORX+iZMnBTJy22Q==
-X-Received: by 2002:a05:620a:533:: with SMTP id h19mr43063500qkh.325.1559901521594;
-        Fri, 07 Jun 2019 02:58:41 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li1322-146.members.linode.com. [45.79.223.146])
-        by smtp.gmail.com with ESMTPSA id w16sm970120qtc.41.2019.06.07.02.58.35
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 07 Jun 2019 02:58:41 -0700 (PDT)
-Date:   Fri, 7 Jun 2019 17:58:31 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] perf augmented_raw_syscalls: Support arm64 raw
- syscalls
-Message-ID: <20190607095831.GG5970@leoy-ThinkPad-X240s>
-References: <20190606094845.4800-1-leo.yan@linaro.org>
- <20190606094845.4800-4-leo.yan@linaro.org>
- <20190606133838.GC30166@kernel.org>
- <20190606141231.GC5970@leoy-ThinkPad-X240s>
- <20190606144412.GC21245@kernel.org>
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Z6z4LvArFmwjk5Kxar9ciw2QDAt5r84X13H7hbm+KM=;
+ b=LOtqTM/lmjtjcbRSBlWhcYZum6zC8oxPYfPz/bJM2F+7bD4HIbxPrsSKKa3/RqSKrK9xH3PdN/NgNouvJ7HLMHJweMrzxV67Cle60t/cwBQHwWMmlaAlECZRdLhsvzfdmFe5B/UuVI82eZDbmBkOPgNvBjiXzpwywTjlIc42+hg=
+Received: from TY1PR01MB1770.jpnprd01.prod.outlook.com (52.133.163.13) by
+ TY1PR01MB1882.jpnprd01.prod.outlook.com (52.133.162.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.22; Fri, 7 Jun 2019 10:02:14 +0000
+Received: from TY1PR01MB1770.jpnprd01.prod.outlook.com
+ ([fe80::8a0:4174:3c3f:f05b]) by TY1PR01MB1770.jpnprd01.prod.outlook.com
+ ([fe80::8a0:4174:3c3f:f05b%7]) with mapi id 15.20.1965.011; Fri, 7 Jun 2019
+ 10:02:13 +0000
+From:   Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+To:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
+Thread-Topic: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
+Thread-Index: AQHVBpxEfaP7dJG4WES76lrhZ+ehP6aQILng
+Date:   Fri, 7 Jun 2019 10:02:13 +0000
+Message-ID: <TY1PR01MB1770D2AAF2ED748575CA4CBFC0100@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+References: <1557429622-31676-1-git-send-email-fabrizio.castro@bp.renesas.com>
+In-Reply-To: <1557429622-31676-1-git-send-email-fabrizio.castro@bp.renesas.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fabrizio.castro@bp.renesas.com; 
+x-originating-ip: [193.141.220.21]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3bb7a36a-2c04-4062-be2b-08d6eb2f3712
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:TY1PR01MB1882;
+x-ms-traffictypediagnostic: TY1PR01MB1882:
+x-microsoft-antispam-prvs: <TY1PR01MB188207A4899633CE8973AC4EC0100@TY1PR01MB1882.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0061C35778
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(366004)(376002)(136003)(396003)(39860400002)(199004)(189003)(66946007)(64756008)(66446008)(54906003)(66476007)(66556008)(102836004)(486006)(8676002)(81166006)(25786009)(74316002)(446003)(3846002)(6116002)(2906002)(68736007)(53936002)(7736002)(76176011)(4744005)(305945005)(7696005)(8936002)(99286004)(9686003)(110136005)(6246003)(186003)(6506007)(53546011)(71200400001)(71190400001)(5660300002)(66066001)(316002)(478600001)(52536014)(76116006)(73956011)(81156014)(14454004)(229853002)(476003)(86362001)(11346002)(413944005)(44832011)(55016002)(256004)(4326008)(33656002)(6436002)(26005)(7416002);DIR:OUT;SFP:1102;SCL:1;SRVR:TY1PR01MB1882;H:TY1PR01MB1770.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
+received-spf: None (protection.outlook.com: bp.renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: dlDf+dk+pWb+C5qOZMtBKmrGye4JRFEkzhh21Tjj25vParGo5Dymx38yuu2up+iwgEGfhEPE2GGF2CgTpaslhJdwkcZJLwBH7TKeH6Qk/ddPm4KNlRLsON3+BZqCUXaw4g7N/pqPts/wVMrnSNmNlb0BkXMKnpH/OIOyb/PQbf0JVAXULGytIvvfzeq98Pr7Tos5Drs1BE8U2/FzIb1L/t3xgm7TThS1jNG6kNawsf+Iq4M1/2T7R6ku3VkdmqU9fdE+ZhtzRW4g0jltxKkAbYfvLIHctq8ygQ92Fv669md4w5/CuY5rjPSnTKQMB1x4Rm3n2VVgnKMdV/Qt+g6QGSzw0ZTQN7PurozkM2DIGh7dSqu03sRJoX6DGT/Wlr2yw6GqBbf1hT9ALhFmS8tfrCIgaqDDU14lyQBbFR5MT9k=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606144412.GC21245@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bb7a36a-2c04-4062-be2b-08d6eb2f3712
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 10:02:13.7320
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fabrizio.castro@bp.renesas.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY1PR01MB1882
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnaldo,
+Dear All,
 
-On Thu, Jun 06, 2019 at 11:44:12AM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Jun 06, 2019 at 10:12:31PM +0800, Leo Yan escreveu:
-> > Hi Arnaldo,
-> > 
-> > On Thu, Jun 06, 2019 at 10:38:38AM -0300, Arnaldo Carvalho de Melo wrote:
-> > > Em Thu, Jun 06, 2019 at 05:48:44PM +0800, Leo Yan escreveu:
-> > > > This patch adds support for arm64 raw syscall numbers so that we can use
-> > > > it on arm64 platform.
-> > > > 
-> > > > After applied this patch, we need to specify macro -D__aarch64__ or
-> > > > -D__x86_64__ in compilation option so Clang can use the corresponding
-> > > > syscall numbers for arm64 or x86_64 respectively, other architectures
-> > > > will report failure when compilation.
-> > > 
-> > > So, please check what I have in my perf/core branch, I've completely
-> > > removed arch specific stuff from augmented_raw_syscalls.c.
-> > > 
-> > > What is done now is use a map to specify what to copy, that same map
-> > > that is used to state which syscalls should be traced.
-> > > 
-> > > It uses that tools/perf/arch/arm64/entry/syscalls/mksyscalltbl to figure
-> > > out the mapping of syscall names to ids, just like is done for x86_64
-> > > and other arches, falling back to audit-libs when that syscalltbl thing
-> > > is not present.
-> > 
-> > Actually I have noticed mksyscalltbl has been enabled for arm64, and
-> > had to say your approach is much better :)
-> > 
-> > Thanks for the info and I will try your patch at my side.
-> 
-> That is excellent news! I'm eager to hear from you if this perf+BPF
-> integration experiment works for arm64.
+These patches have been around for a very long time now, is anybody willing=
+ to take them?
 
-I tested with the lastest perf/core branch which contains the patch:
-'perf augmented_raw_syscalls: Tell which args are filenames and how
-many bytes to copy' and got the error as below:
+Cheers,
+Fab
 
-# perf trace -e string -e /mnt/linux-kernel/linux-cs-dev/tools/perf/examples/bpf/augmented_raw_syscalls.c
-Error:  Invalid syscall access, chmod, chown, creat, futimesat, lchown, link, lstat, mkdir, mknod, newfstatat, open, readlink, rename,
-rmdir, stat, statfs, symlink, truncate, unlink
-Hint:   try 'perf list syscalls:sys_enter_*'
-Hint:   and: 'man syscalls'
+> From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Sent: 09 May 2019 20:20
+> Subject: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
+>=20
+> Dear All,
+>=20
+> I am reposting some CAN and CANFD related dt-bindings changes for
+> Renesas' R-Car and RZ/G devices that have been originally sent
+> end of last year and beginning of this year.
+>=20
+> Thanks,
+> Fab
+>=20
+> Fabrizio Castro (3):
+>   dt-bindings: can: rcar_can: Fix RZ/G2 CAN clocks
+>   dt-bindings: can: rcar_can: Add r8a774c0 support
+>   dt-bindings: can: rcar_canfd: document r8a774c0 support
+>=20
+> Marek Vasut (2):
+>   dt-bindings: can: rcar_canfd: document r8a77965 support
+>   dt-bindings: can: rcar_canfd: document r8a77990 support
+>=20
+>  Documentation/devicetree/bindings/net/can/rcar_can.txt   | 13 ++++------=
+---
+>  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 16 ++++++++++=
+------
+>  2 files changed, 14 insertions(+), 15 deletions(-)
+>=20
+> --
+> 2.7.4
 
-So seems mksyscalltbl has not included completely for syscalls, I
-use below command to generate syscalltbl_arm64[] array and it don't
-include related entries for access, chmod, chown, etc ...
-
-You could refer the generated syscalltbl_arm64 in:
-http://paste.ubuntu.com/p/8Bj7Jkm2mP/
-
-> I'm now trying to get past the verifier when checking if more than one
-> syscall arg is a filename, i.e. things like the rename* family, that
-> take two filenames.
-> 
-> An exercise in loop unrolling, providing the right hints to the
-> verifier, making sure clang don't trash those via explicit barriers, and
-> a lot of patience, limitless fun! ;-)
-
-Cool!  Please feel free let me know if need me to do testing for this.
-
-Thanks,
-Leo Yan
