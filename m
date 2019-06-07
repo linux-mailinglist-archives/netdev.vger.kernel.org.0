@@ -2,92 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C78AD39261
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE6139272
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:45:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731036AbfFGQmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 12:42:50 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:5375 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730958AbfFGQmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 12:42:49 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x57Gghij029774
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 7 Jun 2019 10:42:43 -0600 (CST)
-Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x57GgeOm030818
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 7 Jun 2019 10:42:43 -0600
-From:   Robert Hancock <hancock@sedsystems.ca>
-To:     netdev@vger.kernel.org
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 2/2] net: sfp: add mutex to prevent concurrent state checks
-Date:   Fri,  7 Jun 2019 10:42:36 -0600
-Message-Id: <1559925756-29593-3-git-send-email-hancock@sedsystems.ca>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1559925756-29593-1-git-send-email-hancock@sedsystems.ca>
-References: <1559925756-29593-1-git-send-email-hancock@sedsystems.ca>
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+        id S1731072AbfFGQpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 12:45:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53368 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730100AbfFGQpM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 12:45:12 -0400
+Subject: Re: [GIT] Networking
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559925911;
+        bh=U8hghi4qvAMZLnnV6R80FVh4SMvLY8K7r/4vDSyo+Hs=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=rnmvQNZrNvi+6Gd2tTWfpiAskOWWQIwPM2sVyI6mAm7J7gQKPUlhYZMLxQUQOJj32
+         olfgvV6SQhlc4Ikhsr8XRAGGAmCU+mj4tHM5DH88rEVysOrQBZLfTmnk6qeydl1gOl
+         Ab3B5GBm7KPweab2DaF5I6X1GmPdnbdjbedoOSps=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20190606.150010.895828876779567389.davem@davemloft.net>
+References: <20190606.150010.895828876779567389.davem@davemloft.net>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20190606.150010.895828876779567389.davem@davemloft.net>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net
+ refs/heads/master
+X-PR-Tracked-Commit-Id: 720f1de4021f09898b8c8443f3b3e995991b6e3a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 1e1d926369545ea09c98c6c7f5d109aa4ee0cd0b
+Message-Id: <155992591156.2725.716978244148205783.pr-tracker-bot@kernel.org>
+Date:   Fri, 07 Jun 2019 16:45:11 +0000
+To:     David Miller <davem@davemloft.net>
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sfp_check_state can potentially be called by both a threaded IRQ handler
-and delayed work. If it is concurrently called, it could result in
-incorrect state management. Add a st_mutex to protect the state - this
-lock gets taken outside of code that checks and handle state changes, and
-the existing sm_mutex nests inside of it.
+The pull request you sent on Thu, 06 Jun 2019 15:00:10 -0700 (PDT):
 
-Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
----
- drivers/net/phy/sfp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net refs/heads/master
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 01af080..edd2de5 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -188,10 +188,11 @@ struct sfp {
- 	int gpio_irq[GPIO_MAX];
- 
- 	bool attached;
-+	struct mutex st_mutex;			/* Protects state */
- 	unsigned int state;
- 	struct delayed_work poll;
- 	struct delayed_work timeout;
--	struct mutex sm_mutex;
-+	struct mutex sm_mutex;			/* Protects state machine */
- 	unsigned char sm_mod_state;
- 	unsigned char sm_dev_state;
- 	unsigned short sm_state;
-@@ -1705,6 +1706,7 @@ static void sfp_check_state(struct sfp *sfp)
- {
- 	unsigned int state, i, changed;
- 
-+	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
- 	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-@@ -1730,6 +1732,7 @@ static void sfp_check_state(struct sfp *sfp)
- 		sfp_sm_event(sfp, state & SFP_F_LOS ?
- 				SFP_E_LOS_HIGH : SFP_E_LOS_LOW);
- 	rtnl_unlock();
-+	mutex_unlock(&sfp->st_mutex);
- }
- 
- static irqreturn_t sfp_irq(int irq, void *data)
-@@ -1760,6 +1763,7 @@ static struct sfp *sfp_alloc(struct device *dev)
- 	sfp->dev = dev;
- 
- 	mutex_init(&sfp->sm_mutex);
-+	mutex_init(&sfp->st_mutex);
- 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
- 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
- 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/1e1d926369545ea09c98c6c7f5d109aa4ee0cd0b
+
+Thank you!
+
 -- 
-1.8.3.1
-
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
