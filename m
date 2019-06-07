@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A1D3996A
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B84B399B0
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731330AbfFGXJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 19:09:02 -0400
-Received: from mail-pg1-f173.google.com ([209.85.215.173]:35051 "EHLO
-        mail-pg1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729810AbfFGXJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 19:09:02 -0400
-Received: by mail-pg1-f173.google.com with SMTP id s27so1906761pgl.2
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 16:09:01 -0700 (PDT)
+        id S1729511AbfFGXWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 19:22:04 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39846 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727933AbfFGXWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 19:22:04 -0400
+Received: by mail-lf1-f68.google.com with SMTP id p24so2793573lfo.6
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 16:22:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wPb/wY/tS0XmpPrjeiNUI1u/0QAwojfhWHpeJcA/Ql0=;
-        b=b/6Z2VJBqSfyPqQreQIZEzn4zmUkelPG+ExpKPJ89P77n2oSirvFXF4DJMOgnRPLf9
-         EibeQA98C9R9DOi9l0xKFDNiEyN+0OJdRcGT0+uLl5ZMNgDmIXFMlTfLdMXqC/dw1kzN
-         zrHuii+nq+YjTv69iKyEpZXMfmJ8OfZqe5z7eDAJ6hRhlXL/RilcJweXkgN0iF1fh/aa
-         GvSxtIZxOciNM8+VFbo1x1KeQU8crkCobZkDwXTqAmohUGVlSIcN+Fd6V4VnDLBLH/Az
-         VsP6MppfyGUghZ/d4TFpcHC9QJiHNfuvrPRVe46eDOdXIeGT9J2R6AsF/200jeVu/9WN
-         Z7cQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7occGw+Nj/axW1YYQGvEntV7oJSJx3lTDhBE0vbJYGw=;
+        b=xeQ4Wx/7qTZN3PRIKsSACk1u1dvX63yFoIaUTU/qTkyWNZA+P/hk1Zb4BsX0UFdNe/
+         XlbdWB4Pfr3LPob0TAGjogYKQP+fxhPmV/JulLwCvSz3cpKrblGitc7qf6trWNLYoy7P
+         EwZ8yjRKMCZgQ5PKJ5me/mkeZ+8F3tajO0YPTox+5vjlTNXPiIGUHfw6PMru1c68V4TY
+         nsTtcGJZNzZ5y3b+/N0U2rU1yuplZoHaq6AGRfV2GZPLVNCiYLJCVXzIvtvvMUEPEJKg
+         d+g5mc6f7LWghlw6Re4w+hF1o2oeRMUHoTpOHCfS77i67Xd1a+4hpvA1a8w8/dtMs+e1
+         N6mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wPb/wY/tS0XmpPrjeiNUI1u/0QAwojfhWHpeJcA/Ql0=;
-        b=Ft/OTXEcjvs6r76wFDVifMvUkZRD0NVeyCQ4dTgyrpbBJA8DY7P1+r6NL8znVnExRd
-         zT/jy0mn4y6WvHrH+9o9ZvjlGdn92UrzXiau89NIt/WbqFzbXNfr+bgYZZyBXDbCY19f
-         +s24Zanj4KvotdwddVeENKzfGeD8k9Jr/s6Qayf15IG55JNbNvg2dGRsP6cTmxBnpE52
-         jdrl0Nm4peejZbdD/EnlJjdx2iLUw/+gxS0w/eWhMbVxXf5ZuMg0NFB24nt0PbF9qrFm
-         ZlkOl57Q+2O1rv2iudGoDmk4/VkatQEgkvVKnV1BO1RwlvFfHeVen2U1MmGnwl11Plu5
-         jIsQ==
-X-Gm-Message-State: APjAAAXlUN6+Zl7hTFmT4Q7V2xFGOALtEe/3AzDp3lDwqaPL9oZFotpr
-        ao0PIb6GCKiRRRO53cfMoG0EUc2MFf4=
-X-Google-Smtp-Source: APXvYqy9vqHfS0k8FlKVWbmP199XQ1fcHL5JnAZkiQmhF/KFxEhjJIncUa6DR4P599eX/I8VfN5Vqg==
-X-Received: by 2002:a63:205b:: with SMTP id r27mr5269337pgm.330.1559948941274;
-        Fri, 07 Jun 2019 16:09:01 -0700 (PDT)
-Received: from cakuba.netronome.com (wsip-98-171-133-120.sd.sd.cox.net. [98.171.133.120])
-        by smtp.gmail.com with ESMTPSA id i5sm2553760pjj.8.2019.06.07.16.09.00
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 07 Jun 2019 16:09:01 -0700 (PDT)
-Date:   Fri, 7 Jun 2019 16:08:57 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?7JaR7Jyg7ISd?= <ileixe@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: How net_device feature flag of 'tx-udp_tnl-segmetnation' is
- decided?
-Message-ID: <20190607160857.23a31e98@cakuba.netronome.com>
-In-Reply-To: <CAFAx9ab=Wys2QU+nsh-O_XyOKw9T1ACziphzRW4ARYAwA30xEw@mail.gmail.com>
-References: <CAFAx9ab=Wys2QU+nsh-O_XyOKw9T1ACziphzRW4ARYAwA30xEw@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7occGw+Nj/axW1YYQGvEntV7oJSJx3lTDhBE0vbJYGw=;
+        b=uLYxHm/30vakcYPtwzbWphjPk+Jk++LyrMPUQDi9YvitAqWDAPKuL7a20oc1G7ZS08
+         UN1lbVeloN530gRod0rTSjM8TVoyCMJfTe5lqL9PqNABtOW1vpNu1CCtlpAmgxM5D0Me
+         Lp9P4zgXFwBfe4XS/mp1IWwLCzVfpFGjKQktD/Znu4A0sFMru6c5TLEjhogTNgFMIqkw
+         zrD18XgKrQ+WjsaaafbWZda1opfMtcz0EfyFtSNGRYKP6A08nmbAbhGsKZ9+qG24AqIC
+         og2ob+9rU6WYRcICx/LoMjp5nDUcSu9b8tN6K3Y/3Xwjf8h9lKF3SkahkAnjDoKSbp4W
+         UAsA==
+X-Gm-Message-State: APjAAAV0PwshHddjrcURzYX4D1V4ctuDBvorrAqFzayG4aoqCss3wumV
+        Wge9/oCjjU9vDS5fnaCYCse0aZrZUEPnxuWghC7Ohg==
+X-Google-Smtp-Source: APXvYqz6eKvcASmHyB9Tj+msiYP2wBgsFz4hXUWe3yVOvMgQKvmRdYWGsMKNkumkxAPyZ4keeIugqHdeZ+MzOFmfUVs=
+X-Received: by 2002:ac2:5382:: with SMTP id g2mr27506420lfh.92.1559949721966;
+ Fri, 07 Jun 2019 16:22:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20190606094707.23664-1-anders.roxell@linaro.org> <20190606125024.GE20899@lunn.ch>
+In-Reply-To: <20190606125024.GE20899@lunn.ch>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 8 Jun 2019 01:21:54 +0200
+Message-ID: <CACRpkdZdQPuLKtpsgA4zUeFhubeTwajDUAzvsQ9RY0Q3WFKxcQ@mail.gmail.com>
+Subject: Re: [PATCH 1/8] drivers: net: dsa: realtek: fix warning same module names
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Anders Roxell <anders.roxell@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jun 2019 15:56:48 +0900, =EC=96=91=EC=9C=A0=EC=84=9D wrote:
-> Hi netdev!
->=20
-> I'm kernel newbie and I'm not sure it's right place to ask though, if
-> not please let me know the right place. :)
->=20
-> I sent this mail to ask about net_device interface feature called
-> 'tx-udp_tnl-segmentation'. Ethtool does not appear correct status of
-> offloading, even if the vxlan offloading is enabled. Ethtool show like
-> below for vxlan interface.
->=20
-> deploy@krane-pg1-com1000:~$ ethtool --show-offload vxlan100
-> Features for vxlan100:
-> tx-udp_tnl-segmentation: off [fixed]
->=20
-> deploy@krane-pg1-com1000:~$ ethtool --show-offload eth0
-> Features for eth0:
-> tx-udp_tnl-csum-segmentation: on
->=20
-> Tcpdumping show offload is correctly applied in vxlan interface, so I
-> wonder this is bug for vxlan implementation. I found
-> drivers/net/vxlan.c does not set the feature SKB_GSO_UDP_TUNNEL, just
-> applying the flag at creation time. Is it bug or something that I
-> misunderstood?
+On Thu, Jun 6, 2019 at 2:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> On Thu, Jun 06, 2019 at 11:47:07AM +0200, Anders Roxell wrote:
+> > When building with CONFIG_NET_DSA_REALTEK_SMI and CONFIG_REALTEK_PHY
+> > enabled as loadable modules, we see the following warning:
+> >
+> > warning: same module names found:
+> >   drivers/net/phy/realtek.ko
+> >   drivers/net/dsa/realtek.ko
+> >
+> > Rework so the names matches the config fragment.
+> >
+> > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+>
+> [Removes most of the Cc:]
+>
+> Hi Anders
+>
+> Please base this patch on net-next and submit it to David
+> Miller/netdev.
+>
+> It would also be nice to state the new name of the module in the
+> commit message.
+>
+> Linus, would you prefer this module is called rtl8366?
 
-The flag is set on the lower interface, not on the tunnel interface.
-It means that the interface can perform TCP segmentation over a UDP
-header.
+Yes that should be unique enough!
 
-IOW packet gets generated by the TCP code and it gets tagged as
-requiring normal segmentation (tx-tcp-segmentation).  It then
-reaches the vxlan0 device - since the packet only requires normal
-segmentation at this point the "tx-udp_tnl-segmentation" feature isn't
-checked.  When the packet passes through the VXLAN device it is
-additionally tagged as requiring segmentation over UDP.  Now whatever
-the packet arrives at next needs to have "tx-udp_tnl-segmentation"
-offload, otherwise the kernel will perform segmentation in software.
+Anders: thanks for looking into this. I just always compiled
+all modules as y.
 
-HTH
+Yours,
+Linus Walleij
