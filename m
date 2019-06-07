@@ -2,111 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 509633946A
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA6639487
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731883AbfFGSem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:34:42 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:36966 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730978AbfFGSel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:34:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=rx2NLNKZ6Rcxn8puYvwxzmgPOzgGIDsesRlDG/LBDiQ=; b=pehy2HaT2pOe0UgiyXCUpJPoO
-        /+YIBFo2wvNRHBKW58BJ/A5YMNp33c2TT1EvgHAbYhRtG7kPL2y3RmcdY+qyoSjDOXPZw/ZF3tRTd
-        HW8NmyumHye0MdiO39Dke/WC4b4nsbHLooeqfTyRlfQOO50Ezcfp2DOVb+GQ9eJjyZFP+1iJJxuJi
-        IXL6kb3keS3KHoa4g9G/JviaSO7ch7wu2b6EGlnVq2Bojv92bQrlwq5rqzADpRDnsQ5CCKrBF84X/
-        pt7XitJkXk9PjMqvprBPbhzf6WehTA/CYE62gFs+GyVzSarf5Ak5FSpaXG8isT0KyzbMeZVBepiGN
-        +AgSxZfXw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38562)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hZJhF-0005vd-Id; Fri, 07 Jun 2019 19:34:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hZJhE-0004UX-R3; Fri, 07 Jun 2019 19:34:36 +0100
-Date:   Fri, 7 Jun 2019 19:34:36 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: phylink: add fallback from SGMII to
- 1000BaseX
-Message-ID: <20190607183436.af6h5lhw7nb3ycet@shell.armlinux.org.uk>
-References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
- <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
- <20190531201826.2qo57l2phommgpm2@shell.armlinux.org.uk>
- <4b7bf6b4-dbc8-d3d0-4b31-789fcdb8e6b7@sedsystems.ca>
- <20190602151534.nv4b67n5n2iermnr@shell.armlinux.org.uk>
- <37914305-fd19-949a-e20e-b709495c517d@sedsystems.ca>
+        id S1731888AbfFGSnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:43:15 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48226 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729449AbfFGSnP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 14:43:15 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 19B81308FC4E;
+        Fri,  7 Jun 2019 18:43:15 +0000 (UTC)
+Received: from oldenburg2.str.redhat.com (ovpn-116-64.ams2.redhat.com [10.36.116.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D2AD27856D;
+        Fri,  7 Jun 2019 18:43:05 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Joseph Myers <joseph@codesourcery.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Paul Burton <pburton@wavecomp.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] uapi: avoid namespace conflict in linux/posix_types.h
+References: <20190319165123.3967889-1-arnd@arndb.de>
+        <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
+        <87tvd2j9ye.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
+Date:   Fri, 07 Jun 2019 20:43:03 +0200
+In-Reply-To: <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
+        (Linus Torvalds's message of "Fri, 7 Jun 2019 11:27:57 -0700")
+Message-ID: <871s05fd8o.fsf@oldenburg2.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <37914305-fd19-949a-e20e-b709495c517d@sedsystems.ca>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Fri, 07 Jun 2019 18:43:15 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 12:10:57PM -0600, Robert Hancock wrote:
-> On 2019-06-02 9:15 a.m., Russell King - ARM Linux admin wrote:
-> > On Fri, May 31, 2019 at 06:17:51PM -0600, Robert Hancock wrote:
-> >> Our device is mainly intended for fiber modules, which is why 1000BaseX
-> >> is being used. The variant of fiber modules we are using (for example,
-> >> Finisar FCLF8520P2BTL) are set up for 1000BaseX, and seem like they are
-> >> kind of a hack to allow using copper on devices which only support
-> >> 1000BaseX mode (in fact that particular one is extra hacky since you
-> >> have to disable 1000BaseX autonegotiation on the host side). This patch
-> >> is basically intended to allow that particular case to work.
-> > 
-> > Looking at the data sheet for FCLF8520P2BTL, it explicit states:
-> > 
-> > PRODUCT SELECTION
-> > Part Number	Link Indicator	1000BASE-X auto-negotiation
-> > 		on RX_LOS Pin	enabled by default
-> > FCLF8520P2BTL	Yes		No
-> > FCLF8521P2BTL	No		Yes
-> > FCLF8522P2BTL	Yes		Yes
-> > 
-> > The idea being, you buy the correct one according to what the host
-> > equipment requires, rather than just picking one and hoping it works.
-> > 
-> > The data sheet goes on to mention that the module uses a Marvell
-> > 88e1111 PHY, which seems to be quite common for copper SFPs from
-> > multiple manufacturers (but not all) and is very flexible in how it
-> > can be configured.
-> > 
-> > If we detect a PHY on the SFP module, we check detect whether it is
-> > an 88e1111 PHY, and then read out its configured link type.  We don't
-> > have a way to deal with the difference between FCLF8520P2BTL and
-> > FCLF8521P2BTL, but at least we'll be able to tell whether we should
-> > be in 1000Base-X mode for these modules, rather than SGMII.
-> 
-> It looks like that might provide a solution for modules using the
-> Marvell PHY, however some of the modules we are supporting seem to use a
-> Broadcom PHY, and I have no idea if there is any documentation for those.
-> 
-> It would really be rather silly if there were absolutely no way to tell
-> what mode the module wants from the EEPROM..
+* Linus Torvalds:
 
-It is something I've spent weeks looking at from many different angles.
-There is no way to tell.
+> If we're changing kernel header files, it's easy enough to change the
+> kernel users. I'd be more worried about user space that *uses* that
+> thing, and currently accesses 'val[]' by name.
+>
+> So the patch looks a bit odd to me. How are people supposed to use
+> fsid_t if they can't look at it?
 
-You have to bear in mind that 1000BaseX and SGMII are essentially
-identical, except for the interpretation of that 16-bit control word
-and how it is handled.  Both are 1250Mbaud, both are 8b/10b encoded.
-Both identify as supporting 1000BASE-T.
+The problem is that the header was previously not used pervasively in
+userspace headers.  See commit a623a7a1a5670c25a16881f5078072d272d96b71
+("y2038: fix socket.h header inclusion").  Very little code needed it
+before.
 
-As I've said, the only way I can come up with is a hard-coded table
-of vendor name/part number to identify what each one requires.
+On the glibc side, we nowadays deal with this by splitting headers
+further.  (We used to suppress definitions with macros, but that tended
+to become convoluted.)  In this case, moving the definition of
+__kernel_long_t to its own header, so that
+include/uapi/asm-generic/socket.h can include that should fix it.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> So now that I _do_ see the patch, there's no way I'll apply it.
+
+Fair enough.
+
+Thanks,
+Florian
