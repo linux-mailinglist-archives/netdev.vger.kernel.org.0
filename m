@@ -2,129 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D355339410
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:14:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0672539412
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731356AbfFGSOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:14:18 -0400
-Received: from mail-eopbgr70053.outbound.protection.outlook.com ([40.107.7.53]:40129
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730946AbfFGSOS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 14:14:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H4Cv0jc5a0nuwTfhb3hFMPGQ6x/nAXM/QAYlxFLPeoY=;
- b=ZsSQaky8svPoRzYzOaJsqRHExAwxkA9CBCqvysVFQ7cyU1Lg6qEZv8/j6zcLGPl1p9smVtVzyx+CljAtBj9SJrc4w3X7696/ukGnzMAC0Z3pL7jE6QY1+ZrlE4q2e47sF7thrGhKJA6ylUkY7t2zKGTIFhDrcetg/DCYfirHXsY=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB5963.eurprd05.prod.outlook.com (20.179.10.25) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.13; Fri, 7 Jun 2019 18:14:11 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1965.011; Fri, 7 Jun 2019
- 18:14:11 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        Max Gurtovoy <maxg@mellanox.com>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        Tal Gilboa <talgi@mellanox.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>
-Subject: Re: [pull request][for-next 0/9] Generic DIM lib for netdev and RDMA
-Thread-Topic: [pull request][for-next 0/9] Generic DIM lib for netdev and RDMA
-Thread-Index: AQHVG/XTn2LcR9xgMkG6p2oMks5Qt6aONwiAgAABdoCAAGEZgIAB6BeA
-Date:   Fri, 7 Jun 2019 18:14:11 +0000
-Message-ID: <9faeadac971aaf481b1066b1dde0fc9e77e893a5.camel@mellanox.com>
-References: <20190605232348.6452-1-saeedm@mellanox.com>
-         <20190606071427.GU5261@mtr-leonro.mtl.com>
-         <898e0df0-b73c-c6d7-9cbe-084163643236@mellanox.com>
-         <20190606130713.GC17392@mellanox.com>
-In-Reply-To: <20190606130713.GC17392@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 90939510-d7c5-40e5-2aa5-08d6eb73f0e5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB5963;
-x-ms-traffictypediagnostic: DB8PR05MB5963:
-x-microsoft-antispam-prvs: <DB8PR05MB596384422B604EF40322E62ABE100@DB8PR05MB5963.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0061C35778
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(346002)(39860400002)(376002)(136003)(396003)(199004)(189003)(25786009)(8676002)(256004)(6116002)(14444005)(81156014)(478600001)(85306007)(4326008)(6486002)(6246003)(110136005)(54906003)(14454004)(53936002)(58126008)(66476007)(305945005)(66066001)(8936002)(118296001)(7736002)(316002)(71190400001)(76116006)(91956017)(68736007)(81166006)(86362001)(66946007)(73956011)(76176011)(99286004)(2616005)(476003)(102836004)(6506007)(66446008)(66556008)(71200400001)(3846002)(64756008)(229853002)(186003)(36756003)(446003)(6512007)(6436002)(11346002)(6636002)(5660300002)(26005)(486006)(2906002)(41533002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5963;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: oTaY8tNCwb6ikWQhlfUV9Ha451lSouJx7BBIvCwO/Ew0q/U3jxEtXc30t+v+/7e2RIznsHHBSNOXFeLplzCEweck8yIfLq7yopIbJSkrcZEVu6KWq6+EveAYTiksldxyBT0Z8HQzcsK3isAYZqzVbQ0iYe1b+TWL2Ta4eiY34P8xb67YELEHV+qBd9mHTozua8VaeFZwKyveVjEP1pT6V/4Uc10JHZ7u7LRcjQtD0hGEs3BBYoi3sbi+4/DwhXDdhU0xiSce4okcnkRETsBkaOffGfiYAr8RpLa6gwKV0LNMF2nZ3BKrXwonPSLSJLVakmrzQ3CqwrOLUMugBrBAjMK7O4UFoJlmx8Ahaqil3N+0l746ai5DUurUBxPq6NR/IdFMXaRg9I6oz34AUlZZTWSnSCdeb6dOW2Wjohzjty4=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1A0DC2BB92C7FF45BDE44F866FEB6869@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1731405AbfFGSPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:15:13 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:17657 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730092AbfFGSPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:15:12 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x57IF9ix004010
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 7 Jun 2019 12:15:09 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x57IF96f045114
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Fri, 7 Jun 2019 12:15:09 -0600
+Subject: Re: [PATCH net-next] net: phy: phylink: support using device PHY in
+ fixed or 802.3z mode
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org
+References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
+ <1559330285-30246-5-git-send-email-hancock@sedsystems.ca>
+ <20190531203131.skdlic6ub2esyw3o@shell.armlinux.org.uk>
+ <1cb5994f-cb70-e2ec-7f72-2e7828813150@sedsystems.ca>
+ <20190601201055.isqcqj4psps3fafr@shell.armlinux.org.uk>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <499db618-9ab7-c89f-ffa7-79cd6b316132@sedsystems.ca>
+Date:   Fri, 7 Jun 2019 12:15:08 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90939510-d7c5-40e5-2aa5-08d6eb73f0e5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 18:14:11.3491
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5963
+In-Reply-To: <20190601201055.isqcqj4psps3fafr@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA2LTA2IGF0IDEzOjA3ICswMDAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6
-DQo+IE9uIFRodSwgSnVuIDA2LCAyMDE5IGF0IDEwOjE5OjQxQU0gKzAzMDAsIE1heCBHdXJ0b3Zv
-eSB3cm90ZToNCj4gPiA+ID4gU29sdXRpb246DQo+ID4gPiA+IC0gQ29tbW9uIGxvZ2ljIGlzIGRl
-Y2xhcmVkIGluIGluY2x1ZGUvbGludXgvZGltLmggYW5kDQo+ID4gPiA+IGltcGxlbWVudGVkIGlu
-DQo+ID4gPiA+ICAgIGxpYi9kaW0vZGltLmMNCj4gPiA+ID4gLSBOZXQgRElNIChleGlzdGluZykg
-bG9naWMgaXMgZGVjbGFyZWQgaW4NCj4gPiA+ID4gaW5jbHVkZS9saW51eC9uZXRfZGltLmggYW5k
-DQo+ID4gPiA+ICAgIGltcGxlbWVudGVkIGluIGxpYi9kaW0vbmV0X2RpbS5jLCB3aGljaCB1c2Vz
-IHRoZSBjb21tb24NCj4gPiA+ID4gbG9naWMgZnJvbSBkaW0uaA0KPiA+ID4gPiAtIEFueSBuZXcg
-RElNIGxvZ2ljIHdpbGwgYmUgZGVjbGFyZWQgaW4NCj4gPiA+ID4gIi9pbmNsdWRlL2xpbnV4L25l
-d19kaW0uaCIgYW5kDQo+ID4gPiA+ICAgICBpbXBsZW1lbnRlZCBpbiAibGliL2RpbS9uZXdfZGlt
-LmMiLg0KPiA+ID4gPiAtIFRoaXMgbmV3IGltcGxlbWVudGF0aW9uIHdpbGwgZXhwb3NlIG1vZGlm
-aWVkIHZlcnNpb25zIG9mDQo+ID4gPiA+IHByb2ZpbGVzLA0KPiA+ID4gPiAgICBkaW1fc3RlcCgp
-IGFuZCBkaW1fZGVjaXNpb24oKS4NCj4gPiA+ID4gDQo+ID4gPiA+IFByb3MgZm9yIHRoaXMgc29s
-dXRpb24gYXJlOg0KPiA+ID4gPiAtIFplcm8gaW1wYWN0IG9uIGV4aXN0aW5nIG5ldF9kaW0gaW1w
-bGVtZW50YXRpb24gYW5kIHVzYWdlDQo+ID4gPiA+IC0gUmVsYXRpdmVseSBtb3JlIGNvZGUgcmV1
-c2UgKGNvbXBhcmVkIHRvIHR3byBzZXBhcmF0ZQ0KPiA+ID4gPiBzb2x1dGlvbnMpDQo+ID4gPiA+
-IC0gSW5jcmVhc2VkIGV4dGVuc2liaWxpdHkNCj4gPiA+ID4gDQo+ID4gPiA+IFRhbCBHaWxib2Eg
-KDYpOg0KPiA+ID4gPiAgICAgICAgbGludXgvZGltOiBNb3ZlIGxvZ2ljIHRvIGRpbS5oDQo+ID4g
-PiA+ICAgICAgICBsaW51eC9kaW06IFJlbW92ZSAibmV0IiBwcmVmaXggZnJvbSBpbnRlcm5hbCBE
-SU0gbWVtYmVycw0KPiA+ID4gPiAgICAgICAgbGludXgvZGltOiBSZW5hbWUgZXh0ZXJuYWxseSBl
-eHBvc2VkIG1hY3Jvcw0KPiA+ID4gPiAgICAgICAgbGludXgvZGltOiBSZW5hbWUgbmV0X2RpbV9z
-YW1wbGUoKSB0bw0KPiA+ID4gPiBuZXRfZGltX3VwZGF0ZV9zYW1wbGUoKQ0KPiA+ID4gPiAgICAg
-ICAgbGludXgvZGltOiBSZW5hbWUgZXh0ZXJuYWxseSB1c2VkIG5ldF9kaW0gbWVtYmVycw0KPiA+
-ID4gPiAgICAgICAgbGludXgvZGltOiBNb3ZlIGltcGxlbWVudGF0aW9uIHRvIC5jIGZpbGVzDQo+
-ID4gPiA+IA0KPiA+ID4gPiBZYW1pbiBGcmllZG1hbiAoMyk6DQo+ID4gPiA+ICAgICAgICBsaW51
-eC9kaW06IEFkZCBjb21wbGV0aW9ucyBjb3VudCB0byBkaW1fc2FtcGxlDQo+ID4gPiA+ICAgICAg
-ICBsaW51eC9kaW06IEltcGxlbWVudCByZG1hX2RpbQ0KPiA+ID4gPiAgICAgICAgUkRNQS9jb3Jl
-OiBQcm92aWRlIFJETUEgRElNIHN1cHBvcnQgZm9yIFVMUHMNCj4gPiA+IFNhZWVkLA0KPiA+ID4g
-DQo+ID4gPiBObywgZm9yIHRoZSBSRE1BIHBhdGNoZXMuDQo+ID4gPiBXZSBuZWVkIHRvIHNlZSB1
-c2FnZSBvZiB0aG9zZSBBUElzIGJlZm9yZSBtZXJnaW5nLg0KPiA+IA0KPiA+IEkndmUgYXNrZWQg
-WWFtaW4gdG8gcHJlcGFyZSBwYXRjaGVzIGZvciBOVk1lb0YgaW5pdGlhdG9yIGFuZCB0YXJnZXQN
-Cj4gPiBmb3INCj4gPiByZXZpZXcsIHNvIEkgZ3Vlc3MgaGUgaGFzIGl0IG9uIGhpcyBwbGF0ZSAo
-dGhpcyBpcyBob3cgaGUgdGVzdGVkDQo+ID4gaXQuLikuDQo+ID4gDQo+ID4gSXQgbWlnaHQgY2F1
-c2UgY29uZmxpY3Qgd2l0aCBOVk1lL2JsayBicmFuY2ggbWFpbnRhaW5lZCBieSBTYWdpLA0KPiA+
-IENocmlzdG9waA0KPiA+IGFuZCBKZW5zLg0KPiANCj4gSXQgbG9va3MgbGlrZSBudm1lIGNvdWxk
-IHB1bGwgdGhpcyBzZXJpZXMgKyB0aGUgUkRNQSBwYXRjaGVzIGludG8gdGhlDQo+IG52bWUgdHJl
-ZSB2aWEgUFI/IEknbSBub3QgZmFtaWxpYXIgd2l0aCBob3cgdGhhdCB0cmVlIHdvcmtzLg0KPiAN
-Cj4gQnV0IHdlIG5lZWQgdG8gZ2V0IHRoZSBwYXRjaGVzIHBvc3RlZCByaWdodCBhd2F5Li4NCj4g
-DQoNCldoYXQgZG8geW91IHN1Z2dlc3QgaGVyZSA/DQpJIHRoaW5rIHRoZSBuZXRkZXYgY29tbXVu
-aXR5IGFsc28gZGVzZXJ2ZSB0byBzZWUgdGhlIHJkbWEgcGF0Y2hlcywgYXQNCmxlYXN0IHdpdGgg
-YW4gZXh0ZXJuYWwgbGluaywgSSBjYW4gZHJvcCB0aGUgbGFzdCBwYXRjaCAob3IgdHdvICkgPyBi
-dXQNCmkgbmVlZCBhbiBleHRlcm5hbCByZG1hIGxpbmsgZm9yIHBlb3BsZSB3aG8gYXJlIGdvaW5n
-IHRvIHJldmlldyB0aGlzDQpzZXJpZXMuDQoNCj4gSmFzb24NCg==
+On 2019-06-01 2:10 p.m., Russell King - ARM Linux admin wrote:
+>>> Sorry, I'm having a hard time following this description.  Please draw
+>>> an ASCII diagram of the setup you have - a picture is worth 1000 words,
+>>> and I think that is very much the case here.
+>>>
+>>> We do have boards where the SFP is connected to a real PHY, where the
+>>> real PHY offers a RJ45 copper socket and a fiber interface,
+>>> automatically switching between the two.  In this case, we do not
+>>> use phylink to represent the link between the PHY and the SFP cage,
+>>> but instead the PHY binds directly to the SFP cage.
+>>>
+>>
+>> It sounds like the setup you're describing has the PHY being smarter and
+>> doing more of the SFP module handling internally. In our setup, the
+>> situation is something like this:
+>>
+>> Xilinx MAC		I2C	GPIO
+>> |
+>> |GMII			|	|
+>> |			|	|
+>> Xilinx PHY		|	|
+>> |			|	|
+>> |1000BaseX		|	|
+>> |			|	|
+>> SFP -----------------------------
+> 
+> That is very similar, except the Marvell 88x3310 uses a 10GBASE-R
+> protocol to a SFP+ module, but can be switched to either SGMII or
+> 1000BASE-X mode (neither of which we currently support, but work is
+> in progress, if it turns out that these boards with strong pullups
+> can work with SFP modules.)
+> 
+> With the 88x3310, I have a couple of patches that "bolt on" to the
+> PHY driver, so we end up with this setup from the DT, kernel and
+> hardware point of view:
+> 
+>                  ,-----> Copper RJ45
+>    MAC -----> PHY
+>                  `-----> SFP
+> 
+> Hence, the PHY driver is responsible for registering itself as an
+> "upstream" of the SFP cage without involving phylink - phylink gets
+> used for the MAC <-> PHY part of the connection.
+
+Looking at the patches you have on your branch, it looks like a similar
+sort of approach could work in our case. One difference however, is that
+the Marvell driver has its own internal PHY driver that knows about the
+SFP cage attachment, whereas axienet doesnt (right now we are using the
+generic PHY driver). Would it make sense for that SFP support to be
+added into the generic PHY layer?
+
+> 
+> There's an awkward problem though: the PHY driver doesn't really have
+> much clue whether the network interface is up or down, which SFP
+> really needs to know so it can control whether the SFP module's laser
+> is emitting or not.  One of the patches tweaks the phylink code to
+> pass this information over to the SFP cage, around phylib, but the
+> proper solution would be for phylib to propagate that information to
+> the phylib driver, so that it can in turn pass that on to the SFP cage.
+> 
+> However, there's a slightly bigger problem looming here, which is that
+> phylib and the network layers in general do _not_ support having two
+> PHYs actively bound to one network interface, and without radically
+> reworking phylib and how phylib is bolted into the network layer, that
+> is not easy to get around.>
+>> So in this case the Xilinx PHY is just really doing PCS/PMA, etc.
+>> conversions. The I2C and GPIO lines for the SFP socket are routed back
+>> to the host separately and the Xilinx PHY has no interaction with them
+>> (other than that I believe the LOS signal from the SFP socket is
+>> connected into the PHY to provide some link status indication back to it).
+> 
+> So, very similar situation as on the Macchiatobin with the 88x3310
+> PHYs.
+> 
+>> In this setup, phylink is basically allowing us to communicate with the
+>> SFP module over I2C and manage the LOS, TX enable, etc. control lines
+>> properly, but the Xilinx PHY does need to be initialized as well for the
+>> actual link traffic to pass through.
+> 
+> I think what you're missing is that the design is a layered one.
+> All the SFP cage stuff is interfaced through the sfp layer, and is
+> made accessible independently via the sfp-bus layer (which is needed
+> to avoid sfp being a hard dependency for the MAC driver - especially
+> important when we have SoCs such as Armada 8040 where one hardware
+> module provides multiple network ports.)
+> 
+> phylink provides a mechanism to separate PHYs from the MAC driver
+> such that we can hot-plug PHYs (necessary for the PHYs on SFP modules),
+> and deal with dynamically reconfiguring the MAC's hardware interface
+> mode according to what the module supports.  It isn't intended to
+> always be closely bound to the SFP cage side.
+> 
+> One of the reasons we have this design is because the early boards I
+> had access to when designing this setup were direct MAC to SFP cage
+> setups - there was no intermediate PHY.  Then came the Macchiatobin
+> board which does have a PHY, which brings with it additional
+> complexities, but various hardware problems have stood in the way of
+> having SFP modules in the 10G slots.
+> 
+>> In our case the controller is supporting 1000BaseX only and is mainly
+>> intended for fiber modules. We do want to be able to get copper modules
+>> to work - obviously only ones that are set up for 1000BaseX mode are
+>> possible.
+> 
+> So, what I say below applies:
+> 
+>>> If the former, then I'm pretty certain you're going about it the wrong
+>>> way - as I've said before, there is nothing in the EEPROM that
+>>> indicates definitively what format the control word is (and therefore
+>>> whether it is SGMII or 1000base-X.)
+>>>
+>>> Some network controllers may be able to tell the difference, but that
+>>> is not true of all controllers.
+>>>
+>>> The only way I can see to support such modules would be to have a table
+>>> of quirks to set the interface mode accordingly, and not try this "lets
+>>> pick one, try to validate it with the network controller, otherwise try
+>>> the other."
+>>>
+>>> In any case, the format of the connection between the SFP module and
+>>> the network controller isn't one that should appear in the ethtool link
+>>> modes - I view what you've done there as a hack rather than proper
+>>> design.
+> 
+> I do have the beginnings of a quirk system for the sfp-bus layer,
+> since I've been conversing with someone with a GPON module that
+> does appear to follow the SFP MSA, in particular with regard to the
+> time it takes the module to start responding on I2C, and in regard
+> of the speeds it actually supports (basically, the EEPROM is
+> misleading.)  So, that should be useful for you as well.
+> 
+> http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=phy
+> 
+> is my playground of patches for SFP, which are in various stages of
+> maturity, some which have been posted for inclusion (and merged)
+> others that have been waiting some time.
+> 
+
+-- 
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
