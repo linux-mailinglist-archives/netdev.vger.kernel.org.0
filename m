@@ -2,112 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2CC3981E
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1BDC39826
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731510AbfFGV5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 17:57:53 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44122 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729577AbfFGV5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 17:57:53 -0400
-Received: by mail-qt1-f194.google.com with SMTP id x47so4030496qtk.11
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 14:57:52 -0700 (PDT)
+        id S1727213AbfFGWCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 18:02:49 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41661 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726754AbfFGWCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 18:02:49 -0400
+Received: by mail-pf1-f195.google.com with SMTP id m30so1392399pff.8
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 15:02:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kNukxXdxo8xZZQw6dA5r+4fHcFuZWTFSP4/22G57NpM=;
-        b=pcgkLYNQeJS6Nm3twuvXGoXyy1gjUO+acjumJPT8jZnskVg0ZjzWddV6DVeqzS5y72
-         J+WjG9h5dOd7ZBSkkkl81Hn4OShI6wCrqPbPc9dlFBP3yFrrpPm0D1SQfs+xg7qOw61q
-         KhWwES80lr9aCZrbkt2K32GS3a2De6G4mb4Gmua/hkODaxdBHjCol9u7eqKaffvUQF7v
-         Eezfdts03D8bfLQQu/4gRu/R+X1asdXbNFulbhDjB5hg6BsPYBsPlIOgH9+mfPnFm3/X
-         WZJ27bEKi0Kiii0GioxWhCB6aCnW65mKufaSXY/TwDARZbLUdwESmoVmNP53dimKqZOI
-         Ppdg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=MkdX1ByPuyyhMx7KgR9Las+8lYde8+TrNn+WFHUY5oA=;
+        b=Np0FvSQCXoUcQB/aECH6jnG668iDsuwcUJMnC7GTrGLlxMFHTjAZGwpXYEkzb7h8HL
+         K0ol0H621yvFSEi6beo0XqdAcJlVIALl8avTlb6mbS0V8qdV632P//ABtKK0IOSc1Dr4
+         JkTOm60PvI8PrORLgcZqWI/CmpxkOdF5ZDmcEnfsTkhXyYwwkKePmt2KtUQSJfsd8P2h
+         BFCZuGH6xvY+xd6ToMyncr3eu1hXJM0BiPwoDHTv0h7JA9X6B7spcsDHLITsI+WM/X+B
+         J1TJUGzEIgg3biGmH/DVBB2gX88Ru7j7DyRMDVp2O2OJkib8B6ldtXl4x04OGoz657bR
+         UDhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kNukxXdxo8xZZQw6dA5r+4fHcFuZWTFSP4/22G57NpM=;
-        b=jiarrxQoPW3STSJT6oyyPRLBHtbMALRIuRLycj3WO5D4cAdyybKtDiDVu2SLvjxy1z
-         QHVdTnkaLxAZBZikRm7xyJYMqA3i+pwwhfo14MdslbT/0aS3Cc+KvwQ+Up0dE7u9PHuG
-         wL9yBIIvkdL6+YE/jTzWWLaxI6jgxhPdBe4YZJkX+D8dIJTghFMsVLn43rRzrm8jFis1
-         eT9x66FrOw7b0yVWNmFwLomVKxic2Zk/Sl8RdSJZnBRtQkFm9K/2iG3Bgp2lmCyPeC5f
-         Og+OaI7GJfyrY4qv9QqUx37xtpgWlcjkedhsPl/qGwJpujUQY9IoXrmxDrhlWoIs3XHX
-         oSuA==
-X-Gm-Message-State: APjAAAURM2gidrtKDrzca4Hs8bAPvT3nNeVuVVmPLY6/eSX8T6c5FYiJ
-        8EalvhFYk9Pg4Gw3CGNmRnr3DIy4
-X-Google-Smtp-Source: APXvYqx18aoU4vQ1ojFRnVCQKyWlPPxyvA8OzSdDvs9opZMBA65ZIgqlXOSoiV2Tv311Uect18wjVw==
-X-Received: by 2002:aed:21b1:: with SMTP id l46mr47556276qtc.281.1559944671769;
-        Fri, 07 Jun 2019 14:57:51 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id c7sm1394576qth.53.2019.06.07.14.57.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=MkdX1ByPuyyhMx7KgR9Las+8lYde8+TrNn+WFHUY5oA=;
+        b=jAcQ1YPNfjss8xUAm5GLq2dNbsjaYfdOgWnG6Ca4nJENlY+dfRTZPJLyvappfB1cZ0
+         B1B7Bodgnol/e6JC2z5GS/bkzuxqe+ZLtwY/OCRyJAB4mNyd3pZu/L8NEXVx01WaWHpW
+         SKR7Lv820ppCCTkQa3DGe1p5xTjdmUYeSDykj9qOB4MKjBxr8O2wMb9GVG7nU6LCIP35
+         bmkxFGG5bSuj5DFKLhN7pQNToTnvjUi9HR3F+9hGvfCJqU5GunkizkRfQW3NVqZWjraV
+         ABCPgRXWqf3bqFqEyRGhn5Upn0PPO8kf1JxbJDtuxpOZqj9132yCnnMUBYPOp3GjojDD
+         b/Dw==
+X-Gm-Message-State: APjAAAXneAOmSyJpuIunAoPUz41LAR8R15ejQgQGYk6vR1cxPvB2m/9w
+        dqdurMJyhFC06nlXDo/HbKV+hQ==
+X-Google-Smtp-Source: APXvYqziT/57xaFqWXj1gqNNaW6lk1L1hsuclKTrQv7CVHbfe52j9M0GLbVRXvAZGNzRQEJhsEsz1g==
+X-Received: by 2002:a62:b517:: with SMTP id y23mr63478584pfe.182.1559944968778;
+        Fri, 07 Jun 2019 15:02:48 -0700 (PDT)
+Received: from cakuba.netronome.com (wsip-98-171-133-120.sd.sd.cox.net. [98.171.133.120])
+        by smtp.gmail.com with ESMTPSA id s17sm2308866pfm.74.2019.06.07.15.02.47
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 07 Jun 2019 14:57:50 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: correct udp zerocopy refcnt also when zerocopy only on append
-Date:   Fri,  7 Jun 2019 17:57:48 -0400
-Message-Id: <20190607215748.146484-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+        Fri, 07 Jun 2019 15:02:48 -0700 (PDT)
+Date:   Fri, 7 Jun 2019 15:02:43 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Patel, Vedang" <vedang.patel@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>,
+        Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH net-next v2 4/6] taprio: Add support for txtime-assist
+ mode.
+Message-ID: <20190607150243.369f6e2c@cakuba.netronome.com>
+In-Reply-To: <FF3C8B8E-421E-4C93-8895-C21A38BB55EE@intel.com>
+References: <1559843458-12517-1-git-send-email-vedang.patel@intel.com>
+        <1559843458-12517-5-git-send-email-vedang.patel@intel.com>
+        <20190606162132.0591cc37@cakuba.netronome.com>
+        <FF3C8B8E-421E-4C93-8895-C21A38BB55EE@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Fri, 7 Jun 2019 20:42:55 +0000, Patel, Vedang wrote:
+> > Thanks for the changes, since you now validate no unknown flags are
+> > passed, perhaps there is no need to check if flags are =3D=3D ~0?
+> >=20
+> > IS_ENABLED() could just do: (flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST
+> > No?
+> >  =20
+> This is specifically done so that user does not have to specify the
+> offload flags when trying to install the another schedule which will
+> be switched to at a later point of time (i.e. the admin schedule
+> introduced in Vinicius=E2=80=99 last series). Setting taprio_flags to ~0
+> will help us distinguish between the flags parameter not specified
+> and flags set to 0.
 
-The below patch fixes an incorrect zerocopy refcnt increment when
-appending with MSG_MORE to an existing zerocopy udp skb.
+I'm not super clear on this, because of backward compat you have to
+treat attr not present as unset.  Let's see:
 
-  send(.., MSG_ZEROCOPY | MSG_MORE);	// refcnt 1
-  send(.., MSG_ZEROCOPY | MSG_MORE);	// refcnt still 1 (bar frags)
+new qdisc:
+ - flags attr =3D 0 -> txtime not used
+ - flags attr =3D 1 -> txtime used
+ -> no flags attr -> txtime not used
+change qdisc:
+ - flags attr =3D old flags attr -> leave unchanged
+ - flags attr !=3D old flags attr -> error
+ - no flags attr -> leave txtime unchanged
 
-But it missed that zerocopy need not be passed at the first send. The
-right test whether the uarg is newly allocated and thus has extra
-refcnt 1 is not !skb, but !skb_zcopy.
-
-  send(.., MSG_MORE);			// <no uarg>
-  send(.., MSG_ZEROCOPY);		// refcnt 1
-
-Fixes: 100f6d8e09905 ("net: correct zerocopy refcnt with udp MSG_MORE")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/ipv4/ip_output.c  | 2 +-
- net/ipv6/ip6_output.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 8c9189a41b136..16f9159234a20 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -918,7 +918,7 @@ static int __ip_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
-+		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 934c88f128abb..834475717110e 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1340,7 +1340,7 @@ static int __ip6_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = !skb;	/* only extra ref if !MSG_MORE */
-+		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
-
+Doesn't that cover the cases?  Were you planning to have no flag attr
+on change mean disabled rather than no change?
