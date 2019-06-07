@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADDFB389F1
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 14:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9409138A01
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 14:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbfFGMOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 08:14:23 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:42299 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727047AbfFGMOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 08:14:23 -0400
-Received: by mail-qk1-f194.google.com with SMTP id b18so1053041qkc.9
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 05:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=tTxdi5UsVspr/VkIsQ9XXiwzMsmDpxe2YtahvaqThcQ=;
-        b=VK2SMw5QvOiNiWkF32TKGUTeY2rEwhB7fZvD+DmFAqIBUvg4cO4ZdkbaX+7IH7umfq
-         KBRtaVu87Yxd+61n9ItpI05X0d2dURvTeAtQcs2igMRW6iPMzNsOrkrHbh6aqajZiDOr
-         qUv9OfboFtEexs4de2m3lCbKuSMqh0XoK26K3EdkoJoSK2m/QhmSwOhE/IlzsQkvT6VA
-         DXEMdjiBIIb+MSKqtSOndmXVkPl/UEd1L5l20YJn381lhwaRCGj1JAX0c6Lx6Szu5dGs
-         Dosv9TsdZaTbHVKbj7BoT1xOjj/UF9+LOM/QJJyNIadZUOG6fdvbamOmj+vQp6NjhncT
-         bVaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tTxdi5UsVspr/VkIsQ9XXiwzMsmDpxe2YtahvaqThcQ=;
-        b=GDnp4Dds2R4iB/+e7I5b2g5KSwjdzbKhbh/MPMO7JfEajubmnh3cg0b+tK+4cQ9m9g
-         2EyqQu7qnpa7jgeuWjFzJEkp7vDduHuayU6c4KTh6hrsRp7evBVgR08ivF1UwUdfto+m
-         hG6O0b8btNuYm8UcMw3vcxMd2CIxGheK8gPy6w23NaDJsNqZYVNHZeAS1/Xl+jIUrXjp
-         Dp0ZbLPoeeVlvVa6xiRdMrW/h4R39wj2ZmZJX4AN9QpDC+9aIQJe+5n8vCQBtF9DC/G+
-         ZlP6doN0MaRob4rGN97gU59rPDQq5mC31piFywn/qG9GX9GChjv7oN0eMeUn34FmbHCC
-         1sqA==
-X-Gm-Message-State: APjAAAUXIhKHzB22vMrzXntHyI6ohwuzHrNe8hmSb3ww1K16+GlIwP8O
-        2K/WrDyfZTDLyYr5KtT38/Q=
-X-Google-Smtp-Source: APXvYqx3L9nJBCaPZj66cgU+uLTkApLSjHRuphKjRjwIJqjFj1wZ5mHaf/TW/MctU7mf3m7SIPaZaw==
-X-Received: by 2002:a37:6652:: with SMTP id a79mr24718359qkc.60.1559909662557;
-        Fri, 07 Jun 2019 05:14:22 -0700 (PDT)
-Received: from fabio-Latitude-E5450.am.freescale.net ([2804:14c:482:3c8::2])
-        by smtp.gmail.com with ESMTPSA id y42sm1232903qtc.66.2019.06.07.05.14.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Jun 2019 05:14:21 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     davem@davemloft.net
-Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v3 net-next] net: fec_main: Use dev_err() instead of pr_err()
-Date:   Fri,  7 Jun 2019 09:14:18 -0300
-Message-Id: <20190607121418.16760-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728378AbfFGMSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 08:18:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48154 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727693AbfFGMSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 08:18:46 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CA55E44BC6;
+        Fri,  7 Jun 2019 12:18:40 +0000 (UTC)
+Received: from ovpn-204-179.brq.redhat.com (ovpn-204-179.brq.redhat.com [10.40.204.179])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 666DE7A503;
+        Fri,  7 Jun 2019 12:18:34 +0000 (UTC)
+Message-ID: <66ee49271b9ecc89cd2ee7b9fbffd298ae219d14.camel@redhat.com>
+Subject: Re: [RFC PATCH net-next 1/1] tc-testing: Restore original
+ behaviour for namespaces in tdc
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Lucas Bates <lucasb@mojatatu.com>, netdev@vger.kernel.org
+Cc:     nicolas.dichtel@6wind.com, davem@davemloft.net, jhs@mojatatu.com,
+        kernel@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        mleitner@redhat.com, vladbu@mellanox.com,
+        Hangbin Liu <haliu@redhat.com>
+In-Reply-To: <1559768882-12628-1-git-send-email-lucasb@mojatatu.com>
+References: <1559768882-12628-1-git-send-email-lucasb@mojatatu.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 07 Jun 2019 14:18:33 +0200
+Mime-Version: 1.0
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Fri, 07 Jun 2019 12:18:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dev_err() is more appropriate for printing error messages inside
-drivers, so switch to dev_err().
+On Wed, 2019-06-05 at 17:08 -0400, Lucas Bates wrote:
+> Apologies for the delay in getting this out. I've been busy
+> with other things and this change was a little trickier than
+> I expected.
+> 
+> This patch restores the original behaviour for tdc prior to the
+> introduction of the plugin system, where the network namespace
+> functionality was split from the main script.
+> 
+> It introduces the concept of required plugins for testcases,
+> and will automatically load any plugin that isn't already
+> enabled when said plugin is required by even one testcase.
+> 
+> Additionally, the -n option for the nsPlugin is deprecated
+> so the default action is to make use of the namespaces.
+> Instead, we introduce -N to not use them, but still create
+> the veth pair.
+> 
+> Comments welcome!
+> ---
 
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
----
-Changes since v2:
-- Use dev_err() instead of netdev_err() - Andy
+hello Lucas,
 
- drivers/net/ethernet/freescale/fec_main.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+thanks for the patch, I tested it and verified it successfully on some
+items belonging to the 'filter' category.
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 2ee72452ca76..9d459ccf251d 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -2446,30 +2446,31 @@ static int
- fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
-+	struct device *dev = &fep->pdev->dev;
- 	unsigned int cycle;
+From what I see, it is a fix for the reported problem (e.g. tests failing
+because of 'nsPlugin' uninstalled). And, I want to followup fixing the
+bpf.json in tc-actions, so that
+
+# ./tdc.py  -l -c bpf | grep eBPF
+ e939: (actions, bpf) Add eBPF action with valid object-file
+ 282d: (actions, bpf) Add eBPF action with invalid object-file
  
- 	if (!(fep->quirks & FEC_QUIRK_HAS_COALESCE))
- 		return -EOPNOTSUPP;
- 
- 	if (ec->rx_max_coalesced_frames > 255) {
--		pr_err("Rx coalesced frames exceed hardware limitation\n");
-+		dev_err(dev, "Rx coalesced frames exceed hardware limitation\n");
- 		return -EINVAL;
- 	}
- 
- 	if (ec->tx_max_coalesced_frames > 255) {
--		pr_err("Tx coalesced frame exceed hardware limitation\n");
-+		dev_err(dev, "Tx coalesced frame exceed hardware limitation\n");
- 		return -EINVAL;
- 	}
- 
- 	cycle = fec_enet_us_to_itr_clock(ndev, fep->rx_time_itr);
- 	if (cycle > 0xFFFF) {
--		pr_err("Rx coalesced usec exceed hardware limitation\n");
-+		dev_err(dev, "Rx coalesced usec exceed hardware limitation\n");
- 		return -EINVAL;
- 	}
- 
- 	cycle = fec_enet_us_to_itr_clock(ndev, fep->tx_time_itr);
- 	if (cycle > 0xFFFF) {
--		pr_err("Rx coalesced usec exceed hardware limitation\n");
-+		dev_err(dev, "Rx coalesced usec exceed hardware limitation\n");
- 		return -EINVAL;
- 	}
- 
+require the buildebpfPlugin (unless anybody disagrees, I will also revert
+the meaning of '-B' also, like you did for '-n')
+
+few comments after a preliminary test:
+1) the patch still does not cover the two categories that use $DEV2 (i.e.
+flower and concurrency still fail in my environment)
+
+2) I've been reported, and reproduced with latest fedora, a problem in
+nsPlugin.py. All tests in the 'filter' category still fail, unless I do
+
+# sed -i "s#ip#/sbin/ip#g" nsPlugin.py
+
+otherwise, the 'prepare' stage fails:
+
+# ./tdc.py  -e  5339
+ -- ns/SubPlugin.__init__
+Test 5339: Del entire fw filter
+
+-----> prepare stage *** Could not execute: "$TC qdisc add dev $DEV1 ingress"
+
+-----> prepare stage *** Error message: "/bin/sh: ip: command not found
+"
+returncode 127; expected [0]
+
+-----> prepare stage *** Aborting test run.
+
+(maybe we should use a variable for that, instead of hardcoded command
+name, like we do for $TC ?)
+
 -- 
-2.17.1
+davide
 
