@@ -2,201 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46D163924C
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A7839253
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:38:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730949AbfFGQiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 12:38:18 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51564 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730304AbfFGQiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 12:38:17 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x57Ganjv004731
-        for <netdev@vger.kernel.org>; Fri, 7 Jun 2019 09:38:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=kK787B2fSNLKBrSmlRNcG4ZJqW2AkkeJP293AgQqc94=;
- b=jK6/7JASXOWMM0E1UyrKjDhVoy7dqQ0rKqvbyQxamb/EI9rQKwpODb8yyoYa+M/qhPmQ
- h1hO5broVIZ3kl9YHPCYZQHmZz8UO0bLvfWMdZG614o2FOXx/lrvaYhsaq02QbC9if3c
- RjxiTzSsf8feVpJ+fpyvTgqgpjar2PZwrkU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0b-00082601.pphosted.com with ESMTP id 2syube81y1-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 09:38:16 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 7 Jun 2019 09:38:04 -0700
-Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
-        id 912AACD9C6E4; Fri,  7 Jun 2019 09:38:03 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Hechao Li <hechaol@fb.com>
-Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>, <ast@kernel.org>,
-        <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v4 bpf-next 2/2] bpf: use libbpf_num_possible_cpus in bpftool and selftests
-Date:   Fri, 7 Jun 2019 09:37:59 -0700
-Message-ID: <20190607163759.2211904-3-hechaol@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190607163759.2211904-1-hechaol@fb.com>
-References: <20190607163759.2211904-1-hechaol@fb.com>
-X-FB-Internal: Safe
+        id S1730976AbfFGQiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 12:38:46 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:41427 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729953AbfFGQip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 12:38:45 -0400
+Received: by mail-lf1-f67.google.com with SMTP id 136so2096069lfa.8
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 09:38:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M6fQOpOxxm854dFRSslkO9Ys9N5P4jge8tnN2qc8Wgc=;
+        b=l45SAvBhdC11dyBsPTMI7kQiF9vJGGldYmPW9k0gIYg4qBqUTXHvhWizi6AGn4+XYX
+         QVA0VAkqOVRqJl+f3PhDHu10pcqKJiVFSzRUG3nwqCBzzy99WlFEsafjXHEO92u/BW8r
+         F1CUDNXa9iEPKlisgOW44lvlzhb7DtvuG0CDhBpMzyldMxh4K89Iv7B+3eWKoCO4zqZQ
+         MihVN65B6wHW8SpMgXC3JvXacs2oOWbc2IavRFtrOze4Qe6p9KmDJtc5y5IHBJ1DcktY
+         bA9sOMEpiUmu5OvrgPuG7yQ082S2T0fjkR/slvBuMMwEBAiRtGHcmOmZnTeU3VhPmoRX
+         ZDKg==
+X-Gm-Message-State: APjAAAXur4caxlsU6liUx9nS+K4n4OTgyhrO3CdHdtylIDClMhitZ+1Q
+        KPRGnVnZRVdfe3h54U6WHOQ2Jy+wHff60kLCHADbfRdY
+X-Google-Smtp-Source: APXvYqxwgQy8B+m8kjJAc4K9rIu5y1GBaWUlef7tuO7Gh0Z0AmQVGrKX+J6CXStKppOMf28K5+F4ULg0SZVUKBLAfTs=
+X-Received: by 2002:a19:e308:: with SMTP id a8mr26359732lfh.69.1559925523955;
+ Fri, 07 Jun 2019 09:38:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-07_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=727 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906070111
-X-FB-Internal: deliver
+References: <20190607101313.8561-1-mcroce@redhat.com> <20190607082517.5ebcceca@hermes.lan>
+In-Reply-To: <20190607082517.5ebcceca@hermes.lan>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Fri, 7 Jun 2019 18:38:07 +0200
+Message-ID: <CAGnkfhxHvJicm7u1YtVxVSVxQbb2+xrxKdU-TZ8fGTBcz7vpQA@mail.gmail.com>
+Subject: Re: [PATCH iproute2] ip: reset netns after each command in batch mode
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Andrea Claudi <aclaudi@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the newly added bpf_num_possible_cpus() in bpftool and selftests
-and remove duplicate implementations.
+On Fri, Jun 7, 2019 at 5:25 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Fri,  7 Jun 2019 12:13:13 +0200
+> Matteo Croce <mcroce@redhat.com> wrote:
+>
+> > +void netns_restore(void)
+> > +{
+> > +     if (saved_netns != -1) {
+>
+> If saved_netns is -1 then it is a program bug becase
+> no save was done? then do something?
+>
 
-Signed-off-by: Hechao Li <hechaol@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- tools/bpf/bpftool/common.c             | 53 +++-----------------------
- tools/testing/selftests/bpf/bpf_util.h | 37 +++---------------
- 2 files changed, 10 insertions(+), 80 deletions(-)
+saved_netns can be -1 if you execute a batch which doesn't never
+change the current netns, e.g: only link, addr, route etc.
+In this case netns_restore() will do nothing as there is nothing to restore
 
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index f7261fad45c1..5215e0870bcb 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -21,6 +21,7 @@
- #include <sys/vfs.h>
- 
- #include <bpf.h>
-+#include <libbpf.h> /* libbpf_num_possible_cpus */
- 
- #include "main.h"
- 
-@@ -439,57 +440,13 @@ unsigned int get_page_size(void)
- 
- unsigned int get_possible_cpus(void)
- {
--	static unsigned int result;
--	char buf[128];
--	long int n;
--	char *ptr;
--	int fd;
--
--	if (result)
--		return result;
--
--	fd = open("/sys/devices/system/cpu/possible", O_RDONLY);
--	if (fd < 0) {
--		p_err("can't open sysfs possible cpus");
--		exit(-1);
--	}
--
--	n = read(fd, buf, sizeof(buf));
--	if (n < 2) {
--		p_err("can't read sysfs possible cpus");
--		exit(-1);
--	}
--	close(fd);
-+	int cpus = libbpf_num_possible_cpus();
- 
--	if (n == sizeof(buf)) {
--		p_err("read sysfs possible cpus overflow");
-+	if (cpus < 0) {
-+		p_err("Can't get # of possible cpus: %s", strerror(-cpus));
- 		exit(-1);
- 	}
--
--	ptr = buf;
--	n = 0;
--	while (*ptr && *ptr != '\n') {
--		unsigned int a, b;
--
--		if (sscanf(ptr, "%u-%u", &a, &b) == 2) {
--			n += b - a + 1;
--
--			ptr = strchr(ptr, '-') + 1;
--		} else if (sscanf(ptr, "%u", &a) == 1) {
--			n++;
--		} else {
--			assert(0);
--		}
--
--		while (isdigit(*ptr))
--			ptr++;
--		if (*ptr == ',')
--			ptr++;
--	}
--
--	result = n;
--
--	return result;
-+	return cpus;
- }
- 
- static char *
-diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
-index a29206ebbd13..6231eafd4a5a 100644
---- a/tools/testing/selftests/bpf/bpf_util.h
-+++ b/tools/testing/selftests/bpf/bpf_util.h
-@@ -6,44 +6,17 @@
- #include <stdlib.h>
- #include <string.h>
- #include <errno.h>
-+#include <libbpf.h>
- 
- static inline unsigned int bpf_num_possible_cpus(void)
- {
--	static const char *fcpu = "/sys/devices/system/cpu/possible";
--	unsigned int start, end, possible_cpus = 0;
--	char buff[128];
--	FILE *fp;
--	int len, n, i, j = 0;
-+	int possible_cpus = libbpf_num_possible_cpus();
- 
--	fp = fopen(fcpu, "r");
--	if (!fp) {
--		printf("Failed to open %s: '%s'!\n", fcpu, strerror(errno));
-+	if (possible_cpus < 0) {
-+		printf("Failed to get # of possible cpus: '%s'!\n",
-+		       strerror(-possible_cpus));
- 		exit(1);
- 	}
--
--	if (!fgets(buff, sizeof(buff), fp)) {
--		printf("Failed to read %s!\n", fcpu);
--		exit(1);
--	}
--
--	len = strlen(buff);
--	for (i = 0; i <= len; i++) {
--		if (buff[i] == ',' || buff[i] == '\0') {
--			buff[i] = '\0';
--			n = sscanf(&buff[j], "%u-%u", &start, &end);
--			if (n <= 0) {
--				printf("Failed to retrieve # possible CPUs!\n");
--				exit(1);
--			} else if (n == 1) {
--				end = start;
--			}
--			possible_cpus += end - start + 1;
--			j = i + 1;
--		}
--	}
--
--	fclose(fp);
--
- 	return possible_cpus;
- }
- 
--- 
-2.17.1
+> > +             if (!setns(saved_netns, CLONE_NEWNET)) {
+> > +                     close(saved_netns);
+> > +                     saved_netns = -1;
+> > +             } else {
+> > +                     perror("setns");
+>
+> If you are going to look for errors. then you need to either
+> return the error or cause the program to exit.
+> You don't want later commands in the batch to be applied
+> to wrong namespace.
 
+Right. A failure in restoring a saved netns means that something bad
+happened, so better stop.
+
+Regards,
+
+--
+Matteo Croce
+per aspera ad upstream
