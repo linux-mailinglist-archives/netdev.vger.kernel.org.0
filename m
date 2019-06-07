@@ -2,145 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7670C39903
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A673990C
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:39:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731832AbfFGWih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 18:38:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48676 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731772AbfFGWiV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 18:38:21 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C02D721479;
-        Fri,  7 Jun 2019 22:38:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559947100;
-        bh=y4GgxUE4lF8iag2yMAV9jIFARkru1PQ3cXDUPVGDn2A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WvrqqUxJSVs8fKFb2Dorbk/uydnl3SzTOloq8u3XLmu5nwvzWKx0JhSFAoDB1Mszk
-         T0byvR/EKKe2ApFcOgfKvlwKH/v3iitEpY0Qb3BRzIYFoVP67SzCWtmYwWA/vu7wnj
-         5n+h6R+R1Nh1TXPRVrNj/JlmYkTQZrBpZ8K68B14=
-From:   David Ahern <dsahern@kernel.org>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 iproute-next 10/10] ipmonitor: Add nexthop option to monitor
-Date:   Fri,  7 Jun 2019 15:38:16 -0700
-Message-Id: <20190607223816.27512-11-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190607223816.27512-1-dsahern@kernel.org>
-References: <20190607223816.27512-1-dsahern@kernel.org>
+        id S1729867AbfFGWjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 18:39:48 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35047 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728749AbfFGWjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 18:39:48 -0400
+Received: by mail-pl1-f195.google.com with SMTP id p1so1345421plo.2
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 15:39:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZtFMnrFjgCQiJ/Xtrjwklu5967W8ntMVmsVjXNz+UZc=;
+        b=ErKT9ZJkJEhRK5bz0jrqifszUsXky3c0Rry+zLksnJfg/1I1I9JZOdfIr4qAUcLh4s
+         Vcd5wJCALGen7EPOe6MzzIbXGOmTF1XkN/4fpnygaBgAf0grm+gA+MWe4HQc8mWfZ5/x
+         crfK8ghwxfKncY4cJ0bGetZ0gEJPs6bUsS6OfblA+wwnVc61ZOILdqjj6wKCFjHbYRTm
+         oG8BEO18CReckd2aejk+46tq4jq5OgUnH+OJ5u4I4SxSosjLQwFXxHsapUGURocIgtxR
+         RQxQpkSP9qSXP9MYZ1A0Ws+/bHjGta4boCQSGvewzs2PEqGhl9DfuYpY6Af2XqgdSGk3
+         z7tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZtFMnrFjgCQiJ/Xtrjwklu5967W8ntMVmsVjXNz+UZc=;
+        b=JZvGbvBkEQb/Tyyxsk1ipebhDWXibD3aJhBxGJnLjSuwwf4MCpcxxPdUPzpLcjt6iS
+         GArytUaxZginbU361WTa6xowPEdi1dyj4dCP6l4hSKV76xZ9CWUn0z0AhZFn9+rFj5ao
+         yyyEFIuJyNWt4/xy0YxHbYCARkr5OXOQZrnOek/Bwi1pBYwyP39/qXB4krKJOBowQm1j
+         7Vkc2burAVMykGMBu7BIted8lcbCSNQhHtoumY03UsDtGv34/wMps5UyB9ag67ybjDAT
+         ATEJWI/C/JBme7uivxTvhdXp52bXsFwqN1h/BhKawjgp0MY6EZDTrHhL8NqbSJocPqzD
+         vzMQ==
+X-Gm-Message-State: APjAAAXr02ZWnbwmwgOLdJIjJ+TpwISsn55kdCcByO2cKY8m3sOhMxwp
+        V2QxmND/hh/MikKTaLY1hyQ=
+X-Google-Smtp-Source: APXvYqy1gdFLivTFUjwydb4MRowEzVR1cvB3gHk70nTvY8iRqbIvs+dNmv9tYtOHH5A1IpcQp8l5Bg==
+X-Received: by 2002:a17:902:467:: with SMTP id 94mr2918300ple.131.1559947187282;
+        Fri, 07 Jun 2019 15:39:47 -0700 (PDT)
+Received: from [172.27.227.254] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id j7sm3074746pfa.184.2019.06.07.15.39.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Jun 2019 15:39:46 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 07/20] ipv6: Handle all fib6_nh in a nexthop
+ in exception handling
+To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, Martin KaFai Lau <kafai@fb.com>,
+        Stefano Brivio <sbrivio@redhat.com>
+References: <20190607150941.11371-1-dsahern@kernel.org>
+ <20190607150941.11371-8-dsahern@kernel.org>
+ <CAEA6p_BcqXPKtshmsrpZMCrwz1TNzz0Wtoccu61gHuUg74Tx+Q@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3a7ea5b0-07cb-791a-171d-93047e365473@gmail.com>
+Date:   Fri, 7 Jun 2019 16:39:44 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <CAEA6p_BcqXPKtshmsrpZMCrwz1TNzz0Wtoccu61gHuUg74Tx+Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On 6/7/19 4:05 PM, Wei Wang wrote:
+>> @@ -1835,6 +1848,24 @@ static int fib6_nh_remove_exception(const struct fib6_nh *nh, int plen,
+>>         return err;
+>>  }
+>>
+>> +struct fib6_nh_excptn_arg {
+>> +       struct rt6_info *rt;
+>> +       int             plen;
+>> +       bool            found;
+>> +};
+>> +
+>> +static int rt6_nh_remove_exception_rt(struct fib6_nh *nh, void *_arg)
+>> +{
+>> +       struct fib6_nh_excptn_arg *arg = _arg;
+>> +       int err;
+>> +
+>> +       err = fib6_nh_remove_exception(nh, arg->plen, arg->rt);
+>> +       if (err == 0)
+>> +               arg->found = true;
+>> +
+>> +       return 0;
+>> +}
+>> +
+> Hi David,
+> Why not return 1 here to break the loop when
+> fib6_nh_remove_exception() successfully removed the rt?
+> 
 
-Add capability to ip-monitor to listen and dump nexthop messages.
-Since the nexthop group = 32 which exceeds the max groups bit
-field, 2 separate flags are needed - one that defaults on to indicate
-nexthop group is joined by default and a second that indicates a
-specific selection by the user (e.g, ip mon nexthop route).
-
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- ip/ipmonitor.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
-
-diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
-index 9ecc7fd2011a..685be52cfe64 100644
---- a/ip/ipmonitor.c
-+++ b/ip/ipmonitor.c
-@@ -84,6 +84,12 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- 		}
- 	}
- 
-+	case RTM_NEWNEXTHOP:
-+	case RTM_DELNEXTHOP:
-+		print_headers(fp, "[NEXTHOP]", ctrl);
-+		print_nexthop(n, arg);
-+		return 0;
-+
- 	case RTM_NEWLINK:
- 	case RTM_DELLINK:
- 		ll_remember_index(n, NULL);
-@@ -161,6 +167,7 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- 
- int do_ipmonitor(int argc, char **argv)
- {
-+	int lnexthop = 0, nh_set = 1;
- 	char *file = NULL;
- 	unsigned int groups = 0;
- 	int llink = 0;
-@@ -202,30 +209,42 @@ int do_ipmonitor(int argc, char **argv)
- 		} else if (matches(*argv, "link") == 0) {
- 			llink = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "address") == 0) {
- 			laddr = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "route") == 0) {
- 			lroute = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "mroute") == 0) {
- 			lmroute = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "prefix") == 0) {
- 			lprefix = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "neigh") == 0) {
- 			lneigh = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "netconf") == 0) {
- 			lnetconf = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "rule") == 0) {
- 			lrule = 1;
- 			groups = 0;
-+			nh_set = 0;
- 		} else if (matches(*argv, "nsid") == 0) {
- 			lnsid = 1;
- 			groups = 0;
-+			nh_set = 0;
-+		} else if (matches(*argv, "nexthop") == 0) {
-+			lnexthop = 1;
-+			groups = 0;
- 		} else if (strcmp(*argv, "all") == 0) {
- 			prefix_banner = 1;
- 		} else if (matches(*argv, "all-nsid") == 0) {
-@@ -297,6 +316,9 @@ int do_ipmonitor(int argc, char **argv)
- 	if (lnsid) {
- 		groups |= nl_mgrp(RTNLGRP_NSID);
- 	}
-+	if (nh_set)
-+		lnexthop = 1;
-+
- 	if (file) {
- 		FILE *fp;
- 		int err;
-@@ -313,6 +335,12 @@ int do_ipmonitor(int argc, char **argv)
- 
- 	if (rtnl_open(&rth, groups) < 0)
- 		exit(1);
-+
-+	if (lnexthop && rtnl_add_nl_group(&rth, RTNLGRP_NEXTHOP) < 0) {
-+		fprintf(stderr, "Failed to add nexthop group to list\n");
-+		exit(1);
-+	}
-+
- 	if (listen_all_nsid && rtnl_listen_all_nsid(&rth) < 0)
- 		exit(1);
- 
--- 
-2.11.0
+will change. update will drop the found arg and let rc == 1 indicate an
+entry was found.
 
