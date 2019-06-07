@@ -2,92 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 230FE384C4
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 09:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11963846F
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 08:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727213AbfFGHNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 03:13:41 -0400
-Received: from smtp1.iitb.ac.in ([103.21.127.13]:45312 "EHLO smtp1.iitb.ac.in"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727097AbfFGHNj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 03:13:39 -0400
-Received: from ldns1.iitb.ac.in (ldns1.iitb.ac.in [10.200.12.1])
-        by smtp1.iitb.ac.in (Postfix) with SMTP id 0AEA9105B77E
-        for <netdev@vger.kernel.org>; Fri,  7 Jun 2019 12:01:34 +0530 (IST)
-Received: (qmail 27999 invoked by uid 510); 7 Jun 2019 12:01:33 +0530
-X-Qmail-Scanner-Diagnostics: from 10.200.1.25 by ldns1 (envelope-from <rws@aero.iitb.ac.in>, uid 501) with qmail-scanner-2.11
- spamassassin: 3.4.1. mhr: 1.0. {clamdscan: 0.100.0/25472} 
- Clear:RC:1(10.200.1.25):SA:0(1.5/7.0):. Processed in 2.069313 secs; 07 Jun 2019 12:01:33 +0530
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on ldns1.iitb.ac.in
-X-Spam-Level: *
-X-Spam-Status: No, score=1.5 required=7.0 tests=BAYES_50,IITB_ORIG,
-        MISSING_HEADERS,PROPER_IITB_MSGID,T_RP_MATCHES_RCVD autolearn=disabled
-        version=3.4.1
-X-Spam-Pyzor: Reported 0 times.
-X-Envelope-From: rws@aero.iitb.ac.in
-X-Qmail-Scanner-Mime-Attachments: |
-X-Qmail-Scanner-Zip-Files: |
-Received: from unknown (HELO ldns1.iitb.ac.in) (10.200.1.25)
-  by ldns1.iitb.ac.in with SMTP; 7 Jun 2019 12:01:31 +0530
-Received: from vayu.aero.iitb.ac.in (vayu.aero.iitb.ac.in [10.101.1.1])
-        by ldns1.iitb.ac.in (Postfix) with ESMTP id 80518360036;
-        Fri,  7 Jun 2019 12:01:17 +0530 (IST)
-Received: from localhost (localhost [127.0.0.1])
-        by vayu.aero.iitb.ac.in (Postfix) with ESMTP id E4B948902E55E;
-        Fri,  7 Jun 2019 12:01:16 +0530 (IST)
-Received: from vayu.aero.iitb.ac.in ([127.0.0.1])
-        by localhost (vayu.aero.iitb.ac.in [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id uy24o_MU5OGU; Fri,  7 Jun 2019 12:01:16 +0530 (IST)
-Received: from localhost (localhost [127.0.0.1])
-        by vayu.aero.iitb.ac.in (Postfix) with ESMTP id 5C3AC8902E548;
-        Fri,  7 Jun 2019 12:01:14 +0530 (IST)
-X-Virus-Scanned: amavisd-new at aero.iitb.ac.in
-Received: from vayu.aero.iitb.ac.in ([127.0.0.1])
-        by localhost (vayu.aero.iitb.ac.in [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 2kbUWSjAc2AF; Fri,  7 Jun 2019 12:01:14 +0530 (IST)
-Received: from vayu.aero.iitb.ac.in (vayu.aero.iitb.ac.in [10.101.1.1])
-        by vayu.aero.iitb.ac.in (Postfix) with ESMTP id 0EEE684310111;
-        Fri,  7 Jun 2019 12:01:10 +0530 (IST)
-Date:   Fri, 7 Jun 2019 12:01:09 +0530 (IST)
-From:   Martins Henry <rws@aero.iitb.ac.in>
-Message-ID: <412557711.60336.1559889069980.JavaMail.zimbra@aero.iitb.ac.in>
-Subject: Thanks and I wait for your answer
+        id S1727462AbfFGGg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 02:36:26 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:40999 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727417AbfFGGgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 02:36:24 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190607063622euoutp01c352a425fd54be3b86d2478c6fc48a05~l1yECW1Fv0880508805euoutp014
+        for <netdev@vger.kernel.org>; Fri,  7 Jun 2019 06:36:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190607063622euoutp01c352a425fd54be3b86d2478c6fc48a05~l1yECW1Fv0880508805euoutp014
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1559889382;
+        bh=4dIKFHzGeWRANLIGlUbVTNAeAcyQG23/AuW/VLw3TLA=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=gJkxsWFmGg4n0Vd99kYYQvX/CHLe6rLEVU3q9/43pclg5Amc7/vkldDutsD5w6lTC
+         TviRlq+0CISr7ufXTtP9OtHtShLFS6BPf2M6z3jwLcn5916F8Vl5S6z6Q1llsA6BoE
+         oZgfgr3wePxuE+HXXIr9PTCzGMJZRsS+tW2Nrm/E=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20190607063621eucas1p1ee145ac25ce6b9b4640814f5704a3653~l1yDBO6bo1300013000eucas1p1F;
+        Fri,  7 Jun 2019 06:36:21 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 22.FE.04377.5E50AFC5; Fri,  7
+        Jun 2019 07:36:21 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20190607063620eucas1p2b54027b6141b790397c2ddc44879eb01~l1yCKAXS40205402054eucas1p2f;
+        Fri,  7 Jun 2019 06:36:20 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20190607063620eusmtrp2ca90c853fcd48331b149b8566dafbe6a~l1yB6Tmul3208732087eusmtrp2D;
+        Fri,  7 Jun 2019 06:36:20 +0000 (GMT)
+X-AuditID: cbfec7f4-113ff70000001119-e9-5cfa05e5c1f5
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 16.67.04140.4E50AFC5; Fri,  7
+        Jun 2019 07:36:20 +0100 (BST)
+Received: from [106.109.129.180] (unknown [106.109.129.180]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20190607063619eusmtip2c09a629a3daea4a82bb0539461921c82~l1yBXwF2Y1026410264eusmtip2i;
+        Fri,  7 Jun 2019 06:36:19 +0000 (GMT)
+Subject: Re: [PATCH] net: Fix hang while unregistering device bound to xdp
+ socket
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+From:   Ilya Maximets <i.maximets@samsung.com>
+Message-ID: <3014f882-3042-cb6a-2356-ea3a754840a7@samsung.com>
+Date:   Fri, 7 Jun 2019 09:36:19 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4414B6B6-3FE2-4CF2-A67A-159FCF6B9ECF@gmail.com>
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.101.1.5]
-X-Mailer: Zimbra 8.8.12_GA_3803 (ZimbraWebClient - FF11 (Win)/8.8.12_GA_3794)
-Thread-Index: SsslhYkcLNFU69da/wYft5cO9/ZYnA==
-Thread-Topic: Thanks and I wait for your answer
-To:     unlisted-recipients:; (no To-header on input)
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTYRjG/XbOdo7m5HPeXrwFQ6gsL0V/nD/SDAoGFZRiN4WcedCRN3bU
+        UoOkzNRKRUzdENIu3rooa0wnYjRFs9JFZiohliih00w3c5ZYzjPJ/37f+z4Pz/vARxMSrdCb
+        VqRmsMpUebJU5ETqeleNQdPC37Ghd9oxs1bQihhzT5+IqTHmk8yn26sU0/FCRTBDHTUiptHw
+        hmJ6az2ZttIuFOEo0zaNCWR69Tgle9Q5I5CVaJuRzKzxPyW84HQogU1WZLHKkPA4p6SFfrUo
+        /Yv71cfDZjIPVeJi5EgDPgjz1iKqGDnREtyIQDewYn9YENTPLpP8w4zAVKEitiwtwxrSxhLc
+        gKD/VygvWkQwNzS6KXLDUaC2Lgps7I6DoKuVzyBwngCM42Mi20KE98Hbpz3IxmIcDrqbS5tm
+        EgfA8tKTTbMHPgcWvcaucYV+1dRmsiMOA1P3IGVjAnvBDUuTkOed0DZfQ9jCABsosNbeF/Fn
+        HwX9y2p7BTeY7dNSPPvCX/0DAc/XYSJ/BvHmQgRVhnX74jBoTbY0eiNhD7R0hPDjI5Bfd0tg
+        GwN2gdF5V/4GFyjXVRH8WAyFBRJeHQB/XjfYL/CGsR9mqgxJ1duaqbe1UW9ro/6fW4vIZuTF
+        ZnIpiSx3IJW9EszJU7jM1MTgS2kpGrTxl96t91naUcdavAFhGkmdxREOq7ESoTyLy04xIKAJ
+        qbs464M1ViJOkGfnsMq0i8rMZJYzIB+alHqJcx2+xkhwojyDvcyy6axyayugHb3zkN/s+7sD
+        cdS9sBNpH+cqR3zLojR+nZHN5tMnzzizceXGimf+oqJSzXGXtcZXkyv1rOp8+s/w3ulInc/k
+        XlV5dYb/5/S6hG/zx0pKY0biLfWe4zCRfG2uavD77lwfj8Cp5yaOc2nQqfXRCo/RpodnRwLw
+        LlmOIXqHd/fqgnPGgkJKckny/YGEkpP/Aw3AiwBHAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBIsWRmVeSWpSXmKPExsVy+t/xe7pPWH/FGJy4L2nxp20Do8XnI8fZ
+        LOacb2GxuNL+k91i17qZzBaXd81hs1hx6AS7xbEFYhbb+/cxOnB6bFl5k8lj56y77B6L97xk
+        8ujbsorR4/MmuQDWKD2bovzSklSFjPziElulaEMLIz1DSws9IxNLPUNj81grI1MlfTublNSc
+        zLLUIn27BL2M9ydnsRXcFqlYcvUzSwPjNIEuRk4OCQETifVXN7F0MXJxCAksZZRYefwfK0RC
+        SuLHrwtQtrDEn2tdbBBF7xkl9l/4zgSSEBYIlpj14yOYLSKgK7FvQyc7SBGzQAOTxPWVe6E6
+        DjFK9H57xwhSxSagI3Fq9REwm1fATmJb8ydmEJtFQEXi66elYJNEBSIkZu9qYIGoEZQ4OfMJ
+        mM0pYCvx+vA5dhCbWUBd4s+8S8wQtrhE05eVrBC2vMT2t3OYJzAKzULSPgtJyywkLbOQtCxg
+        ZFnFKJJaWpybnltspFecmFtcmpeul5yfu4kRGIvbjv3csoOx613wIUYBDkYlHt4ZTD9jhFgT
+        y4orc4Ee5GBWEuEtu/AjRog3JbGyKrUoP76oNCe1+BCjKdBzE5mlRJPzgWkiryTe0NTQ3MLS
+        0NzY3NjMQkmct0PgYIyQQHpiSWp2ampBahFMHxMHp1QDo2hu1L3cv3d3vD97aC/TS/caJqm9
+        zM8i3r+4Pm86j+TZs3wWM1herO495dWvve28lnDJvhyNrs8TruhqHgsRsG7YyPb1830Dj01n
+        yrd9jVc9ftilx6DhX9P6ZRl3j1mF67/zX5V97byo3ccU0dkrzscJflygwHP9wTq9Wa9evD4k
+        Y5a9y1dELFiJpTgj0VCLuag4EQCMtDJO2wIAAA==
+X-CMS-MailID: 20190607063620eucas1p2b54027b6141b790397c2ddc44879eb01
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20190606124020eucas1p2007396ae8f23a426a17e0e5481636187
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190606124020eucas1p2007396ae8f23a426a17e0e5481636187
+References: <CGME20190606124020eucas1p2007396ae8f23a426a17e0e5481636187@eucas1p2.samsung.com>
+        <20190606124014.23231-1-i.maximets@samsung.com>
+        <4414B6B6-3FE2-4CF2-A67A-159FCF6B9ECF@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 06.06.2019 21:03, Jonathan Lemon wrote:
+> On 6 Jun 2019, at 5:40, Ilya Maximets wrote:
+> 
+>> Device that bound to XDP socket will not have zero refcount until the
+>> userspace application will not close it. This leads to hang inside
+>> 'netdev_wait_allrefs()' if device unregistering requested:
+>>
+>>   # ip link del p1
+>>   < hang on recvmsg on netlink socket >
+>>
+>>   # ps -x | grep ip
+>>   5126  pts/0    D+   0:00 ip link del p1
+>>
+>>   # journalctl -b
+>>
+>>   Jun 05 07:19:16 kernel:
+>>   unregister_netdevice: waiting for p1 to become free. Usage count = 1
+>>
+>>   Jun 05 07:19:27 kernel:
+>>   unregister_netdevice: waiting for p1 to become free. Usage count = 1
+>>   ...
+>>
+>> Fix that by counting XDP references for the device and failing
+>> RTM_DELLINK with EBUSY if device is still in use by any XDP socket.
+>>
+>> With this change:
+>>
+>>   # ip link del p1
+>>   RTNETLINK answers: Device or resource busy
+>>
+>> Fixes: 965a99098443 ("xsk: add support for bind for Rx")
+>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+>> ---
+>>
+>> Another option could be to force closing all the corresponding AF_XDP
+>> sockets, but I didn't figure out how to do this properly yet.
+>>
+>>  include/linux/netdevice.h | 25 +++++++++++++++++++++++++
+>>  net/core/dev.c            | 10 ++++++++++
+>>  net/core/rtnetlink.c      |  6 ++++++
+>>  net/xdp/xsk.c             |  7 ++++++-
+>>  4 files changed, 47 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index 44b47e9df94a..24451cfc5590 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -1705,6 +1705,7 @@ enum netdev_priv_flags {
+>>   *	@watchdog_timer:	List of timers
+>>   *
+>>   *	@pcpu_refcnt:		Number of references to this device
+>> + *	@pcpu_xdp_refcnt:	Number of XDP socket references to this device
+>>   *	@todo_list:		Delayed register/unregister
+>>   *	@link_watch_list:	XXX: need comments on this one
+>>   *
+>> @@ -1966,6 +1967,7 @@ struct net_device {
+>>  	struct timer_list	watchdog_timer;
+>>
+>>  	int __percpu		*pcpu_refcnt;
+>> +	int __percpu		*pcpu_xdp_refcnt;
+>>  	struct list_head	todo_list;
+> 
+> 
+> I understand the intention here, but don't think that putting a XDP reference
+> into the generic netdev structure is the right way of doing this.  Likely the
+> NETDEV_UNREGISTER notifier should be used so the socket and umem unbinds from
+> the device.
+> 
 
-I am Martin Henry, An American Citizen; I am the personal secretary to
-Mr. Donald Railton, the controller of a Lottery Company. Please I am
-having big problem now, I have a 6yrs old daughter who has leukemia, a
-disease of the blood, and she needs a bone marrow transplant or she
-will die.
+Thanks for the pointer! That is exactly what I looked for.
+I'll make a new version that will unbind resources using netdevice notifier.
 
-Please I am only asking for your help and you will benefit from it
-also. As an insider with Lottery Firm, working as the personal
-secretary to the controller, I want you to send me your name to play,
-I have some numbers that are going to win, stored in his secret data
-system in the office. The Lottery is an online entry with credit card
-anywhere with a name and address. All I want you to do is to send your
-name to play it and I will send confirmation to you.
-
-I will play with my card on your name and the Prize will be shared
-equally between us. Immediately the results are released they will
-contact you for payment as the oversea winner. The lotto can be played
-with 9.00 dollars, or 50 dollars but the prize will be Millions.
-Remember that I am playing on your name with my card; I just want to
-front you for this, because I need this money to save the life of my
-little daughter.
-
-Thanks and I wait for your answer
-Martin Henry.
+Best regards, Ilya Maximets.
