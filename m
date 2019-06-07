@@ -2,245 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8943982E
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986013983F
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 00:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730419AbfFGWFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 18:05:39 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:51447 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726754AbfFGWFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 18:05:38 -0400
-Received: by mail-it1-f194.google.com with SMTP id m3so5007407itl.1
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 15:05:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xJ7ThG+EXRqei+O2h1TvXGUERm/gbXkUO+6emmRo8eg=;
-        b=PtXIGp5W9sXgpaiGBJBwJqhE4Fk1bqHfeN8VTSeIYmfktAmB9A8YU2dZY0RrLaPvp4
-         OdPTKgVnbIuE5M2Gi2qTe3i/VBrON/zCEr+SdUmrGXs4UYF5w36D1ZVlw8awZ9luHzLb
-         vvx3tyUSGmGxJSETNDrq7dipR0qkEpDItxYMYbSNySGQ8wWnxHFFwDIdDXRFyk2lj5ho
-         trubTc+US4Qq+aHj/MtUXu9Y++fVyGK3BZPUlvurYfttmIWHOh85JynEI3laSEIFmuz/
-         0LiUwnYJsGmcF2jUOAfInxsCjq/16fdk0I3R5WzG2rIb0lWX2w7kVILHRO9g+lj58x+8
-         Ml6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xJ7ThG+EXRqei+O2h1TvXGUERm/gbXkUO+6emmRo8eg=;
-        b=WrremyjOKHNG51oPAP0ZelMLPQ6hTjRfKUts/2oc1lJLMJ25GCuK1WK5SpUdOU8SWF
-         II5OdqfDZdBBCJs4GnumG8MCkrmR7q9JWpBm+M7fMfgfJSIljkopZCCmOdQFZaqv+Loh
-         J6zkAXuAaVvmByNPTs8Yo7lzzmNWJ8HoSwZ+5eFOiuGo6QMS5UCw5beZE/lv5F0Bt9CW
-         FKqhPOQGnUdRp6oTGRtwRQFD59s2AyGEQmcTB5mjisygQ3NHOcxiLoeXYoPQZb9iFbou
-         lESex0JxB3Aej8abaLlXT5TlQ2zn3kzb8BBUna03e3zK+uDyuU0yrZHs+LfPdLDJvsb+
-         5YvA==
-X-Gm-Message-State: APjAAAVmGbJDFwB1JJH+gJWCDmcya8sm5Ev9PYLoWuADasSLZn3KS51p
-        AVQ3mptvU+JlsBEx/C3gzP/6BcWpBBHYGdKvOzX2kw==
-X-Google-Smtp-Source: APXvYqxRAmfj0eWnq3enSE4tsIND3LrJmrPlJp4SVmaEA9LP5opmy/+Eu1/GWA1Jx8ipFqmFodd5INpv1vGTRtekddw=
-X-Received: by 2002:a02:394c:: with SMTP id w12mr5236608jae.126.1559945137579;
- Fri, 07 Jun 2019 15:05:37 -0700 (PDT)
+        id S1731147AbfFGWId convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 7 Jun 2019 18:08:33 -0400
+Received: from mga04.intel.com ([192.55.52.120]:20128 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727213AbfFGWId (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 18:08:33 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Jun 2019 15:08:32 -0700
+X-ExtLoop1: 1
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+  by orsmga005.jf.intel.com with ESMTP; 07 Jun 2019 15:08:32 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.13]) by
+ ORSMSX103.amr.corp.intel.com ([169.254.5.232]) with mapi id 14.03.0415.000;
+ Fri, 7 Jun 2019 15:08:32 -0700
+From:   "Fujinaka, Todd" <todd.fujinaka@intel.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     "e1000-devel@lists.sourceforge.net" 
+        <e1000-devel@lists.sourceforge.net>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Subject: RE: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with
+ NAT-Traversal IPsec packets
+Thread-Topic: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with
+ NAT-Traversal IPsec packets
+Thread-Index: AQHVAGFrUp79tfxVUUm4svS7p3lcbqZXVdKAgAERcwCAAB83gIAAA7EAgAADSgCAAAeAgIAAEBkAgAAjdwCAATHTgIAAIwyAgAA9aYCAD3MygIAAI9MAgAFooQCAAy7FgIAAF0AAgAAA04CAAFKIAIABH72AgAALcoCAAFLpAIAF0r+AgAAazYCAABG2AIAAW3aAgAEAYwCAGSUSAIAAUhKAgAAVdAD//58hAA==
+Date:   Fri, 7 Jun 2019 22:08:31 +0000
+Message-ID: <9B4A1B1917080E46B64F07F2989DADD69AFBF090@ORSMSX115.amr.corp.intel.com>
+References: <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+ <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
+ <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+ <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+ <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
+ <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+ <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com>
+ <20190522143956.quskqh33ko2wuf47@csclub.uwaterloo.ca>
+ <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca>
+ <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
+ <alpine.NEB.2.21.9999.1906071343460.809@chris.i8u.org>
+In-Reply-To: <alpine.NEB.2.21.9999.1906071343460.809@chris.i8u.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMWE0MWE5MTEtNjM2ZC00ZjQxLWEyM2QtMGQ0YzY5OWZkZTBlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiSU5BYTNcL2VSSTVyNTQ2YmRaR0dWM1VIWGVpT3ZINUR5d3NibjJIUVhYR1ZQREZnMUtcL3NCbFdoK3l4MFhnWTVCIn0=
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20190607150941.11371-1-dsahern@kernel.org> <20190607150941.11371-8-dsahern@kernel.org>
-In-Reply-To: <20190607150941.11371-8-dsahern@kernel.org>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 7 Jun 2019 15:05:26 -0700
-Message-ID: <CAEA6p_BcqXPKtshmsrpZMCrwz1TNzz0Wtoccu61gHuUg74Tx+Q@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 07/20] ipv6: Handle all fib6_nh in a nexthop
- in exception handling
-To:     David Ahern <dsahern@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        idosch@mellanox.com, Martin KaFai Lau <kafai@fb.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 7, 2019 at 8:09 AM David Ahern <dsahern@kernel.org> wrote:
->
-> From: David Ahern <dsahern@gmail.com>
->
-> Add a hook in rt6_flush_exceptions, rt6_remove_exception_rt,
-> rt6_update_exception_stamp_rt, and rt6_age_exceptions to handle
-> nexthop struct in a fib6_info.
->
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  net/ipv6/route.c | 109 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 106 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index bdbd3f1f417a..883997c591d7 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -1746,9 +1746,22 @@ static void fib6_nh_flush_exceptions(struct fib6_nh *nh, struct fib6_info *from)
->         spin_unlock_bh(&rt6_exception_lock);
->  }
->
-> +static int rt6_nh_flush_exceptions(struct fib6_nh *nh, void *arg)
-> +{
-> +       struct fib6_info *f6i = arg;
-> +
-> +       fib6_nh_flush_exceptions(nh, f6i);
-> +
-> +       return 0;
-> +}
-> +
->  void rt6_flush_exceptions(struct fib6_info *f6i)
->  {
-> -       fib6_nh_flush_exceptions(f6i->fib6_nh, f6i);
-> +       if (f6i->nh)
-> +               nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_flush_exceptions,
-> +                                        f6i);
-> +       else
-> +               fib6_nh_flush_exceptions(f6i->fib6_nh, f6i);
->  }
->
->  /* Find cached rt in the hash table inside passed in rt
-> @@ -1835,6 +1848,24 @@ static int fib6_nh_remove_exception(const struct fib6_nh *nh, int plen,
->         return err;
->  }
->
-> +struct fib6_nh_excptn_arg {
-> +       struct rt6_info *rt;
-> +       int             plen;
-> +       bool            found;
-> +};
-> +
-> +static int rt6_nh_remove_exception_rt(struct fib6_nh *nh, void *_arg)
-> +{
-> +       struct fib6_nh_excptn_arg *arg = _arg;
-> +       int err;
-> +
-> +       err = fib6_nh_remove_exception(nh, arg->plen, arg->rt);
-> +       if (err == 0)
-> +               arg->found = true;
-> +
-> +       return 0;
-> +}
-> +
-Hi David,
-Why not return 1 here to break the loop when
-fib6_nh_remove_exception() successfully removed the rt?
+Just a quick update with the response I got and I'll make sure this is in our internal bug database.
 
->  static int rt6_remove_exception_rt(struct rt6_info *rt)
->  {
->         struct fib6_info *from;
-> @@ -1843,6 +1874,17 @@ static int rt6_remove_exception_rt(struct rt6_info *rt)
->         if (!from || !(rt->rt6i_flags & RTF_CACHE))
->                 return -EINVAL;
+Here's what I got back, and it looks like you guys have tried this already:
+
+Have they tried these steps to configure RSS:
+
+RSS Hash Flow
+-------------
+
+Allows you to set the hash bytes per flow type and any combination of one or
+more options for Receive Side Scaling (RSS) hash byte configuration.
+
+#ethtool -N <dev> rx-flow-hash <type> <option>
+
+Where <type> is:
+  tcp4  signifying TCP over IPv4
+  udp4  signifying UDP over IPv4
+  tcp6  signifying TCP over IPv6
+  udp6  signifying UDP over IPv6
+And <option> is one or more of:
+  s Hash on the IP source address of the rx packet.
+  d Hash on the IP destination address of the rx packet.
+  f Hash on bytes 0 and 1 of the Layer 4 header of the rx packet.
+  n Hash on bytes 2 and 3 of the Layer 4 header of the rx packet.
+
+Also, looks like the driver needs to be updated to latest version:
+>>> 1.1767.0 i40e 0000:3d:00.0: The driver for the device detected a
+>>> newer version of the NVM image than expected. Please install the
+>>> most recent version of the network driver.
+
+Out of tree: https://sourceforge.net/projects/e1000/files/i40e%20stable/
+
+Todd Fujinaka
+Software Application Engineer
+Datacenter Engineering Group
+Intel Corporation
+todd.fujinaka@intel.com
+
+
+-----Original Message-----
+From: Hisashi T Fujinaka [mailto:htodd@twofifty.com] 
+Sent: Friday, June 7, 2019 1:50 PM
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: e1000-devel@lists.sourceforge.net; Netdev <netdev@vger.kernel.org>; intel-wired-lan <intel-wired-lan@lists.osuosl.org>; LKML <linux-kernel@vger.kernel.org>; Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Subject: Re: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec packets
+
+On Fri, 7 Jun 2019, Alexander Duyck wrote:
+
+> On Fri, Jun 7, 2019 at 7:39 AM Lennart Sorensen 
+> <lsorense@csclub.uwaterloo.ca> wrote:
+>>
+>> On Wed, May 22, 2019 at 10:39:56AM -0400, Lennart Sorensen wrote:
+>>> OK I applied those two patches and get this:
+>>>
+>>> i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 
+>>> 2.1.7-k
+>>> i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+>>> i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 
+>>> 1.1767.0 i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+>>> i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87 i40e 0000:3d:00.0: 
+>>> PFQF_HREGION[7]: 0x00000000 i40e 0000:3d:00.0: PFQF_HREGION[6]: 
+>>> 0x00000000 i40e 0000:3d:00.0: PFQF_HREGION[5]: 0x00000000 i40e 
+>>> 0000:3d:00.0: PFQF_HREGION[4]: 0x00000000 i40e 0000:3d:00.0: 
+>>> PFQF_HREGION[3]: 0x00000000 i40e 0000:3d:00.0: PFQF_HREGION[2]: 
+>>> 0x00000000 i40e 0000:3d:00.0: PFQF_HREGION[1]: 0x00000000 i40e 
+>>> 0000:3d:00.0: PFQF_HREGION[0]: 0x00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 63 input_mask:0x0000000000004000 i40e 0000:3d:00.0: 
+>>> flow_type: 46 input_mask:0x0007fff800000000 i40e 0000:3d:00.0: 
+>>> flow_type: 45 input_mask:0x0007fff800000000 i40e 0000:3d:00.0: 
+>>> flow_type: 44 input_mask:0x0007ffff80000000 i40e 0000:3d:00.0: 
+>>> flow_type: 43 input_mask:0x0007fffe00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 42 input_mask:0x0007fffe00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 41 input_mask:0x0007fffe00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 40 input_mask:0x0007fffe00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 39 input_mask:0x0007fffe00000000 i40e 0000:3d:00.0: 
+>>> flow_type: 36 input_mask:0x0006060000000000 i40e 0000:3d:00.0: 
+>>> flow_type: 35 input_mask:0x0006060000000000 i40e 0000:3d:00.0: 
+>>> flow_type: 34 input_mask:0x0006060780000000 i40e 0000:3d:00.0: 
+>>> flow_type: 33 input_mask:0x0006060600000000 i40e 0000:3d:00.0: 
+>>> flow_type: 32 input_mask:0x0006060600000000 i40e 0000:3d:00.0: 
+>>> flow_type: 31 input_mask:0x0006060600000000 i40e 0000:3d:00.0: 
+>>> flow_type: 30 input_mask:0x0006060600000000 i40e 0000:3d:00.0: 
+>>> flow_type: 29 input_mask:0x0006060600000000 i40e 0000:3d:00.0: 
+>>> flow_type: 27 input_mask:0x00000000002c0000 i40e 0000:3d:00.0: 
+>>> flow_type: 26 input_mask:0x00000000002c0000 i40e 0000:3d:00.0: flow 
+>>> type: 36 update input mask from:0x0006060000000000, 
+>>> to:0x0001801800000000 i40e 0000:3d:00.0: flow type: 35 update input 
+>>> mask from:0x0006060000000000, to:0x0001801800000000 i40e 
+>>> 0000:3d:00.0: flow type: 34 update input mask 
+>>> from:0x0006060780000000, to:0x0001801f80000000 i40e 0000:3d:00.0: 
+>>> flow type: 33 update input mask from:0x0006060600000000, 
+>>> to:0x0001801e00000000 i40e 0000:3d:00.0: flow type: 32 update input 
+>>> mask from:0x0006060600000000, to:0x0001801e00000000 i40e 
+>>> 0000:3d:00.0: flow type: 31 update input mask 
+>>> from:0x0006060600000000, to:0x0001801e00000000 i40e 0000:3d:00.0: 
+>>> flow type: 30 update input mask from:0x0006060600000000, 
+>>> to:0x0001801e00000000 i40e 0000:3d:00.0: flow type: 29 update input 
+>>> mask from:0x0006060600000000, to:0x0001801e00000000
+>>>
+>>> So seems the regions are all 0.
+>>>
+>>> All ipsec packets still hitting queue 0.
+>>
+>> So any news or more ideas to try or are we stuck hoping someone can 
+>> fix the firmware?
 >
-> +       if (from->nh) {
-> +               struct fib6_nh_excptn_arg arg = {
-> +                       .rt = rt,
-> +                       .plen = from->fib6_src.plen
-> +               };
-> +
-> +               nexthop_for_each_fib6_nh(from->nh, rt6_nh_remove_exception_rt,
-> +                                        &arg);
-> +               return arg.found ? 0 : -ENOENT;
-> +       }
-> +
->         return fib6_nh_remove_exception(from->fib6_nh,
->                                         from->fib6_src.plen, rt);
->  }
-> @@ -1873,9 +1915,33 @@ static void fib6_nh_update_exception(const struct fib6_nh *nh, int plen,
->                 rt6_ex->stamp = jiffies;
->  }
+> I had reached out to some folks over in the networking division hoping 
+> that they can get a reproduction as I don't have the hardware that you 
+> are seeing the issue on so I have no way to reproduce it.
 >
-> +struct fib6_nh_match_arg {
-> +       const struct net_device *dev;
-> +       const struct in6_addr   *gw;
-> +       struct fib6_nh          *match;
-> +};
-> +
-> +/* determine if fib6_nh has given device and gateway */
-> +static int fib6_nh_find_match(struct fib6_nh *nh, void *_arg)
-> +{
-> +       struct fib6_nh_match_arg *arg = _arg;
-> +
-> +       if (arg->dev != nh->fib_nh_dev ||
-> +           (arg->gw && !nh->fib_nh_gw_family) ||
-> +           (!arg->gw && nh->fib_nh_gw_family) ||
-> +           (arg->gw && !ipv6_addr_equal(arg->gw, &nh->fib_nh_gw6)))
-> +               return 0;
-> +
-> +       arg->match = nh;
-> +
-> +       /* found a match, break the loop */
-> +       return 1;
-> +}
-> +
->  static void rt6_update_exception_stamp_rt(struct rt6_info *rt)
->  {
->         struct fib6_info *from;
-> +       struct fib6_nh *fib6_nh;
+> Maybe someone from that group can reply and tell us where they are on that?
 >
->         rcu_read_lock();
+> Thanks.
 >
-> @@ -1883,7 +1949,21 @@ static void rt6_update_exception_stamp_rt(struct rt6_info *rt)
->         if (!from || !(rt->rt6i_flags & RTF_CACHE))
->                 goto unlock;
->
-> -       fib6_nh_update_exception(from->fib6_nh, from->fib6_src.plen, rt);
-> +       if (from->nh) {
-> +               struct fib6_nh_match_arg arg = {
-> +                       .dev = rt->dst.dev,
-> +                       .gw = &rt->rt6i_gateway,
-> +               };
-> +
-> +               nexthop_for_each_fib6_nh(from->nh, fib6_nh_find_match, &arg);
-> +
-> +               if (!arg.match)
-> +                       return;
-> +               fib6_nh = arg.match;
-> +       } else {
-> +               fib6_nh = from->fib6_nh;
-> +       }
-> +       fib6_nh_update_exception(fib6_nh, from->fib6_src.plen, rt);
->  unlock:
->         rcu_read_unlock();
->  }
-> @@ -2045,11 +2125,34 @@ static void fib6_nh_age_exceptions(const struct fib6_nh *nh,
->         rcu_read_unlock_bh();
->  }
->
-> +struct fib6_nh_age_excptn_arg {
-> +       struct fib6_gc_args     *gc_args;
-> +       unsigned long           now;
-> +};
-> +
-> +static int rt6_nh_age_exceptions(struct fib6_nh *nh, void *_arg)
-> +{
-> +       struct fib6_nh_age_excptn_arg *arg = _arg;
-> +
-> +       fib6_nh_age_exceptions(nh, arg->gc_args, arg->now);
-> +       return 0;
-> +}
-> +
->  void rt6_age_exceptions(struct fib6_info *f6i,
->                         struct fib6_gc_args *gc_args,
->                         unsigned long now)
->  {
-> -       fib6_nh_age_exceptions(f6i->fib6_nh, gc_args, now);
-> +       if (f6i->nh) {
-> +               struct fib6_nh_age_excptn_arg arg = {
-> +                       .gc_args = gc_args,
-> +                       .now = now
-> +               };
-> +
-> +               nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_age_exceptions,
-> +                                        &arg);
-> +       } else {
-> +               fib6_nh_age_exceptions(f6i->fib6_nh, gc_args, now);
-> +       }
->  }
->
->  /* must be called with rcu lock held */
-> --
-> 2.11.0
->
+> - Alex
+
+For some reason this isn't showing up in my work email. We had an internal conference this week and I think people are away. I'll see if I can chase some people down if they're still here and not on the way home.
+
+--
+Hisashi T Fujinaka - htodd@twofifty.com
+
+
+_______________________________________________
+E1000-devel mailing list
+E1000-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/e1000-devel
+To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
