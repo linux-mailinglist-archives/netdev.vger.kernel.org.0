@@ -2,134 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA8B38CFB
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 16:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1FBB38D3F
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 16:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729192AbfFGO3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 10:29:05 -0400
-Received: from mail.us.es ([193.147.175.20]:47052 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728795AbfFGO3F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 10:29:05 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E3381BAE9A
-        for <netdev@vger.kernel.org>; Fri,  7 Jun 2019 16:29:01 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D3D4CDA701
-        for <netdev@vger.kernel.org>; Fri,  7 Jun 2019 16:29:01 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id B7522DA715; Fri,  7 Jun 2019 16:29:01 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 433E5DA701;
-        Fri,  7 Jun 2019 16:28:59 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 07 Jun 2019 16:28:59 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 0386D4265A2F;
-        Fri,  7 Jun 2019 16:28:58 +0200 (CEST)
-Date:   Fri, 7 Jun 2019 16:28:58 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Christian Brauner <christian@brauner.io>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, tyhicks@canonical.com,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, linux-kernel@vger.kernel.org,
-        richardrose@google.com, vapier@chromium.org, bhthompson@google.com,
-        smbarber@chromium.org, joelhockey@chromium.org,
-        ueberall@themenzentrisch.de
-Subject: Re: [PATCH RESEND net-next 1/2] br_netfilter: add struct netns_brnf
-Message-ID: <20190607142858.vgkljqohn34rxhe2@salvia>
-References: <20190606114142.15972-1-christian@brauner.io>
- <20190606114142.15972-2-christian@brauner.io>
- <20190606081440.61ea1c62@hermes.lan>
- <20190606151937.mdpalfk7urvv74ub@brauner.io>
- <20190606163035.x7rvqdwubxiai5t6@salvia>
- <20190607132516.q3zwmzrynvqo7mzn@brauner.io>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190607132516.q3zwmzrynvqo7mzn@brauner.io>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1729462AbfFGOgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 10:36:20 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38093 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729447AbfFGOfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 10:35:33 -0400
+Received: by mail-qt1-f194.google.com with SMTP id n11so379670qtl.5
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 07:35:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=GbgsWWJsYfuFE0Ayk1WcQ4Df2lBstgQ/CvJS7+ETd2s=;
+        b=QGUXZscHEoL0COiYgKJzGauvXiRnD/yzWrfJsYJcTclbPX9TCvCrdfjxhLSv6VqVOy
+         Ds63L+KT50jtxVnmqpdXm+k0hnKJi5RXnLS0g7q5/aYYikllYLDJlOL5jJq9fIyS2KXT
+         N4kSzGLH1BqH5+sIoQRhIEIplVz6xOOFXH3kUevzoxUvalU97d0JQV8t5yyidDelIDry
+         k8NouTI/Vwk3wkIkBwrPlJNHi55Eas42L1+bSUxShFHT/PfTIYvWn+XASslmcOf+opCq
+         Xe44NUEbE+9/+hU7i7HYNQl4s6GIv+QUbmYg2o2r2mDo0R1jnV48MtbC/0gPLmPAyG0T
+         qL2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=GbgsWWJsYfuFE0Ayk1WcQ4Df2lBstgQ/CvJS7+ETd2s=;
+        b=fHSobb+Tgkm0Yln5wYen9qHeWTK1HeufVuX7Q8hxIINrCZ+5aHX+dWSsZKX+jBzzo5
+         C+rpO7L6RtUd2nuSZcv0bXVXCyStoojZcCVm41YI4Ir3rsjIg6WhNDYp9o3pXG0gyOQE
+         zD9gsCrmbItSNX4vI4lh9Q8V+2KYYe9YjHBIw3HqU/ioLn3D9doPNWF09DLKLgEtG2UC
+         qfRK1aw0QWkcoQvFdDxXVYQxoAO7Km1/VYdNhzG3Op9H20RYnIuoNLUq76oqglK4lmWy
+         LUAD85nhJe+qIj4wEjIN3DwFUZtG39x6JyCndB7j8rMyTqfjmbaRVtuLtfBYjYqs/YCm
+         p/Uw==
+X-Gm-Message-State: APjAAAUQyIY9ZgG2PJE9RmJpTR/42okCU0ywTdfcaYSRVe0q0QZGQyfq
+        yjTxbSjIGV9PIoZK5iK1wNfHcA==
+X-Google-Smtp-Source: APXvYqylHXL8PP8WU7yZy4f3dkfIgSoGD/enIs4QVNUfQMUWy/e2kCWQ7kzXKicoMTtJqeMAeDYHQA==
+X-Received: by 2002:ac8:2ca5:: with SMTP id 34mr47371137qtw.246.1559918132104;
+        Fri, 07 Jun 2019 07:35:32 -0700 (PDT)
+Received: from localhost.localdomain (li1322-146.members.linode.com. [45.79.223.146])
+        by smtp.gmail.com with ESMTPSA id c5sm1243963qkb.41.2019.06.07.07.35.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Jun 2019 07:35:31 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>, Mark Drayton <mbd@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH] perf config: Update default value for llvm.clang-bpf-cmd-template
+Date:   Fri,  7 Jun 2019 22:35:08 +0800
+Message-Id: <20190607143508.18141-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 03:25:16PM +0200, Christian Brauner wrote:
-> On Thu, Jun 06, 2019 at 06:30:35PM +0200, Pablo Neira Ayuso wrote:
-> > On Thu, Jun 06, 2019 at 05:19:39PM +0200, Christian Brauner wrote:
-> > > On Thu, Jun 06, 2019 at 08:14:40AM -0700, Stephen Hemminger wrote:
-> > > > On Thu,  6 Jun 2019 13:41:41 +0200
-> > > > Christian Brauner <christian@brauner.io> wrote:
-> > > > 
-> > > > > +struct netns_brnf {
-> > > > > +#ifdef CONFIG_SYSCTL
-> > > > > +	struct ctl_table_header *ctl_hdr;
-> > > > > +#endif
-> > > > > +
-> > > > > +	/* default value is 1 */
-> > > > > +	int call_iptables;
-> > > > > +	int call_ip6tables;
-> > > > > +	int call_arptables;
-> > > > > +
-> > > > > +	/* default value is 0 */
-> > > > > +	int filter_vlan_tagged;
-> > > > > +	int filter_pppoe_tagged;
-> > > > > +	int pass_vlan_indev;
-> > > > > +};
-> > > > 
-> > > > Do you really need to waste four bytes for each
-> > > > flag value. If you use a u8 that would work just as well.
-> > > 
-> > > I think we had discussed something like this but the problem why we
-> > > can't do this stems from how the sysctl-table stuff is implemented.
-> > > I distinctly remember that it couldn't be done with a flag due to that.
-> > 
-> > Could you define a pernet_operations object? I mean, define the id and size
-> > fields, then pass it to register_pernet_subsys() for registration.
-> > Similar to what we do in net/ipv4/netfilter/ipt_CLUSTER.c, see
-> > clusterip_net_ops and clusterip_pernet() for instance.
-> 
-> Hm, I don't think that would work. The sysctls for br_netfilter are
-> located in /proc/sys/net/bridge under /proc/sys/net which is tightly
-> integrated with the sysctls infrastructure for all of net/ and all the
-> folder underneath it including "core", "ipv4" and "ipv6".
-> I don't think creating and managing files manually in /proc/sys/net is
-> going to fly. It also doesn't seem very wise from a consistency and
-> complexity pov. I'm also not sure if this would work at all wrt to file
-> creation and reference counting if there are two different ways of
-> managing them in the same subfolder...
-> (clusterip creates files manually underneath /proc/net which probably is
-> the reason why it gets away with it.)
+The clang bpf cmdline template has defined default value in the file
+tools/perf/util/llvm-utils.c, which has been changed for several times.
 
-br_netfilter is now a module, and br_netfilter_hooks.c is part of it
-IIRC, this file registers these sysctl entries from the module __init
-path.
+This patch updates the documentation to reflect the latest default value
+for the configuration llvm.clang-bpf-cmd-template.
 
-It would be a matter of adding a new .init callback to the existing
-brnf_net_ops object in br_netfilter_hooks.c. Then, call
-register_net_sysctl() from this .init callback to register the sysctl
-entries per netns.
+Fixes: d35b168c3dcd ("perf bpf: Give precedence to bpf header dir")
+Fixes: cb76371441d0 ("perf llvm: Allow passing options to llc in addition to clang")
+Fixes: 1b16fffa389d ("perf llvm-utils: Add bpf include path to clang command line")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
+ tools/perf/Documentation/perf-config.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-There is already a brnf_net area that you can reuse for this purpose,
-to place these pernetns flags...
+diff --git a/tools/perf/Documentation/perf-config.txt b/tools/perf/Documentation/perf-config.txt
+index 462b3cde0675..e4aa268d2e38 100644
+--- a/tools/perf/Documentation/perf-config.txt
++++ b/tools/perf/Documentation/perf-config.txt
+@@ -564,9 +564,12 @@ llvm.*::
+ 	llvm.clang-bpf-cmd-template::
+ 		Cmdline template. Below lines show its default value. Environment
+ 		variable is used to pass options.
+-		"$CLANG_EXEC -D__KERNEL__ $CLANG_OPTIONS $KERNEL_INC_OPTIONS \
+-		-Wno-unused-value -Wno-pointer-sign -working-directory \
+-		$WORKING_DIR  -c $CLANG_SOURCE -target bpf -O2 -o -"
++		"$CLANG_EXEC -D__KERNEL__ -D__NR_CPUS__=$NR_CPUS "\
++		"-DLINUX_VERSION_CODE=$LINUX_VERSION_CODE "	\
++		"$CLANG_OPTIONS $PERF_BPF_INC_OPTIONS $KERNEL_INC_OPTIONS " \
++		"-Wno-unused-value -Wno-pointer-sign "		\
++		"-working-directory $WORKING_DIR "		\
++		"-c \"$CLANG_SOURCE\" -target bpf $CLANG_EMIT_LLVM -O2 -o - $LLVM_OPTIONS_PIPE"
+ 
+ 	llvm.clang-opt::
+ 		Options passed to clang.
+-- 
+2.17.1
 
-struct brnf_net {
-        bool enabled;
-};
-
-which is going to be glad to have more fields (under the #ifdef
-CONFIG_SYSCTL) there.
