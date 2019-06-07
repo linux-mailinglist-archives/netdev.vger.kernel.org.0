@@ -2,92 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0E9392AE
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 19:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013C1392D7
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 19:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731142AbfFGRBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 13:01:44 -0400
-Received: from nbd.name ([46.4.11.11]:59356 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731099AbfFGRBo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 13:01:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=UP3HYaBRyyZCgrGkjreuXPoJQnusxc/pp3ork1+U7J0=; b=NvvbWXHuJRSTpWUc/rF5CX0QxG
-        wG2uEqYO38wVscQkr6Apxn9JLac0sUUMgviV7orNAv5vVOSXymrV0r6gSaj4maQgAGKbq+cSzg6Gg
-        7Y2F1Bc8IifKwDNxZm1EKYe3tzjPDb7gGTy7yGkQ2zy3AMRwo8DhdtYa61Q/yUpDiVyM=;
-Received: from p4ff13bc7.dip0.t-ipconnect.de ([79.241.59.199] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1hZIFF-00011f-Hm; Fri, 07 Jun 2019 19:01:37 +0200
-Subject: Re: [PATCH] mt76: Remove set but not used variables 'pid' and
- 'final_mpdu'
-To:     YueHaibing <yuehaibing@huawei.com>, lorenzo.bianconi83@gmail.com,
-        ryder.lee@mediatek.com, royluo@google.com, kvalo@codeaurora.org,
-        matthias.bgg@gmail.com, sgruszka@redhat.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, davem@davemloft.net
-References: <20190529145356.13872-1-yuehaibing@huawei.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Openpgp: preference=signencrypt
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- mQGiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwbQcRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPohgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQuQINBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabiEkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <f3e5d386-e1de-d707-397d-2ef99e09f345@nbd.name>
-Date:   Fri, 7 Jun 2019 19:01:36 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S1731226AbfFGRL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 13:11:28 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36615 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730290AbfFGRL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 13:11:27 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u12so3130243qth.3
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 10:11:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wV65jHmXxXYwEI5deTNY6dp3x/XfRTRroK95qm1AXzw=;
+        b=phJjV8OS/Kp6CZAQGOf/4k5LaQy3VZustLDdJD0AQb1n/CCV8y24sI7aYYBRCEILHr
+         25JDQ38p0fV6t/Rgo4ONy91cN+lAriSRzMXmQCYP05GFkZ8o32V16etQUYZheNDqYPql
+         jGcq3Rc6qETLpvjNQugy6zMNh15ymtjfajlCqP6MlrdXRe03qQqlno1uWWrs+xf/Dls3
+         49hFvcCz2AIdCIW/2ZHClvE3DHz19JJRpDnSuEXnHq5gblorX0bKRIQooOPL0C6fZagM
+         FfcrX+uc9YPb5IZNxLCF/0X9hc9rxb3NoaFN0PrWDBM0a9P8zp7DchwAjqHYAl5hCAKd
+         OqYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wV65jHmXxXYwEI5deTNY6dp3x/XfRTRroK95qm1AXzw=;
+        b=cFjaK7m/9QsThMcyKX4zqdKoCte2l0L5Sn336dvKFOsOc9I9tz97+xHi5WMBTJ7FaI
+         dI5dQ2PHh916cuyAGR4qW6s5Vso2cxzsbkv3uAMwi8CUIYmcBageXT1XFzSwoiYJoWNr
+         i8Ip0YfhsBiCVUBtZ5k0Cx0jk04pbpfDBZQR3SYOEjBoNrod+6ouu4W9VDnYxEN0WX37
+         4hbnV1n1Gn/EpzuH3yh874UB3rgRPtpswTfNuy9+cODPR6qayvaV69N9gGd5zAusJr5i
+         f07o8CNGnrLjnI+O2DP4U+ZzMwfgWFv/bzNINXv6KqJfKxL2CkegIVaYYt6HlCvvforA
+         E2wA==
+X-Gm-Message-State: APjAAAVD4xWSWiDVlYP2FGS3iygZA9LlVendSm5ma6/EXstN2BC+cInK
+        dumYm56cbcs+H7GAHpTlzQwrww==
+X-Google-Smtp-Source: APXvYqwiGoCKNJb3ycGShjtp56s2py2nMCvyTEGRhup71swNyv6Vc3Rto1jSiFCFCEReFvSgE46JrA==
+X-Received: by 2002:a0c:f78d:: with SMTP id s13mr24081609qvn.156.1559927486643;
+        Fri, 07 Jun 2019 10:11:26 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 15sm1517893qtf.2.2019.06.07.10.11.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Jun 2019 10:11:25 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     oss-drivers@netronome.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: [PATCH bpf-next] samples: bpf: don't run probes at the local make stage
+Date:   Fri,  7 Jun 2019 10:11:16 -0700
+Message-Id: <20190607171116.19173-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190529145356.13872-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-29 16:53, YueHaibing wrote:
-> Fixes gcc '-Wunused-but-set-variable' warnings:
-> 
-> drivers/net/wireless/mediatek/mt76/mt7603/mac.c: In function mt7603_fill_txs:
-> drivers/net/wireless/mediatek/mt76/mt7603/mac.c:969:5: warning: variable pid set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/mediatek/mt76/mt7603/mac.c:961:7: warning: variable final_mpdu set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/mediatek/mt76/mt7615/mac.c: In function mt7615_fill_txs:
-> drivers/net/wireless/mediatek/mt76/mt7615/mac.c:555:5: warning: variable pid set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/mediatek/mt76/mt7615/mac.c:552:19: warning: variable final_mpdu set but not used [-Wunused-but-set-variable]
-> 
-> They are never used, so can be removed.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Quentin reports that commit 07c3bbdb1a9b ("samples: bpf: print
+a warning about headers_install") is producing the false
+positive when make is invoked locally, from the samples/bpf/
+directory.
 
-Applied, thanks.
+When make is run locally it hits the "all" target, which
+will recursively invoke make through the full build system.
 
-- Felix
+Speed up the "local" run which doesn't actually build anything,
+and avoid false positives by skipping all the probes if not in
+kbuild environment (cover both the new warning and the BTF
+probes).
+
+Reported-by: Quentin Monnet <quentin.monnet@netronome.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+---
+ samples/bpf/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 4074a66a70ca..9eb5d733f575 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -206,6 +206,8 @@ HOSTCC = $(CROSS_COMPILE)gcc
+ CLANG_ARCH_ARGS = -target $(ARCH)
+ endif
+ 
++# Don't evaluate probes and warnings if we need to run make recursively
++ifneq ($(src),)
+ HDR_PROBE := $(shell echo "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
+ 	$(HOSTCC) $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
+ 	echo okay)
+@@ -232,6 +234,7 @@ ifneq ($(and $(BTF_LLC_PROBE),$(BTF_PAHOLE_PROBE),$(BTF_OBJCOPY_PROBE)),)
+ 	DWARF2BTF = y
+ endif
+ endif
++endif
+ 
+ # Trick to allow make to be run from this directory
+ all:
+-- 
+2.21.0
+
