@@ -2,65 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1894396FB
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:44:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2795B39703
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730242AbfFGUoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 16:44:24 -0400
-Received: from torres.zugschlus.de ([85.214.131.164]:50176 "EHLO
-        torres.zugschlus.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729640AbfFGUoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 16:44:24 -0400
-Received: from mh by torres.zugschlus.de with local (Exim 4.92)
-        (envelope-from <mh+netdev@zugschlus.de>)
-        id 1hZLin-0000Vd-Fc; Fri, 07 Jun 2019 22:44:21 +0200
-Date:   Fri, 7 Jun 2019 22:44:21 +0200
-From:   Marc Haber <mh+netdev@zugschlus.de>
-To:     Yussuf Khalil <dev@pp3345.net>
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>
-Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
-Message-ID: <20190607204421.GK31088@torres.zugschlus.de>
-References: <20190530081257.GA26133@torres.zugschlus.de>
- <20190602134842.GC3249@torres.zugschlus.de>
- <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
+        id S1730251AbfFGUqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 16:46:13 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36404 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729640AbfFGUqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 16:46:13 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g18so2125343qkl.3;
+        Fri, 07 Jun 2019 13:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fRehPsNPEN/ECzbU8b7fuUn9KqNcRuRp0hIKZaFy6Ug=;
+        b=Y4c5SCaQfbBPk52YPTi7o4M2R3JAWZWzK6p8WRbz6/xgBQSaH7fHxZG29xgOkQJc1t
+         2NI3RNcgMTxZpyjWl1ILg0kQXBoPpUjaWA6QJoDMncoRU5mLR4HBbjkOq0udnqD5LUHw
+         GbXJvxdKZ04dHBRALWGB5ArybMie+IEqfmO7JSFpd6X1TUMboVcqj4qPHVguXItpTYmN
+         m4yeu02OexHattRSuOaA5GvB25TsZQyxTX16adMDm8ouiBWHPm9ZB2F6YRyFzXGem0eX
+         NAfYwsvRUFP9+PnbEhisXAB9LRu5qSivB5mIQJUmkRJrCzG1AFH8+1Y/mhgAtfgICnYJ
+         oBSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fRehPsNPEN/ECzbU8b7fuUn9KqNcRuRp0hIKZaFy6Ug=;
+        b=KngsJ4BBBIkK8zoRD114mcUan4W4U1OIX16ipUhfMuo/2ji/6gItM4EQSJdspTsXYe
+         hDP7dzKlSYM2zJTuct94yi+PW/H+XlS99HWtxS8j7vjsg0smoRAWXrei5bSz+H7CFseR
+         xO/2QTxB53hCHozH/kNH0pH419/SkHIxzqHpSk0UNUTeaVX8Yg/gwPMBmsakQEj6dTke
+         xQmmyIEFESC+cD7+OwIfk+WjJO74ZAYJBPoghULLZmSXR/GsnlL6I65uc0uO0Zru5GQV
+         Tuu9aCq1KWOqBadG8u6lFkmUomte79F5IoWAMGdpvCSYXdJJjc8pC5E/ewRyH5vU85vC
+         BtYA==
+X-Gm-Message-State: APjAAAVSyZtNbVjKXwqCt49MPD8fUvwDhU3wu5H6c3bmEgxuHUyBxO7i
+        DGkmI1d+s3NvyYhJCWM/8wZja+nW
+X-Google-Smtp-Source: APXvYqy6Qlb1MbiwtpuE9bC1TwrNvnsXqBqXwEVCqregplmHtCs75rJJPbqV7FPAiPbCGgAOB16vlg==
+X-Received: by 2002:a37:c45:: with SMTP id 66mr27122899qkm.31.1559940372089;
+        Fri, 07 Jun 2019 13:46:12 -0700 (PDT)
+Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
+        by smtp.gmail.com with ESMTPSA id d23sm1437823qtq.6.2019.06.07.13.46.10
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 07 Jun 2019 13:46:11 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org, mkl@pengutronix.de,
+        wg@grandegger.com, patrick.ohly@intel.com,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com
+Subject: [PATCH net] can: purge socket error queue on sock destruct
+Date:   Fri,  7 Jun 2019 16:46:07 -0400
+Message-Id: <20190607204607.250375-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <29401822-d7e9-430b-d284-706bf68acb8a@pp3345.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 10:20:56PM +0200, Yussuf Khalil wrote:
-> CC'ing iwlwifi maintainers to get some attention for this issue.
-> 
-> I am experiencing the very same bug on a ThinkPad T480s running 5.1.6 with
-> Fedora 30. A friend is seeing it on his X1 Carbon 6th Gen, too. Both have an
-> "Intel Corporation Wireless 8265 / 8275" card according to lspci.
+From: Willem de Bruijn <willemb@google.com>
 
-I have an older 04:00.0 Network controller [0280]: Intel Corporation
-Wireless 8260 [8086:24f3] (rev 3a) on a Thinkpad X260.
+CAN supports software tx timestamps as of the below commit. Purge
+any queued timestamp packets on socket destroy.
 
-> Notably, in all cases I've observed it occurred right after roaming from one
-> AP to another (though I can't guarantee this isn't a coincidence).
+Fixes: 51f31cabe3ce ("ip: support for TX timestamps on UDP and RAW sockets")
+Reported-by: syzbot+a90604060cb40f5bdd16@syzkaller.appspotmail.com
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ net/can/af_can.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I also have multiple Access Points broadcasting the same SSID in my
-house, and yes, I experience those issues often when I move from one
-part of the hose to another. I have, however, also experienced it in a
-hotel when I was using the mobile hotspot offered by my mobile, so that
-was clearly not a roaming situation.
-
-Greetings
-Marc
-
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index e8fd5dc1780ae..189a6bf8f829c 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -99,6 +99,7 @@ EXPORT_SYMBOL(can_ioctl);
+ static void can_sock_destruct(struct sock *sk)
+ {
+ 	skb_queue_purge(&sk->sk_receive_queue);
++	skb_queue_purge(&sk->sk_error_queue);
+ }
+ 
+ static const struct can_proto *can_get_proto(int protocol)
 -- 
------------------------------------------------------------------------------
-Marc Haber         | "I don't trust Computers. They | Mailadresse im Header
-Leimen, Germany    |  lose things."    Winona Ryder | Fon: *49 6224 1600402
-Nordisch by Nature |  How to make an American Quilt | Fax: *49 6224 1600421
+2.22.0.rc2.383.gf4fbbf30c2-goog
+
