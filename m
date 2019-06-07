@@ -2,93 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52852383CB
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 07:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C89383D8
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 07:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfFGFij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 01:38:39 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37953 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725772AbfFGFij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 01:38:39 -0400
-Received: by mail-pl1-f194.google.com with SMTP id f97so377232plb.5
-        for <netdev@vger.kernel.org>; Thu, 06 Jun 2019 22:38:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=fBLHoBBFLjWFQj+vWI/zOnyuH0YEQ6j6IoW3YJzYQyA=;
-        b=Ltp8PcMq/Oy63oh2S0kIw1o1I0t97dEIulKY67yZNx2/w6TgzIGIf42bSZQ/rPvwPZ
-         tUl1ObwH4wshnj/Jhv9nyUp+6TZOR7pmud7m7F8p4ctAHCOtlwUVgPSMmNDT8rtKJJPd
-         ypVUWyc5pVaHVXFnUTDAVECWT56/NDeuC0li4fvdfXPh3qIpff+ZgjHsHku0OgIeVyYo
-         TeXj/6GnIEcxTt9nXziuCvGqmK9oolEvHKdTrQv6eY8VBsdVon+rHnZ3yEorZC02GgmA
-         RAB/NYtVZP0ESL+/Ox1bu3B68SIE3xBBFRDxuo2WC3dzm1s3nDI9n7Sdp5PUdWq9Waa5
-         Hflw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=fBLHoBBFLjWFQj+vWI/zOnyuH0YEQ6j6IoW3YJzYQyA=;
-        b=S8IxrSMU6UyGMchiqEBqJN3VnaaBvdwkE4mH5oRkZMz5TtdJN2Os2OUa9myFqujFty
-         HVFC8N8oB9aktI86GvN3ox26iZrthRnH1iruomWkVKlCEyN33aiTvAJMNOAh/MYMOqXn
-         dgZYZNzdqfw4BASzoFTemvYd33z0PgDV1OYM3vPMM6p7DgHT9440Dgj3+HT3qR7csaiL
-         KYrBdqlF7rMs6wN3YyV5SKQk7HzR2j1p+RmgmVH+LSRmhDRS8M3asAY7xD3zZRwhCT87
-         Gwkokr+ZuRPAQyWE0AuJ7hLyrk+Cm9H+iKEH9fhkNPcSnYmEc4eW2jMKukfnxRBaGons
-         //Mg==
-X-Gm-Message-State: APjAAAW2cmqn8jP3ReodET7moYUoUF77T8IP9QSJtl4phD3eLMGfHnoG
-        fc1PgstjMJK0CSputo0EBxgkd1uw
-X-Google-Smtp-Source: APXvYqw5GxZ8fX0IM4LGcw+Hm6rAgozJdutY9xL5haZk8yIqS6pXMueAHZh1/Ek0lIEAVjPzTUiBlQ==
-X-Received: by 2002:a17:902:bd06:: with SMTP id p6mr53060813pls.112.1559885918710;
-        Thu, 06 Jun 2019 22:38:38 -0700 (PDT)
-Received: from [192.168.1.101] (122-58-182-39-adsl.sparkbb.co.nz. [122.58.182.39])
-        by smtp.gmail.com with ESMTPSA id o192sm989647pgo.74.2019.06.06.22.38.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Jun 2019 22:38:38 -0700 (PDT)
-Subject: Re: [PATCH 6/8] drivers: net: phy: fix warning same module names
-To:     Andrew Lunn <andrew@lunn.ch>
-References: <20190606094727.23868-1-anders.roxell@linaro.org>
- <20190606125817.GF20899@lunn.ch>
- <e56b59ce-5d5d-b28f-4886-d606fee19152@gmail.com>
- <20190607015912.GI20899@lunn.ch>
-Cc:     Anders Roxell <anders.roxell@linaro.org>, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <55fff7d9-064a-c2dc-8d6a-080749dfedd9@gmail.com>
-Date:   Fri, 7 Jun 2019 17:38:32 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        id S1726826AbfFGFpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 01:45:05 -0400
+Received: from ozlabs.org ([203.11.71.1]:59843 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbfFGFpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 01:45:04 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45Ks1S5t7cz9sNR;
+        Fri,  7 Jun 2019 15:45:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1559886302;
+        bh=GAGMgYjIWuiKhXW3w1n2VB9jKa7NfmJVlq1R6jocYU8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=oy6hzqhxH085Tppczq94Ui+wkrZJcyfUy3iUwU32aVvDQ1xd3c9Cz1HLS1WPUGdwj
+         OYj7xHdUd0+MAQo8eMUWFVLH+QeN9FYhqJE+Kuyow0FQRK2Wvfpf80Ou00vwcTZWEh
+         QhVU7XnijqmH6z3wcOLFpAbHWsg9i7n2buCnoRC+voemquVDfSwLeQrzCTOkQmL39u
+         aQkF0+le0Dfff3vbGYLthkLdDXVxF8Pa8S6WyqfRXGLSdUqdtmFFVItqmyI2TmW8jl
+         ZRYz8RZVw1FRAUFeIWUJfgls3rfMSMDaF97XzrmQeTwBtBRrP7CXAHrrVf36P3+Il4
+         zTMEEeKjOlxwQ==
+Date:   Fri, 7 Jun 2019 15:44:56 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Matteo Croce <mcroce@redhat.com>
+Subject: linux-next: manual merge of the akpm-current tree with the net-next
+ tree
+Message-ID: <20190607154456.3144c3b6@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20190607015912.GI20899@lunn.ch>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/vY/C/WhtbazlgG87bXzoBWJ"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+--Sig_/vY/C/WhtbazlgG87bXzoBWJ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Am 07.06.2019 um 13:59 schrieb Andrew Lunn:
-> On Fri, Jun 07, 2019 at 12:34:47PM +1200, Michael Schmitz wrote:
->> Hi Andew, Anders,
->>
->> sorry I dropped the ball on that one - I've got a patch for the ax88796b PHY
->> driver that I just forgot to resend.
->>
->> It'll clash with your patch, Anders - are you happy to drop the
->> CONFIG_ASIX_PHY from your series?
->
-> Hi Michael
->
-> Please send your patch. Anders needs to split up his patchset anyway,
-> so dropping one is not a problem.
+Hi all,
 
-Done, thanks for your feedback.
+Today's linux-next merge of the akpm-current tree got a conflict in:
 
+  net/ipv6/sysctl_net_ipv6.c
+
+between commit:
+
+  323a53c41292 ("ipv6: tcp: enable flowlabel reflection in some RST packets=
+")
+
+from the net-next tree and commit:
+
+  f4e7c821eda5 ("proc/sysctl: add shared variables for range check")
+
+from the akpm-current tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
 Cheers,
+Stephen Rothwell
 
-	Michael
+diff --cc net/ipv6/sysctl_net_ipv6.c
+index 6d86fac472e7,4c6adfccc3d2..000000000000
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@@ -21,9 -21,6 +21,7 @@@
+  #include <net/calipso.h>
+  #endif
+ =20
+- static int zero;
+- static int one =3D 1;
+ +static int three =3D 3;
+  static int auto_flowlabels_min;
+  static int auto_flowlabels_max =3D IP6_AUTO_FLOW_LABEL_MAX;
+ =20
+@@@ -115,8 -112,6 +113,8 @@@ static struct ctl_table ipv6_table_temp
+  		.maxlen		=3D sizeof(int),
+  		.mode		=3D 0644,
+  		.proc_handler	=3D proc_dointvec,
+- 		.extra1		=3D &zero,
+++		.extra1		=3D SYSCTL_ZERO,
+ +		.extra2		=3D &three,
+  	},
+  	{
+  		.procname	=3D "max_dst_opts_number",
 
->
->    Andrew
->
+--Sig_/vY/C/WhtbazlgG87bXzoBWJ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlz5+dgACgkQAVBC80lX
+0Gwhigf/ddyGgNh8MCJKkemu1Ktq9IQyksaJqGxLM7ur8Uj8FoomtsBWRpkwPyr/
+gPAvDWLfCejmmaC5FEGe+hvy7QFxKuyjKsmnGc5Ue1mGuF/0cKtYXtWfi8HffCKO
+Qy3SmjrMTH2RKwEqE/H3iWtMLOmlOawty6NZ2wXbpR/pxVeTG1lKbS342t8hZSuu
+O/Cp00GGH4OrfkWeWueOYHuVTljZH22KS+DKNMLKgDFT+4lgL2GrvZovPNvf+Zzm
+Wp/je5DZcMTdintUXWQXfVmXeofKJmOm4Q/Tb3rIaNnojX8Cb8cWGvJyTaxY4MfB
+EzGAz4KQ/1d0knHr8RGlnGMvAjLnrA==
+=ZGIN
+-----END PGP SIGNATURE-----
+
+--Sig_/vY/C/WhtbazlgG87bXzoBWJ--
