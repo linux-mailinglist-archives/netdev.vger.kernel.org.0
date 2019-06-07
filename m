@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E68439746
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:04:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FA8F39741
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731098AbfFGVEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 17:04:11 -0400
-Received: from mail.i8u.org ([75.148.87.25]:32160 "EHLO chris.i8u.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731059AbfFGVEI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 17:04:08 -0400
-X-Greylist: delayed 864 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Jun 2019 17:04:06 EDT
-Received: by chris.i8u.org (Postfix, from userid 1000)
-        id 51A8816C9402; Fri,  7 Jun 2019 13:49:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by chris.i8u.org (Postfix) with ESMTP id 5016416C9279;
-        Fri,  7 Jun 2019 13:49:38 -0700 (PDT)
-Date:   Fri, 7 Jun 2019 13:49:38 -0700 (PDT)
-From:   Hisashi T Fujinaka <htodd@twofifty.com>
-X-X-Sender: htodd@chris.i8u.org
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-cc:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>,
-        e1000-devel@lists.sourceforge.net, Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with
- NAT-Traversal IPsec packets
-In-Reply-To: <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
-Message-ID: <alpine.NEB.2.21.9999.1906071343460.809@chris.i8u.org>
-References: <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca> <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com> <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com> <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
- <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com> <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca> <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com> <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
- <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com> <20190522143956.quskqh33ko2wuf47@csclub.uwaterloo.ca> <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca> <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
-User-Agent: Alpine 2.21.9999 (NEB 344 2019-05-25)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+        id S1731039AbfFGVEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 17:04:04 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:49928 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730242AbfFGVED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 17:04:03 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x57L2LHL066138
+        for <netdev@vger.kernel.org>; Fri, 7 Jun 2019 17:04:02 -0400
+Received: from e31.co.us.ibm.com (e31.co.us.ibm.com [32.97.110.149])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2sytmumax4-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 17:04:02 -0400
+Received: from localhost
+        by e31.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
+        Fri, 7 Jun 2019 22:04:01 +0100
+Received: from b03cxnp08027.gho.boulder.ibm.com (9.17.130.19)
+        by e31.co.us.ibm.com (192.168.1.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 7 Jun 2019 22:04:00 +0100
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x57L3wAJ30081320
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 7 Jun 2019 21:03:58 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6CA83C6059;
+        Fri,  7 Jun 2019 21:03:58 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D53C2C605A;
+        Fri,  7 Jun 2019 21:03:57 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.80.206.102])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri,  7 Jun 2019 21:03:57 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net 0/3] ibmvnic: Fixes for device reset handling
+Date:   Fri,  7 Jun 2019 16:03:52 -0500
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+x-cbid: 19060721-8235-0000-0000-00000EA52B55
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011229; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000286; SDB=6.01214693; UDB=6.00638533; IPR=6.00995777;
+ MB=3.00027226; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-07 21:04:01
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060721-8236-0000-0000-000045EBB428
+Message-Id: <1559941435-30124-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-07_11:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=949 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906070141
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jun 2019, Alexander Duyck wrote:
+This series contains three unrelated fixes to issues seen during
+device resets. The first patch fixes an error when the driver requests
+to deactivate the link of an uninitialized device, resulting in a 
+failure to reset. Next, a patch to fix multicast transmission 
+failures seen after a driver reset. The final patch fixes mishandling
+of memory allocation failures during device initialization, which
+caused a kernel oops.
 
-> On Fri, Jun 7, 2019 at 7:39 AM Lennart Sorensen
-> <lsorense@csclub.uwaterloo.ca> wrote:
->>
->> On Wed, May 22, 2019 at 10:39:56AM -0400, Lennart Sorensen wrote:
->>> OK I applied those two patches and get this:
->>>
->>> i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
->>> i40e: Copyright (c) 2013 - 2014 Intel Corporation.
->>> i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
->>> i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
->>> i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
->>> i40e 0000:3d:00.0: PFQF_HREGION[7]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[6]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[5]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[4]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[3]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[2]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[1]: 0x00000000
->>> i40e 0000:3d:00.0: PFQF_HREGION[0]: 0x00000000
->>> i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
->>> i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
->>> i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
->>> i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
->>> i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
->>> i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
->>> i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
->>> i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
->>> i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
->>> i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
->>> i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
->>> i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
->>> i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
->>> i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
->>> i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
->>> i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
->>> i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
->>> i40e 0000:3d:00.0: flow_type: 27 input_mask:0x00000000002c0000
->>> i40e 0000:3d:00.0: flow_type: 26 input_mask:0x00000000002c0000
->>> i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
->>> i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
->>> i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
->>> i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
->>> i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
->>> i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
->>> i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
->>> i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
->>>
->>> So seems the regions are all 0.
->>>
->>> All ipsec packets still hitting queue 0.
->>
->> So any news or more ideas to try or are we stuck hoping someone can fix
->> the firmware?
->
-> I had reached out to some folks over in the networking division hoping
-> that they can get a reproduction as I don't have the hardware that you
-> are seeing the issue on so I have no way to reproduce it.
->
-> Maybe someone from that group can reply and tell us where they are on that?
->
-> Thanks.
->
-> - Alex
+Thomas Falcon (3):
+  ibmvnic: Do not close unopened driver during reset
+  ibmvnic: Refresh device multicast list after reset
+  ibmvnic: Fix unchecked return codes of memory allocations
 
-For some reason this isn't showing up in my work email. We had an
-internal conference this week and I think people are away. I'll see if I
-can chase some people down if they're still here and not on the way
-home.
+ drivers/net/ethernet/ibm/ibmvnic.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
 -- 
-Hisashi T Fujinaka - htodd@twofifty.com
+1.8.3.1
+
