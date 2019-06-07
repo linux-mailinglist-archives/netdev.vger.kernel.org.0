@@ -2,100 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 451DB38E24
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 16:54:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766A538E42
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728700AbfFGOyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 10:54:38 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44023 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728203AbfFGOyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 10:54:37 -0400
-Received: by mail-pl1-f196.google.com with SMTP id cl9so921947plb.10;
-        Fri, 07 Jun 2019 07:54:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ayg8bLfZdRmKvdUAgj8C1iwRELXb44aAKvSMCEk7jqQ=;
-        b=JpD/7CFXwl2NnI7fB+8KkOGs+7RTMZ2DHsCbblnZMR4WJIoCRie9ANA9Z/UGK+BHQY
-         ZWH/8QTVhphYWRn7N74xWjJygmFlWSXckeGzwFstVBSCeYbmGGxr//ZRAmDE2sfXEWTL
-         pNSM4SWG4dqhBQxJy+Jm8f8C4OyIq7RSa3y+0KPhnaydKxAvN4NoLDKPAr1BTYjrY4Lf
-         hCiToojSM22GyCEQ/i7SdHLvNir70LnY3W50u6+Ym1xm28lXafEqda8L8ZQm5zqk7CrI
-         1h5AfjkJT2/o/WrV9szXqlf9cRIoYIQ/KAA8RbMi3g/NMzP0wxDp/QT2tYqAXl+tVG/F
-         UwRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ayg8bLfZdRmKvdUAgj8C1iwRELXb44aAKvSMCEk7jqQ=;
-        b=dql7FlmMMTv7BJbJ6aXsI10XeLisurhW3aSHZfUAb/Cgkje0R5cts69fF5KBAvgYe4
-         u67uCNehxFsr4U75tNC1flkH1cXCm5tOogP3vMgb+hWHqi2Ln3WW1VRC9xcqxKMAQ3Xp
-         T1g13zx2liBDDvtUZg9XqX4b+o1CI9p4AK1MqY+QoAjGZwzrqKqrk5OgGBFa2T6g6mFA
-         k6tpGqT0KAuRCNea8pvwOzaXd5QTyKjpd+FAIIfTyaPHjDIwIpL978sAHkqtAH6D9CBY
-         hLXN2ZLQ69LvwuoqnnSdOikk0fUbEB8P5XJoHnNo33MWyKVpjJHYVXOAAPQC6WARmD9N
-         EtJw==
-X-Gm-Message-State: APjAAAWPxn9DfgYgTGT0jrKrxjptNUsDKWleiO+e0nK16g5avhS0ep+h
-        JWQEXtuU07Cidcq/JdrYRwxE5oxfnmA=
-X-Google-Smtp-Source: APXvYqxIPCcBUTtJIzXXA10NNXfGPr/w08PjE1YTxEfbA0p6MnWu0v7VUeyMdfMYarxPrzJNvrr1yQ==
-X-Received: by 2002:a17:902:294a:: with SMTP id g68mr57169540plb.169.1559919276852;
-        Fri, 07 Jun 2019 07:54:36 -0700 (PDT)
-Received: from [172.27.227.216] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id ce3sm2258443pjb.11.2019.06.07.07.54.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Jun 2019 07:54:35 -0700 (PDT)
-Subject: Re: [PATCH next] nexthop: off by one in nexthop_mpath_select()
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20190607135636.GB16718@mwanda>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0e02a744-f28e-e206-032b-a0ffac9f7311@gmail.com>
-Date:   Fri, 7 Jun 2019 08:54:33 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1729106AbfFGPAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:00:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40058 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728408AbfFGPAK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 11:00:10 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 4293330C31AE;
+        Fri,  7 Jun 2019 15:00:02 +0000 (UTC)
+Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 51E4F82F59;
+        Fri,  7 Jun 2019 14:59:57 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>, Joe Perches <joe@perches.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/7] bonding: clean up and standarize logging printks
+Date:   Fri,  7 Jun 2019 10:59:25 -0400
+Message-Id: <20190607145933.37058-1-jarod@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190607135636.GB16718@mwanda>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 07 Jun 2019 15:00:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/7/19 7:56 AM, Dan Carpenter wrote:
-> The nhg->nh_entries[] array is allocated in nexthop_grp_alloc() and it
-> has nhg->num_nh elements so this check should be >= instead of >.
-> 
-> Fixes: f88d8ea67fbd ("ipv6: Plumb support for nexthop object in a fib6_info")
+This set improves a few somewhat terse bonding debug messages, fixes some
+errors in others, and then standarizes the majority of them, using new
+slave_* printk macros that wrap around netdev_* to ensure both master
+and slave information is provided consistently, where relevant. This set
+proves very useful in debugging issues on hosts with multiple bonds.
 
-Wrong fixes. The helper was added by 430a049190de so it should be
+I've run an array of LNST tests over this set, creating and destroying
+quite a few different bonds of the course of testing, fixed the little
+gotchas here and there, and everything looks stable and reasonable to me,
+but I can't guarantee I've tested every possible message and scenario to
+catch every possible "slave could be NULL" case.
 
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
+Jarod Wilson (7):
+  bonding: improve event debug usability
+  bonding: fix error messages in bond_do_fail_over_mac
+  bonding: add slave_foo printk macros
+  bonding/main: convert to using slave printk macros
+  bonding/802.3ad: convert to using slave printk macros
+  bonding/alb: convert to using slave printk macros
+  bonding/options: convert to using slave printk macros
 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  include/net/nexthop.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index aff7b2410057..e019ed9b3dc3 100644
-> --- a/include/net/nexthop.h
-> +++ b/include/net/nexthop.h
-> @@ -160,7 +160,7 @@ struct nexthop *nexthop_mpath_select(const struct nexthop *nh, int nhsel)
->  	/* for_nexthops macros in fib_semantics.c grabs a pointer to
->  	 * the nexthop before checking nhsel
->  	 */
-> -	if (nhsel > nhg->num_nh)
-> +	if (nhsel >= nhg->num_nh)
->  		return NULL;
->  
->  	return nhg->nh_entries[nhsel].nh;
-> 
+ drivers/net/bonding/bond_3ad.c     | 222 +++++++++++----------
+ drivers/net/bonding/bond_alb.c     |  30 +--
+ drivers/net/bonding/bond_main.c    | 309 +++++++++++++----------------
+ drivers/net/bonding/bond_options.c |  30 ++-
+ include/net/bonding.h              |   9 +
+ 5 files changed, 293 insertions(+), 307 deletions(-)
 
-Thanks for the patch.
+Suggested-by: Joe Perches <joe@perches.com>
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: netdev@vger.kernel.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+-- 
+2.20.1
+
