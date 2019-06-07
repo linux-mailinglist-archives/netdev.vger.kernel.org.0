@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A193871B
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 11:32:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA403871C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 11:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbfFGJce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 05:32:34 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35128 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726671AbfFGJcd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 05:32:33 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7105530C1206;
-        Fri,  7 Jun 2019 09:32:31 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C02710A4B42;
-        Fri,  7 Jun 2019 09:32:21 +0000 (UTC)
-Date:   Fri, 7 Jun 2019 11:32:20 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, brouer@redhat.com,
-        "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2 bpf-next 1/2] xdp: Add tracepoint for bulk XDP_TX
-Message-ID: <20190607113220.1ea4093a@carbon>
-In-Reply-To: <e0266202-5db6-123c-eba6-33e5c5c4ba6d@gmail.com>
-References: <20190605053613.22888-1-toshiaki.makita1@gmail.com>
-        <20190605053613.22888-2-toshiaki.makita1@gmail.com>
-        <20190605095931.5d90b69c@carbon>
-        <abd43c39-afb7-acd4-688a-553cec76f55c@gmail.com>
-        <20190606214105.6bf2f873@carbon>
-        <e0266202-5db6-123c-eba6-33e5c5c4ba6d@gmail.com>
+        id S1727134AbfFGJdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 05:33:10 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39886 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727233AbfFGJdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 05:33:09 -0400
+Received: by mail-ot1-f65.google.com with SMTP id r21so1251701otq.6
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 02:33:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=ZR386RP0zmY1WufasmAUSyc96jZxUzDsX+jXk1VKJzY=;
+        b=eovWEvxiYAnIVtnshN6IXRdk/nHURUcrKPyZyDhTvOXuw066Ymdl/Dutf229HUJBao
+         H3rpA4VSfQBxftH2yNtt3KZeYJLuTs2SoILn0niSAMhUgj1jN4O5NY4OBiUMeYrTXiQs
+         08yWO30GrUC7AnsUZ++2nHsS2DdoK5WhLh/qeZ8ioJlKOXtjvumQh5eseLGKp4F+AW4y
+         gg+1KylE5XSriupwaTizLMG9aKobJJG2sXfLh8Cd0b7CGi9m9cb3cmCCyzmx20rfLisT
+         dbh6yxUOX2rtx4e0SMXGXuZl8e+IAQdoMR0ABOlmMY9QEo943ANziDVc2Oe2skMmEIRa
+         uu0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=ZR386RP0zmY1WufasmAUSyc96jZxUzDsX+jXk1VKJzY=;
+        b=ldkb9Tv91ME8hLtSA9hL9KCaOJxtYmGGpnS+qTiFCZsKKmocXF4D+V/ZizPthkGdqC
+         enK6IHdo0ybBRG8LCFufF0gQZy076p+eZHNOqAhKr00LM1z9ulCzrMmxiD5UcSemXdTQ
+         CJ9Diq/FhlL14hjdwmwKbc3C1TvE9wEOppN+qzs1eSJy6s6if5Q/M/jebLn4WTyWoaUu
+         OpGhiMZpx6tNIjqODG1CwJ86qob4bCHD/TT/104/NXFLx0VcmZIVzQGfJB3tbEu63vDq
+         /VSj2XaNCHZEnl4VC3TaYL28O6q/B4611zhWvICIQUoE/iMsntLXO5PLzJLxn9hWPB5w
+         V+ZA==
+X-Gm-Message-State: APjAAAVPtxhHNn8vbeO30pAYa+FuHkedh6MkPN0KW5tjwopCj+JAHDYH
+        8hWwBwthR6N0s6QfGrmiu8XpTK639TK/qpmYYgM=
+X-Google-Smtp-Source: APXvYqx9pErt1ZZUx/laEjS0db5uqwT62k9/HQ+bW8DHNobHPkCrHLjOVHO6oSIw5QQpVKr7N2G07sXPX6AVLzFHZzw=
+X-Received: by 2002:a05:6830:10c2:: with SMTP id z2mr8416349oto.149.1559899989305;
+ Fri, 07 Jun 2019 02:33:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 07 Jun 2019 09:32:33 +0000 (UTC)
+Received: by 2002:ac9:5f89:0:0:0:0:0 with HTTP; Fri, 7 Jun 2019 02:33:08 -0700 (PDT)
+From:   fatima ibrahim <fi644780@gmail.com>
+Date:   Fri, 7 Jun 2019 10:33:08 +0100
+Message-ID: <CAEhvXQ_K5NM=uTXjfABP6GDfqEh4J4jwmZm6GzdNcG4RPk2Oiw@mail.gmail.com>
+Subject: Assalamu Alaikum//
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jun 2019 11:22:00 +0900
-Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+Assalamu Alaikum
+I will be happy if you can accepted my request I am sorry I don=E2=80=99t k=
+now
+you to discusses this with  you on internet which I don=E2=80=99t like   bu=
+t
+just allow me to do this  because of the condition I am in now .
+my name  is  Mrs. Fatima Ibrahim I am from Mauritius but I and family
+has been in IVORY COAST WEST AFRICA as my late father work here with
+Mobil oil before his death as a contract.
+ We are all Christians in my family.  but after seeming Muslim  As a
+religion of love no matter what people feels   about them because of
+some terrorist groups I still have my love and proud to be a Muslim
+but my family refuse me to be one of them  .
+ And this has been my problem with them, as My   father left some good
+things for me like  cars houses  and some money(AS HIS ONLY CHILD ) in
+the bank But  my uncles  has sized all that I got from my father
+because of this , because I refuse to come back to Christianity.
+This only thing that I am having now is the certificate of deposit
+which my father use to deposit some money with a commercial bank here
+in Abidjan and my uncle is looking for  away to take this funds out
+from  me and now I am sick I want to transfer this funds out to your
+country come over there and start a new life I have discuses with the
+bank they told me that since I want to relocate to your country that I
+need to get a bank account there for the transfer  please it is urgent
+so that  I move this money and come over for my security please if you
+are interested contact me so that I will give you the bank contact so
+that you will contact the bank manager Mr Philip Huma for the transfer
+Please get back to me
+Mr Fatima Ibrahim
 
-> On 2019/06/07 4:41, Jesper Dangaard Brouer wrote:
-> > On Thu, 6 Jun 2019 20:04:20 +0900
-> > Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
-> >   
-> >> On 2019/06/05 16:59, Jesper Dangaard Brouer wrote:  
-> >>> On Wed,  5 Jun 2019 14:36:12 +0900
-> >>> Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
-> >>>      
-[...]
-> >>
-> >> So... prog_id is the problem. The program can be changed while we are
-> >> enqueueing packets to the bulk queue, so the prog_id at flush may be an
-> >> unexpected one.  
-> > 
-> > Hmmm... that sounds problematic, if the XDP bpf_prog for veth can
-> > change underneath, before the flush.  Our redirect system, depend on
-> > things being stable until the xdp_do_flush_map() operation, as will
-> > e.g. set per-CPU (bpf_redirect_info) map_to_flush pointer (which depend
-> > on XDP prog), and expect it to be correct/valid.  
-> 
-> Sorry, I don't get how maps depend on programs.
-
-BPF/XDP programs have a reference count on the map (e.g. used for
-redirect) and when the XDP is removed, and last refcnt for the map is
-reached, then the map is also removed (redirect maps does a call_rcu
-when shutdown).
-
-> At least xdp_do_redirect_map() handles map_to_flush change during NAPI. 
-> Is there a problem when the map is not changed but the program is changed?
-> Also I believe this is not veth-specific behavior. Looking at tun and 
-> i40e, they seem to change xdp_prog without stopping data path.
- 
-I guess this could actually happen, but we are "saved" by the
-'map_to_flush' (pointer) is still valid due to RCU protection.
-
-But it does look fishy, as our rcu_read_lock's does not encapsulation
-this. There is RCU-read-section in veth_xdp_rcv_skb(), which via can
-call xdp_do_redirect() which set per-CPU ri->map_to_flush.  
-
-Do we get this protection by running under softirq, and does this
-prevent an RCU grace-period (call_rcu callbacks) from happening?
-(between veth_xdp_rcv_skb() and xdp_do_flush_map() in veth_poll())
-
-
-To Toshiaki, regarding your patch 2/2, you are not affected by this
-per-CPU map storing, as you pass along the bulk-queue.  I do see you
-point, with prog_id could change.  Could you change the tracepoint to
-include the 'act' and place 'ifindex' above this in the struct, this way
-the 'act' member is in the same location/offset as other XDP
-tracepoints.  I see the 'ifindex' as the identifier for this tracepoint
-(other have map_id or prog_id in this location).
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Mrs Fatima Ibrahim
+Abidjan Ivory coast
