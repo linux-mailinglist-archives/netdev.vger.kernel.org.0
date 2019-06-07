@@ -2,168 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54095393F8
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B6139405
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730336AbfFGSJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:09:13 -0400
-Received: from mail-eopbgr00086.outbound.protection.outlook.com ([40.107.0.86]:55430
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729815AbfFGSJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 14:09:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9NqbXluQCTYNSCbia5BG9mwlV6oBZ/AZLt9lbMTVZI=;
- b=sMXA+xxm2T0L+jAzaWlZS2dcYYGoG5ZzS4+s94GtTyoZoBUrxZvlajUdrTZ/z2/ZtEqg+75uXELUt/TE4E3VnfpLxjWZ6OOyFJG1A/HLf6JpCcirDhgvWitXHH7WWjt0IGVEBT7uVcjvBPkUzTERnM+x5nNLe/bez/BBlDJ110U=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6060.eurprd05.prod.outlook.com (20.179.10.79) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.14; Fri, 7 Jun 2019 18:09:07 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1965.011; Fri, 7 Jun 2019
- 18:09:07 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH net-next v2 3/3] net/mlx5e: use indirect calls wrapper for
- the rx packet handler
-Thread-Topic: [PATCH net-next v2 3/3] net/mlx5e: use indirect calls wrapper
- for the rx packet handler
-Thread-Index: AQHVHLLUj1lczUcwlEuE/49mSxqZEaaQfsmA
-Date:   Fri, 7 Jun 2019 18:09:06 +0000
-Message-ID: <248c85579656054de478ea29154aa40c7542009e.camel@mellanox.com>
-References: <cover.1559857734.git.pabeni@redhat.com>
-         <fe1dffe13521e0b89969301f7b34fdb19964dbdb.1559857734.git.pabeni@redhat.com>
-In-Reply-To: <fe1dffe13521e0b89969301f7b34fdb19964dbdb.1559857734.git.pabeni@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3fd31cbc-269d-400a-47d2-08d6eb733b93
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6060;
-x-ms-traffictypediagnostic: DB8PR05MB6060:
-x-microsoft-antispam-prvs: <DB8PR05MB6060CF0BB9C855911CA40464BE100@DB8PR05MB6060.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0061C35778
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(366004)(39860400002)(376002)(346002)(199004)(189003)(99286004)(25786009)(6512007)(2616005)(256004)(6116002)(3846002)(11346002)(476003)(81156014)(81166006)(14454004)(6486002)(2906002)(76176011)(229853002)(6246003)(8936002)(305945005)(4326008)(446003)(66556008)(2501003)(6436002)(53936002)(316002)(58126008)(66476007)(91956017)(86362001)(68736007)(66446008)(64756008)(76116006)(7736002)(54906003)(110136005)(66946007)(73956011)(71190400001)(71200400001)(36756003)(14444005)(478600001)(66066001)(5660300002)(118296001)(8676002)(186003)(26005)(102836004)(6506007)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6060;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: S3zmvvJiQYdI5+ZOu8Pmbirl2X59l4iFJLuO5ybpfXUpOPwrkkwXCitD6YQ3x6MPxOx+K+5S+WkBdUg1A8qqqt7FxgCT+RkuFy96vQ/PY09A4wkOuIZDQLwo+LpKhtpzPBV09uB2Sh4injxhUyZvkvHB1P3NwHUv37Wr24HYvz3ljYJ358imV5bs0fqcqyWZPPZGOGMpO902CIdKl3nsLFpotkWLm4Oy/CFAXRDipMeyuHtgr52ETesW4XY7ZoCs4SyCTsQunOSohx7L+T0LfzE2WFNKzPe8s+XmtGLr97OjdUlIHPPXGhete1pf5ThKExdfk49xCye9VNndEeUg3r+sb1ue7rjCZmSVt0Vhp/s1RdNJQA1uyqgPK1NnTXHCv13df2bZ/EJRCZOmf7Qbxc5+b6StN/7XsXbDeAQDTQs=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A529F4093E855C45A7FE7754A56C2058@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1730946AbfFGSLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:11:04 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:29063 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730336AbfFGSLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:11:04 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x57IAxjK010633
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 7 Jun 2019 12:10:59 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x57IAvst038860
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Fri, 7 Jun 2019 12:10:57 -0600
+Subject: Re: [PATCH net-next] net: phy: phylink: add fallback from SGMII to
+ 1000BaseX
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org
+References: <1559330285-30246-1-git-send-email-hancock@sedsystems.ca>
+ <1559330285-30246-4-git-send-email-hancock@sedsystems.ca>
+ <20190531201826.2qo57l2phommgpm2@shell.armlinux.org.uk>
+ <4b7bf6b4-dbc8-d3d0-4b31-789fcdb8e6b7@sedsystems.ca>
+ <20190602151534.nv4b67n5n2iermnr@shell.armlinux.org.uk>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <37914305-fd19-949a-e20e-b709495c517d@sedsystems.ca>
+Date:   Fri, 7 Jun 2019 12:10:57 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fd31cbc-269d-400a-47d2-08d6eb733b93
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 18:09:06.9969
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6060
+In-Reply-To: <20190602151534.nv4b67n5n2iermnr@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA2LTA2IGF0IDIzOjU2ICswMjAwLCBQYW9sbyBBYmVuaSB3cm90ZToNCj4g
-V2UgY2FuIGF2b2lkIGFub3RoZXIgaW5kaXJlY3QgY2FsbCBwZXIgcGFja2V0IHdyYXBwaW5nIHRo
-ZSByeA0KPiBoYW5kbGVyIGNhbGwgd2l0aCB0aGUgcHJvcGVyIGhlbHBlci4NCj4gDQo+IFRvIGVu
-c3VyZSB0aGF0IGV2ZW4gdGhlIGxhc3QgbGlzdGVkIGRpcmVjdCBjYWxsIGV4cGVyaWVuY2UNCj4g
-bWVhc3VyYWJsZSBnYWluLCBkZXNwaXRlIHRoZSBhZGRpdGlvbmFsIGNvbmRpdGlvbmFscyB3ZSBt
-dXN0DQo+IHRyYXZlcnNlIGJlZm9yZSByZWFjaGluZyBpdCwgSSB0ZXN0ZWQgcmV2ZXJzaW5nIHRo
-ZSBvcmRlciBvZiB0aGUNCj4gbGlzdGVkIG9wdGlvbnMsIHdpdGggcGVyZm9ybWFuY2UgZGlmZmVy
-ZW5jZXMgYmVsb3cgbm9pc2UgbGV2ZWwuDQo+IA0KPiBUb2dldGhlciB3aXRoIHRoZSBwcmV2aW91
-cyBpbmRpcmVjdCBjYWxsIHBhdGNoLCB0aGlzIGdpdmVzDQo+IH42JSBwZXJmb3JtYW5jZSBpbXBy
-b3ZlbWVudCBpbiByYXcgVURQIHRwdXQuDQo+IA0KPiB2MSAtPiB2MjoNCj4gIC0gdXBkYXRlIHRo
-ZSBkaXJlY3QgY2FsbCBsaXN0IGFuZCB1c2UgYSBtYWNybyB0byBkZWZpbmUgaXQsDQo+ICAgIGFz
-IHBlciBTYWVlZCBzdWdnZXN0aW9uLiBBbiBpbnRlcm1lZGlhdGVkIGFkZGl0aW9uYWwNCj4gICAg
-bWFjcm8gaXMgbmVlZGVkIHRvIGFsbG93IGFyZyBsaXN0IGV4cGFuc2lvbg0KPiANCj4gU2lnbmVk
-LW9mZi1ieTogUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQuY29tPg0KPiAtLS0NCj4gIGRyaXZl
-cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi5oICAgIHwgNCArKysrDQo+ICBk
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcnguYyB8IDUgKysrKy0N
-Cj4gIDIgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0K
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vu
-LmgNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4uaA0KPiBp
-bmRleCAzYTE4M2Q2OTBlMjMuLjUyYmNkYzg3Y2JlMiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmgNCj4gKysrIGIvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmgNCj4gQEAgLTE0OCw2ICsxNDgsMTAgQEAg
-c3RydWN0IHBhZ2VfcG9vbDsNCj4gIA0KPiAgI2RlZmluZSBNTFg1RV9NU0dfTEVWRUwJCQlORVRJ
-Rl9NU0dfTElOSw0KPiAgDQo+ICsjZGVmaW5lIE1MWDVfUlhfSU5ESVJFQ1RfQ0FMTF9MSVNUIFwN
-Cj4gKwltbHg1ZV9oYW5kbGVfcnhfY3FlX21wd3JxLCBtbHg1ZV9oYW5kbGVfcnhfY3FlLA0KPiBt
-bHg1aV9oYW5kbGVfcnhfY3FlLCBcDQo+ICsJbWx4NWVfaXBzZWNfaGFuZGxlX3J4X2NxZQ0KPiAr
-DQo+ICAjZGVmaW5lIG1seDVlX2RiZyhtbGV2ZWwsIHByaXYsIGZvcm1hdCwgLi4uKSAgICAgICAg
-ICAgICAgICAgICAgXA0KPiAgZG8geyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIFwNCj4gIAlpZiAoTkVUSUZfTVNHXyMjbWxldmVsICYg
-KHByaXYpLT5tc2dsZXZlbCkgICAgICAgICAgICAgIFwNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yeC5jDQo+IGIvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmMNCj4gaW5kZXggMGZlNWYxM2QwN2Nj
-Li43ZmFmNjQzZWIxYjkgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lbl9yeC5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lbl9yeC5jDQo+IEBAIC0xMzAzLDYgKzEzMDMsOCBAQCB2b2lkIG1seDVl
-X2hhbmRsZV9yeF9jcWVfbXB3cnEoc3RydWN0IG1seDVlX3JxDQo+ICpycSwgc3RydWN0IG1seDVf
-Y3FlNjQgKmNxZSkNCj4gIAltbHg1X3dxX2xsX3BvcCh3cSwgY3FlLT53cWVfaWQsICZ3cWUtPm5l
-eHQubmV4dF93cWVfaW5kZXgpOw0KPiAgfQ0KPiAgDQo+ICsjZGVmaW5lIElORElSRUNUX0NBTExf
-TElTVChmLCBsaXN0LCAuLi4pIElORElSRUNUX0NBTExfNChmLCBsaXN0LA0KPiBfX1ZBX0FSR1Nf
-XykNCj4gKw0KDQpIaSBQYW9sbywgDQoNClRoaXMgcGF0Y2ggcHJvZHVjZXMgc29tZSBjb21waWxl
-ciBlcnJvcnM6DQoNClBsZWFzZSBub3RlIHRoYXQgbWx4NWVfaXBzZWNfaGFuZGxlX3J4X2NxZSBp
-cyBvbmx5IGRlZmluZWQgd2hlbg0KQ09ORklHX01MWDVfRU5fSVBTRUMgaXMgZW5hYmxlZC4NCg0K
-MDI6MjY6NTMgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmM6
-IEluIGZ1bmN0aW9uDQonbWx4NWVfcG9sbF9yeF9jcSc6DQowMjoyNjo1MyBkcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcnguYzoxMzAwOjQyOg0KZXJyb3I6IGltcGxp
-Y2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdJTkRJUkVDVF9DQUxMXzQnOyBkaWQgeW91IG1l
-YW4NCidJTkRJUkVDVF9DQUxMX0xJU1QnPyBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNs
-YXJhdGlvbl0NCjAyOjI2OjUzICAjZGVmaW5lIElORElSRUNUX0NBTExfTElTVChmLCBsaXN0LCAu
-Li4pIElORElSRUNUX0NBTExfNChmLA0KbGlzdCwgX19WQV9BUkdTX18pDQowMjoyNjo1MyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeDQowMjoyNjo1MyBkcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcnguYzoxMzMyOjM6IG5vdGU6DQpp
-biBleHBhbnNpb24gb2YgbWFjcm8gJ0lORElSRUNUX0NBTExfTElTVCcNCjAyOjI2OjUzICAgIElO
-RElSRUNUX0NBTExfTElTVChycS0+aGFuZGxlX3J4X2NxZSwNCjAyOjI2OjUzICAgIF5+fn5+fn5+
-fn5+fn5+fn5+fg0KMDI6MjY6NTMgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2VuLmg6MTUzOjI6IGVycm9yOg0KJ21seDVlX2lwc2VjX2hhbmRsZV9yeF9jcWUnIHVuZGVj
-bGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKTsNCmRpZCB5b3UgbWVhbiAnbWx4NWVf
-ZnBfaGFuZGxlX3J4X2NxZSc/DQowMjoyNjo1MyAgIG1seDVlX2lwc2VjX2hhbmRsZV9yeF9jcWUN
-CjAyOjI2OjUzICAgXg0KMDI6MjY6NTMgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NS9jb3JlL2VuX3J4LmM6MTMwMDo2MTogbm90ZToNCmluIGRlZmluaXRpb24gb2YgbWFjcm8gJ0lO
-RElSRUNUX0NBTExfTElTVCcNCjAyOjI2OjUzICAjZGVmaW5lIElORElSRUNUX0NBTExfTElTVChm
-LCBsaXN0LCAuLi4pIElORElSRUNUX0NBTExfNChmLA0KbGlzdCwgX19WQV9BUkdTX18pDQowMjoy
-Njo1MyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgXg0Kfn5+DQowMjoyNjo1MyBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9t
-bHg1L2NvcmUvZW5fcnguYzoxMzMzOjg6IG5vdGU6DQppbiBleHBhbnNpb24gb2YgbWFjcm8gJ01M
-WDVfUlhfSU5ESVJFQ1RfQ0FMTF9MSVNUJw0KMDI6MjY6NTMgICAgICAgICBNTFg1X1JYX0lORElS
-RUNUX0NBTExfTElTVCwgcnEsIGNxZSk7DQowMjoyNjo1MyAgICAgICAgIF5+fn5+fn5+fn5+fn5+
-fn5+fn5+fn5+fn5+DQowMjoyNjo1MyBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
-L2NvcmUvZW4uaDoxNTM6Mjogbm90ZTogZWFjaA0KdW5kZWNsYXJlZCBpZGVudGlmaWVyIGlzIHJl
-cG9ydGVkIG9ubHkgb25jZSBmb3IgZWFjaCBmdW5jdGlvbiBpdA0KYXBwZWFycyBpbg0KMDI6MjY6
-NTMgICBtbHg1ZV9pcHNlY19oYW5kbGVfcnhfY3FlDQowMjoyNjo1MyAgIF4NCjAyOjI2OjUzIGRy
-aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yeC5jOjEzMDA6NjE6IG5v
-dGU6DQppbiBkZWZpbml0aW9uIG9mIG1hY3JvICdJTkRJUkVDVF9DQUxMX0xJU1QnDQowMjoyNjo1
-MyAgI2RlZmluZSBJTkRJUkVDVF9DQUxMX0xJU1QoZiwgbGlzdCwgLi4uKSBJTkRJUkVDVF9DQUxM
-XzQoZiwNCmxpc3QsIF9fVkFfQVJHU19fKQ0KMDI6MjY6NTMgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4NCn5+fg0KMDI6MjY6NTMg
-ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3J4LmM6MTMzMzo4OiBu
-b3RlOg0KaW4gZXhwYW5zaW9uIG9mIG1hY3JvICdNTFg1X1JYX0lORElSRUNUX0NBTExfTElTVCcN
-CjAyOjI2OjUzICAgICAgICAgTUxYNV9SWF9JTkRJUkVDVF9DQUxMX0xJU1QsIHJxLCBjcWUpOw0K
-MDI6MjY6NTMgICAgICAgICBefn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fg0KDQoNCj4gIGludCBt
-bHg1ZV9wb2xsX3J4X2NxKHN0cnVjdCBtbHg1ZV9jcSAqY3EsIGludCBidWRnZXQpDQo+ICB7DQo+
-ICAJc3RydWN0IG1seDVlX3JxICpycSA9IGNvbnRhaW5lcl9vZihjcSwgc3RydWN0IG1seDVlX3Jx
-LCBjcSk7DQo+IEBAIC0xMzMzLDcgKzEzMzUsOCBAQCBpbnQgbWx4NWVfcG9sbF9yeF9jcShzdHJ1
-Y3QgbWx4NWVfY3EgKmNxLCBpbnQNCj4gYnVkZ2V0KQ0KPiAgDQo+ICAJCW1seDVfY3F3cV9wb3Ao
-Y3F3cSk7DQo+ICANCj4gLQkJcnEtPmhhbmRsZV9yeF9jcWUocnEsIGNxZSk7DQo+ICsJCUlORElS
-RUNUX0NBTExfTElTVChycS0+aGFuZGxlX3J4X2NxZSwNCj4gKwkJCQkgICBNTFg1X1JYX0lORElS
-RUNUX0NBTExfTElTVCwgcnEsDQo+IGNxZSk7DQo+ICAJfSB3aGlsZSAoKCsrd29ya19kb25lIDwg
-YnVkZ2V0KSAmJiAoY3FlID0NCj4gbWx4NV9jcXdxX2dldF9jcWUoY3F3cSkpKTsNCj4gIA0KPiAg
-b3V0Og0K
+On 2019-06-02 9:15 a.m., Russell King - ARM Linux admin wrote:
+> On Fri, May 31, 2019 at 06:17:51PM -0600, Robert Hancock wrote:
+>> Our device is mainly intended for fiber modules, which is why 1000BaseX
+>> is being used. The variant of fiber modules we are using (for example,
+>> Finisar FCLF8520P2BTL) are set up for 1000BaseX, and seem like they are
+>> kind of a hack to allow using copper on devices which only support
+>> 1000BaseX mode (in fact that particular one is extra hacky since you
+>> have to disable 1000BaseX autonegotiation on the host side). This patch
+>> is basically intended to allow that particular case to work.
+> 
+> Looking at the data sheet for FCLF8520P2BTL, it explicit states:
+> 
+> PRODUCT SELECTION
+> Part Number	Link Indicator	1000BASE-X auto-negotiation
+> 		on RX_LOS Pin	enabled by default
+> FCLF8520P2BTL	Yes		No
+> FCLF8521P2BTL	No		Yes
+> FCLF8522P2BTL	Yes		Yes
+> 
+> The idea being, you buy the correct one according to what the host
+> equipment requires, rather than just picking one and hoping it works.
+> 
+> The data sheet goes on to mention that the module uses a Marvell
+> 88e1111 PHY, which seems to be quite common for copper SFPs from
+> multiple manufacturers (but not all) and is very flexible in how it
+> can be configured.
+> 
+> If we detect a PHY on the SFP module, we check detect whether it is
+> an 88e1111 PHY, and then read out its configured link type.  We don't
+> have a way to deal with the difference between FCLF8520P2BTL and
+> FCLF8521P2BTL, but at least we'll be able to tell whether we should
+> be in 1000Base-X mode for these modules, rather than SGMII.
+
+It looks like that might provide a solution for modules using the
+Marvell PHY, however some of the modules we are supporting seem to use a
+Broadcom PHY, and I have no idea if there is any documentation for those.
+
+It would really be rather silly if there were absolutely no way to tell
+what mode the module wants from the EEPROM.. I don't have any copper
+modules set up for SGMII, but below is the ethtool -m output for two of
+the 1000BaseX modules I have. If you have access to an SGMII module, can
+you compare this to what it indicates?
+
+# ethtool -m eth1
+	Identifier                                : 0x03 (SFP)
+	Extended identifier                       : 0x04 (GBIC/SFP defined by
+2-wire interface ID)
+	Connector                                 : 0x00 (unknown or unspecified)
+	Transceiver codes                         : 0x00 0x00 0x00 0x08 0x00
+0x00 0x00 0x00 0x00
+	Transceiver type                          : Ethernet: 1000BASE-T
+	Encoding                                  : 0x01 (8B/10B)
+	BR, Nominal                               : 1200MBd
+	Rate identifier                           : 0x00 (unspecified)
+	Length (SMF,km)                           : 0km
+	Length (SMF)                              : 0m
+	Length (50um)                             : 0m
+	Length (62.5um)                           : 0m
+	Length (Copper)                           : 100m
+	Length (OM3)                              : 0m
+	Laser wavelength                          : 0nm
+	Vendor name                               : FINISAR CORP.
+	Vendor OUI                                : 00:90:65
+	Vendor PN                                 : FCLF8520P2BTL
+	Vendor rev                                : A
+	Option values                             : 0x00 0x12
+	Option                                    : RX_LOS implemented
+	Option                                    : TX_DISABLE implemented
+	BR margin, max                            : 0%
+	BR margin, min                            : 0%
+	Vendor SN                                 : PX90NHX
+	Date code                                 : 170303
+
+
+# ethtool -m eth1
+	Identifier                                : 0x03 (SFP)
+	Extended identifier                       : 0x04 (GBIC/SFP defined by
+2-wire interface ID)
+	Connector                                 : 0x00 (unknown or unspecified)
+	Transceiver codes                         : 0x00 0x00 0x00 0x08 0x00
+0x00 0x00 0x00 0x00
+	Transceiver type                          : Ethernet: 1000BASE-T
+	Encoding                                  : 0x01 (8B/10B)
+	BR, Nominal                               : 1300MBd
+	Rate identifier                           : 0x00 (unspecified)
+	Length (SMF,km)                           : 0km
+	Length (SMF)                              : 0m
+	Length (50um)                             : 0m
+	Length (62.5um)                           : 0m
+	Length (Copper)                           : 100m
+	Length (OM3)                              : 0m
+	Laser wavelength                          : 0nm
+	Vendor name                               : BEL-FUSE
+	Vendor OUI                                : 00:00:00
+	Vendor PN                                 : 1GBT-SFP06
+	Vendor rev                                : PB
+	Option values                             : 0x00 0x12
+	Option                                    : RX_LOS implemented
+	Option                                    : TX_DISABLE implemented
+	BR margin, max                            : 0%
+	BR margin, min                            : 0%
+	Vendor SN                                 :      0000000610
+	Date code                                 : 1336
+
+
+> 
+> For a SFP cage meant to support fiber, I would recommend using the
+> FCLF8521P2BTL or FCLF8522P2BTL since those will behave more like a
+> 802.3z standards-compliant gigabit fiber connection.
+> 
+
+-- 
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
