@@ -2,110 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A1F1391C3
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0781239202
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 18:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbfFGQUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 12:20:01 -0400
-Received: from mail-lf1-f53.google.com ([209.85.167.53]:37141 "EHLO
-        mail-lf1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729127AbfFGQUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 12:20:00 -0400
-Received: by mail-lf1-f53.google.com with SMTP id m15so2065942lfh.4
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 09:19:59 -0700 (PDT)
+        id S1730581AbfFGQ3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 12:29:23 -0400
+Received: from mail-oi1-f201.google.com ([209.85.167.201]:44368 "EHLO
+        mail-oi1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730428AbfFGQ3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 12:29:23 -0400
+Received: by mail-oi1-f201.google.com with SMTP id b124so751802oii.11
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 09:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sah1sze9qZQXC9dhxye7WQeDvgCv5Q6wpPURRp8bWQs=;
-        b=GZp/BOH8X5Pg721SyiLtnieCJ/ZD2Ktw+FSJGwq590YKHcmVc4mKv9e4VgZjoepG+N
-         L9grIrK4IatsF2cxfARKtaaDuUoOOYkIk1HZzSNsBgIVd6L0FrIRl1HF5p2lKnJv9IyM
-         mXYfqUagFtpgySX1R/W0DkVdRgXr8y5qemuHA=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=MQg5YXmUW5YMs6Iwc/kDwaZ3qkNdiWI+Z1HjuF980Xg=;
+        b=XEurjodSBdJtZHF8Fq0M3ocJPRYMb+87VLTZ7tyVdVctIdh6JQKdJtrPSQcy9G1yYM
+         Y0AmQT4O+KP0C2vFbOybjOVlguxhQaoYV+AWgMGf1WmjozRoCBSISIfUamaLN3VvSrRg
+         zOgH1ZVpu1Mw4fkIsqCm+dRY6A7qyKynKxaAn3KD5socPGRv3NAdNFwKQRC+Sz8gwcz1
+         iOiAIG8Rv+817JEMJ0T+GPKm1CCAWMiY42VgCI3vg5m93vlXNh1Su61m59OOzH/GZVde
+         9WEaVEhHnZxutBtXfHm2rX5LriwoRMekRsm54p5jSyxZH7j4V4w1dKXjFmlBRFhcsrrC
+         t10Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sah1sze9qZQXC9dhxye7WQeDvgCv5Q6wpPURRp8bWQs=;
-        b=jPeB0hFzRVOFv2ITZzjLhJosUNfKA+KlchMa/MkDMEVdmn3f5jEJx2fGWzpHLiank9
-         pXm/WtdKwnALObRJlb3ZbKMlSj2t7To8HSR2Nl94P0Z7iJy90NK0V9RLalAAJN+E2oxV
-         iv7QPSgewE3Kt8vRQmIHR25u/D1PMymJx1CyEimUM3Prvmv5n6IPveXLqe3kj2/Yb2Hy
-         yUl6NuKKno0aktH+CARUOLWUHRiqA6L1aKE1oFT16ir9NKvOM2JYl2oEuwT8+ca2p5fW
-         8dS6Lr1OFxZUTOkLnwAr0lrlksaJdXJXS1lDDex9vE/ErdIxYAItPAs1PaY2NK+BvHmh
-         PsvA==
-X-Gm-Message-State: APjAAAXWCA9oubpNzaw8tvUhAzEOndCHlIRGJ+DjhKrvPQFT+mAwFr/8
-        bqyoHpAsSDaOy+c/3q8ITwbZi5zKBdc=
-X-Google-Smtp-Source: APXvYqynM5C3BHYU+cAFzoVQmFwlL32D98AR9GLsyqSDauFeGwgExysePGdCxNINHJ4oG1Njp7QbqQ==
-X-Received: by 2002:ac2:4904:: with SMTP id n4mr11659208lfi.53.1559924399013;
-        Fri, 07 Jun 2019 09:19:59 -0700 (PDT)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id v16sm442158lji.88.2019.06.07.09.19.58
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Jun 2019 09:19:58 -0700 (PDT)
-Received: by mail-lf1-f41.google.com with SMTP id u10so2043329lfm.12
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 09:19:58 -0700 (PDT)
-X-Received: by 2002:a19:521a:: with SMTP id m26mr2437446lfb.134.1559924398137;
- Fri, 07 Jun 2019 09:19:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190603200301.GM28207@linux.ibm.com> <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
- <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au> <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
-In-Reply-To: <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 7 Jun 2019 09:19:42 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgtY1hNQX9TM=4ono-UJ-hsoFA0OT36ixFWBG2eeO011w@mail.gmail.com>
-Message-ID: <CAHk-=wgtY1hNQX9TM=4ono-UJ-hsoFA0OT36ixFWBG2eeO011w@mail.gmail.com>
-Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=MQg5YXmUW5YMs6Iwc/kDwaZ3qkNdiWI+Z1HjuF980Xg=;
+        b=atzkNJaH/CexxxIe/MIKwzhyzheI+kPXwx3wvWxuLbPmkwD+gEIA2q3hv4ziccXNEn
+         zhOtzQar0baBudMgQTFtkvVk+Lg1HGlgNUJKokeLdD+dRzi/SWo4CRNdlAwSxjzdA5fv
+         GDFSe0Qw6zO0J8nYDXLWEExdHAhzkY7VoINYhQPVRVN8oK+k5mqx/uJUvdZK5oJH+7a6
+         FvRG8pASVGyQgw0NO0kMXi9wvXZTl7/ZS3BLzrJuy14/f89dYool/cWbICrBz6/nTA7V
+         uct3lNOI2IE/ifHQNIgJpAxsMR/5kTU4nsfckOuK/3aPhwMXyb2cRNmYdzqC4pt62pUL
+         8RPw==
+X-Gm-Message-State: APjAAAVyL4Zs+eFY/f6D9B5YzyBc5ejl2CZhGLNX1ZW4juOr+TwAROk1
+        Y807z81o4xPddDJ9s0ZUcFRQyJlV4RgUKggbIUIAHtEfDIzHIl41DWMvC1+LL3NkzQRCyN3DJNu
+        yVwPGpVOEV/VZD1fAW4PDJt40rhalB/uUQifBXPGRIUU3+xbeMP/vuA==
+X-Google-Smtp-Source: APXvYqy/CoXgz7/qtToEIeQK3OXo7MuXAztZDQY5Lj8plqv2wdfxKWWF/mm1n6y/GmUz5zhfk7mSD58=
+X-Received: by 2002:aca:ac4d:: with SMTP id v74mr4161795oie.66.1559924962094;
+ Fri, 07 Jun 2019 09:29:22 -0700 (PDT)
+Date:   Fri,  7 Jun 2019 09:29:12 -0700
+Message-Id: <20190607162920.24546-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
+Subject: [PATCH bpf-next v3 0/8] bpf: getsockopt and setsockopt hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 7, 2019 at 8:26 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> There is common knowledge among us programmers that bit fields
-> (or bool) sharing a common 'word' need to be protected
-> with a common lock.
->
-> Converting all bit fields to plain int/long would be quite a waste of memory.
+This series implements two new per-cgroup hooks: getsockopt and
+setsockopt along with a new sockopt program type. The idea is pretty
+similar to recently introduced cgroup sysctl hooks, but
+implementation is simpler (no need to convert to/from strings).
 
-Yeah, and we really don't care about alpha. So 'char' should be safe.
+What this can be applied to:
+* move business logic of what tos/priority/etc can be set by
+  containers (either pass or reject)
+* handle existing options (or introduce new ones) differently by
+  propagating some information in cgroup/socket local storage
 
-No compiler actually turns a 'bool' in a struct into a bitfield,
-afaik, because you're still supposed to be able to take the address of
-a boolean.
+Compared to a simple syscall/{g,s}etsockopt tracepoint, those
+hooks are context aware. Meaning, they can access underlying socket
+and use cgroup and socket local storage.
 
-But on the whole, I do not believe that we should ever use 'bool' in
-structures anyway, because it's such a badly defined type. I think
-it's 'char' in practice on just about all architectures, but there
-really were traditional use cases where 'bool' was int.
+Stanislav Fomichev (8):
+  bpf: implement getsockopt and setsockopt hooks
+  bpf: sync bpf.h to tools/
+  libbpf: support sockopt hooks
+  selftests/bpf: test sockopt section name
+  selftests/bpf: add sockopt test
+  selftests/bpf: add sockopt test that exercises sk helpers
+  bpf: add sockopt documentation
+  bpftool: support cgroup sockopt
 
-But:
+ Documentation/bpf/index.rst                   |   1 +
+ Documentation/bpf/prog_cgroup_sockopt.rst     |  39 +
+ include/linux/bpf-cgroup.h                    |  29 +
+ include/linux/bpf.h                           |  46 ++
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/filter.h                        |  13 +
+ include/uapi/linux/bpf.h                      |  13 +
+ kernel/bpf/cgroup.c                           | 264 ++++++
+ kernel/bpf/core.c                             |   9 +
+ kernel/bpf/syscall.c                          |  19 +
+ kernel/bpf/verifier.c                         |  15 +
+ net/core/filter.c                             |   4 +-
+ net/socket.c                                  |  18 +
+ .../bpftool/Documentation/bpftool-cgroup.rst  |   7 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   2 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   8 +-
+ tools/bpf/bpftool/cgroup.c                    |   5 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      |   3 +-
+ tools/include/uapi/linux/bpf.h                |  14 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   2 +
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  77 ++
+ .../selftests/bpf/test_section_names.c        |  10 +
+ tools/testing/selftests/bpf/test_sockopt.c    | 773 ++++++++++++++++++
+ tools/testing/selftests/bpf/test_sockopt_sk.c | 156 ++++
+ 28 files changed, 1528 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/bpf/prog_cgroup_sockopt.rst
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_sk.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_sk.c
 
- - we shouldn't turn them into 'int' anyway - alpha is dead, and no
-sane architecture will make the same mistake anyway. People learnt.
-
- - we might want to make sure 'bool' really is 'char' in practice, to
-double-check that fthe compiler doesn't do anything stupid.
-
- - bitfields obviously do need locks. 'char' does not.
-
-If there's somebody who really notices the alpha issue in PRACTICE, we
-can then bother to fix it. But there is approximately one user, and
-it's not a heavy-duty one.
-
-                   Linus
+-- 
+2.22.0.rc1.311.g5d7573a151-goog
