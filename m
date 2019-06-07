@@ -2,104 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DCC738C3A
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 16:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EE038C43
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 16:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729366AbfFGOKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 10:10:13 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:35370 "EHLO deadmen.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727840AbfFGOKN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 10:10:13 -0400
-Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
-        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1hZFZB-0006Q2-3B; Fri, 07 Jun 2019 22:10:01 +0800
-Received: from herbert by gondobar with local (Exim 4.89)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1hZFYz-000796-Cp; Fri, 07 Jun 2019 22:09:49 +0800
-Date:   Fri, 7 Jun 2019 22:09:49 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-Subject: inet: frags: Turn fqdir->dead into an int for old Alphas
-Message-ID: <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au>
-References: <20190603200301.GM28207@linux.ibm.com>
- <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
+        id S1729439AbfFGOLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 10:11:13 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45546 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728656AbfFGOLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 10:11:12 -0400
+Received: by mail-ed1-f66.google.com with SMTP id a14so1351635edv.12
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 07:11:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kinvolk.io; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GW1chtOYexn3iEYy8Pq9DlSLLB5ej7vVGOlF8xEFfgU=;
+        b=EYGzdgf8GAFWo+SUyvKer6mt4TBmt6hBTlBmp7LWW7m2jE7nTiqLOxmCZV8tazHxrf
+         M1SSmcRjBT8RT7KRPwphdtUa0AII+xGWk8LYzp2KzYic2GPc7D++koW3LSe9BqZ+AVrc
+         PX8vgtxaB/YP8EWs1dzemyRdcps5F8/ftMbis=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GW1chtOYexn3iEYy8Pq9DlSLLB5ej7vVGOlF8xEFfgU=;
+        b=s5QOrB7GmGQ1ZGGHQVLtxtJL2ounkYNRC0/PBnBeInVMsSyrkrlV5C1XoM9DGBwucw
+         T4nGCp4q4ZNzZqICUKyEc1OZrlpegmwM37VQeSrf2qiyJJ78xsYQc1eqORYMy90ZWBRI
+         dOlGBNicvnDtxXyyCqMcHsxHy+t9a2K13zuYdSCPC7pBhC/Vb/GSkzChp01S3nksJwxk
+         9x9JtG4dvnk8S4SgzQqYxaTINsQ+wv5q0dGxzC3HVft0C48BTanqJ8JmUtYCSWbjrxgW
+         /vyr/inWKmzv42d/Fpi2FMt9mIMHB7Jq8sk9QjXxCD+9AvZ3SfHI/Y/s6CZJ65FwXbwB
+         hc1Q==
+X-Gm-Message-State: APjAAAWk/RLiGSFX48Exbqi9aFkRKNuEJTSc4WVh1H8OXXUe/swQ68/x
+        nc6BsFbrjQNB/JbttcxnyI8COA==
+X-Google-Smtp-Source: APXvYqyFO8OVO9Ek1HXeW7uJldc9Q3IHl5BmgqroEGn0wz7sBZvCdcPBXBgzAj+vO/RGzRoDloQRMg==
+X-Received: by 2002:aa7:cdc4:: with SMTP id h4mr47346453edw.221.1559916671307;
+        Fri, 07 Jun 2019 07:11:11 -0700 (PDT)
+Received: from locke-xps13.fritz.box (dslb-002-205-069-198.002.205.pools.vodafone-ip.de. [2.205.69.198])
+        by smtp.gmail.com with ESMTPSA id a40sm546116edd.1.2019.06.07.07.11.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 07 Jun 2019 07:11:10 -0700 (PDT)
+From:   =?UTF-8?q?Iago=20L=C3=B3pez=20Galeiras?= <iago@kinvolk.io>
+To:     john.fastabend@gmail.com, ast@kernel.org, daniel@iogearbox.net
+Cc:     alban@kinvolk.io, krzesimir@kinvolk.io, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Iago=20L=C3=B3pez=20Galeiras?= <iago@kinvolk.io>
+Subject: [PATCH bpf-next v5 0/4] sock ops: add netns ino and dev in bpf context
+Date:   Fri,  7 Jun 2019 16:11:02 +0200
+Message-Id: <20190607141106.32148-1-iago@kinvolk.io>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 09:04:55AM -0700, Linus Torvalds wrote:
->
-> In fact, the alpha port was always subtly buggy exactly because of the
-> "byte write turns into a read-and-masked-write", even if I don't think
-> anybody ever noticed (we did fix cases where people _did_ notice,
-> though, and we might still have some cases where we use 'int' for
-> booleans because of alpha issues.).
+This series allows sockops programs to access the network namespace
+inode and device via (struct bpf_sock_ops)->netns_ino and ->netns_dev.
+This can be useful to apply different policies on different network
+namespaces.
 
-This is in fact a real bug in the code in question that no amount
-of READ_ONCE/WRITE_ONCE would have caught.  The field fqdir->dead is
-declared as boolean so writing to it is not atomic (on old Alphas).
+In the unlikely case where network namespaces are not compiled in
+(CONFIG_NET_NS=n), the verifier will generate code to return netns_dev
+as usual and will return 0 for netns_ino.
 
-I don't think it currently matters because padding would ensure
-that it is in fact 64 bits long.  However, should someone add another
-char/bool/bitfield in this struct in future it could become an issue.
+The generated BPF bytecode for netns_ino is loading the correct
+inode number at the time of execution.
 
-So let's fix it.
+However, the generated BPF bytecode for netns_dev is loading an
+immediate value determined at BPF-load-time by looking at the
+initial network namespace. In practice, this works because all netns
+currently use the same virtual device. If this was to change, this
+code would need to be updated too.
 
----8<--
-The field fqdir->dead is meant to be written (and read) atomically.
-As old Alpha CPUs can't write a single byte atomically, we need at
-least an int for it to work.
+It also adds sockmap and verifier selftests to cover the new fields.
 
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Partial reads work thanks to commit e2f7fc0ac69 ("bpf: fix undefined
+behavior in narrow load handling").
 
-diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-index e91b79ad4e4a..8c458fba74ad 100644
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -14,7 +14,9 @@ struct fqdir {
- 	int			max_dist;
- 	struct inet_frags	*f;
- 	struct net		*net;
--	bool			dead;
-+
-+	/* We can't use boolean because this needs atomic writes. */
-+	int			dead;
- 
- 	struct rhashtable       rhashtable ____cacheline_aligned_in_smp;
- 
-diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
-index 35e9784fab4e..05aa7c145817 100644
---- a/net/ipv4/inet_fragment.c
-+++ b/net/ipv4/inet_fragment.c
-@@ -193,7 +193,7 @@ void fqdir_exit(struct fqdir *fqdir)
- {
- 	fqdir->high_thresh = 0; /* prevent creation of new frags */
- 
--	fqdir->dead = true;
-+	fqdir->dead = 1;
- 
- 	/* call_rcu is supposed to provide memory barrier semantics,
- 	 * separating the setting of fqdir->dead with the destruction
+v1 patchset can be found at:
+https://lkml.org/lkml/2019/4/12/238
+
+Changes since v1:
+- add netns_dev (review from Alexei)
+- tools/include/uapi/linux/bpf.h: update with netns_dev
+- tools/testing/selftests/bpf/test_sockmap_kern.h: print debugs with
+- This is a new selftest (review from Song)
+
+v2 patchest can be found at:
+https://lkml.org/lkml/2019/4/18/685
+
+Changes since v2:
+- replace __u64 by u64 in kernel code (review from Y Song)
+- remove unneeded #else branch: program would be rejected in
+  is_valid_access (review from Y Song)
+- allow partial reads (<u64) (review from Y Song)
+- standalone patch for the sync (requested by Y Song)
+- update commitmsg to refer to netns_ino
+- test partial reads on netns_dev (review from Y Song)
+- split in two tests
+
+v3 patchset can be found at:
+https://lkml.org/lkml/2019/4/26/740
+
+Changes since v3:
+- return netns_dev unconditionally and set netns_ino to 0 if
+  CONFIG_NET_NS is not enabled (review from Jakub Kicinski)
+- use bpf_ctx_record_field_size and bpf_ctx_narrow_access_ok instead of
+  manually deal with partial reads (review from Y Song)
+- update commit message to reflect new code and remove note about
+  partial reads since it was discussed in the review
+- use bpf_ctx_range() and offsetofend()
+
+v4 patchset can be found at:
+https://lkml.org/lkml/2019/5/24/714
+
+Changes since v4:
+- add netns_dev comment on uapi headers (review from Y Song)
+- remove redundant bounds check (review from Y Song)
+
+Alban Crequy (4):
+  bpf: sock ops: add netns ino and dev in bpf context
+  bpf: sync bpf.h to tools/ for bpf_sock_ops->netns*
+  selftests: bpf: read netns_ino from struct bpf_sock_ops
+  selftests: bpf: verifier: read netns_dev and netns_ino from struct
+    bpf_sock_ops
+
+ include/uapi/linux/bpf.h                      |  6 ++
+ net/core/filter.c                             | 67 +++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  6 ++
+ tools/testing/selftests/bpf/test_sockmap.c    | 38 ++++++++++-
+ .../testing/selftests/bpf/test_sockmap_kern.h | 22 ++++++
+ .../testing/selftests/bpf/verifier/var_off.c  | 53 +++++++++++++++
+ 6 files changed, 189 insertions(+), 3 deletions(-)
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.21.0
+
