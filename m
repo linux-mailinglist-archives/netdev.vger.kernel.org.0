@@ -2,59 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F4E38279
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 03:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C377438290
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 04:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbfFGB7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jun 2019 21:59:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34882 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726791AbfFGB7R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jun 2019 21:59:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rPiY4ryxbX5lKhyCC1Ro4K1SQb3yamQXN8Milhacjic=; b=5LtqdWJE3vWshALdzBkQbb4G6i
-        f6BrlycBkg5wl8vKZicRTuwz5HKSUUx4vQBq+WiRQwN8mvnZPWp371pqQgJxjPkxG3jLVGkrOTdTQ
-        FMXCKd5e7p1m6V1f0mHc09+9AAfELeq6FDIoPoSo28ikUmjKAbwjsvABAcwpypEc8Km8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hZ49w-0002jZ-FY; Fri, 07 Jun 2019 03:59:12 +0200
-Date:   Fri, 7 Jun 2019 03:59:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Anders Roxell <anders.roxell@linaro.org>, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 6/8] drivers: net: phy: fix warning same module names
-Message-ID: <20190607015912.GI20899@lunn.ch>
-References: <20190606094727.23868-1-anders.roxell@linaro.org>
- <20190606125817.GF20899@lunn.ch>
- <e56b59ce-5d5d-b28f-4886-d606fee19152@gmail.com>
+        id S1728137AbfFGCFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jun 2019 22:05:21 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:58418 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727975AbfFGCFU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jun 2019 22:05:20 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CEACC6EB81A283EFD433;
+        Fri,  7 Jun 2019 10:05:17 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 7 Jun 2019 10:05:08 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 00/12] net: hns3: some code optimizations & cleanups & bugfixes
+Date:   Fri, 7 Jun 2019 10:03:01 +0800
+Message-ID: <1559872993-14507-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e56b59ce-5d5d-b28f-4886-d606fee19152@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 12:34:47PM +1200, Michael Schmitz wrote:
-> Hi Andew, Anders,
-> 
-> sorry I dropped the ball on that one - I've got a patch for the ax88796b PHY
-> driver that I just forgot to resend.
-> 
-> It'll clash with your patch, Anders - are you happy to drop the
-> CONFIG_ASIX_PHY from your series?
+This patch-set includes code optimizations, cleanups and bugfixes for
+the HNS3 ethernet controller driver.
 
-Hi Michael
+[patch 1/12] logs more detail error info for ROCE RAS errors.
 
-Please send your patch. Anders needs to split up his patchset anyway,
-so dropping one is not a problem.
+[patch 2/12] fixes a wrong size issue for mailbox responding.
 
-   Andrew
+[patch 3/12] makes HW GRO handing compliant with SW one.
+
+[patch 4/12] refactors hns3_get_new_int_gl.
+
+[patch 5/12] adds handling for VF's over_8bd_nfe_err.
+
+[patch 6/12 - 12/12] adds some code optimizations and cleanups, to
+make the code more readable and compliant with some static code
+analysis tools, these modifications do not change the logic of
+the code.
+
+Change log:
+V1->V2: fixes comment from David Miller.
+
+Jian Shen (1):
+  net: hns3: small changes for magic numbers
+
+Weihang Li (2):
+  net: hns3: trigger VF reset if a VF has an over_8bd_nfe_err
+  net: hns3: fix some coding style issues
+
+Xiaofei Tan (1):
+  net: hns3: log detail error info of ROCEE ECC and AXI errors
+
+Yonglong Liu (1):
+  net: hns3: delete the redundant user NIC codes
+
+Yufeng Mo (3):
+  net: hns3: use macros instead of magic numbers
+  net: hns3: refactor PF/VF RSS hash key configuration
+  net: hns3: some modifications to simplify and optimize code
+
+Yunsheng Lin (3):
+  net: hns3: make HW GRO handling compliant with SW GRO
+  net: hns3: replace numa_node_id with numa_mem_id for buffer reusing
+  net: hns3: refactor hns3_get_new_int_gl function
+
+Zhongzhu Liu (1):
+  net: hns3: fix wrong size of mailbox responding data
+
+ drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |   2 +-
+ drivers/net/ethernet/hisilicon/hns3/hnae3.c        |  21 +-
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   7 -
+ drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c   |  12 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 199 ++++++-----
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  43 +--
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  24 ++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  20 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 175 +++++++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |   4 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 372 ++++++++++-----------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  26 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |   4 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 141 ++++----
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  85 ++---
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |   3 +
+ 16 files changed, 658 insertions(+), 480 deletions(-)
+
+-- 
+2.7.4
+
