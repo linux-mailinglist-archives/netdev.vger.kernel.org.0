@@ -2,129 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C582395C4
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9625395E2
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730573AbfFGTdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 15:33:04 -0400
-Received: from mail-it1-f176.google.com ([209.85.166.176]:55968 "EHLO
-        mail-it1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729081AbfFGTdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:33:03 -0400
-Received: by mail-it1-f176.google.com with SMTP id i21so4429942ita.5;
-        Fri, 07 Jun 2019 12:33:03 -0700 (PDT)
+        id S1730447AbfFGTiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 15:38:23 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:45126 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729809AbfFGTiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:38:23 -0400
+Received: by mail-ed1-f65.google.com with SMTP id a14so2672837edv.12;
+        Fri, 07 Jun 2019 12:38:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=04uJTo7m358ByRo9cA4dc6Sv7rmMryAY1l67cCAtOVE=;
-        b=XWsr84uI6tkrX9hKMZZXfrsnYYqyJJ8HQQNHD0Dd04qccooEkCMHcnr3OsLytjgky6
-         W/gSWE/Rm6lKqPKekX2gO6F5cFnW1mMLUUh9hY698fl0jAFkdpCz5aq1sC2SP931C9Aw
-         x4Ott88SIjzask0DlTHDLqwbG20erXXux4t3nx4gvi9b+1efULT/YawVNJbIbseiBXMh
-         sYPhyakxl6nEBuyquBx2IKhx4wAjFMZDwIqSOo+2V9Pu+AIs0gB5rErjD95g/58B4w0F
-         wM/FQs1DxT1RZMC7Vop+urYJfJhrnd6Rt1F8CGInLGQQRfDcseFdJcRG8/AU5ntedANy
-         c7VQ==
+        bh=zaTwR61OvFbwg4aUVtbQv05SUHVgNDxvbWkcGwjcChk=;
+        b=iwCzrrnF9dOrUNSpiNLz+zbd62iB967NcOq0S8G1ZKt8FlP3QKo+hQo/qNieQh3lXZ
+         Bn+n6ts/4mluCe5KTVccUZvFPphSgTHJgbiJII+9cD20+yplxS47yUTQLb1jXCI3M6uS
+         lN/9HEnpvYKfTaBmRTJ3PZI3Rc1JzrGvCbn5I6DiY2NjrpuoAQIqagyxxbtOtsGpBU3G
+         tDEYhGRKR/e4xPfmFyREvHONON2RN4FWqp6kFis1Znd2/XYbEP1Fm8V5aBg1jbFkXTbc
+         ax9h82u2IcwfQ4FJMZfv5SQVfOxcljCAt5au8umXq0iUIPNmfcNkiBeD3gfM/LTK9nv4
+         Lq0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=04uJTo7m358ByRo9cA4dc6Sv7rmMryAY1l67cCAtOVE=;
-        b=TcvUtWnRXVNUNHgCUZ1I4fsZBdf+GuTnVx5LSjJy031PAvkInrQrDJarwclwsltTZZ
-         QBgvzg+GWolREQMY1uKx3wKKNLjtMec482um8FMbZ/NbmeTzEilmPfRjUmkgtX/o+WCh
-         ysFeSEAxQWNKO1MuFzyBxE9D8tMlyuTNL1gAtpgRclUImIRwAfdFGba1SEUa6bp48vBG
-         61vS7tUTRu9AbR/4+Ut5jeaMYL0JG2YK3rXnyuNAJHD3AkRjZp5/ll6buEYo3AgmxJC1
-         IVBpc818vJCfawD83KuNBJOigQ6CT5kkyHeQ7Q4ihgThyv/NgXhtThOXOID6N4bsl4k4
-         CrEw==
-X-Gm-Message-State: APjAAAVmknqM0n0WWhZt7d6FR0e3mxbbwgCJy4aBXgrzl97CKcJ2D2Pm
-        JHFuSD1XqwJsRJYYtYzCDyS9hH3KdLpfgYuycs0=
-X-Google-Smtp-Source: APXvYqxijbtfZEblcBZkVQnhcYbDIEXGcJuk2PxICqk1t0yVYYHwLWBNMPCSLKf+bha80GuRvaQCLcSwAZVUIwuQTzg=
-X-Received: by 2002:a05:660c:ace:: with SMTP id k14mr5206415itl.33.1559935982517;
- Fri, 07 Jun 2019 12:33:02 -0700 (PDT)
+        bh=zaTwR61OvFbwg4aUVtbQv05SUHVgNDxvbWkcGwjcChk=;
+        b=cc2pDhHDX8ysBx3xVUm/YO5821b1Su9K9k890xRBO8EstzMGvPOVkPtLnuT+1PEqtZ
+         PZRK9g8qiu0nAilXSc7XqyGbmmLJawdT29Z+05VpxJkmgnxfszDdzgmz78ivRD4ZZrR8
+         v2bJq8W83epTUMg1Kq5u3fwTlILwZhTmoQDf3XH673C9OouSV8jKTtPlZXZ5fHRARD6m
+         pgCYxHynZWhclMpFnjIZnmy4s2w/P/SmUd4KNae1+q5tW8Aud3W8QVhEHozyfbNKkvWP
+         VmVQIgjNBfaImo6zY51fOEhu9tvZmM7cZYYoeO9j79I3QUt0yh2mrAaKoR+EJkVclRil
+         MEfg==
+X-Gm-Message-State: APjAAAXA9x8jPh3LuWQDuRuefsVIt3EAD5P82JLVa5vvPNtIsL6xjYRU
+        XzSfGgSL+XLxmqjfuDrFVADov2BlIPNtIkaurRE=
+X-Google-Smtp-Source: APXvYqx+KVVO17c7aZO9447Pi7PBlltD3Jf63c8dfUVuA4gihVOsP/HGJQFrjbxqAH54FXPn83IUpviRzztY6lF2xdI=
+X-Received: by 2002:aa7:da4b:: with SMTP id w11mr51300775eds.36.1559936301614;
+ Fri, 07 Jun 2019 12:38:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
- <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
- <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
- <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca> <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
- <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca> <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
- <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca> <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com>
- <20190522143956.quskqh33ko2wuf47@csclub.uwaterloo.ca> <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca>
-In-Reply-To: <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 7 Jun 2019 12:32:51 -0700
-Message-ID: <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec packets
-To:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        e1000-devel@lists.sourceforge.net
+References: <20190604.202258.1443410652869724565.davem@davemloft.net>
+ <CA+h21hq1_wcB6_ffYdtOEyz8-aE=c7MiZP4en_VKOBodo=3VSQ@mail.gmail.com>
+ <20190605.114429.1672040440449676386.davem@davemloft.net> <20190607.121538.2106706546161674940.davem@davemloft.net>
+In-Reply-To: <20190607.121538.2106706546161674940.davem@davemloft.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 7 Jun 2019 22:38:10 +0300
+Message-ID: <CA+h21hqGWhpkHx_yG3PJbQPxv7iKuLMrD3H7GhjfzRr+TZ-wrQ@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 00/17] PTP support for the SJA1105 DSA driver
+To:     David Miller <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 7, 2019 at 7:39 AM Lennart Sorensen
-<lsorense@csclub.uwaterloo.ca> wrote:
+On Fri, 7 Jun 2019 at 22:15, David Miller <davem@davemloft.net> wrote:
 >
-> On Wed, May 22, 2019 at 10:39:56AM -0400, Lennart Sorensen wrote:
-> > OK I applied those two patches and get this:
-> >
-> > i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
-> > i40e: Copyright (c) 2013 - 2014 Intel Corporation.
-> > i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-> > i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-> > i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
-> > i40e 0000:3d:00.0: PFQF_HREGION[7]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[6]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[5]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[4]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[3]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[2]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[1]: 0x00000000
-> > i40e 0000:3d:00.0: PFQF_HREGION[0]: 0x00000000
-> > i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
-> > i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
-> > i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
-> > i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
-> > i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
-> > i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
-> > i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
-> > i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
-> > i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
-> > i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
-> > i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
-> > i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
-> > i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
-> > i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
-> > i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
-> > i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
-> > i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
-> > i40e 0000:3d:00.0: flow_type: 27 input_mask:0x00000000002c0000
-> > i40e 0000:3d:00.0: flow_type: 26 input_mask:0x00000000002c0000
-> > i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
-> > i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
-> > i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
-> > i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
-> > i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
-> > i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
-> > i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
-> > i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
-> >
-> > So seems the regions are all 0.
-> >
-> > All ipsec packets still hitting queue 0.
+> From: David Miller <davem@davemloft.net>
+> Date: Wed, 05 Jun 2019 11:44:29 -0700 (PDT)
 >
-> So any news or more ideas to try or are we stuck hoping someone can fix
-> the firmware?
+> > From: Vladimir Oltean <olteanv@gmail.com>
+> > Date: Wed, 5 Jun 2019 12:13:59 +0300
+> >
+> >> It is conflicting because net-next at the moment lacks this patch that
+> >> I submitted to net:
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=e8d67fa5696e2fcaf956dae36d11e6eff5246101
+> >> What would you like me to do: resubmit after you merge net into
+> >> net-next, add the above patch to this series (which you'll have to
+> >> skip upon the next merge), or you can just cherry-pick it and then the
+> >> series will apply?
+> >
+> > So let me bring this series back to state "Under Review" and I'll apply it
+> > after I next merge net into net-next.
+>
+> So I applied the series but it doesn't even build:
+>
+> ERROR: "sja1105_unpack" [drivers/net/dsa/sja1105/sja1105_ptp.ko] undefined!
+> ERROR: "sja1105_spi_send_packed_buf" [drivers/net/dsa/sja1105/sja1105_ptp.ko] undefined!
+> ERROR: "sja1105_pack" [drivers/net/dsa/sja1105/sja1105_ptp.ko] undefined!
+> ERROR: "sja1105_spi_send_int" [drivers/net/dsa/sja1105/sja1105_ptp.ko] undefined!
+> ERROR: "sja1105_get_ts_info" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105pqrs_ptp_cmd" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105_ptp_clock_unregister" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105_ptpegr_ts_poll" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105et_ptp_cmd" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105_ptp_reset" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105_tstamp_reconstruct" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+> ERROR: "sja1105_ptp_clock_register" [drivers/net/dsa/sja1105/sja1105.ko] undefined!
+>
+> You have to test better with the various modular/non-modular combinations.
+>
+> Thanks.
 
-I had reached out to some folks over in the networking division hoping
-that they can get a reproduction as I don't have the hardware that you
-are seeing the issue on so I have no way to reproduce it.
+Ok, my bad, I'll resubmit it tomorrow.
 
-Maybe someone from that group can reply and tell us where they are on that?
-
-Thanks.
-
-- Alex
+Thanks!
+-Vladimir
