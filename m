@@ -2,126 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 993F438794
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED872387B5
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbfFGKCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 06:02:21 -0400
-Received: from mail-eopbgr1410122.outbound.protection.outlook.com ([40.107.141.122]:36128
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726584AbfFGKCU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 06:02:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+Z6z4LvArFmwjk5Kxar9ciw2QDAt5r84X13H7hbm+KM=;
- b=LOtqTM/lmjtjcbRSBlWhcYZum6zC8oxPYfPz/bJM2F+7bD4HIbxPrsSKKa3/RqSKrK9xH3PdN/NgNouvJ7HLMHJweMrzxV67Cle60t/cwBQHwWMmlaAlECZRdLhsvzfdmFe5B/UuVI82eZDbmBkOPgNvBjiXzpwywTjlIc42+hg=
-Received: from TY1PR01MB1770.jpnprd01.prod.outlook.com (52.133.163.13) by
- TY1PR01MB1882.jpnprd01.prod.outlook.com (52.133.162.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.22; Fri, 7 Jun 2019 10:02:14 +0000
-Received: from TY1PR01MB1770.jpnprd01.prod.outlook.com
- ([fe80::8a0:4174:3c3f:f05b]) by TY1PR01MB1770.jpnprd01.prod.outlook.com
- ([fe80::8a0:4174:3c3f:f05b%7]) with mapi id 15.20.1965.011; Fri, 7 Jun 2019
- 10:02:13 +0000
-From:   Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-To:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Simon Horman <horms@verge.net.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
-Thread-Topic: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
-Thread-Index: AQHVBpxEfaP7dJG4WES76lrhZ+ehP6aQILng
-Date:   Fri, 7 Jun 2019 10:02:13 +0000
-Message-ID: <TY1PR01MB1770D2AAF2ED748575CA4CBFC0100@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-References: <1557429622-31676-1-git-send-email-fabrizio.castro@bp.renesas.com>
-In-Reply-To: <1557429622-31676-1-git-send-email-fabrizio.castro@bp.renesas.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fabrizio.castro@bp.renesas.com; 
-x-originating-ip: [193.141.220.21]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3bb7a36a-2c04-4062-be2b-08d6eb2f3712
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:TY1PR01MB1882;
-x-ms-traffictypediagnostic: TY1PR01MB1882:
-x-microsoft-antispam-prvs: <TY1PR01MB188207A4899633CE8973AC4EC0100@TY1PR01MB1882.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 0061C35778
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(366004)(376002)(136003)(396003)(39860400002)(199004)(189003)(66946007)(64756008)(66446008)(54906003)(66476007)(66556008)(102836004)(486006)(8676002)(81166006)(25786009)(74316002)(446003)(3846002)(6116002)(2906002)(68736007)(53936002)(7736002)(76176011)(4744005)(305945005)(7696005)(8936002)(99286004)(9686003)(110136005)(6246003)(186003)(6506007)(53546011)(71200400001)(71190400001)(5660300002)(66066001)(316002)(478600001)(52536014)(76116006)(73956011)(81156014)(14454004)(229853002)(476003)(86362001)(11346002)(413944005)(44832011)(55016002)(256004)(4326008)(33656002)(6436002)(26005)(7416002);DIR:OUT;SFP:1102;SCL:1;SRVR:TY1PR01MB1882;H:TY1PR01MB1770.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
-received-spf: None (protection.outlook.com: bp.renesas.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: dlDf+dk+pWb+C5qOZMtBKmrGye4JRFEkzhh21Tjj25vParGo5Dymx38yuu2up+iwgEGfhEPE2GGF2CgTpaslhJdwkcZJLwBH7TKeH6Qk/ddPm4KNlRLsON3+BZqCUXaw4g7N/pqPts/wVMrnSNmNlb0BkXMKnpH/OIOyb/PQbf0JVAXULGytIvvfzeq98Pr7Tos5Drs1BE8U2/FzIb1L/t3xgm7TThS1jNG6kNawsf+Iq4M1/2T7R6ku3VkdmqU9fdE+ZhtzRW4g0jltxKkAbYfvLIHctq8ygQ92Fv669md4w5/CuY5rjPSnTKQMB1x4Rm3n2VVgnKMdV/Qt+g6QGSzw0ZTQN7PurozkM2DIGh7dSqu03sRJoX6DGT/Wlr2yw6GqBbf1hT9ALhFmS8tfrCIgaqDDU14lyQBbFR5MT9k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727143AbfFGKNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 06:13:18 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43544 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726584AbfFGKNS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 06:13:18 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r18so1546214wrm.10
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 03:13:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LzGP15SbZkZQXEeeYJMgW/oAHovU0Ls9/UKDOd6ozUw=;
+        b=UJULPEB1am9ZlFzbZJ1GogUGTB19LopeAdtti0nG+wPK7QoLPlR4Y4pX54oN+3ysPB
+         +mN6WNMeAf4bgvh0SZtqJsue9/Y+Bod4t/G6ztuG9k6I9K5DByHA6DmL0ANBltLd5oyg
+         V/0Rihg1iXasr9AsMgjKkk7+Y7zn2EM2MNWu6yaUAIQqDt2O8DKSIeuJT50rvbLewVLL
+         JpoooHzK3ZL1tRhqB671iWbUHiSFT8UiJocNxpef1XmJZ+X0UXWVuTT1RPlVN5BAVUjU
+         wNfabcXwbHd13x9AUAgGh9OE2yRBT//gRuETjWQclOUqwpXkGY03JSjT1pGyW06TicpE
+         zkSg==
+X-Gm-Message-State: APjAAAX2YSSoMvW5ECL0u77bTVCBPbB+we/wpkUd10zfbQm7/7pfsskj
+        8zP6fcGJEBSTQ+PVDUEAv2UYH9au4x4=
+X-Google-Smtp-Source: APXvYqxjVnlrjVCMA0KyN/5ldMKfdsCfXTe1ePjZXOebeyPv2zE4liM6SVO2jCkpy0abSKfPOIGQuQ==
+X-Received: by 2002:a5d:6644:: with SMTP id f4mr17010410wrw.51.1559902395278;
+        Fri, 07 Jun 2019 03:13:15 -0700 (PDT)
+Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id 67sm1547967wmd.38.2019.06.07.03.13.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 07 Jun 2019 03:13:14 -0700 (PDT)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrea Claudi <aclaudi@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>
+Subject: [PATCH iproute2] ip: reset netns after each command in batch mode
+Date:   Fri,  7 Jun 2019 12:13:13 +0200
+Message-Id: <20190607101313.8561-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bb7a36a-2c04-4062-be2b-08d6eb2f3712
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 10:02:13.7320
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fabrizio.castro@bp.renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY1PR01MB1882
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear All,
+When creating a new netns or executing a program into an existing one,
+the unshare() or setns() calls will change the current netns.
+In batch mode, this can run commands on the wrong interfaces, as the
+ifindex value is meaningful only in the current netns. For example, this
+command fails because veth-c doesn't exists in the init netns:
 
-These patches have been around for a very long time now, is anybody willing=
- to take them?
+    # ip -b - <<-'EOF'
+        netns add client
+        link add name veth-c type veth peer veth-s netns client
+        addr add 192.168.2.1/24 dev veth-c
+    EOF
+    Cannot find device "veth-c"
+    Command failed -:7
 
-Cheers,
-Fab
+But if there are two devices with the same name in the init and new netns,
+ip will build a wrong ll_map with indexes belonging to the new netns,
+and will execute actions in the init netns using this wrong mapping.
+This script will flush all eth0 addresses and bring it down, as it has
+the same ifindex of veth0 in the new netns:
 
-> From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Sent: 09 May 2019 20:20
-> Subject: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
->=20
-> Dear All,
->=20
-> I am reposting some CAN and CANFD related dt-bindings changes for
-> Renesas' R-Car and RZ/G devices that have been originally sent
-> end of last year and beginning of this year.
->=20
-> Thanks,
-> Fab
->=20
-> Fabrizio Castro (3):
->   dt-bindings: can: rcar_can: Fix RZ/G2 CAN clocks
->   dt-bindings: can: rcar_can: Add r8a774c0 support
->   dt-bindings: can: rcar_canfd: document r8a774c0 support
->=20
-> Marek Vasut (2):
->   dt-bindings: can: rcar_canfd: document r8a77965 support
->   dt-bindings: can: rcar_canfd: document r8a77990 support
->=20
->  Documentation/devicetree/bindings/net/can/rcar_can.txt   | 13 ++++------=
+    # ip addr
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+        inet 127.0.0.1/8 scope host lo
+           valid_lft forever preferred_lft forever
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+        link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+        inet 192.168.122.76/24 brd 192.168.122.255 scope global dynamic eth0
+           valid_lft 3598sec preferred_lft 3598sec
+
+    # ip -b - <<-'EOF'
+        netns add client
+        link add name veth0 type veth peer name veth1
+        link add name veth-ns type veth peer name veth0 netns client
+        link set veth0 down
+        address flush veth0
+    EOF
+
+    # ip addr
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+        inet 127.0.0.1/8 scope host lo
+           valid_lft forever preferred_lft forever
+    2: eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc mq state DOWN group default qlen 1000
+        link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    3: veth1@veth0: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN group default qlen 1000
+        link/ether c2:db:d0:34:13:4a brd ff:ff:ff:ff:ff:ff
+    4: veth0@veth1: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN group default qlen 1000
+        link/ether ca:9d:6b:5f:5f:8f brd ff:ff:ff:ff:ff:ff
+    5: veth-ns@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+        link/ether 32:ef:22:df:51:0a brd ff:ff:ff:ff:ff:ff link-netns client
+
+The same issue can be triggered by the netns exec subcommand with a
+sligthy different script:
+
+    # ip netns add client
+    # ip -b - <<-'EOF'
+        netns exec client true
+        link add name veth0 type veth peer name veth1
+        link add name veth-ns type veth peer name veth0 netns client
+        link set veth0 down
+        address flush veth0
+    EOF
+
+Fix this by adding two netns_{save,reset} functions, which are used
+to get a file descriptor for the init netns, and restore it after
+each batch command.
+netns_save() is called before the unshare() or setns(),
+while netns_restore() is called after each command.
+
+Fixes: 0dc34c7713bb ("iproute2: Add processless network namespace support")
+Reviewed-and-tested-by: Andrea Claudi <aclaudi@redhat.com>
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
 ---
->  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 16 ++++++++++=
-------
->  2 files changed, 14 insertions(+), 15 deletions(-)
->=20
-> --
-> 2.7.4
+ include/namespace.h |  2 ++
+ ip/ip.c             |  1 +
+ ip/ipnetns.c        |  1 +
+ lib/namespace.c     | 26 ++++++++++++++++++++++++++
+ 4 files changed, 30 insertions(+)
+
+diff --git a/include/namespace.h b/include/namespace.h
+index e47f9b5d..89cdda11 100644
+--- a/include/namespace.h
++++ b/include/namespace.h
+@@ -49,6 +49,8 @@ static inline int setns(int fd, int nstype)
+ }
+ #endif /* HAVE_SETNS */
+ 
++void netns_save(void);
++void netns_restore(void);
+ int netns_switch(char *netns);
+ int netns_get_fd(const char *netns);
+ int netns_foreach(int (*func)(char *nsname, void *arg), void *arg);
+diff --git a/ip/ip.c b/ip/ip.c
+index e4131714..d64d43e1 100644
+--- a/ip/ip.c
++++ b/ip/ip.c
+@@ -158,6 +158,7 @@ static int batch(const char *name)
+ 			if (!force)
+ 				break;
+ 		}
++		netns_restore();
+ 	}
+ 	if (line)
+ 		free(line);
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index 52aefacf..e4788e75 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -707,6 +707,7 @@ static int netns_add(int argc, char **argv, bool create)
+ 	close(fd);
+ 
+ 	if (create) {
++		netns_save();
+ 		if (unshare(CLONE_NEWNET) < 0) {
+ 			fprintf(stderr, "Failed to create a new network namespace \"%s\": %s\n",
+ 				name, strerror(errno));
+diff --git a/lib/namespace.c b/lib/namespace.c
+index 06ae0a48..11ba0f86 100644
+--- a/lib/namespace.c
++++ b/lib/namespace.c
+@@ -15,6 +15,30 @@
+ #include "utils.h"
+ #include "namespace.h"
+ 
++static int saved_netns = -1;
++
++/* Obtain a FD for the current namespace, so we can reenter it later */
++void netns_save(void)
++{
++	if (saved_netns == -1) {
++		saved_netns = open("/proc/self/ns/net", O_RDONLY | O_CLOEXEC);
++		if (saved_netns == -1)
++			perror("Cannot open init namespace");
++	}
++}
++
++void netns_restore(void)
++{
++	if (saved_netns != -1) {
++		if (!setns(saved_netns, CLONE_NEWNET)) {
++			close(saved_netns);
++			saved_netns = -1;
++		} else {
++			perror("setns");
++		}
++	}
++}
++
+ static void bind_etc(const char *name)
+ {
+ 	char etc_netns_path[sizeof(NETNS_ETC_DIR) + NAME_MAX];
+@@ -61,6 +85,8 @@ int netns_switch(char *name)
+ 		return -1;
+ 	}
+ 
++	netns_save();
++
+ 	if (setns(netns, CLONE_NEWNET) < 0) {
+ 		fprintf(stderr, "setting the network namespace \"%s\" failed: %s\n",
+ 			name, strerror(errno));
+-- 
+2.21.0
 
