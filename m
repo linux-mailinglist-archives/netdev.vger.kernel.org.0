@@ -2,63 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B752938E52
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:02:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A1238E97
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729539AbfFGPCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 11:02:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41500 "EHLO mx1.redhat.com"
+        id S1729873AbfFGPKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:10:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728682AbfFGPCg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 11:02:36 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729148AbfFGPJn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 11:09:43 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C9DDE30058D9;
-        Fri,  7 Jun 2019 15:02:36 +0000 (UTC)
-Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1026D104B50D;
-        Fri,  7 Jun 2019 15:02:34 +0000 (UTC)
-Subject: Re: [PATCH net] bonding: make debugging output more succinct
-To:     linux-kernel@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20190607145933.37058-1-jarod@redhat.com>
- <20190607145933.37058-9-jarod@redhat.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Message-ID: <0e12b390-9b47-ae24-3a1b-4f602c57a779@redhat.com>
-Date:   Fri, 7 Jun 2019 11:02:34 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190607145933.37058-9-jarod@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 07 Jun 2019 15:02:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3738D2089E;
+        Fri,  7 Jun 2019 15:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559920182;
+        bh=nfFeHvu1mW7PC+3VO+01aU7vP6+7QQk97vW1NQJujTc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sCVx4u59FfzdzN0zzmP5p0iB4hh4FhEXRT7k0maMCX8Gh3sTNVpVCELzE1r8RXO2Z
+         NevcW24YsK0Ts6xipcYqjCvf04qzW4pBz/8ZYo6FI2+trm2uJem0732mdPEGXVgISq
+         iG4805anj3OBrwsI3WV0extj1vxvfQ2ejzZIBzlU=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
+        sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v2 net-next 00/20] net: Enable nexthop objects with IPv4 and IPv6 routes
+Date:   Fri,  7 Jun 2019 08:09:21 -0700
+Message-Id: <20190607150941.11371-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/7/19 10:59 AM, Jarod Wilson wrote:
-> Seeing bonding debug log data along the lines of "event: 5" is a bit spartan,
-> and often requires a lookup table if you don't remember what every event is.
-> Make use of netdev_cmd_to_name for an improved debugging experience, so for
-> the prior example, you'll see: "bond_netdev_event received NETDEV_REGISTER"
-> instead (both are prefixed with the device for which the event pertains).
-> 
-> There are also quite a few places that the netdev_dbg output could stand to
-> mention exactly which slave the message pertains to (gets messy if you have
-> multiple slaves all spewing at once to know which one they pertain to).
+From: David Ahern <dsahern@gmail.com>
 
-Argh. Please drop this one, detritus in my git tree when I hit git 
-send-email caused this earlier iteration of patch 1 of the set this is 
-threaded with to go out.
+This is the final set of the initial nexthop object work. When I
+started this idea almost 2 years ago, it took 18 seconds to inject
+700k+ IPv4 routes with 1 hop and about 28 seconds for 4-paths. Some
+of that time was due to inefficiencies in 'ip', but most of it was
+kernel side with excessive synchronize_rcu calls in ipv4, and redundant
+processing validating a nexthop spec (device, gateway, encap). Worse,
+the time increased dramatically as the number of legs in the routes
+increased; for example, taking over 72 seconds for 16-path routes.
+
+After this set, with increased dirty memory limits (fib_sync_mem sysctl),
+an improved ip and nexthop objects a full internet fib (743,799 routes
+based on a pull in January 2019) can be pushed to the kernel in 4.3
+seconds. Even better, the time to insert is "almost" constant with
+increasing number of paths. The 'almost constant' time is due to
+expanding the nexthop definitions when generating notifications. A
+follow on patch will be sent adding a sysctl that allows an admin to
+avoid the nexthop expansion and truly get constant route insert time
+regardless of the number of paths in a route! (Useful once all programs
+used for a deployment that care about routes understand nexthop objects).
+
+To be clear, 'ip' is used for benchmarking for no other reason than
+'ip -batch' is a trivial to use for the tests. FRR, for example, better
+manages nexthops and route changes and the way those are pushed to the
+kernel and thus will have less userspace processing times than 'ip -batch'.
+
+Patches 1-10 iterate over fib6_nh with a nexthop invoke a processing
+function per fib6_nh. Prior to nexthop objects, a fib6_info referenced
+a single fib6_nh. Multipath routes were added as separate fib6_info for
+each leg of the route and linked as siblings:
+
+    f6i -> sibling -> sibling ... -> sibling
+     |                                   |
+     +--------- multipath route ---------+
+
+With nexthop objects a single fib6_info references an external
+nexthop which may have a series of fib6_nh:
+
+     f6i ---> nexthop ---> fib6_nh
+                           ...
+                           fib6_nh
+
+making IPv6 routes similar to IPv4. The side effect is that a single
+fib6_info now indirectly references a series of fib6_nh so the code
+needs to walk each entry and call the local, per-fib6_nh processing
+function.
+
+Patches 11 and 13 wire up use of nexthops with fib entries for IPv4
+and IPv6. With these commits you can actually use nexthops with routes.
+
+Patch 12 is an optimization for IPv4 when using nexthops in the most
+predominant use case (no metrics).
+
+Patches 14 handles replace of a nexthop config.
+
+Patches 15-18 add update pmtu and redirect tests to use both old and
+new routing.
+
+Patches 19 and 20 add new tests for the nexthop infrastructure. The first
+is single nexthop is used by multiple prefixes to communicate with remote
+hosts. This is on top of the functional tests already committed. The
+second verifies multipath selection.
+
+v2
+- changed ++i to i++ in patches 1 and 14 as noticed by DaveM
+- improved commit message for patch 14 (nexthop replace)
+- removed the skip_fib argument to remove_nexthop; vestige of an
+  older design
+
+David Ahern (20):
+  nexthops: Add ipv6 helper to walk all fib6_nh in a nexthop struct
+  ipv6: Handle all fib6_nh in a nexthop in fib6_drop_pcpu_from
+  ipv6: Handle all fib6_nh in a nexthop in rt6_device_match
+  ipv6: Handle all fib6_nh in a nexthop in __find_rr_leaf
+  ipv6: Handle all fib6_nh in a nexthop in rt6_nlmsg_size
+  ipv6: Handle all fib6_nh in a nexthop in fib6_info_uses_dev
+  ipv6: Handle all fib6_nh in a nexthop in exception handling
+  ipv6: Handle all fib6_nh in a nexthop in __ip6_route_redirect
+  ipv6: Handle all fib6_nh in a nexthop in rt6_do_redirect
+  ipv6: Handle all fib6_nh in a nexthop in mtu updates
+  ipv4: Allow routes to use nexthop objects
+  ipv4: Optimization for fib_info lookup with nexthops
+  ipv6: Allow routes to use nexthop objects
+  nexthops: add support for replace
+  selftests: pmtu: Move running of test into a new function
+  selftests: pmtu: Move route installs to a new function
+  selftests: pmtu: Add support for routing via nexthop objects
+  selftests: icmp_redirect: Add support for routing via nexthop objects
+  selftests: Add test with multiple prefixes using single nexthop
+  selftests: Add version of router_multipath.sh using nexthop objects
+
+ include/net/ip6_fib.h                              |   1 +
+ include/net/ip_fib.h                               |   1 +
+ include/net/nexthop.h                              |   4 +
+ net/ipv4/fib_frontend.c                            |  19 +
+ net/ipv4/fib_semantics.c                           |  86 +++-
+ net/ipv4/nexthop.c                                 | 250 ++++++++++-
+ net/ipv6/ip6_fib.c                                 |  31 +-
+ net/ipv6/route.c                                   | 456 +++++++++++++++++++--
+ .../selftests/net/fib_nexthop_multiprefix.sh       | 290 +++++++++++++
+ .../selftests/net/forwarding/router_mpath_nh.sh    | 359 ++++++++++++++++
+ tools/testing/selftests/net/icmp_redirect.sh       |  49 +++
+ tools/testing/selftests/net/pmtu.sh                | 237 ++++++++---
+ 12 files changed, 1670 insertions(+), 113 deletions(-)
+ create mode 100755 tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+ create mode 100755 tools/testing/selftests/net/forwarding/router_mpath_nh.sh
 
 -- 
-Jarod Wilson
-jarod@redhat.com
+2.11.0
+
