@@ -2,421 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F62F38E82
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B863B38EC1
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 17:16:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729795AbfFGPJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 11:09:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51372 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729748AbfFGPJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jun 2019 11:09:48 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1EE9C21707;
-        Fri,  7 Jun 2019 15:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559920188;
-        bh=OrYyeWuD4KiQCCkkORqJqpNesxA4H9qBEy6LFlYpoCQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmc4PmtAzhf6kliyPwSXCUcAxZLThAaMsTTqR4mFdTLufbSWar6GEhAWvkPgTJkZI
-         zMgynvRcUZ0y2Edx9+3sKBRZsOfcEtdS36BtcpY28yFG2IGZhX9I9pyD0K7nvUrmv1
-         G2hJu3JWygsMM1Ok9eB/HpV6f8GkCr0sX3m08lDg=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
-        sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 net-next 20/20] selftests: Add version of router_multipath.sh using nexthop objects
-Date:   Fri,  7 Jun 2019 08:09:41 -0700
-Message-Id: <20190607150941.11371-21-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190607150941.11371-1-dsahern@kernel.org>
-References: <20190607150941.11371-1-dsahern@kernel.org>
+        id S1729226AbfFGPQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 11:16:07 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34609 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728486AbfFGPQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 11:16:07 -0400
+Received: by mail-pl1-f195.google.com with SMTP id i2so961159plt.1
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 08:16:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ip4elrPLGCMXVJWXh5WbeGWCskfRzsDea3LFyn6A9gQ=;
+        b=wPqyetjhGSbBV1zs6BG0kqLFALe53h6kVX13nYPw/CjEqZqcW8wvqPMWGr/Un4om5u
+         uuP1xSTlgAYFK0vKbFfkONXkiiQnRm1ZJYTjSUjCCQCxpWk4D74ztzi6CE9q8ilSWPi2
+         5NMk4xgWSc06VZatqLnVqluseYogQIh6djCyDxcKjsAQq8bgmC3Q9Rsit0kC1ctSBlfj
+         KxvRcVfs2+QADlzz+l9fOCV8iZxBN4pZn2l44JKKI20e21nVyognUvBHkRJHLQGVbTdW
+         a1u5Mz9A7f68Tr539GSp2g7Het7qFeaByHItzWNf7VN8QgS44PPDnYA5T8do5OZ5xPGh
+         eVSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ip4elrPLGCMXVJWXh5WbeGWCskfRzsDea3LFyn6A9gQ=;
+        b=nIHRIgUhs6nRO/0Sn33euAvYW+vdz8/KPHvGshSBM91ryiBS+RuF7L9nKqoVAnDmpD
+         cS8o/On5ajecJmpWSBwAlmUFgMcH0YRUiqwLvyEbRDWqnROE/2TWefTlEK6o7OK1hxlG
+         cGR9KIgFLcNhRh6yPyM0+07GLDCEsgRtrx2a4d/vntzfrn0p7FZ+KxRsgJ3an9+k4rsT
+         /G3fK84jC5NitArwAAuo4Z27uxvwiD4C+Q021xJHu8H0sSofIRMbCtvCOcxxQw1dmOHm
+         csfQuVAun9+P3qZhB7gIPOXhDbWiXB2MYKPmggNKyVqEZStzAVDEujIbyUdZXS6QZVjd
+         Z8Ig==
+X-Gm-Message-State: APjAAAXlLFrFnWhqKm3BlOdmiYCZWpmeW8EMUb8RYl2prrVxQJGLtFhl
+        1O4GtHI9Q0Crb23G09HCuvIGW+wiJfc=
+X-Google-Smtp-Source: APXvYqyUFTkS9efWCiZSEReMOmIFl3G1ZEbzxbuKWF4MD0pQkzSS50aqRqXvSFM2/IpxEa+7wcNo9A==
+X-Received: by 2002:a17:902:165:: with SMTP id 92mr28370607plb.197.1559920565489;
+        Fri, 07 Jun 2019 08:16:05 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j37sm2282630pgj.58.2019.06.07.08.16.04
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 07 Jun 2019 08:16:05 -0700 (PDT)
+Date:   Fri, 7 Jun 2019 08:16:02 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Fw: [Bug 203843] New: e1000e crash when ethernet is plugged in
+Message-ID: <20190607081602.3e286000@hermes.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
 
-Add a version of router_multipath.sh that uses nexthop objects for
-routes.
 
-Ido requested a version that does not cause regressions with mlxsw
-testing since it does not support nexthop objects yet.
+Begin forwarded message:
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- .../selftests/net/forwarding/router_mpath_nh.sh    | 359 +++++++++++++++++++++
- 1 file changed, 359 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/router_mpath_nh.sh
+Date: Fri, 07 Jun 2019 10:09:19 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 203843] New: e1000e crash when ethernet is plugged in
 
-diff --git a/tools/testing/selftests/net/forwarding/router_mpath_nh.sh b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
-new file mode 100755
-index 000000000000..cf3d26c233e8
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
-@@ -0,0 +1,359 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="ping_ipv4 ping_ipv6 multipath_test"
-+NUM_NETIFS=8
-+source lib.sh
-+
-+h1_create()
-+{
-+	vrf_create "vrf-h1"
-+	ip link set dev $h1 master vrf-h1
-+
-+	ip link set dev vrf-h1 up
-+	ip link set dev $h1 up
-+
-+	ip address add 192.0.2.2/24 dev $h1
-+	ip address add 2001:db8:1::2/64 dev $h1
-+
-+	ip route add 198.51.100.0/24 vrf vrf-h1 nexthop via 192.0.2.1
-+	ip route add 2001:db8:2::/64 vrf vrf-h1 nexthop via 2001:db8:1::1
-+}
-+
-+h1_destroy()
-+{
-+	ip route del 2001:db8:2::/64 vrf vrf-h1
-+	ip route del 198.51.100.0/24 vrf vrf-h1
-+
-+	ip address del 2001:db8:1::2/64 dev $h1
-+	ip address del 192.0.2.2/24 dev $h1
-+
-+	ip link set dev $h1 down
-+	vrf_destroy "vrf-h1"
-+}
-+
-+h2_create()
-+{
-+	vrf_create "vrf-h2"
-+	ip link set dev $h2 master vrf-h2
-+
-+	ip link set dev vrf-h2 up
-+	ip link set dev $h2 up
-+
-+	ip address add 198.51.100.2/24 dev $h2
-+	ip address add 2001:db8:2::2/64 dev $h2
-+
-+	ip route add 192.0.2.0/24 vrf vrf-h2 nexthop via 198.51.100.1
-+	ip route add 2001:db8:1::/64 vrf vrf-h2 nexthop via 2001:db8:2::1
-+}
-+
-+h2_destroy()
-+{
-+	ip route del 2001:db8:1::/64 vrf vrf-h2
-+	ip route del 192.0.2.0/24 vrf vrf-h2
-+
-+	ip address del 2001:db8:2::2/64 dev $h2
-+	ip address del 198.51.100.2/24 dev $h2
-+
-+	ip link set dev $h2 down
-+	vrf_destroy "vrf-h2"
-+}
-+
-+router1_create()
-+{
-+	vrf_create "vrf-r1"
-+	ip link set dev $rp11 master vrf-r1
-+	ip link set dev $rp12 master vrf-r1
-+	ip link set dev $rp13 master vrf-r1
-+
-+	ip link set dev vrf-r1 up
-+	ip link set dev $rp11 up
-+	ip link set dev $rp12 up
-+	ip link set dev $rp13 up
-+
-+	ip address add 192.0.2.1/24 dev $rp11
-+	ip address add 2001:db8:1::1/64 dev $rp11
-+
-+	ip address add 169.254.2.12/24 dev $rp12
-+	ip address add fe80:2::12/64 dev $rp12
-+
-+	ip address add 169.254.3.13/24 dev $rp13
-+	ip address add fe80:3::13/64 dev $rp13
-+}
-+
-+router1_destroy()
-+{
-+	ip route del 2001:db8:2::/64 vrf vrf-r1
-+	ip route del 198.51.100.0/24 vrf vrf-r1
-+
-+	ip address del fe80:3::13/64 dev $rp13
-+	ip address del 169.254.3.13/24 dev $rp13
-+
-+	ip address del fe80:2::12/64 dev $rp12
-+	ip address del 169.254.2.12/24 dev $rp12
-+
-+	ip address del 2001:db8:1::1/64 dev $rp11
-+	ip address del 192.0.2.1/24 dev $rp11
-+
-+	ip nexthop del id 103
-+	ip nexthop del id 101
-+	ip nexthop del id 102
-+	ip nexthop del id 106
-+	ip nexthop del id 104
-+	ip nexthop del id 105
-+
-+	ip link set dev $rp13 down
-+	ip link set dev $rp12 down
-+	ip link set dev $rp11 down
-+
-+	vrf_destroy "vrf-r1"
-+}
-+
-+router2_create()
-+{
-+	vrf_create "vrf-r2"
-+	ip link set dev $rp21 master vrf-r2
-+	ip link set dev $rp22 master vrf-r2
-+	ip link set dev $rp23 master vrf-r2
-+
-+	ip link set dev vrf-r2 up
-+	ip link set dev $rp21 up
-+	ip link set dev $rp22 up
-+	ip link set dev $rp23 up
-+
-+	ip address add 198.51.100.1/24 dev $rp21
-+	ip address add 2001:db8:2::1/64 dev $rp21
-+
-+	ip address add 169.254.2.22/24 dev $rp22
-+	ip address add fe80:2::22/64 dev $rp22
-+
-+	ip address add 169.254.3.23/24 dev $rp23
-+	ip address add fe80:3::23/64 dev $rp23
-+}
-+
-+router2_destroy()
-+{
-+	ip route del 2001:db8:1::/64 vrf vrf-r2
-+	ip route del 192.0.2.0/24 vrf vrf-r2
-+
-+	ip address del fe80:3::23/64 dev $rp23
-+	ip address del 169.254.3.23/24 dev $rp23
-+
-+	ip address del fe80:2::22/64 dev $rp22
-+	ip address del 169.254.2.22/24 dev $rp22
-+
-+	ip address del 2001:db8:2::1/64 dev $rp21
-+	ip address del 198.51.100.1/24 dev $rp21
-+
-+	ip nexthop del id 201
-+	ip nexthop del id 202
-+	ip nexthop del id 204
-+	ip nexthop del id 205
-+
-+	ip link set dev $rp23 down
-+	ip link set dev $rp22 down
-+	ip link set dev $rp21 down
-+
-+	vrf_destroy "vrf-r2"
-+}
-+
-+routing_nh_obj()
-+{
-+	ip nexthop add id 101 via 169.254.2.22 dev $rp12
-+	ip nexthop add id 102 via 169.254.3.23 dev $rp13
-+	ip nexthop add id 103 group 101/102
-+	ip route add 198.51.100.0/24 vrf vrf-r1 nhid 103
-+
-+	ip nexthop add id 104 via fe80:2::22 dev $rp12
-+	ip nexthop add id 105 via fe80:3::23 dev $rp13
-+	ip nexthop add id 106 group 104/105
-+	ip route add 2001:db8:2::/64 vrf vrf-r1 nhid 106
-+
-+	ip nexthop add id 201 via 169.254.2.12 dev $rp22
-+	ip nexthop add id 202 via 169.254.3.13 dev $rp23
-+	ip nexthop add id 203 group 201/202
-+	ip route add 192.0.2.0/24 vrf vrf-r2 nhid 203
-+
-+	ip nexthop add id 204 via fe80:2::12 dev $rp22
-+	ip nexthop add id 205 via fe80:3::13 dev $rp23
-+	ip nexthop add id 206 group 204/205
-+	ip route add 2001:db8:1::/64 vrf vrf-r2 nhid 206
-+}
-+
-+multipath4_test()
-+{
-+	local desc="$1"
-+	local weight_rp12=$2
-+	local weight_rp13=$3
-+	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
-+	local packets_rp12 packets_rp13
-+
-+	# Transmit multiple flows from h1 to h2 and make sure they are
-+	# distributed between both multipath links (rp12 and rp13)
-+	# according to the configured weights.
-+	sysctl_set net.ipv4.fib_multipath_hash_policy 1
-+	ip nexthop replace id 103 group 101,$weight_rp12/102,$weight_rp13
-+
-+	t0_rp12=$(link_stats_tx_packets_get $rp12)
-+	t0_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	ip vrf exec vrf-h1 $MZ -q -p 64 -A 192.0.2.2 -B 198.51.100.2 \
-+		-d 1msec -t udp "sp=1024,dp=0-32768"
-+
-+	t1_rp12=$(link_stats_tx_packets_get $rp12)
-+	t1_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	let "packets_rp12 = $t1_rp12 - $t0_rp12"
-+	let "packets_rp13 = $t1_rp13 - $t0_rp13"
-+	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
-+
-+	# Restore settings.
-+	ip nexthop replace id 103 group 101/102
-+	sysctl_restore net.ipv4.fib_multipath_hash_policy
-+}
-+
-+multipath6_l4_test()
-+{
-+	local desc="$1"
-+	local weight_rp12=$2
-+	local weight_rp13=$3
-+	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
-+	local packets_rp12 packets_rp13
-+
-+	# Transmit multiple flows from h1 to h2 and make sure they are
-+	# distributed between both multipath links (rp12 and rp13)
-+	# according to the configured weights.
-+	sysctl_set net.ipv6.fib_multipath_hash_policy 1
-+
-+	ip nexthop replace id 106 group 104,$weight_rp12/105,$weight_rp13
-+
-+	t0_rp12=$(link_stats_tx_packets_get $rp12)
-+	t0_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	$MZ $h1 -6 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
-+		-d 1msec -t udp "sp=1024,dp=0-32768"
-+
-+	t1_rp12=$(link_stats_tx_packets_get $rp12)
-+	t1_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	let "packets_rp12 = $t1_rp12 - $t0_rp12"
-+	let "packets_rp13 = $t1_rp13 - $t0_rp13"
-+	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
-+
-+	ip nexthop replace id 106 group 104/105
-+
-+	sysctl_restore net.ipv6.fib_multipath_hash_policy
-+}
-+
-+multipath6_test()
-+{
-+	local desc="$1"
-+	local weight_rp12=$2
-+	local weight_rp13=$3
-+	local t0_rp12 t0_rp13 t1_rp12 t1_rp13
-+	local packets_rp12 packets_rp13
-+
-+	ip nexthop replace id 106 group 104,$weight_rp12/105,$weight_rp13
-+
-+	t0_rp12=$(link_stats_tx_packets_get $rp12)
-+	t0_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	# Generate 16384 echo requests, each with a random flow label.
-+	for _ in $(seq 1 16384); do
-+		ip vrf exec vrf-h1 $PING6 2001:db8:2::2 -F 0 -c 1 -q >/dev/null 2>&1
-+	done
-+
-+	t1_rp12=$(link_stats_tx_packets_get $rp12)
-+	t1_rp13=$(link_stats_tx_packets_get $rp13)
-+
-+	let "packets_rp12 = $t1_rp12 - $t0_rp12"
-+	let "packets_rp13 = $t1_rp13 - $t0_rp13"
-+	multipath_eval "$desc" $weight_rp12 $weight_rp13 $packets_rp12 $packets_rp13
-+
-+	ip nexthop replace id 106 group 104/105
-+}
-+
-+multipath_test()
-+{
-+	log_info "Running IPv4 multipath tests"
-+	multipath4_test "ECMP" 1 1
-+	multipath4_test "Weighted MP 2:1" 2 1
-+	multipath4_test "Weighted MP 11:45" 11 45
-+
-+	log_info "Running IPv6 multipath tests"
-+	multipath6_test "ECMP" 1 1
-+	multipath6_test "Weighted MP 2:1" 2 1
-+	multipath6_test "Weighted MP 11:45" 11 45
-+
-+	log_info "Running IPv6 L4 hash multipath tests"
-+	multipath6_l4_test "ECMP" 1 1
-+	multipath6_l4_test "Weighted MP 2:1" 2 1
-+	multipath6_l4_test "Weighted MP 11:45" 11 45
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	rp11=${NETIFS[p2]}
-+
-+	rp12=${NETIFS[p3]}
-+	rp22=${NETIFS[p4]}
-+
-+	rp13=${NETIFS[p5]}
-+	rp23=${NETIFS[p6]}
-+
-+	rp21=${NETIFS[p7]}
-+	h2=${NETIFS[p8]}
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+
-+	router1_create
-+	router2_create
-+	routing_nh_obj
-+
-+	forwarding_enable
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	forwarding_restore
-+
-+	router2_destroy
-+	router1_destroy
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+ping_ipv4()
-+{
-+	ping_test $h1 198.51.100.2
-+}
-+
-+ping_ipv6()
-+{
-+	ping6_test $h1 2001:db8:2::2
-+}
-+
-+ip nexthop ls >/dev/null 2>&1
-+if [ $? -ne 0 ]; then
-+	echo "Nexthop objects not supported; skipping tests"
-+	exit 0
-+fi
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+routing_nh_obj
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+
+https://bugzilla.kernel.org/show_bug.cgi?id=203843
+
+            Bug ID: 203843
+           Summary: e1000e crash when ethernet is plugged in
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.1.7
+          Hardware: Intel
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: justinvangog@gmail.com
+        Regression: No
+
+Created attachment 283143
+  --> https://bugzilla.kernel.org/attachment.cgi?id=283143&action=edit  
+log of the crash
+
+I get a crash when i plug in a network cable after the system has booted.
+
+Im on kernel version 5.1.7
+
+e1000e driver version 3.4.2.4
+
+
+
+
+
+
+T30 ~ # [   20.027123] e1000e: enp0s31f6 NIC Link is Up 10 Mbps Full Duplex,
+Flow Control: None
+[   20.027151] e1000e 0000:00:1f.6 enp0s31f6: 10/100 speed: disabling TSO
+[   20.027211] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s31f6: link becomes ready
+[   25.212764] ------------[ cut here ]------------
+[   25.212824] NETDEV WATCHDOG: enp0s31f6 (e1000e): transmit queue 0 timed out
+[   25.212909] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:461
+dev_watchdog+0x1ee/0x200
+[   25.212977] Modules linked in: snd_hda_codec_realtek snd_hda_codec_generic
+snd_hda_intel snd_hda_codec snd_hwdep snd_hda_core e1000e(O) snd_pcm tpm_tis
+tpm_tis_core efivarfs
+[   25.213107] CPU: 3 PID: 0 Comm: swapper/3 Tainted: G           O     
+5.1.7-gentoo #1
+[   25.213171] Hardware name: Dell Inc. PowerEdge T30/07T4MC, BIOS 1.0.15
+07/12/2018
+[   25.213236] RIP: 0010:dev_watchdog+0x1ee/0x200
+[   25.213277] Code: 00 48 63 4d e0 eb 93 4c 89 e7 c6 05 bf 98 ad 00 01 e8 26
+d4 fc ff 89 d9 4c 89 e6 48 c7 c7 b0 85 68 84 48 89 c2 e8 79 96 83 ff <0f> 0b eb
+c0 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 c7 47 08
+[   25.213421] RSP: 0018:ffff9eefddb83ea0 EFLAGS: 00010286
+[   25.213466] RAX: 0000000000000000 RBX: 0000000000000000 RCX:
+0000000000000000
+[   25.213525] RDX: 0000000000040400 RSI: 00000000000000f6 RDI:
+0000000000000300
+[   25.213584] RBP: ffff9eefcaa9c440 R08: 000000000000039c R09:
+0000000000aaaaaa
+[   25.213643] R10: 0000000000000000 R11: ffffb691f01c0220 R12:
+ffff9eefcaa9c000
+[   25.213702] R13: 0000000000000003 R14: ffff9eefddb83ef0 R15:
+0000000000000000
+[   25.213762] FS:  0000000000000000(0000) GS:ffff9eefddb80000(0000)
+knlGS:0000000000000000
+[   25.213828] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   25.213877] CR2: 00007f6a77a0c680 CR3: 00000001b820e003 CR4:
+00000000003606e0
+[   25.213936] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+[   25.213994] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+0000000000000400
+[   25.214053] Call Trace:
+[   25.214080]  <IRQ>
+[   25.214107]  ? qdisc_put_unlocked+0x30/0x30
+[   25.214148]  call_timer_fn+0x26/0x120
+[   25.214185]  run_timer_softirq+0x390/0x3c0
+[   25.214225]  ? tick_sched_timer+0x32/0x70
+[   25.214266]  ? __hrtimer_run_queues+0x10b/0x280
+[   25.214310]  ? recalibrate_cpu_khz+0x10/0x10
+[   25.214352]  __do_softirq+0xd3/0x2ec
+[   25.214390]  irq_exit+0xa0/0xb0
+[   25.214422]  smp_apic_timer_interrupt+0x67/0x130
+[   25.214466]  apic_timer_interrupt+0xf/0x20
+[   25.214504]  </IRQ>
+[   25.214530] RIP: 0010:cpuidle_enter_state+0xac/0x420
+[   25.214574] Code: 89 04 24 0f 1f 44 00 00 31 ff e8 ff 66 8f ff 45 84 ff 74
+12 9c 58 f6 c4 02 0f 85 3e 03 00 00 31 ff e8 58 ca 93 ff fb 45 85 e4 <0f> 88 7c
+02 00 00 49 63 cc 48 8b 34 24 48 2b 74 24 08 48 8d 04 49
+[   25.214717] RSP: 0018:ffffb691c00bbe98 EFLAGS: 00000206 ORIG_RAX:
+ffffffffffffff13
+[   25.214787] RAX: ffff9eefddba0d00 RBX: ffffffff8489b260 RCX:
+000000000000001f
+[   25.214846] RDX: 00000005decbd37a RSI: 0000000026a5b845 RDI:
+0000000000000000
+[   25.214905] RBP: ffff9eefddba8200 R08: 0000000000000002 R09:
+00000000000205c0
+[   25.214964] R10: 00000017dec25626 R11: ffff9eefddb9fe44 R12:
+0000000000000006
+[   25.215023] R13: ffffffff8489b4b8 R14: ffffffff8489b4a0 R15:
+0000000000000000
+[   25.215086]  ? cpuidle_enter_state+0x91/0x420
+[   25.215128]  do_idle+0x1a6/0x1e0
+[   25.215164]  cpu_startup_entry+0x14/0x20
+[   25.215202]  start_secondary+0x159/0x180
+[   25.215240]  secondary_startup_64+0xa4/0xb0
+[   25.215279] ---[ end trace 7e6afe981485542a ]---
+[   25.215346] e1000e 0000:00:1f.6 enp0s31f6: Reset adapter unexpectedly
+[   29.186751] e1000e: enp0s31f6 NIC Link is Up 1000 Mbps Full Duplex, Flow
+Control: None
+
 -- 
-2.11.0
-
+You are receiving this mail because:
+You are the assignee for the bug.
