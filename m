@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0193881A
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 959F73883E
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 12:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbfFGKm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 06:42:56 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:59484 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbfFGKm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 06:42:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=lj8DwDhTbmbeNcSNnHB80GkseCcsUA06K+/VjZ4a8a8=; b=vvrFYb31xcWsEJ5vf9iLUK8bV
-        Gsz7hLE7NNjam9vFRdkBAa5QULeW/rXEZ53SsnX2vCRCd0cATC4d6aZ2XUVsefiIONaWqF62MEXon
-        HrhTjIw1V8/d0bALhdPu45Z0BHeGfOgTOuplFdl3KWxq403DFeT6LdcPORB9YzWfq8zOrTuwhRyMq
-        /78j8kfqRoTy0hWBiDYx6hKqREwClWp4BiJGbiY2Vu1VWtCxLIfzXnhY4r7GT6ILDPf+cBiSl7b6r
-        A2xQ7aUrXmqzYZ1Wtz5mJ0+WUiD8qgMhXeEDFEjIUlVZlVQryGwvgjr3X3niaryN/YRjeoB139kTg
-        +e3EoKBMw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38560)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hZCKi-0003gD-JQ; Fri, 07 Jun 2019 11:42:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hZCKh-0004Fy-EN; Fri, 07 Jun 2019 11:42:51 +0100
-Date:   Fri, 7 Jun 2019 11:42:51 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Robert Hancock <hancock@sedsystems.ca>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH net-next] net: sfp: Stop SFP polling and interrupt
- handling during shutdown
-Message-ID: <20190607104251.opqdsgjbyweb2rfg@shell.armlinux.org.uk>
-References: <1559844377-17188-1-git-send-email-hancock@sedsystems.ca>
- <20190606180908.ctoxi7c4i2uothzn@shell.armlinux.org.uk>
- <1a329ee9-4292-44a2-90eb-a82ca3de03f3@sedsystems.ca>
+        id S1728269AbfFGKuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 06:50:03 -0400
+Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:49678 "EHLO
+        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728115AbfFGKuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 06:50:03 -0400
+Received: from pps.filterd (m0049297.ppops.net [127.0.0.1])
+        by m0049297.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x57Aj5hN035109;
+        Fri, 7 Jun 2019 06:50:00 -0400
+Received: from alpi155.enaf.aldc.att.com (sbcsmtp7.sbc.com [144.160.229.24])
+        by m0049297.ppops.net-00191d01. with ESMTP id 2sym462ga2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Jun 2019 06:50:00 -0400
+Received: from enaf.aldc.att.com (localhost [127.0.0.1])
+        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x57AnxXD025199;
+        Fri, 7 Jun 2019 06:49:59 -0400
+Received: from zlp27126.vci.att.com (zlp27126.vci.att.com [135.66.87.47])
+        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x57AnsVm025123
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 7 Jun 2019 06:49:55 -0400
+Received: from zlp27126.vci.att.com (zlp27126.vci.att.com [127.0.0.1])
+        by zlp27126.vci.att.com (Service) with ESMTP id 81E094030700;
+        Fri,  7 Jun 2019 10:49:54 +0000 (GMT)
+Received: from mlpi432.sfdc.sbc.com (unknown [144.151.223.11])
+        by zlp27126.vci.att.com (Service) with ESMTP id 6F82E4013F97;
+        Fri,  7 Jun 2019 10:49:54 +0000 (GMT)
+Received: from sfdc.sbc.com (localhost [127.0.0.1])
+        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x57Anspr014433;
+        Fri, 7 Jun 2019 06:49:54 -0400
+Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
+        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x57AnqA6014386;
+        Fri, 7 Jun 2019 06:49:52 -0400
+Received: from debian10.vyatta.net (unknown [10.156.48.137])
+        by mail.eng.vyatta.net (Postfix) with ESMTPA id D9A603600A4;
+        Fri,  7 Jun 2019 03:49:48 -0700 (PDT)
+From:   George Wilkie <gwilkie@vyatta.att-mail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] mpls: fix warning with multi-label encap
+Date:   Fri,  7 Jun 2019 11:49:41 +0100
+Message-Id: <20190607104941.1026-1-gwilkie@vyatta.att-mail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1a329ee9-4292-44a2-90eb-a82ca3de03f3@sedsystems.ca>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-07_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906070077
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 02:57:22PM -0600, Robert Hancock wrote:
-> The idea there was to deal with the case where GPIO interrupts were
-> previously raised before shutdown and not yet handled by the threaded
-> interrupt handler by the time shutdown is called. After shutdown on the
-> SFP completes, the bus the GPIO stuff is on could potentially be shut
-> down at any moment, so we really don't want to be digging into the GPIO
-> states after that. Locking the mutex there ensures that we don't read a
-> stale value for the shutdown flag in the interrupt handler, since AFAIK
-> there's no other synchronization around that value.
+If you configure a route with multiple labels, e.g.
+  ip route add 10.10.3.0/24 encap mpls 16/100 via 10.10.2.2 dev ens4
+A warning is logged:
+  kernel: [  130.561819] netlink: 'ip': attribute type 1 has an invalid
+  length.
 
-There are two cases:
+This happens because mpls_iptunnel_policy has set the type of
+MPLS_IPTUNNEL_DST to fixed size NLA_U32.
+Change it to a minimum size.
+nla_get_labels() does the remaining validation.
 
-1) The interrupt is raised just as sfp_shutdown() is called but before
-   the mutex is taken.  We will get the full processing in this case.
+Signed-off-by: George Wilkie <gwilkie@vyatta.att-mail.com>
+---
+ net/mpls/mpls_iptunnel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-2) The interrupt is raised during the mutex-locked bit of sfp_shutdown()
-   or after the mutex in sfp_shutdown() is released.  We will get the
-   abbreviated processing.
-
-This means that the mutex doesn't provide any protection against full
-interrupt processing if it occurs just prior to or during the initial
-execution of sfp_shutdown().
-
-All that we need to ensure is that the state of sfp->shutdown is
-visible by the time sfp_shutdown() returns, and that none of the
-interrupt and worker functions are executing.  We have the worker
-functions covered by the synchronous cancelling of them, but not the
-interrupts, and as Florian points out, it's probably better to disable
-the interrupts, and again, that can be done synchronously to ensure
-that the handlers are not running.
-
-If the workers and interrupt handlers are synchronously disabled, we
-can be sure by the end of sfp_shutdown() that none of those paths are
-executing, so the next time something attempts to trigger them, they
-will see sfp->shutdown is set.
-
-I'm not convinced that we even need sfp->shutdown if we have cancelled
-the workers and disabled the interrupts.
-
+diff --git a/net/mpls/mpls_iptunnel.c b/net/mpls/mpls_iptunnel.c
+index 951b52d5835b..20c682143b01 100644
+--- a/net/mpls/mpls_iptunnel.c
++++ b/net/mpls/mpls_iptunnel.c
+@@ -28,7 +28,7 @@
+ #include "internal.h"
+ 
+ static const struct nla_policy mpls_iptunnel_policy[MPLS_IPTUNNEL_MAX + 1] = {
+-	[MPLS_IPTUNNEL_DST]	= { .type = NLA_U32 },
++	[MPLS_IPTUNNEL_DST]	= { .len = sizeof(u32) },
+ 	[MPLS_IPTUNNEL_TTL]	= { .type = NLA_U8 },
+ };
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
