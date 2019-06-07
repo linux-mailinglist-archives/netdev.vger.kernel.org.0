@@ -2,131 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B76E397D2
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABABA39805
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 23:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731001AbfFGVeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 17:34:05 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:39072 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729796AbfFGVeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 17:34:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1559943244; x=1591479244;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=ci2OMA7X9AFtU5+f8MLSLkh5+K8L37bF/lJzkinaJnU=;
-  b=gem5ntb1drE9MGRkPM5WsWaw5Pu+wvctKGjzu2UY9SomO46bGPWRAA18
-   zj64dDF3N8Wm4HGGcRzuuedz7M7oXAsJdPKj3IOQQx1fyLPh2hUe6OfPf
-   j+Zs5GjVmogiEinbMklopEhUm1Ee3IzBWAsFhqzHCJJLmnpZoDwRdrLp3
-   8=;
-X-IronPort-AV: E=Sophos;i="5.60,564,1549929600"; 
-   d="scan'208";a="736590956"
-Received: from iad6-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.124.125.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 07 Jun 2019 21:34:02 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id 1EE42A22F8;
-        Fri,  7 Jun 2019 21:34:02 +0000 (UTC)
-Received: from EX13D08EUB002.ant.amazon.com (10.43.166.232) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 7 Jun 2019 21:34:01 +0000
-Received: from EX13D04EUB002.ant.amazon.com (10.43.166.51) by
- EX13D08EUB002.ant.amazon.com (10.43.166.232) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 7 Jun 2019 21:34:00 +0000
-Received: from EX13D04EUB002.ant.amazon.com ([10.43.166.51]) by
- EX13D04EUB002.ant.amazon.com ([10.43.166.51]) with mapi id 15.00.1367.000;
- Fri, 7 Jun 2019 21:34:00 +0000
-From:   "Bshara, Nafea" <nafea@amazon.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>
-CC:     David Woodhouse <dwmw2@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Jubran, Samih" <sameehj@amazon.com>, Andrew Lunn <andrew@lunn.ch>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>
-Subject: Re: [PATCH V2 net 00/11] Extending the ena driver to support new
- features and enhance performance
-Thread-Topic: [PATCH V2 net 00/11] Extending the ena driver to support new
- features and enhance performance
-Thread-Index: AQHVGhq67AG/toDzFEuJgXAZxcdpDaaKc16AgAAPeQCAAAorgIAALp+AgAAG49KAAE7pAIAArv0AgAKvMgCAAHNcAP//1FmAgAB8GACAAA7HaYAAAvQAgAADxoeAAAXVgIAAFuSigAACzQCAAVLqgP//jIaA
-Date:   Fri, 7 Jun 2019 21:34:00 +0000
-Message-ID: <F6CECB83-63C5-4A91-8798-84846A3D7E00@amazon.com>
-References: <20190603144329.16366-1-sameehj@amazon.com>
- <20190603143205.1d95818e@cakuba.netronome.com>
- <9da931e72debc868efaac144082f40d379c50f3c.camel@amazon.co.uk>
- <20190603160351.085daa91@cakuba.netronome.com>
- <20190604015043.GG17267@lunn.ch>
- <D26B5448-1E74-44E8-83DA-FC93E5520325@amazon.com>
- <af79f238465ebe069bc41924a2ae2efbcdbd6e38.camel@infradead.org>
- <20190604102406.1f426339@cakuba.netronome.com>
- <7f697af8f31f4bc7ba30ef643e7b3921@EX13D11EUB003.ant.amazon.com>
- <20190606100945.49ceb657@cakuba.netronome.com>
- <D9B372D5-1B71-4387-AA8D-E38B22B44D8D@amazon.com>
- <20190606150428.2e55eb08@cakuba.netronome.com>
- <861B5CF2-878E-4610-8671-9D66AB61ABD7@amazon.com>
- <20190606160756.73fe4c06@cakuba.netronome.com>
- <35E875B8-FAE8-4C6A-BA30-FB3E2F7BA66B@amazon.com>
- <20190606164219.10dca54e@cakuba.netronome.com>
- <9057E288-28BA-4865-B41A-5847EE41D66F@amazon.com>
- <20190606181416.5ce1400d@cakuba.netronome.com>
- <20190607142717.3ee89f12@cakuba.netronome.com>
-In-Reply-To: <20190607142717.3ee89f12@cakuba.netronome.com>
+        id S1731336AbfFGVro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 17:47:44 -0400
+Received: from mail-eopbgr30044.outbound.protection.outlook.com ([40.107.3.44]:37518
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731225AbfFGVro (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 17:47:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nL4CpUZwsPZpxz19KQ8a0R0tIqSzzSWqvsXlxkLjYR8=;
+ b=r00YCAb4Mx/7h0aEZWkwHOxCKYhZ+uGgPWWDpSfKXZOZtBjh+KrvxzChIAv1cz+xc2wwMTtFg6kNdaSBLRVY1AusX3Scq5D2D9eHjf9cfPcO4ANnph5tUAwxmwY3tk0Wvgi3ZJZ92Sg9YuDUvN40mqkeVqqaIYH9zCSkQ1miMvI=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB6139.eurprd05.prod.outlook.com (20.179.12.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.15; Fri, 7 Jun 2019 21:47:35 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::4008:6417:32d4:6031]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::4008:6417:32d4:6031%5]) with mapi id 15.20.1965.011; Fri, 7 Jun 2019
+ 21:47:35 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/7] Mellanox, mlx5 fixes 2019-06-07
+Thread-Topic: [pull request][net 0/7] Mellanox, mlx5 fixes 2019-06-07
+Thread-Index: AQHVHXqeZU0Jwu8SiEqo703dnaDoQA==
+Date:   Fri, 7 Jun 2019 21:47:35 +0000
+Message-ID: <20190607214716.16316-1-saeedm@mellanox.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/10.10.a.190512
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR02CA0033.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::46) To DB8PR05MB5898.eurprd05.prod.outlook.com
+ (2603:10a6:10:a4::32)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.97]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e00996de-7a41-4cfd-dada-08d6eb91c0a7
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6139;
+x-ms-traffictypediagnostic: DB8PR05MB6139:
+x-microsoft-antispam-prvs: <DB8PR05MB6139AB55E3FAA17AFA5F8561BE100@DB8PR05MB6139.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-forefront-prvs: 0061C35778
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(366004)(376002)(346002)(136003)(189003)(199004)(71200400001)(81166006)(71190400001)(8676002)(25786009)(52116002)(64756008)(66446008)(66556008)(66476007)(8936002)(86362001)(99286004)(73956011)(66946007)(66066001)(50226002)(54906003)(6916009)(6512007)(81156014)(7736002)(316002)(486006)(14444005)(256004)(102836004)(2906002)(305945005)(6116002)(53936002)(3846002)(4326008)(107886003)(6436002)(36756003)(476003)(2616005)(6486002)(68736007)(6506007)(386003)(1076003)(186003)(26005)(14454004)(5660300002)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6139;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: o/F8SCVrLu5v8vMeHxN1FiOhJKotCe4yt6z9PwcYQ0znVeCJ2T1srP+2j3wNUN+Mwm7J/QkFFxU2fY5ZsLIZpFYVClYJDyyRNvfjNI7K5uyQS8BiZaJbAwNjt1VhVAbSKLI8JRv1d+rcPhnO1T08kLkFNeXOA9OgocdX0Di1Mf4BN5c/+ZbqtdSQdZpLXLdh+e5zmVPXBJFP92aDyA+JF2tMCEkq+8JvYdOfaDCxl6Yne1RN824+d2DHMBzlpwt9+F+I2ZPjD2O1Bg4BP6YRxMDpgUaCuNj0QXolifm6u39z+gT8JYw2thneYkhjzzkymbmOiI5tbv4kwUEabAEgGmaXqjfzl6vGBFDn1kYdCAnlZRER6MYgl0kJT1aeSpjvmxxy7c1AjNw4YxsQWzAUVinCmCVoptU7U4xHHG2k4ag=
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <3C4550C3A79E3344B16EF62D61AEC19D@amazon.com>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e00996de-7a41-4cfd-dada-08d6eb91c0a7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 21:47:35.6763
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6139
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDYvNy8xOSwgMjoyNyBQTSwgIkpha3ViIEtpY2luc2tpIiA8amFrdWIua2ljaW5z
-a2lAbmV0cm9ub21lLmNvbT4gd3JvdGU6DQoNCiAgICBPbiBUaHUsIDYgSnVuIDIwMTkgMTg6MTQ6
-MTYgLTA3MDAsIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KICAgID4gT24gRnJpLCA3IEp1biAyMDE5
-IDAxOjA0OjE0ICswMDAwLCBCc2hhcmEsIE5hZmVhIHdyb3RlOg0KICAgID4gPiBPbiBKdW4gNiwg
-MjAxOSwgYXQgNDo0MyBQTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6ICANCiAgICA+ID4gPj4+IE9r
-YXksIHRoZW4geW91IGtub3cgd2hpY2ggb25lIGlzIHdoaWNoLiAgQXJlIHRoZXJlIG11bHRpcGxl
-IEVOQXMgYnV0DQogICAgPiA+ID4+PiBvbmUgRUZBPyAgDQogICAgPiA+ID4+IA0KICAgID4gPiA+
-PiBZZXMsICB2ZXJ5IHBvc3NpYmxlLiBWZXJ5IGNvbW1vbg0KICAgID4gPiA+PiANCiAgICA+ID4g
-Pj4gVHlwaWNhbCB1c2UgY2FzZSB0aGF0IGluc3RhbmNlcyBoYXZlIG9uZSBlbmEgZm9yIGNvbnRy
-b2wgcGxhbmUsIG9uZQ0KICAgID4gPiA+PiBmb3IgaW50ZXJuZXQgZmFjaW5nICwgYW5kIG9uZSAx
-MDBHIGVuYSB0aGF0IGFsc28gaGF2ZSBlZmEgY2FwYWJpbGl0aWVzICANCiAgICA+ID4gPiANCiAg
-ICA+ID4gPiBJIHNlZSwgYW5kIHRob3NlIGFyZSBQQ0kgZGV2aWNlcy4uICBTb21lIGZvcm0gb2Yg
-cGxhdGZvcm0gZGF0YSB3b3VsZA0KICAgID4gPiA+IHNlZW0gbGlrZSB0aGUgYmVzdCBmaXQgdG8g
-bWUuICBUaGVyZSBpcyBzb21ldGhpbmcgY2FsbGVkOg0KICAgID4gPiA+IA0KICAgID4gPiA+IC9z
-eXMvYnVzL3BjaS8ke2RiZGZ9L2xhYmVsDQogICAgPiA+ID4gDQogICAgPiA+ID4gSXQgc2VlbXMg
-dG8gY29tZSBmcm9tIHNvbWUgQUNQSSB0YWJsZSAtIERTTSBtYXliZT8gIEkgdGhpbmsgeW91IGNh
-biBwdXQNCiAgICA+ID4gPiB3aGF0ZXZlciBzdHJpbmcgeW91IHdhbnQgdGhlcmUg8J+klCAgICAN
-CiAgICA+ID4gDQogICAgPiA+IEFjcGkgcGF0aCB3b27igJl0IHdvcmssIG11Y2ggb2YgdGhlZSBp
-bnRlcmZhY2UgYXJlIGhvdCBhdHRhY2hlZCwgdXNpbmcNCiAgICA+ID4gbmF0aXZlIHBjaWUgaG90
-IHBsdWcgYW5kIGFjcGkgd29u4oCZdCBiZSBpbnZvbHZlZC4gICANCiAgICA+IA0KICAgID4gUGVy
-aGFwcyBob3RwbHVnIGJyZWFrIERTTSwgSSB3b24ndCBwcmV0ZW5kIHRvIGJlIGFuIEFDUEkgZXhw
-ZXJ0LiAgU28geW91DQogICAgPiBjYW4gZmluZCBhIHdheSB0byBzdHVmZiB0aGUgbGFiZWwgaW50
-byB0aGF0IGZpbGUgZnJvbSBhbm90aGVyIHNvdXJjZS4NCiAgICA+IFRoZXJlJ3MgYWxzbyBWUEQs
-IG9yIGN1c3RvbSBQQ0kgY2FwcywgYnV0IHBsYXRmb3JtIGRhdGEgZ2VuZXJhbGx5IHNlZW1zDQog
-ICAgPiBsaWtlIGEgYmV0dGVyIGlkZWEuDQogICAgDQogICAgSmlyaSwgZG8geW91IGhhdmUgYW55
-IHRob3VnaHRzIGFib3V0IHVzaW5nIHBoeXNfcG9ydF9uYW1lIGZvciBleHBvc2luZw0KICAgIHRv
-cG9sb2d5IGluIHZpcnR1YWwgZW52aXJvbm1lbnRzLiAgUGVyaGFwcyB0aGF0J3MgdGhlIGJlc3Qg
-Zml0IG9uIHRoZQ0KICAgIG5ldGRldiBzaWRlLiAgSXQncyBub3QgbGlrZSB3ZSB3YW50IGFueSBv
-dGhlciBwb3J0IG5hbWUgaW4gc3VjaCBjYXNlLA0KICAgIGFuZCBoYXZpbmcgaXQgYXV0b21hdGlj
-YWxseSBhcHBlbmRlZCB0byB0aGUgbmV0ZGV2IG5hbWUgbWF5IGJlIHVzZWZ1bC4NCiAgICANCmFu
-eSBwcmVmZXJlbmNlIGZvciB0aGF0IHZzIC9zeXNmcyA/DQoNCg0KDQo=
+SGkgRGF2ZSwNCg0KVGhpcyBzZXJpZXMgaW50cm9kdWNlcyBzb21lIGZpeGVzIHRvIG1seDUgZHJp
+dmVyLg0KDQpQbGVhc2UgcHVsbCBhbmQgbGV0IG1lIGtub3cgaWYgdGhlcmUgaXMgYW55IHByb2Js
+ZW0uDQoNCkZvciAtc3RhYmxlIHY0LjE3DQogICgnbmV0L21seDU6IEF2b2lkIHJlbG9hZGluZyBh
+bHJlYWR5IHJlbW92ZWQgZGV2aWNlcycpDQoNCkZvciAtc3RhYmxlIHY1LjANCiAgKCduZXQvbWx4
+NWU6IEF2b2lkIGRldGFjaGluZyBub24tZXhpc3RpbmcgbmV0ZGV2IHVuZGVyIHN3aXRjaGRldiBt
+b2RlJykNCg0KRm9yIC1zdGFibGUgdjUuMQ0KICAoJ25ldC9tbHg1ZTogRml4IHNvdXJjZSBwb3J0
+IG1hdGNoaW5nIGluIGZkYiBwZWVyIGZsb3cgcnVsZScpDQogICgnbmV0L21seDVlOiBTdXBwb3J0
+IHRhZ2dlZCB0dW5uZWwgb3ZlciBib25kJykNCiAgKCduZXQvbWx4NWU6IEFkZCBuZG9fc2V0X2Zl
+YXR1cmUgZm9yIHVwbGluayByZXByZXNlbnRvcicpDQogICgnbmV0L21seDU6IFVwZGF0ZSBwY2kg
+ZXJyb3IgaGFuZGxlciBlbnRyaWVzIGFuZCBjb21tYW5kIHRyYW5zbGF0aW9uJykNCg0KVGhhbmtz
+LA0KU2FlZWQuDQoNCi0tLQ0KVGhlIGZvbGxvd2luZyBjaGFuZ2VzIHNpbmNlIGNvbW1pdCBmMmM3
+Yzc2YzVkMGE0NDMwNTNlOTRhZGI5ZjA5MThmYTJmYjg1YzNhOg0KDQogIExpbnV4IDUuMi1yYzMg
+KDIwMTktMDYtMDIgMTM6NTU6MzMgLTA3MDApDQoNCmFyZSBhdmFpbGFibGUgaW4gdGhlIEdpdCBy
+ZXBvc2l0b3J5IGF0Og0KDQogIGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2Vy
+bmVsL2dpdC9zYWVlZC9saW51eC5naXQgdGFncy9tbHg1LWZpeGVzLTIwMTktMDYtMDcNCg0KZm9y
+IHlvdSB0byBmZXRjaCBjaGFuZ2VzIHVwIHRvIDQ1ZTdkNGMwYzE3MjdkMzYyMDEyYTYyZWI1NzI1
+NGVhNzFhMmQ1OTE6DQoNCiAgbmV0L21seDVlOiBTdXBwb3J0IHRhZ2dlZCB0dW5uZWwgb3ZlciBi
+b25kICgyMDE5LTA2LTA3IDE0OjQwOjM3IC0wNzAwKQ0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQptbHg1LWZpeGVzLTIw
+MTktMDYtMDcNCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQ0KQWxhYSBIbGVpaGVsICgyKToNCiAgICAgIG5ldC9tbHg1OiBB
+dm9pZCByZWxvYWRpbmcgYWxyZWFkeSByZW1vdmVkIGRldmljZXMNCiAgICAgIG5ldC9tbHg1ZTog
+QXZvaWQgZGV0YWNoaW5nIG5vbi1leGlzdGluZyBuZXRkZXYgdW5kZXIgc3dpdGNoZGV2IG1vZGUN
+Cg0KQ2hyaXMgTWkgKDEpOg0KICAgICAgbmV0L21seDVlOiBBZGQgbmRvX3NldF9mZWF0dXJlIGZv
+ciB1cGxpbmsgcmVwcmVzZW50b3INCg0KRWR3YXJkIFNyb3VqaSAoMSk6DQogICAgICBuZXQvbWx4
+NTogVXBkYXRlIHBjaSBlcnJvciBoYW5kbGVyIGVudHJpZXMgYW5kIGNvbW1hbmQgdHJhbnNsYXRp
+b24NCg0KRWxpIEJyaXRzdGVpbiAoMSk6DQogICAgICBuZXQvbWx4NWU6IFN1cHBvcnQgdGFnZ2Vk
+IHR1bm5lbCBvdmVyIGJvbmQNCg0KUmFlZCBTYWxlbSAoMSk6DQogICAgICBuZXQvbWx4NWU6IEZp
+eCBzb3VyY2UgcG9ydCBtYXRjaGluZyBpbiBmZGIgcGVlciBmbG93IHJ1bGUNCg0KU2hheSBBZ3Jv
+c2tpbiAoMSk6DQogICAgICBuZXQvbWx4NWU6IFJlcGxhY2UgcmVjaXByb2NhbF9zY2FsZSBpbiBU
+WCBzZWxlY3QgcXVldWUgZnVuY3Rpb24NCg0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
+L21seDUvY29yZS9jbWQuYyAgICAgIHwgIDggKysrKysrKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0
+L21lbGxhbm94L21seDUvY29yZS9kZXYuYyAgICAgIHwgMjUgKysrKysrKysrKysrKysrKysrKyst
+LQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi5oICAgICAgIHwg
+IDIgKysNCiAuLi4vbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi90Y190dW4uYyAg
+ICB8IDExICsrKysrLS0tLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
+cmUvZW5fbWFpbi5jICB8ICA5ICsrKysrKy0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFu
+b3gvbWx4NS9jb3JlL2VuX3JlcC5jICAgfCAxMCArKysrKy0tLS0NCiBkcml2ZXJzL25ldC9ldGhl
+cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fdGMuYyAgICB8ICAzIC0tLQ0KIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90eC5jICAgIHwgMTIgKysrKystLS0tLS0N
+CiA4IGZpbGVzIGNoYW5nZWQsIDU4IGluc2VydGlvbnMoKyksIDIyIGRlbGV0aW9ucygtKQ0K
