@@ -2,105 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C24E339649
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 21:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B204F39689
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 22:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731310AbfFGT6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 15:58:09 -0400
-Received: from mail-pg1-f169.google.com ([209.85.215.169]:35852 "EHLO
-        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731269AbfFGT6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 15:58:09 -0400
-Received: by mail-pg1-f169.google.com with SMTP id a3so1700416pgb.3
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 12:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NWyeuCRufUS6eZsmUA6uA67/Ma2SThIZq5J+AXara/4=;
-        b=Gy9PLl2p+FP25sFcEg7/EmmrEH+rGEKyFqBEXPLSil6kwETemL6EqBfYvLMeQHdmrS
-         C0nPPHh8h7LTc3byWEO00KwIznV+wZRSu6kHd8F+4IZhu2NOygSztChQnoy1cjpPXo64
-         TZsQHyxwgNnvuddvM2H5nPQ89F2TiypOicTCuluVEpVO5N9knG40GCsXHsOBBTq8+Fmz
-         dDhL5gimN+iSBle6GJIXsbEFDaTCohdLlmaDTWo2lUjCVk25NcwiS2RjFbwKM3Nc6E4O
-         CzACY6AY75c56lp90GMzaaXloptlVxZldIzETgoEfkI5B62XJlnYRZnFZGhfo/CFa34K
-         qX/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NWyeuCRufUS6eZsmUA6uA67/Ma2SThIZq5J+AXara/4=;
-        b=aHNB8FqYHQ+egezj+w7mo9YSA8CKHBS/IoYhUlAJIq5tyGHQkZ/2+0BBlCYcT8FLgC
-         W0zTfbBrqH1QD3kVxAEkAM1Wk3B7t4qhgTEuJSzBgg+hovXxwksgMasJUFIA3IvItnk2
-         7mNVDsx8OWYSqxAX5aTTPLr+tebtZk4mNjOmhnTHpfwrNoj4cmRVKJgMZK0geQdqVSbV
-         WugegrtSN2KOzTytvZnOU9PO2llnU2SFd6MEmjIhJa57UFLVZpBlteBdgJOCcOFEezA0
-         HwfOkQT1iboCztTpYwJMiaao4WBsZSV39CmY5vNiWo/sdIy/mBMoR0iKeEKjuoC9dAkk
-         kycw==
-X-Gm-Message-State: APjAAAVmZxsB88UzSw0wAREkKYjzmQAoWNWcH8I5bX9s4wB+lk+PMvDC
-        4PQRX9mctGhBOolyDv7a/Y+UP/S12h72K9CdiPI=
-X-Google-Smtp-Source: APXvYqw53mg4iifQm2wPbvTn+G3qVHFfsTQtHHajwi5f+ZRzm6ZW4BNdZ20+zstNY+JEztaYNGwkcv/5fBiqOdsMi2g=
-X-Received: by 2002:a17:90a:de08:: with SMTP id m8mr7653961pjv.50.1559937488566;
- Fri, 07 Jun 2019 12:58:08 -0700 (PDT)
+        id S1730242AbfFGUMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 16:12:35 -0400
+Received: from mga18.intel.com ([134.134.136.126]:46026 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728724AbfFGUMf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jun 2019 16:12:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Jun 2019 13:12:34 -0700
+X-ExtLoop1: 1
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+  by fmsmga005.fm.intel.com with ESMTP; 07 Jun 2019 13:12:33 -0700
+Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
+ ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Fri, 7 Jun 2019 13:12:33 -0700
+Received: from orsmsx121.amr.corp.intel.com ([169.254.10.133]) by
+ ORSMSX161.amr.corp.intel.com ([169.254.4.126]) with mapi id 14.03.0415.000;
+ Fri, 7 Jun 2019 13:12:33 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Colin King <colin.king@canonical.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH][next][V2] ixgbe: fix potential u32 overflow on shift
+Thread-Topic: [PATCH][next][V2] ixgbe: fix potential u32 overflow on shift
+Thread-Index: AQHVHV2OjqHrl9oJCUOLbN4+Vk3DLaaQn9mg
+Date:   Fri, 7 Jun 2019 20:12:33 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB589674F4D9@ORSMSX121.amr.corp.intel.com>
+References: <20190607181920.23339-1-colin.king@canonical.com>
+In-Reply-To: <20190607181920.23339-1-colin.king@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNDgzYTI2MjctYWRmOC00MzIyLTg3ZjktYmQ4ZWJhZjYxNjQ2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiXC9BM3NKY01ieTVneE1rRWRGbldvZWlRYjVJT01DZHByNTJodE15bEkrc3RJM1hYTks1TVE0dDFlMmV3TEw0M2wifQ==
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190530083508.i52z5u25f2o7yigu@sesse.net> <CAM_iQpX-fJzVXc4sLndkZfD4L-XJHCwkndj8xG2p7zY04k616g@mail.gmail.com>
- <20190605072712.avp3svw27smrq2qx@sesse.net> <CAM_iQpXWM35ySoigS=TdsXr8+3Ws4ZMspJCBVdWngggCBi362g@mail.gmail.com>
- <20190606073611.7n2w5n52pfh3jzks@sesse.net>
-In-Reply-To: <20190606073611.7n2w5n52pfh3jzks@sesse.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 7 Jun 2019 12:57:57 -0700
-Message-ID: <CAM_iQpVFq8TdnHSOsC7+6tK3KEoeyF1SFOQ-DheLW7Y=g77xxg@mail.gmail.com>
-Subject: Re: EoGRE sends undersized frames without padding
-To:     "Steinar H. Gunderson" <steinar+kernel@gunderson.no>
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 6, 2019 at 12:36 AM Steinar H. Gunderson
-<steinar+kernel@gunderson.no> wrote:
->
-> On Wed, Jun 05, 2019 at 06:17:51PM -0700, Cong Wang wrote:
-> > Hmm, sounds like openvswitch should pad the packets in this scenario,
-> > like hardware switches padding those on real wires.
->
-> Well, openvswitch say that they just throw packets around and assume they're
-> valid... :-)
-
-_If_ the hardware switch has to pad them (according to what you said),
-why software switch doesn't?
-
->
-> In any case, if you talk EoGRE to the vWLC directly, I doubt it accepts this,
-> given that it doesn't accept it on the virtual NICs.
->
-> >> Yes, but that's just Linux accepting something invalid, no? It doesn't mean
-> >> it should be sending it out.
-> > Well, we can always craft our own ill-formatted packets, right? :) Does
-> > any standard say OS has to drop ethernet frames shorter than the
-> > minimum?
->
-> I believe you're fully allowed to accept them (although it might be
-> technically difficult on physical media). But that doesn't mean everybody
-> else has to accept them. :-)
-
-Sure, Linux is already different with other OS'es, this also means Linux
-doesn't have to reject them.
-
->
-> >>> Some hardware switches pad for ETH_ZLEN when it goes through a real wire.
-> >> All hardware switches should; it's a 802.1Q demand. (Some have traditionally
-> >> been buggy in that they haven't added extra padding back when they strip the
-> >> VLAN tag.)
-> > If so, so is the software switch, that is openvswitch?
->
-> What if the other end isn't a (virtual) switch, but a host?
-
-Rather than arguing about this, please check what ethernet standard
-says. It would be much easier to convince others with standard.
-
-Depends on what standard says, we may need to pad on xmit path or on
-forwarding path (switch), or rejecting shorter frames on receive path.
-
-Thanks.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBDb2xpbiBLaW5nIFttYWlsdG86
+Y29saW4ua2luZ0BjYW5vbmljYWwuY29tXQ0KPiBTZW50OiBGcmlkYXksIEp1bmUgMDcsIDIwMTkg
+MTE6MTkgQU0NCj4gVG86IEtlbGxlciwgSmFjb2IgRSA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29t
+PjsgS2lyc2hlciwgSmVmZnJleSBUDQo+IDxqZWZmcmV5LnQua2lyc2hlckBpbnRlbC5jb20+OyBE
+YXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgaW50ZWwtd2lyZWQtDQo+IGxh
+bkBsaXN0cy5vc3Vvc2wub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiBrZXJuZWwt
+amFuaXRvcnNAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+
+IFN1YmplY3Q6IFtQQVRDSF1bbmV4dF1bVjJdIGl4Z2JlOiBmaXggcG90ZW50aWFsIHUzMiBvdmVy
+ZmxvdyBvbiBzaGlmdA0KPiANCj4gRnJvbTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fu
+b25pY2FsLmNvbT4NCj4gDQo+IFRoZSB1MzIgdmFyaWFibGUgcmVtIGlzIGJlaW5nIHNoaWZ0ZWQg
+dXNpbmcgdTMyIGFyaXRobWV0aWMgaG93ZXZlcg0KPiBpdCBpcyBiZWluZyBwYXNzZWQgdG8gZGl2
+X3U2NCB0aGF0IGV4cGVjdHMgdGhlIGV4cHJlc3Npb24gdG8gYmUgYSB1NjQuDQo+IFRoZSAzMiBi
+aXQgc2hpZnQgbWF5IHBvdGVudGlhbGx5IG92ZXJmbG93LCBzbyBjYXN0IHJlbSB0byBhIHU2NCBi
+ZWZvcmUNCj4gc2hpZnRpbmcgdG8gYXZvaWQgdGhpcy4gIEFsc28gcmVtb3ZlIGNvbW1lbnQgYWJv
+dXQgb3ZlcmZsb3cuDQo+IA0KPiBBZGRyZXNzZXMtQ292ZXJpdHk6ICgiVW5pbnRlbnRpb25hbCBp
+bnRlZ2VyIG92ZXJmbG93IikNCj4gRml4ZXM6IGNkNDU4MzIwNjk5MCAoIml4Z2JlOiBpbXBsZW1l
+bnQgc3VwcG9ydCBmb3IgU0RQL1BQUyBvdXRwdXQgb24gWDU1MA0KPiBoYXJkd2FyZSIpDQo+IEZp
+eGVzOiA2OGQ5Njc2ZmMwNGUgKCJpeGdiZTogZml4IFBUUCBTRFAgcGluIHNldHVwIG9uIFg1NDAg
+aGFyZHdhcmUiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0Bj
+YW5vbmljYWwuY29tPg0KPiAtLS0NCj4gDQo+IFYyOiB1cGRhdGUgY29tbWVudA0KDQpUaGFua3Mg
+Q29saW4hDQoNCkFja2VkLWJ5OiBKYWNvYiBLZWxsZXIgPGphY29iLmUua2VsbGVyQGludGVsLmNv
+bT4NCg0KUmVnYXJkcywNCkpha2UNCg0KPiANCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9pbnRlbC9peGdiZS9peGdiZV9wdHAuYyB8IDE0ICsrKystLS0tLS0tLS0tDQo+ICAxIGZpbGUg
+Y2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxMCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9wdHAuYw0KPiBiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX3B0cC5jDQo+IGluZGV4IDJjNGQz
+MjdmY2MyZS4uMGJlMTNhOTBmZjc5IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9pbnRlbC9peGdiZS9peGdiZV9wdHAuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9p
+bnRlbC9peGdiZS9peGdiZV9wdHAuYw0KPiBAQCAtMjA1LDExICsyMDUsOCBAQCBzdGF0aWMgdm9p
+ZCBpeGdiZV9wdHBfc2V0dXBfc2RwX1g1NDAoc3RydWN0DQo+IGl4Z2JlX2FkYXB0ZXIgKmFkYXB0
+ZXIpDQo+ICAJICovDQo+ICAJcmVtID0gKE5TX1BFUl9TRUMgLSByZW0pOw0KPiANCj4gLQkvKiBB
+ZGp1c3QgdGhlIGNsb2NrIGVkZ2UgdG8gYWxpZ24gd2l0aCB0aGUgbmV4dCBmdWxsIHNlY29uZC4g
+VGhpcw0KPiAtCSAqIGFzc3VtZXMgdGhhdCB0aGUgY3ljbGUgY291bnRlciBzaGlmdCBpcyBzbWFs
+bCBlbm91Z2ggdG8gYXZvaWQNCj4gLQkgKiBvdmVyZmxvd2luZyB3aGVuIHNoaWZ0aW5nIHRoZSBy
+ZW1haW5kZXIuDQo+IC0JICovDQo+IC0JY2xvY2tfZWRnZSArPSBkaXZfdTY0KChyZW0gPDwgY2Mt
+PnNoaWZ0KSwgY2MtPm11bHQpOw0KPiArCS8qIEFkanVzdCB0aGUgY2xvY2sgZWRnZSB0byBhbGln
+biB3aXRoIHRoZSBuZXh0IGZ1bGwgc2Vjb25kLiAqLw0KPiArCWNsb2NrX2VkZ2UgKz0gZGl2X3U2
+NCgoKHU2NClyZW0gPDwgY2MtPnNoaWZ0KSwgY2MtPm11bHQpOw0KPiAgCXRyZ3R0aW1sID0gKHUz
+MiljbG9ja19lZGdlOw0KPiAgCXRyZ3R0aW1oID0gKHUzMikoY2xvY2tfZWRnZSA+PiAzMik7DQo+
+IA0KPiBAQCAtMjkxLDExICsyODgsOCBAQCBzdGF0aWMgdm9pZCBpeGdiZV9wdHBfc2V0dXBfc2Rw
+X1g1NTAoc3RydWN0DQo+IGl4Z2JlX2FkYXB0ZXIgKmFkYXB0ZXIpDQo+ICAJICovDQo+ICAJcmVt
+ID0gKE5TX1BFUl9TRUMgLSByZW0pOw0KPiANCj4gLQkvKiBBZGp1c3QgdGhlIGNsb2NrIGVkZ2Ug
+dG8gYWxpZ24gd2l0aCB0aGUgbmV4dCBmdWxsIHNlY29uZC4gVGhpcw0KPiAtCSAqIGFzc3VtZXMg
+dGhhdCB0aGUgY3ljbGUgY291bnRlciBzaGlmdCBpcyBzbWFsbCBlbm91Z2ggdG8gYXZvaWQNCj4g
+LQkgKiBvdmVyZmxvd2luZyB3aGVuIHNoaWZ0aW5nIHRoZSByZW1haW5kZXIuDQo+IC0JICovDQo+
+IC0JY2xvY2tfZWRnZSArPSBkaXZfdTY0KChyZW0gPDwgY2MtPnNoaWZ0KSwgY2MtPm11bHQpOw0K
+PiArCS8qIEFkanVzdCB0aGUgY2xvY2sgZWRnZSB0byBhbGlnbiB3aXRoIHRoZSBuZXh0IGZ1bGwg
+c2Vjb25kLiAqLw0KPiArCWNsb2NrX2VkZ2UgKz0gZGl2X3U2NCgoKHU2NClyZW0gPDwgY2MtPnNo
+aWZ0KSwgY2MtPm11bHQpOw0KPiANCj4gIAkvKiBYNTUwIGhhcmR3YXJlIHN0b3JlcyB0aGUgdGlt
+ZSBpbiAzMmJpdHMgb2YgJ2JpbGxpb25zIG9mIGN5Y2xlcycgYW5kDQo+ICAJICogMzJiaXRzIG9m
+ICdjeWNsZXMnLiBUaGVyZSdzIG5vIGd1YXJhbnRlZSB0aGF0IGN5Y2xlcyByZXByZXNlbnRzDQo+
+IC0tDQo+IDIuMjAuMQ0KDQo=
