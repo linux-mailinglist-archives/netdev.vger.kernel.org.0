@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68068394D2
-	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F047394DE
+	for <lists+netdev@lfdr.de>; Fri,  7 Jun 2019 20:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732134AbfFGSz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 14:55:29 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37979 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729241AbfFGSz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:55:27 -0400
-Received: by mail-pg1-f194.google.com with SMTP id v11so1616191pgl.5
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 11:55:27 -0700 (PDT)
+        id S1732295AbfFGSzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 14:55:48 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:45896 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732083AbfFGSzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 14:55:47 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w34so1601178pga.12
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 11:55:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=2E9VYR6XkfxuAdQ0Z1HRXTHw3UVmtfSWQbklPpZvhfw=;
-        b=sQljH9oRlLZJIj4mtznnKJX0pCeppeEI6DZJX43ixkxHhT5Z8IaZKMM7DGybHF/Ghw
-         WHRs6paysCHTv5W0fdFmJwoDlsgdjsliQf89gdu15641bqEFPPsBqgsJDmqYomqsYN8Q
-         JkyK1sUkJ2WDn0Ybj/3O9RFNwsK5Q2fouuIPRzEN1tovUXNZFWjxT4VKfHwpHiw1P4/1
-         Ku9orRRcG1cRvQBU9B8zYeo7GUy5fXZC+HObiweGrbwzz81B0ttiqt3ypRUuG62kew08
-         TAKKO1Wxh0RkWaigTj5IeLdaQjMFALEq7B/YpiwhPP1SNM8lTAh8vxJ7GfopoOkMd+oG
-         G8+g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=OqkWOX4LCkr1GiS0NEd3XdV9+Bg2GAYGC3wHGsctfs4=;
+        b=xj1NfLfNCqFw8lMJ0emIJHmAGRCpVI6zLPvM9a+6T8mAlwgCOq9k4tqDoIRyP3kG1u
+         d47J2KUBy2RIAC3KKPWIixxmn1oKR194cLWjYF0TVXq7oEJ1fd3NYoyMgDwochEvYOqL
+         uy8gUn7r5Cf8broR5IyPZteKi4Ie0+eDGMkZOZz5Jg10+eedL0quMLk89NdgokmQluHa
+         gSkeNgMEgfBFFtxUgLyGzWP1MDF7Id5O51xndCEkn9aeY9u9GsZDgLZSY+794JvoFJKD
+         5lotDawgarKJ0J3MjImDodblKsVAB7aWAydS/TZMUGOX4NGz/2iDCzJG8ftIHn77A46R
+         KexA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2E9VYR6XkfxuAdQ0Z1HRXTHw3UVmtfSWQbklPpZvhfw=;
-        b=pTUOnMRmMbPTw60IDXUftDeheRp9rZvJs9XC9AzeJ13jXi2y4+nrIi2nb8uWBFgMOw
-         xX6Lj5QNaUT9fJJWDrYppj/2HGxnACgJXxuvP1RuH0K8cL3WADGQwthVRcoFR2oZ2wgw
-         blc5h09FKmOE/EipMdANClTJ6Q9aHGGGPtKzvYE/O7ls87IMvxKkmcYUlRN4hzqP5xO+
-         ThVzpTe06DkCUno+xDiXa0bPVnYCsPO4tHoeGQa6TlpQ+2F2ciOYJl8M9DxnjJnq/69/
-         YHV5Lpy5vzLXHfmP6qzjp1jyZud3M1dSIglYe6DLr+DSvnO5+0O7n7Jc4jqUwpSdYYHq
-         +H0A==
-X-Gm-Message-State: APjAAAWs5HIzWi/iZXATx2wD7N+i05nDax3KkpDIuj/JWtB/lx5lIB6y
-        6ptrPRyQocuXOarQ1Fli6j33IMReL8o=
-X-Google-Smtp-Source: APXvYqxEAxOI+TtZOy2x+H85u1vfrvq/cDsElNcEWgsvkyRicQTl4q0tz1eJWSkgEyPTMErCKy8P0A==
-X-Received: by 2002:a17:90a:be0a:: with SMTP id a10mr7070678pjs.112.1559933726881;
-        Fri, 07 Jun 2019 11:55:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=OqkWOX4LCkr1GiS0NEd3XdV9+Bg2GAYGC3wHGsctfs4=;
+        b=n5zHMmPPUE+3YY57i13+wKXxye2egP/U7WnSvL0jFZWojVyQ9xUJ6HECDMFUOsrEre
+         LRI5dS3vWaMI9QjQYQpuWg+bywYYAuAbJfyzhUXDYTPbNBnvvLL6wU2G0/uG0d/U3Lns
+         Lp+UgVB3foSv448tYACWMAs6W3dH7fIQFfXl7x0sCcS+tfJ0sGsSFCSDjmjCLjZOGYw7
+         Lm84kciqATaeGVaPl5K+2xsDdK0Lx46ULGcHIPm2tzCqmfdP9bjDTKubbJ7Q8Tw6s4zY
+         2j+H8DIYFCQEXSfZM+DP0LKhLgwaeKEiQPD+gceffPu0x5Re7rMoXgnm9dnfPuNKL8D2
+         neZw==
+X-Gm-Message-State: APjAAAWQlNHmx1xWfCxXn4zhvYNdLoKAUsdXb1HXq4fSGsvWl21PfNW4
+        zn0Br5j9FfSeBpH2X2O19riwlqHaff8=
+X-Google-Smtp-Source: APXvYqycYTNh4Gh72Di6zzikLCIN1e/x/k0zEuxo62TetlfeHHssOExhZlaNAP0EUJESQ4hh2TsSsw==
+X-Received: by 2002:a63:e250:: with SMTP id y16mr4311934pgj.392.1559933746947;
+        Fri, 07 Jun 2019 11:55:46 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id i25sm3181933pfr.73.2019.06.07.11.55.25
+        by smtp.gmail.com with ESMTPSA id i25sm3181933pfr.73.2019.06.07.11.55.45
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 07 Jun 2019 11:55:25 -0700 (PDT)
+        Fri, 07 Jun 2019 11:55:46 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org, dlebrun@google.com
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [RFC v2 PATCH 0/5] seg6: Segment routing fixes
-Date:   Fri,  7 Jun 2019 11:55:03 -0700
-Message-Id: <1559933708-13947-1-git-send-email-tom@quantonium.net>
+Subject: [RFC v2 PATCH 1/5] seg6: Fix TLV definitions
+Date:   Fri,  7 Jun 2019 11:55:04 -0700
+Message-Id: <1559933708-13947-2-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1559933708-13947-1-git-send-email-tom@quantonium.net>
+References: <1559933708-13947-1-git-send-email-tom@quantonium.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set includes fixes to bring the segment routing
-implementation into conformance with the latest version of the
-draft (draft-ietf-6man-segment-routing-header-19). Also, segment
-routing receive function calls ip6_parse to properly parse TLVs
-in parsing loop.
+The definitions of TLVs in uapi/linux/seg6.h are out of date and
+incomplete. Fix this.
 
-Changes include:
+TLV constants are defined for PAD1, PADN, and HMAC (the three defined in
+draft-ietf-6man-segment-routing-header-19). The other TLV are unused and
+and are marked as obsoleted.
 
-  - Update TLV macro definitions. Mark obsoleted TLVs as such, add
-    definitions for PAD1 and PADN
-  - Mark obsoleted flags as such
-  - Implement parsing loop in sr_has_hmac to find HMAC TLV without
-    relying on obsoleted flag
-  - Parameterize ip6_parse_tlv so that it can be used for parsing
-    segment routing TLVs
-  - Add sysctls for segment routing TLV parsing limits
-  - Segment routing receive functions call ip6_parse_tlv
+Signed-off-by: Tom Herbert <tom@quantonium.net>
+---
+ include/uapi/linux/seg6.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Tom Herbert (5):
-  seg6: Fix TLV definitions
-  seg6: Obsolete unused SRH flags
-  ipv6: Paramterize TLV parsing
-  seg6: Add sysctl limits for segment routing header
-  seg6: Leverage ip6_parse_tlv
-
- include/net/ipv6.h         | 31 ++++++++++-------
- include/net/netns/ipv6.h   |  2 ++
- include/net/seg6.h         |  5 +++
- include/net/seg6_hmac.h    |  2 +-
- include/uapi/linux/seg6.h  | 54 +++++++++++++++++++++++------
- net/ipv6/af_inet6.c        |  2 ++
- net/ipv6/exthdrs.c         | 84 +++++++++++++++++++++++++++++++++++++++-------
- net/ipv6/seg6_hmac.c       | 16 ++-------
- net/ipv6/seg6_local.c      | 21 ++++++++----
- net/ipv6/sysctl_net_ipv6.c | 16 +++++++++
- 10 files changed, 176 insertions(+), 57 deletions(-)
-
+diff --git a/include/uapi/linux/seg6.h b/include/uapi/linux/seg6.h
+index 286e8d6..3a7d324 100644
+--- a/include/uapi/linux/seg6.h
++++ b/include/uapi/linux/seg6.h
+@@ -38,10 +38,13 @@ struct ipv6_sr_hdr {
+ #define SR6_FLAG1_ALERT		(1 << 4)
+ #define SR6_FLAG1_HMAC		(1 << 3)
+ 
+-#define SR6_TLV_INGRESS		1
+-#define SR6_TLV_EGRESS		2
+-#define SR6_TLV_OPAQUE		3
+-#define SR6_TLV_PADDING		4
++
++#define SR6_TLV_INGRESS		1	/* obsoleted */
++#define SR6_TLV_EGRESS		2	/* obsoleted */
++#define SR6_TLV_OPAQUE		3	/* obsoleted */
++
++#define SR6_TLV_PAD1		0
++#define SR6_TLV_PADN		1
+ #define SR6_TLV_HMAC		5
+ 
+ #define sr_has_hmac(srh) ((srh)->flags & SR6_FLAG1_HMAC)
 -- 
 2.7.4
 
