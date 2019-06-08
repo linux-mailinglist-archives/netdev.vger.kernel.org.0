@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAED39DE0
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D8B39DEC
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbfFHLna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:43:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60766 "EHLO mail.kernel.org"
+        id S1728748AbfFHLpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:45:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728733AbfFHLnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:43:25 -0400
+        id S1728745AbfFHLn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:43:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2202821530;
-        Sat,  8 Jun 2019 11:43:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4378214D8;
+        Sat,  8 Jun 2019 11:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994204;
-        bh=QqwbVvg7oCYi/X4AobtxoBfM99XkLtwtSgDkCsX3Yik=;
+        s=default; t=1559994207;
+        bh=sVSPEhC3zlekc/OLKlMq0TYhvASDHwGvD7nOh6vOqdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T/exYECLGPm+jn7vvA8ut7LpscLKz1JnTqXlx77w4x2KsgjoSxongkvV2EB1Y/R2s
-         NRu2/FSNV6L+7yHFUi0YDF802S3GeeEun5JiIFnbbyzmR9zp44UH+2aIziKxxa9oV+
-         VqQucRwTZjElhs58tA6dYyZwxV1ybI3FIUtt53Hk=
+        b=bdXjJzobO4rQkds8ani1LfRfjak/BjZ2gBxPq6yl+HQasaGVWhpNmXLthQi7Sa4CC
+         oy/FWvucEWgI+TDSqsOED9JnWcs+0+/UGGgDvo2NMvJjgVgKFn2KTn7SOgqPeXQ3ZB
+         XG3HVMIkeh7+Y6CwuUc0/No0NSfdLPRIdtgKTxaI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biao Huang <biao.huang@mediatek.com>,
+Cc:     Kees Cook <keescook@chromium.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 18/49] net: stmmac: update rx tail pointer register to fix rx dma hang issue.
-Date:   Sat,  8 Jun 2019 07:41:59 -0400
-Message-Id: <20190608114232.8731-18-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 19/49] net: tulip: de4x5: Drop redundant MODULE_DEVICE_TABLE()
+Date:   Sat,  8 Jun 2019 07:42:00 -0400
+Message-Id: <20190608114232.8731-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608114232.8731-1-sashal@kernel.org>
 References: <20190608114232.8731-1-sashal@kernel.org>
@@ -43,37 +44,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 4523a5611526709ec9b4e2574f1bb7818212651e ]
+[ Upstream commit 3e66b7cc50ef921121babc91487e1fb98af1ba6e ]
 
-Currently we will not update the receive descriptor tail pointer in
-stmmac_rx_refill. Rx dma will think no available descriptors and stop
-once received packets exceed DMA_RX_SIZE, so that the rx only test will fail.
+Building with Clang reports the redundant use of MODULE_DEVICE_TABLE():
 
-Update the receive tail pointer in stmmac_rx_refill to add more descriptors
-to the rx channel, so packets can be received continually
+drivers/net/ethernet/dec/tulip/de4x5.c:2110:1: error: redefinition of '__mod_eisa__de4x5_eisa_ids_device_table'
+MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+^
+./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+extern typeof(name) __mod_##type##__##name##_device_table               \
+                    ^
+<scratch space>:90:1: note: expanded from here
+__mod_eisa__de4x5_eisa_ids_device_table
+^
+drivers/net/ethernet/dec/tulip/de4x5.c:2100:1: note: previous definition is here
+MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+^
+./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+extern typeof(name) __mod_##type##__##name##_device_table               \
+                    ^
+<scratch space>:85:1: note: expanded from here
+__mod_eisa__de4x5_eisa_ids_device_table
+^
 
-Fixes: 54139cf3bb33 ("net: stmmac: adding multiple buffers for rx")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+This drops the one further from the table definition to match the common
+use of MODULE_DEVICE_TABLE().
+
+Fixes: 07563c711fbc ("EISA bus MODALIAS attributes support")
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/dec/tulip/de4x5.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 50c00822b2d8..45e64d71a93f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3319,6 +3319,7 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
- 		entry = STMMAC_GET_ENTRY(entry, DMA_RX_SIZE);
- 	}
- 	rx_q->dirty_rx = entry;
-+	stmmac_set_rx_tail_ptr(priv, priv->ioaddr, rx_q->rx_tail_addr, queue);
- }
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index 66535d1653f6..f16853c3c851 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -2107,7 +2107,6 @@ static struct eisa_driver de4x5_eisa_driver = {
+ 		.remove  = de4x5_eisa_remove,
+         }
+ };
+-MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+ #endif
  
- /**
+ #ifdef CONFIG_PCI
 -- 
 2.20.1
 
