@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D45233A256
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620443A249
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727956AbfFHWWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 18:22:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44454 "EHLO mail.kernel.org"
+        id S1727853AbfFHWW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 18:22:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727391AbfFHWWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727821AbfFHWWY (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 8 Jun 2019 18:22:24 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 97DAA217D7;
+        by mail.kernel.org (Postfix) with ESMTPSA id E1186217D9;
         Sat,  8 Jun 2019 21:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560030826;
-        bh=zDNdZ0ZKELsMgesNGghK3qAZT/FSD2vVr62ptGSQ+zw=;
+        s=default; t=1560030827;
+        bh=LGGVM8LX+/Js48o6UBv60RJ+x62/vQDFI7muJijfHIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/qKpA7UOaq34cntERw4GRNMQUl2d2D4fBWvkJKVNkBOKl/FszUT3wIoEipl3mDJ6
-         l5P73Nt/dJI1yCfxmwZKNtCgmSpoSY01rANO1ZdpHiZECzytz6RGixZw7bbapvb7AJ
-         e7hPTmzVEwZEJhXjVawFMlfQGkBikwJ/F1TXEqng=
+        b=BI1rEQUTDu0CVvEx41Fk6q3eGOQxXgMWGnI6YAyWDyAbya9PJPBNTLO8h83BqqOeM
+         85OpPN/fgQ07y8wve3SADpN4JA0J10F0cP4vTC3phs/B5xnz1IgWMoYSh/hcAugLMN
+         tMvc3oQ4TPUs/ffD3RvWPAWo/DDB66J4TLSkdxaE=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v4 net-next 11/20] ipv4: Allow routes to use nexthop objects
-Date:   Sat,  8 Jun 2019 14:53:32 -0700
-Message-Id: <20190608215341.26592-12-dsahern@kernel.org>
+Subject: [PATCH v4 net-next 12/20] ipv4: Optimization for fib_info lookup with nexthops
+Date:   Sat,  8 Jun 2019 14:53:33 -0700
+Message-Id: <20190608215341.26592-13-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190608215341.26592-1-dsahern@kernel.org>
 References: <20190608215341.26592-1-dsahern@kernel.org>
@@ -40,110 +40,114 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add support for RTA_NH_ID attribute to allow a user to specify a
-nexthop id to use with a route. fc_nh_id is added to fib_config to
-hold the value passed in the RTA_NH_ID attribute. If a nexthop id
-is given, the gateway, device, encap and multipath attributes can
-not be set.
-
-Update fib_nh_match to check ids on a route delete.
+Be optimistic about re-using a fib_info when nexthop id is given and
+the route does not use metrics. Avoids a memory allocation which in
+most cases is expected to be freed anyways.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- include/net/ip_fib.h     |  1 +
- net/ipv4/fib_frontend.c  | 19 +++++++++++++++++++
- net/ipv4/fib_semantics.c | 15 +++++++++++++++
- 3 files changed, 35 insertions(+)
+ net/ipv4/fib_semantics.c | 71 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 65 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 4cdf8bc22efd..7e1e621a56df 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -40,6 +40,7 @@ struct fib_config {
- 	u32			fc_flags;
- 	u32			fc_priority;
- 	__be32			fc_prefsrc;
-+	u32			fc_nh_id;
- 	struct nlattr		*fc_mx;
- 	struct rtnexthop	*fc_mp;
- 	int			fc_mx_len;
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 33b0dbe84aa6..108191667531 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -671,6 +671,7 @@ const struct nla_policy rtm_ipv4_policy[RTA_MAX + 1] = {
- 	[RTA_IP_PROTO]		= { .type = NLA_U8 },
- 	[RTA_SPORT]		= { .type = NLA_U16 },
- 	[RTA_DPORT]		= { .type = NLA_U16 },
-+	[RTA_NH_ID]		= { .type = NLA_U32 },
- };
- 
- int fib_gw_from_via(struct fib_config *cfg, struct nlattr *nla,
-@@ -808,6 +809,18 @@ static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
- 			if (err < 0)
- 				goto errout;
- 			break;
-+		case RTA_NH_ID:
-+			cfg->fc_nh_id = nla_get_u32(attr);
-+			break;
-+		}
-+	}
-+
-+	if (cfg->fc_nh_id) {
-+		if (cfg->fc_oif || cfg->fc_gw_family ||
-+		    cfg->fc_encap || cfg->fc_mp) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Nexthop specification and nexthop id are mutually exclusive");
-+			return -EINVAL;
- 		}
- 	}
- 
-@@ -834,6 +847,12 @@ static int inet_rtm_delroute(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err < 0)
- 		goto errout;
- 
-+	if (cfg.fc_nh_id && !nexthop_find_by_id(net, cfg.fc_nh_id)) {
-+		NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
-+		err = -EINVAL;
-+		goto errout;
-+	}
-+
- 	tb = fib_get_table(net, cfg.fc_table);
- 	if (!tb) {
- 		NL_SET_ERR_MSG(extack, "FIB table does not exist");
 diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index afa4af1f9326..2c24d8e3b126 100644
+index 2c24d8e3b126..0de895cd0621 100644
 --- a/net/ipv4/fib_semantics.c
 +++ b/net/ipv4/fib_semantics.c
-@@ -789,6 +789,12 @@ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi,
- 	if (cfg->fc_priority && cfg->fc_priority != fi->fib_priority)
- 		return 1;
+@@ -325,14 +325,32 @@ static inline unsigned int fib_devindex_hashfn(unsigned int val)
+ 		(val >> (DEVINDEX_HASHBITS * 2))) & mask;
+ }
  
-+	if (cfg->fc_nh_id) {
-+		if (fi->nh && cfg->fc_nh_id == fi->nh->id)
-+			return 0;
-+		return 1;
-+	}
+-static inline unsigned int fib_info_hashfn(const struct fib_info *fi)
++static unsigned int fib_info_hashfn_1(int init_val, u8 protocol, u8 scope,
++				      u32 prefsrc, u32 priority)
++{
++	unsigned int val = init_val;
 +
- 	if (cfg->fc_oif || cfg->fc_gw_family) {
- 		struct fib_nh *nh = fib_info_nh(fi, 0);
++	val ^= (protocol << 8) | scope;
++	val ^= prefsrc;
++	val ^= priority;
++
++	return val;
++}
++
++static unsigned int fib_info_hashfn_result(unsigned int val)
+ {
+ 	unsigned int mask = (fib_info_hash_size - 1);
+-	unsigned int val = fi->fib_nhs;
  
-@@ -1302,6 +1308,15 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
- 		goto err_inval;
+-	val ^= (fi->fib_protocol << 8) | fi->fib_scope;
+-	val ^= (__force u32)fi->fib_prefsrc;
+-	val ^= fi->fib_priority;
++	return (val ^ (val >> 7) ^ (val >> 12)) & mask;
++}
++
++static inline unsigned int fib_info_hashfn(struct fib_info *fi)
++{
++	unsigned int val;
++
++	val = fib_info_hashfn_1(fi->fib_nhs, fi->fib_protocol,
++				fi->fib_scope, (__force u32)fi->fib_prefsrc,
++				fi->fib_priority);
+ 
+ 	if (fi->nh) {
+ 		val ^= fib_devindex_hashfn(fi->nh->id);
+@@ -342,7 +360,40 @@ static inline unsigned int fib_info_hashfn(const struct fib_info *fi)
+ 		} endfor_nexthops(fi)
  	}
  
-+	if (cfg->fc_nh_id) {
-+		nh = nexthop_find_by_id(net, cfg->fc_nh_id);
-+		if (!nh) {
-+			NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
-+			goto err_inval;
-+		}
-+		nhs = 0;
+-	return (val ^ (val >> 7) ^ (val >> 12)) & mask;
++	return fib_info_hashfn_result(val);
++}
++
++/* no metrics, only nexthop id */
++static struct fib_info *fib_find_info_nh(struct net *net,
++					 const struct fib_config *cfg)
++{
++	struct hlist_head *head;
++	struct fib_info *fi;
++	unsigned int hash;
++
++	hash = fib_info_hashfn_1(fib_devindex_hashfn(cfg->fc_nh_id),
++				 cfg->fc_protocol, cfg->fc_scope,
++				 (__force u32)cfg->fc_prefsrc,
++				 cfg->fc_priority);
++	hash = fib_info_hashfn_result(hash);
++	head = &fib_info_hash[hash];
++
++	hlist_for_each_entry(fi, head, fib_hash) {
++		if (!net_eq(fi->fib_net, net))
++			continue;
++		if (!fi->nh || fi->nh->id != cfg->fc_nh_id)
++			continue;
++		if (cfg->fc_protocol == fi->fib_protocol &&
++		    cfg->fc_scope == fi->fib_scope &&
++		    cfg->fc_prefsrc == fi->fib_prefsrc &&
++		    cfg->fc_priority == fi->fib_priority &&
++		    cfg->fc_type == fi->fib_type &&
++		    cfg->fc_table == fi->fib_tb_id &&
++		    !((cfg->fc_flags ^ fi->fib_flags) & ~RTNH_COMPARE_MASK))
++			return fi;
 +	}
 +
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- 	if (cfg->fc_mp) {
- 		nhs = fib_count_nexthops(cfg->fc_mp, cfg->fc_mp_len, extack);
++	return NULL;
+ }
+ 
+ static struct fib_info *fib_find_info(struct fib_info *nfi)
+@@ -1309,6 +1360,14 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+ 	}
+ 
+ 	if (cfg->fc_nh_id) {
++		if (!cfg->fc_mx) {
++			fi = fib_find_info_nh(net, cfg);
++			if (fi) {
++				fi->fib_treeref++;
++				return fi;
++			}
++		}
++
+ 		nh = nexthop_find_by_id(net, cfg->fc_nh_id);
+ 		if (!nh) {
+ 			NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
 -- 
 2.11.0
 
