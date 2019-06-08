@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAB039E71
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2088339F9D
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 14:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730055AbfFHLtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:49:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730030AbfFHLtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:49:07 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B22A21726;
-        Sat,  8 Jun 2019 11:49:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994547;
-        bh=AD4GRc4EAoNu9rDsMfCIUcUdXChBE37MLd0TH5O79V4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQ+FofXCyX2mb3/iZcCySRKzmqP+qYoes9yz8tuZhqwzk4ajobG8k4b1em9RjN1qh
-         KjXdHoV7O3XhObYhsOxZaTY8OH2jUrRKcJKh/L9Nnq3e5Gh9ALaXGI2XvBlKxYvXvV
-         Dj6PlWblATcBhMtZmh79XvdfvYDRr2OVXf4pr7Vk=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 11/13] net: sh_eth: fix mdio access in sh_eth_close() for R-Car Gen2 and RZ/A1 SoCs
-Date:   Sat,  8 Jun 2019 07:48:43 -0400
-Message-Id: <20190608114847.9973-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190608114847.9973-1-sashal@kernel.org>
-References: <20190608114847.9973-1-sashal@kernel.org>
+        id S1726984AbfFHMOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 08:14:35 -0400
+Received: from fudo.makrotopia.org ([185.142.180.71]:46199 "EHLO
+        fudo.makrotopia.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726907AbfFHMOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 08:14:34 -0400
+X-Greylist: delayed 1328 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jun 2019 08:14:33 EDT
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+         (Exim 4.91)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1hZZtO-0007F8-Sa; Sat, 08 Jun 2019 13:52:15 +0200
+Date:   Sat, 8 Jun 2019 13:51:59 +0200
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Daniel Santos <daniel.santos@pobox.com>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        openwrt-devel <openwrt-devel@lists.openwrt.org>,
+        netdev@vger.kernel.org, Vitaly Chekryzhev <13hakta@gmail.com>
+Subject: Re: [OpenWrt-Devel] Using ethtool or swconfig to change link
+ settings for mt7620a?
+Message-ID: <20190608115159.GA1559@makrotopia.org>
+References: <5316c6da-1966-4896-6f4d-8120d9f1ff6e@pobox.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <5316c6da-1966-4896-6f4d-8120d9f1ff6e@pobox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Hi Daniel,
 
-[ Upstream commit 315ca92dd863fecbffc0bb52ae0ac11e0398726a ]
+On Sat, Jun 08, 2019 at 04:06:54AM -0500, Daniel Santos wrote:
+> Hello,
+> 
+> I need to change auto-negotiate, speed and duplex for a port on my
+> mt7620a-based device, but I'm not quite certain that I understand the
+> structure here.  When using ethtool on eth0 I always get ENODEV,
+> apparently because priv->phy_dev is always NULL in fe_get_link_ksettings
+> of drivers/net/ethernet/mtk/ethtool.c.  But I'm being told that eth0 is
+> only an internal device between the µC and the switch hardware, so it
+> isn't even the one I need to change.
 
-The sh_eth_close() resets the MAC and then calls phy_stop()
-so that mdio read access result is incorrect without any error
-according to kernel trace like below:
+That's correct.
 
-ifconfig-216   [003] .n..   109.133124: mdio_access: ee700000.ethernet-ffffffff read  phy:0x01 reg:0x00 val:0xffff
+> If this is true, then it looks like I will need to implement a
+> get_port_link function for struct switch_dev_ops?  Can anybody confirm
+> this to be the case?  Also, are there any examples aside from the
+> Broadcom drivers?  I have the mt7620 programmer's guide and it specifies
+> the registers I need to change.
 
-According to the hardware manual, the RMII mode should be set to 1
-before operation the Ethernet MAC. However, the previous code was not
-set to 1 after the driver issued the soft_reset in sh_eth_dev_exit()
-so that the mdio read access result seemed incorrect. To fix the issue,
-this patch adds a condition and set the RMII mode register in
-sh_eth_dev_exit() for R-Car Gen2 and RZ/A1 SoCs.
+Currently MT7620 still uses our legacy swconfig switch driver, which
+also doesn't support setting autoneg, speed and duplex. However, rather
+than implementing it there, it'd be great to add support for the FE-
+version of the MT7530 swtich found in the MT7620(A/N) WiSoC to the now
+upstream DSA driver[1]. While this driver was originally intended for
+use with standalone MT7530 GE switch chip or the ARM-based MT7623 SoC,
+the same switch fabric is also implemented in MT7621 and support for
+that chip was added to the driver recently[2]. MT7620 basically also
+features the same switch internally, however, it comes with only one
+CPU port, supports only FastEthernet and lacks some of the management
+counters.
 
-Note that when I have tried to move the sh_eth_dev_exit() calling
-after phy_stop() on sh_eth_close(), but it gets worse (kernel panic
-happened and it seems that a register is accessed while the clock is
-off).
+Assuming your MT7620 datasheet includes the decription of the MT7530
+switch registers, it'd be great if you can help working on supporting
+MT7620 in the DSA driver as well -- gaining per-port ethtool support
+as a reward :)
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/renesas/sh_eth.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index afaf79b8761f..2d9f4ed9a65e 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -1408,6 +1408,10 @@ static void sh_eth_dev_exit(struct net_device *ndev)
- 	sh_eth_get_stats(ndev);
- 	sh_eth_reset(ndev);
- 
-+	/* Set the RMII mode again if required */
-+	if (mdp->cd->rmiimode)
-+		sh_eth_write(ndev, 0x1, RMIIMODE);
-+
- 	/* Set MAC address again */
- 	update_mac_address(ndev);
- }
--- 
-2.20.1
+Cheers
 
+
+Daniel
+
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/dsa/mt7530.c
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ddda1ac116c852bb969541ed53cffef7255c4961
