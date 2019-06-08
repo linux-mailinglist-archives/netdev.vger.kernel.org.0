@@ -2,80 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCB939C09
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 11:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B46AA39C41
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 11:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfFHJP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 05:15:29 -0400
-Received: from pb-smtp21.pobox.com ([173.228.157.53]:60011 "EHLO
-        pb-smtp21.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbfFHJP2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 05:15:28 -0400
-X-Greylist: delayed 418 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jun 2019 05:15:27 EDT
-Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
-        by pb-smtp21.pobox.com (Postfix) with ESMTP id 8DC477FC3E;
-        Sat,  8 Jun 2019 05:08:29 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=to:cc:from
-        :subject:message-id:date:mime-version:content-type
-        :content-transfer-encoding; s=sasl; bh=jFkOIkwtY1j9QwTNMffRGuqkA
-        v8=; b=aeVIpH+r/etQ7zYRVtxNAvP5d5TvIFEZoDQVjLyrzfmtVOqYjtzRdzubY
-        9sWathkAZ6zpJxBsQXkpueKXljX/6UC476HH1tOU6LC14RN0qz4eTkbrv5Gr84/1
-        rYql2yUrFpqfqoyKwNLI4tuRpeJlo4FK2ofGAxTJLMW6ORvKy4=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=to:cc:from
-        :subject:message-id:date:mime-version:content-type
-        :content-transfer-encoding; q=dns; s=sasl; b=g/U8etg3g9LIUJtBBkG
-        A2hdB3EeC/irrXuvdRs2xJkFbsluNlV9XnJn58WCpj9xUb5+CGr3Ievz/c/Et4gn
-        f6YhktVBSIfprM+U9BKY4RCBwh1TlippUu4yloBkOGiIomfyBbn3csKDznPeSXlb
-        mtrLWsXg4Rtzoaektvxci1fg=
-Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp21.pobox.com (Postfix) with ESMTP id 856517FC3D;
-        Sat,  8 Jun 2019 05:08:29 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-Received: from [192.168.2.4] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by pb-smtp21.pobox.com (Postfix) with ESMTPSA id A65C37FC3C;
-        Sat,  8 Jun 2019 05:08:26 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-To:     Felix Fietkau <nbd@nbd.name>,
-        openwrt-devel <openwrt-devel@lists.openwrt.org>
-Cc:     netdev@vger.kernel.org, Vitaly Chekryzhev <13hakta@gmail.com>
-From:   Daniel Santos <daniel.santos@pobox.com>
-Subject: Using ethtool or swconfig to change link settings for mt7620a?
-Message-ID: <5316c6da-1966-4896-6f4d-8120d9f1ff6e@pobox.com>
-Date:   Sat, 8 Jun 2019 04:06:54 -0500
+        id S1726729AbfFHJu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 05:50:58 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41706 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfFHJu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 05:50:58 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p15so6245612eds.8
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 02:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SzcVARsxjSGu89XucDrb0gDxbojdGFnUqfa9ln4uXwA=;
+        b=p5BjofFIcSbg/cDaxmOB744avexToSh3iPfzWYM5zBjegd3p7HqAbsd1iPVW6VEBLX
+         BcxdJerAuqRpziHtuYrJqVx7GF62VfKdNx2Cu+z32eaaobY1f912CuJ3ulrO3XzSZueP
+         gakKq3QEGmS8NZVOBeFRlSUTjcCuLsV0jQnSPoiLzFkYAhQDs6U4X6/8K1J2F83ujjNa
+         g0Y29USntg48zNV5yaqH47dsSwZ2I5NyuXTks2CZ2Ydq3DhpKgD8i8RVDg3MWGqAuzVg
+         ToFoY8X7j4xZ3U/xrFJk6MEXM6TZ4g9UWVM2gEwRxAGGPcDzoBbb1qjLCrKB4wfGsaee
+         LDZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SzcVARsxjSGu89XucDrb0gDxbojdGFnUqfa9ln4uXwA=;
+        b=qbxShKhxyttmldDs2sJ27rMMVQVs493A0xZrRfinWbrxJaYThgEyfWKhPd2LbtxvQs
+         lW0h+eWqGqVy66t9F1bl9K2phoN3HwbJ+vXbP5wnn0+nERPv4beryUVAsc85Xe6L83t4
+         wpWGQt8LTts0jd8XYIAaxicJWY9dkAnrwu80Jqs0QVriyCY875+qdDDh+b5DTgWtW48Q
+         mW4qxknxf//mx1K/UKgU67uM2JhLArqkx7iXhhX8KipMu/oMnNt3BiKUJ/d8OCVbOPkH
+         tB8+JV65D/VgOeUVGVFQzZj3eHvDOpN1x+SwLEzD6QugFpivOdQynm78rPl03Kkgmb7a
+         plYg==
+X-Gm-Message-State: APjAAAXlZQ3hmVf98h4XZsICbeEgqBprOYoYTVnYhfm0etBg5OVtwNfS
+        rl9W8fBYnNd3SejuDa8nTUQ=
+X-Google-Smtp-Source: APXvYqyvU/Hl/6PqD0YhLXzjxs9db6j0CKs762veq7bGoceuhNGsc89jwr0RRYjvSJQXeHCgUnrqWw==
+X-Received: by 2002:a17:906:4d88:: with SMTP id s8mr28310037eju.225.1559987456400;
+        Sat, 08 Jun 2019 02:50:56 -0700 (PDT)
+Received: from ?IPv6:2a02:8084:601c:ef00:991d:267c:9ed8:7bbb? ([2a02:8084:601c:ef00:991d:267c:9ed8:7bbb])
+        by smtp.gmail.com with ESMTPSA id 10sm336417ejn.8.2019.06.08.02.50.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 08 Jun 2019 02:50:55 -0700 (PDT)
+Subject: Re: [RFC v2 PATCH 1/5] seg6: Fix TLV definitions
+To:     Tom Herbert <tom@herbertland.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, dlebrun@google.com
+Cc:     Tom Herbert <tom@quantonium.net>
+References: <1559933708-13947-1-git-send-email-tom@quantonium.net>
+ <1559933708-13947-2-git-send-email-tom@quantonium.net>
+From:   David Lebrun <dav.lebrun@gmail.com>
+Message-ID: <215ec4c5-bef0-f34e-20d5-3c35df0719f4@gmail.com>
+Date:   Sat, 8 Jun 2019 10:50:55 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1559933708-13947-2-git-send-email-tom@quantonium.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Pobox-Relay-ID: F9E6FF60-89CC-11E9-9083-8D86F504CC47-06139138!pb-smtp21.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 07/06/2019 19:55, Tom Herbert wrote:
+> -#define SR6_TLV_PADDING		4
 
-I need to change auto-negotiate, speed and duplex for a port on my
-mt7620a-based device, but I'm not quite certain that I understand the
-structure here.=C2=A0 When using ethtool on eth0 I always get ENODEV,
-apparently because priv->phy_dev is always NULL in fe_get_link_ksettings
-of drivers/net/ethernet/mtk/ethtool.c.=C2=A0 But I'm being told that eth0=
- is
-only an internal device between the =C2=B5C and the switch hardware, so i=
-t
-isn't even the one I need to change.
+ From a uapi perspective, should we rather keep the definition and mark 
+it as obsoleted as for the rest of the TLV types ?
 
-If this is true, then it looks like I will need to implement a
-get_port_link function for struct switch_dev_ops?=C2=A0 Can anybody confi=
-rm
-this to be the case?=C2=A0 Also, are there any examples aside from the
-Broadcom drivers?=C2=A0 I have the mt7620 programmer's guide and it speci=
-fies
-the registers I need to change.
-
-Thanks,
-Daniel
+Note that I'm fine with both.
