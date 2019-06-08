@@ -2,107 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA2143A059
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 17:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F24D3A05B
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 17:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbfFHPCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 11:02:19 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43940 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727035AbfFHPCT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 11:02:19 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C23A130842CE;
-        Sat,  8 Jun 2019 15:02:13 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 242A6601A6;
-        Sat,  8 Jun 2019 15:02:10 +0000 (UTC)
-Date:   Sat, 8 Jun 2019 17:02:06 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Martin Lau <kafai@fb.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Message-ID: <20190608170206.4fa108f5@redhat.com>
-In-Reply-To: <20190608071920.rio4ldr4fhjm2ztv@kafai-mbp.dhcp.thefacebook.com>
-References: <cover.1559851514.git.sbrivio@redhat.com>
-        <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
-        <fbe7cbf3-c298-48d5-ad1b-78690d4203b5@gmail.com>
-        <20190606231834.72182c33@redhat.com>
-        <05041be2-e658-8766-ba77-ee01cdfe62bb@gmail.com>
-        <20190608054003.5uwggebuawjtetyg@kafai-mbp.dhcp.thefacebook.com>
-        <20190608075911.2622aecf@redhat.com>
-        <20190608071920.rio4ldr4fhjm2ztv@kafai-mbp.dhcp.thefacebook.com>
-Organization: Red Hat
+        id S1727166AbfFHPDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 11:03:07 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:44190 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727035AbfFHPDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 11:03:06 -0400
+Received: by mail-io1-f71.google.com with SMTP id i133so3985429ioa.11
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 08:03:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0KdeUb+UfEQdipefR6pVhLY33O2S8gQ7FzwbqhitJwQ=;
+        b=ZGzMmVeQDKYF0ah7mhA6yzif2XjI6w26Jyb4ZxVz3qiMu8CY5/6eIlVv6aeKGbFt8f
+         h3Wxj7zB6uufaRsEUOnTQ3BCLwVIiJ7TKcAFAQk05ousc1HQ/QieylxYFQSPfQMIVxQe
+         qVwK7lf21I9xuiH379kwVQ9zeu5/ZKTevkLXu7+z8aH3Ej4RGNRs7ekKt/y2e/bIDa5T
+         DMpjTaz6QQBAaN+ZbUZ2A7sRtRn6IQK4PLJXqJ6IfZqXbqzLYaXqg/pRhCnR8+Vq5Y1Q
+         wtQW1wWw5UHKrW+NY4t8s8h1WbcqlCJ/KzeNptXIhnenFevs92tTfu28dTIC957yX0cS
+         sVTQ==
+X-Gm-Message-State: APjAAAXTvFBVUp8PrRiu7G3quilWCyBVF9AMs7Ca0N4I6ufjDXuyG2eU
+        YQcRjl02rwnHsRAdAVSEMyVRsZQnGwc2Uh6EqyxJLBmlKril
+X-Google-Smtp-Source: APXvYqx/lCrlsM+jEGz1fCXhrjloO9MrUuiJBEEOaMD6ZjtX2UMhafC4D3ftHHGq6JELJYlkQ5H4wlsegxliTPGnmEFmQ3IQWuAD
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Sat, 08 Jun 2019 15:02:19 +0000 (UTC)
+X-Received: by 2002:a02:c95a:: with SMTP id u26mr22232424jao.15.1560006185906;
+ Sat, 08 Jun 2019 08:03:05 -0700 (PDT)
+Date:   Sat, 08 Jun 2019 08:03:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008f00f7058ad13ec8@google.com>
+Subject: KMSAN: uninit-value in bcmp
+From:   syzbot <syzbot+d8b02c920ae8f3e0be75@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, idosch@mellanox.com,
+        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        petrm@mellanox.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 8 Jun 2019 07:19:23 +0000
-Martin Lau <kafai@fb.com> wrote:
+Hello,
 
-> On Sat, Jun 08, 2019 at 07:59:11AM +0200, Stefano Brivio wrote:
-> > I also agree it makes more sense to filter routes this way.
-> > 
-> > But it wasn't like this before 2b760fcf5cfb, so this smells like
-> > breaking userspace expectations, even though iproute already filters
-> > routes this way: with 'cache' it only displays routes with
-> > RTM_F_CLONED, without, it won't display exceptions, see filter_nlmsg():  
-> Thanks for pointing it out.
-> 
-> > 	if (filter.cloned == !(r->rtm_flags & RTM_F_CLONED))
-> > 		return 0;
-> > 
-> > This, together with the fact it's been like that for almost two years
-> > now, makes it acceptable in my opinion. What do you think?  
-> With learning the above fact on iproute2,
-> it makes even less sense to dump exceptions from the kernel side
-> when RTM_F_CLONED is not set.
+syzbot found the following crash on:
 
-I just hit a more fundamental problem though: iproute2 filters on the
-flag, but never sets it on a dump request. Flags will be NLM_F_DUMP |
-NLM_F_REQUEST, no matter what, see rtnl_routedump_req(). So the current
-iproute2 would have no way to dump cached routes.
+HEAD commit:    d062d017 usb-fuzzer: main usb gadget fuzzer driver
+git tree:       kmsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=119daa0ca00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=67ebf8b3cce62ce7
+dashboard link: https://syzkaller.appspot.com/bug?extid=d8b02c920ae8f3e0be75
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14973970a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1349a4e2a00000
 
-It could from 2007, iproute2 9ab4c85b9af1 ("Fix bug in display of ipv6
-cloned/cached routes"), to 2017, kernel 2b760fcf5cfb ("ipv6: hook up
-exception table to store dst cache").
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d8b02c920ae8f3e0be75@syzkaller.appspotmail.com
 
-Something tells me it's wrong to fix userspace, because userspace "is
-always right". There has been by the way a similar discussion on this
-list in 2011, see https://lists.openwall.net/netdev/2011/12/28/27.
+IPVS: ftp: loaded support on port[0] = 21
+==================================================================
+BUG: KMSAN: uninit-value in memcmp lib/string.c:865 [inline]
+BUG: KMSAN: uninit-value in bcmp+0x117/0x180 lib/string.c:887
+CPU: 1 PID: 10480 Comm: syz-executor472 Not tainted 5.1.0-rc7+ #5
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:619
+  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+  memcmp lib/string.c:865 [inline]
+  bcmp+0x117/0x180 lib/string.c:887
+  __hw_addr_del_ex net/core/dev_addr_lists.c:123 [inline]
+  __dev_mc_del+0x16c/0x690 net/core/dev_addr_lists.c:810
+  dev_mc_del+0x6d/0x80 net/core/dev_addr_lists.c:828
+  ip_mc_filter_del net/ipv4/igmp.c:1142 [inline]
+  __igmp_group_dropped+0x260/0x1320 net/ipv4/igmp.c:1276
+  igmp_group_dropped net/ipv4/igmp.c:1306 [inline]
+  ip_mc_down+0x1e7/0x3b0 net/ipv4/igmp.c:1714
+  inetdev_event+0x22d/0x1df0 net/ipv4/devinet.c:1534
+  notifier_call_chain kernel/notifier.c:93 [inline]
+  __raw_notifier_call_chain kernel/notifier.c:394 [inline]
+  raw_notifier_call_chain+0x13d/0x240 kernel/notifier.c:401
+  call_netdevice_notifiers_info net/core/dev.c:1753 [inline]
+  call_netdevice_notifiers_extack net/core/dev.c:1765 [inline]
+  call_netdevice_notifiers net/core/dev.c:1779 [inline]
+  dev_close_many+0x60d/0x9e0 net/core/dev.c:1522
+  rollback_registered_many+0x94a/0x2210 net/core/dev.c:8177
+  rollback_registered net/core/dev.c:8242 [inline]
+  unregister_netdevice_queue+0x593/0xab0 net/core/dev.c:9289
+  unregister_netdevice include/linux/netdevice.h:2658 [inline]
+  __tun_detach+0x21be/0x2b10 drivers/net/tun.c:727
+  tun_detach drivers/net/tun.c:744 [inline]
+  tun_chr_close+0xda/0x1c0 drivers/net/tun.c:3443
+  __fput+0x4d1/0xbc0 fs/file_table.c:278
+  ____fput+0x37/0x40 fs/file_table.c:309
+  task_work_run+0x22e/0x2a0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+  exit_to_usermode_loop arch/x86/entry/common.c:166 [inline]
+  prepare_exit_to_usermode+0x31d/0x420 arch/x86/entry/common.c:197
+  syscall_return_slowpath+0x90/0x5c0 arch/x86/entry/common.c:268
+  do_syscall_64+0xe2/0xf0 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+RIP: 0033:0x400f00
+Code: 01 f0 ff ff 0f 83 20 0c 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f  
+44 00 00 83 3d cd 17 2d 00 00 75 14 b8 03 00 00 00 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 f4 0b 00 00 c3 48 83 ec 08 e8 5a 01 00 00
+RSP: 002b:00007fff995e0ec8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000400f00
+RDX: 0000000020000c40 RSI: 0000000000008914 RDI: 0000000000000004
+RBP: 00000000004a2470 R08: 0000000000000100 R09: 0000000000000100
+R10: 0000000000000100 R11: 0000000000000246 R12: 0000000000401f80
+R13: 0000000000402010 R14: 0000000000000000 R15: 0000000000000000
 
-I would proceed like this:
+Local variable description: ----buf.i@__igmp_group_dropped
+Variable was created at:
+  ip_mc_filter_del net/ipv4/igmp.c:1139 [inline]
+  __igmp_group_dropped+0x170/0x1320 net/ipv4/igmp.c:1276
+  igmp_group_dropped net/ipv4/igmp.c:1306 [inline]
+  ip_mc_down+0x1e7/0x3b0 net/ipv4/igmp.c:1714
+==================================================================
 
-- stick to the original semantic of RTM_F_CLONED and fix the issue at
-  hand, which would be v2 with your suggested clean-up and without
-  check on RTM_F_CLONED. Exceptions are always dumped and iproute2 will
-  filter them as it always did. Result: kernel sends exceptions on
-  netlink even if not "requested" but iproute2 works again and won't
-  spam you anyway, and the issue is fixed for the users
 
-- fix this on IPv4 (as I mentioned, I think it's less critical, because
-  at least flushing works, and listing with 'route get' is awkward but
-  possible)
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-- retry adding NLM_F_MATCH (for net-next and iproute-next) according
-  to RFC 3549. Things changed a bit from 2011: we now have
-  NLM_F_DUMP_FILTERED, iproute2 already uses it (ip neigh) and we
-  wouldn't need to make iproute2 more complicated by handling old/new
-  kernel cases. So I think this would be reasonable now.
-
--- 
-Stefano
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
