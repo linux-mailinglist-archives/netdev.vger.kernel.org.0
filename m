@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D74939E17
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEAED39DE0
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728148AbfFHLpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:45:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60452 "EHLO mail.kernel.org"
+        id S1728765AbfFHLna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:43:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728659AbfFHLnN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:43:13 -0400
+        id S1728733AbfFHLnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:43:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BEF63214D8;
-        Sat,  8 Jun 2019 11:43:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2202821530;
+        Sat,  8 Jun 2019 11:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994192;
-        bh=w1oDmUXsyUE2+w9jLGc9efd1x7B0IjhnhaNthXFd59M=;
+        s=default; t=1559994204;
+        bh=QqwbVvg7oCYi/X4AobtxoBfM99XkLtwtSgDkCsX3Yik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vT4ECaSVJn7/awGfDCFO21M+pFz3Gi1Jk0ku6UcQuGcpGSQf6/+x62yCK3CdrjXbs
-         Ad5Z5lR7+dM9+MLS3RaEdXf129Py6ngGCfZQmC8/381yR/Ca59bq6AipN0THFDdfk6
-         2GG9Z+4JF3BaKOeW/ROzDN2n5PJWuCx7NL2Z00mo=
+        b=T/exYECLGPm+jn7vvA8ut7LpscLKz1JnTqXlx77w4x2KsgjoSxongkvV2EB1Y/R2s
+         NRu2/FSNV6L+7yHFUi0YDF802S3GeeEun5JiIFnbbyzmR9zp44UH+2aIziKxxa9oV+
+         VqQucRwTZjElhs58tA6dYyZwxV1ybI3FIUtt53Hk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Biao Huang <biao.huang@mediatek.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/49] mISDN: make sure device name is NUL terminated
-Date:   Sat,  8 Jun 2019 07:41:52 -0400
-Message-Id: <20190608114232.8731-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 18/49] net: stmmac: update rx tail pointer register to fix rx dma hang issue.
+Date:   Sat,  8 Jun 2019 07:41:59 -0400
+Message-Id: <20190608114232.8731-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608114232.8731-1-sashal@kernel.org>
 References: <20190608114232.8731-1-sashal@kernel.org>
@@ -43,56 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Biao Huang <biao.huang@mediatek.com>
 
-[ Upstream commit ccfb62f27beb295103e9392462b20a6ed807d0ea ]
+[ Upstream commit 4523a5611526709ec9b4e2574f1bb7818212651e ]
 
-The user can change the device_name with the IMSETDEVNAME ioctl, but we
-need to ensure that the user's name is NUL terminated.  Otherwise it
-could result in a buffer overflow when we copy the name back to the user
-with IMGETDEVINFO ioctl.
+Currently we will not update the receive descriptor tail pointer in
+stmmac_rx_refill. Rx dma will think no available descriptors and stop
+once received packets exceed DMA_RX_SIZE, so that the rx only test will fail.
 
-I also changed two strcpy() calls which handle the name to strscpy().
-Hopefully, there aren't any other ways to create a too long name, but
-it's nice to do this as a kernel hardening measure.
+Update the receive tail pointer in stmmac_rx_refill to add more descriptors
+to the rx channel, so packets can be received continually
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 54139cf3bb33 ("net: stmmac: adding multiple buffers for rx")
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/socket.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/isdn/mISDN/socket.c b/drivers/isdn/mISDN/socket.c
-index b2abc44fa5cb..a73337b74f41 100644
---- a/drivers/isdn/mISDN/socket.c
-+++ b/drivers/isdn/mISDN/socket.c
-@@ -394,7 +394,7 @@ data_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -677,7 +677,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -691,6 +691,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			err = -EFAULT;
- 			break;
- 		}
-+		dn.name[sizeof(dn.name) - 1] = '\0';
- 		dev = get_mdevice(dn.id);
- 		if (dev)
- 			err = device_rename(&dev->dev, dn.name);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 50c00822b2d8..45e64d71a93f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3319,6 +3319,7 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ 		entry = STMMAC_GET_ENTRY(entry, DMA_RX_SIZE);
+ 	}
+ 	rx_q->dirty_rx = entry;
++	stmmac_set_rx_tail_ptr(priv, priv->ioaddr, rx_q->rx_tail_addr, queue);
+ }
+ 
+ /**
 -- 
 2.20.1
 
