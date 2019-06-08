@@ -2,225 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EC639F7A
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 14:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328F139FB0
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 14:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728057AbfFHMF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 08:05:57 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53481 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727947AbfFHMF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 08:05:56 -0400
-Received: by mail-wm1-f65.google.com with SMTP id x15so4441128wmj.3;
-        Sat, 08 Jun 2019 05:05:54 -0700 (PDT)
+        id S1727020AbfFHMqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 08:46:03 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:39627 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726907AbfFHMqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 08:46:03 -0400
+Received: by mail-ed1-f68.google.com with SMTP id m10so6638945edv.6
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 05:46:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=eIJopOpfrf71xA2uHWpcqD8vKfMEYZecNggwM1ZBWGU=;
-        b=oqjhI5rWf+bPhXvTQB+NqWLgFo2CjniRUMCCG8tsgaLoEO4TXuOkS3pzyAnG0XO1Uu
-         eHffXNtDMnGStI+4T9v5s4PZShq1UGkcwjBhZq50oiphAhKIz43IS3WwChTtWV6Eh5Rb
-         yvgFGWKpkwEhMS+zqjwBx3x5Hb8TFFD9huyQgJYjrPK6ft4vzWm4MWASPDhUCBLIe/Hw
-         H+Qx308TKadnr379nNFKtn+A/WVeMOZfbWj/kFj+MYlmbMGlozxxmHmn4JLpK+y6mo92
-         /XxRSwLeGkjEI/0498LN9YnQDsguSjCEfUUXZfitiESzqtt0RlM5gDUdVR0yX89XWvJk
-         zphg==
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=p4LzBQWh2Yv5PsBcZFcAs0QoIkEzAuc+ZT1Kp2iKMGI=;
+        b=U6gjOg6abqM75I/eiil71J7X3DbmUpshuNCUJYl6v/bW/hdhfl1+11m/pPmd9SWwvv
+         yBoy5aSQ7wsYNgMRoxYyx0pmIht272pMz7Nm1A/dc6Fy5ImRGVKH64f4FQTLJxJgesvp
+         J1FsOovuEELMcavcrq3podTaEQWhMayLyhFL3WnOWphM8fsswRFAKtTg5UY+8Uwo76sQ
+         KGqtYgkGwsM3wtOuVhIiXB9Ftej1nfRM/dTvFoXGilnfnVi9fPX8KCc7mahisG2TU/0d
+         z3+DKVmYNy5DtjzlGjIcNLSD0YhUKGnZIM66/+Wvl62Srjx88oL4+z8y4SELWXhgdhox
+         U95g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=eIJopOpfrf71xA2uHWpcqD8vKfMEYZecNggwM1ZBWGU=;
-        b=NBwxSy2kA06cEBKDSUyfU5cJzyCT6ZRMdCz9GBi8UHfxhkJzq6QsLcxq8aGZ1EFhIa
-         tZAm60qv+wNa4rvUH8hWey2wtJYw1xPlaBEkEuh3+53HGGJL+mu9gsJ/pnJzoFOxomDU
-         QsdvAm1r4Zx5NYSG2VY2CjcR5ZXIjA58tEuYAmqHFrq8K4yP2kc2LMwX2Tf6gXbkapYu
-         a3dT2bErg0Vg4MSWeQbUxK+mxjbaA2XO8xQGl4/FSiiLd7ZAGXRNh6/aGa94yut0auia
-         OrnH6WfkgIRV94vWl08sEaBRvrXnQxF3fy3/cBFRNmcL11bZr1tDNNvYTzkwrfcxOwYq
-         s5Ng==
-X-Gm-Message-State: APjAAAX3Rv5U80iYqTbaKbly11++0Lyi3is0amiIw09CUkRrkx5Qhj/I
-        oj6FyWn02x9HAfRCujlQj3o=
-X-Google-Smtp-Source: APXvYqxqH1mHW/Hi0WNYKxireMYM3t6A7+dGSf4siC/tgy2PNWol8WUOAkVLn+x1DHWolEFeDC8saA==
-X-Received: by 2002:a1c:6c0a:: with SMTP id h10mr5045951wmc.40.1559995553796;
-        Sat, 08 Jun 2019 05:05:53 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.252.192])
-        by smtp.gmail.com with ESMTPSA id j16sm5440030wre.94.2019.06.08.05.05.52
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=p4LzBQWh2Yv5PsBcZFcAs0QoIkEzAuc+ZT1Kp2iKMGI=;
+        b=FU6aq59eDpS2utBZvvzTCZP90hQGUlACqQI6qlkIWOrvvl2JN7MchFFib6pABZTHft
+         h7whL/X6sbpeQFwT18kMmdQwCcI36Apv1gIk2HPDsB0+gD6JcL4tywMRV8Rl8mwzuFEC
+         zgAMKfyWHNmGLR0woYHgbYRiI4caOpl7QwAVKJW9i483haq16uhMjI+KRyZYj4/sgUPX
+         CtoPJXjFP34l2gNe9OtjYe8ov7s3fuzbZ7w7S5kLv5diMWRJ7jb8GOjdtoBsPZ8aWoMX
+         nKmMW+hY9rw90ifQtx47qTYKt02cGszw5G3wlyQBjo1271xFZ0xY3mmcllOCw/8Yj4yO
+         VxWA==
+X-Gm-Message-State: APjAAAWKnOD0Y7B+LDaAj+2ct4G69JcbeZCew4RL+LjUWz6yZWNtrDXh
+        HKh77OsDNyKOQPibSpggIls=
+X-Google-Smtp-Source: APXvYqwiZWspBS93NH28Mx0cbTVxYSMxPfyheC4e16MGZZyCPjDFSj6iKFCsRUaNK57X+8+dkDL2Fg==
+X-Received: by 2002:a50:85c4:: with SMTP id q4mr58653417edh.125.1559997961074;
+        Sat, 08 Jun 2019 05:46:01 -0700 (PDT)
+Received: from ?IPv6:2a02:8084:601c:ef00:991d:267c:9ed8:7bbb? ([2a02:8084:601c:ef00:991d:267c:9ed8:7bbb])
+        by smtp.gmail.com with ESMTPSA id k51sm164969edb.7.2019.06.08.05.45.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Jun 2019 05:05:53 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net, richardcochran@gmail.com,
-        john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v4 net-next 17/17] net: dsa: sja1105: Expose PTP timestamping ioctls to userspace
-Date:   Sat,  8 Jun 2019 15:04:43 +0300
-Message-Id: <20190608120443.21889-18-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190608120443.21889-1-olteanv@gmail.com>
-References: <20190608120443.21889-1-olteanv@gmail.com>
+        Sat, 08 Jun 2019 05:46:00 -0700 (PDT)
+Subject: Re: [RFC v2 PATCH 5/5] seg6: Leverage ip6_parse_tlv
+To:     Tom Herbert <tom@herbertland.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, dlebrun@google.com
+Cc:     Tom Herbert <tom@quantonium.net>
+References: <1559933708-13947-1-git-send-email-tom@quantonium.net>
+ <1559933708-13947-6-git-send-email-tom@quantonium.net>
+From:   David Lebrun <dav.lebrun@gmail.com>
+Message-ID: <4ae893a9-4540-caf6-7746-553029f53a8c@gmail.com>
+Date:   Sat, 8 Jun 2019 13:45:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <1559933708-13947-6-git-send-email-tom@quantonium.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This enables the PTP support towards userspace applications such as
-linuxptp.
+On 07/06/2019 19:55, Tom Herbert wrote:
+>   
 
-The switches can timestamp only trapped multicast MAC frames, and
-therefore only the profiles of 1588 over L2 are supported.
+...
 
-TX timestamping can be enabled per port, but RX timestamping is enabled
-globally. As long as RX timestamping is enabled, the switch will emit
-metadata follow-up frames that will be processed by the tagger. It may
-be a problem that linuxptp does not restore the RX timestamping settings
-when exiting.
+> @@ -387,8 +416,24 @@ static int ipv6_srh_rcv(struct sk_buff *skb)
+>   		return -1;
+>   	}
+>   
+> +	tlvoff = seg6_tlv_offset(hdr);
+> +	tlvlen = ipv6_optlen((struct ipv6_opt_hdr *)hdr) - tlvoff;
+> +
+> +	if (tlvlen) {
+> +		if (tlvlen > net->ipv6.sysctl.max_srh_opts_len) {
+> +			kfree_skb(skb);
+> +			return -1;
+> +		}
+> +
+> +		if (!ip6_parse_tlv(tlvprocsrhopt_lst, skb,
+> +				   init_net.ipv6.sysctl.max_srh_opts_cnt,
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
-Changes in v4:
+Why init_net ? I assume you mean 'net->ipv6.sysctl' instead.
 
-None.
+> +				   tlvoff, tlvlen, seg6_srhopt_unknown))
+> +			return -1;
+> +	}
+> +
+>   #ifdef CONFIG_IPV6_SEG6_HMAC
+> -	if (!seg6_hmac_validate_skb(skb)) {
+> +	if (idev->cnf.seg6_require_hmac > 0 && !sr_has_hmac(hdr)) {
+> +		/* mandatory check but no HMAC tlv */
+>   		kfree_skb(skb);
+>   		return -1;
+>   	}
+> diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+> index 8546f94..18f82f2 100644
+> --- a/net/ipv6/seg6_hmac.c
+> +++ b/net/ipv6/seg6_hmac.c
+> @@ -240,7 +240,7 @@ EXPORT_SYMBOL(seg6_hmac_compute);
+>    *
+>    * called with rcu_read_lock()
+>    */
+> -bool seg6_hmac_validate_skb(struct sk_buff *skb)
+> +bool seg6_hmac_validate_skb(struct sk_buff *skb, int optoff)
+>   {
+>   	u8 hmac_output[SEG6_HMAC_FIELD_LEN];
+>   	struct net *net = dev_net(skb->dev);
+> @@ -251,23 +251,13 @@ bool seg6_hmac_validate_skb(struct sk_buff *skb)
+>   
+>   	idev = __in6_dev_get(skb->dev);
+>   
+> -	srh = (struct ipv6_sr_hdr *)skb_transport_header(skb);
+> -
+> -	tlv = seg6_get_tlv_hmac(srh);
+> -
+> -	/* mandatory check but no tlv */
+> -	if (idev->cnf.seg6_require_hmac > 0 && !tlv)
+> -		return false;
+> -
+>   	/* no check */
+>   	if (idev->cnf.seg6_require_hmac < 0)
+>   		return true;
+>   
+> -	/* check only if present */
+> -	if (idev->cnf.seg6_require_hmac == 0 && !tlv)
+> -		return true;
+> +	srh = (struct ipv6_sr_hdr *)skb_transport_header(skb);
+>   
+> -	/* now, seg6_require_hmac >= 0 && tlv */
+> +	tlv = (struct sr6_tlv_hmac *)(skb_network_header(skb) + optoff);
+>   
+>   	hinfo = seg6_hmac_info_lookup(net, be32_to_cpu(tlv->hmackeyid));
+>   	if (!hinfo)
+> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+> index 78155fd..d486ed8 100644
+> --- a/net/ipv6/seg6_local.c
+> +++ b/net/ipv6/seg6_local.c
+> @@ -92,6 +92,19 @@ static struct ipv6_sr_hdr *get_srh(struct sk_buff *skb)
+>   	return srh;
+>   }
+>   
+> +static bool seg6_local_hmac_validate_skb(struct sk_buff *skb,
+> +					 struct ipv6_sr_hdr *srh)
+> +{
+> +#ifdef CONFIG_IPV6_SEG6_HMAC
+> +	int off = sr_hmac_offset(srh);
+> +
+> +	return off ? seg6_hmac_validate_skb(skb, off) :
+> +		     (__in6_dev_get(skb->dev)->cnf.seg6_require_hmac <= 0);
 
-Changes in v3:
+If I read sr_hmac_offset() correctly, it returns an offset relative to 
+the start of the SRH, while seg_hmac_validate_skb() now expects an 
+offset relative to the network header (and rightly so as it receives 
+such an offset from ip6_parse_tlv). A solution might be:
 
-Split from previous 09/10 patch (no functional changes).
+seg6_hmac_validate_skb(skb, skb_network_header_len(skb) + off)
 
-Changes in v2:
+But this also assumes that the SRH is present immediately after the IPv6 
+header, which might not be true when HBH or Destination Options are also 
+present. So I'd suggest something like:
 
-None.
+int nhoff = (unsigned char *)srh - skb_network_header(skb);
+int off = sr_hmac_offset(srh);
 
- drivers/net/dsa/sja1105/sja1105_main.c | 96 ++++++++++++++++++++++++++
- drivers/net/dsa/sja1105/sja1105_ptp.c  |  6 +-
- 2 files changed, 100 insertions(+), 2 deletions(-)
+return off ? seg6_hmac_validate_skb(skb, off + nhoff) ...
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 8963b21b3061..0db30e2da903 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1755,6 +1755,100 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
- 	return sja1105_static_config_reload(priv);
- }
- 
-+/* Caller must hold priv->tagger_data.meta_lock */
-+static int sja1105_change_rxtstamping(struct sja1105_private *priv,
-+				      bool on)
-+{
-+	struct sja1105_general_params_entry *general_params;
-+	struct sja1105_table *table;
-+	int rc;
-+
-+	table = &priv->static_config.tables[BLK_IDX_GENERAL_PARAMS];
-+	general_params = table->entries;
-+	general_params->send_meta1 = on;
-+	general_params->send_meta0 = on;
-+
-+	rc = sja1105_init_avb_params(priv, on);
-+	if (rc < 0)
-+		return rc;
-+
-+	/* Initialize the meta state machine to a known state */
-+	if (priv->tagger_data.stampable_skb) {
-+		kfree_skb(priv->tagger_data.stampable_skb);
-+		priv->tagger_data.stampable_skb = NULL;
-+	}
-+
-+	return sja1105_static_config_reload(priv);
-+}
-+
-+static int sja1105_hwtstamp_set(struct dsa_switch *ds, int port,
-+				struct ifreq *ifr)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	struct hwtstamp_config config;
-+	bool rx_on;
-+	int rc;
-+
-+	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-+		return -EFAULT;
-+
-+	switch (config.tx_type) {
-+	case HWTSTAMP_TX_OFF:
-+		priv->ports[port].hwts_tx_en = false;
-+		break;
-+	case HWTSTAMP_TX_ON:
-+		priv->ports[port].hwts_tx_en = true;
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	switch (config.rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		rx_on = false;
-+		break;
-+	default:
-+		rx_on = true;
-+		break;
-+	}
-+
-+	if (rx_on != priv->tagger_data.hwts_rx_en) {
-+		spin_lock(&priv->tagger_data.meta_lock);
-+		rc = sja1105_change_rxtstamping(priv, rx_on);
-+		spin_unlock(&priv->tagger_data.meta_lock);
-+		if (rc < 0) {
-+			dev_err(ds->dev,
-+				"Failed to change RX timestamping: %d\n", rc);
-+			return -EFAULT;
-+		}
-+		priv->tagger_data.hwts_rx_en = rx_on;
-+	}
-+
-+	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+static int sja1105_hwtstamp_get(struct dsa_switch *ds, int port,
-+				struct ifreq *ifr)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	struct hwtstamp_config config;
-+
-+	config.flags = 0;
-+	if (priv->ports[port].hwts_tx_en)
-+		config.tx_type = HWTSTAMP_TX_ON;
-+	else
-+		config.tx_type = HWTSTAMP_TX_OFF;
-+	if (priv->tagger_data.hwts_rx_en)
-+		config.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-+	else
-+		config.rx_filter = HWTSTAMP_FILTER_NONE;
-+
-+	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
-+		-EFAULT : 0;
-+}
-+
- #define to_tagger(d) \
- 	container_of((d), struct sja1105_tagger_data, rxtstamp_work)
- #define to_sja1105(d) \
-@@ -1847,6 +1941,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.port_mdb_add		= sja1105_mdb_add,
- 	.port_mdb_del		= sja1105_mdb_del,
- 	.port_deferred_xmit	= sja1105_port_deferred_xmit,
-+	.port_hwtstamp_get	= sja1105_hwtstamp_get,
-+	.port_hwtstamp_set	= sja1105_hwtstamp_set,
- 	.port_rxtstamp		= sja1105_port_rxtstamp,
- 	.port_txtstamp		= sja1105_port_txtstamp,
- };
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 01ecc8fb1b30..3041cf9d5856 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -70,8 +70,10 @@ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
- 				SOF_TIMESTAMPING_RAW_HARDWARE;
--	info->tx_types = (1 << HWTSTAMP_TX_OFF);
--	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE);
-+	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
-+			 (1 << HWTSTAMP_TX_ON);
-+	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-+			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT);
- 	info->phc_index = ptp_clock_index(priv->clock);
- 	return 0;
- }
--- 
-2.17.1
+> +#else
+> +	return true;
+> +#endif
+> +}
+> +
+>   static struct ipv6_sr_hdr *get_and_validate_srh(struct sk_buff *skb)
+>   {
+>   	struct ipv6_sr_hdr *srh;
+> @@ -103,10 +116,8 @@ static struct ipv6_sr_hdr *get_and_validate_srh(struct sk_buff *skb)
+>   	if (srh->segments_left == 0)
+>   		return NULL;
+>   
+> -#ifdef CONFIG_IPV6_SEG6_HMAC
+> -	if (!seg6_hmac_validate_skb(skb))
+> +	if (!seg6_local_hmac_validate_skb(skb, srh))
+>   		return NULL;
+> -#endif
+>   
+>   	return srh;
+>   }
+> @@ -120,10 +131,8 @@ static bool decap_and_validate(struct sk_buff *skb, int proto)
+>   	if (srh && srh->segments_left > 0)
+>   		return false;
+>   
+> -#ifdef CONFIG_IPV6_SEG6_HMAC
+> -	if (srh && !seg6_hmac_validate_skb(skb))
+> +	if (srh && !seg6_local_hmac_validate_skb(skb, srh))
+>   		return false;
+> -#endif
+>   
+>   	if (ipv6_find_hdr(skb, &off, proto, NULL, NULL) < 0)
+>   		return false;
+> 
 
