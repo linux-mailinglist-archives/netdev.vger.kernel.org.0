@@ -2,130 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5147A3A07A
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 17:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B96753A06F
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 17:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727245AbfFHPcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 11:32:50 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:59268 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727220AbfFHPct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 11:32:49 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x58FQkgC016440;
-        Sat, 8 Jun 2019 11:32:32 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2t090rap3p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 08 Jun 2019 11:32:32 -0400
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x58FSses019803;
-        Sat, 8 Jun 2019 11:32:31 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2t090rap3f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 08 Jun 2019 11:32:31 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x58DVEBe013007;
-        Sat, 8 Jun 2019 13:39:47 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 2t04n5kgsm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 08 Jun 2019 13:39:47 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x58FWTG542598856
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 8 Jun 2019 15:32:29 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BC68BB2065;
-        Sat,  8 Jun 2019 15:32:29 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9F6A7B205F;
-        Sat,  8 Jun 2019 15:32:29 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.85.180.36])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Sat,  8 Jun 2019 15:32:29 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-        id 8DB3916C3421; Sat,  8 Jun 2019 08:27:07 -0700 (PDT)
-Date:   Sat, 8 Jun 2019 08:27:07 -0700
-From:   "Paul E. McKenney" <paulmck@linux.ibm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-Subject: Re: inet: frags: Turn fqdir->dead into an int for old Alphas
-Message-ID: <20190608152707.GF28207@linux.ibm.com>
-Reply-To: paulmck@linux.ibm.com
-References: <20190603200301.GM28207@linux.ibm.com>
- <Pine.LNX.4.44L0.1906041026570.1731-100000@iolanthe.rowland.org>
- <CAHk-=wgGnCw==uY8radrB+Tg_CEmzOtwzyjfMkuh7JmqFh+jzQ@mail.gmail.com>
- <20190607140949.tzwyprrhmqdx33iu@gondor.apana.org.au>
- <da5eedfe-92f9-6c50-b9e7-68886047dd25@gmail.com>
- <CAHk-=wgtY1hNQX9TM=4ono-UJ-hsoFA0OT36ixFWBG2eeO011w@mail.gmail.com>
+        id S1727166AbfFHP1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 11:27:33 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34876 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727015AbfFHP1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 11:27:33 -0400
+Received: by mail-wm1-f68.google.com with SMTP id c6so4496078wml.0
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 08:27:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=quantonium-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9/sxyShoAnyJ01viZawJSmOQjMAkGfuQpB9n6+E8oxE=;
+        b=E4PcI+1itL/Ro2im+VWxlPk8XW+yqBs81x7WP1eM2vyIy/w4S8Mq9qWXYiKxlo8Xcb
+         sAPMbaTiYYYud0SHLggZME7YzIwRuJcX5igCOh7l/TW6wvBoU6vPOx6wmMkjA+Z0emhk
+         rP8TrJ0ATANtirGdHnmZMwmjqokuoU+cEicUUVktRQyhgpJVivKJorOa9ET4sDL0lDs3
+         UkuLedyKk0eSPJ9lBMlITVjxz/tBZP24LdQTmo6ESd2RWYMwMjJizqyif1/7wKgQCWsw
+         ihuNM+6tJW1/ljS1dcoCNBN4B1uqiSLx29C7S7bsXooUoAk+ONM1MH2xS9Z6e7SZoRyn
+         3pAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9/sxyShoAnyJ01viZawJSmOQjMAkGfuQpB9n6+E8oxE=;
+        b=S1Q8PJKZzAJz8UVGGL2esyQ0SuH4VSXDNTKN5b/3aLdGhgFSLNWaWlT5aqsK0Rw5j7
+         4KWjeRV/yqwNx8WGp/E3PqVqiGXCxhz7WsUzJbzu3JPDgXyNqXNZxy3YK8o0q3qw48ah
+         8rId89ShCB71jnODw2FE0yqz+JgL2DI+MdMQ0yNWZs6Y0bdHxF3Ku7TksKiOaYDfjpxp
+         61rbZk0Iat4mpWK+kO2hOv9DpS6t91tSplJIt6uo9LyplyHy1TAyyH+OnONUKJhWav9j
+         0c2i9AgPbjgi+vMhWK2JhLpDIGghvxdCDEdqVJywdt3pz5WvisdyZaELWaeFvdZvCGsu
+         n7tQ==
+X-Gm-Message-State: APjAAAWs3afSvHKIQr67taQTthgHUE8HBYeVKHVxM3bgnjhBnKgYtdYg
+        P3uMpXzIVKK+asHKqxl+yICe/M781+bpoLa+M5SxAQ==
+X-Google-Smtp-Source: APXvYqxcB6K1Qt+iYXycuXjiOZfIRsPPvNJHe7QXlE15irY381UD4PN7uu5KA95xZPILgWQVRJUd9y8qRJ3USDYe6lc=
+X-Received: by 2002:a1c:cc02:: with SMTP id h2mr7224592wmb.13.1560007650775;
+ Sat, 08 Jun 2019 08:27:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgtY1hNQX9TM=4ono-UJ-hsoFA0OT36ixFWBG2eeO011w@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-08_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906080116
+References: <1559933708-13947-1-git-send-email-tom@quantonium.net> <752a0680-a872-69d9-c67d-687d830e29da@gmail.com>
+In-Reply-To: <752a0680-a872-69d9-c67d-687d830e29da@gmail.com>
+From:   Tom Herbert <tom@quantonium.net>
+Date:   Sat, 8 Jun 2019 08:27:20 -0700
+Message-ID: <CAPDqMer8btH59cdiw37u7oJyayNpvDKWhGR5YZsFMSbKzr4GWw@mail.gmail.com>
+Subject: Re: [RFC v2 PATCH 0/5] seg6: Segment routing fixes
+To:     David Lebrun <dav.lebrun@gmail.com>
+Cc:     Tom Herbert <tom@herbertland.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Lebrun <dlebrun@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 07, 2019 at 09:19:42AM -0700, Linus Torvalds wrote:
-> On Fri, Jun 7, 2019 at 8:26 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >
-> > There is common knowledge among us programmers that bit fields
-> > (or bool) sharing a common 'word' need to be protected
-> > with a common lock.
-> >
-> > Converting all bit fields to plain int/long would be quite a waste of memory.
-> 
-> Yeah, and we really don't care about alpha. So 'char' should be safe.
-> 
-> No compiler actually turns a 'bool' in a struct into a bitfield,
-> afaik, because you're still supposed to be able to take the address of
-> a boolean.
-> 
-> But on the whole, I do not believe that we should ever use 'bool' in
-> structures anyway, because it's such a badly defined type. I think
-> it's 'char' in practice on just about all architectures, but there
-> really were traditional use cases where 'bool' was int.
-> 
-> But:
-> 
->  - we shouldn't turn them into 'int' anyway - alpha is dead, and no
-> sane architecture will make the same mistake anyway. People learnt.
-> 
->  - we might want to make sure 'bool' really is 'char' in practice, to
-> double-check that fthe compiler doesn't do anything stupid.
-> 
->  - bitfields obviously do need locks. 'char' does not.
-> 
-> If there's somebody who really notices the alpha issue in PRACTICE, we
-> can then bother to fix it. But there is approximately one user, and
-> it's not a heavy-duty one.
+On Sat, Jun 8, 2019 at 3:39 AM David Lebrun <dav.lebrun@gmail.com> wrote:
+>
+> On 07/06/2019 19:55, Tom Herbert wrote:
+> > This patch set includes fixes to bring the segment routing
+> > implementation into conformance with the latest version of the
+> > draft (draft-ietf-6man-segment-routing-header-19). Also, segment
+> > routing receive function calls ip6_parse to properly parse TLVs
+> > in parsing loop.
+>
+> Thanks for your patch set !
+>
+> General comment regarding uapi changes: it might be wise to wait for RFC
+> status in case the IESG or IANA decide different type/flags values.
 
-C11 and later compilers are supposed to use read-modify-write atomic
-operations in this sort of situation anyway because they are not supposed
-to introduce data races.  So if this problem comes up, the fix should
-be in GCC rather than the Linux kernel, right?
+David,
 
-								Thanx, Paul
+It's a "chicken and the egg problem". If we wait for publication to
+implement the protocol, then we can't implement the protocol which is
+necessary for publication. So we have to implement and deploy Internet
+Drafts, but the definition of I-Ds expressly makes them "works in
+progress" that can change at any time.
+
+In this case, the segment routing draft is in working group last call
+so it's unlikely that any major changes will occur. There is one
+proposed change in changing a padding value, it has not been accepted
+by the WG. IESG and IANA are very unlikely to impose different
+protocol parameter values. A potential hangup for publication is that
+there is very little evidence that large portions of the draft have
+been implemented. Linux is the only draft cited as having implemented
+TLVs and HMAC, but as these patches point out it's pretty out of date
+(HMAC flag stil used, no padding, no parse loop). These patches should
+help the argument that segment routing can move forward.
+
+Tom
