@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC2639EFA
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F1839D8C
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728732AbfFHLxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:53:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58180 "EHLO mail.kernel.org"
+        id S1728196AbfFHLlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:41:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727922AbfFHLkw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:40:52 -0400
+        id S1728082AbfFHLlL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:41:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 10893214D8;
-        Sat,  8 Jun 2019 11:40:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0982214C6;
+        Sat,  8 Jun 2019 11:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994051;
-        bh=o6lTFZ3hmVUlmTR1H+43U1WHI/uWNhzYLQqEEvu5AXo=;
+        s=default; t=1559994071;
+        bh=nvpqlCYyqw5KWyJSXPZb9sF0a9m5ho9uaVWVWhtfsWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdyjdelhozffIaU8RRMDs6vFSQaGZlOio4KzKq+JD5DLgN1H1OABGlV6KX9V7wuvv
-         M9Ba8zvVDrHsCe3/Z96amxzjUx4NaTvzEBIAJPFAl5hxbddmwxSJlOd9HBspPxt+gR
-         CDChcgEZDIdmA3S8EpVMmGXtl6oF37m21xq0jUG0=
+        b=jOC/zUnNH9b8k6dv0WGd+/ZkXtHLyF1x/dOuhYj6qMuL8chXn+pJrOZmD2PmrYRir
+         /EKUNECV6YOoiB3yJpOd1i9L9Zeg3ELqCchM8vB3eDpxJoe6v0OTcE2uiqhxiciC7u
+         TayA4MyboCiF3u9z7pmr7NZC8wWtSLpII0Od8snA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 38/70] net: aquantia: fix LRO with FCS error
-Date:   Sat,  8 Jun 2019 07:39:17 -0400
-Message-Id: <20190608113950.8033-38-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 48/70] dpaa_eth: use only online CPU portals
+Date:   Sat,  8 Jun 2019 07:39:27 -0400
+Message-Id: <20190608113950.8033-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
 References: <20190608113950.8033-1-sashal@kernel.org>
@@ -44,104 +43,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
+From: Madalin Bucur <madalin.bucur@nxp.com>
 
-[ Upstream commit eaeb3b7494ba9159323814a8ce8af06a9277d99b ]
+[ Upstream commit 7aae703f8096d21e34ce5f34f16715587bc30902 ]
 
-Driver stops producing skbs on ring if a packet with FCS error
-was coalesced into LRO session. Ring gets hang forever.
+Make sure only the portals for the online CPUs are used.
+Without this change, there are issues when someone boots with
+maxcpus=n, with n < actual number of cores available as frames
+either received or corresponding to the transmit confirmation
+path would be offered for dequeue to the offline CPU portals,
+getting lost.
 
-Thats a logical error in driver processing descriptors:
-When rx_stat indicates MAC Error, next pointer and eop flags
-are not filled. This confuses driver so it waits for descriptor 0
-to be filled by HW.
-
-Solution is fill next pointer and eop flag even for packets with FCS error.
-
-Fixes: bab6de8fd180b ("net: ethernet: aquantia: Atlantic A0 and B0 specific functions.")
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
+Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 61 ++++++++++---------
- 1 file changed, 32 insertions(+), 29 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c     | 9 ++++-----
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index b31dba1b1a55..ec302fdfec63 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -702,38 +702,41 @@ static int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s *self,
- 		if ((rx_stat & BIT(0)) || rxd_wb->type & 0x1000U) {
- 			/* MAC error or DMA error */
- 			buff->is_error = 1U;
--		} else {
--			if (self->aq_nic_cfg->is_rss) {
--				/* last 4 byte */
--				u16 rss_type = rxd_wb->type & 0xFU;
--
--				if (rss_type && rss_type < 0x8U) {
--					buff->is_hash_l4 = (rss_type == 0x4 ||
--					rss_type == 0x5);
--					buff->rss_hash = rxd_wb->rss_hash;
--				}
-+		}
-+		if (self->aq_nic_cfg->is_rss) {
-+			/* last 4 byte */
-+			u16 rss_type = rxd_wb->type & 0xFU;
-+
-+			if (rss_type && rss_type < 0x8U) {
-+				buff->is_hash_l4 = (rss_type == 0x4 ||
-+				rss_type == 0x5);
-+				buff->rss_hash = rxd_wb->rss_hash;
- 			}
-+		}
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index d3f2408dc9e8..f38c3fa7d705 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -780,7 +780,7 @@ static void dpaa_eth_add_channel(u16 channel)
+ 	struct qman_portal *portal;
+ 	int cpu;
  
--			if (HW_ATL_B0_RXD_WB_STAT2_EOP & rxd_wb->status) {
--				buff->len = rxd_wb->pkt_len %
--					AQ_CFG_RX_FRAME_MAX;
--				buff->len = buff->len ?
--					buff->len : AQ_CFG_RX_FRAME_MAX;
--				buff->next = 0U;
--				buff->is_eop = 1U;
-+		if (HW_ATL_B0_RXD_WB_STAT2_EOP & rxd_wb->status) {
-+			buff->len = rxd_wb->pkt_len %
-+				AQ_CFG_RX_FRAME_MAX;
-+			buff->len = buff->len ?
-+				buff->len : AQ_CFG_RX_FRAME_MAX;
-+			buff->next = 0U;
-+			buff->is_eop = 1U;
-+		} else {
-+			buff->len =
-+				rxd_wb->pkt_len > AQ_CFG_RX_FRAME_MAX ?
-+				AQ_CFG_RX_FRAME_MAX : rxd_wb->pkt_len;
-+
-+			if (HW_ATL_B0_RXD_WB_STAT2_RSCCNT &
-+				rxd_wb->status) {
-+				/* LRO */
-+				buff->next = rxd_wb->next_desc_ptr;
-+				++ring->stats.rx.lro_packets;
- 			} else {
--				if (HW_ATL_B0_RXD_WB_STAT2_RSCCNT &
--					rxd_wb->status) {
--					/* LRO */
--					buff->next = rxd_wb->next_desc_ptr;
--					++ring->stats.rx.lro_packets;
--				} else {
--					/* jumbo */
--					buff->next =
--						aq_ring_next_dx(ring,
--								ring->hw_head);
--					++ring->stats.rx.jumbo_packets;
--				}
-+				/* jumbo */
-+				buff->next =
-+					aq_ring_next_dx(ring,
-+							ring->hw_head);
-+				++ring->stats.rx.jumbo_packets;
- 			}
- 		}
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		portal = qman_get_affine_portal(cpu);
+ 		qman_p_static_dequeue_add(portal, pool);
  	}
+@@ -896,7 +896,7 @@ static void dpaa_fq_setup(struct dpaa_priv *priv,
+ 	u16 channels[NR_CPUS];
+ 	struct dpaa_fq *fq;
+ 
+-	for_each_cpu(cpu, affine_cpus)
++	for_each_cpu_and(cpu, affine_cpus, cpu_online_mask)
+ 		channels[num_portals++] = qman_affine_channel(cpu);
+ 
+ 	if (num_portals == 0)
+@@ -2174,7 +2174,6 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
+ 	if (cleaned < budget) {
+ 		napi_complete_done(napi, cleaned);
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+-
+ 	} else if (np->down) {
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+ 	}
+@@ -2448,7 +2447,7 @@ static void dpaa_eth_napi_enable(struct dpaa_priv *priv)
+ 	struct dpaa_percpu_priv *percpu_priv;
+ 	int i;
+ 
+-	for_each_possible_cpu(i) {
++	for_each_online_cpu(i) {
+ 		percpu_priv = per_cpu_ptr(priv->percpu_priv, i);
+ 
+ 		percpu_priv->np.down = 0;
+@@ -2461,7 +2460,7 @@ static void dpaa_eth_napi_disable(struct dpaa_priv *priv)
+ 	struct dpaa_percpu_priv *percpu_priv;
+ 	int i;
+ 
+-	for_each_possible_cpu(i) {
++	for_each_online_cpu(i) {
+ 		percpu_priv = per_cpu_ptr(priv->percpu_priv, i);
+ 
+ 		percpu_priv->np.down = 1;
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index bdee441bc3b7..7ce2e99b594d 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -569,7 +569,7 @@ static int dpaa_set_coalesce(struct net_device *dev,
+ 	qman_dqrr_get_ithresh(portal, &prev_thresh);
+ 
+ 	/* set new values */
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		portal = qman_get_affine_portal(cpu);
+ 		res = qman_portal_set_iperiod(portal, period);
+ 		if (res)
+@@ -586,7 +586,7 @@ static int dpaa_set_coalesce(struct net_device *dev,
+ 
+ revert_values:
+ 	/* restore previous values */
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		if (!needs_revert[cpu])
+ 			continue;
+ 		portal = qman_get_affine_portal(cpu);
 -- 
 2.20.1
 
