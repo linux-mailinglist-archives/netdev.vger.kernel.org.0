@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3E03A251
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D50D13A258
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:23:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727914AbfFHWWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 18:22:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44484 "EHLO mail.kernel.org"
+        id S1727978AbfFHWW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 18:22:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727679AbfFHWWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727729AbfFHWWY (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 8 Jun 2019 18:22:24 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B30821721;
+        by mail.kernel.org (Postfix) with ESMTPSA id C4C2A21734;
         Sat,  8 Jun 2019 21:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560030824;
-        bh=Yc5pCkMNNMBqJttn8+XK2KNFKrbMkTzC/rNQPmYUBGY=;
+        s=default; t=1560030825;
+        bh=Y9ywMfgrm8Bqb42qb2/HJlQStOglIvl9kGytf0dyeNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkRF6on+K5dRLyDqe31rdQlsQ2keaOj6VkhLieQhmnKqHVAH/2FZUhrvabtvkpeA9
-         5fdzk3sa/mSmtmOS6D7+2nEQesyNacKVlM1mBkQlqHFWuIo4UMiCUWy8C5IBvBVFd5
-         9jD2INtfzlSUViFNEPagA9gcvlnx/kJ67FODYHas=
+        b=qv7Q0SE34dUP6PVbjlOm3iJBnNuffLvfny9qlOJkrYocVGUmy+5BiQOrFJbj5c/lq
+         84Os/helAxdYte8aoLj483ZVbiEUuTvt1Pls7QTVBTmouJYH9aHeV/B8y93KSCtmIJ
+         O+MZwqpbImGJAPOP8C6A2AoS4hBhDcFXHuM5RuIo=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v4 net-next 04/20] ipv6: Handle all fib6_nh in a nexthop in __find_rr_leaf
-Date:   Sat,  8 Jun 2019 14:53:25 -0700
-Message-Id: <20190608215341.26592-5-dsahern@kernel.org>
+Subject: [PATCH v4 net-next 05/20] ipv6: Handle all fib6_nh in a nexthop in rt6_nlmsg_size
+Date:   Sat,  8 Jun 2019 14:53:26 -0700
+Message-Id: <20190608215341.26592-6-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190608215341.26592-1-dsahern@kernel.org>
 References: <20190608215341.26592-1-dsahern@kernel.org>
@@ -40,90 +40,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add a hook in __find_rr_leaf to handle nexthop struct in a fib6_info.
-nexthop_for_each_fib6_nh is used to walk each fib6_nh in a nexthop and
-call find_match. On a match, use the fib6_nh saved in the callback arg
-to setup fib6_result.
+Add a hook in rt6_nlmsg_size to handle nexthop struct in a fib6_info.
+rt6_nh_nlmsg_size is used to sum the space needed for all nexthops in
+the fib entry.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- net/ipv6/route.c | 49 +++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 2 deletions(-)
+ net/ipv6/route.c | 49 +++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 37 insertions(+), 12 deletions(-)
 
 diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index aac209381903..740df725b9fc 100644
+index 740df725b9fc..d1139ef077cd 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -765,6 +765,24 @@ static bool find_match(struct fib6_nh *nh, u32 fib6_flags,
- 	return rc;
+@@ -100,7 +100,7 @@ static void		rt6_do_redirect(struct dst_entry *dst, struct sock *sk,
+ 					struct sk_buff *skb);
+ static int rt6_score_route(const struct fib6_nh *nh, u32 fib6_flags, int oif,
+ 			   int strict);
+-static size_t rt6_nlmsg_size(struct fib6_info *rt);
++static size_t rt6_nlmsg_size(struct fib6_info *f6i);
+ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
+ 			 struct fib6_info *rt, struct dst_entry *dst,
+ 			 struct in6_addr *dest, struct in6_addr *src,
+@@ -4935,20 +4935,46 @@ static int inet6_rtm_newroute(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return ip6_route_add(&cfg, GFP_KERNEL, extack);
  }
  
-+struct fib6_nh_frl_arg {
-+	u32		flags;
-+	int		oif;
-+	int		strict;
-+	int		*mpri;
-+	bool		*do_rr;
-+	struct fib6_nh	*nh;
-+};
+-static size_t rt6_nlmsg_size(struct fib6_info *rt)
++/* add the overhead of this fib6_nh to nexthop_len */
++static int rt6_nh_nlmsg_size(struct fib6_nh *nh, void *arg)
+ {
+-	int nexthop_len = 0;
++	int *nexthop_len = arg;
+ 
+-	if (rt->nh)
+-		nexthop_len += nla_total_size(4); /* RTA_NH_ID */
++	*nexthop_len += nla_total_size(0)	 /* RTA_MULTIPATH */
++		     + NLA_ALIGN(sizeof(struct rtnexthop))
++		     + nla_total_size(16); /* RTA_GATEWAY */
 +
-+static int rt6_nh_find_match(struct fib6_nh *nh, void *_arg)
-+{
-+	struct fib6_nh_frl_arg *arg = _arg;
-+
-+	arg->nh = nh;
-+	return find_match(nh, arg->flags, arg->oif, arg->strict,
-+			  arg->mpri, arg->do_rr);
++	if (nh->fib_nh_lws) {
++		/* RTA_ENCAP_TYPE */
++		*nexthop_len += lwtunnel_get_encap_size(nh->fib_nh_lws);
++		/* RTA_ENCAP */
++		*nexthop_len += nla_total_size(2);
++	}
+ 
+-	if (rt->fib6_nsiblings) {
+-		nexthop_len = nla_total_size(0)	 /* RTA_MULTIPATH */
+-			    + NLA_ALIGN(sizeof(struct rtnexthop))
+-			    + nla_total_size(16) /* RTA_GATEWAY */
+-			    + lwtunnel_get_encap_size(rt->fib6_nh->fib_nh_lws);
++	return 0;
 +}
-+
- static void __find_rr_leaf(struct fib6_info *f6i_start,
- 			   struct fib6_info *nomatch, u32 metric,
- 			   struct fib6_result *res, struct fib6_info **cont,
-@@ -775,6 +793,7 @@ static void __find_rr_leaf(struct fib6_info *f6i_start,
- 	for (f6i = f6i_start;
- 	     f6i && f6i != nomatch;
- 	     f6i = rcu_dereference(f6i->fib6_next)) {
-+		bool matched = false;
- 		struct fib6_nh *nh;
  
- 		if (cont && f6i->fib6_metric != metric) {
-@@ -785,8 +804,34 @@ static void __find_rr_leaf(struct fib6_info *f6i_start,
- 		if (fib6_check_expired(f6i))
- 			continue;
- 
--		nh = f6i->fib6_nh;
--		if (find_match(nh, f6i->fib6_flags, oif, strict, mpri, do_rr)) {
-+		if (unlikely(f6i->nh)) {
-+			struct fib6_nh_frl_arg arg = {
-+				.flags  = f6i->fib6_flags,
-+				.oif    = oif,
-+				.strict = strict,
-+				.mpri   = mpri,
-+				.do_rr  = do_rr
-+			};
+-		nexthop_len *= rt->fib6_nsiblings;
++static size_t rt6_nlmsg_size(struct fib6_info *f6i)
++{
++	int nexthop_len;
 +
-+			if (nexthop_is_blackhole(f6i->nh)) {
-+				res->fib6_flags = RTF_REJECT;
-+				res->fib6_type = RTN_BLACKHOLE;
-+				res->f6i = f6i;
-+				res->nh = nexthop_fib6_nh(f6i->nh);
-+				return;
-+			}
-+			if (nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_find_match,
-+						     &arg)) {
-+				matched = true;
-+				nh = arg.nh;
-+			}
-+		} else {
-+			nh = f6i->fib6_nh;
-+			if (find_match(nh, f6i->fib6_flags, oif, strict,
-+				       mpri, do_rr))
-+				matched = true;
++	if (f6i->nh) {
++		nexthop_len = nla_total_size(4); /* RTA_NH_ID */
++		nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_nlmsg_size,
++					 &nexthop_len);
++	} else {
++		struct fib6_nh *nh = f6i->fib6_nh;
++
++		nexthop_len = 0;
++		if (f6i->fib6_nsiblings) {
++			nexthop_len = nla_total_size(0)	 /* RTA_MULTIPATH */
++				    + NLA_ALIGN(sizeof(struct rtnexthop))
++				    + nla_total_size(16) /* RTA_GATEWAY */
++				    + lwtunnel_get_encap_size(nh->fib_nh_lws);
++
++			nexthop_len *= f6i->fib6_nsiblings;
 +		}
-+		if (matched) {
- 			res->f6i = f6i;
- 			res->nh = nh;
- 			res->fib6_flags = f6i->fib6_flags;
++		nexthop_len += lwtunnel_get_encap_size(nh->fib_nh_lws);
+ 	}
+ 
+ 	return NLMSG_ALIGN(sizeof(struct rtmsg))
+@@ -4964,7 +4990,6 @@ static size_t rt6_nlmsg_size(struct fib6_info *rt)
+ 	       + nla_total_size(sizeof(struct rta_cacheinfo))
+ 	       + nla_total_size(TCP_CA_NAME_MAX) /* RTAX_CC_ALGO */
+ 	       + nla_total_size(1) /* RTA_PREF */
+-	       + lwtunnel_get_encap_size(rt->fib6_nh->fib_nh_lws)
+ 	       + nexthop_len;
+ }
+ 
 -- 
 2.11.0
 
