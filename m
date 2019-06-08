@@ -2,313 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E51C239B78
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 09:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEF0C39B7A
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 09:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbfFHHGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 03:06:23 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34445 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbfFHHGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 03:06:22 -0400
-Received: by mail-wr1-f66.google.com with SMTP id e16so4218974wrn.1;
-        Sat, 08 Jun 2019 00:06:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l71valUy73yS7d9m1Jw+T9vHYZRj8p2Ia1yYGkuIspg=;
-        b=JOrrAOdbOMUSTeyZEohyio/Q/YFncs4bnQoWyCwwmlVbpvq8PaFODnHJ1FS5F+DjmA
-         KGsMhbJBLAojIC17ysHF8+C6P6e01OCSUhBhxYW5HqKHhzxUday9RwS6s6NWY2Qx5brQ
-         ecsmuTjg3ChLKCL4z4gvi+cbM75G0Ez7DWz0OFD8/5oaeDGMpfDdp0vmt+c4fGL7MsW6
-         WZ+UAncQ1e9vy3Y9N2/o0ghQ3zK99EvELDegQoaytItEjymrG6yuKQ+AZLItCzVZXS94
-         cgy4hCU4b9NUeJUYawQzM39j03Fx1AwEkuRfQISZV5c3GswHntWopd2suHl3PBEr9b/A
-         SeGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l71valUy73yS7d9m1Jw+T9vHYZRj8p2Ia1yYGkuIspg=;
-        b=ItciFd+xuLZG+kcN3O/PfzTqCk6/ZH+8eGrFi1P/PetqAF7gTVbqV1ZNNptr5202Yu
-         MzOq2B+n3nigkkTWCFDO7z7s7vHMddvkr0McD8cSoCUvd0QjL0eFs4/P+PVyOT34olZB
-         /yKbNG1F39zUuYApXroxDbBREDUjxlk7tLdSZtnB1pDZaik2cllIH4Op7T61N8yXR+yV
-         SrVuGXxO/nkqGyVynq6MmSnrBFlaeRpKPJAfw5WlOpuzoBijVMoEqMtEUNC0/wt9BFMz
-         fbIoCgt3rl2s3KukdbNknJoYU+L1Q1u0dzQ8K1OchAcuwTE0uWw6x4RSN2rpc2RJYo/1
-         IxYw==
-X-Gm-Message-State: APjAAAUVuKqLgzWeLBRB3ICVLacdCG5T+1N5FcXboj6E90o87X22gbBL
-        OCcKm29MVMlTd4XnWzvquMiQkHUZcI5sTCGcvDGBHw==
-X-Google-Smtp-Source: APXvYqwEKapufhdQwrFVeANNHmzrb2fls8YW1EREMLTNMMS/lf/2EKjGZmPMDCarQdZZ5alvqWfan66l6tZ/v0macPM=
-X-Received: by 2002:a5d:5189:: with SMTP id k9mr2353155wrv.329.1559977580122;
- Sat, 08 Jun 2019 00:06:20 -0700 (PDT)
+        id S1726786AbfFHHJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 03:09:10 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52862 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726204AbfFHHJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 03:09:10 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5878Nog020718;
+        Sat, 8 Jun 2019 00:08:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=jtY6UEax00JfBTwSuTsSRuXrYRn1eVzDHu9iEntf1DU=;
+ b=OSRUrGZ2lCA/Bm/HCnDlcQyWS5nGVR8vFBrqD1OKALBlvX8Ubi5N/Qrg4g/W4n+9kzTE
+ whinOR3D4LZ/4tL/B+Hfrke7AoMg8+zIjmmDQITVN24T7748gCXfMd9k6NmXuqqbvQ3C
+ 4UeHRcLvyqgHUDX7YxWP1mtz7xr7ErWkTt4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sywsmsjq0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 08 Jun 2019 00:08:45 -0700
+Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
+ ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 8 Jun 2019 00:08:44 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sat, 8 Jun 2019 00:08:44 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jtY6UEax00JfBTwSuTsSRuXrYRn1eVzDHu9iEntf1DU=;
+ b=Y47j8i4AYAgV1KpnLyuujV95wmxbDwCm4X627hXfFqHjcIKDHK7M7g71W/vRa8XlrPr/S1bwExpTdGrXzhl/kJzGhXjRCRHH0oRABuvXog0qkOJZWRBDDmoF2lJd3YKZByK4syFVyCUcpsibqLLpwd6nzcB2KIMICtlQ7Ff2esg=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
+ MWHSPR00MB05.namprd15.prod.outlook.com (10.175.142.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.12; Sat, 8 Jun 2019 07:08:42 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1943.023; Sat, 8 Jun 2019
+ 07:08:42 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v3 1/8] bpf: implement getsockopt and setsockopt
+ hooks
+Thread-Topic: [PATCH bpf-next v3 1/8] bpf: implement getsockopt and setsockopt
+ hooks
+Thread-Index: AQHVHU484Mlm6IDY2kuK+Ji3uF7VuqaRV2AA
+Date:   Sat, 8 Jun 2019 07:08:41 +0000
+Message-ID: <20190608070838.4vhwss4anyibju53@kafai-mbp.dhcp.thefacebook.com>
+References: <20190607162920.24546-1-sdf@google.com>
+ <20190607162920.24546-2-sdf@google.com>
+In-Reply-To: <20190607162920.24546-2-sdf@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR07CA0073.namprd07.prod.outlook.com (2603:10b6:100::41)
+ To MWHPR15MB1790.namprd15.prod.outlook.com (2603:10b6:301:53::10)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:14ab]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2368bee7-2d57-4ece-b52c-08d6ebe022fa
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHSPR00MB05;
+x-ms-traffictypediagnostic: MWHSPR00MB05:
+x-microsoft-antispam-prvs: <MWHSPR00MB052D26AFBFD225A29BF61ED5110@MWHSPR00MB05.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:175;
+x-forefront-prvs: 0062BDD52C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(346002)(39860400002)(376002)(396003)(199004)(189003)(66946007)(73956011)(229853002)(6436002)(64756008)(66476007)(66446008)(66556008)(6486002)(102836004)(256004)(5024004)(86362001)(7736002)(14444005)(5660300002)(6916009)(14454004)(6116002)(478600001)(4326008)(25786009)(6512007)(6246003)(9686003)(53936002)(1076003)(2906002)(6506007)(486006)(446003)(386003)(76176011)(316002)(8676002)(54906003)(52116002)(46003)(68736007)(8936002)(99286004)(81166006)(81156014)(476003)(71200400001)(71190400001)(11346002)(305945005)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHSPR00MB05;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: U3Ja/OlnK1Kv9mP8ZL9R73Ukfx+rLhpcsIcCep16Zxg4/QTPvJNXfwRD9EH0Q7mXXr0PMS9gkiG/DBsjdSV5WxoQbwFmvdcHetJHGQtBacg7EwuHtU8FwP9B+DDITDggVAJFooUjgJazH1MhuQfHIs6pAC7UkA5IpOfMltqWsDLjLEaH1TP+Q/glt1VHf/n3ysCXaUzdIOR3J1svxkYNytwCQ/wxHBRdsTlRZU0pGfo426VmA0+/8hie1DX9Ww+FgP764RQHMAizMLfV8AJd0GOJpWpAcBd8RJdVFH4va+Rckf1yyqB9otFPFopRGxxWq5L+jMhDob0gJpKlxaXAAALig3iBrUAg8DoZSKkacFbm3KJOqKLebO2s2VcfIVVMdNA8bjGVrN5EzuMf/mi+XwSTM+Qb5aFCYcaQOoAuTco=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AEFF13EA65976A49B744F16E01D8B9C1@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <00000000000097abb90589e804fd@google.com> <20190603203259.21508-1-nhorman@tuxdriver.com>
- <CADvbK_c6Ym2pbKqGQD8WUmUPX_PtAa6RGde7AQwhRZzUr_emiw@mail.gmail.com>
- <20190605112010.GA554@hmswarspite.think-freely.org> <20190606154754.GA3500@localhost.localdomain>
- <20190607105639.GB26017@hmswarspite.think-freely.org> <20190607124813.GA3436@localhost.localdomain>
-In-Reply-To: <20190607124813.GA3436@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 8 Jun 2019 15:06:08 +0800
-Message-ID: <CADvbK_eTqSJ27=0=yf7MXtKW796gvaByBMQ-2AKWr9BEoX_r+g@mail.gmail.com>
-Subject: Re: [PATCH V2] Fix memory leak in sctp_process_init
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Neil Horman <nhorman@tuxdriver.com>, linux-sctp@vger.kernel.org,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        network dev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2368bee7-2d57-4ece-b52c-08d6ebe022fa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2019 07:08:41.7696
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHSPR00MB05
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-08_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906080054
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 7, 2019 at 8:48 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Fri, Jun 07, 2019 at 06:56:39AM -0400, Neil Horman wrote:
-> > On Thu, Jun 06, 2019 at 12:47:55PM -0300, Marcelo Ricardo Leitner wrote:
-> > > On Wed, Jun 05, 2019 at 07:20:10AM -0400, Neil Horman wrote:
-> > > > On Wed, Jun 05, 2019 at 04:16:24AM +0800, Xin Long wrote:
-> > > > > On Tue, Jun 4, 2019 at 4:34 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > > > >
-> > > > > > syzbot found the following leak in sctp_process_init
-> > > > > > BUG: memory leak
-> > > > > > unreferenced object 0xffff88810ef68400 (size 1024):
-> > > > > >   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
-> > > > > >   hex dump (first 32 bytes):
-> > > > > >     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
-> > > > > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> > > > > >   backtrace:
-> > > > > >     [<00000000a02cebbd>] kmemleak_alloc_recursive include/linux/kmemleak.h:55
-> > > > > > [inline]
-> > > > > >     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
-> > > > > >     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
-> > > > > >     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
-> > > > > >     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
-> > > > > >     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
-> > > > > >     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
-> > > > > >     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
-> > > > > > net/sctp/sm_make_chunk.c:2437
-> > > > > >     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
-> > > > > > [inline]
-> > > > > >     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
-> > > > > > [inline]
-> > > > > >     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
-> > > > > > [inline]
-> > > > > >     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60 net/sctp/sm_sideeffect.c:1165
-> > > > > >     [<0000000044e11f96>] sctp_assoc_bh_rcv+0x13c/0x200
-> > > > > > net/sctp/associola.c:1074
-> > > > > >     [<00000000ec43804d>] sctp_inq_push+0x7f/0xb0 net/sctp/inqueue.c:95
-> > > > > >     [<00000000726aa954>] sctp_backlog_rcv+0x5e/0x2a0 net/sctp/input.c:354
-> > > > > >     [<00000000d9e249a8>] sk_backlog_rcv include/net/sock.h:950 [inline]
-> > > > > >     [<00000000d9e249a8>] __release_sock+0xab/0x110 net/core/sock.c:2418
-> > > > > >     [<00000000acae44fa>] release_sock+0x37/0xd0 net/core/sock.c:2934
-> > > > > >     [<00000000963cc9ae>] sctp_sendmsg+0x2c0/0x990 net/sctp/socket.c:2122
-> > > > > >     [<00000000a7fc7565>] inet_sendmsg+0x64/0x120 net/ipv4/af_inet.c:802
-> > > > > >     [<00000000b732cbd3>] sock_sendmsg_nosec net/socket.c:652 [inline]
-> > > > > >     [<00000000b732cbd3>] sock_sendmsg+0x54/0x70 net/socket.c:671
-> > > > > >     [<00000000274c57ab>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2292
-> > > > > >     [<000000008252aedb>] __sys_sendmsg+0x80/0xf0 net/socket.c:2330
-> > > > > >     [<00000000f7bf23d1>] __do_sys_sendmsg net/socket.c:2339 [inline]
-> > > > > >     [<00000000f7bf23d1>] __se_sys_sendmsg net/socket.c:2337 [inline]
-> > > > > >     [<00000000f7bf23d1>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2337
-> > > > > >     [<00000000a8b4131f>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:3
-> > > > > >
-> > > > > > The problem was that the peer.cookie value points to an skb allocated
-> > > > > > area on the first pass through this function, at which point it is
-> > > > > > overwritten with a heap allocated value, but in certain cases, where a
-> > > > > > COOKIE_ECHO chunk is included in the packet, a second pass through
-> > > > > > sctp_process_init is made, where the cookie value is re-allocated,
-> > > > > > leaking the first allocation.
-> > > > > This's not gonna happen, as after processing INIT, the temp asoc will be
-> > > > > deleted on the server side. Besides, from the reproducer:
-> > > > >
-> > > > >   https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
-> > > > >
-> > > > > Packet(INIT|COOKIE_ECHO) can't be made in here.
-> > > > >
-> > > > > The call trace says the leak happened when processing INIT_ACK on the
-> > > > > client side, as Marcelo noticed.  Then it can be triggered by:
-> > > > >
-> > > > > 1. sctp_sf_do_5_1C_ack() -> SCTP_CMD_PEER_INIT -> sctp_process_init():
-> > > > >    where it "goto clean_up" after sctp_process_param(), but in 'cleanup'
-> > > > >    path, it doesn't do any freeup for the memdups of sctp_process_param().
-> > > > >    then the client T1 retrans INIT, and later get INIT_ACK again from the
-> > > > >    peer, and go to sctp_process_init() to memdup().
-> > > > >
-> > > > > 2. sctp_sf_cookie_echoed_err() -> sctp_sf_do_5_2_6_stale():
-> > > > >    where the asoc state will go from COOKIE_ECHOED back to COOKIE_WAIT,
-> > > > >    and T1 starts to retrans INIT, and later it will get INIT_ACK again
-> > > > >    to sctp_process_init() and memdup().
-> > > > >
-> > > > ok, you may well be right as to the path that we take to get here, but the root
-> > > > cause is the same, multiple passes through sctp_process_init without freeing the
-> > > > previously memduped memory.  Thats why I would think my patch is fixing the
-> > > > issue, because now we're always duping the cookie memory and always freeing it
-> > > > when we transition to the ESTABLISHED state.
-> > > >
-> > > > As for the other variables (peer_[random|chunks|hmacs]), I'm not sure why we're
-> > > > not seeing leak reports of those variables.
-> > >
-> > > This actually also works for peer.cookie as well, as now they are
-> > > allocated and freed in the same places.
-> > >
-> > > I talked with Xin and I agree that this patch didn't really fix the
-> > > leak. It moved the allocation from sctp_process_init() to
-> > > sctp_process_param() which is called by sctp_process_init and there is
-> > > nothing avoiding multiple allocations on these vars once INIT_ACK is
-> > > retransmited.
-> > >
-> > > The reproducer works by having the client to re-request cookies by
-> > > setting a short lifetime. So
-> > > Client sends INIT
-> > >                        Server replies INIT_ACK with cookie
-> > > Client echoes the cookie
-> > >                        Server rejects because the cookie expired
-> > > Client sends INIT again, to ask for another cookie
-> > >   (sctp_sf_do_5_2_6_stale)
-> > >                        Server sends INIT_ACK again with a new cookie
-> > > Client calls sctp_process_init again, from
-> > >   -> sctp_sf_do_5_1C_ack()
-> > >    -> sctp_cmd_process_init()
-> > >     -> sctp_process_init()
-> > >      -> sctp_process_param()
-> > >         ^-- leak happens
-> > >                    Server may or may not accept the new cookie,
-> > >                    leading to further leaks if not
-> > If this is the case, it seems like the most reasonable fix then is to just
-> > check to see if peer.cookie is non-null prior to calling kmemdup, and freeing
-> > the old cookie first, no?
->
-> That probably would be clearer and easier to maintain later, yes.
-> Xin?
-Sure, looks good to me. :)
+On Fri, Jun 07, 2019 at 09:29:13AM -0700, Stanislav Fomichev wrote:
+> Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
+> BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
+>=20
+> BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
+> BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
+> Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
+>=20
+> The buffer memory is pre-allocated (because I don't think there is
+> a precedent for working with __user memory from bpf). This might be
+> slow to do for each {s,g}etsockopt call, that's why I've added
+> __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
+> attached to a cgroup. Note, however, that there is a race between
+> __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
+> program layout might have changed; this should not be a problem
+> because in general there is a race between multiple calls to
+> {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
+>=20
+> The return code of the BPF program is handled as follows:
+> * 0: EPERM
+> * 1: success, execute kernel {s,g}etsockopt path after BPF prog exits
+> * 2: success, do _not_ execute kernel {s,g}etsockopt path after BPF
+>      prog exits
+>=20
+> v3:
+> * typos in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY comments (Andrii Nakryiko)
+> * reverse christmas tree in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY (Andrii
+>   Nakryiko)
+> * use __bpf_md_ptr instead of __u32 for optval{,_end} (Martin Lau)
+> * use BPF_FIELD_SIZEOF() for consistency (Martin Lau)
+> * new CG_SOCKOPT_ACCESS macro to wrap repeated parts
+>=20
+> v2:
+> * moved bpf_sockopt_kern fields around to remove a hole (Martin Lau)
+> * aligned bpf_sockopt_kern->buf to 8 bytes (Martin Lau)
+> * bpf_prog_array_is_empty instead of bpf_prog_array_length (Martin Lau)
+> * added [0,2] return code check to verifier (Martin Lau)
+> * dropped unused buf[64] from the stack (Martin Lau)
+> * use PTR_TO_SOCKET for bpf_sockopt->sk (Martin Lau)
+> * dropped bpf_target_off from ctx rewrites (Martin Lau)
+> * use return code for kernel bypass (Martin Lau & Andrii Nakryiko)
+>=20
 
->
->   Marcelo
->
-> >
-> > Neil
-> >
-> > > (this is his 2nd case above)
-> > >
-> > > Yet somehow the patch changed the dynamics and made the test pass (4x
-> > > 10mins each run) here. Uff.
-> > >
-> > >   Marcelo
-> > >
-> > > >
-> > > > Neil
-> > > >
-> > > > > As on either above, asoc's never been to ESTABLISHED state,
-> > > > > asoc->peer.cookie can be not freed, and this patch won't work.
-> > > > > But yes, it's nice to have this patch, just not to fix this memleak.
-> > >
-> > > +1 (read: won't hurt -stable and no need to revert)
-> > >
-> > > > >
-> > > > > I tracked the code, this memleak was triggered by case 2, so I think
-> > > > > you also need to add something like:
-> > > > >
-> > > > > @@ -881,6 +893,18 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
-> > > > >                                                 asoc->rto_initial;
-> > > > >                 asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_COOKIE] =
-> > > > >                                                 asoc->rto_initial;
-> > > > > +
-> > > > > +               if (asoc->peer.cookie) {
-> > > > > +                       kfree(asoc->peer.cookie);
-> > > > > +                       kfree(asoc->peer.peer_random);
-> > > > > +                       kfree(asoc->peer.peer_chunks);
-> > > > > +                       kfree(asoc->peer.peer_hmacs);
-> > > > > +
-> > > > > +                       asoc->peer.cookie = NULL;
-> > > > > +                       asoc->peer.peer_random = NULL;
-> > > > > +                       asoc->peer.peer_random = NULL;
-> > > > > +                       asoc->peer.peer_hmacs = NULL;
-> > > > > +               }
-> > > > >         }
-> > > > >
-> > > > > and the same thing may also be needed in sctp_cmd_process_init() on the
-> > > > > err path for case 1.
-> > > > >
-> > > > > >
-> > > > > > Fix is to always allocate the cookie value, and free it when we are done
-> > > > > > using it.
-> > > > > >
-> > > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > > > > > Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> > > > > > CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> > > > > > CC: "David S. Miller" <davem@davemloft.net>
-> > > > > > CC: netdev@vger.kernel.org
-> > > > > >
-> > > > > > ---
-> > > > > > Change notes
-> > > > > >
-> > > > > > V1->V2:
-> > > > > >   * Removed an accidental double free I let slip in in
-> > > > > > sctp_association_free
-> > > > > >   * Removed now unused cookie variable
-> > > > > > ---
-> > > > > >  net/sctp/sm_make_chunk.c | 13 +++----------
-> > > > > >  net/sctp/sm_sideeffect.c |  5 +++++
-> > > > > >  2 files changed, 8 insertions(+), 10 deletions(-)
-> > > > > >
-> > > > > > diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> > > > > > index 72e74503f9fc..8e12e19fe42d 100644
-> > > > > > --- a/net/sctp/sm_make_chunk.c
-> > > > > > +++ b/net/sctp/sm_make_chunk.c
-> > > > > > @@ -2327,7 +2327,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
-> > > > > >         union sctp_addr addr;
-> > > > > >         struct sctp_af *af;
-> > > > > >         int src_match = 0;
-> > > > > > -       char *cookie;
-> > > > > >
-> > > > > >         /* We must include the address that the INIT packet came from.
-> > > > > >          * This is the only address that matters for an INIT packet.
-> > > > > > @@ -2431,14 +2430,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
-> > > > > >         /* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
-> > > > > >         asoc->peer.rwnd = asoc->peer.i.a_rwnd;
-> > > > > >
-> > > > > > -       /* Copy cookie in case we need to resend COOKIE-ECHO. */
-> > > > > > -       cookie = asoc->peer.cookie;
-> > > > > > -       if (cookie) {
-> > > > > > -               asoc->peer.cookie = kmemdup(cookie, asoc->peer.cookie_len, gfp);
-> > > > > > -               if (!asoc->peer.cookie)
-> > > > > > -                       goto clean_up;
-> > > > > > -       }
-> > > > > > -
-> > > > > >         /* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
-> > > > > >          * high (for example, implementations MAY use the size of the receiver
-> > > > > >          * advertised window).
-> > > > > > @@ -2607,7 +2598,9 @@ static int sctp_process_param(struct sctp_association *asoc,
-> > > > > >         case SCTP_PARAM_STATE_COOKIE:
-> > > > > >                 asoc->peer.cookie_len =
-> > > > > >                         ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-> > > > > > -               asoc->peer.cookie = param.cookie->body;
-> > > > > > +               asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
-> > > > > > +               if (!asoc->peer.cookie)
-> > > > > > +                       retval = 0;
-> > > > > >                 break;
-> > > > > >
-> > > > > >         case SCTP_PARAM_HEARTBEAT_INFO:
-> > > > > > diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-> > > > > > index 4aa03588f87b..27ddf2d8f001 100644
-> > > > > > --- a/net/sctp/sm_sideeffect.c
-> > > > > > +++ b/net/sctp/sm_sideeffect.c
-> > > > > > @@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sctp_cmd_seq *cmds,
-> > > > > >                                                 asoc->rto_initial;
-> > > > > >         }
-> > > > > >
-> > > > > > +       if (sctp_state(asoc, ESTABLISHED)) {
-> > > > > > +               kfree(asoc->peer.cookie);
-> > > > > > +               asoc->peer.cookie = NULL;
-> > > > > > +       }
-> > > > > > +
-> > > > > >         if (sctp_state(asoc, ESTABLISHED) ||
-> > > > > >             sctp_state(asoc, CLOSED) ||
-> > > > > >             sctp_state(asoc, SHUTDOWN_RECEIVED)) {
-> > > > > > --
-> > > > > > 2.20.1
-> > > > > >
-> > > > >
-> > > >
-> > >
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 1b65ab0df457..4fc8429af6fc 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+
+[ ... ]
+
+> +static const struct bpf_func_proto *
+> +cg_sockopt_func_proto(enum bpf_func_id func_id, const struct bpf_prog *p=
+rog)
+> +{
+> +	switch (func_id) {
+> +	case BPF_FUNC_sk_fullsock:
+> +		return &bpf_sk_fullsock_proto;
+May be my v2 comment has been missed.
+
+sk here (i.e. PTR_TO_SOCKET) must be a fullsock.
+bpf_sk_fullsock() will be a no-op.  Hence, there is
+no need to expose bpf_sk_fullsock_proto.
+
+> +	case BPF_FUNC_sk_storage_get:
+> +		return &bpf_sk_storage_get_proto;
+> +	case BPF_FUNC_sk_storage_delete:
+> +		return &bpf_sk_storage_delete_proto;
+> +#ifdef CONFIG_INET
+> +	case BPF_FUNC_tcp_sock:
+> +		return &bpf_tcp_sock_proto;
+> +#endif
+> +	default:
+> +		return cgroup_base_func_proto(func_id, prog);
+> +	}
+> +}
+> +
+> +static bool cg_sockopt_is_valid_access(int off, int size,
+> +				       enum bpf_access_type type,
+> +				       const struct bpf_prog *prog,
+> +				       struct bpf_insn_access_aux *info)
+> +{
+> +	const int size_default =3D sizeof(__u32);
+> +
+> +	if (off < 0 || off >=3D sizeof(struct bpf_sockopt))
+> +		return false;
+> +
+> +	if (off % size !=3D 0)
+> +		return false;
+> +
+> +	if (type =3D=3D BPF_WRITE) {
+> +		switch (off) {
+> +		case offsetof(struct bpf_sockopt, optlen):
+> +			if (size !=3D size_default)
+> +				return false;
+> +			return prog->expected_attach_type =3D=3D
+> +				BPF_CGROUP_GETSOCKOPT;
+> +		default:
+> +			return false;
+> +		}
+> +	}
+> +
+> +	switch (off) {
+> +	case offsetof(struct bpf_sockopt, sk):
+> +		if (size !=3D sizeof(struct bpf_sock *))
+Based on my understanding in commit b7df9ada9a77 ("bpf: fix pointer offsets=
+ in context for 32 bit"),
+I think it should be 'size !=3D sizeof(__u64)'
+
+Same for the optval and optval_end below.
+
+> +			return false;
+> +		info->reg_type =3D PTR_TO_SOCKET;
+> +		break;
+> +	case bpf_ctx_range(struct bpf_sockopt, optval):
+offsetof(struct bpf_sockopt, optval)
+
+> +		if (size !=3D sizeof(void *))
+> +			return false;
+> +		info->reg_type =3D PTR_TO_PACKET;
+> +		break;
+> +	case bpf_ctx_range(struct bpf_sockopt, optval_end):
+offsetof(struct bpf_sockopt, optval_end)
+
+> +		if (size !=3D sizeof(void *))
+> +			return false;
+> +		info->reg_type =3D PTR_TO_PACKET_END;
+> +		break;
+> +	default:
+> +		if (size !=3D size_default)
+> +			return false;
+> +		break;
+> +	}
+> +	return true;
+> +}
+> +
+
+[ ... ]
+
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 55bfc941d17a..4652c0a005ca 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -1835,7 +1835,7 @@ BPF_CALL_1(bpf_sk_fullsock, struct sock *, sk)
+>  	return sk_fullsock(sk) ? (unsigned long)sk : (unsigned long)NULL;
+>  }
+> =20
+> -static const struct bpf_func_proto bpf_sk_fullsock_proto =3D {
+> +const struct bpf_func_proto bpf_sk_fullsock_proto =3D {
+As mentioned above, this change is also not needed.
+
+Others LGTM.
+
+>  	.func		=3D bpf_sk_fullsock,
+>  	.gpl_only	=3D false,
+>  	.ret_type	=3D RET_PTR_TO_SOCKET_OR_NULL,
+> @@ -5636,7 +5636,7 @@ BPF_CALL_1(bpf_tcp_sock, struct sock *, sk)
+>  	return (unsigned long)NULL;
+>  }
+> =20
