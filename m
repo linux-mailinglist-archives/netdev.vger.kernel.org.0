@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 484AD39D66
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB2239F18
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfFHLkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:40:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57824 "EHLO mail.kernel.org"
+        id S1728802AbfFHLyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:54:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727644AbfFHLkd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:40:33 -0400
+        id S1727619AbfFHLke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:40:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CCF7214DA;
-        Sat,  8 Jun 2019 11:40:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8CBA121726;
+        Sat,  8 Jun 2019 11:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994033;
-        bh=S5X6XyIUnDln+sm7NVvGx1v6MmkkskLGjw2yjhRDXJI=;
+        s=default; t=1559994034;
+        bh=fGkjKiQfawmic6BBanSd1Vtb2m0w+VoWvZ0ZFBjSH7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFXg08PSBQe+KAbD018YK5a7xAqkQGq16BxZyIeAw3vvTLffz2Ep0h0AyxHs3lp9U
-         rZkXGo89LlGR78UwxRgvxya74p3EGqLXXSlvnXIF78g/hOOemWFOmWYIvpYMWAtOVT
-         6NIpQNOtphot6T7TRVRt43vEmIBijPp5eESljjGw=
+        b=jp5yBtlF6vZU4dcigaqP2fBka9lJjkcBY1lokX6GvVgKRbJid1sZlyXyTKG0ahht4
+         CYl6iiCeIiUXO6EwmYNuREgC/J5KrUguoLC8dFwWPpTlYpryL6sX202rATrS2E6dFY
+         h7k2/VW1aF+Z8SGMJhMtnsBxVEfAaLFK7/2iL+L0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Biao Huang <biao.huang@mediatek.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 27/70] net: stmmac: fix csr_clk can't be zero issue
-Date:   Sat,  8 Jun 2019 07:39:06 -0400
-Message-Id: <20190608113950.8033-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 28/70] net: stmmac: dwmac-mediatek: modify csr_clk value to fix mdio read/write fail
+Date:   Sat,  8 Jun 2019 07:39:07 -0400
+Message-Id: <20190608113950.8033-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
 References: <20190608113950.8033-1-sashal@kernel.org>
@@ -46,57 +45,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Biao Huang <biao.huang@mediatek.com>
 
-[ Upstream commit 5e7f7fc538d894b2d9aa41876b8dcf35f5fe11e6 ]
+[ Upstream commit f4ca7a9260dfe700f2a16f0881825de625067515 ]
 
-The specific clk_csr value can be zero, and
-stmmac_clk is necessary for MDC clock which can be set dynamically.
-So, change the condition from plat->clk_csr to plat->stmmac_clk to
-fix clk_csr can't be zero issue.
+1. the frequency of csr clock is 66.5MHz, so the csr_clk value should
+be 0 other than 5.
+2. the csr_clk can be got from device tree, so remove initialization here.
 
-Fixes: cd7201f477b9 ("stmmac: MDC clock dynamically based on the csr clock input")
+Fixes: 9992f37e346b ("stmmac: dwmac-mediatek: add support for mt2712")
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Acked-by: Alexandre TORGUE <alexandre.torgue@st.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 6 +++---
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 5 ++++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8cebc44108b2..635d88d82610 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4380,10 +4380,10 @@ int stmmac_dvr_probe(struct device *device,
- 	 * set the MDC clock dynamically according to the csr actual
- 	 * clock input.
- 	 */
--	if (!priv->plat->clk_csr)
--		stmmac_clk_csr_set(priv);
--	else
-+	if (priv->plat->clk_csr >= 0)
- 		priv->clk_csr = priv->plat->clk_csr;
-+	else
-+		stmmac_clk_csr_set(priv);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+index bf2562995fc8..126b66bb73a6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+@@ -346,8 +346,6 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+ 		return PTR_ERR(plat_dat);
  
- 	stmmac_check_pcs_mode(priv);
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 3031f2bf15d6..f45bfbef97d0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -408,7 +408,10 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
- 	/* Default to phy auto-detection */
- 	plat->phy_addr = -1;
- 
--	/* Get clk_csr from device tree */
-+	/* Default to get clk_csr from stmmac_clk_crs_set(),
-+	 * or get clk_csr from device tree.
-+	 */
-+	plat->clk_csr = -1;
- 	of_property_read_u32(np, "clk_csr", &plat->clk_csr);
- 
- 	/* "snps,phy-addr" is not a standard property. Mark it as deprecated
+ 	plat_dat->interface = priv_plat->phy_mode;
+-	/* clk_csr_i = 250-300MHz & MDC = clk_csr_i/124 */
+-	plat_dat->clk_csr = 5;
+ 	plat_dat->has_gmac4 = 1;
+ 	plat_dat->has_gmac = 0;
+ 	plat_dat->pmt = 0;
 -- 
 2.20.1
 
