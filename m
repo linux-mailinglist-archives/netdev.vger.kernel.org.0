@@ -2,61 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 430DA39C73
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 12:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23DA939C79
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 12:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbfFHKjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 06:39:14 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39463 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726692AbfFHKjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 06:39:14 -0400
-Received: by mail-ed1-f67.google.com with SMTP id m10so6362075edv.6
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 03:39:13 -0700 (PDT)
+        id S1726891AbfFHKo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 06:44:59 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46243 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726816AbfFHKo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 06:44:59 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n4so4493324wrw.13
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 03:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+        h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PAHfE6UW3/IKN4cTMNQBKU1lB293wPtE7Cc12NjZwzY=;
-        b=sziTWXq9Ea9idrPVfjixxS6kfFBI5dn8fUi5QVL9gwvaiU5V7yV51EYWhh6XuAO0A5
-         m3awOA3Soxpyp3E8QqnBty8v6Jaai6aVUTQm+F6wqWa0pNbLJ2lWX91/BJNfxOfXhnu9
-         /42wse74JoQPyWtEGv4eWLJhtHf7VCW/oR6KNv6tLlA2QmLY3CAI8sWxtfQ5GFNgVepI
-         aFi3bQorWkqVv/xKjBKLBEEAy+iDJ1YKN5uyykO53MCrpZRBh/BHy8i6IhfW5j6bEYwv
-         jefX8aVAwJ33lWQYYp8FcaL2LVmPfB8pDf2zfZbdEzw7oO+aSY3CaXZGOK8m48XSPsQd
-         disg==
+        bh=LwTq/QdEo9S1EorWQWeXguEKoNn3QNRdA3wVTvrf2ro=;
+        b=ivtLs9akPS/T2NmT5RSCeqp6b2YNLrsVQVURdYA3FfJ9Tyhc/wWdh8R5JBFT/kmP0e
+         AgVsmvhsZDC8OP/QLYPX8oKWecGQZR5nfxcK2T78rPohC/S/aFiJTG5MFNGq8201obzU
+         30YOfgahO/SM52JT9aFXJyikYp1J1HeoMYHN1pefMvWbv/jEbGOPlfJC+44jEFFaukyT
+         9NannmdRn8nV1MI8JlpWrQBumdUmrkivVOVIslaNzXYZHEXV26+1pQX03ry8ALStUqq4
+         TCPiHcs2+d9pV6Twb+9dMgb3bWgBBRr7dPkW8pn2ZwgsOsEUTzpSIhBrL/tkOh0XINRs
+         PQaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PAHfE6UW3/IKN4cTMNQBKU1lB293wPtE7Cc12NjZwzY=;
-        b=CW+aNKYdEzxLNmY1nfz439/pp9hQTAzHgmu89e+XkCiQPcs+CVCTzayO3laK96doKR
-         hjIQyZCRuKYLGPKGoEIGJrs9BE7yvyGi1RBRC06Zcp29bdW9DMRO4Tv+DGPSShN8bXw6
-         TUTk1Hkn2dZNmoF5ty6QPrqn59FKl+6FmL6nlQNAQ/qCOsElce3I8H2gMDVZ9xAQ3NJJ
-         R7tuYDeDWEzjT82Wsp1zzTnPD6gumnVFHzuEttGl0kZ2bLyVk4PXbrWiLLKPeJ1G1J+i
-         bQ9Qm2HirSvXm/YmHgnEJ4sO2pExrRNn81Su6yAhCqOS2slmqYIrhCBMi07BsmncjCOc
-         +WMQ==
-X-Gm-Message-State: APjAAAUG6xPWYaowrT60JC0fSLj5Sqv6wdjBi038jRY9k54mQHjFLZFD
-        Iaa5JQntZlnsfRrTRZWOdSvcU0HIyPAH7g==
-X-Google-Smtp-Source: APXvYqybJC6YCaK5AvmTNzWleWHzLAkq1b8FlUIW2dfcjbxaU2B3cXTMuOpwNwJ1iEJh8ATMfjsB3w==
-X-Received: by 2002:a17:906:4c81:: with SMTP id q1mr50721713eju.12.1559990352399;
-        Sat, 08 Jun 2019 03:39:12 -0700 (PDT)
-Received: from ?IPv6:2a02:8084:601c:ef00:991d:267c:9ed8:7bbb? ([2a02:8084:601c:ef00:991d:267c:9ed8:7bbb])
-        by smtp.gmail.com with ESMTPSA id e22sm1253338edd.25.2019.06.08.03.39.11
+        bh=LwTq/QdEo9S1EorWQWeXguEKoNn3QNRdA3wVTvrf2ro=;
+        b=uRKh1zxfT7jN6i3yHfd80WZPjFUsljyzdyoSQD/i3PEgL2QP/16hF5uHijgkNvKY7e
+         Q7ZRXsxKF/mOJf9y097WQR47c1q180MoDHEPpLSCVZkv0Qq7uJaqJTPaJawJJAWPq9Vx
+         Jl56/pICkeNVh8JGObfP1PHbRDStckZXJSwtMtOtgz5y1GffWGPVaTGfdN6BCFKV1NK+
+         Wq/Bc3BJU6ZM6H5ruuU+kpBfiHjznn1r2uymX+MJAF5olbQaiYNIrqvazEYLOZoensHq
+         pwqjkKBLYp0MA6r+ylCnrX0PXz8RzYavgI7/TB6+KNCQoebQIkK7YQO83Bnh9oOBYBg0
+         KMAw==
+X-Gm-Message-State: APjAAAX4qoQ0USILkgmyLMN3YNAMnM8i5H2CKI8ZtMhEIKsT9nuPMlU1
+        lt60ljE27+syGDRUXWljt5B3B7IebJc=
+X-Google-Smtp-Source: APXvYqwcAJsypQ6CbVMB0O5Bd3ZNDSI89OiEqk7cm44XzGr+VV4RTp/vvd0UUz/zM2dtseme6S83AA==
+X-Received: by 2002:a5d:4141:: with SMTP id c1mr22743086wrq.159.1559990696583;
+        Sat, 08 Jun 2019 03:44:56 -0700 (PDT)
+Received: from [192.168.1.2] ([188.26.252.192])
+        by smtp.gmail.com with ESMTPSA id q9sm7192108wmq.9.2019.06.08.03.44.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Jun 2019 03:39:11 -0700 (PDT)
-Subject: Re: [RFC v2 PATCH 0/5] seg6: Segment routing fixes
-To:     Tom Herbert <tom@herbertland.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, dlebrun@google.com
-Cc:     Tom Herbert <tom@quantonium.net>
-References: <1559933708-13947-1-git-send-email-tom@quantonium.net>
-From:   David Lebrun <dav.lebrun@gmail.com>
-Message-ID: <752a0680-a872-69d9-c67d-687d830e29da@gmail.com>
-Date:   Sat, 8 Jun 2019 11:39:11 +0100
+        Sat, 08 Jun 2019 03:44:55 -0700 (PDT)
+Subject: Re: [PATCH net-next 9/9] selftests: ptp: Add Physical Hardware Clock
+ test
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>, jiri@mellanox.com,
+        shalomt@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20190603121244.3398-1-idosch@idosch.org>
+ <20190603121244.3398-10-idosch@idosch.org>
+ <CA+h21hrAzdb0Bnn4dbJqnqRAhgR-3r+DBEYyEUh=_rk6Jh3ouA@mail.gmail.com>
+Message-ID: <3ec0658a-0224-39b5-edb5-e34d65c1fc3a@gmail.com>
+Date:   Sat, 8 Jun 2019 13:44:54 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1559933708-13947-1-git-send-email-tom@quantonium.net>
+In-Reply-To: <CA+h21hrAzdb0Bnn4dbJqnqRAhgR-3r+DBEYyEUh=_rk6Jh3ouA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -65,14 +71,340 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/06/2019 19:55, Tom Herbert wrote:
-> This patch set includes fixes to bring the segment routing
-> implementation into conformance with the latest version of the
-> draft (draft-ietf-6man-segment-routing-header-19). Also, segment
-> routing receive function calls ip6_parse to properly parse TLVs
-> in parsing loop.
+On 6/7/19 2:15 PM, Vladimir Oltean wrote:
+> On Mon, 3 Jun 2019 at 15:25, Ido Schimmel <idosch@idosch.org> wrote:
+>>
+>> From: Shalom Toledo <shalomt@mellanox.com>
+>>
+>> Test the PTP Physical Hardware Clock functionality using the "phc_ctl" (a
+>> part of "linuxptp").
+>>
+>> The test contains three sub-tests:
+>>    * "settime" test
+>>    * "adjtime" test
+>>    * "adjfreq" test
+>>
+>> "settime" test:
+>>    * set the PHC time to 0 seconds.
+>>    * wait for 120.5 seconds.
+>>    * check if PHC time equal to 120.XX seconds.
+>>
+>> "adjtime" test:
+>>    * set the PHC time to 0 seconds.
+>>    * adjust the time by 10 seconds.
+>>    * check if PHC time equal to 10.XX seconds.
+>>
+>> "adjfreq" test:
+>>    * adjust the PHC frequency to be 1% faster.
+>>    * set the PHC time to 0 seconds.
+>>    * wait for 100.5 seconds.
+>>    * check if PHC time equal to 101.XX seconds.
+>>
+>> Usage:
+>>    $ ./phc.sh /dev/ptp<X>
+>>
+>>    It is possible to run a subset of the tests, for example:
+>>      * To run only the "settime" test:
+>>        $ TESTS="settime" ./phc.sh /dev/ptp<X>
+>>
+>> Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
+>> Reviewed-by: Petr Machata <petrm@mellanox.com>
+>> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+>> ---
+>>   tools/testing/selftests/ptp/phc.sh | 166 +++++++++++++++++++++++++++++
+>>   1 file changed, 166 insertions(+)
+>>   create mode 100755 tools/testing/selftests/ptp/phc.sh
+>>
+>> diff --git a/tools/testing/selftests/ptp/phc.sh b/tools/testing/selftests/ptp/phc.sh
+>> new file mode 100755
+>> index 000000000000..ac6e5a6e1d3a
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/ptp/phc.sh
+>> @@ -0,0 +1,166 @@
+>> +#!/bin/bash
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +
+>> +ALL_TESTS="
+>> +       settime
+>> +       adjtime
+>> +       adjfreq
+>> +"
+>> +DEV=$1
+>> +
+>> +##############################################################################
+>> +# Sanity checks
+>> +
+>> +if [[ "$(id -u)" -ne 0 ]]; then
+>> +       echo "SKIP: need root privileges"
+>> +       exit 0
+>> +fi
+>> +
+>> +if [[ "$DEV" == "" ]]; then
+>> +       echo "SKIP: PTP device not provided"
+>> +       exit 0
+>> +fi
+>> +
+>> +require_command()
+>> +{
+>> +       local cmd=$1; shift
+>> +
+>> +       if [[ ! -x "$(command -v "$cmd")" ]]; then
+>> +               echo "SKIP: $cmd not installed"
+>> +               exit 1
+>> +       fi
+>> +}
+>> +
+>> +phc_sanity()
+>> +{
+>> +       phc_ctl $DEV get &> /dev/null
+>> +
+>> +       if [ $? != 0 ]; then
+>> +               echo "SKIP: unknown clock $DEV: No such device"
+>> +               exit 1
+>> +       fi
+>> +}
+>> +
+>> +require_command phc_ctl
+>> +phc_sanity
+>> +
+>> +##############################################################################
+>> +# Helpers
+>> +
+>> +# Exit status to return at the end. Set in case one of the tests fails.
+>> +EXIT_STATUS=0
+>> +# Per-test return value. Clear at the beginning of each test.
+>> +RET=0
+>> +
+>> +check_err()
+>> +{
+>> +       local err=$1
+>> +
+>> +       if [[ $RET -eq 0 && $err -ne 0 ]]; then
+>> +               RET=$err
+>> +       fi
+>> +}
+>> +
+>> +log_test()
+>> +{
+>> +       local test_name=$1
+>> +
+>> +       if [[ $RET -ne 0 ]]; then
+>> +               EXIT_STATUS=1
+>> +               printf "TEST: %-60s  [FAIL]\n" "$test_name"
+>> +               return 1
+>> +       fi
+>> +
+>> +       printf "TEST: %-60s  [ OK ]\n" "$test_name"
+>> +       return 0
+>> +}
+>> +
+>> +tests_run()
+>> +{
+>> +       local current_test
+>> +
+>> +       for current_test in ${TESTS:-$ALL_TESTS}; do
+>> +               $current_test
+>> +       done
+>> +}
+>> +
+>> +##############################################################################
+>> +# Tests
+>> +
+>> +settime_do()
+>> +{
+>> +       local res
+>> +
+>> +       res=$(phc_ctl $DEV set 0 wait 120.5 get 2> /dev/null \
+>> +               | awk '/clock time is/{print $5}' \
+>> +               | awk -F. '{print $1}')
+>> +
+>> +       (( res == 120 ))
+>> +}
+>> +
+>> +adjtime_do()
+>> +{
+>> +       local res
+>> +
+>> +       res=$(phc_ctl $DEV set 0 adj 10 get 2> /dev/null \
+>> +               | awk '/clock time is/{print $5}' \
+>> +               | awk -F. '{print $1}')
+>> +
+>> +       (( res == 10 ))
+>> +}
+>> +
+>> +adjfreq_do()
+>> +{
+>> +       local res
+>> +
+>> +       # Set the clock to be 1% faster
+>> +       res=$(phc_ctl $DEV freq 10000000 set 0 wait 100.5 get 2> /dev/null \
+>> +               | awk '/clock time is/{print $5}' \
+>> +               | awk -F. '{print $1}')
+>> +
+>> +       (( res == 101 ))
+>> +}
+>> +
+>> +##############################################################################
+>> +
+>> +cleanup()
+>> +{
+>> +       phc_ctl $DEV freq 0.0 &> /dev/null
+>> +       phc_ctl $DEV set &> /dev/null
+>> +}
+>> +
+>> +settime()
+>> +{
+>> +       RET=0
+>> +
+>> +       settime_do
+>> +       check_err $?
+>> +       log_test "settime"
+>> +       cleanup
+>> +}
+>> +
+>> +adjtime()
+>> +{
+>> +       RET=0
+>> +
+>> +       adjtime_do
+>> +       check_err $?
+>> +       log_test "adjtime"
+>> +       cleanup
+>> +}
+>> +
+>> +adjfreq()
+>> +{
+>> +       RET=0
+>> +
+>> +       adjfreq_do
+>> +       check_err $?
+>> +       log_test "adjfreq"
+>> +       cleanup
+>> +}
+>> +
+>> +trap cleanup EXIT
+>> +
+>> +tests_run
+>> +
+>> +exit $EXIT_STATUS
+>> --
+>> 2.20.1
+>>
+> 
+> Cool testing framework, thanks!
+> Some things to consider:
+> - Why the .5 in the wait commands?
+> - I suspect there's a huge margin of inaccuracy that the test is
+> missing by only looking at the 'seconds' portion of the PHC time after
+> the adjfreq operation (up to 10^9 - 1 ppb, in the worst case).
+> 
+> Tested-by: Vladimir Oltean <olteanv@gmail.com>
+> 
+> Regards,
+> -Vladimir
+> 
 
-Thanks for your patch set !
+Here, I was actually thinking about something like this:
 
-General comment regarding uapi changes: it might be wise to wait for RFC 
-status in case the IESG or IANA decide different type/flags values.
+check_with_tolerance()
+{
+	local res=$1
+	local expected=$2
+	local ppb=$3
+	local expected_min=$(($expected - (($expected * $ppb) / 1000000000)))
+	local expected_max=$(($expected + (($expected * $ppb) / 1000000000)))
+
+	if [ $res -lt $expected_min ]; then
+		printf "%d is more than %d ppb lower than expected %d (%d)\n" \
+			$res $ppb $expected $expected_min
+		return 1
+	elif [ $res -gt $expected_max ]; then
+		printf "%d is more than %d ppb higher than expected %d (%d)\n" \
+			$res $ppb $expected $expected_max
+		return 1;
+	else
+		printf "%d is within the +/-%d ppb tolerance of %d (%d - %d)\n" \
+			$res $ppb $expected $expected_min $expected_max
+		return 0;
+	fi
+}
+
+settime_do()
+{
+	local res
+
+	res=$(phc_ctl $DEV set 0 wait 120 get 2> /dev/null \
+		 | awk '/clock time is/{print $5}' \
+		 | awk -F. '{print $1 * 1000000000 + $2}')
+
+	check_with_tolerance $res 120000000000 10000
+}
+
+adjtime_do()
+{
+	local res
+
+	res=$(phc_ctl $DEV set 0 adj 10 get 2> /dev/null \
+		 | awk '/clock time is/{print $5}' \
+		 | awk -F. '{print $1 * 1000000000 + $2}')
+
+	check_with_tolerance $res 10000000000 10000
+}
+
+adjfreq_do()
+{
+	local res
+
+	# Set the clock to be 1% faster
+	res=$(phc_ctl $DEV freq 10000000 set 0 wait 100 get 2> /dev/null \
+		 | awk '/clock time is/{print $5}' \
+		 | awk -F. '{print $1 * 1000000000 + $2}')
+
+	check_with_tolerance $res 101000000000 10000
+}
+
+
+With the above changes:
+
+SJA1105 hardware clock operations (not the timecounter ones that I 
+submitted):
+
+# ./phc.sh /dev/ptp1
+119999611352 is within the +/-1000000 ppb tolerance of 120000000000 
+(119880000000 - 120120000000)
+TEST: settime                                                 [ OK ]
+10001018472 is within the +/-1000000 ppb tolerance of 10000000000 
+(9990000000 - 10010000000)
+TEST: adjtime                                                 [ OK ]
+100998300984 is within the +/-1000000 ppb tolerance of 101000000000 
+(100899000000 - 101101000000)
+TEST: adjfreq                                                 [ OK ]
+
+But at a lower tolerance of 10000 ppb:
+
+[root@OpenIL:~]# ./phc.sh /dev/ptp1
+119998277344 is more than 10000 ppb lower than expected 120000000000 
+(119998800000)
+TEST: settime                                                 [FAIL]
+10002033840 is more than 10000 ppb higher than expected 10000000000 
+(10000100000)
+TEST: adjtime                                                 [FAIL]
+100998295304 is more than 10000 ppb lower than expected 101000000000 
+(100998990000)
+TEST: adjfreq                                                 [FAIL]
+
+For reference, ptp_qoriq:
+
+[root@OpenIL:~]# ./phc.sh /dev/ptp0
+120000960470 is within the +/-10000 ppb tolerance of 120000000000 
+(119998800000 - 120001200000)
+TEST: settime                                                 [ OK ]
+10000699770 is more than 10000 ppb higher than expected 10000000000 
+(10000100000)
+TEST: adjtime                                                 [FAIL]
+101000211269 is within the +/-10000 ppb tolerance of 101000000000 
+(100998990000 - 101001010000)
+TEST: adjfreq                                                 [ OK ]
+
+Regards,
+-Vladimir
