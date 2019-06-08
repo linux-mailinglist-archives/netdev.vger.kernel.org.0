@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C37B23A247
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 561643A259
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 00:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbfFHWWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 18:22:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44456 "EHLO mail.kernel.org"
+        id S1727965AbfFHWWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 18:22:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727215AbfFHWWX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 18:22:23 -0400
+        id S1727752AbfFHWWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 18:22:24 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 92F02216C4;
+        by mail.kernel.org (Postfix) with ESMTPSA id DBDE2216F4;
         Sat,  8 Jun 2019 21:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560030823;
-        bh=RaHqIQO02ND5vTiN+IpdGl3sKmkUwRmxHXkGKxAbhcg=;
+        s=default; t=1560030824;
+        bh=gXzQmRhYlx8JTRITF/7J4wTH1m3Z7gkWErTkclPPU6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f+H6Zs991bJ8bQSE35NO5GMThDnIBRT6n92qOC9FJ1BFHO1OhBRcNZJkD1gX6oQ8b
-         X31JacyWQsfQrHimU/XTOjOMAgZMbx4GVabB53t/Cijbtl95eD3ZcfVDxzjooyRYSv
-         tf3PfA7lQrfbMSdIvt/ppOnDJUHoVmbjiftcO2D8=
+        b=IJvHNz4ptQnvpDSadlcCQ8GRCTE3n4bJVBn2KmonsTm07BBX8q0Ha71e6UDLS8hpg
+         pF731eZkwqXkdSddMuDiYJoLops10qObDQnuw3trta41LPhKYJNyhQ+2QS+2qNINR1
+         Iab5EOBV8eeqCWAj8eqlzH3aH6/vqdEfuxUyxLfk=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, kafai@fb.com, weiwan@google.com,
         sbrivio@redhat.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v4 net-next 01/20] nexthops: Add ipv6 helper to walk all fib6_nh in a nexthop struct
-Date:   Sat,  8 Jun 2019 14:53:22 -0700
-Message-Id: <20190608215341.26592-2-dsahern@kernel.org>
+Subject: [PATCH v4 net-next 02/20] ipv6: Handle all fib6_nh in a nexthop in fib6_drop_pcpu_from
+Date:   Sat,  8 Jun 2019 14:53:23 -0700
+Message-Id: <20190608215341.26592-3-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190608215341.26592-1-dsahern@kernel.org>
 References: <20190608215341.26592-1-dsahern@kernel.org>
@@ -40,73 +40,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-IPv6 has traditionally had a single fib6_nh per fib6_info. With
-nexthops we can have multiple fib6_nh associated with a fib6_info.
-Add a nexthop helper to invoke a callback for each fib6_nh in a
-'struct nexthop'. If the callback returns non-0, the loop is
-stopped and the return value passed to the caller.
+Use nexthop_for_each_fib6_nh to walk all fib6_nh in a nexthop when
+dropping 'from' reference in pcpu routes.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- include/net/nexthop.h |  4 ++++
- net/ipv4/nexthop.c    | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 35 insertions(+)
+ net/ipv6/ip6_fib.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index aff7b2410057..448249968903 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -305,4 +305,8 @@ static inline void nexthop_path_fib6_result(struct fib6_result *res, int hash)
- 		res->nh = &nhi->fib6_nh;
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 17dcc916eb63..1cce2082279c 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -906,19 +906,42 @@ static void __fib6_drop_pcpu_from(struct fib6_nh *fib6_nh,
  	}
  }
-+
-+int nexthop_for_each_fib6_nh(struct nexthop *nh,
-+			     int (*cb)(struct fib6_nh *nh, void *arg),
-+			     void *arg);
- #endif
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 5e48762b6b5f..49e8adce5b96 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -517,6 +517,37 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
- }
- EXPORT_SYMBOL_GPL(nexthop_select_path);
  
-+int nexthop_for_each_fib6_nh(struct nexthop *nh,
-+			     int (*cb)(struct fib6_nh *nh, void *arg),
-+			     void *arg)
++struct fib6_nh_pcpu_arg {
++	struct fib6_info	*from;
++	const struct fib6_table *table;
++};
++
++static int fib6_nh_drop_pcpu_from(struct fib6_nh *nh, void *_arg)
 +{
-+	struct nh_info *nhi;
-+	int err;
++	struct fib6_nh_pcpu_arg *arg = _arg;
 +
-+	if (nh->is_group) {
-+		struct nh_group *nhg;
-+		int i;
-+
-+		nhg = rcu_dereference_rtnl(nh->nh_grp);
-+		for (i = 0; i < nhg->num_nh; i++) {
-+			struct nh_grp_entry *nhge = &nhg->nh_entries[i];
-+
-+			nhi = rcu_dereference_rtnl(nhge->nh->nh_info);
-+			err = cb(&nhi->fib6_nh, arg);
-+			if (err)
-+				return err;
-+		}
-+	} else {
-+		nhi = rcu_dereference_rtnl(nh->nh_info);
-+		err = cb(&nhi->fib6_nh, arg);
-+		if (err)
-+			return err;
-+	}
-+
++	__fib6_drop_pcpu_from(nh, arg->from, arg->table);
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(nexthop_for_each_fib6_nh);
 +
- int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
- 		       struct netlink_ext_ack *extack)
+ static void fib6_drop_pcpu_from(struct fib6_info *f6i,
+ 				const struct fib6_table *table)
  {
+-	struct fib6_nh *fib6_nh;
+-
+ 	/* Make sure rt6_make_pcpu_route() wont add other percpu routes
+ 	 * while we are cleaning them here.
+ 	 */
+ 	f6i->fib6_destroying = 1;
+ 	mb(); /* paired with the cmpxchg() in rt6_make_pcpu_route() */
+ 
+-	fib6_nh = f6i->fib6_nh;
+-	__fib6_drop_pcpu_from(fib6_nh, f6i, table);
++	if (f6i->nh) {
++		struct fib6_nh_pcpu_arg arg = {
++			.from = f6i,
++			.table = table
++		};
++
++		nexthop_for_each_fib6_nh(f6i->nh, fib6_nh_drop_pcpu_from,
++					 &arg);
++	} else {
++		struct fib6_nh *fib6_nh;
++
++		fib6_nh = f6i->fib6_nh;
++		__fib6_drop_pcpu_from(fib6_nh, f6i, table);
++	}
+ }
+ 
+ static void fib6_purge_rt(struct fib6_info *rt, struct fib6_node *fn,
 -- 
 2.11.0
 
