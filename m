@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D74B339FCA
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 15:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E6BC39FCE
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 15:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727244AbfFHND4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 09:03:56 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:39895 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbfFHNDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 09:03:53 -0400
-Received: by mail-wm1-f66.google.com with SMTP id z23so4276194wma.4
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 06:03:52 -0700 (PDT)
+        id S1727325AbfFHNEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 09:04:01 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43551 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727177AbfFHNDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 09:03:55 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r18so4735026wrm.10
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 06:03:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kH7cTNKzXAl7w0isQMDYh/vyxa08pdn3kODTCppe4Lg=;
-        b=d7oakhBlFJ7Vf8aXiDAHodLWg23ISQj0Vml/BD91OUSCNgSyeaNdQ2dHCk73SCzDVJ
-         xa00RRP4AXXevjqqUGI1UmeR2VILbG4jgeefan0U7ZQGx5lfJzcPtnPJtcXex9YMuGo9
-         1mtaVAr9FItHhk5W5BmW1r77utgqn+VGGDHfwuYVz/7HBN6nk/0fW+BwGA5f9b1QzQCT
-         oM+97gzZUBVoORA82wC4OcqQOv4n0XcUt5CfBEQROP4B4keQJOrDdEKpowlJc8GhHm1N
-         cafiY+IlOGXnmBe7NKhUmcCy96rXE54riRZytgB9TghwpK7d9TiVTEtDQViph469VCJ6
-         d9ew==
+        bh=mfWLb0EWYPqM4Q0OC6o5kRcBWqGopiM+bcboQM4mLfY=;
+        b=Kjox+jjQFn9+x5a9qAfJAGqAUhpaeRY1F/L3/7evo6akWelLG8Ucer2JFENbUAW+Rp
+         BWvJ8353okkYHzMyqMX148MvMeJtlJtEFoBTnYaRJS+AqmTWsjsLKEH2OFeNgVCYqU7Q
+         RLQtx8UEH9Uwk1Bp3sTSIxjj+/+mx1+rG12ryZ6+vTQEQDh+1diZd4nx2x7zvshRuEfH
+         w7H1fCuECMydE3vwLs73bvUhaOCuc4gRaZEHHtUxIMjo5sc4rRtPpxLMQHn4HdMes5fs
+         0pno25enDFT14KNiTAWC7lFn7qhi0E+VOsNlkvCju7v+TiFlaqWsS6rCCo/z3g/KYhEH
+         TFHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=kH7cTNKzXAl7w0isQMDYh/vyxa08pdn3kODTCppe4Lg=;
-        b=XDyM2F2GB9ETLy8PH3XCldCjbrmocY0qpgfZrSDIRy4ZcDlFtK9/skEwCP8YPkAJ84
-         Ols1ZrROlwiKaAygre2EKMmZlDKmPUq+z7MKfeoqTlpaqlEoah3rrKWOoiiOcC4npvy1
-         cfnIfnRUIgo67ncDVlTvRyXvJ2aF/lfpeXJyYdfisaI0WlJMFX31cLVssPxca/uZIA6J
-         HxERGZJxovnIZelQMbWfFMDsCoH4qrKPwr65FpO9BKq3HS8qOhSgJ9AavO+kQSkEOf3K
-         WDLo6s8elpNiY2METt463ief1VBXv5wTvauG8bjXuPPrlOmpzCiDPqXSl8w3SsoMyIW1
-         hA6g==
-X-Gm-Message-State: APjAAAWzOz9uw4rs7An+PegktaScOb2UpgGwi8hg3W/aSnm8Ay0E5W59
-        08fVT4fQTp/65eEZLvOJnwk=
-X-Google-Smtp-Source: APXvYqwq/a6D4bBbug3L9CiA6ekvy31UnEpTZJ84jhd3DGcfrb9NZWwsuDAslZEB7VoKVCb465aIpw==
-X-Received: by 2002:a05:600c:28d:: with SMTP id 13mr1347477wmk.5.1559999032288;
-        Sat, 08 Jun 2019 06:03:52 -0700 (PDT)
+        bh=mfWLb0EWYPqM4Q0OC6o5kRcBWqGopiM+bcboQM4mLfY=;
+        b=uIjJ+83yKMa8jJSatZIcRo2y+YfeYV1mG9sBoWRDgo4HfaYQyrkm9bqKbw7F0lmsJO
+         Xp4zwM7ZaOhe2oWUpPwzCpkYh6xlhVTttSEt5vNwYn76trPlRK4C9OOxq7S1IH0z6mcu
+         P7xKfsMWwxNIsR+bTffBW0VMCIxB4wIDe0LLsZZKwC4zrcbAlPTfP8Y6HTaSoDezwg7q
+         S9CVytZ8ucOT7nxpfdlXgek2Wida/OFNatPYgc2PY7C/17JJOasDHkYq14nKPp2YtzGp
+         RetmrtIuqfxRzgVIbHiVuF4DknznBuQPZ+cAys8Q9oBc2V3WmlM5z+j+SQ2xYVrIIM34
+         pi+A==
+X-Gm-Message-State: APjAAAXQ1hRSgiKlY0ciVAxYXQlDrWOOg50TMcYNdBoacAdL5dtuOlZo
+        SzMISfcGsf1NS4BNMI6Ygac=
+X-Google-Smtp-Source: APXvYqwAcxPxIdPiVXoE/kWu18Dath2NwCHg38/DiPymml9NnZ/eg38vACqEfnFP2cKGLEjuARTL0w==
+X-Received: by 2002:adf:dcc2:: with SMTP id x2mr3112212wrm.55.1559999033240;
+        Sat, 08 Jun 2019 06:03:53 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.252.192])
-        by smtp.gmail.com with ESMTPSA id 128sm4632766wme.12.2019.06.08.06.03.51
+        by smtp.gmail.com with ESMTPSA id 128sm4632766wme.12.2019.06.08.06.03.52
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Jun 2019 06:03:51 -0700 (PDT)
+        Sat, 08 Jun 2019 06:03:52 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 2/4] net: dsa: sja1105: Update some comments about PHYLIB
-Date:   Sat,  8 Jun 2019 16:03:42 +0300
-Message-Id: <20190608130344.661-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/4] net: dsa: sja1105: Export the sja1105_inhibit_tx function
+Date:   Sat,  8 Jun 2019 16:03:43 +0300
+Message-Id: <20190608130344.661-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190608130344.661-1-olteanv@gmail.com>
 References: <20190608130344.661-1-olteanv@gmail.com>
@@ -58,59 +58,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the driver is now using PHYLINK exclusively, it makes sense to
-remove all references to it and replace them with PHYLINK.
+This will be used to stop egress traffic in .phylink_mac_link_up.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/sja1105/Kconfig        | 2 +-
- drivers/net/dsa/sja1105/sja1105_main.c | 6 ++----
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h     |  2 ++
+ drivers/net/dsa/sja1105/sja1105_spi.c | 14 ++++++++------
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-index 049cea8240e4..105e8d3e380e 100644
---- a/drivers/net/dsa/sja1105/Kconfig
-+++ b/drivers/net/dsa/sja1105/Kconfig
-@@ -9,7 +9,7 @@ tristate "NXP SJA1105 Ethernet switch family support"
- 	  This is the driver for the NXP SJA1105 automotive Ethernet switch
- 	  family. These are 5-port devices and are managed over an SPI
- 	  interface. Probing is handled based on OF bindings and so is the
--	  linkage to phylib. The driver supports the following revisions:
-+	  linkage to PHYLINK. The driver supports the following revisions:
- 	    - SJA1105E (Gen. 1, No TT-Ethernet)
- 	    - SJA1105T (Gen. 1, TT-Ethernet)
- 	    - SJA1105P (Gen. 2, No SGMII, No TT-Ethernet)
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 580568922f35..d7f4dbfdb15d 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -70,8 +70,7 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
- 		/* Keep standard IFG of 12 bytes on egress. */
- 		.ifg = 0,
- 		/* Always put the MAC speed in automatic mode, where it can be
--		 * retrieved from the PHY object through phylib and
--		 * sja1105_adjust_port_config.
-+		 * adjusted at runtime by PHYLINK.
- 		 */
- 		.speed = SJA1105_SPEED_AUTO,
- 		/* No static correction for 1-step 1588 events */
-@@ -116,7 +115,6 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
- 	if (!table->entries)
- 		return -ENOMEM;
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index 38b6c7c7db86..ed66d00eb394 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -138,6 +138,8 @@ int sja1105_spi_send_long_packed_buf(const struct sja1105_private *priv,
+ 				     sja1105_spi_rw_mode_t rw, u64 base_addr,
+ 				     void *packed_buf, u64 buf_len);
+ int sja1105_static_config_upload(struct sja1105_private *priv);
++int sja1105_inhibit_tx(const struct sja1105_private *priv,
++		       unsigned long port_bitmap, bool tx_inhibited);
  
--	/* Override table based on phylib DT bindings */
- 	table->entry_count = SJA1105_NUM_PORTS;
+ extern struct sja1105_info sja1105e_info;
+ extern struct sja1105_info sja1105t_info;
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index d729a0f0b28e..d7ff74259b31 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -285,20 +285,22 @@ static int sja1105_cold_reset(const struct sja1105_private *priv)
+ 	return priv->info->reset_cmd(priv, &reset);
+ }
  
- 	mac = table->entries;
-@@ -157,7 +155,7 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
- 	if (!table->entries)
- 		return -ENOMEM;
+-static int sja1105_inhibit_tx(const struct sja1105_private *priv,
+-			      const unsigned long *port_bitmap)
++int sja1105_inhibit_tx(const struct sja1105_private *priv,
++		       unsigned long port_bitmap, bool tx_inhibited)
+ {
+ 	const struct sja1105_regs *regs = priv->info->regs;
+ 	u64 inhibit_cmd;
+-	int port, rc;
++	int rc;
  
--	/* Override table based on phylib DT bindings */
-+	/* Override table based on PHYLINK DT bindings */
- 	table->entry_count = SJA1105_MAX_XMII_PARAMS_COUNT;
+ 	rc = sja1105_spi_send_int(priv, SPI_READ, regs->port_control,
+ 				  &inhibit_cmd, SJA1105_SIZE_PORT_CTRL);
+ 	if (rc < 0)
+ 		return rc;
  
- 	mii = table->entries;
+-	for_each_set_bit(port, port_bitmap, SJA1105_NUM_PORTS)
+-		inhibit_cmd |= BIT(port);
++	if (tx_inhibited)
++		inhibit_cmd |= port_bitmap;
++	else
++		inhibit_cmd &= ~port_bitmap;
+ 
+ 	return sja1105_spi_send_int(priv, SPI_WRITE, regs->port_control,
+ 				    &inhibit_cmd, SJA1105_SIZE_PORT_CTRL);
+@@ -415,7 +417,7 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
+ 	 * Tx on all ports and waiting for current packet to drain.
+ 	 * Otherwise, the PHY will see an unterminated Ethernet packet.
+ 	 */
+-	rc = sja1105_inhibit_tx(priv, &port_bitmap);
++	rc = sja1105_inhibit_tx(priv, port_bitmap, true);
+ 	if (rc < 0) {
+ 		dev_err(dev, "Failed to inhibit Tx on ports\n");
+ 		return -ENXIO;
 -- 
 2.17.1
 
