@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A3F3A095
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 17:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7673A09D
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 18:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfFHP4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 11:56:06 -0400
-Received: from netrider.rowland.org ([192.131.102.5]:33987 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S1727148AbfFHP4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 11:56:05 -0400
-Received: (qmail 11733 invoked by uid 500); 8 Jun 2019 11:56:04 -0400
-Received: from localhost (sendmail-bs@127.0.0.1)
-  by localhost with SMTP; 8 Jun 2019 11:56:04 -0400
-Date:   Sat, 8 Jun 2019 11:56:04 -0400 (EDT)
-From:   Alan Stern <stern@rowland.harvard.edu>
-X-X-Sender: stern@netrider.rowland.org
-To:     "Paul E. McKenney" <paulmck@linux.ibm.com>
-cc:     Andrea Parri <andrea.parri@amarulasolutions.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Fengguang Wu <fengguang.wu@intel.com>, LKP <lkp@01.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Jade Alglave <j.alglave@ucl.ac.uk>
-Subject: Re: rcu_read_lock lost its compiler barrier
-In-Reply-To: <20190608151943.GD28207@linux.ibm.com>
-Message-ID: <Pine.LNX.4.44L0.1906081153140.11124-100000@netrider.rowland.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+        id S1727248AbfFHQNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 12:13:05 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39801 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727160AbfFHQNF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 12:13:05 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x4so2387624wrt.6
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 09:13:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=x1w0y3c6X/HkF/zMDiEAq4/Vnu5siSptAlSysuVXN5M=;
+        b=RTuHESL6rodYod3guWpgJX6rVKomYkDXMEOaOBOXjv7cttctmb7ufpbFMC5u5RXYat
+         dsTF8pSaAvOPsy5uTO46b6Pn1OlN+wLmU9YEegb49zDCe0JF5ViHvvN6m+tuvJxNnJSg
+         SY54VKqdhwtQu/VhZVnG01c175cHOkpKPV2qtUYElOPxi0/bd1d4If+J3JJhRhccb2dI
+         O9XGdx/0Co6xV+9vedAyWqnnl2cQR6WxM6sumYn9PXB123e86rW1cX5zkGqiBNq9IalM
+         JpgZMFLV88ev2QiNee53G9Z4fBpYdC72whLneDTa4Q0OFWDmtUuTuQ8rdNkauF+2EZCQ
+         D/mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=x1w0y3c6X/HkF/zMDiEAq4/Vnu5siSptAlSysuVXN5M=;
+        b=JkxCOGNnnkCuKnXeWf2DGPlLJeWKIz/k0UxgY5J++Dohz3o0iaj+afV2gW4DOLR8SN
+         7eKIxSUo91jlpeIuE9HcqHwjUDduxJHM2mbPFlfQhj2YlgSgZn7S/3vTVGiZsz8OyYmc
+         woeiLxq4OZiqMdCMzQaUuoCRX9CijH+6XIt0ZzWqStiJj+dFQp/V2BzJVXPfSi4S7L9V
+         eOLUpCazMaZ3LW911/GjJAxbWs7zPmjbby2eH6hxan3E/tgimYaP7jQ7NosEdEBxT+nL
+         v8H55ZeXIVOUvPv6+VnnIGdHu6xyyxuhPJ21Vl/hZI5U05cs4ppJC+9BNfXTH5AK56ep
+         9pvw==
+X-Gm-Message-State: APjAAAX+mOh0sNUNWUoyJ/A/jo4OmBdBJSRoaX5Ss5dJhTv856VY2km2
+        7m7DaFDs6XzzSR7xAE33Mw4=
+X-Google-Smtp-Source: APXvYqxmgggnLa4d/JbbO1Zy/N+KQoRAznbMJFIjTPtcNBWaM1xZYU121nAh1bVOqjUHyRBMdmxmnQ==
+X-Received: by 2002:a5d:4e83:: with SMTP id e3mr4535423wru.263.1560010383475;
+        Sat, 08 Jun 2019 09:13:03 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.252.192])
+        by smtp.gmail.com with ESMTPSA id l18sm3934221wrv.38.2019.06.08.09.13.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 08 Jun 2019 09:13:02 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/2] RGMII delays for SJA1105 DSA driver
+Date:   Sat,  8 Jun 2019 19:12:26 +0300
+Message-Id: <20190608161228.5730-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 8 Jun 2019, Paul E. McKenney wrote:
+This patchset configures the Tunable Delay Lines of the SJA1105 P/Q/R/S
+switches. These add a programmable phase offset on the RGMII RX and TX
+clock signals and get used by the driver for fixed-link interfaces that
+use the rgmii-id, rgmii-txid or rgmii-rxid phy-modes.
 
-> On Thu, Jun 06, 2019 at 10:19:43AM -0400, Alan Stern wrote:
-> > On Thu, 6 Jun 2019, Andrea Parri wrote:
-> > 
-> > > This seems a sensible change to me: looking forward to seeing a patch,
-> > > on top of -rcu/dev, for further review and testing!
-> > > 
-> > > We could also add (to LKMM) the barrier() for rcu_read_{lock,unlock}()
-> > > discussed in this thread (maybe once the RCU code and the informal doc
-> > > will have settled in such direction).
-> > 
-> > Yes.  Also for SRCU.  That point had not escaped me.
-> 
-> And it does seem pretty settled.  There are quite a few examples where
-> there are normal accesses at either end of the RCU read-side critical
-> sections, for example, the one in the requirements diffs below.
-> 
-> For SRCU, srcu_read_lock() and srcu_read_unlock() have implied compiler
-> barriers since 2006.  ;-)
-> 
-> 							Thanx, Paul
-> 
-> ------------------------------------------------------------------------
-> 
-> diff --git a/Documentation/RCU/Design/Requirements/Requirements.html b/Documentation/RCU/Design/Requirements/Requirements.html
-> index 5a9238a2883c..080b39cc1dbb 100644
-> --- a/Documentation/RCU/Design/Requirements/Requirements.html
-> +++ b/Documentation/RCU/Design/Requirements/Requirements.html
-> @@ -2129,6 +2129,8 @@ Some of the relevant points of interest are as follows:
->  <li>	<a href="#Hotplug CPU">Hotplug CPU</a>.
->  <li>	<a href="#Scheduler and RCU">Scheduler and RCU</a>.
->  <li>	<a href="#Tracing and RCU">Tracing and RCU</a>.
-> +<li>	<a href="#Accesses to User Mamory and RCU">
-------------------------------------^
-> +Accesses to User Mamory and RCU</a>.
----------------------^
->  <li>	<a href="#Energy Efficiency">Energy Efficiency</a>.
->  <li>	<a href="#Scheduling-Clock Interrupts and RCU">
->  	Scheduling-Clock Interrupts and RCU</a>.
-> @@ -2521,6 +2523,75 @@ cannot be used.
->  The tracing folks both located the requirement and provided the
->  needed fix, so this surprise requirement was relatively painless.
->  
-> +<h3><a name="Accesses to User Mamory and RCU">
-----------------------------------^
-> +Accesses to User Mamory and RCU</a></h3>
----------------------^
+Tested on a board where RGMII delays were already set up, by adding
+MAC-side delays on the RGMII interface towards a BCM5464R PHY and
+noticing that the MAC now reports SFD, preamble, FCS etc. errors.
 
-Are these issues especially notable for female programmers?  :-)
+Conflicts trivially in drivers/net/dsa/sja1105/sja1105_spi.c with
+https://patchwork.ozlabs.org/project/netdev/list/?series=112614&state=*
+which must be applied first.
 
-Alan
+Vladimir Oltean (2):
+  net: dsa: sja1105: Remove duplicate rgmii_pad_mii_tx from regs
+  net: dsa: sja1105: Add RGMII delay support for P/Q/R/S chips
+
+ drivers/net/dsa/sja1105/sja1105.h          |   3 +-
+ drivers/net/dsa/sja1105/sja1105_clocking.c | 100 ++++++++++++++++++++-
+ drivers/net/dsa/sja1105/sja1105_spi.c      |  11 ++-
+ 3 files changed, 106 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
 
