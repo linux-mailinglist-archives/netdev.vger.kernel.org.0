@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE2D39E1B
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0ECE39DB4
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728589AbfFHLqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:46:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59718 "EHLO mail.kernel.org"
+        id S1728033AbfFHLm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:42:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60020 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728451AbfFHLm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:42:26 -0400
+        id S1727947AbfFHLmo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:42:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F62521537;
-        Sat,  8 Jun 2019 11:42:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 900CF21530;
+        Sat,  8 Jun 2019 11:42:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994146;
-        bh=o+G1kTnpQBVpPmVxZ/vKRLrP5Vyd2+cAirqJA/FEwlw=;
+        s=default; t=1559994163;
+        bh=FDBsYQdJb38TfUeN+jtGYnt5nQrbtFe0wqYBGWDoFaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yKX5VgNMfOXLQlNPWWj/bN9CiRWaYzalxbj+BBOnejeFHb2XygINRzubgzHwRQH2r
-         sdEwtqVhh8lFMJeAREQAO9QXYyzgml5rx7bGE4IoQ6u0zQMXXUsQnQudnG0Xnazeb6
-         0S2WYOYtioZEvgr3v9mlU8ZIbw+smIaFZ0PzX9Qg=
+        b=DJIOto3GfpyE4mqbxsDfXMzmJJfGn1SyBw2k8NGQNe0wvTtani2K4SmgmKbXw+sgO
+         nF0Gi0VKQKTqpw0l/kjVgNqpzZBua4eIdRBtJ+d0vCrbU834p/0f2DCI3+sk9eoV6P
+         gOBQDlUwiuOigvghuHU0Mxq5Su/Yk0pZOL/pXq+M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amitc@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 69/70] mlxsw: spectrum: Prevent force of 56G
-Date:   Sat,  8 Jun 2019 07:39:48 -0400
-Message-Id: <20190608113950.8033-69-sashal@kernel.org>
+Cc:     Jagdish Motwani <jagdish.motwani@sophos.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 05/49] netfilter: nf_queue: fix reinject verdict handling
+Date:   Sat,  8 Jun 2019 07:41:46 -0400
+Message-Id: <20190608114232.8731-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
-References: <20190608113950.8033-1-sashal@kernel.org>
+In-Reply-To: <20190608114232.8731-1-sashal@kernel.org>
+References: <20190608114232.8731-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,41 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amitc@mellanox.com>
+From: Jagdish Motwani <jagdish.motwani@sophos.com>
 
-[ Upstream commit 275e928f19117d22f6d26dee94548baf4041b773 ]
+[ Upstream commit 946c0d8e6ed43dae6527e878d0077c1e11015db0 ]
 
-Force of 56G is not supported by hardware in Ethernet devices. This
-configuration fails with a bad parameter error from firmware.
+This patch fixes netfilter hook traversal when there are more than 1 hooks
+returning NF_QUEUE verdict. When the first queue reinjects the packet,
+'nf_reinject' starts traversing hooks with a proper hook_index. However,
+if it again receives a NF_QUEUE verdict (by some other netfilter hook), it
+queues the packet with a wrong hook_index. So, when the second queue
+reinjects the packet, it re-executes hooks in between.
 
-Add check of this case. Instead of trying to set 56G with autoneg off,
-return a meaningful error.
-
-Fixes: 56ade8fe3fe1 ("mlxsw: spectrum: Add initial support for Spectrum ASIC")
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 960632ece694 ("netfilter: convert hook list to an array")
+Signed-off-by: Jagdish Motwani <jagdish.motwani@sophos.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/netfilter/nf_queue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 6b8aa3761899..f4acb38569e1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3110,6 +3110,10 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *dev,
- 	ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, &eth_proto_cap, NULL, NULL);
- 
- 	autoneg = cmd->base.autoneg == AUTONEG_ENABLE;
-+	if (!autoneg && cmd->base.speed == SPEED_56000) {
-+		netdev_err(dev, "56G not supported with autoneg off\n");
-+		return -EINVAL;
-+	}
- 	eth_proto_new = autoneg ?
- 		ops->to_ptys_advert_link(mlxsw_sp, cmd) :
- 		ops->to_ptys_speed(mlxsw_sp, cmd->base.speed);
+diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
+index d67a96a25a68..7569ba00e732 100644
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -238,6 +238,7 @@ static unsigned int nf_iterate(struct sk_buff *skb,
+ repeat:
+ 		verdict = nf_hook_entry_hookfn(hook, skb, state);
+ 		if (verdict != NF_ACCEPT) {
++			*index = i;
+ 			if (verdict != NF_REPEAT)
+ 				return verdict;
+ 			goto repeat;
 -- 
 2.20.1
 
