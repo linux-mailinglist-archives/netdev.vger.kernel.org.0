@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 113E539BF4
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 11:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBCB939C09
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 11:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfFHJCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 05:02:38 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:43990 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbfFHJCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 05:02:38 -0400
-Received: by mail-lj1-f196.google.com with SMTP id 16so3728907ljv.10
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 02:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JzD57XsNsm4T7ciYV5qAxbKzPpS/622/plyPfoUuaT0=;
-        b=C3LPbh6zTpgqdqk1OabHi1qwjbCKMi4gaYbeys2nVnl4pGPLey+8dynI2K7xi1sOZ7
-         7kilIHsGQHMsO/3CXODaKyLGjL76aSAuP0ZePR37J1FBBHcGCFtn6dZ8seqkOkeg5Yf+
-         FpY98pgGt3qKKyFs+HgKMTnQYuFHs52bDgm4hJm6XtEpCGU4Bt6QtWOzUmdBOt7Mx6F+
-         ZfVl2tZIh0kDg5Q+V51yF3WglMFURPFUYppddySrGiVfe/1+LPDLvM6TufL1jAHMd/LW
-         CV3O53V1ZewQUQs373j540+TLC2t2WEfg9hSnDOZ44mBhwJrzMDzoHS8POF74kVghPGC
-         QKmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JzD57XsNsm4T7ciYV5qAxbKzPpS/622/plyPfoUuaT0=;
-        b=Rfd6WqDKwQuasBUUWQ9TNpjUW72nkwCxrDjOcj2b34kyREQOpQUU3l0yoTUEX3Uag4
-         fezM2j1WYXz13Xp6GvyUr8v2PbZzzBCAdSO4UT893gcnML41tLQTIcXibx+aciUieOq6
-         XJGO0+O4XbfLAmsnEUxZdwJ852bB6uMjHVV98XWneUOkTm9vZaBbFYW01LFvR48LcnUt
-         1OPhRfvRhTEs16VPqAymd4kBUo3MXzk4KVCPIlJG1+sXAYT+56O9LXBtSD8USzBBXbLg
-         GQc8QXeT1mZqlzEmZ6mUhR4CybPhq93iD0AFvJFR686jvAS3TyZ6PWauaBYMi6wOxLCE
-         V5dQ==
-X-Gm-Message-State: APjAAAVb4ffYCVfa/4K94fatIFsHPRpx5kPMuXnAXe/h6SK2KCT0CM2b
-        Gsr7ygbtCfCNIeibAl4bW1WWZw==
-X-Google-Smtp-Source: APXvYqyd/kqa4qiFi5uydOKSbaqImtCipAE28cplnv2D2I+Q+J4RNDokGouhWvLF1V62y8Gj1urz4A==
-X-Received: by 2002:a2e:9ad1:: with SMTP id p17mr31017948ljj.147.1559984556669;
-        Sat, 08 Jun 2019 02:02:36 -0700 (PDT)
-Received: from [192.168.0.199] ([31.173.83.119])
-        by smtp.gmail.com with ESMTPSA id t13sm771408lji.47.2019.06.08.02.02.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Jun 2019 02:02:35 -0700 (PDT)
-Subject: Re: [PATCH trivial] qed: Spelling s/configuraion/configuration/
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Kosina <trivial@kernel.org>
-Cc:     GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190607112516.13717-1-geert+renesas@glider.be>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <115096b5-8614-7f0e-e49b-0a71555f18d7@cogentembedded.com>
-Date:   Sat, 8 Jun 2019 12:02:33 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726613AbfFHJP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 05:15:29 -0400
+Received: from pb-smtp21.pobox.com ([173.228.157.53]:60011 "EHLO
+        pb-smtp21.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726478AbfFHJP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 05:15:28 -0400
+X-Greylist: delayed 418 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jun 2019 05:15:27 EDT
+Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 8DC477FC3E;
+        Sat,  8 Jun 2019 05:08:29 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=to:cc:from
+        :subject:message-id:date:mime-version:content-type
+        :content-transfer-encoding; s=sasl; bh=jFkOIkwtY1j9QwTNMffRGuqkA
+        v8=; b=aeVIpH+r/etQ7zYRVtxNAvP5d5TvIFEZoDQVjLyrzfmtVOqYjtzRdzubY
+        9sWathkAZ6zpJxBsQXkpueKXljX/6UC476HH1tOU6LC14RN0qz4eTkbrv5Gr84/1
+        rYql2yUrFpqfqoyKwNLI4tuRpeJlo4FK2ofGAxTJLMW6ORvKy4=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=to:cc:from
+        :subject:message-id:date:mime-version:content-type
+        :content-transfer-encoding; q=dns; s=sasl; b=g/U8etg3g9LIUJtBBkG
+        A2hdB3EeC/irrXuvdRs2xJkFbsluNlV9XnJn58WCpj9xUb5+CGr3Ievz/c/Et4gn
+        f6YhktVBSIfprM+U9BKY4RCBwh1TlippUu4yloBkOGiIomfyBbn3csKDznPeSXlb
+        mtrLWsXg4Rtzoaektvxci1fg=
+Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 856517FC3D;
+        Sat,  8 Jun 2019 05:08:29 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+Received: from [192.168.2.4] (unknown [70.142.57.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by pb-smtp21.pobox.com (Postfix) with ESMTPSA id A65C37FC3C;
+        Sat,  8 Jun 2019 05:08:26 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+To:     Felix Fietkau <nbd@nbd.name>,
+        openwrt-devel <openwrt-devel@lists.openwrt.org>
+Cc:     netdev@vger.kernel.org, Vitaly Chekryzhev <13hakta@gmail.com>
+From:   Daniel Santos <daniel.santos@pobox.com>
+Subject: Using ethtool or swconfig to change link settings for mt7620a?
+Message-ID: <5316c6da-1966-4896-6f4d-8120d9f1ff6e@pobox.com>
+Date:   Sat, 8 Jun 2019 04:06:54 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190607112516.13717-1-geert+renesas@glider.be>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Pobox-Relay-ID: F9E6FF60-89CC-11E9-9083-8D86F504CC47-06139138!pb-smtp21.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    Again, typo in the subject. :-)
+Hello,
 
-On 07.06.2019 14:25, Geert Uytterhoeven wrote:
+I need to change auto-negotiate, speed and duplex for a port on my
+mt7620a-based device, but I'm not quite certain that I understand the
+structure here.=C2=A0 When using ethtool on eth0 I always get ENODEV,
+apparently because priv->phy_dev is always NULL in fe_get_link_ksettings
+of drivers/net/ethernet/mtk/ethtool.c.=C2=A0 But I'm being told that eth0=
+ is
+only an internal device between the =C2=B5C and the switch hardware, so i=
+t
+isn't even the one I need to change.
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be
-[...]
+If this is true, then it looks like I will need to implement a
+get_port_link function for struct switch_dev_ops?=C2=A0 Can anybody confi=
+rm
+this to be the case?=C2=A0 Also, are there any examples aside from the
+Broadcom drivers?=C2=A0 I have the mt7620 programmer's guide and it speci=
+fies
+the registers I need to change.
 
-MBR, Sergei
+Thanks,
+Daniel
