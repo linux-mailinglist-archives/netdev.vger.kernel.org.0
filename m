@@ -2,89 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C5A399C7
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 01:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C92B6399D3
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 02:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730351AbfFGXrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 19:47:31 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60550 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727184AbfFGXrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 19:47:31 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hZOa0-00052O-Vv; Sat, 08 Jun 2019 01:47:29 +0200
-Received: from [178.197.248.32] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hZOa0-000QI0-QH; Sat, 08 Jun 2019 01:47:28 +0200
-Subject: Re: [PATCH v4 bpf-next 0/2] bpf: Add a new API
-To:     Roman Gushchin <guro@fb.com>, Hechao Li <hechaol@fb.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>, Kernel Team <Kernel-team@fb.com>
-References: <20190607232550.GA5472@tower.DHCP.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7b7c8e00-a0d5-7d45-017d-a8869cd8025c@iogearbox.net>
-Date:   Sat, 8 Jun 2019 01:47:28 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1730348AbfFHALV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 20:11:21 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:33180 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729685AbfFHALV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 20:11:21 -0400
+Received: by mail-it1-f193.google.com with SMTP id v193so5709025itc.0
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 17:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+RNHLLsyJellmSnIDZ7+LvEICMewTFh/MY6WcIKuVk0=;
+        b=BYPcwoKqfSaruMOmHGR1badqlmrDfaB8wc1WGXHnDuD62Wl8sW8dMccs8UyCOSkboq
+         aICV2YI/5ALQrrceC52qv0JK1anf8QMVqKa3eD5tj5N206uEe7AH9i3wigxB+Cs6LonZ
+         v8ELgTiHue1z1LpnLeYhNaLK5SXujPq26PHxsI/m/EQqtx1JZetoA4Ubd3ZwtYzZJrk7
+         FPFrRwpspeLPUqSx/RsI+pdJ8kAkXJyvz36qHBzkaoZBhmKR4ediBa5Dwdp8bHLTctiI
+         ogJ3/yQ0RYgshOQi1O/eb01MXUuZC9oFft0hjGOacQKhQz3tCX5HJHepaoYvZttQoXPY
+         +rNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+RNHLLsyJellmSnIDZ7+LvEICMewTFh/MY6WcIKuVk0=;
+        b=SqdA8Nc0fGXC3ZUVltYM6RhkFevvRKWY9eJgnzfITQNfb6lC6c/QgY018CneZc3Axu
+         cRaPGtBG2H7ZvFprHqOivb13Npn6/WGO+QvekdVEewAOJpp8ULWvdYO4YkcIssOaOgY3
+         0bm0crdLqcSQNE3AbCJ9kFg/bADcJ9OLhdenLWzrZAaCluUjsd5uGS+C0z2jNbgVHAM5
+         6F+33kO099GddaptBrkkJAzUb9HlEIgOfs8MO+Ff2qPib7jQ7XExNZvMy9GmqtZ0nz0M
+         srySNg2vpA2/N9eSxhTXP89f3dFNNbBcf2UIN7Y4+7FLdwkfgkkCKB+duKl9wd+UQmzw
+         hT0A==
+X-Gm-Message-State: APjAAAXfYMRQ4Hac7ePDPFEUVXd+QrOw+e9pOKMrmQhnBwBdufRED44C
+        ZaOKN0kVSN7hy2pnRoRnxTtwLLrNRYfloUfKxEPI4Q==
+X-Google-Smtp-Source: APXvYqwxTvv8iST/+oX9HOh8CJ3sAph0cKp9iblXVS+Nhpi3fdRGALzjQkPxNSsvn/qIgCDjUzt5PBNqtM9NU+PCeGo=
+X-Received: by 2002:a24:6e55:: with SMTP id w82mr6140217itc.17.1559952680222;
+ Fri, 07 Jun 2019 17:11:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190607232550.GA5472@tower.DHCP.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25473/Fri Jun  7 10:00:31 2019)
+References: <20190607230610.10349-1-dsahern@kernel.org> <20190607230610.10349-10-dsahern@kernel.org>
+In-Reply-To: <20190607230610.10349-10-dsahern@kernel.org>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 7 Jun 2019 17:11:09 -0700
+Message-ID: <CAEA6p_BHrHUAgF_Ca4=zRc2iH6WBOGPkLK+a3_h43zmn6uZKWA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 09/20] ipv6: Handle all fib6_nh in a nexthop
+ in rt6_do_redirect
+To:     David Ahern <dsahern@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        idosch@mellanox.com, Martin KaFai Lau <kafai@fb.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/08/2019 01:25 AM, Roman Gushchin wrote:
-> On 06/07/2019 06:37 PM, Hechao Li wrote:
->> Getting number of possible CPUs is commonly used for per-CPU BPF maps
->> and perf_event_maps. Add a new API libbpf_num_possible_cpus() that
->> helps user with per-CPU related operations and remove duplicate
->> implementations in bpftool and selftests.
->>
->> v4: Fixed error code when reading 0 bytes from possible CPU file
->>
->> Hechao Li (2):
->>   bpf: add a new API libbpf_num_possible_cpus()
->>   bpf: use libbpf_num_possible_cpus in bpftool and selftests
->>
->>  tools/bpf/bpftool/common.c             | 53 +++---------------------
->>  tools/lib/bpf/libbpf.c                 | 57 ++++++++++++++++++++++++++
->>  tools/lib/bpf/libbpf.h                 | 16 ++++++++
->>  tools/lib/bpf/libbpf.map               |  1 +
->>  tools/testing/selftests/bpf/bpf_util.h | 37 +++--------------
->>  5 files changed, 84 insertions(+), 80 deletions(-)
-> 
->> Series applied, thanks!
-> 
->> P.s.: Please retain full history (v1->v2->v3->v4) in cover letter next time as
->> that is typical convention and helps readers of git log to follow what has been
->> changed over time.
-> 
-> 
-> Hello!
-> 
-> I'm getting the following errors on an attempt to build bpf tests.
-> Reverting the last patch fixes it.
-> 
-[...]
-> 
-> clang -I. -I./include/uapi -I../../../include/uapi -idirafter /usr/local/include -idirafter /opt/fb/devtoolset/bin/../lib/clang/4.0.0/include -idirafter /usr/include -Wno-compare-distinct-pointer-types \
-> 	 -O2 -target bpf -emit-llvm -c progs/sockmap_parse_prog.c -o - |      \
-> llc -march=bpf -mcpu=generic  -filetype=obj -o /data/users/guro/linux/tools/testing/selftests/bpf/sockmap_parse_prog.o
-> In file included from progs/sockmap_parse_prog.c:3:
-> ./bpf_util.h:9:10: fatal error: 'libbpf.h' file not found
-> #include <libbpf.h>
->          ^~~~~~~~~~
-> 1 error generated.
+On Fri, Jun 7, 2019 at 4:06 PM David Ahern <dsahern@kernel.org> wrote:
+>
+> From: David Ahern <dsahern@gmail.com>
+>
+> Use nexthop_for_each_fib6_nh and fib6_nh_find_match to find the
+> fib6_nh in a nexthop that correlates to the device and gateway
+> in the rt6_info.
+>
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+> ---
+>  net/ipv6/route.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 2eb6754c6d11..1c6cff699a76 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -3903,7 +3903,25 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
+>         if (!res.f6i)
+>                 goto out;
+>
+> -       res.nh = res.f6i->fib6_nh;
+> +       if (res.f6i->nh) {
+> +               struct fib6_nh_match_arg arg = {
+> +                       .dev = dst->dev,
+> +                       .gw = &rt->rt6i_gateway,
+> +               };
+> +
+> +               nexthop_for_each_fib6_nh(res.f6i->nh,
+> +                                        fib6_nh_find_match, &arg);
+> +
+> +               /* fib6_info uses a nexthop that does not have fib6_nh
+> +                * using the dst->dev. Should be impossible
+> +                */
+> +               if (!arg.match)
+> +                       return;
+I don't think you can directly return here. We are still holding
+rcu_read_lock() here. Probably need "goto out"...
 
-True, I've therefore tossed the series from bpf-next. Hechao, please fix and resubmit.
+
+> +               res.nh = arg.match;
+> +       } else {
+> +               res.nh = res.f6i->fib6_nh;
+> +       }
+> +
+>         res.fib6_flags = res.f6i->fib6_flags;
+>         res.fib6_type = res.f6i->fib6_type;
+>         nrt = ip6_rt_cache_alloc(&res, &msg->dest, NULL);
+> --
+> 2.11.0
+>
