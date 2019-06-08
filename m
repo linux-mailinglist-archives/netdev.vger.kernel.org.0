@@ -2,112 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C92B6399D3
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 02:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ADD399E9
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 02:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730348AbfFHALV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jun 2019 20:11:21 -0400
-Received: from mail-it1-f193.google.com ([209.85.166.193]:33180 "EHLO
-        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729685AbfFHALV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 20:11:21 -0400
-Received: by mail-it1-f193.google.com with SMTP id v193so5709025itc.0
-        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 17:11:20 -0700 (PDT)
+        id S1730340AbfFHAWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jun 2019 20:22:16 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:47068 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729685AbfFHAWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jun 2019 20:22:16 -0400
+Received: by mail-pl1-f195.google.com with SMTP id e5so1398068pls.13
+        for <netdev@vger.kernel.org>; Fri, 07 Jun 2019 17:22:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+RNHLLsyJellmSnIDZ7+LvEICMewTFh/MY6WcIKuVk0=;
-        b=BYPcwoKqfSaruMOmHGR1badqlmrDfaB8wc1WGXHnDuD62Wl8sW8dMccs8UyCOSkboq
-         aICV2YI/5ALQrrceC52qv0JK1anf8QMVqKa3eD5tj5N206uEe7AH9i3wigxB+Cs6LonZ
-         v8ELgTiHue1z1LpnLeYhNaLK5SXujPq26PHxsI/m/EQqtx1JZetoA4Ubd3ZwtYzZJrk7
-         FPFrRwpspeLPUqSx/RsI+pdJ8kAkXJyvz36qHBzkaoZBhmKR4ediBa5Dwdp8bHLTctiI
-         ogJ3/yQ0RYgshOQi1O/eb01MXUuZC9oFft0hjGOacQKhQz3tCX5HJHepaoYvZttQoXPY
-         +rNw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8U2c68J+RGnQt51A2K0YoinPAxjlIvpJH3fCz7y7OD4=;
+        b=r4wqkKQBq6QXaRQurtbVn2Ctb1nHGRszkti56TybsPD3n6tCwkXFg5c6gjKT5Sag8O
+         VpqQoQzUpX6U/5CO8JWWPi3o7eF7oI7RuJJ2ya+wv6yTbOBIZhdu+dxF5fTWzE4g0ahI
+         CCCQ03kM76BPthejFo2c+XIqZKkHErWiAxIckZ+gZMI6mpxkx99bWeu1vHVHL0Ti81bF
+         /daGo+yymDzqwaxAyrttXHAeItpq+49Qc1M+Rso9M7aQ6ditk+gh3TwXPvODKW5X5EXY
+         mGiflH19lWW+qL/XCjbgQjV03QTtd/2L+jvISIC79leEycuVeE5yFhmJ17/fsp/WW17p
+         S3Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+RNHLLsyJellmSnIDZ7+LvEICMewTFh/MY6WcIKuVk0=;
-        b=SqdA8Nc0fGXC3ZUVltYM6RhkFevvRKWY9eJgnzfITQNfb6lC6c/QgY018CneZc3Axu
-         cRaPGtBG2H7ZvFprHqOivb13Npn6/WGO+QvekdVEewAOJpp8ULWvdYO4YkcIssOaOgY3
-         0bm0crdLqcSQNE3AbCJ9kFg/bADcJ9OLhdenLWzrZAaCluUjsd5uGS+C0z2jNbgVHAM5
-         6F+33kO099GddaptBrkkJAzUb9HlEIgOfs8MO+Ff2qPib7jQ7XExNZvMy9GmqtZ0nz0M
-         srySNg2vpA2/N9eSxhTXP89f3dFNNbBcf2UIN7Y4+7FLdwkfgkkCKB+duKl9wd+UQmzw
-         hT0A==
-X-Gm-Message-State: APjAAAXfYMRQ4Hac7ePDPFEUVXd+QrOw+e9pOKMrmQhnBwBdufRED44C
-        ZaOKN0kVSN7hy2pnRoRnxTtwLLrNRYfloUfKxEPI4Q==
-X-Google-Smtp-Source: APXvYqwxTvv8iST/+oX9HOh8CJ3sAph0cKp9iblXVS+Nhpi3fdRGALzjQkPxNSsvn/qIgCDjUzt5PBNqtM9NU+PCeGo=
-X-Received: by 2002:a24:6e55:: with SMTP id w82mr6140217itc.17.1559952680222;
- Fri, 07 Jun 2019 17:11:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190607230610.10349-1-dsahern@kernel.org> <20190607230610.10349-10-dsahern@kernel.org>
-In-Reply-To: <20190607230610.10349-10-dsahern@kernel.org>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 7 Jun 2019 17:11:09 -0700
-Message-ID: <CAEA6p_BHrHUAgF_Ca4=zRc2iH6WBOGPkLK+a3_h43zmn6uZKWA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8U2c68J+RGnQt51A2K0YoinPAxjlIvpJH3fCz7y7OD4=;
+        b=dtGzw3YZZcvs/IqG0rmo76QzU5FbCvqVHHuidGUSqA0cFMF/4cjQ5UdEIqCQXPsUAu
+         t7vSkNIiFPaq+EBDwA9Kxj1hCq727ZiU7sodoupFrt+V9Q8+FrEEMLPU/07zqEmKVfwp
+         AL/fU5nNV7FftZ3PvB7JvX09rvHfGTTWiqaltRJpwT7QjUwPUti3kE8mAwmady4y4xia
+         OM+B3dpH55HeF38qOAyOZLtDxFEX24cmQFw1dQpr9ZIeUnF+D+8XplC4v4n8SHm80Q59
+         XSWTC9WT1/i+TR0TqU6bqZf7FhhwJZ3GUz0Kj7TlerOq6OVBzWe06ONkE66N25purmPy
+         yeXA==
+X-Gm-Message-State: APjAAAXAlmjQVkOBAuNg0WLIPfhcc16Tb+hEuxhPjydiUVqq3cBUahTE
+        aWMvOICi0PIu/phdTfUrvA8=
+X-Google-Smtp-Source: APXvYqw2uCzRtYUkC8HHPnPniNoXzmW0fS92+A6wWV8QZTn/h1qHh9whD1EzH4r5LA+qeT86DOznCw==
+X-Received: by 2002:a17:902:724:: with SMTP id 33mr57369736pli.49.1559953335634;
+        Fri, 07 Jun 2019 17:22:15 -0700 (PDT)
+Received: from [172.27.227.254] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id y22sm3674922pfo.39.2019.06.07.17.22.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Jun 2019 17:22:14 -0700 (PDT)
 Subject: Re: [PATCH v3 net-next 09/20] ipv6: Handle all fib6_nh in a nexthop
  in rt6_do_redirect
-To:     David Ahern <dsahern@kernel.org>
+To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
         idosch@mellanox.com, Martin KaFai Lau <kafai@fb.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Stefano Brivio <sbrivio@redhat.com>
+References: <20190607230610.10349-1-dsahern@kernel.org>
+ <20190607230610.10349-10-dsahern@kernel.org>
+ <CAEA6p_BHrHUAgF_Ca4=zRc2iH6WBOGPkLK+a3_h43zmn6uZKWA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <89620ba8-971a-f6a5-e1cf-20dc8eac1eca@gmail.com>
+Date:   Fri, 7 Jun 2019 18:22:11 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <CAEA6p_BHrHUAgF_Ca4=zRc2iH6WBOGPkLK+a3_h43zmn6uZKWA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 7, 2019 at 4:06 PM David Ahern <dsahern@kernel.org> wrote:
->
-> From: David Ahern <dsahern@gmail.com>
->
-> Use nexthop_for_each_fib6_nh and fib6_nh_find_match to find the
-> fib6_nh in a nexthop that correlates to the device and gateway
-> in the rt6_info.
->
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  net/ipv6/route.c | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 2eb6754c6d11..1c6cff699a76 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3903,7 +3903,25 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
->         if (!res.f6i)
->                 goto out;
->
-> -       res.nh = res.f6i->fib6_nh;
-> +       if (res.f6i->nh) {
-> +               struct fib6_nh_match_arg arg = {
-> +                       .dev = dst->dev,
-> +                       .gw = &rt->rt6i_gateway,
-> +               };
-> +
-> +               nexthop_for_each_fib6_nh(res.f6i->nh,
-> +                                        fib6_nh_find_match, &arg);
-> +
-> +               /* fib6_info uses a nexthop that does not have fib6_nh
-> +                * using the dst->dev. Should be impossible
-> +                */
-> +               if (!arg.match)
-> +                       return;
-I don't think you can directly return here. We are still holding
-rcu_read_lock() here. Probably need "goto out"...
+On 6/7/19 6:11 PM, Wei Wang wrote:
+> I don't think you can directly return here. We are still holding
+> rcu_read_lock() here. Probably need "goto out"...
 
-
-> +               res.nh = arg.match;
-> +       } else {
-> +               res.nh = res.f6i->fib6_nh;
-> +       }
-> +
->         res.fib6_flags = res.f6i->fib6_flags;
->         res.fib6_type = res.f6i->fib6_type;
->         nrt = ip6_rt_cache_alloc(&res, &msg->dest, NULL);
-> --
-> 2.11.0
->
+ouch. yes, thank you for catching that.
