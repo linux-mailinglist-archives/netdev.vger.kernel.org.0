@@ -2,116 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC07C39D24
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C34B39F48
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbfFHLWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:22:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:44321 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727085AbfFHLWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 07:22:07 -0400
-Received: by mail-io1-f69.google.com with SMTP id i133so3675861ioa.11
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 04:22:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=hVoG57mCN8NOasXfbKFhxicqTT/xW4k6vglaIu7Gsr8=;
-        b=FnpinDBc68NJ0aDs0xMwqcY86Kzz87gxXbRNCLGPpRyX/zfTJKazllR/sS25QGKT6w
-         e6NJSy1kPBngEkXHhZ8jyCeItbAw3dX/Ya9xoH96YvRDTWih5Wu5/+H3oku5WTOaErJI
-         M1iBPN8OFOwApdkwJGD52R8SL1YK60uv4aYD8IpIBUnZq1qVaLh4P/HIxiLSDEDw/dBY
-         F9td7L0SV0BbvXJ1V4hlabuFM217YJTrQDBFZOWJvsZ8f3JnotCVmgAeUQdD+j9IbZPm
-         PNh+FSarR0hXxWF6z7GBvmUmJWhdPS9gZ6wuK46jOTdGcJ03Rtc97zAUN47HuRmblBhf
-         tCLw==
-X-Gm-Message-State: APjAAAXxXew+y2DOXOwLseE278kDdvU1N+bnwRyfn7SBMTk7r684pOdB
-        c7XV2kXYyCOBNGeiXxU38056fdzZ6l3ODYiqBTdaKfVvF35I
-X-Google-Smtp-Source: APXvYqxR+yDqE0sbsVS8kE/JcX0C63g/G7rVLFT6sEkllG3CgH0tCwhH0z0uaNRie7Uk/8nBz/cdYlmm5MngD6hxJdcYk5neIjx8
+        id S1728561AbfFHLz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:55:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57122 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727243AbfFHLkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:40:03 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B1AE214C6;
+        Sat,  8 Jun 2019 11:40:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1559994002;
+        bh=Anl24wVRwQz/64PnpnLUW8+rHvTzsBxXk1v9M9lAXgQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eyTqEfRTZJS8+Vy407O46uKdqO/Xl6xz2WPeM/XhiPSwRX6L/DQS3ciAtMFCpbbfI
+         XiUbdhux9TJCTSWdVbs/ZC/VeohO0dIaHaQv8w8N2N0idNrqIeaOFefYw2B0gfVDiu
+         PCHdLUtYlVVnUSGglJ5OnbuM42TBxwZjI52oDUOM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 09/70] netfilter: nf_tables: fix oops during rule dump
+Date:   Sat,  8 Jun 2019 07:38:48 -0400
+Message-Id: <20190608113950.8033-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
+References: <20190608113950.8033-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:5489:: with SMTP id t131mr36685651jaa.70.1559992926211;
- Sat, 08 Jun 2019 04:22:06 -0700 (PDT)
-Date:   Sat, 08 Jun 2019 04:22:06 -0700
-In-Reply-To: <000000000000e92d1805711f5552@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000381684058ace28e5@google.com>
-Subject: Re: WARNING in bpf_jit_free
-From:   syzbot <syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com>
-To:     airlied@linux.ie, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@ffwll.ch, daniel@iogearbox.net, davem@davemloft.net,
-        dri-devel@lists.freedesktop.org, hawk@kernel.org,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        kafai@fb.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, maxime.ripard@bootlin.com,
-        netdev@vger.kernel.org, paul.kocialkowski@bootlin.com,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        wens@csie.org, xdp-newbies@vger.kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+From: Florian Westphal <fw@strlen.de>
 
-HEAD commit:    79c3ba32 Merge tag 'drm-fixes-2019-06-07-1' of git://anong..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1201b971a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=60564cb52ab29d5b
-dashboard link: https://syzkaller.appspot.com/bug?extid=2ff1e7cb738fd3c41113
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a3bf51a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120d19f2a00000
+[ Upstream commit 2c82c7e724ff51cab78e1afd5c2aaa31994fe41e ]
 
-The bug was bisected to:
+We can oops in nf_tables_fill_rule_info().
 
-commit 0fff724a33917ac581b5825375d0b57affedee76
-Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Date:   Fri Jan 18 14:51:13 2019 +0000
+Its not possible to fetch previous element in rcu-protected lists
+when deletions are not prevented somehow: list_del_rcu poisons
+the ->prev pointer value.
 
-     drm/sun4i: backend: Use explicit fourcc helpers for packed YUV422 check
+Before rcu-conversion this was safe as dump operations did hold
+nfnetlink mutex.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1467550f200000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1667550f200000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1267550f200000
+Pass previous rule as argument, obtained by keeping a pointer to
+the previous rule during traversal.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com
-Fixes: 0fff724a3391 ("drm/sun4i: backend: Use explicit fourcc helpers for  
-packed YUV422 check")
+Fixes: d9adf22a291883 ("netfilter: nf_tables: use call_rcu in netlink dumps")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nf_tables_api.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-WARNING: CPU: 0 PID: 8951 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 8951 Comm: kworker/0:0 Not tainted 5.2.0-rc3+ #23
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events bpf_prog_free_deferred
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2cb/0x744 kernel/panic.c:219
-  __warn.cold+0x20/0x4d kernel/panic.c:576
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
-RIP: 0010:bpf_jit_free+0x157/0x1b0
-Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00  
-00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 f9 b5 f4 ff <0f> 0b e9 f9 fe  
-ff ff e8 bd 53 2d 00 e9 d9 fe ff ff 48 89 7d e0 e8
-RSP: 0018:ffff88808886fcb0 EFLAGS: 00010293
-RAX: ffff88808cb6c480 RBX: ffff88809051d280 RCX: ffffffff817ae68d
-RDX: 0000000000000000 RSI: ffffffff817bf0f7 RDI: ffff88809051d2f0
-RBP: ffff88808886fcd0 R08: 1ffffffff14ccaa8 R09: fffffbfff14ccaa9
-R10: fffffbfff14ccaa8 R11: ffffffff8a665547 R12: ffffc90001925000
-R13: ffff88809051d2e8 R14: ffff8880a0e43900 R15: ffff8880ae834840
-  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1984
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 1606eaa5ae0d..041a81185c6a 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2256,13 +2256,13 @@ static int nf_tables_fill_rule_info(struct sk_buff *skb, struct net *net,
+ 				    u32 flags, int family,
+ 				    const struct nft_table *table,
+ 				    const struct nft_chain *chain,
+-				    const struct nft_rule *rule)
++				    const struct nft_rule *rule,
++				    const struct nft_rule *prule)
+ {
+ 	struct nlmsghdr *nlh;
+ 	struct nfgenmsg *nfmsg;
+ 	const struct nft_expr *expr, *next;
+ 	struct nlattr *list;
+-	const struct nft_rule *prule;
+ 	u16 type = nfnl_msg_type(NFNL_SUBSYS_NFTABLES, event);
+ 
+ 	nlh = nlmsg_put(skb, portid, seq, type, sizeof(struct nfgenmsg), flags);
+@@ -2282,8 +2282,7 @@ static int nf_tables_fill_rule_info(struct sk_buff *skb, struct net *net,
+ 			 NFTA_RULE_PAD))
+ 		goto nla_put_failure;
+ 
+-	if ((event != NFT_MSG_DELRULE) && (rule->list.prev != &chain->rules)) {
+-		prule = list_prev_entry(rule, list);
++	if (event != NFT_MSG_DELRULE && prule) {
+ 		if (nla_put_be64(skb, NFTA_RULE_POSITION,
+ 				 cpu_to_be64(prule->handle),
+ 				 NFTA_RULE_PAD))
+@@ -2330,7 +2329,7 @@ static void nf_tables_rule_notify(const struct nft_ctx *ctx,
+ 
+ 	err = nf_tables_fill_rule_info(skb, ctx->net, ctx->portid, ctx->seq,
+ 				       event, 0, ctx->family, ctx->table,
+-				       ctx->chain, rule);
++				       ctx->chain, rule, NULL);
+ 	if (err < 0) {
+ 		kfree_skb(skb);
+ 		goto err;
+@@ -2355,12 +2354,13 @@ static int __nf_tables_dump_rules(struct sk_buff *skb,
+ 				  const struct nft_chain *chain)
+ {
+ 	struct net *net = sock_net(skb->sk);
++	const struct nft_rule *rule, *prule;
+ 	unsigned int s_idx = cb->args[0];
+-	const struct nft_rule *rule;
+ 
++	prule = NULL;
+ 	list_for_each_entry_rcu(rule, &chain->rules, list) {
+ 		if (!nft_is_active(net, rule))
+-			goto cont;
++			goto cont_skip;
+ 		if (*idx < s_idx)
+ 			goto cont;
+ 		if (*idx > s_idx) {
+@@ -2372,11 +2372,13 @@ static int __nf_tables_dump_rules(struct sk_buff *skb,
+ 					NFT_MSG_NEWRULE,
+ 					NLM_F_MULTI | NLM_F_APPEND,
+ 					table->family,
+-					table, chain, rule) < 0)
++					table, chain, rule, prule) < 0)
+ 			return 1;
+ 
+ 		nl_dump_check_consistent(cb, nlmsg_hdr(skb));
+ cont:
++		prule = rule;
++cont_skip:
+ 		(*idx)++;
+ 	}
+ 	return 0;
+@@ -2532,7 +2534,7 @@ static int nf_tables_getrule(struct net *net, struct sock *nlsk,
+ 
+ 	err = nf_tables_fill_rule_info(skb2, net, NETLINK_CB(skb).portid,
+ 				       nlh->nlmsg_seq, NFT_MSG_NEWRULE, 0,
+-				       family, table, chain, rule);
++				       family, table, chain, rule, NULL);
+ 	if (err < 0)
+ 		goto err;
+ 
+-- 
+2.20.1
 
