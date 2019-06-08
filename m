@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C67E239E21
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91D839E23
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:46:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728331AbfFHLmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:42:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59472 "EHLO mail.kernel.org"
+        id S1728202AbfFHLqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:46:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728306AbfFHLmL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:42:11 -0400
+        id S1727607AbfFHLmM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:42:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 65173216C4;
-        Sat,  8 Jun 2019 11:42:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A9C3214D8;
+        Sat,  8 Jun 2019 11:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994131;
-        bh=dXIw594PFIhA3xlq96cbq226LcjPNYMNiR92xQ62fRg=;
+        s=default; t=1559994132;
+        bh=kk/oRqzBHc+xkKfIE/IIEd6ifzx7wC2Ea6BxEhbHvmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CECzzfPEeh0+eVQzY7+5CietiYQt9+mf0dPs/Svg3cH4+TTWFYvMpmYepPt0BdUZA
-         g1e1n5oDT8lnhoKfhbnd39+MQH8vu2YdaL2LfzebH0BjRiSNfE6tl1jnh29O03vLwL
-         7r+W7B5quFt75eBCQ51oQLwQSqgZC+tT9axNqK0M=
+        b=kDK+1RbHY1AHvpAhta/n1ye0WRcsiC7BW6+pAZf1hKw1kjYMnPLHbHQ+L6xdLR+bJ
+         /kWrMdqzQhUJeYCyMdeDsDcC8to/mT2TPErMrkXMQXngqEoxZKxontGXmtdZv/ur7p
+         UOdMwOuSFoI3Nj+jj9H3IifT/FsgIgbhcoHiF4IE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+Cc:     Max Uvarov <muvarov@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 61/70] net: phylink: ensure consistent phy interface mode
-Date:   Sat,  8 Jun 2019 07:39:40 -0400
-Message-Id: <20190608113950.8033-61-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 62/70] net: phy: dp83867: fix speed 10 in sgmii mode
+Date:   Sat,  8 Jun 2019 07:39:41 -0400
+Message-Id: <20190608113950.8033-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
 References: <20190608113950.8033-1-sashal@kernel.org>
@@ -43,54 +45,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King <rmk+kernel@armlinux.org.uk>
+From: Max Uvarov <muvarov@gmail.com>
 
-[ Upstream commit c678726305b9425454be7c8a7624290b602602fc ]
+[ Upstream commit 333061b924539c0de081339643f45514f5f1c1e6 ]
 
-Ensure that we supply the same phy interface mode to mac_link_down() as
-we did for the corresponding mac_link_up() call.  This ensures that MAC
-drivers that use the phy interface mode in these methods can depend on
-mac_link_down() always corresponding to a mac_link_up() call for the
-same interface mode.
+For supporting 10Mps speed in SGMII mode DP83867_10M_SGMII_RATE_ADAPT bit
+of DP83867_10M_SGMII_CFG register has to be cleared by software.
+That does not affect speeds 100 and 1000 so can be done on init.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Max Uvarov <muvarov@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phylink.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/phy/dp83867.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 89750c7dfd6f..efa31fcda505 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -51,6 +51,10 @@ struct phylink {
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 8448d01819ef..29cae4de9a4f 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -30,6 +30,8 @@
+ #define DP83867_STRAP_STS1	0x006E
+ #define DP83867_RGMIIDCTL	0x0086
+ #define DP83867_IO_MUX_CFG	0x0170
++#define DP83867_10M_SGMII_CFG   0x016F
++#define DP83867_10M_SGMII_RATE_ADAPT_MASK BIT(7)
  
- 	/* The link configuration settings */
- 	struct phylink_link_state link_config;
+ #define DP83867_SW_RESET	BIT(15)
+ #define DP83867_SW_RESTART	BIT(14)
+@@ -277,6 +279,21 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 				       DP83867_IO_MUX_CFG_IO_IMPEDANCE_CTRL);
+ 	}
+ 
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
++		/* For support SPEED_10 in SGMII mode
++		 * DP83867_10M_SGMII_RATE_ADAPT bit
++		 * has to be cleared by software. That
++		 * does not affect SPEED_100 and
++		 * SPEED_1000.
++		 */
++		ret = phy_modify_mmd(phydev, DP83867_DEVADDR,
++				     DP83867_10M_SGMII_CFG,
++				     DP83867_10M_SGMII_RATE_ADAPT_MASK,
++				     0);
++		if (ret)
++			return ret;
++	}
 +
-+	/* The current settings */
-+	phy_interface_t cur_interface;
-+
- 	struct gpio_desc *link_gpio;
- 	struct timer_list link_poll;
- 	void (*get_fixed_state)(struct net_device *dev,
-@@ -453,12 +457,12 @@ static void phylink_resolve(struct work_struct *w)
- 		if (!link_state.link) {
- 			netif_carrier_off(ndev);
- 			pl->ops->mac_link_down(ndev, pl->link_an_mode,
--					       pl->phy_state.interface);
-+					       pl->cur_interface);
- 			netdev_info(ndev, "Link is Down\n");
- 		} else {
-+			pl->cur_interface = link_state.interface;
- 			pl->ops->mac_link_up(ndev, pl->link_an_mode,
--					     pl->phy_state.interface,
--					     pl->phydev);
-+					     pl->cur_interface, pl->phydev);
- 
- 			netif_carrier_on(ndev);
- 
+ 	/* Enable Interrupt output INT_OE in CFG3 register */
+ 	if (phy_interrupt_is_valid(phydev)) {
+ 		val = phy_read(phydev, DP83867_CFG3);
 -- 
 2.20.1
 
