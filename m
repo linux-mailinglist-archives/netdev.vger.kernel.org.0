@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6175C39E91
-	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4FB839E96
+	for <lists+netdev@lfdr.de>; Sat,  8 Jun 2019 13:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729542AbfFHLsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 07:48:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36910 "EHLO mail.kernel.org"
+        id S1728865AbfFHLsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 07:48:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727805AbfFHLsM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:48:12 -0400
+        id S1729583AbfFHLsX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:48:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 79F3A214AF;
-        Sat,  8 Jun 2019 11:48:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5EBFB216FD;
+        Sat,  8 Jun 2019 11:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994492;
-        bh=k6zmiuiZ9ptC0fjUuZvVZZaUOc4rBZauxwqq3bCcUoM=;
+        s=default; t=1559994503;
+        bh=8F5r7ZgB2gD6Rrc7gkB+b3iBZdok2ASmpbLtrCpoJ8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nEctGfDRgVSvkiDQQFuvw+hF1IYGkW9wcg0l0htNDZzzIJxGIVpkU3gegdD3qik80
-         JM6Bg2HTB6tOP/TnM7jdwxTBs7XT9NB61/yTmvQSae1tmXVsF/cg2dINLGlx9/UHMs
-         Mxv6J0Csn/F6bDE97u55MIWNjh4BgY9Txi6wVq3Y=
+        b=btoMh/IrvlxxYOx69cHiWuHWvUHRdekn11dOWkF1Pr300PoIY/2g1dZsxe4x/rkUY
+         WM+oVQlSCwxr6u8Qkkp8UL0muQzc7e8H2oAoWeP02pwyFFF+vuorhhOBI9b4w10K5B
+         tdOqSHT1MWmBrMM7jzWbQsQ1t3J2E2as9xQTk5OM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Kees Cook <keescook@chromium.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 03/20] mISDN: make sure device name is NUL terminated
-Date:   Sat,  8 Jun 2019 07:47:39 -0400
-Message-Id: <20190608114756.9742-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/20] net: tulip: de4x5: Drop redundant MODULE_DEVICE_TABLE()
+Date:   Sat,  8 Jun 2019 07:47:44 -0400
+Message-Id: <20190608114756.9742-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190608114756.9742-1-sashal@kernel.org>
 References: <20190608114756.9742-1-sashal@kernel.org>
@@ -43,56 +44,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit ccfb62f27beb295103e9392462b20a6ed807d0ea ]
+[ Upstream commit 3e66b7cc50ef921121babc91487e1fb98af1ba6e ]
 
-The user can change the device_name with the IMSETDEVNAME ioctl, but we
-need to ensure that the user's name is NUL terminated.  Otherwise it
-could result in a buffer overflow when we copy the name back to the user
-with IMGETDEVINFO ioctl.
+Building with Clang reports the redundant use of MODULE_DEVICE_TABLE():
 
-I also changed two strcpy() calls which handle the name to strscpy().
-Hopefully, there aren't any other ways to create a too long name, but
-it's nice to do this as a kernel hardening measure.
+drivers/net/ethernet/dec/tulip/de4x5.c:2110:1: error: redefinition of '__mod_eisa__de4x5_eisa_ids_device_table'
+MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+^
+./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+extern typeof(name) __mod_##type##__##name##_device_table               \
+                    ^
+<scratch space>:90:1: note: expanded from here
+__mod_eisa__de4x5_eisa_ids_device_table
+^
+drivers/net/ethernet/dec/tulip/de4x5.c:2100:1: note: previous definition is here
+MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+^
+./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+extern typeof(name) __mod_##type##__##name##_device_table               \
+                    ^
+<scratch space>:85:1: note: expanded from here
+__mod_eisa__de4x5_eisa_ids_device_table
+^
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+This drops the one further from the table definition to match the common
+use of MODULE_DEVICE_TABLE().
+
+Fixes: 07563c711fbc ("EISA bus MODALIAS attributes support")
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/socket.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/dec/tulip/de4x5.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/isdn/mISDN/socket.c b/drivers/isdn/mISDN/socket.c
-index f96b8f2bdf74..d7c986fb0b3b 100644
---- a/drivers/isdn/mISDN/socket.c
-+++ b/drivers/isdn/mISDN/socket.c
-@@ -394,7 +394,7 @@ data_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -678,7 +678,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -692,6 +692,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			err = -EFAULT;
- 			break;
- 		}
-+		dn.name[sizeof(dn.name) - 1] = '\0';
- 		dev = get_mdevice(dn.id);
- 		if (dev)
- 			err = device_rename(&dev->dev, dn.name);
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index 6620fc861c47..005c79b5b3f0 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -2109,7 +2109,6 @@ static struct eisa_driver de4x5_eisa_driver = {
+ 		.remove  = de4x5_eisa_remove,
+         }
+ };
+-MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+ #endif
+ 
+ #ifdef CONFIG_PCI
 -- 
 2.20.1
 
