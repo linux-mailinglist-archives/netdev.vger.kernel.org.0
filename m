@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC193A353
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 485763A35A
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727962AbfFICcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 22:32:14 -0400
-Received: from casper.infradead.org ([85.118.1.10]:37306 "EHLO
+        id S1727653AbfFICdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 22:33:41 -0400
+Received: from casper.infradead.org ([85.118.1.10]:37438 "EHLO
         casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727588AbfFICcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:32:14 -0400
+        with ESMTP id S1727485AbfFICdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:33:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
         MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3Fp1yuwwbOTbYdEqsZgF9iklbrQHl3f9VYC9FtEc6kI=; b=WRk7/mkYGbgyZYhA0REobo8duv
-        +moA9YGNkW+nLOarrRCDN6zXsMmx4X2dupkkg19cbSeGJa87v8bD36cZknrrZ2LoWTArh6UqSFUU+
-        a/u0Z7DBO9kfHLLQQV3G8M+7FkTBydEVsMhEUQN3nqWYEUNbKM1Gseck3Pu9dTfKMwWcCp0gJtrrb
-        tYCyeH0c4WnxydOzO9GryUA3cjR1XQLbZ2VIiaUCch2gMp6XCcoKnXYgk0ows4lu4j78XrUMcRlC9
-        PS7uZKoN50ACGgMLC2/dvGd5wLph1tTMXwcg2RJOZyR6a5HqsQGqZ5URIPK53RTykGMo9q9+FwZWH
-        m2+1796Q==;
+        bh=3Fp1yuwwbOTbYdEqsZgF9iklbrQHl3f9VYC9FtEc6kI=; b=QklMMOA9CGj+eXx0W9MvmFE0by
+        0aQedeNfBMWna6CYprMFaEI2qA4kPeOnRyOEvn2aWyVBRVrFxHsJhJT4y8j8WRET4/OuncElTGcKY
+        1kXcQ0a8VlI2NwrvtTMO2cQ3q7h1Jn66qeukXioB6/N9vSPhV0EgdPWi9n/gC+9fmyNydhA9BXiNo
+        9yKbfd0o7rTBHQVpNnQx4TQOlFVXinBGdjSGKt7RUOGCGI+/dbrJnHDzL0AkB20um1bet10+OzDMq
+        dP0ath70zmmP8wrAoVRXdoywUNkrUudR2U+ifiamGNlWhAtXUpuSrxNwDl+xdQy39vJRKkx3vlkf3
+        aQ09AIQw==;
 Received: from 179.176.115.133.dynamic.adsl.gvt.net.br ([179.176.115.133] helo=coco.lan)
         by casper.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hZnch-0004qg-L3; Sun, 09 Jun 2019 02:32:07 +0000
-Date:   Sat, 8 Jun 2019 23:31:49 -0300
+        id 1hZneK-0004xW-3Q; Sun, 09 Jun 2019 02:33:36 +0000
+Date:   Sat, 8 Jun 2019 23:33:31 -0300
 From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 To:     Jonathan Corbet <corbet@lwn.net>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
