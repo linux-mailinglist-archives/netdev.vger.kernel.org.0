@@ -2,197 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FBF73A27C
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 01:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766273A2A3
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 02:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbfFHXrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 19:47:13 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46841 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727424AbfFHXrN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 19:47:13 -0400
-Received: by mail-pg1-f196.google.com with SMTP id v9so1338483pgr.13
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 16:47:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=IkGCY4eEKnwl0itjV2RvEoTeNU6SXrF/5KeYoir+cQQ=;
-        b=q/T6Ts/pH1OGXxEFlb/v/YIpdU/MXp6sJR1jRSfJtxRskGnMVksbj9VGccAiSd2bFz
-         4oV/KVRQ2c2x0IP69nDgTRI2kuLNbkcU9iboPSOQFAncSNcivS3lIbKdAYMs9hD7zVRx
-         5oATLQGPAJvwjSU9tsVR7KGYHrskDbdZ5UrPNItI9jaupGSZMAPmdI4l8AZe6FbyilAn
-         GDh6niPlgkK5OaeME/vacOraNT5+jU/rxOSaRJFAz0E5QxaG8wrm/V9KOTzV/ZXBmrQK
-         Cj0Y5BP4nfZE2SgLmn17r6Cp5ELiLaN7eYzTHA1rDqDepmDQzUwDkF5fCYiMXbqrXXlA
-         qetw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=IkGCY4eEKnwl0itjV2RvEoTeNU6SXrF/5KeYoir+cQQ=;
-        b=sCUfaIsGmt4r1CvFUcMtRRRzWTZZW+oVHw5v+JoSv4UqHZZRmpU/wi9/I+rZNcmFkE
-         5UolEAQoTUhzHW5H13bltBPDK+YMqZeSwJWd8SGoObmL0fV6P9mJkZAD4nU/w45h+sZ6
-         lPSPi1FJWymNSUpWr6X7rdV1k5ppsm+coCnvtmBSr8Vb7dVSl5OSXITK3AsWI+AeeeJO
-         8NC3wsb0olrxHrThcfM2DKkytfOR7Ws32khjsqZOgi5FZniCBrXy6qr9ZjR+g1m1TPLn
-         PsqcijWTgY85wo9d8C5Aj0ClbfPiaYp0sTE2uU5RSuK9m+FSdacKJJRpKvm0hJZGcX5B
-         mSrQ==
-X-Gm-Message-State: APjAAAUNsfNphMC9N3YKLadV2PYGsIJeq94ZBehSGEzzVhS7wRIolEqr
-        fPgNp0n+RLzVATYFQJFLZU8r1g==
-X-Google-Smtp-Source: APXvYqw/kCE5eMQytwsTDy7JvmNdQaSFGTIW1FeQ6noUVR5chO0sAzMym5o5pnYv2/qiTUjcLUukRQ==
-X-Received: by 2002:a62:87c5:: with SMTP id i188mr10038978pfe.118.1560037631781;
-        Sat, 08 Jun 2019 16:47:11 -0700 (PDT)
-Received: from cakuba.netronome.com (cpe-76-172-122-34.san.res.rr.com. [76.172.122.34])
-        by smtp.gmail.com with ESMTPSA id p17sm2947795pjo.1.2019.06.08.16.47.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 08 Jun 2019 16:47:11 -0700 (PDT)
-Date:   Sat, 8 Jun 2019 16:47:04 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     syzbot <syzbot+06537213db7ba2745c4a@syzkaller.appspotmail.com>
-Cc:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: memory leak in create_ctx
-Message-ID: <20190608164704.742c18da@cakuba.netronome.com>
-In-Reply-To: <000000000000a420af058ad4bca2@google.com>
-References: <000000000000a420af058ad4bca2@google.com>
-Organization: Netronome Systems, Ltd.
+        id S1727696AbfFIAO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 20:14:27 -0400
+Received: from pb-smtp20.pobox.com ([173.228.157.52]:62852 "EHLO
+        pb-smtp20.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727612AbfFIAO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 20:14:26 -0400
+Received: from pb-smtp20.pobox.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 779597BD70;
+        Sat,  8 Jun 2019 20:14:18 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
+        :references:from:message-id:date:mime-version:in-reply-to
+        :content-type:content-transfer-encoding; s=sasl; bh=+hCIgWf2gGnv
+        N1U5hkkWGBSChbE=; b=aeYHrYvdTdR1C/CiYJpgXMe/sBBO4cYk+Xom48ybbj4m
+        m1jH0jnhXy1UXqktHQWtdqG0hwUoU1XWgGql86pwsfBghcDFbeUiqXobYZrJ2jiJ
+        iqadRXKWY/OjDHNkJBEnaMT+mD9ZKOadJ3cUrnfHKF4qW6CuaKdaENZ+kfjGNX4=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
+        :references:from:message-id:date:mime-version:in-reply-to
+        :content-type:content-transfer-encoding; q=dns; s=sasl; b=tGcmYL
+        fLKm0ypsjrcZRJn8fWcEyuTf6pINxrMtDMl4/eAbCMlC4aeaTpQePF0mmbOpmzAJ
+        UeAhfJxIEpy23AvX+d3gCaaIesTPYW9hwylr87HGKIbkoWKJ4uXdXSP3TioaBusm
+        tkp0db/zNC1O4vVM7FdOF7NN0nsT+SCtIm1QM=
+Received: from pb-smtp20.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 6FEB37BD6F;
+        Sat,  8 Jun 2019 20:14:18 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+Received: from [192.168.2.4] (unknown [70.142.57.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id 5F9587BD6C;
+        Sat,  8 Jun 2019 20:14:15 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+Subject: Re: [OpenWrt-Devel] Using ethtool or swconfig to change link settings
+ for mt7620a?
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        openwrt-devel <openwrt-devel@lists.openwrt.org>,
+        netdev@vger.kernel.org, Vitaly Chekryzhev <13hakta@gmail.com>,
+        Luis Soltero <lsoltero@globalmarinenet.com>
+References: <5316c6da-1966-4896-6f4d-8120d9f1ff6e@pobox.com>
+ <20190608115159.GA1559@makrotopia.org>
+From:   Daniel Santos <daniel.santos@pobox.com>
+Message-ID: <42094a87-09e6-1278-97c5-b6faaaca0a95@pobox.com>
+Date:   Sat, 8 Jun 2019 19:12:41 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190608115159.GA1559@makrotopia.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-Pobox-Relay-ID: 844A6420-8A4B-11E9-A518-B0405B776F7B-06139138!pb-smtp20.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 08 Jun 2019 12:13:06 -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    79c3ba32 Merge tag 'drm-fixes-2019-06-07-1' of git://anong..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=170e0bfea00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d5c73825cbdc7326
-> dashboard link: https://syzkaller.appspot.com/bug?extid=06537213db7ba2745c4a
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10aa806aa00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+06537213db7ba2745c4a@syzkaller.appspotmail.com
+Hello Daniel,
 
-This one creates a TCPv6 socket, puts it in repair mode, connects and
-then adds a tls ULP.  Apparently that leaks the entire TLS context but 
-I can't repro..
+Thanks for your help!
 
-> IPv6: ADDRCONF(NETDEV_CHANGE): team0: link becomes ready
-> 2019/06/08 14:55:51 executed programs: 15
-> 2019/06/08 14:55:56 executed programs: 31
-> 2019/06/08 14:56:02 executed programs: 51
-> BUG: memory leak
-> unreferenced object 0xffff888117ceae00 (size 512):
->    comm "syz-executor.3", pid 7233, jiffies 4294949016 (age 13.640s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<00000000e6550967>] kmemleak_alloc_recursive  
-> include/linux/kmemleak.h:55 [inline]
->      [<00000000e6550967>] slab_post_alloc_hook mm/slab.h:439 [inline]
->      [<00000000e6550967>] slab_alloc mm/slab.c:3326 [inline]
->      [<00000000e6550967>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
->      [<0000000014132182>] kmalloc include/linux/slab.h:547 [inline]
->      [<0000000014132182>] kzalloc include/linux/slab.h:742 [inline]
->      [<0000000014132182>] create_ctx+0x25/0x70 net/tls/tls_main.c:601
->      [<00000000e08e1a44>] tls_init net/tls/tls_main.c:787 [inline]
->      [<00000000e08e1a44>] tls_init+0x97/0x1e0 net/tls/tls_main.c:769
->      [<0000000037b0c43c>] __tcp_set_ulp net/ipv4/tcp_ulp.c:126 [inline]
->      [<0000000037b0c43c>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:147
->      [<000000007a284277>] do_tcp_setsockopt.isra.0+0x19a/0xd60  
-> net/ipv4/tcp.c:2784
->      [<00000000f35f3415>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3098
->      [<00000000c840962c>] sock_common_setsockopt+0x38/0x50  
-> net/core/sock.c:3124
->      [<0000000006b0801f>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
->      [<00000000a6309f52>] __do_sys_setsockopt net/socket.c:2083 [inline]
->      [<00000000a6309f52>] __se_sys_setsockopt net/socket.c:2080 [inline]
->      [<00000000a6309f52>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
->      [<00000000fa555bbc>] do_syscall_64+0x76/0x1a0  
-> arch/x86/entry/common.c:301
->      [<00000000a06d7d1a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810965dc00 (size 512):
->    comm "syz-executor.2", pid 7235, jiffies 4294949016 (age 13.640s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<00000000e6550967>] kmemleak_alloc_recursive  
-> include/linux/kmemleak.h:55 [inline]
->      [<00000000e6550967>] slab_post_alloc_hook mm/slab.h:439 [inline]
->      [<00000000e6550967>] slab_alloc mm/slab.c:3326 [inline]
->      [<00000000e6550967>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
->      [<0000000014132182>] kmalloc include/linux/slab.h:547 [inline]
->      [<0000000014132182>] kzalloc include/linux/slab.h:742 [inline]
->      [<0000000014132182>] create_ctx+0x25/0x70 net/tls/tls_main.c:601
->      [<00000000e08e1a44>] tls_init net/tls/tls_main.c:787 [inline]
->      [<00000000e08e1a44>] tls_init+0x97/0x1e0 net/tls/tls_main.c:769
->      [<0000000037b0c43c>] __tcp_set_ulp net/ipv4/tcp_ulp.c:126 [inline]
->      [<0000000037b0c43c>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:147
->      [<000000007a284277>] do_tcp_setsockopt.isra.0+0x19a/0xd60  
-> net/ipv4/tcp.c:2784
->      [<00000000f35f3415>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3098
->      [<00000000c840962c>] sock_common_setsockopt+0x38/0x50  
-> net/core/sock.c:3124
->      [<0000000006b0801f>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
->      [<00000000a6309f52>] __do_sys_setsockopt net/socket.c:2083 [inline]
->      [<00000000a6309f52>] __se_sys_setsockopt net/socket.c:2080 [inline]
->      [<00000000a6309f52>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
->      [<00000000fa555bbc>] do_syscall_64+0x76/0x1a0  
-> arch/x86/entry/common.c:301
->      [<00000000a06d7d1a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> BUG: memory leak
-> unreferenced object 0xffff8881207d7600 (size 512):
->    comm "syz-executor.5", pid 7244, jiffies 4294949019 (age 13.610s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<00000000e6550967>] kmemleak_alloc_recursive  
-> include/linux/kmemleak.h:55 [inline]
->      [<00000000e6550967>] slab_post_alloc_hook mm/slab.h:439 [inline]
->      [<00000000e6550967>] slab_alloc mm/slab.c:3326 [inline]
->      [<00000000e6550967>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
->      [<0000000014132182>] kmalloc include/linux/slab.h:547 [inline]
->      [<0000000014132182>] kzalloc include/linux/slab.h:742 [inline]
->      [<0000000014132182>] create_ctx+0x25/0x70 net/tls/tls_main.c:601
->      [<00000000e08e1a44>] tls_init net/tls/tls_main.c:787 [inline]
->      [<00000000e08e1a44>] tls_init+0x97/0x1e0 net/tls/tls_main.c:769
->      [<0000000037b0c43c>] __tcp_set_ulp net/ipv4/tcp_ulp.c:126 [inline]
->      [<0000000037b0c43c>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:147
->      [<000000007a284277>] do_tcp_setsockopt.isra.0+0x19a/0xd60  
-> net/ipv4/tcp.c:2784
->      [<00000000f35f3415>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3098
->      [<00000000c840962c>] sock_common_setsockopt+0x38/0x50  
-> net/core/sock.c:3124
->      [<0000000006b0801f>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
->      [<00000000a6309f52>] __do_sys_setsockopt net/socket.c:2083 [inline]
->      [<00000000a6309f52>] __se_sys_setsockopt net/socket.c:2080 [inline]
->      [<00000000a6309f52>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
->      [<00000000fa555bbc>] do_syscall_64+0x76/0x1a0  
-> arch/x86/entry/common.c:301
->      [<00000000a06d7d1a>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> 
-> 
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+On 6/8/19 6:51 AM, Daniel Golle wrote:
+> Hi Daniel,
+>
+> On Sat, Jun 08, 2019 at 04:06:54AM -0500, Daniel Santos wrote:
+>> Hello,
+>>
+>> I need to change auto-negotiate, speed and duplex for a port on my
+>> mt7620a-based device, but I'm not quite certain that I understand the
+>> structure here.=C2=A0 When using ethtool on eth0 I always get ENODEV,
+>> apparently because priv->phy_dev is always NULL in fe_get_link_ksettin=
+gs
+>> of drivers/net/ethernet/mtk/ethtool.c.=C2=A0 But I'm being told that e=
+th0 is
+>> only an internal device between the =C2=B5C and the switch hardware, s=
+o it
+>> isn't even the one I need to change.
+> That's correct.
+
+It always helps when my idea about what I'm doing matches reality.
+
+>> If this is true, then it looks like I will need to implement a
+>> get_port_link function for struct switch_dev_ops?=C2=A0 Can anybody co=
+nfirm
+>> this to be the case?=C2=A0 Also, are there any examples aside from the
+>> Broadcom drivers?=C2=A0 I have the mt7620 programmer's guide and it sp=
+ecifies
+>> the registers I need to change.
+> Currently MT7620 still uses our legacy swconfig switch driver, which
+> also doesn't support setting autoneg, speed and duplex. However, rather
+> than implementing it there, it'd be great to add support for the FE-
+> version of the MT7530 swtich found in the MT7620(A/N) WiSoC to the now
+> upstream DSA driver[1].
+
+Ok, this makes much more sense now.=C2=A0 So swconfig is on its way out i=
+n
+favor of DSA (which I've never heard of until now)?=C2=A0 I presume this =
+will
+also abstract away changes of ethtool to netlink-based instead of ioctl
+on a random socket as well?
+
+> While this driver was originally intended for
+> use with standalone MT7530 GE switch chip or the ARM-based MT7623 SoC,
+> the same switch fabric is also implemented in MT7621 and support for
+> that chip was added to the driver recently[2]. MT7620 basically also
+> features the same switch internally, however, it comes with only one
+> CPU port, supports only FastEthernet and lacks some of the management
+> counters.
+>
+> Assuming your MT7620 datasheet includes the decription of the MT7530
+> switch registers, it'd be great if you can help working on supporting
+> MT7620 in the DSA driver as well -- gaining per-port ethtool support
+> as a reward :)
+
+Wonderful!=C2=A0 So if I understand correctly, this is the same switch
+hardware (internally at least), so has all of the same MAC and MII
+registers on 7530, 7621, 7620, etc?=C2=A0 For now I have to get a fix for=
+ a
+customer on a 3.18 kernel, so I'll be doing the swconfig first and then
+see how much time we can put into the DSA implementation.
+
+>
+> Cheers
+>
+>
+> Daniel
+>
+>
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git=
+/tree/drivers/net/dsa/mt7530.c
+> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git=
+/commit/?id=3Dddda1ac116c852bb969541ed53cffef7255c4961
+>
+
+Also, would you happen to know why the mt7620 mdio driver is using a
+32-bit read for MII registers that are 32-bit?=C2=A0 For example, in
+_mt7620_mii_read.=C2=A0 It looks like some of this can use some improved
+error management, since return codes are being ignored in a few places.
+
+From what I can tell thus far, it looks like these MII registers are
+standardized, so the "generic" version might do most or all of what I
+need in some cases.=C2=A0 But as far as implementing DSA, I guess I'll ha=
+ve
+to examine the mainlined driver and see how it works.=C2=A0 I just didn't
+have a struct phy_device to work with when trying to get it to work.
+
+Thanks,
+Daniel
+
 
