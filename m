@@ -2,135 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA503ABFB
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 23:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8E5C3AC01
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 23:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729306AbfFIVRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 17:17:39 -0400
-Received: from mail-lj1-f173.google.com ([209.85.208.173]:33827 "EHLO
-        mail-lj1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728868AbfFIVRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 17:17:39 -0400
-Received: by mail-lj1-f173.google.com with SMTP id p17so1204597ljg.1
-        for <netdev@vger.kernel.org>; Sun, 09 Jun 2019 14:17:37 -0700 (PDT)
+        id S1729384AbfFIVVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 17:21:12 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39607 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728868AbfFIVVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 17:21:12 -0400
+Received: by mail-ot1-f65.google.com with SMTP id r21so6552123otq.6;
+        Sun, 09 Jun 2019 14:21:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=googlemail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ihP9CHBNii87NzZFvK45BfkIBAlThjiJWCB4oVnWpok=;
-        b=M5iWwlQ+AZHZjR6Dfu1VFt1FA96KmLz7fqBEFA2kG4SlBUpY4QI50lWCFH8IVX1CQa
-         rLhPrwkorA3ar51LnQFpx5yc/7A5O/piuvbpdvpE97/l1Bv/XfUU0CiEtVcRBzstR+G2
-         YvO9NdOdTXHaEU8O3MsOv+UwOvjxcddeXHLm9AoYw94Aq+l6o5z6IocuAzZ+kkLy20IL
-         IZNYvU/MDywIMJ/HPUdNCPWH2CoKjR4+UNnwLj3xjUU5EehCeZnRSfdx+1NLn00IyfeL
-         yr18shSrswAV9mpRLVbBoHVLBNwJgdDaUv7mOymhpnMMFHypY3xAcu1p38mk3lxTkC74
-         b7KA==
+        bh=ILeRyRcjcESncIl+P40HqpETCX7L+NY2Xryuox2AyAU=;
+        b=vA8aLg9fXf3AMIkpttufBddw8qtRPGAoEkExHeDBLzOR4ig+7ulCusH6Lq+Zfq8Qy5
+         n27AtawXPi6N876u0WAnmpjFukegBqhtfOW/ivahVb3zJx84+aXeWYfmY/OxlTSL+60z
+         pPIp2tpUv36aNJY8n/MYH5MSJcHb2SNryQAWScuOiMrGIzF2uO8eI0Gr6Wb6Gp4DaMBU
+         jexUiHzfshPGcZCvgWMl3ZEua5Wax4mKYIBULPDfCC4gchorb1Csg6suVmgsML8voafP
+         aTaX4gv7DsUxW5b9B20uLabF+OX3m0RmUUEyB77CsWTj8DKhnic5nkMeGNUYSfiJxWAZ
+         T2/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ihP9CHBNii87NzZFvK45BfkIBAlThjiJWCB4oVnWpok=;
-        b=lpj4O6AQmRHylEtjWuBl+f6kzeNwHX/BVAf5Pfr4fwhfh/rCcSlI0WeieaL3GX5A28
-         z0T6qepe/a5lU5KR8In2WxjN1HG550G8JWywtA9CbARdHO3YgmMyTvDyzAwG/MleM8ao
-         Hr4oUq4pRBHcMhBO0VF59fGnHC/UetPrf9X44y54tLicQ8P4awtH4dhU/U0iaIQ9lhY4
-         Eblkv0U4cIi4gBsn/zqMLrGXS6U2ALCi5KK+thhA+glSequBvfCL6bM/D1KnDoXunmYE
-         pHRYj6+ZwMPOQiG1fz2bAhQImLKLXJmirW2nMNj7q2hEF4/GJnzON644XhhNBAyehARQ
-         mnwg==
-X-Gm-Message-State: APjAAAVtPSZGxQZmI58+JaXzD4BdLvO844vZP5uzQ/JsrrCMkdi5OkJ/
-        LvdpmsL7eUSFgIdlsXw3PxA0xuNrwOl4HifiVFZeqw==
-X-Google-Smtp-Source: APXvYqxBdAYvm3y5LExjqCS6VzhCQ/tqa+wSJXaWXQI5XScPaVAonZ9AJt1bFgoEuS7UIm4/gbkSFm9EzpNSRJ7fCh8=
-X-Received: by 2002:a2e:9753:: with SMTP id f19mr10595654ljj.113.1560115056899;
- Sun, 09 Jun 2019 14:17:36 -0700 (PDT)
+        bh=ILeRyRcjcESncIl+P40HqpETCX7L+NY2Xryuox2AyAU=;
+        b=tIjZROOSwNIhZnWRmMCSEqCcTVLsJVbYk7eBU++OzVQDl1jnUH0N55rn7fgHe8yiYJ
+         0hEzjrTH9JaiytBEdTt5Zr9ZT1ts7+E7xmQ+vwsfwBBGdLPAEJCx0HvZRE/j2vh7e9VP
+         qWFNU/L4xrh2xZXTRaFpxUNK96Is53NqMfy9X0/A8ZyJsp1vbSv/QvuPVQPeA1lDFm85
+         4mWu9PevbR/5u8JmjZX+mVbnZobtYBFbsRl8dioQYJxvGBqTkgFuDOqa/j9BRbl6QZ/o
+         IvJJ7dcMLkBF1mZ2EKRKVXjBNlhkb1GTIiVzcCuLJaLAqVv3xsYq/xExXQKxvJG3e0bA
+         jcog==
+X-Gm-Message-State: APjAAAWvJzR+ZVnXbckbsVAkRSXlTuGOYCIqgAvhj/sajNtZjH9Xri1O
+        eWUPbeRelUWvrxwKG6+OmEln9iKUPIJd2eCbfSgGqg==
+X-Google-Smtp-Source: APXvYqxchWD3SK/5TgN7AGYLIIb5pfYYcmdM95qajFTt87HFoDR3f82VHMstyE2SNxDn2jQ7NIGHtL0BVjkO1m192S0=
+X-Received: by 2002:a9d:6405:: with SMTP id h5mr16556583otl.42.1560115271456;
+ Sun, 09 Jun 2019 14:21:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190609180621.7607-1-martin.blumenstingl@googlemail.com> <20190609180621.7607-6-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20190609180621.7607-6-martin.blumenstingl@googlemail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 9 Jun 2019 23:17:30 +0200
-Message-ID: <CACRpkdYzeiLB7Yuixv6NsnLJoa_FnGKRHHQm=t4gMH34NdFSYA@mail.gmail.com>
-Subject: Re: [RFC next v1 5/5] arm64: dts: meson: g12a: x96-max: fix the
- Ethernet PHY reset line
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Giuseppe CAVALLARO <peppe.cavallaro@st.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>
+References: <20190609180621.7607-1-martin.blumenstingl@googlemail.com>
+ <20190609180621.7607-3-martin.blumenstingl@googlemail.com> <20190609203828.GA8247@lunn.ch>
+In-Reply-To: <20190609203828.GA8247@lunn.ch>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 9 Jun 2019 23:21:00 +0200
+Message-ID: <CAFBinCA1xp5+77DhYMFjX31D3DsaU7d9EqFkWbn+UFFx5LSqEw@mail.gmail.com>
+Subject: Re: [RFC next v1 2/5] gpio: of: parse stmmac PHY reset line specific
+ active-low property
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linus.walleij@linaro.org,
+        bgolaszewski@baylibre.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com,
+        devicetree@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>, khilman@baylibre.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 9, 2019 at 8:06 PM Martin Blumenstingl
-<martin.blumenstingl@googlemail.com> wrote:
+Hi Andrew,
 
-> The PHY reset line and interrupt line are swapped on the X96 Max
-> compared to the Odroid-N2 schematics. This means:
-> - GPIOZ_14 is the interrupt line (on the Odroid-N2 it's the reset line)
-> - GPIOZ_15 is the reset line (on the Odroid-N2 it's the interrupt line)
+On Sun, Jun 9, 2019 at 10:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Also the GPIOZ_14 and GPIOZ_15 pins are special. The datasheet describes
-> that they are "3.3V input tolerant open drain (OD) output pins". This
-> means the GPIO controller can drive the output LOW to reset the PHY. To
-> release the reset it can only switch the pin to input mode. The output
-> cannot be driven HIGH for these pins.
-> This requires configuring the reset line as GPIO_OPEN_SOURCE because
-> otherwise the PHY will be stuck in "reset" state (because driving the
-> pin HIGH seeems to result in the same signal as driving it LOW).
+> On Sun, Jun 09, 2019 at 08:06:18PM +0200, Martin Blumenstingl wrote:
+> > The stmmac driver currently ignores the GPIO flags which are passed via
+> > devicetree because it operates with legacy GPIO numbers instead of GPIO
+> > descriptors.
+>
+> Hi Martin
+>
+> I don't think this is the reason. I think historically stmmac messed
+> up and ignored the flags. There are a number of device tree blobs
+> which have the incorrect flag value, but since it was always ignored,
+> it did not matter. Then came along a board which really did need the
+> flag, but it was too late, it could not be enabled because too many
+> boards would break. So the hack was made, and snps,reset-active-low
+> was added.
+that seems appropriate. I don't know whether you can fetch the GPIO
+flags when using legacy GPIO numbers.
+so it may also be a mix of your explanation and mine.
+in the end it's the same though: stmmac ignores the GPIO flags
 
-This far it seems all right.
+> Since snps,reset-active-low is a hack, it should not be in the
+> core. Please don't add it to gpiolib-of.c, keep it within stmmac
+> driver.
+I don't know how to keep backwards compatibility with old .dtb / .dts
+when moving this into the stmmac driver again.
 
-> Switch to GPIOZ_15 for the reset GPIO with the correct flags and drop
-> the "snps,reset-active-low" property as this is now encoded in the
-> GPIO_OPEN_SOURCE flag.
+let's assume I put the "snps,reset-active-low" inversion logic back into stmmac.
+then I need to ignore the flags because some .dts file use the flag
+GPIO_ACTIVE_LOW *and* set "snps,reset-active-low" at the same time.
+"snps,reset-active-low" would then invert GPIO_ACTIVE_LOW again, which
+basically results in GPIO_ACTIVE_HIGH
 
-Open source doesn't imply active low.
+however, I can't ignore the flags because then I'm losing the
+information I need for the newer Amlogic SoCs like open drain / open
+source.
 
-We have this in stmmac_mdio_reset():
+so the logic that I need is:
+- use GPIO flags from .dtb / .dts
+- set GPIO_ACTIVE_LOW in addition to the flags if
+"snps,reset-active-low" is set (this is different to "always invert
+the output value")
 
-                gpio_direction_output(data->reset_gpio,
-                                      data->active_low ? 1 : 0);
-                if (data->delays[0])
-                        msleep(DIV_ROUND_UP(data->delays[0], 1000));
+my understanding that of_gpio_flags_quirks (which I'm touching with
+this patch) is supposed to manage similar quirks to what we have in
+stmmac (it also contains some regulator and MMC quirks too).
+however, that's exactly the reason why I decided to mark this as RFC -
+so I'm eager to hear Linus comments on this
 
-                gpio_set_value(data->reset_gpio, data->active_low ? 0 : 1);
-                if (data->delays[1])
-                        msleep(DIV_ROUND_UP(data->delays[1], 1000));
 
-                gpio_set_value(data->reset_gpio, data->active_low ? 1 : 0);
-                if (data->delays[2])
-                        msleep(DIV_ROUND_UP(data->delays[2], 1000));
-
-If "snps,reset-active-low" was set it results in the sequence 1, 0, 1
-if it is not set it results in the sequence 0, 1, 0.
-
-The high (reset) is asserted by switching the pin into high-z open drain
-mode, which happens by switching the line into input mode in some
-cases.
-
-I think the real reason it works now is that reset is actually active high.
-
-It makes a lot of sense, since if it resets the device when set as input
-(open drain) it holds all devices on that line in reset, which is likely
-what you want as most GPIOs come up as inputs (open drain).
-A pull-up resistor will ascertain that the devices are in reset.
-
-After power on you need to actively de-assert the reset (to low) for
-it to go out of reset.
-
-> Fixes: 51d116557b2044 ("arm64: dts: meson-g12a-x96-max: Add Gigabit Ethernet Support")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-
-Other than the commit message:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+Martin
