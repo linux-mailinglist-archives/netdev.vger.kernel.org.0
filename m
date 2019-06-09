@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 485763A35A
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 639343A36D
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfFICdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 22:33:41 -0400
-Received: from casper.infradead.org ([85.118.1.10]:37438 "EHLO
-        casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727485AbfFICdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:33:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3Fp1yuwwbOTbYdEqsZgF9iklbrQHl3f9VYC9FtEc6kI=; b=QklMMOA9CGj+eXx0W9MvmFE0by
-        0aQedeNfBMWna6CYprMFaEI2qA4kPeOnRyOEvn2aWyVBRVrFxHsJhJT4y8j8WRET4/OuncElTGcKY
-        1kXcQ0a8VlI2NwrvtTMO2cQ3q7h1Jn66qeukXioB6/N9vSPhV0EgdPWi9n/gC+9fmyNydhA9BXiNo
-        9yKbfd0o7rTBHQVpNnQx4TQOlFVXinBGdjSGKt7RUOGCGI+/dbrJnHDzL0AkB20um1bet10+OzDMq
-        dP0ath70zmmP8wrAoVRXdoywUNkrUudR2U+ifiamGNlWhAtXUpuSrxNwDl+xdQy39vJRKkx3vlkf3
-        aQ09AIQw==;
-Received: from 179.176.115.133.dynamic.adsl.gvt.net.br ([179.176.115.133] helo=coco.lan)
-        by casper.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hZneK-0004xW-3Q; Sun, 09 Jun 2019 02:33:36 +0000
-Date:   Sat, 8 Jun 2019 23:33:31 -0300
-From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v2 00/22] Some documentation fixes
-Message-ID: <20190608233149.6a35bee9@coco.lan>
-In-Reply-To: <20190608134407.580f8bb5@lwn.net>
-References: <cover.1559656538.git.mchehab+samsung@kernel.org>
-        <20190607115521.6bf39030@lwn.net>
-        <20190607154430.4879976d@coco.lan>
-        <20190608134407.580f8bb5@lwn.net>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1727679AbfFICwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 22:52:41 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36832 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727432AbfFICwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:52:41 -0400
+Received: by mail-pg1-f196.google.com with SMTP id a3so3178128pgb.3
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 19:52:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LNVIehnZzT2GPOtunR+Gp0cqiz2RUe53xfQ2OhnIAtk=;
+        b=aUMbbisS0Vr9k9hg7bGLmiBVA7H0zY5AWfNH/DEiMIK6PKgw9lyg/HonlkGHQSnRZd
+         0tfGNohnaMWc8Xjp1UHacaXfssVLcEVG0zVL2AJC/eZ/eD6O+QDR66qXfk0k3vZqsOLB
+         63OmTwiVQ08lZm0IqetTVzZxYCRqq9Kg0qzDzw9NT/nSsYRFfyJvlC1EEjiW4trLDx1P
+         sMJqF0J98h2P3xYTaBLlgKNVrTorm4CLTIByS2n9J/RM9iD0sZNZJ7QPWtIIUDV3AGeD
+         aYYQJy0EEtQRYfn3omeus7S5x306S605lijRgPzYJYLndLZWjVbfXnPyG8iyibkpgGY4
+         jYjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LNVIehnZzT2GPOtunR+Gp0cqiz2RUe53xfQ2OhnIAtk=;
+        b=Tzn1drFeORaR5PpUUnW0DtfthwP/xVqlXADKAaInggXNaHTQJNet5rREQasptElfz1
+         lNN/hhTSJZXeymTzYQgXJqfe01OGezL/iVwYaW0igEzL30ur9x8UWJIRoQO7W3Jt2YWW
+         P1DpII6kWaA37ecNTVM5L8VsD7QOZFU8MtWR9NOCYunNzHpTpVHkhMw14pHMTa95dcJ6
+         75OaMeKKy/CdlJclVpR9pCC9/9HDKj2Thij04rhxg+Y8bFxGGnDpJtvypVqkGJiad8pG
+         cVDpZjxrKoOZD9JpM9tye8uKeo/dSnNB2SIFERdtLhw+7TaxfN90ShbqRKNmzziNP+jC
+         RoBw==
+X-Gm-Message-State: APjAAAWd7KqcVzQOD8BFfFtRAQymiy4XTCLILe0Z+UYNWt7Vx6AoLXqY
+        qZ48X21ufzNldyOiHEwS5rhafDDg
+X-Google-Smtp-Source: APXvYqyQsnxFfz2G5/oVSs2OdKl28kEPh0SSy62oCYsLnQpB8GNCf+WmUdddW9Ch2mmCv3Jc7p2NYg==
+X-Received: by 2002:a65:484d:: with SMTP id i13mr9603711pgs.27.1560048760265;
+        Sat, 08 Jun 2019 19:52:40 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id c12sm6379094pfn.104.2019.06.08.19.52.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 08 Jun 2019 19:52:39 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/4] net: dsa: sja1105: Use
+ SPEED_{10,100,1000,UNKNOWN} macros
+To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20190608130344.661-1-olteanv@gmail.com>
+ <20190608130344.661-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <206b984d-eb04-da62-a730-3a854c2bb3e1@gmail.com>
+Date:   Sat, 8 Jun 2019 19:52:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190608130344.661-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, 8 Jun 2019 13:44:07 -0600
-Jonathan Corbet <corbet@lwn.net> escreveu:
 
-> On Fri, 7 Jun 2019 15:44:30 -0300
-> Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
+
+On 6/8/2019 6:03 AM, Vladimir Oltean wrote:
+> This is a cosmetic patch that replaces the link speed numbers used in
+> the driver with the corresponding ethtool macros.
 > 
-> > After doing that, there are 17 patches yet to be applied. Two new
-> > patches are now needed too, due to vfs.txt -> vfs.rst and
-> > pci.txt -> pci.rst renames.  
-> 
-> OK, I've applied the set, minus those that had been picked up elsewhere.
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 
-Thank you!
-
-I'm sending the conversion patches based after your tree + linux-next.
-
-I opted to split it on a few series, as I have already 85 patches
-here (and still several new "orphan" index files that I need to work
-in order to find them a place).
-
-Sending right now the first 33 patches.
-
-
-Thanks,
-Mauro
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
