@@ -2,51 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3D23ABCE
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 22:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8D43ABD3
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 22:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbfFIUiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 16:38:08 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:45532 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbfFIUiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 16:38:08 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B7F5E14DF3D4F;
-        Sun,  9 Jun 2019 13:38:07 -0700 (PDT)
-Date:   Sun, 09 Jun 2019 13:38:07 -0700 (PDT)
-Message-Id: <20190609.133807.1807112771773489916.davem@davemloft.net>
-To:     dan.carpenter@oracle.com
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2 next] nexthop: off by one in nexthop_mpath_select()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190607153107.GS31203@kadam>
-References: <0e02a744-f28e-e206-032b-a0ffac9f7311@gmail.com>
-        <20190607153107.GS31203@kadam>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 09 Jun 2019 13:38:07 -0700 (PDT)
+        id S1730208AbfFIUik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 16:38:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39560 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725933AbfFIUij (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Jun 2019 16:38:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=aAgxuie2Hz2Ygvh1FvKs8sfXSa5TA6FHsD2v2BeNmlU=; b=loFZ3wg+RZyrJP5WO6P8HV8ypt
+        gJzwviy22tCzfN56o6PocZ5VpSRqs864Mo6i6I+Uw8bhxw/vrbHap1giCG/rTkFt64tRsLPv8TE/L
+        pPNZIwacKiE8RFy8kheg+N5BzbBM0mDbgETBoA9ACUsBkqJgg0bAHswXQXmQ2g7Xzl9k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ha4aC-0002PI-Ik; Sun, 09 Jun 2019 22:38:28 +0200
+Date:   Sun, 9 Jun 2019 22:38:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linus.walleij@linaro.org,
+        bgolaszewski@baylibre.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com,
+        devicetree@vger.kernel.org, narmstrong@baylibre.com,
+        khilman@baylibre.com, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC next v1 2/5] gpio: of: parse stmmac PHY reset line specific
+ active-low property
+Message-ID: <20190609203828.GA8247@lunn.ch>
+References: <20190609180621.7607-1-martin.blumenstingl@googlemail.com>
+ <20190609180621.7607-3-martin.blumenstingl@googlemail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190609180621.7607-3-martin.blumenstingl@googlemail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Date: Fri, 7 Jun 2019 18:31:07 +0300
+On Sun, Jun 09, 2019 at 08:06:18PM +0200, Martin Blumenstingl wrote:
+> The stmmac driver currently ignores the GPIO flags which are passed via
+> devicetree because it operates with legacy GPIO numbers instead of GPIO
+> descriptors.
 
-> The nhg->nh_entries[] array is allocated in nexthop_grp_alloc() and it
-> has nhg->num_nh elements so this check should be >= instead of >.
-> 
-> Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Reviewed-by: David Ahern <dsahern@gmail.com>
-> ---
-> v2: Use the correct Fixes tag
+Hi Martin
 
-Applied, thanks Dan.
+I don't think this is the reason. I think historically stmmac messed
+up and ignored the flags. There are a number of device tree blobs
+which have the incorrect flag value, but since it was always ignored,
+it did not matter. Then came along a board which really did need the
+flag, but it was too late, it could not be enabled because too many
+boards would break. So the hack was made, and snps,reset-active-low
+was added.
+
+Since snps,reset-active-low is a hack, it should not be in the
+core. Please don't add it to gpiolib-of.c, keep it within stmmac
+driver.
+
+	Andrew
