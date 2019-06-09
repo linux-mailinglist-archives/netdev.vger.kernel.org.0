@@ -2,118 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8E5C3AC01
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 23:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD733AC0A
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 23:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729384AbfFIVVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 17:21:12 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:39607 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728868AbfFIVVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 17:21:12 -0400
-Received: by mail-ot1-f65.google.com with SMTP id r21so6552123otq.6;
-        Sun, 09 Jun 2019 14:21:11 -0700 (PDT)
+        id S1729637AbfFIV3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 17:29:17 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36882 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728868AbfFIV3R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 17:29:17 -0400
+Received: by mail-lj1-f193.google.com with SMTP id 131so6135584ljf.4
+        for <netdev@vger.kernel.org>; Sun, 09 Jun 2019 14:29:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ILeRyRcjcESncIl+P40HqpETCX7L+NY2Xryuox2AyAU=;
-        b=vA8aLg9fXf3AMIkpttufBddw8qtRPGAoEkExHeDBLzOR4ig+7ulCusH6Lq+Zfq8Qy5
-         n27AtawXPi6N876u0WAnmpjFukegBqhtfOW/ivahVb3zJx84+aXeWYfmY/OxlTSL+60z
-         pPIp2tpUv36aNJY8n/MYH5MSJcHb2SNryQAWScuOiMrGIzF2uO8eI0Gr6Wb6Gp4DaMBU
-         jexUiHzfshPGcZCvgWMl3ZEua5Wax4mKYIBULPDfCC4gchorb1Csg6suVmgsML8voafP
-         aTaX4gv7DsUxW5b9B20uLabF+OX3m0RmUUEyB77CsWTj8DKhnic5nkMeGNUYSfiJxWAZ
-         T2/A==
+        bh=KlrRIE/V5p97wscV0kE0tjEI2tlj1dGG4/jhRhsQRG0=;
+        b=SOfnaOissSEz9PzQM9mMat56H+3dTOhDdmHyybdevIOxcr2JCQbgWnlzcNKHngS1ar
+         6lN1VKkdZ7yRsOEp3hxL2mmnVB3bx7Bt3fbe68ItUxhUV/h8lH5jvN09txUIAd9HBDLE
+         yOOfbglZUGy7zp+pLIy/Ti6rWwE+usRIvmnTmud3sfwtqzQKUHMYKqjtVmg24PXE3Mzm
+         Pn8DnWXEw80qJN5Q6DxN+u/Wp9UeLNygpfrvD8EfJ4LhF+F6T8+6uT45UEmVss0EEoUa
+         W/2popw6Ssix8aXzr8GK94RxD4Jtw8n9CeKclonaMsYy5s2V9HHbVhzr9bM+3qkt66Qj
+         Iwng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ILeRyRcjcESncIl+P40HqpETCX7L+NY2Xryuox2AyAU=;
-        b=tIjZROOSwNIhZnWRmMCSEqCcTVLsJVbYk7eBU++OzVQDl1jnUH0N55rn7fgHe8yiYJ
-         0hEzjrTH9JaiytBEdTt5Zr9ZT1ts7+E7xmQ+vwsfwBBGdLPAEJCx0HvZRE/j2vh7e9VP
-         qWFNU/L4xrh2xZXTRaFpxUNK96Is53NqMfy9X0/A8ZyJsp1vbSv/QvuPVQPeA1lDFm85
-         4mWu9PevbR/5u8JmjZX+mVbnZobtYBFbsRl8dioQYJxvGBqTkgFuDOqa/j9BRbl6QZ/o
-         IvJJ7dcMLkBF1mZ2EKRKVXjBNlhkb1GTIiVzcCuLJaLAqVv3xsYq/xExXQKxvJG3e0bA
-         jcog==
-X-Gm-Message-State: APjAAAWvJzR+ZVnXbckbsVAkRSXlTuGOYCIqgAvhj/sajNtZjH9Xri1O
-        eWUPbeRelUWvrxwKG6+OmEln9iKUPIJd2eCbfSgGqg==
-X-Google-Smtp-Source: APXvYqxchWD3SK/5TgN7AGYLIIb5pfYYcmdM95qajFTt87HFoDR3f82VHMstyE2SNxDn2jQ7NIGHtL0BVjkO1m192S0=
-X-Received: by 2002:a9d:6405:: with SMTP id h5mr16556583otl.42.1560115271456;
- Sun, 09 Jun 2019 14:21:11 -0700 (PDT)
+        bh=KlrRIE/V5p97wscV0kE0tjEI2tlj1dGG4/jhRhsQRG0=;
+        b=kfiL/FJLpnxsUo+7BL3qvjamO8AvoU+udzUr+mRRi1BZb8MZ400hNXhcOn/M93Vgfj
+         2Bds6MxNovIC5xROJHQrJp23eKU+ZloxfgTopG75KwGoqUHRXMS1rDYieHRNSuzgEShP
+         DiYXdcoC0XUNfnzd9fg0Em2iI8Gf65CWOYfhiWoitDNzs4+gpKER9EBBF6ZfXzM3gsYJ
+         S5jh0EHlHdIynWbAIneelrt2FX/owVZjzYMgqWRC68iGjoyZadeoY7xeatC0UIgwuvKq
+         keLgaME+KmPTNd/l9DT006jbR/KntgEZC9ju2Jw0A+Bttkw3VYmKmnyMlQGrQHm3LVO2
+         dX+Q==
+X-Gm-Message-State: APjAAAXiCLLvSlqNW96/c8m1Ar+oJCp3vuqirh46CY8Dd+Z6wwcu6cJy
+        gsERyXT2jBSHNMUASp5KEpz4bXi+lpBKYAzlyW2paw==
+X-Google-Smtp-Source: APXvYqwD8jFnBTiQeRvhyH1OObx2r8DdreQqyuGuLnn7YPW7qYYuahnntAMr1MNIp51bnR6Kfl+SJrOrjoX25IWmQoQ=
+X-Received: by 2002:a2e:8902:: with SMTP id d2mr34580225lji.94.1560115755209;
+ Sun, 09 Jun 2019 14:29:15 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190609180621.7607-1-martin.blumenstingl@googlemail.com>
- <20190609180621.7607-3-martin.blumenstingl@googlemail.com> <20190609203828.GA8247@lunn.ch>
-In-Reply-To: <20190609203828.GA8247@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 9 Jun 2019 23:21:00 +0200
-Message-ID: <CAFBinCA1xp5+77DhYMFjX31D3DsaU7d9EqFkWbn+UFFx5LSqEw@mail.gmail.com>
+ <20190609180621.7607-3-martin.blumenstingl@googlemail.com>
+ <20190609203828.GA8247@lunn.ch> <CAFBinCA1xp5+77DhYMFjX31D3DsaU7d9EqFkWbn+UFFx5LSqEw@mail.gmail.com>
+In-Reply-To: <CAFBinCA1xp5+77DhYMFjX31D3DsaU7d9EqFkWbn+UFFx5LSqEw@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sun, 9 Jun 2019 23:29:08 +0200
+Message-ID: <CACRpkdZ4n+nCip-uoqbDvQeT0ZpJUfHVnp-D8qCSKfgJEapM7w@mail.gmail.com>
 Subject: Re: [RFC next v1 2/5] gpio: of: parse stmmac PHY reset line specific
  active-low property
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linus.walleij@linaro.org,
-        bgolaszewski@baylibre.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com,
-        devicetree@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>, khilman@baylibre.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        linux-arm-kernel@lists.infradead.org
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Giuseppe CAVALLARO <peppe.cavallaro@st.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sun, Jun 9, 2019 at 11:21 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
 
-On Sun, Jun 9, 2019 at 10:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sun, Jun 09, 2019 at 08:06:18PM +0200, Martin Blumenstingl wrote:
-> > The stmmac driver currently ignores the GPIO flags which are passed via
-> > devicetree because it operates with legacy GPIO numbers instead of GPIO
-> > descriptors.
->
-> Hi Martin
->
-> I don't think this is the reason. I think historically stmmac messed
-> up and ignored the flags. There are a number of device tree blobs
-> which have the incorrect flag value, but since it was always ignored,
-> it did not matter. Then came along a board which really did need the
-> flag, but it was too late, it could not be enabled because too many
-> boards would break. So the hack was made, and snps,reset-active-low
-> was added.
-that seems appropriate. I don't know whether you can fetch the GPIO
-flags when using legacy GPIO numbers.
-so it may also be a mix of your explanation and mine.
-in the end it's the same though: stmmac ignores the GPIO flags
+> my understanding that of_gpio_flags_quirks (which I'm touching with
+> this patch) is supposed to manage similar quirks to what we have in
+> stmmac (it also contains some regulator and MMC quirks too).
+> however, that's exactly the reason why I decided to mark this as RFC -
+> so I'm eager to hear Linus comments on this
 
-> Since snps,reset-active-low is a hack, it should not be in the
-> core. Please don't add it to gpiolib-of.c, keep it within stmmac
-> driver.
-I don't know how to keep backwards compatibility with old .dtb / .dts
-when moving this into the stmmac driver again.
+The idea with the quirks in gpiolib-of.c is to make device drivers simpler,
+and phase them over to ignoring quirks for mistakes done in the early
+days of DT standardization. This feature of the gpiolib API is supposed
+to make it "narrow and deep": make the generic case simple
+and handle any hardware description languages (DT or ACPI or
+board files) and quirks (mostly historical) under the hood. Especially
+drivers should not need to worry about polarity inversion instead just
+grab a GPIO descriptor and play away with it, asserting it as
+1 and deasserting it as 0 whether that is the right polarity or not,
+the gpiolib should keep track of polarity no matter how that is described,
+even with historical weird bools like "snps,active-low" etc.
 
-let's assume I put the "snps,reset-active-low" inversion logic back into stmmac.
-then I need to ignore the flags because some .dts file use the flag
-GPIO_ACTIVE_LOW *and* set "snps,reset-active-low" at the same time.
-"snps,reset-active-low" would then invert GPIO_ACTIVE_LOW again, which
-basically results in GPIO_ACTIVE_HIGH
+So I think you are probably doing the right thing here.
+This patch is:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-however, I can't ignore the flags because then I'm losing the
-information I need for the newer Amlogic SoCs like open drain / open
-source.
-
-so the logic that I need is:
-- use GPIO flags from .dtb / .dts
-- set GPIO_ACTIVE_LOW in addition to the flags if
-"snps,reset-active-low" is set (this is different to "always invert
-the output value")
-
-my understanding that of_gpio_flags_quirks (which I'm touching with
-this patch) is supposed to manage similar quirks to what we have in
-stmmac (it also contains some regulator and MMC quirks too).
-however, that's exactly the reason why I decided to mark this as RFC -
-so I'm eager to hear Linus comments on this
-
-
-Martin
+Yours,
+Linus Walleij
