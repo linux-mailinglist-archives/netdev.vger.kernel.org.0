@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 639343A36D
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 394D93A36E
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 04:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727679AbfFICwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jun 2019 22:52:41 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36832 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727432AbfFICwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:52:41 -0400
-Received: by mail-pg1-f196.google.com with SMTP id a3so3178128pgb.3
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 19:52:41 -0700 (PDT)
+        id S1727771AbfFICx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jun 2019 22:53:29 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41985 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727432AbfFICx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jun 2019 22:53:29 -0400
+Received: by mail-pg1-f195.google.com with SMTP id l19so571701pgh.9
+        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 19:53:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LNVIehnZzT2GPOtunR+Gp0cqiz2RUe53xfQ2OhnIAtk=;
-        b=aUMbbisS0Vr9k9hg7bGLmiBVA7H0zY5AWfNH/DEiMIK6PKgw9lyg/HonlkGHQSnRZd
-         0tfGNohnaMWc8Xjp1UHacaXfssVLcEVG0zVL2AJC/eZ/eD6O+QDR66qXfk0k3vZqsOLB
-         63OmTwiVQ08lZm0IqetTVzZxYCRqq9Kg0qzDzw9NT/nSsYRFfyJvlC1EEjiW4trLDx1P
-         sMJqF0J98h2P3xYTaBLlgKNVrTorm4CLTIByS2n9J/RM9iD0sZNZJ7QPWtIIUDV3AGeD
-         aYYQJy0EEtQRYfn3omeus7S5x306S605lijRgPzYJYLndLZWjVbfXnPyG8iyibkpgGY4
-         jYjg==
+        bh=uXrdIeqF0wM/99tB32J0M129t5fTlWH4o+Lxchf5W30=;
+        b=hz6up6PW+DIt6VltYel63aw9r0z3wjQEPMPvTy2ABRyr0KVStYCU/mrJKJrIhOeOlV
+         TAHNlBseYMKpvyc+2PzRdeMwHT+0OreqZDjE2z0eyR7FyzcaWhhXCRLfX4fQKOe45j9L
+         jdL+YxYvfj3xUr06Gw+Wnl9Gz24MUfltKM4Fe1l2kAj9wnPURhC/+LE7NKVtdoXoBq4+
+         5+Q2PTy5PAe3F9zeFLajFZQV/p93FhkXl/Hd3xys9qtIOUkDRvq/kDnPQRlASmjnPhcS
+         pWHMGsRW6gCgVEcz+5uDB8fHJR86g8kGpMbIt0D3VJT8Lh2pKg+UarPqUwYeaWdBr5nr
+         WDnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LNVIehnZzT2GPOtunR+Gp0cqiz2RUe53xfQ2OhnIAtk=;
-        b=Tzn1drFeORaR5PpUUnW0DtfthwP/xVqlXADKAaInggXNaHTQJNet5rREQasptElfz1
-         lNN/hhTSJZXeymTzYQgXJqfe01OGezL/iVwYaW0igEzL30ur9x8UWJIRoQO7W3Jt2YWW
-         P1DpII6kWaA37ecNTVM5L8VsD7QOZFU8MtWR9NOCYunNzHpTpVHkhMw14pHMTa95dcJ6
-         75OaMeKKy/CdlJclVpR9pCC9/9HDKj2Thij04rhxg+Y8bFxGGnDpJtvypVqkGJiad8pG
-         cVDpZjxrKoOZD9JpM9tye8uKeo/dSnNB2SIFERdtLhw+7TaxfN90ShbqRKNmzziNP+jC
-         RoBw==
-X-Gm-Message-State: APjAAAWd7KqcVzQOD8BFfFtRAQymiy4XTCLILe0Z+UYNWt7Vx6AoLXqY
-        qZ48X21ufzNldyOiHEwS5rhafDDg
-X-Google-Smtp-Source: APXvYqyQsnxFfz2G5/oVSs2OdKl28kEPh0SSy62oCYsLnQpB8GNCf+WmUdddW9Ch2mmCv3Jc7p2NYg==
-X-Received: by 2002:a65:484d:: with SMTP id i13mr9603711pgs.27.1560048760265;
-        Sat, 08 Jun 2019 19:52:40 -0700 (PDT)
+        bh=uXrdIeqF0wM/99tB32J0M129t5fTlWH4o+Lxchf5W30=;
+        b=nm6OVxLgJAok3Uvq+GZ3J4dtOsl5a5ZQ2kshf6A6YR+qBT2gwyFFjSQp7c9hVXaV5l
+         mRIUPpzDqNft02fd0Saokxxl0SnU21zoks8rJMmnsW6Os41BcfHXPF+0kHDXVby7L49o
+         +0Do/gvZ0Ip0qqVjYhe2KcFmdaWTPTHded5kCksIimmunqOw9VyvseRScJvSqZ7GnqK2
+         gOOi0nghFnq4Y6XLGGJPO8Yvobn7bizGFldPOQpfocsb2ok4BsvPvb7AaYWtuhUl1PdA
+         TR/ww/YfTrOuWYirnEnGdVIXarjG6kg8Eyj+bjd2PZZFuN8bcWNHrq7fXpnL478ZoNvT
+         7Uzg==
+X-Gm-Message-State: APjAAAWK2zHKb9mdF/Ij4Aq5Gr5ZV58MY53Ehsqw/ORa1lP3IC2a1t4U
+        El7rTWYACJL3kLz0Cmx7pP4u2fDC
+X-Google-Smtp-Source: APXvYqxPPe5Icsk8MxvEe4W6uGzLa6aB+TgfuPAv/mehfe3sKKj7GsqlusybWAL/eCXWSHtJ/dIfkg==
+X-Received: by 2002:a65:530d:: with SMTP id m13mr10009832pgq.68.1560048808055;
+        Sat, 08 Jun 2019 19:53:28 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id c12sm6379094pfn.104.2019.06.08.19.52.38
+        by smtp.gmail.com with ESMTPSA id v64sm12253352pfv.172.2019.06.08.19.53.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 Jun 2019 19:52:39 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/4] net: dsa: sja1105: Use
- SPEED_{10,100,1000,UNKNOWN} macros
+        Sat, 08 Jun 2019 19:53:27 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/4] net: dsa: sja1105: Update some comments
+ about PHYLIB
 To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
         andrew@lunn.ch, davem@davemloft.net
 Cc:     netdev@vger.kernel.org
 References: <20190608130344.661-1-olteanv@gmail.com>
- <20190608130344.661-2-olteanv@gmail.com>
+ <20190608130344.661-3-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <206b984d-eb04-da62-a730-3a854c2bb3e1@gmail.com>
-Date:   Sat, 8 Jun 2019 19:52:38 -0700
+Message-ID: <74357f83-fcf8-93d5-ae4b-f6b100782fba@gmail.com>
+Date:   Sat, 8 Jun 2019 19:53:26 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190608130344.661-2-olteanv@gmail.com>
+In-Reply-To: <20190608130344.661-3-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,11 +71,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 6/8/2019 6:03 AM, Vladimir Oltean wrote:
-> This is a cosmetic patch that replaces the link speed numbers used in
-> the driver with the corresponding ethtool macros.
+> Since the driver is now using PHYLINK exclusively, it makes sense to
+> remove all references to it and replace them with PHYLINK.
 > 
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
