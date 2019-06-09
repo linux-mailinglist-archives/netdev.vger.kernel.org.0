@@ -2,116 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 342823A40E
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 08:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2FC3A416
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 09:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727634AbfFIGwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 02:52:40 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43645 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbfFIGwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jun 2019 02:52:39 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z24so546638qtj.10
-        for <netdev@vger.kernel.org>; Sat, 08 Jun 2019 23:52:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/nmJUSdK6VIlAECS9kwIeH9I0bVe4ZWCQIHHy6GIY2k=;
-        b=MncpmTyrepDkUH39SNRZniPxWcJcOMxZJyOdM68O4HWCnjDfakShcu5b1DU8SUkodX
-         CyEVbldaZDqShmQ0dcdXCNQHzZYd4QnlcN6wWhaWComPiw5kmCkeifRWWSiS+0/J/lis
-         gDhTV4047YOuN37lUMVfHS9MiI3Z1MRe5GVUcgEDnU8gUwkmmHGcWZ27c68f949cv+DW
-         WbPDus7glcPMGKYsSSlt1Xi9WPYKJfleqOnwVBxWaiucgaVrjonVBTjofLq6S2KdzGjw
-         lqRxHM4Z0j722BeA3BwwF2wr6mFmIGqlSdGR761PKI/qun9nh/l4uPxnfX5GlFfTJgN8
-         vtwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/nmJUSdK6VIlAECS9kwIeH9I0bVe4ZWCQIHHy6GIY2k=;
-        b=jxoa7TAVJLMVorwXObychtX2o2QE/Cv3ClFyoF/4WukkEG7oF/t3l7FcibtB8TCmXM
-         BdsObPzS32DpwcueNXxa6n7VTnQLLnBekVoJQprUOVP2Q378ht8KsQbaJIOY5dI4xnih
-         df2HSWSt511/2gec5+IZwomi2hbhQlE093ULFxvZjhZDU6C8jtZpbrrZdZ+pPTpncNEi
-         qxMooLQsIEwueMvOuq4euNwLeGjEPiCrSoadpxUZiZ4hH24xcJRXkhnFAu9fbKgX0pup
-         AlSsLzn5+GBaqYHq8MgaekI5VBppCvTRcinBd6NLFe4R3W7UNKAtYKXQOQKspQjQ5OCh
-         dh1Q==
-X-Gm-Message-State: APjAAAVN+E4pUII9y9Lgx7tIl8LQbKqShSklmW4u064gln6d5zqxSrV5
-        b4Z9O2zV3P88yBrxaYKJeitKOfmetbGHXSEcXKs=
-X-Google-Smtp-Source: APXvYqyn8SyiyDYJQr23QLwDic2ApInTuuazlvMHtQv1a+CoHiLpsVP8Z0e/YffD+zU04bWitQ3qSGYZvoL9Gmp3yAg=
-X-Received: by 2002:ac8:4442:: with SMTP id m2mr31921788qtn.107.1560063158862;
- Sat, 08 Jun 2019 23:52:38 -0700 (PDT)
+        id S1727791AbfFIHDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 03:03:54 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:18116 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725850AbfFIHDy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Jun 2019 03:03:54 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 0B0368A77C38820DB5B9;
+        Sun,  9 Jun 2019 15:03:47 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Sun, 9 Jun 2019 15:03:40 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <alexandre.belloni@bootlin.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH -next] ocelot: remove unused variable 'rc' in vcap_cmd()
+Date:   Sun, 9 Jun 2019 15:11:26 +0800
+Message-ID: <20190609071126.183505-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190606205943.818795-1-jonathan.lemon@gmail.com>
-In-Reply-To: <20190606205943.818795-1-jonathan.lemon@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Sun, 9 Jun 2019 08:52:25 +0200
-Message-ID: <CAJ+HfNgL56oxWUM7qGxyQOH0AyKjYJWu6z=77xcMw7K+iqZ0WQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 0/4] Better handling of xskmap entries
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jun 2019 at 00:30, Jonathan Lemon <jonathan.lemon@gmail.com> wrot=
-e:
->
-> Currently, the AF_XDP code uses a separate map in order to
-> determine if an xsk is bound to a queue.  Have the xskmap
-> lookup return a XDP_SOCK pointer on the kernel side, which
-> the verifier uses to extract relevant values.
->
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Very nice! Thanks for doing this, Jonathan.
+drivers/net/ethernet/mscc/ocelot_ace.c: In function ‘vcap_cmd’:
+drivers/net/ethernet/mscc/ocelot_ace.c:108:6: warning: variable ‘rc’ set
+but not used [-Wunused-but-set-variable]
+  int rc;
+      ^
+It's never used since introduction in commit b596229448dd ("net: mscc:
+ocelot: Add support for tcam")
 
-Again, for the series:
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ drivers/net/ethernet/mscc/ocelot_ace.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
+index f74b98f7d8d1..39aca1ab4687 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ace.c
++++ b/drivers/net/ethernet/mscc/ocelot_ace.c
+@@ -105,7 +105,6 @@ static void vcap_cmd(struct ocelot *oc, u16 ix, int cmd, int sel)
+ 	u32 value = (S2_CORE_UPDATE_CTRL_UPDATE_CMD(cmd) |
+ 		     S2_CORE_UPDATE_CTRL_UPDATE_ADDR(ix) |
+ 		     S2_CORE_UPDATE_CTRL_UPDATE_SHOT);
+-	int rc;
+ 
+ 	if ((sel & VCAP_SEL_ENTRY) && ix >= vcap_is2.entry_count)
+ 		return;
+@@ -120,7 +119,7 @@ static void vcap_cmd(struct ocelot *oc, u16 ix, int cmd, int sel)
+ 		value |= S2_CORE_UPDATE_CTRL_UPDATE_CNT_DIS;
+ 
+ 	ocelot_write(oc, value, S2_CORE_UPDATE_CTRL);
+-	rc = readx_poll_timeout(vcap_s2_read_update_ctrl, oc, value,
++	readx_poll_timeout(vcap_s2_read_update_ctrl, oc, value,
+ 				(value & S2_CORE_UPDATE_CTRL_UPDATE_SHOT) == 0,
+ 				10, 100000);
+ }
+-- 
+2.20.1
 
-> Patches:
->  1 - adds XSK_SOCK type
->  2 - sync bpf.h with tools
->  3 - add tools selftest
->  4 - update lib/bpf, removing qidconf
->
-> v4->v5:
->  - xskmap lookup now returns XDP_SOCK type instead of pointer to element.
->  - no changes lib/bpf/xsk.c
->
-> v3->v4:
->  - Clarify error handling path.
->
-> v2->v3:
->  - Use correct map type.
->
-> Jonathan Lemon (4):
->   bpf: Allow bpf_map_lookup_elem() on an xskmap
->   bpf/tools: sync bpf.h
->   tools/bpf: Add bpf_map_lookup_elem selftest for xskmap
->   libbpf: remove qidconf and better support external bpf programs.
->
->  include/linux/bpf.h                           |   8 ++
->  include/net/xdp_sock.h                        |   4 +-
->  include/uapi/linux/bpf.h                      |   4 +
->  kernel/bpf/verifier.c                         |  26 ++++-
->  kernel/bpf/xskmap.c                           |   7 ++
->  net/core/filter.c                             |  40 +++++++
->  tools/include/uapi/linux/bpf.h                |   4 +
->  tools/lib/bpf/xsk.c                           | 103 +++++-------------
->  .../bpf/verifier/prevent_map_lookup.c         |  15 ---
->  tools/testing/selftests/bpf/verifier/sock.c   |  18 +++
->  10 files changed, 135 insertions(+), 94 deletions(-)
->
-> --
-> 2.17.1
->
