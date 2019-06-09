@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 004E93A75F
-	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 18:49:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF293A77C
+	for <lists+netdev@lfdr.de>; Sun,  9 Jun 2019 18:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731374AbfFIQtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 12:49:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48290 "EHLO mail.kernel.org"
+        id S1731653AbfFIQuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 12:50:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730166AbfFIQtA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Jun 2019 12:49:00 -0400
+        id S1731082AbfFIQuG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Jun 2019 12:50:06 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 467CE205ED;
-        Sun,  9 Jun 2019 16:48:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 78B7B206C3;
+        Sun,  9 Jun 2019 16:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560098939;
-        bh=Cp2uECuwOeGPDjVMSYrZzAlare/2fg5aOUeUdcM2Uv4=;
+        s=default; t=1560099005;
+        bh=TRrM6aZo+7lDrh45y6Gia4GwOo80+JtUxdtJg7tGtfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDbJvmtca6V8KZLJz3fAP68AEvoptkhQ1guCWhL55UXcTB78yrgjO0qM5q1Af6SwI
-         Dzp1Fh1GSaH7LcKKz8OyBMEmvPOW0cmGMsKAvOr6LsfUDg1Lq+odH3E8dUO2KI0Rdp
-         SI1rvKSnOb44NEG+hGG3RJvkMJsy8ZxVTqFZuUd0=
+        b=iZG2u1I4zScyy2Q5DeZptM5goI8AZbCsWqwzREBBYTr2GA37dAhQuLC5TzTJ9+l82
+         2Gu4wc/rBEmD+MOL634KIes3vcbSZRMkhQP+7599mPnqFmrk6A1jZV7XZ7daJe4n0d
+         GMO21TqfXl0krNVMp8gMuy/oyQfouttdjqOARsnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -30,12 +30,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 4.19 02/51] Fix memory leak in sctp_process_init
-Date:   Sun,  9 Jun 2019 18:41:43 +0200
-Message-Id: <20190609164127.262205526@linuxfoundation.org>
+Subject: [PATCH 4.14 02/35] Fix memory leak in sctp_process_init
+Date:   Sun,  9 Jun 2019 18:42:08 +0200
+Message-Id: <20190609164125.708731461@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190609164127.123076536@linuxfoundation.org>
-References: <20190609164127.123076536@linuxfoundation.org>
+In-Reply-To: <20190609164125.377368385@linuxfoundation.org>
+References: <20190609164125.377368385@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -117,7 +117,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/sctp/sm_make_chunk.c
 +++ b/net/sctp/sm_make_chunk.c
-@@ -2329,7 +2329,6 @@ int sctp_process_init(struct sctp_associ
+@@ -2318,7 +2318,6 @@ int sctp_process_init(struct sctp_associ
  	union sctp_addr addr;
  	struct sctp_af *af;
  	int src_match = 0;
@@ -125,7 +125,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  	/* We must include the address that the INIT packet came from.
  	 * This is the only address that matters for an INIT packet.
-@@ -2433,14 +2432,6 @@ int sctp_process_init(struct sctp_associ
+@@ -2422,14 +2421,6 @@ int sctp_process_init(struct sctp_associ
  	/* Peer Rwnd   : Current calculated value of the peer's rwnd.  */
  	asoc->peer.rwnd = asoc->peer.i.a_rwnd;
  
@@ -140,7 +140,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	/* RFC 2960 7.2.1 The initial value of ssthresh MAY be arbitrarily
  	 * high (for example, implementations MAY use the size of the receiver
  	 * advertised window).
-@@ -2609,7 +2600,9 @@ do_addr_param:
+@@ -2595,7 +2586,9 @@ do_addr_param:
  	case SCTP_PARAM_STATE_COOKIE:
  		asoc->peer.cookie_len =
  			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
@@ -153,7 +153,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	case SCTP_PARAM_HEARTBEAT_INFO:
 --- a/net/sctp/sm_sideeffect.c
 +++ b/net/sctp/sm_sideeffect.c
-@@ -898,6 +898,11 @@ static void sctp_cmd_new_state(struct sc
+@@ -878,6 +878,11 @@ static void sctp_cmd_new_state(struct sc
  						asoc->rto_initial;
  	}
  
