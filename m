@@ -2,122 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 119E23B223
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 11:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323DB3B25F
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 11:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388714AbfFJJaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 05:30:06 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:45924 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388396AbfFJJaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 05:30:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id b197so7057813iof.12
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 02:30:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Np+xPJWikxtIIlIvGvVx4ZfVKde2a2GTO356MNseHYo=;
-        b=dc44E8h+1VtWUI6xHV3/ZR/CosQjj34Vn3Om5OAz7n86OvcVxxjTxLyIa7J2Yd6298
-         KPMvbkEhBj8pSR4sbBjavdgn0KVjakdNXRylyKz09Gf9sqRzMIoXliMpzBYCIYZqVc8L
-         18/W1eRC0UYoSUiitW/vd/OcQoletCtlqJEIgPmi45a/EJ1qb3S5IJsc5tf/57sF9eFN
-         +dnFuohMr03bQDYS7hC5vC3/bksi9c4hbaQb94mAnHwNXVfcg1E31Bhg7TESLRChETat
-         lB93SnsT3vdaf7Dd/jAFgHwMFhv4eBqKJeYIkKVY7Q+qarfKAprYsootv3OAI6wQ/dcj
-         RNbQ==
-X-Gm-Message-State: APjAAAWNYvHEjFv4duwLwD16V106MdVma4RRxdiF4932K3b+DhjEEFjS
-        HLtrrrITzT6TrlsoNF6BMUW5vVT7bYRdAMBOqM58/UIjQiDt
-X-Google-Smtp-Source: APXvYqz2M+f0Q17h76RoBB7choSL+vGIvH++EpNIaPAzhimyQwDJcGoElZVdPCA72l9rTJFgMT/hvree53vNcYjlWWDhxWCDz0Rs
-MIME-Version: 1.0
-X-Received: by 2002:a24:690f:: with SMTP id e15mr378569itc.31.1560159005811;
- Mon, 10 Jun 2019 02:30:05 -0700 (PDT)
-Date:   Mon, 10 Jun 2019 02:30:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000055aba7058af4d378@google.com>
-Subject: KASAN: null-ptr-deref Read in css_task_iter_advance
-From:   syzbot <syzbot+d4bba5ccd4f9a2a68681@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        daniel@iogearbox.net, hannes@cmpxchg.org, kafai@fb.com,
-        linux-kernel@vger.kernel.org, lizefan@huawei.com,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tj@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S2389079AbfFJJn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 05:43:57 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:59655 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387977AbfFJJn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 05:43:57 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190610094355euoutp02e82b30e75f5aa3fffdaae6fefad98898~mzRqpn9tS1954419544euoutp02E;
+        Mon, 10 Jun 2019 09:43:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190610094355euoutp02e82b30e75f5aa3fffdaae6fefad98898~mzRqpn9tS1954419544euoutp02E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1560159835;
+        bh=Y1ZXF7rmnfRbME/cb81cN8sIoD0cHKznAAQ0GsESofo=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=fLO9wqfaXu3TP/r4Rw2Jh08kaqn0VaTctQtZyZPWjiSb94A+uwfR79bY9XxmZL2I8
+         4+/a7M63X+/kNYVNGWoBezHhcj+aolGr93ML3fEBPVFUiGn7vwnPHEJJvnbq6MjwuQ
+         xsyT8Buw4Q3swRZbv2TApXUgvifdSN+SemFJ20T4=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190610094354eucas1p2d8b84ee3fb2055fc6cf64a85bfb76d20~mzRp0a9xd1188611886eucas1p2w;
+        Mon, 10 Jun 2019 09:43:54 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 7B.F3.04377.9562EFC5; Mon, 10
+        Jun 2019 10:43:54 +0100 (BST)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190610094353eucas1p29eb71e82aa621c1e387513571a78710b~mzRo9dhJj1925319253eucas1p2V;
+        Mon, 10 Jun 2019 09:43:53 +0000 (GMT)
+X-AuditID: cbfec7f4-113ff70000001119-aa-5cfe26597785
+Received: from eusync4.samsung.com ( [203.254.199.214]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 4B.CD.04140.9562EFC5; Mon, 10
+        Jun 2019 10:43:53 +0100 (BST)
+Received: from amdc2143.DIGITAL.local ([106.120.51.59]) by
+        eusync4.samsung.com (Oracle Communications Messaging Server 7.0.5.31.0 64bit
+        (built May  5 2014)) with ESMTPA id <0PSV00FBRN12MD10@eusync4.samsung.com>;
+        Mon, 10 Jun 2019 10:43:53 +0100 (BST)
+From:   Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lukasz Pawelczyk <havner@gmail.com>,
+        Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+Subject: [PATCH v4] extensions: libxt_owner: Add supplementary groups option
+Date:   Mon, 10 Jun 2019 11:42:38 +0200
+Message-id: <20190610094238.24904-1-l.pawelczyk@samsung.com>
+X-Mailer: git-send-email 2.20.1
+MIME-version: 1.0
+Content-transfer-encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrGIsWRmVeSWpSXmKPExsWy7djPc7pRav9iDDbvYLH4u7Od2WLO+RYW
+        i229qxkt/r/WsbjcN43Z4sykhUwWl3fNYbM4tkDMYsK6UywW099cZXbg8jjdtJHFY8vKm0we
+        O2fdZfd4+/sEk0ffllWMHoe+L2D1+LxJLoA9issmJTUnsyy1SN8ugSvjwZa5TAUnVCvmbr7L
+        2sDYLdfFyMEhIWAi8fClWhcjJ4eQwApGiWsTErsYuYDsz4wSD47dZAVJgNR87P3MApFYxijx
+        +NMzNgjnP6PE9nl7warYBAwkvl/YywySEBGYziSxpuEVI0iCWSBU4tyj9cwgtrCAj8S9pr/s
+        IDaLgKpE57MGNhCbV8BGYsnmncwQ6+QlzveuY4eIC0r8mHyPBWKOvMTBK8/BzpAQWMMmsffZ
+        Lqj7XCQeTVsD1SwjcXlyNwvEb9USJ89UQNR3MEpsfDGbEaLGWuLzpC3MEEP5JCZtm84MUc8r
+        0dEmBFHiITFpx0UWSLjESnxZc5xtAqPkLCQnzUJy0gJGplWM4qmlxbnpqcVGeanlesWJucWl
+        eel6yfm5mxiBsX363/EvOxh3/Uk6xCjAwajEw3vA/m+MEGtiWXFl7iFGCQ5mJRHeFVL/YoR4
+        UxIrq1KL8uOLSnNSiw8xSnOwKInzVjM8iBYSSE8sSc1OTS1ILYLJMnFwSjUwimyfmFe6o2lR
+        8i1Ddz3+OxyrllnP2do/zUVSbNK+cLcbNy/oWddfvdVgeXrXvqKYXzInZZtZf7kZxdgeOD9t
+        xcfXdz8sqFQSarywQ6yj9uzqk35O2op1Mx3Osu/d/VGNc87SjTfm3eHeP+t22Pxdt+JiNp70
+        71mxosODwdxXWKGO57KecF/neyWW4oxEQy3mouJEADSeGGTpAgAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGLMWRmVeSWpSXmKPExsVy+t/xa7qRav9iDC7s47H4u7Od2WLO+RYW
+        i229qxkt/r/WsbjcN43Z4sykhUwWl3fNYbM4tkDMYsK6UywW099cZXbg8jjdtJHFY8vKm0we
+        O2fdZfd4+/sEk0ffllWMHoe+L2D1+LxJLoA9issmJTUnsyy1SN8ugSvjwZa5TAUnVCvmbr7L
+        2sDYLdfFyMkhIWAi8bH3M0sXIxeHkMASRombN+9COY1MEmfXN7OBVLEJGEh8v7CXGcQWEZjO
+        JPFnljCIzSwQKnFtxnSwuLCAj8S9pr/sIDaLgKpE57MGsF5eARuJJZt3MkNsk5c437uOHSIu
+        KPFj8j0WiDnyEgevPGeZwMgzC0lqFpLUAkamVYwiqaXFuem5xUZ6xYm5xaV56XrJ+bmbGIGh
+        ue3Yzy07GLveBR9iFOBgVOLhPWD/N0aINbGsuDL3EKMEB7OSCO8KqX8xQrwpiZVVqUX58UWl
+        OanFhxilOViUxHk7BA7GCAmkJ5akZqemFqQWwWSZODilGhgPv7u6UT+8TdL30d1dYta7Ax7m
+        x0teKZJsivPcNGXTrS11zf3Tim7N8VFOvOn5XcGQYXfnAdGJYuHrqjYxr18izjlLuzuqn4fJ
+        880iW62p3u8jd5dOkFTj3vLg2AQbx31SFuWL3ydaVH35EWwb3tb6IrXW5OxU3Ykp7ncDvvjN
+        UrafJvv3GYMSS3FGoqEWc1FxIgDVVQ9iSQIAAA==
+X-CMS-MailID: 20190610094353eucas1p29eb71e82aa621c1e387513571a78710b
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190610094353eucas1p29eb71e82aa621c1e387513571a78710b
+References: <CGME20190610094353eucas1p29eb71e82aa621c1e387513571a78710b@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The --suppl-groups option causes GIDs specified with --gid-owner to be
+also checked in the supplementary groups of a process.
 
-syzbot found the following crash on:
-
-HEAD commit:    3f310e51 Add linux-next specific files for 20190607
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=170acfa6a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5d176e1849bbc45
-dashboard link: https://syzkaller.appspot.com/bug?extid=d4bba5ccd4f9a2a68681
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d4bba5ccd4f9a2a68681@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: null-ptr-deref in atomic_read  
-include/asm-generic/atomic-instrumented.h:26 [inline]
-BUG: KASAN: null-ptr-deref in css_task_iter_advance+0x240/0x540  
-kernel/cgroup/cgroup.c:4503
-Read of size 4 at addr 0000000000000004 by task syz-executor.2/26575
-
-CPU: 1 PID: 26575 Comm: syz-executor.2 Not tainted 5.2.0-rc3-next-20190607  
-#11
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  __kasan_report.cold+0x5/0x36 mm/kasan/report.c:486
-  kasan_report+0x12/0x20 mm/kasan/common.c:614
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x123/0x190 mm/kasan/generic.c:191
-  kasan_check_read+0x11/0x20 mm/kasan/common.c:94
-  atomic_read include/asm-generic/atomic-instrumented.h:26 [inline]
-  css_task_iter_advance+0x240/0x540 kernel/cgroup/cgroup.c:4503
-  css_task_iter_start+0x18b/0x230 kernel/cgroup/cgroup.c:4543
-  __cgroup_procs_start.isra.0+0x32f/0x400 kernel/cgroup/cgroup.c:4638
-  cgroup_procs_start kernel/cgroup/cgroup.c:4660 [inline]
-  cgroup_procs_start+0x1e7/0x260 kernel/cgroup/cgroup.c:4647
-  cgroup_seqfile_start+0xa4/0xd0 kernel/cgroup/cgroup.c:3752
-  kernfs_seq_start+0xdc/0x190 fs/kernfs/file.c:118
-  seq_read+0x2a7/0x1110 fs/seq_file.c:224
-  kernfs_fop_read+0xed/0x560 fs/kernfs/file.c:252
-  do_loop_readv_writev fs/read_write.c:714 [inline]
-  do_loop_readv_writev fs/read_write.c:701 [inline]
-  do_iter_read+0x4a4/0x660 fs/read_write.c:935
-  vfs_readv+0xf0/0x160 fs/read_write.c:997
-  do_preadv+0x1c4/0x280 fs/read_write.c:1089
-  __do_sys_preadv fs/read_write.c:1139 [inline]
-  __se_sys_preadv fs/read_write.c:1134 [inline]
-  __x64_sys_preadv+0x9a/0xf0 fs/read_write.c:1134
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459279
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f4ee9fa8c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000127
-RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 0000000000459279
-RDX: 0000000000000001 RSI: 0000000020000180 RDI: 0000000000000005
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f4ee9fa96d4
-R13: 00000000004c6376 R14: 00000000004dae78 R15: 00000000ffffffff
-==================================================================
-
-
+Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Changes from v3:
+ - removed XTOPT_INVERT from O_SUPPL_GROUPS,
+   it wasn't meant to be invertable
+    
+Changes from v2:
+ - XT_SUPPL_GROUPS -> XT_OWNER_SUPPL_GROUPS
+    
+Changes from v1:
+ - complementary -> supplementary
+ - manual (iptables-extensions)
+
+ extensions/libxt_owner.c           | 24 +++++++++++++++++-------
+ extensions/libxt_owner.man         |  4 ++++
+ include/linux/netfilter/xt_owner.h |  7 ++++---
+ 3 files changed, 25 insertions(+), 10 deletions(-)
+
+diff --git a/extensions/libxt_owner.c b/extensions/libxt_owner.c
+index 87e4df31..1702b478 100644
+--- a/extensions/libxt_owner.c
++++ b/extensions/libxt_owner.c
+@@ -56,6 +56,7 @@ enum {
+ 	O_PROCESS,
+ 	O_SESSION,
+ 	O_COMM,
++	O_SUPPL_GROUPS,
+ };
+ 
+ static void owner_mt_help_v0(void)
+@@ -87,7 +88,8 @@ static void owner_mt_help(void)
+ "owner match options:\n"
+ "[!] --uid-owner userid[-userid]      Match local UID\n"
+ "[!] --gid-owner groupid[-groupid]    Match local GID\n"
+-"[!] --socket-exists                  Match if socket exists\n");
++"[!] --socket-exists                  Match if socket exists\n"
++"    --suppl-groups                   Also match supplementary groups set with --gid-owner\n");
+ }
+ 
+ #define s struct ipt_owner_info
+@@ -131,6 +133,7 @@ static const struct xt_option_entry owner_mt_opts[] = {
+ 	 .flags = XTOPT_INVERT},
+ 	{.name = "socket-exists", .id = O_SOCK_EXISTS, .type = XTTYPE_NONE,
+ 	 .flags = XTOPT_INVERT},
++	{.name = "suppl-groups", .id = O_SUPPL_GROUPS, .type = XTTYPE_NONE},
+ 	XTOPT_TABLEEND,
+ };
+ 
+@@ -275,6 +278,11 @@ static void owner_mt_parse(struct xt_option_call *cb)
+ 			info->invert |= XT_OWNER_SOCKET;
+ 		info->match |= XT_OWNER_SOCKET;
+ 		break;
++	case O_SUPPL_GROUPS:
++		if (!(info->match & XT_OWNER_GID))
++			xtables_param_act(XTF_BAD_VALUE, "owner", "--suppl-groups", "you need to use --gid-owner first");
++		info->match |= XT_OWNER_SUPPL_GROUPS;
++		break;
+ 	}
+ }
+ 
+@@ -455,9 +463,10 @@ static void owner_mt_print(const void *ip, const struct xt_entry_match *match,
+ {
+ 	const struct xt_owner_match_info *info = (void *)match->data;
+ 
+-	owner_mt_print_item(info, "owner socket exists", XT_OWNER_SOCKET, numeric);
+-	owner_mt_print_item(info, "owner UID match",     XT_OWNER_UID,    numeric);
+-	owner_mt_print_item(info, "owner GID match",     XT_OWNER_GID,    numeric);
++	owner_mt_print_item(info, "owner socket exists", XT_OWNER_SOCKET,       numeric);
++	owner_mt_print_item(info, "owner UID match",     XT_OWNER_UID,          numeric);
++	owner_mt_print_item(info, "owner GID match",     XT_OWNER_GID,          numeric);
++	owner_mt_print_item(info, "incl. suppl. groups", XT_OWNER_SUPPL_GROUPS, numeric);
+ }
+ 
+ static void
+@@ -487,9 +496,10 @@ static void owner_mt_save(const void *ip, const struct xt_entry_match *match)
+ {
+ 	const struct xt_owner_match_info *info = (void *)match->data;
+ 
+-	owner_mt_print_item(info, "--socket-exists",  XT_OWNER_SOCKET, true);
+-	owner_mt_print_item(info, "--uid-owner",      XT_OWNER_UID,    true);
+-	owner_mt_print_item(info, "--gid-owner",      XT_OWNER_GID,    true);
++	owner_mt_print_item(info, "--socket-exists",  XT_OWNER_SOCKET,       true);
++	owner_mt_print_item(info, "--uid-owner",      XT_OWNER_UID,          true);
++	owner_mt_print_item(info, "--gid-owner",      XT_OWNER_GID,          true);
++	owner_mt_print_item(info, "--suppl-groups",   XT_OWNER_SUPPL_GROUPS, true);
+ }
+ 
+ static int
+diff --git a/extensions/libxt_owner.man b/extensions/libxt_owner.man
+index 49b58cee..e2479865 100644
+--- a/extensions/libxt_owner.man
++++ b/extensions/libxt_owner.man
+@@ -15,5 +15,9 @@ given user. You may also specify a numerical UID, or an UID range.
+ Matches if the packet socket's file structure is owned by the given group.
+ You may also specify a numerical GID, or a GID range.
+ .TP
++\fB\-\-suppl\-groups\fP
++Causes group(s) specified with \fB\-\-gid-owner\fP to be also checked in the
++supplementary groups of a process.
++.TP
+ [\fB!\fP] \fB\-\-socket\-exists\fP
+ Matches if the packet is associated with a socket.
+diff --git a/include/linux/netfilter/xt_owner.h b/include/linux/netfilter/xt_owner.h
+index 20817617..e7731dcc 100644
+--- a/include/linux/netfilter/xt_owner.h
++++ b/include/linux/netfilter/xt_owner.h
+@@ -4,9 +4,10 @@
+ #include <linux/types.h>
+ 
+ enum {
+-	XT_OWNER_UID    = 1 << 0,
+-	XT_OWNER_GID    = 1 << 1,
+-	XT_OWNER_SOCKET = 1 << 2,
++	XT_OWNER_UID          = 1 << 0,
++	XT_OWNER_GID          = 1 << 1,
++	XT_OWNER_SOCKET       = 1 << 2,
++	XT_OWNER_SUPPL_GROUPS = 1 << 3,
+ };
+ 
+ struct xt_owner_match_info {
+-- 
+2.20.1
+
