@@ -2,67 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 608E13BE25
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560623BE29
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389571AbfFJVLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 17:11:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42924 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726663AbfFJVLl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 17:11:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=haNK3T2ZntFCRUM4zV1ClpWgl70cpyViZTlgMWG58Ik=; b=iPeeqdfVe8RjXjJ/ONYpk8FHS6
-        t6xnvjAKjL2id1j8rgCoooi2T1HQNClxc5PbT1SaY/mVRxh3Wbc3HMNHcaqT6+Nb8tLCB5v6j3YlB
-        dGqYuT6cbjheL4AeUj90MHpBZu3VUpq5zg4L4KhL3Uc2tqTc9NVdTQNFxpUbwYqP58BI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1haRZl-0001xt-T0; Mon, 10 Jun 2019 23:11:33 +0200
-Date:   Mon, 10 Jun 2019 23:11:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: Deal with non-existing PHY/fixed-link
-Message-ID: <20190610211133.GC2191@lunn.ch>
-References: <20190610193150.22231-1-f.fainelli@gmail.com>
- <CA+h21hrcymxF7zk4yHFGhjxbLERTCU6WkfzLGQVoZ5Yxoo4xxw@mail.gmail.com>
+        id S2389858AbfFJVNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 17:13:46 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37614 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbfFJVNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:13:45 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 20so5684465pgr.4
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 14:13:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=xX0ywrril08ISuPqfnuEKb66JjCpwcFjDRF4EiiPKDM=;
+        b=KkrNzUcAOGaMqeJGnloWq7KHk0l+ov4rfXCyyGbmdMYfAYSx7p98VF1auCArV4MKvG
+         anYqbd1pXZzRm4zmTWAG65GAydGAiZyLTOuf8HyBULr1bm57adZ6vg+yTFN3Wrs6fZDL
+         +Fzs15jH9n3tYwgjjD9nm/LJd093dXfIeaMsGw0o8RG2mlzt9zcayQaS2gPvrVrHeocV
+         ZSMN3+cABvI2TRlgYiN/D/w4YvOIayRxtRm4fAyzmlHbVwbbWlXDKTaN5N7MdPvU3rgS
+         P1GzALdALa9nk8RvJaBgTV7EbqWRQOdlreq+C2LIKXbOinOlHmqlo/hdjU70G43K9NAL
+         3X8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=xX0ywrril08ISuPqfnuEKb66JjCpwcFjDRF4EiiPKDM=;
+        b=C5/xVpdnEQSzy77A0upHPbWwxYfAiddN79O+CkR7/bQJPVI0+LsfHeIqAYrkte+ohO
+         07nog71uEmLoymXnyBro3ibvOPF9w3uCae0PV6bPtaOEDN6tz6eUwl0xQZCacNC03qT5
+         lMlH8Vx49aRQlmx4Hp1X+8JMyQ/B3igpcYkWVwYHkHJQ41PT7W9fEm7AmCkJzgZEEwdp
+         MkWaregcupKF5xIUyyt6o+8j+9f6u1XPjhMlbR6KhJZ3KTsLobDVPKZBZARzE4Xsjb8A
+         QQJf1Yan4PgNEWQzPeetOp+Lotn04TJrjnDKYHJEKfFEMAAc9rpi8aNfm7lZg9H11A2f
+         apVA==
+X-Gm-Message-State: APjAAAWPFYwOtUmb253aNARWb/sMmdejdYRkpwQD+r27sQCDfPtMEzlt
+        ch7emmBS1yWQMhbrmYZZhf0=
+X-Google-Smtp-Source: APXvYqxC47a9K/m1wkQI+86iObYfv4VsoiNTGXokvZesCmmjQy32qolmD3D4fBzBQ73KvmxJNfLFzg==
+X-Received: by 2002:a17:90a:1a0d:: with SMTP id 13mr17744164pjk.99.1560201224983;
+        Mon, 10 Jun 2019 14:13:44 -0700 (PDT)
+Received: from [192.168.0.16] (97-115-113-19.ptld.qwest.net. [97.115.113.19])
+        by smtp.gmail.com with ESMTPSA id 137sm14506417pfz.116.2019.06.10.14.13.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 14:13:44 -0700 (PDT)
+Subject: Re: [ovs-dev] [PATCH net-next] net: openvswitch: remove unnecessary
+ ASSERT_OVSL in ovs_vport_del()
+To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        pshelar@ovn.org, netdev@vger.kernel.org, dev@openvswitch.org
+References: <20190609171906.30314-1-ap420073@gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <f2af0857-2352-9478-6f9d-87b0c1381454@gmail.com>
+Date:   Mon, 10 Jun 2019 14:13:42 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrcymxF7zk4yHFGhjxbLERTCU6WkfzLGQVoZ5Yxoo4xxw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190609171906.30314-1-ap420073@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Florian,
-> 
-> Can you give an example of when this is a valid use case, and why
-> fixed-link is not appropriate?
 
-A DSA link is used to connect two switches together. ZII devel b and c
-are two boards which does this. Such links have the MACs connected
-back to back, no PHYs involved. You can also connect a SoC interface
-to the CPU port of a switch without having PHYs involved.
+On 6/9/2019 10:19 AM, Taehee Yoo wrote:
+> ASSERT_OVSL() in ovs_vport_del() is unnecessary because
+> ovs_vport_del() is only called by ovs_dp_detach_port() and
+> ovs_dp_detach_port() calls ASSERT_OVSL() too.
+>
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>   net/openvswitch/vport.c | 2 --
+>   1 file changed, 2 deletions(-)
+>
+> diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+> index 258ce3b7b452..9e71f1a601a9 100644
+> --- a/net/openvswitch/vport.c
+> +++ b/net/openvswitch/vport.c
+> @@ -261,8 +261,6 @@ int ovs_vport_set_options(struct vport *vport, struct nlattr *options)
+>    */
+>   void ovs_vport_del(struct vport *vport)
+>   {
+> -	ASSERT_OVSL();
+> -
+>   	hlist_del_rcu(&vport->hash_node);
+>   	module_put(vport->ops->owner);
+>   	vport->ops->destroy(vport);
 
-We have defined that CPU and DSA ports are always configured by the
-driver to there maximum speed. Because of this, you often don't need a
-fixed-link on CPU or DSA ports. So you will see most DT blobs don't
-have any sort of PHY for the CPU or DSA ports.
-
-You only need fixed-link when you need to slow a port down, e.g. a SoC
-FE port connected to a switch 1G port.
-
-    Andrew
+LGTM
+Reviewed-by: Greg Rose <gvrose8192@gmail.com>
