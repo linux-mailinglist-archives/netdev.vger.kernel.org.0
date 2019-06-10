@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCDD3B833
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74AAA3B853
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391159AbfFJPVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 11:21:36 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:32955 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390288AbfFJPVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 11:21:36 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n9so9646908wru.0
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 08:21:35 -0700 (PDT)
+        id S2390147AbfFJP37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 11:29:59 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35059 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389786AbfFJP37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 11:29:59 -0400
+Received: by mail-pl1-f195.google.com with SMTP id p1so3810815plo.2
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 08:29:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E/V+F42zy5zDKXGy0YG+Ock4S+/7BVw/qPxdB1U2uGs=;
-        b=RSLSKKk0Jh+zqrNJW4rQrIzFfUaR2OwteUKHFydDh+k1VWL0Gdjei10FjpMsTD6LQx
-         K0D/wl1ro0m3nkYc3AFFzOyn5g5VBXMkQgaVP4RnrLgoFYX5q1W3nXnM+xDtca3Y+AXw
-         7w06UdyA+BT1AON8gHw3iRKpXf6CamR2Q7hdY=
+        bh=mnfSmz7sVCjARhj7G33rZXcH2Yiiwr13XgMkUxkiQQE=;
+        b=f8uRx2trIsbf1PW1t7gMG88BXu7suWu7ntrkvb7TZGd7hNi1Vkw1KKqFzJTJ5lI4lu
+         bElezWT2pv5+MAwyLnFh0DlzqTJm/1WIV7bdunKwj+3h9ir6g7a1geioSOWKs1wa98NF
+         akZ1gSXErC7KbLLKbl+12ujPb0+ohGGHbaySST0ug6ggjxJZN3cc2oE4fxsemCbGmJot
+         14q/+Kp5HIF+7zx7ikUB2crXe4BKHDVx8ZxCq80d3SJXkNJiSnWBg1Igm3hfaeRYb4JN
+         GoAeMOqyETkONVNrJ79pWFKwo22vbw2knuZARKhkfX8mdV/YWFVh0nRf7LSIASxeAATd
+         uvsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=E/V+F42zy5zDKXGy0YG+Ock4S+/7BVw/qPxdB1U2uGs=;
-        b=rSrP5rREJpvyq4VgdaG8/KrrrXeq+pafNz4bcBuDtsLCITEAEnvWoQSl88V5ZX37Ip
-         nDCde83PkxO6xN3cAsOSyLH7aeod2Erk8FqNf4gSM51abzWD1j3wSwmA9/2pAimrry8q
-         DUAqnT48E67U9HQW7jcbZglexB8IZvan1aB657wSJnbHv+3zLDYpmKpejfd/24P/GnSa
-         ohtNgD98GGkiI4PQ4zlTWd3siG9F5/dTHo3ugb+vHQ7B1eDXn/2cKj5i8lpCNgx4hvQA
-         EeOI+d7/Tc/AzmEQ24A6xr47Btzj7WBxwCLPlK04b8LPMWs9UxSbClOlEWe912cK574y
-         O6RQ==
-X-Gm-Message-State: APjAAAXKcKXzSEcJ/9Pu9jyGla7y+iaDmxXbMP35oN1BSGVEp51cd+B2
-        Bmj9iTwk5/ojkWKtdHO0+E4YjBqEBKc=
-X-Google-Smtp-Source: APXvYqypApQbwGQXshxFKWF08IJiSXphABA2kZ7DNpaLAT6oBbWhwNaoYuCj33hmoJeLOHxMx8K1/Q==
-X-Received: by 2002:adf:ee4a:: with SMTP id w10mr34236928wro.311.1560180094079;
-        Mon, 10 Jun 2019 08:21:34 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 66sm5461960wma.11.2019.06.10.08.21.33
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 08:21:33 -0700 (PDT)
-Subject: Re: [PATCH net-next] bridge: Set the pvid for untaged packet before
- prerouting
-To:     wenxu@ucloud.cn, roopa@cumulusnetworks.com
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1560159846-29933-1-git-send-email-wenxu@ucloud.cn>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <55b99afa-7ce5-f9e3-89fb-6f3d17985519@cumulusnetworks.com>
-Date:   Mon, 10 Jun 2019 18:21:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        bh=mnfSmz7sVCjARhj7G33rZXcH2Yiiwr13XgMkUxkiQQE=;
+        b=gVGEkMZoLrvHrnevcXDK2WPz1mpMYpgY6q3vHSSCqr8LVpCAnLHF7dCTDyg9aKhutK
+         ckiRFfp52zGarrOkXnm8Uv1m1tEl9KufhSZeLYtkC+kfmKWBGVtEqWfNKJPt0+mSyWVK
+         yxpCrbgsYuo/U3LddaQyVqKvppajY9Q8LUDFD6KjPtip9vK8qsPKlCQaDE1+Gm79o+jO
+         0qH5iXUs2g8QQmAVstw4XmAJzKLJ0Z5d3ZkbZ4tSV2VY4lpRPZzSHmA/VU8DWtzk7Dbh
+         GvNLvL0gstKpHWeMNpxDyk5XJydrhyJMkZXqH+3yAA7O9Qo1Mlb8OqRmwJg4pxVZfTdA
+         AEIQ==
+X-Gm-Message-State: APjAAAUHAhgZs9ZaQU5sZorpHTibZ0D89qEVblpgL/DDhZu2DI8gueFz
+        Hk1LJaYczeFESj3LngQm6STcTYlX
+X-Google-Smtp-Source: APXvYqwDd+X4oyPfUUck7I7K0Fng1rE7Os9wj3S6FziugBjXwzLDYLyo0TlHPUYSQrYERtGIbeC8Vw==
+X-Received: by 2002:a17:902:bb8f:: with SMTP id m15mr5721624pls.84.1560180598590;
+        Mon, 10 Jun 2019 08:29:58 -0700 (PDT)
+Received: from [10.230.28.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 144sm17322291pfy.54.2019.06.10.08.29.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 08:29:57 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] selftests: mlxsw: Add ethtool_lib.sh
+To:     Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, amitc@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20190610084045.6029-1-idosch@idosch.org>
+ <20190610084045.6029-2-idosch@idosch.org> <20190610133538.GF8247@lunn.ch>
+ <20190610135651.GA19495@splinter>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <bfd47cd0-2998-d2b9-7478-fb8cc6fee87c@gmail.com>
+Date:   Mon, 10 Jun 2019 08:29:54 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1560159846-29933-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <20190610135651.GA19495@splinter>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,44 +68,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/06/2019 12:44, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+
+
+On 6/10/2019 6:56 AM, Ido Schimmel wrote:
+> On Mon, Jun 10, 2019 at 03:35:38PM +0200, Andrew Lunn wrote:
+>> On Mon, Jun 10, 2019 at 11:40:43AM +0300, Ido Schimmel wrote:
+>>> From: Amit Cohen <amitc@mellanox.com>
+>>> +declare -A speed_values
+>>> +
+>>> +speed_values=(	[10baseT/Half]=0x001
+>>> +		[10baseT/Full]=0x002
+>>> +		[100baseT/Half]=0x004
+>>> +		[100baseT/Full]=0x008
+>>> +		[1000baseT/Half]=0x010
+>>> +		[1000baseT/Full]=0x020
+>>
+>> Hi Ido, Amit
+>>
+>> 100BaseT1 and 1000BaseT1 were added recently.
 > 
-> bridge vlan add dev veth1 vid 200 pvid untagged
-> bridge vlan add dev veth2 vid 200 pvid untagged
+> Hi Andrew,
 > 
-> nft add table bridge firewall
-> nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
-> nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
-> 
-> As above set the bridge port with pvid, the received packet don't contain
-> the vlan tag which means the packet should belong to vlan 200 through pvid.
-> User can do conntrack base base on vlan id and map the vlan id to zone id
-> in the prerouting hook.
-> 
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  net/bridge/br_input.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
+> Didn't see them in the man page, so didn't include them. I now see your
+> patches are in the queue. Will add these speeds in v2.
 
-Nacked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-
-Hi,
-I don't think this is a good idea for a few reasons:
-- duplicating code (pvid insertion by __allowed_ingress)
-- adding 2 new tests in the fast path (even 3 in the vlan filtering case)
-- issue can be solved with current state by using different config
-
-Why do you need the vid to be set when you can assume that all the traffic from
-that port belongs to the pvid vlan ? In this case you can match the port ifindex
-for example and associate the zones based on that. Another approach - you can
-insert the vlan by tc's vlan action on ingress, you'll get the same effect.
-
-Overall this looks like an issue solvable by different config instead of adding new tests
-in the fast path and increasing the complexity of the bridge input code for little value.
-
-Cheers,
- Nik
-
-
+Could we extract the values from include/uapi/linux/ethtool.h, that way
+we would not have to have to update the selftest speed_values() array here?
+-- 
+Florian
