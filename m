@@ -2,103 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B383B6AA
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 16:02:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F9853B6B4
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 16:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390658AbfFJOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 10:02:48 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:18542 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390384AbfFJOCs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 10:02:48 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 0C55D96CA51B27A67399;
-        Mon, 10 Jun 2019 22:02:43 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Mon, 10 Jun 2019
- 22:02:42 +0800
-Subject: Re: [PATCH -next] packet: remove unused variable 'status' in
- __packet_lookup_frame_in_block
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-References: <20190610115831.175710-1-maowenan@huawei.com>
- <CAF=yD-JOCZHt6q3ArCqY5PMW1vP5ZmNkYMKUB14TrgU-X30cSQ@mail.gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <caf8d25f-60e2-a0c0-dc21-956ea32ee59a@huawei.com>
-Date:   Mon, 10 Jun 2019 22:02:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S2390675AbfFJOGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 10:06:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41554 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390384AbfFJOGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 10:06:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=esB67aW0RZub8YkA0JVWDLciy3LkwjDjBUPRpXA14gk=; b=Zr6MPmsyHccFBjYfE/yoka/pE3
+        /pt8bM5ZArajPiFOxbkVfWFLYcuKu92KPptuIRu6I/LhdbGle+qHjycDFYJZxOWMVz8QRSjoOLFK5
+        tNGrnRGa+9H6SmMsvmnDJdSil2wexHVwRRalJezEHlHze0AWzfGch/41erDGKBebE2I0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1haKwT-0007Dh-Un; Mon, 10 Jun 2019 16:06:33 +0200
+Date:   Mon, 10 Jun 2019 16:06:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, amitc@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 3/3] selftests: mlxsw: Add speed and
+ auto-negotiation test
+Message-ID: <20190610140633.GI8247@lunn.ch>
+References: <20190610084045.6029-1-idosch@idosch.org>
+ <20190610084045.6029-4-idosch@idosch.org>
+ <20190610134820.GG8247@lunn.ch>
+ <20190610135848.GB19495@splinter>
 MIME-Version: 1.0
-In-Reply-To: <CAF=yD-JOCZHt6q3ArCqY5PMW1vP5ZmNkYMKUB14TrgU-X30cSQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190610135848.GB19495@splinter>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2019/6/10 21:05, Willem de Bruijn wrote:
-> On Mon, Jun 10, 2019 at 8:17 AM Mao Wenan <maowenan@huawei.com> wrote:
->>
->> The variable 'status' in  __packet_lookup_frame_in_block() is never used since
->> introduction in commit f6fb8f100b80 ("af-packet: TPACKET_V3 flexible buffer
->> implementation."), we can remove it.
->> And when __packet_lookup_frame_in_block() calls prb_retire_current_block(),
->> it can pass macro TP_STATUS_KERNEL instead of 0.
->>
->> Signed-off-by: Mao Wenan <maowenan@huawei.com>
->> ---
->>  net/packet/af_packet.c | 5 ++---
->>  1 file changed, 2 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
->> index a29d66d..fb1a79c 100644
->> --- a/net/packet/af_packet.c
->> +++ b/net/packet/af_packet.c
->> @@ -1003,7 +1003,6 @@ static void prb_fill_curr_block(char *curr,
->>  /* Assumes caller has the sk->rx_queue.lock */
->>  static void *__packet_lookup_frame_in_block(struct packet_sock *po,
->>                                             struct sk_buff *skb,
->> -                                               int status,
->>                                             unsigned int len
->>                                             )
->>  {
->> @@ -1046,7 +1045,7 @@ static void *__packet_lookup_frame_in_block(struct packet_sock *po,
->>         }
->>
->>         /* Ok, close the current block */
->> -       prb_retire_current_block(pkc, po, 0);
->> +       prb_retire_current_block(pkc, po, TP_STATUS_KERNEL);
+On Mon, Jun 10, 2019 at 04:58:48PM +0300, Ido Schimmel wrote:
+> On Mon, Jun 10, 2019 at 03:48:20PM +0200, Andrew Lunn wrote:
+> > > +		# Skip 56G because this speed isn't supported with autoneg off.
+> > > +		if [[ $speed == 56000 ]]; then
+> > > +			continue
+> > > +		fi
+> > 
+> > Interesting. How is 56000 represented in ethtool? Listed in both
+> > "Supported link modes" and "Advertised link modes"?
 > 
-> I don't think that 0 is intended to mean TP_STATUS_KERNEL here.
+> Hi Andrew,
 > 
-> prb_retire_current_block calls prb_close_block which sets status to
-> 
->   TP_STATUS_USER | stat
-> 
-> where stat is 0 or TP_STATUS_BLK_TMO.
+> Yes. We recently sent a patch to error out if autoneg is off: Commit
+> 275e928f1911 ("mlxsw: spectrum: Prevent force of 56G").
 
+I never get access to high speed links like this. Do you have a
+reference to why 56G needs auto-neg? What makes it different to every
+other link mode?
 
-#define TP_STATUS_KERNEL		      0
-#define TP_STATUS_BLK_TMO		(1 << 5)
-
-Actually, packet_current_rx_frame calls __packet_lookup_frame_in_block with status=TP_STATUS_KERNEL
-in original code.
-
-__packet_lookup_frame_in_block in this function, first is to check whether the currently active block
-has enough space for the packet, which means status of block should be TP_STATUS_KERNEL, then it calls
-prb_retire_current_block to retire this block.
-
-Since there needs some discussion about means of status, I can send v2 only removing the parameter status of
-__packet_lookup_frame_in_block?
-
-> 
-> 
-
+Thanks
+	Andrew
