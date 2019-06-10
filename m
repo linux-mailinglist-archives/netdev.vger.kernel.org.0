@@ -2,136 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CDD33AFCE
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 09:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB28E3AFDB
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 09:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388224AbfFJHip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 03:38:45 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:45141 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388109AbfFJHip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 03:38:45 -0400
-Received: by mail-yb1-f196.google.com with SMTP id v1so3397883ybi.12
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 00:38:44 -0700 (PDT)
+        id S2388251AbfFJHqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 03:46:13 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:9267 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387781AbfFJHqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 03:46:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ivYOsIQLaE0sFyLyjt7AVV6ZKC2mGOmSWvKcFrNuPaE=;
-        b=P7eZqS7v1jWK7YUf29+8gLaGSSiK7dU3B73uNY5V7CwGXNrkg5QvP+z0Dw1Gtad5ty
-         JdlDoiVl4itADcaBgTAVCdh72YIIgQ8/2IzoYFbrKzPvoZIr6l4PuZRstzbBPqdRh6Qd
-         XgkslJ1W9RaZccIBn2aVNsQFz5Vj0jmaC8xwazXHG2OpuvdEYV9++05a+qB5BSp6ND3b
-         X6jmii2rHoq0tyDkYvzX9oaLpE+ClHmIfKlAqGCOhuTcXib645dFnUNKT+BffM8r6tEf
-         n3Qy+M573i+KXP+UD8zITQmhKS9o9VUyF8hPFGFDz4K58ws0cd+hAh/kC9w6PRchjpeN
-         b5FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ivYOsIQLaE0sFyLyjt7AVV6ZKC2mGOmSWvKcFrNuPaE=;
-        b=NhJbO57Io4ia9RtGD3vkeOyBtYYtp2D0zuQQDudVApHqxgQ5NF5ZiTCqpmmHLlzrD9
-         V2rhusuRNxYtnHMfU6Pb4P3/BkIjzPEj9fX6yCHsJpZmwPeM/hiaq3I2LsItzAxf33A7
-         kJ97hDfVYXCjQ1wntwLcQNR98XzZyyNRESqraXA0/oCdb3BEeLMeoKiEV9PDP762a3SO
-         DtqOJ6w/T7aOBR9r9Q95vYINsLSzHqLXe/BvPkGfMPmKTQehMN+whrPiMZ8uNuRJ3aX/
-         JePFPOy3R044j1bio5+1VUsNxuK7OtS4nMGGhj7DeHUvGMg/+xtnqDmbOEIUtvjXRFme
-         ic/w==
-X-Gm-Message-State: APjAAAUr8oEnwFHGCowPLADitVQ8gEj/9AxH7we2c24Pr4AxvIk8GO9t
-        UpcFnCq+fl5JKWOktHnsOnI6vA==
-X-Google-Smtp-Source: APXvYqyFUdlctc8HdWsYt+J1cb0djjlngW+/MYywRZ0lxsUs4EclvkHMtVtNDgPg8MnKDJqz9Fa6/w==
-X-Received: by 2002:a25:d1d5:: with SMTP id i204mr31442488ybg.292.1560152324219;
-        Mon, 10 Jun 2019 00:38:44 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li1322-146.members.linode.com. [45.79.223.146])
-        by smtp.gmail.com with ESMTPSA id 207sm2821824ywo.98.2019.06.10.00.38.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 10 Jun 2019 00:38:43 -0700 (PDT)
-Date:   Mon, 10 Jun 2019 15:38:25 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] perf trace: Exit when build eBPF program failure
-Message-ID: <20190610073825.GB6140@leoy-ThinkPad-X240s>
-References: <20190606094845.4800-1-leo.yan@linaro.org>
- <20190606094845.4800-2-leo.yan@linaro.org>
- <20190606133019.GA30166@kernel.org>
- <20190606133424.GB30166@kernel.org>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1560152772; x=1591688772;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=8koXHAg1VjqHAto11B8cKapKPBgE8XlxoiCfoeRQijU=;
+  b=LL27DSDlJjEJ7u4t6hnw9hnHav1S1XWe6gaWPbsIUJclZUTcNuj/U2P7
+   ZixNClsFd+Gz3f+F7VOrpFTrHCgAnJbNEHlVoR/cvQ21cOexD6HXz/7wr
+   x2nub7HM1cVXzviPHxgkbSpzNQqj+sU+yVfySq/djdFSiU6eaFQBi54g/
+   U=;
+X-IronPort-AV: E=Sophos;i="5.60,573,1549929600"; 
+   d="scan'208";a="405718555"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 10 Jun 2019 07:46:11 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com (Postfix) with ESMTPS id E368AC05FF;
+        Mon, 10 Jun 2019 07:46:10 +0000 (UTC)
+Received: from EX13D22EUB001.ant.amazon.com (10.43.166.145) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 10 Jun 2019 07:46:10 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D22EUB001.ant.amazon.com (10.43.166.145) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 10 Jun 2019 07:46:09 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1367.000;
+ Mon, 10 Jun 2019 07:46:08 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>
+Subject: RE: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+ changing io queue sizes
+Thread-Topic: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+ changing io queue sizes
+Thread-Index: AQHVHF7IiJgkSzvEv0W2cZfiTCX6A6aOtQyAgAXSqfA=
+Date:   Mon, 10 Jun 2019 07:46:08 +0000
+Message-ID: <45419c297d5241d9a7768b4d9af7d9f6@EX13D11EUB003.ant.amazon.com>
+References: <20190606115520.20394-1-sameehj@amazon.com>
+ <20190606115520.20394-6-sameehj@amazon.com>
+ <20190606144825.GB21536@unicorn.suse.cz>
+In-Reply-To: <20190606144825.GB21536@unicorn.suse.cz>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.164.97]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190606133424.GB30166@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 10:34:24AM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Jun 06, 2019 at 10:30:19AM -0300, Arnaldo Carvalho de Melo escreveu:
-> > Em Thu, Jun 06, 2019 at 05:48:42PM +0800, Leo Yan escreveu:
-> > > +++ b/tools/perf/builtin-trace.c
-> > > @@ -3664,6 +3664,14 @@ static int trace__config(const char *var, const char *value, void *arg)
-> > >  					       "event selector. use 'perf list' to list available events",
-> > >  					       parse_events_option);
-> > >  		err = parse_events_option(&o, value, 0);
-> > > +
-> > > +		/*
-> > > +		 * When parse option successfully parse_events_option() will
-> > > +		 * return 0, otherwise means the paring failure.  And it
-> > > +		 * returns 1 for eBPF program building failure; so adjust the
-> > > +		 * err value to -1 for the failure.
-> > > +		 */
-> > > +		err = err ? -1 : 0;
-> > 
-> > I'll rewrite the comment above to make it more succint and fix things
-> > like 'paring' (parsing):
-> > 
-> > 		/*
-> > 		 * parse_events_option() returns !0 to indicate failure
-> > 		 * while the perf_config code that calls trace__config()
-> > 		 * expects < 0 returns to indicate error, so:
-> > 		 */
-> > 
-> > 		 if (err)
-> > 		 	err = -1;
-> 
-> Even shorter, please let me know if I can keep your
-> Signed-off-by/authorship for this one.
-
-Sorry I miss this email.
-
-> diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> index f7e4e50bddbd..1a2a605cf068 100644
-> --- a/tools/perf/builtin-trace.c
-> +++ b/tools/perf/builtin-trace.c
-> @@ -3703,7 +3703,12 @@ static int trace__config(const char *var, const char *value, void *arg)
->  		struct option o = OPT_CALLBACK('e', "event", &trace->evlist, "event",
->  					       "event selector. use 'perf list' to list available events",
->  					       parse_events_option);
-> -		err = parse_events_option(&o, value, 0);
-> +		/*
-> +		 * We can't propagate parse_event_option() return, as it is 1
-> +		 * for failure while perf_config() expects -1.
-> +		 */
-> +		if (parse_events_option(&o, value, 0))
-> +			err = -1;
->  	} else if (!strcmp(var, "trace.show_timestamp")) {
->  		trace->show_tstamp = perf_config_bool(var, value);
->  	} else if (!strcmp(var, "trace.show_duration")) {
 
 
-Yeah, the change looks good to me. And very appreciate your effort to
-improve the patch quality.
+> -----Original Message-----
+> From: Michal Kubecek <mkubecek@suse.cz>
+> Sent: Thursday, June 6, 2019 5:48 PM
+> To: netdev@vger.kernel.org
+> Cc: Jubran, Samih <sameehj@amazon.com>; davem@davemloft.net;
+> Woodhouse, David <dwmw@amazon.co.uk>; Machulsky, Zorik
+> <zorik@amazon.com>; Matushevsky, Alexander <matua@amazon.com>;
+> Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>;
+> Liguori, Anthony <aliguori@amazon.com>; Bshara, Nafea
+> <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal,
+> Netanel <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>;
+> Herrenschmidt, Benjamin <benh@amazon.com>; Kiyanovski, Arthur
+> <akiyano@amazon.com>
+> Subject: Re: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+> changing io queue sizes
+>=20
+> On Thu, Jun 06, 2019 at 02:55:19PM +0300, sameehj@amazon.com wrote:
+> > From: Sameeh Jubran <sameehj@amazon.com>
+> >
+> > Implement the set_ringparam() function of the ethtool interface to
+> > enable the changing of io queue sizes.
+> >
+> > Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+> > Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+> > ---
+> >  drivers/net/ethernet/amazon/ena/ena_ethtool.c | 25
+> > +++++++++++++++++++
+> drivers/net/ethernet/amazon/ena/ena_netdev.c  |
+> > 14 +++++++++++  drivers/net/ethernet/amazon/ena/ena_netdev.h  |  5
+> > +++-
+> >  3 files changed, 43 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > index 101d93f16..33e28ad71 100644
+> > --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > @@ -495,6 +495,30 @@ static void ena_get_ringparam(struct net_device
+> *netdev,
+> >  	ring->rx_pending =3D adapter->rx_ring[0].ring_size;  }
+> >
+> > +static int ena_set_ringparam(struct net_device *netdev,
+> > +			     struct ethtool_ringparam *ring) {
+> > +	struct ena_adapter *adapter =3D netdev_priv(netdev);
+> > +	u32 new_tx_size, new_rx_size;
+> > +
+> > +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> > +		return -EINVAL;
+>=20
+> This check is superfluous as ethtool_set_ringparam() checks supplied valu=
+es
+> against maximum returned by ->get_ringparam() which will be 0 in this cas=
+e.
+>=20
+> > +
+> > +	new_tx_size =3D clamp_val(ring->tx_pending, ENA_MIN_RING_SIZE,
+> > +				adapter->max_tx_ring_size);
+> > +	new_tx_size =3D rounddown_pow_of_two(new_tx_size);
+> > +
+> > +	new_rx_size =3D clamp_val(ring->rx_pending, ENA_MIN_RING_SIZE,
+> > +				adapter->max_rx_ring_size);
+> > +	new_rx_size =3D rounddown_pow_of_two(new_rx_size);
+>=20
+> For the same reason, clamping from below would suffice here.
+>=20
+> Michal Kubecek
+>=20
+> > +
+> > +	if (new_tx_size =3D=3D adapter->requested_tx_ring_size &&
+> > +	    new_rx_size =3D=3D adapter->requested_rx_ring_size)
+> > +		return 0;
+> > +
+> > +	return ena_update_queue_sizes(adapter, new_tx_size,
+> new_rx_size); }
 
-Thanks,
-Leo.
+You are right with both arguments the way the code is written now, however,=
+ in the future the code might change and we prefer to be extra cautious.
