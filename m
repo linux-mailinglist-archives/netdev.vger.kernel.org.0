@@ -2,84 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EAA3B881
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F1E3B883
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391286AbfFJPug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 11:50:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55201 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390646AbfFJPuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 11:50:35 -0400
-Received: by mail-wm1-f65.google.com with SMTP id g135so8945761wme.4;
-        Mon, 10 Jun 2019 08:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=j0cvrW0LiR2yAWHacC+paieH/BsPhO653fx0ilOqwbQ=;
-        b=XrYcjT7N66H7PZl89qVvjkYy2lcUUR+p2y5QlMqTrKSYLfpAHr+5bhPvrKUDoDW2Gn
-         gc8KQUOivmTgSCQR5PIvdxh3Np5UEb4HOX5Y/TgrcVFjLu1N/l6ZRZHcLQwZoZkFB2PK
-         dnHDV+JZ8jRZwikhp0mK3D3c9YrIoYwTbrv+XI3t6hXqkMvOg/CU3HdRVKBqqbiWsoYb
-         ZmrGKLaXtkNsJEc6GlFos05req6azeUDaSh/0lsYh1U2oaNxBegmv6xh+NlQSfkKDqss
-         qqcF/nZdT+NcxD5fD2IRb0hwvT8zPzyEN97nHCywHGtE8NnApD9T/+hYylByZ803tbq9
-         bqbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=j0cvrW0LiR2yAWHacC+paieH/BsPhO653fx0ilOqwbQ=;
-        b=LkyJM7Ptyd/XBfWaoPqtCtqgopS07+Epo331Ng7gcCzqHfFZpJ5WbIUBVhRFCgUo7u
-         MCUPiUu+O56UU+rZkJBXvaqdnj3ZP/Cn62z6AyCuZSxxhrlUCnpN7ZMGPIWPNtFkOYEx
-         o6U3gczVSBh3lRSOq54TSOepTxjQnPvJJARfYAfINEB1kk9yd7x4aLT6l3WxH0fQ9KYg
-         ++PS5jzF45lg/vJSrs4jWXLPXgJwwlqOO5FKfEW+TNp7rB4dYIGGKxJLMOzqVNANVmUY
-         M7aV47kLa25rj14tjANt2klsGj1yPsyRthOfcBE7iHABmSomAO6ckMejQHBF45E95WW7
-         Br+g==
-X-Gm-Message-State: APjAAAULBbIs9GAJbGSogXdn4YBVUJjTplAwQDRXFoch/BAKpow+SXcB
-        RJFbLF74A/5r8pzLVd+HbCQ=
-X-Google-Smtp-Source: APXvYqzLna+aVnK3OUUKYltUUrEa4DJqameWzsVBUOMurnw3ZFvBDcb4Rdm+t6M1JqO46Sv5jxt2fg==
-X-Received: by 2002:a7b:c751:: with SMTP id w17mr14836813wmk.127.1560181833344;
-        Mon, 10 Jun 2019 08:50:33 -0700 (PDT)
-Received: from blackbox.darklights.net (p200300F133DDA40000C4C39937FBD289.dip0.t-ipconnect.de. [2003:f1:33dd:a400:c4:c399:37fb:d289])
-        by smtp.googlemail.com with ESMTPSA id z17sm9711917wru.21.2019.06.10.08.50.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 10 Jun 2019 08:50:32 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     Maxime Ripard <maxime.ripard@bootlin.com>, netdev@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: RE: [PATCH v2 10/11] dt-bindings: net: dwmac: Deprecate the PHY reset properties
-Date:   Mon, 10 Jun 2019 17:50:11 +0200
-Message-Id: <20190610155011.4305-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <ff6306c71a6b6ad174007f9f2823499d3093e21c.1560158667.git-series.maxime.ripard@bootlin.com>
-References: <ff6306c71a6b6ad174007f9f2823499d3093e21c.1560158667.git-series.maxime.ripard@bootlin.com>
+        id S2391288AbfFJPvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 11:51:00 -0400
+Received: from mail.us.es ([193.147.175.20]:43908 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390356AbfFJPvA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 11:51:00 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 53562E7B80
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 43023DA70A
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 38803DA703; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2E72FDA705;
+        Mon, 10 Jun 2019 17:50:56 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 10 Jun 2019 17:50:56 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 08DCF4265A32;
+        Mon, 10 Jun 2019 17:50:55 +0200 (CEST)
+Date:   Mon, 10 Jun 2019 17:50:55 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: add support for matching IPv4 options
+Message-ID: <20190610155055.a3o7yx25j3jlwzgs@salvia>
+References: <20190523093801.3747-1-ssuryaextr@gmail.com>
+ <20190531171101.5pttvxlbernhmlra@salvia>
+ <20190531193558.GB4276@ubuntu>
+ <20190601002230.bo6dhdf3lhlkknqq@salvia>
+ <20190601150429.GA16560@ubuntu>
+ <20190603123006.urztqvxyxcm7w3av@salvia>
+ <20190602022706.GA24477@ubuntu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190602022706.GA24477@ubuntu>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Even though the DWMAC driver uses some driver specific properties, the PHY
-> core has a bunch of generic properties and can deal with them nicely.
+On Sat, Jun 01, 2019 at 10:27:06PM -0400, Stephen Suryaputra wrote:
+> On Mon, Jun 03, 2019 at 02:30:06PM +0200, Pablo Neira Ayuso wrote:
+> > > I developed this patchset to suit my employer needs and there is no plan
+> > > for a follow up patchset, however I think non-zero offset might be useful
+> > > in the future for tunneled packets.
+> > 
+> > For tunneled traffic, we can store the network offset in the
+> > nft_pktinfo object. Then, add a new extension to update this network
+> > offset to point to the network offset inside the tunnel header, and
+> > use this pkt->network_offset everywhere.
 > 
-> Let's deprecate our specific properties.
+> OK. I'm changing so that offset isn't being used as input. But, it's
+> still being passed as reference for output. See further response
+> below...
 > 
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-I am not sure about the yaml syntax for deprecated properties but
-the description inside the .yaml file looks good to me so:
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > I think this new IPv4 options extension should use priv->offset to
+> > match fields inside the IPv4 option specifically, just like in the
+> > IPv6 extensions and TCP options do. If you look on how the
+> > priv->offset is used in the existing code, this offset points to
+> > values that the specific option field conveys.
+> 
+> I believe that's what I have coded:
+> 
+> 	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type, NULL, NULL);
+> 	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
+> 		*dest = (err >= 0);
+> 		return;
+> 	} else if (err < 0) {
+> 		goto err;
+> 	}
+> 	offset += priv->offset;
+> 
+> offset is returned as the offset where it matches the sought priv->type
+> then priv->offset is added to get to the right field between the offset.
+
+I see, thanks for explaining.
+
+I got me confused when I read this:
+
++ * Note that *offset is used as input/output parameter, and if it is not zero,
++ * then it must be a valid offset to an inner IPv4 header. This can be used
++ * to explore inner IPv4 header, eg. ICMP error messages.
+
+I thought this is how the new extension for nftables is working. Not
+the function.
+
+And then, this chunk:
+
++       if (!offset)
++               return -EINVAL;
+
+This never happens, right? offset is always set.
+
++       if (!*offset)
++               *offset = skb_network_offset(skb);
+
+So this is not needed either.
+
+I would remove those, you can add more code to ipv4_find_option()
+later on as you get more clients in the networking tree. I'd suggest,
+better remove code that is not used yet, then introduce it once
+needed.
+
+> If this is satisfactory, I can submit v2 of the kernel patch.
+
+Please do so, so you get more feedback (if needed) and we move on :-)
+
+Thanks!
