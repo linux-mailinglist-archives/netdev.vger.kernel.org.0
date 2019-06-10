@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D033BF1D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 00:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EBAA3BF34
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 00:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389742AbfFJWGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 18:06:13 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33612 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387661AbfFJWGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 18:06:13 -0400
-Received: by mail-qk1-f195.google.com with SMTP id r6so6424346qkc.0
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 15:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2+stKTiDwz+DUxdbGlTX2YZ80vsUADihdEwOnDlBg/8=;
-        b=b7pbfgnYd2Kymk5/jif65XmZT9jJWKzh+Uz9mmg7kv+n3ITh2h97vR8MyKVOn6yPrG
-         HrujUNd9WPA4/pBY8Z8e6PjnTbBFGAKnlSF+wGx90mkiWaZYqBhhtXfbqUyQ0oLsUSc6
-         j48Ut1datbuH0mT5jquoBgtfOfly96j0EJF4/RtcWiVrw6KCH47tSHrGNLBWk5CU0M0c
-         nHIGuCfUSDgv2HZb0leCwi76uJOCBjtITB+mc9U/tDKpoTDyxR/grWPWskKLW6Tg1OX4
-         F8RESHb+LZEpzuP3qcMF/VnTci2TENJv3zNYK1Mk8BypTRdMp64sOMefENBAsN65Qz6J
-         helA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2+stKTiDwz+DUxdbGlTX2YZ80vsUADihdEwOnDlBg/8=;
-        b=AdXbxrp5WNAUhBw7rL+2nRuYGdrhReAJY73ziOJHjbIQTt5SWr+MSRxE+yUFRIz3Kp
-         BEpJfck0L1XJwBwjhCID7p0cvzj1GsBdxZ9PIjvq8F+PcJdr/DcpQV+U6Lw8XKMa9eVA
-         QMVOy23mfpzekJcbuAwJ5UgHgkeLIrrvX3JtAF7yI5eLBb9zEUL7Lt4GUSGuPV/Ad4IZ
-         GYHDK3aSrdhAGPbqFVcQ5ETm5uvNmgSN9H6PRHxXs4uoKOzUpU3WbmJWlszssXaNRQ3j
-         y1CBEqcyQ/Q/8HHW7NdUGYwHj3UQpZvw7N834h2qbLMJVmjZi/FIFahxSjMXkb/xaNW4
-         BpTQ==
-X-Gm-Message-State: APjAAAXY05oWbqJ005p/uIvi6UKOMlzjLJTjXXTGqjb07gJq6nkb3Ofy
-        4LrsTpSox1Gu3XArgt6NxnNluA==
-X-Google-Smtp-Source: APXvYqzoR9hZar/Z9If1SaakOUTSTpUp0krJIqnjCKOlXojrVtJWwlgQI2Q3UcYvCEgUJYm4P98udQ==
-X-Received: by 2002:a37:ac14:: with SMTP id e20mr56070139qkm.243.1560204372707;
-        Mon, 10 Jun 2019 15:06:12 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id a139sm5629591qkb.48.2019.06.10.15.06.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 10 Jun 2019 15:06:12 -0700 (PDT)
-Date:   Mon, 10 Jun 2019 15:06:07 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, mlxsw@mellanox.com, sthemmin@microsoft.com,
-        saeedm@mellanox.com, leon@kernel.org, f.fainelli@gmail.com
-Subject: Re: [patch net-next v3 3/3] devlink: implement flash status
- monitoring
-Message-ID: <20190610150607.22d4f963@cakuba.netronome.com>
-In-Reply-To: <e82080ee-9098-01c5-1108-294c32f53f33@gmail.com>
-References: <20190604134044.2613-1-jiri@resnulli.us>
-        <20190604134450.2839-3-jiri@resnulli.us>
-        <08f73e0f-918b-4750-366b-47d7e5ab4422@gmail.com>
-        <20190610102438.69880dcd@cakuba.netronome.com>
-        <249eca9b-e62a-df02-7593-4492daf39183@gmail.com>
-        <20190610104723.66e78254@cakuba.netronome.com>
-        <e82080ee-9098-01c5-1108-294c32f53f33@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S2390147AbfFJWIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 18:08:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35464 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388757AbfFJWIx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 18:08:53 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 882812089E;
+        Mon, 10 Jun 2019 22:08:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560204532;
+        bh=wa2HdHpzK5YZ98vLNvJM2KFuWOFO6C+Fp4cfd/H2ghc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ENEr1pjhpsDiMrdFl6+74MII5XYFnkJwxICsIsV8RVuHesr0AlQ6Ug/z78dXTDm+T
+         89Y2I0a/mzkriuLOC9wMp35GQ8PVM/3sdZSM3UYigS7lxPbePPfWYsoUvJaNin9YSS
+         Zk/5IZxmg6+AxRba0gfW/Mi4RVmdUfSzYt7lN4jc=
+Received: by mail-qt1-f178.google.com with SMTP id 33so4044642qtr.8;
+        Mon, 10 Jun 2019 15:08:52 -0700 (PDT)
+X-Gm-Message-State: APjAAAVFJ6njCFQM4GvchzTcoSM/ewtVqn3upyVXqCEEpRHSB7WKw+22
+        aRGE3bnYnf+P/w1v54f/BEFyCc2Hgo862aL7Ew==
+X-Google-Smtp-Source: APXvYqzYXOOjmX8G+khXwwdebIogCYLWvQ9T2R8AhEyK2iWf0s4VXDco+E+jid7s4gmOxWq26X5IXOT0DcFDuZYtru0=
+X-Received: by 2002:a05:6214:248:: with SMTP id k8mr26084007qvt.200.1560204531833;
+ Mon, 10 Jun 2019 15:08:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20190531035348.7194-1-elder@linaro.org> <20190531035348.7194-3-elder@linaro.org>
+In-Reply-To: <20190531035348.7194-3-elder@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 10 Jun 2019 16:08:40 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLFk3=YN+V=RVxq9xWQTrPA9_0zW+eFrdXkGkCnM_sBkA@mail.gmail.com>
+Message-ID: <CAL_JsqLFk3=YN+V=RVxq9xWQTrPA9_0zW+eFrdXkGkCnM_sBkA@mail.gmail.com>
+Subject: Re: [PATCH v2 02/17] dt-bindings: soc: qcom: add IPA bindings
+To:     Alex Elder <elder@linaro.org>
+Cc:     David Miller <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+        Ben Chan <benchan@google.com>,
+        Eric Caruso <ejcaruso@google.com>, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, subashab@codeaurora.org,
+        abhishek.esse@gmail.com, netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Jun 2019 15:56:00 -0600, David Ahern wrote:
-> On 6/10/19 11:47 AM, Jakub Kicinski wrote:
-> > It's the kernel that does this, the request_firmware() API.  It's
-> > documented in both devlink's and ethtool's API.  I was initially
-> > intending to use the file request API directly in devlink, but because
-> > of the requirement to keep compatibility with ethtool that was a no go.
-> >=20
-> > FWIW you can load from any directory, just prefix the file name
-> > with ../../ to get out of /lib/firmware.
-> >=20
-> > I guess we could add some logic into devlink user space to detect that
-> > user does not know about this quirk and fix up the path for them.. =F0=
-=9F=A4=94 =20
->=20
-> If the user can not load a file based on an arbitrary path, what is the
-> point of the option in the devlink command? You might as well just have
-> the driver use the firmware interface.
+On Thu, May 30, 2019 at 9:53 PM Alex Elder <elder@linaro.org> wrote:
+>
+> Add the binding definitions for the "qcom,ipa" device tree node.
+>
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  .../devicetree/bindings/net/qcom,ipa.yaml     | 180 ++++++++++++++++++
+>  1 file changed, 180 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> new file mode 100644
+> index 000000000000..0037fc278a61
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -0,0 +1,180 @@
+> +# SPDX-License-Identifier: GPL-2.0
 
-This may be a question about mlxsw quirks.  Traditionally drivers don't
-flash firmware on probe.  Devlink/ethtool interface is for updating
-flash contents, while probe may load FW directly into SRAM for devices
-which don't store firmware on flash (e.g. most WiFi cards).
+New bindings are preferred to be dual GPL-2.0 and BSD-2-Clause. But
+that's really a decision for the submitter.
 
-Also - devlink _can_ load from arbitrary paths.  User just has to assume
-getcwd() =3D=3D "/lib/firmware".  Probe has a hard coded file name it=20
-will try to load.
+Reviewed-by: Rob Herring <robh@kernel.org>
