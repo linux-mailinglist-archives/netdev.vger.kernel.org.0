@@ -2,136 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB1F3BDC9
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 22:50:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A8C3BDD1
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 22:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389691AbfFJUuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 16:50:03 -0400
-Received: from mail-eopbgr60081.outbound.protection.outlook.com ([40.107.6.81]:34477
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389429AbfFJUuD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 16:50:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pZ17w6KiquhG6fWhhZl398LFgYMwAjV/i9/BxYAExfE=;
- b=YFg4JsGlreztRJYlRK7jVCn8A2ssZ0kl4vfO//kSXRNljlRVXPBGsg3EoUMP0s1C/cHazOwh7KIFUbC+NPOrM+8XdLdeJg0UAJLbGLAg/TpoQholIiU73tK0//l3Cic95U3odi/BhEXKOTGAUuyb4DhX5lRc5BgohezZ96Rmt34=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB2704.eurprd04.prod.outlook.com (10.175.23.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.14; Mon, 10 Jun 2019 20:49:59 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1965.017; Mon, 10 Jun 2019
- 20:49:59 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     netdev <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: Deal with non-existing PHY/fixed-link
-Thread-Topic: [PATCH net-next] net: dsa: Deal with non-existing PHY/fixed-link
-Thread-Index: AQHVH8MsxSzXIT7T/0mW4aEu7RtYPg==
-Date:   Mon, 10 Jun 2019 20:49:59 +0000
-Message-ID: <VI1PR0402MB2800ED1A422B900F63561F9CE0130@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <20190610193150.22231-1-f.fainelli@gmail.com>
- <CA+h21hrcymxF7zk4yHFGhjxbLERTCU6WkfzLGQVoZ5Yxoo4xxw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [188.26.252.192]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b0dc24dd-449b-432c-2d96-08d6ede533e1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2704;
-x-ms-traffictypediagnostic: VI1PR0402MB2704:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <VI1PR0402MB270430933DCBBF468F835A78E0130@VI1PR0402MB2704.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0064B3273C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(376002)(396003)(136003)(346002)(189003)(199004)(110136005)(4326008)(2906002)(54906003)(5660300002)(26005)(66446008)(53936002)(73956011)(76116006)(186003)(66476007)(66556008)(52536014)(8936002)(66946007)(33656002)(66066001)(25786009)(229853002)(8676002)(44832011)(74316002)(64756008)(446003)(486006)(476003)(6306002)(86362001)(71200400001)(55016002)(305945005)(14454004)(9686003)(71190400001)(966005)(81166006)(99286004)(7736002)(6436002)(316002)(81156014)(6116002)(6246003)(102836004)(5024004)(478600001)(7696005)(6506007)(14444005)(256004)(68736007)(53546011)(76176011)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2704;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Z/UG3kVJ1C7NMc5VXRxwLrgoPhrIQG4BShjyFA1lkdBM3m4zcqzWC8GEyqDEUQkEbGGUOreKIh18kz3vw2+zycyP/5kPc7AtQFRQiL0Jj+R7hWpd2JabavAdZ2QNvpBhWHGFAJMnORzjo3PecgQIuXLsJ8hV3Jaytu7idYL2KgMO+qOeEWo8+h/53N/Hl6gNgkDeHxMUs1aLbg0hUr7TVh5/xuAebIlIBpeyn3bbCSVXysvcIr/5o5iJ3/yCSPSUiKxWp/xEm1+fdtaofYLw/CYbSdsDl0+Jfdo9CJfwh+yyzSsx5R2k5uJyrHWo9EZKGTJDZG8y1QL+WdUkwZvRv2ky53m90D7jbuuJqk8IUhZUq90TLOwhq/CxVp8eDapM4nFyTrPht5+JcS4wv+HtVswNvasuKmJuLyI1MtOuUxA=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2388542AbfFJUvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 16:51:41 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:37111 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728610AbfFJUvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 16:51:40 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w13so16454057eds.4
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 13:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brauner.io; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LwPRrFIFVpFh7windfuH8fQym2aENAjRfJxjWELiSBU=;
+        b=Zb5w8rP85WrEmAp+Zr/D+9qTV1RoeJ9+bGxf6ZGFaz//eje5o8iDyuC629FdHNoZHM
+         M6NOkiKW5X94YWAH/0ShGapQoZma0hlhSk6PpQEgi915CF1Dv1mhkO/conE2CVt3RObX
+         ksdmzpJiEaaT8Yjo9vuQP3/LNVzAO7x6LBf7L7PR+g89d/pcyU9i67wPGHBkQEiC2ISG
+         qdF9toeA0vtNzb1Fd88YeDnqmdHXoZrEQoob4+rUi/sJyLbrlfMfj4RPQBeM7Zhz4UQr
+         Rps++y3zxLadol/OIc8Cv+L+LUVb9gstJIM2XJOSfG/oNJXv+6ypGOgTjXRr43Utd7px
+         oGWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LwPRrFIFVpFh7windfuH8fQym2aENAjRfJxjWELiSBU=;
+        b=JU0JMiuYTTilDbOkU7tEVdFNntQdeNUfQlj49Y1CmcCUas5NujeotRYfk/ivmQZdTS
+         HT3OnmZ1npjNMZzd79P16tA5qIkrC4r8y1hvKQoOtmsnZ5lnolXBk5j7wVqHAIUn4ITy
+         Nr8iAuZx8Yy0ml/2oY02CVaoUStsOGokpbiRzGREzUC9mDOMmEGQBJj+jX9gzDKHBavn
+         yyTo7t91CH0JrEHjF7OCdXL+7ekzYLzLi0RlcKBpHd/zd976K/HdQlYX89jF1dnSXn46
+         MJHvblz61RnxJI9LNpKYyoTs/y5L9hZVvYPJfI/Bt106cr3nHcAiTJ+slUoxuuvL2ukp
+         dIqA==
+X-Gm-Message-State: APjAAAVcGU1cbtAbt0eIgAGZwYxuYEZfl2rjXCoR6gVf1cIDkHKjOwb/
+        YhGwkq6rJWSy9EDpXnWcK3Iqsg==
+X-Google-Smtp-Source: APXvYqwi/4K4O7p3F5fWVp5YvhiOxBsgwx+PVV7Ojw/tfOBJ/2puw1O0OPD6xnMpmS+Mb4sPcC1x7Q==
+X-Received: by 2002:a17:906:d7aa:: with SMTP id pk10mr1184294ejb.125.1560199899038;
+        Mon, 10 Jun 2019 13:51:39 -0700 (PDT)
+Received: from brauner.io ([2a02:8109:9cc0:6dac:cd8f:f6e9:1b84:bbb1])
+        by smtp.gmail.com with ESMTPSA id k9sm1976063eja.72.2019.06.10.13.51.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 10 Jun 2019 13:51:38 -0700 (PDT)
+Date:   Mon, 10 Jun 2019 22:51:36 +0200
+From:   Christian Brauner <christian@brauner.io>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, tyhicks@canonical.com,
+        kadlec@blackhole.kfki.hu, fw@strlen.de, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, linux-kernel@vger.kernel.org,
+        richardrose@google.com, vapier@chromium.org, bhthompson@google.com,
+        smbarber@chromium.org, joelhockey@chromium.org,
+        ueberall@themenzentrisch.de
+Subject: Re: [PATCH net-next v1 1/1] br_netfilter: namespace bridge netfilter
+ sysctls
+Message-ID: <20190610205134.6wqparmtsdzbiutv@brauner.io>
+References: <20190609162304.3388-1-christian@brauner.io>
+ <20190609162304.3388-2-christian@brauner.io>
+ <20190610174136.p3fbcbn33en5bb7f@salvia>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0dc24dd-449b-432c-2d96-08d6ede533e1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2019 20:49:59.1741
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2704
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190610174136.p3fbcbn33en5bb7f@salvia>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/19 10:53 PM, Vladimir Oltean wrote:=0A=
-> On Mon, 10 Jun 2019 at 22:31, Florian Fainelli <f.fainelli@gmail.com> wro=
-te:=0A=
->>=0A=
->> We need to specifically deal with phylink_of_phy_connect() returning=0A=
->> -ENODEV, because this can happen when a CPU/DSA port does connect=0A=
->> neither to a PHY, nor has a fixed-link property. This is a valid use=0A=
->> case that is permitted by the binding and indicates to the switch:=0A=
->> auto-configure port with maximum capabilities.=0A=
->>=0A=
->> Fixes: 0e27921816ad ("net: dsa: Use PHYLINK for the CPU/DSA ports")=0A=
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>=0A=
->> ---=0A=
->>   net/dsa/port.c | 2 +-=0A=
->>   1 file changed, 1 insertion(+), 1 deletion(-)=0A=
->>=0A=
->> diff --git a/net/dsa/port.c b/net/dsa/port.c=0A=
->> index d74bc9df1359..dde3085ff065 100644=0A=
->> --- a/net/dsa/port.c=0A=
->> +++ b/net/dsa/port.c=0A=
->> @@ -622,7 +622,7 @@ static int dsa_port_phylink_register(struct dsa_port=
- *dp)=0A=
->>          }=0A=
->>=0A=
->>          err =3D phylink_of_phy_connect(dp->pl, port_dn, 0);=0A=
->> -       if (err) {=0A=
->> +       if (err && err !=3D -ENODEV) {=0A=
->>                  pr_err("could not attach to PHY: %d\n", err);=0A=
->>                  goto err_phy_connect;=0A=
->>          }=0A=
->> --=0A=
->> 2.17.1=0A=
->>=0A=
-> =0A=
-> Hi Florian,=0A=
-> =0A=
-> Can you give an example of when this is a valid use case, and why=0A=
-> fixed-link is not appropriate?=0A=
-> =0A=
-> Regards,=0A=
-> -Vladimir=0A=
-> =0A=
-=0A=
-Hi,=0A=
-=0A=
-This reminds me of a previous discussion on what to do when the DSA CPU =0A=
-port does not have a device_tree node at all: =0A=
-https://www.spinics.net/lists/netdev/msg573554.html.=0A=
-=0A=
-This was the case of the dsa-loop driver that probes as a platform =0A=
-device. I'm still not clear how the PHYLINK callbacks are supposed to =0A=
-work in that case though.=0A=
-=0A=
---=0A=
-Ioana=0A=
-=0A=
-=0A=
+On Mon, Jun 10, 2019 at 07:41:36PM +0200, Pablo Neira Ayuso wrote:
+> Thanks for updating this patch to use struct brnf_net.
+> 
+> A few comments below.
+> 
+> On Sun, Jun 09, 2019 at 06:23:04PM +0200, Christian Brauner wrote:
+> [...]
+> > diff --git a/include/net/netfilter/br_netfilter.h b/include/net/netfilter/br_netfilter.h
+> > index 89808ce293c4..302fcd3aade2 100644
+> > --- a/include/net/netfilter/br_netfilter.h
+> > +++ b/include/net/netfilter/br_netfilter.h
+> > @@ -85,17 +82,42 @@ static inline __be16 vlan_proto(const struct sk_buff *skb)
+> >  		return 0;
+> >  }
+> >  
+> > -#define IS_VLAN_IP(skb) \
+> > -	(vlan_proto(skb) == htons(ETH_P_IP) && \
+> > -	 brnf_filter_vlan_tagged)
+> > +static inline bool is_vlan_ip(const struct sk_buff *skb, const struct net *net)
+> > +{
+> 
+> I like this conversion from macro to static inline a lot.
+> 
+> But if you let me ask for one more change, would you split this in two
+> patches? One to replace #defines by static inline.
+
+Sure.
