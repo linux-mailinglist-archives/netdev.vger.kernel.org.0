@@ -2,113 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 138123B0BE
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 10:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E48C93B0D1
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 10:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388228AbfFJIaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 04:30:18 -0400
-Received: from muru.com ([72.249.23.125]:52442 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387862AbfFJIaS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 04:30:18 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id AEF5E807E;
-        Mon, 10 Jun 2019 08:30:36 +0000 (UTC)
-Date:   Mon, 10 Jun 2019 01:30:12 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Spyridon Papageorgiou <spapageorgiou@de.adit-jv.com>,
-        Joshua Frkuska <joshua_frkuska@mentor.com>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrey Gusakov <andrey.gusakov@cogentembedded.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>, eyalr@ti.com
-Subject: Re: [PATCH] wlcore/wl18xx: Add invert-irq OF property for physically
- inverted IRQ
-Message-ID: <20190610083012.GV5447@atomide.com>
-References: <20190607172958.20745-1-erosca@de.adit-jv.com>
- <87tvcxncuq.fsf@codeaurora.org>
+        id S2388041AbfFJIlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 04:41:39 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:37177 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387979AbfFJIli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 04:41:38 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id E388720D12;
+        Mon, 10 Jun 2019 04:41:37 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 10 Jun 2019 04:41:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ua6vYOh1KhabBgJd/
+        qvWKbPuYg4dumXPwEs6r21B2Z8=; b=MBVZAyJR1HTK8tQ1GLoqKnreTmPpPsE0p
+        zEyB5jHbGmaUYLbEQW9zDFU4YDSB+E7dKQ9TQxXoivtKDHa0LV9njCRgfD44zTev
+        p8fS0ooOOtyGzFf7ntG4NRqgVwONr1IXCJ4VWBIkrZGvceOgWmR8iorot8LK++Pn
+        ZUjRe/PItClSdd+ZlZu8upLyCdNe6NmeFiXP4a8Sgm6Cp/ALTF462Gel+e/nx1IT
+        s17k2RCGBci7BfNWzKbXyTL0BHwA5u4CGKhEA/W08/WBwYavUePa7pFxM0oQbq1x
+        SDN/ID0evwVa1PLIfLmIgoxhiocMgZTt3hEDHAxN0oYONkXTjOb2w==
+X-ME-Sender: <xms:wRf-XNQzgXfC-Vl4dHAre05COfRZJhEQjw3J7ndJ2DS-OEpm_ATzeg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehvddgtdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:wRf-XCkRVaoPOsq9yHaMwMnVFq_37KXKW8nygbYYBc9m_Th-Cd-sbg>
+    <xmx:wRf-XIVi9TJ9-nm1ewsBmXsA1MxNEFXdEeT-Hi3UvN47NdVDd5ximQ>
+    <xmx:wRf-XHeMlsc_UCy_CTc5M6RzrzzKPTdxwbyePe3IMudVR4oj3pBZPA>
+    <xmx:wRf-XGRxznsngmN2802xTV1-jV6YLr1R6eFLYRGdPVv_AZAaag44XA>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 61CA980060;
+        Mon, 10 Jun 2019 04:41:36 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, amitc@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/3] mlxsw: Add speed and auto-negotiation test
+Date:   Mon, 10 Jun 2019 11:40:42 +0300
+Message-Id: <20190610084045.6029-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tvcxncuq.fsf@codeaurora.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Ido Schimmel <idosch@mellanox.com>
 
-* Kalle Valo <kvalo@codeaurora.org> [190610 07:01]:
-> Eugeniu Rosca <erosca@de.adit-jv.com> writes:
-> 
-> > The wl1837mod datasheet [1] says about the WL_IRQ pin:
-> >
-> >  ---8<---
-> > SDIO available, interrupt out. Active high. [..]
-> > Set to rising edge (active high) on powerup.
-> >  ---8<---
-> >
-> > That's the reason of seeing the interrupt configured as:
-> >  - IRQ_TYPE_EDGE_RISING on HiKey 960/970
-> >  - IRQ_TYPE_LEVEL_HIGH on a number of i.MX6 platforms
-> >
-> > We assert that all those platforms have the WL_IRQ pin connected
-> > to the SoC _directly_ (confirmed on HiKey 970 [2]).
-> >
-> > That's not the case for R-Car Kingfisher extension target, which carries
-> > a WL1837MODGIMOCT IC. There is an SN74LV1T04DBVR inverter present
-> > between the WLAN_IRQ pin of the WL18* chip and the SoC, effectively
-> > reversing the requirement quoted from [1]. IOW, in Kingfisher DTS
-> > configuration we would need to use IRQ_TYPE_EDGE_FALLING or
-> > IRQ_TYPE_LEVEL_LOW.
-> >
-> > Unfortunately, v4.2-rc1 commit bd763482c82ea2 ("wl18xx: wlan_irq:
-> > support platform dependent interrupt types") made a special case out
-> > of these interrupt types. After this commit, it is impossible to provide
-> > an IRQ configuration via DTS which would describe an inverter present
-> > between the WL18* chip and the SoC, generating the need for workarounds
-> > like [3].
-> >
-> > Create a boolean OF property, called "invert-irq" to specify that
-> > the WLAN_IRQ pin of WL18* is connected to the SoC via an inverter.
-> >
-> > This solution has been successfully tested on R-Car H3ULCB-KF-M06 using
-> > the DTS configuration [4] combined with the "invert-irq" property.
-> >
-> > [1] http://www.ti.com/lit/ds/symlink/wl1837mod.pdf
-> > [2] https://www.96boards.org/documentation/consumer/hikey/hikey970/hardware-docs/
-> > [3] https://github.com/CogentEmbedded/meta-rcar/blob/289fbd4f8354/meta-rcar-gen3-adas/recipes-kernel/linux/linux-renesas/0024-wl18xx-do-not-invert-IRQ-on-WLxxxx-side.patch
-> > [4] https://patchwork.kernel.org/patch/10895879/
-> >     ("arm64: dts: ulcb-kf: Add support for TI WL1837")
-> >
-> > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> 
-> Tony&Eyal, do you agree with this?
+Amit says:
 
-Yeah if there's some hardware between the WLAN device and the SoC
-inverting the interrupt, I don't think we have clear a way to deal
-with it short of setting up a separate irqchip that does the
-translation.
+This patchset adds a selftest which tests different speeds and
+auto-negotiation.
 
-But in some cases we also do not want to invert the interrupt, so
-I think this property should take IRQ_TYPE_EDGE_RISING and
-IRQ_TYPE_EDGE_RISING values to override the setting for
-the WLAN end of the hardware?
+Patch #1 Adds functions that retrieve information from ethtool.
 
-Let's wait a bit longer for comments from Eyal too.
+Patch #2 Adds option to wait for device with limit of iterations.
 
-Regards,
+Patch #3 Adds the test.
 
-Tony
+Amit Cohen (3):
+  selftests: mlxsw: Add ethtool_lib.sh
+  selftests: mlxsw: lib.sh: Add wait for dev with timeout
+  selftests: mlxsw: Add speed and auto-negotiation test
+
+ .../selftests/drivers/net/mlxsw/ethtool.sh    | 308 ++++++++++++++++++
+ .../selftests/net/forwarding/ethtool_lib.sh   |  91 ++++++
+ tools/testing/selftests/net/forwarding/lib.sh |  28 +-
+ 3 files changed, 424 insertions(+), 3 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/ethtool.sh
+ create mode 100755 tools/testing/selftests/net/forwarding/ethtool_lib.sh
+
+-- 
+2.20.1
+
