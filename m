@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05BE83B69A
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 15:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827623B69D
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 15:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390627AbfFJN6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 09:58:53 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:56857 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390587AbfFJN6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 09:58:53 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4FB6721E95;
-        Mon, 10 Jun 2019 09:58:52 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 10 Jun 2019 09:58:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=BiZGHM
-        plLnW8EXEEoCwq8ufJf39ejwvt7uPie6geQSM=; b=Z8n6CzX0lkMsldirbIU/PN
-        VLBRpUDkrDSkK4cFEUMBVRo/vgbJhgFs2NP8/IkLVk6LR5NXRChGQy4ur0BzGJmR
-        R44Sqp1iXf/UHLohWFicfNP1kR5Jhv7U1W5nSzEsTrn2gYadPJS+vVjsc6CdmlNl
-        QbdTN9gL9hErRAfbJrTrB6n/PElQA/GkjHevStIZkhoHQd+bFF3zsXlao5eQufIT
-        04xAlAikQSFwyVEN9PFKOBPTjt/G1h/ErGK5h4c8dcJUNM+/0qarc9JvNZf/mcxw
-        pYMZ20Yk9rDampsPSLLel9aE32MacmxuWz6xhQphRgOyozpm8xw77UneqB/Cmxkw
-        ==
-X-ME-Sender: <xms:GmL-XCstSh2M-z1LWHWIDppUwLZELQDLhVxvLjKOtViHYPQ75k2uoA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehvddgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
-    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedu
-X-ME-Proxy: <xmx:GmL-XFTr7ePOF0HP_2s1hOHdMTaF_zo71N2WPSz7A9kKmeCWXWOjxg>
-    <xmx:GmL-XIPga0ST8ztZq2yXQ9VWREx17UdlZskDZMQG1n9sRRKgZaDeLQ>
-    <xmx:GmL-XKaX_u4inD56GsPEvwEUDn5NJAISM-thTzyMyrIg1vw2SM1m7A>
-    <xmx:HGL-XJHumOG26chiVnGMvYaZunsRmuBUE-s2n0pt9Jeeqo58EgAaoQ>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C6F0180060;
-        Mon, 10 Jun 2019 09:58:49 -0400 (EDT)
-Date:   Mon, 10 Jun 2019 16:58:48 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Andrew Lunn <andrew@lunn.ch>
+        id S2390639AbfFJN7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 09:59:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41538 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390636AbfFJN7R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 09:59:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=PHdatKCG4Xr2cHIDtZVIWTIYI9ACQ+8MeVzL71lMfc0=; b=XGkYL7NTvT5y7jv3j2bBJZvRcE
+        Lr2K01yvQNQHQjJdfzjBNyYQxM6NGE0mkUffLuxbHGIv2x0nSaUtWnsQDdpK+krzNTkKgSb62Tvw4
+        bzad2FBGOODJIj9PpNscrhy9n5rCgI6CSVVj8Gk/uqukPXZWanzMa2j2dynP1akLB8W8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1haKpO-00079J-Hq; Mon, 10 Jun 2019 15:59:14 +0200
+Date:   Mon, 10 Jun 2019 15:59:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ido Schimmel <idosch@idosch.org>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 3/3] selftests: mlxsw: Add speed and
- auto-negotiation test
-Message-ID: <20190610135848.GB19495@splinter>
+Subject: Re: [PATCH net-next 1/3] selftests: mlxsw: Add ethtool_lib.sh
+Message-ID: <20190610135914.GH8247@lunn.ch>
 References: <20190610084045.6029-1-idosch@idosch.org>
- <20190610084045.6029-4-idosch@idosch.org>
- <20190610134820.GG8247@lunn.ch>
+ <20190610084045.6029-2-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190610134820.GG8247@lunn.ch>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190610084045.6029-2-idosch@idosch.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 03:48:20PM +0200, Andrew Lunn wrote:
-> > +		# Skip 56G because this speed isn't supported with autoneg off.
-> > +		if [[ $speed == 56000 ]]; then
-> > +			continue
-> > +		fi
-> 
-> Interesting. How is 56000 represented in ethtool? Listed in both
-> "Supported link modes" and "Advertised link modes"?
+> +speeds_get()
+> +{
+> +	local dev=$1; shift
+> +	local with_mode=$1; shift
+> +
+> +	local speeds_str=$(ethtool "$dev" | \
+> +		# Snip everything before the link modes section.
+> +		sed -n '/Supported link modes:/,$p' | \
+> +		# Quit processing the rest at the start of the next section.
+> +		# When checking, skip the header of this section (hence the 2,).
+> +		sed -n '2,${/^[\t][^ \t]/q};p' | \
+> +		# Drop the section header of the current section.
+> +		cut -d':' -f2)
 
-Hi Andrew,
+ethtool gives you two lists of link modes:
 
-Yes. We recently sent a patch to error out if autoneg is off: Commit
-275e928f1911 ("mlxsw: spectrum: Prevent force of 56G").
+$ sudo ethtool eth17
+Settings for eth17:
+         Supported ports: [ TP ]
+         Supported link modes:   10baseT/Half 10baseT/Full 
+                                 100baseT/Half 100baseT/Full 
+                                 1000baseT/Full 
+         Supported pause frame use: No
+         Supports auto-negotiation: Yes
+         Supported FEC modes: Not reported
+         Advertised link modes:  10baseT/Half 10baseT/Full 
+                                 100baseT/Half 100baseT/Full 
+                                 1000baseT/Full
+
+and if auto-neg has completed, there is potentially a third list, what
+the peer is advertising.
+
+Since this test is all about auto-neg, you should be using Advertised
+link modes, not Supported link modes. There can be supported link
+modes which you cannot advertise.
+
+   Andrew
