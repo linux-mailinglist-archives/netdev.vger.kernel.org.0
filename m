@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E2C3BC68
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E12E3BC6E
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:06:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388814AbfFJTF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 15:05:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57768 "EHLO mail.kernel.org"
+        id S2388841AbfFJTGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 15:06:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58310 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388544AbfFJTF3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 15:05:29 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        id S2388544AbfFJTGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 15:06:08 -0400
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 87CF42085A;
-        Mon, 10 Jun 2019 19:05:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE4682086A;
+        Mon, 10 Jun 2019 19:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560193528;
-        bh=cOW8s/VNjz5sOUaoGt0xllYK4pDMxQHNLdqEQWRROOU=;
+        s=default; t=1560193567;
+        bh=lFanuHHBuVtWmR4kNCQeWkLeEoh91z4m5hAe5ZQ4DbU=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YRBv6Qib4JrcChVXt7vJGBYCBimV0Z81MvXdciZgBKZRyeokB4P+LP1knHVGXNKuq
-         YZ/NL5olKHnzo2vNBnuPHWdh0dkYqO4oUA4uOYoKEXDtJzHv15Chy8sSi0HIF45R6C
-         ORjwtB0APFirgLUa+bGp1fz5QPiPnIVuSv+yR6NU=
-Received: by mail-qt1-f180.google.com with SMTP id i34so11680357qta.6;
-        Mon, 10 Jun 2019 12:05:28 -0700 (PDT)
-X-Gm-Message-State: APjAAAXYn0Wsy9q1+f/TW+L4tSdcmXF/5vSBiLEiDxT93q5IPdelWj1s
-        jV3XEVzABZ44PaxlTh5Hd6bfqS8Gt2BCiP1lyQ==
-X-Google-Smtp-Source: APXvYqzNFAFskotptWmZSp0y4dGXTAqiAx1e+KFLMaVcOIEt50adCoQmksEswgcUSdBQTvIorzTZl1RZS8CHwOD4XHs=
-X-Received: by 2002:a0c:b786:: with SMTP id l6mr33361222qve.148.1560193527816;
- Mon, 10 Jun 2019 12:05:27 -0700 (PDT)
+        b=malhWk+aXGmFn7xlbapoaYjAsgdVnmFbzkgSvGw0kc+GIQJrOplOwNsMHPji8gIzL
+         dSSjOwoaDHOK2hUN7pN5pqmYOIZ8ZTayZAst9xcPOz2gJ41J9s7/ZObABpcRBXNTXP
+         Fauk2eleAbfyMWXdGZn0KuOXVaNS0khxSXsxHViQ=
+Received: by mail-qk1-f176.google.com with SMTP id i125so6123380qkd.6;
+        Mon, 10 Jun 2019 12:06:07 -0700 (PDT)
+X-Gm-Message-State: APjAAAU69yYDyGrPQS+rVmSnAUW/kw5wUy90nForHldCtp0va3KrKFqi
+        Bde33okz2TB59Oawjqke7+RxW7mbs54iGn1ZjQ==
+X-Google-Smtp-Source: APXvYqyqk00u+A1I2mS4USQPJYej70C5KhglxD5XOZevDO5oC+8Y4Q68pL8HBKtqIMa/xiZnnWfM+2EIi1Wpb/mCRBA=
+X-Received: by 2002:ae9:f801:: with SMTP id x1mr14400814qkh.151.1560193567005;
+ Mon, 10 Jun 2019 12:06:07 -0700 (PDT)
 MIME-Version: 1.0
 References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <b5c46cff5b59d021634be143cf559c597f0a0e1f.1560158667.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <b5c46cff5b59d021634be143cf559c597f0a0e1f.1560158667.git-series.maxime.ripard@bootlin.com>
+ <19f160b6edf5a11171cea249305b7458c96a7187.1560158667.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <19f160b6edf5a11171cea249305b7458c96a7187.1560158667.git-series.maxime.ripard@bootlin.com>
 From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 10 Jun 2019 13:05:16 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+0DY8aZ0Gz_x+_QObJhuym7eMAf_OO7fQGiW==U4uPzQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+0DY8aZ0Gz_x+_QObJhuym7eMAf_OO7fQGiW==U4uPzQ@mail.gmail.com>
-Subject: Re: [PATCH v2 02/11] dt-bindings: net: Add a YAML schemas for the
- generic PHY options
+Date:   Mon, 10 Jun 2019 13:05:55 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJtzBwx57_EHwCrSpiFwve8ec2osK0ZXc_cMzD+5dW7FQ@mail.gmail.com>
+Message-ID: <CAL_JsqJtzBwx57_EHwCrSpiFwve8ec2osK0ZXc_cMzD+5dW7FQ@mail.gmail.com>
+Subject: Re: [PATCH v2 04/11] dt-bindings: net: phy: The interrupt property is
+ not mandatory
 To:     Maxime Ripard <maxime.ripard@bootlin.com>
 Cc:     Mark Rutland <mark.rutland@arm.com>,
         Frank Rowand <frowand.list@gmail.com>,
@@ -64,23 +64,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jun 10, 2019 at 3:26 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
 >
-> The networking PHYs have a number of available device tree properties that
-> can be used in their device tree node. Add a YAML schemas for those.
+> Unlike what was initially claimed in the PHY binding, the interrupt
+> property of a PHY can be omitted, and the OS will turn to polling instead.
+>
+> Document that.
 >
 > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->
 > ---
->
-> Changes from v1:
->   - Add missing compatible options
->   - add missing phy speeds
->   - Fix the maintainers entry
->   - Add a custom select clause to make it validate all phy nodes, and not
->     just the ones with a compatible
-> ---
->  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 179 +++++++++-
->  Documentation/devicetree/bindings/net/phy.txt           |  80 +----
->  2 files changed, 180 insertions(+), 79 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 1 -
+>  1 file changed, 1 deletion(-)
 
 Reviewed-by: Rob Herring <robh@kernel.org>
