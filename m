@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD343B154
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 10:57:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCE63B157
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 10:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388703AbfFJIzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 04:55:37 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:56855 "EHLO
+        id S2388739AbfFJIzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 04:55:40 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:41471 "EHLO
         relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387946AbfFJIzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 04:55:36 -0400
+        with ESMTP id S2388727AbfFJIzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 04:55:38 -0400
 X-Originating-IP: 90.88.159.246
 Received: from mc-bl-xps13.lan (aaubervilliers-681-1-40-246.w90-88.abo.wanadoo.fr [90.88.159.246])
         (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id C3ADCFF80C;
-        Mon, 10 Jun 2019 08:55:33 +0000 (UTC)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id C7707FF810;
+        Mon, 10 Jun 2019 08:55:35 +0000 (UTC)
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -24,9 +24,9 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
         miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
         ymarkman@marvell.com, mw@semihalf.com
-Subject: [PATCH net-next 1/3] net: mvpp2: Only clear the stat counters at port init
-Date:   Mon, 10 Jun 2019 10:55:27 +0200
-Message-Id: <20190610085529.16803-2-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next 2/3] net: mvpp2: Rename mvpp2_ethtool_counters to mvpp2_ethtool_mib_counters
+Date:   Mon, 10 Jun 2019 10:55:28 +0200
+Message-Id: <20190610085529.16803-3-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190610085529.16803-1-maxime.chevallier@bootlin.com>
 References: <20190610085529.16803-1-maxime.chevallier@bootlin.com>
@@ -37,56 +37,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When first configuring a port on PPv2, we want to clear the internal
-counters so that we don't get values from previous boot stages.
-
-However, we can't really clear these counters when resetting the MAC,
-since there are valid reasons to do so while the port is being used,
-such as when reconfiguring the interface mode with the PHY.
+Since we'll be adding support for other kind of internal counters, make
+clear that the currently supported counters are the MIB counters.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 21 ++++++++++---------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 4b4d79611339..ee653125194e 100644
+index ee653125194e..01380ccb2139 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1359,13 +1359,8 @@ static int mvpp2_ethtool_get_sset_count(struct net_device *dev, int sset)
+@@ -1267,7 +1267,7 @@ static u64 mvpp2_read_count(struct mvpp2_port *port,
+  * Hence, statistics gathered from userspace with ifconfig (software) and
+  * ethtool (hardware) cannot be compared.
+  */
+-static const struct mvpp2_ethtool_counter mvpp2_ethtool_regs[] = {
++static const struct mvpp2_ethtool_counter mvpp2_ethtool_mib_regs[] = {
+ 	{ MVPP2_MIB_GOOD_OCTETS_RCVD, "good_octets_received", true },
+ 	{ MVPP2_MIB_BAD_OCTETS_RCVD, "bad_octets_received" },
+ 	{ MVPP2_MIB_CRC_ERRORS_SENT, "crc_errors_sent" },
+@@ -1303,9 +1303,10 @@ static void mvpp2_ethtool_get_strings(struct net_device *netdev, u32 sset,
+ 	if (sset == ETH_SS_STATS) {
+ 		int i;
  
- static void mvpp2_mac_reset_assert(struct mvpp2_port *port)
- {
--	unsigned int i;
- 	u32 val;
+-		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_regs); i++)
++		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_mib_regs); i++)
+ 			strscpy(data + i * ETH_GSTRING_LEN,
+-			        mvpp2_ethtool_regs[i].string, ETH_GSTRING_LEN);
++				mvpp2_ethtool_mib_regs[i].string,
++				ETH_GSTRING_LEN);
+ 	}
+ }
  
--	/* Read the GOP statistics to reset the hardware counters */
+@@ -1320,8 +1321,8 @@ static void mvpp2_gather_hw_statistics(struct work_struct *work)
+ 	mutex_lock(&port->gather_stats_lock);
+ 
+ 	pstats = port->ethtool_stats;
 -	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_regs); i++)
--		mvpp2_read_count(port, &mvpp2_ethtool_regs[i]);
--
- 	val = readl(port->base + MVPP2_GMAC_CTRL_2_REG) |
- 	      MVPP2_GMAC_PORT_RESET_MASK;
- 	writel(val, port->base + MVPP2_GMAC_CTRL_2_REG);
-@@ -4265,7 +4260,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
- 	struct mvpp2 *priv = port->priv;
- 	struct mvpp2_txq_pcpu *txq_pcpu;
- 	unsigned int thread;
--	int queue, err;
-+	int queue, err, i;
+-		*pstats++ += mvpp2_read_count(port, &mvpp2_ethtool_regs[i]);
++	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_mib_regs); i++)
++		*pstats++ += mvpp2_read_count(port, &mvpp2_ethtool_mib_regs[i]);
  
- 	/* Checks for hardware constraints */
- 	if (port->first_rxq + port->nrxqs >
-@@ -4372,6 +4367,10 @@ static int mvpp2_port_init(struct mvpp2_port *port)
- 	if (err)
+ 	/* No need to read again the counters right after this function if it
+ 	 * was called asynchronously by the user (ie. use of ethtool).
+@@ -1345,14 +1346,14 @@ static void mvpp2_ethtool_get_stats(struct net_device *dev,
+ 
+ 	mutex_lock(&port->gather_stats_lock);
+ 	memcpy(data, port->ethtool_stats,
+-	       sizeof(u64) * ARRAY_SIZE(mvpp2_ethtool_regs));
++	       sizeof(u64) * ARRAY_SIZE(mvpp2_ethtool_mib_regs));
+ 	mutex_unlock(&port->gather_stats_lock);
+ }
+ 
+ static int mvpp2_ethtool_get_sset_count(struct net_device *dev, int sset)
+ {
+ 	if (sset == ETH_SS_STATS)
+-		return ARRAY_SIZE(mvpp2_ethtool_regs);
++		return ARRAY_SIZE(mvpp2_ethtool_mib_regs);
+ 
+ 	return -EOPNOTSUPP;
+ }
+@@ -4368,8 +4369,8 @@ static int mvpp2_port_init(struct mvpp2_port *port)
  		goto err_free_percpu;
  
-+	/* Read the GOP statistics to reset the hardware counters */
-+	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_regs); i++)
-+		mvpp2_read_count(port, &mvpp2_ethtool_regs[i]);
-+
+ 	/* Read the GOP statistics to reset the hardware counters */
+-	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_regs); i++)
+-		mvpp2_read_count(port, &mvpp2_ethtool_regs[i]);
++	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_mib_regs); i++)
++		mvpp2_read_count(port, &mvpp2_ethtool_mib_regs[i]);
+ 
  	return 0;
  
- err_free_percpu:
+@@ -5052,7 +5053,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 	}
+ 
+ 	port->ethtool_stats = devm_kcalloc(&pdev->dev,
+-					   ARRAY_SIZE(mvpp2_ethtool_regs),
++					   ARRAY_SIZE(mvpp2_ethtool_mib_regs),
+ 					   sizeof(u64), GFP_KERNEL);
+ 	if (!port->ethtool_stats) {
+ 		err = -ENOMEM;
 -- 
 2.20.1
 
