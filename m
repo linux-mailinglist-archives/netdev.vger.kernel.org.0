@@ -2,130 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F1E3B883
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2353B88F
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 17:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391288AbfFJPvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 11:51:00 -0400
-Received: from mail.us.es ([193.147.175.20]:43908 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390356AbfFJPvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 11:51:00 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 53562E7B80
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 43023DA70A
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 38803DA703; Mon, 10 Jun 2019 17:50:58 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2E72FDA705;
-        Mon, 10 Jun 2019 17:50:56 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 10 Jun 2019 17:50:56 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 08DCF4265A32;
-        Mon, 10 Jun 2019 17:50:55 +0200 (CEST)
-Date:   Mon, 10 Jun 2019 17:50:55 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH nf-next] netfilter: add support for matching IPv4 options
-Message-ID: <20190610155055.a3o7yx25j3jlwzgs@salvia>
-References: <20190523093801.3747-1-ssuryaextr@gmail.com>
- <20190531171101.5pttvxlbernhmlra@salvia>
- <20190531193558.GB4276@ubuntu>
- <20190601002230.bo6dhdf3lhlkknqq@salvia>
- <20190601150429.GA16560@ubuntu>
- <20190603123006.urztqvxyxcm7w3av@salvia>
- <20190602022706.GA24477@ubuntu>
+        id S2391298AbfFJPvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 11:51:37 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:40432 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390550AbfFJPvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 11:51:37 -0400
+Received: by mail-oi1-f194.google.com with SMTP id w196so6584303oie.7;
+        Mon, 10 Jun 2019 08:51:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZuHcFSp9RV6IeTzjDjOYf2cyyZ7YnVvyyWSJ347qo6A=;
+        b=Sl+8Rmb2SbYgcshM1Z0Js0gffJMpHV6iNwuBeKkftDEg6qJgrbJkm+yybg3CWqzJ2x
+         qR/7WtHww9+6woEtKc/YlVDtO0g8Y7A5kuCpvgscXSZXtgke0JyDjp7/Ew/b8W3AI/1n
+         gk/fXnfGrZlppgM50p9VnIWFn0op1rziV+e31gh6EDInrEX50Zgw9lXzNQTzACC4Jz4y
+         xuZfkn9Py55sJbkDpD6NHuD5fTNDddBbEKMWUsAunWtMuSUEU6AKzYsvxiPACEuq19TJ
+         TR+RMKGFu9vNaEkKqQAk3oVJ4ZRkCumfzKglVgjyGf5iNvXv1fklUHBgHDDTgVFNNHmA
+         0rXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZuHcFSp9RV6IeTzjDjOYf2cyyZ7YnVvyyWSJ347qo6A=;
+        b=mosc0Z4WQ2YUgEFcicolS++ZbxPUbOsXqOv3hgfZXBrFgz6RjRxbjPYClTpp3vP674
+         /mlut4Vn/qmN4ZozCl2cFn9el/bml+1OOUTet5UkHB6htHvKBQ7EyPAE8W8ET/71iFSG
+         Pcn1nkR9i2LOD0FMJCQFB0snS6yzimJbrwlROSLrOlu462FGHSR4aL+kxB7HgEHbBTmO
+         s9IhdDpIOWJ+Q/OREZ2OuopIuuR8ueCUhnElOgCPrcnOIIo7XgV6k033R/zFIm2TP87Z
+         WWdKzRoV6OBjNQLdIB5Sfq6MgqGIbvKgUcfHA5YrJE/NEM0F9VVYXX0TkXMKU+vj+8oZ
+         HuqQ==
+X-Gm-Message-State: APjAAAV2kfq6PdKeSNPDmHI82YUVqo1/L95X8h4pdEeK59QF7GOenbEg
+        jVytFcOIZMrGH4LWLl3txmXEvlRyfdNcOuVbLiw=
+X-Google-Smtp-Source: APXvYqwamDEZ2pn1KOIAFzWrcT6R7MpvRaH+7gsnVBBoMuB1pYAjxIlbqNIxs3Use8vvJu0GGPKKrdLueixgJ+eH8z4=
+X-Received: by 2002:aca:4403:: with SMTP id r3mr12815875oia.39.1560181896310;
+ Mon, 10 Jun 2019 08:51:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190602022706.GA24477@ubuntu>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20190609180621.7607-1-martin.blumenstingl@googlemail.com>
+ <20190609204510.GB8247@lunn.ch> <20190610114700.tymqzzax334ahtz4@flea>
+ <CAFBinCCs5pa1QmaV32Dk9rOADKGXXFpZsSK=LUk4CGWMrG5VUQ@mail.gmail.com> <20190610135109.7alkvruvw2jbtwph@flea>
+In-Reply-To: <20190610135109.7alkvruvw2jbtwph@flea>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 10 Jun 2019 17:51:25 +0200
+Message-ID: <CAFBinCAy=YR+qV=vYtAV4p5ftcR-VuYTJz3wuMY-k6PWcmbDQQ@mail.gmail.com>
+Subject: Re: [RFC next v1 0/5] stmmac: honor the GPIO flags for the PHY reset GPIO
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, devicetree@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>, khilman@baylibre.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 01, 2019 at 10:27:06PM -0400, Stephen Suryaputra wrote:
-> On Mon, Jun 03, 2019 at 02:30:06PM +0200, Pablo Neira Ayuso wrote:
-> > > I developed this patchset to suit my employer needs and there is no plan
-> > > for a follow up patchset, however I think non-zero offset might be useful
-> > > in the future for tunneled packets.
-> > 
-> > For tunneled traffic, we can store the network offset in the
-> > nft_pktinfo object. Then, add a new extension to update this network
-> > offset to point to the network offset inside the tunnel header, and
-> > use this pkt->network_offset everywhere.
-> 
-> OK. I'm changing so that offset isn't being used as input. But, it's
-> still being passed as reference for output. See further response
-> below...
-> 
-> > I think this new IPv4 options extension should use priv->offset to
-> > match fields inside the IPv4 option specifically, just like in the
-> > IPv6 extensions and TCP options do. If you look on how the
-> > priv->offset is used in the existing code, this offset points to
-> > values that the specific option field conveys.
-> 
-> I believe that's what I have coded:
-> 
-> 	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type, NULL, NULL);
-> 	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
-> 		*dest = (err >= 0);
-> 		return;
-> 	} else if (err < 0) {
-> 		goto err;
-> 	}
-> 	offset += priv->offset;
-> 
-> offset is returned as the offset where it matches the sought priv->type
-> then priv->offset is added to get to the right field between the offset.
-
-I see, thanks for explaining.
-
-I got me confused when I read this:
-
-+ * Note that *offset is used as input/output parameter, and if it is not zero,
-+ * then it must be a valid offset to an inner IPv4 header. This can be used
-+ * to explore inner IPv4 header, eg. ICMP error messages.
-
-I thought this is how the new extension for nftables is working. Not
-the function.
-
-And then, this chunk:
-
-+       if (!offset)
-+               return -EINVAL;
-
-This never happens, right? offset is always set.
-
-+       if (!*offset)
-+               *offset = skb_network_offset(skb);
-
-So this is not needed either.
-
-I would remove those, you can add more code to ipv4_find_option()
-later on as you get more clients in the networking tree. I'd suggest,
-better remove code that is not used yet, then introduce it once
-needed.
-
-> If this is satisfactory, I can submit v2 of the kernel patch.
-
-Please do so, so you get more feedback (if needed) and we move on :-)
-
-Thanks!
+On Mon, Jun 10, 2019 at 3:51 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> Hi Martin,
+>
+> On Mon, Jun 10, 2019 at 02:31:17PM +0200, Martin Blumenstingl wrote:
+> > On Mon, Jun 10, 2019 at 1:47 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> > >
+> > > Hi Andrew,
+> > >
+> > > On Sun, Jun 09, 2019 at 10:45:10PM +0200, Andrew Lunn wrote:
+> > > > > Patch #1 and #4 are minor cleanups which follow the boyscout rule:
+> > > > > "Always leave the campground cleaner than you found it."
+> > > >
+> > > > > I
+> > > > > am also looking for suggestions how to handle these cross-tree changes
+> > > > > (patch #2 belongs to the linux-gpio tree, patches #1, 3 and #4 should
+> > > > > go through the net-next tree. I will re-send patch #5 separately as
+> > > > > this should go through Kevin's linux-amlogic tree).
+> > > >
+> > > > Patches 1 and 4 don't seem to have and dependencies. So i would
+> > > > suggest splitting them out and submitting them to netdev for merging
+> > > > independent of the rest.
+> > >
+> > > Jumping on the occasion of that series. These properties have been
+> > > defined to deal with phy reset, while it seems that the PHY core can
+> > > now handle that pretty easily through generic properties.
+> > >
+> > > Wouldn't it make more sense to just move to that generic properties
+> > > that already deals with the flags properly?
+> > thank you for bringing this up!
+> > if anyone else (just like me) doesn't know about it, there are generic
+> > bindings defined here: [0]
+> >
+> > I just tested this on my X96 Max by defining the following properties
+> > inside the PHY node:
+> >   reset-delay-us = <10000>;
+> >   reset-assert-us = <10000>;
+> >   reset-deassert-us = <10000>;
+> >   reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
+> >
+> > that means I don't need any stmmac patches which seems nice.
+>
+> I'm glad it works for you :)
+>
+> > instead I can submit a patch to mark the snps,reset-gpio properties in
+> > the dt-bindings deprecated (and refer to the generic bindings instead)
+> > what do you think?
+>
+> I already did as part of the binding reworks I did earlier today:
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-June/658427.html
+great, thank you - you have my Reviewed-by!
