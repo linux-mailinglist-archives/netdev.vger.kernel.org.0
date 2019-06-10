@@ -2,119 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FFD3BED0
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83C13BED7
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390012AbfFJVkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 17:40:23 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39458 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389362AbfFJVkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:40:22 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x5ALc2kq017948;
-        Mon, 10 Jun 2019 14:40:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=wpl1gPxKZRfYTgXoFkJipAfuumNwEnnrXKqe0qnNPpo=;
- b=YxHPFJkrgizakD+z4jD1NHWmF7iPmTGNUFu4lA5/lj3Wi9BbDhsPs52yO5Ng4hYbMIuO
- u2mGY/G+w8+8XcByAg3Bx6dzhyHKJ0RRdDPAODR1DBVSYbougl3JgPMqIktEDIPlGLes
- drZbRcb3PQPCn/VM0Lhyk+esSIDFy5tzI4M= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2t08pc7bnk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jun 2019 14:40:03 -0700
-Received: from prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 10 Jun 2019 14:40:01 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 10 Jun 2019 14:40:01 -0700
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 10 Jun 2019 14:40:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wpl1gPxKZRfYTgXoFkJipAfuumNwEnnrXKqe0qnNPpo=;
- b=irlKN+mEcWapKxxBHUF4Lh6wXe1QfSV0HTCzQgpdm1jV2cA3DpMp/ce2gFeWsdGJVyrmfqOt0xpczYNw7+ScxEZCGRX9CN/3rV5tC9WRdTwu/EGe/KLKN6yYIYO7+2ICswk8SJJYE4lNsUI8uwfzbTWIrU8c0mgN3Xe2oWXQXT0=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
- MWHPR15MB1694.namprd15.prod.outlook.com (10.175.141.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.13; Mon, 10 Jun 2019 21:39:59 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1965.017; Mon, 10 Jun 2019
- 21:39:59 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix constness of source arg for
- bpf helpers
-Thread-Topic: [PATCH bpf-next] selftests/bpf: fix constness of source arg for
- bpf helpers
-Thread-Index: AQHVH7SHxjGVTIbEIUKF6MDw2P5+k6aVaq+A
-Date:   Mon, 10 Jun 2019 21:39:59 +0000
-Message-ID: <20190610213957.2q7yfhzy3b2o4wef@kafai-mbp.dhcp.thefacebook.com>
-References: <20190610174655.2207879-1-andriin@fb.com>
-In-Reply-To: <20190610174655.2207879-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MW2PR16CA0014.namprd16.prod.outlook.com (2603:10b6:907::27)
- To MWHPR15MB1790.namprd15.prod.outlook.com (2603:10b6:301:53::10)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:4395]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4fec0a79-3be7-41e1-dcfa-08d6edec2ffc
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1694;
-x-ms-traffictypediagnostic: MWHPR15MB1694:
-x-microsoft-antispam-prvs: <MWHPR15MB16948B6B32A45D3F203C9F31D5130@MWHPR15MB1694.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2887;
-x-forefront-prvs: 0064B3273C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(136003)(396003)(366004)(376002)(39860400002)(199004)(189003)(386003)(102836004)(305945005)(478600001)(7736002)(66556008)(66946007)(66476007)(6246003)(73956011)(558084003)(6506007)(6862004)(66446008)(64756008)(4326008)(99286004)(229853002)(46003)(486006)(476003)(5660300002)(11346002)(81166006)(81156014)(86362001)(6636002)(6512007)(68736007)(76176011)(71190400001)(186003)(2906002)(446003)(8676002)(14454004)(71200400001)(53936002)(9686003)(1076003)(6436002)(6116002)(6486002)(316002)(54906003)(25786009)(52116002)(256004)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1694;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 2/ueTslaGODmljhNfnYrTTkVY2Xz/NoHhEo3SyR9j1SgU2y2g/1xkvlJE7X7SRd+PhDTMqXHJ6UHLkg86QF+jDh1OPhfKNlhHRAGX7rNCW37aE4oIBhLXkO0GHdyzBidVjRMZf6MWytwehoS2IYgMk/cRMcvU1yhFs3zC2rDO4xz6kSahK4Qg2dMBL7aWC49UUOqpL8zCNo9zjUG+mihjleME6E/6lnrh/zeubnYa8ArYEdW726+ECGm9LJwUaCgQp0j58Zck24ec3kOMFBpFch/Tek5IrvqmVXYj+qPPl2UOVcZNWKqpG2Ok+Htz7ftC82qQOCOxB1wKpq8h3VDVvospsdclsr8OYEUmVNIy37ssosIOg4bjxvH8aarOiXdNWSmKiSF0SaoLYs2vPY82r1ht+/yXYXGd2oTs1pWI2I=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7A24992C45BAA5459D657BAF067B18B7@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2387964AbfFJVop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 17:44:45 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39775 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387661AbfFJVop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:44:45 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z23so750496wma.4
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 14:44:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ns3pOAH0h2tm+AJQrvpsT97amILIBEzW/lMAG/NlK58=;
+        b=Wu/D7HK+CIPlr/yubr9O8VCY6IV9dgnIkYPf9LJP9zRv/Dio+KJ0w6B8EzZkZtCYSV
+         beqrcCeAhGYnDZOnLN9q7sMEh40PCUv3mpI5JNeq0Kn5zWBRm/5HkkpqVw2rcyS26gJ5
+         dApgdi/0iUcArem75e3Q8LT3zmcaclQpcIIyKYcQJQ+Eh5inb0RRk0Lnsp2VCJ3YKnAa
+         b3njpQv349z/XgeXEK2J22tT1DDemh6BCc8h/EcnLqXh+8Kh4jcCKtGUZVznQlukjJeA
+         Vh46fptNcADMsGEV26HN+CgXI+5cFfawKioTIHkdbmN+Sp9XVf7eLa1qdZz5w/7lxorj
+         vsfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ns3pOAH0h2tm+AJQrvpsT97amILIBEzW/lMAG/NlK58=;
+        b=b8e1osAUvh7CWyLfTLM+BxzrVJrhHutcVVYT3mZURUxaeWR06Cj2IaHY5SFR78FIwE
+         xkrB4SAa49GzbEJiTCz5DasbiMSDSBlPEfQRbhmQYYXmGOIZPLFhMmnijHZuk+hUbTHe
+         zT9+ofKXbmnDdPkbXoO9qMU9IDT2eJDybVrhMCkvMBA82THOk5MWDeodpLkBPPPd+yDa
+         OXmYNA493GISJ2wcGIvpBXY/2Qlkuz3MF0WE/NId6XEyWxzB5vR7u0CAQabE/Cxaxakz
+         lzZbUtIJ8kzJ7JpFX/GhSGvdlJdM6MV0KOwufy3Xi3tpl9jBcpitkmLTVEY/Ewje9VJd
+         d/pg==
+X-Gm-Message-State: APjAAAUB63wGZJOxsDO/NLXS1ej5txx0CbgnjLmXycz+N4yCKkjQ7sgx
+        vj0IHterTQP5i+S0/ul75D6geon4
+X-Google-Smtp-Source: APXvYqwU9rmeI36pqHbNvuCxtTG/oaQM3h2cZ28ofIt4dywZltsuPleD+7d1aMDy6/i9dbmEydnYtg==
+X-Received: by 2002:a1c:407:: with SMTP id 7mr16096448wme.113.1560203082157;
+        Mon, 10 Jun 2019 14:44:42 -0700 (PDT)
+Received: from [10.67.49.123] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id c65sm46717wma.44.2019.06.10.14.44.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 14:44:41 -0700 (PDT)
+Subject: Re: [PATCH RFC] net: phy: add state PERM_FAIL
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <8e4cd03b-2c0a-ada9-c44d-2b5f5bd4f148@gmail.com>
+ <9e1b2e30-139d-c3b9-0ac3-5775a4ade3a6@gmail.com>
+ <20190610185123.GA2191@lunn.ch>
+ <68508be9-1a36-48ab-7428-bf6e7f71be59@gmail.com>
+ <20190610212743.GE2191@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <9fadc274-fb74-7ab9-8acf-53e3a49a48c9@gmail.com>
+Date:   Mon, 10 Jun 2019 14:44:33 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fec0a79-3be7-41e1-dcfa-08d6edec2ffc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2019 21:39:59.6492
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1694
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-10_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=492 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906100146
-X-FB-Internal: deliver
+In-Reply-To: <20190610212743.GE2191@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 10:46:55AM -0700, Andrii Nakryiko wrote:
-> Fix signature of bpf_probe_read and bpf_probe_write_user to mark source
-> pointer as const. This causes warnings during compilation for
-> applications relying on those helpers.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+On 6/10/19 2:27 PM, Andrew Lunn wrote:
+>> Maybe the broader question is how do you, Heiner and Russell imagine a
+>> genuine case where the PHY does not have a firmware provided/loaded
+>> before Linux does take over (say, BoM cost savings dictate no flash can
+>> be used
+> 
+> I've not seen either of these PHY devices not have a FLASH. I also
+> wonder how long such a download to RAM takes. I suspect it is
+> slow. The boards i have, have a 4Mbit Flash, so, 256K 16bit words.
+> How long does 256K MDIO transfers take, given that they are typically
+> polled IO? Is that a reasonable design/cost trade off?
+
+If you have a long enough uptime, sure. You could emulate the SPI flash
+through the means of GPIO pins, it's embedded, so sky's (no pun
+intended) is the limit :).
+-- 
+Florian
