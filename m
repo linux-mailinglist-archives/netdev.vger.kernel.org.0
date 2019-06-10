@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4723B9B4
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9739A3B9B6
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728471AbfFJQiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 12:38:19 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58292 "EHLO
+        id S2387691AbfFJQie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 12:38:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58304 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728104AbfFJQiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:38:18 -0400
+        with ESMTP id S1728164AbfFJQid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:38:33 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 80E7115064093;
-        Mon, 10 Jun 2019 09:38:17 -0700 (PDT)
-Date:   Mon, 10 Jun 2019 09:38:16 -0700 (PDT)
-Message-Id: <20190610.093816.262800300265390788.davem@davemloft.net>
-To:     nhorman@tuxdriver.com
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        marcelo.leitner@gmail.com, lucien.xin@gmail.com
-Subject: Re: [PATCH] Free cookie before we memdup a new one
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1CD88150640A1;
+        Mon, 10 Jun 2019 09:38:32 -0700 (PDT)
+Date:   Mon, 10 Jun 2019 09:38:30 -0700 (PDT)
+Message-Id: <20190610.093830.1398717949744756291.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, dwmw@amazon.com,
+        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
+        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
+        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
+        benh@amazon.com, akiyano@amazon.com
+Subject: Re: [PATCH V2 net-next 4/6] net: ena: allow queue allocation
+ backoff when low on memory
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190610163456.7778-1-nhorman@tuxdriver.com>
-References: <20190610163456.7778-1-nhorman@tuxdriver.com>
+In-Reply-To: <20190610163659.GL28724@lunn.ch>
+References: <20190610111918.21397-5-sameehj@amazon.com>
+        <20190610.091840.690511717716268814.davem@davemloft.net>
+        <20190610163659.GL28724@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 10 Jun 2019 09:38:17 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 10 Jun 2019 09:38:32 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neil Horman <nhorman@tuxdriver.com>
-Date: Mon, 10 Jun 2019 12:34:56 -0400
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Mon, 10 Jun 2019 18:36:59 +0200
 
-> Based on comments from Xin, even after fixes for our recent syzbot
-> report of cookie memory leaks, its possible to get a resend of an INIT
-> chunk which would lead to us leaking cookie memory.
+> On Mon, Jun 10, 2019 at 09:18:40AM -0700, David Miller wrote:
+>> From: <sameehj@amazon.com>
+>> Date: Mon, 10 Jun 2019 14:19:16 +0300
+>> 
+>> > +static inline void set_io_rings_size(struct ena_adapter *adapter,
+>> > +				     int new_tx_size, int new_rx_size)
+>> 
+>> Please do not ever use inline in foo.c files, let the compiler decide.
 > 
-> To ensure that we don't leak cookie memory, free any previously
-> allocated cookie first.
+> Hi David
 > 
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> It looks like a few got passed review:
 
-Please post with an appropriate subsystem prefix in the Subject.
-
-Thank you.
+I know :-/
