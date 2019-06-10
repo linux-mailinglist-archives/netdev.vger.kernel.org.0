@@ -2,255 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CB283C016
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD793C026
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390717AbfFJXja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 19:39:30 -0400
-Received: from mail-eopbgr20066.outbound.protection.outlook.com ([40.107.2.66]:22416
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390524AbfFJXj3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 19:39:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=50PMIP8Vf29QIIXwym7Yfpfje94jI8gBEjMRy+nvU3o=;
- b=HhXG1T++Ljp3slfrThxhdZkLixPC96iKtSCuoxAVRQjauISsWGmmi4dP+gQUg3fr8XPRK7bGQamrg8ZDgdo0s19L2SyVtLOrLkF5vbJRaJU3hPgUuCqfvACrTeN5p4MhVuFi60jCC9qaa82FnTe6Fw7+yHvtrQXbtAApH+G0P6M=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2166.eurprd05.prod.outlook.com (10.168.55.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1965.12; Mon, 10 Jun 2019 23:38:42 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3b:cb20:88ed:30bf]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3b:cb20:88ed:30bf%5]) with mapi id 15.20.1965.017; Mon, 10 Jun 2019
- 23:38:42 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Yuval Avnery <yuvalav@mellanox.com>
-Subject: [PATCH mlx5-next 16/16] net/mlx5: Add EQ enable/disable API
-Thread-Topic: [PATCH mlx5-next 16/16] net/mlx5: Add EQ enable/disable API
-Thread-Index: AQHVH+WjnhLL8XVEC06+XRMcMHYKaw==
-Date:   Mon, 10 Jun 2019 23:38:42 +0000
-Message-ID: <20190610233733.12155-17-saeedm@mellanox.com>
-References: <20190610233733.12155-1-saeedm@mellanox.com>
-In-Reply-To: <20190610233733.12155-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR01CA0015.prod.exchangelabs.com (2603:10b6:a02:80::28)
- To DB6PR0501MB2759.eurprd05.prod.outlook.com (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2dd4be78-4ee7-4e0d-7a56-08d6edfcc5b1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2166;
-x-ms-traffictypediagnostic: DB6PR0501MB2166:
-x-microsoft-antispam-prvs: <DB6PR0501MB21664105744FCB22CD964ADEBE130@DB6PR0501MB2166.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 0064B3273C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(136003)(376002)(39860400002)(346002)(396003)(189003)(199004)(450100002)(85306007)(53936002)(6512007)(14454004)(50226002)(2616005)(186003)(256004)(81166006)(486006)(6436002)(11346002)(5024004)(8676002)(8936002)(25786009)(476003)(14444005)(52116002)(446003)(2906002)(478600001)(99286004)(81156014)(4326008)(6486002)(107886003)(71200400001)(5660300002)(66446008)(64756008)(305945005)(66946007)(386003)(6506007)(7736002)(26005)(76176011)(71190400001)(102836004)(66476007)(86362001)(73956011)(66556008)(110136005)(6636002)(36756003)(54906003)(3846002)(6116002)(316002)(1076003)(66066001)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2166;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: pwxR1ASfCmw1D9Rykwh/AY3rybsl5Ii4ffZjLdKPxtBAvXH6sNU0VRGSgU2cPuzI2vCAibZbTZwMMNjzO2fE3iWIln4/oZUvH9BPxRwPemqA7kYVLt+dFw1BzEBrsVhtxahOk2nwdQjQNiSCV8GDCexVGOWQb3SdoK5ZTVF+fKbspQOhqA9sLIWoeI5N4nv5bIK4y1oa4zUoys8naCFrD0IotvVdpbQROh3npjk34gC1dpqA4wm7JkI8y6yeva77/Tipk04vn23SN87hLui1g8byJkA7jLGFK+1xRG+39IQ4Bg24RO9I1TUSj2mkxQQ+xKDIs63x5TB8kCYGfGZpOMI9kyeketaLlj7AT9Hn0E/GmIeo+dM8aXVzekhw+3/bkuFrmrMrYq3zDiX93Y03aEyuy570PsRef6xSL4kn9fg=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2390687AbfFJXtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 19:49:10 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39648 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390524AbfFJXtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 19:49:10 -0400
+Received: by mail-qk1-f194.google.com with SMTP id i125so6534798qkd.6;
+        Mon, 10 Jun 2019 16:49:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jozXrqFphFU3vlMDyhbHjG2RsqRJsZmkKUiyJq3WnkU=;
+        b=LMyU70vXzsDEPlCW64H81+tj/TbcQVyMwNMUO1EpwQhk2EczBO99rhx2BQ9QcU65Fi
+         /JgiFW/xfbYAGM4e0UzsAut8o2Th5Mz6xp4HbtBaQ1W0U+Mk1BKK2l0X5ZUUGmw7Pq0i
+         ECD9CPuuaW6ZLvvbIx7j5tdlUPWDUJWasTjTONkcH+m5gCj3UOdwEwpjJg8JXxJpQkvg
+         O9jwRBm+Xgmui22CL7zzNXa599JjW60ybOmDuED9pEAKGYTk9dyGh1KJABRzSZFl5Ezt
+         e1tZXBc377LYB0cT6sOdsSHHvI7H2JJjJm1jKM06pxP72ZGJXGGL8QHOd2lHo4YlTtOO
+         F67g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jozXrqFphFU3vlMDyhbHjG2RsqRJsZmkKUiyJq3WnkU=;
+        b=sLXAVk+6lAxEr6B1op1Pv6s1tzX0rB+e49ALFDhps03pdxoz5qCY5Cf4OijwMY0GZU
+         1TSwvw7j5M9mmsN+b7TjjYsT3syO3T7WgBQl2VybQts6t8vbGRS/dDZDTMC2NEJh9g+e
+         hlJjE1J8gjnNpaKGU/JrJX8dbo0Z63J+cIk6p+UMFzY5fi9OvqOsrKb8Pa9ezx0Cj3ex
+         Xupw5dkeTGcmwr35sENfrhtnX9GocMeQ0gCJnmbRD7xThcZi7afzSOT6QvnRJQNYOODA
+         3DmgbSA7IKfS7b2o2xqd6LGIwE+LGtMhKWk+jfswIwv17FOspjTKLIxEVgR73bGFGleA
+         AY5g==
+X-Gm-Message-State: APjAAAWUxiOZrs2lnGWQlLlknjoe74c/iWvFer7ja1tC0CIgsJQ2S/L+
+        A0QOC7nNt2qmtX0XOuetVV3Psc24JSriTH/CbcAGsaYP
+X-Google-Smtp-Source: APXvYqxFbJihatw/rosGsK6jqnEnOWU7hg8gvwhFIM57z5ifKEihnbQCiILzN7esjRT3OnWnnGctKNo5qMH07u9Mu6I=
+X-Received: by 2002:a05:620a:147:: with SMTP id e7mr57263734qkn.247.1560210548951;
+ Mon, 10 Jun 2019 16:49:08 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2dd4be78-4ee7-4e0d-7a56-08d6edfcc5b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2019 23:38:42.7261
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2166
+References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
+ <20190531212835.GA31612@mini-arch> <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
+ <20190603163222.GA14556@mini-arch> <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
+ <20190604010254.GB14556@mini-arch> <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
+ <20190604042902.GA2014@mini-arch> <20190604134538.GB2014@mini-arch>
+ <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
+ <3ff873a8-a1a6-133b-fa20-ad8bc1d347ed@iogearbox.net> <CAEf4BzYr_3heu2gb8U-rmbgMPu54ojcdjMZu7M_VaqOyCNGR5g@mail.gmail.com>
+ <9d0bff7f-3b9f-9d2c-36df-64569061edd6@fb.com> <20190606171007.1e1eb808@cakuba.netronome.com>
+ <4553f579-c7bb-2d4c-a1ef-3e4fbed64427@fb.com> <20190606180253.36f6d2ae@cakuba.netronome.com>
+ <b9798871-3b0e-66ce-903d-c9a587651abc@fb.com>
+In-Reply-To: <b9798871-3b0e-66ce-903d-c9a587651abc@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 10 Jun 2019 16:48:57 -0700
+Message-ID: <CAEf4Bzbc0VAMjxt=K6nguLz0aP+YEt9Au+KWh-WxvZR19KCD4A@mail.gmail.com>
+Subject: Re: explicit maps. Was: [RFC PATCH bpf-next 6/8] libbpf: allow
+ specifying map definitions using BTF
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogWXV2YWwgQXZuZXJ5IDx5dXZhbGF2QG1lbGxhbm94LmNvbT4NCg0KUHJldmlvdXNseSwg
-RVEgam9pbmVkIHRoZSBjaGFpbiBub3RpZmllciBvbiBjcmVhdGlvbi4NClRoaXMgZm9yY2VkIHRo
-ZSBjYWxsZXIgdG8gYmUgcmVhZHkgdG8gaGFuZGxlIGV2ZW50cyBiZWZvcmUgY3JlYXRpbmcNCnRo
-ZSBFUSB0aHJvdWdoIGVxX2NyZWF0ZV9nZW5lcmljIGludGVyZmFjZS4NCg0KVG8gaGVscCB0aGUg
-Y2FsbGVyIGNvbnRyb2wgd2hlbiB0aGUgY3JlYXRlZCBFUSB3aWxsIGJlIGF0dGFjaGVkIHRvIHRo
-ZQ0KSVJRLCBhZGQgZW5hYmxlL2Rpc2FibGUgQVBJLg0KDQpTaWduZWQtb2ZmLWJ5OiBZdXZhbCBB
-dm5lcnkgPHl1dmFsYXZAbWVsbGFub3guY29tPg0KU2lnbmVkLW9mZi1ieTogU2FlZWQgTWFoYW1l
-ZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQotLS0NCiBkcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4
-NS9vZHAuYyAgICAgICAgICAgICAgfCAgIDkgKy0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
-YW5veC9tbHg1L2NvcmUvZXEuYyAgfCAxMDUgKysrKysrKysrKysrKy0tLS0tDQogLi4uL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2VxLmggIHwgICAxIC0NCiBpbmNsdWRlL2xp
-bnV4L21seDUvZXEuaCAgICAgICAgICAgICAgICAgICAgICAgfCAgIDUgKy0NCiA0IGZpbGVzIGNo
-YW5nZWQsIDg4IGluc2VydGlvbnMoKyksIDMyIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDUvb2RwLmMgYi9kcml2ZXJzL2luZmluaWJhbmQvaHcv
-bWx4NS9vZHAuYw0KaW5kZXggNjkzYTBlMjI1MDkzLi4xMmNjZWUxZWIwNDcgMTAwNjQ0DQotLS0g
-YS9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9vZHAuYw0KKysrIGIvZHJpdmVycy9pbmZpbmli
-YW5kL2h3L21seDUvb2RwLmMNCkBAIC0xNTYwLDE1ICsxNTYwLDIxIEBAIG1seDVfaWJfY3JlYXRl
-X3BmX2VxKHN0cnVjdCBtbHg1X2liX2RldiAqZGV2LCBzdHJ1Y3QgbWx4NV9pYl9wZl9lcSAqZXEp
-DQogCQkuaXJxX2luZGV4ID0gMCwNCiAJCS5tYXNrID0gMSA8PCBNTFg1X0VWRU5UX1RZUEVfUEFH
-RV9GQVVMVCwNCiAJCS5uZW50ID0gTUxYNV9JQl9OVU1fUEZfRVFFLA0KLQkJLm5iID0gJmVxLT5p
-cnFfbmIsDQogCX07DQogCWVxLT5jb3JlID0gbWx4NV9lcV9jcmVhdGVfZ2VuZXJpYyhkZXYtPm1k
-ZXYsICZwYXJhbSk7DQogCWlmIChJU19FUlIoZXEtPmNvcmUpKSB7DQogCQllcnIgPSBQVFJfRVJS
-KGVxLT5jb3JlKTsNCiAJCWdvdG8gZXJyX3dxOw0KIAl9DQorCWVyciA9IG1seDVfZXFfZW5hYmxl
-KGRldi0+bWRldiwgZXEtPmNvcmUsICZlcS0+aXJxX25iKTsNCisJaWYgKGVycikgew0KKwkJbWx4
-NV9pYl9lcnIoZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSBvZHAgRVEgJWRcbiIsIGVycik7DQorCQln
-b3RvIGVycl9lcTsNCisJfQ0KIA0KIAlyZXR1cm4gMDsNCitlcnJfZXE6DQorCW1seDVfZXFfZGVz
-dHJveV9nZW5lcmljKGRldi0+bWRldiwgZXEtPmNvcmUpOw0KIGVycl93cToNCiAJZGVzdHJveV93
-b3JrcXVldWUoZXEtPndxKTsNCiBlcnJfbWVtcG9vbDoNCkBAIC0xNTgxLDYgKzE1ODcsNyBAQCBt
-bHg1X2liX2Rlc3Ryb3lfcGZfZXEoc3RydWN0IG1seDVfaWJfZGV2ICpkZXYsIHN0cnVjdCBtbHg1
-X2liX3BmX2VxICplcSkNCiB7DQogCWludCBlcnI7DQogDQorCW1seDVfZXFfZGlzYWJsZShkZXYt
-Pm1kZXYsIGVxLT5jb3JlLCAmZXEtPmlycV9uYik7DQogCWVyciA9IG1seDVfZXFfZGVzdHJveV9n
-ZW5lcmljKGRldi0+bWRldiwgZXEtPmNvcmUpOw0KIAljYW5jZWxfd29ya19zeW5jKCZlcS0+d29y
-ayk7DQogCWRlc3Ryb3lfd29ya3F1ZXVlKGVxLT53cSk7DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VxLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYw0KaW5kZXggMGY1ODQ2YTM0OTI4Li41OGZmZjJmMzli
-MzggMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUv
-ZXEuYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VxLmMN
-CkBAIC0zMDQsMjcgKzMwNCwxNCBAQCBjcmVhdGVfbWFwX2VxKHN0cnVjdCBtbHg1X2NvcmVfZGV2
-ICpkZXYsIHN0cnVjdCBtbHg1X2VxICplcSwNCiAJZXEtPmlycW4gPSBwY2lfaXJxX3ZlY3Rvcihk
-ZXYtPnBkZXYsIHZlY2lkeCk7DQogCWVxLT5kZXYgPSBkZXY7DQogCWVxLT5kb29yYmVsbCA9IHBy
-aXYtPnVhci0+bWFwICsgTUxYNV9FUV9ET09SQkVMX09GRlNFVDsNCi0JZXEtPmlycV9uYiA9IHBh
-cmFtLT5uYjsNCi0NCi0JZXJyID0gbWx4NV9pcnFfYXR0YWNoX25iKGRldi0+cHJpdi5lcV90YWJs
-ZS0+aXJxX3RhYmxlLCB2ZWNpZHgsDQotCQkJCSBwYXJhbS0+bmIpOw0KLQlpZiAoZXJyKQ0KLQkJ
-Z290byBlcnJfZXE7DQogDQogCWVyciA9IG1seDVfZGVidWdfZXFfYWRkKGRldiwgZXEpOw0KIAlp
-ZiAoZXJyKQ0KLQkJZ290byBlcnJfZGV0YWNoOw0KLQ0KLQkvKiBFUXMgYXJlIGNyZWF0ZWQgaW4g
-QVJNRUQgc3RhdGUNCi0JICovDQotCWVxX3VwZGF0ZV9jaShlcSwgMSk7DQorCQlnb3RvIGVycl9l
-cTsNCiANCiAJa3ZmcmVlKGluKTsNCiAJcmV0dXJuIDA7DQogDQotZXJyX2RldGFjaDoNCi0JbWx4
-NV9pcnFfZGV0YWNoX25iKGRldi0+cHJpdi5lcV90YWJsZS0+aXJxX3RhYmxlLCB2ZWNpZHgsIGVx
-LT5pcnFfbmIpOw0KLQ0KIGVycl9lcToNCiAJbWx4NV9jbWRfZGVzdHJveV9lcShkZXYsIGVxLT5l
-cW4pOw0KIA0KQEAgLTMzNiwxNyArMzIzLDQ5IEBAIGNyZWF0ZV9tYXBfZXEoc3RydWN0IG1seDVf
-Y29yZV9kZXYgKmRldiwgc3RydWN0IG1seDVfZXEgKmVxLA0KIAlyZXR1cm4gZXJyOw0KIH0NCiAN
-CisvKioNCisgKiBtbHg1X2VxX2VuYWJsZSAtIEVuYWJsZSBFUSBmb3IgcmVjZWl2aW5nIEVRRXMN
-CisgKiBAZGV2IC0gRGV2aWNlIHdoaWNoIG93bnMgdGhlIGVxDQorICogQGVxIC0gRVEgdG8gZW5h
-YmxlDQorICogQG5iIC0gbm90aWZpZXIgY2FsbCBibG9jaw0KKyAqIG1seDVfZXFfZW5hYmxlIC0g
-bXVzdCBiZSBjYWxsZWQgYWZ0ZXIgRVEgaXMgY3JlYXRlZCBpbiBkZXZpY2UuDQorICovDQoraW50
-IG1seDVfZXFfZW5hYmxlKHN0cnVjdCBtbHg1X2NvcmVfZGV2ICpkZXYsIHN0cnVjdCBtbHg1X2Vx
-ICplcSwNCisJCSAgIHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpDQorew0KKwlzdHJ1Y3QgbWx4
-NV9lcV90YWJsZSAqZXFfdGFibGUgPSBkZXYtPnByaXYuZXFfdGFibGU7DQorCWludCBlcnI7DQor
-DQorCWVyciA9IG1seDVfaXJxX2F0dGFjaF9uYihlcV90YWJsZS0+aXJxX3RhYmxlLCBlcS0+dmVj
-aWR4LCBuYik7DQorCWlmICghZXJyKQ0KKwkJZXFfdXBkYXRlX2NpKGVxLCAxKTsNCisNCisJcmV0
-dXJuIGVycjsNCit9DQorRVhQT1JUX1NZTUJPTChtbHg1X2VxX2VuYWJsZSk7DQorDQorLyoqDQor
-ICogbWx4NV9lcV9kaXNhYmxlIC0gRW5hYmxlIEVRIGZvciByZWNlaXZpbmcgRVFFcw0KKyAqIEBk
-ZXYgLSBEZXZpY2Ugd2hpY2ggb3ducyB0aGUgZXENCisgKiBAZXEgLSBFUSB0byBkaXNhYmxlDQor
-ICogQG5iIC0gbm90aWZpZXIgY2FsbCBibG9jaw0KKyAqIG1seDVfZXFfZGlzYWJsZSAtIG11c3Qg
-YmUgY2FsbGVkIGJlZm9yZSBFUSBpcyBkZXN0cm95ZWQuDQorICovDQordm9pZCBtbHg1X2VxX2Rp
-c2FibGUoc3RydWN0IG1seDVfY29yZV9kZXYgKmRldiwgc3RydWN0IG1seDVfZXEgKmVxLA0KKwkJ
-ICAgICBzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iKQ0KK3sNCisJc3RydWN0IG1seDVfZXFfdGFi
-bGUgKmVxX3RhYmxlID0gZGV2LT5wcml2LmVxX3RhYmxlOw0KKw0KKwltbHg1X2lycV9kZXRhY2hf
-bmIoZXFfdGFibGUtPmlycV90YWJsZSwgZXEtPnZlY2lkeCwgbmIpOw0KK30NCitFWFBPUlRfU1lN
-Qk9MKG1seDVfZXFfZGlzYWJsZSk7DQorDQogc3RhdGljIGludCBkZXN0cm95X3VubWFwX2VxKHN0
-cnVjdCBtbHg1X2NvcmVfZGV2ICpkZXYsIHN0cnVjdCBtbHg1X2VxICplcSkNCiB7DQogCWludCBl
-cnI7DQogDQogCW1seDVfZGVidWdfZXFfcmVtb3ZlKGRldiwgZXEpOw0KIA0KLQllcnIgPSBtbHg1
-X2lycV9kZXRhY2hfbmIoZGV2LT5wcml2LmVxX3RhYmxlLT5pcnFfdGFibGUsDQotCQkJCSBlcS0+
-dmVjaWR4LCBlcS0+aXJxX25iKTsNCi0JaWYgKGVycikNCi0JCW1seDVfY29yZV93YXJuKGVxLT5k
-ZXYsICJlcSBmYWlsZWQgdG8gZGV0YWNoIGZyb20gaXJxLiBlcnIgJWQiLA0KLQkJCSAgICAgICBl
-cnIpOw0KIAllcnIgPSBtbHg1X2NtZF9kZXN0cm95X2VxKGRldiwgZXEtPmVxbik7DQogCWlmIChl
-cnIpDQogCQltbHg1X2NvcmVfd2FybihkZXYsICJmYWlsZWQgdG8gZGVzdHJveSBhIHByZXZpb3Vz
-bHkgY3JlYXRlZCBlcTogZXFuICVkXG4iLA0KQEAgLTU0NCwxNCArNTYzLDE3IEBAIHN0YXRpYyBp
-bnQgY3JlYXRlX2FzeW5jX2VxcyhzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2KQ0KIAkJLmlycV9p
-bmRleCA9IDAsDQogCQkubWFzayA9IDF1bGwgPDwgTUxYNV9FVkVOVF9UWVBFX0NNRCwNCiAJCS5u
-ZW50ID0gTUxYNV9OVU1fQ01EX0VRRSwNCi0JCS5uYiA9ICZ0YWJsZS0+Y21kX2VxLmlycV9uYiwN
-CiAJfTsNCiAJZXJyID0gY3JlYXRlX2FzeW5jX2VxKGRldiwgJnRhYmxlLT5jbWRfZXEuY29yZSwg
-JnBhcmFtKTsNCiAJaWYgKGVycikgew0KIAkJbWx4NV9jb3JlX3dhcm4oZGV2LCAiZmFpbGVkIHRv
-IGNyZWF0ZSBjbWQgRVEgJWRcbiIsIGVycik7DQogCQlnb3RvIGVycjA7DQogCX0NCi0NCisJZXJy
-ID0gbWx4NV9lcV9lbmFibGUoZGV2LCAmdGFibGUtPmNtZF9lcS5jb3JlLCAmdGFibGUtPmNtZF9l
-cS5pcnFfbmIpOw0KKwlpZiAoZXJyKSB7DQorCQltbHg1X2NvcmVfd2FybihkZXYsICJmYWlsZWQg
-dG8gZW5hYmxlIGNtZCBFUSAlZFxuIiwgZXJyKTsNCisJCWdvdG8gZXJyMTsNCisJfQ0KIAltbHg1
-X2NtZF91c2VfZXZlbnRzKGRldik7DQogDQogCXRhYmxlLT5hc3luY19lcS5pcnFfbmIubm90aWZp
-ZXJfY2FsbCA9IG1seDVfZXFfYXN5bmNfaW50Ow0KQEAgLTU1OSwxMiArNTgxLDE3IEBAIHN0YXRp
-YyBpbnQgY3JlYXRlX2FzeW5jX2VxcyhzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2KQ0KIAkJLmly
-cV9pbmRleCA9IDAsDQogCQkubWFzayA9IGdhdGhlcl9hc3luY19ldmVudHNfbWFzayhkZXYpLA0K
-IAkJLm5lbnQgPSBNTFg1X05VTV9BU1lOQ19FUUUsDQotCQkubmIgPSAmdGFibGUtPmFzeW5jX2Vx
-LmlycV9uYiwNCiAJfTsNCiAJZXJyID0gY3JlYXRlX2FzeW5jX2VxKGRldiwgJnRhYmxlLT5hc3lu
-Y19lcS5jb3JlLCAmcGFyYW0pOw0KIAlpZiAoZXJyKSB7DQogCQltbHg1X2NvcmVfd2FybihkZXYs
-ICJmYWlsZWQgdG8gY3JlYXRlIGFzeW5jIEVRICVkXG4iLCBlcnIpOw0KLQkJZ290byBlcnIxOw0K
-KwkJZ290byBlcnIyOw0KKwl9DQorCWVyciA9IG1seDVfZXFfZW5hYmxlKGRldiwgJnRhYmxlLT5h
-c3luY19lcS5jb3JlLA0KKwkJCSAgICAgJnRhYmxlLT5hc3luY19lcS5pcnFfbmIpOw0KKwlpZiAo
-ZXJyKSB7DQorCQltbHg1X2NvcmVfd2FybihkZXYsICJmYWlsZWQgdG8gZW5hYmxlIGFzeW5jIEVR
-ICVkXG4iLCBlcnIpOw0KKwkJZ290byBlcnIzOw0KIAl9DQogDQogCXRhYmxlLT5wYWdlc19lcS5p
-cnFfbmIubm90aWZpZXJfY2FsbCA9IG1seDVfZXFfYXN5bmNfaW50Ow0KQEAgLTU3MiwyMSArNTk5
-LDMxIEBAIHN0YXRpYyBpbnQgY3JlYXRlX2FzeW5jX2VxcyhzdHJ1Y3QgbWx4NV9jb3JlX2RldiAq
-ZGV2KQ0KIAkJLmlycV9pbmRleCA9IDAsDQogCQkubWFzayA9ICAxIDw8IE1MWDVfRVZFTlRfVFlQ
-RV9QQUdFX1JFUVVFU1QsDQogCQkubmVudCA9IC8qIFRPRE86IHNyaW92IG1heF92ZiArICovIDEs
-DQotCQkubmIgPSAmdGFibGUtPnBhZ2VzX2VxLmlycV9uYiwNCiAJfTsNCiAJZXJyID0gY3JlYXRl
-X2FzeW5jX2VxKGRldiwgJnRhYmxlLT5wYWdlc19lcS5jb3JlLCAmcGFyYW0pOw0KIAlpZiAoZXJy
-KSB7DQogCQltbHg1X2NvcmVfd2FybihkZXYsICJmYWlsZWQgdG8gY3JlYXRlIHBhZ2VzIEVRICVk
-XG4iLCBlcnIpOw0KLQkJZ290byBlcnIyOw0KKwkJZ290byBlcnI0Ow0KKwl9DQorCWVyciA9IG1s
-eDVfZXFfZW5hYmxlKGRldiwgJnRhYmxlLT5wYWdlc19lcS5jb3JlLA0KKwkJCSAgICAgJnRhYmxl
-LT5wYWdlc19lcS5pcnFfbmIpOw0KKwlpZiAoZXJyKSB7DQorCQltbHg1X2NvcmVfd2FybihkZXYs
-ICJmYWlsZWQgdG8gZW5hYmxlIHBhZ2VzIEVRICVkXG4iLCBlcnIpOw0KKwkJZ290byBlcnI1Ow0K
-IAl9DQogDQogCXJldHVybiBlcnI7DQogDQotZXJyMjoNCitlcnI1Og0KKwlkZXN0cm95X2FzeW5j
-X2VxKGRldiwgJnRhYmxlLT5wYWdlc19lcS5jb3JlKTsNCitlcnI0Og0KKwltbHg1X2VxX2Rpc2Fi
-bGUoZGV2LCAmdGFibGUtPmFzeW5jX2VxLmNvcmUsICZ0YWJsZS0+YXN5bmNfZXEuaXJxX25iKTsN
-CitlcnIzOg0KIAlkZXN0cm95X2FzeW5jX2VxKGRldiwgJnRhYmxlLT5hc3luY19lcS5jb3JlKTsN
-Ci0NCi1lcnIxOg0KK2VycjI6DQogCW1seDVfY21kX3VzZV9wb2xsaW5nKGRldik7DQorCW1seDVf
-ZXFfZGlzYWJsZShkZXYsICZ0YWJsZS0+Y21kX2VxLmNvcmUsICZ0YWJsZS0+Y21kX2VxLmlycV9u
-Yik7DQorZXJyMToNCiAJZGVzdHJveV9hc3luY19lcShkZXYsICZ0YWJsZS0+Y21kX2VxLmNvcmUp
-Ow0KIGVycjA6DQogCW1seDVfZXFfbm90aWZpZXJfdW5yZWdpc3RlcihkZXYsICZ0YWJsZS0+Y3Ff
-ZXJyX25iKTsNCkBAIC01OTgsMTEgKzYzNSwxMyBAQCBzdGF0aWMgdm9pZCBkZXN0cm95X2FzeW5j
-X2VxcyhzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2KQ0KIAlzdHJ1Y3QgbWx4NV9lcV90YWJsZSAq
-dGFibGUgPSBkZXYtPnByaXYuZXFfdGFibGU7DQogCWludCBlcnI7DQogDQorCW1seDVfZXFfZGlz
-YWJsZShkZXYsICZ0YWJsZS0+cGFnZXNfZXEuY29yZSwgJnRhYmxlLT5wYWdlc19lcS5pcnFfbmIp
-Ow0KIAllcnIgPSBkZXN0cm95X2FzeW5jX2VxKGRldiwgJnRhYmxlLT5wYWdlc19lcS5jb3JlKTsN
-CiAJaWYgKGVycikNCiAJCW1seDVfY29yZV9lcnIoZGV2LCAiZmFpbGVkIHRvIGRlc3Ryb3kgcGFn
-ZXMgZXEsIGVyciglZClcbiIsDQogCQkJICAgICAgZXJyKTsNCiANCisJbWx4NV9lcV9kaXNhYmxl
-KGRldiwgJnRhYmxlLT5hc3luY19lcS5jb3JlLCAmdGFibGUtPmFzeW5jX2VxLmlycV9uYik7DQog
-CWVyciA9IGRlc3Ryb3lfYXN5bmNfZXEoZGV2LCAmdGFibGUtPmFzeW5jX2VxLmNvcmUpOw0KIAlp
-ZiAoZXJyKQ0KIAkJbWx4NV9jb3JlX2VycihkZXYsICJmYWlsZWQgdG8gZGVzdHJveSBhc3luYyBl
-cSwgZXJyKCVkKVxuIiwNCkBAIC02MTAsNiArNjQ5LDcgQEAgc3RhdGljIHZvaWQgZGVzdHJveV9h
-c3luY19lcXMoc3RydWN0IG1seDVfY29yZV9kZXYgKmRldikNCiANCiAJbWx4NV9jbWRfdXNlX3Bv
-bGxpbmcoZGV2KTsNCiANCisJbWx4NV9lcV9kaXNhYmxlKGRldiwgJnRhYmxlLT5jbWRfZXEuY29y
-ZSwgJnRhYmxlLT5jbWRfZXEuaXJxX25iKTsNCiAJZXJyID0gZGVzdHJveV9hc3luY19lcShkZXYs
-ICZ0YWJsZS0+Y21kX2VxLmNvcmUpOw0KIAlpZiAoZXJyKQ0KIAkJbWx4NV9jb3JlX2VycihkZXYs
-ICJmYWlsZWQgdG8gZGVzdHJveSBjb21tYW5kIGVxLCBlcnIoJWQpXG4iLA0KQEAgLTcxMSw2ICs3
-NTEsNyBAQCBzdGF0aWMgdm9pZCBkZXN0cm95X2NvbXBfZXFzKHN0cnVjdCBtbHg1X2NvcmVfZGV2
-ICpkZXYpDQogDQogCWxpc3RfZm9yX2VhY2hfZW50cnlfc2FmZShlcSwgbiwgJnRhYmxlLT5jb21w
-X2Vxc19saXN0LCBsaXN0KSB7DQogCQlsaXN0X2RlbCgmZXEtPmxpc3QpOw0KKwkJbWx4NV9lcV9k
-aXNhYmxlKGRldiwgJmVxLT5jb3JlLCAmZXEtPmlycV9uYik7DQogCQlpZiAoZGVzdHJveV91bm1h
-cF9lcShkZXYsICZlcS0+Y29yZSkpDQogCQkJbWx4NV9jb3JlX3dhcm4oZGV2LCAiZmFpbGVkIHRv
-IGRlc3Ryb3kgY29tcCBFUSAweCV4XG4iLA0KIAkJCQkgICAgICAgZXEtPmNvcmUuZXFuKTsNCkBA
-IC03NTIsMTMgKzc5MywxOSBAQCBzdGF0aWMgaW50IGNyZWF0ZV9jb21wX2VxcyhzdHJ1Y3QgbWx4
-NV9jb3JlX2RldiAqZGV2KQ0KIAkJCS5pcnFfaW5kZXggPSB2ZWNpZHgsDQogCQkJLm1hc2sgPSAw
-LA0KIAkJCS5uZW50ID0gbmVudCwNCi0JCQkubmIgPSAmZXEtPmlycV9uYiwNCiAJCX07DQogCQll
-cnIgPSBjcmVhdGVfbWFwX2VxKGRldiwgJmVxLT5jb3JlLCAmcGFyYW0pOw0KIAkJaWYgKGVycikg
-ew0KIAkJCWtmcmVlKGVxKTsNCiAJCQlnb3RvIGNsZWFuOw0KIAkJfQ0KKwkJZXJyID0gbWx4NV9l
-cV9lbmFibGUoZGV2LCAmZXEtPmNvcmUsICZlcS0+aXJxX25iKTsNCisJCWlmIChlcnIpIHsNCisJ
-CQlkZXN0cm95X3VubWFwX2VxKGRldiwgJmVxLT5jb3JlKTsNCisJCQlrZnJlZShlcSk7DQorCQkJ
-Z290byBjbGVhbjsNCisJCX0NCisNCiAJCW1seDVfY29yZV9kYmcoZGV2LCAiYWxsb2NhdGVkIGNv
-bXBsZXRpb24gRVFOICVkXG4iLCBlcS0+Y29yZS5lcW4pOw0KIAkJLyogYWRkIHRhaWwsIHRvIGtl
-ZXAgdGhlIGxpc3Qgb3JkZXJlZCwgZm9yIG1seDVfdmVjdG9yMmVxbiB0byB3b3JrICovDQogCQls
-aXN0X2FkZF90YWlsKCZlcS0+bGlzdCwgJnRhYmxlLT5jb21wX2Vxc19saXN0KTsNCmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2VxLmggYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2VxLmgNCmluZGV4IDM4
-MzZjMzliMjkwMC4uMjRiZDk5MWE3MjdlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2xpYi9lcS5oDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2VxLmgNCkBAIC0zMyw3ICszMyw2IEBAIHN0cnVjdCBt
-bHg1X2VxIHsNCiAJdTggICAgICAgICAgICAgICAgICAgICAgZXFuOw0KIAlpbnQgICAgICAgICAg
-ICAgICAgICAgICBuZW50Ow0KIAlzdHJ1Y3QgbWx4NV9yc2NfZGVidWcgICAqZGJnOw0KLQlzdHJ1
-Y3Qgbm90aWZpZXJfYmxvY2sgICAqaXJxX25iOyAvKiBGb3IgZGVzdHJveSBvbmx5ICovDQogfTsN
-CiANCiBzdHJ1Y3QgbWx4NV9lcV9hc3luYyB7DQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9t
-bHg1L2VxLmggYi9pbmNsdWRlL2xpbnV4L21seDUvZXEuaA0KaW5kZXggNGE5NGUwNGVmZjBhLi43
-MGUxNmRjZmI0YzQgMTAwNjQ0DQotLS0gYS9pbmNsdWRlL2xpbnV4L21seDUvZXEuaA0KKysrIGIv
-aW5jbHVkZS9saW51eC9tbHg1L2VxLmgNCkBAIC0xNiwxMyArMTYsMTYgQEAgc3RydWN0IG1seDVf
-ZXFfcGFyYW0gew0KIAl1OCAgICAgICAgICAgICBpcnFfaW5kZXg7DQogCWludCAgICAgICAgICAg
-IG5lbnQ7DQogCXU2NCAgICAgICAgICAgIG1hc2s7DQotCXN0cnVjdCBub3RpZmllcl9ibG9jayAq
-bmI7DQogfTsNCiANCiBzdHJ1Y3QgbWx4NV9lcSAqDQogbWx4NV9lcV9jcmVhdGVfZ2VuZXJpYyhz
-dHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2LCBzdHJ1Y3QgbWx4NV9lcV9wYXJhbSAqcGFyYW0pOw0K
-IGludA0KIG1seDVfZXFfZGVzdHJveV9nZW5lcmljKHN0cnVjdCBtbHg1X2NvcmVfZGV2ICpkZXYs
-IHN0cnVjdCBtbHg1X2VxICplcSk7DQoraW50IG1seDVfZXFfZW5hYmxlKHN0cnVjdCBtbHg1X2Nv
-cmVfZGV2ICpkZXYsIHN0cnVjdCBtbHg1X2VxICplcSwNCisJCSAgIHN0cnVjdCBub3RpZmllcl9i
-bG9jayAqbmIpOw0KK3ZvaWQgbWx4NV9lcV9kaXNhYmxlKHN0cnVjdCBtbHg1X2NvcmVfZGV2ICpk
-ZXYsIHN0cnVjdCBtbHg1X2VxICplcSwNCisJCSAgICAgc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpu
-Yik7DQogDQogc3RydWN0IG1seDVfZXFlICptbHg1X2VxX2dldF9lcWUoc3RydWN0IG1seDVfZXEg
-KmVxLCB1MzIgY2MpOw0KIHZvaWQgbWx4NV9lcV91cGRhdGVfY2koc3RydWN0IG1seDVfZXEgKmVx
-LCB1MzIgY2MsIGJvb2wgYXJtKTsNCi0tIA0KMi4yMS4wDQoNCg==
+On Sun, Jun 9, 2019 at 6:17 PM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 6/6/19 6:02 PM, Jakub Kicinski wrote:
+> > On Fri, 7 Jun 2019 00:27:52 +0000, Alexei Starovoitov wrote:
+> >> the solution we're discussing should solve BPF_ANNOTATE_KV_PAIR too.
+> >> That hack must go.
+> >
+> > I see.
+> >
+> >> If I understood your objections to Andrii's format is that
+> >> you don't like pointer part of key/value while Andrii explained
+> >> why we picked the pointer, right?
+> >>
+> >> So how about:
+> >>
+> >> struct {
+> >>     int type;
+> >>     int max_entries;
+> >>     struct {
+> >>       __u32 key;
+> >>       struct my_value value;
+> >>     } types[];
+> >> } ...
+> >
+> > My objection is that k/v fields are never initialized, so they're
+> > "metafields", mixed with real fields which hold parameters - like
+> > type, max_entries etc.
+>
+> I don't share this meta fields vs real fields distinction.
+
+100% agree.
+
+> All of the fields are meta.
+> Kernel implementation of the map doesn't need to hold type and
+> max_entries as actual configuration fields.
+> The map definition in c++ would have looked like:
+> bpf::hash_map<int, struct my_value, 1000, NO_PREALLOC> foo;
+> bpf::array_map<struct my_value, 2000> bar;
+>
+> Sometime key is not necessary. Sometimes flags have to be zero.
+> bpf syscall api is a superset of all fiels for all maps.
+> All of them are configuration and meta fields at the same time.
+> In c++ example there is really no difference between
+> 'struct my_value' and '1000' attributes.
+>
+> I'm pretty sure bpf will have C++ front-end in the future,
+> but until then we have to deal with C and, I think, the map
+> definition should be the most natural C syntax.
+> In that sense what you're proposing with extern:
+> > extern struct my_key my_key;
+> > extern int type_int;
+> >
+> > struct map_def {
+> >      int type;
+> >      int max_entries;
+> >      void *btf_key_ref;
+> >      void *btf_val_ref;
+> > } = {
+> >      ...
+> >      .btf_key_ref = &my_key,
+> >      .btf_val_ref = &type_int,
+> > };
+>
+> is worse than
+>
+> struct map_def {
+>        int type;
+>        int max_entries;
+>        int btf_key;
+>        struct my_key btf_value;
+> };
+>
+> imo explicit key and value would be ideal,
+
+also agree 100%, that's how I started, but then was quickly pointed to
+a real cases where value is just way too big.
+
+> but they take too much space. Hence pointers
+> or zero sized array:
+> struct {
+>       int type;
+>       int max_entries;
+>       struct {
+>         __u32 key;
+>         struct my_value value;
+>       } types[];
+> };
+
+This works, but I still prefer simpler
+
+__u32 *key;
+struct my_value *value;
+
+It has less visual clutter and doesn't rely on somewhat obscure
+flexible array feature (and it will have to be last in the struct,
+unless you do zero-sized array w/ [0]).
+
+>
+> I think we should also consider explicit map creation.
+>
+> Something like:
+>
+> struct my_map {
+>    __u32 key;
+>    struct my_value value;
+> } *my_hash_map, *my_pinned_hash_map;
+>
+> struct {
+>     __u64 key;
+>    struct my_map *value;
+> } *my_hash_of_maps;
+>
+> struct {
+>    struct my_map *value;
+> } *my_array_of_maps;
+>
+> __init void create_my_maps(void)
+> {
+>    bpf_create_hash_map(&my_hash_map, 1000/*max_entries*/);
+>    bpf_obj_get(&my_pinned_hash_map, "/sys/fs/bpf/my_map");
+>    bpf_create_hash_of_maps(&my_hash_of_maps, 1000/*max_entries*/);
+>    bpf_create_array_of_maps(&my_array_of_maps, 20);
+> }
+>
+> SEC("cgroup/skb")
+> int bpf_prog(struct __sk_buff *skb)
+> {
+>    struct my_value *val;
+>    __u32 key;
+>    __u64 key64;
+>    struct my_map *map;
+>
+>    val = bpf_map_lookup(my_hash_map, &key);
+>    map = bpf_map_lookup(my_hash_of_maps, &key64);
+> }
+>
+> '__init' section will be compiled by llvm into bpf instructions
+> that will be executed in users space by libbpf.
+> The __init prog has to succeed otherwise prog load fails.
+>
+> May be all map pointers should be in a special section to avoid
+> putting them into datasec, but libbpf should be able to figure that
+> out without requiring user to specify the .map section.
+> The rest of global vars would go into special datasec map.
+>
+> No llvm changes necessary and BTF is available for keys and values.
+>
+> libbpf can start with simple __init and eventually grow into
+> complex init procedure where maps are initialized,
+> prog_array is populated, etc.
+>
+> Thoughts?
+
+I have few. :)
+
+I think it would be great to have this feature as a sort of "escape
+hatch" for really complicated initialization of maps, which can't be
+done w/ declarative syntax (and doing it from user-land driving app is
+not possible/desirable). But there is a lot of added complexity and
+work to be done to make this happen:
+
+1. We'll need to build BPF interpreter into libbpf (so partial
+duplication of in-kernel BPF machinery);
+2. We'll need to define some sort of user-space BPF API, so that these
+init functions can call into libbpf API (at least). So now in addition
+to in-kernel BPF helpers, we'll have another and different set of
+helpers/APIs exposed to user-land BPF code. This will certainly add
+confusion and raise learning curve.
+3. Next we'll be adding not-just-libbpf APIs, for cases where the size
+of map depends on some system parameter (e.g., number of CPUs, or
+amount of free RAM, or something else). This probably can be done
+through exposed libbpf APIs again, but now we'll need to decide what
+gets exposed, in what format, etc.
+
+It's all doable, but looks like a very large effort, while we yet
+don't have a realistic use case for this. Today cases like that are
+handled by driving user-land app. It seems like having prog_array and
+map-in-map declarative initialization covers a lot of advanced use
+cases (plus, of course, pinning), so for starters I'd concentrate
+effort there to get declarative approach powerful enough to address a
+lot of real-world needs.
+
+The good thing, though, is that nothing prevents us from specifying
+and adding this later, once we have good use cases and most needs
+already covered w/ declarative syntax.
+
+But, assuming we do explicit map creation, I'd also vote for per-map
+"factory" functions, like this:
+
+typedef int (*map_factory_fn)(struct bpf_map); /* can be provided by libbpf */
+
+int init_my_map(struct bpf_map *map)
+{
+    /* something fancy here */
+}
+
+struct {
+    __u64 *key;
+    struct my_value *value;
+    map_factory_fn factory;
+} my_map SEC(".maps") = {
+    .factory = &init_my_map,
+};
+
+/* we can still have per-BPF object init function: */
+int init_my_app(struct bpf_object *obj) {
+    /* some more initialization of BPF object */
+}
