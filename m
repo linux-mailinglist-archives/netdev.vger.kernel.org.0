@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F0753B5B6
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 15:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEB7E3B5C1
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 15:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390224AbfFJNEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 09:04:05 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:41726 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389950AbfFJNEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 09:04:05 -0400
-Received: by mail-lf1-f67.google.com with SMTP id 136so6565632lfa.8
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 06:04:04 -0700 (PDT)
+        id S2390254AbfFJNG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 09:06:26 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37296 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388848AbfFJNG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 09:06:26 -0400
+Received: by mail-ed1-f66.google.com with SMTP id w13so14472340eds.4;
+        Mon, 10 Jun 2019 06:06:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WcJ8L2VIZpozOUCxmAIAp8kABMEhkWByzfpSGr3ZIIo=;
-        b=lo0a8oKwwI2k/gAiDktR2QOF6rFcxgeFG/RSLWlqrjAPY3hFnEkgRMGUp0oFBhtm2A
-         nVrhhjaXFqDUC1zwdRa4lAaDYf4gxp5jSyH7j+0DiTbweuTovBS0I743+wsnXtz5uHfd
-         EfCxY4Uctl1YmOcTq2BIYllN0gL4R8ov1RJxCavY80DwpQJ+3sK0MSc4IaonvDebWRuu
-         y9Aw24jPK7gQaFHtuTeuki9lIbuEj7a4WF4h0m6bZklZ1bX0W7j18+AHc0Aj9q+PiHO0
-         W7Nf262vjP33Pp4dDm5MFNOiLhXgoX6lkMfm365V586L4kBGbCtDbbb/xd4uWw+mCbjG
-         R++A==
+        bh=NWUz1aHqiW4DAbvEa0aXgvCzvwmagYC0x0cLUe4LUzs=;
+        b=lVHS+rvVZBNNzX16vb+nHxt79PUNxbNEetX7iQeKrY9v6mupSrGBwom58jdVOsXzG8
+         V+JR6CwvoT29M7S0UPxIYnBcS09QSKr/ytPsDgnElQzuYf9ophRaOCpPmYxhfeexndlw
+         vclK+NuWCLD+BRdmlGnG6PJ5lyyx/2BSyMH31TVhcj2zjNHVxRJS0sTit3vwl73yDPyA
+         w2U8wU7uqVMD9gTcbchk19Xzs0ECYIKPIC0UstCft61fSap1VZOe96jxi4RhBBsbCBVq
+         oG+pxb6M3OqU6e59m/ElqjegcZ2UlDOCsEHtsstY5aHv5KN6Qb3snJA8y+BQwaPbwosW
+         ULTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WcJ8L2VIZpozOUCxmAIAp8kABMEhkWByzfpSGr3ZIIo=;
-        b=iOcCeBf+w/kyPZjEm8F7PWhPz3fLmm3g2/a541q7Ik1Loo65DgFC2BEqy8P08U319J
-         1wF4+6OwQWFmeN0nOLz43vVsgftCvicvTB6ESFVD0VbiDCUrlgJeSxwSJD9tlFlURAvz
-         4Lf40xolNONIEqMGdrXFwVEBKMKM26bYMu9w0dB3w65nAQ4R2Y+uWC1zxs1zfuQBSnly
-         89lSh4XLM8hI7JCZwzDZASc3kSpndDMIB9+M8sGlCD9+o+d9cfkE9dWm0TivEgaVxBO6
-         TIMG/V8DnFGY2xvVS0NAGOIbqlldxtYP3Q2/xEEtd3D3vXmdSuOd7Pb6LDrZUfG2VfCY
-         KKZg==
-X-Gm-Message-State: APjAAAWuPtJ6HYuWji9NVkVJGC+chDGzHATGZ/XemkiaEtoGMCyr4Kq2
-        Bz009B2b5PHjZrNoG1s3EhDGmemCKhCc8bkHbKjU4A==
-X-Google-Smtp-Source: APXvYqzM5swNZJ4w1rVu6nw3oQdiqx3Km/1wZnjPG7wePICVaK1Y/o7E/3VRoxqpRWAudLGWuSAHSADwVXTzzfRVtds=
-X-Received: by 2002:a19:c383:: with SMTP id t125mr27992403lff.89.1560171843304;
- Mon, 10 Jun 2019 06:04:03 -0700 (PDT)
+        bh=NWUz1aHqiW4DAbvEa0aXgvCzvwmagYC0x0cLUe4LUzs=;
+        b=gpKndljPb0ue9E3S+j3pwKPQuDqddtpA8zxlLO0A04fpT5IvtZbfHQJH1bCySY9JTf
+         wNgYBR7V+29bD+zlg4QzLuVS718gpXybRBGrMx8c/ni++xRfSLuNd8Hx0pOTKudxWcj/
+         GLxD0JBEz5XFr3Kc9dUvvQpkG9UP8rvtOFjF5hRs8uIVEAJ2yEqoNTCia8xmlraTgh30
+         k333FSyYX/vuWrjGgccqguHm+Hcnjw/PsSWdRbnDwSrky4iIsG5oc7tqCbQ6tsoTFDiY
+         jJHqXxq4mrovEdmlEFAQYlUmBQdHVtvx9pwDMQy1vHs6d7+5lm7YJ5SAxDyDmY4hdrs2
+         SscQ==
+X-Gm-Message-State: APjAAAWZtE1NU/pq3dQ2M2Dn2lCwFjNsSOZIMMXlDRBDeZGtk+uzDZVL
+        apLOY0C+zgScEoeancnXZC5MXeKXX7tfyfXx0j8=
+X-Google-Smtp-Source: APXvYqxSS0J+uIlJ1ZM3+zGWrrtrh/UcBN3VIHfnnDEiaHbzwTuF+97AIOaYkGCC5d3W7EopU7hzI73Od3NB1wrWPDQ=
+X-Received: by 2002:a50:bdc2:: with SMTP id z2mr73352300edh.245.1560171984540;
+ Mon, 10 Jun 2019 06:06:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190606094722.23816-1-anders.roxell@linaro.org> <d6b79ee0-07c6-ad81-16b0-8cf929cc214d@xs4all.nl>
-In-Reply-To: <d6b79ee0-07c6-ad81-16b0-8cf929cc214d@xs4all.nl>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Mon, 10 Jun 2019 15:03:52 +0200
-Message-ID: <CADYN=9KY5=FzrkC7MKj9QnG-eM1NVuL00w8Xv4yU2r05rhr7WQ@mail.gmail.com>
-Subject: Re: [PATCH 5/8] drivers: media: coda: fix warning same module names
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>, p.zabel@pengutronix.de,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        marex@denx.de, stefan@agner.ch, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, b.zolnierkie@samsung.com,
-        a.hajda@samsung.com, hkallweit1@gmail.com,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-fbdev@vger.kernel.org, linux-media@vger.kernel.org
+References: <20190610115831.175710-1-maowenan@huawei.com>
+In-Reply-To: <20190610115831.175710-1-maowenan@huawei.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 10 Jun 2019 09:05:48 -0400
+Message-ID: <CAF=yD-JOCZHt6q3ArCqY5PMW1vP5ZmNkYMKUB14TrgU-X30cSQ@mail.gmail.com>
+Subject: Re: [PATCH -next] packet: remove unused variable 'status' in __packet_lookup_frame_in_block
+To:     Mao Wenan <maowenan@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Jun 2019 at 12:13, Hans Verkuil <hverkuil@xs4all.nl> wrote:
+On Mon, Jun 10, 2019 at 8:17 AM Mao Wenan <maowenan@huawei.com> wrote:
 >
-> On 6/6/19 11:47 AM, Anders Roxell wrote:
-> > When building with CONFIG_VIDEO_CODA and CONFIG_CODA_FS enabled as
-> > loadable modules, we see the following warning:
-> >
-> > warning: same module names found:
-> >   fs/coda/coda.ko
-> >   drivers/media/platform/coda/coda.ko
-> >
-> > Rework so media coda matches the config fragment. Leaving CODA_FS as is
-> > since thats a well known module.
-> >
-> > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-> > ---
-> >  drivers/media/platform/coda/Makefile | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/media/platform/coda/Makefile b/drivers/media/platform/coda/Makefile
-> > index 54e9a73a92ab..588e6bf7c190 100644
-> > --- a/drivers/media/platform/coda/Makefile
-> > +++ b/drivers/media/platform/coda/Makefile
-> > @@ -1,6 +1,6 @@
-> >  # SPDX-License-Identifier: GPL-2.0-only
-> >
-> > -coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
-> > +video-coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
-> >
-> > -obj-$(CONFIG_VIDEO_CODA) += coda.o
-> > +obj-$(CONFIG_VIDEO_CODA) += video-coda.o
+> The variable 'status' in  __packet_lookup_frame_in_block() is never used since
+> introduction in commit f6fb8f100b80 ("af-packet: TPACKET_V3 flexible buffer
+> implementation."), we can remove it.
+> And when __packet_lookup_frame_in_block() calls prb_retire_current_block(),
+> it can pass macro TP_STATUS_KERNEL instead of 0.
 >
-> How about imx-coda? video-coda suggests it is part of the video subsystem,
-> which it isn't.
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>  net/packet/af_packet.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index a29d66d..fb1a79c 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1003,7 +1003,6 @@ static void prb_fill_curr_block(char *curr,
+>  /* Assumes caller has the sk->rx_queue.lock */
+>  static void *__packet_lookup_frame_in_block(struct packet_sock *po,
+>                                             struct sk_buff *skb,
+> -                                               int status,
+>                                             unsigned int len
+>                                             )
+>  {
+> @@ -1046,7 +1045,7 @@ static void *__packet_lookup_frame_in_block(struct packet_sock *po,
+>         }
+>
+>         /* Ok, close the current block */
+> -       prb_retire_current_block(pkc, po, 0);
+> +       prb_retire_current_block(pkc, po, TP_STATUS_KERNEL);
 
-I'll resend a v2 shortly with imx-coda instead.
+I don't think that 0 is intended to mean TP_STATUS_KERNEL here.
 
+prb_retire_current_block calls prb_close_block which sets status to
 
-Cheers,
-Anders
+  TP_STATUS_USER | stat
 
->
-> Regards,
->
->         Hans
->
-> >  obj-$(CONFIG_VIDEO_IMX_VDOA) += imx-vdoa.o
-> >
->
+where stat is 0 or TP_STATUS_BLK_TMO.
