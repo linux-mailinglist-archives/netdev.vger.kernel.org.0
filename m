@@ -2,220 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5783BB2D
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 19:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F40E3BB40
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 19:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388326AbfFJRlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 13:41:49 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38370 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387643AbfFJRls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 13:41:48 -0400
-Received: by mail-pl1-f193.google.com with SMTP id f97so3943963plb.5
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 10:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1W0q53r5AxX6FMVTqoM9uUmoF3wF70oLsOKf0xvE+wQ=;
-        b=cXtNJ1T0+uanXReL3XMSWsw7OtMiCnieLlgbycR5oVcz2DLDuG+a8tPoFIWk8749YQ
-         VXszRmGQtweXlE6LrimXPwN2R0UpOkQB+F1sSnl2ANn17koZ+yUXD1Hi1o3U98wG1APf
-         A8oDW/zKbcXhmrZB817P574LtuSHw44n7hGbnPjYROreNyDI8euG9Qv2wkbzEmqiV9c4
-         su/zAECrQLLIFGpa0TgbTZZQcuQf89uCQbhYfVafyHNLBUDMGfqQ/3l89LtqGavz7D5Z
-         SsDlO6Y4Q7yWzZbVzk0uMj7yxYFFvDbNNK7zUQRfOY/ubjzg5ov7LrQLEEYBhV9q24BP
-         Es5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=1W0q53r5AxX6FMVTqoM9uUmoF3wF70oLsOKf0xvE+wQ=;
-        b=qh9JLPG3NINHbUeZz5LDzCIk5MxnzNXkDJ8Hr6ZK8iiR3sf0+nm3VWKGYB74yjCznp
-         E5hjCCpCSreW0kuIhauJi85G4eMZV4SYdBEGruCFGGrOwCSru6WfMijUXnVK90Ybd1WY
-         IlnSa2FfH0wjzU3H8YUH75kB+/d3mwmdyeN/fYvk56GutrFKYZM3p1yL9sPHbF6elH8V
-         h9XwUBdMMCS0T7IyQ3ZPGf6yLfMVwSR/hX3pEXpf5Ywx+jg8XCt23YJlCG3CGtXK+eJq
-         3oGMLUX+tu9yuGqUpfn5bT6j7/R0xeQJalXXxpT/4Imy7pHYUJ2SS58/lNwld/E8phP/
-         MkSw==
-X-Gm-Message-State: APjAAAVJj95AP9KoojP9Q3JgfNnhiHQkm7z5KefXdbK4dgZE+yKaLeD9
-        s70svBAn9u95/KDoOn/yXTHXafPu
-X-Google-Smtp-Source: APXvYqyVKQA3iUuHo7ATE6medmI9qhQFGHrTxQFPibmx3bQjQxzc9pqxDzHVPTgcEw4d+J9CtKE2uA==
-X-Received: by 2002:a17:902:70c4:: with SMTP id l4mr35899459plt.171.1560188507053;
-        Mon, 10 Jun 2019 10:41:47 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y22sm7854703pgj.38.2019.06.10.10.41.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 10:41:46 -0700 (PDT)
-Subject: Re: [PATCH RFC] net: phy: add state PERM_FAIL
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8e4cd03b-2c0a-ada9-c44d-2b5f5bd4f148@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <9e1b2e30-139d-c3b9-0ac3-5775a4ade3a6@gmail.com>
-Date:   Mon, 10 Jun 2019 10:41:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2388412AbfFJRrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 13:47:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60222 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387643AbfFJRrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 13:47:00 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5AHjU5U020748
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 10:46:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=UTxkqcRX6jSWq0gj7yLGtoNF37Wi8kZLdZlUEegLVJo=;
+ b=SrJP6uYUN4bOmSbu8I3r8TnjXgFZqlY0zcsMJbvD0YSblGp+icvsQUvTrtR4+HPcllwP
+ CLHKNBNoEijnBV4+3SnimLO6n4yJ3q83JsosX6sb1CtC3Mt8dL7/V1A0FmHe1Cfw8K86
+ khvvLUdBNOAD+y6+Rr7NWRO5BjSMbMFHMfA= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t1u3n07qm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 10:46:59 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Mon, 10 Jun 2019 10:46:58 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id E3BDD8617E5; Mon, 10 Jun 2019 10:46:56 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kernel-team@fb.com>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] selftests/bpf: fix constness of source arg for bpf helpers
+Date:   Mon, 10 Jun 2019 10:46:55 -0700
+Message-ID: <20190610174655.2207879-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <8e4cd03b-2c0a-ada9-c44d-2b5f5bd4f148@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-10_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=709 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906100121
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/19 10:37 AM, Heiner Kallweit wrote:
-> This RFC patch is a follow-up to discussion [0]. In cases like missing
-> PHY firmware we may want to keep the PHY from being brought up, but
-> still allow MDIO access. Setting state PERM_FAIL in the probe or
-> config_init callback allows to achieve this.
+Fix signature of bpf_probe_read and bpf_probe_write_user to mark source
+pointer as const. This causes warnings during compilation for
+applications relying on those helpers.
 
-While the use case is potentially applicable to PHY drivers beyond the
-marvell10g driver, this concerns me for a number of reasons:
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/bpf_helpers.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-- the reasons why PHY_PERM_FAIL might be entered are entirely driver
-specific, thus making it hard to diagnose
-
-- a PHY driver that requires a firmware should either be loaded prior to
-Linux taking over the PHY, or should be loaded by the PHY driver itself
-
-So the bottom line of my reasoning is that, if we could make this
-marvell10g specific for now, and we generalize that later once we find a
-second candidate, that would seem preferable.
-
-> 
-> [0] https://marc.info/?t=155973142200002&r=1&w=2
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/phy/phy.c | 10 ++++++++--
->  include/linux/phy.h   |  5 +++++
->  2 files changed, 13 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index d91507650..889437512 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -44,6 +44,7 @@ static const char *phy_state_to_str(enum phy_state st)
->  	PHY_STATE_STR(RUNNING)
->  	PHY_STATE_STR(NOLINK)
->  	PHY_STATE_STR(HALTED)
-> +	PHY_STATE_STR(PERM_FAIL)
->  	}
->  
->  	return NULL;
-> @@ -744,7 +745,8 @@ static void phy_error(struct phy_device *phydev)
->  	WARN_ON(1);
->  
->  	mutex_lock(&phydev->lock);
-> -	phydev->state = PHY_HALTED;
-> +	if (phydev->state != PHY_PERM_FAIL)
-> +		phydev->state = PHY_HALTED;
->  	mutex_unlock(&phydev->lock);
->  
->  	phy_trigger_machine(phydev);
-> @@ -897,7 +899,10 @@ void phy_start(struct phy_device *phydev)
->  {
->  	mutex_lock(&phydev->lock);
->  
-> -	if (phydev->state != PHY_READY && phydev->state != PHY_HALTED) {
-> +	if (phydev->state == PHY_PERM_FAIL) {
-> +		phydev_warn(phydev, "Can't start PHY because it's in state PERM_FAIL\n");
-> +		goto out;
-> +	} else if (phydev->state != PHY_READY && phydev->state != PHY_HALTED) {
->  		WARN(1, "called from state %s\n",
->  		     phy_state_to_str(phydev->state));
->  		goto out;
-> @@ -934,6 +939,7 @@ void phy_state_machine(struct work_struct *work)
->  	switch (phydev->state) {
->  	case PHY_DOWN:
->  	case PHY_READY:
-> +	case PHY_PERM_FAIL:
->  		break;
->  	case PHY_UP:
->  		needs_aneg = true;
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index d0af7d37f..7f47b6605 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -300,11 +300,16 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
->   * HALTED: PHY is up, but no polling or interrupts are done. Or
->   * PHY is in an error state.
->   * - phy_start moves to UP
-> + *
-> + * PERM_FAIL: A permanent failure was detected and PHY isn't allowed to be
-> + * brought up. Still we don't want to fail in probe to allow MDIO access
-> + * to the PHY, e.g. to load missing firmware.
->   */
->  enum phy_state {
->  	PHY_DOWN = 0,
->  	PHY_READY,
->  	PHY_HALTED,
-> +	PHY_PERM_FAIL,
->  	PHY_UP,
->  	PHY_RUNNING,
->  	PHY_NOLINK,
-> 
-
-
+diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+index e6d243b7cd74..1a5b1accf091 100644
+--- a/tools/testing/selftests/bpf/bpf_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_helpers.h
+@@ -31,7 +31,7 @@ static int (*bpf_map_pop_elem)(void *map, void *value) =
+ 	(void *) BPF_FUNC_map_pop_elem;
+ static int (*bpf_map_peek_elem)(void *map, void *value) =
+ 	(void *) BPF_FUNC_map_peek_elem;
+-static int (*bpf_probe_read)(void *dst, int size, void *unsafe_ptr) =
++static int (*bpf_probe_read)(void *dst, int size, const void *unsafe_ptr) =
+ 	(void *) BPF_FUNC_probe_read;
+ static unsigned long long (*bpf_ktime_get_ns)(void) =
+ 	(void *) BPF_FUNC_ktime_get_ns;
+@@ -62,7 +62,7 @@ static int (*bpf_perf_event_output)(void *ctx, void *map,
+ 	(void *) BPF_FUNC_perf_event_output;
+ static int (*bpf_get_stackid)(void *ctx, void *map, int flags) =
+ 	(void *) BPF_FUNC_get_stackid;
+-static int (*bpf_probe_write_user)(void *dst, void *src, int size) =
++static int (*bpf_probe_write_user)(void *dst, const void *src, int size) =
+ 	(void *) BPF_FUNC_probe_write_user;
+ static int (*bpf_current_task_under_cgroup)(void *map, int index) =
+ 	(void *) BPF_FUNC_current_task_under_cgroup;
 -- 
-Florian
+2.17.1
+
