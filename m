@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9578C3AD89
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 05:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 765813AD8B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 05:20:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387584AbfFJDTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jun 2019 23:19:36 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:43312 "EHLO inva020.nxp.com"
+        id S2387673AbfFJDT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jun 2019 23:19:58 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:57162 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387400AbfFJDTf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Jun 2019 23:19:35 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8AA981A073B;
-        Mon, 10 Jun 2019 05:19:33 +0200 (CEST)
+        id S2387533AbfFJDTg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Jun 2019 23:19:36 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 83E352006C8;
+        Mon, 10 Jun 2019 05:19:34 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6BC9E1A072D;
-        Mon, 10 Jun 2019 05:19:29 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 649C1200080;
+        Mon, 10 Jun 2019 05:19:30 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 06B8340310;
-        Mon, 10 Jun 2019 11:19:23 +0800 (SGT)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 0764040319;
+        Mon, 10 Jun 2019 11:19:24 +0800 (SGT)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Richard Cochran <richardcochran@gmail.com>,
@@ -27,9 +27,9 @@ To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Shawn Guo <shawnguo@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         devicetree@vger.kernel.org, Yangbo Lu <yangbo.lu@nxp.com>
-Subject: [PATCH 3/6] dt-binding: ptp_qoriq: support DPAA2 PTP compatible
-Date:   Mon, 10 Jun 2019 11:21:05 +0800
-Message-Id: <20190610032108.5791-4-yangbo.lu@nxp.com>
+Subject: [PATCH 4/6] arm64: dts: fsl: add ptp timer node for dpaa2 platforms
+Date:   Mon, 10 Jun 2019 11:21:06 +0800
+Message-Id: <20190610032108.5791-5-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190610032108.5791-1-yangbo.lu@nxp.com>
 References: <20190610032108.5791-1-yangbo.lu@nxp.com>
@@ -39,27 +39,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new compatible for DPAA2 PTP.
+This patch is to add ptp timer device tree node for dpaa2
+platforms(ls1088a/ls208xa/lx2160a).
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
- Documentation/devicetree/bindings/ptp/ptp-qoriq.txt | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi | 8 ++++++++
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 8 ++++++++
+ arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi | 8 ++++++++
+ 3 files changed, 24 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/ptp/ptp-qoriq.txt b/Documentation/devicetree/bindings/ptp/ptp-qoriq.txt
-index 6ec0534..d48f9eb 100644
---- a/Documentation/devicetree/bindings/ptp/ptp-qoriq.txt
-+++ b/Documentation/devicetree/bindings/ptp/ptp-qoriq.txt
-@@ -4,7 +4,8 @@ General Properties:
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
+index 661137f..dacd8cf 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
+@@ -609,6 +609,14 @@
+ 				     <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
+ 		};
  
-   - compatible   Should be "fsl,etsec-ptp" for eTSEC
-                  Should be "fsl,fman-ptp-timer" for DPAA FMan
--		 Should be "fsl,enetc-ptp" for ENETC
-+                 Should be "fsl,dpaa2-ptp" for DPAA2
-+                 Should be "fsl,enetc-ptp" for ENETC
-   - reg          Offset and length of the register set for the device
-   - interrupts   There should be at least two interrupts. Some devices
-                  have as many as four PTP related interrupts.
++		ptp-timer@8b95000 {
++			compatible = "fsl,dpaa2-ptp";
++			reg = <0x0 0x8b95000 0x0 0x100>;
++			clocks = <&clockgen 4 0>;
++			little-endian;
++			fsl,extts-fifo;
++		};
++
+ 		cluster1_core0_watchdog: wdt@c000000 {
+ 			compatible = "arm,sp805-wdt", "arm,primecell";
+ 			reg = <0x0 0xc000000 0x0 0x1000>;
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+index d7e78dc..3ace919 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+@@ -321,6 +321,14 @@
+ 			};
+ 		};
+ 
++		ptp-timer@8b95000 {
++			compatible = "fsl,dpaa2-ptp";
++			reg = <0x0 0x8b95000 0x0 0x100>;
++			clocks = <&clockgen 4 1>;
++			little-endian;
++			fsl,extts-fifo;
++		};
++
+ 		fsl_mc: fsl-mc@80c000000 {
+ 			compatible = "fsl,qoriq-mc";
+ 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
+diff --git a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
+index 125a8cc..e6fdba3 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
+@@ -848,6 +848,14 @@
+ 			dma-coherent;
+ 		};
+ 
++		ptp-timer@8b95000 {
++			compatible = "fsl,dpaa2-ptp";
++			reg = <0x0 0x8b95000 0x0 0x100>;
++			clocks = <&clockgen 4 1>;
++			little-endian;
++			fsl,extts-fifo;
++		};
++
+ 		fsl_mc: fsl-mc@80c000000 {
+ 			compatible = "fsl,qoriq-mc";
+ 			reg = <0x00000008 0x0c000000 0 0x40>,
 -- 
 2.7.4
 
