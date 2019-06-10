@@ -2,444 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE1113B32B
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 12:29:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1E03B346
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 12:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389432AbfFJK3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 06:29:41 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41285 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389299AbfFJK3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 06:29:41 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 33so1741341qtr.8
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 03:29:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3Zr+Z62K+WJdeFBSjAxJN5w5XMu3o9gN+tqS/lIJFWM=;
-        b=usxA5wG1zD+JO7cBE1uOxlZ7VoyMxJ+B8rvr8yOAyKCcSRQRTYc1hw05IjUyW4XV77
-         HGS+h5jRvsIts9bPORSwns10xCICixRxazNUkZA1AktW67Uqv5Lw0brByH4r10qbgNni
-         H1UDEvzefPqIszOTJ44O26P85O7p8n9cGjjy4tZzuMv5q0CuCRCMihvr9HE//vNe8YcW
-         CpZgPasmAloMhAWbEmrgLmG8izteQcsIPFLn3CujcDBNZq1JxsItTRYlxtryB4XHXevY
-         2/3G1narGbbl24WSF0LwGjtVm9BhBioT+oay5ncTtusrzk9we1LqDXRcQfDm9kxxesOV
-         tWXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3Zr+Z62K+WJdeFBSjAxJN5w5XMu3o9gN+tqS/lIJFWM=;
-        b=nO3j6jxzZ2Em0z/zDU7NvbmwPPwN2n1SePGhpmYtEEP2l5vxB+JXPM+3zI++T23pfL
-         29jBY8gs9Jbpia3me6ouNCNPJwDFVBkHYHN8j5UcDLX90lyGmKID9OfX+uH8aq0eNICR
-         7aTx8d64whp5ktcXTfX8u13/5VyoD1GBDeaWR3UEwJ9IEIqoPow0IHctTMOKk8XQQebM
-         yn42xRfwqiJmJ8g740ruRAri+t2Nt+EDQO7Bfw0YNeNhHK9yImi/CG93VP8pmM8bn1W9
-         uKXvRIN87xUQUtdr7NlDsN8MOESfHI3kO4Csbv1HPJjfWp39ftryT9Q/r9L+XtMd1SLr
-         0Klw==
-X-Gm-Message-State: APjAAAXycpMf2dw1hSWxI8zJT15Xdfo/CIbkNxfWWFkj58CN/gqfyp/Y
-        DXuExvuNelM5Yr25XIN9ceLG1GA0lnNfkY1qJgJJTIXsceGqLg==
-X-Google-Smtp-Source: APXvYqwlOR0EOa4D/XkPwQIRgQXTFvFDpq3lybt8ANB9wKuDDVV2tSLvo6dZkMwGGBnM3IokztPopdqaTeDRZqUGmYw=
-X-Received: by 2002:aed:3e3d:: with SMTP id l58mr8889413qtf.382.1560162579280;
- Mon, 10 Jun 2019 03:29:39 -0700 (PDT)
+        id S2389497AbfFJKer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 06:34:47 -0400
+Received: from mail.us.es ([193.147.175.20]:46378 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389408AbfFJKer (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 06:34:47 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 495F16D4F5
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 12:34:45 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3A386DA716
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 12:34:45 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 2FF4FDA711; Mon, 10 Jun 2019 12:34:45 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C0701DA70C;
+        Mon, 10 Jun 2019 12:34:28 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 10 Jun 2019 12:33:47 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4F1B6406B68B;
+        Mon, 10 Jun 2019 12:34:23 +0200 (CEST)
+Date:   Mon, 10 Jun 2019 12:34:17 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukasz Pawelczyk <havner@gmail.com>
+Subject: Re: [PATCH v4] extensions: libxt_owner: Add supplementary groups
+ option
+Message-ID: <20190610103417.jg7xnaprczu2kkq2@salvia>
+References: <CGME20190610094353eucas1p29eb71e82aa621c1e387513571a78710b@eucas1p2.samsung.com>
+ <20190610094238.24904-1-l.pawelczyk@samsung.com>
 MIME-Version: 1.0
-References: <20190531091229.93033-1-chiu@endlessm.com> <f1c54f97-16a5-2618-569b-9101f9657fcb@gmail.com>
- <CAB4CAwf3Mi2iuR7nAj1U4EoyU5ZnvY9xoLrv7QT2X-tc_1ex3g@mail.gmail.com>
-In-Reply-To: <CAB4CAwf3Mi2iuR7nAj1U4EoyU5ZnvY9xoLrv7QT2X-tc_1ex3g@mail.gmail.com>
-From:   Chris Chiu <chiu@endlessm.com>
-Date:   Mon, 10 Jun 2019 18:29:28 +0800
-Message-ID: <CAB4CAwcmJ_oNMD622Vbm3vHUdmYpMksiOYYWG0cJ5cBEnpvcog@mail.gmail.com>
-Subject: Re: [RFC PATCH v4] rtl8xxxu: Improve TX performance of RTL8723BU on
- rtl8xxxu driver
-To:     Jes Sorensen <jes.sorensen@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190610094238.24904-1-l.pawelczyk@samsung.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 5, 2019 at 10:17 AM Chris Chiu <chiu@endlessm.com> wrote:
->
-> On Tue, Jun 4, 2019 at 3:21 AM Jes Sorensen <jes.sorensen@gmail.com> wrote:
-> >
-> > On 5/31/19 5:12 AM, Chris Chiu wrote:
-> > > We have 3 laptops which connect the wifi by the same RTL8723BU.
-> > > The PCI VID/PID of the wifi chip is 10EC:B720 which is supported.
-> > > They have the same problem with the in-kernel rtl8xxxu driver, the
-> > > iperf (as a client to an ethernet-connected server) gets ~1Mbps.
-> > > Nevertheless, the signal strength is reported as around -40dBm,
-> > > which is quite good. From the wireshark capture, the tx rate for each
-> > > data and qos data packet is only 1Mbps. Compare to the Realtek driver
-> > > at https://github.com/lwfinger/rtl8723bu, the same iperf test gets
-> > > ~12Mbps or better. The signal strength is reported similarly around
-> > > -40dBm. That's why we want to improve.
-> > >
-> > > After reading the source code of the rtl8xxxu driver and Realtek's, the
-> > > major difference is that Realtek's driver has a watchdog which will keep
-> > > monitoring the signal quality and updating the rate mask just like the
-> > > rtl8xxxu_gen2_update_rate_mask() does if signal quality changes.
-> > > And this kind of watchdog also exists in rtlwifi driver of some specific
-> > > chips, ex rtl8192ee, rtl8188ee, rtl8723ae, rtl8821ae...etc. They have
-> > > the same member function named dm_watchdog and will invoke the
-> > > corresponding dm_refresh_rate_adaptive_mask to adjust the tx rate
-> > > mask.
-> > >
-> > > With this commit, the tx rate of each data and qos data packet will
-> > > be 39Mbps (MCS4) with the 0xF00000 as the tx rate mask. The 20th bit
-> > > to 23th bit means MCS4 to MCS7. It means that the firmware still picks
-> > > the lowest rate from the rate mask and explains why the tx rate of
-> > > data and qos data is always lowest 1Mbps because the default rate mask
-> > > passed is always 0xFFFFFFF ranges from the basic CCK rate, OFDM rate,
-> > > and MCS rate. However, with Realtek's driver, the tx rate observed from
-> > > wireshark under the same condition is almost 65Mbps or 72Mbps.
-> > >
-> > > I believe the firmware of RTL8723BU may need fix. And I think we
-> > > can still bring in the dm_watchdog as rtlwifi to improve from the
-> > > driver side. Please leave precious comments for my commits and
-> > > suggest what I can do better. Or suggest if there's any better idea
-> > > to fix this. Thanks.
-> > >
-> > > Signed-off-by: Chris Chiu <chiu@endlessm.com>
-> >
-> > I am really pleased to see you're investigating some of these issues,
-> > since I've been pretty swamped and not had time to work on this driver
-> > for a long time.
-> >
-> > The firmware should allow for two rate modes, either firmware handled or
-> > controlled by the driver. Ideally we would want the driver to handle it,
-> > but I never was able to make that work reliable.
-> >
-> > This fix should at least improve the situation, and it may explain some
-> > of the performance issues with the 8192eu as well?
-> >
-> > > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-> > > index 8828baf26e7b..216f603827a8 100644
-> > > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-> > > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-> > > @@ -1195,6 +1195,44 @@ struct rtl8723bu_c2h {
-> > >
-> > >  struct rtl8xxxu_fileops;
-> > >
-> > > +/*mlme related.*/
-> > > +enum wireless_mode {
-> > > +     WIRELESS_MODE_UNKNOWN = 0,
-> > > +     /* Sub-Element */
-> > > +     WIRELESS_MODE_B = BIT(0),
-> > > +     WIRELESS_MODE_G = BIT(1),
-> > > +     WIRELESS_MODE_A = BIT(2),
-> > > +     WIRELESS_MODE_N_24G = BIT(3),
-> > > +     WIRELESS_MODE_N_5G = BIT(4),
-> > > +     WIRELESS_AUTO = BIT(5),
-> > > +     WIRELESS_MODE_AC = BIT(6),
-> > > +     WIRELESS_MODE_MAX = 0x7F,
-> > > +};
-> > > +
-> > > +/* from rtlwifi/wifi.h */
-> > > +enum ratr_table_mode_new {
-> > > +     RATEID_IDX_BGN_40M_2SS = 0,
-> > > +     RATEID_IDX_BGN_40M_1SS = 1,
-> > > +     RATEID_IDX_BGN_20M_2SS_BN = 2,
-> > > +     RATEID_IDX_BGN_20M_1SS_BN = 3,
-> > > +     RATEID_IDX_GN_N2SS = 4,
-> > > +     RATEID_IDX_GN_N1SS = 5,
-> > > +     RATEID_IDX_BG = 6,
-> > > +     RATEID_IDX_G = 7,
-> > > +     RATEID_IDX_B = 8,
-> > > +     RATEID_IDX_VHT_2SS = 9,
-> > > +     RATEID_IDX_VHT_1SS = 10,
-> > > +     RATEID_IDX_MIX1 = 11,
-> > > +     RATEID_IDX_MIX2 = 12,
-> > > +     RATEID_IDX_VHT_3SS = 13,
-> > > +     RATEID_IDX_BGN_3SS = 14,
-> > > +};
-> > > +
-> > > +#define RTL8XXXU_RATR_STA_INIT 0
-> > > +#define RTL8XXXU_RATR_STA_HIGH 1
-> > > +#define RTL8XXXU_RATR_STA_MID  2
-> > > +#define RTL8XXXU_RATR_STA_LOW  3
-> > > +
-> >
-> > >  extern struct rtl8xxxu_fileops rtl8192cu_fops;
-> > >  extern struct rtl8xxxu_fileops rtl8192eu_fops;
-> > > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > > index 26b674aca125..2071ab9fd001 100644
-> > > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > > @@ -1645,6 +1645,148 @@ static void rtl8723bu_init_statistics(struct rtl8xxxu_priv *priv)
-> > >       rtl8xxxu_write32(priv, REG_OFDM0_FA_RSTC, val32);
-> > >  }
-> > >
-> > > +static u8 rtl8723b_signal_to_rssi(int signal)
-> > > +{
-> > > +     if (signal < -95)
-> > > +             signal = -95;
-> > > +     return (u8)(signal + 95);
-> > > +}
-> >
-> > Could you make this more generic so it can be used by the other sub-drivers?
-> >
-> Sure. I'll do that.
->
-> > > +static void rtl8723b_refresh_rate_mask(struct rtl8xxxu_priv *priv,
-> > > +                                    int signal, struct ieee80211_sta *sta)
-> > > +{
-> > > +     struct ieee80211_hw *hw = priv->hw;
-> > > +     u16 wireless_mode;
-> > > +     u8 rssi_level, ratr_idx;
-> > > +     u8 txbw_40mhz;
-> > > +     u8 rssi, rssi_thresh_high, rssi_thresh_low;
-> > > +
-> > > +     rssi_level = priv->rssi_level;
-> > > +     rssi = rtl8723b_signal_to_rssi(signal);
-> > > +     txbw_40mhz = (hw->conf.chandef.width == NL80211_CHAN_WIDTH_40) ? 1 : 0;
-> > > +
-> > > +     switch (rssi_level) {
-> > > +     case RTL8XXXU_RATR_STA_HIGH:
-> > > +             rssi_thresh_high = 50;
-> > > +             rssi_thresh_low = 20;
-> > > +             break;
-> > > +     case RTL8XXXU_RATR_STA_MID:
-> > > +             rssi_thresh_high = 55;
-> > > +             rssi_thresh_low = 20;
-> > > +             break;
-> > > +     case RTL8XXXU_RATR_STA_LOW:
-> > > +             rssi_thresh_high = 60;
-> > > +             rssi_thresh_low = 25;
-> > > +             break;
-> > > +     default:
-> > > +             rssi_thresh_high = 50;
-> > > +             rssi_thresh_low = 20;
-> > > +             break;
-> > > +     }
-> >
-> > Can we make this use defined values with some explanation rather than
-> > hard coded values?
-> >
->
-> I also thought about this. So I refer to the same refresh_rateadaotive_mask
-> in rtlwifi/rtl8192se/dm.c, rtlwifi/rtl8723ae/dm.c, and rtl8188ee...etc. They
-> don't give a better explanation. And I also don't know if these values can be
-> generally applied to other subdrivers or specifically for 8723b series, for
-> example, the rtl8192se use different values for the threshold. It maybe due
-> to different noise floor for different chip?  I'm not sure. I took these values
-> from vendor driver and rtl8188ee. I can simply use defined values to replace
-> but I have to admit it's hard to find a good explanation.
->
-> > > +     if (rssi > rssi_thresh_high)
-> > > +             rssi_level = RTL8XXXU_RATR_STA_HIGH;
-> > > +     else if (rssi > rssi_thresh_low)
-> > > +             rssi_level = RTL8XXXU_RATR_STA_MID;
-> > > +     else
-> > > +             rssi_level = RTL8XXXU_RATR_STA_LOW;
-> > > +
-> > > +     if (rssi_level != priv->rssi_level) {
-> > > +             int sgi = 0;
-> > > +             u32 rate_bitmap = 0;
-> > > +
-> > > +             rcu_read_lock();
-> > > +             rate_bitmap = (sta->supp_rates[0] & 0xfff) |
-> > > +                             (sta->ht_cap.mcs.rx_mask[0] << 12) |
-> > > +                             (sta->ht_cap.mcs.rx_mask[1] << 20);
-> > > +             if (sta->ht_cap.cap &
-> > > +                 (IEEE80211_HT_CAP_SGI_40 | IEEE80211_HT_CAP_SGI_20))
-> > > +                     sgi = 1;
-> > > +             rcu_read_unlock();
-> > > +
-> > > +             wireless_mode = rtl8xxxu_wireless_mode(hw, sta);
-> > > +             switch (wireless_mode) {
-> > > +             case WIRELESS_MODE_B:
-> > > +                     ratr_idx = RATEID_IDX_B;
-> > > +                     if (rate_bitmap & 0x0000000c)
-> > > +                             rate_bitmap &= 0x0000000d;
-> > > +                     else
-> > > +                             rate_bitmap &= 0x0000000f;
-> > > +                     break;
-> > > +             case WIRELESS_MODE_A:
-> > > +             case WIRELESS_MODE_G:
-> > > +                     ratr_idx = RATEID_IDX_G;
-> > > +                     if (rssi_level == RTL8XXXU_RATR_STA_HIGH)
-> > > +                             rate_bitmap &= 0x00000f00;
-> > > +                     else
-> > > +                             rate_bitmap &= 0x00000ff0;
-> > > +                     break;
-> > > +             case (WIRELESS_MODE_B | WIRELESS_MODE_G):
-> > > +                     ratr_idx = RATEID_IDX_BG;
-> > > +                     if (rssi_level == RTL8XXXU_RATR_STA_HIGH)
-> > > +                             rate_bitmap &= 0x00000f00;
-> > > +                     else if (rssi_level == RTL8XXXU_RATR_STA_MID)
-> > > +                             rate_bitmap &= 0x00000ff0;
-> > > +                     else
-> > > +                             rate_bitmap &= 0x00000ff5;
-> > > +                     break;
-> >
-> > It would be nice as well to get all these masks into generic names.
-> >
->
-> I also take these mask values from the update_hal_rate_mask of the
-> vendor driver and other realtek drivers under rtlwifi. I thought about to
-> define the lower 12 bits like RTL8XXXU_BG_RATE_MASK, 13~20 bits
-> as RTL8XXXU_MCS0_7_RATE_MASK. But it's still hard to express
-> all the combinations here. So I just leave it as it is. I can try to add
-> explanations for the rate mapping of each bit. It would be a lot easier.
->
-> > > +             case WIRELESS_MODE_N_24G:
-> > > +             case WIRELESS_MODE_N_5G:
-> > > +             case (WIRELESS_MODE_G | WIRELESS_MODE_N_24G):
-> > > +             case (WIRELESS_MODE_A | WIRELESS_MODE_N_5G):
-> > > +                     if (priv->tx_paths == 2 && priv->rx_paths == 2)
-> > > +                             ratr_idx = RATEID_IDX_GN_N2SS;
-> > > +                     else
-> > > +                             ratr_idx = RATEID_IDX_GN_N1SS;
-> > > +             case (WIRELESS_MODE_B | WIRELESS_MODE_G | WIRELESS_MODE_N_24G):
-> > > +             case (WIRELESS_MODE_B | WIRELESS_MODE_N_24G):
-> > > +                     if (txbw_40mhz) {
-> > > +                             if (priv->tx_paths == 2 && priv->rx_paths == 2)
-> > > +                                     ratr_idx = RATEID_IDX_BGN_40M_2SS;
-> > > +                             else
-> > > +                                     ratr_idx = RATEID_IDX_BGN_40M_1SS;
-> > > +                     } else {
-> > > +                             if (priv->tx_paths == 2 && priv->rx_paths == 2)
-> > > +                                     ratr_idx = RATEID_IDX_BGN_20M_2SS_BN;
-> > > +                             else
-> > > +                                     ratr_idx = RATEID_IDX_BGN_20M_1SS_BN;
-> > > +                     }
-> > > +
-> > > +                     if (priv->tx_paths == 2 && priv->rx_paths == 2) {
-> > > +                             if (rssi_level == RTL8XXXU_RATR_STA_HIGH) {
-> > > +                                     rate_bitmap &= 0x0f8f0000;
-> > > +                             } else if (rssi_level == RTL8XXXU_RATR_STA_MID) {
-> > > +                                     rate_bitmap &= 0x0f8ff000;
-> > > +                             } else {
-> > > +                                     if (txbw_40mhz)
-> > > +                                             rate_bitmap &= 0x0f8ff015;
-> > > +                                     else
-> > > +                                             rate_bitmap &= 0x0f8ff005;
-> > > +                             }
-> > > +                     } else {
-> > > +                             if (rssi_level == RTL8XXXU_RATR_STA_HIGH) {
-> > > +                                     rate_bitmap &= 0x000f0000;
-> > > +                             } else if (rssi_level == RTL8XXXU_RATR_STA_MID) {
-> > > +                                     rate_bitmap &= 0x000ff000;
-> > > +                             } else {
-> > > +                                     if (txbw_40mhz)
-> > > +                                             rate_bitmap &= 0x000ff015;
-> > > +                                     else
-> > > +                                             rate_bitmap &= 0x000ff005;
-> > > +                             }
-> > > +                     }
-> > > +                     break;
-> > > +             default:
-> > > +                     ratr_idx = RATEID_IDX_BGN_40M_2SS;
-> > > +                     rate_bitmap &= 0x0fffffff;
-> > > +                     break;
-> > > +             }
-> > > +
-> > > +             priv->rssi_level = rssi_level;
-> > > +             priv->fops->update_rate_mask(priv, rate_bitmap, ratr_idx, sgi);
-> > > +     }
-> > > +}
-> > > +
-> >
-> > In general I think all of this should be fairly generic and the other
-> > subdrivers should be able to benefit from it?
-> >
-> >
-> I agree. Mabe separates the rssi level judgement function to be chip specific,
-> and move the whole refresh_rate_mask thing generic?
->
-> > >  struct rtl8xxxu_fileops rtl8723bu_fops = {
-> > >       .parse_efuse = rtl8723bu_parse_efuse,
-> > >       .load_firmware = rtl8723bu_load_firmware,
-> > > @@ -1665,6 +1807,7 @@ struct rtl8xxxu_fileops rtl8723bu_fops = {
-> > >       .usb_quirks = rtl8xxxu_gen2_usb_quirks,
-> > >       .set_tx_power = rtl8723b_set_tx_power,
-> > >       .update_rate_mask = rtl8xxxu_gen2_update_rate_mask,
-> > > +     .refresh_rate_mask = rtl8723b_refresh_rate_mask,
-> > >       .report_connect = rtl8xxxu_gen2_report_connect,
-> > >       .fill_txdesc = rtl8xxxu_fill_txdesc_v2,
-> > >       .writeN_block_size = 1024,
-> > > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > > index 039e5ca9d2e4..be322402ca01 100644
-> > > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > > @@ -4311,7 +4311,8 @@ static void rtl8xxxu_sw_scan_complete(struct ieee80211_hw *hw,
-> > >       rtl8xxxu_write8(priv, REG_BEACON_CTRL, val8);
-> > >  }
-> > >
-> > > -void rtl8xxxu_update_rate_mask(struct rtl8xxxu_priv *priv, u32 ramask, int sgi)
-> > > +void rtl8xxxu_update_rate_mask(struct rtl8xxxu_priv *priv,
-> > > +                            u32 ramask, u8 rateid, int sgi)
-> > >  {
-> > >       struct h2c_cmd h2c;
-> > >
-> > > @@ -4331,7 +4332,7 @@ void rtl8xxxu_update_rate_mask(struct rtl8xxxu_priv *priv, u32 ramask, int sgi)
-> > >  }
-> > >
-> > >  void rtl8xxxu_gen2_update_rate_mask(struct rtl8xxxu_priv *priv,
-> > > -                                 u32 ramask, int sgi)
-> > > +                                 u32 ramask, u8 rateid, int sgi)
-> > >  {
-> > >       struct h2c_cmd h2c;
-> > >       u8 bw = 0;
-> > > @@ -4345,7 +4346,7 @@ void rtl8xxxu_gen2_update_rate_mask(struct rtl8xxxu_priv *priv,
-> > >       h2c.b_macid_cfg.ramask3 = (ramask >> 24) & 0xff;
-> > >
-> > >       h2c.ramask.arg = 0x80;
-> > > -     h2c.b_macid_cfg.data1 = 0;
-> > > +     h2c.b_macid_cfg.data1 = rateid;
-> > >       if (sgi)
-> > >               h2c.b_macid_cfg.data1 |= BIT(7);
-> > >
-> > > @@ -4485,6 +4486,40 @@ static void rtl8xxxu_set_basic_rates(struct rtl8xxxu_priv *priv, u32 rate_cfg)
-> > >       rtl8xxxu_write8(priv, REG_INIRTS_RATE_SEL, rate_idx);
-> > >  }
-> > >
-> > > +u16
-> > > +rtl8xxxu_wireless_mode(struct ieee80211_hw *hw, struct ieee80211_sta *sta)
-> > > +{
-> > > +     u16 network_type = WIRELESS_MODE_UNKNOWN;
-> > > +     u32 rate_mask;
-> > > +
-> > > +     rate_mask = (sta->supp_rates[0] & 0xfff) |
-> > > +                 (sta->ht_cap.mcs.rx_mask[0] << 12) |
-> > > +                 (sta->ht_cap.mcs.rx_mask[0] << 20);
-> > > +
-> > > +     if (hw->conf.chandef.chan->band == NL80211_BAND_5GHZ) {
-> > > +             if (sta->vht_cap.vht_supported)
-> > > +                     network_type = WIRELESS_MODE_AC;
-> > > +             else if (sta->ht_cap.ht_supported)
-> > > +                     network_type = WIRELESS_MODE_N_5G;
-> > > +
-> > > +             network_type |= WIRELESS_MODE_A;
-> > > +     } else {
-> > > +             if (sta->vht_cap.vht_supported)
-> > > +                     network_type = WIRELESS_MODE_AC;
-> > > +             else if (sta->ht_cap.ht_supported)
-> > > +                     network_type = WIRELESS_MODE_N_24G;
-> > > +
-> > > +             if (sta->supp_rates[0] <= 0xf)
-> > > +                     network_type |= WIRELESS_MODE_B;
-> > > +             else if (sta->supp_rates[0] & 0xf)
-> > > +                     network_type |= (WIRELESS_MODE_B | WIRELESS_MODE_G);
-> > > +             else
-> > > +                     network_type |= WIRELESS_MODE_G;
-> > > +     }
-> > > +
-> > > +     return network_type;
-> > > +}
-> >
-> > I always hated the wireless_mode nonsense in the realtek driver, but
-> > maybe we cannot avoid it :(
-> >
-> > Cheers,
-> > Jes
+On Mon, Jun 10, 2019 at 11:42:38AM +0200, Lukasz Pawelczyk wrote:
+> The --suppl-groups option causes GIDs specified with --gid-owner to be
+> also checked in the supplementary groups of a process.
 
-Jes, look forward to any comments or suggestions from you. I would re-write a
-patch with generic refresh_rate_mask for all rtl8xxxu series chips in
-short time.
+Could you also extend iptables/extensions/libxt_owner.t ?
 
-Chris
+Thanks.
+
+> Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+> ---
+> 
+> Changes from v3:
+>  - removed XTOPT_INVERT from O_SUPPL_GROUPS,
+>    it wasn't meant to be invertable
+>     
+> Changes from v2:
+>  - XT_SUPPL_GROUPS -> XT_OWNER_SUPPL_GROUPS
+>     
+> Changes from v1:
+>  - complementary -> supplementary
+>  - manual (iptables-extensions)
+> 
+>  extensions/libxt_owner.c           | 24 +++++++++++++++++-------
+>  extensions/libxt_owner.man         |  4 ++++
+>  include/linux/netfilter/xt_owner.h |  7 ++++---
+>  3 files changed, 25 insertions(+), 10 deletions(-)
+> 
+> diff --git a/extensions/libxt_owner.c b/extensions/libxt_owner.c
+> index 87e4df31..1702b478 100644
+> --- a/extensions/libxt_owner.c
+> +++ b/extensions/libxt_owner.c
+> @@ -56,6 +56,7 @@ enum {
+>  	O_PROCESS,
+>  	O_SESSION,
+>  	O_COMM,
+> +	O_SUPPL_GROUPS,
+>  };
+>  
+>  static void owner_mt_help_v0(void)
+> @@ -87,7 +88,8 @@ static void owner_mt_help(void)
+>  "owner match options:\n"
+>  "[!] --uid-owner userid[-userid]      Match local UID\n"
+>  "[!] --gid-owner groupid[-groupid]    Match local GID\n"
+> -"[!] --socket-exists                  Match if socket exists\n");
+> +"[!] --socket-exists                  Match if socket exists\n"
+> +"    --suppl-groups                   Also match supplementary groups set with --gid-owner\n");
+>  }
+>  
+>  #define s struct ipt_owner_info
+> @@ -131,6 +133,7 @@ static const struct xt_option_entry owner_mt_opts[] = {
+>  	 .flags = XTOPT_INVERT},
+>  	{.name = "socket-exists", .id = O_SOCK_EXISTS, .type = XTTYPE_NONE,
+>  	 .flags = XTOPT_INVERT},
+> +	{.name = "suppl-groups", .id = O_SUPPL_GROUPS, .type = XTTYPE_NONE},
+>  	XTOPT_TABLEEND,
+>  };
+>  
+> @@ -275,6 +278,11 @@ static void owner_mt_parse(struct xt_option_call *cb)
+>  			info->invert |= XT_OWNER_SOCKET;
+>  		info->match |= XT_OWNER_SOCKET;
+>  		break;
+> +	case O_SUPPL_GROUPS:
+> +		if (!(info->match & XT_OWNER_GID))
+> +			xtables_param_act(XTF_BAD_VALUE, "owner", "--suppl-groups", "you need to use --gid-owner first");
+> +		info->match |= XT_OWNER_SUPPL_GROUPS;
+> +		break;
+>  	}
+>  }
+>  
+> @@ -455,9 +463,10 @@ static void owner_mt_print(const void *ip, const struct xt_entry_match *match,
+>  {
+>  	const struct xt_owner_match_info *info = (void *)match->data;
+>  
+> -	owner_mt_print_item(info, "owner socket exists", XT_OWNER_SOCKET, numeric);
+> -	owner_mt_print_item(info, "owner UID match",     XT_OWNER_UID,    numeric);
+> -	owner_mt_print_item(info, "owner GID match",     XT_OWNER_GID,    numeric);
+> +	owner_mt_print_item(info, "owner socket exists", XT_OWNER_SOCKET,       numeric);
+> +	owner_mt_print_item(info, "owner UID match",     XT_OWNER_UID,          numeric);
+> +	owner_mt_print_item(info, "owner GID match",     XT_OWNER_GID,          numeric);
+> +	owner_mt_print_item(info, "incl. suppl. groups", XT_OWNER_SUPPL_GROUPS, numeric);
+>  }
+>  
+>  static void
+> @@ -487,9 +496,10 @@ static void owner_mt_save(const void *ip, const struct xt_entry_match *match)
+>  {
+>  	const struct xt_owner_match_info *info = (void *)match->data;
+>  
+> -	owner_mt_print_item(info, "--socket-exists",  XT_OWNER_SOCKET, true);
+> -	owner_mt_print_item(info, "--uid-owner",      XT_OWNER_UID,    true);
+> -	owner_mt_print_item(info, "--gid-owner",      XT_OWNER_GID,    true);
+> +	owner_mt_print_item(info, "--socket-exists",  XT_OWNER_SOCKET,       true);
+> +	owner_mt_print_item(info, "--uid-owner",      XT_OWNER_UID,          true);
+> +	owner_mt_print_item(info, "--gid-owner",      XT_OWNER_GID,          true);
+> +	owner_mt_print_item(info, "--suppl-groups",   XT_OWNER_SUPPL_GROUPS, true);
+>  }
+>  
+>  static int
+> diff --git a/extensions/libxt_owner.man b/extensions/libxt_owner.man
+> index 49b58cee..e2479865 100644
+> --- a/extensions/libxt_owner.man
+> +++ b/extensions/libxt_owner.man
+> @@ -15,5 +15,9 @@ given user. You may also specify a numerical UID, or an UID range.
+>  Matches if the packet socket's file structure is owned by the given group.
+>  You may also specify a numerical GID, or a GID range.
+>  .TP
+> +\fB\-\-suppl\-groups\fP
+> +Causes group(s) specified with \fB\-\-gid-owner\fP to be also checked in the
+> +supplementary groups of a process.
+> +.TP
+>  [\fB!\fP] \fB\-\-socket\-exists\fP
+>  Matches if the packet is associated with a socket.
+> diff --git a/include/linux/netfilter/xt_owner.h b/include/linux/netfilter/xt_owner.h
+> index 20817617..e7731dcc 100644
+> --- a/include/linux/netfilter/xt_owner.h
+> +++ b/include/linux/netfilter/xt_owner.h
+> @@ -4,9 +4,10 @@
+>  #include <linux/types.h>
+>  
+>  enum {
+> -	XT_OWNER_UID    = 1 << 0,
+> -	XT_OWNER_GID    = 1 << 1,
+> -	XT_OWNER_SOCKET = 1 << 2,
+> +	XT_OWNER_UID          = 1 << 0,
+> +	XT_OWNER_GID          = 1 << 1,
+> +	XT_OWNER_SOCKET       = 1 << 2,
+> +	XT_OWNER_SUPPL_GROUPS = 1 << 3,
+>  };
+>  
+>  struct xt_owner_match_info {
+> -- 
+> 2.20.1
+> 
