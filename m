@@ -2,243 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9063B92E
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED8F3B936
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391511AbfFJQPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 12:15:55 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:58163 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391407AbfFJQPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:15:54 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190610161553euoutp02a560eefaafb1ce0bfba79048f0a399cd~m4n5UCfqX2369923699euoutp02g
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 16:15:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190610161553euoutp02a560eefaafb1ce0bfba79048f0a399cd~m4n5UCfqX2369923699euoutp02g
+        id S2404116AbfFJQRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 12:17:42 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:40176 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390990AbfFJQRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:17:41 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190610161740euoutp010fdaa26e07a196faa65fc5029be981bb~m4pdX136k2528825288euoutp01M
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 16:17:40 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190610161740euoutp010fdaa26e07a196faa65fc5029be981bb~m4pdX136k2528825288euoutp01M
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1560183353;
-        bh=Bl4Z2kbZhq5qTBIXYpPKsmDTnUuT2A/5m5i+xHOe8Kk=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=pjKebCunbR5GjbXuAyBin7Un3Pg6ZEcbClqcovId1vnI3ysxRO/9Df12vveBhrSvf
-         xeY7XuQtzMXC5qqmKd++L/e6BgSsxSB1Kulmuk1wsAKz0S+Cz2KJH3/hKUr4Mrb+qt
-         PzlwQu76x+skrdy4hICMZl1oORjxWOvqjcLuMdN8=
+        s=mail20170921; t=1560183460;
+        bh=sAFK7z11VVTb7FnfO2m2bg3sqAxX7frwXuQTxjAelag=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=bKVhvvtQaX5z3yG5D3noiVf8R9JGqcQzsgM4ySLGGbT0PomeYQBC83qR9mTw9Jyua
+         3pIcMsHBxaAqZBjhD1EsUUfHxAaZhn+A06VLXpezFDFwaZvziwulPTd0A4AHAPGkS3
+         0ad0WjSl04p41ZhcwN5Bg5uxwlfgd6rr9JcPH+go=
 Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
         eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190610161552eucas1p163b5c5f39ae0b54dffa0a1a2142a4d1c~m4n4nz1es1445614456eucas1p1f;
-        Mon, 10 Jun 2019 16:15:52 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id A7.C4.04298.8328EFC5; Mon, 10
-        Jun 2019 17:15:52 +0100 (BST)
+        20190610161739eucas1p17c0338184126cab4edaa1e201e70e2dc~m4pcjC3Pk1445614456eucas1p10;
+        Mon, 10 Jun 2019 16:17:39 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id E8.D4.04298.3A28EFC5; Mon, 10
+        Jun 2019 17:17:39 +0100 (BST)
 Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
         eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df~m4n3ziPGM1445014450eucas1p1f;
-        Mon, 10 Jun 2019 16:15:51 +0000 (GMT)
+        20190610161738eucas1p18e8ea92ad360435f32979380caed7f0b~m4pbzh9tt1445614456eucas1p1z;
+        Mon, 10 Jun 2019 16:17:38 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
         eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20190610161551eusmtrp2bb77719d05996361f774ddf6190ceb42~m4n3j43sU1476914769eusmtrp2f;
-        Mon, 10 Jun 2019 16:15:51 +0000 (GMT)
-X-AuditID: cbfec7f2-f2dff700000010ca-db-5cfe82386180
+        20190610161738eusmtrp2a2a495b577bf1fbfabfc5ce074264323~m4pbj2g5A1476914769eusmtrp2g;
+        Mon, 10 Jun 2019 16:17:38 +0000 (GMT)
+X-AuditID: cbfec7f2-f2dff700000010ca-7f-5cfe82a3680a
 Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 4B.C3.04140.7328EFC5; Mon, 10
-        Jun 2019 17:15:51 +0100 (BST)
-Received: from imaximets.rnd.samsung.ru (unknown [106.109.129.180]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 0E.D3.04140.2A28EFC5; Mon, 10
+        Jun 2019 17:17:38 +0100 (BST)
+Received: from [106.109.129.180] (unknown [106.109.129.180]) by
         eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20190610161550eusmtip18b2cd7fd8af6f2194ff1a158e0e4afb5~m4n24B_uB2310323103eusmtip1K;
-        Mon, 10 Jun 2019 16:15:50 +0000 (GMT)
+        20190610161737eusmtip1dd37683d70038d9f90fe32a0dfdf9043~m4parH2bQ2310323103eusmtip1d;
+        Mon, 10 Jun 2019 16:17:37 +0000 (GMT)
+Subject: Re: [PATCH bpf v2] xdp: fix hang while unregistering device bound
+ to xdp socket
 From:   Ilya Maximets <i.maximets@samsung.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org,
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Ilya Maximets <i.maximets@samsung.com>
-Subject: [PATCH bpf v3] xdp: fix hang while unregistering device bound to
- xdp socket
-Date:   Mon, 10 Jun 2019 19:15:46 +0300
-Message-Id: <20190610161546.30569-1-i.maximets@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpgleLIzCtJLcpLzFFi42LZduznOV2Lpn8xBru62C3+tG1gtPh85Dib
-        xZzzLSwWV9p/slsce9HCZrFr3Uxmi8u75rBZrDh0Aii2QMxie/8+Rgcujy0rbzJ57Jx1l91j
-        8Z6XTB7Tux8ye/RtWcXo8XmTXABbFJdNSmpOZllqkb5dAlfGtK1zWQpWyFTsW3CEvYFxolgX
-        IyeHhICJxL+Lt5m6GLk4hARWMEqcOrqKFcL5wigx8elWNgjnM6PEtHnbGWFa7lz4wQyRWA6U
-        +NcD1fKDUWJr5yp2kCo2AR2JU6uPgHWICEhJfNyxnR2kiFngI5PE+5ffmUESwgJhEjeWtrKB
-        2CwCqhKzZ68Csjk4eAWsJR5u9YTYJi+xesMBZgj7NZvE84mxELaLRMfc12wQtrDEq+Nb2CFs
-        GYn/O+czQdj1EvdbXjKC7JUQ6GCUmH7oH1TCXmLL63PsILuYBTQl1u/SBzElBBwlNr1RgzD5
-        JG68FQQpZgYyJ22bzgwR5pXoaBOCmKEi8fvgcqjDpCRuvvsMdYCHxPaudWBxIYFYiSnH57JO
-        YJSbhbBqASPjKkbx1NLi3PTUYsO81HK94sTc4tK8dL3k/NxNjMB0cfrf8U87GL9eSjrEKMDB
-        qMTDGxH9L0aINbGsuDL3EKMEB7OSCO8KKaAQb0piZVVqUX58UWlOavEhRmkOFiVx3mqGB9FC
-        AumJJanZqakFqUUwWSYOTqkGxgkclcfz+/QE1tr5bczJyLUo+9pRx/Bjn7Wk8PWgt2wB0zjU
-        Y4Nk6yapCbanHbbZnpvTkXP7l8q6fzfWaR7OcgmecI9Nwqb7q+XSql+rZ6x6xvb/inBx5/fv
-        BZv9n8ukHVS+6D5P5LDf142dvXPm7PrMrW5jqxGobe5cocqvvfXesvOZ233fKLEUZyQaajEX
-        FScCAEhtbw4TAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrGLMWRmVeSWpSXmKPExsVy+t/xu7rmTf9iDNq3cVn8advAaPH5yHE2
-        iznnW1gsrrT/ZLc49qKFzWLXupnMFpd3zWGzWHHoBFBsgZjF9v59jA5cHltW3mTy2DnrLrvH
-        4j0vmTymdz9k9ujbsorR4/MmuQC2KD2bovzSklSFjPziElulaEMLIz1DSws9IxNLPUNj81gr
-        I1MlfTublNSczLLUIn27BL2MaVvnshSskKnYt+AIewPjRLEuRk4OCQETiTsXfjCD2EICSxkl
-        WlYwQsSlJH78usAKYQtL/LnWxdbFyAVU841R4n33crAGNgEdiVOrj4A1iAA1fNyxnR3EZhb4
-        ziRx/F4wiC0sECKx4/oTsEEsAqoSs2evAhrEwcErYC3xcKsnxHx5idUbDjBPYORZwMiwilEk
-        tbQ4Nz232EivODG3uDQvXS85P3cTIzBMtx37uWUHY9e74EOMAhyMSjy8EdH/YoRYE8uKK3MP
-        MUpwMCuJ8K6QAgrxpiRWVqUW5ccXleakFh9iNAXaPZFZSjQ5HxhDeSXxhqaG5haWhubG5sZm
-        FkrivB0CB2OEBNITS1KzU1MLUotg+pg4OKUaGC9qLD2WcXjtS+HFjB8zH58OPfQ1WVuLRbZa
-        Wa3u+H3bm9arl+7gc1IofcVcP1FDYcbpuyzhn3drvpyf9bBv37aHW6ZnRTin9c9eIbjo17Zd
-        jOrJLJ2q061nfb1m4KFZsHDfXINX2lasfE8i3gfn54n25Vq8Lsmv02fMPyvbnBb3R/hOVOua
-        E0osxRmJhlrMRcWJAL+S1ohpAgAA
-X-CMS-MailID: 20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Message-ID: <06eee1e3-283a-d665-904b-f0bc89b73232@samsung.com>
+Date:   Mon, 10 Jun 2019 19:17:37 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <d8b2bc92-3b7e-dfe7-35ee-61a68d46ff02@samsung.com>
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrJKsWRmVeSWpSXmKPExsWy7djP87qLm/7FGDT+ErH407aB0eLzkeNs
+        FnPOt7BYXGn/yW5x7EULm8WudTOZLS7vmsNmseLQCaDYAjGL7f37GB24PLasvMnksXPWXXaP
+        xXteMnlM737I7NG3ZRWjx+dNcgFsUVw2Kak5mWWpRfp2CVwZKy7rFGznrVh17S1bA+MRri5G
+        Tg4JAROJqZOOsXQxcnAICaxglHguDBIWEvjCKPF5WVYXIxeQ/ZlRYsHF7aww9Y9evWaESCwH
+        Knq6lw3C+cgoMeP1YiaQKmGBKIlv/56C2WwCOhKnVh9hBLFFBAwlft2YwgrSwCywlkni0p+J
+        YKt5BewkJnRmg5gsAqoSl6+Kg5SLCkRIfNm5CayVV0BQ4uTMJywgNqeAvcSJo2/AbGYBcYmm
+        LytZIWx5ie1v5zCDjJcQOMcu0X3kKyPE1S4St1t3MEPYwhKvjm9hh7BlJP7vnM8EYddL3G95
+        yQjR3MEoMf3QP6iEvcSW1+fYQY5jFtCUWL9LHyLsKPH9UjtYWEKAT+LGW0GIG/gkJm2bzgwR
+        5pXoaBOCqFaR+H1wOdQFUhI3331mn8CoNAvJZ7OQfDMLyTezEPYuYGRZxSieWlqcm55abJiX
+        Wq5XnJhbXJqXrpecn7uJEZigTv87/mkH49dLSYcYBTgYlXh4I6L/xQixJpYVV+YeYpTgYFYS
+        4V0hBRTiTUmsrEotyo8vKs1JLT7EKM3BoiTOW83wIFpIID2xJDU7NbUgtQgmy8TBKdXAOG3/
+        P64U/lNqfAUyDN///lXpcmYW9fmxQnJ5rNYdnquKWRxi6n8Znm7+4f1Ims/OxPPixTzNWbLr
+        F273XHvBoe4f94n7Xv8vcfiqvdgWuftibNZaN5XvPGtVOTqs+v35nBu/K4SqzBCdzjG/rMd/
+        mvzc21E5PWYrO1dsnLLVc23PyfJefqN3SizFGYmGWsxFxYkAYheG7kwDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrHIsWRmVeSWpSXmKPExsVy+t/xu7qLmv7FGEyeJGjxp20Do8XnI8fZ
+        LOacb2GxuNL+k93i2IsWNotd62YyW1zeNYfNYsWhE0CxBWIW2/v3MTpweWxZeZPJY+esu+we
+        i/e8ZPKY3v2Q2aNvyypGj8+b5ALYovRsivJLS1IVMvKLS2yVog0tjPQMLS30jEws9QyNzWOt
+        jEyV9O1sUlJzMstSi/TtEvQyVlzWKdjOW7Hq2lu2BsYjXF2MnBwSAiYSj169Zuxi5OIQEljK
+        KPFx5URWiISUxI9fF6BsYYk/17rYIIreM0osvfSHGSQhLBAlcenxcTCbTUBH4tTqI4wgtoiA
+        ocSvG1NYQRqYBdYySexa3cwEkhAS+MIo8WmxeRcjBwevgJ3EhM5sEJNFQFXi8lVxkApRgQiJ
+        2bsaWEBsXgFBiZMzn4DZnAL2EieOvgGzmQXUJf7Mu8QMYYtLNH1ZyQphy0tsfzuHeQKj0Cwk
+        7bOQtMxC0jILScsCRpZVjCKppcW56bnFRnrFibnFpXnpesn5uZsYgXG57djPLTsYu94FH2IU
+        4GBU4uGNiP4XI8SaWFZcmXuIUYKDWUmEd4UUUIg3JbGyKrUoP76oNCe1+BCjKdBvE5mlRJPz
+        gSkjryTe0NTQ3MLS0NzY3NjMQkmct0PgYIyQQHpiSWp2ampBahFMHxMHp1QDY013I0vBsWkv
+        o9t26bKZSC1yOG7au+/nevabLk0iQpOUdA4Ylhd4rKm/bblMYM0HkTv1Tis8SjelXXggp11i
+        V/jXdv3zKxzfjs/cnGrCuPDq7qDe//PXeaf722dWh9xMTGidWL11wvQl9S7H67JSmTxe3Nx7
+        SrN43rFX5lJsnRUvyxh2r7/7QomlOCPRUIu5qDgRAGsFRj/hAgAA
+X-CMS-MailID: 20190610161738eucas1p18e8ea92ad360435f32979380caed7f0b
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df
+X-RootMTR: 20190607173149eucas1p1d2ebedcab469ebd66acfe7c7dcd18d7e
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df
-References: <CGME20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df@eucas1p1.samsung.com>
+X-CMS-RootMailID: 20190607173149eucas1p1d2ebedcab469ebd66acfe7c7dcd18d7e
+References: <CGME20190607173149eucas1p1d2ebedcab469ebd66acfe7c7dcd18d7e@eucas1p1.samsung.com>
+        <20190607173143.4919-1-i.maximets@samsung.com>
+        <20190607163156.12cd3418@cakuba.netronome.com>
+        <d8b2bc92-3b7e-dfe7-35ee-61a68d46ff02@samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Device that bound to XDP socket will not have zero refcount until the
-userspace application will not close it. This leads to hang inside
-'netdev_wait_allrefs()' if device unregistering requested:
+On 10.06.2019 11:05, Ilya Maximets wrote:
+> On 08.06.2019 2:31, Jakub Kicinski wrote:
+>> On Fri,  7 Jun 2019 20:31:43 +0300, Ilya Maximets wrote:
+>>> +static int xsk_notifier(struct notifier_block *this,
+>>> +			unsigned long msg, void *ptr)
+>>> +{
+>>> +	struct sock *sk;
+>>> +	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>> +	struct net *net = dev_net(dev);
+>>> +	int i, unregister_count = 0;
+>>
+>> Please order the var declaration lines longest to shortest.
+>> (reverse christmas tree)
+> 
+> Hi.
+> I'm not a fan of mixing 'struct's with bare types in the declarations.
+> Moving the 'sk' to the third place will make a hole like this:
+> 
+> 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+> 	struct net *net = dev_net(dev);
+> 	struct sock *sk;
+> 	int i, unregister_count = 0;
+> 
+> Which is not looking good.
+> Moving to the 4th place:
+> 
+> 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+> 	struct net *net = dev_net(dev);
+> 	int i, unregister_count = 0;
+> 	struct sock *sk;
 
-  # ip link del p1
-  < hang on recvmsg on netlink socket >
+I've sent v3 with this variant and with moved msg check to the top level.
 
-  # ps -x | grep ip
-  5126  pts/0    D+   0:00 ip link del p1
-
-  # journalctl -b
-
-  Jun 05 07:19:16 kernel:
-  unregister_netdevice: waiting for p1 to become free. Usage count = 1
-
-  Jun 05 07:19:27 kernel:
-  unregister_netdevice: waiting for p1 to become free. Usage count = 1
-  ...
-
-Fix that by implementing NETDEV_UNREGISTER event notification handler
-to properly clean up all the resources and unref device.
-
-This should also allow socket killing via ss(8) utility.
-
-Fixes: 965a99098443 ("xsk: add support for bind for Rx")
-Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
----
-
-Version 3:
-
-    * Declaration lines ordered from longest to shortest.
-    * Checking of event type moved to the top to avoid unnecessary
-      locking.
-
-Version 2:
-
-    * Completely re-implemented using netdev event handler.
-
- net/xdp/xsk.c | 65 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 64 insertions(+), 1 deletion(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index a14e8864e4fa..273a419a8c4d 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -693,6 +693,57 @@ static int xsk_mmap(struct file *file, struct socket *sock,
- 			       size, vma->vm_page_prot);
- }
- 
-+static int xsk_notifier(struct notifier_block *this,
-+			unsigned long msg, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+	struct net *net = dev_net(dev);
-+	int i, unregister_count = 0;
-+	struct sock *sk;
-+
-+	switch (msg) {
-+	case NETDEV_UNREGISTER:
-+		mutex_lock(&net->xdp.lock);
-+		sk_for_each(sk, &net->xdp.list) {
-+			struct xdp_sock *xs = xdp_sk(sk);
-+
-+			mutex_lock(&xs->mutex);
-+			if (dev != xs->dev) {
-+				mutex_unlock(&xs->mutex);
-+				continue;
-+			}
-+
-+			sk->sk_err = ENETDOWN;
-+			if (!sock_flag(sk, SOCK_DEAD))
-+				sk->sk_error_report(sk);
-+
-+			/* Wait for driver to stop using the xdp socket. */
-+			xdp_del_sk_umem(xs->umem, xs);
-+			xs->dev = NULL;
-+			synchronize_net();
-+
-+			/* Clear device references in umem. */
-+			xdp_put_umem(xs->umem);
-+			xs->umem = NULL;
-+
-+			mutex_unlock(&xs->mutex);
-+			unregister_count++;
-+		}
-+		mutex_unlock(&net->xdp.lock);
-+
-+		if (unregister_count) {
-+			/* Wait for umem clearing completion. */
-+			synchronize_net();
-+			for (i = 0; i < unregister_count; i++)
-+				dev_put(dev);
-+		}
-+
-+		break;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- static struct proto xsk_proto = {
- 	.name =		"XDP",
- 	.owner =	THIS_MODULE,
-@@ -727,7 +778,8 @@ static void xsk_destruct(struct sock *sk)
- 	if (!sock_flag(sk, SOCK_DEAD))
- 		return;
- 
--	xdp_put_umem(xs->umem);
-+	if (xs->umem)
-+		xdp_put_umem(xs->umem);
- 
- 	sk_refcnt_debug_dec(sk);
- }
-@@ -784,6 +836,10 @@ static const struct net_proto_family xsk_family_ops = {
- 	.owner	= THIS_MODULE,
- };
- 
-+static struct notifier_block xsk_netdev_notifier = {
-+	.notifier_call	= xsk_notifier,
-+};
-+
- static int __net_init xsk_net_init(struct net *net)
- {
- 	mutex_init(&net->xdp.lock);
-@@ -816,8 +872,15 @@ static int __init xsk_init(void)
- 	err = register_pernet_subsys(&xsk_net_ops);
- 	if (err)
- 		goto out_sk;
-+
-+	err = register_netdevice_notifier(&xsk_netdev_notifier);
-+	if (err)
-+		goto out_pernet;
-+
- 	return 0;
- 
-+out_pernet:
-+	unregister_pernet_subsys(&xsk_net_ops);
- out_sk:
- 	sock_unregister(PF_XDP);
- out_proto:
--- 
-2.17.1
-
+> 
+> This variant doesn't look good for me because of mixing 'struct's with
+> bare integers.
+> 
+> Do you think I need to use one of above variants?
+> 
+>>
+>>> +	mutex_lock(&net->xdp.lock);
+>>> +	sk_for_each(sk, &net->xdp.list) {
+>>> +		struct xdp_sock *xs = xdp_sk(sk);
+>>> +
+>>> +		mutex_lock(&xs->mutex);
+>>> +		switch (msg) {
+>>> +		case NETDEV_UNREGISTER:
+>>
+>> You should probably check the msg type earlier and not take all the
+>> locks and iterate for other types..
+> 
+> Yeah. I thought about it too. Will fix in the next version.
+> 
+> Best regards, Ilya Maximets.
+> 
