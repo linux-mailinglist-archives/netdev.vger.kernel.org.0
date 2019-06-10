@@ -2,63 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F603BC07
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 20:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED413BC4E
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 20:59:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388309AbfFJSv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 14:51:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42620 "EHLO vps0.lunn.ch"
+        id S2388745AbfFJS7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 14:59:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387643AbfFJSv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 14:51:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lbqqcddIXUK4Qt7ADiSO1yJTcmHpDZCJi6Xhhhmc1fA=; b=dCH0J7KKGXlYUBZ/L4WeB7kDVr
-        iS/Jz1qB4h7Ok+g6qIVkIAHlTpe4Xp+CvOUglOc5V58OSXdbVCk0wRRm6qEgCiBt1fxCJJoSPmbyg
-        96LiLSv+5tuUOAZETvEj7flHBuwbCYsIFDFRHvBs3xJ7iSdeTbuvjacXEglpDcDmeKkA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1haPO7-00018u-4b; Mon, 10 Jun 2019 20:51:23 +0200
-Date:   Mon, 10 Jun 2019 20:51:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC] net: phy: add state PERM_FAIL
-Message-ID: <20190610185123.GA2191@lunn.ch>
-References: <8e4cd03b-2c0a-ada9-c44d-2b5f5bd4f148@gmail.com>
- <9e1b2e30-139d-c3b9-0ac3-5775a4ade3a6@gmail.com>
+        id S2388544AbfFJS7m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 14:59:42 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B62B1208E3;
+        Mon, 10 Jun 2019 18:59:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560193181;
+        bh=NiQ6TSS68zMVARMk1UxtRrBtgarpzq8OIbKEFYq7Nyw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PZy7xeMMzhmsda1hjKJ29ExmrhdZQYjnrUmbMWO8BP81vJK3DXvIkdTzD9GV/r1Ta
+         QEwqvvJUFE93GJeXm1+pobl+zg78XWx5FA1zDP9ROVKQooOyrpWOkm9JmoyVZS0fRR
+         MUiMJ+kawdHnnw7xPP3a2XNiVFIPhPOLiKhjgY48=
+Received: by mail-qt1-f173.google.com with SMTP id a15so11667525qtn.7;
+        Mon, 10 Jun 2019 11:59:41 -0700 (PDT)
+X-Gm-Message-State: APjAAAVmF2BcdQmI8Am0Ogx47VBRuwPgxXMSlXkmLJ+7yMki04Ls6xA/
+        Zc24LvBpMWUj8N6Xk8C3aK/Fy5FFx/kRaeE7vQ==
+X-Google-Smtp-Source: APXvYqwCmscLJYNa3hNvdJokj1iSTo/T0hJq/eoSYOtoTwBoqS29ewgLPnrTr6A8IxSA+xvJ3iYP3g7C2lZ8C89tCMA=
+X-Received: by 2002:ac8:36b9:: with SMTP id a54mr61317703qtc.300.1560193180904;
+ Mon, 10 Jun 2019 11:59:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9e1b2e30-139d-c3b9-0ac3-5775a4ade3a6@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
+ <d198d29119b37b2fdb700d8992b31963e98b6693.1560158667.git-series.maxime.ripard@bootlin.com>
+ <20190610143139.GG28724@lunn.ch>
+In-Reply-To: <20190610143139.GG28724@lunn.ch>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 10 Jun 2019 12:59:29 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJahCJcdu=+fA=ewbGezuEJ2W6uwMVxkQpdY6w+1OWVVA@mail.gmail.com>
+Message-ID: <CAL_JsqJahCJcdu=+fA=ewbGezuEJ2W6uwMVxkQpdY6w+1OWVVA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] dt-bindings: net: sun4i-emac: Convert the
+ binding to a schemas
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> - a PHY driver that requires a firmware should either be loaded prior to
-> Linux taking over the PHY, or should be loaded by the PHY driver itself
+On Mon, Jun 10, 2019 at 8:31 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +  - phy
+> > +  - allwinner,sram
+>
+> Quoting ethernet.txt:
+>
+> - phy: the same as "phy-handle" property, not recommended for new bindings.
+>
+> - phy-handle: phandle, specifies a reference to a node representing a PHY
+>   device; this property is described in the Devicetree Specification and so
+>   preferred;
+>
+> Can this be expressed in Yaml? Accept phy, but give a warning. Accept
+> phy-handle without a warning? Enforce that one or the other is
+> present?
 
-Hi Florian
+The common schema could have 'phy: false'. This works as long as we've
+updated (or plan to) all the dts files to use phy-handle. The issue is
+how far back do you need kernels to work with newer dtbs.
 
-Both the Marvell10g and Aquantia PHY need the firmware in their FLASH.
-It is a slow operation to perform. And so far, everybody has done it
-from user space. I'm not sure we want to hold up the PHY driver probe
-for multiple minutes if we where to do this in kernel.
-
-> So the bottom line of my reasoning is that, if we could make this
-> marvell10g specific for now, and we generalize that later once we find a
-> second candidate, that would seem preferable.
-
-The obvious second candidate is the Aquantia PHY. And i probably have
-a board without firmware.
-
-  Andrew
+Rob
