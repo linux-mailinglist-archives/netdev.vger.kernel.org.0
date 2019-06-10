@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29BF83B976
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:32:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A86153B975
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 18:32:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727707AbfFJQc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 12:32:28 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45467 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfFJQc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:32:26 -0400
-Received: by mail-wr1-f68.google.com with SMTP id f9so9830195wre.12
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 09:32:25 -0700 (PDT)
+        id S1727836AbfFJQcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 12:32:25 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34003 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727305AbfFJQcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 12:32:25 -0400
+Received: by mail-wm1-f68.google.com with SMTP id w9so299378wmd.1
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 09:32:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9Ic5PlwGSWhh6JUvNjGvBJ9knGjzB4Va/zSsXrcJHQM=;
-        b=gbZG2H4oFPTRclJD8QoVHT2Iga3QBwTsHbFJy+tHu67aIq2BOrhwrb1ExptLELJncD
-         yoN1zbN5KEkK7XwmH4W1yekmexi1oW6gEL8Zu48GvPTVSePLTJ7aBh6lNPG6I0YPhfUB
-         3HEMs+aRM3dYWyBBg7dSaVtHkAxyP13/oJsPDy2B6Gbh+B5KdTFZWe5VV3X5xKWN/XI+
-         1MTumgcpOSAksQJGCiTl2dLYOZqz5m0QGtsZa+lHfvpmY/cMLxa4yyGh7BOKfjyJ2MVy
-         VOC2RNJFu5Je640YotxoPRT3W0nXa9HkwCYPS0go6zkAO5KKH7O6N9GC4tkOu+/hNfjD
-         JPnQ==
+        bh=UEYuVvTWd0PfLChOOhEtp6XCK3bzDXam8uN0L/f1d40=;
+        b=Q5X3bnTrtDLHO0Zom8f5Q9aD/zhmWmjOzwVIw8x1Uijp/NaO362opb2doOvt2XnUk9
+         4J2kZscBAyC9ZbLFTqCfeNi1HNVHNhgG04AqCt8Ov5IlKTZkaiVI24pC0Q9rMhU2JUQI
+         Y3Kfk8Kv8IF/G59rsHWRRQO94C6s87RTPnNgfw/sPWZiqha1Yt2HUUCELi9NwyhcyO/c
+         kV6nfu9gEQ6BDbJLNLggKzkqED48D/XWBi51F4JWVngYkL6dsv19noN9XwHC+4D7Sy1+
+         k36XO+q9aGmhhGOrG/8Ojm1EyvccbZHIYgxs3M6CRSUByrHsL72gOD58oD9sD+dk3r5Q
+         GAkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=9Ic5PlwGSWhh6JUvNjGvBJ9knGjzB4Va/zSsXrcJHQM=;
-        b=bNvuLMwEgPVuULStlQaPLsqWchM75ONiLx8xr8IprVVGBwsVk9TXe0YOMDtYQp1xoX
-         hJtlty+H6Q1j69hzbt1uhpQwcrO0Zor/UtgH1B7tff7r/0vdhTGgiiHbrtjZxZMEzgyj
-         vsYTWw2RQyB+dXySyuDc70IB4adQKqd25NGKAjaLFm4Peyi0kVavGS1Q9RC7XFwPYB/z
-         aFiEEVEGSoIdFmFTTXnWZ7TR56xxQypbYaxO2I15EJfJcxq/YdQJtrdyDiVaVCD/Vhxi
-         DNsLeijijI4FDM6ZyIISXem3otrCJQ/NcNmFYN9x/dOUni2wA/KuhIjhdF1bDV8rWzwl
-         M5ag==
-X-Gm-Message-State: APjAAAWcqa04R4R2UqHiknfg+p1wYgkBivZ/+P/qNTF+l3BBgbsGi+Ob
-        YdoWNMNUBj/9h81UDzxnWKjpU3nz
-X-Google-Smtp-Source: APXvYqya4J68p3AyTUB08i5jnI0v5svpK1gzCleqHDNLB8kvaJ5h/8+6ulZtf5/5fklYVx9Ze02eVw==
-X-Received: by 2002:adf:e8cb:: with SMTP id k11mr44704134wrn.244.1560183947036;
-        Mon, 10 Jun 2019 09:25:47 -0700 (PDT)
+        bh=UEYuVvTWd0PfLChOOhEtp6XCK3bzDXam8uN0L/f1d40=;
+        b=Z4bhsiM2xslyiyC7pyvwkNBtdAtMBCEL8KS9VyYOnidrNP+6fcxhHSrMa+1t80+HiV
+         rTUkYgrWGx/kU0MEBhWXwKUlpSyzZnetB4szWbC4I55TsTCWghMd0YiQQdlPnQ1AtNUT
+         wrkRW58c/WXaoN31Hep03ZICkJMwhSzczsSmfs/7Fp2nLDlPLqF9G12TU2wTIwmaz1d9
+         qwCRVMGpg2MMYsB4hOm8VbWwl2T3wNM4oy93AJSb0UtKJuPwW5TfavxyHTXrvnHKf9sd
+         Ms5Rl+wfPPg+zjMhkuA5KhrRetC3fHxLijaf6S4XzmkoTJP2Ziw9apgR/uQvAgPVZ6aw
+         otSQ==
+X-Gm-Message-State: APjAAAVTE4RwAqoJ5h7TXWUCMTePaPatYSgVCRU4rT7pM6+NqlgFV2Ik
+        Slo2SV32rlrPYqHMNm6ip279UTJo
+X-Google-Smtp-Source: APXvYqwKUT7Zl/5NVl316CNBnKlxorirMm+KABd6MsMoLvPCVmuuvAIvM+ZXeb6wWlXEHod8/uPtAg==
+X-Received: by 2002:a7b:c933:: with SMTP id h19mr14867110wml.52.1560183948437;
+        Mon, 10 Jun 2019 09:25:48 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bf3:bd00:8cc:c330:790b:34f7? (p200300EA8BF3BD0008CCC330790B34F7.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:8cc:c330:790b:34f7])
-        by smtp.googlemail.com with ESMTPSA id r5sm21369797wrg.10.2019.06.10.09.25.46
+        by smtp.googlemail.com with ESMTPSA id b203sm12170965wmd.41.2019.06.10.09.25.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 09:25:46 -0700 (PDT)
-Subject: [PATCH next 4/5] r8169: remove member coalesce_info from struct
- rtl_cfg_info
+        Mon, 10 Jun 2019 09:25:47 -0700 (PDT)
+Subject: [PATCH next 5/5] r8169: remove struct rtl_cfg_info
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <1afce631-e188-58a9-ca72-3de2e5e73d09@gmail.com>
-Message-ID: <bc9b0740-f71f-346d-43c8-6a91cb202ad7@gmail.com>
-Date:   Mon, 10 Jun 2019 18:24:25 +0200
+Message-ID: <c1e1a547-39d0-78d8-fb58-558f5f114ecf@gmail.com>
+Date:   Mon, 10 Jun 2019 18:25:29 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
@@ -66,50 +65,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To prepare removal of struct rtl_cfg_info, set the coalesce
-config based on the chip version number.
+Simplify the code by removing struct rtl_cfg_info. Only info we need
+per PCI ID is whether it supports GBit or not.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 56 ++++++++---------------
+ 1 file changed, 19 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 4a53276da..65ae575ba 100644
+index 65ae575ba..ca26cd659 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -6461,18 +6461,14 @@ static const struct net_device_ops rtl_netdev_ops = {
+@@ -73,6 +73,8 @@ static const int multicast_filter_limit = 32;
+ #define R8169_TX_RING_BYTES	(NUM_TX_DESC * sizeof(struct TxDesc))
+ #define R8169_RX_RING_BYTES	(NUM_RX_DESC * sizeof(struct RxDesc))
  
- static const struct rtl_cfg_info {
- 	unsigned int has_gmii:1;
--	const struct rtl_coalesce_info *coalesce_info;
- } rtl_cfg_infos [] = {
- 	[RTL_CFG_0] = {
- 		.has_gmii	= 1,
--		.coalesce_info	= rtl_coalesce_info_8169,
- 	},
- 	[RTL_CFG_1] = {
- 		.has_gmii	= 1,
--		.coalesce_info	= rtl_coalesce_info_8168_8136,
- 	},
- 	[RTL_CFG_2] = {
--		.coalesce_info	= rtl_coalesce_info_8168_8136,
- 	}
++#define RTL_CFG_NO_GBIT	1
++
+ /* write/read MMIO register */
+ #define RTL_W8(tp, reg, val8)	writeb((val8), tp->mmio_addr + (reg))
+ #define RTL_W16(tp, reg, val16)	writew((val16), tp->mmio_addr + (reg))
+@@ -200,32 +202,26 @@ static const struct {
+ 	[RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"			},
  };
  
-@@ -6850,7 +6846,11 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	dev->max_mtu = jumbo_max;
+-enum cfg_version {
+-	RTL_CFG_0 = 0x00,
+-	RTL_CFG_1,
+-	RTL_CFG_2
+-};
+-
+ static const struct pci_device_id rtl8169_pci_tbl[] = {
+-	{ PCI_VDEVICE(REALTEK,	0x2502), RTL_CFG_1 },
+-	{ PCI_VDEVICE(REALTEK,	0x2600), RTL_CFG_1 },
+-	{ PCI_VDEVICE(REALTEK,	0x8129), RTL_CFG_0 },
+-	{ PCI_VDEVICE(REALTEK,	0x8136), RTL_CFG_2 },
+-	{ PCI_VDEVICE(REALTEK,	0x8161), RTL_CFG_1 },
+-	{ PCI_VDEVICE(REALTEK,	0x8167), RTL_CFG_0 },
+-	{ PCI_VDEVICE(REALTEK,	0x8168), RTL_CFG_1 },
+-	{ PCI_VDEVICE(NCUBE,	0x8168), RTL_CFG_1 },
+-	{ PCI_VDEVICE(REALTEK,	0x8169), RTL_CFG_0 },
++	{ PCI_VDEVICE(REALTEK,	0x2502) },
++	{ PCI_VDEVICE(REALTEK,	0x2600) },
++	{ PCI_VDEVICE(REALTEK,	0x8129) },
++	{ PCI_VDEVICE(REALTEK,	0x8136), RTL_CFG_NO_GBIT },
++	{ PCI_VDEVICE(REALTEK,	0x8161) },
++	{ PCI_VDEVICE(REALTEK,	0x8167) },
++	{ PCI_VDEVICE(REALTEK,	0x8168) },
++	{ PCI_VDEVICE(NCUBE,	0x8168) },
++	{ PCI_VDEVICE(REALTEK,	0x8169) },
+ 	{ PCI_VENDOR_ID_DLINK,	0x4300,
+-		PCI_VENDOR_ID_DLINK, 0x4b10, 0, 0, RTL_CFG_1 },
+-	{ PCI_VDEVICE(DLINK,	0x4300), RTL_CFG_0 },
+-	{ PCI_VDEVICE(DLINK,	0x4302), RTL_CFG_0 },
+-	{ PCI_VDEVICE(AT,	0xc107), RTL_CFG_0 },
+-	{ PCI_VDEVICE(USR,	0x0116), RTL_CFG_0 },
++		PCI_VENDOR_ID_DLINK, 0x4b10, 0, 0 },
++	{ PCI_VDEVICE(DLINK,	0x4300), },
++	{ PCI_VDEVICE(DLINK,	0x4302), },
++	{ PCI_VDEVICE(AT,	0xc107), },
++	{ PCI_VDEVICE(USR,	0x0116), },
+ 	{ PCI_VENDOR_ID_LINKSYS,		0x1032,
+-		PCI_ANY_ID, 0x0024, 0, 0, RTL_CFG_0 },
++		PCI_ANY_ID, 0x0024, 0, 0 },
+ 	{ 0x0001,				0x8168,
+-		PCI_ANY_ID, 0x2410, 0, 0, RTL_CFG_2 },
++		PCI_ANY_ID, 0x2410, 0, 0, RTL_CFG_NO_GBIT },
+ 	{}
+ };
  
- 	rtl_set_irq_mask(tp);
--	tp->coalesce_info = cfg->coalesce_info;
-+
-+	if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
-+		tp->coalesce_info = rtl_coalesce_info_8169;
-+	else
-+		tp->coalesce_info = rtl_coalesce_info_8168_8136;
+@@ -6459,19 +6455,6 @@ static const struct net_device_ops rtl_netdev_ops = {
  
- 	tp->fw_name = rtl_chip_infos[chipset].fw_name;
+ };
  
+-static const struct rtl_cfg_info {
+-	unsigned int has_gmii:1;
+-} rtl_cfg_infos [] = {
+-	[RTL_CFG_0] = {
+-		.has_gmii	= 1,
+-	},
+-	[RTL_CFG_1] = {
+-		.has_gmii	= 1,
+-	},
+-	[RTL_CFG_2] = {
+-	}
+-};
+-
+ static void rtl_set_irq_mask(struct rtl8169_private *tp)
+ {
+ 	tp->irq_mask = RTL_EVENT_NAPI | LinkChg;
+@@ -6695,7 +6678,6 @@ static int rtl_get_ether_clk(struct rtl8169_private *tp)
+ 
+ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+-	const struct rtl_cfg_info *cfg = rtl_cfg_infos + ent->driver_data;
+ 	/* align to u16 for is_valid_ether_addr() */
+ 	u8 mac_addr[ETH_ALEN] __aligned(2) = {};
+ 	struct rtl8169_private *tp;
+@@ -6713,7 +6695,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	tp->dev = dev;
+ 	tp->pci_dev = pdev;
+ 	tp->msg_enable = netif_msg_init(debug.msg_enable, R8169_MSG_DEFAULT);
+-	tp->supports_gmii = cfg->has_gmii;
++	tp->supports_gmii = ent->driver_data == RTL_CFG_NO_GBIT ? 0 : 1;
+ 
+ 	/* Get the *optional* external "ether_clk" used on some boards */
+ 	rc = rtl_get_ether_clk(tp);
 -- 
 2.21.0
 
