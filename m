@@ -2,63 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 898093BEF9
+	by mail.lfdr.de (Postfix) with ESMTP id F1F513BEFA
 	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388927AbfFJVzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 17:55:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51250 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388757AbfFJVzk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 17:55:40 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B50B93082291;
-        Mon, 10 Jun 2019 21:55:40 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2AE9419C59;
-        Mon, 10 Jun 2019 21:55:36 +0000 (UTC)
-Date:   Mon, 10 Jun 2019 23:55:32 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v3 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Message-ID: <20190610235532.5a4f9f0d@redhat.com>
-In-Reply-To: <91d0b4a4-46ba-5dd0-e387-c9a0ba195506@gmail.com>
-References: <cover.1560016091.git.sbrivio@redhat.com>
-        <f5ca22e91017e90842ee00aa4fd41dcdf7a6e99b.1560016091.git.sbrivio@redhat.com>
-        <35689c52-0969-0103-663b-c9f909f4c727@gmail.com>
-        <20190610234502.41949c97@redhat.com>
-        <91d0b4a4-46ba-5dd0-e387-c9a0ba195506@gmail.com>
-Organization: Red Hat
+        id S2389168AbfFJV4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 17:56:04 -0400
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:38178 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389047AbfFJV4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:56:03 -0400
+Received: by mail-pg1-f172.google.com with SMTP id v11so5723199pgl.5
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 14:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=j3QBGZAX00q+IDbFvup8N2WsU8DhDhF6bBmHfzNVin8=;
+        b=JlMoaqSXG2Pa7P4Jp/yipq6bfafOTKUhV0bSy1zHpZJfkE94j+uut4y3JQEF+Vv5Gb
+         umI7rsij/Y4tzFZZtEJuB1aadKajk+EJ32GDeXTzITRKDT7RkKF19AGPuIR83yvtqm6v
+         wbZEmvqKISqd3WbI5KTNFXA7vlFr1NXYDXU+pOSGh0PBUPMR4lIPFqG/Mo1vjdIdk/z0
+         TMjgUz72no1hjLQYRCoyC5qZAgOEA+tg8Xmp+mX5ygT71Oho24ysHi7WuHjLTGEsvuwy
+         ZXPh1B5q/vQKEEQ6dlwQa3KAfGM+vdwLoZUIVnyJn0lj4WktCmkL0B5+9uLjy078w1Mc
+         WaCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=j3QBGZAX00q+IDbFvup8N2WsU8DhDhF6bBmHfzNVin8=;
+        b=imwN7BhVY9U7OJu38fHRX2fUUvh0I/6j+Hgh0YHyN4V1JnFE7Apg3DhorNf26rQinm
+         DXPbLvWfXfg2BVtNFFTJfnL0NUqsZJTmzgnmUzxtZjy/FoA5KtIvmk6c8to1dUTGzGQ5
+         Piu1FO76jXYtPk2nTHGCKYjeAYBY1voXDPISvz1oS9rIdLamb3/PS/cw7ucImXYgn692
+         PQJCGaQh4MpeHkuGEf2aYR6q6J9/abmDa3r0/eihlCcV1fMD6BtwV906L5g1g/EaAb+o
+         KiMk5WFzDzGehjHNtCDwCkVlS/gfxVw/IER+zYu13pZbHaG2Pox5o3N1ufzKehWW94oN
+         Phgw==
+X-Gm-Message-State: APjAAAV4lG4I1V0jR86ClkKOpFnPq6c67DelOdPK+QlYpyr3T2J2OCN/
+        imILhnB4lfjHbDlUJzfGwAA=
+X-Google-Smtp-Source: APXvYqwMGc6Ai6AxwFOPsEebAVhkC9aTaXP4ktWJI/xKafAymbaajY25k8R0lfOZ/s76W70CzApuLQ==
+X-Received: by 2002:a17:90a:cd03:: with SMTP id d3mr22408317pju.127.1560203762999;
+        Mon, 10 Jun 2019 14:56:02 -0700 (PDT)
+Received: from [172.27.227.182] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id j23sm12887267pgb.63.2019.06.10.14.56.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 14:56:02 -0700 (PDT)
+Subject: Re: [patch net-next v3 3/3] devlink: implement flash status
+ monitoring
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, mlxsw@mellanox.com, sthemmin@microsoft.com,
+        saeedm@mellanox.com, leon@kernel.org, f.fainelli@gmail.com
+References: <20190604134044.2613-1-jiri@resnulli.us>
+ <20190604134450.2839-3-jiri@resnulli.us>
+ <08f73e0f-918b-4750-366b-47d7e5ab4422@gmail.com>
+ <20190610102438.69880dcd@cakuba.netronome.com>
+ <249eca9b-e62a-df02-7593-4492daf39183@gmail.com>
+ <20190610104723.66e78254@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e82080ee-9098-01c5-1108-294c32f53f33@gmail.com>
+Date:   Mon, 10 Jun 2019 15:56:00 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Mon, 10 Jun 2019 21:55:40 +0000 (UTC)
+In-Reply-To: <20190610104723.66e78254@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Jun 2019 15:47:16 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 6/10/19 3:45 PM, Stefano Brivio wrote:
-> > Indeed, we don't have to add much: just make this work for IPv4 too,
-> > honour NLM_F_MATCH, and skip filtering (further optimisation) on
-> > NLM_F_DUMP_FILTERED in iproute2 (ip neigh already uses that).  
+On 6/10/19 11:47 AM, Jakub Kicinski wrote:
+> It's the kernel that does this, the request_firmware() API.  It's
+> documented in both devlink's and ethtool's API.  I was initially
+> intending to use the file request API directly in devlink, but because
+> of the requirement to keep compatibility with ethtool that was a no go.
 > 
-> you can't. Not all of iproute2's filter options are handled by the
-> kernel (and nor should they be).
+> FWIW you can load from any directory, just prefix the file name
+> with ../../ to get out of /lib/firmware.
+> 
+> I guess we could add some logic into devlink user space to detect that
+> user does not know about this quirk and fix up the path for them.. 🤔
 
-Right, of course. Discard that last part.
-
--- 
-Stefano
+If the user can not load a file based on an arbitrary path, what is the
+point of the option in the devlink command? You might as well just have
+the driver use the firmware interface.
