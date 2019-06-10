@@ -2,74 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9256F3BF7D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 00:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E267F3BF87
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 00:34:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390280AbfFJW1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 18:27:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51374 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388328AbfFJW1V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 18:27:21 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D752A3082B15;
-        Mon, 10 Jun 2019 22:27:21 +0000 (UTC)
-Received: from epycfail.redhat.com (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 59A6E60A9F;
-        Mon, 10 Jun 2019 22:27:20 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Guillaume Nault <gnault@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Subject: [PATCH net 2/2] geneve: Don't assume linear buffers in error handler
-Date:   Tue, 11 Jun 2019 00:27:06 +0200
-Message-Id: <2bdcf7ad6c46f91d554c86b5b25937b2ce8741d2.1560205281.git.sbrivio@redhat.com>
-In-Reply-To: <cover.1560205281.git.sbrivio@redhat.com>
-References: <cover.1560205281.git.sbrivio@redhat.com>
+        id S2390311AbfFJWeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 18:34:23 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:41272 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390266AbfFJWeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 18:34:23 -0400
+Received: by mail-yb1-f194.google.com with SMTP id d2so4399857ybh.8
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 15:34:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TsVEpXGaziOtf6dCMTqugok1VaOj/14Vc+zvAlbZSKs=;
+        b=lw3U0vAkMXIGClOAh3vBcxTZEhEddDD9ZRGTJT+JieGCMYz3Ir12CzGUSA5BdHa4yv
+         nEaxDL7o03Hza/L5VfAIj4FL/xDZlFlk1cMwnShNWBLPfZAvNoUDHW5Zdg8mljNSv9tf
+         qI6EGSMRU2gRlA47ciB4MwalzLBj8pppmDwbDJUDL1nIGeWfRYPgKQtyf1vRq0HTEFgc
+         aRzsi5gi0T11St62PK8PpTvID7/GQTYYVQWO2CjPHTWRzKZmuC1tKS/XJV8bawDQgge6
+         dDwMiDImb7KZbzOzkjssbnwLhdinYgPvN35FgteC6t4AD5NEvFTQVr0CKI+t86XyWMgm
+         7sog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TsVEpXGaziOtf6dCMTqugok1VaOj/14Vc+zvAlbZSKs=;
+        b=PNPG+SFC7PG3tLRaJYljb4yVjFc/zEUWiP5tzX7qV9W+sKUZARx84xrY+AD+smYFFw
+         jFdKZZyZm4SCZT5q2dvRiQm0dGzyhCRV+N3TKzbmYKMIqdMcrGhhb8CIW3zw2O//kFDg
+         2epK6Ov9hJXrezmACFrgotsUwPd2Sole2oCiwFHZkzca+327KSI6jgWkpar73//PPalK
+         YFoun7mp8SLrJEnAEWZS4SM4JVjGQYMKNTXUlnMfzJWqpoysIf0jafcKm7JDDMJrNZAw
+         p4Hc0VeWZ7DTm6vLP0hIgXuOf4ZVJ3yKATJHo1boqpA1WhaAxD48smQ6rmnitozGb7cW
+         Ppiw==
+X-Gm-Message-State: APjAAAXL/68LUcfJh9WmEampuxMjh91/FAOczc5GSy1Hs+EKh2CC/yQI
+        PQn7ouhXqnYoZQDnC7n4HuZ50ZvXff8L4Z//k0HrEFMtXIa8Cg==
+X-Google-Smtp-Source: APXvYqwE/15G107WoEoVtG4/tFL9mvkHRucbvTk61v8wSxbG492eifhMQOPAM2KpQs38+2fnKJrj3CdFjVffqlu7FFc=
+X-Received: by 2002:a25:7642:: with SMTP id r63mr37451561ybc.253.1560206061733;
+ Mon, 10 Jun 2019 15:34:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Mon, 10 Jun 2019 22:27:21 +0000 (UTC)
+References: <20190610214543.92576-1-edumazet@google.com> <CAGHK07A7QuGpcfNGv0h3hdMj8U1GVkrmRyuwWRMRyrOwJWCOAQ@mail.gmail.com>
+In-Reply-To: <CAGHK07A7QuGpcfNGv0h3hdMj8U1GVkrmRyuwWRMRyrOwJWCOAQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 10 Jun 2019 15:34:10 -0700
+Message-ID: <CANn89iKrm2GuAsnP_Wpo4xre6dKKx9QouoXw9iop-nuzUiY_sw@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: take care of SYN_RECV sockets in
+ tcp_v4_send_ack() and tcp_v6_send_response()
+To:     Jonathan Maxwell <jmaxwell37@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit a07966447f39 ("geneve: ICMP error lookup handler") I wrongly
-assumed buffers from icmp_socket_deliver() would be linear. This is not
-the case: icmp_socket_deliver() only guarantees we have 8 bytes of linear
-data.
+On Mon, Jun 10, 2019 at 3:27 PM Jonathan Maxwell <jmaxwell37@gmail.com> wrote:
+>
+> Thanks for fixing that Eric.
 
-Eric fixed this same issue for fou and fou6 in commits 26fc181e6cac
-("fou, fou6: do not assume linear skbs") and 5355ed6388e2 ("fou, fou6:
-avoid uninit-value in gue_err() and gue6_err()").
+Hi Jonathan.
 
-Use pskb_may_pull() instead of checking skb->len, and take into account
-the fact we later access the GENEVE header with udp_hdr(), so we also
-need to sum skb_transport_header() here.
+There is no bug actually, at least not on sk->sk_mark part.
 
-Reported-by: Guillaume Nault <gnault@redhat.com>
-Fixes: a07966447f39 ("geneve: ICMP error lookup handler")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
- drivers/net/geneve.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I will send a simpler patch so that sock_net_uid() correctly fetches
+sk->sk_uid for FASTOPEN socket.
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 98d1a45c0606..25770122c219 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -395,7 +395,7 @@ static int geneve_udp_encap_err_lookup(struct sock *sk, struct sk_buff *skb)
- 	u8 zero_vni[3] = { 0 };
- 	u8 *vni = zero_vni;
- 
--	if (skb->len < GENEVE_BASE_HLEN)
-+	if (!pskb_may_pull(skb, skb_transport_offset(skb) + GENEVE_BASE_HLEN))
- 		return -EINVAL;
- 
- 	geneveh = geneve_hdr(skb);
--- 
-2.20.1
+Thanks !
 
+
+
+>
+> On Tue, Jun 11, 2019 at 7:45 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > TCP can send ACK packets on behalf of SYN_RECV sockets.
+> >
+> > tcp_v4_send_ack() and tcp_v6_send_response() incorrectly
+> > dereference sk->sk_mark for non TIME_WAIT sockets.
+> >
+> > This field is not defined for SYN_RECV sockets.
+> >
+> > Using sk_to_full_sk() should get back to the listener socket.
+> >
+> > Note that this also provides a socket pointer to sock_net_uid() calls.
+> >
+> > Fixes: 00483690552c ("tcp: Add mark for TIMEWAIT sockets")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Jon Maxwell <jmaxwell37@gmail.com>
+> > ---
+> >  net/ipv4/tcp_ipv4.c | 6 ++++--
+> >  net/ipv6/tcp_ipv6.c | 1 +
+> >  2 files changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index f059fbd81a84314ae6fef37f600b0cf28bd2ad30..2bb27d5eae78efdff52a741904d7526a234595d8 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -856,12 +856,14 @@ static void tcp_v4_send_ack(const struct sock *sk,
+> >         if (oif)
+> >                 arg.bound_dev_if = oif;
+> >         arg.tos = tos;
+> > -       arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+> >         local_bh_disable();
+> >         ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
+> > -       if (sk)
+> > +       if (sk) {
+> > +               sk = sk_to_full_sk(sk);
+> >                 ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+> >                                    inet_twsk(sk)->tw_mark : sk->sk_mark;
+> > +       }
+> > +       arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+> >         ip_send_unicast_reply(ctl_sk,
+> >                               skb, &TCP_SKB_CB(skb)->header.h4.opt,
+> >                               ip_hdr(skb)->saddr, ip_hdr(skb)->daddr,
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index ad7039137a20f9ad8581d9ca01347c67aa8a8433..ea4dd988bc7f9a90e0d95283e10db5a517a59027 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -884,6 +884,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+> >         }
+> >
+> >         if (sk) {
+> > +               sk = sk_to_full_sk(sk);
+> >                 if (sk->sk_state == TCP_TIME_WAIT) {
+> >                         mark = inet_twsk(sk)->tw_mark;
+> >                         /* autoflowlabel relies on buff->hash */
+> > --
+> > 2.22.0.rc2.383.gf4fbbf30c2-goog
+> >
