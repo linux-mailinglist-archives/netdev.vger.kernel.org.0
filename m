@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 119913B737
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 16:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FCAF3B73C
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 16:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403854AbfFJOX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 10:23:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41628 "EHLO vps0.lunn.ch"
+        id S2403861AbfFJOYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 10:24:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41652 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403788AbfFJOX4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 10:23:56 -0400
+        id S2403856AbfFJOYO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 10:24:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=9OSybgnmQ91PoaXFVruGCEv1Em60aOgOJ3s88JwC90A=; b=JUHX3imtoLCTLucGaqpxbV3ecD
-        fDbWpXOLo+4pMwc7VsQeUy++5XgaTm20OURI7N1WnP6SHAUeCoU0JiRIjXbJSlBXVIcHEYkuyyLZF
-        ySOyOCEV+wodnQNbm2ZLDR7LUNNbMVbhd+9efQsZC290P/r4bz1095EI0z9ZJO/uSPN4=;
+        bh=4uDtPE5PcxyypfCh8bq4i/bFNL96TyC7s2xPN/RuX5w=; b=jVngoXcCUAFATRrXu+cBZV288M
+        4Pxx8ntMtHm8BHQKanabhnOqho3YRWK2HqWpS8tHEN4CGGpIoTzxRjqOczpT+qJuDaPj4w6g3sLiY
+        9pRdEbtisvXDqFm/5/9hIFc9eXhPLXzx9Zfh8JImH31burqajoG62Fx8T7xvix3W1jxM=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1haLD5-0007YS-3K; Mon, 10 Jun 2019 16:23:43 +0200
-Date:   Mon, 10 Jun 2019 16:23:43 +0200
+        id 1haLDS-0007Ze-2B; Mon, 10 Jun 2019 16:24:06 +0200
+Date:   Mon, 10 Jun 2019 16:24:06 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Maxime Ripard <maxime.ripard@bootlin.com>
 Cc:     Mark Rutland <mark.rutland@arm.com>,
@@ -40,31 +40,26 @@ Cc:     Mark Rutland <mark.rutland@arm.com>,
         Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 02/11] dt-bindings: net: Add a YAML schemas for the
- generic PHY options
-Message-ID: <20190610142343.GD28724@lunn.ch>
+Subject: Re: [PATCH v2 03/11] MAINTAINERS: Add Ethernet PHY YAML file
+Message-ID: <20190610142406.GE28724@lunn.ch>
 References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <b5c46cff5b59d021634be143cf559c597f0a0e1f.1560158667.git-series.maxime.ripard@bootlin.com>
+ <2e9c285102cdca2d6f3e042ba4430032537b8835.1560158667.git-series.maxime.ripard@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b5c46cff5b59d021634be143cf559c597f0a0e1f.1560158667.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <2e9c285102cdca2d6f3e042ba4430032537b8835.1560158667.git-series.maxime.ripard@bootlin.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +required:
-> +  - reg
-> +  - interrupts
-
-Hi Maxime
-
-Interrupts are not required. That is an error in the .txt binding
-document.
-
-Otherwise, this looks good:
+On Mon, Jun 10, 2019 at 11:25:42AM +0200, Maxime Ripard wrote:
+> While the Ethernet PHY framework was marked as maintained, the device tree
+> bindings associated to that framework was not listed under the maintained
+> files. Fix that.
+> 
+> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
