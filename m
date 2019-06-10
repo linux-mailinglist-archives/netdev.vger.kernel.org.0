@@ -2,98 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A683AF0E
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 08:38:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02A6B3AF2B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 08:51:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387803AbfFJGiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 02:38:50 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:51654 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387718AbfFJGir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 02:38:47 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5A6cWcZ123745;
-        Mon, 10 Jun 2019 06:38:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2018-07-02;
- bh=+dBz/3MNw5n0r9FD7awwMEqDZH96bQi0PjZ/mMWOBTA=;
- b=UMpimt6goJd1M1IRW2emxmRbSyJRtPyJWIc/eWW0kWfO24KBkQFWnwn6KeMpBi/jhxbM
- 5c82qiqtuEm/9/Iw5ajIWfep/dLLZGay+GWONKOYhrAphHcS+/5KnGxhQ3XquYJi2z9R
- ArGqdvw1UxcwO900kH2uEgKkH0qauquQOd04IdDuCXpxdhPVk2EOuew4MJ1KaV46n4nB
- OU6sqp9PxGrRXN9XbYAMjWLjRw977QZ9hByiknUuY4g+HDyRHvSgHZl/5rJS5bBsOEIq
- WaBBAkOqGXPmFVkLGdxLmQ2MKr2EOPqnmt6C151I5eO2N6J+LCJRPC2oiIfDPSbBSxyf 3w== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 2t02hed743-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jun 2019 06:38:44 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5A6cipH123212;
-        Mon, 10 Jun 2019 06:38:44 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2t04bm4spd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jun 2019 06:38:43 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5A6cg1W004331;
-        Mon, 10 Jun 2019 06:38:42 GMT
-Received: from jw-M900.cn.oracle.com (/10.182.69.163)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 09 Jun 2019 23:38:42 -0700
-From:   Jacob Wen <jian.w.wen@oracle.com>
-To:     netdev@vger.kernel.org
-Cc:     john.r.fastabend@intel.com
-Subject: [PATCH net] net_sched: sch_mqprio: handle return value of mqprio_queue_get
-Date:   Mon, 10 Jun 2019 14:38:21 +0800
-Message-Id: <20190610063821.27007-1-jian.w.wen@oracle.com>
-X-Mailer: git-send-email 2.17.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9283 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1906100046
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9283 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906100046
+        id S2387782AbfFJGvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 02:51:48 -0400
+Received: from bues.ch ([80.190.117.144]:52420 "EHLO bues.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387582AbfFJGvs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 02:51:48 -0400
+Received: by bues.ch with esmtpsa (Exim 4.89)
+        (envelope-from <m@bues.ch>)
+        id 1haE9c-0006oL-7V; Mon, 10 Jun 2019 08:51:40 +0200
+Date:   Mon, 10 Jun 2019 08:51:37 +0200
+From:   Michael =?UTF-8?B?QsO8c2No?= <m@bues.ch>
+To:     H Buus <ubuntu@hbuus.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: Should b44_init lead to WARN_ON in
+ drivers/ssb/driver_gpio.c:464?
+Message-ID: <20190610085137.7d6117ae@wiggum>
+In-Reply-To: <a7c07ad7-1ca2-c16d-4082-6ddc9325a20d@hbuus.com>
+References: <946c86bf-7e90-a981-b9fc-757adb98adfa@hbuus.com>
+        <20190609235711.481bbac9@wiggum>
+        <4fdd3b06-f3f7-87e0-93be-c5d6f2bf5ab4@lwfinger.net>
+        <a7c07ad7-1ca2-c16d-4082-6ddc9325a20d@hbuus.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/l9Y0pu4CIeTAhwtB9wtBkw7"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It may return NULL thus we can't ignore it.
----
- net/sched/sch_mqprio.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+--Sig_/l9Y0pu4CIeTAhwtB9wtBkw7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index d05086dc3866..d926056f72ac 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -491,9 +491,12 @@ static int mqprio_dump_class(struct Qdisc *sch, unsigned long cl,
- 			 struct sk_buff *skb, struct tcmsg *tcm)
- {
- 	if (cl < TC_H_MIN_PRIORITY) {
--		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
- 		struct net_device *dev = qdisc_dev(sch);
- 		int tc = netdev_txq_to_tc(dev, cl - 1);
-+		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
-+
-+		if (!dev_queue)
-+			return -EINVAL;
- 
- 		tcm->tcm_parent = (tc < 0) ? 0 :
- 			TC_H_MAKE(TC_H_MAJ(sch->handle),
-@@ -558,6 +561,8 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 			return -1;
- 	} else {
- 		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
-+		if (!dev_queue)
-+			return -1;
- 
- 		sch = dev_queue->qdisc_sleeping;
- 		if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
--- 
-2.17.1
+On Mon, 10 Jun 2019 01:40:17 -0400
+H Buus <ubuntu@hbuus.com> wrote:
 
+> Unless I get lucky and figure
+> out what commit is making newer kernels unstable on this laptop.
+
+
+You can use 'git bisect' to quickly find a commit that breaks something.
+
+I'll prepare a patch to get rid of the warning asap.
+
+--=20
+Michael
+
+--Sig_/l9Y0pu4CIeTAhwtB9wtBkw7
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEihRzkKVZOnT2ipsS9TK+HZCNiw4FAlz9/fkACgkQ9TK+HZCN
+iw4law//U51RmVK3MkDonmyNK1pyXt8Jvqul3dai8jpHTU25GzPRbc97A77Jv1I1
+ijjiniEJEvZJTgp0gKEYfv4xaK+uNBP/Zrj9PgB8taLuAiDkVO9yvmI9KAKuSCDd
+PNcoB8BKkKNunVMBTgoAhIyPaNdxG2r+5W0xsgQ8rg29PU6EGrY192Gymm2uQ6h5
+lIQtSq9rW7V+PO1EoJJ5ODmXE+U71f6JjjU8C1p46r1w78xBkNfnYrocMo23jRiA
+qCRwJiUyYeNSPbOwvbloEEmqT9dJTPiXZDQUicft2Yui+XHr1YszJMQm6o5Mr7BR
+2iKf51dy5XG0z+gFqrxxEIKm3mCOTX1glJSv2EGE5FEJZYQTjANQLZrlwHzzjdcN
+cxH5ilKMYHAC88DagbqnScQXfFT/YWFfbmnYPt9miCa11CoEO801aHOVThB5fH5F
+WZMwbxgWiaiRUFDtVkf7mcm2nIT93+sllemYoalgGcezZ5R2H2M7hoxCjP9E0S6f
+T4gtOydKqV+yQHY/QU6q+aWAPm6VMMip1YngIC+Ccbu9CDHGoV0kt2PppRvoavvg
+mXyNtrmB5/T+WnOgZ/xg6LVo6ZEzU7rbIGkZ4vA9yPa/p+ho0lViM2Vwp/oJfWJf
+IVt/MirYDq612aFirRUmsnOvq3RE56Qf/krTzQm0Osvr1fiWNi4=
+=5/7S
+-----END PGP SIGNATURE-----
+
+--Sig_/l9Y0pu4CIeTAhwtB9wtBkw7--
