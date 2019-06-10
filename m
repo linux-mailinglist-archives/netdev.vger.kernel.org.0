@@ -2,102 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E88453AECB
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 07:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A683AF0E
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 08:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387702AbfFJF4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 01:56:21 -0400
-Received: from mailgate1.rohmeurope.com ([178.15.145.194]:44810 "EHLO
-        mailgate1.rohmeurope.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387667AbfFJF4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 01:56:21 -0400
-X-AuditID: c0a8fbf4-501ff700000014c1-1b-5cfdf1036b4b
-Received: from smtp.reu.rohmeu.com (will-cas001.reu.rohmeu.com [192.168.251.177])
-        by mailgate1.rohmeurope.com (Symantec Messaging Gateway) with SMTP id D7.94.05313.301FDFC5; Mon, 10 Jun 2019 07:56:19 +0200 (CEST)
-Received: from WILL-MAIL001.REu.RohmEu.com ([fe80::2915:304f:d22c:c6ba]) by
- WILL-CAS001.REu.RohmEu.com ([fe80::d57e:33d0:7a5d:f0a6%16]) with mapi id
- 14.03.0439.000; Mon, 10 Jun 2019 07:56:03 +0200
-From:   "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-To:     "kafai@fb.com" <kafai@fb.com>,
-        "sbrivio@redhat.com" <sbrivio@redhat.com>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "jishi@redhat.com" <jishi@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Thread-Topic: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Thread-Index: AQHVHgswpipEvDfcJECeLHdfOM2Y1KaURM2A
-Date:   Mon, 10 Jun 2019 05:56:03 +0000
-Message-ID: <876287da6e45876a9874782a00eea0b6cb8a9aa0.camel@fi.rohmeurope.com>
-References: <cover.1559851514.git.sbrivio@redhat.com>
-         <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
-         <fbe7cbf3-c298-48d5-ad1b-78690d4203b5@gmail.com>
-         <20190606231834.72182c33@redhat.com>
-         <05041be2-e658-8766-ba77-ee01cdfe62bb@gmail.com>
-         <20190608054003.5uwggebuawjtetyg@kafai-mbp.dhcp.thefacebook.com>
-         <20190608075911.2622aecf@redhat.com>
-         <20190608071920.rio4ldr4fhjm2ztv@kafai-mbp.dhcp.thefacebook.com>
-         <20190608170206.4fa108f5@redhat.com>
-In-Reply-To: <20190608170206.4fa108f5@redhat.com>
-Accept-Language: en-US, de-DE
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [213.255.186.46]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <521AFCF5FB39554192FD260F920AE3EB@de.rohmeurope.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUgUURSGvTvjzPgxdl1Nr1ZCGxkK7WoELSglFLSGRin9EUPHHJ2l/bCZ
-        3crqh2JhWpSRES2JZlqalrkWpmjk5lr5Rym0DbWyjyXL1FAyLa0ZJz/+3Dlz3vc9zx3mUJiy
-        jAil9CYLy5sYg4rwxp/U/G7cjP2YS4362azRXu85jWsfto/i2s9dH0jtfP9ZUvtl4hPQdlUE
-        aV1D7wntQFWBIo7SPah9o9BdKhgjdS22IVJXYbfqxh/3EbpJe9g+IsUnNoOxHE3WZ5s029N9
-        uPnXUyDH7n98bNJN5oFfsBhQFIJb0ezTI8XAm1LCfoAq+n6R8stzgNo63IRkImAsKn4j9r2o
-        QJiAXr7qxSUPBi8okN01vuAJgEnoXUuM7ElGz4bqPOV6C/pWf3khi8ON6Hz1mEKqabgXuTtv
-        A5n1HUP3nG4gCV4wGk1PNiyYAFyHivLkAAaDkd09vTAUQYiq2nowuV6NRj7O/++rUPvMMC7d
-        B4MRqKFVI5dxqOVimDxlPSo9N0zKV/BHL659wktAkG0FwLYcti2HbSvCthXhCuB5ByAjozdk
-        MxY2Ws2zVjVv5ozi45DZaAfyr516BP464h0AUkDlS8+45lKVnsxRIdfoACGUQrWatqyaTVX6
-        ZZgzczlG4NJ4q4EVHABRmCqQ/u78k6qkM5ncEyxvXpTWULgqmA6nxRiUyIdZNoflF9W1FKVC
-        dNSEyPHn2Wz2eJbeYFmWFZSXNNw7NFBgTZksz1gtXJq0KmmCuCuS5Cty2VExTgs5jFHsytFu
-        EE2VjJRVYlRTWbV4dkqnEjeZTWxoMM1JPCgFOKtpCfcVBItfHUCHj4uqr7jzS9O+iiCFCGpw
-        zkogC7MsheYB8lh/Qt/Yq4hww1UnccrDFTM7mFWcuOV+t77FrSZ+hiB14pXewlpnQr29dE9S
-        /s6mM9vCNPFVDE9y6puuDY1sx3BEev4RYtegY9x895z5QPnZorpbwkn9jV0TOed3NN+s2ZTS
-        Fjm432t3q1/ltOFtnKZwjuA8Jg5WJQ6Yc8sDVbjAMdGRGC8w/wA625bLsAMAAA==
+        id S2387803AbfFJGiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 02:38:50 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:51654 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387718AbfFJGir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 02:38:47 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5A6cWcZ123745;
+        Mon, 10 Jun 2019 06:38:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2018-07-02;
+ bh=+dBz/3MNw5n0r9FD7awwMEqDZH96bQi0PjZ/mMWOBTA=;
+ b=UMpimt6goJd1M1IRW2emxmRbSyJRtPyJWIc/eWW0kWfO24KBkQFWnwn6KeMpBi/jhxbM
+ 5c82qiqtuEm/9/Iw5ajIWfep/dLLZGay+GWONKOYhrAphHcS+/5KnGxhQ3XquYJi2z9R
+ ArGqdvw1UxcwO900kH2uEgKkH0qauquQOd04IdDuCXpxdhPVk2EOuew4MJ1KaV46n4nB
+ OU6sqp9PxGrRXN9XbYAMjWLjRw977QZ9hByiknUuY4g+HDyRHvSgHZl/5rJS5bBsOEIq
+ WaBBAkOqGXPmFVkLGdxLmQ2MKr2EOPqnmt6C151I5eO2N6J+LCJRPC2oiIfDPSbBSxyf 3w== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2130.oracle.com with ESMTP id 2t02hed743-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jun 2019 06:38:44 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5A6cipH123212;
+        Mon, 10 Jun 2019 06:38:44 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2t04bm4spd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jun 2019 06:38:43 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5A6cg1W004331;
+        Mon, 10 Jun 2019 06:38:42 GMT
+Received: from jw-M900.cn.oracle.com (/10.182.69.163)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 09 Jun 2019 23:38:42 -0700
+From:   Jacob Wen <jian.w.wen@oracle.com>
+To:     netdev@vger.kernel.org
+Cc:     john.r.fastabend@intel.com
+Subject: [PATCH net] net_sched: sch_mqprio: handle return value of mqprio_queue_get
+Date:   Mon, 10 Jun 2019 14:38:21 +0800
+Message-Id: <20190610063821.27007-1-jian.w.wen@oracle.com>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9283 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906100046
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9283 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906100046
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRGVlIEhvIFBlZXBzIQ0KDQpXb3cgU3RlZmFubywgeW91IHNlZW0gdG8gYmUgcXVpdGUgYSBk
-ZXRlY3RpdmUgOikgSG93IG9uIGVhcnRoIGRpZCB5b3UNCm1hdGNoIG15IG5ldyBlbWFpbCB0byB0
-aGlzIHNvbGUgbmV0ZGV2IGludHJ1c2lvbiBkb25lIGJhY2sgYXQgdGhlIDIwMTENCiUpIEltcHJl
-c3NpdmUhDQoNCk9uIFNhdCwgMjAxOS0wNi0wOCBhdCAxNzowMiArMDIwMCwgU3RlZmFubyBCcml2
-aW8gd3JvdGU6DQoNCj4gDQo+IC0gcmV0cnkgYWRkaW5nIE5MTV9GX01BVENIIChmb3IgbmV0LW5l
-eHQgYW5kIGlwcm91dGUtbmV4dCkgYWNjb3JkaW5nDQo+ICAgdG8gUkZDIDM1NDkuIFRoaW5ncyBj
-aGFuZ2VkIGEgYml0IGZyb20gMjAxMTogd2Ugbm93IGhhdmUNCj4gICBOTE1fRl9EVU1QX0ZJTFRF
-UkVELCBpcHJvdXRlMiBhbHJlYWR5IHVzZXMgaXQgKGlwIG5laWdoKSBhbmQgd2UNCj4gICB3b3Vs
-ZG4ndCBuZWVkIHRvIG1ha2UgaXByb3V0ZTIgbW9yZSBjb21wbGljYXRlZCBieSBoYW5kbGluZyBv
-bGQvbmV3DQo+ICAga2VybmVsIGNhc2VzLiBTbyBJIHRoaW5rIHRoaXMgd291bGQgYmUgcmVhc29u
-YWJsZSBub3cuDQo+IA0KSSBhbSBwcmV0dHkgc3VyZSB0aGUgaXByb3V0ZSB3b3VsZCBub3QgaGF2
-ZSBiZWNvbWUgbW9yZSBjb21wbGljYXRlZA0KYmFjayBpbiAyMDExIGV2ZW4gaWYgd2UgZGlkIHB1
-c2ggdGhpcyBjaGFuZ2UgYmFjayB0aGVuLiBpcHJvdXRlMiBjb3VsZA0KaGF2ZSBjaG9zZW4gdG8g
-c3RpY2sgd2l0aCBvd24gdXNlcnNwYWNlIGZpbHRlcmluZyAtIHN1cHBvcnRpbmcgdGhlDQpOTE1f
-Rl9NQVRDSCBmbGFnIGJhY2sgdGhlbiB3b3VsZCBub3QgaGF2ZSBicm9rZW4gdGhhdC4gQW5kIGlm
-IHdlIGRpZCBpdA0KYmFjayB0aGVuIC0gdGhlcmUgbm93IHByb2JhYmx5IHdhcyBzb21lIG90aGVy
-IHRvb2xzIHV0aWxpemluZyB0aGUNCmtlcm5lbCBmaWx0ZXJpbmcgLSBhbmQgdG9kYXkgdGhlIGlw
-cm91dGUyIGNvdWxkIHByZXR0eSBzYWZlbHkgZHJvcCB0aGUNCnVzZXItc3BhY2Ugcm91dGUgZmls
-dGVyaW5nIGNvZGUgYW5kIHRyYW5zaXRpb24gdG8gZG8gZmlsdGVyaW5nIGFscmVhZHkNCmluIGtl
-cm5lbC4gV2VsbCwgdGhhdCdzIGEgYml0IGxhdGUgdG8gc2F5IHRvZGF5IDopDQoNCkJ1dCB5ZXMs
-IHRoaXMgdW5maW5pc2hlZCB0aGluZyBoYXMgaW5kZWVkIGhhdW50ZWQgbWUgZHVyaW5nIHNvbWUg
-YmxhY2sNCm5pZ2h0cyA9KSBJIHdvdWxkIGJlIGRlbGlnaHRlZCB0byBzZWUgdGhlIHByb3BlciBO
-TE1fRl9NQVRDSCBzdXBwb3J0IGluDQprZXJuZWwuDQoNCldoYXQgc3RvcHBlZCBtZSBiYWNrIGlu
-IHRoZSAyMDExIHdhcyBhY3R1YWxseSBEYXZlJ3MgY29tbWVudCB0aGF0IGV2ZW4NCmlmIGhlIGNv
-dWxkIGNvbnNpZGVyIGFwcGx5aW5nIHRoaXMgY2hhbmdlIGhlIHdvdWxkIHJlcXVpcmUgaXQgZm9y
-IElQdjQNCnRvby4gQW5kIHRoYXQgbWFrZXMgcGVyZmVjdCBzZW5zZS4gSXQgd2FzIGp1c3QgdG9v
-IG11Y2ggZm9yIG1lIGJhY2sNCnRoZW4uIEkgZ3Vlc3MgdGhpcyBoYXMgbm90IGNoYW5nZWQgLSBJ
-UHY2IGFuZCBJUHY0IHNob3VsZCBzdGlsbCBoYW5kbGUNCnRoZXNlIGZsYWdzIGluIGEgc2FtZSB3
-YXkuDQoNCkJyLA0KCU1hdHRpIFZhaXR0aW5lbg0K
+It may return NULL thus we can't ignore it.
+---
+ net/sched/sch_mqprio.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index d05086dc3866..d926056f72ac 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -491,9 +491,12 @@ static int mqprio_dump_class(struct Qdisc *sch, unsigned long cl,
+ 			 struct sk_buff *skb, struct tcmsg *tcm)
+ {
+ 	if (cl < TC_H_MIN_PRIORITY) {
+-		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
+ 		struct net_device *dev = qdisc_dev(sch);
+ 		int tc = netdev_txq_to_tc(dev, cl - 1);
++		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
++
++		if (!dev_queue)
++			return -EINVAL;
+ 
+ 		tcm->tcm_parent = (tc < 0) ? 0 :
+ 			TC_H_MAKE(TC_H_MAJ(sch->handle),
+@@ -558,6 +561,8 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
+ 			return -1;
+ 	} else {
+ 		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
++		if (!dev_queue)
++			return -1;
+ 
+ 		sch = dev_queue->qdisc_sleeping;
+ 		if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
+-- 
+2.17.1
+
