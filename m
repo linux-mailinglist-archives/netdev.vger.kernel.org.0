@@ -2,145 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A83C13BED7
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:44:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C90413BEDC
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387964AbfFJVop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 17:44:45 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39775 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387661AbfFJVop (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:44:45 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z23so750496wma.4
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 14:44:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ns3pOAH0h2tm+AJQrvpsT97amILIBEzW/lMAG/NlK58=;
-        b=Wu/D7HK+CIPlr/yubr9O8VCY6IV9dgnIkYPf9LJP9zRv/Dio+KJ0w6B8EzZkZtCYSV
-         beqrcCeAhGYnDZOnLN9q7sMEh40PCUv3mpI5JNeq0Kn5zWBRm/5HkkpqVw2rcyS26gJ5
-         dApgdi/0iUcArem75e3Q8LT3zmcaclQpcIIyKYcQJQ+Eh5inb0RRk0Lnsp2VCJ3YKnAa
-         b3njpQv349z/XgeXEK2J22tT1DDemh6BCc8h/EcnLqXh+8Kh4jcCKtGUZVznQlukjJeA
-         Vh46fptNcADMsGEV26HN+CgXI+5cFfawKioTIHkdbmN+Sp9XVf7eLa1qdZz5w/7lxorj
-         vsfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ns3pOAH0h2tm+AJQrvpsT97amILIBEzW/lMAG/NlK58=;
-        b=b8e1osAUvh7CWyLfTLM+BxzrVJrhHutcVVYT3mZURUxaeWR06Cj2IaHY5SFR78FIwE
-         xkrB4SAa49GzbEJiTCz5DasbiMSDSBlPEfQRbhmQYYXmGOIZPLFhMmnijHZuk+hUbTHe
-         zT9+ofKXbmnDdPkbXoO9qMU9IDT2eJDybVrhMCkvMBA82THOk5MWDeodpLkBPPPd+yDa
-         OXmYNA493GISJ2wcGIvpBXY/2Qlkuz3MF0WE/NId6XEyWxzB5vR7u0CAQabE/Cxaxakz
-         lzZbUtIJ8kzJ7JpFX/GhSGvdlJdM6MV0KOwufy3Xi3tpl9jBcpitkmLTVEY/Ewje9VJd
-         d/pg==
-X-Gm-Message-State: APjAAAUB63wGZJOxsDO/NLXS1ej5txx0CbgnjLmXycz+N4yCKkjQ7sgx
-        vj0IHterTQP5i+S0/ul75D6geon4
-X-Google-Smtp-Source: APXvYqwU9rmeI36pqHbNvuCxtTG/oaQM3h2cZ28ofIt4dywZltsuPleD+7d1aMDy6/i9dbmEydnYtg==
-X-Received: by 2002:a1c:407:: with SMTP id 7mr16096448wme.113.1560203082157;
-        Mon, 10 Jun 2019 14:44:42 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id c65sm46717wma.44.2019.06.10.14.44.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 14:44:41 -0700 (PDT)
-Subject: Re: [PATCH RFC] net: phy: add state PERM_FAIL
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8e4cd03b-2c0a-ada9-c44d-2b5f5bd4f148@gmail.com>
- <9e1b2e30-139d-c3b9-0ac3-5775a4ade3a6@gmail.com>
- <20190610185123.GA2191@lunn.ch>
- <68508be9-1a36-48ab-7428-bf6e7f71be59@gmail.com>
- <20190610212743.GE2191@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <9fadc274-fb74-7ab9-8acf-53e3a49a48c9@gmail.com>
-Date:   Mon, 10 Jun 2019 14:44:33 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2389047AbfFJVpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 17:45:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56280 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387661AbfFJVpR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 17:45:17 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id DC5BA3082133;
+        Mon, 10 Jun 2019 21:45:13 +0000 (UTC)
+Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 30AAB5C219;
+        Mon, 10 Jun 2019 21:45:06 +0000 (UTC)
+Date:   Mon, 10 Jun 2019 23:45:02 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v3 1/2] ipv6: Dump route exceptions too in
+ rt6_dump_route()
+Message-ID: <20190610234502.41949c97@redhat.com>
+In-Reply-To: <35689c52-0969-0103-663b-c9f909f4c727@gmail.com>
+References: <cover.1560016091.git.sbrivio@redhat.com>
+        <f5ca22e91017e90842ee00aa4fd41dcdf7a6e99b.1560016091.git.sbrivio@redhat.com>
+        <35689c52-0969-0103-663b-c9f909f4c727@gmail.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <20190610212743.GE2191@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Mon, 10 Jun 2019 21:45:17 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/19 2:27 PM, Andrew Lunn wrote:
->> Maybe the broader question is how do you, Heiner and Russell imagine a
->> genuine case where the PHY does not have a firmware provided/loaded
->> before Linux does take over (say, BoM cost savings dictate no flash can
->> be used
-> 
-> I've not seen either of these PHY devices not have a FLASH. I also
-> wonder how long such a download to RAM takes. I suspect it is
-> slow. The boards i have, have a 4Mbit Flash, so, 256K 16bit words.
-> How long does 256K MDIO transfers take, given that they are typically
-> polled IO? Is that a reasonable design/cost trade off?
+On Mon, 10 Jun 2019 15:31:37 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-If you have a long enough uptime, sure. You could emulate the SPI flash
-through the means of GPIO pins, it's embedded, so sky's (no pun
-intended) is the limit :).
+> On 6/8/19 12:12 PM, Stefano Brivio wrote:
+> > To avoid dumping exceptions if not requested, we can, in the future, add
+> > support for NLM_F_MATCH as described by RFC 3549. This would also require
+> > some changes in iproute2: whenever a 'cache' argument is given,
+> > RTM_F_CLONED should be set in the dump request and, when filtering in the
+> > kernel is desired, NLM_F_MATCH should be also passed. We can then signal
+> > filtering with the NLM_F_DUMP_FILTERED whenever a NLM_F_MATCH flag caused
+> > it.  
+> 
+> NLM_F_MATCH is set today. iproute2 for example uses NLM_F_DUMP for dump
+> requests and NLM_F_DUMP is defined as:
+> 
+> #define NLM_F_DUMP      (NLM_F_ROOT|NLM_F_MATCH)
+> 
+> further, the kernel already supports kernel side filtering now for
+> routes. See ip_valid_fib_dump_req.
+
+Indeed, we don't have to add much: just make this work for IPv4 too,
+honour NLM_F_MATCH, and skip filtering (further optimisation) on
+NLM_F_DUMP_FILTERED in iproute2 (ip neigh already uses that).
+
 -- 
-Florian
+Stefano
