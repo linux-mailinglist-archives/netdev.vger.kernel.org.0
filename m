@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8F793BA4C
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 19:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 836D93BA6E
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 19:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387631AbfFJRFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 13:05:33 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35685 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727914AbfFJRFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 13:05:32 -0400
-Received: by mail-wm1-f67.google.com with SMTP id c6so110485wml.0;
-        Mon, 10 Jun 2019 10:05:31 -0700 (PDT)
+        id S1728389AbfFJRJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 13:09:23 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45691 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727679AbfFJRJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 13:09:23 -0400
+Received: by mail-pl1-f194.google.com with SMTP id bi6so3509319plb.12
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 10:09:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U333hXUxyQhiqlTlWhPVMGKcPUQsglAuf+7XETbuhQ0=;
-        b=EuwZ9CI9TRpQ84BisjKdi9pjg2eefrWXVLkXsGK2DzD35kxciUA1a5Y7RdBpprceED
-         0+ki6jQ5tmyBuxBWnu4z2lawxRauHHha4h+1whSl8Y9OpnNI0kagg6z4sok3d5PTNWV5
-         Immur+79WjzdGBoXMtA9IFoCPk5uZTmiZ+SBmtmOFWtQl+G8gWsNKXxglmTbogajJrGT
-         SvAeFPOLL5DIm+UBwYSlIh7QIhAT9eDl8Hd7F9wW1rEXp+RsFXvFLqwglH9mV7uiZAoz
-         Oq5ijbNgGaB3pSOl2kS9+XKun63d4ehI0mIhsWridFqZfO9emPYNKKKcG85I/T3EjMwN
-         refQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6PLYJgZLyOghu/Zj4EjjyzNoDg+PnIVANK7gMeQCPyA=;
+        b=aO3Ks8FVi0vpvPXBTPdFpE95lMfdgRlZYI/qdF0gBKoIFy11U52iT3m9MsvAqFKqTm
+         WzMC+89OR1FtBwvnAIS5tppIUlR6bgmqdaG/RdiwF2BPcbPlB0YNAo87XKmsriv56sMD
+         Cfg36bCAX77y7SV+ylk0sr8rizwqiJU3+Po9FWKPXDGEEBWgEduK6Nz3kJbtNrNNDmFP
+         AGhh5yQ8U2wUM/1VzIS1+1qR6KWyjwwRHQYbBlD5l+G7vwrbZW1H6R9rSOvxYxMUudin
+         4LVair+fvLFCs+EfVIf8SZ9y5o1eRjr4ArxL7dBT8hYzVGuXFCyrqzw/c2yyJPY21nlL
+         hrvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U333hXUxyQhiqlTlWhPVMGKcPUQsglAuf+7XETbuhQ0=;
-        b=FdGy8pf83o4VgSZLmUG7dm+YUDibV2ppS1184ICoaeD+CkKohHEL+gZ0DcWv0XZDwU
-         kArI3SNqPXWi8NqbDCkjDVnqCPsSL8pNw2EOArk3+uXZ9Ss2z7HcXABirWvLV7E6GdAD
-         c7bkvG0xesmdgBICdgqGab8CNtF/bnZJmwedxrmSJcw3ZO6RCly3bA43i6yi5YPIHRAg
-         +Q3vxZgMN9EfjIz6BaH+JgkNRSwr2ZEZ8YG2pDfPtG4eAW1+rwFVXMO1rVglHUqVgUGK
-         kiccy/VaP8Ztu4J/BQI2zTAcvu00ZsGfmgtmAWgUthkM6lJWgy3xaF2v5b2hgTTxfrRK
-         7cRw==
-X-Gm-Message-State: APjAAAVwMeG/eJA1JGKEwPBfeNVlChRaWHTQgwwAJ1m0ZMJm312Xutf5
-        LoA5BeUzjyUJgG25aY0d/Yo=
-X-Google-Smtp-Source: APXvYqw/sJe73OJ/n8Bn3G6ZRNzoYNUjNZpgT9wrlMFjix8pu35QsHAFFRx5k8sKTKqlNoiLmchwaQ==
-X-Received: by 2002:a1c:ed0b:: with SMTP id l11mr13861973wmh.103.1560186330361;
-        Mon, 10 Jun 2019 10:05:30 -0700 (PDT)
-Received: from blackbox.darklights.net (p200300F133DDA40000C4C39937FBD289.dip0.t-ipconnect.de. [2003:f1:33dd:a400:c4:c399:37fb:d289])
-        by smtp.googlemail.com with ESMTPSA id r5sm21558160wrg.10.2019.06.10.10.05.29
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 10 Jun 2019 10:05:29 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        linux-gpio@vger.kernel.org
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 1/1] gpio: of: parse stmmac PHY reset line specific active-low property
-Date:   Mon, 10 Jun 2019 19:05:23 +0200
-Message-Id: <20190610170523.26554-2-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190610170523.26554-1-martin.blumenstingl@googlemail.com>
-References: <20190610170523.26554-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6PLYJgZLyOghu/Zj4EjjyzNoDg+PnIVANK7gMeQCPyA=;
+        b=k9MusauXwje1I7QuM57XOPKw3eZloDzJUIwc01gVpZE0bOzZyX1IMSdZ/C0FV1KUCC
+         Ty+asZp6Ka11ldr0MaoI+VuqsTa6QjH7aaLNo6HNmydSB1xvS19ke3xxxlN2A4MccX23
+         nabMRhmhRcjzg2ISqi5HabJXnOO0csZhP/aQR4tP+iHNBTeSUZsLZRWVsrHhPzU36/bg
+         408QuTArtFxPwXyECR+cwXoQqcBL6eP27mV6OjNMo/8hudg+6XBOAPMXgPy7rKD3ptOc
+         WHBNUxg4PcBEbLcw0OvMgW+0wQ1iSPHDE55wt3tFNoC5mmHbOdMhwnGna4JqMl4G0azA
+         Q5GA==
+X-Gm-Message-State: APjAAAX/vH8aFih1RMkodkrPcekTp0Cx5HvToh5K/P1uthE4USAlECnZ
+        E1FnEC354QI7LX2KA7ZnWZs=
+X-Google-Smtp-Source: APXvYqwbkpGfoTqIiCXnrr/ewJhdRxZMVKFbW5nFyg2c+iGPg0V6sLN/9Yk4e+eyJFHh6XEB5dCVTw==
+X-Received: by 2002:a17:902:a60d:: with SMTP id u13mr2703719plq.144.1560186563058;
+        Mon, 10 Jun 2019 10:09:23 -0700 (PDT)
+Received: from [172.27.227.182] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id k22sm10845836pfk.178.2019.06.10.10.09.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 10:09:22 -0700 (PDT)
+Subject: Re: [patch net-next v3 3/3] devlink: implement flash status
+ monitoring
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, mlxsw@mellanox.com,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        saeedm@mellanox.com, leon@kernel.org, f.fainelli@gmail.com
+References: <20190604134044.2613-1-jiri@resnulli.us>
+ <20190604134450.2839-3-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <08f73e0f-918b-4750-366b-47d7e5ab4422@gmail.com>
+Date:   Mon, 10 Jun 2019 11:09:19 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190604134450.2839-3-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The stmmac driver currently ignores the GPIO flags which are passed via
-devicetree because it operates with legacy GPIO numbers instead of GPIO
-descriptors. stmmac assumes that the GPIO is "active HIGH" by default.
-This can be overwritten by setting "snps,reset-active-low" to make the
-reset line "active LOW".
+On 6/4/19 7:44 AM, Jiri Pirko wrote:
+> diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
+> index 1804463b2321..1021ee8d064c 100644
+> --- a/man/man8/devlink-dev.8
+> +++ b/man/man8/devlink-dev.8
+> @@ -244,6 +244,17 @@ Sets the parameter internal_error_reset of specified devlink device to true.
+>  devlink dev reload pci/0000:01:00.0
+>  .RS 4
+>  Performs hot reload of specified devlink device.
+> +.RE
+> +.PP
+> +devlink dev flash pci/0000:01:00.0 file firmware.bin
+> +.RS 4
+> +Flashes the specified devlink device with provided firmware file name. If the driver supports it, user gets updates about the flash status. For example:
+> +.br
+> +Preparing to flash
+> +.br
+> +Flashing 100%
+> +.br
+> +Flashing done
+>  
+>  .SH SEE ALSO
+>  .BR devlink (8),
 
-Recent Amlogic SoCs (G12A which includes S905X2 and S905D2 as well as
-G12B which includes S922X) use GPIOZ_14 or GPIOZ_15 for the PHY reset
-line. These GPIOs are special because they are marked as "3.3V input
-tolerant open drain" pins which means they can only drive the pin output
-LOW (to reset the PHY) or to switch to input mode (to take the PHY out
-of reset).
-The GPIO subsystem already supports this with the GPIO_OPEN_DRAIN and
-GPIO_OPEN_SOURCE flags in the devicetree bindings.
+something is missing here from a user perspective at least:
 
-Add the stmmac PHY reset line specific active low parsing to gpiolib-of
-so stmmac can be ported to GPIO descriptors while being backwards
-compatible with device trees which use the "old" way of specifying the
-polarity.
+root@mlx-2700-05:~# ./devlink dev
+pci/0000:03:00.0
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/gpio/gpiolib-of.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+root@mlx-2700-05:~# ./devlink dev flash pci/0000:03:00.0 file
+/lib/firmware/mellanox/mlxsw_spectrum-13.2000.1122.mfa2
+devlink answers: No such file or directory
 
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 00deb885409c..a8f02f551d6b 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -158,6 +158,12 @@ static void of_gpio_flags_quirks(struct device_node *np,
- 			}
- 		}
- 	}
-+
-+	/* Legacy handling of stmmac's active-low PHY reset line */
-+	if (IS_ENABLED(CONFIG_STMMAC_ETH) &&
-+	    !strcmp(propname, "snps,reset-gpio") &&
-+	    of_property_read_bool(np, "snps,reset-active-low"))
-+		*flags |= OF_GPIO_ACTIVE_LOW;
- }
- 
- /**
--- 
-2.22.0
+root@mlx-2700-05:~# ls -l
+/lib/firmware/mellanox/mlxsw_spectrum-13.2000.1122.mfa2
+-rw-r--r-- 1 cumulus 1001 994184 May 14 22:44
+/lib/firmware/mellanox/mlxsw_spectrum-13.2000.1122.mfa2
 
+
+Why the 'no such file' response when the file exists?
