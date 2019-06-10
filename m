@@ -2,324 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA7E3BCC3
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA393BCCB
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:25:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388829AbfFJTWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 15:22:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41162 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728299AbfFJTWN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 15:22:13 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C9E5208E3;
-        Mon, 10 Jun 2019 19:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560194532;
-        bh=RPlu/FbNde1/05Jkd4DjfnOS1p2Ifq3mg3vcN1zbvYg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qKo12MNcZKN64gvTfBORHDqRSm2bzQXWKdb5jUQTOKAQm1mzJK2zPG4c7cRpWuSMc
-         7pMnZ3sAM8LC39cK1b+8CVYKeFZ50QQUNLZQ0+b+5riVCjoKf4xRG3Oy3j8rv/aK7M
-         U3TWRE5uuXTFRg56mdbDXOfagfXTfMrtsUbSf3Jw=
-Received: by mail-qt1-f173.google.com with SMTP id p15so4332320qtl.3;
-        Mon, 10 Jun 2019 12:22:12 -0700 (PDT)
-X-Gm-Message-State: APjAAAX5/vLTl9Z84EdQXC1T1euJMl3Oqj5huucisE620DnyjpvC77bF
-        IaMJoyx4vbsH0Xb3YIaro2FOKh/al7DVsMC+fw==
-X-Google-Smtp-Source: APXvYqzaWg5gHRbYcZZU5WCMaC0Wy9RpGjgJGqJlUQXdbCejYqZKeuKwQpEct2tnWtVmzr3oE+BmMlLsBw7Z0y/5WHA=
-X-Received: by 2002:aed:3fb0:: with SMTP id s45mr7705653qth.136.1560194531666;
- Mon, 10 Jun 2019 12:22:11 -0700 (PDT)
+        id S2389072AbfFJTZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 15:25:13 -0400
+Received: from smtprelay0006.hostedemail.com ([216.40.44.6]:56717 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388793AbfFJTZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 15:25:12 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 2E93918029127;
+        Mon, 10 Jun 2019 19:25:11 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:355:379:599:800:960:966:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2196:2199:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3872:4321:4385:4605:5007:7514:7576:7903:10004:10400:10848:10967:11232:11658:11914:12295:12296:12555:12663:12740:12760:12895:12986:13069:13311:13357:13439:14096:14097:14181:14659:14721:21080:21324:21451:21627:30054:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: party74_66197af95055a
+X-Filterd-Recvd-Size: 2276
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 10 Jun 2019 19:25:00 +0000 (UTC)
+Message-ID: <13f306216ca9bcad563da4d86c55549645e061af.camel@perches.com>
+Subject: Re: [PATCH] ipv6: exthdrs: fix warning comparison to bool
+From:   Joe Perches <joe@perches.com>
+To:     David Miller <davem@davemloft.net>, hariprasad.kelam@gmail.com
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 10 Jun 2019 12:24:58 -0700
+In-Reply-To: <20190609.195420.1742255944804133266.davem@davemloft.net>
+References: <20190608083532.GA7288@hari-Inspiron-1545>
+         <20190609.195420.1742255944804133266.davem@davemloft.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <f3f393db88b26d84a048cb71887a571611b984a2.1560158667.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <f3f393db88b26d84a048cb71887a571611b984a2.1560158667.git-series.maxime.ripard@bootlin.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 10 Jun 2019 13:22:00 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL8ARs3jQECS+E-BtZGouLYJhofM+oPpS1a3SxPORwMZA@mail.gmail.com>
-Message-ID: <CAL_JsqL8ARs3jQECS+E-BtZGouLYJhofM+oPpS1a3SxPORwMZA@mail.gmail.com>
-Subject: Re: [PATCH v2 09/11] dt-bindings: net: sun8i-emac: Convert the
- binding to a schemas
-To:     Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 3:26 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->
-> Switch our Allwinner H3 EMAC controller binding to a YAML schema to enable
-> the DT validation. Since that controller is based on a Synopsys IP, let's
-> add the validation to that schemas with a bunch of conditionals.
->
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->
-> ---
->
-> Changes from v1:
->   - Add specific binding document
-> ---
->  Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml | 353 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  Documentation/devicetree/bindings/net/dwmac-sun8i.txt                | 201 +-----------------------------------------
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml                |  15 +++-
->  3 files changed, 368 insertions(+), 201 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/dwmac-sun8i.txt
->
-> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> new file mode 100644
-> index 000000000000..814cfb862e4f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
-> @@ -0,0 +1,353 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/allwinner,sun8i-a83t-gmac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner A83t EMAC Device Tree Bindings
-> +
-> +maintainers:
-> +  - Chen-Yu Tsai <wens@csie.org>
-> +  - Maxime Ripard <maxime.ripard@bootlin.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: allwinner,sun8i-a83t-emac
-> +      - const: allwinner,sun8i-h3-emac
-> +      - const: allwinner,sun8i-r40-emac
-> +      - const: allwinner,sun8i-v3s-emac
-> +      - const: allwinner,sun50i-a64-emac
-> +      - items:
-> +        - const: allwinner,sun50i-h6-emac
-> +        - const: allwinner,sun50i-a64-emac
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupt-names:
-> +    const: macirq
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: stmmaceth
-> +
-> +  syscon:
-> +    $ref: /schemas/types.yaml#definitions/phandle
-> +    description:
-> +      Phandle to the device containing the EMAC or GMAC clock
-> +      register
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - interrupt-names
-> +  - clocks
-> +  - clock-names
-> +  - resets
-> +  - reset-names
-> +  - phy-mode
-> +  - phy-handle
-> +  - syscon
-> +
-> +allOf:
-> +  - $ref: "snps,dwmac.yaml#"
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - allwinner,sun8i-a83t-emac
-> +              - allwinner,sun8i-h3-emac
-> +              - allwinner,sun8i-v3s-emac
-> +              - allwinner,sun50i-a64-emac
-> +
-> +    then:
-> +      properties:
-> +        allwinner,tx-delay-ps:
-> +          allOf:
-> +            - $ref: /schemas/types.yaml#definitions/uint32
+On Sun, 2019-06-09 at 19:54 -0700, David Miller wrote:
+> From: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+> Date: Sat, 8 Jun 2019 14:05:33 +0530
+> 
+> > Fix below warning reported by coccicheck
+> > 
+> > net/ipv6/exthdrs.c:180:9-29: WARNING: Comparison to bool
+> > 
+> > Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+>  ...
+> > diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+> > index ab5add0..e137325 100644
+> > --- a/net/ipv6/exthdrs.c
+> > +++ b/net/ipv6/exthdrs.c
+> > @@ -177,7 +177,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+> >                                       /* type specific length/alignment
+> >                                          checks will be performed in the
+> >                                          func(). */
+> > -                                     if (curr->func(skb, off) == false)
+> > +                                     if (!curr->func(skb, off))
+> 
+> curr->func() returns type 'bool', whats wrong with comparing against the
+> same type?
+> 
+> I'm not applying stuff like this, sorry.
 
-Can drop this as anything with unit prefix has its type defined already.
+Looking at the function, it seems odd to have
+some direct uses of "return false" and others
+of "goto bad" where bad: does kfree_skb.
 
-> +            - enum: [0, 100, 200, 300, 400, 500, 600, 700]
-> +              default: 0
-> +          description:
-> +            External RGMII PHY TX clock delay chain value in ps.
-> +
-> +        allwinner,rx-delay-ps:
-> +          allOf:
-> +            - $ref: /schemas/types.yaml#definitions/uint32
-> +            - enum:
-> +                - 0
-> +                - 100
-> +                - 200
-> +                - 300
-> +                - 400
-> +                - 500
-> +                - 600
-> +                - 700
-> +                - 800
-> +                - 900
-> +                - 1000
-> +                - 1100
-> +                - 1200
-> +                - 1300
-> +                - 1400
-> +                - 1500
-> +                - 1600
-> +                - 1700
-> +                - 1800
-> +                - 1900
-> +                - 2000
-> +                - 2100
-> +                - 2200
-> +                - 2300
-> +                - 2400
-> +                - 2500
-> +                - 2600
-> +                - 2700
-> +                - 2800
-> +                - 2900
-> +                - 3000
-> +                - 3100
+If all of the direct uses of return false are
+correct, it could be useful to document why.
 
-I think you can do
 
-enum: [1, 2, 3,
-  4,  5, 6]
-
-Or you can do:
-
-minimum: 0
-maximum: 3100
-multipleOf: 100
-
-IIRC that multipleOf is a json-schema key.
-
-> +              default: 0
-> +          description:
-> +            External RGMII PHY TX clock delay chain value in ps.
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - allwinner,sun8i-r40-emac
-> +
-> +    then:
-> +      properties:
-> +        allwinner,rx-delay-ps:
-> +          allOf:
-> +            - $ref: /schemas/types.yaml#definitions/uint32
-> +            - enum: [0, 100, 200, 300, 400, 500, 600, 700]
-> +              default: 0
-> +          description:
-> +            External RGMII PHY TX clock delay chain value in ps.
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - allwinner,sun8i-h3-emac
-> +              - allwinner,sun8i-v3s-emac
-> +
-> +    then:
-> +      properties:
-> +        allwinner,leds-active-low:
-> +          $ref: /schemas/types.yaml#definitions/flag
-> +          description:
-> +            EPHY LEDs are active low.
-> +
-> +        mdio-mux:
-> +          type: object
-> +
-> +          properties:
-> +            compatible:
-> +              const: allwinner,sun8i-h3-mdio-mux
-> +
-> +            mdio-parent-bus:
-> +              $ref: /schemas/types.yaml#definitions/phandle
-> +              description:
-> +                Phandle to EMAC MDIO.
-> +
-> +            mdio@1:
-> +              type: object
-> +              description: Internal MDIO Bus
-> +
-> +              properties:
-> +                "#address-cells":
-> +                  const: 1
-> +
-> +                "#size-cells":
-> +                  const: 0
-> +
-> +                compatible:
-> +                  const: allwinner,sun8i-h3-mdio-internal
-> +
-> +                reg:
-> +                  const: 1
-> +
-> +              patternProperties:
-> +                "^ethernet-phy@[0-9a-f]$":
-> +                  type: object
-> +                  description:
-> +                    Integrated PHY node
-> +
-> +                  properties:
-> +                    clocks:
-> +                      maxItems: 1
-> +
-> +                    resets:
-> +                      maxItems: 1
-> +
-> +                  required:
-> +                    - clocks
-> +                    - resets
-> +
-> +
-> +            mdio@2:
-> +              type: object
-> +              description: External MDIO Bus (H3 only)
-> +
-> +              properties:
-> +                "#address-cells":
-> +                  const: 1
-> +
-> +                "#size-cells":
-> +                  const: 0
-> +
-> +                reg:
-> +                  const: 2
-> +
-> +          required:
-> +            - compatible
-> +            - mdio-parent-bus
-> +            - mdio@1
-> +
