@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D693BF9D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 00:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DFD3BFA7
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390453AbfFJWwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 18:52:51 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37285 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390301AbfFJWwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 18:52:51 -0400
-Received: by mail-lj1-f194.google.com with SMTP id 131so9593548ljf.4
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 15:52:50 -0700 (PDT)
+        id S2390501AbfFJW7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 18:59:33 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36989 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390340AbfFJW7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 18:59:32 -0400
+Received: by mail-wr1-f65.google.com with SMTP id v14so10828283wrr.4
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 15:59:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G0NAejhmEvRuu+rO8iY1KPiXgNlEWtZFyMC870o8MPI=;
-        b=Jxf5ifIQI2YeVT5883nBhdb2RSDqTnAML+kcqe9Et/H/CRLBBQUNTRHzsGEbyB6gvX
-         kzqH+4ys901vBA3H1yT+VvaoL15EDsmeMQo6cZShFkQInBI6BQnM6pU8shPr/+Z01Y/9
-         A8qUe9/anOFQoh2y+u/qfmQ1HISyu5U2XD87suyP+2JTWaNKpDGkQr7BDv0JwLtdf8z4
-         mPSOgZ9NtrApn2BUkVinCspxK1lGtWjfCr3x6F/X/DB8F8+6iohX0Wmp7lZpETsnH0WA
-         MUKUCMgp8eM++QYvuKbJLwywHHzqp+cjo+54ovHw20Eo98IkpJPKF3eQaYMfBD0/wFQg
-         Kxzg==
-X-Gm-Message-State: APjAAAXcDbgwT/M38rE7SFZH3Gm+9F31RIKTancYnyw5XvzCdBiEf3k3
-        RqB6jwCl7m9Jm8jYoXEYaOKUwPMDOWNOw/X08YdTdYxDMYU=
-X-Google-Smtp-Source: APXvYqwkY1Dw0DKJBWkXZmRQAHxC+SOQV+sSKNTjE32SALamKfPob7KjgyoiQ0R0nq0Q/Tbu03iKYVksMhCAC2V1u0o=
-X-Received: by 2002:a2e:9753:: with SMTP id f19mr14291500ljj.113.1560207169430;
- Mon, 10 Jun 2019 15:52:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NaJwvaYNh7njuHoZQECaDJ97+f9+iFyeQ+zOolol2Qw=;
+        b=SegPwG4SdRfJnYjEMJGs3lQ1qBhvMrArj4dTF8h/iBosGhQJ+Kcd1dXeAl1N7A/xEo
+         YwUxpxhv1pVCHkoUL6O/dwHErA7wg+zEtOxsinwelJyRrvwpINxU46CvrXtqyIvjK+cs
+         Zwl7TRN5IUdf6SsavcghOIL/pfoC0/aNYDxuuLdUc6vxvebkq/xZRP+22MN0RDQu+n8Q
+         pxPllWHX31vYPW6lvgGo0o/Mlk40TjTPWLUGEv0zu+AgV8FVcPHT2CQbqO6BnrbV1S4N
+         CNs/MK3ZbLBB+yq8b2ZVwmId4SyTf8D49x1vaxODdlCWBU5IBh5hnU5ItYb6OtNCtnnm
+         UXEw==
+X-Gm-Message-State: APjAAAV91GtkZQ7WPcfpleIXJvCLSKJybdFREi3mIi2MjCUfyqHD37Xw
+        RrhCB+3lNTTH6PbqslqWPenQfw==
+X-Google-Smtp-Source: APXvYqwegzqf1FACH2p2+SrFjWh/iN0B4eoaM5RtACePtKL38YSrDWj8Q6MV9uHKRJ3Py2svJuo8Eg==
+X-Received: by 2002:adf:c654:: with SMTP id u20mr21811860wrg.271.1560207571162;
+        Mon, 10 Jun 2019 15:59:31 -0700 (PDT)
+Received: from linux.home (2a01cb058382ea004233e954b48ed30d.ipv6.abo.wanadoo.fr. [2a01:cb05:8382:ea00:4233:e954:b48e:d30d])
+        by smtp.gmail.com with ESMTPSA id z5sm598741wma.36.2019.06.10.15.59.30
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 10 Jun 2019 15:59:30 -0700 (PDT)
+Date:   Tue, 11 Jun 2019 00:59:28 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/2] Don't assume linear buffers in error handlers
+ for VXLAN and GENEVE
+Message-ID: <20190610225926.GE19832@linux.home>
+References: <cover.1560205281.git.sbrivio@redhat.com>
 MIME-Version: 1.0
-References: <20190610221613.7554-1-mcroce@redhat.com> <20190610221613.7554-2-mcroce@redhat.com>
- <20190610154552.4dfa54af@hermes.lan>
-In-Reply-To: <20190610154552.4dfa54af@hermes.lan>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Tue, 11 Jun 2019 00:52:13 +0200
-Message-ID: <CAGnkfhyJeN853gmNX+Op88b4OTkuQdQt==FttFdb4WVPNmQ7zA@mail.gmail.com>
-Subject: Re: [PATCH iproute2 1/2] netns: switch netns in the child when
- executing commands
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1560205281.git.sbrivio@redhat.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 12:46 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Tue, 11 Jun 2019 00:16:12 +0200
-> Matteo Croce <mcroce@redhat.com> wrote:
->
-> > +     printf("\nnetns: %s\n", nsname);
-> > +     cmd_exec(argv[0], argv, true, nsname);
-> >       return 0;
->
-> simple printf breaks JSON output.
-
-It was just moved from on_netns_label(). I will check how the json
-output works when running doall and provide a similar behaviour.
-
-Anyway, I noticed that the VRF env should be reset but only in the
-child. I'm adding a function pointer to cmd_exec which will
-point to an hook which changes the netns when doing 'ip netns exec'
-and reset the VRF on vrf exec.
-
-Regards,
--- 
-Matteo Croce
-per aspera ad upstream
+On Tue, Jun 11, 2019 at 12:27:04AM +0200, Stefano Brivio wrote:
+> Guillaume noticed the same issue fixed by commit 26fc181e6cac ("fou, fou6:
+> do not assume linear skbs") for fou and fou6 is also present in VXLAN and
+> GENEVE error handlers: we can't assume linear buffers there, we need to
+> use pskb_may_pull() instead.
+> 
+Acked-by: Guillaume Nault <gnault@redhat.com>
