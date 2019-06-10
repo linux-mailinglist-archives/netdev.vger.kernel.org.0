@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 827623B69D
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 15:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B383B6AA
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 16:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390639AbfFJN7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 09:59:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41538 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390636AbfFJN7R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 09:59:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=PHdatKCG4Xr2cHIDtZVIWTIYI9ACQ+8MeVzL71lMfc0=; b=XGkYL7NTvT5y7jv3j2bBJZvRcE
-        Lr2K01yvQNQHQjJdfzjBNyYQxM6NGE0mkUffLuxbHGIv2x0nSaUtWnsQDdpK+krzNTkKgSb62Tvw4
-        bzad2FBGOODJIj9PpNscrhy9n5rCgI6CSVVj8Gk/uqukPXZWanzMa2j2dynP1akLB8W8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1haKpO-00079J-Hq; Mon, 10 Jun 2019 15:59:14 +0200
-Date:   Mon, 10 Jun 2019 15:59:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, amitc@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 1/3] selftests: mlxsw: Add ethtool_lib.sh
-Message-ID: <20190610135914.GH8247@lunn.ch>
-References: <20190610084045.6029-1-idosch@idosch.org>
- <20190610084045.6029-2-idosch@idosch.org>
+        id S2390658AbfFJOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 10:02:48 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:18542 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2390384AbfFJOCs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 10:02:48 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 0C55D96CA51B27A67399;
+        Mon, 10 Jun 2019 22:02:43 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Mon, 10 Jun 2019
+ 22:02:42 +0800
+Subject: Re: [PATCH -next] packet: remove unused variable 'status' in
+ __packet_lookup_frame_in_block
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+References: <20190610115831.175710-1-maowenan@huawei.com>
+ <CAF=yD-JOCZHt6q3ArCqY5PMW1vP5ZmNkYMKUB14TrgU-X30cSQ@mail.gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <caf8d25f-60e2-a0c0-dc21-956ea32ee59a@huawei.com>
+Date:   Mon, 10 Jun 2019 22:02:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190610084045.6029-2-idosch@idosch.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <CAF=yD-JOCZHt6q3ArCqY5PMW1vP5ZmNkYMKUB14TrgU-X30cSQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +speeds_get()
-> +{
-> +	local dev=$1; shift
-> +	local with_mode=$1; shift
-> +
-> +	local speeds_str=$(ethtool "$dev" | \
-> +		# Snip everything before the link modes section.
-> +		sed -n '/Supported link modes:/,$p' | \
-> +		# Quit processing the rest at the start of the next section.
-> +		# When checking, skip the header of this section (hence the 2,).
-> +		sed -n '2,${/^[\t][^ \t]/q};p' | \
-> +		# Drop the section header of the current section.
-> +		cut -d':' -f2)
 
-ethtool gives you two lists of link modes:
 
-$ sudo ethtool eth17
-Settings for eth17:
-         Supported ports: [ TP ]
-         Supported link modes:   10baseT/Half 10baseT/Full 
-                                 100baseT/Half 100baseT/Full 
-                                 1000baseT/Full 
-         Supported pause frame use: No
-         Supports auto-negotiation: Yes
-         Supported FEC modes: Not reported
-         Advertised link modes:  10baseT/Half 10baseT/Full 
-                                 100baseT/Half 100baseT/Full 
-                                 1000baseT/Full
+On 2019/6/10 21:05, Willem de Bruijn wrote:
+> On Mon, Jun 10, 2019 at 8:17 AM Mao Wenan <maowenan@huawei.com> wrote:
+>>
+>> The variable 'status' in  __packet_lookup_frame_in_block() is never used since
+>> introduction in commit f6fb8f100b80 ("af-packet: TPACKET_V3 flexible buffer
+>> implementation."), we can remove it.
+>> And when __packet_lookup_frame_in_block() calls prb_retire_current_block(),
+>> it can pass macro TP_STATUS_KERNEL instead of 0.
+>>
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+>> ---
+>>  net/packet/af_packet.c | 5 ++---
+>>  1 file changed, 2 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+>> index a29d66d..fb1a79c 100644
+>> --- a/net/packet/af_packet.c
+>> +++ b/net/packet/af_packet.c
+>> @@ -1003,7 +1003,6 @@ static void prb_fill_curr_block(char *curr,
+>>  /* Assumes caller has the sk->rx_queue.lock */
+>>  static void *__packet_lookup_frame_in_block(struct packet_sock *po,
+>>                                             struct sk_buff *skb,
+>> -                                               int status,
+>>                                             unsigned int len
+>>                                             )
+>>  {
+>> @@ -1046,7 +1045,7 @@ static void *__packet_lookup_frame_in_block(struct packet_sock *po,
+>>         }
+>>
+>>         /* Ok, close the current block */
+>> -       prb_retire_current_block(pkc, po, 0);
+>> +       prb_retire_current_block(pkc, po, TP_STATUS_KERNEL);
+> 
+> I don't think that 0 is intended to mean TP_STATUS_KERNEL here.
+> 
+> prb_retire_current_block calls prb_close_block which sets status to
+> 
+>   TP_STATUS_USER | stat
+> 
+> where stat is 0 or TP_STATUS_BLK_TMO.
 
-and if auto-neg has completed, there is potentially a third list, what
-the peer is advertising.
 
-Since this test is all about auto-neg, you should be using Advertised
-link modes, not Supported link modes. There can be supported link
-modes which you cannot advertise.
+#define TP_STATUS_KERNEL		      0
+#define TP_STATUS_BLK_TMO		(1 << 5)
 
-   Andrew
+Actually, packet_current_rx_frame calls __packet_lookup_frame_in_block with status=TP_STATUS_KERNEL
+in original code.
+
+__packet_lookup_frame_in_block in this function, first is to check whether the currently active block
+has enough space for the packet, which means status of block should be TP_STATUS_KERNEL, then it calls
+prb_retire_current_block to retire this block.
+
+Since there needs some discussion about means of status, I can send v2 only removing the parameter status of
+__packet_lookup_frame_in_block?
+
+> 
+> 
+
