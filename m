@@ -2,68 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 470D03B478
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 14:18:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7053B4AA
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 14:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389819AbfFJMQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 08:16:45 -0400
-Received: from forward400p.mail.yandex.net ([77.88.28.105]:58124 "EHLO
-        forward400p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389573AbfFJMQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 08:16:45 -0400
-X-Greylist: delayed 378 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jun 2019 08:16:44 EDT
-Received: from mxback15j.mail.yandex.net (mxback15j.mail.yandex.net [IPv6:2a02:6b8:0:1619::91])
-        by forward400p.mail.yandex.net (Yandex) with ESMTP id 1EC721BC0E3B
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 15:10:24 +0300 (MSK)
-Received: from localhost (localhost [::1])
-        by mxback15j.mail.yandex.net (nwsmtp/Yandex) with ESMTP id ui4sYCk4uL-ANDqopn6;
-        Mon, 10 Jun 2019 15:10:23 +0300
-Received: by myt6-27270b78ac4f.qloud-c.yandex.net with HTTP;
-        Mon, 10 Jun 2019 15:10:23 +0300
-From:   iam@itaddict.ru
+        id S2389983AbfFJMVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 08:21:07 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44724 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388952AbfFJMVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 08:21:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id AF613AE9A;
+        Mon, 10 Jun 2019 12:21:02 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 0AEDBE00E3; Mon, 10 Jun 2019 14:21:02 +0200 (CEST)
+Date:   Mon, 10 Jun 2019 14:21:02 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
 To:     netdev@vger.kernel.org
-Subject: How long TCP state change from SYN_RECV to ESTABLISHED should take?
+Cc:     "Jubran, Samih" <sameehj@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>
+Subject: Re: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+ changing io queue sizes
+Message-ID: <20190610122102.GD31797@unicorn.suse.cz>
+References: <20190606115520.20394-1-sameehj@amazon.com>
+ <20190606115520.20394-6-sameehj@amazon.com>
+ <20190606144825.GB21536@unicorn.suse.cz>
+ <45419c297d5241d9a7768b4d9af7d9f6@EX13D11EUB003.ant.amazon.com>
 MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Mon, 10 Jun 2019 15:10:23 +0300
-Message-Id: <7723811560168623@myt6-27270b78ac4f.qloud-c.yandex.net>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45419c297d5241d9a7768b4d9af7d9f6@EX13D11EUB003.ant.amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While playing with eBPF i tried tcpstates.py (https://github.com/iovisor/bcc/blob/master/tools/tcpstates.py) and noticed very low time for TCP state transition SYN_RECV -> ESTABLISHED
+On Mon, Jun 10, 2019 at 07:46:08AM +0000, Jubran, Samih wrote:
+> > -----Original Message-----
+> > From: Michal Kubecek <mkubecek@suse.cz>
+> > Sent: Thursday, June 6, 2019 5:48 PM
+> > To: netdev@vger.kernel.org
+> > Cc: Jubran, Samih <sameehj@amazon.com>; davem@davemloft.net;
+> > Woodhouse, David <dwmw@amazon.co.uk>; Machulsky, Zorik
+> > <zorik@amazon.com>; Matushevsky, Alexander <matua@amazon.com>;
+> > Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>;
+> > Liguori, Anthony <aliguori@amazon.com>; Bshara, Nafea
+> > <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal,
+> > Netanel <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>;
+> > Herrenschmidt, Benjamin <benh@amazon.com>; Kiyanovski, Arthur
+> > <akiyano@amazon.com>
+> > Subject: Re: [PATCH V1 net-next 5/6] net: ena: add ethtool function for
+> > changing io queue sizes
+> > 
+> > On Thu, Jun 06, 2019 at 02:55:19PM +0300, sameehj@amazon.com wrote:
+> > > From: Sameeh Jubran <sameehj@amazon.com>
+> > >
+> > > Implement the set_ringparam() function of the ethtool interface to
+> > > enable the changing of io queue sizes.
+> > >
+> > > Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+> > > Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+> > > ---
+> > >  drivers/net/ethernet/amazon/ena/ena_ethtool.c | 25
+> > > +++++++++++++++++++
+> > drivers/net/ethernet/amazon/ena/ena_netdev.c  |
+> > > 14 +++++++++++  drivers/net/ethernet/amazon/ena/ena_netdev.h  |  5
+> > > +++-
+> > >  3 files changed, 43 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > > b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > > index 101d93f16..33e28ad71 100644
+> > > --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > > +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > > @@ -495,6 +495,30 @@ static void ena_get_ringparam(struct net_device
+> > *netdev,
+> > >  	ring->rx_pending = adapter->rx_ring[0].ring_size;  }
+> > >
+> > > +static int ena_set_ringparam(struct net_device *netdev,
+> > > +			     struct ethtool_ringparam *ring) {
+> > > +	struct ena_adapter *adapter = netdev_priv(netdev);
+> > > +	u32 new_tx_size, new_rx_size;
+> > > +
+> > > +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> > > +		return -EINVAL;
+> > 
+> > This check is superfluous as ethtool_set_ringparam() checks supplied values
+> > against maximum returned by ->get_ringparam() which will be 0 in this case.
+> > 
+> > > +
+> > > +	new_tx_size = clamp_val(ring->tx_pending, ENA_MIN_RING_SIZE,
+> > > +				adapter->max_tx_ring_size);
+> > > +	new_tx_size = rounddown_pow_of_two(new_tx_size);
+> > > +
+> > > +	new_rx_size = clamp_val(ring->rx_pending, ENA_MIN_RING_SIZE,
+> > > +				adapter->max_rx_ring_size);
+> > > +	new_rx_size = rounddown_pow_of_two(new_rx_size);
+> > 
+> > For the same reason, clamping from below would suffice here.
+> > 
+> > Michal Kubecek
+> > 
+> > > +
+> > > +	if (new_tx_size == adapter->requested_tx_ring_size &&
+> > > +	    new_rx_size == adapter->requested_rx_ring_size)
+> > > +		return 0;
+> > > +
+> > > +	return ena_update_queue_sizes(adapter, new_tx_size,
+> > new_rx_size); }
+> 
+> You are right with both arguments the way the code is written now,
+> however, in the future the code might change and we prefer to be extra
+> cautious.
 
-My numbers from tests:
+If we accept this logic, commit 37e2d99b59c4 ("ethtool: Ensure new ring
+parameters are within bounds during SRINGPARAM") would be useless as
+every driver would have to duplicate the checks anyway.
 
-SYN_RECV -> ESTABLISHED 0.015   
-SYN_RECV -> ESTABLISHED 0.017   
-SYN_RECV -> ESTABLISHED 0.051 
-
-From handshake diagram (https://user-images.githubusercontent.com/1006307/58944706-0ffdb580-878b-11e9-95d3-8e7a4f85d8b0.png) it looks like that transition time from SYN_RECV to ESTABLISHED should be near RTT between hosts?
-
-TCP Fast Open turned off on host.
-
-OS: Ubuntu 18.10 (GNU/Linux 4.18.0-21-generic x86_64)
-
-tcpdump -tttttv output
-
-Receiver got SYN:
- 00:00:00.000000 IP (tos 0x28, ttl 49, id 280, offset 0, flags [DF], proto TCP (6), length 60)
-    dst_host > src_host: Flags [S], cksum 0x46ae (correct), seq 4063608731, win 29200, options [mss 1460,sackOK,TS val 332512899 ecr 0,nop,wscale 6], length 0
-
-Receiver sent SYN+ACK:
- 00:00:00.000071 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 60)
-    src_host > dst_host: Flags [S.], cksum 0x84c2 (incorrect -> 0x3c01), seq 1516815880, ack 4063608732, win 28960, options [mss 1460,sackOK,TS val 2341429130 ecr 332512899,nop,wscale 7], length 0
-
-Receiver got ACK:
- 00:00:00.079183 IP (tos 0x28, ttl 49, id 281, offset 0, flags [DF], proto TCP (6), length 52)
-    dst_host > src_host: Flags [.], cksum 0xda11 (correct), ack 1, win 457, options [nop,nop,TS val 332512918 ecr 2341429130], length 0
-
-such low numbers are between syn_recv and syn+ack send, but between syn_recv and established it should be 00:00:00.079183
-
-ping between hosts in this tcpdump is around 83ms
-
-Is it bug or i'm wrong?
+Michal Kubecek
