@@ -2,154 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7013C02E
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17AD73C027
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390754AbfFJXvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 19:51:15 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41832 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390570AbfFJXvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 19:51:15 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 33so4279818qtr.8;
-        Mon, 10 Jun 2019 16:51:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gcKM3lKoJLbSN9OjnPJmIQlFQNi/BcO8/RK5ehWVdT0=;
-        b=r2+I0y7KG8frXrEMk2S9yDOhPJKU3AUhHn3rUKLMgvrgFsJPIBAV2tCLEh4J8pvfLv
-         7kcaN0IbccTPN8MJ0onG7SRb8Agx76qwU7w/UcRjIVAIYYVNsdJqk7VUAn65gxAzpDU4
-         obOR/c9GCjXdoTzOWbpV+qgSt1g0qMKkhx+FbCmtDreJDxbSvWJEAr2DymfaSHomxW7q
-         sHIJTdPL3YRiJO+SZ/c2hOZl/c904ZC1qVtr6h9dfUi+gYReZPWK7yhxwuphkPcM6y34
-         WgXbDQu3NCNWTMlfl5T9gufrWKA/8/9vxZhaCSXXEz9jwkRpl29in2Sz1PN6D6pt0ZP+
-         r9hg==
+        id S2390702AbfFJXtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 19:49:12 -0400
+Received: from mx2.ucr.edu ([138.23.62.3]:56349 "EHLO mx2.ucr.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390570AbfFJXtL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 19:49:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1560210550; x=1591746550;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   subject:to:cc;
+  bh=5dpFvE/+juvat/BejnLqmabttoGgZAvR3JWhDuSOis4=;
+  b=a0CatwixqVQ35EbMZxQacDzxQ/hGYQd/Vyl3HqHa/zPCiwxR+q9lw/TH
+   yHqGll+ipWGYNqWhYqrzSckeY8z1ryPFXJhB9V/zT4umEiqUPNKMNQpVL
+   6ifegSRCPsAh0J0BNiZm++d6ew0e/Huf5H9rL9Uegu2joamTCgdlEZBIL
+   Ky+y6JLY4mUhQm2mOyQab9hpntzGjJ8lQt2PkcAe9Gnw5U14GTsDXlX7J
+   SNDeMKZ0IGwcUPob89Dw91iBsRHwr1h2H6e7ldZfTUgw/vGwLO8E+3tgN
+   u9RYZ82ZQNBFTR+CKaK0Isldgp6UYNnmMo312zZ7LPEAJHMoDNygsEoVb
+   w==;
+IronPort-PHdr: =?us-ascii?q?9a23=3A9T4iqhzy9YMMquXXCy+O+j09IxM/srCxBDY+r6Qd?=
+ =?us-ascii?q?1O0eIJqq85mqBkHD//Il1AaPAdyCrasZ0KGM7ujJYi8p2d65qncMcZhBBVcuqP?=
+ =?us-ascii?q?49uEgeOvODElDxN/XwbiY3T4xoXV5h+GynYwAOQJ6tL1LdrWev4jEMBx7xKRR6?=
+ =?us-ascii?q?JvjvGo7Vks+7y/2+94fcbglVmTaxe65+IRW4oAneqMUbgZZpJ7osxBfOvnZGYf?=
+ =?us-ascii?q?ldy3lyJVKUkRb858Ow84Bm/i9Npf8v9NNOXLvjcaggQrNWEDopM2Yu5M32rhbD?=
+ =?us-ascii?q?VheA5mEdUmoNjBVFBRXO4QzgUZfwtiv6sfd92DWfMMbrQ704RSiu4qF2QxLzli?=
+ =?us-ascii?q?wJKyA2/33WisxojaJUvhShpwBkw4XJZI2ZLedycr/Bcd8fQ2dKQ8RfWDFbAo6k?=
+ =?us-ascii?q?YIQPAegOM+ZWoYf+ulUAswexCBKwBO/z0DJEmmP60bE43uknDArI3BYgH9ULsH?=
+ =?us-ascii?q?nMr9r1NKASUea6zKnKzDXMce5d1jfn54jOfRAqvPaBXLN+cMXLz0kvGB/Jg1qT?=
+ =?us-ascii?q?pIH+IjOayv4Nv3KF4OV9SOKikmgqoBxyrDi33soglJXFi4YPxl3H9Sh12pg5Kc?=
+ =?us-ascii?q?CkREJhfNKpFJlduieHPIVsWMwiWXtnuCMix70Dvp60YTYFxYw8xx7ad/yHa4+I?=
+ =?us-ascii?q?4g//VOqJITd3mnZleLWniha360egy+n8WtCs0FZEsyZJi9fMum0J2hHR8MSHRf?=
+ =?us-ascii?q?x9/kCu2TaLyQ/f8P1LIUcxlabDKp4hxKA/loYLvEjdAiP7nF/6gayWe0k+5OSk?=
+ =?us-ascii?q?9vjrbq/7qpKYNYJ4kgT+Pb4vmsy7D+Q4KA8OX22D9OW92rzs50v5QLpWgvA5ka?=
+ =?us-ascii?q?TUq43aKtgBpqKjHQBaz5sj5w6lDzi6yNQYgWUHLFVddRKBkYfpJ0zBL+7mDfqk?=
+ =?us-ascii?q?nVSsnylkx+rcMr3iHJrNNH7Dn6nlfbpn7E5c0gUznphj4MdyB7gFaNn6QEPuud?=
+ =?us-ascii?q?jcRks/OAWuz/nqDNFV2YQZVmaCRKSeNfWBn0WP47cdI+6Ka40UtX7CIv4qr6r8?=
+ =?us-ascii?q?knY/lgdBLYG01oFRZXylSKc1a36FaGbh149SWVwBuRAzGamz0AWP?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DYAgDr6/5cdcXSVdFcCoNBAjuCGCiEF?=
+ =?us-ascii?q?ZUAmHSBEANUAQgBAQEOLwEBhDwCAgKCdCNLAQMBAQUBAQEFARMBCg0KBycxgjo?=
+ =?us-ascii?q?pAYJnAQUjBFIQCwsDCgICJgICIhIBBQEcBhODIoILnQ08iyB+M4hiAQcKgUYSe?=
+ =?us-ascii?q?iYEi1uCFoQjPoQRAQcLAYMpglgEgS0BAQGTF5N2aQEGAgGBfhOTQhuCJYZ8coM?=
+ =?us-ascii?q?SiXYtozkPIYIdMHEzGiV/BmeBToM0AQuNMiIwjT6CQwEB?=
+X-IPAS-Result: =?us-ascii?q?A2DYAgDr6/5cdcXSVdFcCoNBAjuCGCiEFZUAmHSBEANUAQg?=
+ =?us-ascii?q?BAQEOLwEBhDwCAgKCdCNLAQMBAQUBAQEFARMBCg0KBycxgjopAYJnAQUjBFIQC?=
+ =?us-ascii?q?wsDCgICJgICIhIBBQEcBhODIoILnQ08iyB+M4hiAQcKgUYSeiYEi1uCFoQjPoQ?=
+ =?us-ascii?q?RAQcLAYMpglgEgS0BAQGTF5N2aQEGAgGBfhOTQhuCJYZ8coMSiXYtozkPIYIdM?=
+ =?us-ascii?q?HEzGiV/BmeBToM0AQuNMiIwjT6CQwEB?=
+X-IronPort-AV: E=Sophos;i="5.63,577,1557212400"; 
+   d="scan'208";a="1065450420"
+Received: from mail-pf1-f197.google.com ([209.85.210.197])
+  by smtp2.ucr.edu with ESMTP/TLS/AES128-GCM-SHA256; 10 Jun 2019 16:48:32 -0700
+Received: by mail-pf1-f197.google.com with SMTP id i26so8250001pfo.22
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 16:48:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gcKM3lKoJLbSN9OjnPJmIQlFQNi/BcO8/RK5ehWVdT0=;
-        b=YThIIE2YLpNpAJKlDw/SBkju5HjrdWVeic2o6ZwcZu5f4vcOOA6OapDof4Q2QphOus
-         OtzJIQ63IZHm89zwqz0CclUzjjtplDrhD6Rsr2Rv4q2LzJuNg283+P8EO2cB8R/ulnz+
-         J1S/fTbTsetfppiR5UiEYiRNqQgC+aTqhzELTwfTUL4Hi80fnE6JllIqEyehYTIKq1FR
-         YzunBU1HTvK7ekPqPatapuo1VHrFfiWguLw6wio/HdabPfdJbH4NTUh/CWc3fIEWnVEk
-         jBnuPw+nf+CtPvcsB25Yyf2aP1mgTjc6E2984vVU0QmW6AhIgAECIlgZe3h9sMi6o1SD
-         MOtw==
-X-Gm-Message-State: APjAAAWBXOFGck0lDi9OCjpM1iij1c1jbhVujvcReOBoIH1kUX4BF1al
-        AaFLd+mpY/y6tA1kaduhxZ+kELLGzCb8x+sUscgcQ5g/
-X-Google-Smtp-Source: APXvYqxjK0Q71/sZukyMJiHLxpa0O2Xg+QGyd2j9umTnTVb0q553Ks/iPeOOxxCMa+6VYCY+Zi4F+1HdGgiu589xAw0=
-X-Received: by 2002:ac8:1087:: with SMTP id a7mr48016204qtj.141.1560210674077;
- Mon, 10 Jun 2019 16:51:14 -0700 (PDT)
+        bh=CaOoz8j2UMrv32FeXs2WFFwpsAQB5P6Hn1rMuT3jKD8=;
+        b=cTAMMGD2iTNDtUeSEPSKxUtEncMIvcp4T/v1zXy5jzKqewYspvB+sMKo9OkzazhYch
+         HfIBIVps7lAhn6MevSXAzWb5/BmFqQL2i/97J2WJ073yFTqnGutLh1rxnOuZ6x3bmxH2
+         P2cDpknrq7oLToR5FkD3MRkPj6MF85Q+sKc3vebTq/JC1NEbK0boLtGhZ7E6skrq2v0Z
+         oPYXaMpLrV6ZO7RC/09hrnChoFxE4s3qhggf6y3n/BeU6eLvwM0sR6Xf/pLEodO/ZDnq
+         GP6tzRNVHEcv5tfUZHCw90Q0UONAxfhYyMdiBu8xQL1AdGI5uICxEFe//WC7gQhXUwz0
+         lM1Q==
+X-Gm-Message-State: APjAAAVbqU0rroWGe9TBMzAyh6bl4+PBBxCLMDg9nr8sDmSYQv0qYEj3
+        LPEoWGsVweDV9+MS7XsaS6X5zmhcLB612FXz095ILLK1vsRkmAVm1J+UqlBcWgmvJXlMaFrpdkt
+        1rkTLre+Q4EYJv5RPZoqao6AEjlJxHC/7XQ==
+X-Received: by 2002:a63:5207:: with SMTP id g7mr17239222pgb.356.1560210511976;
+        Mon, 10 Jun 2019 16:48:31 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwVZw5tOz2gRNkG8Scf318b07opnJz0dJC+0rOglwWZhWHUJEdwJixzrU/aLFCXv9Pwz5jSHNvjXflAoEzQZIk=
+X-Received: by 2002:a63:5207:: with SMTP id g7mr17239194pgb.356.1560210511588;
+ Mon, 10 Jun 2019 16:48:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190610165708.2083220-1-hechaol@fb.com> <CAEf4BzZGK+SN1EPudi=tt8ppN58ovW8o+=JMd8rhEgr4KBnSmw@mail.gmail.com>
- <20190610190252.GA41381@hechaol-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190610190252.GA41381@hechaol-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 10 Jun 2019 16:51:03 -0700
-Message-ID: <CAEf4Bzb-vxbzF+JN+4khK-mQYOexgnigBrgym_T+86KfOctXbg@mail.gmail.com>
-Subject: Re: [PATCH v1 bpf-next] selftests/bpf : Clean up feature/ when make clean
-To:     Hechao Li <hechaol@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
+References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
+ <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
+In-Reply-To: <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
+From:   Zhongjie Wang <zwang048@ucr.edu>
+Date:   Mon, 10 Jun 2019 16:51:34 -0700
+Message-ID: <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
+Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 12:03 PM Hechao Li <hechaol@fb.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote on Mon [2019-Jun-10 11:05:28 -0700]:
-> > On Mon, Jun 10, 2019 at 9:57 AM Hechao Li <hechaol@fb.com> wrote:
-> > >
-> > > I got an error when compiling selftests/bpf:
-> > >
-> > > libbpf.c:411:10: error: implicit declaration of function 'reallocarray';
-> > > did you mean 'realloc'? [-Werror=implicit-function-declaration]
-> > >   progs = reallocarray(progs, nr_progs + 1, sizeof(progs[0]));
-> > >
-> > > It was caused by feature-reallocarray=1 in FEATURE-DUMP.libbpf and it
-> > > was fixed by manually removing feature/ folder. This diff adds feature/
-> > > to EXTRA_CLEAN to avoid this problem.
-> > >
-> > > Signed-off-by: Hechao Li <hechaol@fb.com>
-> > > ---
-> >
-> > There is no need to include v1 into patch prefix for a first version
-> > of a patch. Only v2 and further versions are added.
-> >
-> >
-> > >  tools/testing/selftests/bpf/Makefile | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index 2b426ae1cdc9..44fb61f4d502 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -279,4 +279,5 @@ $(OUTPUT)/verifier/tests.h: $(VERIFIER_TESTS_DIR) $(VERIFIER_TEST_FILES)
-> > >                  ) > $(VERIFIER_TESTS_H))
-> > >
-> > >  EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(ALU32_BUILD_DIR) \
-> > > -       $(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H)
-> > > +       $(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H) \
-> > > +       feature
-> >
-> > It doesn't seem any of linux's Makefile do that. From brief reading of
-> > build/Makefile.feature, it seems like it is supposed to handle
-> > transparently the case where environment changes and thus a set of
-> > supported features changes. I also verified that FEATURE-DUMP.libbpf
-> > is re-generated every single time I run make in
-> > tools/testing/selftests/bpf, even if nothing changed at all. So I
-> > don't think this patch is necessary.
-> >
-> > I'm not sure what was the cause of your original problem, though.
-> >
-> > > --
-> > > 2.17.1
-> > >
->
-> # Background:
->
-> My default GCC version is 4.8.5, which caused the following error when I
-> run make under selftests/bpf:
-> libbpf.c:39:10: fatal error: libelf.h: No such file or directory
->
-> To fix it, I have to run:
->
-> make CC=<Path to GCC 7.x>
->
-> The I got reallocarray not found error. By deleting feature/ folder
-> under selftests/bpf, it was fixed.
->
-> # Root Cause:
->
-> Now I found the root cause. When I run "make", which uses GCC 4.8.5, it
-> generates feature/test-reallocarray.d which indicates reallocarray is
-> enabled. However, when I switched to GCC 7.0, this file was not
-> re-generated and thus even FEATURE-DUMP.libbpf was re-generated,
-> feature-reallocarray is still 1 in it.
->
-> This can be reproduced by the following steps:
-> $ cd tools/testing/selftests/bpf
-> $ make clean && make CC=<Path to GCC 4.8.5>
-> (Fail due to libelf.h not found)
-> $ make clean && make CC=<Path to GCC 7.x>
-> (Should succeed but actually fail with reallocarray not defined)
->
-> If adding feature to EXTRA_CLEAN is not the way to go, do you have any
-> suggestion to fix such problem? I spent some time debugging this and I
-> hope to fix it so that other people with similar situation won't have to
-> waste time on this issue.
+Hi Neal,
 
-I think adding feature to EXTRA_CLEAN is just fine. I was hesitant
-without understanding how this happened. Maybe condense this
-explanation as part of commit message, I think it's useful, thanks for
-explaining!
+Thanks for your reply. Sorry, I made a mistake in my previous email.
+After I double checked the source code, I think it should be tp->urg_seq,
+which is used before assignment, instead of tp->copied_seq.
+Still in the same if-statement:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+5189     if (tp->urg_seq == tp->copied_seq && tp->urg_data &&
+5190         !sock_flag(sk, SOCK_URGINLINE) && tp->copied_seq != tp->rcv_nxt) {
+5191         struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
+5192         tp->copied_seq++;
+5193         if (skb && !before(tp->copied_seq, TCP_SKB_CB(skb)->end_seq)) {
+5194             __skb_unlink(skb, &sk->sk_receive_queue);
+5195             __kfree_skb(skb);   // wzj(a)
+5196         }
+5197     }
+5198
+5199     tp->urg_data = TCP_URG_NOTYET;
+5200     tp->urg_seq = ptr;
 
+It compares tp->copied_seq with tp->urg_seq.
+And I found only 1 assignment of tp->urg_seq in the code base,
+which is after the if-statement in the same tcp_check_urg() function.
+
+So it seems tp->urg_seq is not assigned to any sequence number before
+its first use.
+Is that correct?
+
+P.S. In our symbolic execution tool, we found an execution path that
+requires the client initial sequence number (ISN) to be 0xFF FF FF FF.
+And when it traverse that path, the tp->copied_seq is equal to (client
+ISN + 1), and compared with 0 in this if-statatement.
+Therefore the client ISN has to be exactly 0xFF FF FF FF to hit this
+execution path.
+
+To trigger this, we first sent a SYN packet, and then an ACK packet
+with urgent pointer.
+
+Best Regards,
+Zhongjie Wang
+Ph.D. Candidate 2015 Fall
+Department of Computer Science & Engineering
+University of California, Riverside
+
+Zhongjie Wang
+Ph.D. Candidate 2015 Fall
+Department of Computer Science & Engineering
+University of California, Riverside
+
+
+
+On Mon, Jun 10, 2019 at 5:00 AM Neal Cardwell <ncardwell@google.com> wrote:
 >
-> Thanks,
-> Hechao
+> On Sun, Jun 9, 2019 at 11:12 PM Zhongjie Wang <zwang048@ucr.edu> wrote:
+> ...
+> > It compares tp->copied_seq with tcp->rcv_nxt.
+> > However, tp->copied_seq is only assigned to an appropriate sequence number when
+> > it copies data to user space. So here tp->copied_seq could be equal to 0,
+> > which is its initial value, if no data are copied yet.
+>
+> I don't believe that's the case. As far as I can see, the
+> tp->copied_seq field is initialized to tp->rcv_nxt in the various
+> places where TCP connections are initialized:
+>
+>   tp->copied_seq = tp->rcv_nxt;
+>
+> > In this case, the condition becomes 0 != tp->rcv_nxt,
+> > and it renders this comparison ineffective.
+> >
+> > For example, if we send a SYN packet with initial sequence number 0xFF FF FF FF,
+> > and after receiving SYN/ACK response, then send a ACK packet with sequence
+> > number 0, it will bypass this if-then block.
+> >
+> > We are not sure how this would affect the TCP logic. Could you please confirm
+> > that tp->copied_seq should be assigned to a sequence number before its use?
+>
+> Yes, the tp->copied_seq  ought to be assigned to a sequence number
+> before its use, and AFAICT it is. Can you identify a specific sequence
+> of code execution (and ideally construct a packetdrill script) where
+> tp->copied_seq is somehow read before it is initialized?
+>
+> cheers,
+> neal
