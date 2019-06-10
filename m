@@ -2,279 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD793C026
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7013C02E
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:52:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390687AbfFJXtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 19:49:10 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39648 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390524AbfFJXtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 19:49:10 -0400
-Received: by mail-qk1-f194.google.com with SMTP id i125so6534798qkd.6;
-        Mon, 10 Jun 2019 16:49:09 -0700 (PDT)
+        id S2390754AbfFJXvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 19:51:15 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41832 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390570AbfFJXvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 19:51:15 -0400
+Received: by mail-qt1-f196.google.com with SMTP id 33so4279818qtr.8;
+        Mon, 10 Jun 2019 16:51:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jozXrqFphFU3vlMDyhbHjG2RsqRJsZmkKUiyJq3WnkU=;
-        b=LMyU70vXzsDEPlCW64H81+tj/TbcQVyMwNMUO1EpwQhk2EczBO99rhx2BQ9QcU65Fi
-         /JgiFW/xfbYAGM4e0UzsAut8o2Th5Mz6xp4HbtBaQ1W0U+Mk1BKK2l0X5ZUUGmw7Pq0i
-         ECD9CPuuaW6ZLvvbIx7j5tdlUPWDUJWasTjTONkcH+m5gCj3UOdwEwpjJg8JXxJpQkvg
-         O9jwRBm+Xgmui22CL7zzNXa599JjW60ybOmDuED9pEAKGYTk9dyGh1KJABRzSZFl5Ezt
-         e1tZXBc377LYB0cT6sOdsSHHvI7H2JJjJm1jKM06pxP72ZGJXGGL8QHOd2lHo4YlTtOO
-         F67g==
+        bh=gcKM3lKoJLbSN9OjnPJmIQlFQNi/BcO8/RK5ehWVdT0=;
+        b=r2+I0y7KG8frXrEMk2S9yDOhPJKU3AUhHn3rUKLMgvrgFsJPIBAV2tCLEh4J8pvfLv
+         7kcaN0IbccTPN8MJ0onG7SRb8Agx76qwU7w/UcRjIVAIYYVNsdJqk7VUAn65gxAzpDU4
+         obOR/c9GCjXdoTzOWbpV+qgSt1g0qMKkhx+FbCmtDreJDxbSvWJEAr2DymfaSHomxW7q
+         sHIJTdPL3YRiJO+SZ/c2hOZl/c904ZC1qVtr6h9dfUi+gYReZPWK7yhxwuphkPcM6y34
+         WgXbDQu3NCNWTMlfl5T9gufrWKA/8/9vxZhaCSXXEz9jwkRpl29in2Sz1PN6D6pt0ZP+
+         r9hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jozXrqFphFU3vlMDyhbHjG2RsqRJsZmkKUiyJq3WnkU=;
-        b=sLXAVk+6lAxEr6B1op1Pv6s1tzX0rB+e49ALFDhps03pdxoz5qCY5Cf4OijwMY0GZU
-         1TSwvw7j5M9mmsN+b7TjjYsT3syO3T7WgBQl2VybQts6t8vbGRS/dDZDTMC2NEJh9g+e
-         hlJjE1J8gjnNpaKGU/JrJX8dbo0Z63J+cIk6p+UMFzY5fi9OvqOsrKb8Pa9ezx0Cj3ex
-         Xupw5dkeTGcmwr35sENfrhtnX9GocMeQ0gCJnmbRD7xThcZi7afzSOT6QvnRJQNYOODA
-         3DmgbSA7IKfS7b2o2xqd6LGIwE+LGtMhKWk+jfswIwv17FOspjTKLIxEVgR73bGFGleA
-         AY5g==
-X-Gm-Message-State: APjAAAWUxiOZrs2lnGWQlLlknjoe74c/iWvFer7ja1tC0CIgsJQ2S/L+
-        A0QOC7nNt2qmtX0XOuetVV3Psc24JSriTH/CbcAGsaYP
-X-Google-Smtp-Source: APXvYqxFbJihatw/rosGsK6jqnEnOWU7hg8gvwhFIM57z5ifKEihnbQCiILzN7esjRT3OnWnnGctKNo5qMH07u9Mu6I=
-X-Received: by 2002:a05:620a:147:: with SMTP id e7mr57263734qkn.247.1560210548951;
- Mon, 10 Jun 2019 16:49:08 -0700 (PDT)
+        bh=gcKM3lKoJLbSN9OjnPJmIQlFQNi/BcO8/RK5ehWVdT0=;
+        b=YThIIE2YLpNpAJKlDw/SBkju5HjrdWVeic2o6ZwcZu5f4vcOOA6OapDof4Q2QphOus
+         OtzJIQ63IZHm89zwqz0CclUzjjtplDrhD6Rsr2Rv4q2LzJuNg283+P8EO2cB8R/ulnz+
+         J1S/fTbTsetfppiR5UiEYiRNqQgC+aTqhzELTwfTUL4Hi80fnE6JllIqEyehYTIKq1FR
+         YzunBU1HTvK7ekPqPatapuo1VHrFfiWguLw6wio/HdabPfdJbH4NTUh/CWc3fIEWnVEk
+         jBnuPw+nf+CtPvcsB25Yyf2aP1mgTjc6E2984vVU0QmW6AhIgAECIlgZe3h9sMi6o1SD
+         MOtw==
+X-Gm-Message-State: APjAAAWBXOFGck0lDi9OCjpM1iij1c1jbhVujvcReOBoIH1kUX4BF1al
+        AaFLd+mpY/y6tA1kaduhxZ+kELLGzCb8x+sUscgcQ5g/
+X-Google-Smtp-Source: APXvYqxjK0Q71/sZukyMJiHLxpa0O2Xg+QGyd2j9umTnTVb0q553Ks/iPeOOxxCMa+6VYCY+Zi4F+1HdGgiu589xAw0=
+X-Received: by 2002:ac8:1087:: with SMTP id a7mr48016204qtj.141.1560210674077;
+ Mon, 10 Jun 2019 16:51:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
- <20190531212835.GA31612@mini-arch> <CAEf4Bza38VEh9NWTLEReAR_J0eqjsvH1a2T-0AeWqDZpE8YPfA@mail.gmail.com>
- <20190603163222.GA14556@mini-arch> <CAEf4BzbRXAZMXY3kG9HuRC93j5XhyA3EbWxkLrrZsG7K4abdBg@mail.gmail.com>
- <20190604010254.GB14556@mini-arch> <f2b5120c-fae7-bf72-238a-b76257b0c0e4@fb.com>
- <20190604042902.GA2014@mini-arch> <20190604134538.GB2014@mini-arch>
- <CAEf4BzZEqmnwL0MvEkM7iH3qKJ+TF7=yCKJRAAb34m4+B-1Zcg@mail.gmail.com>
- <3ff873a8-a1a6-133b-fa20-ad8bc1d347ed@iogearbox.net> <CAEf4BzYr_3heu2gb8U-rmbgMPu54ojcdjMZu7M_VaqOyCNGR5g@mail.gmail.com>
- <9d0bff7f-3b9f-9d2c-36df-64569061edd6@fb.com> <20190606171007.1e1eb808@cakuba.netronome.com>
- <4553f579-c7bb-2d4c-a1ef-3e4fbed64427@fb.com> <20190606180253.36f6d2ae@cakuba.netronome.com>
- <b9798871-3b0e-66ce-903d-c9a587651abc@fb.com>
-In-Reply-To: <b9798871-3b0e-66ce-903d-c9a587651abc@fb.com>
+References: <20190610165708.2083220-1-hechaol@fb.com> <CAEf4BzZGK+SN1EPudi=tt8ppN58ovW8o+=JMd8rhEgr4KBnSmw@mail.gmail.com>
+ <20190610190252.GA41381@hechaol-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190610190252.GA41381@hechaol-mbp.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 10 Jun 2019 16:48:57 -0700
-Message-ID: <CAEf4Bzbc0VAMjxt=K6nguLz0aP+YEt9Au+KWh-WxvZR19KCD4A@mail.gmail.com>
-Subject: Re: explicit maps. Was: [RFC PATCH bpf-next 6/8] libbpf: allow
- specifying map definitions using BTF
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+Date:   Mon, 10 Jun 2019 16:51:03 -0700
+Message-ID: <CAEf4Bzb-vxbzF+JN+4khK-mQYOexgnigBrgym_T+86KfOctXbg@mail.gmail.com>
+Subject: Re: [PATCH v1 bpf-next] selftests/bpf : Clean up feature/ when make clean
+To:     Hechao Li <hechaol@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 9, 2019 at 6:17 PM Alexei Starovoitov <ast@fb.com> wrote:
+On Mon, Jun 10, 2019 at 12:03 PM Hechao Li <hechaol@fb.com> wrote:
 >
-> On 6/6/19 6:02 PM, Jakub Kicinski wrote:
-> > On Fri, 7 Jun 2019 00:27:52 +0000, Alexei Starovoitov wrote:
-> >> the solution we're discussing should solve BPF_ANNOTATE_KV_PAIR too.
-> >> That hack must go.
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote on Mon [2019-Jun-10 11:05:28 -0700]:
+> > On Mon, Jun 10, 2019 at 9:57 AM Hechao Li <hechaol@fb.com> wrote:
+> > >
+> > > I got an error when compiling selftests/bpf:
+> > >
+> > > libbpf.c:411:10: error: implicit declaration of function 'reallocarray';
+> > > did you mean 'realloc'? [-Werror=implicit-function-declaration]
+> > >   progs = reallocarray(progs, nr_progs + 1, sizeof(progs[0]));
+> > >
+> > > It was caused by feature-reallocarray=1 in FEATURE-DUMP.libbpf and it
+> > > was fixed by manually removing feature/ folder. This diff adds feature/
+> > > to EXTRA_CLEAN to avoid this problem.
+> > >
+> > > Signed-off-by: Hechao Li <hechaol@fb.com>
+> > > ---
 > >
-> > I see.
+> > There is no need to include v1 into patch prefix for a first version
+> > of a patch. Only v2 and further versions are added.
 > >
-> >> If I understood your objections to Andrii's format is that
-> >> you don't like pointer part of key/value while Andrii explained
-> >> why we picked the pointer, right?
-> >>
-> >> So how about:
-> >>
-> >> struct {
-> >>     int type;
-> >>     int max_entries;
-> >>     struct {
-> >>       __u32 key;
-> >>       struct my_value value;
-> >>     } types[];
-> >> } ...
 > >
-> > My objection is that k/v fields are never initialized, so they're
-> > "metafields", mixed with real fields which hold parameters - like
-> > type, max_entries etc.
->
-> I don't share this meta fields vs real fields distinction.
-
-100% agree.
-
-> All of the fields are meta.
-> Kernel implementation of the map doesn't need to hold type and
-> max_entries as actual configuration fields.
-> The map definition in c++ would have looked like:
-> bpf::hash_map<int, struct my_value, 1000, NO_PREALLOC> foo;
-> bpf::array_map<struct my_value, 2000> bar;
->
-> Sometime key is not necessary. Sometimes flags have to be zero.
-> bpf syscall api is a superset of all fiels for all maps.
-> All of them are configuration and meta fields at the same time.
-> In c++ example there is really no difference between
-> 'struct my_value' and '1000' attributes.
->
-> I'm pretty sure bpf will have C++ front-end in the future,
-> but until then we have to deal with C and, I think, the map
-> definition should be the most natural C syntax.
-> In that sense what you're proposing with extern:
-> > extern struct my_key my_key;
-> > extern int type_int;
+> > >  tools/testing/selftests/bpf/Makefile | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > > index 2b426ae1cdc9..44fb61f4d502 100644
+> > > --- a/tools/testing/selftests/bpf/Makefile
+> > > +++ b/tools/testing/selftests/bpf/Makefile
+> > > @@ -279,4 +279,5 @@ $(OUTPUT)/verifier/tests.h: $(VERIFIER_TESTS_DIR) $(VERIFIER_TEST_FILES)
+> > >                  ) > $(VERIFIER_TESTS_H))
+> > >
+> > >  EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(ALU32_BUILD_DIR) \
+> > > -       $(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H)
+> > > +       $(VERIFIER_TESTS_H) $(PROG_TESTS_H) $(MAP_TESTS_H) \
+> > > +       feature
 > >
-> > struct map_def {
-> >      int type;
-> >      int max_entries;
-> >      void *btf_key_ref;
-> >      void *btf_val_ref;
-> > } = {
-> >      ...
-> >      .btf_key_ref = &my_key,
-> >      .btf_val_ref = &type_int,
-> > };
+> > It doesn't seem any of linux's Makefile do that. From brief reading of
+> > build/Makefile.feature, it seems like it is supposed to handle
+> > transparently the case where environment changes and thus a set of
+> > supported features changes. I also verified that FEATURE-DUMP.libbpf
+> > is re-generated every single time I run make in
+> > tools/testing/selftests/bpf, even if nothing changed at all. So I
+> > don't think this patch is necessary.
+> >
+> > I'm not sure what was the cause of your original problem, though.
+> >
+> > > --
+> > > 2.17.1
+> > >
 >
-> is worse than
+> # Background:
 >
-> struct map_def {
->        int type;
->        int max_entries;
->        int btf_key;
->        struct my_key btf_value;
-> };
+> My default GCC version is 4.8.5, which caused the following error when I
+> run make under selftests/bpf:
+> libbpf.c:39:10: fatal error: libelf.h: No such file or directory
 >
-> imo explicit key and value would be ideal,
+> To fix it, I have to run:
+>
+> make CC=<Path to GCC 7.x>
+>
+> The I got reallocarray not found error. By deleting feature/ folder
+> under selftests/bpf, it was fixed.
+>
+> # Root Cause:
+>
+> Now I found the root cause. When I run "make", which uses GCC 4.8.5, it
+> generates feature/test-reallocarray.d which indicates reallocarray is
+> enabled. However, when I switched to GCC 7.0, this file was not
+> re-generated and thus even FEATURE-DUMP.libbpf was re-generated,
+> feature-reallocarray is still 1 in it.
+>
+> This can be reproduced by the following steps:
+> $ cd tools/testing/selftests/bpf
+> $ make clean && make CC=<Path to GCC 4.8.5>
+> (Fail due to libelf.h not found)
+> $ make clean && make CC=<Path to GCC 7.x>
+> (Should succeed but actually fail with reallocarray not defined)
+>
+> If adding feature to EXTRA_CLEAN is not the way to go, do you have any
+> suggestion to fix such problem? I spent some time debugging this and I
+> hope to fix it so that other people with similar situation won't have to
+> waste time on this issue.
 
-also agree 100%, that's how I started, but then was quickly pointed to
-a real cases where value is just way too big.
+I think adding feature to EXTRA_CLEAN is just fine. I was hesitant
+without understanding how this happened. Maybe condense this
+explanation as part of commit message, I think it's useful, thanks for
+explaining!
 
-> but they take too much space. Hence pointers
-> or zero sized array:
-> struct {
->       int type;
->       int max_entries;
->       struct {
->         __u32 key;
->         struct my_value value;
->       } types[];
-> };
-
-This works, but I still prefer simpler
-
-__u32 *key;
-struct my_value *value;
-
-It has less visual clutter and doesn't rely on somewhat obscure
-flexible array feature (and it will have to be last in the struct,
-unless you do zero-sized array w/ [0]).
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
 >
-> I think we should also consider explicit map creation.
->
-> Something like:
->
-> struct my_map {
->    __u32 key;
->    struct my_value value;
-> } *my_hash_map, *my_pinned_hash_map;
->
-> struct {
->     __u64 key;
->    struct my_map *value;
-> } *my_hash_of_maps;
->
-> struct {
->    struct my_map *value;
-> } *my_array_of_maps;
->
-> __init void create_my_maps(void)
-> {
->    bpf_create_hash_map(&my_hash_map, 1000/*max_entries*/);
->    bpf_obj_get(&my_pinned_hash_map, "/sys/fs/bpf/my_map");
->    bpf_create_hash_of_maps(&my_hash_of_maps, 1000/*max_entries*/);
->    bpf_create_array_of_maps(&my_array_of_maps, 20);
-> }
->
-> SEC("cgroup/skb")
-> int bpf_prog(struct __sk_buff *skb)
-> {
->    struct my_value *val;
->    __u32 key;
->    __u64 key64;
->    struct my_map *map;
->
->    val = bpf_map_lookup(my_hash_map, &key);
->    map = bpf_map_lookup(my_hash_of_maps, &key64);
-> }
->
-> '__init' section will be compiled by llvm into bpf instructions
-> that will be executed in users space by libbpf.
-> The __init prog has to succeed otherwise prog load fails.
->
-> May be all map pointers should be in a special section to avoid
-> putting them into datasec, but libbpf should be able to figure that
-> out without requiring user to specify the .map section.
-> The rest of global vars would go into special datasec map.
->
-> No llvm changes necessary and BTF is available for keys and values.
->
-> libbpf can start with simple __init and eventually grow into
-> complex init procedure where maps are initialized,
-> prog_array is populated, etc.
->
-> Thoughts?
-
-I have few. :)
-
-I think it would be great to have this feature as a sort of "escape
-hatch" for really complicated initialization of maps, which can't be
-done w/ declarative syntax (and doing it from user-land driving app is
-not possible/desirable). But there is a lot of added complexity and
-work to be done to make this happen:
-
-1. We'll need to build BPF interpreter into libbpf (so partial
-duplication of in-kernel BPF machinery);
-2. We'll need to define some sort of user-space BPF API, so that these
-init functions can call into libbpf API (at least). So now in addition
-to in-kernel BPF helpers, we'll have another and different set of
-helpers/APIs exposed to user-land BPF code. This will certainly add
-confusion and raise learning curve.
-3. Next we'll be adding not-just-libbpf APIs, for cases where the size
-of map depends on some system parameter (e.g., number of CPUs, or
-amount of free RAM, or something else). This probably can be done
-through exposed libbpf APIs again, but now we'll need to decide what
-gets exposed, in what format, etc.
-
-It's all doable, but looks like a very large effort, while we yet
-don't have a realistic use case for this. Today cases like that are
-handled by driving user-land app. It seems like having prog_array and
-map-in-map declarative initialization covers a lot of advanced use
-cases (plus, of course, pinning), so for starters I'd concentrate
-effort there to get declarative approach powerful enough to address a
-lot of real-world needs.
-
-The good thing, though, is that nothing prevents us from specifying
-and adding this later, once we have good use cases and most needs
-already covered w/ declarative syntax.
-
-But, assuming we do explicit map creation, I'd also vote for per-map
-"factory" functions, like this:
-
-typedef int (*map_factory_fn)(struct bpf_map); /* can be provided by libbpf */
-
-int init_my_map(struct bpf_map *map)
-{
-    /* something fancy here */
-}
-
-struct {
-    __u64 *key;
-    struct my_value *value;
-    map_factory_fn factory;
-} my_map SEC(".maps") = {
-    .factory = &init_my_map,
-};
-
-/* we can still have per-BPF object init function: */
-int init_my_app(struct bpf_object *obj) {
-    /* some more initialization of BPF object */
-}
+> Thanks,
+> Hechao
