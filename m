@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E68E93BC59
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 756283BC5B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 21:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388680AbfFJTBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 15:01:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36220 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387674AbfFJTBh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 15:01:37 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id BBAE38535D;
-        Mon, 10 Jun 2019 19:01:31 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EED5F600C4;
-        Mon, 10 Jun 2019 19:01:25 +0000 (UTC)
-Date:   Mon, 10 Jun 2019 21:01:21 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-Cc:     "kafai@fb.com" <kafai@fb.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "jishi@redhat.com" <jishi@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: Re: [PATCH net 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Message-ID: <20190610210121.5d543bb0@redhat.com>
-In-Reply-To: <876287da6e45876a9874782a00eea0b6cb8a9aa0.camel@fi.rohmeurope.com>
-References: <cover.1559851514.git.sbrivio@redhat.com>
-        <085ce9fbe0206be0d1d090b36e656aa89cef3d98.1559851514.git.sbrivio@redhat.com>
-        <fbe7cbf3-c298-48d5-ad1b-78690d4203b5@gmail.com>
-        <20190606231834.72182c33@redhat.com>
-        <05041be2-e658-8766-ba77-ee01cdfe62bb@gmail.com>
-        <20190608054003.5uwggebuawjtetyg@kafai-mbp.dhcp.thefacebook.com>
-        <20190608075911.2622aecf@redhat.com>
-        <20190608071920.rio4ldr4fhjm2ztv@kafai-mbp.dhcp.thefacebook.com>
-        <20190608170206.4fa108f5@redhat.com>
-        <876287da6e45876a9874782a00eea0b6cb8a9aa0.camel@fi.rohmeurope.com>
-Organization: Red Hat
+        id S2388898AbfFJTBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 15:01:43 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:35863 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387674AbfFJTBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 15:01:43 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id 8D9FC461162; Mon, 10 Jun 2019 15:01:41 -0400 (EDT)
+Date:   Mon, 10 Jun 2019 15:01:41 -0400
+To:     "Fujinaka, Todd" <todd.fujinaka@intel.com>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        "e1000-devel@lists.sourceforge.net" 
+        <e1000-devel@lists.sourceforge.net>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [E1000-devel] [Intel-wired-lan] i40e X722 RSS problem with
+ NAT-Traversal IPsec packets
+Message-ID: <20190610190141.77k6gbrefm2mr6lb@csclub.uwaterloo.ca>
+References: <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+ <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+ <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
+ <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+ <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com>
+ <20190522143956.quskqh33ko2wuf47@csclub.uwaterloo.ca>
+ <20190607143906.wgi344jcc77qvh24@csclub.uwaterloo.ca>
+ <CAKgT0Ue1M8_30PVPmoJy_EGo2mjM26ecz32Myx-hpnuq_6wdjw@mail.gmail.com>
+ <alpine.NEB.2.21.9999.1906071343460.809@chris.i8u.org>
+ <9B4A1B1917080E46B64F07F2989DADD69AFBF090@ORSMSX115.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Mon, 10 Jun 2019 19:01:36 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9B4A1B1917080E46B64F07F2989DADD69AFBF090@ORSMSX115.amr.corp.intel.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matti,
-
-On Mon, 10 Jun 2019 05:56:03 +0000
-"Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com> wrote:
-
-> Hi Dee Ho Peeps!
+On Fri, Jun 07, 2019 at 10:08:31PM +0000, Fujinaka, Todd wrote:
+> Just a quick update with the response I got and I'll make sure this is in our internal bug database.
 > 
-> Wow Stefano, you seem to be quite a detective :) How on earth did you
-> match my new email to this sole netdev intrusion done back at the 2011
-> %) Impressive!
-
-I was looking for lost UDP jokes. :)
-
-> On Sat, 2019-06-08 at 17:02 +0200, Stefano Brivio wrote:
+> Here's what I got back, and it looks like you guys have tried this already:
 > 
-> > 
-> > - retry adding NLM_F_MATCH (for net-next and iproute-next) according
-> >   to RFC 3549. Things changed a bit from 2011: we now have
-> >   NLM_F_DUMP_FILTERED, iproute2 already uses it (ip neigh) and we
-> >   wouldn't need to make iproute2 more complicated by handling old/new
-> >   kernel cases. So I think this would be reasonable now.
-> >   
-> I am pretty sure the iproute would not have become more complicated
-> back in 2011 even if we did push this change back then. iproute2 could
-> have chosen to stick with own userspace filtering - supporting the
-> NLM_F_MATCH flag back then would not have broken that. And if we did it
-> back then - there now probably was some other tools utilizing the
-> kernel filtering - and today the iproute2 could pretty safely drop the
-> user-space route filtering code and transition to do filtering already
-> in kernel. Well, that's a bit late to say today :)
-
-Well, yes, it wouldn't have become more complicated. The difference
-today is that, with NLM_F_DUMP_FILTERED codifying this, we could safely
-and simply skip userspace filtering with just two lines, something like:
-
-	if (n->nlmsg_flags & RTM_F_DUMP_FILTERED)
-		return 1;
-
-in filter_nlmsg().
-
-> But yes, this unfinished thing has indeed haunted me during some black
-> nights =) I would be delighted to see the proper NLM_F_MATCH support in
-> kernel.
+> Have they tried these steps to configure RSS:
 > 
-> What stopped me back in the 2011 was actually Dave's comment that even
-> if he could consider applying this change he would require it for IPv4
-> too. And that makes perfect sense. It was just too much for me back
-> then. I guess this has not changed - IPv6 and IPv4 should still handle
-> these flags in a same way.
+> RSS Hash Flow
+> -------------
+> 
+> Allows you to set the hash bytes per flow type and any combination of one or
+> more options for Receive Side Scaling (RSS) hash byte configuration.
+> 
+> #ethtool -N <dev> rx-flow-hash <type> <option>
+> 
+> Where <type> is:
+>   tcp4  signifying TCP over IPv4
+>   udp4  signifying UDP over IPv4
+>   tcp6  signifying TCP over IPv6
+>   udp6  signifying UDP over IPv6
+> And <option> is one or more of:
+>   s Hash on the IP source address of the rx packet.
+>   d Hash on the IP destination address of the rx packet.
+>   f Hash on bytes 0 and 1 of the Layer 4 header of the rx packet.
+>   n Hash on bytes 2 and 3 of the Layer 4 header of the rx packet.
 
-Indeed, we'll have to take care of both. It's on my to do list now, I
-should get to it soon.
+With potentially 10000 ipsec connections, we don't even want to look at
+creating manual flow entries.  There isn't enough room for that.  We just
+wanted RSS to do its job the way it does on every other NIC in the past.
+After years of using mostly intel NICs that just worked, this one has
+been quite the surprise.
 
-Right now my priority is to fix the fact that, at least with iproute2,
-flushing IPv6 routed caches is simply not possible anymore. This looks
-like a serious breakage to me.
+> Also, looks like the driver needs to be updated to latest version:
+> >>> 1.1767.0 i40e 0000:3d:00.0: The driver for the device detected a
+> >>> newer version of the NVM image than expected. Please install the
+> >>> most recent version of the network driver.
+> 
+> Out of tree: https://sourceforge.net/projects/e1000/files/i40e%20stable/
+
+Already tried with 4.19 kernel which is essentially identical to the
+latest out of tree driver (I diffed them and found no functional
+differences at all) and it didn't help.  Well it was essentially identical
+to the latest out of tree a few weeks ago.  It seems there is now a
+newer one with some changes although nothing in the list of changes
+sound relevant.
+
+We do not want to use the out of tree driver and even trying it out is
+a lot of work.  We used to use it in the past for some NIC types but
+stopped due to the hassle of maintaining the integration.  If any problems
+exist in the in kernel driver we will patch it, but so far that does not
+appear to be the problem.  The tests we did so far indicate the firmware
+isn't applying an RSS value to certain packet types.  Even mapping every
+RSS value to queue 7 still saw these packets arrive on queue 0 which
+should of course be impossible if the firmware was working.  Now if
+there is anything in the out of tree driver that you think can explain
+this problem, I will look at it and consider trying it, but so far I
+see nothing that makes that worth the effort.  It just doesn't look like
+a driver problem.  If someone has access to a S2600WFT board (or some
+other C612 based board) it should be simple enough to try replaying
+the captured packet and see what RSS queue it hits (with ATR disabled
+of course).
+
+The message is because we tried installing an NVM update to see if it
+fixed anything, and it did not.  We could put the old version back,
+but since neither version works I didn't bother yet.
 
 -- 
-Stefano
+Len Sorensen
