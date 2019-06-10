@@ -2,169 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C15413BDC4
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 22:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB1F3BDC9
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 22:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbfFJUtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 16:49:42 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36643 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727771AbfFJUtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 16:49:42 -0400
-Received: by mail-pg1-f194.google.com with SMTP id a3so5653204pgb.3
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 13:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=jc8wLES0pFE0B2lIoNGk8i8nABl9F14regklvJEeVVk=;
-        b=la/yliK5mleAhgBxDHwgA8x5p+WSV5kQTtiHboOuwfZ5SMAX8ofDeKi28GrcrdzYFg
-         Nl4gtuuCMbqS2eoX4eDX5eoa02i6ibl9idkcRnZyaO8Cjv4xxDQXFWbfes78h7ou7L4R
-         QLx9eajvNYO4jCAqlLpoqv5cxQbAUuPBqsqv5c9u+5cT4QNM/XwOGrMQ2yiBIkrNQvkT
-         bQz1kAzJ1PRuc7oaUI1aWRjDFkUienoVMRgpiqk6nhaISYjDTrgSvKN0yK0L1nojdVIV
-         e6UR1pNkGu9pglab8KZN4kqCuSTIB1ARcWlPud0dxGoZTQu8zS3SstIg0qgFIJUDRJLs
-         KTTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=jc8wLES0pFE0B2lIoNGk8i8nABl9F14regklvJEeVVk=;
-        b=JJudKWGqsAlREZHe9fSKEEyml2NxxulDtpJXhWhSSjQMM39gAJ9DVo+6aCHuWtE2Xt
-         4uRZAHyKx/3lOb1HRrc+Qv2KdgHsHsCXN8OXRHsdk/NQAfjf3RFmjb12c3/F8MkRAbsy
-         2yZYwbTlIZKUOdJXw9BLSntFYQV47F3iY4iZR5asuFJ57PkNiQL540mUp495OzYVXSRY
-         Il1+Z3xgPduWVMqbZGC9ZL0Pxn2VsMS6fICd1VeUAvIRSyDhoHadKt/SqTCjP/v48QD6
-         3fbA3C//lmy9mM070y69YmXc7aPFz6qJ0kbjn7D5oq9/XAkgMmzghfM2uGoULfX1DR1M
-         Fhig==
-X-Gm-Message-State: APjAAAV5Ado5OSFQCk3Fr3s87GUzBJMtv9dFz4WZML2oMCx97U59+kjR
-        hmjISoedwRSyLaoe2KfLRBk=
-X-Google-Smtp-Source: APXvYqzW+afO2MJZwp2jUBSRjr0bKLjWw1pgc65JW3mvax8W3y7GuS77ksHXCxrGv1njf1ifGVfo/w==
-X-Received: by 2002:aa7:8394:: with SMTP id u20mr65022745pfm.252.1560199780958;
-        Mon, 10 Jun 2019 13:49:40 -0700 (PDT)
-Received: from [192.168.0.16] (97-115-113-19.ptld.qwest.net. [97.115.113.19])
-        by smtp.gmail.com with ESMTPSA id b2sm12733733pgk.50.2019.06.10.13.49.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 13:49:40 -0700 (PDT)
-Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: do not free vport if
- register_netdevice() is failed.
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        pshelar@ovn.org, netdev@vger.kernel.org, dev@openvswitch.org
-References: <20190609142621.30674-1-ap420073@gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <4cf21b2e-9e4c-acda-d432-24525645f385@gmail.com>
-Date:   Mon, 10 Jun 2019 13:49:38 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190609142621.30674-1-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        id S2389691AbfFJUuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 16:50:03 -0400
+Received: from mail-eopbgr60081.outbound.protection.outlook.com ([40.107.6.81]:34477
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2389429AbfFJUuD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 16:50:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pZ17w6KiquhG6fWhhZl398LFgYMwAjV/i9/BxYAExfE=;
+ b=YFg4JsGlreztRJYlRK7jVCn8A2ssZ0kl4vfO//kSXRNljlRVXPBGsg3EoUMP0s1C/cHazOwh7KIFUbC+NPOrM+8XdLdeJg0UAJLbGLAg/TpoQholIiU73tK0//l3Cic95U3odi/BhEXKOTGAUuyb4DhX5lRc5BgohezZ96Rmt34=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB2704.eurprd04.prod.outlook.com (10.175.23.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.14; Mon, 10 Jun 2019 20:49:59 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1965.017; Mon, 10 Jun 2019
+ 20:49:59 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: Deal with non-existing PHY/fixed-link
+Thread-Topic: [PATCH net-next] net: dsa: Deal with non-existing PHY/fixed-link
+Thread-Index: AQHVH8MsxSzXIT7T/0mW4aEu7RtYPg==
+Date:   Mon, 10 Jun 2019 20:49:59 +0000
+Message-ID: <VI1PR0402MB2800ED1A422B900F63561F9CE0130@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <20190610193150.22231-1-f.fainelli@gmail.com>
+ <CA+h21hrcymxF7zk4yHFGhjxbLERTCU6WkfzLGQVoZ5Yxoo4xxw@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [188.26.252.192]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b0dc24dd-449b-432c-2d96-08d6ede533e1
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2704;
+x-ms-traffictypediagnostic: VI1PR0402MB2704:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <VI1PR0402MB270430933DCBBF468F835A78E0130@VI1PR0402MB2704.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0064B3273C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(376002)(396003)(136003)(346002)(189003)(199004)(110136005)(4326008)(2906002)(54906003)(5660300002)(26005)(66446008)(53936002)(73956011)(76116006)(186003)(66476007)(66556008)(52536014)(8936002)(66946007)(33656002)(66066001)(25786009)(229853002)(8676002)(44832011)(74316002)(64756008)(446003)(486006)(476003)(6306002)(86362001)(71200400001)(55016002)(305945005)(14454004)(9686003)(71190400001)(966005)(81166006)(99286004)(7736002)(6436002)(316002)(81156014)(6116002)(6246003)(102836004)(5024004)(478600001)(7696005)(6506007)(14444005)(256004)(68736007)(53546011)(76176011)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2704;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Z/UG3kVJ1C7NMc5VXRxwLrgoPhrIQG4BShjyFA1lkdBM3m4zcqzWC8GEyqDEUQkEbGGUOreKIh18kz3vw2+zycyP/5kPc7AtQFRQiL0Jj+R7hWpd2JabavAdZ2QNvpBhWHGFAJMnORzjo3PecgQIuXLsJ8hV3Jaytu7idYL2KgMO+qOeEWo8+h/53N/Hl6gNgkDeHxMUs1aLbg0hUr7TVh5/xuAebIlIBpeyn3bbCSVXysvcIr/5o5iJ3/yCSPSUiKxWp/xEm1+fdtaofYLw/CYbSdsDl0+Jfdo9CJfwh+yyzSsx5R2k5uJyrHWo9EZKGTJDZG8y1QL+WdUkwZvRv2ky53m90D7jbuuJqk8IUhZUq90TLOwhq/CxVp8eDapM4nFyTrPht5+JcS4wv+HtVswNvasuKmJuLyI1MtOuUxA=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b0dc24dd-449b-432c-2d96-08d6ede533e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2019 20:49:59.1741
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2704
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 6/9/2019 7:26 AM, Taehee Yoo wrote:
-> In order to create an internal vport, internal_dev_create() is used and
-> that calls register_netdevice() internally.
-> If register_netdevice() fails, it calls dev->priv_destructor() to free
-> private data of netdev. actually, a private data of this is a vport.
->
-> Hence internal_dev_create() should not free and use a vport after failure
-> of register_netdevice().
->
-> Test command
->      ovs-dpctl add-dp bonding_masters
->
-> Splat looks like:
-> [ 1035.667767] kasan: GPF could be caused by NULL-ptr deref or user memory access
-> [ 1035.675958] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
-> [ 1035.676916] CPU: 1 PID: 1028 Comm: ovs-vswitchd Tainted: G    B             5.2.0-rc3+ #240
-> [ 1035.676916] RIP: 0010:internal_dev_create+0x2e5/0x4e0 [openvswitch]
-> [ 1035.676916] Code: 48 c1 ea 03 80 3c 02 00 0f 85 9f 01 00 00 4c 8b 23 48 b8 00 00 00 00 00 fc ff df 49 8d bc 24 60 05 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 86 01 00 00 49 8b bc 24 60 05 00 00 e8 e4 68 f4
-> [ 1035.713720] RSP: 0018:ffff88810dcb7578 EFLAGS: 00010206
-> [ 1035.713720] RAX: dffffc0000000000 RBX: ffff88810d13fe08 RCX: ffffffff84297704
-> [ 1035.713720] RDX: 00000000000000ac RSI: 0000000000000000 RDI: 0000000000000560
-> [ 1035.713720] RBP: 00000000ffffffef R08: fffffbfff0d3b881 R09: fffffbfff0d3b881
-> [ 1035.713720] R10: 0000000000000001 R11: fffffbfff0d3b880 R12: 0000000000000000
-> [ 1035.768776] R13: 0000607ee460b900 R14: ffff88810dcb7690 R15: ffff88810dcb7698
-> [ 1035.777709] FS:  00007f02095fc980(0000) GS:ffff88811b400000(0000) knlGS:0000000000000000
-> [ 1035.777709] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 1035.777709] CR2: 00007ffdf01d2f28 CR3: 0000000108258000 CR4: 00000000001006e0
-> [ 1035.777709] Call Trace:
-> [ 1035.777709]  ovs_vport_add+0x267/0x4f0 [openvswitch]
-> [ 1035.777709]  new_vport+0x15/0x1e0 [openvswitch]
-> [ 1035.777709]  ovs_vport_cmd_new+0x567/0xd10 [openvswitch]
-> [ 1035.777709]  ? ovs_dp_cmd_dump+0x490/0x490 [openvswitch]
-> [ 1035.777709]  ? __kmalloc+0x131/0x2e0
-> [ 1035.777709]  ? genl_family_rcv_msg+0xa54/0x1030
-> [ 1035.777709]  genl_family_rcv_msg+0x63a/0x1030
-> [ 1035.777709]  ? genl_unregister_family+0x630/0x630
-> [ 1035.841681]  ? debug_show_all_locks+0x2d0/0x2d0
-> [ ... ]
->
-> Fixes: cf124db566e6 ("net: Fix inconsistent teardown and release of private netdev state.")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
->   net/openvswitch/vport-internal_dev.c | 18 ++++++++++++------
->   1 file changed, 12 insertions(+), 6 deletions(-)
->
-> diff --git a/net/openvswitch/vport-internal_dev.c b/net/openvswitch/vport-internal_dev.c
-> index 26f71cbf7527..5993405c25c1 100644
-> --- a/net/openvswitch/vport-internal_dev.c
-> +++ b/net/openvswitch/vport-internal_dev.c
-> @@ -170,7 +170,9 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
->   {
->   	struct vport *vport;
->   	struct internal_dev *internal_dev;
-> +	struct net_device *dev;
->   	int err;
-> +	bool free_vport = true;
->   
->   	vport = ovs_vport_alloc(0, &ovs_internal_vport_ops, parms);
->   	if (IS_ERR(vport)) {
-> @@ -178,8 +180,9 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
->   		goto error;
->   	}
->   
-> -	vport->dev = alloc_netdev(sizeof(struct internal_dev),
-> -				  parms->name, NET_NAME_USER, do_setup);
-> +	dev = alloc_netdev(sizeof(struct internal_dev),
-> +			   parms->name, NET_NAME_USER, do_setup);
-> +	vport->dev = dev;
->   	if (!vport->dev) {
->   		err = -ENOMEM;
->   		goto error_free_vport;
-> @@ -200,8 +203,10 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
->   
->   	rtnl_lock();
->   	err = register_netdevice(vport->dev);
-> -	if (err)
-> +	if (err) {
-> +		free_vport = false;
->   		goto error_unlock;
-> +	}
->   
->   	dev_set_promiscuity(vport->dev, 1);
->   	rtnl_unlock();
-> @@ -211,11 +216,12 @@ static struct vport *internal_dev_create(const struct vport_parms *parms)
->   
->   error_unlock:
->   	rtnl_unlock();
-> -	free_percpu(vport->dev->tstats);
-> +	free_percpu(dev->tstats);
->   error_free_netdev:
-> -	free_netdev(vport->dev);
-> +	free_netdev(dev);
->   error_free_vport:
-> -	ovs_vport_free(vport);
-> +	if (free_vport)
-> +		ovs_vport_free(vport);
->   error:
->   	return ERR_PTR(err);
->   }
-
-Reviewed-by: Greg Rose <gvrose8192@gmail.com>
-
+On 6/10/19 10:53 PM, Vladimir Oltean wrote:=0A=
+> On Mon, 10 Jun 2019 at 22:31, Florian Fainelli <f.fainelli@gmail.com> wro=
+te:=0A=
+>>=0A=
+>> We need to specifically deal with phylink_of_phy_connect() returning=0A=
+>> -ENODEV, because this can happen when a CPU/DSA port does connect=0A=
+>> neither to a PHY, nor has a fixed-link property. This is a valid use=0A=
+>> case that is permitted by the binding and indicates to the switch:=0A=
+>> auto-configure port with maximum capabilities.=0A=
+>>=0A=
+>> Fixes: 0e27921816ad ("net: dsa: Use PHYLINK for the CPU/DSA ports")=0A=
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>=0A=
+>> ---=0A=
+>>   net/dsa/port.c | 2 +-=0A=
+>>   1 file changed, 1 insertion(+), 1 deletion(-)=0A=
+>>=0A=
+>> diff --git a/net/dsa/port.c b/net/dsa/port.c=0A=
+>> index d74bc9df1359..dde3085ff065 100644=0A=
+>> --- a/net/dsa/port.c=0A=
+>> +++ b/net/dsa/port.c=0A=
+>> @@ -622,7 +622,7 @@ static int dsa_port_phylink_register(struct dsa_port=
+ *dp)=0A=
+>>          }=0A=
+>>=0A=
+>>          err =3D phylink_of_phy_connect(dp->pl, port_dn, 0);=0A=
+>> -       if (err) {=0A=
+>> +       if (err && err !=3D -ENODEV) {=0A=
+>>                  pr_err("could not attach to PHY: %d\n", err);=0A=
+>>                  goto err_phy_connect;=0A=
+>>          }=0A=
+>> --=0A=
+>> 2.17.1=0A=
+>>=0A=
+> =0A=
+> Hi Florian,=0A=
+> =0A=
+> Can you give an example of when this is a valid use case, and why=0A=
+> fixed-link is not appropriate?=0A=
+> =0A=
+> Regards,=0A=
+> -Vladimir=0A=
+> =0A=
+=0A=
+Hi,=0A=
+=0A=
+This reminds me of a previous discussion on what to do when the DSA CPU =0A=
+port does not have a device_tree node at all: =0A=
+https://www.spinics.net/lists/netdev/msg573554.html.=0A=
+=0A=
+This was the case of the dsa-loop driver that probes as a platform =0A=
+device. I'm still not clear how the PHYLINK callbacks are supposed to =0A=
+work in that case though.=0A=
+=0A=
+--=0A=
+Ioana=0A=
+=0A=
+=0A=
