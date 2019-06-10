@@ -2,72 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C90413BEDC
-	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B033BEDD
+	for <lists+netdev@lfdr.de>; Mon, 10 Jun 2019 23:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389047AbfFJVpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 17:45:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56280 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387661AbfFJVpR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 17:45:17 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DC5BA3082133;
-        Mon, 10 Jun 2019 21:45:13 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 30AAB5C219;
-        Mon, 10 Jun 2019 21:45:06 +0000 (UTC)
-Date:   Mon, 10 Jun 2019 23:45:02 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        id S2389362AbfFJVps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 17:45:48 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:52378 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389083AbfFJVpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 17:45:47 -0400
+Received: by mail-pf1-f202.google.com with SMTP id i123so8063221pfb.19
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 14:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=qRVB35Ix0EnXk+x19HEgddT7X6s8d1Gr4NFUIpSc2zk=;
+        b=EOoH0wYFbuMx81Rw2RRwCVBrmaRpOgzg7DgThbSfYnoKOvC1ZT5ESql0L+43Lkzaja
+         fVIeNjWHwXdoXmwUyz+2dnZ5oKfY+2fCOetIo1M5xg9ZP5aaLAISRTXyFy8gZ/oAILbO
+         1JwmNJFzw1wpwjvtToumiCSy/fZ4voVrA+PuiQXIVzX/AXHINPhbd72thetBCtZNTWKA
+         1/LFAgqrqDowu5ZYtdSkEXzuXET8s2taWst78hJ6lT7CufTyLjaeIdP9WnUDCKeBqpXa
+         wHG2sW0YOsn+4hy8ZAog+dNSy7ld3ZUBp9xrq+h47umN2LHz/CHzGKDuhasB4EuUlZlM
+         5w5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=qRVB35Ix0EnXk+x19HEgddT7X6s8d1Gr4NFUIpSc2zk=;
+        b=X4odKHMlhR6Lji1ZjvWV1Lyd1jz7lQ5udQOhR9n3NtS8O28c16ncbNCAM+h4arcGTq
+         br1aRzfbsSJx/bhtAZUVdrM5bO/qNmEJTfOsfppgnBiRF1nc13cHC88hr9U4N01FHLYO
+         j7Wc+cxJDRUWLafp8xNl9Sg4KP++AkOa8KNlQ7rfBo8vQc4coprMshssejysERiMat/M
+         1CwpxBubCL9l503lryI/oPe9ulHKuxYlWv5mH0vlX6VhWNb2xMZGqT+4irFyU3Hx9z2L
+         yvyzgYSVFCiq04cjOfZDZX9YUwDRtoGNcc6wim1rsqcRlmQINbx/IMeWu+q+AeKGhNTM
+         idqg==
+X-Gm-Message-State: APjAAAW0k07K4dKZbpMgrfTRBOYH17UyRy6+etqfraZiLUlIrldtOXug
+        os3BStpZS3AS/AblE4J26G9ldp8XNkJeHg==
+X-Google-Smtp-Source: APXvYqyEbVdWVm90JLGQ7Z0h46UJANxDfIhIDOhVZLeXx1s5RUuNdf8V33N/23hdAYEewLoTEnA0H3xbqeQeng==
+X-Received: by 2002:a63:c94f:: with SMTP id y15mr17582952pgg.159.1560203146698;
+ Mon, 10 Jun 2019 14:45:46 -0700 (PDT)
+Date:   Mon, 10 Jun 2019 14:45:43 -0700
+Message-Id: <20190610214543.92576-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+Subject: [PATCH net-next] tcp: take care of SYN_RECV sockets in
+ tcp_v4_send_ack() and tcp_v6_send_response()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v3 1/2] ipv6: Dump route exceptions too in
- rt6_dump_route()
-Message-ID: <20190610234502.41949c97@redhat.com>
-In-Reply-To: <35689c52-0969-0103-663b-c9f909f4c727@gmail.com>
-References: <cover.1560016091.git.sbrivio@redhat.com>
-        <f5ca22e91017e90842ee00aa4fd41dcdf7a6e99b.1560016091.git.sbrivio@redhat.com>
-        <35689c52-0969-0103-663b-c9f909f4c727@gmail.com>
-Organization: Red Hat
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Mon, 10 Jun 2019 21:45:17 +0000 (UTC)
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jon Maxwell <jmaxwell37@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Jun 2019 15:31:37 -0600
-David Ahern <dsahern@gmail.com> wrote:
+TCP can send ACK packets on behalf of SYN_RECV sockets.
 
-> On 6/8/19 12:12 PM, Stefano Brivio wrote:
-> > To avoid dumping exceptions if not requested, we can, in the future, add
-> > support for NLM_F_MATCH as described by RFC 3549. This would also require
-> > some changes in iproute2: whenever a 'cache' argument is given,
-> > RTM_F_CLONED should be set in the dump request and, when filtering in the
-> > kernel is desired, NLM_F_MATCH should be also passed. We can then signal
-> > filtering with the NLM_F_DUMP_FILTERED whenever a NLM_F_MATCH flag caused
-> > it.  
-> 
-> NLM_F_MATCH is set today. iproute2 for example uses NLM_F_DUMP for dump
-> requests and NLM_F_DUMP is defined as:
-> 
-> #define NLM_F_DUMP      (NLM_F_ROOT|NLM_F_MATCH)
-> 
-> further, the kernel already supports kernel side filtering now for
-> routes. See ip_valid_fib_dump_req.
+tcp_v4_send_ack() and tcp_v6_send_response() incorrectly
+dereference sk->sk_mark for non TIME_WAIT sockets.
 
-Indeed, we don't have to add much: just make this work for IPv4 too,
-honour NLM_F_MATCH, and skip filtering (further optimisation) on
-NLM_F_DUMP_FILTERED in iproute2 (ip neigh already uses that).
+This field is not defined for SYN_RECV sockets.
 
+Using sk_to_full_sk() should get back to the listener socket.
+
+Note that this also provides a socket pointer to sock_net_uid() calls.
+
+Fixes: 00483690552c ("tcp: Add mark for TIMEWAIT sockets")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jon Maxwell <jmaxwell37@gmail.com>
+---
+ net/ipv4/tcp_ipv4.c | 6 ++++--
+ net/ipv6/tcp_ipv6.c | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index f059fbd81a84314ae6fef37f600b0cf28bd2ad30..2bb27d5eae78efdff52a741904d7526a234595d8 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -856,12 +856,14 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 	if (oif)
+ 		arg.bound_dev_if = oif;
+ 	arg.tos = tos;
+-	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+ 	local_bh_disable();
+ 	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
+-	if (sk)
++	if (sk) {
++		sk = sk_to_full_sk(sk);
+ 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
++	}
++	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+ 	ip_send_unicast_reply(ctl_sk,
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+ 			      ip_hdr(skb)->saddr, ip_hdr(skb)->daddr,
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index ad7039137a20f9ad8581d9ca01347c67aa8a8433..ea4dd988bc7f9a90e0d95283e10db5a517a59027 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -884,6 +884,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	}
+ 
+ 	if (sk) {
++		sk = sk_to_full_sk(sk);
+ 		if (sk->sk_state == TCP_TIME_WAIT) {
+ 			mark = inet_twsk(sk)->tw_mark;
+ 			/* autoflowlabel relies on buff->hash */
 -- 
-Stefano
+2.22.0.rc2.383.gf4fbbf30c2-goog
+
