@@ -2,70 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB8B417CB
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 00:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61526417E4
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 00:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436647AbfFKWBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 18:01:21 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42818 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407758AbfFKWBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 18:01:21 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s15so16463633qtk.9;
-        Tue, 11 Jun 2019 15:01:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wVRjad9Fc8BILg/+DYBhqnoHZfByaIOMm77zfoBIfY0=;
-        b=uZheCOttbqblvyIMZwReeWp+JKZkUKNnu2dE7PFC6Ayj4XeuMQmtYZ7WfswaYJbQcF
-         vOGVbYTmuPxAMwyLC004S0bLmcYiboju7syJ7Mtk+B+50jjdMzQ+YrNHZh1SYSrxY+VL
-         /gb2QmzjjonwcTtZyBQI1OseExiibPQbdd7ATSHuyf4ESdngBp/2CsZ8+5V5mfvir+8s
-         LLf1GDzvcJYS9r6YT2OUn0qoIp/bJDutb8gsV10YK/nesxcS/Ri44EE3kKZV7VsPrXbr
-         HkH1F+DJ/NG22BGf6czObAZ5M96xGGQzxOWUTwLi6vCiQkbsQIV7HNk9KwMFlwAXLq4x
-         oAGQ==
-X-Gm-Message-State: APjAAAUW+2mrC6Zwr9mHJnEewB70KZwGWWg6N/sVLhUr6jD2t/fwnqYF
-        wKhc9t86sFPVMhWLqKvXig==
-X-Google-Smtp-Source: APXvYqxq+ctalxr4J055wzK7JBghbqhScsopOPimJQptlh5w/Pu3JDApOeKWxso3z1UIm9uUmO+OTw==
-X-Received: by 2002:ac8:c45:: with SMTP id l5mr50644561qti.63.1560290480260;
-        Tue, 11 Jun 2019 15:01:20 -0700 (PDT)
-Received: from localhost ([64.188.179.199])
-        by smtp.gmail.com with ESMTPSA id g5sm8812899qta.77.2019.06.11.15.01.19
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 15:01:19 -0700 (PDT)
-Date:   Tue, 11 Jun 2019 16:01:17 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rocky Liao <rjliao@codeaurora.org>
-Cc:     mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com,
-        thierry.escande@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        bgodavar@codeaurora.org, c-hbandi@codeaurora.org
-Subject: Re: [PATCH v6 2/2] dt-bindings: net: bluetooth: Add device property
- firmware-name for QCA6174
-Message-ID: <20190611220117.GA31601@bogus>
-References: <1557919203-11055-1-git-send-email-rjliao@codeaurora.org>
- <1559814055-13872-1-git-send-email-rjliao@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1559814055-13872-1-git-send-email-rjliao@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S2436692AbfFKWGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 18:06:16 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:35322 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405693AbfFKWGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 18:06:15 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x5BM6Cpf012446
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jun 2019 16:06:12 -0600 (CST)
+Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x5BM6BUB043560
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 11 Jun 2019 16:06:11 -0600
+From:   Robert Hancock <hancock@sedsystems.ca>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        Robert Hancock <hancock@sedsystems.ca>
+Subject: [PATCH net-next] net: phy: Add more 1000BaseX support detection
+Date:   Tue, 11 Jun 2019 16:06:09 -0600
+Message-Id: <1560290769-11858-1-git-send-email-hancock@sedsystems.ca>
+X-Mailer: git-send-email 1.8.3.1
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 06, 2019 at 05:40:55PM +0800, Rocky Liao wrote:
-> This patch adds an optional device property "firmware-name" to allow the
-> driver to load customized nvm firmware file based on this property.
-> 
-> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
-> ---
-> Changes in v6:
->   * Added read firmware-name property for both QCA6174 and WCN399X
-> ---
->  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 4 ++++
->  1 file changed, 4 insertions(+)
+Commit "net: phy: Add detection of 1000BaseX link mode support" added
+support for not filtering out 1000BaseX mode from the PHY's supported
+modes in genphy_config_init, but we have to make a similar change in
+genphy_read_abilities in order to actually detect it as a supported mode
+in the first place. Add this in.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+---
+ drivers/net/phy/phy_device.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 03c885e..5387890 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1984,6 +1984,8 @@ int genphy_read_abilities(struct phy_device *phydev)
+ 				 phydev->supported, val & ESTATUS_1000_TFULL);
+ 		linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
+ 				 phydev->supported, val & ESTATUS_1000_THALF);
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
++				 phydev->supported, val & ESTATUS_1000_XFULL);
+ 	}
+ 
+ 	return 0;
+-- 
+1.8.3.1
+
