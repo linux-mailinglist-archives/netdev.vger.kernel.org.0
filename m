@@ -2,245 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 585533C0A0
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:34:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9043C3C0AB
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:43:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbfFKAcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 20:32:04 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:45476 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728645AbfFKAcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:32:04 -0400
-Received: by mail-ot1-f67.google.com with SMTP id n2so10023426otl.12
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:32:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=o3DK0nkWpRpMiwc8Ih5d4ou6a8n/VYA8Lld2bDfDIo8=;
-        b=SyWXCkz8+bgQGMvoosoPUj0DOLFOc+jImidLs+UQ697u7L/0hCiuhwZXAUdLPZn3iD
-         3kzIxQwmkr/2i8iz2KlIFg9ryEIhR8EHebgN25FV/qf42+Sxs/mmoCBzFxw32hKMQSth
-         bud8phsvyHBg1qGmO68is4TB2VFWqCLYyYT9X6/cEMJg1yS3WoQr90OjVCcuXofHfPBI
-         ltKFPiphWhBVtfu0xTxRF5XXBNsgeggn5sZ4YSGOq1hIAb80DO1mnkBA+Gx5XsZ2E/hU
-         rBirb0ru0YuuFXNl997zZENmRMQy2rCEtkebKbQL175xgK7mt9VjEl1VoSjKPdrrsx7e
-         kEMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=o3DK0nkWpRpMiwc8Ih5d4ou6a8n/VYA8Lld2bDfDIo8=;
-        b=Z27oBtptJ5ptYrq01n3V3sXMabyg9I78qt1z6Pk+V1MSPD/PeN8Jq1Gkir9kmKD5ZR
-         9azpgfcjaoiOIM9sBxE59FswXSRpbkqJfk5uOcYFbm8kyLYJwvIKKm9CkSXoaVrLJT49
-         Ja2HQ4GiaR05Op0VzvUBpgg9upvcO/+ur5sB0gFXadfjr8O2HgYdfYdZpvRbtkNS4wF2
-         sjvNLhoO4YfW2uG9KIeCBMhsbwv1gdMvXC0SEmyTHa24Ltt4vl0HSpsouWJP7n6ftLYV
-         CGrYWLq5lXUa2zjuVubwvMRKsvYmYKHcD6enuFq3BLQhir0up6KxMfRubZoW2p7wNDRl
-         qhwg==
-X-Gm-Message-State: APjAAAVFNB/vyzjUcKz4Jie8hRfUN250iTKY9ZeAiZzCWpTP553B6ts4
-        dI+caNZi7G5SxqBnRrbY+GYBx2c=
-X-Google-Smtp-Source: APXvYqwAaZIpFcT/Fr48rlFI3ER6u2+Q8FeT8KyNUu+g5m+jqlRCGs+C/WaBodGDEefRBcU3bsla6w==
-X-Received: by 2002:a9d:7d90:: with SMTP id j16mr3065144otn.95.1560213122870;
-        Mon, 10 Jun 2019 17:32:02 -0700 (PDT)
-Received: from localhost.localdomain (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
-        by smtp.gmail.com with ESMTPSA id l12sm836427otp.74.2019.06.10.17.32.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 17:32:02 -0700 (PDT)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH net-next] ipv4: Support multipath hashing on inner IP pkts for GRE tunnel
-Date:   Mon, 10 Jun 2019 20:31:42 -0400
-Message-Id: <20190611003142.11626-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728912AbfFKAnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 20:43:11 -0400
+Received: from alln-iport-2.cisco.com ([173.37.142.89]:42489 "EHLO
+        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728645AbfFKAnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:43:11 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jun 2019 20:43:09 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=6818; q=dns/txt; s=iport;
+  t=1560213789; x=1561423389;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=7NQLhDO8eHZXT4Y6QwnsC4qmVdoofjr9CF4MNqUSn+I=;
+  b=iOi7MhVqazryzaXFpmcLZkxN6NILnT8UZv3tgQDIweMbBuAz/V0oWWAg
+   JhoWviXeqKCCmscRzpsI6XDIvCb1AWMwa7sw403c5+8HHlln8EfZTlgJ1
+   Zs5R10ftiSw0ZcPv8Q7Rzs4hn4kX6+SU+v6K+YnlfcE157H6uStdKN4yP
+   E=;
+IronPort-PHdr: =?us-ascii?q?9a23=3AptZH6xBEH8sKNxf26jrVUyQJPHJ1sqjoPgMT9p?=
+ =?us-ascii?q?ssgq5PdaLm5Zn5IUjD/qg93kTRU9Dd7PRJw6rNvqbsVHZIwK7JsWtKMfkuHw?=
+ =?us-ascii?q?QAld1QmgUhBMCfDkiuJvPscSESF8VZX1gj9Ha+YgBY?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AGAACb9v5c/4oNJK1mGQEBAQEBAQE?=
+ =?us-ascii?q?BAQEBAQcBAQEBAQGBUQQBAQEBAQsBgT0pJwOBPyAECyiHXAOEUooNgleJQ41?=
+ =?us-ascii?q?vgS6BJANUCQEBAQwBAS0CAQGEQAKCdCM0CQ4BAwEBBAEBAgEEbRwMhUoBAQE?=
+ =?us-ascii?q?EEhUTBgEBNwELBAIBCA4DAwEBAQEeECERHQgCBAENBQgahGsDHQECnVECgTi?=
+ =?us-ascii?q?IX4FvM4J5AQEFhQ0NC4IPCYE0AYtcF4F/gVeCFzU+ghqCLIM6giaLWgGdEj4?=
+ =?us-ascii?q?JAoIPj1eEBpcbjROIdo1EAgQCBAUCDgEBBYFPOIFYcBWDJ4IPDBeBAgEHgkO?=
+ =?us-ascii?q?KU3KBKY5YAQE?=
+X-IronPort-AV: E=Sophos;i="5.63,577,1557187200"; 
+   d="scan'208";a="285671698"
+Received: from alln-core-5.cisco.com ([173.36.13.138])
+  by alln-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 11 Jun 2019 00:36:02 +0000
+Received: from XCH-RCD-005.cisco.com (xch-rcd-005.cisco.com [173.37.102.15])
+        by alln-core-5.cisco.com (8.15.2/8.15.2) with ESMTPS id x5B0a2e7031830
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
+        Tue, 11 Jun 2019 00:36:02 GMT
+Received: from xhs-rtp-002.cisco.com (64.101.210.229) by XCH-RCD-005.cisco.com
+ (173.37.102.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 10 Jun
+ 2019 19:36:01 -0500
+Received: from xhs-rtp-002.cisco.com (64.101.210.229) by xhs-rtp-002.cisco.com
+ (64.101.210.229) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 10 Jun
+ 2019 20:36:00 -0400
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (64.101.32.56) by
+ xhs-rtp-002.cisco.com (64.101.210.229) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 10 Jun 2019 20:36:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
+ s=selector2-cisco-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ReZORISEIWrxg98aY2UFCrYC8cP7VOyBEdAs2X8Jo8A=;
+ b=ABwb8KWwK1tZIzyRNNrf531HMBjwQeNsFwCkZz+qZIsbrG2breyApzxU+85Ye8cHwLC+YuIQ9Xk2rbvvO9PJnpzkwLWASfiqhrnnkrz87jPdAAHrIhxFrgnHrfYu6YDs1u13m938cPYGnDBHzritdBbQ67U/qhK/xOcfdJREUoU=
+Received: from BYAPR11MB3512.namprd11.prod.outlook.com (20.177.226.97) by
+ BYAPR11MB3576.namprd11.prod.outlook.com (20.178.206.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.12; Tue, 11 Jun 2019 00:35:59 +0000
+Received: from BYAPR11MB3512.namprd11.prod.outlook.com
+ ([fe80::81dc:1465:c3b9:23b1]) by BYAPR11MB3512.namprd11.prod.outlook.com
+ ([fe80::81dc:1465:c3b9:23b1%3]) with mapi id 15.20.1965.017; Tue, 11 Jun 2019
+ 00:35:59 +0000
+From:   "Christian Benvenuti (benve)" <benve@cisco.com>
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Miller <davem@davemloft.net>
+CC:     "Govindarajulu Varadarajan (gvaradar)" <gvaradar@cisco.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "govind.varadar@gmail.com" <govind.varadar@gmail.com>
+Subject: RE: [PATCH net] net: handle 802.1P vlan 0 packets properly
+Thread-Topic: [PATCH net] net: handle 802.1P vlan 0 packets properly
+Thread-Index: AQHVH9KGeIlyZG4nJUSB/Xa7PyfB96aVZygAgAAcEACAABRg8A==
+Date:   Tue, 11 Jun 2019 00:35:59 +0000
+Message-ID: <BYAPR11MB351224279A7FDF2B9C5A73A5BAED0@BYAPR11MB3512.namprd11.prod.outlook.com>
+References: <20190610142702.2698-1-gvaradar@cisco.com>
+ <20190610.142810.138225058759413106.davem@davemloft.net>
+ <20190610230836.GA3390@ubuntu>
+In-Reply-To: <20190610230836.GA3390@ubuntu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=benve@cisco.com; 
+x-originating-ip: [2001:420:c0c8:1001::1a4]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: efb5fb4c-2c0e-41e6-c49d-08d6ee04c655
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR11MB3576;
+x-ms-traffictypediagnostic: BYAPR11MB3576:
+x-microsoft-antispam-prvs: <BYAPR11MB3576CC212D0C6BC2F53361B6BAED0@BYAPR11MB3576.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 006546F32A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(136003)(39860400002)(396003)(366004)(189003)(199004)(13464003)(7736002)(6246003)(11346002)(486006)(305945005)(8676002)(81166006)(53936002)(476003)(5660300002)(6436002)(7696005)(54906003)(446003)(68736007)(14454004)(8936002)(478600001)(46003)(81156014)(33656002)(316002)(186003)(52536014)(25786009)(256004)(71190400001)(71200400001)(86362001)(76176011)(9686003)(55016002)(99286004)(6116002)(53546011)(6506007)(102836004)(4326008)(74316002)(64756008)(2906002)(76116006)(229853002)(73956011)(110136005)(66446008)(66556008)(66476007)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR11MB3576;H:BYAPR11MB3512.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: cisco.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: BLh36V/hMa5SaQq3dFc0PQj9YNrxxsvwt0A8AUofr+Nv6/FMrPXGE9v66zfFqSzGvor+LVr9xFG5X25s05LTeQ1PjJyu9tAZPjgx00jybVLPL2h2OVkHuB6H9GM7l/QcuO31eBnK47BJIECCWpWpk0fritU2z4F7cMPNKd2Mzv89/LnZajPBEgZLaSKh+8rSMAUB84KjLPnQEXoqsQL1PHgkYFDiGWA7TsSna+KFiDljUXjXj5zI/IWgQkPRYOiIwPc+R7jBZ0hJ8GV2FAd09835SSXpcF1QDYDRejGzMaYtuh2wvdqJAGpAAf/bcbk6aj9WQT4nwJ3snb7DQyLQ7bitzpONG5+BgBZEIMkN+03LyuarM9N//ARKMVsVtPCIJltEiuvbgN6LFFNf2lfxqcwYZSsZ/yHoXwk5opQ0/2s=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: efb5fb4c-2c0e-41e6-c49d-08d6ee04c655
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2019 00:35:59.3253
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: benve@cisco.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3576
+X-OriginatorOrg: cisco.com
+X-Outbound-SMTP-Client: 173.37.102.15, xch-rcd-005.cisco.com
+X-Outbound-Node: alln-core-5.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multipath hash policy value of 0 isn't distributing since the outer IP
-dest and src aren't varied eventhough the inner ones are. Since the flow
-is on the inner ones in the case of tunneled traffic, hashing on them is
-desired.
+> -----Original Message-----
+> From: Stephen Suryaputra <ssuryaextr@gmail.com>
+> Sent: Monday, June 10, 2019 4:09 PM
+> To: David Miller <davem@davemloft.net>
+> Cc: Govindarajulu Varadarajan (gvaradar) <gvaradar@cisco.com>; Christian
+> Benvenuti (benve) <benve@cisco.com>; netdev@vger.kernel.org;
+> govind.varadar@gmail.com
+> Subject: Re: [PATCH net] net: handle 802.1P vlan 0 packets properly
+>=20
+> On Mon, Jun 10, 2019 at 02:28:10PM -0700, David Miller wrote:
+> > From: Govindarajulu Varadarajan <gvaradar@cisco.com>
+> > Date: Mon, 10 Jun 2019 07:27:02 -0700
+> >
+> > > When stack receives pkt: [802.1P vlan 0][802.1AD vlan 100][IPv4],
+> > > vlan_do_receive() returns false if it does not find vlan_dev. Later
+> > > __netif_receive_skb_core() fails to find packet type handler for
+> > > skb->protocol 801.1AD and drops the packet.
+> > >
+> > > 801.1P header with vlan id 0 should be handled as untagged packets.
+> > > This patch fixes it by checking if vlan_id is 0 and processes next
+> > > vlan header.
+> > >
+> > > Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
+> >
+> > Under Linux we absolutely do not decapsulate the VLAN protocol unless
+> > a VLAN device is configured on that interface.
+>=20
+> VLAN ID 0 is treated as if the VLAN protocol isn't there. It is used so t=
+hat the
+> 802.1 priority bits can be encoded and acted upon.
 
-This currently only supports IP over GRE and CONFIG_NET_GRE_DEMUX must
-be compiled as built-in in the kernel.
+David,
+  if we assume that the kernel is supposed to deal properly with .1p tagged=
+ frames, regardless
+of what the next header is (802.{1Q,1AD} or something else), I think the ca=
+se this patch was
+trying to address (that is 1Q+1AD) is not handled properly in the case of p=
+riority tagged frames
+when the (1Q) vlan is untagged and therefore 1Q is only used to carry 1p.
+=20
+    [1P vid=3D0][1AD].
 
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- Documentation/networking/ip-sysctl.txt |  4 ++
- net/ipv4/route.c                       | 75 ++++++++++++++++++++++----
- net/ipv4/sysctl_net_ipv4.c             |  2 +-
- 3 files changed, 70 insertions(+), 11 deletions(-)
+Here is a simplified summary of how the kernel is dealing with priority fra=
+mes right now, based on
+- what the next protocol is
+and
+- whether a vlan device exists or not for the outer (1Q) header.
+=20
+PS:
+'vid' below refers to the vlan id in the 1Q header (not the 1AD header)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 5eedc6941ce5..4f1e18713ea4 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -80,6 +80,10 @@ fib_multipath_hash_policy - INTEGER
- 	Possible values:
- 	0 - Layer 3
- 	1 - Layer 4
-+	2 - Inner Layer 3 for tunneled IP packets. Only IP tunneled by GRE is
-+	    supported now. Others are treated as if the control is set to 0,
-+	    i.e. the outer L3 is used. GRE support is only valid when the kernel
-+	    was compiled with CONFIG_NET_GRE_DEMUX.
- 
- fib_sync_mem - UNSIGNED INTEGER
- 	Amount of dirty memory from fib entries that can be backlogged before
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 14c7fdacaa72..92c693ee8d4b 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -112,6 +112,7 @@
- #include <net/secure_seq.h>
- #include <net/ip_tunnels.h>
- #include <net/l3mdev.h>
-+#include <net/gre.h>
- 
- #include "fib_lookup.h"
- 
-@@ -1782,23 +1783,29 @@ static int __mkroute_input(struct sk_buff *skb,
-  * calculated from the inner IP addresses.
-  */
- static void ip_multipath_l3_keys(const struct sk_buff *skb,
--				 struct flow_keys *hash_keys)
-+				 struct flow_keys *hash_keys,
-+				 const struct iphdr *outer_iph,
-+				 int offset)
- {
--	const struct iphdr *outer_iph = ip_hdr(skb);
--	const struct iphdr *key_iph = outer_iph;
- 	const struct iphdr *inner_iph;
-+	const struct iphdr *key_iph;
- 	const struct icmphdr *icmph;
- 	struct iphdr _inner_iph;
- 	struct icmphdr _icmph;
- 
-+	if (!outer_iph)
-+		outer_iph = ip_hdr(skb);
-+
-+	key_iph = ip_hdr(skb);
-+
- 	if (likely(outer_iph->protocol != IPPROTO_ICMP))
- 		goto out;
- 
- 	if (unlikely((outer_iph->frag_off & htons(IP_OFFSET)) != 0))
- 		goto out;
- 
--	icmph = skb_header_pointer(skb, outer_iph->ihl * 4, sizeof(_icmph),
--				   &_icmph);
-+	icmph = skb_header_pointer(skb, offset + outer_iph->ihl * 4,
-+				   sizeof(_icmph), &_icmph);
- 	if (!icmph)
- 		goto out;
- 
-@@ -1820,6 +1827,47 @@ static void ip_multipath_l3_keys(const struct sk_buff *skb,
- 	hash_keys->addrs.v4addrs.dst = key_iph->daddr;
- }
- 
-+static void ip_multipath_inner_l3_keys(const struct sk_buff *skb,
-+				       struct flow_keys *hash_keys)
-+{
-+	const struct iphdr *outer_iph = ip_hdr(skb);
-+	const struct iphdr *inner_iph;
-+	struct iphdr _inner_iph;
-+	int hdr_len;
-+
-+	switch (outer_iph->protocol) {
-+#ifdef CONFIG_NET_GRE_DEMUX
-+	case IPPROTO_GRE:
-+		{
-+			struct tnl_ptk_info tpi;
-+			bool csum_err = false;
-+
-+			hdr_len = gre_parse_header(skb, &tpi, &csum_err,
-+						   htons(ETH_P_IP),
-+						   outer_iph->ihl * 4);
-+			if (hdr_len > 0 && tpi.proto == htons(ETH_P_IP))
-+				break;
-+		}
-+		/* fallthrough */
-+#endif
-+	default:
-+		/* Hash on outer for unknown tunnels, non IP tunneled, or non-
-+		 * tunneled pkts
-+		 */
-+		ip_multipath_l3_keys(skb, hash_keys, outer_iph, 0);
-+		return;
-+	}
-+	inner_iph = skb_header_pointer(skb,
-+				       outer_iph->ihl * 4 + hdr_len,
-+				       sizeof(struct iphdr), &_inner_iph);
-+	if (inner_iph) {
-+		ip_multipath_l3_keys(skb, hash_keys, inner_iph, hdr_len);
-+	} else {
-+		/* Use outer */
-+		ip_multipath_l3_keys(skb, hash_keys, outer_iph, 0);
-+	}
-+}
-+
- /* if skb is set it will be used and fl4 can be NULL */
- int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 		       const struct sk_buff *skb, struct flow_keys *flkeys)
-@@ -1828,12 +1876,13 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 	struct flow_keys hash_keys;
- 	u32 mhash;
- 
-+	memset(&hash_keys, 0, sizeof(hash_keys));
-+
- 	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
- 	case 0:
--		memset(&hash_keys, 0, sizeof(hash_keys));
- 		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 		if (skb) {
--			ip_multipath_l3_keys(skb, &hash_keys);
-+			ip_multipath_l3_keys(skb, &hash_keys, NULL, 0);
- 		} else {
- 			hash_keys.addrs.v4addrs.src = fl4->saddr;
- 			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-@@ -1849,8 +1898,6 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			if (skb->l4_hash)
- 				return skb_get_hash_raw(skb) >> 1;
- 
--			memset(&hash_keys, 0, sizeof(hash_keys));
--
- 			if (!flkeys) {
- 				skb_flow_dissect_flow_keys(skb, &keys, flag);
- 				flkeys = &keys;
-@@ -1863,7 +1910,6 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			hash_keys.ports.dst = flkeys->ports.dst;
- 			hash_keys.basic.ip_proto = flkeys->basic.ip_proto;
- 		} else {
--			memset(&hash_keys, 0, sizeof(hash_keys));
- 			hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 			hash_keys.addrs.v4addrs.src = fl4->saddr;
- 			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-@@ -1872,6 +1918,15 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			hash_keys.basic.ip_proto = fl4->flowi4_proto;
- 		}
- 		break;
-+	case 2:
-+		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+		if (skb) {
-+			ip_multipath_inner_l3_keys(skb, &hash_keys);
-+		} else {
-+			hash_keys.addrs.v4addrs.src = fl4->saddr;
-+			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-+		}
-+		break;
- 	}
- 	mhash = flow_hash_from_keys(&hash_keys);
- 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 2316c08e9591..e1efc2e62d21 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -960,7 +960,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_fib_multipath_hash_policy,
- 		.extra1		= &zero,
--		.extra2		= &one,
-+		.extra2		= &two,
- 	},
- #endif
- 	{
--- 
-2.17.1
+Case 1: vid !=3D 0 , no nested 1Q/1AD  - OK
+Case 2: vid !=3D 0 , nested      1Q/1AD  - OK
+Case 3: vid =3D  0 , no nested 1Q/1AD  - OK
+Case 4: vid =3D  0 , nested       1Q/1AD <--- The patch addresses this case
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+Case 1: vid !=3D 0 , no nested 1Q/1AD
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+	Packet looks like this:
+
+	[802.1Q  vid =3D V ! =3D 0] [Next header: Anything but 802.{1Q,1AD}]
+
+Case 1a: Vlan device present (*)
+
+	__netif_receive_skb_core()
+	+-> skb->protocol !=3D ETH_P_802{1Q,1AD}   <--- therefore no call to skb_v=
+lan_untag()
+	+-> vlan_do_receive()
+	       +-> vlan_dev =3D vlan_find_dev(...) <--- vlan device found (*)
+	       +-> skb->dev =3D vlan_dev
+	+-> Deliver skb to vlan device
+=09
+Case 1b: Vlan device NOT present (**)
+
+	__netif_receive_skb_core()
+	+-> skb->protocol !=3D ETH_P_802{1Q,1AD}  <--- therefore no call to skb_vl=
+an_untag()
+	+-> vlan_do_receive()
+	      +-> vlan_dev =3D vlan_find_dev(...)     <--- vlan device NOT found (=
+**)
+	+-> if (skb_vlan_tag_present(skb))         <--- TRUE
+	                if (skb_vlan_tag_get_id(skb))  <--- TRUE (***)
+		          PACKET_OTHERHOST
+		  __vlan_hwaccel_clear_tag(skb)
+	+-> Deliver pkt to next layer protocol
+		If we take the example of IPv4, ip_rcv_core() will drop the pkt because o=
+f
+	 	PACKET_OTHERHOST.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+Case 2: vid !=3D 0 , nested 1Q/1AD
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+	Packet looks like this:
+
+	[802.1Q  vid =3D V ! =3D 0] [Next header: 802.{1Q,1AD}]
+
+Case 2a: Vlan device present
+
+	+-> if (skb->protocol =3D=3D ETH_P_8021AD) <--- TRUE
+	        +-> skb_vlan_untag(skb)
+		+-> if unlikely(skb_vlan_tag_present(skb)) <--- TRUE
+		               return skb
+	        +-> if (skb_vlan_tag_present(skb)) <--- TRUE (again)
+			if (vlan_do_receive(&skb)) <--- TRUE
+			     +-> vlan_dev =3D vlan_find_dev(...) <--- vlan device found
+			     +-> skb->dev =3D vlan_dev
+
+				goto another_round <-- At the following round the packet will be delive=
+red to the next layer proto
+
+Case 2b: Vlan device NOT present
+
+	__netif_receive_skb_core()
+	+-> if (skb->protocol =3D=3D ETH_P_8021AD)  <--- TRUE
+	       +-> skb_vlan_untag(skb)
+		+-> If (unlikely(skb_vlan_tag_present(skb)) <--- TRUE (packet is .1p tagg=
+ed, vid=3D0)
+		               return skb <--- packet is returned as is, 1AD header still=
+ inline
+	        +-> if (skb_vlan_tag_present(skb)) <--- TRUE (again)
+			if (vlan_do_receive(&skb)) <--- FALSE
+			     +-> vlan_dev =3D vlan_find_dev(...) <--- vlan device NOT found
+
+	        The 2nd part is the same as 1b:
+
+	+-> if (skb_vlan_tag_present(skb))         <--- TRUE
+	                if (skb_vlan_tag_get_id(skb))  <--- TRUE (***)
+		          PACKET_OTHERHOST
+		  __vlan_hwaccel_clear_tag(skb)
+	+-> Deliver pkt to next layer protocol
+		If we take the example of IPv4, ip_rcv_core() will drop the pkt because o=
+f
+		PACKET_OTHERHOST.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+Case 3: vid =3D 0 , no nested 1Q/1AD
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+	Packet looks like this:
+
+	[802.1Q  vid =3D 0][Next header: Anything but 802.{1Q,1AD}]
+
+Case 3a: vlan (0) device present
+
+	Same as case 1a: packet delivered to vlan device.
+
+Case 3b: vlan (0) device not present
+
+	This is similar to case 1b above, with the difference that condition (***)=
+ is false
+	and therefore pkt type is NOT set to PACKET_OTHERHOST, which translates to
+	".1p / vid=3D=3D0 header ignored and packet NOT accepted".
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+Case 4: vid =3D 0 , nested 1Q/1AD
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -=
+ - -
+	Packet looks like this:
+
+	[802.1Q  vid =3D=3D 0][Next header: 802.{1Q,1AD}]
+
+Case 4a: vlan (0) device present
+
+	This is equivalent to the cases 1a/2a/3a above: the packet is going to be =
+delivered to the vlan (0) device.
+
+Case 4b: vlan (0) device not present.
+	THIS IS THE CASE THE PATCH TRIED TO ADDRESS.
+
+	__netif_receive_skb_core()
+	+-> if (skb->protocol =3D=3D ETH_P_8021AD)  <--- TRUE
+	       +-> skb_vlan_untag(skb)
+		+-> If (unlikely(skb_vlan_tag_present(skb)) <--- TRUE (packet is .1p tagg=
+ed, vid=3D0)
+		               return skb <--- packet is returned as is, 1AD header still=
+ inline
+
+ 	+-> Since there is no 1AD proto handler, packet will be dropped (but it s=
+hould not)
+
+Thanks
+/Chris
