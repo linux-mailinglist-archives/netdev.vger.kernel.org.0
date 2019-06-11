@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DD53C9D7
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E053C9E6
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389180AbfFKLQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 07:16:55 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:40286 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387519AbfFKLQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:16:55 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5BBGg0A111081;
-        Tue, 11 Jun 2019 06:16:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1560251802;
-        bh=ymb68AYJr6qOFYNX8+pGpasWhJJh3G+q893ggNbXIfs=;
-        h=From:To:CC:Subject:Date;
-        b=ieZyKDuEirJDSUPqZk+s9RPf0XuZbf/3ldOM3ZPQ37TjF6kTSnuKI2/qg9y5CA3P8
-         bEeRcaY4IzLCI/wrF7VA1/24nnbRVQx1ts/2CO92ZlbOVaTWfH+Ug2zrzm++lYMZ/0
-         wwNhWAxvQ9Rl/6hnW4/stGmL5zt1GSGagn9zYQHU=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5BBGg7F110971
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 11 Jun 2019 06:16:42 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Tue, 11
- Jun 2019 06:16:42 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Tue, 11 Jun 2019 06:16:41 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5BBGesC057695;
-        Tue, 11 Jun 2019 06:16:41 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        <netdev@vger.kernel.org>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-next@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [RESEND PATCH net-next] net: ethernet: ti: cpts: fix build failure for powerpc
-Date:   Tue, 11 Jun 2019 14:16:32 +0300
-Message-ID: <20190611111632.9444-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S2389302AbfFKLVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 07:21:45 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:51332 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387444AbfFKLVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:21:44 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1haeqR-0002l7-S5; Tue, 11 Jun 2019 07:21:42 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     linux-sctp@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH v2] [net] Free cookie before we memdup a new one
+Date:   Tue, 11 Jun 2019 07:21:28 -0400
+Message-Id: <20190611112128.27057-1-nhorman@tuxdriver.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190610163456.7778-1-nhorman@tuxdriver.com>
+References: <20190610163456.7778-1-nhorman@tuxdriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add dependency to TI CPTS from Common CLK framework COMMON_CLK to fix
-allyesconfig build for Powerpc:
+Based on comments from Xin, even after fixes for our recent syzbot
+report of cookie memory leaks, its possible to get a resend of an INIT
+chunk which would lead to us leaking cookie memory.
 
-drivers/net/ethernet/ti/cpts.c: In function 'cpts_of_mux_clk_setup':
-drivers/net/ethernet/ti/cpts.c:567:2: error: implicit declaration of function 'of_clk_parent_fill'; did you mean 'of_clk_get_parent_name'? [-Werror=implicit-function-declaration]
-  of_clk_parent_fill(refclk_np, parent_names, num_parents);
-  ^~~~~~~~~~~~~~~~~~
-  of_clk_get_parent_name
+To ensure that we don't leak cookie memory, free any previously
+allocated cookie first.
 
-Fixes: a3047a81ba13 ("net: ethernet: ti: cpts: add support for ext rftclk selection")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- Resending due to missed netdev@vger.kernel.org list in prev post.
+Change notes
+v1->v2
+update subsystem tag in subject (davem)
+repeat kfree check for peer_random and peer_hmacs (xin)
 
- drivers/net/ethernet/ti/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+CC: Xin Long <lucien.xin@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+---
+ net/sctp/sm_make_chunk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index bd05a977ee7e..a800d3417411 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -60,6 +60,7 @@ config TI_CPSW
- config TI_CPTS
- 	bool "TI Common Platform Time Sync (CPTS) Support"
- 	depends on TI_CPSW || TI_KEYSTONE_NETCP || COMPILE_TEST
-+	depends on COMMON_CLK
- 	depends on POSIX_TIMERS
- 	---help---
- 	  This driver supports the Common Platform Time Sync unit of
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index f17908f5c4f3..0992ec0395f8 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2583,6 +2583,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 	case SCTP_PARAM_STATE_COOKIE:
+ 		asoc->peer.cookie_len =
+ 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
++		if (asoc->peer.cookie)
++			kfree(asoc->peer.cookie);
+ 		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
+ 		if (!asoc->peer.cookie)
+ 			retval = 0;
+@@ -2647,6 +2649,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 			goto fall_through;
+ 
+ 		/* Save peer's random parameter */
++		if (asoc->peer.peer_random)
++			kfree(asoc->peer.peer_random);
+ 		asoc->peer.peer_random = kmemdup(param.p,
+ 					    ntohs(param.p->length), gfp);
+ 		if (!asoc->peer.peer_random) {
+@@ -2660,6 +2664,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 			goto fall_through;
+ 
+ 		/* Save peer's HMAC list */
++		if (asoc->peer.peer_hmacs)
++			kfree(asoc->peer.peer_hmacs);
+ 		asoc->peer.peer_hmacs = kmemdup(param.p,
+ 					    ntohs(param.p->length), gfp);
+ 		if (!asoc->peer.peer_hmacs) {
 -- 
-2.17.1
+2.20.1
 
