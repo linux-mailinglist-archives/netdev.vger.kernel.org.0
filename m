@@ -2,178 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17AD73C027
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 01:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BD13C099
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390702AbfFJXtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 19:49:12 -0400
-Received: from mx2.ucr.edu ([138.23.62.3]:56349 "EHLO mx2.ucr.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390570AbfFJXtL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 19:49:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1560210550; x=1591746550;
-  h=mime-version:references:in-reply-to:from:date:message-id:
-   subject:to:cc;
-  bh=5dpFvE/+juvat/BejnLqmabttoGgZAvR3JWhDuSOis4=;
-  b=a0CatwixqVQ35EbMZxQacDzxQ/hGYQd/Vyl3HqHa/zPCiwxR+q9lw/TH
-   yHqGll+ipWGYNqWhYqrzSckeY8z1ryPFXJhB9V/zT4umEiqUPNKMNQpVL
-   6ifegSRCPsAh0J0BNiZm++d6ew0e/Huf5H9rL9Uegu2joamTCgdlEZBIL
-   Ky+y6JLY4mUhQm2mOyQab9hpntzGjJ8lQt2PkcAe9Gnw5U14GTsDXlX7J
-   SNDeMKZ0IGwcUPob89Dw91iBsRHwr1h2H6e7ldZfTUgw/vGwLO8E+3tgN
-   u9RYZ82ZQNBFTR+CKaK0Isldgp6UYNnmMo312zZ7LPEAJHMoDNygsEoVb
-   w==;
-IronPort-PHdr: =?us-ascii?q?9a23=3A9T4iqhzy9YMMquXXCy+O+j09IxM/srCxBDY+r6Qd?=
- =?us-ascii?q?1O0eIJqq85mqBkHD//Il1AaPAdyCrasZ0KGM7ujJYi8p2d65qncMcZhBBVcuqP?=
- =?us-ascii?q?49uEgeOvODElDxN/XwbiY3T4xoXV5h+GynYwAOQJ6tL1LdrWev4jEMBx7xKRR6?=
- =?us-ascii?q?JvjvGo7Vks+7y/2+94fcbglVmTaxe65+IRW4oAneqMUbgZZpJ7osxBfOvnZGYf?=
- =?us-ascii?q?ldy3lyJVKUkRb858Ow84Bm/i9Npf8v9NNOXLvjcaggQrNWEDopM2Yu5M32rhbD?=
- =?us-ascii?q?VheA5mEdUmoNjBVFBRXO4QzgUZfwtiv6sfd92DWfMMbrQ704RSiu4qF2QxLzli?=
- =?us-ascii?q?wJKyA2/33WisxojaJUvhShpwBkw4XJZI2ZLedycr/Bcd8fQ2dKQ8RfWDFbAo6k?=
- =?us-ascii?q?YIQPAegOM+ZWoYf+ulUAswexCBKwBO/z0DJEmmP60bE43uknDArI3BYgH9ULsH?=
- =?us-ascii?q?nMr9r1NKASUea6zKnKzDXMce5d1jfn54jOfRAqvPaBXLN+cMXLz0kvGB/Jg1qT?=
- =?us-ascii?q?pIH+IjOayv4Nv3KF4OV9SOKikmgqoBxyrDi33soglJXFi4YPxl3H9Sh12pg5Kc?=
- =?us-ascii?q?CkREJhfNKpFJlduieHPIVsWMwiWXtnuCMix70Dvp60YTYFxYw8xx7ad/yHa4+I?=
- =?us-ascii?q?4g//VOqJITd3mnZleLWniha360egy+n8WtCs0FZEsyZJi9fMum0J2hHR8MSHRf?=
- =?us-ascii?q?x9/kCu2TaLyQ/f8P1LIUcxlabDKp4hxKA/loYLvEjdAiP7nF/6gayWe0k+5OSk?=
- =?us-ascii?q?9vjrbq/7qpKYNYJ4kgT+Pb4vmsy7D+Q4KA8OX22D9OW92rzs50v5QLpWgvA5ka?=
- =?us-ascii?q?TUq43aKtgBpqKjHQBaz5sj5w6lDzi6yNQYgWUHLFVddRKBkYfpJ0zBL+7mDfqk?=
- =?us-ascii?q?nVSsnylkx+rcMr3iHJrNNH7Dn6nlfbpn7E5c0gUznphj4MdyB7gFaNn6QEPuud?=
- =?us-ascii?q?jcRks/OAWuz/nqDNFV2YQZVmaCRKSeNfWBn0WP47cdI+6Ka40UtX7CIv4qr6r8?=
- =?us-ascii?q?knY/lgdBLYG01oFRZXylSKc1a36FaGbh149SWVwBuRAzGamz0AWP?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DYAgDr6/5cdcXSVdFcCoNBAjuCGCiEF?=
- =?us-ascii?q?ZUAmHSBEANUAQgBAQEOLwEBhDwCAgKCdCNLAQMBAQUBAQEFARMBCg0KBycxgjo?=
- =?us-ascii?q?pAYJnAQUjBFIQCwsDCgICJgICIhIBBQEcBhODIoILnQ08iyB+M4hiAQcKgUYSe?=
- =?us-ascii?q?iYEi1uCFoQjPoQRAQcLAYMpglgEgS0BAQGTF5N2aQEGAgGBfhOTQhuCJYZ8coM?=
- =?us-ascii?q?SiXYtozkPIYIdMHEzGiV/BmeBToM0AQuNMiIwjT6CQwEB?=
-X-IPAS-Result: =?us-ascii?q?A2DYAgDr6/5cdcXSVdFcCoNBAjuCGCiEFZUAmHSBEANUAQg?=
- =?us-ascii?q?BAQEOLwEBhDwCAgKCdCNLAQMBAQUBAQEFARMBCg0KBycxgjopAYJnAQUjBFIQC?=
- =?us-ascii?q?wsDCgICJgICIhIBBQEcBhODIoILnQ08iyB+M4hiAQcKgUYSeiYEi1uCFoQjPoQ?=
- =?us-ascii?q?RAQcLAYMpglgEgS0BAQGTF5N2aQEGAgGBfhOTQhuCJYZ8coMSiXYtozkPIYIdM?=
- =?us-ascii?q?HEzGiV/BmeBToM0AQuNMiIwjT6CQwEB?=
-X-IronPort-AV: E=Sophos;i="5.63,577,1557212400"; 
-   d="scan'208";a="1065450420"
-Received: from mail-pf1-f197.google.com ([209.85.210.197])
-  by smtp2.ucr.edu with ESMTP/TLS/AES128-GCM-SHA256; 10 Jun 2019 16:48:32 -0700
-Received: by mail-pf1-f197.google.com with SMTP id i26so8250001pfo.22
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 16:48:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CaOoz8j2UMrv32FeXs2WFFwpsAQB5P6Hn1rMuT3jKD8=;
-        b=cTAMMGD2iTNDtUeSEPSKxUtEncMIvcp4T/v1zXy5jzKqewYspvB+sMKo9OkzazhYch
-         HfIBIVps7lAhn6MevSXAzWb5/BmFqQL2i/97J2WJ073yFTqnGutLh1rxnOuZ6x3bmxH2
-         P2cDpknrq7oLToR5FkD3MRkPj6MF85Q+sKc3vebTq/JC1NEbK0boLtGhZ7E6skrq2v0Z
-         oPYXaMpLrV6ZO7RC/09hrnChoFxE4s3qhggf6y3n/BeU6eLvwM0sR6Xf/pLEodO/ZDnq
-         GP6tzRNVHEcv5tfUZHCw90Q0UONAxfhYyMdiBu8xQL1AdGI5uICxEFe//WC7gQhXUwz0
-         lM1Q==
-X-Gm-Message-State: APjAAAVbqU0rroWGe9TBMzAyh6bl4+PBBxCLMDg9nr8sDmSYQv0qYEj3
-        LPEoWGsVweDV9+MS7XsaS6X5zmhcLB612FXz095ILLK1vsRkmAVm1J+UqlBcWgmvJXlMaFrpdkt
-        1rkTLre+Q4EYJv5RPZoqao6AEjlJxHC/7XQ==
-X-Received: by 2002:a63:5207:: with SMTP id g7mr17239222pgb.356.1560210511976;
-        Mon, 10 Jun 2019 16:48:31 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwVZw5tOz2gRNkG8Scf318b07opnJz0dJC+0rOglwWZhWHUJEdwJixzrU/aLFCXv9Pwz5jSHNvjXflAoEzQZIk=
-X-Received: by 2002:a63:5207:: with SMTP id g7mr17239194pgb.356.1560210511588;
- Mon, 10 Jun 2019 16:48:31 -0700 (PDT)
+        id S1728705AbfFKA3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 20:29:47 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:55760 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728645AbfFKA3r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:29:47 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5B0OAvU187741;
+        Tue, 11 Jun 2019 00:29:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=bHEDKOtoH51quhuCXQ/oKvurxQKeW6TiYF3uEqDbN4w=;
+ b=H8ljcxf2C5UyCtrULr4NWoBI+SLOoQAjCY2c9V9FGmv8rcE0nMbeod+aPZYghzcE4U/B
+ vSks4OrWVXFbBCgT00JMiP5tnHOJbftLzdqMeQeK2XUKi2k7dFTrtGRv3PUqCZOj5hWR
+ mtgjxvNndAVeDibca9l7rqvdEXrGpeADcc8gaq9Sx1j8DzRifutb3RQcTJ4KHnMDLoE0
+ rXCVLO1j9XYMheOzVAVYIBac4sVAB4c89+DsvVp1M79FnNXVubrxL2wkGMOV/3gaVoeE
+ jZDEdiBQBqtQT3Oc6neERuJYED+NMIxoxkXoNZ2Ee3cKMI/XqnQlQweNtw3+2/UMe5vm 7w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2t05nqhu86-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 11 Jun 2019 00:29:45 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5B0Qpje010440;
+        Tue, 11 Jun 2019 00:27:45 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2t04hy294u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 11 Jun 2019 00:27:45 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5B0RiIp020699;
+        Tue, 11 Jun 2019 00:27:44 GMT
+Received: from [10.0.0.100] (/111.193.67.110)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 10 Jun 2019 17:27:44 -0700
+Subject: Re: [PATCH net] net_sched: sch_mqprio: handle return value of
+ mqprio_queue_get
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20190610063821.27007-1-jian.w.wen@oracle.com>
+ <CAM_iQpXk_-4zKJXkEDVUKUYxEpa8QNa8u2iD4BVxTTWQe=J4cA@mail.gmail.com>
+From:   Jacob Wen <jian.w.wen@oracle.com>
+Message-ID: <9812dba9-e7c5-c0c0-7065-1cf5f04e7958@oracle.com>
+Date:   Tue, 11 Jun 2019 08:27:41 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
- <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
-In-Reply-To: <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
-From:   Zhongjie Wang <zwang048@ucr.edu>
-Date:   Mon, 10 Jun 2019 16:51:34 -0700
-Message-ID: <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
-Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAM_iQpXk_-4zKJXkEDVUKUYxEpa8QNa8u2iD4BVxTTWQe=J4cA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9284 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=929
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906110001
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9284 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=981 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906110001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Neal,
+Hi Cong,
 
-Thanks for your reply. Sorry, I made a mistake in my previous email.
-After I double checked the source code, I think it should be tp->urg_seq,
-which is used before assignment, instead of tp->copied_seq.
-Still in the same if-statement:
+This was detected by a tool.
 
-5189     if (tp->urg_seq == tp->copied_seq && tp->urg_data &&
-5190         !sock_flag(sk, SOCK_URGINLINE) && tp->copied_seq != tp->rcv_nxt) {
-5191         struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
-5192         tp->copied_seq++;
-5193         if (skb && !before(tp->copied_seq, TCP_SKB_CB(skb)->end_seq)) {
-5194             __skb_unlink(skb, &sk->sk_receive_queue);
-5195             __kfree_skb(skb);   // wzj(a)
-5196         }
-5197     }
-5198
-5199     tp->urg_data = TCP_URG_NOTYET;
-5200     tp->urg_seq = ptr;
+Thanks for the review :)
 
-It compares tp->copied_seq with tp->urg_seq.
-And I found only 1 assignment of tp->urg_seq in the code base,
-which is after the if-statement in the same tcp_check_urg() function.
+I will abandon the patch.
 
-So it seems tp->urg_seq is not assigned to any sequence number before
-its first use.
-Is that correct?
-
-P.S. In our symbolic execution tool, we found an execution path that
-requires the client initial sequence number (ISN) to be 0xFF FF FF FF.
-And when it traverse that path, the tp->copied_seq is equal to (client
-ISN + 1), and compared with 0 in this if-statatement.
-Therefore the client ISN has to be exactly 0xFF FF FF FF to hit this
-execution path.
-
-To trigger this, we first sent a SYN packet, and then an ACK packet
-with urgent pointer.
-
-Best Regards,
-Zhongjie Wang
-Ph.D. Candidate 2015 Fall
-Department of Computer Science & Engineering
-University of California, Riverside
-
-Zhongjie Wang
-Ph.D. Candidate 2015 Fall
-Department of Computer Science & Engineering
-University of California, Riverside
-
-
-
-On Mon, Jun 10, 2019 at 5:00 AM Neal Cardwell <ncardwell@google.com> wrote:
+On 6/11/19 2:19 AM, Cong Wang wrote:
+> On Sun, Jun 9, 2019 at 11:41 PM Jacob Wen <jian.w.wen@oracle.com> wrote:
+>> It may return NULL thus we can't ignore it.
+> How is this possible? All of the callers should have validated
+> the 'cl' before calling this, for example by calling ->find().
 >
-> On Sun, Jun 9, 2019 at 11:12 PM Zhongjie Wang <zwang048@ucr.edu> wrote:
-> ...
-> > It compares tp->copied_seq with tcp->rcv_nxt.
-> > However, tp->copied_seq is only assigned to an appropriate sequence number when
-> > it copies data to user space. So here tp->copied_seq could be equal to 0,
-> > which is its initial value, if no data are copied yet.
+> I don't see it is possible to be NULL at this point.
 >
-> I don't believe that's the case. As far as I can see, the
-> tp->copied_seq field is initialized to tp->rcv_nxt in the various
-> places where TCP connections are initialized:
+> Did you see a real crash? If so, please put the full stack trace
+> in your changelog.
 >
->   tp->copied_seq = tp->rcv_nxt;
->
-> > In this case, the condition becomes 0 != tp->rcv_nxt,
-> > and it renders this comparison ineffective.
-> >
-> > For example, if we send a SYN packet with initial sequence number 0xFF FF FF FF,
-> > and after receiving SYN/ACK response, then send a ACK packet with sequence
-> > number 0, it will bypass this if-then block.
-> >
-> > We are not sure how this would affect the TCP logic. Could you please confirm
-> > that tp->copied_seq should be assigned to a sequence number before its use?
->
-> Yes, the tp->copied_seq  ought to be assigned to a sequence number
-> before its use, and AFAICT it is. Can you identify a specific sequence
-> of code execution (and ideally construct a packetdrill script) where
-> tp->copied_seq is somehow read before it is initialized?
->
-> cheers,
-> neal
+> Thanks!
