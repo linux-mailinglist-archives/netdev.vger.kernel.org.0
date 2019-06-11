@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD8A3C80E
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 12:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C41D3C82C
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 12:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404575AbfFKKGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 06:06:01 -0400
-Received: from ozlabs.org ([203.11.71.1]:57065 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728937AbfFKKGB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 06:06:01 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45NQcj5fd0z9sDX;
-        Tue, 11 Jun 2019 20:05:57 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1560247558;
-        bh=7U/XVQfmfn8ksgJsWS+ntJglSV9GfB0NOkUJ1PR2ASU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TYyrZ/RnmVdu8hnXhHmtS6Yw2EJ8C2Gsoiwha8KT+17ar9qtTPkN83ccTxdsTBDwo
-         EtRD00u1vRBtP+bkHD3EgbFx5XCbs+7Pvm7IQqzd+OP3XXKpli1MrkppVqhqepXaEZ
-         iLCkQ4rnaUG9y0w/26CrFiWedDmazHtMVlvy5cKOrbkbfWBII7uisz5I/eb7d3uXLx
-         tGnpB9zF5eI7+HxX1AW1sjIQRGTrIRWH0dQFP5GU+lrPQ3wDhE5eXt01U5OA3T3M85
-         z/LkQ6oDWnV4Y5MrrPaMpgaarb+XmDnbZSdjWTvYOuEPuVv85R5+qHLIpM4AombThv
-         JdWSjm8XmUf0g==
-Date:   Tue, 11 Jun 2019 20:05:56 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: linux-next: Fixes tag needs some work in the bpf tree
-Message-ID: <20190611200556.4a09514d@canb.auug.org.au>
+        id S2405233AbfFKKIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 06:08:53 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:45118 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405185AbfFKKIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 06:08:52 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a14so17326528edv.12;
+        Tue, 11 Jun 2019 03:08:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=upToNZmU1lMq7es+5zXvEQjyTF1NnvLf1/9ORQaZ1DE=;
+        b=iCOSrKcUK+rli/OUyV1Fpo+eVbyGE8IUCkpVXPdJqMOV3jbckAVXXe/LNJ08+i85dt
+         fgljXzkq+tNhQR1WuX+jv0gC5HXPKZVwhEsHH4ZVyv567GOhFi1LEvdgt0WITYQ6H2tt
+         qt9hoI9VsxlxqdZLTypYTT/u1LEWyJEZYy0nVG8HC+4vMysJ30RHd4c3Lfufy4A0ddtQ
+         BpDLdF5eeTVv4MjQMczE3ZWoQ99scUqlPKJjxko1nV7JPgaTvNnx5L1rAdCQEJdI366z
+         mY3TJlfBxrvj0DUU/qZL7QKSLvZmLGlCrJWLEPWmyQtDxOywIKtDNB8V8BT0in3Lgpet
+         0Z5g==
+X-Gm-Message-State: APjAAAUjturf9kVSrohkHPTFHazvg4NrKCIZlFJeBZqqotoWBXH7VkH2
+        SRhYfqZv6j6pV1dY2I2NAqzhSkV4so8=
+X-Google-Smtp-Source: APXvYqxTc7uu07z4aidQ8odoAbUGZpihRowGfPQKyIP6B1ElMaLOiXVw0fUv2U0hCpYYEI8zPY3IOw==
+X-Received: by 2002:aa7:c559:: with SMTP id s25mr7829344edr.117.1560247730528;
+        Tue, 11 Jun 2019 03:08:50 -0700 (PDT)
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
+        by smtp.gmail.com with ESMTPSA id o22sm2298198edc.37.2019.06.11.03.08.47
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id x17so12295897wrl.9;
+        Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
+X-Received: by 2002:adf:fd01:: with SMTP id e1mr23640588wrr.167.1560247727247;
+ Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/7xsX+2aY0ikNJvTtDD9/vld"; protocol="application/pgp-signature"
+References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
+ <af3a342a6cba1dda27763c13093a8fc060946c1e.1560158667.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <af3a342a6cba1dda27763c13093a8fc060946c1e.1560158667.git-series.maxime.ripard@bootlin.com>
+From:   Chen-Yu Tsai <wens@csie.org>
+Date:   Tue, 11 Jun 2019 18:08:34 +0800
+X-Gmail-Original-Message-ID: <CAGb2v66vKPeyvw56ROR-B=5Bzi7GVby1CXCjgQ5hnuUdPWX0cg@mail.gmail.com>
+Message-ID: <CAGb2v66vKPeyvw56ROR-B=5Bzi7GVby1CXCjgQ5hnuUdPWX0cg@mail.gmail.com>
+Subject: Re: [PATCH v2 11/11] ARM: dts: sunxi: Switch to the generic PHY properties
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/7xsX+2aY0ikNJvTtDD9/vld
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, Jun 10, 2019 at 5:26 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> The DWMAC specific properties to manage the PHY have been superseeded by
+> the generic PHY properties. Let's move to it.
+>
+> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+>
+> ---
+>
+> This patch should go through arm-soc.
+>
+> Changes from v1:
+>   - New patch
+> ---
+>  arch/arm/boot/dts/sun6i-a31-hummingbird.dts       |  6 +++---
 
-Hi all,
-
-In commit
-
-  605465dd0c27 ("bpf: lpm_trie: check left child of last leftmost node for =
-NULL")
-
-Fixes tag
-
-  Fixes: b471f2f1de8 ("bpf: implement MAP_GET_NEXT_KEY command for LPM_TRIE=
-")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/7xsX+2aY0ikNJvTtDD9/vld
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlz/fQQACgkQAVBC80lX
-0Gw7Wgf+NtaIzPwZpz/rKY47PD9aCIfaKCLRcxWh1n6vDHtaVi9uVFDOI3GTkO0z
-vffYFAo5iVot9EEt0kA4sgPs2s6dMXzD2BHpTuxeHb5hpX8twkOoFqTOSfjoINvz
-fCRzX6EgJ2z3ympwYDvDZ+PdEj5sAYOg7xF2su4qCAbTM9CBmTgMLIrlnvaURPUF
-ayTypYQ3OMzm4A4oop9McAnn+ku7/xIUfyLrMfOgY+sXZGCE/hQrEZvjAvVYX/1E
-hluUVGmdHmba/fCzsPIUorFrGVCEbI8nKOpo3axeBdhnaWTlDTncYmnu7TqOPq6e
-D/guwtPY9vuzOfIFuJsxEofV1N36Ng==
-=oDUu
------END PGP SIGNATURE-----
-
---Sig_/7xsX+2aY0ikNJvTtDD9/vld--
+Tested-by: Chen-Yu Tsai <wens@csie.org>
