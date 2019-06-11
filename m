@@ -2,170 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E26B417C0
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB8B417CB
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 00:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407828AbfFKV7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:59:45 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:35713 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407758AbfFKV7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:59:45 -0400
-Received: by mail-lf1-f67.google.com with SMTP id a25so10483174lfg.2
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=Zzu+iigGnljTNLpw4PV21/NpwXZqBVj44MZDZpMBu9k=;
-        b=PobiPbYcny3WgIyxrQehAN1nsvHHczEh4rKLhjhpRUHi5oP2JXevAQTzCNmyXPtkOJ
-         uAD+t9JOexPIFCh64sfCV9FtaD6iUetrcyogT28F7NvlRqrI6n2zAqm4dtu+VlvIBR3a
-         gyZvO2JwZbHansH5cVDh6Z6jYRq3yM/oVxR9BYZ8JrW69pUHdF4W/B5Ql4r1Gr80X/AJ
-         IdOD3Ocdd6FDE87CL1PtMIcDU97zcS2vEGZ1mLJkzAjczvHpU3Cy7iQUTaPL38rNU5Pa
-         aLUFeipC7MS8JcjaqgSjwUMQmDg5p17vONbyE1a+ivXjuxvCaaxKfcTEQFHNk9jrBrVZ
-         Km5g==
+        id S2436647AbfFKWBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 18:01:21 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:42818 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407758AbfFKWBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 18:01:21 -0400
+Received: by mail-qt1-f195.google.com with SMTP id s15so16463633qtk.9;
+        Tue, 11 Jun 2019 15:01:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Zzu+iigGnljTNLpw4PV21/NpwXZqBVj44MZDZpMBu9k=;
-        b=J8g+GH3AGqQcnQAqp01rL1pxdZYNT1Xje1Mk6/DUonrL5Z4hftPz1Hr9GvyUdKsZ+X
-         w4ZDmrWBHun6TgqkHvf64Q89NAG8w8oPEMYYtDSsAeSBKATRSQzsEYL1oDWoG1uYXFiP
-         MYLxGbvLdtrqQno3MX35fN/az6ZGFdL+PtVoOQ4qInbjxzkEr6ViMGwhcnIOUFRqbJ/x
-         ava6RKGqm5cg5tudNO0Xg3n6P0+L5QO0AO+J6Z2LdEKSFI4VtZVkSAsPrCaEf4VhH91+
-         wcY4Q/9RAeAOGU4JwHO025M+QtIGyIyWZZWuYfrntPEIwFqd23LWSU8saX0kJNc1cvxN
-         K+VQ==
-X-Gm-Message-State: APjAAAWdSDRTsYIFsRqnGotnMJBwLu8J+Il19eyBtSWlL13l4nGHRNXB
-        qLBB7ji1+cmiAKcH5dIsE4KHAA==
-X-Google-Smtp-Source: APXvYqxROsgLEagJ8cL2DRxT+ztHYQ7QT2V+4OlXJGcsDDWEq6cv4mqxmOimauuTlNjm9dvfY5hkxQ==
-X-Received: by 2002:ac2:4466:: with SMTP id y6mr11979289lfl.0.1560290382773;
-        Tue, 11 Jun 2019 14:59:42 -0700 (PDT)
-Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id u10sm3339653lfu.18.2019.06.11.14.59.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wVRjad9Fc8BILg/+DYBhqnoHZfByaIOMm77zfoBIfY0=;
+        b=uZheCOttbqblvyIMZwReeWp+JKZkUKNnu2dE7PFC6Ayj4XeuMQmtYZ7WfswaYJbQcF
+         vOGVbYTmuPxAMwyLC004S0bLmcYiboju7syJ7Mtk+B+50jjdMzQ+YrNHZh1SYSrxY+VL
+         /gb2QmzjjonwcTtZyBQI1OseExiibPQbdd7ATSHuyf4ESdngBp/2CsZ8+5V5mfvir+8s
+         LLf1GDzvcJYS9r6YT2OUn0qoIp/bJDutb8gsV10YK/nesxcS/Ri44EE3kKZV7VsPrXbr
+         HkH1F+DJ/NG22BGf6czObAZ5M96xGGQzxOWUTwLi6vCiQkbsQIV7HNk9KwMFlwAXLq4x
+         oAGQ==
+X-Gm-Message-State: APjAAAUW+2mrC6Zwr9mHJnEewB70KZwGWWg6N/sVLhUr6jD2t/fwnqYF
+        wKhc9t86sFPVMhWLqKvXig==
+X-Google-Smtp-Source: APXvYqxq+ctalxr4J055wzK7JBghbqhScsopOPimJQptlh5w/Pu3JDApOeKWxso3z1UIm9uUmO+OTw==
+X-Received: by 2002:ac8:c45:: with SMTP id l5mr50644561qti.63.1560290480260;
+        Tue, 11 Jun 2019 15:01:20 -0700 (PDT)
+Received: from localhost ([64.188.179.199])
+        by smtp.gmail.com with ESMTPSA id g5sm8812899qta.77.2019.06.11.15.01.19
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 14:59:42 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     grygorii.strashko@ti.com, davem@davemloft.net
-Cc:     linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH net-next] net: ethernet: ti: cpsw_ethtool: simplify slave loops
-Date:   Wed, 12 Jun 2019 00:59:40 +0300
-Message-Id: <20190611215940.32359-1-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        Tue, 11 Jun 2019 15:01:19 -0700 (PDT)
+Date:   Tue, 11 Jun 2019 16:01:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rocky Liao <rjliao@codeaurora.org>
+Cc:     mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com,
+        thierry.escande@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        bgodavar@codeaurora.org, c-hbandi@codeaurora.org
+Subject: Re: [PATCH v6 2/2] dt-bindings: net: bluetooth: Add device property
+ firmware-name for QCA6174
+Message-ID: <20190611220117.GA31601@bogus>
+References: <1557919203-11055-1-git-send-email-rjliao@codeaurora.org>
+ <1559814055-13872-1-git-send-email-rjliao@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1559814055-13872-1-git-send-email-rjliao@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only for consistency reasons, do it like in main cpsw.c module
-and use ndev reference but not by means of slave.
+On Thu, Jun 06, 2019 at 05:40:55PM +0800, Rocky Liao wrote:
+> This patch adds an optional device property "firmware-name" to allow the
+> driver to load customized nvm firmware file based on this property.
+> 
+> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
+> ---
+> Changes in v6:
+>   * Added read firmware-name property for both QCA6174 and WCN399X
+> ---
+>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
-
-Based on net-next/master
-
- drivers/net/ethernet/ti/cpsw_ethtool.c | 40 ++++++++++++++------------
- 1 file changed, 21 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
-index 6d1c9ebae7cc..86697b32194d 100644
---- a/drivers/net/ethernet/ti/cpsw_ethtool.c
-+++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
-@@ -458,7 +458,6 @@ int cpsw_nway_reset(struct net_device *ndev)
- static void cpsw_suspend_data_pass(struct net_device *ndev)
- {
- 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
--	struct cpsw_slave *slave;
- 	int i;
- 
- 	/* Disable NAPI scheduling */
-@@ -467,12 +466,13 @@ static void cpsw_suspend_data_pass(struct net_device *ndev)
- 	/* Stop all transmit queues for every network device.
- 	 * Disable re-using rx descriptors with dormant_on.
- 	 */
--	for (i = cpsw->data.slaves, slave = cpsw->slaves; i; i--, slave++) {
--		if (!(slave->ndev && netif_running(slave->ndev)))
-+	for (i = 0; i < cpsw->data.slaves; i++) {
-+		ndev = cpsw->slaves[i].ndev;
-+		if (!(ndev && netif_running(ndev)))
- 			continue;
- 
--		netif_tx_stop_all_queues(slave->ndev);
--		netif_dormant_on(slave->ndev);
-+		netif_tx_stop_all_queues(ndev);
-+		netif_dormant_on(ndev);
- 	}
- 
- 	/* Handle rest of tx packets and stop cpdma channels */
-@@ -483,13 +483,14 @@ static int cpsw_resume_data_pass(struct net_device *ndev)
- {
- 	struct cpsw_priv *priv = netdev_priv(ndev);
- 	struct cpsw_common *cpsw = priv->cpsw;
--	struct cpsw_slave *slave;
- 	int i, ret;
- 
- 	/* Allow rx packets handling */
--	for (i = cpsw->data.slaves, slave = cpsw->slaves; i; i--, slave++)
--		if (slave->ndev && netif_running(slave->ndev))
--			netif_dormant_off(slave->ndev);
-+	for (i = 0; i < cpsw->data.slaves; i++) {
-+		ndev = cpsw->slaves[i].ndev;
-+		if (ndev && netif_running(ndev))
-+			netif_dormant_off(ndev);
-+	}
- 
- 	/* After this receive is started */
- 	if (cpsw->usage_count) {
-@@ -502,9 +503,11 @@ static int cpsw_resume_data_pass(struct net_device *ndev)
- 	}
- 
- 	/* Resume transmit for every affected interface */
--	for (i = cpsw->data.slaves, slave = cpsw->slaves; i; i--, slave++)
--		if (slave->ndev && netif_running(slave->ndev))
--			netif_tx_start_all_queues(slave->ndev);
-+	for (i = 0; i < cpsw->data.slaves; i++) {
-+		ndev = cpsw->slaves[i].ndev;
-+		if (ndev && netif_running(ndev))
-+			netif_tx_start_all_queues(ndev);
-+	}
- 
- 	return 0;
- }
-@@ -587,7 +590,7 @@ int cpsw_set_channels_common(struct net_device *ndev,
- {
- 	struct cpsw_priv *priv = netdev_priv(ndev);
- 	struct cpsw_common *cpsw = priv->cpsw;
--	struct cpsw_slave *slave;
-+	struct net_device *sl_ndev;
- 	int i, ret;
- 
- 	ret = cpsw_check_ch_settings(cpsw, chs);
-@@ -604,20 +607,19 @@ int cpsw_set_channels_common(struct net_device *ndev,
- 	if (ret)
- 		goto err;
- 
--	for (i = cpsw->data.slaves, slave = cpsw->slaves; i; i--, slave++) {
--		if (!(slave->ndev && netif_running(slave->ndev)))
-+	for (i = 0; i < cpsw->data.slaves; i++) {
-+		sl_ndev = cpsw->slaves[i].ndev;
-+		if (!(sl_ndev && netif_running(sl_ndev)))
- 			continue;
- 
- 		/* Inform stack about new count of queues */
--		ret = netif_set_real_num_tx_queues(slave->ndev,
--						   cpsw->tx_ch_num);
-+		ret = netif_set_real_num_tx_queues(sl_ndev, cpsw->tx_ch_num);
- 		if (ret) {
- 			dev_err(priv->dev, "cannot set real number of tx queues\n");
- 			goto err;
- 		}
- 
--		ret = netif_set_real_num_rx_queues(slave->ndev,
--						   cpsw->rx_ch_num);
-+		ret = netif_set_real_num_rx_queues(sl_ndev, cpsw->rx_ch_num);
- 		if (ret) {
- 			dev_err(priv->dev, "cannot set real number of rx queues\n");
- 			goto err;
--- 
-2.17.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
