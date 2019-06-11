@@ -2,120 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFAE41727
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 527A14172F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407739AbfFKVtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:49:12 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:40277 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407170AbfFKVtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:49:11 -0400
-Received: by mail-lf1-f65.google.com with SMTP id a9so10452573lff.7
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:49:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=i6GhLaflHxtAwL6Ad6Dr/C5ELNhP+vqOwXCPihJeLM8=;
-        b=mF/ELEtx8NPOPG3GZNMj3xXssQs8CPSw6r9xXfmVWR6vI50hpVCFF8E++nxCQxBQty
-         w1mqcgctM/qAYXwueTcmLS9XTrg9obZ0X9Z327VRyQK40aEuuqUysUhpRYW8PawxNHNy
-         fzt9hcqJPCgMwkqup/JcNPCQt5Kq9clL6C7j6HhdRs+oH8OV2VgTQBC5eTjbGd/WN/tq
-         vjw2gTYLwvqmwZDH6qYhRzUcNvSHLV7aRINd+jsgUmp2DSI0V6XgOwjNKJ+rdsrTc/jQ
-         kLHDaBT3/z1E41YMfT7XPfdK57pKtlKK/9UsVkmWZgW0DRN9UIY4dQf5zKQv93moT2ZT
-         vAfA==
+        id S2407196AbfFKVwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:52:10 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36382 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407165AbfFKVwK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:52:10 -0400
+Received: by mail-qt1-f196.google.com with SMTP id p15so9051643qtl.3;
+        Tue, 11 Jun 2019 14:52:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=i6GhLaflHxtAwL6Ad6Dr/C5ELNhP+vqOwXCPihJeLM8=;
-        b=YSyVX6iRFl/mv8iOlCNpBcP0MX3r1TydIGSZnOtjy25118eyH4lrqu8fofmURGRo9z
-         hIREzaxa5SykaFGgzm9BiGrG+duEEW8I27Z6mkdSrf74PHV1KU7U0Xq1kB4sL6JA5HT4
-         UpV/fJmYDIpayMwtvp1i5hcKShqC4YX37RtPL9T6TUgNB0uxP433ip2pMPO05+EZKH0Q
-         tSnpEGEZU2Z/8ihm1y6QwIN6X0Orlmbopfo2DaqRYs7RR61tHfYkuhlZL2kfVAhqqkb6
-         4RRBtkFtH4C9GLPqbHySa0CI4F6PogWOk+u0uMZUz8R1MlrNRWwQJCXmWSJIkjT/VH5G
-         A48Q==
-X-Gm-Message-State: APjAAAVbE2BxtiqUVgMgjgylCQmrgwTgxe9lRx9ykvPQidEVQaNl4dUz
-        ZReTmH2hyLTR75IpIZ85ZqpKUw==
-X-Google-Smtp-Source: APXvYqw+qg4jwlO0JzvRQuQMV9ByejZJE+uZatTs0aps96wZ6LLBeiY1URuP4dn41RtClXDZDIa/dw==
-X-Received: by 2002:ac2:514b:: with SMTP id q11mr5226108lfd.33.1560289748726;
-        Tue, 11 Jun 2019 14:49:08 -0700 (PDT)
-Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id e26sm2787342ljl.33.2019.06.11.14.49.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3r12qJQBXAuvMT4EwoDNzavCtWYu4iRZchiufeeQkDA=;
+        b=N7kMZvLZcnBioe2//xcL1M1JtXeItOjpk+32oiPYYvkR1qcTd8UG3720klZffMZBVW
+         eyCbW5s0iv5N+NraXN/IN3BJxaIMxc5tD2DFHd2X8SHfKmssIE8hY2/48dLuk9AONPwl
+         +vQPd24NdiaUnvbfOJ1z0Mdu6wJRieu0Ae6ixAM/+cYB3EHfmA2DRG9U1P9K2kwiCObH
+         ZbUmt7uPESam5rwEesdww1EqU8q3NLU9UBJbijf6GSsd5H1gVveVzTj/Vxqj0H1UQA6p
+         +DneHyADuSaCtUPer4V7U3sk/Bj8h1IK8r+0Sn3r/PB1k0+cK+1DN9TjGyfHQRXOj5DX
+         xzOQ==
+X-Gm-Message-State: APjAAAUT3z3mCAFpflqGv0xig2ygoqF3bYTqnhEBuiVo1h0Q7rzpDE2A
+        MX7p6W7I272U4AFCh9nyone67ic=
+X-Google-Smtp-Source: APXvYqwYg7O90+eWMBJqzuTqXctWOHI40/oJ0GPlNFDUVF6CgMDfl7e03c/8RDgTcCt1Q9vjJvfAkA==
+X-Received: by 2002:a0c:b997:: with SMTP id v23mr62799346qvf.128.1560289929520;
+        Tue, 11 Jun 2019 14:52:09 -0700 (PDT)
+Received: from localhost ([64.188.179.199])
+        by smtp.gmail.com with ESMTPSA id j26sm8645067qtj.70.2019.06.11.14.52.08
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 14:49:08 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     grygorii.strashko@ti.com, davem@davemloft.net
-Cc:     linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH net-next] net: ethernet: ti: cpsw: use cpsw as drv data
-Date:   Wed, 12 Jun 2019 00:49:03 +0300
-Message-Id: <20190611214903.32146-1-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        Tue, 11 Jun 2019 14:52:09 -0700 (PDT)
+Date:   Tue, 11 Jun 2019 15:52:06 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     megous@megous.com
+Cc:     linux-sunxi@googlegroups.com,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Ondrej Jirman <megous@megous.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v6 4/6] dt-bindings: display: hdmi-connector: Support DDC
+ bus enable
+Message-ID: <20190611215206.GA17759@bogus>
+References: <20190527162237.18495-1-megous@megous.com>
+ <20190527162237.18495-5-megous@megous.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190527162237.18495-5-megous@megous.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need to set ndev for drvdata when mainly cpsw reference is needed,
-so correct this legacy decision.
+On Mon, 27 May 2019 18:22:35 +0200, megous@megous.com wrote:
+> From: Ondrej Jirman <megous@megous.com>
+> 
+> Some Allwinner SoC using boards (Orange Pi 3 for example) need to enable
+> on-board voltage shifting logic for the DDC bus using a gpio to be able
+> to access DDC bus. Use ddc-en-gpios property on the hdmi-connector to
+> model this.
+> 
+> Add binding documentation for optional ddc-en-gpios property.
+> 
+> Signed-off-by: Ondrej Jirman <megous@megous.com>
+> ---
+>  .../devicetree/bindings/display/connector/hdmi-connector.txt     | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
+Please add Acked-by/Reviewed-by tags when posting new versions. However,
+there's no need to repost patches *only* to add the tags. The upstream
+maintainer will do that for acks received on the version they apply.
 
-Based on net-next/master
-
- drivers/net/ethernet/ti/cpsw.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 6d3f1f3f90cb..3430503e1053 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -2265,8 +2265,7 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
- 
- static void cpsw_remove_dt(struct platform_device *pdev)
- {
--	struct net_device *ndev = platform_get_drvdata(pdev);
--	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
-+	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
- 	struct cpsw_platform_data *data = &cpsw->data;
- 	struct device_node *node = pdev->dev.of_node;
- 	struct device_node *slave_node;
-@@ -2477,7 +2476,7 @@ static int cpsw_probe(struct platform_device *pdev)
- 		goto clean_cpts;
- 	}
- 
--	platform_set_drvdata(pdev, ndev);
-+	platform_set_drvdata(pdev, cpsw);
- 	priv = netdev_priv(ndev);
- 	priv->cpsw = cpsw;
- 	priv->ndev = ndev;
-@@ -2570,9 +2569,8 @@ static int cpsw_probe(struct platform_device *pdev)
- 
- static int cpsw_remove(struct platform_device *pdev)
- {
--	struct net_device *ndev = platform_get_drvdata(pdev);
--	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
--	int ret;
-+	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
-+	int i, ret;
- 
- 	ret = pm_runtime_get_sync(&pdev->dev);
- 	if (ret < 0) {
-@@ -2580,9 +2578,9 @@ static int cpsw_remove(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	if (cpsw->data.dual_emac)
--		unregister_netdev(cpsw->slaves[1].ndev);
--	unregister_netdev(ndev);
-+	for (i = 0; i < cpsw->data.slaves; i++)
-+		if (cpsw->slaves[i].ndev)
-+			unregister_netdev(cpsw->slaves[i].ndev);
- 
- 	cpts_release(cpsw->cpts);
- 	cpdma_ctlr_destroy(cpsw->dma);
--- 
-2.17.1
-
+If a tag was not added on purpose, please state why and what changed.
