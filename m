@@ -2,200 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0846D3C0BA
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:57:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 060E73C0C4
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 03:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389836AbfFKA45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 20:56:57 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52614 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388845AbfFKA44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:56:56 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5B0j9TZ024424
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:56:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=LivXNz16vzgUNvqfPpK+qDX89wmtrxuhnSP3Wutt4S0=;
- b=W1XOtyvXD2krByB1/ygXd1jz1Wj11lUU+EBeWo9p3lq/MbI6N3lrhAW6A6Aq+uWsRe3k
- KHHPuA8OnhDaWwiqRgyNco+AingwPpIkMCktRqCfLBVb2nW09xVSWFOIoLVklZ4I95nq
- Tu2+khL0csNAQ7zZjBCcL6alZinD5F6L+3U= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t1s632c9m-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:56:55 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 10 Jun 2019 17:56:54 -0700
-Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
-        id A49ABD0D72E6; Mon, 10 Jun 2019 17:56:53 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Hechao Li <hechaol@fb.com>
-Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>, <ast@kernel.org>,
-        <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v6 bpf-next 3/3] bpf: use libbpf_num_possible_cpus internally
-Date:   Mon, 10 Jun 2019 17:56:52 -0700
-Message-ID: <20190611005652.3827331-4-hechaol@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190611005652.3827331-1-hechaol@fb.com>
-References: <20190611005652.3827331-1-hechaol@fb.com>
-X-FB-Internal: Safe
+        id S2390088AbfFKBGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 21:06:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46912 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388845AbfFKBGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jun 2019 21:06:17 -0400
+Received: from gmail.com (unknown [104.132.1.77])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E3ED120652;
+        Tue, 11 Jun 2019 01:06:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560215175;
+        bh=H0wYscaX4spAKhGwci+faRMeUtvVux/Cx2QS70lGKnE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rEyFSdOSUyrnB/z7NmdFYurOWXuJ7MHD7xEX757FtCUPczPNs+aDBKovF9B3zz15z
+         e19Evp6mG8ida9dvAJ97iPzj206qBUt7s3S0nFJbzq112/aUhMubeTZk92l6Wxh0+I
+         fyT18NKDuKkZS5mTQVTw65KE7HYmk3GV4pkFuRcQ=
+Date:   Mon, 10 Jun 2019 18:06:13 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     syzbot <syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com>
+Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        horms@verge.net.au, ja@ssi.bg, kadlec@blackhole.kfki.hu,
+        linux-kernel@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        wensong@linux-vs.org
+Subject: Re: memory leak in start_sync_thread
+Message-ID: <20190611010612.GD220379@gmail.com>
+References: <0000000000006d7e520589f6d3a9@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-10_10:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=699 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906110003
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000006d7e520589f6d3a9@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the newly added bpf_num_possible_cpus() in bpftool and selftests
-and remove duplicate implementations.
+On Tue, May 28, 2019 at 11:28:05AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    cd6c84d8 Linux 5.2-rc2
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=132bd44aa00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7e2e50c8adfccd2e5041
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=114b1354a00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b7ad26a00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com
+> 
+> d started: state = MASTER, mcast_ifn = syz_tun, syncid = 0, id = 0
+> BUG: memory leak
+> unreferenced object 0xffff8881206bf700 (size 32):
+>   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 20.470s)
+>   hex dump (first 32 bytes):
+>     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<0000000057619e23>] kmemleak_alloc_recursive
+> include/linux/kmemleak.h:55 [inline]
+>     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
+>     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
+>     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+>     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
+>     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10
+> net/netfilter/ipvs/ip_vs_sync.c:1862
+>     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780
+> net/netfilter/ipvs/ip_vs_ctl.c:2402
+>     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
+>     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80
+> net/netfilter/nf_sockopt.c:115
+>     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
+>     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
+>     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
+>     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50
+> net/core/sock.c:3130
+>     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
+>     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
+>     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
+>     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
+>     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0
+> arch/x86/entry/common.c:301
+>     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
 
-Signed-off-by: Hechao Li <hechaol@fb.com>
----
- tools/bpf/bpftool/common.c             | 53 +++-----------------------
- tools/testing/selftests/bpf/bpf_util.h | 37 +++---------------
- 2 files changed, 10 insertions(+), 80 deletions(-)
+The bug is that ownership of some memory is passed to a kthread started by
+kthread_run(), but the kthread can be stopped before it actually executes the
+threadfn.  See the code in kernel/kthread.c:
 
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index f7261fad45c1..5215e0870bcb 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -21,6 +21,7 @@
- #include <sys/vfs.h>
- 
- #include <bpf.h>
-+#include <libbpf.h> /* libbpf_num_possible_cpus */
- 
- #include "main.h"
- 
-@@ -439,57 +440,13 @@ unsigned int get_page_size(void)
- 
- unsigned int get_possible_cpus(void)
- {
--	static unsigned int result;
--	char buf[128];
--	long int n;
--	char *ptr;
--	int fd;
--
--	if (result)
--		return result;
--
--	fd = open("/sys/devices/system/cpu/possible", O_RDONLY);
--	if (fd < 0) {
--		p_err("can't open sysfs possible cpus");
--		exit(-1);
--	}
--
--	n = read(fd, buf, sizeof(buf));
--	if (n < 2) {
--		p_err("can't read sysfs possible cpus");
--		exit(-1);
--	}
--	close(fd);
-+	int cpus = libbpf_num_possible_cpus();
- 
--	if (n == sizeof(buf)) {
--		p_err("read sysfs possible cpus overflow");
-+	if (cpus < 0) {
-+		p_err("Can't get # of possible cpus: %s", strerror(-cpus));
- 		exit(-1);
- 	}
--
--	ptr = buf;
--	n = 0;
--	while (*ptr && *ptr != '\n') {
--		unsigned int a, b;
--
--		if (sscanf(ptr, "%u-%u", &a, &b) == 2) {
--			n += b - a + 1;
--
--			ptr = strchr(ptr, '-') + 1;
--		} else if (sscanf(ptr, "%u", &a) == 1) {
--			n++;
--		} else {
--			assert(0);
--		}
--
--		while (isdigit(*ptr))
--			ptr++;
--		if (*ptr == ',')
--			ptr++;
--	}
--
--	result = n;
--
--	return result;
-+	return cpus;
- }
- 
- static char *
-diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
-index a29206ebbd13..ec219f84e041 100644
---- a/tools/testing/selftests/bpf/bpf_util.h
-+++ b/tools/testing/selftests/bpf/bpf_util.h
-@@ -6,44 +6,17 @@
- #include <stdlib.h>
- #include <string.h>
- #include <errno.h>
-+#include <libbpf.h> /* libbpf_num_possible_cpus */
- 
- static inline unsigned int bpf_num_possible_cpus(void)
- {
--	static const char *fcpu = "/sys/devices/system/cpu/possible";
--	unsigned int start, end, possible_cpus = 0;
--	char buff[128];
--	FILE *fp;
--	int len, n, i, j = 0;
-+	int possible_cpus = libbpf_num_possible_cpus();
- 
--	fp = fopen(fcpu, "r");
--	if (!fp) {
--		printf("Failed to open %s: '%s'!\n", fcpu, strerror(errno));
-+	if (possible_cpus < 0) {
-+		printf("Failed to get # of possible cpus: '%s'!\n",
-+		       strerror(-possible_cpus));
- 		exit(1);
- 	}
--
--	if (!fgets(buff, sizeof(buff), fp)) {
--		printf("Failed to read %s!\n", fcpu);
--		exit(1);
--	}
--
--	len = strlen(buff);
--	for (i = 0; i <= len; i++) {
--		if (buff[i] == ',' || buff[i] == '\0') {
--			buff[i] = '\0';
--			n = sscanf(&buff[j], "%u-%u", &start, &end);
--			if (n <= 0) {
--				printf("Failed to retrieve # possible CPUs!\n");
--				exit(1);
--			} else if (n == 1) {
--				end = start;
--			}
--			possible_cpus += end - start + 1;
--			j = i + 1;
--		}
--	}
--
--	fclose(fp);
--
- 	return possible_cpus;
- }
- 
--- 
-2.17.1
+        ret = -EINTR;
+        if (!test_bit(KTHREAD_SHOULD_STOP, &self->flags)) {
+                cgroup_kthread_ready();
+                __kthread_parkme(self);
+                ret = threadfn(data);
+        }
 
+So, apparently the thread parameters must always be owned by the owner of the
+kthread, not by the kthread itself.  It seems like this would be a common
+mistake in kernel code; I'm surprised this doesn't come up more...
+
+- Eric
