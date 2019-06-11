@@ -2,108 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60729416A0
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37E9416A4
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407465AbfFKVJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:09:09 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40595 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406793AbfFKVJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:09:09 -0400
-Received: by mail-pg1-f195.google.com with SMTP id d30so7637601pgm.7
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:09:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uED7J3lKedIyzESAC/9YUIXNaBqTZXdB+UJJLBkB9p0=;
-        b=QMfjCX8h83N9YQvpKn0oXyzWv37gSObF83CxPwA5n1mOVeZb/bysbNkJ7N2QV+wNMh
-         IqMIhrpa1HURvZ1igmN6Te1CR6/QUtKTgAq4gYg0bvZ89KlUt93nUGU8Jk+n8fL/KDtX
-         9Kva/VS+Vlg9/Nk0UTbXBsGKPyejdCLGwbeb6Q76C0BpEeK1TWqfAL4NKYd2aY2jaQo3
-         GXqhAseZFssx1JIp4a48PSS2IsEUCRv0ydvfB+86WI81/05KDjEdp9mj/wQ4h7Ufb3hA
-         H0/B25WlsmHldeyfLcYKm5URSAcnwnv5ZUgvWV5tOJ2uYpftUdUBOXDKor7Atx9Edr1d
-         7z0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uED7J3lKedIyzESAC/9YUIXNaBqTZXdB+UJJLBkB9p0=;
-        b=iAJjzsB919I/VLIrE/2Ct8JvnXY5MOwviSu7/ePtMxYHgQ1LwPKB3m67kPbsgZmeeR
-         ElPJvdUOM/kn1sULjzWSvHZBLERdOlWY+7CzCADQ+zYABUkpC76LkWTHtyCDt5MzRlko
-         IBFOdIpcvcb8EQHXHQdSkHtcPYZsbTaFX8lIwkclGYCrORXLMQaA5eNtK7VOkq9OvcWI
-         xtvd4uYdV6kxbhxuFE5CeHBxbrxFh4BsQ2oSee6U3EzUrCgnhygIaeAjkI1dvApQw5pB
-         H7YM6RTWl0EGRNBaDPbWheZtuxi3PPu+NlrMBAYR+J+H2X5CoXhYoM7MwwLTp7EGsocY
-         zAxQ==
-X-Gm-Message-State: APjAAAWYUyimYzFttWU7Tl8dC3AJ6WqoGRInLCj/ea31wgQd0s6j4OBg
-        15S7iMHQR+hceDes/Qp9vLAuzgPuceI=
-X-Google-Smtp-Source: APXvYqyCRsUJo8WhjtN8tk3eG2UHMFpH4cCDhvvvDMSLyK9WK1en0eG7zcs2DtnMqFIA+XY1/MOfxA==
-X-Received: by 2002:a17:90a:ba93:: with SMTP id t19mr19557304pjr.139.1560287348230;
-        Tue, 11 Jun 2019 14:09:08 -0700 (PDT)
-Received: from [172.27.227.165] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id d7sm17565441pfn.89.2019.06.11.14.09.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 14:09:07 -0700 (PDT)
-Subject: Re: [PATCH net v3 0/2] ipv6: Fix listing and flushing of cached route
- exceptions
-To:     Martin Lau <kafai@fb.com>, Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <cover.1560016091.git.sbrivio@redhat.com>
- <37a62d04-0285-f6de-84b5-e1592c31a913@gmail.com>
- <20190610235315.46faca79@redhat.com> <20190611004758.1e302288@redhat.com>
- <20190611201946.tokf7su5hlxyrlhs@kafai-mbp.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <956e4bc4-c916-c069-cd5d-b8f4b309a437@gmail.com>
-Date:   Tue, 11 Jun 2019 15:09:05 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190611201946.tokf7su5hlxyrlhs@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S2436517AbfFKVJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:09:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60886 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406960AbfFKVJK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 17:09:10 -0400
+Received: from akpm3.svl.corp.google.com (unknown [104.133.8.65])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 542412080A;
+        Tue, 11 Jun 2019 21:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560287348;
+        bh=qmpEoNXO99XPF9xd/5iv2nDwyZYxG+9HqzTYNPT4KTw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EzYSNQ5VopjCkhJxjwzVG+3NUfKcn1X9cU/Ns4PV5yZIsnow5MRHYB73/Tl3T81K/
+         SbRRApw7C7MWKpiNZqE5wCHVmQlPPOHtSxjsrM3RebqPsIl/mcOR/W6a0jpkC0UwOz
+         rSPkBbLzTQO7F5VSs5bcQHmoWK/bst5kRMcBgC7c=
+Date:   Tue, 11 Jun 2019 14:09:07 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Andreas Dilger <adilger@dilger.ca>
+Cc:     Shyam Saini <shyam.saini@amarulasolutions.com>,
+        kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org,
+        keescook@chromium.org, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-ext4 <linux-ext4@vger.kernel.org>,
+        devel@lists.orangefs.org, linux-mm@kvack.org,
+        linux-sctp@vger.kernel.org, bpf@vger.kernel.org,
+        kvm@vger.kernel.org, mayhs11saini@gmail.com,
+        Alexey Dobriyan <adobriyan@gmail.com>
+Subject: Re: [PATCH V2] include: linux: Regularise the use of FIELD_SIZEOF
+ macro
+Message-Id: <20190611140907.899bebb12a3d731da24a9ad1@linux-foundation.org>
+In-Reply-To: <6DCAE4F8-3BEC-45F2-A733-F4D15850B7F3@dilger.ca>
+References: <20190611193836.2772-1-shyam.saini@amarulasolutions.com>
+        <20190611134831.a60c11f4b691d14d04a87e29@linux-foundation.org>
+        <6DCAE4F8-3BEC-45F2-A733-F4D15850B7F3@dilger.ca>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/11/19 2:19 PM, Martin Lau wrote:
-> On Tue, Jun 11, 2019 at 12:47:58AM +0200, Stefano Brivio wrote:
->> On Mon, 10 Jun 2019 23:53:15 +0200
->> Stefano Brivio <sbrivio@redhat.com> wrote:
->>
->>> On Mon, 10 Jun 2019 15:38:06 -0600
->>> David Ahern <dsahern@gmail.com> wrote:
->>>
->>>> in dot releases of stable trees, I think it would be better to converge
->>>> on consistent behavior between v4 and v6. By that I mean without the
->>>> CLONED flag, no exceptions are returned (default FIB dump). With the
->>>> CLONED flag only exceptions are returned.  
->>>
->>> Again, this needs a change in iproute2, because RTM_F_CLONED is *not*
->>> passed on 'flush'. And sure, let's *also* do that, but not everybody
->>> runs recent versions of iproute2.
->>
->> One thing that sounds a bit more acceptable to me is:
->>
->> - dump (in IPv4 and IPv6):
->>   - regular routes only, if !RTM_F_CLONED and NLM_F_MATCH
->>   - exceptions only, if RTM_F_CLONED and NLM_F_MATCH
-> That seems reasonable since DavidAhern pointed out iproute2 already has
-> #define NLM_F_DUMP      (NLM_F_ROOT|NLM_F_MATCH)
-> 
->>   - everything if !NLM_F_MATCH
-> I am not sure how may the kernel change looks like.  At least I don't
-> see the current ipv6/route.c or ipv6/ip6_fib.c is handling
-> nlmsg_flags.  I would defer to DavidAhern for comment.
+On Tue, 11 Jun 2019 15:00:10 -0600 Andreas Dilger <adilger@dilger.ca> wrote:
 
-We might be battling change histories in 2 different code bases. We
-should compare behaviors of kernel and iproute2 for 4.14 (pre-change),
-4.15 (change), 4.19 (LTS), 5.0 (strict checking) and 5.2 and then look
-at what the proposed kernel change does with the various iproute2 versions.
+> >> to FIELD_SIZEOF
+> > 
+> > As Alexey has pointed out, C structs and unions don't have fields -
+> > they have members.  So this is an opportunity to switch everything to
+> > a new member_sizeof().
+> > 
+> > What do people think of that and how does this impact the patch footprint?
+> 
+> I did a check, and FIELD_SIZEOF() is used about 350x, while sizeof_field()
+> is about 30x, and SIZEOF_FIELD() is only about 5x.
+
+Erk.  Sorry, I should have grepped.
+
+> That said, I'm much more in favour of "sizeof_field()" or "sizeof_member()"
+> than FIELD_SIZEOF().  Not only does that better match "offsetof()", with
+> which it is closely related, but is also closer to the original "sizeof()".
+> 
+> Since this is a rather trivial change, it can be split into a number of
+> patches to get approval/landing via subsystem maintainers, and there is no
+> huge urgency to remove the original macros until the users are gone.  It
+> would make sense to remove SIZEOF_FIELD() and sizeof_field() quickly so
+> they don't gain more users, and the remaining FIELD_SIZEOF() users can be
+> whittled away as the patches come through the maintainer trees.
+
+In that case I'd say let's live with FIELD_SIZEOF() and remove
+sizeof_field() and SIZEOF_FIELD().
+
+I'm a bit surprised that the FIELD_SIZEOF() definition ends up in
+stddef.h rather than in kernel.h where such things are normally
+defined.  Why is that?
 
