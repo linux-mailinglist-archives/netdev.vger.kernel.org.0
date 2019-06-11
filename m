@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC219418B2
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130B6418E2
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407953AbfFKXKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 19:10:49 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42106 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404483AbfFKXKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:10:48 -0400
-Received: by mail-pl1-f194.google.com with SMTP id go2so5737674plb.9;
-        Tue, 11 Jun 2019 16:10:48 -0700 (PDT)
+        id S2408107AbfFKX17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 19:27:59 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46930 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404692AbfFKX16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:27:58 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n4so14776810wrw.13
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 16:27:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=gOxpWt9450U9U7mtd5KrPlNhq9GnPsRQiRJlY6U4l00=;
-        b=fuetTGBKfhw9/3oHfiA01aA8ZjdhPmoy63MXWRVOpBEmfnoPOBp6VbMiW6oTgNLw3n
-         8NTVq76YGIWIEsCJWUmgxoBGXTLpv3SCg+T+t31Mll7Hhf4n8MnHNPNmrRPt5PrXh+OV
-         xEeRD7efc183++D/BVxkWtwRB+qEhn3seqVrbgk6MIaDjpZaEdI/IxyvDKqSBOz+TV1O
-         OZV8kO/s2jDoRfvBR+OYWzmh1Rt+Zs5+ZEqaepsQrrGYJ8n79aDNMRizc8HECcn5StWW
-         Po2GSqAkDoyiKwtVDTO12diZqwhqwrCI964OVhY7I3RgryEVM+dj0LnjHyhVJhEzO2Lh
-         nHHg==
+        bh=rhGOTsIRjma82lR9hgcwIBuPREH7Y2gvfF3jNKJe9WI=;
+        b=iFsKyowMm53e2eFD33zYjnWHoLE4G1oLqca2QrQrtl+4Ojxr1CIvWR+2iDYMJ5PMn+
+         Oq0doctNOeAkKfAO4Ld8E5HCXpZjY35k6LqRha7rjRwe1nzyRvITuoftOAnCU3aiqyah
+         YHvx/Dk9Qx5Lq0VXDkWYnOjCuDPLptTqxx5dSRUMdtFJeSarBiv7J9L/sl/biR/fwxnP
+         FJFWsiTm+M+d4hoWPEqQQ6JMyaslzlDAuwq2iuFCOHEG2tAFcOwr1j33dX+AmIoJHNX7
+         Qs01uo+cUeZa6PSjyVJPZYne2+vTfFXMntW5eqFOvtGTTzpGdtAlR0qTqcKgnu0SwTI/
+         vAcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=gOxpWt9450U9U7mtd5KrPlNhq9GnPsRQiRJlY6U4l00=;
-        b=FSJnucS9yMOrJZWRBMWUesDF0mBkgO7KxC2cFlVHpT2LtvxaiB7mNET0mo6a1NuG/g
-         SJ/86nKOldECSx93HOH9JP9+yAu+MPrdNN0NHzifwS8nE6OHQRzu4byFXyqgfF8Zqz7e
-         gCM+uMo13/7POyWkL1kwr8SAcRZeNBzp7dh3BaNghJUQpkZ1qpYERt6Ivm5Hi9qjW3+g
-         BjoFqK1VQQ+n8N/Xxh7GSgHyMuXhZX6EWap3taaag4KuGyyrCEBDMlpdQ/jE7ECnn2zp
-         rNkG2XB9l4JVrB8GjtRi1WbKbyrpS+NHU0qkj8MyKE5QvXKlgfr5PsAQsX6OVqCZnYTq
-         WBkg==
-X-Gm-Message-State: APjAAAVm4nlFkgHpEKlC/mn3VPd68rfz8ApxoB8ogih06Z1h/vqPjcXl
-        Y9qs5bmOOYI/PqpUeylW2+0=
-X-Google-Smtp-Source: APXvYqxUdk1S9SAThdril7xUBLfV5wwbAJN5cCNdmOKkFf03KYpf0V5DOctMIVmOqbdxa97ihDSxIw==
-X-Received: by 2002:a17:902:76c6:: with SMTP id j6mr53478342plt.263.1560294647815;
-        Tue, 11 Jun 2019 16:10:47 -0700 (PDT)
+        bh=rhGOTsIRjma82lR9hgcwIBuPREH7Y2gvfF3jNKJe9WI=;
+        b=oLaqAOHBIpZeVZsF8p6LEQbSDAbvadVMfYAwQCrw6t5eb4vLGLtxUAJ6k/NQZWS0ax
+         uEga8oISGSp0rnAsUzs2NxlPNBwfLwSYBQ7aWm55tXZl/ZwU1u8o3epp1ngfs3k7Ci5K
+         WWRe/Et0V6Gry8s483/8yAO62htNXdpL11dOPELk/+YbamWslAm4Fl7XaVjN7g2oglul
+         1yFRrI787ADHgjIahgOhFQBqoq6So54Q5E0UNexIqvo8wma8dL76mDmBWOPtBngIBlHg
+         xKb7b5ff+QEdLYsDV7ab6SqVI5LhLAqBUOQe9PCQmCWMxQi1s5bhPSuMH25egXL4EpRP
+         SZow==
+X-Gm-Message-State: APjAAAUMlte2zFGAx7ZR9tUu8IN3VBoko62ohutGa1QquCYrcn56ST2q
+        Cpbz/miLnc4NAEOU43vyPUs=
+X-Google-Smtp-Source: APXvYqyJu2yUb4StXTHwHxUhO0zneg6qqf+0i3W6P5TwDv7AMm8RyDENUvQsmD5j8KTuufJtc6UIMA==
+X-Received: by 2002:a5d:4941:: with SMTP id r1mr42842227wrs.225.1560295675949;
+        Tue, 11 Jun 2019 16:27:55 -0700 (PDT)
 Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id n2sm18998974pgp.27.2019.06.11.16.10.46
+        by smtp.googlemail.com with ESMTPSA id s10sm4021587wmf.8.2019.06.11.16.27.54
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 16:10:46 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/4] net: dsa: use switchdev handle helpers
-To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch
-References: <20190611214747.22285-1-vivien.didelot@gmail.com>
- <20190611214747.22285-5-vivien.didelot@gmail.com>
+        Tue, 11 Jun 2019 16:27:55 -0700 (PDT)
+Subject: Re: net-next: KSZ switch driver oops in ksz_mib_read_work
+To:     Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
+References: <6dc8cc46-6225-011c-68bc-c96a819fa00d@sedsystems.ca>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +106,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <51fe4433-89fc-2090-1a3c-3405ed7a8cc5@gmail.com>
-Date:   Tue, 11 Jun 2019 16:10:45 -0700
+Message-ID: <3f8ee5e5-9996-dd74-807a-a4b24cd9ee4c@gmail.com>
+Date:   Tue, 11 Jun 2019 16:27:47 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190611214747.22285-5-vivien.didelot@gmail.com>
+In-Reply-To: <6dc8cc46-6225-011c-68bc-c96a819fa00d@sedsystems.ca>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,20 +120,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/11/19 2:47 PM, Vivien Didelot wrote:
-> Get rid of the dsa_slave_switchdev_port_{attr_set,obj}_event functions
-> in favor of the switchdev_handle_port_{attr_set,obj_add,obj_del}
-> helpers which recurse into the lower devices of the target interface.
+On 6/11/19 10:57 AM, Robert Hancock wrote:
+> We are using an embedded platform with a KSZ9897 switch. I am getting
+> the oops below in ksz_mib_read_work when testing with net-next branch.
+> After adding in some debug output, the problem is in this code:
 > 
-> This has the benefit of being aware of the operations made on the
-> bridge device itself, where orig_dev is the bridge, and dev is the
-> slave. This can be used later to configure bridge-wide attributes on
-> the hardware switches.
+> 	for (i = 0; i < dev->mib_port_cnt; i++) {
+> 		p = &dev->ports[i];
+> 		mib = &p->mib;
+> 		mutex_lock(&mib->cnt_mutex);
 > 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> 		/* Only read MIB counters when the port is told to do.
+> 		 * If not, read only dropped counters when link is not up.
+> 		 */
+> 		if (!p->read) {
+> 			const struct dsa_port *dp = dsa_to_port(dev->ds, i);
+> 
+> 			if (!netif_carrier_ok(dp->slave))
+> 				mib->cnt_ptr = dev->reg_mib_cnt;
+> 		}
+> 
+> The oops is happening on port index 3 (i.e. 4th port) which is not
+> connected on our platform and so has no entry in the device tree. For
+> that port, dp->slave is NULL and so netif_carrier_ok explodes.
+> 
+> If I change the code to skip the port entirely in the loop if dp->slave
+> is NULL it seems to fix the crash, but I'm not that familiar with this
+> code. Can someone confirm whether that is the proper fix?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Yes, the following should do it, if you confirm that is the case, I can
+send that later with your Tested-by.
 
-Nice cleanup, thanks!
+diff --git a/drivers/net/dsa/microchip/ksz_common.c
+b/drivers/net/dsa/microchip/ksz_common.c
+index 39dace8e3512..5470b28332cf 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -93,6 +93,9 @@ static void ksz_mib_read_work(struct work_struct *work)
+                if (!p->read) {
+                        const struct dsa_port *dp = dsa_to_port(dev->ds, i);
+
++                       if (dsa_is_unused_port(dp))
++                               continue;
++
+                        if (!netif_carrier_ok(dp->slave))
+                                mib->cnt_ptr = dev->reg_mib_cnt;
+                }
+
+
+> 
+> [   17.842829] Unable to handle kernel NULL pointer dereference at
+> virtual address 0000002c
+> [   17.850983] pgd = (ptrval)
+> [   17.853711] [0000002c] *pgd=00000000
+> [   17.857317] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+> [   17.862632] Modules linked in:
+> [   17.865695] CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.2.0-rc3 #1
+> [   17.872142] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+> [   17.878688] Workqueue: events ksz_mib_read_work
+> [   17.883227] PC is at ksz_mib_read_work+0x58/0x94
+> [   17.887848] LR is at ksz_mib_read_work+0x38/0x94
+> [   17.887852] pc : [<c04843dc>]    lr : [<c04843bc>]    psr: 60070113
+> [   17.887857] sp : e8147f08  ip : e8148000  fp : ffffe000
+> [   17.887860] r10: 00000000  r9 : e8aa7040  r8 : e867cc44
+> [   17.887865] r7 : 00000c20  r6 : e8aa7120  r5 : 00000003  r4 : e867c958
+> [   17.887868] r3 : 00000000  r2 : 00000000  r1 : 00000003  r0 : e8aa7040
+> [   17.887879] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM
+> Segment none
+> [   17.948224] Control: 10c5387d  Table: 38d9404a  DAC: 00000051
+> [   17.948230] Process kworker/1:1 (pid: 21, stack limit = 0x(ptrval))
+> [   17.948236] Stack: (0xe8147f08 to 0xe8148000)
+> [   17.948245] 7f00:                   e8aa7120 e80a8080 eb7aef40
+> eb7b2000 00000000 e8aa7124
+> [   17.948254] 7f20: 00000000 c013865c 00000008 c0b03d00 e80a8080
+> e80a8094 eb7aef40 00000008
+> [   17.958073] systemd[1]: storage.mount: Unit is bound to inactive unit
+> dev-mmcblk1p2.device. Stopping, too.
+> [   17.963306] 7f40: c0b03d00 eb7aef58 eb7aef40 c01393a0 ffffe000
+> c0b46b09 c084e464 00000000
+> [   17.963314] 7f60: ffffe000 e8053140 e80530c0 00000000 e8146000
+> e80a8080 c013935c e80a1eac
+> [   17.963322] 7f80: e805315c c013e78c 00000000 e80530c0 c013e648
+> 00000000 00000000 00000000
+> [   17.969893] random: systemd: uninitialized urandom read (16 bytes read)
+> [   17.973942] 7fa0: 00000000 00000000 00000000 c01010e8 00000000
+> 00000000 00000000 00000000
+> [   17.973949] 7fc0: 00000000 00000000 00000000 00000000 00000000
+> 00000000 00000000 00000000
+> [   17.973958] 7fe0: 00000000 00000000 00000000 00000000 00000013
+> 00000000 00000000 00000000
+> [   17.982246] random: systemd: uninitialized urandom read (16 bytes read)
+> [   17.990329] [<c04843dc>] (ksz_mib_read_work) from [<c013865c>]
+> (process_one_work+0x17c/0x390)
+> [   17.990345] [<c013865c>] (process_one_work) from [<c01393a0>]
+> (worker_thread+0x44/0x518)
+> [   18.009394] random: systemd: uninitialized urandom read (16 bytes read)
+> [   18.016344] [<c01393a0>] (worker_thread) from [<c013e78c>]
+> (kthread+0x144/0x14c)
+> [   18.016358] [<c013e78c>] (kthread) from [<c01010e8>]
+> (ret_from_fork+0x14/0x2c)
+> [   18.016362] Exception stack(0xe8147fb0 to 0xe8147ff8)
+> [   18.016369] 7fa0:                                     00000000
+> 00000000 00000000 00000000
+> [   18.031159] 7fc0: 00000000 00000000 00000000 00000000 00000000
+> 00000000 00000000 00000000
+> [   18.031166] 7fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [   18.031176] Code: 1a000006 e51630e0 e0833405 e5933050 (e593302c)
+> [   18.031279] ---[ end trace ca82392a6c2aa959 ]---
+> 
+> 
+
+
 -- 
 Florian
