@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 862F33C276
+	by mail.lfdr.de (Postfix) with ESMTP id EF2603C277
 	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 06:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391162AbfFKElI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 00:41:08 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38363 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391149AbfFKElH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 00:41:07 -0400
-Received: by mail-qt1-f194.google.com with SMTP id n11so10886828qtl.5
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 21:41:06 -0700 (PDT)
+        id S2391167AbfFKElK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 00:41:10 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33386 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391159AbfFKElJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 00:41:09 -0400
+Received: by mail-qt1-f196.google.com with SMTP id x2so12124409qtr.0
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 21:41:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i2Es2bp1InNBsyyW+vpY1dcrkyzi/FbyyM6ZyJogAQ8=;
-        b=XWOlkCRvvG2zDdnWaPTmyx/dSVqSyIVZMuS1fMMAm/O+j+IasFWCtLYnQBE88fhwaZ
-         cOMkNC1pzErZpCCdU2Pk4Poeyfwtb4Ob/GMjTMHGzpkIQf9oLm5hzAjeVPxroIGhmvmh
-         Umyawoszkp67j4pLLjGiawRDtVLkJl6yqoqW0TODDhjQkjOCwloR8p2s0nNu/CghuLTv
-         kA++tEx4wsnAZ48wCysPmBaEyroar6UUDCvxfjSFjfPHgMLRQtxkQ86eidbCV93Qd+LR
-         +FVJVeCZpq7aHDa75VyqbqojxeMb1fh7qFJsfAcGUmsafRJaY/hIGyAQJueQYxrMC37A
-         yWJg==
+        bh=5mJrVl5LEivf48aN+6BHzooJFvRIjVE4iPwXmOBy/Ek=;
+        b=Nj3cmHfvRhTSOgc6iFQX37ygFI6A4uhoK9KH3ezJiC2BISN0AuFUROQX472biBeYyH
+         /nc5bF1zlwpyDeeTvAA+NlCCU5qs6uSQX0PLgQxfwtG7quw8alooAns+28ZVCCbpNNyh
+         i02pkGCScqOjp3ycbn497bjW6PUrVvMtm7+xYDzQhrfz1qbD2dSvjgpUisAaR1CbSUrl
+         rBidK767/uQ3NpZHcioUiTbnIT49Lq9fzL5EesncBmW3toOtQij+zHazWsWoC9aeMCrV
+         rO+uyEwW9jrwPwjiMp49b62nw24GlbNhhFbD510U2Lgo6paCtaGT5L5Egpvzj1ug8a4q
+         MCAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i2Es2bp1InNBsyyW+vpY1dcrkyzi/FbyyM6ZyJogAQ8=;
-        b=WSa75vTUV7vszEcOfCCVp39XuHjSJ5OW/U908PXQYB0EDKqoPHaVIcIFrfZwa8T3eg
-         CtMWrDLH4GiTN0FW+BOl9TofzNXx/8fjc2nIEbpMiSr2l9pi9Z82FxdV3JqUV67RNuUv
-         ulflSumUp6nphjK8uLt4t12kipTHRp8pjvGoA960vT03iPUDTdC1bihkrud88QSEzDC3
-         U2KthN8Yc7dY+2bN43G+dKF7dCBuljxcDV61qJoAJOCGkihPY86NJzAEKA/B5B65+0QN
-         BdZDNAhl02jyAQcu0IOglIToggrg2D4TFDe2nX430A0ImRAlNDoaFjMic7Q5cJGxuLgN
-         SChQ==
-X-Gm-Message-State: APjAAAXqbiQlew51Ysoa0qmdvpV1Qlj8s5qz+khiZW7CczmQoYtO/EC2
-        QD4fLju4/utM4lJOKzY6yn/88A==
-X-Google-Smtp-Source: APXvYqx0OCJtVMpJ5eAD0+DMBrz8WoLIQtIhFFp++BoEOYmF7yZGwnXnOAp5KRXpKfZ/M9WmnGtcmQ==
-X-Received: by 2002:ac8:40cd:: with SMTP id f13mr49794457qtm.100.1560228066514;
-        Mon, 10 Jun 2019 21:41:06 -0700 (PDT)
+        bh=5mJrVl5LEivf48aN+6BHzooJFvRIjVE4iPwXmOBy/Ek=;
+        b=L3Hcj1NrxxPRSB16nCKoSpxz1pr081/7Zldf1r6k5X2vuG81Z1j0zpyw81T/3UnRfn
+         1ZVhQoKobTlUFppIUG1x60aMGqS8dnCJBKZp7uU+IX92mOeNFUzAJmDkKL+qKDIVWfLk
+         BnlxYIt5/DQOLJd2WlwdFpXiuOZQ/rlpF+UCZSo8Lh7Dvrwy4yP2sWJj7yyk+l8x1vTg
+         xWPAGkssreu36cGPfYGipN5vlPyeaz3xsTVLG7e5g7Q6NPn8lmEiajre+1Rli1Ou3rSO
+         kz8RixT5UbmXjQQTCwDLwMjtyn8he/zWxFlIejr9X1FyvDGtI/vn774EISdpb/sueqr0
+         T7MA==
+X-Gm-Message-State: APjAAAVtyq1OZ9qThS/guaygJ+WaWfRt2ABgvkAlnxedLSybRpdqRk+9
+        KmjdAC5kBQp/sp+Fg8A/1f3sEQ==
+X-Google-Smtp-Source: APXvYqxV1E8J1e4LVxVUQhmsX0ZoyvnJKrKT0IaR6qdcRAwyxca5/fXmdCUIT0WV2FSZmkMM5Uzzmw==
+X-Received: by 2002:ac8:6898:: with SMTP id m24mr61494462qtq.362.1560228068150;
+        Mon, 10 Jun 2019 21:41:08 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id y3sm2463375qtj.46.2019.06.10.21.41.04
+        by smtp.gmail.com with ESMTPSA id y3sm2463375qtj.46.2019.06.10.21.41.06
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Jun 2019 21:41:05 -0700 (PDT)
+        Mon, 10 Jun 2019 21:41:07 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com, davejwatson@fb.com,
         borisp@mellanox.com, Jakub Kicinski <jakub.kicinski@netronome.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net-next 11/12] net/tls: add kernel-driven resync mechanism for TX
-Date:   Mon, 10 Jun 2019 21:40:09 -0700
-Message-Id: <20190611044010.29161-12-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 12/12] nfp: tls: make use of kernel-driven TX resync
+Date:   Mon, 10 Jun 2019 21:40:10 -0700
+Message-Id: <20190611044010.29161-13-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190611044010.29161-1-jakub.kicinski@netronome.com>
 References: <20190611044010.29161-1-jakub.kicinski@netronome.com>
@@ -63,173 +63,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS offload drivers keep track of TCP seq numbers to make sure
-the packets are fed into the HW in order.
+When TCP stream gets out of sync (driver stops receiving skbs
+with expected TCP sequence numbers) request a TX resync from
+the kernel.
 
-When packets get dropped on the way through the stack, the driver
-will get out of sync and have to use fallback encryption, but unless
-TCP seq number is resynced it will never match the packets correctly
-(or even worse - use incorrect record sequence number after TCP seq
-wraps).
-
-Existing drivers (mlx5) feed the entire record on every out-of-order
-event, allowing FW/HW to always be in sync.
-
-This patch adds an alternative, more akin to the RX resync.  When
-driver sees a frame which is past its expected sequence number the
-stream must have gotten out of order (if the sequence number is
-smaller than expected its likely a retransmission which doesn't
-require resync).  Driver will ask the stack to perform TX sync
-before it submits the next full record, and fall back to software
-crypto until stack has performed the sync.
+We try to distinguish retransmissions from missed transmissions
+by comparing the sequence number to expected - if it's further
+than the expected one - we probably missed packets.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- Documentation/networking/tls-offload.rst | 35 +++++++++++++++++++++++-
- include/net/tls.h                        | 23 ++++++++++++++++
- net/tls/tls_device.c                     | 27 ++++++++++++++++++
- 3 files changed, 84 insertions(+), 1 deletion(-)
+ .../ethernet/netronome/nfp/crypto/crypto.h    |  1 -
+ .../net/ethernet/netronome/nfp/crypto/tls.c   | 21 ++++++++++++-------
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  8 ++++---
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/networking/tls-offload.rst b/Documentation/networking/tls-offload.rst
-index d134d63307e7..048e5ca44824 100644
---- a/Documentation/networking/tls-offload.rst
-+++ b/Documentation/networking/tls-offload.rst
-@@ -206,7 +206,11 @@ TX
+diff --git a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
+index 591924ad920c..60372ddf69f0 100644
+--- a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
++++ b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
+@@ -13,7 +13,6 @@ struct nfp_net_tls_offload_ctx {
+ 	 */
  
- Segments transmitted from an offloaded socket can get out of sync
- in similar ways to the receive side-retransmissions - local drops
--are possible, though network reorders are not.
-+are possible, though network reorders are not. There are currently
-+two mechanisms for dealing with out of order segments.
-+
-+Crypto state rebuilding
-+~~~~~~~~~~~~~~~~~~~~~~~
- 
- Whenever an out of order segment is transmitted the driver provides
- the device with enough information to perform cryptographic operations.
-@@ -225,6 +229,35 @@ was just a retransmission. The former is simpler, and does not require
- retransmission detection therefore it is the recommended method until
- such time it is proven inefficient.
- 
-+Next record sync
-+~~~~~~~~~~~~~~~~
-+
-+Whenever an out of order segment is detected the driver requests
-+that the ``ktls`` software fallback code encrypt it. If the segment's
-+sequence number is lower than expected the driver assumes retransmission
-+and doesn't change device state. If the segment is in the future, it
-+may imply a local drop, the driver asks the stack to sync the device
-+to the next record state and falls back to software.
-+
-+Resync request is indicated with:
-+
-+.. code-block:: c
-+
-+  void tls_offload_tx_resync_request(struct sock *sk, u32 got_seq, u32 exp_seq)
-+
-+Until resync is complete driver should not access its expected TCP
-+sequence number (as it will be updated from a different context).
-+Following helper should be used to test if resync is complete:
-+
-+.. code-block:: c
-+
-+  bool tls_offload_tx_resync_pending(struct sock *sk)
-+
-+Next time ``ktls`` pushes a record it will first send its TCP sequence number
-+and TLS record number to the driver. Stack will also make sure that
-+the new record will start on a segment boundary (like it does when
-+the connection is initially added).
-+
- RX
- --
- 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 9b49baecc4a8..63e473420b00 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -212,6 +212,11 @@ struct tls_offload_context_tx {
- 
- enum tls_context_flags {
- 	TLS_RX_SYNC_RUNNING = 0,
-+	/* Unlike RX where resync is driven entirely by the core in TX only
-+	 * the driver knows when things went out of sync, so we need the flag
-+	 * to be atomic.
-+	 */
-+	TLS_TX_SYNC_SCHED = 1,
+ 	u32 next_seq;
+-	bool out_of_sync;
  };
  
- struct cipher_context {
-@@ -619,6 +624,24 @@ tls_offload_rx_resync_set_type(struct sock *sk, enum tls_offload_sync_type type)
- 	tls_offload_ctx_rx(tls_ctx)->resync_type = type;
+ #ifdef CONFIG_TLS_DEVICE
+diff --git a/drivers/net/ethernet/netronome/nfp/crypto/tls.c b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
+index 93f87b7633b1..3ee829d69c04 100644
+--- a/drivers/net/ethernet/netronome/nfp/crypto/tls.c
++++ b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
+@@ -390,25 +390,30 @@ nfp_net_tls_resync(struct net_device *netdev, struct sock *sk, u32 seq,
+ 	struct nfp_net_tls_offload_ctx *ntls;
+ 	struct nfp_crypto_req_update *req;
+ 	struct sk_buff *skb;
++	gfp_t flags;
+ 
+-	if (WARN_ON_ONCE(direction != TLS_OFFLOAD_CTX_DIR_RX))
+-		return;
+-
+-	skb = nfp_net_tls_alloc_simple(nn, sizeof(*req), GFP_ATOMIC);
++	flags = direction == TLS_OFFLOAD_CTX_DIR_TX ? GFP_KERNEL : GFP_ATOMIC;
++	skb = nfp_net_tls_alloc_simple(nn, sizeof(*req), flags);
+ 	if (!skb)
+ 		return;
+ 
+-	ntls = tls_driver_ctx(sk, TLS_OFFLOAD_CTX_DIR_RX);
++	ntls = tls_driver_ctx(sk, direction);
+ 	req = (void *)skb->data;
+ 	req->ep_id = 0;
+-	req->opcode = NFP_NET_CRYPTO_OP_TLS_1_2_AES_GCM_128_DEC;
++	req->opcode = nfp_tls_1_2_dir_to_opcode(direction);
+ 	memset(req->resv, 0, sizeof(req->resv));
+ 	memcpy(req->handle, ntls->fw_handle, sizeof(ntls->fw_handle));
+ 	req->tcp_seq = cpu_to_be32(seq);
+ 	memcpy(req->rec_no, rcd_sn, sizeof(req->rec_no));
+ 
+-	nfp_ccm_mbox_post(nn, skb, NFP_CCM_TYPE_CRYPTO_UPDATE,
+-			  sizeof(struct nfp_crypto_reply_simple));
++	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
++		nfp_net_tls_communicate_simple(nn, skb, "sync",
++					       NFP_CCM_TYPE_CRYPTO_UPDATE);
++		ntls->next_seq = seq;
++	} else {
++		nfp_ccm_mbox_post(nn, skb, NFP_CCM_TYPE_CRYPTO_UPDATE,
++				  sizeof(struct nfp_crypto_reply_simple));
++	}
  }
  
-+static inline void tls_offload_tx_resync_request(struct sock *sk)
-+{
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+
-+	WARN_ON(test_and_set_bit(TLS_TX_SYNC_SCHED, &tls_ctx->flags));
-+}
-+
-+/* Driver's seq tracking has to be disabled until resync succeeded */
-+static inline bool tls_offload_tx_resync_pending(struct sock *sk)
-+{
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	bool ret;
-+
-+	ret = test_bit(TLS_TX_SYNC_SCHED, &tls_ctx->flags);
-+	smp_mb__after_atomic();
-+	return ret;
-+}
-+
- int tls_proccess_cmsg(struct sock *sk, struct msghdr *msg,
- 		      unsigned char *record_type);
- void tls_register_device(struct tls_device *device);
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index b35a3b902bfa..40076f423dcb 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -209,6 +209,29 @@ void tls_device_free_resources_tx(struct sock *sk)
- 	tls_free_partial_record(sk, tls_ctx);
- }
+ static const struct tlsdev_ops nfp_net_tls_ops = {
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index c9c43abb2427..8e9568b15062 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -829,6 +829,7 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
+ {
+ 	struct nfp_net_tls_offload_ctx *ntls;
+ 	struct sk_buff *nskb;
++	bool resync_pending;
+ 	u32 datalen, seq;
  
-+static void tls_device_resync_tx(struct sock *sk, struct tls_context *tls_ctx,
-+				 u32 seq)
-+{
-+	struct net_device *netdev;
-+	struct sk_buff *skb;
-+	u8 *rcd_sn;
-+
-+	skb = tcp_write_queue_tail(sk);
-+	if (skb)
-+		TCP_SKB_CB(skb)->eor = 1;
-+
-+	rcd_sn = tls_ctx->tx.rec_seq;
-+
-+	down_read(&device_offload_lock);
-+	netdev = tls_ctx->netdev;
-+	if (netdev)
-+		netdev->tlsdev_ops->tls_dev_resync(netdev, sk, seq, rcd_sn,
-+						   TLS_OFFLOAD_CTX_DIR_TX);
-+	up_read(&device_offload_lock);
-+
-+	clear_bit_unlock(TLS_TX_SYNC_SCHED, &tls_ctx->flags);
-+}
-+
- static void tls_append_frag(struct tls_record_info *record,
- 			    struct page_frag *pfrag,
- 			    int size)
-@@ -264,6 +287,10 @@ static int tls_push_record(struct sock *sk,
- 	list_add_tail(&record->list, &offload_ctx->records_list);
- 	spin_unlock_irq(&offload_ctx->lock);
- 	offload_ctx->open_record = NULL;
-+
-+	if (test_bit(TLS_TX_SYNC_SCHED, &ctx->flags))
-+		tls_device_resync_tx(sk, ctx, tp->write_seq);
-+
- 	tls_advance_record_sn(sk, prot, &ctx->tx);
+ 	if (likely(!dp->ktls_tx))
+@@ -839,7 +840,8 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
+ 	datalen = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
+ 	seq = ntohl(tcp_hdr(skb)->seq);
+ 	ntls = tls_driver_ctx(skb->sk, TLS_OFFLOAD_CTX_DIR_TX);
+-	if (unlikely(ntls->next_seq != seq || ntls->out_of_sync)) {
++	resync_pending = tls_offload_tx_resync_pending(skb->sk);
++	if (unlikely(resync_pending || ntls->next_seq != seq)) {
+ 		/* Pure ACK out of order already */
+ 		if (!datalen)
+ 			return skb;
+@@ -869,8 +871,8 @@ nfp_net_tls_tx(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
+ 		}
  
- 	for (i = 0; i < record->num_frags; i++) {
+ 		/* jump forward, a TX may have gotten lost, need to sync TX */
+-		if (!ntls->out_of_sync && seq - ntls->next_seq < U32_MAX / 4)
+-			ntls->out_of_sync = true;
++		if (!resync_pending && seq - ntls->next_seq < U32_MAX / 4)
++			tls_offload_tx_resync_request(nskb->sk);
+ 
+ 		*nr_frags = 0;
+ 		return nskb;
 -- 
 2.21.0
 
