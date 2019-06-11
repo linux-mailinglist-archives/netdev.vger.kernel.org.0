@@ -2,74 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F4FA41721
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AFAE41727
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436605AbfFKVsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:48:25 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35555 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436583AbfFKVsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:48:25 -0400
-Received: by mail-qt1-f193.google.com with SMTP id d23so16470319qto.2
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:48:24 -0700 (PDT)
+        id S2407739AbfFKVtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:49:12 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:40277 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407170AbfFKVtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:49:11 -0400
+Received: by mail-lf1-f65.google.com with SMTP id a9so10452573lff.7
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=0wfxj3LFUUr+c+qdI/usdCINOleyhfngk+dloc6Qgto=;
-        b=Y3dsXDXbAsVOPiUrxYMQ5nP++b+7hfFZPTve2fpdOo3p6IkcQEYSOdz1BAx5Aunx1G
-         K+XHQZKLx7K72nse/CXpyGTeZ57QpGu+GmN8qTxsvoRdAkVxbN5jDFjoYKroCUfSPyC4
-         rXXNvFB9P3mM1HjUie6mrV2rftK7mwCgxyF+NsqHPVNmuzFpTr0O4spAvrpjwE81kN3/
-         GeDX+aYkFGcYtXWjFsNEJF1Met9knbtHJmCR/4+g4okeTbMdhARkBqNn4Spxj0btk/++
-         g0j6ibjzqrKnD1DTFl500IRjzqlX/emwx2CC8Fx2xyBX0+niQQwJ21k3tZIdFrcs8g6i
-         YkrA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=i6GhLaflHxtAwL6Ad6Dr/C5ELNhP+vqOwXCPihJeLM8=;
+        b=mF/ELEtx8NPOPG3GZNMj3xXssQs8CPSw6r9xXfmVWR6vI50hpVCFF8E++nxCQxBQty
+         w1mqcgctM/qAYXwueTcmLS9XTrg9obZ0X9Z327VRyQK40aEuuqUysUhpRYW8PawxNHNy
+         fzt9hcqJPCgMwkqup/JcNPCQt5Kq9clL6C7j6HhdRs+oH8OV2VgTQBC5eTjbGd/WN/tq
+         vjw2gTYLwvqmwZDH6qYhRzUcNvSHLV7aRINd+jsgUmp2DSI0V6XgOwjNKJ+rdsrTc/jQ
+         kLHDaBT3/z1E41YMfT7XPfdK57pKtlKK/9UsVkmWZgW0DRN9UIY4dQf5zKQv93moT2ZT
+         vAfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=0wfxj3LFUUr+c+qdI/usdCINOleyhfngk+dloc6Qgto=;
-        b=g9gc05p351MajQl5eMVf5Q85EvWH3SCkYxnh+UMQGDrN8Q9z34H/y1+ndYJeKufqnr
-         BG8kr2djAGOy8ylVHh51uCGyrOeS6Aw2RrIYXVo80YHO+iU+eXbBeG+AvYwMJPhhS+JR
-         Z+TJ01y1jF9IkDbFSd4ODhjnqPG4eRe6EIjcpd/xCtibOvTkCN8gtRAjTsstd7yMuxvy
-         z12C+XnxQpuDr7Nh6NEFcSHB/6pwvF4dsAG5WY8GPBVKGsH2K4mMukqO58uuBzUZba57
-         a/M76JJ2k8G8A2V/bSzSon/NtdG1M5pxhZRQkoYYSYNzWnnjnLrKeNzsPW4ykANHuIaP
-         qe2A==
-X-Gm-Message-State: APjAAAWy3mK8jyN59znNeOtxlriJ3dlCoEsNtn6sX14eQ7DC4KZnzcON
-        yd7QENL874FTZ16vNceHEHP7eQ==
-X-Google-Smtp-Source: APXvYqxe5DxoGJRezhlA1EvB+gdfkQVkN9irwlX+oQ37t6nIHWvB3ALETSLlhS3xam7zMqBudy9Ing==
-X-Received: by 2002:ac8:3811:: with SMTP id q17mr37553257qtb.315.1560289704245;
-        Tue, 11 Jun 2019 14:48:24 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id k7sm6553993qth.88.2019.06.11.14.48.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=i6GhLaflHxtAwL6Ad6Dr/C5ELNhP+vqOwXCPihJeLM8=;
+        b=YSyVX6iRFl/mv8iOlCNpBcP0MX3r1TydIGSZnOtjy25118eyH4lrqu8fofmURGRo9z
+         hIREzaxa5SykaFGgzm9BiGrG+duEEW8I27Z6mkdSrf74PHV1KU7U0Xq1kB4sL6JA5HT4
+         UpV/fJmYDIpayMwtvp1i5hcKShqC4YX37RtPL9T6TUgNB0uxP433ip2pMPO05+EZKH0Q
+         tSnpEGEZU2Z/8ihm1y6QwIN6X0Orlmbopfo2DaqRYs7RR61tHfYkuhlZL2kfVAhqqkb6
+         4RRBtkFtH4C9GLPqbHySa0CI4F6PogWOk+u0uMZUz8R1MlrNRWwQJCXmWSJIkjT/VH5G
+         A48Q==
+X-Gm-Message-State: APjAAAVbE2BxtiqUVgMgjgylCQmrgwTgxe9lRx9ykvPQidEVQaNl4dUz
+        ZReTmH2hyLTR75IpIZ85ZqpKUw==
+X-Google-Smtp-Source: APXvYqw+qg4jwlO0JzvRQuQMV9ByejZJE+uZatTs0aps96wZ6LLBeiY1URuP4dn41RtClXDZDIa/dw==
+X-Received: by 2002:ac2:514b:: with SMTP id q11mr5226108lfd.33.1560289748726;
+        Tue, 11 Jun 2019 14:49:08 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id e26sm2787342ljl.33.2019.06.11.14.49.07
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 14:48:24 -0700 (PDT)
-Date:   Tue, 11 Jun 2019 14:48:18 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] bpf_xdp_redirect_map: Perform map
- lookup in eBPF helper
-Message-ID: <20190611144818.7cf159c3@cakuba.netronome.com>
-In-Reply-To: <156026784011.26748.7290735899755011809.stgit@alrua-x1>
-References: <156026783994.26748.2899804283816365487.stgit@alrua-x1>
-        <156026784011.26748.7290735899755011809.stgit@alrua-x1>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Tue, 11 Jun 2019 14:49:08 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     grygorii.strashko@ti.com, davem@davemloft.net
+Cc:     linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH net-next] net: ethernet: ti: cpsw: use cpsw as drv data
+Date:   Wed, 12 Jun 2019 00:49:03 +0300
+Message-Id: <20190611214903.32146-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jun 2019 17:44:00 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> +#define XDP_REDIRECT_INVALID_MASK (XDP_ABORTED | XDP_DROP | XDP_PASS | X=
-DP_TX)
+No need to set ndev for drvdata when mainly cpsw reference is needed,
+so correct this legacy decision.
 
-It feels a little strange to OR in values which are not bits, even if
-it happens to work today (since those are values of 0, 1, 2, 3)...
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+---
+
+Based on net-next/master
+
+ drivers/net/ethernet/ti/cpsw.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 6d3f1f3f90cb..3430503e1053 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -2265,8 +2265,7 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
+ 
+ static void cpsw_remove_dt(struct platform_device *pdev)
+ {
+-	struct net_device *ndev = platform_get_drvdata(pdev);
+-	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
++	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
+ 	struct cpsw_platform_data *data = &cpsw->data;
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct device_node *slave_node;
+@@ -2477,7 +2476,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 		goto clean_cpts;
+ 	}
+ 
+-	platform_set_drvdata(pdev, ndev);
++	platform_set_drvdata(pdev, cpsw);
+ 	priv = netdev_priv(ndev);
+ 	priv->cpsw = cpsw;
+ 	priv->ndev = ndev;
+@@ -2570,9 +2569,8 @@ static int cpsw_probe(struct platform_device *pdev)
+ 
+ static int cpsw_remove(struct platform_device *pdev)
+ {
+-	struct net_device *ndev = platform_get_drvdata(pdev);
+-	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
+-	int ret;
++	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
++	int i, ret;
+ 
+ 	ret = pm_runtime_get_sync(&pdev->dev);
+ 	if (ret < 0) {
+@@ -2580,9 +2578,9 @@ static int cpsw_remove(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	if (cpsw->data.dual_emac)
+-		unregister_netdev(cpsw->slaves[1].ndev);
+-	unregister_netdev(ndev);
++	for (i = 0; i < cpsw->data.slaves; i++)
++		if (cpsw->slaves[i].ndev)
++			unregister_netdev(cpsw->slaves[i].ndev);
+ 
+ 	cpts_release(cpsw->cpts);
+ 	cpdma_ctlr_destroy(cpsw->dma);
+-- 
+2.17.1
+
