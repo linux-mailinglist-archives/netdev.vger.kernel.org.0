@@ -2,82 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED453D4F6
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E9B43D525
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406731AbfFKSFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 14:05:18 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41924 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406685AbfFKSFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:05:18 -0400
-Received: by mail-wr1-f67.google.com with SMTP id c2so14059877wrm.8
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 11:05:17 -0700 (PDT)
+        id S2406868AbfFKSIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 14:08:09 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43488 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406829AbfFKSIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:08:09 -0400
+Received: by mail-qt1-f194.google.com with SMTP id z24so2442345qtj.10;
+        Tue, 11 Jun 2019 11:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sDDXeskfmkhVSOYqH42jOLWDA0Vpzj5152gUAPbopKc=;
+        b=gjAPQJQh5JYwgRA+PLgGch9BqhXKwD4pmlQFBzQr3EHgrz4jxWStM/Y7awrI1CUftG
+         Q4m1ApltFabUdZJ0KRghLP8AFhPzODkHPQveT/xxQZQM+QEzkrLZmaltafHRgYzyaN0Y
+         mTx67w113DmqbDylrQCFSSfjgbvytuU5ZMiihubCLlXR4+yw48u+DmsRbQGhIYPVMwhM
+         La+vPFdwH+21lP1PAJ954YB58DnFtt0UlbvZdxAZTsz4i2CT5xl0M14PkmRabLaVIuVn
+         pTgmipqwS+ibZ6aFKAIpTgfYI60dUE0cgrmgV4hrGfU4rlpA4zixbwMUbp3AXNH1hAnE
+         PWpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1mgqXIhxVpVrTgZ5BA2dhl7Fczm2z4z9/zB5X/VsZR0=;
-        b=cVtP2S67AhDzPwru6qssFki5a6ZHf/9E01sDRMY/pO3gl0xSsefKPaLpkmr1Ozfr5j
-         WkDRBWv10yrV9cV8wg06qrIJHC1e0vhwut6Zc2qnb2dpDZ6yy2yYIh3vUg2zHFtqq2ru
-         jsQTNVrMMkUCol3u8ttQEVB85EsTaCwZkeodq4crRVnF3H5KLdAt7SFEm797KV/xIKNP
-         2WAofLhsihdkHUN32pI3sLkM244+Zti41FHSfRfoGiLYMzqnq2CFulEdkZwgumutE1+6
-         L0WF/HhvBp3HiiQIpm4ejLzv6i8TG9gqUd86zIAE1eFoDyAXxzVg7UHAKkCeWjFboI2Q
-         902A==
-X-Gm-Message-State: APjAAAWwLX/YOQl4qk4tLyFvUSJ4Ra6T9XW/twza5T5zQnM06leGp1zz
-        IpiN7KWCFiacCb0guzlBS7XU1cD/8Ik=
-X-Google-Smtp-Source: APXvYqy/uN166v8hNnny2SHPR0kO8+mli0UYl9uMhrQZeHr8D0okmDT3Ys6WaVH5rwrgZJ9LVGrVrQ==
-X-Received: by 2002:adf:ea12:: with SMTP id q18mr13919005wrm.128.1560276316420;
-        Tue, 11 Jun 2019 11:05:16 -0700 (PDT)
-Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id f20sm2907320wmh.22.2019.06.11.11.05.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 11:05:15 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH iproute2-next] Makefile: pass -pipe to the compiler
-Date:   Tue, 11 Jun 2019 20:05:13 +0200
-Message-Id: <20190611180513.30772-1-mcroce@redhat.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sDDXeskfmkhVSOYqH42jOLWDA0Vpzj5152gUAPbopKc=;
+        b=CoM1hbSUlMaXJNn2kLxhtPhrUmOaBxCQ7vGPslf9B8LvI8c4hzFo7atkJd0PpEU08E
+         TXtuv4VwaXBkBH83gB+jxxTl5Mq8DlXqP3t6prySydvIbCv9fTzHKWRVUdZkEwNXQUp5
+         FzfqYp+cHTp3iczBuSZu9SrJErC/7WNnf1TVZLhU1XeaP0AUA3F4SP4SWf3RfT2PMz8a
+         TLW/Y3Qnq3pRGFgx9q+4cHHegjadhVHdJIr/a/OLKNwCmDauFLcz9DLQL2Am5WI8VQBo
+         ayHWXKE+orQaBc9cNdd6YZPD7oWpMOx/km6Z4IOXWVEpVLKFZzBuw3PQeNBINkkrL7PH
+         MXVw==
+X-Gm-Message-State: APjAAAWI4fvO5MGtljK9DOe9nhnSXenpe1lWs3z2x0HoW2Xu9o280jez
+        NRCJB/qyLFVqWgaUgBUz9y7e4WBPcyqQjdWKyg8=
+X-Google-Smtp-Source: APXvYqwOYnk52r/0lGOolOj7HyR0unUh3LoklSIswrk+LqydWlPNKuTeAXG8iyCxlGTqg36QPbC3khPydoiviuERjI4=
+X-Received: by 2002:ac8:1087:: with SMTP id a7mr51876992qtj.141.1560276487946;
+ Tue, 11 Jun 2019 11:08:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190611132811.GA27212@embeddedor> <CAEf4BzaG=cQWAVNNj0hy4Ui7mHzXZgxs8J3rKbxjjVdEGdNkvA@mail.gmail.com>
+ <4acbc6b9-e2aa-02d3-0e99-f641b67a3da3@embeddedor.com> <07450b27-5c09-2156-e6ee-921fef174c78@embeddedor.com>
+In-Reply-To: <07450b27-5c09-2156-e6ee-921fef174c78@embeddedor.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 11 Jun 2019 11:07:56 -0700
+Message-ID: <CAEf4BzawBrzyA60fS2PU_Kdg1EgP2ufSc8_BBx3JUZXqrFx0fg@mail.gmail.com>
+Subject: Re: [PATCH] bpf: verifier: avoid fall-through warnings
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pass the -pipe option to GCC, to use pipes instead of temp files.
-On a slow AMD G-T40E CPU we get a non negligible 6% improvement
-in build time.
+On Tue, Jun 11, 2019 at 10:41 AM Gustavo A. R. Silva
+<gustavo@embeddedor.com> wrote:
+>
+>
+>
+> On 6/11/19 12:27 PM, Gustavo A. R. Silva wrote:
+> >
+> >
+> > On 6/11/19 12:22 PM, Andrii Nakryiko wrote:
+> >> On Tue, Jun 11, 2019 at 7:05 AM Gustavo A. R. Silva
+> >> <gustavo@embeddedor.com> wrote:
+> >>>
+> >>> In preparation to enabling -Wimplicit-fallthrough, this patch silence=
+s
+> >>> the following warning:
+> >>
+> >> Your patch doesn't apply cleanly to neither bpf nor bpf-next tree.
+> >> Could you please rebase and re-submit? Please also include which tree
+> >> (probably bpf-next) you are designating this patch to in subject
+> >> prefix.
+> >>
+> >
+> > This patch applies cleanly to linux-next (tag next-20190611).
+> >
+>
+> It seems that this commit hasn't been merged into bpf/bpf-next yet:
+>
+> 983695fa676568fc0fe5ddd995c7267aabc24632
+>
+> --
+> Gustavo
+>
+> >>>
+> >>> kernel/bpf/verifier.c: In function =E2=80=98check_return_code=E2=80=
+=99:
+> >>> kernel/bpf/verifier.c:5509:6: warning: this statement may fall throug=
+h [-Wimplicit-fallthrough=3D]
+> >>>    if (env->prog->expected_attach_type =3D=3D BPF_CGROUP_UDP4_RECVMSG=
+ ||
+> >>>       ^
+> >>> kernel/bpf/verifier.c:5512:2: note: here
+> >>>   case BPF_PROG_TYPE_CGROUP_SKB:
+> >>>   ^~~~
+> >>>
+> >>> Warning level 3 was used: -Wimplicit-fallthrough=3D3
+> >>>
+> >>> Notice that it's much clearer to explicitly add breaks in each case
+> >>> (that actually contains some code), rather than letting the code to
+> >>> fall through.
+> >>>
+> >>> This patch is part of the ongoing efforts to enable
+> >>> -Wimplicit-fallthrough.
+> >>>
+> >>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> >>> ---
+> >>>  kernel/bpf/verifier.c | 2 ++
+> >>>  1 file changed, 2 insertions(+)
+> >>>
+> >>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> >>> index 1e9d10b32984..e9fc28991548 100644
+> >>> --- a/kernel/bpf/verifier.c
+> >>> +++ b/kernel/bpf/verifier.c
+> >>> @@ -5509,11 +5509,13 @@ static int check_return_code(struct bpf_verif=
+ier_env *env)
+> >>>                 if (env->prog->expected_attach_type =3D=3D BPF_CGROUP=
+_UDP4_RECVMSG ||
+> >>>                     env->prog->expected_attach_type =3D=3D BPF_CGROUP=
+_UDP6_RECVMSG)
+> >>>                         range =3D tnum_range(1, 1);
+> >>> +               break;
 
-real    1m15,111s
-user    1m2,521s
-sys     0m12,465s
+So this part is in bpf tree only...
 
-real    1m10,861s
-user    1m2,520s
-sys     0m12,901s
+> >>>         case BPF_PROG_TYPE_CGROUP_SKB:
+> >>>                 if (env->prog->expected_attach_type =3D=3D BPF_CGROUP=
+_INET_EGRESS) {
+> >>>                         range =3D tnum_range(0, 3);
+> >>>                         enforce_attach_type_range =3D tnum_range(2, 3=
+);
+> >>>                 }
+> >>> +               break;
 
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+... while this one is in bpf-next only.
 
-diff --git a/Makefile b/Makefile
-index 48f469b0..6c35e7c2 100644
---- a/Makefile
-+++ b/Makefile
-@@ -48,7 +48,7 @@ HOSTCC ?= $(CC)
- DEFINES += -D_GNU_SOURCE
- # Turn on transparent support for LFS
- DEFINES += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
--CCOPTS = -O2
-+CCOPTS = -O2 -pipe
- WFLAGS := -Wall -Wstrict-prototypes  -Wmissing-prototypes
- WFLAGS += -Wmissing-declarations -Wold-style-definition -Wformat=2
- 
--- 
-2.21.0
+Maybe just split this into two separate patches, one targeting bpf
+tree and another for bpf-next tree? Unless you are willing to wait
+till bpf is merged into bpf-next.
 
+> >>>         case BPF_PROG_TYPE_CGROUP_SOCK:
+> >>>         case BPF_PROG_TYPE_SOCK_OPS:
+> >>>         case BPF_PROG_TYPE_CGROUP_DEVICE:
+> >>> --
+> >>> 2.21.0
+> >>>
