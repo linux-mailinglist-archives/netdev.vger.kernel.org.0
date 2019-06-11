@@ -2,136 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F6D3D579
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333B73D582
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407076AbfFKS1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 14:27:20 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37856 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406804AbfFKS1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:27:16 -0400
-Received: by mail-qt1-f194.google.com with SMTP id y57so15761917qtk.4
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=XTSl1X3TVusNnBwvpfSKetQ7KFSoxgL/x9tvPN4y51Q=;
-        b=CRAEEdTtEd/R/ClPRCAiQrGs353d6Tbo3jIKj42fETxvxpoFht2citqwCizu+33E4B
-         +JP4HyZtGaV+ojzUSANo2JTxN9uZJuVTCIdB5VDwxaajMa4IdsmZqr2iMOOdkQug4CPO
-         D4HrAY5X+k+OfpDZIqflFncGBPA/BYEeK5fkJKZiTpnIXjHJE8C8C9Gw1Q1r6y0ZsMer
-         1ih33ubjy3e80OUbS/QmPjKW+iqSeJzTiyB7yn2brAaZZSQ4KGgtAKsJl2SBbVAm0zAB
-         P37irrMi8CrkU4pwyEi6yC+kFXGeOXHQbZXEfQdwkhvBSLzQ4z71mRd4ouAld+i1/yRN
-         EZRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=XTSl1X3TVusNnBwvpfSKetQ7KFSoxgL/x9tvPN4y51Q=;
-        b=RezyEERuAdMQyZme8TvKt1U0oh4FrGeOZfCaoHk34so2j6RqzuKzb7JI3X+Hou5yMS
-         5UDBUx+rl2IX92cPrBfVW1ncTjcJjt46u1QnXTjE9mOC8C7AENmzXVoEgj9920zNCDnZ
-         iyv84QtOgujlbOGoj3WX2jVTK9VO4+hQvxdFwHLRDtyLBgWq5ixQ8+4qWUpCBRhmMZkA
-         8xUIE0aB55R3hCcwdP4OPS5C6Seyc0ZVkwwz4V80+xD3/EWofKpKNMzJojjAqe0HxUBW
-         abd6Ak8pFjFZCY4ympKcYFSwHkWJUPEkGBn8WT2ZFvVtJQbRYRL6ZVarlQJnS6Gwc7tg
-         i7QQ==
-X-Gm-Message-State: APjAAAVLr/F/u8V3pTjwm3OXUsHXbpMDDzA85VPc+iJY/xF86ZmTTsjF
-        3hZ+QQPN9nkoPSZQLg2D90j3OfL5Iv0=
-X-Google-Smtp-Source: APXvYqxOJlQrkKCKNeZVMer/ppqUM3GcMD8BwtnZWk7n591FH4TR2dpB9T5BB74xMJinUiXzrdjheA==
-X-Received: by 2002:ac8:7545:: with SMTP id b5mr56892127qtr.234.1560277635418;
-        Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u7sm6731244qkm.62.2019.06.11.11.27.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
-Date:   Tue, 11 Jun 2019 11:27:10 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Subject: Re: [PATCH net] net: ethtool: Allow matching on vlan CFI bit
-Message-ID: <20190611112710.211e218b@cakuba.netronome.com>
-In-Reply-To: <20190611155456.15360-1-maxime.chevallier@bootlin.com>
-References: <20190611155456.15360-1-maxime.chevallier@bootlin.com>
-Organization: Netronome Systems, Ltd.
+        id S1728740AbfFKSaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 14:30:19 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:58272 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727748AbfFKSaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:30:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=SRqwQ9Cq+VPPpQF4UBPOMXEl0SwrucZG3aVfiVN5Xaw=; b=dCUhd3Vwk6n2kdZ6NtCrgg1uAD
+        nemybzhK0ahpNgOXaBV+1o8Hdjlfrpbs4HHUuBRROanNgi+e+OzlULEk+t0+KOR2WeA54ZM1P5BYk
+        AhEasXPyNPyNJGtgztMZd886ilZDFBBNczr3V197/tEC/RCeSvc+kUK+GtOTLuA5amEBOlnjN9y+l
+        uY1Dm2hPs7CmyvHxZXM+ITYJEoaNYwijCnIsXyS8A6kgTudCsflg6QVOkYLLalfUFL4IOq8M/Ws0A
+        NgFx0rMOv1VY3QaQ9/OtjnXfeglsCCdNM0h0noxnjfnfQ0DWgwFC5r8o+0XYZgoFBrmumhTNxvJ9o
+        ijwn/HOQ==;
+Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1halXE-0006et-ME; Tue, 11 Jun 2019 18:30:16 +0000
+Subject: Re: linux-next: Tree for Jun 11 (net/dsa/tag_sja1105.c)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20190611192432.1d8f11b2@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <12e489ae-d3d9-0390-dee7-0da6301fdcf8@infradead.org>
+Date:   Tue, 11 Jun 2019 11:30:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190611192432.1d8f11b2@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jun 2019 17:54:56 +0200, Maxime Chevallier wrote:
-> Using ethtool, users can specify a classification action matching on the
-> full vlan tag, which includes the CFI bit.
->=20
-> However, when converting the ethool_flow_spec to a flow_rule, we use
-> dissector keys to represent the matching patterns.
->=20
-> Since the vlan dissector key doesn't include the CFI bit, this
-> information was silently discarded when translating the ethtool
-> flow spec in to a flow_rule.
->=20
-> This commit adds the CFI bit into the vlan dissector key, and allows
-> propagating the information to the driver when parsing the ethtool flow
-> spec.
->=20
-> Fixes: eca4205f9ec3 ("ethtool: add ethtool_rx_flow_spec to flow_rule stru=
-cture translator")
-> Reported-by: Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.qmqm.pl>
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
+On 6/11/19 2:24 AM, Stephen Rothwell wrote:
 > Hi all,
->=20
-> Although this prevents information to be silently discarded when parsing
-> an ethtool_flow_spec, this information doesn't seem to be used by any
-> driver that converts an ethtool_flow_spec to a flow_rule, hence I'm not
-> sure this is suitable for -net.
->=20
-> Thanks,
->=20
-> Maxime
->=20
->  include/net/flow_dissector.h | 1 +
->  net/core/ethtool.c           | 5 +++++
->  2 files changed, 6 insertions(+)
->=20
-> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-> index 7c5a8d9a8d2a..9d2e395c6568 100644
-> --- a/include/net/flow_dissector.h
-> +++ b/include/net/flow_dissector.h
-> @@ -46,6 +46,7 @@ struct flow_dissector_key_tags {
-> =20
->  struct flow_dissector_key_vlan {
->  	u16	vlan_id:12,
-> +		vlan_cfi:1,
->  		vlan_priority:3;
->  	__be16	vlan_tpid;
->  };
-> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-> index d08b1e19ce9c..43df34c1ebe1 100644
-> --- a/net/core/ethtool.c
-> +++ b/net/core/ethtool.c
-> @@ -3020,6 +3020,11 @@ ethtool_rx_flow_rule_create(const struct ethtool_r=
-x_flow_spec_input *input)
->  			match->mask.vlan.vlan_id =3D
->  				ntohs(ext_m_spec->vlan_tci) & 0x0fff;
-> =20
-> +			match->key.vlan.vlan_cfi =3D
-> +				!!(ntohs(ext_h_spec->vlan_tci) & 0x1000);
-> +			match->mask.vlan.vlan_cfi =3D
-> +				!!(ntohs(ext_m_spec->vlan_tci) & 0x1000);
+> 
+> Changes since 20190607:
+> 
 
-nit: since you're only using the output as a boolean, you can apply the
-     byteswap to the constant and have it performed at build time.
-     Another option is be16_get_bits() from linux/bitfield.h.
+on i386:
 
->  			match->key.vlan.vlan_priority =3D
->  				(ntohs(ext_h_spec->vlan_tci) & 0xe000) >> 13;
->  			match->mask.vlan.vlan_priority =3D
+#
+# Library routines
+#
+# CONFIG_PACKING is not set
+
+ld: net/dsa/tag_sja1105.o: in function `sja1105_rcv':
+tag_sja1105.c:(.text+0x40b): undefined reference to `packing'
+ld: tag_sja1105.c:(.text+0x423): undefined reference to `packing'
+ld: tag_sja1105.c:(.text+0x43e): undefined reference to `packing'
+ld: tag_sja1105.c:(.text+0x456): undefined reference to `packing'
+ld: tag_sja1105.c:(.text+0x471): undefined reference to `packing'
+
+
+Should this driver select PACKING?
+
+
+-- 
+~Randy
