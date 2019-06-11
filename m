@@ -2,100 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7723C137
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 04:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372C63C132
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 04:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390670AbfFKCVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 22:21:03 -0400
-Received: from mail.southtel.ru ([77.73.88.82]:60237 "EHLO mail.southtel.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390244AbfFKCVD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jun 2019 22:21:03 -0400
-X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jun 2019 22:21:03 EDT
-Received: by mail.southtel.ru (Postfix, from userid 110)
-        id 49EAA22405; Tue, 11 Jun 2019 05:15:38 +0300 (MSK)
-X-DKIM: OpenDKIM Filter v2.6.8 mail.southtel.ru 49EAA22405
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=southtel.ru; s=mail;
-        t=1560219338; bh=gwn0eDW1+ygoSg8ttv+zrvJKzJkgkCQ5035Zqv0Emqg=;
-        h=To:From:Subject:Date:From;
-        b=birgXUd1X4RB7RNclbhettevo3WuQ+0uIx14Sj6JPVEqctEOqDQsMMKDulp0hyt/S
-         7anIFjNwX5+OuZ2PrY3Rxpow3ueoHUnxSnZBJP3mf0yGUKlevNeKK+eEacYAWye7q8
-         iG+vN8OJzmNpARaBtD5B0xY4XDcoC4JqzMrCpWM0=
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on mail.southtel.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=6.0 tests=ALL_TRUSTED,BAYES_00,
-        T_DKIM_INVALID autolearn=ham version=3.3.2
-Received: from [127.0.0.1] (unknown [187.120.133.128])
-        (Authenticated sender: potemkina@southtel.ru)
-        by mail.southtel.ru (Postfix) with ESMTPSA id 1B45D22401
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 05:15:35 +0300 (MSK)
-X-DKIM: OpenDKIM Filter v2.6.8 mail.southtel.ru 1B45D22401
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=southtel.ru; s=mail;
-        t=1560219337; bh=gwn0eDW1+ygoSg8ttv+zrvJKzJkgkCQ5035Zqv0Emqg=;
-        h=To:From:Subject:Date:From;
-        b=VUoSsHMJisn7ltvo2Z78ji4/XzvlsBD1Yi6DKAlC8ghcPKWA2JtOaaZ9GOiyUysMq
-         W1eLNOJFVH6Ev8oZVXJ7irCXJ5jMOZs2B4bw3LOIrORyYAX2PLR7eKHxZ2EpwkayAU
-         VuMEWy0OPDBeUztv8i4z2V38TpnJLNWK7igwS0jo=
-To:     netdev@vger.kernel.org
-From:   potemkina@southtel.ru
-Subject: Your account was under attack! Change your access data!
-Message-ID: <441817C1.5814829@southtel.ru>
-Date:   Tue, 11 Jun 2019 05:14:26 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
- Thunderbird/38.0.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+        id S2390260AbfFKCTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 22:19:32 -0400
+Received: from mail-lj1-f175.google.com ([209.85.208.175]:46776 "EHLO
+        mail-lj1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728685AbfFKCTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 22:19:32 -0400
+Received: by mail-lj1-f175.google.com with SMTP id v24so5552947ljg.13
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 19:19:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R0dmOVUTOICVuPwMd/Xk3EQwNDwUM0NAxPkwX9e5V6Y=;
+        b=dlR1shXGAALE5XVB7FMCZoqFpqvOkKJ9NU1UbFb/TGFyCyDmakAmSbxp32x36durOp
+         A0fSz6Gb4e9ZBpIh6x/qmR6TVC9ygT1aBOodmLxAuGHd3zF+wyFYmUCBMjSZENtPs+cL
+         x30yXPnw0alznTGqid8V/ilp97GfnhnjlnXyxrptsEisGurxMspTEghenhibMDX+WQiu
+         p+5mvfG39rvpDTXfv+k3OqtJ88nHFSrIwuSq2wPoyyNkesSGiu3gWPXPvgLuvy/bb0rl
+         QeD/3we07fWc/uWGa66PjM5eje/XTqv0SkO//xTgGknlw1bZ1Dlkcejb/vI1KWGCmNLz
+         9c8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R0dmOVUTOICVuPwMd/Xk3EQwNDwUM0NAxPkwX9e5V6Y=;
+        b=EH2aGT67zlW/nKMEnp+AhY9pNM782vXzb5GfJRqirC0bZTDf6Iq4rvIsDblP/VEiW6
+         6a09xiSh+Xm0m+MIEW7tE3nL98EA4Rb9sfeZ5jWO9gok/1P0ZgyQYBZVny/0UQ4l7UvC
+         PCW1eysyw0q3AeB4XmO+/Rmihzs9b2vzYiBum71c9FpwygxH6gvMUzeJZJH0gqv+n20g
+         IN0zH7c4WWqVFiQ1LOP+VsMn10xgtHdkikJlUn7Ue1y8k3kNEFdJap1Ea8Dv9e1+h0cc
+         FCzkFRIuCY9HsfMKOszgsFdxOaCEhsZhHvMN2SgjlMbrNYTroKwZdFEUV2kNgTCj5k3q
+         kaEw==
+X-Gm-Message-State: APjAAAWyZ/M1PiLv43tS8wskkDbzwL0kTQBXIKU0qGpaWQGUFBfimlt6
+        ZhzeJUqMFGGMAVnKluNhB+LMlTHyD7hW+R5kpArdQ5uYrRvd2w==
+X-Google-Smtp-Source: APXvYqzrEk6Z9T43ZQDNMHWim9MM/h5rOuYVqoMxHRphaLnAeRKYZ2Y+D9HcCuQwZGA11z8mvxpUyXCKtOfp8kQyZWI=
+X-Received: by 2002:a05:651c:92:: with SMTP id 18mr11186681ljq.35.1560219569439;
+ Mon, 10 Jun 2019 19:19:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
+ <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com> <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
+In-Reply-To: <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 10 Jun 2019 22:19:12 -0400
+Message-ID: <CADVnQy=P=P1iPxrgqQ1U5xwY7Wj3H54XF1sfTyi92mQkLgjb6g@mail.gmail.com>
+Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
+To:     Zhongjie Wang <zwang048@ucr.edu>
+Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Mon, Jun 10, 2019 at 7:48 PM Zhongjie Wang <zwang048@ucr.edu> wrote:
+>
+> Hi Neal,
+>
+> Thanks for your reply. Sorry, I made a mistake in my previous email.
+> After I double checked the source code, I think it should be tp->urg_seq,
+> which is used before assignment, instead of tp->copied_seq.
+> Still in the same if-statement:
+>
+> 5189     if (tp->urg_seq == tp->copied_seq && tp->urg_data &&
+> 5190         !sock_flag(sk, SOCK_URGINLINE) && tp->copied_seq != tp->rcv_nxt) {
+> 5191         struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
+> 5192         tp->copied_seq++;
+> 5193         if (skb && !before(tp->copied_seq, TCP_SKB_CB(skb)->end_seq)) {
+> 5194             __skb_unlink(skb, &sk->sk_receive_queue);
+> 5195             __kfree_skb(skb);   // wzj(a)
+> 5196         }
+> 5197     }
+> 5198
+> 5199     tp->urg_data = TCP_URG_NOTYET;
+> 5200     tp->urg_seq = ptr;
+>
+> It compares tp->copied_seq with tp->urg_seq.
+> And I found only 1 assignment of tp->urg_seq in the code base,
+> which is after the if-statement in the same tcp_check_urg() function.
+>
+> So it seems tp->urg_seq is not assigned to any sequence number before
+> its first use.
+> Is that correct?
 
-I am a hacker who has access to your operating system.
-I also have full access to your account.
+I agree, it does seem that tp->urg_seq is not assigned to any sequence
+number before its first use.
 
-I've been watching you for a few months now.
-The fact is that you were infected with malware through an adult site =
-that you visited.
+AFAICT from a quick read of the code, this does not matter. It seems
+the idea is for tp->urg_data and tp->urg_seq to be set and used
+together, so that tp->urg_seq is never relied upon to be set to
+something meaningful unless tp->urg_data has also been verified to be
+set to something (something non-zero).
 
-If you are not familiar with this, I will explain.
-Trojan Virus gives me full access and control over a computer or other=
- device.
-This means that I can see everything on your screen, turn on the camer=
-a and microphone, but you do not know about it.
+I suppose it might be more clear to structure the code to check urg_data first:
 
-I also have access to all your contacts and all your correspondence.
+  if (tp->urg_data && tp->urg_seq == tp->copied_seq &&
 
-Why your antivirus did not detect malware?
-Answer: My malware uses the driver, I update its signatures every 4 ho=
-urs so that your antivirus is silent.
+...but in practice AFAICT it does not make a difference, since no
+matter which order the expressions use, both conditions must be true
+for the code to have any side effects.
 
-I made a video showing how you satisfy yourself in the left half of th=
-e screen, and in the right half you see the video that you watched.
-With one click of the mouse, I can send this video to all your emails =
-and contacts on social networks.
-I can also post access to all your e-mail correspondence and messenger=
-s that you use.
+> P.S. In our symbolic execution tool, we found an execution path that
+> requires the client initial sequence number (ISN) to be 0xFF FF FF FF.
+> And when it traverse that path, the tp->copied_seq is equal to (client
+> ISN + 1), and compared with 0 in this if-statatement.
+> Therefore the client ISN has to be exactly 0xFF FF FF FF to hit this
+> execution path.
+>
+> To trigger this, we first sent a SYN packet, and then an ACK packet
+> with urgent pointer.
 
-If you want to prevent this,
-transfer the amount of $500 to my bitcoin address (if you do not know =
-how to do this, write to Google: "Buy Bitcoin").
+Does your test show any invalid behavior by the TCP endpoint? For
+example, does the state in tcp_sock become incorrect, or is some
+system call return value or outgoing packet incorrect? AFAICT from the
+scenario you describe it seems that the "if" condition would fail when
+the receiver processes the ACK packet with urgent pointer, because
+tp->urg_data was not yet set at this point. Thus it would seem that in
+this case it does not matter that tp->urg_seq is not assigned to any
+sequence number before being first used.
 
-My bitcoin address (BTC Wallet) is:  3PBu8e4uzEEpZ1DfC4pe9PxYtZGwz1dmT=
-q
-
-After receiving the payment, I will delete the video and you will neve=
-r hear me again.
-I give you 50 hours (more than 2 days) to pay.
-I have a notice reading this letter, and the timer will work when you =
-see this letter.
-
-Filing a complaint somewhere does not make sense because this email ca=
-nnot be tracked like my bitcoin address.
-I do not make any mistakes.
-
-If I find that you have shared this message with someone else, the vid=
-eo will be immediately distributed.
-
-Best regards!
+cheers,
+neal
