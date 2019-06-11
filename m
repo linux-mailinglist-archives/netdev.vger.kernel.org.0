@@ -2,61 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61526417E4
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 00:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07CE4181C
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 00:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436692AbfFKWGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 18:06:16 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:35322 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405693AbfFKWGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 18:06:15 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x5BM6Cpf012446
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jun 2019 16:06:12 -0600 (CST)
-Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x5BM6BUB043560
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 11 Jun 2019 16:06:11 -0600
-From:   Robert Hancock <hancock@sedsystems.ca>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next] net: phy: Add more 1000BaseX support detection
-Date:   Tue, 11 Jun 2019 16:06:09 -0600
-Message-Id: <1560290769-11858-1-git-send-email-hancock@sedsystems.ca>
-X-Mailer: git-send-email 1.8.3.1
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+        id S2391012AbfFKWZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 18:25:42 -0400
+Received: from vps.xff.cz ([195.181.215.36]:41794 "EHLO vps.xff.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389575AbfFKWZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 18:25:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
+        t=1560291939; bh=u1xRqcipnjQfdrJT1iMxqmCOWzuFT5iSpjmBJ/NwAng=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iUogNK2F3RyjngMx4djQtjKewbxnn+Nvf/e84Jaqj+b4bz0KfhOo3Ucmsc62ArP91
+         AnN9RXuB+r50eNOnii91OJYHduVuqj5nTyOUHPDIYkXghBU6tFTYtNYz9GqOvxApED
+         F0Y3GKdyuZXdNlSiqbjhmi4AahsEzFRbhTeWdtDA=
+Date:   Wed, 12 Jun 2019 00:25:39 +0200
+From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        devicetree@vger.kernel.org,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        linux-sunxi@googlegroups.com, Jose Abreu <joabreu@synopsys.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v6 4/6] dt-bindings: display: hdmi-connector: Support DDC
+ bus enable
+Message-ID: <20190611222539.msviqrbptjd5vdji@core.my.home>
+Mail-Followup-To: Rob Herring <robh@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        devicetree@vger.kernel.org,
+        Maxime Ripard <maxime.ripard@bootlin.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        linux-sunxi@googlegroups.com, Jose Abreu <joabreu@synopsys.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+References: <20190527162237.18495-1-megous@megous.com>
+ <20190527162237.18495-5-megous@megous.com>
+ <20190611215206.GA17759@bogus>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190611215206.GA17759@bogus>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit "net: phy: Add detection of 1000BaseX link mode support" added
-support for not filtering out 1000BaseX mode from the PHY's supported
-modes in genphy_config_init, but we have to make a similar change in
-genphy_read_abilities in order to actually detect it as a supported mode
-in the first place. Add this in.
+On Tue, Jun 11, 2019 at 03:52:06PM -0600, Rob Herring wrote:
+> On Mon, 27 May 2019 18:22:35 +0200, megous@megous.com wrote:
+> > From: Ondrej Jirman <megous@megous.com>
+> > 
+> > Some Allwinner SoC using boards (Orange Pi 3 for example) need to enable
+> > on-board voltage shifting logic for the DDC bus using a gpio to be able
+> > to access DDC bus. Use ddc-en-gpios property on the hdmi-connector to
+> > model this.
+> > 
+> > Add binding documentation for optional ddc-en-gpios property.
+> > 
+> > Signed-off-by: Ondrej Jirman <megous@megous.com>
+> > ---
+> >  .../devicetree/bindings/display/connector/hdmi-connector.txt     | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> 
+> Please add Acked-by/Reviewed-by tags when posting new versions. However,
+> there's no need to repost patches *only* to add the tags. The upstream
+> maintainer will do that for acks received on the version they apply.
+> 
+> If a tag was not added on purpose, please state why and what changed.
 
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
----
- drivers/net/phy/phy_device.c | 2 ++
- 1 file changed, 2 insertions(+)
+Sorry, it was some mistake. Thanks for the note.
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 03c885e..5387890 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1984,6 +1984,8 @@ int genphy_read_abilities(struct phy_device *phydev)
- 				 phydev->supported, val & ESTATUS_1000_TFULL);
- 		linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
- 				 phydev->supported, val & ESTATUS_1000_THALF);
-+		linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+				 phydev->supported, val & ESTATUS_1000_XFULL);
- 	}
- 
- 	return 0;
--- 
-1.8.3.1
+regards,
+	Ondrej
 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
