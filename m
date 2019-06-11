@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D154189E
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC219418B2
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407906AbfFKXIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 19:08:06 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42653 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404124AbfFKXIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:08:05 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x17so14763433wrl.9;
-        Tue, 11 Jun 2019 16:08:03 -0700 (PDT)
+        id S2407953AbfFKXKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 19:10:49 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42106 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404483AbfFKXKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:10:48 -0400
+Received: by mail-pl1-f194.google.com with SMTP id go2so5737674plb.9;
+        Tue, 11 Jun 2019 16:10:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PDwkS5w8XnSRr2NNwvXLf41knR3AK04AXOssqTiuVS4=;
-        b=vXlm/osrd3a7VCTjv7GJajbJLDU9K282bO0mR3z/FnLVLg1QY+GZAAHWIEZgNDC2th
-         XoPUkdAaFI5Jr8dRMrYH8ID8lpuBfODpY64CiQW3VXjKgPphI7LpkzhqwytQwGRspjSb
-         EH0CNK7nCmfCok6ARUi4t0NiYVy981ILzYkPvujoL+/lVmCrBWt7mrHly3Eh/zRoQSHG
-         zbBoz0KNLhgdyWvXHuNMzXh71Ms0P212MutwcddBP0P/+cyPFCEfflcNfwe+GmNUB427
-         gAQzlKxTz/vmUXBiWEmtxPLtNttL+18VvFyZ62fFzeFSsQzGTggRIqxV79oVIeZ7pRat
-         8H5A==
+        bh=gOxpWt9450U9U7mtd5KrPlNhq9GnPsRQiRJlY6U4l00=;
+        b=fuetTGBKfhw9/3oHfiA01aA8ZjdhPmoy63MXWRVOpBEmfnoPOBp6VbMiW6oTgNLw3n
+         8NTVq76YGIWIEsCJWUmgxoBGXTLpv3SCg+T+t31Mll7Hhf4n8MnHNPNmrRPt5PrXh+OV
+         xEeRD7efc183++D/BVxkWtwRB+qEhn3seqVrbgk6MIaDjpZaEdI/IxyvDKqSBOz+TV1O
+         OZV8kO/s2jDoRfvBR+OYWzmh1Rt+Zs5+ZEqaepsQrrGYJ8n79aDNMRizc8HECcn5StWW
+         Po2GSqAkDoyiKwtVDTO12diZqwhqwrCI964OVhY7I3RgryEVM+dj0LnjHyhVJhEzO2Lh
+         nHHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=PDwkS5w8XnSRr2NNwvXLf41knR3AK04AXOssqTiuVS4=;
-        b=B9DvSW1MUpbjEPSFvB/JLcVlggaoats3Dl36ZEG0K5tNae2W95DsaMZZNL/f05KGyT
-         yGiNrr5QQPG5Som0HYTUBYC5/5XQMwTkRQOOIE9JktfU+4bIb4URU5wBF2C7PNlUZd8C
-         nYB/2as2yAq9YuiTy748VMryJpN3MhH9L1Hh6Gjf9ARAfaTGyUZdrnknEtDnOO27aTmJ
-         BaqtZWIlasz9bB+R6+/SBT5d37XUtmm8tizOm0kxRzx26ZfA7R8eKBk/B+tN4LS8mzIZ
-         CY1QBpPjQvl3Wx3wqjCpyeZtPMzgy5IiWUOX9tXRFWrgprXPPXMnNSdlK0WaPwBO+kUR
-         wyeg==
-X-Gm-Message-State: APjAAAUxzWA5oVRnAVZQcXtd+rSsbn+etnxiZOTjqPmQxsnuPDdgyxgM
-        5R6m4G1Z89hkDYSSr6ZJCQs=
-X-Google-Smtp-Source: APXvYqyUPbZYcwCKrwsjNVVXCL64M+C9kHufhhO2g0JASzN36wAMfX6dCKePebxRbt4gO+Dc7T9znA==
-X-Received: by 2002:a5d:6ccc:: with SMTP id c12mr27574190wrc.57.1560294483153;
-        Tue, 11 Jun 2019 16:08:03 -0700 (PDT)
+        bh=gOxpWt9450U9U7mtd5KrPlNhq9GnPsRQiRJlY6U4l00=;
+        b=FSJnucS9yMOrJZWRBMWUesDF0mBkgO7KxC2cFlVHpT2LtvxaiB7mNET0mo6a1NuG/g
+         SJ/86nKOldECSx93HOH9JP9+yAu+MPrdNN0NHzifwS8nE6OHQRzu4byFXyqgfF8Zqz7e
+         gCM+uMo13/7POyWkL1kwr8SAcRZeNBzp7dh3BaNghJUQpkZ1qpYERt6Ivm5Hi9qjW3+g
+         BjoFqK1VQQ+n8N/Xxh7GSgHyMuXhZX6EWap3taaag4KuGyyrCEBDMlpdQ/jE7ECnn2zp
+         rNkG2XB9l4JVrB8GjtRi1WbKbyrpS+NHU0qkj8MyKE5QvXKlgfr5PsAQsX6OVqCZnYTq
+         WBkg==
+X-Gm-Message-State: APjAAAVm4nlFkgHpEKlC/mn3VPd68rfz8ApxoB8ogih06Z1h/vqPjcXl
+        Y9qs5bmOOYI/PqpUeylW2+0=
+X-Google-Smtp-Source: APXvYqxUdk1S9SAThdril7xUBLfV5wwbAJN5cCNdmOKkFf03KYpf0V5DOctMIVmOqbdxa97ihDSxIw==
+X-Received: by 2002:a17:902:76c6:: with SMTP id j6mr53478342plt.263.1560294647815;
+        Tue, 11 Jun 2019 16:10:47 -0700 (PDT)
 Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 32sm35493600wra.35.2019.06.11.16.08.01
+        by smtp.googlemail.com with ESMTPSA id n2sm18998974pgp.27.2019.06.11.16.10.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 16:08:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/4] net: dsa: make dsa_slave_dev_check use const
+        Tue, 11 Jun 2019 16:10:46 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/4] net: dsa: use switchdev handle helpers
 To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch
 References: <20190611214747.22285-1-vivien.didelot@gmail.com>
- <20190611214747.22285-4-vivien.didelot@gmail.com>
+ <20190611214747.22285-5-vivien.didelot@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ea0b4ef4-acbd-8dc1-b679-35aa93e11033@gmail.com>
-Date:   Tue, 11 Jun 2019 16:07:56 -0700
+Message-ID: <51fe4433-89fc-2090-1a3c-3405ed7a8cc5@gmail.com>
+Date:   Tue, 11 Jun 2019 16:10:45 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190611214747.22285-4-vivien.didelot@gmail.com>
+In-Reply-To: <20190611214747.22285-5-vivien.didelot@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,12 +123,19 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 6/11/19 2:47 PM, Vivien Didelot wrote:
-> The switchdev handle helpers make use of a device checking helper
-> requiring a const net_device. Make dsa_slave_dev_check compliant
-> to this.
+> Get rid of the dsa_slave_switchdev_port_{attr_set,obj}_event functions
+> in favor of the switchdev_handle_port_{attr_set,obj_add,obj_del}
+> helpers which recurse into the lower devices of the target interface.
+> 
+> This has the benefit of being aware of the operations made on the
+> bridge device itself, where orig_dev is the bridge, and dev is the
+> slave. This can be used later to configure bridge-wide attributes on
+> the hardware switches.
 > 
 > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Nice cleanup, thanks!
 -- 
 Florian
