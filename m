@@ -2,118 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C983C4CA
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1873C4CF
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404254AbfFKHTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 03:19:17 -0400
-Received: from mga06.intel.com ([134.134.136.31]:42890 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404113AbfFKHTR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 03:19:17 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Jun 2019 00:19:16 -0700
-X-ExtLoop1: 1
-Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.198]) ([10.237.72.198])
-  by orsmga007.jf.intel.com with ESMTP; 11 Jun 2019 00:19:11 -0700
-Subject: Re: [PATCH v3 3/5] brcmfmac: sdio: Disable auto-tuning around
- commands expected to fail
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>,
-        Double Lo <double.lo@cypress.com>,
-        "briannorris@chromium.org" <briannorris@chromium.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>,
-        "mka@chromium.org" <mka@chromium.org>,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20190607223716.119277-1-dianders@chromium.org>
- <20190607223716.119277-4-dianders@chromium.org>
- <363DA0ED52042842948283D2FC38E4649C52F8A0@IRSMSX106.ger.corp.intel.com>
- <CAD=FV=U8eo78Ee9xjhGXJMv=8YF9o89KLX024GH3iBRnRjCRvQ@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Message-ID: <ccdc4c80-2fcf-6938-c68e-dc2b21a57d92@intel.com>
-Date:   Tue, 11 Jun 2019 10:17:57 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2404254AbfFKHUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 03:20:12 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:38493 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2404216AbfFKHUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:20:11 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 10C3C22405;
+        Tue, 11 Jun 2019 03:20:11 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 11 Jun 2019 03:20:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=qVohjtZDNOYAUMUQh
+        0rUJS4fQYkP8M4iwKAWNUiAxFA=; b=nID+zmaXUjjSpwoZ5c3LGtXIA1pscjZx6
+        Soiw7oDvDznxQecoBHgkXXKN5DQKVuDnpWmRFTRopOMR42gTMbTgLawEdOM/z9ws
+        SxzI5j+wuLvmmbJw95RT1yGRCBPDAUN8BDg/J5OIp76nuLRMuKCC94cJLyBiIejq
+        2v0E/EISsV9uo9zC1aYc+LSYy/4I+qneI8ydJHJ40FJkPvSMON6XxZAw5XOBYfw9
+        Z17xgNYcpKau7dIktkts+vV6UfcSXlRuuSzICrFVfUzOf5EQl6hDj0pjhuWhGHmr
+        i9FweuQsyoN627jGJE2vUrTUtcETWlZAHtlZXZa7t7i4LDvnflLZA==
+X-ME-Sender: <xms:Klb_XKFrBhlYZOTruca_KbW4hfTeCOLylzC-uQUOJ0QOxskHb5p17A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehfedguddujecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:Klb_XHCygLYlH27ZR0tHUi9cUAB81txi2Numw1APAQKqRLv3J0zmeQ>
+    <xmx:Klb_XAmb0STbvp_6-MiYmg77LwUYKombzuQcIgA_7Th2Mlhw6-dETA>
+    <xmx:Klb_XNPw8hQ9N4Y12pvRzvpnw9ILe4Zs6cvBcDLJTH1MSuZyg7PUoA>
+    <xmx:K1b_XD8QJNnwVg45PgA_TesooZYOlUX4tPaz2TDyN15UHBGgaygS2A>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DC444380084;
+        Tue, 11 Jun 2019 03:20:08 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        alexpe@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/7] mlxsw: Various fixes
+Date:   Tue, 11 Jun 2019 10:19:39 +0300
+Message-Id: <20190611071946.11089-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <CAD=FV=U8eo78Ee9xjhGXJMv=8YF9o89KLX024GH3iBRnRjCRvQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/06/19 7:50 PM, Doug Anderson wrote:
-> Hi,
-> 
-> On Mon, Jun 10, 2019 at 1:56 AM Hunter, Adrian <adrian.hunter@intel.com> wrote:
->>
->>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> @@ -16,6 +16,7 @@
->>>  #include <linux/mmc/sdio_ids.h>
->>>  #include <linux/mmc/sdio_func.h>
->>>  #include <linux/mmc/card.h>
->>> +#include <linux/mmc/core.h>
->>
->> SDIO function drivers should not really include linux/mmc/core.h
->> (Also don't know why linux/mmc/card.h is included)
-> 
-> OK, so I guess you're requesting an extra level of "sdio_" wrappers
-> for all the functions I need to call.  I don't think the wrappers buy
-> us a ton other than to abstract things a little bit and make it look
-> prettier.  :-)  ...but certainly I can code that up if that's what
-> everyone wants.
+From: Ido Schimmel <idosch@mellanox.com>
 
-I guess it is really up to Ulf.
+This patchset contains various fixes for mlxsw.
 
-> 
-> Just to make sure, I looked in "drivers/net/wireless/" and I do see
-> quite a few instances of "mmc_" functions being used.  That doesn't
-> mean all these instances are correct but it does appear to be
-> commonplace.  Selected examples:
-> 
-> drivers/net/wireless/ath/ath10k/sdio.c:
->   ret = mmc_hw_reset(ar_sdio->func->card->host);
-> 
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c:
->   mmc_set_data_timeout(md, func->card);
->   mmc_wait_for_req(func->card->host, mr);
-> 
-> drivers/net/wireless/marvell/mwifiex/sdio.c:
->   mmc_hw_reset(func->card->host);
-> 
-> drivers/net/wireless/rsi/rsi_91x_sdio.c:
->   err = mmc_wait_for_cmd(host, &cmd, 3);
-> 
-> 
-> ...anyway, I'll give it a few days and if nobody else chimes in then
-> I'll assume you indeed want "sdio_" wrappers for things and I'll post
-> a v4.  If patch #1 happens to land in the meantime then I won't
-> object.  ;-)
-> 
-> 
-> -Doug
-> 
+Patch #1 fixes an hash polarization problem when a nexthop device is a
+LAG device. This is caused by the fact that the same seed is used for
+the LAG and ECMP hash functions.
+
+Patch #2 fixes an issue in which the driver fails to refresh a nexthop
+neighbour after it becomes dead. This prevents the nexthop from ever
+being written to the adjacency table and used to forward traffic. Patch
+#3 is a test case.
+
+Patch #4 fixes a wrong extraction of TOS value in flower offload code.
+Patch #5 is a test case.
+
+Patch #6 works around a buffer issue in Spectrum-2 by reducing the
+default sizes of the shared buffer pools.
+
+Patch #7 prevents prio-tagged packets from entering the switch when PVID
+is removed from the bridge port.
+
+Please consider patches #2, #4 and #6 for 5.1.y
+
+Ido Schimmel (4):
+  mlxsw: spectrum: Use different seeds for ECMP and LAG hash
+  mlxsw: spectrum_router: Refresh nexthop neighbour when it becomes dead
+  selftests: mlxsw: Test nexthop offload indication
+  mlxsw: spectrum: Disallow prio-tagged packets when PVID is removed
+
+Jiri Pirko (2):
+  mlxsw: spectrum_flower: Fix TOS matching
+  selftests: tc_flower: Add TOS matching test
+
+Petr Machata (1):
+  mlxsw: spectrum_buffers: Reduce pool size on Spectrum-2
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  2 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  5 +-
+ .../mellanox/mlxsw/spectrum_buffers.c         |  4 +-
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c |  4 +-
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 73 ++++++++++++++++++-
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 47 ++++++++++++
+ .../selftests/net/forwarding/tc_flower.sh     | 36 ++++++++-
+ 7 files changed, 161 insertions(+), 10 deletions(-)
+
+-- 
+2.20.1
 
