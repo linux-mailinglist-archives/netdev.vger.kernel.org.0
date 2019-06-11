@@ -2,44 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9767D41898
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CFA4189A
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:08:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437031AbfFKXHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 19:07:06 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:54688 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390115AbfFKXHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:07:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=aWwNDG9l+fRofOJ4dvlOUGxsf7dmx2az/Ef1K3Z/EoY=; b=SBr/CRmlczoybi8R+VWdBVH5K
-        MRuWlf8ggyJanc8B6NFuoRtDCxLL9hPPBgSUWSmJTUiXeBmJ78a+Yf+JFvXjsE0fEXHLsXL90AfeM
-        cPMEYgVdybx2YCGOtGDXR3T21UtRhpEm7Y9jxYxkQ+54bTyRctrL9jx1NfSHkMuyyNx/AT1ew2Vlg
-        6TRFdTKcs6czohEyEpX+5n/nfV4D6O88+o6IzUXsdj/E3M2D+U3WW3UNH7QgMNpal6kv5U73IRCN6
-        YrpTXe56o2+lm2tjxdXbXQvlbU9VLic4C6jZjk9TxhiTLCe7o4oc10QP1ch+Q6HR7NC1NDL76Io4j
-        TfKEWo1og==;
-Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hapr6-0000I0-UP; Tue, 11 Jun 2019 23:07:05 +0000
-Subject: Re: [PATCH net] mpls: fix af_mpls dependencies
-To:     David Miller <davem@davemloft.net>, mcroce@redhat.com
-Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org,
-        akpm@linux-foundation.org, dsahern@gmail.com,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-References: <20190608125019.417-1-mcroce@redhat.com>
- <20190609.195742.739339469351067643.davem@davemloft.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <d19abcd4-799c-ac2f-ffcb-fa749d17950c@infradead.org>
-Date:   Tue, 11 Jun 2019 16:06:53 -0700
+        id S2407857AbfFKXHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 19:07:25 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33637 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390115AbfFKXHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:07:24 -0400
+Received: by mail-wm1-f65.google.com with SMTP id h19so2963780wme.0;
+        Tue, 11 Jun 2019 16:07:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WRyJ12ri3uGR+ARwuS2am3+LDX/orlJWlXM0gjutX2k=;
+        b=JtJC0h0AA4ERUGsoz10C4kqQZcNKWhhFtY9F4DOiM4zj4wFUWiTK1GED0/sKhk2W0K
+         9qkIzVZSfTvBldFm7fBMtmKt4oGuY5O9pQL+tMADz1jq7eTNIk8II9gRa8DP1qKgTJal
+         VILaCmXVg+MN2HJeP8cYD2vSAKz3OWZ6UgKJhbAUhvJhsSQA3TUAMnCoaGM3+B81rnk+
+         b36axgp0QB24W+Mo3xNttgHMOZOBbbKLF6xBKC0Ok7WKffbOmA4ikxbql/q4Gl8xq1Za
+         8mfvF43fBte9x8r0PQhJpnE6++NynAqPnHPojiN5AQTMZcKjJx1oqHKoFlm4mzFrXm+l
+         Bp9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=WRyJ12ri3uGR+ARwuS2am3+LDX/orlJWlXM0gjutX2k=;
+        b=CSAeXEo24f9W8mIjM0CxzS0FG7xfyObYArl8mB+Ait2NRn5PQBQwJW0AFCEPPfauEH
+         4q2sg7Qjtk8UX1zMMRpj3K6TMqvwbJRdli0A0NTuljM989LoRncnPOOZWijtP4cGNYZO
+         6OI76TOaM3/EAtRjLqpbuzIeQXVx118YhplzKIVD0bVsz636lGwCpJ5f1o7RUWe008bh
+         Hjk8gl2A+srjR1gqd1qKLUTnINVSpD0hy6yjncsAjgTFaNM3d6ZyBGiWtAF+wKaZZHDF
+         aD+qAu3tHERyjcfIvz0etEkv5HdL/5azUMRxJC6awOzwQVtLTsXgoVYD9UAgOUs1q8S5
+         eJ5Q==
+X-Gm-Message-State: APjAAAXEycghR7K+f32+8jJeeoNFyYnLSWoaKl/EQw1BUEnEq1LiKlNU
+        vL1LASypApHnwY//7f7DbAs=
+X-Google-Smtp-Source: APXvYqy1w2b8Zeu4r2BovVrj47CgdwuMRCfaygeFRtymiTIWrqmrYRuQuWCjwge51Q6lnSQULQhshQ==
+X-Received: by 2002:a1c:238d:: with SMTP id j135mr19824880wmj.53.1560294443128;
+        Tue, 11 Jun 2019 16:07:23 -0700 (PDT)
+Received: from [10.67.49.123] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id l4sm2574501wmh.18.2019.06.11.16.07.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 11 Jun 2019 16:07:22 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/4] net: dsa: do not check orig_dev in vlan del
+To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch
+References: <20190611214747.22285-1-vivien.didelot@gmail.com>
+ <20190611214747.22285-2-vivien.didelot@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <3d73efad-17ee-8ba7-5c1f-c35f6e95cade@gmail.com>
+Date:   Tue, 11 Jun 2019 16:07:11 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190609.195742.739339469351067643.davem@davemloft.net>
+In-Reply-To: <20190611214747.22285-2-vivien.didelot@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -48,50 +122,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/19 7:57 PM, David Miller wrote:
-> From: Matteo Croce <mcroce@redhat.com>
-> Date: Sat,  8 Jun 2019 14:50:19 +0200
+On 6/11/19 2:47 PM, Vivien Didelot wrote:
+> The current DSA code handling switchdev objects does not recurse into
+> the lower devices thus is never called with an orig_dev member being
+> a bridge device, hence remove this useless check.
 > 
->> MPLS routing code relies on sysctl to work, so let it select PROC_SYSCTL.
->>
->> Reported-by: Randy Dunlap <rdunlap@infradead.org>
->> Suggested-by: David Ahern <dsahern@gmail.com>
->> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> At the same time, remove the comments about the callers, which is
+> unlikely to be updated if the code changes and thus confusing.
 > 
-> Applied, thanks.
-> 
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
-This patch causes build errors when
-# CONFIG_PROC_FS is not set
-because PROC_SYSCTL depends on PROC_FS.  The build errors are not
-in fs/proc/ but in other places in the kernel that never expect to see
-PROC_FS not set but PROC_SYSCTL=y.
-
-I see the following 2 build errors:
-
-../kernel/sysctl_binary.c: In function 'binary_sysctl':
-../kernel/sysctl_binary.c:1305:37: error: 'struct pid_namespace' has no member named 'proc_mnt'; did you mean 'proc_work'?
-  mnt = task_active_pid_ns(current)->proc_mnt;
-                                     ^~~~~~~~
-
-../fs/xfs/xfs_sysctl.c:80:19: error: 'xfs_panic_mask_proc_handler' undeclared here (not in a function); did you mean 'xfs_panic_mask'?
-   .proc_handler = xfs_panic_mask_proc_handler,
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-The patch's line:
-+	select PROC_SYSCTL
-
-should not be done unless PROC_FS is enabled, e.g.:
-	select PROC_SYSCTL if PROC_FS
-but that still doesn't help the mpls driver operate as it should.
-
-The patch should have been
-	depends on PROC_SYSCTL
-
-As it stands now (in linux-next), this patch should be reverted IMO.
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-~Randy
+Florian
