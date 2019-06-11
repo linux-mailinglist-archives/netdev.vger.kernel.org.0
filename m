@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E16123C4D0
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8723C4DA
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404269AbfFKHUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 03:20:14 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:56071 "EHLO
+        id S2404272AbfFKHUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 03:20:16 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:37637 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2404224AbfFKHUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:20:13 -0400
+        by vger.kernel.org with ESMTP id S2404268AbfFKHUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:20:15 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4995F22494;
-        Tue, 11 Jun 2019 03:20:12 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id CCD4D224C0;
+        Tue, 11 Jun 2019 03:20:13 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 11 Jun 2019 03:20:12 -0400
+  by compute3.internal (MEProxy); Tue, 11 Jun 2019 03:20:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=nBuPvC/Vkse/1TLJRSz5VQnMI/ht8uZso9qP0dOqjkw=; b=a7mOX4E9
-        Rk7e1Fb2yrevNsGfvYGpERJvVuCM2PPnnWFwlihFlEQOubmfbGQMHcc/EBYxL8ZN
-        FrmEji0owQINA5oad7+QskNHFNrL1boKnpiaw9ymQMJi8cQ/ZzppK4GWxFywbwlz
-        itu8tI2yXa20jt324MMdtwd3W3Y/6wkrvea5rW3jzTQyiCEkcabKuT7wPqcuVnDi
-        DScJ2UWSH4q7vl77atp5PcrgootJPjpdbY1qsAPnsBvp8tPxElIT0OGkabtWO80c
-        1SnrDfmncunsbkF/khXjC1xlzTIcV79R1A2/633LBG4EUe/ey9FhV7NcC3eZA7FA
-        K4NuqmcK0q0ZWA==
-X-ME-Sender: <xms:LFb_XLxYHZr00vllLIxgSsE2pa8bN30S6JdkB-vsN4hn-bRfsKO8Sw>
+        fm3; bh=RjRPeVHq8rKBEb5IrIPyroAW3g6dHk+abFHoWNvdfXY=; b=cAwVTSSM
+        Xh+//HAgIEjN8wLNClXezHje1La6Vl2/OZrAb+2wOi2GCdEuCORQFwI4r/emf9b9
+        k0t5qgWH0uRZZQO9JqeCEJFECFIFEut18KwhEc5HX09cqbazg8RCfaIWsDZHAd8w
+        V7gSUlVw9sOOD4eqNwIy2fmtu3K4EH6TIBLHDfxZIHXzAcysAPYSK0MLwhUgxjT/
+        o+pyvc1dYUFzzdKId4R3fitZJbfpUvoqargFKIt7QO9B19iaSPnRKFIjXMQkp7jX
+        AKi667PyYRxZcIR/pnNFbWrjx2i7aKWb+9Z6g8/5wyo50ldYrROVGTfGmUN/oUxR
+        Uesh6OsFA9gLog==
+X-ME-Sender: <xms:LVb_XKu-fNZh11YHUiCsbOFaiFvQubvfXPZoqEFCo0KGHokB0nmD6Q>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehfedguddujecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehfedguddujecutefuodetgg
     ohhstghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmh
     epmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgv
     rhfuihiivgeptd
-X-ME-Proxy: <xmx:LFb_XDtGJhdTkwPF1W7hf60Kg9_rNgnb4e1SiiYG3smNljtX4JEvZw>
-    <xmx:LFb_XMMrmwF5ru1Gsu9u-KPxWDQyvhGwPQdCf4AJn8xcrrTexdJfgA>
-    <xmx:LFb_XLxDOuEZmBqQBy6GpypsltWaduxMp2a9HVsiYncQdupSQJkbEg>
-    <xmx:LFb_XHvydikgEDSK4E3VDCqzMt8lduB5WGcgcMAK6Sc3B4ogoMfT1A>
+X-ME-Proxy: <xmx:LVb_XLKgsYK0my3AD5hCrnbmaORrOnFFcVzweQnAwQJ0tdfYqTrGHQ>
+    <xmx:LVb_XAexYVhqtmDLydreSrr4kRIrqzDY6p-sfEnnlwHHN4eqNX491g>
+    <xmx:LVb_XGLxQnnQrZkL7Gd9nnAohgw8THuGiC5lXxm_CllBMsolxL5Enw>
+    <xmx:LVb_XOX6P3rQ0JJMyhDkcwhZnXxb_PHSZGFtcxcyhVxiiEYyJYyWNA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B9AED380086;
-        Tue, 11 Jun 2019 03:20:10 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4005E380088;
+        Tue, 11 Jun 2019 03:20:12 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         alexpe@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 1/7] mlxsw: spectrum: Use different seeds for ECMP and LAG hash
-Date:   Tue, 11 Jun 2019 10:19:40 +0300
-Message-Id: <20190611071946.11089-2-idosch@idosch.org>
+Subject: [PATCH net 2/7] mlxsw: spectrum_router: Refresh nexthop neighbour when it becomes dead
+Date:   Tue, 11 Jun 2019 10:19:41 +0300
+Message-Id: <20190611071946.11089-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190611071946.11089-1-idosch@idosch.org>
 References: <20190611071946.11089-1-idosch@idosch.org>
@@ -62,44 +62,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-The same hash function and seed are used for both ECMP and LAG hash.
-Therefore, when a LAG device is used as a nexthop device as part of an
-ECMP group, hash polarization can occur and all the traffic will be
-hashed to a single LAG slave.
+The driver tries to periodically refresh neighbours that are used to
+reach nexthops. This is done by periodically calling neigh_event_send().
 
-Fix this by using a different seed for the LAG hash.
+However, if the neighbour becomes dead, there is nothing we can do to
+return it to a connected state and the above function call is basically
+a NOP.
 
-Fixes: fa73989f2697 ("mlxsw: spectrum: Use a stable ECMP/LAG seed")
+This results in the nexthop never being written to the device's
+adjacency table and therefore never used to forward packets.
+
+Fix this by dropping our reference from the dead neighbour and
+associating the nexthop with a new neigbhour which we will try to
+refresh.
+
+Fixes: a7ff87acd995 ("mlxsw: spectrum_router: Implement next-hop routing")
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reported-by: Alex Veber <alexve@mellanox.com>
 Tested-by: Alex Veber <alexve@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 73 ++++++++++++++++++-
+ 1 file changed, 70 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index dfe6b44baf63..23204356ad88 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4280,13 +4280,16 @@ static void mlxsw_sp_traps_fini(struct mlxsw_sp *mlxsw_sp)
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 1cda8a248b12..ef554739dd54 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -2363,7 +2363,7 @@ static void mlxsw_sp_router_probe_unresolved_nexthops(struct work_struct *work)
+ static void
+ mlxsw_sp_nexthop_neigh_update(struct mlxsw_sp *mlxsw_sp,
+ 			      struct mlxsw_sp_neigh_entry *neigh_entry,
+-			      bool removing);
++			      bool removing, bool dead);
+ 
+ static enum mlxsw_reg_rauht_op mlxsw_sp_rauht_op(bool adding)
+ {
+@@ -2507,7 +2507,8 @@ static void mlxsw_sp_router_neigh_event_work(struct work_struct *work)
+ 
+ 	memcpy(neigh_entry->ha, ha, ETH_ALEN);
+ 	mlxsw_sp_neigh_entry_update(mlxsw_sp, neigh_entry, entry_connected);
+-	mlxsw_sp_nexthop_neigh_update(mlxsw_sp, neigh_entry, !entry_connected);
++	mlxsw_sp_nexthop_neigh_update(mlxsw_sp, neigh_entry, !entry_connected,
++				      dead);
+ 
+ 	if (!neigh_entry->connected && list_empty(&neigh_entry->nexthop_list))
+ 		mlxsw_sp_neigh_entry_destroy(mlxsw_sp, neigh_entry);
+@@ -3472,13 +3473,79 @@ static void __mlxsw_sp_nexthop_neigh_update(struct mlxsw_sp_nexthop *nh,
+ 	nh->update = 1;
  }
  
-+#define MLXSW_SP_LAG_SEED_INIT 0xcafecafe
++static int
++mlxsw_sp_nexthop_dead_neigh_replace(struct mlxsw_sp *mlxsw_sp,
++				    struct mlxsw_sp_neigh_entry *neigh_entry)
++{
++	struct neighbour *n, *old_n = neigh_entry->key.n;
++	struct mlxsw_sp_nexthop *nh;
++	bool entry_connected;
++	u8 nud_state, dead;
++	int err;
 +
- static int mlxsw_sp_lag_init(struct mlxsw_sp *mlxsw_sp)
++	nh = list_first_entry(&neigh_entry->nexthop_list,
++			      struct mlxsw_sp_nexthop, neigh_list_node);
++
++	n = neigh_lookup(nh->nh_grp->neigh_tbl, &nh->gw_addr, nh->rif->dev);
++	if (!n) {
++		n = neigh_create(nh->nh_grp->neigh_tbl, &nh->gw_addr,
++				 nh->rif->dev);
++		if (IS_ERR(n))
++			return PTR_ERR(n);
++		neigh_event_send(n, NULL);
++	}
++
++	mlxsw_sp_neigh_entry_remove(mlxsw_sp, neigh_entry);
++	neigh_entry->key.n = n;
++	err = mlxsw_sp_neigh_entry_insert(mlxsw_sp, neigh_entry);
++	if (err)
++		goto err_neigh_entry_insert;
++
++	read_lock_bh(&n->lock);
++	nud_state = n->nud_state;
++	dead = n->dead;
++	read_unlock_bh(&n->lock);
++	entry_connected = nud_state & NUD_VALID && !dead;
++
++	list_for_each_entry(nh, &neigh_entry->nexthop_list,
++			    neigh_list_node) {
++		neigh_release(old_n);
++		neigh_clone(n);
++		__mlxsw_sp_nexthop_neigh_update(nh, !entry_connected);
++		mlxsw_sp_nexthop_group_refresh(mlxsw_sp, nh->nh_grp);
++	}
++
++	neigh_release(n);
++
++	return 0;
++
++err_neigh_entry_insert:
++	neigh_entry->key.n = old_n;
++	mlxsw_sp_neigh_entry_insert(mlxsw_sp, neigh_entry);
++	neigh_release(n);
++	return err;
++}
++
+ static void
+ mlxsw_sp_nexthop_neigh_update(struct mlxsw_sp *mlxsw_sp,
+ 			      struct mlxsw_sp_neigh_entry *neigh_entry,
+-			      bool removing)
++			      bool removing, bool dead)
  {
- 	char slcr_pl[MLXSW_REG_SLCR_LEN];
- 	u32 seed;
- 	int err;
+ 	struct mlxsw_sp_nexthop *nh;
  
--	seed = jhash(mlxsw_sp->base_mac, sizeof(mlxsw_sp->base_mac), 0);
-+	seed = jhash(mlxsw_sp->base_mac, sizeof(mlxsw_sp->base_mac),
-+		     MLXSW_SP_LAG_SEED_INIT);
- 	mlxsw_reg_slcr_pack(slcr_pl, MLXSW_REG_SLCR_LAG_HASH_SMAC |
- 				     MLXSW_REG_SLCR_LAG_HASH_DMAC |
- 				     MLXSW_REG_SLCR_LAG_HASH_ETHERTYPE |
++	if (list_empty(&neigh_entry->nexthop_list))
++		return;
++
++	if (dead) {
++		int err;
++
++		err = mlxsw_sp_nexthop_dead_neigh_replace(mlxsw_sp,
++							  neigh_entry);
++		if (err)
++			dev_err(mlxsw_sp->bus_info->dev, "Failed to replace dead neigh\n");
++		return;
++	}
++
+ 	list_for_each_entry(nh, &neigh_entry->nexthop_list,
+ 			    neigh_list_node) {
+ 		__mlxsw_sp_nexthop_neigh_update(nh, removing);
 -- 
 2.20.1
 
