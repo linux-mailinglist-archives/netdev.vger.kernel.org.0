@@ -2,214 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6C43C709
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 11:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB61F3C741
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 11:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404702AbfFKJIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 05:08:34 -0400
-Received: from mail-it1-f193.google.com ([209.85.166.193]:32892 "EHLO
-        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728865AbfFKJIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 05:08:34 -0400
-Received: by mail-it1-f193.google.com with SMTP id v193so1697512itc.0
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 02:08:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=zeMo4vTTCMRQCh1UcUab1tdVwXAnUYKlGDYFR9grHg4=;
-        b=sTDQ+Nw/Rp7k19rWC1nXdKBn4Zt4yD+Obps9mOrJ2VZb678zQnt61Pt/daBBugdRBx
-         1Be7e3yMMhsZC219NQy2SQ8l8xkYsb8dMihUFKkDs8u1udbRT5GNNcmo5z9brTCF+fR9
-         U7/CgKgwUsb5AiwLAOfpw65ZTu56YDum15n8JDfv0wjLp8Dg5XpJSukLSN7GhS+Bj2AW
-         59aXQ+Ap0FYSdBlfOySQD7gyUg2FvXiCw8sV0j39aCtXnOPTjlYVa5rDxu10x0EZzY9M
-         85zxap2CvS5MN70zvIkj7QwdyfuS8w/f4D+Ugpk5fAcJREIFZtDpXWiQ62+OwdZ6zlPc
-         QGxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=zeMo4vTTCMRQCh1UcUab1tdVwXAnUYKlGDYFR9grHg4=;
-        b=GGdylicMTfwmuR/wZwbryG8mq7dBW5TLvi01kMSTLEEGH8wET5kagXLr6DxdPGxPOs
-         KxfKFbGSGqJPriK6nWpFN9xsudeDTriN+9N6PIQ5WDG7Q8frxtAY5UKWX5vvqS7y11H5
-         Zxh5vwAv91Iqd3YEWC2vkI4ubM0GlzIiUH6NPfRZ/kVwUj9CqAiNgkrTVve+0unoBKhD
-         BkY5at5xFAS09VvHGe3w9cQudbjWJk8KoqQ2uUBR14TtMkYtNdsX61lQhztkhId5l3Kd
-         7yKHMkWSbgMNLbthk95OJJOpBKSo3F9eI6SePHLZBy5s2qB5oxPzOqQ8FS5Kz33mGH+9
-         1tRw==
-X-Gm-Message-State: APjAAAXVPM5GyY7fhIu4y4INPGKKL1Kc29sG+qzyyekskgVIKHdynXgz
-        3bnloYks8rkBdGBNiLyKzreKurm6PIVleR2/VThkrg==
-X-Google-Smtp-Source: APXvYqwB5sap2qRNSgYlEuZQOK82FyMZ6aKds+0MFL2fxX75MoOnEnRDLoCj9S4IMxuR7RQMpeFuZMAWlazYZbSTPk8=
-X-Received: by 2002:a24:4417:: with SMTP id o23mr18165667ita.88.1560244112421;
- Tue, 11 Jun 2019 02:08:32 -0700 (PDT)
+        id S2404484AbfFKJdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 05:33:12 -0400
+Received: from mout.web.de ([212.227.17.11]:53453 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404197AbfFKJdM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 05:33:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1560245590;
+        bh=uWKhF0KKmacpgkeX1RaU3XxrZeH/dM8+/zJCB3AVCMs=;
+        h=X-UI-Sender-Class:Date:From:To:Subject;
+        b=FSc8dHCZfLlR/Q99YdZo+uKVhUHqOGwFx/TTFTqUyAgfwnOKx6bzH2vK+Xa8V2+EH
+         8Mkj3++T6OxKJxKnkxdfmzRdlF67NiiY3IFOLHwlETvub0axVn6MNURj9nqqP8UmXA
+         Fw2ds8p1a/5Qq4L8n279QOW1qFLAfpADGxFLRv3Y=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from schienar ([128.141.85.100]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LkPjj-1gyYVp09Yh-00cN7Z for
+ <netdev@vger.kernel.org>; Tue, 11 Jun 2019 11:33:10 +0200
+Date:   Tue, 11 Jun 2019 11:32:51 +0200
+From:   Julian Wollrath <jwollrath@web.de>
+To:     netdev@vger.kernel.org
+Subject: Kernel v5.2-rc4 trace involving nf_conntrack
+Message-ID: <20190611113251.2e3feffe@schienar>
 MIME-Version: 1.0
-References: <000000000000e92d1805711f5552@google.com> <000000000000381684058ace28e5@google.com>
- <20190611080431.GP21222@phenom.ffwll.local> <CACT4Y+YMFKe1cq_XpP0o5fd+XLD_8qMVjqnVX5rx1UCWyCR5eg@mail.gmail.com>
- <20190611085123.GU21222@phenom.ffwll.local> <20190611090110.GY21222@phenom.ffwll.local>
-In-Reply-To: <20190611090110.GY21222@phenom.ffwll.local>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 11 Jun 2019 11:08:21 +0200
-Message-ID: <CACT4Y+bPq6rcKCT-O8_TLUA9FTF6U0HumNcrfMLskvbX13NhsQ@mail.gmail.com>
-Subject: Re: WARNING in bpf_jit_free
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        DRI <dri-devel@lists.freedesktop.org>, hawk@kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>, maxime.ripard@bootlin.com,
-        netdev <netdev@vger.kernel.org>, paul.kocialkowski@bootlin.com,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>, wens@csie.org,
-        xdp-newbies@vger.kernel.org, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:pp7rD40ZGzEKX86muAwenl21K1g5x5xh0LDbqneFtNHvGgVb0LS
+ On7qMCtyUaew+U36UJww/uhqfsASwT4Oe8GyEQBAyQiTDXiqcITgDkVjFFMzezVOE+tDKFb
+ 9vMGMoYX5Bt/ZLkQF/k75NtqOJiAMb3nOGKvshSqnzDGfVJG5Oe5VnVBmjXvKbZcuC1nkvW
+ jLa/u+n4CFtt0bv2d1uAw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+7zQpDmcErc=:vipNBkDDf2IH76240nrpge
+ sm8WQbuuXGpBmB/oDlOoK2AQNaqfzJopntN2hJ7F+cQvnWRjv787/VzAwd2Y0SKO/lHpdH0hw
+ +aUwsh7XJCo5TO0AFT58Ad8zaGXXkkLZwt8IYNqB9I8QvZ81Mvx/jUz0tS660BVFm8nn5vpPw
+ bkUOHFPP6ePVp6dBJ25jP344UhWHLaHB9+QPIZYqxBOU6VhojXlNj/Yjk1jqr5PUaV0riPCTV
+ ZiAM7nK9FMTZZELgNVzOVHWhE45z7klFqJ3cQ86UiW4MSlMzPeHBk5yOCWbK60fVNeP5bXS3G
+ ifxMyWNP0Fz5c0bREYdDbjTBgen6Ay2XIMkihgF9bySFEDs9/3qtvdAgsZ4N5zmSxKtDa8rpz
+ cRwzfsNPB6bAFBlEGG/bPq/RVjBctqeSfYqeJ7VCH6rPv/67Nl82Ge3JyjDQGKUVItNH53WLQ
+ UTR4PbC3X4MqKsf4lqvv3Ep/wuuwzpiqXGPdhQNt6yw68LV3DHGZAT5TWzVbFgW/G0d5dv+a6
+ iMs3Osq74wkuDv8BZ6LQmmWW3TxrJpF0XNprKzXwSeA4JSHaErVfHbmQkGZ4ig4rkFDcWu0KK
+ llY6b4CUFle1tubO07S9oDiEodh95bJYd1ENl4un7tTgho0+e4HNnh+gCV+8aTUmbwN0gK17e
+ rZd5YO5Llfl6fYP4vMquhsIWOL0dBtjBV5UgTSDroooDXfX6quPE8pxo1VRXelVNT9ZYxJ9V4
+ v1XvDD1NjEhCLhiVjv79s+LR9pxNvTcDphv3ovgA7COwIc/LSwfDjR7tqBNvp6xUCbfkw5IkE
+ RhOnxMKC6w7qmibrlVvivqvUyDKfK3LDesU8zFuJpgXMecw6TQj8tIOk1AyMCe/pNTFPEdQzE
+ Y7+Dv2lWgRXa2Avkv4rzI52ND0nSo2mM7JLa3eh/NuMpkHVGdac0J9hguiEsUDeyYjIWf9R00
+ O2Zyu2EjNNZfc2gK94HF8j3xsKRO8SPMQuY+o8NS+1Z9d1UTSYQGN
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 11:01 AM Daniel Vetter <daniel@ffwll.ch> wrote:
->
-> On Tue, Jun 11, 2019 at 10:51:23AM +0200, Daniel Vetter wrote:
-> > On Tue, Jun 11, 2019 at 10:33:21AM +0200, Dmitry Vyukov wrote:
-> > > On Tue, Jun 11, 2019 at 10:04 AM Daniel Vetter <daniel@ffwll.ch> wrote:
-> > > >
-> > > > On Sat, Jun 08, 2019 at 04:22:06AM -0700, syzbot wrote:
-> > > > > syzbot has found a reproducer for the following crash on:
-> > > > >
-> > > > > HEAD commit:    79c3ba32 Merge tag 'drm-fixes-2019-06-07-1' of git://anong..
-> > > > > git tree:       upstream
-> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1201b971a00000
-> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=60564cb52ab29d5b
-> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=2ff1e7cb738fd3c41113
-> > > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a3bf51a00000
-> > > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120d19f2a00000
-> > > >
-> > > > Looking at the reproducer I don't see any calls to ioctl which could end
-> > > > up anywhere in drm.
-> > > > >
-> > > > > The bug was bisected to:
-> > > > >
-> > > > > commit 0fff724a33917ac581b5825375d0b57affedee76
-> > > > > Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > > Date:   Fri Jan 18 14:51:13 2019 +0000
-> > > > >
-> > > > >     drm/sun4i: backend: Use explicit fourcc helpers for packed YUV422 check
-> > > >
-> > > > And most definitely not in drm/sun4i. You can only hit this if you have
-> > > > sun4i and run on arm, which per your config isn't the case.
-> > > >
-> > > > tldr; smells like bisect gone wrong.
-> > > > -Daniel
-> > >
-> > > From the bisection log it looks like the bug is too hard to trigger
-> > > for reliable bisection. So it probably classified one bad commit as
-> > > good. But it should got quite close to the right one.
-> >
-> > Well statistically it'll get close, since there's a fair chance that it's
-> > one of the later bisect results that got mischaracterized.
-> >
-> > But you can be equally unlucky, and if it's one of the earliers, then it
-> > can easily be a few thousand commits of. Looking at the log it's mostly
-> > bad, with a few good sprinkled in, which could just be reproduction
-> > failures. So might very well be that the very first "good" result is
-> > wrong. And that very first "good" decision cuts away a big pile of bpf
-> > related commits. The next "good" decision then only cuts away a pile of
-> > drm commits, but at that point you're already off the rails most likely.
-> >
-> > I'd say re-test on f90d64483ebd394958841f67f8794ab203b319a7 a few times,
-> > I'm willing to bet that one is actually bad.
->
-> btw if this theory is right, we have a 1-in-4 chance of a spurious "good"
-> with your test. If you get 10 repeated "good" then that should be good
-> enough to make playing the lottery a better endeavor :-)
+Hi,
+
+I got the following trace on v5.2-rc4 involving nf_conntrack:
+
+[  143.193245] general protection fault: 0000 [#1] SMP PTI
+[  143.193264] CPU: 3 PID: 201 Comm: kworker/3:2 Tainted: G        W      =
+   5.2.0-rc4 #1
+[  143.193271] Hardware name: FUJITSU LIFEBOOK U747/FJNB2A5, BIOS Version =
+1.17 09/11/2017
+[  143.193292] Workqueue: events_power_efficient gc_worker [nf_conntrack]
+[  143.193316] RIP: 0010:nf_ct_helper_destroy+0x21/0x40 [nf_conntrack]
+[  143.193327] Code: 50 ff ff ff 0f 1f 44 00 00 48 8b 87 b8 00 00 00 48 85=
+ c0 74 24 0f b6 50 10 84 d2 74 1d 4
+4 0e <48> 8b 40 68 48 85 c0 74 05 e8 a1 b9 d9 e5 c3 c3 c3 66 66 2e 0f 1f
+[  143.193335] RSP: 0018:ffffaa9780e9bdc0 EFLAGS: 00010286
+[  143.193344] RAX: ff89bb1b62090000 RBX: ffffffffa66ae200 RCX: 0000000000=
+000000
+[  143.193350] RDX: 00000000000000ff RSI: 0000000000000000 RDI: ffff89bb49=
+2b0000
+[  143.193356] RBP: 0000000000000000 R08: 0000000000000010 R09: 0000746e65=
+696369
+[  143.193362] R10: 8080808080808080 R11: 0000000000000018 R12: 0000000000=
+004900
+[  143.193367] R13: ffff89bb492b0000 R14: ffffffffc0471c54 R15: 0000000000=
+000002
+[  143.193376] FS:  0000000000000000(0000) GS:ffff89bb5dd80000(0000) knlGS=
+:0000000000000000
+[  143.193382] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  143.193388] CR2: 00007fc6558b2008 CR3: 00000001b9c0a003 CR4: 0000000000=
+3606e0
+[  143.193394] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000=
+000000
+[  143.193400] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000=
+000400
+[  143.193404] Call Trace:
+[  143.193425]  nf_ct_delete_from_lists+0x1d/0x140 [nf_conntrack]
+[  143.193441]  ? __switch_to_asm+0x40/0x70
+[  143.193451]  ? __switch_to_asm+0x34/0x70
+[  143.193466]  nf_ct_delete+0x68/0x160 [nf_conntrack]
+[  143.193477]  ? __switch_to_asm+0x34/0x70
+[  143.193491]  nf_ct_gc_expired+0x64/0x80 [nf_conntrack]
+[  143.193506]  gc_worker+0x24e/0x2e0 [nf_conntrack]
+[  143.193525]  process_one_work+0x1f5/0x3f0
+[  143.193539]  ? process_one_work+0x3f0/0x3f0
+[  143.193551]  worker_thread+0x28/0x3c0
+[  143.193564]  ? process_one_work+0x3f0/0x3f0
+[  143.193574]  kthread+0x111/0x130
+[  143.193586]  ? kthread_create_worker_on_cpu+0x60/0x60
+[  143.193596]  ret_from_fork+0x35/0x40
+[  143.193605] Modules linked in: kafs dns_resolver fcrypt pcbc rxrpc arc4=
+ snd_hda_codec_hdmi iwlmvm snd_hda_
+_generic btrtl btbcm mac80211 btintel bluetooth nft_counter iwlwifi uvcvid=
+eo videobuf2_vmalloc intel_rapl vid
+l videobuf2_v4l2 intel_powerclamp nft_limit videodev coretemp i915 drbg sn=
+d_hda_intel videobuf2_common snd_us
+t snd_usbmidi_lib snd_hda_core snd_hwdep ansi_cprng drm_kms_helper snd_pcm=
+ snd_rawmidi syscopyarea snd_timer
+snd soundcore serio_raw cfg80211 sysimgblt ecdh_generic ecc fb_sys_fops rf=
+kill crc16 drm idma64 wmi battery b
+ag_ipv6 nf_defrag_ipv4 tpm_crb tpm fujitsu_laptop sparse_keymap video acpi=
+_pad ac nf_tables_set nf_tables nfn
+her af_alg hid_generic usbhid hid dm_crypt dm_mod sd_mod crct10dif_pclmul =
+i2c_designware_platform i2c_designw
+l
+[  143.193713]  ghash_clmulni_intel e1000e psmouse sdhci_pci ptp cqhci pps=
+_core sdhci i2c_i801 mmc_core ahci
+scsi_mod usbcore intel_lpss_pci intel_lpss usb_common
+[  143.193753] ---[ end trace 473de765b5682889 ]---
+[  143.193772] RIP: 0010:nf_ct_helper_destroy+0x21/0x40 [nf_conntrack]
+[  143.193782] Code: 50 ff ff ff 0f 1f 44 00 00 48 8b 87 b8 00 00 00 48 85=
+ c0 74 24 0f b6 50 10 84 d2 74 1d 48 01 d0 74 17 48 8b 00 48 85 c0 74 0e <=
+48> 8b 40 68 48 85 c0 74 05 e8 a1 b9 d9 e5 c3 c3 c3 66 66 2e 0f 1f
+[  143.193789] RSP: 0018:ffffaa9780e9bdc0 EFLAGS: 00010286
+[  143.193796] RAX: ff89bb1b62090000 RBX: ffffffffa66ae200 RCX: 0000000000=
+000000
+[  143.193801] RDX: 00000000000000ff RSI: 0000000000000000 RDI: ffff89bb49=
+2b0000
+[  143.193807] RBP: 0000000000000000 R08: 0000000000000010 R09: 0000746e65=
+696369
+[  143.193812] R10: 8080808080808080 R11: 0000000000000018 R12: 0000000000=
+004900
+[  143.193817] R13: ffff89bb492b0000 R14: ffffffffc0471c54 R15: 0000000000=
+000002
+[  143.193825] FS:  0000000000000000(0000) GS:ffff89bb5dd80000(0000) knlGS=
+:0000000000000000
+[  143.193831] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  143.193837] CR2: 00007fc6558b2008 CR3: 00000001b9c0a003 CR4: 0000000000=
+3606e0
+[  143.193842] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000=
+000000
+[  143.193847] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000=
+000400
 
 
-Yes, unfortunately.
-We could do more tests, but if bug reproduction chances are lower, we
-still the same lottery. And the more tests we do, the higher chances
-that we hit and get distracted by unrelated kernel bugs.
-When syzbot started bisecting bugs, I analyzed 120 bisections for
-correct/not correct and some classification of root causes:
-https://groups.google.com/forum/#!msg/syzkaller/sR8aAXaWEF4/tTWYRgvmAwAJ
-https://docs.google.com/spreadsheets/d/1WdBAN54-csaZpD3LgmTcIMR7NDFuQoOZZqPZ-CUqQgA/edit#gid=348315157
-https://docs.google.com/spreadsheets/d/1WdBAN54-csaZpD3LgmTcIMR7NDFuQoOZZqPZ-CUqQgA/edit#gid=0
-Hard to trigger bugs are a problem, but unrelated kernel bugs is even
-bigger problem...
+Best regards,
+Julian Wollrath
 
-
-
-> -Daniel
->
->
-> >
-> > Cheers, Daniel
-> >
-> > >
-> > > > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1467550f200000
-> > > > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=1667550f200000
-> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1267550f200000
-> > > > >
-> > > > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > > > Reported-by: syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com
-> > > > > Fixes: 0fff724a3391 ("drm/sun4i: backend: Use explicit fourcc helpers for
-> > > > > packed YUV422 check")
-> > > > >
-> > > > > WARNING: CPU: 0 PID: 8951 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
-> > > > > Kernel panic - not syncing: panic_on_warn set ...
-> > > > > CPU: 0 PID: 8951 Comm: kworker/0:0 Not tainted 5.2.0-rc3+ #23
-> > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > > > > Google 01/01/2011
-> > > > > Workqueue: events bpf_prog_free_deferred
-> > > > > Call Trace:
-> > > > >  __dump_stack lib/dump_stack.c:77 [inline]
-> > > > >  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-> > > > >  panic+0x2cb/0x744 kernel/panic.c:219
-> > > > >  __warn.cold+0x20/0x4d kernel/panic.c:576
-> > > > >  report_bug+0x263/0x2b0 lib/bug.c:186
-> > > > >  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-> > > > >  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-> > > > >  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-> > > > >  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-> > > > >  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
-> > > > > RIP: 0010:bpf_jit_free+0x157/0x1b0
-> > > > > Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00
-> > > > > 00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 f9 b5 f4 ff <0f> 0b e9 f9 fe ff
-> > > > > ff e8 bd 53 2d 00 e9 d9 fe ff ff 48 89 7d e0 e8
-> > > > > RSP: 0018:ffff88808886fcb0 EFLAGS: 00010293
-> > > > > RAX: ffff88808cb6c480 RBX: ffff88809051d280 RCX: ffffffff817ae68d
-> > > > > RDX: 00000000> >
-> > > >
-> > > > --
-> > > > Daniel Vetter
-> > > > Software Engineer, Intel Corporation
-> > > > http://blog.ffwll.ch
-> > > >
-> > > > --
-> > > > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> > > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20190611080431.GP21222%40phenom.ffwll.local.
-> > > > For more options, visit https://groups.google.com/d/optout.00000000 RSI: ffffffff817bf0f7 RDI: ffff88809051d2f0
-> > > > > RBP: ffff88808886fcd0 R08: 1ffffffff14ccaa8 R09: fffffbfff14ccaa9
-> > > > > R10: fffffbfff14ccaa8 R11: ffffffff8a665547 R12: ffffc90001925000
-> > > > > R13: ffff88809051d2e8 R14: ffff8880a0e43900 R15: ffff8880ae834840
-> > > > >  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1984
-> > > > >  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-> > > > >  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-> > > > >  kthread+0x354/0x420 kernel/kthread.c:255
-> > > > >  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> > > > > Kernel Offset: disabled
-> > > > > Rebooting in 86400 seconds..
-> >
-> > --
-> > Daniel Vetter
-> > Software Engineer, Intel Corporation
-> > http://blog.ffwll.ch
->
-> --
-> Daniel Vetter
-> Software Engineer, Intel Corporation
-> http://blog.ffwll.ch
+=2D-
+ ()  ascii ribbon campaign - against html e-mail
+ /\                        - against proprietary attachments
