@@ -2,162 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C42B3CA87
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6F83CA92
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404103AbfFKL5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 07:57:08 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45091 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403877AbfFKL5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:57:08 -0400
-Received: by mail-qt1-f196.google.com with SMTP id j19so14071085qtr.12;
-        Tue, 11 Jun 2019 04:57:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K3Sm1X+d2sov0ITQpzgk6HQiz/Phckwgb6KD7DQ+q/M=;
-        b=llBWdXc9ufcDn9VTjjDJIRoBqsPwIk2ZRp4tiC8CFA0r1N37TwKz0DFg1VJnA/Ci0B
-         AIASlCCnSBtNmD0vnnp9Uf8Qrb5Y+o4AF47XzKEutUSdM63zFJ6sKA5OrHss4YVf4a7h
-         Nw2X8po5gj7XsvO8TKbQJpe2LYtumG6dLw3D+6pqpxNCu1gcqnOVUzav05Swgq7CY4Re
-         Z259UXi3eEjCaQavakLv8mKadadS+rs9ZgYa0EqO1vuDjIYdtqAnoINY7gebx3jz3aZ0
-         7YkqT3ewCiyMiJSLN4m7sKToA0XWtCHNIuLUXjRoQ9x+I5hAM2PiDxlWb/+cocDsy0RH
-         xx8w==
-X-Gm-Message-State: APjAAAXawBW/+8+mShtA6q+NBSM8MbBcuyfjJIKiCURNabPQtNI3GDpM
-        f0hb4zwLS0EiIeGTBThBy0ITA0DQiPOsgsgs2PU=
-X-Google-Smtp-Source: APXvYqwirPrDDDsMco7I6kepiNjDwf87AqZbyPYaRT4gsoLYAygjHsKyh9v3e1zX7J05MHnONK4y+Dh0Ic32yh7e2fg=
-X-Received: by 2002:ac8:2dae:: with SMTP id p43mr45188807qta.304.1560254226737;
- Tue, 11 Jun 2019 04:57:06 -0700 (PDT)
+        id S2404248AbfFKL6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 07:58:22 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:39961 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403877AbfFKL6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:58:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1560254301; x=1591790301;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=GmjJlUFqUbEULJG8ZnfLQMXCtx6HEb+MpiqrR2WVT0Q=;
+  b=VS96hhSqJEL5/cCm62g3PCHwlvt7dXCPDzyFmh4d04DEJ9vps9Tnp6N0
+   a/BOE79bjT9pLrl3JctP5cN/5KU5AfvjPyZDy2lRaHcfUG4K8MQCP9h0G
+   l0Tylqv/3igJuHJhGO1D5CsPcd2yHkEC9LqLPoTRyXo63yg9PQ0DGIhbz
+   k=;
+X-IronPort-AV: E=Sophos;i="5.60,579,1549929600"; 
+   d="scan'208";a="804742785"
+Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.47.22.34])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 11 Jun 2019 11:58:19 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 10CAFA2184;
+        Tue, 11 Jun 2019 11:58:18 +0000 (UTC)
+Received: from EX13d09UWC004.ant.amazon.com (10.43.162.114) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 11 Jun 2019 11:58:18 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13d09UWC004.ant.amazon.com (10.43.162.114) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 11 Jun 2019 11:58:17 +0000
+Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.81) by
+ mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Tue, 11 Jun 2019 11:58:14 +0000
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>
+Subject: [PATCH V3 net 0/7] Support for dynamic queue size changes
+Date:   Tue, 11 Jun 2019 14:58:04 +0300
+Message-ID: <20190611115811.2819-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org> <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-In-Reply-To: <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 11 Jun 2019 13:56:49 +0200
-Message-ID: <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
-        Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        syadagir@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 10:12 AM Johannes Berg
-<johannes@sipsolutions.net> wrote:
+From: Sameeh Jubran <sameehj@amazon.com>
 
-> > As I've made clear before, my work on this has been focused on the IPA transport,
-> > and some of this higher-level LTE architecture is new to me.  But it
-> > seems pretty clear that an abstracted WWAN subsystem is a good plan,
-> > because these devices represent a superset of what a "normal" netdev
-> > implements.
->
-> I'm not sure I'd actually call it a superset. By themselves, these
-> netdevs are actually completely useless to the network stack, AFAICT.
-> Therefore, the overlap with netdevs you can really use with the network
-> stack is pretty small?
+This patchset introduces the following:
+* add new admin command for supporting different queue size for Tx/Rx
+* add support for Tx/Rx queues size modification through ethtool
+* allow queues allocation backoff when low on memory
+* update driver version
 
-I think Alex meant the concept of having a type of netdev with a generic
-user space interface for wwan and similar to a wlan device, as I understood
-you had suggested as well, as opposed to a stacked device as in
-rmnet or those drivers it seems to be modeled after (vlan, ip tunnel, ...)/.
+Difference from v2:
+* Dropped superfluous range checks which are already done in ethtool. [patch 5/7]
+* Dropped inline keyword from function. [patch 4/7]
+* Added a new patch which drops inline keyword all *.c files. [patch 6/7]
 
-> > HOWEVER I disagree with your suggestion that the IPA code should
-> > not be committed until after that is all sorted out.  In part it's
-> > for selfish reasons, but I think there are legitimate reasons to
-> > commit IPA now *knowing* that it will need to be adapted to fit
-> > into the generic model that gets defined and developed.  Here
-> > are some reasons why.
->
-> I can't really argue with those, though I would point out that the
-> converse also holds - if we commit to this now, then we will have to
-> actually keep the API offered by IPA/rmnet today, so we cannot actually
-> remove the netdev again, even if we do migrate it to offer support for a
-> WWAN framework in the future.
+Difference from v1:
+* Changed ena_update_queue_sizes() signature to use u32 instead of int
+  type for the size arguments. [patch 5/7]
 
-Right. The interface to support rmnet might be simple enough to keep
-next to what becomes the generic interface, but it will always continue
-to be an annoyance.
+Arthur Kiyanovski (1):
+  net: ena: add MAX_QUEUES_EXT get feature admin command
 
-> > Second, the IPA code has been out for review recently, and has been
-> > the subject of some detailed discussion in the past few weeks.  Arnd
-> > especially has invested considerable time in review and discussion.
-> > Delaying things until after a better generic model is settled on
-> > (which I'm guessing might be on the order of months)
->
->
-> I dunno if it really has to be months. I think we can cobble something
-> together relatively quickly that addresses the needs of IPA more
-> specifically, and then extend later?
->
-> But OTOH it may make sense to take a more paced approach and think
-> about the details more carefully than we have over in the other thread so far.
+Sameeh Jubran (6):
+  net: ena: enable negotiating larger Rx ring size
+  net: ena: make ethtool show correct current and max queue sizes
+  net: ena: allow queue allocation backoff when low on memory
+  net: ena: add ethtool function for changing io queue sizes
+  net: ena: remove inline keyword from functions in *.c
+  net: ena: update driver version from 2.0.3 to 2.1.0
 
-I would hope that as soon as we can agree on a general approach, it
-would also be possible to merge a minimal implementation into the kernel
-along with IPA. Alex already mentioned that IPA in its current state does
-not actually support more than one data channel, so the necessary
-setup for it becomes even simpler.
+ .../net/ethernet/amazon/ena/ena_admin_defs.h  |  56 ++-
+ drivers/net/ethernet/amazon/ena/ena_com.c     |  82 +++--
+ drivers/net/ethernet/amazon/ena/ena_com.h     |   3 +
+ drivers/net/ethernet/amazon/ena/ena_eth_com.c |  26 +-
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  32 +-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 319 +++++++++++++-----
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  28 +-
+ 7 files changed, 403 insertions(+), 143 deletions(-)
 
-At the moment, the rmnet configuration in include/uapi/linux/if_link.h
-is almost trivial, with the three pieces of information needed being
-an IFLA_LINK to point to the real device (not needed if there is only
-one device per channel, instead of two), the IFLA_RMNET_MUX_ID
-setting the ID of the muxing channel (not needed if there is only
-one channel ?), a way to specify software bridging between channels
-(not useful if there is only one channel) and a few flags that I assume
-must match the remote end:
+-- 
+2.17.1
 
-#define RMNET_FLAGS_INGRESS_DEAGGREGATION         (1U << 0)
-#define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
-#define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
-#define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
-enum {
-        IFLA_RMNET_UNSPEC,
-        IFLA_RMNET_MUX_ID,
-        IFLA_RMNET_FLAGS,
-        __IFLA_RMNET_MAX,
-};
-#define IFLA_RMNET_MAX  (__IFLA_RMNET_MAX - 1)
-struct ifla_rmnet_flags {
-        __u32   flags;
-        __u32   mask;
-};
-
-> > Third, having the code upstream actually means the actual requirements
-> > for rmnet-over-IPA are clear and explicit.  This might not be a huge
-> > deal, but I think it's better to devise a generic WWAN scheme that
-> > can refer to actual code than to do so with assumptions about what
-> > will work with rmnet (and others).  As far as I know, the upstream
-> > rmnet has no other upstream back end; IPA will make it "real."
->
-> Is that really true? I had previously been told that rmnet actually does
-> have use with a few existing drivers.
->
->
-> If true though, then I think this would be the killer argument *in
-> favour* of *not* merging this - because that would mean we *don't* have
-> to actually keep the rmnet API around for all foreseeable future.
-
-I would agree with that. From the code I can see no other driver
-including the rmnet protocol header (see the discussion about moving
-the header to include/linux in order to merge ipa), and I don't see
-any other driver referencing ETH_P_MAP either. My understanding
-is that any driver used by rmnet would require both, but they are
-all out-of-tree at the moment.
-
-        Arnd
