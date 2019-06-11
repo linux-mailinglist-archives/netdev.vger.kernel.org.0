@@ -2,72 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4235641667
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 22:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A520D41676
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 22:52:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406782AbfFKUse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 16:48:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405881AbfFKUse (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 16:48:34 -0400
-Received: from akpm3.svl.corp.google.com (unknown [104.133.8.65])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CE6320684;
-        Tue, 11 Jun 2019 20:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560286113;
-        bh=y33lrlkQja7eoIovWsePDjdEdIHZ/RJoRj29PafhqOI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UgyruavCsSZLLvbVGn/8Url9hdMFqD/vc6cS2xvCxVAaLGSpqRyO7wgSl3uYSlnrC
-         3+fJjYU9x+kvkKn62ONAnZk5QMPYKtIt9RU5V2bIySebdJX4pNazzbre4oO5OlK2mG
-         81xtH5C+HAjNqK8Itw5roVmiKtRcfGnYRZlw+kVk=
-Date:   Tue, 11 Jun 2019 13:48:31 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Shyam Saini <shyam.saini@amarulasolutions.com>
-Cc:     kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        netdev@vger.kernel.org, linux-ext4@vger.kernel.org,
-        devel@lists.orangefs.org, linux-mm@kvack.org,
-        linux-sctp@vger.kernel.org, bpf@vger.kernel.org,
-        kvm@vger.kernel.org, mayhs11saini@gmail.com,
-        Alexey Dobriyan <adobriyan@gmail.com>
-Subject: Re: [PATCH V2] include: linux: Regularise the use of FIELD_SIZEOF
- macro
-Message-Id: <20190611134831.a60c11f4b691d14d04a87e29@linux-foundation.org>
-In-Reply-To: <20190611193836.2772-1-shyam.saini@amarulasolutions.com>
-References: <20190611193836.2772-1-shyam.saini@amarulasolutions.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S2406712AbfFKUwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 16:52:34 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:57735 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406629AbfFKUwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 16:52:33 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hankp-00015x-IO; Tue, 11 Jun 2019 16:52:30 -0400
+Date:   Tue, 11 Jun 2019 16:52:22 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
+        marcelo.leitner@gmail.com, lucien.xin@gmail.com
+Subject: Re: [PATCH v3] [sctp] Free cookie before we memdup a new one
+Message-ID: <20190611205222.GA31473@hmswarspite.think-freely.org>
+References: <20190610163456.7778-1-nhorman@tuxdriver.com>
+ <20190611192245.9110-1-nhorman@tuxdriver.com>
+ <20190611.130856.1857826051148231972.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190611.130856.1857826051148231972.davem@davemloft.net>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jun 2019 01:08:36 +0530 Shyam Saini <shyam.saini@amarulasolutions.com> wrote:
-
-> Currently, there are 3 different macros, namely sizeof_field, SIZEOF_FIELD
-> and FIELD_SIZEOF which are used to calculate the size of a member of
-> structure, so to bring uniformity in entire kernel source tree lets use
-> FIELD_SIZEOF and replace all occurrences of other two macros with this.
+On Tue, Jun 11, 2019 at 01:08:56PM -0700, David Miller wrote:
+> From: Neil Horman <nhorman@tuxdriver.com>
+> Date: Tue, 11 Jun 2019 15:22:45 -0400
 > 
-> For this purpose, redefine FIELD_SIZEOF in include/linux/stddef.h and
-> tools/testing/selftests/bpf/bpf_util.h and remove its defination from
-> include/linux/kernel.h
+> > v2->v3
+> > net->sctp
+> > also free peer_chunks
 > 
-> In favour of FIELD_SIZEOF, this patch also deprecates other two similar
-> macros sizeof_field and SIZEOF_FIELD.
+> Neil this isn't the first time you're submitting sctp patches right? ;-)
 > 
-> For code compatibility reason, retain sizeof_field macro as a wrapper macro
-> to FIELD_SIZEOF
+> Subject: "[PATCH v3 net] sctp: Free cookie before we memdup a new one"
+> 
+> It's "subsystem_prefix: " and I even stated this explicitly yesterday.
+> 
+No, sorry, I'm trying to do this while I get a CI mess sorted out at the same
+time, and I'm not close attention here.
 
-As Alexey has pointed out, C structs and unions don't have fields -
-they have members.  So this is an opportunity to switch everything to
-a new member_sizeof().
+If you want to take over a few dozen user space packages for me in RHEL, I'll
+gladly get this right on the first try :)
 
-What do people think of that and how does this impact the patch footprint?
+Neil
+
