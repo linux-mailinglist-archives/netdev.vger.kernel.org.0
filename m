@@ -2,139 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DCB83C25A
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 06:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84E7A3C26B
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 06:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388847AbfFKEhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 00:37:10 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41090 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfFKEhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 00:37:10 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 33so4837389qtr.8;
-        Mon, 10 Jun 2019 21:37:09 -0700 (PDT)
+        id S2391084AbfFKEku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 00:40:50 -0400
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:39595 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387997AbfFKEkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 00:40:49 -0400
+Received: by mail-qt1-f171.google.com with SMTP id i34so13003114qta.6
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 21:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2VpHqTtoIr2WKto7cuYhJoVTJ0OD/hwftu7D+UU2YMs=;
-        b=ZjrMFV7xhdsNyaXDtUR+LKBr6UOzpy/3RJ/kVcHT+O1xgDquAsK8uTbKU7L9cG6yJy
-         SO0AVOJIAeOyF/PmcL0c77nd4NnCu0lR6m0z2E0m+V0pPbCybPNM8n58CJhac4+B9Q6/
-         xfUhmrLaCvt6Ddw4CxPgOubz2QNyPR20l5I91NcbCNfS+ysuANgCGxled1CeQgMa8XRM
-         0Qz5vd7OTuEH4bygdC+quSHaHlGuHaFq+pUWFpObiSbLI0AFyvLryQbfU2AC1ECrUy4b
-         Jp/1ELtvQlN9T3qrgq8BNzhUQ3l3W236BFswnLnRrLDd/JbRYwjpBOdaGK812c5bCW61
-         1xmQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pedKJv+y0h9YwH8l6r68ZaJ51HyYS8CLS/ZfqDVvEI8=;
+        b=DAlIjSQy1QlPoP+EhgD27qDB7VzyMIb7pZzecIbCMa6ViOZy2Hca/tcurvSIAWe18j
+         7BeWGeNmynLMy/hhrUWnE2yRLkKmj/9Uzoqk+iYL1m/59kumvnOuWXR/Arvw4IofApWV
+         tnUHujdW9CJrSX3u+38bcqVbOv4PiL2W7OjzkO8HE189SlHg/DuQxZXma/U6mbXfeREB
+         Ms14d6/vaEZhGH5QYyHFzZWse65tgQwRu2hP9p6b6mEJ8hZG2SCreStiM4L8m+9WUFIb
+         FklLafGU+2pOyFCpCbQZpiQ6HfYOiroR21cEVQueoxaQ9b5Z0rlz+RBmocCg4B4RpyLs
+         Fxow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2VpHqTtoIr2WKto7cuYhJoVTJ0OD/hwftu7D+UU2YMs=;
-        b=mXIMc4uThw/t3HXm7O6xcbauX+4ECH4uNExjQeQ/DAwkhq7852QyNB0Hn6aHOsVvMm
-         2e0HV909lUWXUlCn8g8hI5WHnArmdtPdfZt4Ve89kgUFywZU48i1fZTgwlB4hctidq83
-         CigKzWv7B8bJzL7OkCb2TPKK4Jf07+bGnaXdaXneJwA+OlAnjRtv2O2thPiBKC3UukF7
-         /Etg11Z5zumM3hTBd8UEGYt4ZNFx3y+t2aZdksR5o6/1gW0mh766H2fw9D8o2UnHrhp2
-         UUycEe7h4NOhtspnJqs54gGbtt+WVNTaiaUwukUaNGDY8viwAMAuHTiV35iUdo1hjMTH
-         M2qw==
-X-Gm-Message-State: APjAAAWcqksJ82BS1RgpfironaEnezWSFAmXZ6DgIySMqFdOETDhr50B
-        pfKJR5tK16w5JptSSpgIBIJL6GDuYEZbWv2pcY4=
-X-Google-Smtp-Source: APXvYqy51DzsUzfz9KHdrwVq2Lt3cwo87M+wlbz7TFEt24KsPYPdogqEmeMlK9iPuEorqusanqdkY00IcSI3RItdH/k=
-X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr39622788qta.93.1560227829440;
- Mon, 10 Jun 2019 21:37:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pedKJv+y0h9YwH8l6r68ZaJ51HyYS8CLS/ZfqDVvEI8=;
+        b=QJLoGpNVMcpCW0sj3eeALXpcAcdCLTZ1PnFLXoAJTqRk3Hxrj3UAunTLi852SnUxWx
+         b8bGm+xzBFaYt6TurG/YbF9aisJ/x5KgKvBAEIpiOwovJX0TBwSELDZhCfXE81lhliKJ
+         FhYZLsbW6k3gvzYeP68RIGn35FBpXhrLIzYJFX9NBeyy3QhXChbP/M3nursPET2zfIzG
+         E5Gq4DsH294D28phzc4dihA2REQW1F1YyzHMcoIpEINMA6mApbkG/nfR3G+dVU09EelG
+         vQ0OmR+a78/Y240ICKXx4ivPu2u0T+Pus6I8BqK2lcwKJThk2VV0tarpfNiDBIaLAkqz
+         oTPw==
+X-Gm-Message-State: APjAAAV8jwmwtgVZibpymGqD/2E14uTJ631Ysw9UKGyRwAKNuw7awJNG
+        n7zC6gwB6aZRVZpputs9xKIEMw==
+X-Google-Smtp-Source: APXvYqzAhsu6W12GKhI46VEoyWTFSc9ydge5HVfW3POkNU+3HfCC2sSz9qkbsZEZP7vsQSdGRjL09w==
+X-Received: by 2002:a0c:d4f4:: with SMTP id y49mr32522115qvh.238.1560228048789;
+        Mon, 10 Jun 2019 21:40:48 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y3sm2463375qtj.46.2019.06.10.21.40.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Jun 2019 21:40:48 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        alexei.starovoitov@gmail.com, davejwatson@fb.com,
+        borisp@mellanox.com, Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 00/12] tls: add support for kernel-driven resync and nfp RX offload
+Date:   Mon, 10 Jun 2019 21:39:58 -0700
+Message-Id: <20190611044010.29161-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190611043505.14664-1-andriin@fb.com>
-In-Reply-To: <20190611043505.14664-1-andriin@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 10 Jun 2019 21:36:58 -0700
-Message-ID: <CAEf4BzajDtVbKa+z-goL18pyBj9TKpq0-QGW6nKvQY=yBqDCVA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/8] BTF-defined BPF map definitions
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 9:35 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> This patch set implements initial version (as discussed at LSF/MM2019
-> conference) of a new way to specify BPF maps, relying on BTF type information,
-> which allows for easy extensibility, preserving forward and backward
-> compatibility. See details and examples in description for patch #6.
->
-> Patch #1 centralizes commonly used min/max macro in libbpf_internal.h.
-> Patch #2 extracts .BTF and .BTF.ext loading loging from elf_collect().
-> Patch #3 refactors map initialization logic into user-provided maps and global
-> data maps, in preparation to adding another way (BTF-defined maps).
-> Patch #4 adds support for map definitions in multiple ELF sections and
-> deprecates bpf_object__find_map_by_offset() API which doesn't appear to be
-> used anymore and makes assumption that all map definitions reside in single
-> ELF section.
-> Patch #5 splits BTF intialization from sanitization/loading into kernel to
-> preserve original BTF at the time of map initialization.
-> Patch #6 adds support for BTF-defined maps.
-> Patch #7 adds new test for BTF-defined map definition.
-> Patch #8 converts test BPF map definitions to use BTF way.
->
-> rfc->v1:
-> - error out on unknown field by default (Stanislav, Jakub, Lorenz);
->
-> Andrii Nakryiko (8):
->   libbpf: add common min/max macro to libbpf_internal.h
->   libbpf: extract BTF loading and simplify ELF parsing logic
->   libbpf: refactor map initialization
->   libbpf: identify maps by section index in addition to offset
->   libbpf: split initialization and loading of BTF
->   libbpf: allow specifying map definitions using BTF
->   selftests/bpf: add test for BTF-defined maps
->   selftests/bpf: switch tests to BTF-defined map definitions
->
->  tools/lib/bpf/bpf.c                           |   7 +-
->  tools/lib/bpf/bpf_prog_linfo.c                |   5 +-
->  tools/lib/bpf/btf.c                           |   3 -
->  tools/lib/bpf/btf.h                           |   1 +
->  tools/lib/bpf/btf_dump.c                      |   3 -
->  tools/lib/bpf/libbpf.c                        | 767 +++++++++++++-----
->  tools/lib/bpf/libbpf_internal.h               |   7 +
->  tools/testing/selftests/bpf/progs/bpf_flow.c  |  18 +-
->  .../selftests/bpf/progs/get_cgroup_id_kern.c  |  18 +-
->  .../testing/selftests/bpf/progs/netcnt_prog.c |  22 +-
->  .../selftests/bpf/progs/sample_map_ret0.c     |  18 +-
->  .../selftests/bpf/progs/socket_cookie_prog.c  |   9 +-
->  .../bpf/progs/sockmap_verdict_prog.c          |  36 +-
->  .../selftests/bpf/progs/test_btf_newkv.c      |  73 ++
->  .../bpf/progs/test_get_stack_rawtp.c          |  27 +-
->  .../selftests/bpf/progs/test_global_data.c    |  27 +-
->  tools/testing/selftests/bpf/progs/test_l4lb.c |  45 +-
->  .../selftests/bpf/progs/test_l4lb_noinline.c  |  45 +-
->  .../selftests/bpf/progs/test_map_in_map.c     |  20 +-
->  .../selftests/bpf/progs/test_map_lock.c       |  22 +-
->  .../testing/selftests/bpf/progs/test_obj_id.c |   9 +-
->  .../bpf/progs/test_select_reuseport_kern.c    |  45 +-
->  .../bpf/progs/test_send_signal_kern.c         |  22 +-
->  .../bpf/progs/test_skb_cgroup_id_kern.c       |   9 +-
->  .../bpf/progs/test_sock_fields_kern.c         |  60 +-
->  .../selftests/bpf/progs/test_spin_lock.c      |  33 +-
->  .../bpf/progs/test_stacktrace_build_id.c      |  44 +-
->  .../selftests/bpf/progs/test_stacktrace_map.c |  40 +-
->  .../testing/selftests/bpf/progs/test_tc_edt.c |   9 +-
->  .../bpf/progs/test_tcp_check_syncookie_kern.c |   9 +-
->  .../selftests/bpf/progs/test_tcp_estats.c     |   9 +-
->  .../selftests/bpf/progs/test_tcpbpf_kern.c    |  18 +-
->  .../selftests/bpf/progs/test_tcpnotify_kern.c |  18 +-
->  tools/testing/selftests/bpf/progs/test_xdp.c  |  18 +-
->  .../selftests/bpf/progs/test_xdp_noinline.c   |  60 +-
->  tools/testing/selftests/bpf/test_btf.c        |  10 +-
->  .../selftests/bpf/test_queue_stack_map.h      |  20 +-
->  .../testing/selftests/bpf/test_sockmap_kern.h |  72 +-
->  38 files changed, 1187 insertions(+), 491 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/test_btf_newkv.c
->
-> --
-> 2.17.1
->
+Hi!
 
-Argh, forgot to remove RFC part, will resend, sorry for spam!
+This series adds TLS RX offload for NFP and completes the offload
+by providing resync strategies.  When TLS data stream looses segments
+or experiences reorder NIC can no longer perform in line offload.
+Resyncs provide information about placement of records in the
+stream so that offload can resume.
+
+Existing TLS resync mechanisms are not a great fit for the NFP.
+In particular the TX resync is hard to implement for packet-centric
+NICs.  This patchset adds an ability to perform TX resync in a way
+similar to the way initial sync is done - by calling down to the
+driver when new record is created after driver indicated sync had
+been lost.
+
+Similarly on the RX side, we try to wait for a gap in the stream
+and send record information for the next record.  This works very
+well for RPC workloads which are the primary focus at this time.
+
+Dirk van der Merwe (2):
+  nfp: tls: set skb decrypted flag
+  nfp: tls: implement RX TLS resync
+
+Jakub Kicinski (10):
+  net/tls: simplify seq calculation in handle_device_resync()
+  net/tls: pass record number as a byte array
+  net/tls: rename handle_device_resync()
+  net/tls: add kernel-driven TLS RX resync
+  nfp: rename nfp_ccm_mbox_alloc()
+  nfp: add async version of mailbox communication
+  nfp: tls: enable TLS RX offload
+  net/tls: generalize the resync callback
+  net/tls: add kernel-driven resync mechanism for TX
+  nfp: tls: make use of kernel-driven TX resync
+
+ Documentation/networking/tls-offload.rst      |  54 +++++-
+ .../mellanox/mlx5/core/en_accel/tls.c         |  10 +-
+ drivers/net/ethernet/netronome/nfp/ccm.h      |  10 +-
+ drivers/net/ethernet/netronome/nfp/ccm_mbox.c | 179 ++++++++++++++++--
+ .../ethernet/netronome/nfp/crypto/crypto.h    |   6 +-
+ .../net/ethernet/netronome/nfp/crypto/tls.c   |  73 ++++++-
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  |  20 +-
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  57 +++++-
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  |  18 +-
+ include/net/tls.h                             |  63 +++++-
+ net/tls/tls_device.c                          | 140 ++++++++++++--
+ net/tls/tls_sw.c                              |   9 +-
+ 12 files changed, 566 insertions(+), 73 deletions(-)
+
+-- 
+2.21.0
+
