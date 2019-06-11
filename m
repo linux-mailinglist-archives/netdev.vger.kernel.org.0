@@ -2,119 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 021BD3D73B
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 21:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08E4F3D74C
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 21:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406315AbfFKTxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 15:53:34 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:52482 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404282AbfFKTxe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 15:53:34 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x5BJqsE6005588;
-        Tue, 11 Jun 2019 22:52:54 +0300
-Date:   Tue, 11 Jun 2019 22:52:54 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Eric Biggers <ebiggers@kernel.org>
-cc:     syzbot <syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        horms@verge.net.au, kadlec@blackhole.kfki.hu,
-        linux-kernel@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        wensong@linux-vs.org
-Subject: Re: memory leak in start_sync_thread
-In-Reply-To: <20190611010612.GD220379@gmail.com>
-Message-ID: <alpine.LFD.2.21.1906112239410.3387@ja.home.ssi.bg>
-References: <0000000000006d7e520589f6d3a9@google.com> <20190611010612.GD220379@gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S2406367AbfFKTzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 15:55:14 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:35776 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406242AbfFKTzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 15:55:13 -0400
+Received: by mail-ot1-f65.google.com with SMTP id j19so13141798otq.2;
+        Tue, 11 Jun 2019 12:55:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2i3vf0rvzIrUcS429y9/vh3HAalX4Oc5g7401Bit/+o=;
+        b=dtGsnv2yPE5aM4SpEjmjnV37V3jfaNlPDNkHOKNFiuRUzfgMcy9gJ9TOZQuwsPdmlO
+         ccQnpyuLiAn+grFpsdWaMy5oDsPqnvdW6ydLhvWpG9YBBzBU5Ou8LuKUVEeefVrdyM5H
+         7Nv/HN7DOURw0JuLBj4ifWjs91K6mrHe2K9Z4xP7oDwEbSSgDDmrSi8hhsY92HoBjhUS
+         JbOrOLrkustJ2PbA9kr/3vfdpnml6BjuTxGfsVwo/f8fFZHWNBGb+M9ZepxmbDMMWm77
+         O9UwSNY1M20+PU7eGRCyEXQOeMc48xIW8IX9XiHJx7sMii+RKPjZ+aMORy3UDFUwovQJ
+         3Iog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2i3vf0rvzIrUcS429y9/vh3HAalX4Oc5g7401Bit/+o=;
+        b=cK+2YUjBrZRLzSEFHz8YInA9FVIckSGy3I0ZLY/kOyM6vbcaJb4fzLkBnqz/N/grb9
+         hNcLIoGdULlqsFRukFxk6/4ThWVWt7D7J0aJyRXebfWp32q0jXsfKQ+xIOdqeP3LWS/4
+         VqKJ5O6psKmAgsQI6L8xQH6fiqh3+xRiN4ZdZDMrgxJUqnZf3NebO02uKf3YvRPtRsQQ
+         5Hji82KgGvmVUGTwz7yslSXCjJvzEux9Ye/eBrRGjJH2UzlxBrxMswzAiUlA7vVUQMCz
+         hZ+Abm6od4yLOvqOQHdHYwf8kh5YKqWcF1xt0IucbelefIlrO6vTW1VXDRvDwIEnptws
+         uMgw==
+X-Gm-Message-State: APjAAAWmixi+acmhOsMzzqDiDpFCRoKF65d/yP1+R7GgLaVNLB/sSGte
+        ULwXQGliRvcMyUamfR47GoV+3+S00u+XYHfHFfc=
+X-Google-Smtp-Source: APXvYqzsQM9kPsCqm9oHigjo0WuLHVlsFvcp2RFkRgadZQhoVDfqn8f7WCfVTe6ekcSET4BOaM8howSBFhMuozDOY8k=
+X-Received: by 2002:a9d:32a1:: with SMTP id u30mr35281383otb.371.1560282912579;
+ Tue, 11 Jun 2019 12:55:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20190522052002.10411-1-anarsoul@gmail.com> <6BD1D3F7-E2F2-4B2D-9479-06E27049133C@holtmann.org>
+ <7B7F362B-6C8B-4112-8772-FB6BC708ABF5@holtmann.org> <CA+E=qVfopSA90vG2Kkh+XzdYdNn=M-hJN_AptW=R+B5v3HB9eA@mail.gmail.com>
+In-Reply-To: <CA+E=qVfopSA90vG2Kkh+XzdYdNn=M-hJN_AptW=R+B5v3HB9eA@mail.gmail.com>
+From:   Vasily Khoruzhick <anarsoul@gmail.com>
+Date:   Tue, 11 Jun 2019 12:56:02 -0700
+Message-ID: <CA+E=qVdLOS9smt-nBxg9Lon0iTZr87kONSp-XPKj9tqB4bvnqw@mail.gmail.com>
+Subject: Re: [PATCH] Revert "Bluetooth: Align minimum encryption key size for
+ LE and BR/EDR connections"
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Greg,
 
-	Hello,
+Can we get this revert merged into stable branches? Bluetooth HID has
+been broken for many devices for quite a while now and RFC patch that
+fixes the breakage hasn't seen any movement for almost a month.
 
-On Mon, 10 Jun 2019, Eric Biggers wrote:
+Regards,
+Vasily
 
-> On Tue, May 28, 2019 at 11:28:05AM -0700, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following crash on:
-> > 
-> > HEAD commit:    cd6c84d8 Linux 5.2-rc2
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=132bd44aa00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=7e2e50c8adfccd2e5041
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=114b1354a00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b7ad26a00000
-> > 
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com
-> > 
-> > d started: state = MASTER, mcast_ifn = syz_tun, syncid = 0, id = 0
-> > BUG: memory leak
-> > unreferenced object 0xffff8881206bf700 (size 32):
-> >   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 20.470s)
-> >   hex dump (first 32 bytes):
-> >     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> >   backtrace:
-> >     [<0000000057619e23>] kmemleak_alloc_recursive
-> > include/linux/kmemleak.h:55 [inline]
-> >     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-> >     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-> >     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-> >     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-> >     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10
-> > net/netfilter/ipvs/ip_vs_sync.c:1862
-> >     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780
-> > net/netfilter/ipvs/ip_vs_ctl.c:2402
-> >     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-> >     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80
-> > net/netfilter/nf_sockopt.c:115
-> >     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-> >     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-> >     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-> >     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50
-> > net/core/sock.c:3130
-> >     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-> >     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-> >     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-> >     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-> >     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0
-> > arch/x86/entry/common.c:301
-> >     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > 
-> 
-> The bug is that ownership of some memory is passed to a kthread started by
-> kthread_run(), but the kthread can be stopped before it actually executes the
-> threadfn.  See the code in kernel/kthread.c:
-> 
->         ret = -EINTR;
->         if (!test_bit(KTHREAD_SHOULD_STOP, &self->flags)) {
->                 cgroup_kthread_ready();
->                 __kthread_parkme(self);
->                 ret = threadfn(data);
->         }
-> 
-> So, apparently the thread parameters must always be owned by the owner of the
-> kthread, not by the kthread itself.  It seems like this would be a common
-> mistake in kernel code; I'm surprised this doesn't come up more...
-
-	Thanks! It explains the problem. It was not obvious from the
-fact that only tinfo was reported as a leak, nothing for tinfo->sock.
-
-	Moving sock_release to owner complicates the locking but
-I'll try to fix it in the following days...
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+On Thu, May 23, 2019 at 7:52 AM Vasily Khoruzhick <anarsoul@gmail.com> wrote:
+>
+> On Wed, May 22, 2019 at 12:08 AM Marcel Holtmann <marcel@holtmann.org> wrote:
+> >
+> > Hi Vasily,
+> >
+> > >> This reverts commit d5bb334a8e171b262e48f378bd2096c0ea458265.
+> > >>
+> > >> This commit breaks some HID devices, see [1] for details
+> > >>
+> > >> https://bugzilla.kernel.org/show_bug.cgi?id=203643
+> > >>
+> > >> Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> > >> Cc: stable@vger.kernel.org
+> > >
+> > > let me have a look at this. Maybe there is a missing initialization for older HID devices that we need to handle. Do you happen to have the full btmon binary trace from controller initialization to connection attempt for me?
+> > >
+> > > Are both devices Bluetooth 2.1 or later device that are supporting Secure Simple Pairing? Or is one of them a Bluetooth 2.0 or earlier device?
+> >
+> > I am almost certain that you have a Bluetooth 2.0 mouse. I made a really stupid mistake in the key size check logic and forgot to bind it to SSP support. Can you please check the patch that I just send you.
+> >
+> > https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/T/#u
+>
+> This patch fixes the issue for me. Thanks!
+>
+> >
+> > Regards
+> >
+> > Marcel
+> >
