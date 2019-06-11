@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 649964189C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D154189E
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 01:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407889AbfFKXHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 19:07:51 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37266 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404124AbfFKXHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:07:50 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 22so4575338wmg.2;
-        Tue, 11 Jun 2019 16:07:48 -0700 (PDT)
+        id S2407906AbfFKXIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 19:08:06 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42653 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404124AbfFKXIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 19:08:05 -0400
+Received: by mail-wr1-f68.google.com with SMTP id x17so14763433wrl.9;
+        Tue, 11 Jun 2019 16:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=AlTEvamwVtnaWHPxk+r9M0WOD7BfIIcOO6BwdR2YvsE=;
-        b=lSnXaRLWH+qQVeM4XEnLwJ5qorhXvEOZUXnscpCpegVa48+Mv6YdOScyHV1DSQ+XWN
-         6LBupmRJKCJUkm/G+WnHZdM2ma63DI8LJFTxMF8bjiH3VKdwNRZM+pHEZNovTGWovgdx
-         DGfmD7H4YG3J9OntR2MSdkaIyNdE7jj2WN3JyPee3E2QjZm+PW89F4EG9AHlUPB9qith
-         Ub2hxy+osWTPBzhGPlxicCVjI1awvvXxQp0BomDW8wFLeDEdmYFWkp7Hg3M68eUmsuC2
-         8UOz4uYmnJZ924uB2+0J6GWJ1nlfDFtZxOTa8mfKR95okc5xCDpr3592bw0CjnE/SRJW
-         fGPg==
+        bh=PDwkS5w8XnSRr2NNwvXLf41knR3AK04AXOssqTiuVS4=;
+        b=vXlm/osrd3a7VCTjv7GJajbJLDU9K282bO0mR3z/FnLVLg1QY+GZAAHWIEZgNDC2th
+         XoPUkdAaFI5Jr8dRMrYH8ID8lpuBfODpY64CiQW3VXjKgPphI7LpkzhqwytQwGRspjSb
+         EH0CNK7nCmfCok6ARUi4t0NiYVy981ILzYkPvujoL+/lVmCrBWt7mrHly3Eh/zRoQSHG
+         zbBoz0KNLhgdyWvXHuNMzXh71Ms0P212MutwcddBP0P/+cyPFCEfflcNfwe+GmNUB427
+         gAQzlKxTz/vmUXBiWEmtxPLtNttL+18VvFyZ62fFzeFSsQzGTggRIqxV79oVIeZ7pRat
+         8H5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=AlTEvamwVtnaWHPxk+r9M0WOD7BfIIcOO6BwdR2YvsE=;
-        b=CYtmHAqM+ASv7gzQU7jRakmHDLfvv/2nODot2IoxseuOPIpSYgZ8fLL/5PtymqiOzl
-         Sm9f3OpzEg0YylrccKt7gqCJJzaz/5GsgnI5t51AGp6Gf0mMuQdLEpKlDvUzsWLya2yU
-         SwsXT80edCsaz+XevGwHxHdc2kovGSrQ02Rd3tkiDWue+vShL81W6QfFmjdmqQtLBOL4
-         u1TRYXQHLgh3/ZjSZgGfn5IYRDiSrlCVScRsHgqWTXU/SivEypq95JkKkRm2xB4W1Bi/
-         SEBhlNeu4cPSait16+snxqPpRxUIk0Uvw1mLAZHl4W61QoN1kAulG33uHkDvmlMELF7J
-         au+Q==
-X-Gm-Message-State: APjAAAWip7z9vbQsXlROCMnZ/BaHbdsTNbejvU59LRaFoddD96cRiGk0
-        jzF8ucwYrU4N4tKB+35XH6pQ1T4d
-X-Google-Smtp-Source: APXvYqxOba1bAwcbJ2mOnW2Pe960/fQ4iMTQMLdzc88bKBkYYcbH5/9bfhY603xqDISm0OjToTKuZg==
-X-Received: by 2002:a1c:44d4:: with SMTP id r203mr19173220wma.158.1560294467248;
-        Tue, 11 Jun 2019 16:07:47 -0700 (PDT)
+        bh=PDwkS5w8XnSRr2NNwvXLf41knR3AK04AXOssqTiuVS4=;
+        b=B9DvSW1MUpbjEPSFvB/JLcVlggaoats3Dl36ZEG0K5tNae2W95DsaMZZNL/f05KGyT
+         yGiNrr5QQPG5Som0HYTUBYC5/5XQMwTkRQOOIE9JktfU+4bIb4URU5wBF2C7PNlUZd8C
+         nYB/2as2yAq9YuiTy748VMryJpN3MhH9L1Hh6Gjf9ARAfaTGyUZdrnknEtDnOO27aTmJ
+         BaqtZWIlasz9bB+R6+/SBT5d37XUtmm8tizOm0kxRzx26ZfA7R8eKBk/B+tN4LS8mzIZ
+         CY1QBpPjQvl3Wx3wqjCpyeZtPMzgy5IiWUOX9tXRFWrgprXPPXMnNSdlK0WaPwBO+kUR
+         wyeg==
+X-Gm-Message-State: APjAAAUxzWA5oVRnAVZQcXtd+rSsbn+etnxiZOTjqPmQxsnuPDdgyxgM
+        5R6m4G1Z89hkDYSSr6ZJCQs=
+X-Google-Smtp-Source: APXvYqyUPbZYcwCKrwsjNVVXCL64M+C9kHufhhO2g0JASzN36wAMfX6dCKePebxRbt4gO+Dc7T9znA==
+X-Received: by 2002:a5d:6ccc:: with SMTP id c12mr27574190wrc.57.1560294483153;
+        Tue, 11 Jun 2019 16:08:03 -0700 (PDT)
 Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h90sm33264514wrh.15.2019.06.11.16.07.45
+        by smtp.googlemail.com with ESMTPSA id 32sm35493600wra.35.2019.06.11.16.08.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 16:07:46 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: dsa: make cpu_dp non const
+        Tue, 11 Jun 2019 16:08:02 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: dsa: make dsa_slave_dev_check use const
 To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch
 References: <20190611214747.22285-1-vivien.didelot@gmail.com>
- <20190611214747.22285-3-vivien.didelot@gmail.com>
+ <20190611214747.22285-4-vivien.didelot@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <7c5f27c6-9914-2fb3-3b00-0f11c88815a3@gmail.com>
-Date:   Tue, 11 Jun 2019 16:07:44 -0700
+Message-ID: <ea0b4ef4-acbd-8dc1-b679-35aa93e11033@gmail.com>
+Date:   Tue, 11 Jun 2019 16:07:56 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190611214747.22285-3-vivien.didelot@gmail.com>
+In-Reply-To: <20190611214747.22285-4-vivien.didelot@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,15 +123,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 6/11/19 2:47 PM, Vivien Didelot wrote:
-> A port may trigger operations on its dedicated CPU port, so using
-> cpu_dp as const will raise warnings. Make cpu_dp non const.
-
-Do we need that change now, or could this be part of another series? Anyway:
-
+> The switchdev handle helpers make use of a device checking helper
+> requiring a const net_device. Make dsa_slave_dev_check compliant
+> to this.
 > 
 > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
 -- 
 Florian
