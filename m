@@ -2,183 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C72B3C46D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 08:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246F13C472
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 08:47:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403864AbfFKGqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 02:46:19 -0400
-Received: from mx6.ucr.edu ([138.23.62.71]:13526 "EHLO mx6.ucr.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390485AbfFKGqT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 02:46:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1560235580; x=1591771580;
-  h=mime-version:references:in-reply-to:from:date:message-id:
-   subject:to:cc;
-  bh=vhK+lK9e1q+91pn/QnbCltunFi0pGuaDmVBqbv68svU=;
-  b=d8n5QGSzEIIgW51sHpsk3Enpiwbw3fAjBV/yPUql326+Vu6mKIaGYXux
-   Z4YsPZT25Ih6jCn1AmsOotV7Ov8IdX3AkkYin33u1dnUNqDNcM2iUc4Gi
-   Z8GSGo8vcZqlGDHCkAbWhJ/CT1SFzBCE9K6UefvusQbS/yPDpRoCV6vRU
-   QehGpGU+rWl4Xu6zz2qv81Vq1HUXgONGj7BEw2Ensrp0zaD6SRBdK6rAX
-   ZCr/RxRAD0e8Sv729lfJVrrL4uNBDWaIoHys5HRO1zwopLkTjUpOIsgMj
-   N+2uQ33262vSML7dX94lFCUx/iqZujP3Gk9MHWCC/DsHJ2dNOYYIswSeU
-   Q==;
-IronPort-PHdr: =?us-ascii?q?9a23=3AIkbAVxYXUX3b1emL49vv9qj/LSx+4OfEezUN459i?=
- =?us-ascii?q?sYplN5qZoMS7bnLW6fgltlLVR4KTs6sC17OP9fm9AidZucnJmUtBWaQEbwUCh8?=
- =?us-ascii?q?QSkl5oK+++Imq/EsTXaTcnFt9JTl5v8iLzG0FUHMHjew+a+SXqvnYdFRrlKAV6?=
- =?us-ascii?q?OPn+FJLMgMSrzeCy/IDYbxlViDanbr5+MQi6oR/MusQWj4ZuJbs9xgfLr3BVZ+?=
- =?us-ascii?q?lY2GRkKE6JkR3h/Mmw5plj8ypRu/Il6cFNVLjxcro7Q7JFEjkoKng568L3uxbN?=
- =?us-ascii?q?SwuP/WYcXX4NkhVUGQjF7Qr1UYn3vyDnq+dywiiaPcnxTbApRTSv6rpgRRH0hC?=
- =?us-ascii?q?sbMTMy7XragdJsgq1FvB2hpgR/w4/Kb4GTKPp+Zb7WcdcDSWZcQspdSylND4Wh?=
- =?us-ascii?q?ZIUNEuUBJ/5VoIbzp1QMrRWwCwqiCv7xxDBUnXL2wbE23v49HQ3awAAtHdQDu2?=
- =?us-ascii?q?nUotXvM6cSVPi4w6rIzTXEafNW1jX96InWfRs8of6DR7RwccXMwkQoFgLEgE+f?=
- =?us-ascii?q?qYrqPz+J2ekAsHOW7/d8WuK1kWIotRx+oiW2y8oql4LHhZoVx0ja+SllxIs5P9?=
- =?us-ascii?q?61RU5hbdK6DZdduDuWO5VqTs8+RWxjpTw0xaccuZGheSgH0JEnxxnCZPOZa4WI?=
- =?us-ascii?q?+RfjVPqJITd/mXJlZKqzhxas/kikze3xTsy030xLripBi9XMrnQN2wHK5siJVP?=
- =?us-ascii?q?dx4lut1SyA1wDU7eFELkQ0mrTBJ5E9xb4wk4IfsUXFHiDohEX7lLGaelkg9+Sy?=
- =?us-ascii?q?6OnqYq/qqoGBO4J7kA3yLLgiltCnDeQ9KAcOXmyb+eqm1L3k+E30WLRLj/Msna?=
- =?us-ascii?q?nfv5DWOcsWq62iDg9Izokj8QyzACm739QFhXUHNk5KeAqbj4j1PFHDOPb4Aumj?=
- =?us-ascii?q?g1uxjjhr2evLPqPuAprTNHjPirThcqhn605a1gUzycpT55VOCrEOc7rPXRrXud?=
- =?us-ascii?q?XcRjQwKQCrzuLjQIF73YoEVX2CBquxP6TVvluFoOkoJr/fSpUSvWPPK/8j6Pzv?=
- =?us-ascii?q?gDcGkFkSNf27wpIRZyjkTtx7KF/fbHbx1IRSWVwWtxYzGbS5wGaJViReMjPrB/?=
- =?us-ascii?q?ox?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DFAgBhTf9cdcjWVdFmg36CGCiEFZUAm?=
- =?us-ascii?q?HWBEANUAQgBAQEOLwEBhEACgncjOBMBAwEBBQEBAQEEARMBCg0KBycxgjopAYJ?=
- =?us-ascii?q?nAQUjBFIQCwsDCgICJgICIhIBBQEcBhMIhSUFnHM8iyB+M4hjAQcKgUYSeiiLX?=
- =?us-ascii?q?YIWhCM+hBEBEgGDKYJYBIEtAQEBkxmUYQEGAgGBfxOLGogpG4Ilh26DE4l2LaM?=
- =?us-ascii?q?9DyGBRVgwcTMaJX8GZ4FOghsXgQIBCAONMiIwjT2CQwEB?=
-X-IPAS-Result: =?us-ascii?q?A2DFAgBhTf9cdcjWVdFmg36CGCiEFZUAmHWBEANUAQgBAQE?=
- =?us-ascii?q?OLwEBhEACgncjOBMBAwEBBQEBAQEEARMBCg0KBycxgjopAYJnAQUjBFIQCwsDC?=
- =?us-ascii?q?gICJgICIhIBBQEcBhMIhSUFnHM8iyB+M4hjAQcKgUYSeiiLXYIWhCM+hBEBEgG?=
- =?us-ascii?q?DKYJYBIEtAQEBkxmUYQEGAgGBfxOLGogpG4Ilh26DE4l2LaM9DyGBRVgwcTMaJ?=
- =?us-ascii?q?X8GZ4FOghsXgQIBCAONMiIwjT2CQwEB?=
-X-IronPort-AV: E=Sophos;i="5.63,578,1557212400"; 
-   d="scan'208";a="58721142"
-Received: from mail-pl1-f200.google.com ([209.85.214.200])
-  by smtpmx6.ucr.edu with ESMTP/TLS/AES128-GCM-SHA256; 10 Jun 2019 23:46:19 -0700
-Received: by mail-pl1-f200.google.com with SMTP id i3so7195433plb.8
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 23:46:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YXSHHsIC6RHwpwZphTAKvWmCX96POzDYvfIDZ/eXDjM=;
-        b=Z5YSY762BRlDZkvK6GdzpAd02xJq+f3h8uoWaY/rMqaGRS6unJssHA5TL1cloUXT3x
-         59Xlj3JXVlgJq1YF2aZWjORJ1kj2qdRx/TUVztHiZYtr3WPOxGvXTT/u59fAdUE8NFmc
-         QsiHlKN49DcsPO8D9rY5GZ1MrhPsrOUwajdiSyljxBYn9yHgPt8w6m0lR4dubZBN0hEY
-         VOYchUfHnR+8qfO9LlbNbtGzEMfd349kcNTQnSUa1ecQNY0iGmxIx/bXSXgvdDylbJx1
-         mQBTKrew/eM62yHS/MBy238ulYM9DGvDmlxvDetZvjvqWTJs2TSlsPs/Y3EmxWSHxiy8
-         EmDQ==
-X-Gm-Message-State: APjAAAW+ZCAgZKlkiJELmDyD960Wy/1NKGZBGiZORCC2VK3eeK9zEidZ
-        YTgaaAxoyZO33ljozWBd9nF5X3jU2yJoXmLSeylXEZ8tExEiYiVUgX8JNPMR5mOVeXY7GI0eoy/
-        p8w9xB9/xj75OLrjihZS6+O/UfapmOnvPNg==
-X-Received: by 2002:a63:5207:: with SMTP id g7mr18398789pgb.356.1560235577833;
-        Mon, 10 Jun 2019 23:46:17 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzMVSh/1HQl0dBczN7Td0hgnhXhHeFfs6pq9zJSXfrif0rCjZ4JElYSErMjOyFXyKoay5PzIGsBBrhpQPMso20=
-X-Received: by 2002:a63:5207:: with SMTP id g7mr18398776pgb.356.1560235577391;
- Mon, 10 Jun 2019 23:46:17 -0700 (PDT)
+        id S2403997AbfFKGr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 02:47:27 -0400
+Received: from mail-eopbgr20075.outbound.protection.outlook.com ([40.107.2.75]:12867
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2390485AbfFKGr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 02:47:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7m4g49CZvQQj31wdW4V6QUQoWUtjQ6yxAJ4rleU5KAo=;
+ b=O70NLqJdbTP34daQIZ8vJZi6GlcHxTF+cfu0R5atpLeCmPaWKkvn8OSvhwBTDlPO5pmSlw+4lQ5KrlTezfWY8e/NPRnuEoxb3LMcmFuZQE56n6yrs8h7enzKQYhZeOyMoavYiMbQfFYk9qHimdP1bF3NzMVyJrzu5AxcsXo9Z/o=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.138.152) by
+ DB7PR04MB4761.eurprd04.prod.outlook.com (20.176.233.83) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.10; Tue, 11 Jun 2019 06:47:19 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::d020:ef8f:cfd0:2c1c]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::d020:ef8f:cfd0:2c1c%6]) with mapi id 15.20.1987.010; Tue, 11 Jun 2019
+ 06:47:19 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH] can: flexcan: fix stop mode acknowledgment
+Thread-Topic: [PATCH] can: flexcan: fix stop mode acknowledgment
+Thread-Index: AQHVICGDb/IDX734hU+A1k7o57NTbQ==
+Date:   Tue, 11 Jun 2019 06:47:19 +0000
+Message-ID: <20190611064458.1477-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR02CA0003.apcprd02.prod.outlook.com
+ (2603:1096:3:17::15) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:36::24)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 50695b81-9e06-4640-5180-08d6ee38a5db
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR04MB4761;
+x-ms-traffictypediagnostic: DB7PR04MB4761:
+x-microsoft-antispam-prvs: <DB7PR04MB47618367C754173267373495E6ED0@DB7PR04MB4761.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2657;
+x-forefront-prvs: 006546F32A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(136003)(396003)(366004)(39860400002)(346002)(199004)(189003)(256004)(2616005)(476003)(14444005)(54906003)(6436002)(6486002)(99286004)(110136005)(486006)(305945005)(66446008)(81156014)(36756003)(8676002)(26005)(64756008)(66066001)(7736002)(66476007)(50226002)(53936002)(2501003)(66556008)(68736007)(66946007)(81166006)(2906002)(186003)(73956011)(14454004)(8936002)(1076003)(5660300002)(86362001)(102836004)(6506007)(386003)(52116002)(3846002)(6116002)(25786009)(71200400001)(71190400001)(478600001)(4326008)(316002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4761;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 0gnT7GR4P0GpT4YT8cZGiv92XltFdQh9vRyjqUNJsYC22nCme2DgXfkvMCe82tGnSl80TFGRpqcIVxhx+NT6kMhvfPqZmsv9BW3yfY17UriNkqz9H5vETZ2OSX/BQJfZwEyO2ooVCjclK6gyYBMQlDbxflNMetOXr4sp4oMGMFgCf8TqCuLbGDwapxVRPpjJaX/BSP2IOor6MpoPjDfmvEMuXL09OgMGcucHL40xlN51WaWuKwr7JpW1bxa9rsHHvhxI0L29Inx8UoOw7RHockSR2UKYIXW0bd8BNZLUMugTBPCVkIjZfuTBhWLtqjGorMYnscfvwxjj17MLVeTOGcEmfsBh2yk3cbNBwBoy08SY/MoD+YN3gn5mtyhBQGNOmj9h5WNmwT6aJSL5ejCqYXFE+9ourfJpDUpXGYYPMjY=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
- <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
- <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com> <CADVnQy=P=P1iPxrgqQ1U5xwY7Wj3H54XF1sfTyi92mQkLgjb6g@mail.gmail.com>
-In-Reply-To: <CADVnQy=P=P1iPxrgqQ1U5xwY7Wj3H54XF1sfTyi92mQkLgjb6g@mail.gmail.com>
-From:   Zhongjie Wang <zwang048@ucr.edu>
-Date:   Mon, 10 Jun 2019 23:45:39 -0700
-Message-ID: <CAHx7fy68uTURceZtzYEnvdZ1pD2_F0dNJKjB7c7JTT8pjNKRSw@mail.gmail.com>
-Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50695b81-9e06-4640-5180-08d6ee38a5db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2019 06:47:19.4483
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qiangqing.zhang@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4761
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Neal,
-
-Thanks for your valuable feedback! Yes, I think you are right.
-It seems not a problem if tp->urg_data and tp->urg_seq are used together.
-From our test results, we can only see there are some paths requiring
-specific initial sequence number to reach.
-But as you said, it would not cause a difference in the code logic.
-We haven't observed any abnormal states.
-
-Thanks,
-Zhongjie Wang
-Ph.D. Candidate 2015 Fall
-Department of Computer Science & Engineering
-University of California, Riverside
-
-
-On Mon, Jun 10, 2019 at 7:19 PM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Mon, Jun 10, 2019 at 7:48 PM Zhongjie Wang <zwang048@ucr.edu> wrote:
-> >
-> > Hi Neal,
-> >
-> > Thanks for your reply. Sorry, I made a mistake in my previous email.
-> > After I double checked the source code, I think it should be tp->urg_seq,
-> > which is used before assignment, instead of tp->copied_seq.
-> > Still in the same if-statement:
-> >
-> > 5189     if (tp->urg_seq == tp->copied_seq && tp->urg_data &&
-> > 5190         !sock_flag(sk, SOCK_URGINLINE) && tp->copied_seq != tp->rcv_nxt) {
-> > 5191         struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
-> > 5192         tp->copied_seq++;
-> > 5193         if (skb && !before(tp->copied_seq, TCP_SKB_CB(skb)->end_seq)) {
-> > 5194             __skb_unlink(skb, &sk->sk_receive_queue);
-> > 5195             __kfree_skb(skb);   // wzj(a)
-> > 5196         }
-> > 5197     }
-> > 5198
-> > 5199     tp->urg_data = TCP_URG_NOTYET;
-> > 5200     tp->urg_seq = ptr;
-> >
-> > It compares tp->copied_seq with tp->urg_seq.
-> > And I found only 1 assignment of tp->urg_seq in the code base,
-> > which is after the if-statement in the same tcp_check_urg() function.
-> >
-> > So it seems tp->urg_seq is not assigned to any sequence number before
-> > its first use.
-> > Is that correct?
->
-> I agree, it does seem that tp->urg_seq is not assigned to any sequence
-> number before its first use.
->
-> AFAICT from a quick read of the code, this does not matter. It seems
-> the idea is for tp->urg_data and tp->urg_seq to be set and used
-> together, so that tp->urg_seq is never relied upon to be set to
-> something meaningful unless tp->urg_data has also been verified to be
-> set to something (something non-zero).
->
-> I suppose it might be more clear to structure the code to check urg_data first:
->
->   if (tp->urg_data && tp->urg_seq == tp->copied_seq &&
->
-> ...but in practice AFAICT it does not make a difference, since no
-> matter which order the expressions use, both conditions must be true
-> for the code to have any side effects.
->
-> > P.S. In our symbolic execution tool, we found an execution path that
-> > requires the client initial sequence number (ISN) to be 0xFF FF FF FF.
-> > And when it traverse that path, the tp->copied_seq is equal to (client
-> > ISN + 1), and compared with 0 in this if-statatement.
-> > Therefore the client ISN has to be exactly 0xFF FF FF FF to hit this
-> > execution path.
-> >
-> > To trigger this, we first sent a SYN packet, and then an ACK packet
-> > with urgent pointer.
->
-> Does your test show any invalid behavior by the TCP endpoint? For
-> example, does the state in tcp_sock become incorrect, or is some
-> system call return value or outgoing packet incorrect? AFAICT from the
-> scenario you describe it seems that the "if" condition would fail when
-> the receiver processes the ACK packet with urgent pointer, because
-> tp->urg_data was not yet set at this point. Thus it would seem that in
-> this case it does not matter that tp->urg_seq is not assigned to any
-> sequence number before being first used.
->
-> cheers,
-> neal
+VG8gZW50ZXIgc3RvcCBtb2RlLCB0aGUgQ1BVIHNob3VsZCBtYW51YWxseSBhc3NlcnQgYSBnbG9i
+YWwgU3RvcCBNb2RlDQpyZXF1ZXN0IGFuZCBjaGVjayB0aGUgYWNrbm93bGVkZ21lbnQgYXNzZXJ0
+ZWQgYnkgRmxleENBTi4gVGhlIENQVSBtdXN0DQpvbmx5IGNvbnNpZGVyIHRoZSBGbGV4Q0FOIGlu
+IHN0b3AgbW9kZSB3aGVuIGJvdGggcmVxdWVzdCBhbmQNCmFja25vd2xlZGdtZW50IGNvbmRpdGlv
+bnMgYXJlIHNhdGlzZmllZC4NCg0KRml4ZXM6IGRlMzU3OGMxOThjNiAoImNhbjogZmxleGNhbjog
+YWRkIHNlbGYgd2FrZXVwIHN1cHBvcnQiKQ0KUmVwb3J0ZWQtYnk6IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQpTaWduZWQtb2ZmLWJ5OiBKb2FraW0gWmhhbmcgPHFpYW5n
+cWluZy56aGFuZ0BueHAuY29tPg0KLS0tDQogZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyB8IDQ3
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2Vk
+LCAzOSBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9uZXQvY2FuL2ZsZXhjYW4uYyBiL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCmluZGV4IGUz
+NTA4M2ZmMzFlZS4uMjgyZGFjMWQ4ZjVjIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvY2FuL2Zs
+ZXhjYW4uYw0KKysrIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KQEAgLTQwNCw5ICs0MDQs
+MTEgQEAgc3RhdGljIHZvaWQgZmxleGNhbl9lbmFibGVfd2FrZXVwX2lycShzdHJ1Y3QgZmxleGNh
+bl9wcml2ICpwcml2LCBib29sIGVuYWJsZSkNCiAJcHJpdi0+d3JpdGUocmVnX21jciwgJnJlZ3Mt
+Pm1jcik7DQogfQ0KIA0KLXN0YXRpYyBpbmxpbmUgdm9pZCBmbGV4Y2FuX2VudGVyX3N0b3BfbW9k
+ZShzdHJ1Y3QgZmxleGNhbl9wcml2ICpwcml2KQ0KK3N0YXRpYyBpbmxpbmUgaW50IGZsZXhjYW5f
+ZW50ZXJfc3RvcF9tb2RlKHN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYpDQogew0KIAlzdHJ1Y3Qg
+ZmxleGNhbl9yZWdzIF9faW9tZW0gKnJlZ3MgPSBwcml2LT5yZWdzOw0KKwl1bnNpZ25lZCBpbnQg
+dGltZW91dCA9IEZMRVhDQU5fVElNRU9VVF9VUyAvIDEwOw0KKwl1bnNpZ25lZCBpbnQgYWNrdmFs
+Ow0KIAl1MzIgcmVnX21jcjsNCiANCiAJcmVnX21jciA9IHByaXYtPnJlYWQoJnJlZ3MtPm1jcik7
+DQpAQCAtNDE2LDIwICs0MTgsNDggQEAgc3RhdGljIGlubGluZSB2b2lkIGZsZXhjYW5fZW50ZXJf
+c3RvcF9tb2RlKHN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYpDQogCS8qIGVuYWJsZSBzdG9wIHJl
+cXVlc3QgKi8NCiAJcmVnbWFwX3VwZGF0ZV9iaXRzKHByaXYtPnN0bS5ncHIsIHByaXYtPnN0bS5y
+ZXFfZ3ByLA0KIAkJCSAgIDEgPDwgcHJpdi0+c3RtLnJlcV9iaXQsIDEgPDwgcHJpdi0+c3RtLnJl
+cV9iaXQpOw0KKw0KKwkvKiBnZXQgc3RvcCBhY2tub3dsZWRnbWVudCAqLw0KKwlyZWdtYXBfcmVh
+ZChwcml2LT5zdG0uZ3ByLCBwcml2LT5zdG0uYWNrX2dwciwgJmFja3ZhbCk7DQorDQorCXdoaWxl
+ICh0aW1lb3V0LS0gJiYgIShhY2t2YWwgJiAoMSA8PCBwcml2LT5zdG0uYWNrX2JpdCkpKSB7DQor
+CQl1ZGVsYXkoMTApOw0KKwkJcmVnbWFwX3JlYWQocHJpdi0+c3RtLmdwciwgcHJpdi0+c3RtLmFj
+a19ncHIsICZhY2t2YWwpOw0KKwl9DQorDQorCWlmICghKGFja3ZhbCAmICgxIDw8IHByaXYtPnN0
+bS5hY2tfYml0KSkpDQorCQlyZXR1cm4gLUVUSU1FRE9VVDsNCisNCisJcmV0dXJuIDA7DQogfQ0K
+IA0KLXN0YXRpYyBpbmxpbmUgdm9pZCBmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlKHN0cnVjdCBmbGV4
+Y2FuX3ByaXYgKnByaXYpDQorc3RhdGljIGlubGluZSBpbnQgZmxleGNhbl9leGl0X3N0b3BfbW9k
+ZShzdHJ1Y3QgZmxleGNhbl9wcml2ICpwcml2KQ0KIHsNCiAJc3RydWN0IGZsZXhjYW5fcmVncyBf
+X2lvbWVtICpyZWdzID0gcHJpdi0+cmVnczsNCisJdW5zaWduZWQgaW50IHRpbWVvdXQgPSBGTEVY
+Q0FOX1RJTUVPVVRfVVMgLyAxMDsNCisJdW5zaWduZWQgaW50IGFja3ZhbDsNCiAJdTMyIHJlZ19t
+Y3I7DQogDQorCXJlZ19tY3IgPSBwcml2LT5yZWFkKCZyZWdzLT5tY3IpOw0KKwlyZWdfbWNyICY9
+IH5GTEVYQ0FOX01DUl9TTEZfV0FLOw0KKwlwcml2LT53cml0ZShyZWdfbWNyLCAmcmVncy0+bWNy
+KTsNCisNCiAJLyogcmVtb3ZlIHN0b3AgcmVxdWVzdCAqLw0KIAlyZWdtYXBfdXBkYXRlX2JpdHMo
+cHJpdi0+c3RtLmdwciwgcHJpdi0+c3RtLnJlcV9ncHIsDQogCQkJICAgMSA8PCBwcml2LT5zdG0u
+cmVxX2JpdCwgMCk7DQogDQotCXJlZ19tY3IgPSBwcml2LT5yZWFkKCZyZWdzLT5tY3IpOw0KLQly
+ZWdfbWNyICY9IH5GTEVYQ0FOX01DUl9TTEZfV0FLOw0KLQlwcml2LT53cml0ZShyZWdfbWNyLCAm
+cmVncy0+bWNyKTsNCisJLyogZ2V0IHN0b3AgYWNrbm93bGVkZ21lbnQgKi8NCisJcmVnbWFwX3Jl
+YWQocHJpdi0+c3RtLmdwciwgcHJpdi0+c3RtLmFja19ncHIsICZhY2t2YWwpOw0KKw0KKwl3aGls
+ZSAodGltZW91dC0tICYmIChhY2t2YWwgJiAoMSA8PCBwcml2LT5zdG0uYWNrX2JpdCkpKSB7DQor
+CQl1ZGVsYXkoMTApOw0KKwkJcmVnbWFwX3JlYWQocHJpdi0+c3RtLmdwciwgcHJpdi0+c3RtLmFj
+a19ncHIsICZhY2t2YWwpOw0KKwl9DQorDQorCWlmIChhY2t2YWwgJiAoMSA8PCBwcml2LT5zdG0u
+YWNrX2JpdCkpDQorCQlyZXR1cm4gLUVUSU1FRE9VVDsNCisNCisJcmV0dXJuIDA7DQogfQ0KIA0K
+IHN0YXRpYyBpbmxpbmUgdm9pZCBmbGV4Y2FuX2Vycm9yX2lycV9lbmFibGUoY29uc3Qgc3RydWN0
+IGZsZXhjYW5fcHJpdiAqcHJpdikNCkBAIC0xNjUyLDcgKzE2ODIsNyBAQCBzdGF0aWMgaW50IF9f
+bWF5YmVfdW51c2VkIGZsZXhjYW5fc3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXZpY2UpDQogCQkg
+Ki8NCiAJCWlmIChkZXZpY2VfbWF5X3dha2V1cChkZXZpY2UpKSB7DQogCQkJZW5hYmxlX2lycV93
+YWtlKGRldi0+aXJxKTsNCi0JCQlmbGV4Y2FuX2VudGVyX3N0b3BfbW9kZShwcml2KTsNCisJCQll
+cnIgPSBmbGV4Y2FuX2VudGVyX3N0b3BfbW9kZShwcml2KTsNCiAJCX0gZWxzZSB7DQogCQkJZXJy
+ID0gZmxleGNhbl9jaGlwX2Rpc2FibGUocHJpdik7DQogCQkJaWYgKGVycikNCkBAIC0xNzI1LDEz
+ICsxNzU1LDE0IEBAIHN0YXRpYyBpbnQgX19tYXliZV91bnVzZWQgZmxleGNhbl9ub2lycV9yZXN1
+bWUoc3RydWN0IGRldmljZSAqZGV2aWNlKQ0KIHsNCiAJc3RydWN0IG5ldF9kZXZpY2UgKmRldiA9
+IGRldl9nZXRfZHJ2ZGF0YShkZXZpY2UpOw0KIAlzdHJ1Y3QgZmxleGNhbl9wcml2ICpwcml2ID0g
+bmV0ZGV2X3ByaXYoZGV2KTsNCisJaW50IGVyciA9IDA7DQogDQogCWlmIChuZXRpZl9ydW5uaW5n
+KGRldikgJiYgZGV2aWNlX21heV93YWtldXAoZGV2aWNlKSkgew0KIAkJZmxleGNhbl9lbmFibGVf
+d2FrZXVwX2lycShwcml2LCBmYWxzZSk7DQotCQlmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlKHByaXYp
+Ow0KKwkJZXJyID0gZmxleGNhbl9leGl0X3N0b3BfbW9kZShwcml2KTsNCiAJfQ0KIA0KLQlyZXR1
+cm4gMDsNCisJcmV0dXJuIGVycjsNCiB9DQogDQogc3RhdGljIGNvbnN0IHN0cnVjdCBkZXZfcG1f
+b3BzIGZsZXhjYW5fcG1fb3BzID0gew0KLS0gDQoyLjE3LjENCg0K
