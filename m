@@ -2,99 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 664403CA3F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEEB63CA05
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403954AbfFKLof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 07:44:35 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:52668 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727278AbfFKLof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:44:35 -0400
-Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 450943AB2FD;
-        Tue, 11 Jun 2019 11:28:40 +0000 (UTC)
-X-Originating-IP: 90.88.159.246
-Received: from localhost (aaubervilliers-681-1-40-246.w90-88.abo.wanadoo.fr [90.88.159.246])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 950021C0009;
-        Tue, 11 Jun 2019 11:28:28 +0000 (UTC)
-Date:   Tue, 11 Jun 2019 13:28:28 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 07/11] dt-bindings: net: stmmac: Convert the binding
- to a schemas
-Message-ID: <20190611112828.nstilhcyflpuyt3g@flea>
-References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <40b91798a807cc3c232119ec74285325ebb6692a.1560158667.git-series.maxime.ripard@bootlin.com>
- <CAL_JsqJ_Y4nzN+BCKcUu7jBDwtT+6w5FFOR5S1eYtLm-uUjGqA@mail.gmail.com>
+        id S2389557AbfFKLat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 07:30:49 -0400
+Received: from mail1.ugh.no ([178.79.162.34]:52304 "EHLO mail1.ugh.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389269AbfFKLas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 07:30:48 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail1.ugh.no (Postfix) with ESMTP id 7D38624C90D;
+        Tue, 11 Jun 2019 13:30:47 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at catastrophix.ugh.no
+Received: from mail1.ugh.no ([127.0.0.1])
+        by localhost (catastrophix.ugh.no [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 8FsIYINXlXhs; Tue, 11 Jun 2019 13:30:47 +0200 (CEST)
+Received: from [10.255.96.11] (unknown [185.176.245.143])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: andre@tomt.net)
+        by mail.ugh.no (Postfix) with ESMTPSA id E656F24C8FB;
+        Tue, 11 Jun 2019 13:30:46 +0200 (CEST)
+Subject: Re: [net PATCH] net: tls, correctly account for copied bytes with
+ multiple sk_msgs
+To:     John Fastabend <john.fastabend@gmail.com>,
+        steinar+kernel@gunderson.no, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, ast@kernel.org
+References: <156023370286.5966.10762957456071886488.stgit@ubuntu-kvm1>
+From:   Andre Tomt <andre@tomt.net>
+Message-ID: <369d7445-6502-9e97-1d25-8d261967c1ab@tomt.net>
+Date:   Tue, 11 Jun 2019 13:30:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qew5pxuoqrxydleq"
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJ_Y4nzN+BCKcUu7jBDwtT+6w5FFOR5S1eYtLm-uUjGqA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <156023370286.5966.10762957456071886488.stgit@ubuntu-kvm1>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11.06.2019 08:15, John Fastabend wrote:
+> tls_sw_do_sendpage needs to return the total number of bytes sent
+> regardless of how many sk_msgs are allocatedt. Unfortunately, copied
+                                      ^ typo
+> (the value we return up the stack) is zero'd before each new sk_msg
+> is alloced so we only return the copied size of the last sk_msg used.
+> 
+> The application will then believe only part of its data was sent and
+> send the missing chunks again. However, because the data actually was
+> sent the receiver will get multiple copies of the same data.
 
---qew5pxuoqrxydleq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This description doesnt make sense to me as in my testing corruption 
+occurs even when sendfile is always returning that it sent all the bytes 
+requested. So all this resending(?) likely happens within the kernel.
 
-On Mon, Jun 10, 2019 at 01:13:25PM -0600, Rob Herring wrote:
-> On Mon, Jun 10, 2019 at 3:26 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
-> > +    then:
-> > +      properties:
-> > +        snps,pbl:
-> > +          allOf:
-> > +            - $ref: /schemas/types.yaml#definitions/uint32-array
-> > +            - enum: [2, 4, 8]
->
-> As this is an array, I think this needs to be:
->
-> - items:
->     enum: [2, 4, 8]
->
->
-> And the next 2, too.
+The fix does appear to work just fine however.
 
-This was actually an error on the types, those properties are not
-arrays. I've changed the type, thanks!
+Tested-by: Andre Tomt <andre@tomt.net>
 
-maxime
+> To reproduce this do multiple copies close to the max record size to
+> force the above scenario. Andre created a C program that can easily
+> generate this case so we will push a similar selftest for this to
+> bpf-next shortly.
+> 
+> The fix is to _not_ zero the copied field so that the total sent
+> bytes is returned.
+> 
+> Reported-by: Steinar H. Gunderson <steinar+kernel@gunderson.no>
+> Reported-by: Andre Tomt <andre@tomt.net>
+> Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>   net/tls/tls_sw.c |    1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index d93f83f77864..5fe3dfa2c5e3 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -1143,7 +1143,6 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
+>   
+>   		full_record = false;
+>   		record_room = TLS_MAX_PAYLOAD_SIZE - msg_pl->sg.size;
+> -		copied = 0;
+>   		copy = size;
+>   		if (copy >= record_room) {
+>   			copy = record_room;
+> 
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---qew5pxuoqrxydleq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXP+QXAAKCRDj7w1vZxhR
-xV9cAQD5L7HheHjAdvoGBNb7CPTPUZI4imYlYaEM5mHnERlzhQD/UsXNJZh1LLwq
-3lzUjzZeUKdRAytJJAPH9N/9JIEjOAA=
-=10ZG
------END PGP SIGNATURE-----
-
---qew5pxuoqrxydleq--
