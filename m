@@ -2,108 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B853D131
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC3A3D134
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391789AbfFKPoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 11:44:06 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44380 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391769AbfFKPoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:44:05 -0400
-Received: by mail-ed1-f65.google.com with SMTP id k8so20750660edr.11
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 08:44:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=SaPHF+kttDjLmOsLV+nbh1VVacxkA06qdBNc25PzWOA=;
-        b=asQosJTWtJHv1omnWP45Sa06X4QOgYxZheOhDGGPqdHMYpZJQPu/ugNyu9ZuQKQGay
-         fMf2kNdO5JfyPt1qykY39nYRw9BSI9uUE6TJbtN1kubWDuyCoWw2OhHXhEcs8SWdUMt+
-         dI82Ku4ptxI1JhnqQtNTx74ReuAcRuAa9MsAClP4bxgqGoarIecjS/xuSjGq7302aEEe
-         rChe4ENU1Gn0GUOX01oJFL7XcUN/ZOnzl9kyIHDYEBKltcUEdM+uzeY6AQw0/RHh255O
-         +q1YAWGUluvNS19/2z+3t80sQPQb1QwXMWqBiJQ85SoqNnpj6ZMjKXRP0UpXsrJWHchX
-         4IHA==
-X-Gm-Message-State: APjAAAVfQLBqia0WXdRz3yTf78JusUpJWpEsy2f+g9XOnjcS8n1SUPyt
-        gcBTdmSlLmkw5Ndu3SR7W9IIYQ==
-X-Google-Smtp-Source: APXvYqx3wnoJpjviwCjcMVdRfUX5n3Fi9rWRwifL8OQIblUiseK/HXIHrjQA8ZWUO/l7BXvaemOIyw==
-X-Received: by 2002:a50:85c4:: with SMTP id q4mr77183965edh.125.1560267843271;
-        Tue, 11 Jun 2019 08:44:03 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id k51sm2679825edb.7.2019.06.11.08.44.01
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 08:44:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0ED5418037E; Tue, 11 Jun 2019 17:44:00 +0200 (CEST)
-Subject: [PATCH bpf-next v3 0/3] xdp: Allow lookup into devmaps before
- redirect
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+        id S2391798AbfFKPpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 11:45:44 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42279 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2391628AbfFKPpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:45:44 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1F88A22303;
+        Tue, 11 Jun 2019 11:45:41 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 11 Jun 2019 11:45:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=CXJguJiR0lCFmlW/D
+        pVxEYzemE/BLKyVclC1Src/s/Q=; b=bYYXIvDHWs9Lcxh/JRqm9k7jvxSm5btsT
+        zgAzWXK4UUpUFC3rA35nFYNmytv1YkXh8ZI6LDMB5JKE+GhlqPcCQwy11Sk5UiFB
+        ErgPAtVltcHE5Sl+BQImr4veYjSl0yQZ1BRS3BoWFk+Lz/hck2lvfrLddnUeJmGh
+        WZo9qcbE5Re0/CWaSkncSFKLPZHkYN6SFOCQaaaBAkBS7bwerVYIcbuJJjLx8hDj
+        bsQTYs6yYUMmUaQT558a1QhBaufx4vDN8RkQKp0zq/fHVtTNnDKfEYvGFCVPaFY1
+        eW6YamiUOiPG9X67uSU9WIWw8vYhF/zafWBj+al8kbF5KpBB3g8ZQ==
+X-ME-Sender: <xms:pMz_XAKuiea9sosaM3IurnDI5ikbEj2UxE0XHGrVFNv107zUieNKIA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehhedgjeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:pMz_XOzWfHGknFOpLbJ2t-beRpJDuJeDT0LQxoKEh8-VmnSOaBJooQ>
+    <xmx:pMz_XAUaiomwjja11UJnsrXBoGGB1b3bJhBDR40ROyzlT5mc_KcgNQ>
+    <xmx:pMz_XDnzUnZknZXEJ6Iao_hVIVnmEHycjZAx5l91fILL_m1IBLH8IA>
+    <xmx:pcz_XHqz5F0c6rDJv6BFhGKdVqOlc2zl8JsNv7q-9LPSJXiiKBtYZg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id EF3E8380088;
+        Tue, 11 Jun 2019 11:45:38 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Date:   Tue, 11 Jun 2019 17:44:00 +0200
-Message-ID: <156026783994.26748.2899804283816365487.stgit@alrua-x1>
-User-Agent: StGit/0.19-dirty
+Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
+        petrm@mellanox.com, richardcochran@gmail.com, olteanv@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 0/9] mlxsw: Add support for physical hardware clock
+Date:   Tue, 11 Jun 2019 18:45:03 +0300
+Message-Id: <20190611154512.17650-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using the bpf_redirect_map() helper to redirect packets from XDP, the eBPF
-program cannot currently know whether the redirect will succeed, which makes it
-impossible to gracefully handle errors. To properly fix this will probably
-require deeper changes to the way TX resources are allocated, but one thing that
-is fairly straight forward to fix is to allow lookups into devmaps, so programs
-can at least know when a redirect is *guaranteed* to fail because there is no
-entry in the map. Currently, programs work around this by keeping a shadow map
-of another type which indicates whether a map index is valid.
+From: Ido Schimmel <idosch@mellanox.com>
 
-This series contains two changes that are complementary ways to fix this issue:
+Shalom says:
 
-- Moving the map lookup into the bpf_redirect_map() helper (and caching the
-  result), so the helper can return an error if no value is found in the map.
-  This includes a refactoring of the devmap and cpumap code to not care about
-  the index on enqueue.
+This patchset adds support for physical hardware clock for Spectrum-1
+ASIC only.
 
-- Allowing regular lookups into devmaps from eBPF programs, using the read-only
-  flag to make sure they don't change the values.
+Patches #1, #2 and #3 add the ability to query the free running clock
+PCI address.
 
-The performance impact of the series is negligible, in the sense that I cannot
-measure it because the variance between test runs is higher than the difference
-pre/post series.
+Patches #4 and #5 add two new register, the Management UTC Register and
+the Management Pulse Per Second Register.
 
-Changelog:
+Patch #6 publishes scaled_ppm_to_ppb() to allow drivers to use it.
 
-v3:
-  - Adopt Jonathan's idea of using the lower two bits of the flag value as the
-    return code.
-  - Always do the lookup, and cache the result for use in xdp_do_redirect(); to
-    achieve this, refactor the devmap and cpumap code to get rid the bitmap for
-    selecting which devices to flush.
-v2:
-  - For patch 1, make it clear that the change works for any map type.
-  - For patch 2, just use the new BPF_F_RDONLY_PROG flag to make the return
-    value read-only.
+Patch #7 adds the physical hardware clock operations.
 
----
+Patch #8 initializes the physical hardware clock.
 
-Toke Høiland-Jørgensen (3):
-      devmap/cpumap: Use flush list instead of bitmap
-      bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-      devmap: Allow map lookups from eBPF
+Patch #9 adds a selftest for testing the PTP physical hardware clock.
 
+v2 (Richard):
+* s/ptp_clock_scaled_ppm_to_ppb/scaled_ppm_to_ppb/
+* imply PTP_1588_CLOCK in mlxsw Kconfig
+* s/mlxsw_sp1_ptp_update_phc_settime/mlxsw_sp1_ptp_phc_settime/
+* s/mlxsw_sp1_ptp_update_phc_adjfreq/mlxsw_sp1_ptp_phc_adjfreq/
 
- include/linux/filter.h   |    1 
- include/uapi/linux/bpf.h |    8 ++++
- kernel/bpf/cpumap.c      |   97 +++++++++++++++++++++-------------------------
- kernel/bpf/devmap.c      |   98 ++++++++++++++++++++++------------------------
- kernel/bpf/verifier.c    |    7 +--
- net/core/filter.c        |   28 ++++++-------
- 6 files changed, 115 insertions(+), 124 deletions(-)
+Shalom Toledo (9):
+  mlxsw: cmd: Free running clock PCI BAR and offsets via query firmware
+  mlxsw: core: Add a new interface for reading the hardware free running
+    clock
+  mlxsw: pci: Query free running clock PCI BAR and offsets
+  mlxsw: reg: Add Management UTC Register
+  mlxsw: reg: Add Management Pulse Per Second Register
+  ptp: ptp_clock: Publish scaled_ppm_to_ppb
+  mlxsw: spectrum_ptp: Add implementation for physical hardware clock
+    operations
+  mlxsw: spectrum: PTP physical hardware clock initialization
+  selftests: ptp: Add Physical Hardware Clock test
+
+ drivers/net/ethernet/mellanox/mlxsw/Kconfig   |   1 +
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |   1 +
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h     |  12 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  12 +
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   8 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  32 +++
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h  |   3 +
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 103 +++++++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  36 +++
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   3 +
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 267 ++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.h    |  44 +++
+ drivers/ptp/ptp_clock.c                       |   3 +-
+ include/linux/ptp_clock_kernel.h              |   8 +
+ tools/testing/selftests/ptp/phc.sh            | 166 +++++++++++
+ 15 files changed, 697 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h
+ create mode 100755 tools/testing/selftests/ptp/phc.sh
+
+-- 
+2.20.1
 
