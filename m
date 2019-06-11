@@ -2,192 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 595233D555
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F6D3D579
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406991AbfFKSRG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Jun 2019 14:17:06 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:42178 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405802AbfFKSRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:17:05 -0400
-Received: by mail-ed1-f66.google.com with SMTP id z25so21460027edq.9
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 11:17:05 -0700 (PDT)
+        id S2407076AbfFKS1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 14:27:20 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37856 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406804AbfFKS1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:27:16 -0400
+Received: by mail-qt1-f194.google.com with SMTP id y57so15761917qtk.4
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=XTSl1X3TVusNnBwvpfSKetQ7KFSoxgL/x9tvPN4y51Q=;
+        b=CRAEEdTtEd/R/ClPRCAiQrGs353d6Tbo3jIKj42fETxvxpoFht2citqwCizu+33E4B
+         +JP4HyZtGaV+ojzUSANo2JTxN9uZJuVTCIdB5VDwxaajMa4IdsmZqr2iMOOdkQug4CPO
+         D4HrAY5X+k+OfpDZIqflFncGBPA/BYEeK5fkJKZiTpnIXjHJE8C8C9Gw1Q1r6y0ZsMer
+         1ih33ubjy3e80OUbS/QmPjKW+iqSeJzTiyB7yn2brAaZZSQ4KGgtAKsJl2SBbVAm0zAB
+         P37irrMi8CrkU4pwyEi6yC+kFXGeOXHQbZXEfQdwkhvBSLzQ4z71mRd4ouAld+i1/yRN
+         EZRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=PeevNBNzRO9hMQUBVDmmgLb4HjXujI6Cc4LqojeCsBk=;
-        b=Mh8ZzPvRrb7oU8F1I4pxF4Cc8lI6phpHPUIXDeoVoCpEguRMFtm19PV+mity8KRfEI
-         owCVCgNHZfKSXKqjRH2ICXZ61Llw73cUmydN1sfQuxM/QQoCCtq+2YsBpD7X3GtOstS5
-         Prv+Ayi+/xHQQBXUgmX+jOHzBU78kCzh6vPfBnIn3DMtcLPDJ6jBILvWysejVcrP1FoL
-         BXmZeocie2Pz/w8KFMXIxMRXYnnlFLNsYyRYOcdt/WuKlu0H4SJMuZMtEarB8ASlsyvX
-         1iaC4ndh3kUR4sGkXDafTT8iYhAAyad3gT56x50cNLfpYk0XDkDt+xh4kOSLdzFoGJ0V
-         n6jg==
-X-Gm-Message-State: APjAAAWKDOTki1AGVErr5TNicT5tIRY9bRvNLoRIX5VcDiU6se8uVqN1
-        UslCxCZQlpp6JXeajwEIVE6dnsU4c5E=
-X-Google-Smtp-Source: APXvYqzkcMVNVifaB2v/lQuB9nYEK49ZDDKuut0vEhh8tZu0tW48WG9DY2wfK+7NnplWqol0WkW5oA==
-X-Received: by 2002:a17:906:644c:: with SMTP id l12mr16327171ejn.199.1560277024358;
-        Tue, 11 Jun 2019 11:17:04 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id y2sm4069598edc.26.2019.06.11.11.17.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=XTSl1X3TVusNnBwvpfSKetQ7KFSoxgL/x9tvPN4y51Q=;
+        b=RezyEERuAdMQyZme8TvKt1U0oh4FrGeOZfCaoHk34so2j6RqzuKzb7JI3X+Hou5yMS
+         5UDBUx+rl2IX92cPrBfVW1ncTjcJjt46u1QnXTjE9mOC8C7AENmzXVoEgj9920zNCDnZ
+         iyv84QtOgujlbOGoj3WX2jVTK9VO4+hQvxdFwHLRDtyLBgWq5ixQ8+4qWUpCBRhmMZkA
+         8xUIE0aB55R3hCcwdP4OPS5C6Seyc0ZVkwwz4V80+xD3/EWofKpKNMzJojjAqe0HxUBW
+         abd6Ak8pFjFZCY4ympKcYFSwHkWJUPEkGBn8WT2ZFvVtJQbRYRL6ZVarlQJnS6Gwc7tg
+         i7QQ==
+X-Gm-Message-State: APjAAAVLr/F/u8V3pTjwm3OXUsHXbpMDDzA85VPc+iJY/xF86ZmTTsjF
+        3hZ+QQPN9nkoPSZQLg2D90j3OfL5Iv0=
+X-Google-Smtp-Source: APXvYqxOJlQrkKCKNeZVMer/ppqUM3GcMD8BwtnZWk7n591FH4TR2dpB9T5BB74xMJinUiXzrdjheA==
+X-Received: by 2002:ac8:7545:: with SMTP id b5mr56892127qtr.234.1560277635418;
+        Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id u7sm6731244qkm.62.2019.06.11.11.27.14
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 11:17:03 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id ECE6718037E; Tue, 11 Jun 2019 20:17:02 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next v3 2/3] bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-In-Reply-To: <20190611200021.473138bc@carbon>
-References: <156026783994.26748.2899804283816365487.stgit@alrua-x1> <156026784011.26748.7290735899755011809.stgit@alrua-x1> <20190611200021.473138bc@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 11 Jun 2019 20:17:02 +0200
-Message-ID: <87y328f0m9.fsf@toke.dk>
+        Tue, 11 Jun 2019 11:27:15 -0700 (PDT)
+Date:   Tue, 11 Jun 2019 11:27:10 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+Subject: Re: [PATCH net] net: ethtool: Allow matching on vlan CFI bit
+Message-ID: <20190611112710.211e218b@cakuba.netronome.com>
+In-Reply-To: <20190611155456.15360-1-maxime.chevallier@bootlin.com>
+References: <20190611155456.15360-1-maxime.chevallier@bootlin.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+On Tue, 11 Jun 2019 17:54:56 +0200, Maxime Chevallier wrote:
+> Using ethtool, users can specify a classification action matching on the
+> full vlan tag, which includes the CFI bit.
+>=20
+> However, when converting the ethool_flow_spec to a flow_rule, we use
+> dissector keys to represent the matching patterns.
+>=20
+> Since the vlan dissector key doesn't include the CFI bit, this
+> information was silently discarded when translating the ethtool
+> flow spec in to a flow_rule.
+>=20
+> This commit adds the CFI bit into the vlan dissector key, and allows
+> propagating the information to the driver when parsing the ethtool flow
+> spec.
+>=20
+> Fixes: eca4205f9ec3 ("ethtool: add ethtool_rx_flow_spec to flow_rule stru=
+cture translator")
+> Reported-by: Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.qmqm.pl>
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+> Hi all,
+>=20
+> Although this prevents information to be silently discarded when parsing
+> an ethtool_flow_spec, this information doesn't seem to be used by any
+> driver that converts an ethtool_flow_spec to a flow_rule, hence I'm not
+> sure this is suitable for -net.
+>=20
+> Thanks,
+>=20
+> Maxime
+>=20
+>  include/net/flow_dissector.h | 1 +
+>  net/core/ethtool.c           | 5 +++++
+>  2 files changed, 6 insertions(+)
+>=20
+> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+> index 7c5a8d9a8d2a..9d2e395c6568 100644
+> --- a/include/net/flow_dissector.h
+> +++ b/include/net/flow_dissector.h
+> @@ -46,6 +46,7 @@ struct flow_dissector_key_tags {
+> =20
+>  struct flow_dissector_key_vlan {
+>  	u16	vlan_id:12,
+> +		vlan_cfi:1,
+>  		vlan_priority:3;
+>  	__be16	vlan_tpid;
+>  };
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> index d08b1e19ce9c..43df34c1ebe1 100644
+> --- a/net/core/ethtool.c
+> +++ b/net/core/ethtool.c
+> @@ -3020,6 +3020,11 @@ ethtool_rx_flow_rule_create(const struct ethtool_r=
+x_flow_spec_input *input)
+>  			match->mask.vlan.vlan_id =3D
+>  				ntohs(ext_m_spec->vlan_tci) & 0x0fff;
+> =20
+> +			match->key.vlan.vlan_cfi =3D
+> +				!!(ntohs(ext_h_spec->vlan_tci) & 0x1000);
+> +			match->mask.vlan.vlan_cfi =3D
+> +				!!(ntohs(ext_m_spec->vlan_tci) & 0x1000);
 
-> On Tue, 11 Jun 2019 17:44:00 +0200
-> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
->> 
->> The bpf_redirect_map() helper used by XDP programs doesn't return any
->> indication of whether it can successfully redirect to the map index it was
->> given. Instead, BPF programs have to track this themselves, leading to
->> programs using duplicate maps to track which entries are populated in the
->> devmap.
->> 
->> This patch fixes this by moving the map lookup into the bpf_redirect_map()
->> helper, which makes it possible to return failure to the eBPF program. The
->> lower bits of the flags argument is used as the return code, which means
->> that existing users who pass a '0' flag argument will get XDP_ABORTED.
->> 
->> With this, a BPF program can check the return code from the helper call and
->> react by, for instance, substituting a different redirect. This works for
->> any type of map used for redirect.
->> 
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>  include/linux/filter.h   |    1 +
->>  include/uapi/linux/bpf.h |    8 ++++++++
->>  net/core/filter.c        |   26 ++++++++++++--------------
->>  3 files changed, 21 insertions(+), 14 deletions(-)
->> 
->> diff --git a/include/linux/filter.h b/include/linux/filter.h
->> index 43b45d6db36d..f31ae8b9035a 100644
->> --- a/include/linux/filter.h
->> +++ b/include/linux/filter.h
->> @@ -580,6 +580,7 @@ struct bpf_skb_data_end {
->>  struct bpf_redirect_info {
->>  	u32 ifindex;
->>  	u32 flags;
->> +	void *item;
->>  	struct bpf_map *map;
->>  	struct bpf_map *map_to_flush;
->>  	u32 kern_flags;
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 7c6aef253173..9931cf02de19 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -3098,6 +3098,14 @@ enum xdp_action {
->>  	XDP_REDIRECT,
->>  };
->>  
->> +/* Flags for bpf_xdp_redirect_map helper */
->> +
->> +/* The lower flag bits will be the return code of bpf_xdp_redirect_map() helper
->> + * if the map lookup fails.
->> + */
->> +#define XDP_REDIRECT_INVALID_MASK (XDP_ABORTED | XDP_DROP | XDP_PASS | XDP_TX)
->> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_INVALID_MASK
->> +
->
-> Slightly confused about the naming of the define, see later.
->
->>  /* user accessible metadata for XDP packet hook
->>   * new fields must be added to the end of this structure
->>   */
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 7a996887c500..dd43be497480 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_device *dev, struct xdp_buff *xdp,
->>  			       struct bpf_redirect_info *ri)
->>  {
->>  	u32 index = ri->ifindex;
->> -	void *fwd = NULL;
->> +	void *fwd = ri->item;
->>  	int err;
->>  
->>  	ri->ifindex = 0;
->> +	ri->item = NULL;
->>  	WRITE_ONCE(ri->map, NULL);
->>  
->> -	fwd = __xdp_map_lookup_elem(map, index);
->> -	if (unlikely(!fwd)) {
->> -		err = -EINVAL;
->> -		goto err;
->> -	}
->>  	if (ri->map_to_flush && unlikely(ri->map_to_flush != map))
->>  		xdp_do_flush_map();
->>  
->> @@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
->>  {
->>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>  	u32 index = ri->ifindex;
->> -	void *fwd = NULL;
->> +	void *fwd = ri->item;
->>  	int err = 0;
->>  
->>  	ri->ifindex = 0;
->> +	ri->item = NULL;
->>  	WRITE_ONCE(ri->map, NULL);
->>  
->> -	fwd = __xdp_map_lookup_elem(map, index);
->> -	if (unlikely(!fwd)) {
->> -		err = -EINVAL;
->> -		goto err;
->> -	}
->> -
->>  	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
->>  		struct bpf_dtab_netdev *dst = fwd;
->>  
->> @@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
->>  
->>  	ri->ifindex = ifindex;
->>  	ri->flags = flags;
->> +	ri->item = NULL;
->>  	WRITE_ONCE(ri->map, NULL);
->>  
->>  	return XDP_REDIRECT;
->> @@ -3753,9 +3745,15 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>  {
->>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>  
->> -	if (unlikely(flags))
->> +	if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
->>  		return XDP_ABORTED;
->>  
->> +	ri->item = __xdp_map_lookup_elem(map, ifindex);
->> +	if (unlikely(!ri->item)) {
->> +		WRITE_ONCE(ri->map, NULL);
->> +		return (flags & XDP_REDIRECT_INVALID_MASK);
->
-> Maybe I'm reading it wrong, but shouldn't the mask be called the "valid" mask?
+nit: since you're only using the output as a boolean, you can apply the
+     byteswap to the constant and have it performed at build time.
+     Another option is be16_get_bits() from linux/bitfield.h.
 
-It's the mask that is applied when the index looked up is invalid (i.e.,
-the entry doesn't exist)? But yeah, can see how the name can be
-confusing; maybe it should just be "RETURN_MASK" or something like that?
-
--Toke
+>  			match->key.vlan.vlan_priority =3D
+>  				(ntohs(ext_h_spec->vlan_tci) & 0xe000) >> 13;
+>  			match->mask.vlan.vlan_priority =3D
