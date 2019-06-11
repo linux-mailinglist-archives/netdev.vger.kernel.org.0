@@ -2,86 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C41D3C82C
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 12:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9443C9B0
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 13:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405233AbfFKKIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 06:08:53 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:45118 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405185AbfFKKIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 06:08:52 -0400
-Received: by mail-ed1-f67.google.com with SMTP id a14so17326528edv.12;
-        Tue, 11 Jun 2019 03:08:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=upToNZmU1lMq7es+5zXvEQjyTF1NnvLf1/9ORQaZ1DE=;
-        b=iCOSrKcUK+rli/OUyV1Fpo+eVbyGE8IUCkpVXPdJqMOV3jbckAVXXe/LNJ08+i85dt
-         fgljXzkq+tNhQR1WuX+jv0gC5HXPKZVwhEsHH4ZVyv567GOhFi1LEvdgt0WITYQ6H2tt
-         qt9hoI9VsxlxqdZLTypYTT/u1LEWyJEZYy0nVG8HC+4vMysJ30RHd4c3Lfufy4A0ddtQ
-         BpDLdF5eeTVv4MjQMczE3ZWoQ99scUqlPKJjxko1nV7JPgaTvNnx5L1rAdCQEJdI366z
-         mY3TJlfBxrvj0DUU/qZL7QKSLvZmLGlCrJWLEPWmyQtDxOywIKtDNB8V8BT0in3Lgpet
-         0Z5g==
-X-Gm-Message-State: APjAAAUjturf9kVSrohkHPTFHazvg4NrKCIZlFJeBZqqotoWBXH7VkH2
-        SRhYfqZv6j6pV1dY2I2NAqzhSkV4so8=
-X-Google-Smtp-Source: APXvYqxTc7uu07z4aidQ8odoAbUGZpihRowGfPQKyIP6B1ElMaLOiXVw0fUv2U0hCpYYEI8zPY3IOw==
-X-Received: by 2002:aa7:c559:: with SMTP id s25mr7829344edr.117.1560247730528;
-        Tue, 11 Jun 2019 03:08:50 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id o22sm2298198edc.37.2019.06.11.03.08.47
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id x17so12295897wrl.9;
-        Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
-X-Received: by 2002:adf:fd01:: with SMTP id e1mr23640588wrr.167.1560247727247;
- Tue, 11 Jun 2019 03:08:47 -0700 (PDT)
+        id S2388622AbfFKLFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 07:05:47 -0400
+Received: from sonic305-1.consmr.mail.bf2.yahoo.com ([74.6.133.40]:45414 "EHLO
+        sonic305-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727278AbfFKLFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 07:05:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1560251145; bh=KjGTrcKxBnSNa4Y0eXUad32yjVm8WvcW0ACsAf8zNeE=; h=Date:From:Reply-To:Subject:References:From:Subject; b=jReXseL5R5UyzBYh1p0Jua8dzjZUjPNJs/QZPaE94eIqcY6e6ITUthTAzub6uRzItAWIYVQRhX7EhYmw+hPbbLyTntrfC4ZvmxBspmtjrY14rP6yfuSkFz2VhGRRnfP9JCMTLaYUR4uvJED4x6mKiVe/T7YkN54YHY1H8fDAjdU9ARfh9SOWNdpTjBgFRg9NGUgf4aP1ZztO5AP7ACjAU5vv+t0fZ3jzKgnIvZV34S/zzW+YjPvb257CDS2bQPHXqruWkyVqVrtXjUZnbZu4VRkr+PdALapQ9wAxfEI84UOjOBQBj0ASN+LDhg15LNW589qHVObeKpWbqwRXrDJuCg==
+X-YMail-OSG: gmjRV20VM1k_rtINHOJ3e.PDioAn8PEt68rgneYML8Lck3LZIIejzBK1igTUl67
+ M4OvhlsiOsS9rRqNXNuqHBcm9UJnTLUgEfiC5yAiSvc9phZJa16Zd8i3khDo6svGPKtW2bYZsAQw
+ j80rECnfzFYn8RtbQHaFnFQX1PloC62Qb_VpxR5fEQ3K7qKkEWoWXSq4pHDtXeIcWq.Y0Z38p1YU
+ HAFM2fC6bQdg.fKqq0f1gRHROlZKjTBvkZcFrirXR.iXxpFYTE8Tms8HNuLHzgq9pj3qnx7S3EbB
+ I4ywzWgfsL5kKhcuqZb9g.Tb_uCosEs6q61ogk0zHalG1CoNanqTdKMNd5gTs_sm2XVC8juDg7.N
+ l39ZPJ85X1._IDCjtD3Rs3KKd8FxQzqk3WssK0TVe3Nknql6fOkSs5urjeMrw7elYk.soHzhBAHK
+ Cw6.T0TBgaNNewJCmtEliUcEvpy.CwZdDHfgGOgfTopHF10TLvaY6expvD4aqGdzeZRFxRPKPLDz
+ p.a7hrViD5F9A9YTse9aWhVNew9joOE80UMhuXzJhBhrk71ADr8VcnDyPaTlMvRDeXehz4y_k1At
+ bt_fdFCxe2vLUF5BxM.p5jcIRenS4SEPNpKUEupAQ2YJYTs4M5ejzMNr67QZJEsIemv9N1lnlLc5
+ K51XiRK_O_iwluPXQv0vpMnC.w8XVH9v4Qj.hxksqxtaIfKy9YRwRlZLICKeAu5DdvwGbc76v5dN
+ Bn6cVpS3IR7grZJ4xXPwLBcyJLMHSYgUuHDlW7XYmILbzGEljtXUZzuForkD7R8FHUMsEXt9H5eE
+ He3B9zsR25Gx7VuivUD1LvaFo3qm2SLL9e.F1hlx73N6_kgx0boLaYazszJxmsM_92HixVEqTKYD
+ dc.p8Ia.b_l2lUHM4t4lSNhp5iYUIHKVo5ydgnk478k3dSdIK_4C5QORtehYPgMktGI9L4LvWWYe
+ H1U6maIjrxTj0LoiDurKz8JIVuMqUFQ3_eKvBZSGL1yub23QcCRFU6ttuXkJHmZIk5qeBVmSPoOH
+ 91HR6VlC_wwQV5gZoY6aR7q3PVrCS5siutA.dfNNWRekNpVwMgeOahfK9giyF5pA9GA_XtxATKFr
+ 4Is1f0Cr3knIrYp5nrL4.rUwU17GKekiy_7cQDz32ut1qEPcgtGvwZ5lSdofsSBYiiCJbHByWoIL
+ sCrRiw0zkfga1FRuR4aLb5t5HKUZXddgQUq.pgjpW5rHm357mPTwt_YVcyvev0w2X6cvfsf0MNZi
+ bROnP8wdsrDKl8SpmKQ--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.bf2.yahoo.com with HTTP; Tue, 11 Jun 2019 11:05:45 +0000
+Date:   Tue, 11 Jun 2019 11:05:41 +0000 (UTC)
+From:   "mrs.kadi.brahimmusa" <mrs.kadi.brahimmusa@gmail.com>
+Reply-To: "mrs.kadi.brahimmusa" <mrs.kadi.brahimmusa@gmail.com>
+Message-ID: <525822254.1056660.1560251141252@mail.yahoo.com>
+Subject: "As-Salam-u-Alaikum" Dear friends,
 MIME-Version: 1.0
-References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <af3a342a6cba1dda27763c13093a8fc060946c1e.1560158667.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <af3a342a6cba1dda27763c13093a8fc060946c1e.1560158667.git-series.maxime.ripard@bootlin.com>
-From:   Chen-Yu Tsai <wens@csie.org>
-Date:   Tue, 11 Jun 2019 18:08:34 +0800
-X-Gmail-Original-Message-ID: <CAGb2v66vKPeyvw56ROR-B=5Bzi7GVby1CXCjgQ5hnuUdPWX0cg@mail.gmail.com>
-Message-ID: <CAGb2v66vKPeyvw56ROR-B=5Bzi7GVby1CXCjgQ5hnuUdPWX0cg@mail.gmail.com>
-Subject: Re: [PATCH v2 11/11] ARM: dts: sunxi: Switch to the generic PHY properties
-To:     Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <525822254.1056660.1560251141252.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.13634 YahooMailBasic Mozilla/5.0 (Windows NT 6.1; WOW64; rv:67.0) Gecko/20100101 Firefox/67.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 5:26 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->
-> The DWMAC specific properties to manage the PHY have been superseeded by
-> the generic PHY properties. Let's move to it.
->
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->
-> ---
->
-> This patch should go through arm-soc.
->
-> Changes from v1:
->   - New patch
-> ---
->  arch/arm/boot/dts/sun6i-a31-hummingbird.dts       |  6 +++---
+Assalamu Alaikum Wa Rahmatullahi Wa Barakatuh,
 
-Tested-by: Chen-Yu Tsai <wens@csie.org>
+My Dear Good Friend.
+
+I came across your e-mail contact prior a private search while in need of your assistance, The only Daughter of (Late Ahmed Ibrahim the education and information minister Libya )under the government of late Muammar Qaddafi.
+
+My Father was sentenced to death after the death of late president Muammar Qaddafi by Libya's supreme court for supporting late president Muammar Qaddafi, before his death he deposit the sum of Ten Million Five Hundred Thousand United State Dollar ($10.500.000.00 in UBA bank with my name as the only daughter and indicated me as the next of kin to the fund ,in another country called Burkina Faso where are am now as a refuge. am here pleading with you to help me as a foreign partner and transfer the fund out of here , i will come over to your country and invest over there and as well have opportunity to start my education.
+
+You can email me { mrs.kadi.brahimmusa@gmail.com} to enable me give you all the full details of the fund
+
+Best Regards
+Mrs Kadi brahim
