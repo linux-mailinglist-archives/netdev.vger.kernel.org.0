@@ -2,74 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4AC33CCD5
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 15:23:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B0203CCE7
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 15:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390706AbfFKNX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 09:23:29 -0400
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:44506 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387578AbfFKNX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 09:23:29 -0400
-Received: by mail-ot1-f46.google.com with SMTP id b7so11799258otl.11
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 06:23:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4pFByX/gV8SRk15tIVamc1Q+Obh4R2wV+e3nxQGfMbU=;
-        b=VN3PefCcf6ZBx33aEZppw+UOr8b0JmdPHrn/AxdM3LA/TOK90kRKnkuAKb5ifwY/Te
-         4Xje3Z9w7NXhKYFHej+4lyKyaziqnH5O1EA4Re22ljfOQRwjlkmIXzOjMUrU5llC7tQC
-         JuljcioMxbYg+irLIC3XHyPcG0G0HnGa0PzAz0WSSc0pAs0SxfhwJw8CamoeAcifty7S
-         W9TNpzl+RYGsBY5S1Jp0aEBbsV67sERXsSrutjApGP6CVowZosisaNVE4nOn/ToY120a
-         0OYFOrVVeDGedlZbuV0DSYZzUoCwdNkdRI5fenHuUEYHcvIosfISUkNKZQ0ZHWaadMMd
-         LH2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4pFByX/gV8SRk15tIVamc1Q+Obh4R2wV+e3nxQGfMbU=;
-        b=OQBfbMDzJzKjtxP10EnPgh7hUfaVsLRVlV9PT1HvUffoucxx2v/wLP73XeNf6LeQbZ
-         fySqmvcBG7bPAMeng3jaWTTxikyAVC1+PESMys22NFTaYohfWnwUvRHCIgUrQ6ixYGil
-         /6mEwKS+UrJYC0AP87fHscasgYqtyaDrz0UioPtCiKQgfPHu5xKMQ94Rc7ww1HaxgA6M
-         JTyrTYqj24LZnlDECYA0PGs9pp/nR5j8lLL5yABQCSzdIEJ2G9dkbLwjRf2p9E0CGYNp
-         E7gIoWOhumdlqi4s3G/1KWtG9OZmbIFUOHReo9BolgEFkuU4fj7PeegmWlRm2G0KpQkD
-         5UiA==
-X-Gm-Message-State: APjAAAWxoYccvGOO2yJazA0HplvsjcLn0T8K2Wnztbcj0Z05efIF1AVa
-        hmHvZSZbuZK74rLcWXDIx9tlS173Nt0JqxRLWwxM2g==
-X-Google-Smtp-Source: APXvYqw04c5crPepK/1SeUOjGW0gpdNUga1WWqQEiJh4t/8usDrrtbdKXz+MaetJfkQfJj/08clqAr/yz65+YHu3weg=
-X-Received: by 2002:a05:6830:108d:: with SMTP id y13mr36088541oto.255.1560259408229;
- Tue, 11 Jun 2019 06:23:28 -0700 (PDT)
+        id S2388533AbfFKN1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 09:27:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45176 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726713AbfFKN1r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 09:27:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=BVwrsGPFJFrD09FYZ2WX7Gh/a0P8PtV9rVWiZV89tTM=; b=CVcvUcTJkknBeOT0snnz8Ppc0S
+        RdFqBUUDsVml66ITn6spE6yKtFrhgZP5O5/kQpRVc4GzRIc0estT3RZpxIw6KbNxKetHTcJU2G5xu
+        SQz75CwkfvDfr8qmw1L11Hq+HLKDGKoXZHKkID3byxQEawWHxw98oudLE6Fa9MJoEU1g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hagoU-0005yW-4o; Tue, 11 Jun 2019 15:27:46 +0200
+Date:   Tue, 11 Jun 2019 15:27:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: DSA with MV88E6321 and imx28
+Message-ID: <20190611132746.GA22832@lunn.ch>
+References: <20190606122437.GA20899@lunn.ch>
+ <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
+ <20190606133501.GC19590@lunn.ch>
+ <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
+ <20190606135903.GE19590@lunn.ch>
+ <8903b07b-4ac5-019a-14a1-d2fc6a57c0bb@eks-engel.de>
+ <20190607124750.GJ20899@lunn.ch>
+ <635c884a-185d-5b3b-7f91-ce058d9726f4@eks-engel.de>
+ <20190611121938.GA20904@lunn.ch>
+ <68671792-a720-6fa5-0a6e-0cd9f57c67eb@eks-engel.de>
 MIME-Version: 1.0
-References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
- <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
- <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
- <CADVnQy=P=P1iPxrgqQ1U5xwY7Wj3H54XF1sfTyi92mQkLgjb6g@mail.gmail.com> <CAHx7fy68uTURceZtzYEnvdZ1pD2_F0dNJKjB7c7JTT8pjNKRSw@mail.gmail.com>
-In-Reply-To: <CAHx7fy68uTURceZtzYEnvdZ1pD2_F0dNJKjB7c7JTT8pjNKRSw@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Tue, 11 Jun 2019 09:23:11 -0400
-Message-ID: <CADVnQymT2zPDnmN6jp5NonQqyZHFRdW9CoiRL=MKKEbqVcySkA@mail.gmail.com>
-Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
-To:     Zhongjie Wang <zwang048@ucr.edu>
-Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <68671792-a720-6fa5-0a6e-0cd9f57c67eb@eks-engel.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 2:46 AM Zhongjie Wang <zwang048@ucr.edu> wrote:
->
-> Hi Neal,
->
-> Thanks for your valuable feedback! Yes, I think you are right.
-> It seems not a problem if tp->urg_data and tp->urg_seq are used together.
-> From our test results, we can only see there are some paths requiring
-> specific initial sequence number to reach.
-> But as you said, it would not cause a difference in the code logic.
-> We haven't observed any abnormal states.
+> I captured a ping from my device to my computer to look if outgoing is working
+> (captured on both devices). Here is the output from my device where i started the:
+> 
+> 00:24:24.752057 ARP, Request who-has 192.168.10.2 tell 192.168.10.1, length 28
+> 	0x0000:  0001 0800 0604 0001 6a2a ad79 def5 c0a8  ........j*.y....
+> 	0x0010:  0a01 0000 0000 0000 c0a8 0a02            ............
+> 
+> and here the output of the receiver:
+> 
+> 14:49:06.725940 MEDSA 0.2:0: ARP, Request who-has benjamin-HP tell 192.168.10.1, length 42
+> 	0x0000:  0000 4010 0000 0806 0001 0800 0604 0001  ..@.............
+> 	0x0010:  6a2a ad79 def5 c0a8 0a01 0000 0000 0000  j*.y............
+> 	0x0020:  c0a8 0a02 0000 0000 0000 0000 0000 0000  ................
+> 	0x0030:  0000
+> 
+> I'm really stuck at the moment because I don't know what to do further. I think, 
+> I did everything what is needed.
+> And I know when I configure the switch manually via MDIO the connection is working.
+> When I'm looking for traffic in ifconfig on all ports there is everywhere 0 bytes 
+> except for eth0.
+> Do you have any ideas?
 
-Great. Thanks for confirming!
+I would start simple and build up. Don't use a bridge. Just put the IP
+address 192.168.10.1 on the slave interface for port 2.
 
-cheers,
-neal
+So something like:
+
+ip link set eth0 up
+ip addr add 192.168.10.1/24 dev lan2
+ip link set lan2 up
+
+then you can try ping 192.168.10.2.
+
+Then trace the packet along the path. Does the ARP request make it to
+192.168.10.2? Is a reply sent? ethtool -S lan2 will show you the
+packet counts. Do the counters show the ARP going out and the reply
+coming back?
+
+       Andrew
