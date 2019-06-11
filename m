@@ -2,159 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA433D5F6
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C98413D662
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 21:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404900AbfFKS6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 14:58:05 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50270 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404245AbfFKS6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:58:05 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 023901525A431;
-        Tue, 11 Jun 2019 11:58:04 -0700 (PDT)
-Date:   Tue, 11 Jun 2019 11:58:04 -0700 (PDT)
-Message-Id: <20190611.115804.258818890043739947.davem@davemloft.net>
-To:     ssuryaextr@gmail.com
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org
-Subject: Re: [PATCH net v2] vrf: Increment Icmp6InMsgs on the original
- netdev
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190610143250.18796-1-ssuryaextr@gmail.com>
-References: <20190610143250.18796-1-ssuryaextr@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 11 Jun 2019 11:58:05 -0700 (PDT)
+        id S2405607AbfFKTDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 15:03:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40092 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405486AbfFKTDx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 15:03:53 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.35.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8695621850;
+        Tue, 11 Jun 2019 19:03:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560279833;
+        bh=nQz/FiPhSp99AyagSW4bHpw6sEPfWuQnWGR4HXWX6TM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ahYlfeqMCpPLXR3vZ3QTn7BIDCw//yWC1clhFvq5Amssu4ZCsZ5uC5gzJHDOnDl1r
+         d+++RvtdYs0aHgBtZqC3KmHICqwE/zIUWbGCg6dFEWQ+fHrG4qn1qL+jVZhzYZdidN
+         C9fUMHkyNHN9n0oAa5Eqm4u6iBE5zSUk1D0wMQgU=
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@redhat.com>, Mark Drayton <mbd@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 62/85] perf config: Update default value for llvm.clang-bpf-cmd-template
+Date:   Tue, 11 Jun 2019 15:58:48 -0300
+Message-Id: <20190611185911.11645-63-acme@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190611185911.11645-1-acme@kernel.org>
+References: <20190611185911.11645-1-acme@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Suryaputra <ssuryaextr@gmail.com>
-Date: Mon, 10 Jun 2019 10:32:50 -0400
+From: Leo Yan <leo.yan@linaro.org>
 
-> Get the ingress interface and increment ICMP counters based on that
-> instead of skb->dev when the the dev is a VRF device.
-> 
-> This is a follow up on the following message:
-> https://www.spinics.net/lists/netdev/msg560268.html
-> 
-> v2: Avoid changing skb->dev since it has unintended effect for local
->     delivery (David Ahern).
-> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+The clang bpf cmdline template has defined default value in the file
+tools/perf/util/llvm-utils.c, which has been changed for several times.
 
-David, please review.
+This patch updates the documentation to reflect the latest default value
+for the configuration llvm.clang-bpf-cmd-template.
 
-Thanks.
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Drayton <mbd@fb.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Fixes: d35b168c3dcd ("perf bpf: Give precedence to bpf header dir")
+Fixes: cb76371441d0 ("perf llvm: Allow passing options to llc in addition to clang")
+Fixes: 1b16fffa389d ("perf llvm-utils: Add bpf include path to clang command line")
+Link: http://lkml.kernel.org/r/20190607143508.18141-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/Documentation/perf-config.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-> ---
->  include/net/addrconf.h | 16 ++++++++++++++++
->  net/ipv6/icmp.c        | 17 +++++++++++------
->  net/ipv6/reassembly.c  |  4 ++--
->  3 files changed, 29 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-> index 269ec27385e9..2e36e29f9f54 100644
-> --- a/include/net/addrconf.h
-> +++ b/include/net/addrconf.h
-> @@ -356,6 +356,22 @@ static inline struct inet6_dev *__in6_dev_get(const struct net_device *dev)
->  	return rcu_dereference_rtnl(dev->ip6_ptr);
->  }
->  
-> +/**
-> + * __in6_dev_stats_get - get inet6_dev pointer for stats
-> + * @dev: network device
-> + * @skb: skb for original incoming interface if neeeded
-> + *
-> + * Caller must hold rcu_read_lock or RTNL, because this function
-> + * does not take a reference on the inet6_dev.
-> + */
-> +static inline struct inet6_dev *__in6_dev_stats_get(const struct net_device *dev,
-> +						    const struct sk_buff *skb)
-> +{
-> +	if (netif_is_l3_master(dev))
-> +		dev = dev_get_by_index_rcu(dev_net(dev), inet6_iif(skb));
-> +	return __in6_dev_get(dev);
-> +}
-> +
->  /**
->   * __in6_dev_get_safely - get inet6_dev pointer from netdevice
->   * @dev: network device
-> diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-> index 802faa2fcc0e..f54191cd1d7b 100644
-> --- a/net/ipv6/icmp.c
-> +++ b/net/ipv6/icmp.c
-> @@ -398,23 +398,28 @@ static struct dst_entry *icmpv6_route_lookup(struct net *net,
->  	return ERR_PTR(err);
->  }
->  
-> -static int icmp6_iif(const struct sk_buff *skb)
-> +static struct net_device *icmp6_dev(const struct sk_buff *skb)
->  {
-> -	int iif = skb->dev->ifindex;
-> +	struct net_device *dev = skb->dev;
->  
->  	/* for local traffic to local address, skb dev is the loopback
->  	 * device. Check if there is a dst attached to the skb and if so
->  	 * get the real device index. Same is needed for replies to a link
->  	 * local address on a device enslaved to an L3 master device
->  	 */
-> -	if (unlikely(iif == LOOPBACK_IFINDEX || netif_is_l3_master(skb->dev))) {
-> +	if (unlikely(dev->ifindex == LOOPBACK_IFINDEX || netif_is_l3_master(skb->dev))) {
->  		const struct rt6_info *rt6 = skb_rt6_info(skb);
->  
->  		if (rt6)
-> -			iif = rt6->rt6i_idev->dev->ifindex;
-> +			dev = rt6->rt6i_idev->dev;
->  	}
->  
-> -	return iif;
-> +	return dev;
-> +}
-> +
-> +static int icmp6_iif(const struct sk_buff *skb)
-> +{
-> +	return icmp6_dev(skb)->ifindex;
->  }
->  
->  /*
-> @@ -801,7 +806,7 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
->  static int icmpv6_rcv(struct sk_buff *skb)
->  {
->  	struct net *net = dev_net(skb->dev);
-> -	struct net_device *dev = skb->dev;
-> +	struct net_device *dev = icmp6_dev(skb);
->  	struct inet6_dev *idev = __in6_dev_get(dev);
->  	const struct in6_addr *saddr, *daddr;
->  	struct icmp6hdr *hdr;
-> diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-> index 1a832f5e190b..e219e669ac11 100644
-> --- a/net/ipv6/reassembly.c
-> +++ b/net/ipv6/reassembly.c
-> @@ -302,7 +302,7 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
->  			   skb_network_header_len(skb));
->  
->  	rcu_read_lock();
-> -	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMOKS);
-> +	__IP6_INC_STATS(net, __in6_dev_stats_get(dev, skb), IPSTATS_MIB_REASMOKS);
->  	rcu_read_unlock();
->  	fq->q.rb_fragments = RB_ROOT;
->  	fq->q.fragments_tail = NULL;
-> @@ -316,7 +316,7 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
->  	net_dbg_ratelimited("ip6_frag_reasm: no memory for reassembly\n");
->  out_fail:
->  	rcu_read_lock();
-> -	__IP6_INC_STATS(net, __in6_dev_get(dev), IPSTATS_MIB_REASMFAILS);
-> +	__IP6_INC_STATS(net, __in6_dev_stats_get(dev, skb), IPSTATS_MIB_REASMFAILS);
->  	rcu_read_unlock();
->  	inet_frag_kill(&fq->q);
->  	return -1;
-> -- 
-> 2.17.1
-> 
+diff --git a/tools/perf/Documentation/perf-config.txt b/tools/perf/Documentation/perf-config.txt
+index 462b3cde0675..e4aa268d2e38 100644
+--- a/tools/perf/Documentation/perf-config.txt
++++ b/tools/perf/Documentation/perf-config.txt
+@@ -564,9 +564,12 @@ llvm.*::
+ 	llvm.clang-bpf-cmd-template::
+ 		Cmdline template. Below lines show its default value. Environment
+ 		variable is used to pass options.
+-		"$CLANG_EXEC -D__KERNEL__ $CLANG_OPTIONS $KERNEL_INC_OPTIONS \
+-		-Wno-unused-value -Wno-pointer-sign -working-directory \
+-		$WORKING_DIR  -c $CLANG_SOURCE -target bpf -O2 -o -"
++		"$CLANG_EXEC -D__KERNEL__ -D__NR_CPUS__=$NR_CPUS "\
++		"-DLINUX_VERSION_CODE=$LINUX_VERSION_CODE "	\
++		"$CLANG_OPTIONS $PERF_BPF_INC_OPTIONS $KERNEL_INC_OPTIONS " \
++		"-Wno-unused-value -Wno-pointer-sign "		\
++		"-working-directory $WORKING_DIR "		\
++		"-c \"$CLANG_SOURCE\" -target bpf $CLANG_EMIT_LLVM -O2 -o - $LLVM_OPTIONS_PIPE"
+ 
+ 	llvm.clang-opt::
+ 		Options passed to clang.
+-- 
+2.20.1
+
