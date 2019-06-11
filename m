@@ -2,285 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0E03CABF
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 14:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF50C3CAD5
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 14:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404554AbfFKMKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 08:10:04 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37402 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404538AbfFKMKE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 08:10:04 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 19so6487269pfa.4;
-        Tue, 11 Jun 2019 05:10:03 -0700 (PDT)
+        id S2390190AbfFKMNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 08:13:55 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46018 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387538AbfFKMNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 08:13:55 -0400
+Received: by mail-qk1-f193.google.com with SMTP id s22so7432457qkj.12;
+        Tue, 11 Jun 2019 05:13:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=uEbaWZ7CSywpPD1njQAxIRl3QQVRG3+Pm3u0i4SdA7w=;
-        b=ppU7ATNEH4eVI+b3YTmA2WI8aydvfOxgeCE251gUk1SWEdQESfNX9QDRW8RJ6E86OR
-         vnlHkY9f+wS5+shq/WlulC3/zI5MczLRSOYUOowMFREnefN6X+Z0in/n2CGUL5DKMowD
-         MGtWZgW8yH27fcd4TrLQ6LGZa/HOihyOIXj9eSIwPSHt4DwsibbRJ0+loudMidVX8iZx
-         Xj9XJtPlOP1ng1D4vePZ7KUD7Wskfk0Y/l+X3QrnvMcumgx9JtQD/sy1/akXJyHQA4po
-         O2X70z7tshtTo2ocXsyWVXwX7iIqVuHCB379ACA9ahjzkhKfYi26XuCKpyyNdGRpb21w
-         owLA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=F9sYH77GwvTWnaxRoVTLn2O5wlIPDpWETDCvIeRmDxQ=;
+        b=UgdruSVxQRPvNbG+O2D3QZ56HicZqoGkRxd7toiTK9riWtndBDF8MUOoILQlKdslmC
+         OWEL+p8ii3pjYX3RYJ81aVgBYRTdeJ6l7F0D+t2m4kgLH9ATd+HFq/X+rimOjbIoE2LU
+         X9n8feS4kUdKnEa0d64DhavWczONBQQRBVMp94R15lmAjvYhQuzFH633AaCUxKXCRVhp
+         Eenf4TyyMR9VMp/2t19u4RXJUELYXo/kf/O8R+itig9DVfcd+YpV0pj46FUFfDDkEYiN
+         dGz1rffROcVWshBiCjyC/dT3HkPdX2rc+caLpLtHIpNodfk7GbMfAWbqACzJJOXJz/qN
+         Txlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uEbaWZ7CSywpPD1njQAxIRl3QQVRG3+Pm3u0i4SdA7w=;
-        b=Ven98uF58MTumQGaLUD4aVobbA5Gy4fiKAWiPLMxt76uhbGP6jZuYJT4oDIh6t7kKn
-         3quTozwKoj3IU3984TgnWmt6Q0DBCDPikMKwCIXSa57O2V4rZb5sPZhWrbKtNspM8dxn
-         3NXxtRPxU3IVkMoovfsAbW2qucoktt6Eop6FUFItgTeTMrgFmBlcN3eOft1KA4PJ2kU0
-         OKDTJVn/8LI6HsHeOx226p3LybXYVLweiwbEYtx1ktGhZdQFyQXtxj2/o1ZDYrqYXtJG
-         aPN/fs21h+aCFvpV9XsI/fWBEcKtPmEj2gthH4JLsi1JdRXgBvftF8wtpKR+LFOWo1sL
-         dIYw==
-X-Gm-Message-State: APjAAAXhmyslcDCtFCwaTv/VezIAzX7ze+8vTm7huASnYu7peHBXHK9t
-        A4oGL/FHOOk/q4YnLMIucDbLGN0=
-X-Google-Smtp-Source: APXvYqyvSTfHuLK9wZeiufbXgu0Lal3TwdIQsTAac85wa28carbQwNXaARNHontNBg1Ex0eUZjFalQ==
-X-Received: by 2002:aa7:8d98:: with SMTP id i24mr11968467pfr.199.1560255003091;
-        Tue, 11 Jun 2019 05:10:03 -0700 (PDT)
-Received: from ubuntu.extremenetworks.com ([12.38.14.8])
-        by smtp.gmail.com with ESMTPSA id d7sm16469287pfn.89.2019.06.11.05.09.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 05:10:02 -0700 (PDT)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netfilter-devel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH RESEND nf-next] netfilter: add support for matching IPv4 options
-Date:   Tue, 11 Jun 2019 08:09:12 -0400
-Message-Id: <20190611120912.3825-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=F9sYH77GwvTWnaxRoVTLn2O5wlIPDpWETDCvIeRmDxQ=;
+        b=UGr0dwY9TipFEQFFzLXo9gk5DTjeLFgc3lbDDSQk8doZMwEzy4W+3zo1vDG8xhb92i
+         8WMYg1HmN32xZg0tHb0afaiFdClmCUiiJKaEfZK70/RMjJsY20AfVT6xZWkDsAhoNmRs
+         ME+6jk4W7a4HY+mskHiOkG4UX52iphg9Dr+KSJDF9TEINK65+yhQcNK4UcKOJz5g3e/x
+         TK//feOoGRxO6OqzctNSCk5hQ/TaVVPssK/vAPyGkM0jBOQ/oGMWKjIAiqW2CIjTDVCH
+         Pgs4xxRcnqr8Jj87FNqHSm+FwGCRsHcMu+xqHbu6mR1Gk6v4Ib5DgYZUpv5EPm/Q+aWg
+         NbuQ==
+X-Gm-Message-State: APjAAAW2CaNzHA0jzXPkLge6DxLW76diC/zW+njElm7lHXpmthX+vSMH
+        spdeBIMXsByEhEIe0/zAXm4FtWdcE/+Asgxjxto=
+X-Google-Smtp-Source: APXvYqy+8DtsFTnS1eutVJbGzdlAhJ6iOi3oNQB1UWBvgvol3QTsgQYcWNOyMNDHpKIqYnVu2UnGjmICYET/jeLkm0I=
+X-Received: by 2002:a37:7786:: with SMTP id s128mr59952244qkc.63.1560255233555;
+ Tue, 11 Jun 2019 05:13:53 -0700 (PDT)
+MIME-Version: 1.0
+References: <CGME20190610161551eucas1p1f370190ee6d0d5e921de1a21f3da72df@eucas1p1.samsung.com>
+ <20190610161546.30569-1-i.maximets@samsung.com> <06C99519-64B9-4A91-96B9-0F99731E3857@gmail.com>
+ <CAJ+HfNgdiutAwpnc3LDDEGXs2SFCu3UtMnao79sFNyZZpQ2ETw@mail.gmail.com> <e2313edb-6617-cd52-1a40-4712c9f20127@samsung.com>
+In-Reply-To: <e2313edb-6617-cd52-1a40-4712c9f20127@samsung.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 11 Jun 2019 14:13:42 +0200
+Message-ID: <CAJ+HfNgsxwDFdsfsNkpendnc=uwrkXakLBRw=WnjLMCG93z_3w@mail.gmail.com>
+Subject: Re: [PATCH bpf v3] xdp: fix hang while unregistering device bound to
+ xdp socket
+To:     Ilya Maximets <i.maximets@samsung.com>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the kernel change for the overall changes with this description:
-Add capability to have rules matching IPv4 options. This is developed
-mainly to support dropping of IP packets with loose and/or strict source
-route route options. Nevertheless, the implementation include others and
-ability to get specific fields in the option.
+On Tue, 11 Jun 2019 at 10:42, Ilya Maximets <i.maximets@samsung.com> wrote:
+>
+> On 11.06.2019 11:09, Bj=C3=B6rn T=C3=B6pel wrote:
+> > On Mon, 10 Jun 2019 at 22:49, Jonathan Lemon <jonathan.lemon@gmail.com>=
+ wrote:
+> >>
+> >> On 10 Jun 2019, at 9:15, Ilya Maximets wrote:
+> >>
+> >>> Device that bound to XDP socket will not have zero refcount until the
+> >>> userspace application will not close it. This leads to hang inside
+> >>> 'netdev_wait_allrefs()' if device unregistering requested:
+> >>>
+> >>>   # ip link del p1
+> >>>   < hang on recvmsg on netlink socket >
+> >>>
+> >>>   # ps -x | grep ip
+> >>>   5126  pts/0    D+   0:00 ip link del p1
+> >>>
+> >>>   # journalctl -b
+> >>>
+> >>>   Jun 05 07:19:16 kernel:
+> >>>   unregister_netdevice: waiting for p1 to become free. Usage count =
+=3D 1
+> >>>
+> >>>   Jun 05 07:19:27 kernel:
+> >>>   unregister_netdevice: waiting for p1 to become free. Usage count =
+=3D 1
+> >>>   ...
+> >>>
+> >>> Fix that by implementing NETDEV_UNREGISTER event notification handler
+> >>> to properly clean up all the resources and unref device.
+> >>>
+> >>> This should also allow socket killing via ss(8) utility.
+> >>>
+> >>> Fixes: 965a99098443 ("xsk: add support for bind for Rx")
+> >>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+> >>> ---
+> >>>
+> >>> Version 3:
+> >>>
+> >>>     * Declaration lines ordered from longest to shortest.
+> >>>     * Checking of event type moved to the top to avoid unnecessary
+> >>>       locking.
+> >>>
+> >>> Version 2:
+> >>>
+> >>>     * Completely re-implemented using netdev event handler.
+> >>>
+> >>>  net/xdp/xsk.c | 65
+> >>> ++++++++++++++++++++++++++++++++++++++++++++++++++-
+> >>>  1 file changed, 64 insertions(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> >>> index a14e8864e4fa..273a419a8c4d 100644
+> >>> --- a/net/xdp/xsk.c
+> >>> +++ b/net/xdp/xsk.c
+> >>> @@ -693,6 +693,57 @@ static int xsk_mmap(struct file *file, struct
+> >>> socket *sock,
+> >>>                              size, vma->vm_page_prot);
+> >>>  }
+> >>>
+> >>> +static int xsk_notifier(struct notifier_block *this,
+> >>> +                     unsigned long msg, void *ptr)
+> >>> +{
+> >>> +     struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
+> >>> +     struct net *net =3D dev_net(dev);
+> >>> +     int i, unregister_count =3D 0;
+> >>> +     struct sock *sk;
+> >>> +
+> >>> +     switch (msg) {
+> >>> +     case NETDEV_UNREGISTER:
+> >>> +             mutex_lock(&net->xdp.lock);
+> >>
+> >> The call is under the rtnl lock, and we're not modifying
+> >> the list, so this mutex shouldn't be needed.
+> >>
+> >
+> > The list can, however, be modified outside the rtnl lock (e.g. at
+> > socket creation). AFAIK the hlist cannot be traversed lock-less,
+> > right?
+>
+> We could use 'rcu_read_lock' instead and iterate with 'sk_for_each_rcu',
+> but we'll not be able to synchronize inside.
+>
+> >
+> >>
+> >>> +             sk_for_each(sk, &net->xdp.list) {
+> >>> +                     struct xdp_sock *xs =3D xdp_sk(sk);
+> >>> +
+> >>> +                     mutex_lock(&xs->mutex);
+> >>> +                     if (dev !=3D xs->dev) {
+> >>> +                             mutex_unlock(&xs->mutex);
+> >>> +                             continue;
+> >>> +                     }
+> >>> +
+> >>> +                     sk->sk_err =3D ENETDOWN;
+> >>> +                     if (!sock_flag(sk, SOCK_DEAD))
+> >>> +                             sk->sk_error_report(sk);
+> >>> +
+> >>> +                     /* Wait for driver to stop using the xdp socket=
+. */
+> >>> +                     xdp_del_sk_umem(xs->umem, xs);
+> >>> +                     xs->dev =3D NULL;
+> >>> +                     synchronize_net();
+> >> Isn't this by handled by the unregister_count case below?
+> >>
+> >
+> > To clarify, setting dev to NULL and xdp_del_sk_umem() + sync makes
+> > sure that a driver doesn't touch the Tx and Rx rings. Nothing can be
+> > assumed about completion + fill ring (umem), until zero-copy has been
+> > disabled via ndo_bpf.
+> >
+> >>> +
+> >>> +                     /* Clear device references in umem. */
+> >>> +                     xdp_put_umem(xs->umem);
+> >>> +                     xs->umem =3D NULL;
+> >>
+> >> This makes me uneasy.  We need to unregister the umem from
+> >> the device (xdp_umem_clear_dev()) but this can remove the umem
+> >> pages out from underneath the xsk.
+> >>
+> >
+> > Yes, this is scary. The socket is alive, and userland typically has
+> > the fill/completion rings mmapped. Then the umem refcount is decreased
+> > and can potentially free the umem (fill rings etc.), as Jonathan says,
+> > underneath the xsk. Also, setting the xs umem/dev to zero, while the
+> > socket is alive, would allow a user to re-setup the socket, which we
+> > don't want to allow.
+> >
+> >> Perhaps what's needed here is the equivalent of an unbind()
+> >> call that just detaches the umem/sk from the device, but does
+> >> not otherwise tear them down.
+> >>
+> >
+> > Yeah, I agree. A detached/zombie state is needed during the socket life=
+time.
+>
+>
+> I could try to rip the 'xdp_umem_release()' apart so the 'xdp_umem_clear_=
+dev()'
+> could be called separately. This will allow to not tear down the 'umem'.
+> However, it seems that it'll not be easy to synchronize all parts.
+> Any suggestions are welcome.
+>
 
-v2: Fix style issues. Make this work with NFPROTO_INET (inet tables),
-    NFPROTO_BRIDGE and the NFPROTO_NETDEV families. Check skb->protocol.
-    Remove ability to input IP header offset for ipv4_find_option()
-    function (all per Pablo Neira Ayuso).
+Thanks for continuing to work on this, Ilya.
 
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- include/net/inet_sock.h                  |   2 +-
- include/uapi/linux/netfilter/nf_tables.h |   2 +
- net/ipv4/ip_options.c                    |   2 +
- net/netfilter/nft_exthdr.c               | 133 +++++++++++++++++++++++
- 4 files changed, 138 insertions(+), 1 deletion(-)
+What need to be done is exactly an "unbind()", i.e. returning the
+socket to the state prior bind, but disallowing any changes from
+userland (e.g. setsockopt/bind). So, unbind() + track that we're in
+"unbound" mode. :-) I think breaking up xdp_umem_release() is good way
+to go.
 
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index e8eef85006aa..8db4f8639a33 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -55,7 +55,7 @@ struct ip_options {
- 			ts_needaddr:1;
- 	unsigned char	router_alert;
- 	unsigned char	cipso;
--	unsigned char	__pad2;
-+	unsigned char	end;
- 	unsigned char	__data[0];
- };
- 
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index 505393c6e959..168d741f42c5 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -730,10 +730,12 @@ enum nft_exthdr_flags {
-  *
-  * @NFT_EXTHDR_OP_IPV6: match against ipv6 extension headers
-  * @NFT_EXTHDR_OP_TCP: match against tcp options
-+ * @NFT_EXTHDR_OP_IPV4: match against ipv4 options
-  */
- enum nft_exthdr_op {
- 	NFT_EXTHDR_OP_IPV6,
- 	NFT_EXTHDR_OP_TCPOPT,
-+	NFT_EXTHDR_OP_IPV4,
- 	__NFT_EXTHDR_OP_MAX
- };
- #define NFT_EXTHDR_OP_MAX	(__NFT_EXTHDR_OP_MAX - 1)
-diff --git a/net/ipv4/ip_options.c b/net/ipv4/ip_options.c
-index 3db31bb9df50..fc0e694aa97c 100644
---- a/net/ipv4/ip_options.c
-+++ b/net/ipv4/ip_options.c
-@@ -272,6 +272,7 @@ int __ip_options_compile(struct net *net,
- 	for (l = opt->optlen; l > 0; ) {
- 		switch (*optptr) {
- 		case IPOPT_END:
-+			opt->end = optptr - iph;
- 			for (optptr++, l--; l > 0; optptr++, l--) {
- 				if (*optptr != IPOPT_END) {
- 					*optptr = IPOPT_END;
-@@ -473,6 +474,7 @@ int __ip_options_compile(struct net *net,
- 		*info = htonl((pp_ptr-iph)<<24);
- 	return -EINVAL;
- }
-+EXPORT_SYMBOL(__ip_options_compile);
- 
- int ip_options_compile(struct net *net,
- 		       struct ip_options *opt, struct sk_buff *skb)
-diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-index a940c9fd9045..4155a32fade7 100644
---- a/net/netfilter/nft_exthdr.c
-+++ b/net/netfilter/nft_exthdr.c
-@@ -62,6 +62,125 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
- 	regs->verdict.code = NFT_BREAK;
- }
- 
-+/* find the offset to specified option or the header beyond the options
-+ * if target < 0.
-+ *
-+ * If target header is found, its offset is set in *offset and return option
-+ * number. Otherwise, return negative error.
-+ *
-+ * If the first fragment doesn't contain the End of Options it is considered
-+ * invalid.
-+ */
-+static int ipv4_find_option(struct net *net, struct sk_buff *skb,
-+			    unsigned int *offset, int target,
-+			    unsigned short *fragoff, int *flags)
-+{
-+	unsigned char optbuf[sizeof(struct ip_options) + 41];
-+	struct ip_options *opt = (struct ip_options *)optbuf;
-+	struct iphdr *iph, _iph;
-+	unsigned int start;
-+	bool found = false;
-+	__be32 info;
-+	int optlen;
-+
-+	if (fragoff)
-+		*fragoff = 0;
-+
-+	iph = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
-+	if (!iph || iph->version != 4)
-+		return -EBADMSG;
-+	start = sizeof(struct iphdr);
-+
-+	optlen = iph->ihl * 4 - (int)sizeof(struct iphdr);
-+	if (optlen <= 0)
-+		return -ENOENT;
-+
-+	memset(opt, 0, sizeof(struct ip_options));
-+	/* Copy the options since __ip_options_compile() modifies
-+	 * the options. Get one byte beyond the option for target < 0
-+	 */
-+	if (skb_copy_bits(skb, start, opt->__data, optlen + 1))
-+		return -EBADMSG;
-+	opt->optlen = optlen;
-+
-+	if (__ip_options_compile(net, opt, NULL, &info))
-+		return -EBADMSG;
-+
-+	switch (target) {
-+	case IPOPT_SSRR:
-+	case IPOPT_LSRR:
-+		if (!opt->srr)
-+			break;
-+		found = target == IPOPT_SSRR ? opt->is_strictroute :
-+					       !opt->is_strictroute;
-+		if (found)
-+			*offset = opt->srr + start;
-+		break;
-+	case IPOPT_RR:
-+		if (opt->rr)
-+			break;
-+		*offset = opt->rr + start;
-+		found = true;
-+		break;
-+	case IPOPT_RA:
-+		if (opt->router_alert)
-+			break;
-+		*offset = opt->router_alert + start;
-+		found = true;
-+		break;
-+	default:
-+		/* Either not supported or not a specific search, treated as
-+		 * found
-+		 */
-+		found = true;
-+		if (target >= 0) {
-+			target = -EOPNOTSUPP;
-+			break;
-+		}
-+		if (opt->end) {
-+			*offset = opt->end + start;
-+			target = IPOPT_END;
-+		} else {
-+			/* Point to beyond the options. */
-+			*offset = optlen + start;
-+			target = opt->__data[optlen];
-+		}
-+	}
-+	if (!found)
-+		target = -ENOENT;
-+	return target;
-+}
-+
-+static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
-+				 struct nft_regs *regs,
-+				 const struct nft_pktinfo *pkt)
-+{
-+	struct nft_exthdr *priv = nft_expr_priv(expr);
-+	u32 *dest = &regs->data[priv->dreg];
-+	struct sk_buff *skb = pkt->skb;
-+	unsigned int offset;
-+	int err;
-+
-+	if (skb->protocol != htons(ETH_P_IP))
-+		goto err;
-+
-+	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type, NULL, NULL);
-+	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
-+		*dest = (err >= 0);
-+		return;
-+	} else if (err < 0) {
-+		goto err;
-+	}
-+	offset += priv->offset;
-+
-+	dest[priv->len / NFT_REG32_SIZE] = 0;
-+	if (skb_copy_bits(pkt->skb, offset, dest, priv->len) < 0)
-+		goto err;
-+	return;
-+err:
-+	regs->verdict.code = NFT_BREAK;
-+}
-+
- static void *
- nft_tcp_header_pointer(const struct nft_pktinfo *pkt,
- 		       unsigned int len, void *buffer, unsigned int *tcphdr_len)
-@@ -360,6 +479,14 @@ static const struct nft_expr_ops nft_exthdr_ipv6_ops = {
- 	.dump		= nft_exthdr_dump,
- };
- 
-+static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
-+	.type		= &nft_exthdr_type,
-+	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
-+	.eval		= nft_exthdr_ipv4_eval,
-+	.init		= nft_exthdr_init,
-+	.dump		= nft_exthdr_dump,
-+};
-+
- static const struct nft_expr_ops nft_exthdr_tcp_ops = {
- 	.type		= &nft_exthdr_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
-@@ -400,6 +527,12 @@ nft_exthdr_select_ops(const struct nft_ctx *ctx,
- 		if (tb[NFTA_EXTHDR_DREG])
- 			return &nft_exthdr_ipv6_ops;
- 		break;
-+	case NFT_EXTHDR_OP_IPV4:
-+		if (ctx->family != NFPROTO_IPV6) {
-+			if (tb[NFTA_EXTHDR_DREG])
-+				return &nft_exthdr_ipv4_ops;
-+		}
-+		break;
- 	}
- 
- 	return ERR_PTR(-EOPNOTSUPP);
--- 
-2.17.1
+> Also, there is no way to not clear the 'dev' as we have to put the refere=
+nce.
+> Maybe we could add the additional check to 'xsk_bind()' for current devic=
+e
+> state (dev->reg_state =3D=3D NETREG_REGISTERED). This will allow us to av=
+oid
+> re-setup of the socket.
+>
 
+Yes, and also make sure that the rest of the syscall implementations
+don't allow for re-setup.
+
+
+Bj=C3=B6rn
+
+> >
+> >>
+> >>> +                     mutex_unlock(&xs->mutex);
+> >>> +                     unregister_count++;
+> >>> +             }
+> >>> +             mutex_unlock(&net->xdp.lock);
+> >>> +
+> >>> +             if (unregister_count) {
+> >>> +                     /* Wait for umem clearing completion. */
+> >>> +                     synchronize_net();
+> >>> +                     for (i =3D 0; i < unregister_count; i++)
+> >>> +                             dev_put(dev);
+> >>> +             }
+> >>> +
+> >>> +             break;
+> >>> +     }
+> >>> +
+> >>> +     return NOTIFY_DONE;
+> >>> +}
+> >>> +
+> >>>  static struct proto xsk_proto =3D {
+> >>>       .name =3D         "XDP",
+> >>>       .owner =3D        THIS_MODULE,
+> >>> @@ -727,7 +778,8 @@ static void xsk_destruct(struct sock *sk)
+> >>>       if (!sock_flag(sk, SOCK_DEAD))
+> >>>               return;
+> >>>
+> >>> -     xdp_put_umem(xs->umem);
+> >>> +     if (xs->umem)
+> >>> +             xdp_put_umem(xs->umem);
+> >> Not needed - xdp_put_umem() already does a null check.
+>
+> Indeed. Thanks.
+>
+> >> --
+> >> Jonathan
+> >>
+> >>
+> >>>
+> >>>       sk_refcnt_debug_dec(sk);
+> >>>  }
+> >>> @@ -784,6 +836,10 @@ static const struct net_proto_family
+> >>> xsk_family_ops =3D {
+> >>>       .owner  =3D THIS_MODULE,
+> >>>  };
+> >>>
+> >>> +static struct notifier_block xsk_netdev_notifier =3D {
+> >>> +     .notifier_call  =3D xsk_notifier,
+> >>> +};
+> >>> +
+> >>>  static int __net_init xsk_net_init(struct net *net)
+> >>>  {
+> >>>       mutex_init(&net->xdp.lock);
+> >>> @@ -816,8 +872,15 @@ static int __init xsk_init(void)
+> >>>       err =3D register_pernet_subsys(&xsk_net_ops);
+> >>>       if (err)
+> >>>               goto out_sk;
+> >>> +
+> >>> +     err =3D register_netdevice_notifier(&xsk_netdev_notifier);
+> >>> +     if (err)
+> >>> +             goto out_pernet;
+> >>> +
+> >>>       return 0;
+> >>>
+> >>> +out_pernet:
+> >>> +     unregister_pernet_subsys(&xsk_net_ops);
+> >>>  out_sk:
+> >>>       sock_unregister(PF_XDP);
+> >>>  out_proto:
+> >>> --
+> >>> 2.17.1
+> >
+> >
