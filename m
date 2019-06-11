@@ -2,188 +2,507 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BED64168C
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE3B41690
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406954AbfFKVEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:04:05 -0400
-Received: from mga12.intel.com ([192.55.52.136]:33641 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406793AbfFKVEF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 17:04:05 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Jun 2019 14:03:55 -0700
-X-ExtLoop1: 1
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 Jun 2019 14:03:55 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.13]) by
- ORSMSX105.amr.corp.intel.com ([169.254.2.111]) with mapi id 14.03.0415.000;
- Tue, 11 Jun 2019 14:03:54 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>
-Subject: Re: [PATCH net-next v1 5/7] taprio: Add support for txtime offload
- mode.
-Thread-Topic: [PATCH net-next v1 5/7] taprio: Add support for txtime offload
- mode.
-Thread-Index: AQHVFX1jB+iNR+raHE+empHywwSrKaaKeAIAgAH0TACABKJOgIAAJzGAgARF74CAAgDhgA==
-Date:   Tue, 11 Jun 2019 21:03:53 +0000
-Message-ID: <A8C0B7C0-BEA0-412E-9B3E-F3050E008D96@intel.com>
-References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
- <1559065608-27888-6-git-send-email-vedang.patel@intel.com>
- <55c2daae-c69b-4847-f995-4df85c4ee8b8@ti.com>
- <E6AB74F1-C942-4167-97EF-329831D73F6C@intel.com>
- <7a8f56c5-69aa-52ed-3889-810466f80137@ti.com>
- <7F0484D6-80AA-454B-B179-9FAC20D633FD@intel.com>
- <89d1cea2-ae1c-bc1c-0327-29a3334cba49@ti.com>
-In-Reply-To: <89d1cea2-ae1c-bc1c-0327-29a3334cba49@ti.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.186]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <10E1911AAFA3364E9AD28A070B173284@intel.com>
-Content-Transfer-Encoding: base64
+        id S2407349AbfFKVFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:05:42 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:37593 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406793AbfFKVFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:05:41 -0400
+Received: by mail-ot1-f65.google.com with SMTP id r10so13329882otd.4;
+        Tue, 11 Jun 2019 14:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WcanZz+mptuiFO1FOrH8ws9AjJjCLr14oWUG5p6+Hks=;
+        b=iJQMoCwYc23LAoq/nhxJ035CiFJQ2hxJn1BNye5jFP8Ck+CLav2jVQYv0vW++lqQhk
+         FdQ5LuRoGMIXjLwW/r1NGjL8QX4oDOirRbw0KmEB01SaiIXj/GEGAGEPuQIMXxxQhWsG
+         G/GDkauFLVXFhdh2Xxj+113U0mRxrwriwX4WmwN2pAkivZKtlFaybRhRo9Im6QP1wms2
+         Y8vJ9N68QW72MIZ3LPyv9vdww7ctB8Dg7ceszsxTwa/zVNKT02nv1FLKO+4ptGhfbC5k
+         vR1P/C8PF6vQYDhXqJ6A+s2GAo1VxmU4pCtd+uBrP6F/KxkKh3I5wHNjT2cjou+ndLPS
+         t/dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WcanZz+mptuiFO1FOrH8ws9AjJjCLr14oWUG5p6+Hks=;
+        b=K5p5+HprNs3VBki2XANJbT9iU2WRBxoiwGPRrUL6tpSAlZ3LrVO0UBrYiPh2gCJWys
+         T9WzWBXTPt7gWnZogxaXbV/DhS3nhrZOaywOIBit0mWseJdgecrbEmDfQ1NHBYus1NvB
+         dNc8vQZJVMTtxdGnFnRqi28T8eHc/9i0RGgstE3t0UIGF4cSKzIyUwIqlwHoi4pJbZ15
+         KFyu/ozIUY2bPj4nO3buyvyHX0SD40mL6AriPHOz7YaweafVKQG5jSM/lXeOWz3UosDC
+         e0scnnJw1eOoHjKirAou334jwlxllj9USrRvDbXyCORjItfq8syt/Yd3OoJ+uRVqxmLG
+         yCPQ==
+X-Gm-Message-State: APjAAAUS0CDpecoStJ8hmorbxx7/dNsVZuE8BryclfRaN4/4V4i2KjHv
+        J/Nky06e+g8V5g9RCVn0MdMeBELkgU5CXHtS/ANoJ7jhdzUSRA==
+X-Google-Smtp-Source: APXvYqwCapXzUEU/OW0FgteBOI3Ru0UMCdmw4g13S/THGs3BP+sutXDmFQYqa8LgfH+7HTi5t3VxiZVUkypJLqgT5/o=
+X-Received: by 2002:a9d:3f62:: with SMTP id m89mr37392992otc.128.1560287139969;
+ Tue, 11 Jun 2019 14:05:39 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190611193836.2772-1-shyam.saini@amarulasolutions.com> <201906111345.74AA9311F5@keescook>
+In-Reply-To: <201906111345.74AA9311F5@keescook>
+From:   Shyam Saini <mayhs11saini@gmail.com>
+Date:   Wed, 12 Jun 2019 02:35:28 +0530
+Message-ID: <CAOfkYf7yk7L9oY0yt92DGb-HW=tp1-FE0tFr_=YmXKNFxaK68g@mail.gmail.com>
+Subject: Re: [PATCH V2] include: linux: Regularise the use of FIELD_SIZEOF macro
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Shyam Saini <shyam.saini@amarulasolutions.com>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-ext4@vger.kernel.org, devel@lists.orangefs.org,
+        linux-mm <linux-mm@kvack.org>, linux-sctp@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, kvm@vger.kernel.org,
+        William Kucharski <william.kucharski@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gSnVuIDEwLCAyMDE5LCBhdCA3OjI3IEFNLCBNdXJhbGkgS2FyaWNoZXJpIDxtLWth
-cmljaGVyaTJAdGkuY29tPiB3cm90ZToNCj4gDQo+IFZlZGFuZywNCj4gDQo+IE9uIDA2LzA3LzIw
-MTkgMDU6MTIgUE0sIFBhdGVsLCBWZWRhbmcgd3JvdGU6DQo+PiBIaSBNdXJhbGksDQo+Pj4gT24g
-SnVuIDcsIDIwMTksIGF0IDExOjUyIEFNLCBNdXJhbGkgS2FyaWNoZXJpIDxtLWthcmljaGVyaTJA
-dGkuY29tPiB3cm90ZToNCj4+PiANCj4+PiBPbiAwNi8wNC8yMDE5IDA0OjA2IFBNLCBQYXRlbCwg
-VmVkYW5nIHdyb3RlOg0KPj4+PiBIaSBNdXJhbGksDQo+Pj4+PiBPbiBKdW4gMywgMjAxOSwgYXQg
-NzoxNSBBTSwgTXVyYWxpIEthcmljaGVyaSA8bS1rYXJpY2hlcmkyQHRpLmNvbT4gd3JvdGU6DQo+
-Pj4+PiANCj4+Pj4+IEhpIFZlZGFuZywNCj4+Pj4+IA0KPj4+Pj4gT24gMDUvMjgvMjAxOSAwMTo0
-NiBQTSwgVmVkYW5nIFBhdGVsIHdyb3RlOg0KPj4+Pj4+IEN1cnJlbnRseSwgd2UgYXJlIHNlZWlu
-ZyBub24tY3JpdGljYWwgcGFja2V0cyBiZWluZyB0cmFuc21pdHRlZCBvdXRzaWRlDQo+Pj4+Pj4g
-b2YgdGhlaXIgdGltZXNsaWNlLiBXZSBjYW4gY29uZmlybSB0aGF0IHRoZSBwYWNrZXRzIGFyZSBi
-ZWluZyBkZXF1ZXVlZA0KPj4+Pj4+IGF0IHRoZSByaWdodCB0aW1lLiBTbywgdGhlIGRlbGF5IGlz
-IGluZHVjZWQgaW4gdGhlIGhhcmR3YXJlIHNpZGUuICBUaGUNCj4+Pj4+PiBtb3N0IGxpa2VseSBy
-ZWFzb24gaXMgdGhlIGhhcmR3YXJlIHF1ZXVlcyBhcmUgc3RhcnZpbmcgdGhlIGxvd2VyDQo+Pj4+
-Pj4gcHJpb3JpdHkgcXVldWVzLg0KPj4+Pj4+IEluIG9yZGVyIHRvIGltcHJvdmUgdGhlIHBlcmZv
-cm1hbmNlIG9mIHRhcHJpbywgd2Ugd2lsbCBiZSBtYWtpbmcgdXNlIG9mIHRoZQ0KPj4+Pj4+IHR4
-dGltZSBmZWF0dXJlIHByb3ZpZGVkIGJ5IHRoZSBFVEYgcWRpc2MuIEZvciBhbGwgdGhlIHBhY2tl
-dHMgd2hpY2ggZG8gbm90IGhhdmUNCj4+Pj4+PiB0aGUgU09fVFhUSU1FIG9wdGlvbiBzZXQsIHRh
-cHJpbyB3aWxsIHNldCB0aGUgdHJhbnNtaXQgdGltZXN0YW1wIChzZXQgaW4NCj4+Pj4+PiBza2It
-PnRzdGFtcCkgaW4gdGhpcyBtb2RlLiBUQVByaW8gUWRpc2Mgd2lsbCBlbnN1cmUgdGhhdCB0aGUg
-dHJhbnNtaXQgdGltZSBmb3INCj4+Pj4+PiB0aGUgcGFja2V0IGlzIHNldCB0byB3aGVuIHRoZSBn
-YXRlIGlzIG9wZW4uIElmIFNPX1RYVElNRSBpcyBzZXQsIHRoZSBUQVByaW8NCj4+Pj4+PiBxZGlz
-YyB3aWxsIHZhbGlkYXRlIHdoZXRoZXIgdGhlIHRpbWVzdGFtcCAoaW4gc2tiLT50c3RhbXApIG9j
-Y3VycyB3aGVuIHRoZSBnYXRlDQo+Pj4+Pj4gY29ycmVzcG9uZGluZyB0byBza2IncyB0cmFmZmlj
-IGNsYXNzIGlzIG9wZW4uDQo+Pj4+Pj4gRm9sbG93aW5nIGlzIHRoZSBleGFtcGxlIGNvbmZpZ3Vy
-YXRpb24gZm9yIGVuYWJsaW5nIHR4dGltZSBvZmZsb2FkOg0KPj4+Pj4+IHRjIHFkaXNjIHJlcGxh
-Y2UgZGV2IGV0aDAgcGFyZW50IHJvb3QgaGFuZGxlIDEwMCB0YXByaW8gXFwNCj4+Pj4+PiAgICAg
-ICBudW1fdGMgMyBcXA0KPj4+Pj4+ICAgICAgIG1hcCAyIDIgMSAwIDIgMiAyIDIgMiAyIDIgMiAy
-IDIgMiAyIFxcDQo+Pj4+Pj4gICAgICAgcXVldWVzIDFAMCAxQDAgMUAwIFxcDQo+Pj4+Pj4gICAg
-ICAgYmFzZS10aW1lIDE1NTg2NTM0MjQyNzk4NDI1NjggXFwNCj4+Pj4+PiAgICAgICBzY2hlZC1l
-bnRyeSBTIDAxIDMwMDAwMCBcXA0KPj4+Pj4+ICAgICAgIHNjaGVkLWVudHJ5IFMgMDIgMzAwMDAw
-IFxcDQo+Pj4+Pj4gICAgICAgc2NoZWQtZW50cnkgUyAwNCA0MDAwMDAgXFwNCj4+Pj4+PiAgICAg
-ICBvZmZsb2FkIDIgXFwNCj4+Pj4+PiAgICAgICB0eHRpbWUtZGVsYXkgNDAwMDAgXFwNCj4+Pj4+
-PiAgICAgICBjbG9ja2lkIENMT0NLX1RBSQ0KPj4+Pj4+IHRjIHFkaXNjIHJlcGxhY2UgZGV2ICRJ
-RkFDRSBwYXJlbnQgMTAwOjEgZXRmIHNraXBfc29ja19jaGVjayBcXA0KPj4+Pj4+ICAgICAgIG9m
-ZmxvYWQgZGVsdGEgMjAwMDAwIGNsb2NraWQgQ0xPQ0tfVEFJDQo+Pj4+Pj4gSGVyZSwgdGhlICJv
-ZmZsb2FkIiBwYXJhbWV0ZXIgaXMgaW5kaWNhdGluZyB0aGF0IHRoZSBUWFRJTUVfT0ZGTE9BRCBt
-b2RlIGlzDQo+Pj4+Pj4gZW5hYmxlZC4gQWxzbywgYWxsIHRoZSB0cmFmZmljIGNsYXNzZXMgYXJl
-IG1hcHBlZCB0byB0aGUgc2FtZSBxdWV1ZS4gIFRoaXMgaXMNCj4+Pj4+PiBvbmx5IHBvc3NpYmxl
-IGluIHRhcHJpbyB3aGVuIHR4dGltZSBvZmZsb2FkIGlzIGVuYWJsZWQuIEFsc28gbm90ZSB0aGF0
-IHRoZSBFVEYNCj4+Pj4+PiBRZGlzYyBpcyBlbmFibGVkIHdpdGggb2ZmbG9hZCBtb2RlIHNldC4N
-Cj4+Pj4+PiBJbiB0aGlzIG1vZGUsIGlmIHRoZSBwYWNrZXQncyB0cmFmZmljIGNsYXNzIGlzIG9w
-ZW4gYW5kIHRoZSBjb21wbGV0ZSBwYWNrZXQgY2FuDQo+Pj4+Pj4gYmUgdHJhbnNtaXR0ZWQsIHRh
-cHJpbyB3aWxsIHRyeSB0byB0cmFuc21pdCB0aGUgcGFja2V0IGltbWVkaWF0ZWx5LiBUaGlzIHdp
-bGwNCj4+Pj4+PiBiZSBkb25lIGJ5IHNldHRpbmcgc2tiLT50c3RhbXAgdG8gY3VycmVudF90aW1l
-ICsgdGhlIHRpbWUgZGVsdGEgaW5kaWNhdGVkIGluDQo+Pj4+Pj4gdGhlIHR4dGltZV9kZWxheSBw
-YXJhbWV0ZXIuIFRoaXMgcGFyYW1ldGVyIGluZGljYXRlcyB0aGUgdGltZSB0YWtlbiAoaW4NCj4+
-Pj4+PiBzb2Z0d2FyZSkgZm9yIHBhY2tldCB0byByZWFjaCB0aGUgbmV0d29yayBhZGFwdGVyLg0K
-Pj4+Pj4gDQo+Pj4+PiBJbiBUU04gVGltZSBhd2FyZSBzaGFwZXIsIHBhY2tldHMgYXJlIHNlbnQg
-d2hlbiBnYXRlIGZvciBhIHNwZWNpZmljDQo+Pj4+PiB0cmFmZmljIGNsYXNzIGlzIG9wZW4uIFNv
-IHBhY2tldHMgdGhhdCBhcmUgYXZhaWxhYmxlIGluIHRoZSBxdWV1ZXMgYXJlDQo+Pj4+PiBzZW50
-IGJ5IHRoZSBzY2hlZHVsZXIuIFNvIHRoZSBFVEYgaXMgbm90IHN0cmljdGx5IHJlcXVpcmVkIGZv
-ciB0aGlzDQo+Pj4+PiBmdW5jdGlvbi4NCj4+Pj4+IEkgdW5kZXJzdGFuZCBpZiB0aGUgYXBwbGlj
-YXRpb24gbmVlZHMgdG8gc2VuZCBwYWNrZXRzIHdpdGgNCj4+Pj4+IHNvbWUgbGF0ZW5jeSBleHBl
-Y3RhdGlvbiBzaG91bGQgdXNlIEVURiB0byBzY2hlZHVsZSB0aGUgcGFja2V0IGluIHN5bmMNCj4+
-Pj4+IHdpdGggdGhlIG5leHQgZ2F0ZSBvcGVuIHRpbWUuIFNvIHR4dGltZV9kZWxheSBpcyB1c2Vk
-IHRvIGFjY291bnQgZm9yDQo+Pj4+PiB0aGUgZGVsYXkgZm9yIHBhY2tldHMgdG8gdHJhdmVsIGZy
-b20gdXNlciBzcGFjZSB0byBuaWMuDQo+Pj4+IFRoaXMgaXMgbm90IHRydWUuIEFzIGV4cGxhaW5l
-ZCBpbiB0aGUgb3RoZXIgZW1haWwsIHR4dGltZS1kZWxheSBpcyB0aGUgbWF4aW11bSB0aW1lIGEg
-cGFja2V0IG1pZ2h0IHRha2UgYWZ0ZXIgcmVhY2hpbmcgdGFwcmlvX2VucXVldWUoKSBhc3N1bWlu
-ZyB0aGUgZ2F0ZSBjb3JyZXNwb25kaW5nIHRvIHRoYXQgcGFja2V0IHdhcyBhbHJlYWR5IG9wZW4u
-DQo+Pj4+PiBTbyBpdCBpcyBFVEYNCj4+Pj4+IHRoYXQgbmVlZCB0byBpbnNwZWN0IHRoZSBza2It
-PnRzdGFtcCBhbmQgYWxsb3cgb3IgaWYgdGltZSBtYXRjaCBvcg0KPj4+Pj4gZGlzY2FyZCBpZiBs
-YXRlLiBJcyB0aGlzIHRoZSBjYXNlPw0KPj4+Pj4gDQo+Pj4+IFRoZSByb2xlIG9mIEVURiBpcyBq
-dXN0IHRvIHNvcnQgcGFja2V0cyBhY2NvcmRpbmcgdG8gdGhlaXIgdHJhbnNtaXQgdGltZXN0YW1w
-IGFuZCBzZW5kIHRoZW0gdG8gdGhlIGhhcmR3YXJlIHF1ZXVlcyB0byB0cmFuc21pdCB3aGVuZXZl
-ciB0aGVpciB0aW1lIGNvbWVzLiBUaGlzIGlzIG5lZWRlZCBiZWNhdXNlIHRoZSBpMjEwIGhhcmR3
-YXJlIGRvZXMgbm90IGhhdmUgYW55IHNvcnQgZmVhdHVyZSB3aXRoaW4gaXRzIHF1ZXVlLiBJZiAy
-IHBhY2tldHMgYXJyaXZlIGFuZCB0aGUgZmlyc3QgcGFja2V0IGhhcyBhIHRyYW5zbWl0IHRpbWVz
-dGFtcCBsYXRlciB0aGFuIHRoZSBzZWNvbmQgcGFja2V0LCB0aGUgc2Vjb25kIHBhY2tldCB3b27i
-gJl0IGJlIHRyYW5zbWl0dGVkIG9uIHRpbWUuDQo+Pj4+IFRhcHJpbyBpbiB0aGUgdHh0aW1lIG9m
-ZmxvYWQgbW9kZSAoYnR3LCB0aGlzIHdpbGwgc29vbiBiZSByZW5hbWVkIHRvIHR4dGltZS1hc3Np
-c3QpIHdpbGwgc2V0IHRoZSB0cmFuc21pdCB0aW1lc3RhbXAgb2YgZWFjaCBwYWNrZXQgKGluIHNr
-Yi0+dHN0YW1wKSBhbmQgdGhlbiBzZW5kIGl0IHRvIEVURiBzbyB0aGF0IGl0IGNhbiBiZSBzb3J0
-ZWQgd2l0aCB0aGUgb3RoZXIgcGFja2V0cyBhbmQgc2VudCB0byBoYXJkd2FyZSB3aGVuZXZlciB0
-aGUgdGltZSBjb21lcy4gRVRGIHdpbGwgZGlzY2FyZCB0aGUgcGFja2V0IGlmIHRoZSB0cmFuc21p
-dCB0aW1lIGlzIGluIHRoZSBwYXN0IG9yIGJlZm9yZSB0aGUgdHJhbnNtaXQgdGltZSBvZiB0aGUg
-cGFja2V0IHdoaWNoIGlzIGFscmVhZHkgYmVlbiBzZW50IHRvIHRoZSBoYXJkd2FyZS4NCj4+Pj4g
-TGV0IG1lIGtub3cgaWYgeW91IGhhdmUgbW9yZSBxdWVzdGlvbnMgYWJvdXQgdGhpcy4NCj4+PiAN
-Cj4+PiBJdCBpcyBiaXQgY29uZnVzaW5nIHRvIGhhdmUgdGhpcyBtb2RlIGluIHRhcHJpby4gTXkg
-YXNzdW1wdGlvbiBpcw0KPj4+IHRoYXQgdGFwcmlvIGltcGxlbWVudHMgVFNOIHN0YW5kYXJkIDgw
-Mi4xUWJ2IHNjaGVkdWxlciB0aGF0IGlzDQo+Pj4gcmVzcG9uc2libGUgZm9yIG1hbmFnaW5nIHRo
-ZSBHYXRlIG9wZW4vY2xvc2UgYW5kIHNlbmRpbmcgZnJhbWVzDQo+Pj4gZm9yIHNwZWNpZmljIHRy
-YWZmaWMgY2xhc3MgZHVyaW5nIHRoZSBHYXRlIG9wZW4uIEFGQUlLLCB0aGlzDQo+Pj4gc2NoZWR1
-bGVyIGRvZXNuJ3QgaW5zcGVjdCB0aGUgcGFja2V0J3MgbWV0YWRhdGEgc3VjaCBhcyB0aW1lIHRv
-DQo+Pj4gc2VuZCBvciBzdWNoLiBTbyB3aHkgaXMgdHh0aW1lIG9mZmxvYWQgbW9kZSBpcyBhZGRl
-ZCB0byB0YXByaW8/DQo+Pj4gQ291bGQgeW91IHBsZWFzZSBleHBsYWluPw0KPj4+IA0KPj4+IE11
-cmFsaQ0KPj4+IA0KPj4gU2hvcnQgYW5zd2VyOiBUYXByaW8gc3RpbGwgaW1wbGVtZW50cyBhIDgw
-Mi4xUWJ2IGxpa2Ugc2NoZWR1bGUuIEJ1dCwgaXQgbGV2ZXJhZ2VzIHRoZSBmdW5jdGlvbmFsaXR5
-IGZyb20gRVRGIHRvIGRvIHNvLg0KPj4gTG9uZyBhbnN3ZXI6DQo+PiBUaGUgc29mdHdhcmUtb25s
-eSBpbXBsZW1lbnRhdGlvbiBvZiA4MDIuMVFidiBoYXMgcXVpdGUgYSBmZXcgbG93IHByaW9yaXR5
-IHBhY2tldHMgYmVpbmcgdHJhbnNtaXR0ZWQgb3V0c2lkZSB0aGVpciB0aW1lc2xpY2UuIFRoaXMg
-aXMgYmVjYXVzZSB0aGUgaGlnaGVyIHByaW9yaXR5IHF1ZXVlcyBpbiBpMjEwIGFyZSBzdGFydmlu
-ZyB0aGUgbG93ZXIgcHJpb3JpdHkgcXVldWVzLiBTbywgd2hhdCB0aGUgdHh0aW1lLWFzc2lzdCBt
-b2RlIGRvZXMgaXMgdG8gYXNzaWduIGFuIGV4cGxpY2l0IHR4IHRpbWVzdGFtcCBhbmQgdXNlIHRo
-ZSBsYXVuY2h0aW1lIGZlYXR1cmUgb2YgdGhlIGkyMTAgYWRhcHRlciBjYXJkIHRvIHRyYW5zbWl0
-IHRoZSBwYWNrZXRzIG9uIHRpbWUuIEl0IGlzIHN0aWxsIHNlbmRpbmcgZnJhbWVzIGZvciBhIHBh
-cnRpY3VsYXIgdHJhZmZpYyBjbGFzcyBvbmx5IHdoZW4gdGhlaXIgZ2F0ZSBpcyBvcGVuLiBBbHNv
-LCBpdCBpcyBub3QgbW9kaWZ5aW5nIGFueSBkYXRhIGluIHRoZSBwYWNrZXQgd2hpY2ggaXMgdHJh
-bnNtaXR0ZWQuIEp1c3Qgbm90aWZ5aW5nIHRoZSBOSUMgd2hlbiB0byB0cmFuc21pdCB0aGUgcGFj
-a2V0LiBJZiB0aGVyZSBpcyBhIHR4IHRpbWVzdGFtcCBhbHJlYWR5IGFzc2lnbmVkIHRvIGEgcGFj
-a2V0LCBpdCBkb2VzIG5vdCBjaGFuZ2UgaXQuIFNpbmNlIHdlIGFyZSBhc3NpZ25pbmcgdGhlIHR4
-IHRpbWVzdGFtcCwgd2UgaGF2ZSB0byByb3V0ZSB0aGUgcGFja2V0IHRocm91Z2ggdGhlIEVURiBx
-dWV1ZSBkaXNjIGZvciBzb3J0aW5nIHRoZSBwYWNrZXRzIGFjY29yZGluZyB0byB0aGVpciB0aW1l
-c3RhbXBzIGFuZCBzZW5kaW5nIGl0IHRvIHRoZSBOSUMuDQo+PiBXZSBoYXZlIHRvIGltcGxlbWVu
-dCB0aGUgYWJvdmUgbWVjaGFuaXNtIGJlY2F1c2UsIGN1cnJlbnRseSwgd2UgZG8gbm90IGhhdmUg
-dGhlIGNhcGFiaWxpdHkgdG8gb2ZmbG9hZCB0aGUgdGFwcmlvIHNjaGVkdWxlIHRvIHRoZSBoYXJk
-d2FyZS4NCj4gT2ssIFRoYW5rcyBmb3IgdGhlIHBhdGllbmNlIGFuZCBleHBsYW5hdGlvbi4gWWVz
-LCBpdCBoZWxwcy4NCj4gDQo+IE9uZSBsYXN0IHF1ZXN0aW9uLiBJZiB5b3VyIGhhcmR3YXJlIGky
-MTAgY2hlY2tzIHRoZSB0aW1lIGluIGEgcGFja2V0DQo+IGFuZCBmaW5kcyBpdCBpcyAgbGF0ZSwg
-ZG9lcyBpdCBkcm9wIHRoZSBwYWNrZXQ/IEkgdW5kZXJzdGFuZCB0aGF0DQo+IHR4dGltZS1kZWxh
-eSBpcyBmb3IgdHVuaW5nIHRoaXMgc3VjaCB0aGF0IGhhcmR3YXJlIHNlZSB0aGUgcGFja2V0IG9u
-DQo+IHRpbWUgYW5kIHRyYW5zbWl0LiBJIGFsc28gdW5kZXJzdGFuZCB0aGF0IHBhY2tldHMgZ2V0
-IGRyb3BwZWQNCj4gYXQgdGhlIEVURiBxZGlzYyBpZiBsYXRlLg0KPiANCj4gTXVyYWxpDQoNClRo
-ZSBpMjEwIGhhcmR3YXJlIGRvZXMgbm90IGRyb3AgcGFja2V0cyBpZiB0aGV5IGFyZSBsYXRlLiAN
-Cg0KSW4gaTIxMCBOSUMsIHRoZSBsYXVuY2h0aW1lIGZpZWxkIGlzIG9ubHkgMjUgYml0cyBsb25n
-IHdpdGggMzIgbnMgdW5pdHMuIFNvLCBpdCB3aWxsIGNvbXBhcmUgbGF1bmNodGltZSozMiB0byB0
-aGUgU1lTVElNTCByZWdpc3RlciAoaXQgc3RvcmVzIHRoZSBuYW5vc2Vjb25kIHBhcnQgb2YgdGhl
-IFBUUCB0aW1lKS4gSXQgd2lsbCBzZW5kIHRoZSBwYWNrZXQgaWYgdGhlIHRpbWUgaXMgZXhhY3Rs
-eSBzYW1lIGFzIGFib3ZlLiBJdCBpcyB0aGUgam9iIG9mIEVURiB0byBlbnN1cmUgdGhhdCB0aGUg
-cGFja2V0IGlzIG5vdCBzZW50IHRvbyBlYXJseSBieSBzZWxlY3RpbmcgdGhlIGRlbHRhIHdoaWNo
-IGlzIGxlc3MgdGhhbiAwLjUgc2VjLg0KDQpGb3IgbW9yZSBpbmZvcm1hdGlvbiwgeW91IGNhbiBs
-b29rIGF0IFNlY3Rpb24gNy4yLjIuMi4zIGFuZCBTZWN0aW9uIDcuMi43LjUuMyBvZiB0aGUgaTIx
-MCBkYXRhIHNoZWV0WzFdLiANCg0KVGhhbmtzLA0KVmVkYW5nDQoNClsxXSAtIGh0dHBzOi8vd3d3
-LmludGVsLmNvbS9jb250ZW50L2RhbS93d3cvcHVibGljL3VzL2VuL2RvY3VtZW50cy9kYXRhc2hl
-ZXRzL2kyMTAtZXRoZXJuZXQtY29udHJvbGxlci1kYXRhc2hlZXQucGRmDQoNCg==
+Hi Kees,
+
+Cc'ing William Kucharski,
+
+> On Wed, Jun 12, 2019 at 01:08:36AM +0530, Shyam Saini wrote:
+> > In favour of FIELD_SIZEOF, this patch also deprecates other two similar
+> > macros sizeof_field and SIZEOF_FIELD.
+> >
+> > For code compatibility reason, retain sizeof_field macro as a wrapper macro
+> > to FIELD_SIZEOF
+>
+> Can you explain this part? First sentence says you want to remove
+> sizeof_field, and the second says you're keeping it? I thought the point
+> was to switch all of these to FIELD_SIZEOF()?
+
+Previously, William [1] suggested to retain sizeof_field as macro to
+FIELD_SIZEOF
+for code compatibility reason. I have removed all the usage of
+sizeof_field apart from retained
+wrapper macro definition.
+
+
+[1] https://patchwork.ozlabs.org/patch/1085275/
+
+Thanks,
+Shyam
+
+> >
+> >  arch/arm64/include/asm/processor.h                 | 10 +++++-----
+> >  arch/mips/cavium-octeon/executive/cvmx-bootmem.c   |  9 +--------
+> >  drivers/gpu/drm/i915/gvt/scheduler.c               |  2 +-
+> >  drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c |  4 ++--
+> >  fs/befs/linuxvfs.c                                 |  2 +-
+> >  fs/ext2/super.c                                    |  2 +-
+> >  fs/ext4/super.c                                    |  2 +-
+> >  fs/freevxfs/vxfs_super.c                           |  2 +-
+> >  fs/orangefs/super.c                                |  2 +-
+> >  fs/ufs/super.c                                     |  2 +-
+> >  include/linux/kernel.h                             |  9 ---------
+> >  include/linux/slab.h                               |  2 +-
+> >  include/linux/stddef.h                             | 17 ++++++++++++++---
+> >  kernel/fork.c                                      |  2 +-
+> >  kernel/utsname.c                                   |  2 +-
+> >  net/caif/caif_socket.c                             |  2 +-
+> >  net/core/skbuff.c                                  |  2 +-
+> >  net/ipv4/raw.c                                     |  2 +-
+> >  net/ipv6/raw.c                                     |  2 +-
+> >  net/sctp/socket.c                                  |  4 ++--
+> >  tools/testing/selftests/bpf/bpf_util.h             | 22 +++++++++++++++++++---
+> >  virt/kvm/kvm_main.c                                |  2 +-
+> >  22 files changed, 58 insertions(+), 47 deletions(-)
+> >
+> > diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+> > index fcd0e691b1ea..ace906d887cc 100644
+> > --- a/arch/arm64/include/asm/processor.h
+> > +++ b/arch/arm64/include/asm/processor.h
+> > @@ -164,13 +164,13 @@ static inline void arch_thread_struct_whitelist(unsigned long *offset,
+> >                                               unsigned long *size)
+> >  {
+> >       /* Verify that there is no padding among the whitelisted fields: */
+> > -     BUILD_BUG_ON(sizeof_field(struct thread_struct, uw) !=
+> > -                  sizeof_field(struct thread_struct, uw.tp_value) +
+> > -                  sizeof_field(struct thread_struct, uw.tp2_value) +
+> > -                  sizeof_field(struct thread_struct, uw.fpsimd_state));
+> > +     BUILD_BUG_ON(FIELD_SIZEOF(struct thread_struct, uw) !=
+> > +                  FIELD_SIZEOF(struct thread_struct, uw.tp_value) +
+> > +                  FIELD_SIZEOF(struct thread_struct, uw.tp2_value) +
+> > +                  FIELD_SIZEOF(struct thread_struct, uw.fpsimd_state));
+> >
+> >       *offset = offsetof(struct thread_struct, uw);
+> > -     *size = sizeof_field(struct thread_struct, uw);
+> > +     *size = FIELD_SIZEOF(struct thread_struct, uw);
+> >  }
+> >
+> >  #ifdef CONFIG_COMPAT
+> > diff --git a/arch/mips/cavium-octeon/executive/cvmx-bootmem.c b/arch/mips/cavium-octeon/executive/cvmx-bootmem.c
+> > index ba8f82a29a81..44b506a14666 100644
+> > --- a/arch/mips/cavium-octeon/executive/cvmx-bootmem.c
+> > +++ b/arch/mips/cavium-octeon/executive/cvmx-bootmem.c
+> > @@ -45,13 +45,6 @@ static struct cvmx_bootmem_desc *cvmx_bootmem_desc;
+> >  /* See header file for descriptions of functions */
+> >
+> >  /**
+> > - * This macro returns the size of a member of a structure.
+> > - * Logically it is the same as "sizeof(s::field)" in C++, but
+> > - * C lacks the "::" operator.
+> > - */
+> > -#define SIZEOF_FIELD(s, field) sizeof(((s *)NULL)->field)
+> > -
+> > -/**
+> >   * This macro returns a member of the
+> >   * cvmx_bootmem_named_block_desc_t structure. These members can't
+> >   * be directly addressed as they might be in memory not directly
+> > @@ -65,7 +58,7 @@ static struct cvmx_bootmem_desc *cvmx_bootmem_desc;
+> >  #define CVMX_BOOTMEM_NAMED_GET_FIELD(addr, field)                    \
+> >       __cvmx_bootmem_desc_get(addr,                                   \
+> >               offsetof(struct cvmx_bootmem_named_block_desc, field),  \
+> > -             SIZEOF_FIELD(struct cvmx_bootmem_named_block_desc, field))
+> > +             FIELD_SIZEOF(struct cvmx_bootmem_named_block_desc, field))
+> >
+> >  /**
+> >   * This function is the implementation of the get macros defined
+> > diff --git a/drivers/gpu/drm/i915/gvt/scheduler.c b/drivers/gpu/drm/i915/gvt/scheduler.c
+> > index 0f919f0a43d4..820f95a52542 100644
+> > --- a/drivers/gpu/drm/i915/gvt/scheduler.c
+> > +++ b/drivers/gpu/drm/i915/gvt/scheduler.c
+> > @@ -1243,7 +1243,7 @@ int intel_vgpu_setup_submission(struct intel_vgpu *vgpu)
+> >                                                 sizeof(struct intel_vgpu_workload), 0,
+> >                                                 SLAB_HWCACHE_ALIGN,
+> >                                                 offsetof(struct intel_vgpu_workload, rb_tail),
+> > -                                               sizeof_field(struct intel_vgpu_workload, rb_tail),
+> > +                                               FIELD_SIZEOF(struct intel_vgpu_workload, rb_tail),
+> >                                                 NULL);
+> >
+> >       if (!s->workloads) {
+> > diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+> > index 46baf3b44309..c0447bf07fbb 100644
+> > --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+> > +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+> > @@ -49,13 +49,13 @@ struct mlxsw_sp_fid_8021d {
+> >  };
+> >
+> >  static const struct rhashtable_params mlxsw_sp_fid_ht_params = {
+> > -     .key_len = sizeof_field(struct mlxsw_sp_fid, fid_index),
+> > +     .key_len = FIELD_SIZEOF(struct mlxsw_sp_fid, fid_index),
+> >       .key_offset = offsetof(struct mlxsw_sp_fid, fid_index),
+> >       .head_offset = offsetof(struct mlxsw_sp_fid, ht_node),
+> >  };
+> >
+> >  static const struct rhashtable_params mlxsw_sp_fid_vni_ht_params = {
+> > -     .key_len = sizeof_field(struct mlxsw_sp_fid, vni),
+> > +     .key_len = FIELD_SIZEOF(struct mlxsw_sp_fid, vni),
+> >       .key_offset = offsetof(struct mlxsw_sp_fid, vni),
+> >       .head_offset = offsetof(struct mlxsw_sp_fid, vni_ht_node),
+> >  };
+> > diff --git a/fs/befs/linuxvfs.c b/fs/befs/linuxvfs.c
+> > index 462d096ff3e9..06ffd4829e2e 100644
+> > --- a/fs/befs/linuxvfs.c
+> > +++ b/fs/befs/linuxvfs.c
+> > @@ -438,7 +438,7 @@ befs_init_inodecache(void)
+> >                                       SLAB_ACCOUNT),
+> >                               offsetof(struct befs_inode_info,
+> >                                       i_data.symlink),
+> > -                             sizeof_field(struct befs_inode_info,
+> > +                             FIELD_SIZEOF(struct befs_inode_info,
+> >                                       i_data.symlink),
+> >                               init_once);
+> >       if (befs_inode_cachep == NULL)
+> > diff --git a/fs/ext2/super.c b/fs/ext2/super.c
+> > index 1d7ab73b1014..d9a6c81f4a47 100644
+> > --- a/fs/ext2/super.c
+> > +++ b/fs/ext2/super.c
+> > @@ -220,7 +220,7 @@ static int __init init_inodecache(void)
+> >                               (SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|
+> >                                       SLAB_ACCOUNT),
+> >                               offsetof(struct ext2_inode_info, i_data),
+> > -                             sizeof_field(struct ext2_inode_info, i_data),
+> > +                             FIELD_SIZEOF(struct ext2_inode_info, i_data),
+> >                               init_once);
+> >       if (ext2_inode_cachep == NULL)
+> >               return -ENOMEM;
+> > diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+> > index 4079605d437a..b1b5856248bd 100644
+> > --- a/fs/ext4/super.c
+> > +++ b/fs/ext4/super.c
+> > @@ -1148,7 +1148,7 @@ static int __init init_inodecache(void)
+> >                               (SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|
+> >                                       SLAB_ACCOUNT),
+> >                               offsetof(struct ext4_inode_info, i_data),
+> > -                             sizeof_field(struct ext4_inode_info, i_data),
+> > +                             FIELD_SIZEOF(struct ext4_inode_info, i_data),
+> >                               init_once);
+> >       if (ext4_inode_cachep == NULL)
+> >               return -ENOMEM;
+> > diff --git a/fs/freevxfs/vxfs_super.c b/fs/freevxfs/vxfs_super.c
+> > index a89f68c3cbed..ffd22f85bbe0 100644
+> > --- a/fs/freevxfs/vxfs_super.c
+> > +++ b/fs/freevxfs/vxfs_super.c
+> > @@ -329,7 +329,7 @@ vxfs_init(void)
+> >                       sizeof(struct vxfs_inode_info), 0,
+> >                       SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD,
+> >                       offsetof(struct vxfs_inode_info, vii_immed.vi_immed),
+> > -                     sizeof_field(struct vxfs_inode_info,
+> > +                     FIELD_SIZEOF(struct vxfs_inode_info,
+> >                               vii_immed.vi_immed),
+> >                       NULL);
+> >       if (!vxfs_inode_cachep)
+> > diff --git a/fs/orangefs/super.c b/fs/orangefs/super.c
+> > index ee5efdc35cc1..30f625059ad9 100644
+> > --- a/fs/orangefs/super.c
+> > +++ b/fs/orangefs/super.c
+> > @@ -646,7 +646,7 @@ int orangefs_inode_cache_initialize(void)
+> >                                       ORANGEFS_CACHE_CREATE_FLAGS,
+> >                                       offsetof(struct orangefs_inode_s,
+> >                                               link_target),
+> > -                                     sizeof_field(struct orangefs_inode_s,
+> > +                                     FIELD_SIZEOF(struct orangefs_inode_s,
+> >                                               link_target),
+> >                                       orangefs_inode_cache_ctor);
+> >
+> > diff --git a/fs/ufs/super.c b/fs/ufs/super.c
+> > index 3d247c0d92aa..1e8bcd950f6d 100644
+> > --- a/fs/ufs/super.c
+> > +++ b/fs/ufs/super.c
+> > @@ -1469,7 +1469,7 @@ static int __init init_inodecache(void)
+> >                               (SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|
+> >                                       SLAB_ACCOUNT),
+> >                               offsetof(struct ufs_inode_info, i_u1.i_symlink),
+> > -                             sizeof_field(struct ufs_inode_info,
+> > +                             FIELD_SIZEOF(struct ufs_inode_info,
+> >                                       i_u1.i_symlink),
+> >                               init_once);
+> >       if (ufs_inode_cachep == NULL)
+> > diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+> > index 74b1ee9027f5..4672391cdb5b 100644
+> > --- a/include/linux/kernel.h
+> > +++ b/include/linux/kernel.h
+> > @@ -79,15 +79,6 @@
+> >   */
+> >  #define round_down(x, y) ((x) & ~__round_mask(x, y))
+> >
+> > -/**
+> > - * FIELD_SIZEOF - get the size of a struct's field
+> > - * @t: the target struct
+> > - * @f: the target struct's field
+> > - * Return: the size of @f in the struct definition without having a
+> > - * declared instance of @t.
+> > - */
+> > -#define FIELD_SIZEOF(t, f) (sizeof(((t*)0)->f))
+> > -
+> >  #define DIV_ROUND_UP __KERNEL_DIV_ROUND_UP
+> >
+> >  #define DIV_ROUND_DOWN_ULL(ll, d) \
+> > diff --git a/include/linux/slab.h b/include/linux/slab.h
+> > index 9449b19c5f10..8bdfdd389b37 100644
+> > --- a/include/linux/slab.h
+> > +++ b/include/linux/slab.h
+> > @@ -175,7 +175,7 @@ void memcg_destroy_kmem_caches(struct mem_cgroup *);
+> >                       sizeof(struct __struct),                        \
+> >                       __alignof__(struct __struct), (__flags),        \
+> >                       offsetof(struct __struct, __field),             \
+> > -                     sizeof_field(struct __struct, __field), NULL)
+> > +                     FIELD_SIZEOF(struct __struct, __field), NULL)
+> >
+> >  /*
+> >   * Common kmalloc functions provided by all allocators
+> > diff --git a/include/linux/stddef.h b/include/linux/stddef.h
+> > index 998a4ba28eba..a5960e2b4a8b 100644
+> > --- a/include/linux/stddef.h
+> > +++ b/include/linux/stddef.h
+> > @@ -20,12 +20,23 @@ enum {
+> >  #endif
+> >
+> >  /**
+> > - * sizeof_field(TYPE, MEMBER)
+> > + * FIELD_SIZEOF - get the size of a struct's field
+> > + * @t: the target struct
+> > + * @f: the target struct's field
+> > + * Return: the size of @f in the struct definition without having a
+> > + * declared instance of @t.
+> > + */
+> > +#define FIELD_SIZEOF(t, f) (sizeof(((t *)0)->f))
+> > +
+> > +/*
+> > + * For code compatibility
+> >   *
+> > + * sizeof_field(TYPE, MEMBER)
+> >   * @TYPE: The structure containing the field of interest
+> >   * @MEMBER: The field to return the size of
+> >   */
+> > -#define sizeof_field(TYPE, MEMBER) sizeof((((TYPE *)0)->MEMBER))
+> > +
+> > +#define sizeof_field(TYPE, MEMBER) FIELD_SIZEOF(TYPE, MEMBER)
+> >
+> >  /**
+> >   * offsetofend(TYPE, MEMBER)
+> > @@ -34,6 +45,6 @@ enum {
+> >   * @MEMBER: The member within the structure to get the end offset of
+> >   */
+> >  #define offsetofend(TYPE, MEMBER) \
+> > -     (offsetof(TYPE, MEMBER) + sizeof_field(TYPE, MEMBER))
+> > +     (offsetof(TYPE, MEMBER) + FIELD_SIZEOF(TYPE, MEMBER))
+> >
+> >  #endif
+> > diff --git a/kernel/fork.c b/kernel/fork.c
+> > index 75675b9bf6df..ef40b95bf82c 100644
+> > --- a/kernel/fork.c
+> > +++ b/kernel/fork.c
+> > @@ -2553,7 +2553,7 @@ void __init proc_caches_init(void)
+> >                       mm_size, ARCH_MIN_MMSTRUCT_ALIGN,
+> >                       SLAB_HWCACHE_ALIGN|SLAB_PANIC|SLAB_ACCOUNT,
+> >                       offsetof(struct mm_struct, saved_auxv),
+> > -                     sizeof_field(struct mm_struct, saved_auxv),
+> > +                     FIELD_SIZEOF(struct mm_struct, saved_auxv),
+> >                       NULL);
+> >       vm_area_cachep = KMEM_CACHE(vm_area_struct, SLAB_PANIC|SLAB_ACCOUNT);
+> >       mmap_init();
+> > diff --git a/kernel/utsname.c b/kernel/utsname.c
+> > index f0e491193009..28257c571553 100644
+> > --- a/kernel/utsname.c
+> > +++ b/kernel/utsname.c
+> > @@ -174,6 +174,6 @@ void __init uts_ns_init(void)
+> >                       "uts_namespace", sizeof(struct uts_namespace), 0,
+> >                       SLAB_PANIC|SLAB_ACCOUNT,
+> >                       offsetof(struct uts_namespace, name),
+> > -                     sizeof_field(struct uts_namespace, name),
+> > +                     FIELD_SIZEOF(struct uts_namespace, name),
+> >                       NULL);
+> >  }
+> > diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+> > index 13ea920600ae..3306bbed77eb 100644
+> > --- a/net/caif/caif_socket.c
+> > +++ b/net/caif/caif_socket.c
+> > @@ -1033,7 +1033,7 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
+> >               .owner = THIS_MODULE,
+> >               .obj_size = sizeof(struct caifsock),
+> >               .useroffset = offsetof(struct caifsock, conn_req.param),
+> > -             .usersize = sizeof_field(struct caifsock, conn_req.param)
+> > +             .usersize = FIELD_SIZEOF(struct caifsock, conn_req.param)
+> >       };
+> >
+> >       if (!capable(CAP_SYS_ADMIN) && !capable(CAP_NET_ADMIN))
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 47c1aa9ee045..816bea0c4a8e 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -3983,7 +3983,7 @@ void __init skb_init(void)
+> >                                             0,
+> >                                             SLAB_HWCACHE_ALIGN|SLAB_PANIC,
+> >                                             offsetof(struct sk_buff, cb),
+> > -                                           sizeof_field(struct sk_buff, cb),
+> > +                                           FIELD_SIZEOF(struct sk_buff, cb),
+> >                                             NULL);
+> >       skbuff_fclone_cache = kmem_cache_create("skbuff_fclone_cache",
+> >                                               sizeof(struct sk_buff_fclones),
+> > diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+> > index 0b8e06ca75d6..efa4c745f7b9 100644
+> > --- a/net/ipv4/raw.c
+> > +++ b/net/ipv4/raw.c
+> > @@ -977,7 +977,7 @@ struct proto raw_prot = {
+> >       .unhash            = raw_unhash_sk,
+> >       .obj_size          = sizeof(struct raw_sock),
+> >       .useroffset        = offsetof(struct raw_sock, filter),
+> > -     .usersize          = sizeof_field(struct raw_sock, filter),
+> > +     .usersize          = FIELD_SIZEOF(struct raw_sock, filter),
+> >       .h.raw_hash        = &raw_v4_hashinfo,
+> >  #ifdef CONFIG_COMPAT
+> >       .compat_setsockopt = compat_raw_setsockopt,
+> > diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+> > index 70693bc7ad9d..257c71e22d74 100644
+> > --- a/net/ipv6/raw.c
+> > +++ b/net/ipv6/raw.c
+> > @@ -1292,7 +1292,7 @@ struct proto rawv6_prot = {
+> >       .unhash            = raw_unhash_sk,
+> >       .obj_size          = sizeof(struct raw6_sock),
+> >       .useroffset        = offsetof(struct raw6_sock, filter),
+> > -     .usersize          = sizeof_field(struct raw6_sock, filter),
+> > +     .usersize          = FIELD_SIZEOF(struct raw6_sock, filter),
+> >       .h.raw_hash        = &raw_v6_hashinfo,
+> >  #ifdef CONFIG_COMPAT
+> >       .compat_setsockopt = compat_rawv6_setsockopt,
+> > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > index 39ea0a37af09..6b648a6033b9 100644
+> > --- a/net/sctp/socket.c
+> > +++ b/net/sctp/socket.c
+> > @@ -9377,7 +9377,7 @@ struct proto sctp_prot = {
+> >       .useroffset  =  offsetof(struct sctp_sock, subscribe),
+> >       .usersize    =  offsetof(struct sctp_sock, initmsg) -
+> >                               offsetof(struct sctp_sock, subscribe) +
+> > -                             sizeof_field(struct sctp_sock, initmsg),
+> > +                             FIELD_SIZEOF(struct sctp_sock, initmsg),
+> >       .sysctl_mem  =  sysctl_sctp_mem,
+> >       .sysctl_rmem =  sysctl_sctp_rmem,
+> >       .sysctl_wmem =  sysctl_sctp_wmem,
+> > @@ -9419,7 +9419,7 @@ struct proto sctpv6_prot = {
+> >       .useroffset     = offsetof(struct sctp6_sock, sctp.subscribe),
+> >       .usersize       = offsetof(struct sctp6_sock, sctp.initmsg) -
+> >                               offsetof(struct sctp6_sock, sctp.subscribe) +
+> > -                             sizeof_field(struct sctp6_sock, sctp.initmsg),
+> > +                             FIELD_SIZEOF(struct sctp6_sock, sctp.initmsg),
+> >       .sysctl_mem     = sysctl_sctp_mem,
+> >       .sysctl_rmem    = sysctl_sctp_rmem,
+> >       .sysctl_wmem    = sysctl_sctp_wmem,
+> > diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
+> > index a29206ebbd13..571c35aac90f 100644
+> > --- a/tools/testing/selftests/bpf/bpf_util.h
+> > +++ b/tools/testing/selftests/bpf/bpf_util.h
+> > @@ -58,13 +58,29 @@ static inline unsigned int bpf_num_possible_cpus(void)
+> >  # define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+> >  #endif
+> >
+> > -#ifndef sizeof_field
+> > -#define sizeof_field(TYPE, MEMBER) sizeof((((TYPE *)0)->MEMBER))
+> > +/*
+> > + * FIELD_SIZEOF - get the size of a struct's field
+> > + * @t: the target struct
+> > + * @f: the target struct's field
+> > + * Return: the size of @f in the struct definition without having a
+> > + * declared instance of @t.
+> > + */
+> > +#ifndef FIELD_SIZEOF
+> > +#define FIELD_SIZEOF(t, f) (sizeof(((t *)0)->f))
+> >  #endif
+> >
+> > +/*
+> > + * For code compatibility
+> > + *
+> > + * sizeof_field(TYPE, MEMBER)
+> > + * @TYPE: The structure containing the field of interest
+> > + * @MEMBER: The field to return the size of
+> > + */
+> > +#define sizeof_field(TYPE, MEMBER) FIELD_SIZEOF(TYPE, MEMBER)
+> > +
+> >  #ifndef offsetofend
+> >  #define offsetofend(TYPE, MEMBER) \
+> > -     (offsetof(TYPE, MEMBER) + sizeof_field(TYPE, MEMBER))
+> > +     (offsetof(TYPE, MEMBER) + FIELD_SIZEOF(TYPE, MEMBER))
+> >  #endif
+> >
+> >  #endif /* __BPF_UTIL__ */
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index ca54b09adf5b..e43e3a26f6ab 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -4275,7 +4275,7 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+> >               kmem_cache_create_usercopy("kvm_vcpu", vcpu_size, vcpu_align,
+> >                                          SLAB_ACCOUNT,
+> >                                          offsetof(struct kvm_vcpu, arch),
+> > -                                        sizeof_field(struct kvm_vcpu, arch),
+> > +                                        FIELD_SIZEOF(struct kvm_vcpu, arch),
+> >                                          NULL);
+> >       if (!kvm_vcpu_cache) {
+> >               r = -ENOMEM;
+> > --
+> > 2.11.0
+> >
+>
+> --
+> Kees Cook
