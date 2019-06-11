@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6BC3D13B
+	by mail.lfdr.de (Postfix) with ESMTP id 9902D3D13C
 	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:46:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405325AbfFKPpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2405318AbfFKPpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 11 Jun 2019 11:45:54 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51375 "EHLO
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:57871 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405210AbfFKPpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:45:50 -0400
+        by vger.kernel.org with ESMTP id S2404136AbfFKPpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:45:52 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B880722304;
-        Tue, 11 Jun 2019 11:45:49 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 64BA6222CE;
+        Tue, 11 Jun 2019 11:45:51 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 11 Jun 2019 11:45:49 -0400
+  by compute3.internal (MEProxy); Tue, 11 Jun 2019 11:45:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=9H41v8EGBNI/jJT/3nxPSvBDDOGRAc6oWyzIY4e6cCw=; b=epIA/vCv
-        RFXJ4tdi9gyYEPTLgCqAn7WloGvAmZ/ZPpB0ACN5ltnPt1fAwIExVTjpvYsK0dz4
-        PsrUGXk4P9FpKM2WTvf1sRj3DF+dPUUaT1PQL2f4qQTwjZHsemTXUgpkOctWyFfv
-        QL9ZDPLIzHXg9wnHYuSntfWLzPTGFDgj8VEiq1VQEb/ZEkYF4KwmOutcp2nXTxkS
-        qW63f44qVUJmHYdJnfrUX6YhAT24sHn5btUWYVvVOvwBACMAEWwQOP9UAVnpMPLQ
-        1/SJer0NHMB0SEO+S09o9i70q/Fy7iMgS1uxVfj6yOGjQTUJ+ynJHZcknB5U9iVk
-        97KtlJAzAdDF/A==
-X-ME-Sender: <xms:rcz_XIx27sfZlLxAaiBvLHYj-kr6uN2Vd_8kp5Zr29QvwWyOaGc9sQ>
+        fm3; bh=Id1FsuWfuMLuDXQTFtG4cXkmKUewAjCCXjTGdBhK0AI=; b=o5GEogjn
+        GgSGYHlYK3r8P2BGj9NoNKPIeSabW8QFdBD8CYuJ4MrXQoe4j53hWAjLe21kEygB
+        UhbFm4uvDxy42lvoM1tzZdH9kggvZRPL4MdoUJVqZ6ZJcPs0KBN0Ko9G1WdDP94x
+        qZi+3qqZSr+RkjtmsR/DnyMchAaxiSbinz68z9lFH5tksFInZsDnpxrf3o+hYTQT
+        ETFB649+mXPWibUkAHR6lJNootyq/SY69NAPEVqPSwCNQ8rgCoMSjBk/jicDR9oe
+        4nSRBlUEOsbDLi3Uwxmc7gjCoJjQ4v4OZKLG5Kj9StfweSOyDkO8um8AmPaLD2Q1
+        s3tgeResVTPCDg==
+X-ME-Sender: <xms:r8z_XPGLLK2vhwMCB5GQaikywjjoI7WrlIutEE3zt1KC4-sjqdPDIg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehhedgjeeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudehhedgjeeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:rcz_XNeUPU3_Z6sTqcAVJus2PkPAod5omLso4Ivld01qguiWYCtkdQ>
-    <xmx:rcz_XKxz4MOi3X05FAVaklbWDtPmWTG0iuekZo8G5rw-t4Vw6vQ9JA>
-    <xmx:rcz_XP5LWVV8wMV5Vzb-w2HK3Uun8saCjqa7lhOGV3qky0Vap0muPA>
-    <xmx:rcz_XARW35SsCASLjpqBWSiTeq43xCbQHxcg6ivOpdxkYXjPxAsn2Q>
+X-ME-Proxy: <xmx:r8z_XAUMcQQ6IpTkhoMhHbsUW5HDTQ6yd8czFRp7RkJkSIIb7qG-gg>
+    <xmx:r8z_XBzROrPaKkRd-vg3VU1xslS3_Rn3NKYzTZnap8r22yK35mbHWg>
+    <xmx:r8z_XM9-vcrNzBMW03w-EKDuPqaRZT_JW5zN_EOAhVU1E-JDJ-lb3w>
+    <xmx:r8z_XCpNiZXiNMc0eB22kV9ZUPPtrzxDvxcmkQIYs-BWlBG62LCtxw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DD705380073;
-        Tue, 11 Jun 2019 11:45:47 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A024C380085;
+        Tue, 11 Jun 2019 11:45:49 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
         petrm@mellanox.com, richardcochran@gmail.com, olteanv@gmail.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 5/9] mlxsw: reg: Add Management Pulse Per Second Register
-Date:   Tue, 11 Jun 2019 18:45:08 +0300
-Message-Id: <20190611154512.17650-6-idosch@idosch.org>
+Subject: [PATCH net-next v2 6/9] ptp: ptp_clock: Publish scaled_ppm_to_ppb
+Date:   Tue, 11 Jun 2019 18:45:09 +0300
+Message-Id: <20190611154512.17650-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190611154512.17650-1-idosch@idosch.org>
 References: <20190611154512.17650-1-idosch@idosch.org>
@@ -62,93 +62,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shalom Toledo <shalomt@mellanox.com>
 
-The MTPPS register provides the device PPS capabilities, configure the PPS
-in and out modules and holds the PPS in time stamp.
+Publish scaled_ppm_to_ppb to allow drivers to use it.
 
 Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 Reviewed-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 58 +++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ drivers/ptp/ptp_clock.c          | 3 ++-
+ include/linux/ptp_clock_kernel.h | 8 ++++++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 9ec154975cb2..d8eb9ef01646 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8691,6 +8691,63 @@ static inline void mlxsw_reg_mlcr_pack(char *payload, u8 local_port,
- 					   MLXSW_REG_MLCR_DURATION_MAX : 0);
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index e189fa1be21e..e60eab7f8a61 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -63,7 +63,7 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
+ 	spin_unlock_irqrestore(&queue->lock, flags);
  }
  
-+/* MTPPS - Management Pulse Per Second Register
-+ * --------------------------------------------
-+ * This register provides the device PPS capabilities, configure the PPS in and
-+ * out modules and holds the PPS in time stamp.
+-static s32 scaled_ppm_to_ppb(long ppm)
++s32 scaled_ppm_to_ppb(long ppm)
+ {
+ 	/*
+ 	 * The 'freq' field in the 'struct timex' is in parts per
+@@ -82,6 +82,7 @@ static s32 scaled_ppm_to_ppb(long ppm)
+ 	ppb >>= 13;
+ 	return (s32) ppb;
+ }
++EXPORT_SYMBOL(scaled_ppm_to_ppb);
+ 
+ /* posix clock implementation */
+ 
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index 28eb9c792522..93cc4f1d444a 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -212,6 +212,14 @@ extern void ptp_clock_event(struct ptp_clock *ptp,
+ 
+ extern int ptp_clock_index(struct ptp_clock *ptp);
+ 
++/**
++ * scaled_ppm_to_ppb() - convert scaled ppm to ppb
++ *
++ * @ppm:    Parts per million, but with a 16 bit binary fractional field
 + */
-+#define MLXSW_REG_MTPPS_ID 0x9053
-+#define MLXSW_REG_MTPPS_LEN 0x3C
 +
-+MLXSW_REG_DEFINE(mtpps, MLXSW_REG_MTPPS_ID, MLXSW_REG_MTPPS_LEN);
++extern s32 scaled_ppm_to_ppb(long ppm);
 +
-+/* reg_mtpps_enable
-+ * Enables the PPS functionality the specific pin.
-+ * A boolean variable.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mtpps, enable, 0x20, 31, 1);
-+
-+enum mlxsw_reg_mtpps_pin_mode {
-+	MLXSW_REG_MTPPS_PIN_MODE_VIRTUAL_PIN = 0x2,
-+};
-+
-+/* reg_mtpps_pin_mode
-+ * Pin mode to be used. The mode must comply with the supported modes of the
-+ * requested pin.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mtpps, pin_mode, 0x20, 8, 4);
-+
-+#define MLXSW_REG_MTPPS_PIN_SP_VIRTUAL_PIN	7
-+
-+/* reg_mtpps_pin
-+ * Pin to be configured or queried out of the supported pins.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, mtpps, pin, 0x20, 0, 8);
-+
-+/* reg_mtpps_time_stamp
-+ * When pin_mode = pps_in, the latched device time when it was triggered from
-+ * the external GPIO pin.
-+ * When pin_mode = pps_out or virtual_pin or pps_out_and_virtual_pin, the target
-+ * time to generate next output signal.
-+ * Time is in units of device clock.
-+ * Access: RW
-+ */
-+MLXSW_ITEM64(reg, mtpps, time_stamp, 0x28, 0, 64);
-+
-+static inline void
-+mlxsw_reg_mtpps_vpin_pack(char *payload, u64 time_stamp)
-+{
-+	MLXSW_REG_ZERO(mtpps, payload);
-+	mlxsw_reg_mtpps_pin_set(payload, MLXSW_REG_MTPPS_PIN_SP_VIRTUAL_PIN);
-+	mlxsw_reg_mtpps_pin_mode_set(payload,
-+				     MLXSW_REG_MTPPS_PIN_MODE_VIRTUAL_PIN);
-+	mlxsw_reg_mtpps_enable_set(payload, true);
-+	mlxsw_reg_mtpps_time_stamp_set(payload, time_stamp);
-+}
-+
- /* MTUTC - Management UTC Register
-  * -------------------------------
-  * Configures the HW UTC counter.
-@@ -10149,6 +10206,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(mgir),
- 	MLXSW_REG(mrsr),
- 	MLXSW_REG(mlcr),
-+	MLXSW_REG(mtpps),
- 	MLXSW_REG(mtutc),
- 	MLXSW_REG(mpsc),
- 	MLXSW_REG(mcqi),
+ /**
+  * ptp_find_pin() - obtain the pin index of a given auxiliary function
+  *
 -- 
 2.20.1
 
