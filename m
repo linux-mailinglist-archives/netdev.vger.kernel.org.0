@@ -2,126 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 905723D179
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 007EC3D17C
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405155AbfFKPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 11:53:55 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41452 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388958AbfFKPxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:53:54 -0400
-Received: by mail-qk1-f196.google.com with SMTP id c11so7956547qkk.8
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 08:53:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=AlkrbQYAq5ggfeanUdZINnoihFF0gPgxsWNEjFNogf8=;
-        b=ueOGSkOWX2A7u4tyMuh00k0YLIN81nyqTYlMK8cjU2o320bmCfWS5vnLcXJ4d8mMhc
-         pcEC07aQ3HxqPF1QL/3tIeEJESOLryxpDT4UYmlMgDLL39Vxlodbk5ahlIzX7a1TxVQ3
-         dA+0r9tTO9VDUuVdZyvQonYTdQ+e3y08EP+I01dxNBETKJP6ihPnFSv7TR6rhgD01oBi
-         U9Fc+AR8qKXsdvceDt2CZ1O7IBJoeIzNgLftVt5I8I6YV/2L+suJRNiATCBglR7Gw2gt
-         PnVMwUqkZ7JU5GNWdRjMYEXnYHm7ImzXiJGFTtc3aiFVLmJDthwDkGSZ/YDTNJWnisl4
-         fX/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=AlkrbQYAq5ggfeanUdZINnoihFF0gPgxsWNEjFNogf8=;
-        b=Gi5MKGLYvM08rUE/EUmrfq6Kyw+REUDorlpym4p1VAewnky+Kptazn6lB+uoUOppP2
-         RyJUGAOkj9e8gB3bezc4Bd0pHClwFKwgg2dekyBBxZ+ZJ+cI2FBMhfwhO/MKgNSM7vNP
-         8xwR8OJHDBVZbzbqlsClfgBck1nzDuqUCVXhkK6ewK5S5pq28nqmDRg1n+qVX10aAkP2
-         gPU6mzNL3RbNrpXG7FRyDs8V9KjMYLGJlNewBOTIF4tnfCP9ePF6XEwR6LeHOu3RUXPM
-         ElTu3B4DgbDMDWqHhQqcZAT72OcPZemtfWL5+9RfgNWFhIfdj3zWUFKOBYQuWtb+0eis
-         Oyxg==
-X-Gm-Message-State: APjAAAXlXSD/vYj2tt9mPZqzcS9hZeznK6k0Rln9Lrd7bFPfYN40meWH
-        /og5QUGodeGzJ9gotT+vfmc=
-X-Google-Smtp-Source: APXvYqwQB1j7I2NffgkhLOmbhzuVdcytJYqGlXc+2cPoSKggZcK2ig1KRcA1rO+oYlC5q7SrAIsw3A==
-X-Received: by 2002:a37:a9c3:: with SMTP id s186mr9450705qke.190.1560268433861;
-        Tue, 11 Jun 2019 08:53:53 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.36])
-        by smtp.gmail.com with ESMTPSA id y20sm2324522qka.14.2019.06.11.08.53.52
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 08:53:53 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id A4DADC087D; Tue, 11 Jun 2019 12:53:50 -0300 (-03)
-Date:   Tue, 11 Jun 2019 12:53:50 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Paul Blakey <paulb@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>,
-        Kevin Darbyshire-Bryant <kevin@darbyshire-bryant.me.uk>
-Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
-Message-ID: <20190611155350.GC3436@localhost.localdomain>
-References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
- <1560259713-25603-2-git-send-email-paulb@mellanox.com>
- <87d0jkgr3r.fsf@toke.dk>
- <da87a939-9000-8371-672a-a949f834caea@mellanox.com>
- <877e9sgmp1.fsf@toke.dk>
+        id S2405356AbfFKPyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 11:54:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46200 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405288AbfFKPyO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 11:54:14 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8D9A48CB56;
+        Tue, 11 Jun 2019 15:54:08 +0000 (UTC)
+Received: from ovpn-112-53.rdu2.redhat.com (ovpn-112-53.rdu2.redhat.com [10.10.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EEFE619C70;
+        Tue, 11 Jun 2019 15:53:58 +0000 (UTC)
+Message-ID: <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        syadagir@codeaurora.org
+Date:   Tue, 11 Jun 2019 10:53:57 -0500
+In-Reply-To: <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <877e9sgmp1.fsf@toke.dk>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Tue, 11 Jun 2019 15:54:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 05:34:50PM +0200, Toke Høiland-Jørgensen wrote:
-> Paul Blakey <paulb@mellanox.com> writes:
+On Tue, 2019-06-11 at 13:56 +0200, Arnd Bergmann wrote:
+> On Tue, Jun 11, 2019 at 10:12 AM Johannes Berg
+> <johannes@sipsolutions.net> wrote:
 > 
-> > On 6/11/2019 4:59 PM, Toke Høiland-Jørgensen wrote:
-> >> Paul Blakey <paulb@mellanox.com> writes:
-> >>
-> >>> Allow sending a packet to conntrack and set conntrack zone, mark,
-> >>> labels and nat parameters.
-> >> How is this different from the newly merged ctinfo action?
-> >>
-> >> -Toke
-> >
-> > Hi,
-> >
-> > ctinfo does one of two very specific things,
-> >
-> > 1) copies DSCP values that have been placed in the firewall conntrack 
-> > mark back into the IPv4/v6 diffserv field
-> >
-> > 2) copies the firewall conntrack mark to the skb's mark field (like 
-> > act_connmark)
-> >
-> > Originally ctinfo action was named conndscp (then conntrack, which is 
-> > what our ct shorthand stands for).
-> >
-> > We also talked about merging both at some point, but they seem only 
-> > coincidentally related.
+> > > As I've made clear before, my work on this has been focused on
+> > > the IPA transport,
+> > > and some of this higher-level LTE architecture is new to me.  But
+> > > it
+> > > seems pretty clear that an abstracted WWAN subsystem is a good
+> > > plan,
+> > > because these devices represent a superset of what a "normal"
+> > > netdev
+> > > implements.
+> > 
+> > I'm not sure I'd actually call it a superset. By themselves, these
+> > netdevs are actually completely useless to the network stack,
+> > AFAICT.
+> > Therefore, the overlap with netdevs you can really use with the
+> > network
+> > stack is pretty small?
 > 
-> Well, I'm predicting it will create some confusion to have them so
-> closely named... Not sure what the best way to fix that is, though...?
+> I think Alex meant the concept of having a type of netdev with a
+> generic
+> user space interface for wwan and similar to a wlan device, as I
+> understood
+> you had suggested as well, as opposed to a stacked device as in
+> rmnet or those drivers it seems to be modeled after (vlan, ip tunnel,
+> ...)/.
+> 
+> > > HOWEVER I disagree with your suggestion that the IPA code should
+> > > not be committed until after that is all sorted out.  In part
+> > > it's
+> > > for selfish reasons, but I think there are legitimate reasons to
+> > > commit IPA now *knowing* that it will need to be adapted to fit
+> > > into the generic model that gets defined and developed.  Here
+> > > are some reasons why.
+> > 
+> > I can't really argue with those, though I would point out that the
+> > converse also holds - if we commit to this now, then we will have
+> > to
+> > actually keep the API offered by IPA/rmnet today, so we cannot
+> > actually
+> > remove the netdev again, even if we do migrate it to offer support
+> > for a
+> > WWAN framework in the future.
+> 
+> Right. The interface to support rmnet might be simple enough to keep
+> next to what becomes the generic interface, but it will always
+> continue
+> to be an annoyance.
+> 
+> > > Second, the IPA code has been out for review recently, and has
+> > > been
+> > > the subject of some detailed discussion in the past few
+> > > weeks.  Arnd
+> > > especially has invested considerable time in review and
+> > > discussion.
+> > > Delaying things until after a better generic model is settled on
+> > > (which I'm guessing might be on the order of months)
+> > 
+> > I dunno if it really has to be months. I think we can cobble
+> > something
+> > together relatively quickly that addresses the needs of IPA more
+> > specifically, and then extend later?
+> > 
+> > But OTOH it may make sense to take a more paced approach and think
+> > about the details more carefully than we have over in the other
+> > thread so far.
+> 
+> I would hope that as soon as we can agree on a general approach, it
+> would also be possible to merge a minimal implementation into the
+> kernel
+> along with IPA. Alex already mentioned that IPA in its current state
+> does
+> not actually support more than one data channel, so the necessary
+> setup for it becomes even simpler.
+> 
+> At the moment, the rmnet configuration in
+> include/uapi/linux/if_link.h
+> is almost trivial, with the three pieces of information needed being
+> an IFLA_LINK to point to the real device (not needed if there is only
+> one device per channel, instead of two), the IFLA_RMNET_MUX_ID
+> setting the ID of the muxing channel (not needed if there is only
+> one channel ?), a way to specify software bridging between channels
+> (not useful if there is only one channel) and a few flags that I
+> assume
+> must match the remote end:
+> 
+> #define RMNET_FLAGS_INGRESS_DEAGGREGATION         (1U << 0)
+> #define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
+> #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
+> #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
+> enum {
+>         IFLA_RMNET_UNSPEC,
+>         IFLA_RMNET_MUX_ID,
+>         IFLA_RMNET_FLAGS,
+>         __IFLA_RMNET_MAX,
+> };
+> #define IFLA_RMNET_MAX  (__IFLA_RMNET_MAX - 1)
+> struct ifla_rmnet_flags {
+>         __u32   flags;
+>         __u32   mask;
+> };
+> 
+> > > Third, having the code upstream actually means the actual
+> > > requirements
+> > > for rmnet-over-IPA are clear and explicit.  This might not be a
+> > > huge
+> > > deal, but I think it's better to devise a generic WWAN scheme
+> > > that
+> > > can refer to actual code than to do so with assumptions about
+> > > what
+> > > will work with rmnet (and others).  As far as I know, the
+> > > upstream
+> > > rmnet has no other upstream back end; IPA will make it "real."
+> > 
+> > Is that really true? I had previously been told that rmnet actually
+> > does
+> > have use with a few existing drivers.
+> > 
+> > 
+> > If true though, then I think this would be the killer argument *in
+> > favour* of *not* merging this - because that would mean we *don't*
+> > have
+> > to actually keep the rmnet API around for all foreseeable future.
+> 
+> I would agree with that. From the code I can see no other driver
+> including the rmnet protocol header (see the discussion about moving
+> the header to include/linux in order to merge ipa), and I don't see
+> any other driver referencing ETH_P_MAP either. My understanding
+> is that any driver used by rmnet would require both, but they are
+> all out-of-tree at the moment.
 
-I had suggested to let act_ct handle the above as well, as there is a
-big chunk of code on both that is pretty similar. There is quite some
-boilerplate for interfacing with conntrack which is duplicated.
-But it was considered that the end actions are unrelated, and ctinfo
-went ahead. (I'm still not convinced of that, btw)
+The general plan (and I believe Daniele Palmas was working on it) was
+to eventually make qmi_wwan use rmnet rather than its internal sysfs-
+based implementation. qmi_wwan and ipa are at essentially the same
+level and both could utilize rmnet on top.
 
-Other than this, which is not an option anymore, I don't see a way to
-avoid confusion here. Seems anything we pick now will be confusing
-because ctinfo is a generic name, and we also need one here.
+*That's* what I'd like to see. I don't want to see two different ways
+to get QMAP packets to modem firmware from two different drivers that
+really could use the same code.
 
-  Marcelo
+Dan
+
