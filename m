@@ -2,181 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6FC3D242
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 18:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702043D260
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 18:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391540AbfFKQ2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 12:28:51 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:37713 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728283AbfFKQ2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 12:28:51 -0400
-Received: by mail-lf1-f67.google.com with SMTP id d11so1959358lfb.4
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 09:28:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RgyPf7xhx0YF0w9Kty/80UkxGW/cNJhmecxkZGC4Svg=;
-        b=Wy6GLE/bRjVgzVg3lTBzcxvgONy0/gxFk0wNAyFPNhLKb1zkqgi7IORqDn/A5oMhNs
-         P1N7dtfcmcAozuWE5Eb3UlefyJfoLU/vDMgiMI3gdS0x+DBehpksepzE3rG6XpxcTQTL
-         dgguk5hn73V7XtY9m418kM424zKdGmSeZiwHBMjROl0RJXauPuHC4yXQZJhkON6lbL4x
-         8yP5dVjBuymlWB96zkGHGcjBVzztPUFGpPcNcVrKQyhj8zt9gsA+MYw/a7H4tw2+tBeS
-         72NhJJT+iv7ymfMLyx7RYScRS52teqvNNZh+H661tbd0KCYPYAwPMSB88JYKm6t07qyn
-         5NRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RgyPf7xhx0YF0w9Kty/80UkxGW/cNJhmecxkZGC4Svg=;
-        b=I2VQpxGoYZs6UcxupdWycaOXmzXSaZYFKl4uzchYurTux1vkKKHnkgF+/0wwUt6Idj
-         IbxArn96N+3N/ak+J5vRCD1xF6uUIfV7RTsCH6NT1BZJsNFoXN9oLsb9SxruQnJ6u0Dl
-         Rdroatqj4grwLtXPc9xXK6Rp6ZtfwX0GS7y+JnfhQaenXytyo2ex6mSUFQ2/Cluiq0at
-         zZzynqTb5uzqe5gldmjNEMOgKHX2Q3JcZbD2QYJjsY5nzui9AI+Qpetu8xIUJPKBgCSO
-         nWmtVrki4Hg60eJXQj/tRmOQ1thsMAMRD77M6bwRikzCrYjBseYy8o2fVCidA8FV79pR
-         hHzA==
-X-Gm-Message-State: APjAAAUzG2ES9cX7hbSn66xMNy8mJgcQny8pbuUHPFgykXSixJpgCUAL
-        ySpDFZrOn6t1ZgowA8Fvuq3Vpc8QxZAsDaWaEnIGrg==
-X-Google-Smtp-Source: APXvYqz+8HsvC2fZeq6JGexwZBxWKw0IGtco6wwqGIYyL/OdqZf9E69/kPyFOQ1Wtpf5LQTIPeOKLiFAWfBQYsb8+YM=
-X-Received: by 2002:a19:c383:: with SMTP id t125mr31681402lff.89.1560270528359;
- Tue, 11 Jun 2019 09:28:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190606094722.23816-1-anders.roxell@linaro.org>
- <d6b79ee0-07c6-ad81-16b0-8cf929cc214d@xs4all.nl> <CADYN=9KY5=FzrkC7MKj9QnG-eM1NVuL00w8Xv4yU2r05rhr7WQ@mail.gmail.com>
- <c2ff2c77-5c14-4bc4-f59c-7012d272ec76@thinci.com> <1560240943.13886.1.camel@pengutronix.de>
- <221c8ef8-7adc-4383-93c9-9031dca590f0@xs4all.nl> <CADYN=9K7GwPGM_Eh5q-OZ9rcEPAjXw4BXy-m3a=QxmGuVruCUw@mail.gmail.com>
- <CAAEAJfC9vja5WwsNc5+MTVHLFg_P3zG=OZt_CuRR5eG-3iWD9Q@mail.gmail.com>
-In-Reply-To: <CAAEAJfC9vja5WwsNc5+MTVHLFg_P3zG=OZt_CuRR5eG-3iWD9Q@mail.gmail.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 11 Jun 2019 18:28:37 +0200
-Message-ID: <CADYN=9L36CadXu2csbQhvey=20NTte-a+a8i08w=pP-+VdTuLA@mail.gmail.com>
-Subject: Re: [PATCH 5/8] drivers: media: coda: fix warning same module names
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     Hans Verkuil <hverkuil@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Matt Redfearn <matt.redfearn@thinci.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "marex@denx.de" <marex@denx.de>,
-        "stefan@agner.ch" <stefan@agner.ch>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>,
-        "a.hajda@samsung.com" <a.hajda@samsung.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S2404472AbfFKQiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 12:38:12 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2404082AbfFKQiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 12:38:12 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5BGWQBX018013
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 12:38:10 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2t2eqg3xta-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 12:38:10 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Tue, 11 Jun 2019 17:38:08 +0100
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 11 Jun 2019 17:38:06 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x5BGbvYw16843122
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 11 Jun 2019 16:37:57 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4769F4C062;
+        Tue, 11 Jun 2019 16:38:04 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ED4804C058;
+        Tue, 11 Jun 2019 16:38:03 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 11 Jun 2019 16:38:03 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 00/13] s390/qeth: updates 2019-06-11
+Date:   Tue, 11 Jun 2019 18:37:47 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19061116-0012-0000-0000-000003283B15
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19061116-0013-0000-0000-000021613E6E
+Message-Id: <20190611163800.64730-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-11_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=889 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906110106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jun 2019 at 18:18, Ezequiel Garcia
-<ezequiel@vanguardiasur.com.ar> wrote:
->
->
->
-> On Tue, Jun 11, 2019, 1:01 PM Anders Roxell <anders.roxell@linaro.org> wrote:
->>
->> On Tue, 11 Jun 2019 at 10:21, Hans Verkuil <hverkuil@xs4all.nl> wrote:
->> >
->> > On 6/11/19 10:15 AM, Philipp Zabel wrote:
->> > > Hi,
->> > >
->> > > On Mon, 2019-06-10 at 13:14 +0000, Matt Redfearn wrote:
->> > >>
->> > >> On 10/06/2019 14:03, Anders Roxell wrote:
->> > >>> On Thu, 6 Jun 2019 at 12:13, Hans Verkuil <hverkuil@xs4all.nl> wrote:
->> > >>>>
->> > >>>> On 6/6/19 11:47 AM, Anders Roxell wrote:
->> > >>>>> When building with CONFIG_VIDEO_CODA and CONFIG_CODA_FS enabled as
->> > >>>>> loadable modules, we see the following warning:
->> > >>>>>
->> > >>>>> warning: same module names found:
->> > >>>>>    fs/coda/coda.ko
->> > >>>>>    drivers/media/platform/coda/coda.ko
->> > >>>>>
->> > >>>>> Rework so media coda matches the config fragment. Leaving CODA_FS as is
->> > >>>>> since thats a well known module.
->> > >>>>>
->> > >>>>> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
->> > >>>>> ---
->> > >>>>>   drivers/media/platform/coda/Makefile | 4 ++--
->> > >>>>>   1 file changed, 2 insertions(+), 2 deletions(-)
->> > >>>>>
->> > >>>>> diff --git a/drivers/media/platform/coda/Makefile b/drivers/media/platform/coda/Makefile
->> > >>>>> index 54e9a73a92ab..588e6bf7c190 100644
->> > >>>>> --- a/drivers/media/platform/coda/Makefile
->> > >>>>> +++ b/drivers/media/platform/coda/Makefile
->> > >>>>> @@ -1,6 +1,6 @@
->> > >>>>>   # SPDX-License-Identifier: GPL-2.0-only
->> > >>>>>
->> > >>>>> -coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
->> > >>>>> +video-coda-objs := coda-common.o coda-bit.o coda-gdi.o coda-h264.o coda-mpeg2.o coda-mpeg4.o coda-jpeg.o
->> > >>>>>
->> > >>>>> -obj-$(CONFIG_VIDEO_CODA) += coda.o
->> > >>>>> +obj-$(CONFIG_VIDEO_CODA) += video-coda.o
->> > >>>>
->> > >>>> How about imx-coda? video-coda suggests it is part of the video subsystem,
->> > >>>> which it isn't.
->> > >>>
->> > >>> I'll resend a v2 shortly with imx-coda instead.
->> > >
->> > > I'd be in favor of calling it "coda-vpu" instead.
->> >
->> > Fine by me!
->> >
->> > >
->> > >> What about other vendor SoCs implementing the Coda IP block which are
->> > >> not an imx? I'd prefer a more generic name - maybe media-coda.
->> > >
->> > > Right, this driver can be used on other SoCs [1].
->> >
->> > Good point.
->>
->> OK, so I'll change it to 'media-coda'.
->>
->>
->>
->
-> As suggested by Philipp, coda-vpu seems the most accurate name.
+Hi Dave,
 
-urgh, that correct.
+please apply the following patch series for qeth to net-next.
+This brings all sorts of cleanups and minor improvements,
+primarily for the control IO path.
 
 Thanks,
-Anders
+Julian
 
->
-> Thanks,
-> Ezequiel
->
->
->
->> Cheers,
->> Anders
->>
->> >
->> > Regards,
->> >
->> >         Hans
->> >
->> > >
->> > > [1] https://www.mail-archive.com/linux-media@vger.kernel.org/msg146498.html
->> > >
->> > > regards
->> > > Philipp
->> > >
->> >
+
+Julian Wiedmann (13):
+  s390/qeth: don't mask TX errors on IQD devices
+  s390/qeth: use mm helpers
+  s390/qeth: simplify DOWN state handling
+  s390/qeth: restart pending READ cmd from callback
+  s390/qeth: clean up setting of BLKT defaults
+  s390/qeth: remove qeth_wait_for_buffer()
+  s390/qeth: remove OSN-specific IO code
+  s390/qeth: convert device-specific trace entries
+  s390/qeth: remove 'channel' parameter from callbacks
+  s390/qeth: add support for dynamically allocated cmds
+  s390/qeth: convert RCD code to common IO infrastructure
+  s390/qeth: command-chain the IDX sequence
+  s390/qeth: allocate a single cmd on read channel
+
+ drivers/s390/net/qeth_core.h      |  27 +-
+ drivers/s390/net/qeth_core_main.c | 614 ++++++++++++++----------------
+ drivers/s390/net/qeth_core_mpc.h  |   2 -
+ drivers/s390/net/qeth_l2_main.c   |  83 ++--
+ drivers/s390/net/qeth_l3_main.c   |  41 +-
+ 5 files changed, 351 insertions(+), 416 deletions(-)
+
+-- 
+2.17.1
+
