@@ -2,133 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B4543C556
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:44:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D5B3C589
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 10:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404272AbfFKHoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 03:44:06 -0400
-Received: from mx-relay74-hz1.antispameurope.com ([94.100.133.237]:37018 "EHLO
-        mx-relay74-hz1.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2403897AbfFKHoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:44:05 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jun 2019 03:44:05 EDT
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay74-hz1.antispameurope.com;
- Tue, 11 Jun 2019 09:36:30 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Tue, 11 Jun
- 2019 09:36:16 +0200
-Subject: Re: DSA with MV88E6321 and imx28
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>
-References: <20190605133102.GF19627@lunn.ch>
- <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
- <20190605184724.GB19590@lunn.ch>
- <c27f2b9b-90d7-db63-f01c-2dfaef7a014b@eks-engel.de>
- <20190606122437.GA20899@lunn.ch>
- <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
- <20190606133501.GC19590@lunn.ch>
- <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
- <20190606135903.GE19590@lunn.ch>
- <8903b07b-4ac5-019a-14a1-d2fc6a57c0bb@eks-engel.de>
- <20190607124750.GJ20899@lunn.ch>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Message-ID: <635c884a-185d-5b3b-7f91-ce058d9726f4@eks-engel.de>
-Date:   Tue, 11 Jun 2019 09:36:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2404555AbfFKIEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 04:04:38 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38134 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404546AbfFKIEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 04:04:37 -0400
+Received: by mail-ed1-f68.google.com with SMTP id g13so18637617edu.5
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 01:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=sender:date:from:to:cc:subject:message-id:mail-followup-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1VpP4BQl0scWmMIfvVrIwxl9EaLNPQUpAZnq/R1E08A=;
+        b=ZIa8H2Jy5lWKWQz1TT7B/cBLsAJV/t0RUOsjzlAUmvjxv48OR/2G2Z3xwj89VqyCSC
+         Y7NCdLF+j+Zb7j9MlTsh2N8qAd9mQSkTkGybODE0RYNXFT6BGqim8aTZFx8ccV9Ema2X
+         VHizYVWLs+TJqJRySt+NsoMrmPz7kLRDwVbHA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=1VpP4BQl0scWmMIfvVrIwxl9EaLNPQUpAZnq/R1E08A=;
+        b=IMqc9WBOHK/ZNpvm6fcSEsfJspeNsIVisjHsIIc9cudVx/bt4AR4BVmSXkTpdtBIAB
+         bC0oWS4LGNZ2AUsbv7GQ/cZKLD1NrzdombFFLZeNbycB70PexGOJHyjDKRcPgseZQ5DP
+         wzdZDP0E1eqIfRc23NkG7LEKNCn624QrBpfoXn+gZC2GPu2hlB5wHsuPShfjbPNuzgny
+         qZpiwwQPhnCyhAc3wNNJesB8Aj9FET/ZIH7gWb1L5BO2ncDJxgZUHdRjXLUOYKCqaQiu
+         bQvbj/858zyxD7ZVJnWaUX+uwZeYpg6h2L/qcZ7J2t2VN7gX1qczxZSHLBQlng5o1e/d
+         KlqA==
+X-Gm-Message-State: APjAAAVMduYbyQ3AmKZ5GiguJlmvFt6ns8j+hnmdafqzL3108ecxtuEl
+        mTnGYuC6GuFSWW68e4RwdCXZI+vNI1E=
+X-Google-Smtp-Source: APXvYqxTt4reyZxOwFM7gpLn44B2/syN7stLMXz/LTQgDQdiH76jkBmOlBKjhtvaB3E/mb8+p5bIJQ==
+X-Received: by 2002:a17:906:ad86:: with SMTP id la6mr44226340ejb.43.1560240275503;
+        Tue, 11 Jun 2019 01:04:35 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:569e:0:3106:d637:d723:e855])
+        by smtp.gmail.com with ESMTPSA id y11sm3576596edj.96.2019.06.11.01.04.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 11 Jun 2019 01:04:34 -0700 (PDT)
+Date:   Tue, 11 Jun 2019 10:04:31 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     syzbot <syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com>
+Cc:     airlied@linux.ie, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@ffwll.ch, daniel@iogearbox.net, davem@davemloft.net,
+        dri-devel@lists.freedesktop.org, hawk@kernel.org,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        kafai@fb.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, maxime.ripard@bootlin.com,
+        netdev@vger.kernel.org, paul.kocialkowski@bootlin.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        wens@csie.org, xdp-newbies@vger.kernel.org, yhs@fb.com
+Subject: Re: WARNING in bpf_jit_free
+Message-ID: <20190611080431.GP21222@phenom.ffwll.local>
+Mail-Followup-To: syzbot <syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com>,
+        airlied@linux.ie, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        dri-devel@lists.freedesktop.org, hawk@kernel.org,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        kafai@fb.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, maxime.ripard@bootlin.com,
+        netdev@vger.kernel.org, paul.kocialkowski@bootlin.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        wens@csie.org, xdp-newbies@vger.kernel.org, yhs@fb.com
+References: <000000000000e92d1805711f5552@google.com>
+ <000000000000381684058ace28e5@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20190607124750.GJ20899@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay74-hz1.antispameurope.com with 9A18B70434A
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:8.249
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000381684058ace28e5@google.com>
+X-Operating-System: Linux phenom 4.14.0-3-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> So all ports are now in forwarding mode (Switch port register 0x4 of all ports 
->> are 0x7f), but I don't reach it over ping.
-> Hi
->
-> The most common error for people new to DSA is forgetting to bring
-> the master interface up.
->
-> The second thing to understand is that by default, all interfaces are
-> separated. So the switch won't bridge frames between ports, until you
-> add the ports to a Linux bridge. But you can give each interface its
-> own IP address.
->
->     Andrew
+On Sat, Jun 08, 2019 at 04:22:06AM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following crash on:
+> 
+> HEAD commit:    79c3ba32 Merge tag 'drm-fixes-2019-06-07-1' of git://anong..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1201b971a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=60564cb52ab29d5b
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2ff1e7cb738fd3c41113
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a3bf51a00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120d19f2a00000
 
-Hi Andrew,
-thanks for your help again. Sorry for the late reply we had a stats day yesterday. 
-What interface do you mean with master interface? I assume, you mean eth0 (cpu port)?
-I deleted the IP address of this interface and tried to add it to the bridge:
+Looking at the reproducer I don't see any calls to ioctl which could end
+up anywhere in drm.
+> 
+> The bug was bisected to:
+> 
+> commit 0fff724a33917ac581b5825375d0b57affedee76
+> Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Date:   Fri Jan 18 14:51:13 2019 +0000
+> 
+>     drm/sun4i: backend: Use explicit fourcc helpers for packed YUV422 check
 
-brctl addif bridge0 eth0
-brctl: bridge bridge0: Invalid argument
+And most definitely not in drm/sun4i. You can only hit this if you have
+sun4i and run on arm, which per your config isn't the case.
 
-I tried this with all lan1-4 interfaces and they just work and directly after
-I added them I got some information about the port:
+tldr; smells like bisect gone wrong.
+-Daniel
 
-brctl addif br0 lan4
-[  156.085842] br0: port 4(lan4) entered blocking state
-[  156.091022] br0: port 4(lan4) entered disabled state
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1467550f200000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=1667550f200000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1267550f200000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com
+> Fixes: 0fff724a3391 ("drm/sun4i: backend: Use explicit fourcc helpers for
+> packed YUV422 check")
+> 
+> WARNING: CPU: 0 PID: 8951 at kernel/bpf/core.c:851 bpf_jit_free+0x157/0x1b0
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 0 PID: 8951 Comm: kworker/0:0 Not tainted 5.2.0-rc3+ #23
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> Workqueue: events bpf_prog_free_deferred
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+>  panic+0x2cb/0x744 kernel/panic.c:219
+>  __warn.cold+0x20/0x4d kernel/panic.c:576
+>  report_bug+0x263/0x2b0 lib/bug.c:186
+>  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+>  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+>  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+>  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+>  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
+> RIP: 0010:bpf_jit_free+0x157/0x1b0
+> Code: 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 75 5d 48 b8 00 02 00 00
+> 00 00 ad de 48 39 43 70 0f 84 05 ff ff ff e8 f9 b5 f4 ff <0f> 0b e9 f9 fe ff
+> ff e8 bd 53 2d 00 e9 d9 fe ff ff 48 89 7d e0 e8
+> RSP: 0018:ffff88808886fcb0 EFLAGS: 00010293
+> RAX: ffff88808cb6c480 RBX: ffff88809051d280 RCX: ffffffff817ae68d
+> RDX: 0000000000000000 RSI: ffffffff817bf0f7 RDI: ffff88809051d2f0
+> RBP: ffff88808886fcd0 R08: 1ffffffff14ccaa8 R09: fffffbfff14ccaa9
+> R10: fffffbfff14ccaa8 R11: ffffffff8a665547 R12: ffffc90001925000
+> R13: ffff88809051d2e8 R14: ffff8880a0e43900 R15: ffff8880ae834840
+>  bpf_prog_free_deferred+0x27a/0x350 kernel/bpf/core.c:1984
+>  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+>  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+>  kthread+0x354/0x420 kernel/kthread.c:255
+>  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> Kernel Offset: disabled
+> Rebooting in 86400 seconds..
+> 
 
-After I brought up the bridge with:
-
-ip link set br0 up
-[  445.313697] br0: port 4(lan4) entered blocking state
-[  445.318896] br0: port 4(lan4) entered forwarding state
-
-So I gave my eth0 an IP address and started tcpdump on eth0:
-
-tcpdump -i eth0
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes
-01:11:36.040006 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
-01:11:37.062283 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
-01:11:38.086465 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
-
-How you can see, I get the ARP request but no reply from my device. No ping is
-working. All interfaces are up:
-
-ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,ALLMULTI,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.10.201/24 brd 192.168.10.255 scope global eth0
-       valid_lft forever preferred_lft forever
-3: Serdes0@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop switchid 00000000 state DOWN group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-4: Serdes1@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop switchid 00000000 state DOWN group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-5: lan1@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state UP group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-6: lan2@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-7: lan3@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-8: lan4@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-9: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
-
-Am I doing something wrong or maybe I forget something?
-
-Cheers,
-Benjamin
-
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
