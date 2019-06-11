@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 776CC3D097
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCCCF3D09F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404678AbfFKPTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 11:19:03 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:45604 "EHLO
+        id S2404649AbfFKPTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 11:19:02 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:45584 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2404631AbfFKPTC (ORCPT
+        by vger.kernel.org with ESMTP id S2389686AbfFKPTC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:19:02 -0400
 Received: from mailhost.synopsys.com (unknown [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 14B57C5946;
-        Tue, 11 Jun 2019 15:18:59 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E574CC5944;
+        Tue, 11 Jun 2019 15:18:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1560266340; bh=fBkquBzILtl1PNmqN45u/bW82CTlUi1hZxlR8SckMAk=;
+        t=1560266339; bh=mBpV3DPxMu1zOlFHKdZ74vSrOXCkS01TP7DfWxpo6LE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=EpGd+VlPJYVJf1SEgRHHIu2aiN7VzcGvopmqnFYeimbC/oljrUn0Ub1lFkr4KqoWn
-         RBBGyvzkaulAY1IhgpNSbuvW2O+ufzHtmsMIqw4+GXV1JsD/F66CoFnOghkblTD4Zk
-         NLm3xO8EuYJ2n+wBiwzfL/ZpHwcSirpQvJvPC/sxBbjjLgVlEf3RGSNTuywJ1srVpT
-         B+mn/JGBWiWa5HIoGnEy5Kb92iKDZW04sHQRfZhugmF2aMAxD1GNLFXQVDc1ATjzC/
-         96QT76JODZ/Xn1hK7uRIvHS8h4KsJwGB/7K5BomD2d6iLXS+nqT2dfr6vC6jeJZVtk
-         ITzHelC6k2J0w==
+        b=LMnEfbOGZioUaSW06OOpCrAT9xgC1MBxKvrD8Le3ahACfqkZeUXsE5kY3N0juWaAD
+         EaIKtjBUy8DbDSJyICWZFa5Y94Zq2dievNKOO3zTz3svOsc0rccciROPao8ZsMc2vr
+         b8lwfUsc4cHAqrqUtQOGFbRwOZOp/WqitSn4aNtexgPK5cZ9vwz/mgrO5h5qeLiN8L
+         x5JDD9i85vEmDg/wBz9Z8Z1WGjLpeg/j6Yee0g7tiX8clek2G8TBo1+kAMv7STo2Rx
+         K1yDp15Y5PZTXWpfLYWBGJzS0XoAE1/yLe+KWXLYDMKnhsA65+16Z8f+vzf418fYTq
+         tm1bF57Y6g6Ug==
 Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 36B1FA0235;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 33E35A022E;
         Tue, 11 Jun 2019 15:18:58 +0000 (UTC)
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 020353FDBB;
+        by de02.synopsys.com (Postfix) with ESMTP id 1584D3FDBE;
         Tue, 11 Jun 2019 17:18:58 +0200 (CEST)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
@@ -43,9 +43,9 @@ Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 1/3] net: stmmac: Prepare to convert to phylink
-Date:   Tue, 11 Jun 2019 17:18:45 +0200
-Message-Id: <7c989680246ea2dfaff07a16b25a16735aa77862.1560266175.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 2/3] net: stmmac: Start adding phylink support
+Date:   Tue, 11 Jun 2019 17:18:46 +0200
+Message-Id: <7daa1ac5cf56152b9d6c969c24603bc82e0b7d55.1560266175.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1560266175.git.joabreu@synopsys.com>
 References: <cover.1560266175.git.joabreu@synopsys.com>
@@ -56,8 +56,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for the convertion, split the adjust_link function into
-mac_config and add the mac_link_up and mac_link_down functions.
+Start adding the phylink callbacks.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 Cc: Joao Pinto <jpinto@synopsys.com>
@@ -69,147 +68,125 @@ Cc: Andrew Lunn <andrew@lunn.ch>
 Cc: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 113 +++++++++++-------
- 1 file changed, 72 insertions(+), 41 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  4 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 48 +++++++++++++++++++
+ 3 files changed, 53 insertions(+)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 0b5c8d74c683..cf0c9f4f347a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -4,6 +4,7 @@ config STMMAC_ETH
+ 	depends on HAS_IOMEM && HAS_DMA
+ 	select MII
+ 	select PHYLIB
++	select PHYLINK
+ 	select CRC32
+ 	imply PTP_1588_CLOCK
+ 	select RESET_CONTROLLER
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index a16ada8b8507..b8386778f6c6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -25,6 +25,7 @@
+ #include <linux/clk.h>
+ #include <linux/stmmac.h>
+ #include <linux/phy.h>
++#include <linux/phylink.h>
+ #include <linux/pci.h>
+ #include "common.h"
+ #include <linux/ptp_clock_kernel.h>
+@@ -155,6 +156,9 @@ struct stmmac_priv {
+ 	struct mii_bus *mii;
+ 	int mii_irq[PHY_MAX_ADDR];
+ 
++	struct phylink_config phylink_config;
++	struct phylink *phylink;
++
+ 	struct stmmac_extra_stats xstats ____cacheline_aligned_in_smp;
+ 	struct stmmac_safety_stats sstats;
+ 	struct plat_stmmacenet_data *plat;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 268af79e2632..6a2f072c0ce3 100644
+index 6a2f072c0ce3..e2e69cb08fef 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -848,6 +848,72 @@ static void stmmac_mac_flow_ctrl(struct stmmac_priv *priv, u32 duplex)
+@@ -45,6 +45,7 @@
+ #include <linux/seq_file.h>
+ #endif /* CONFIG_DEBUG_FS */
+ #include <linux/net_tstamp.h>
++#include <linux/phylink.h>
+ #include <net/pkt_cls.h>
+ #include "stmmac_ptp.h"
+ #include "stmmac.h"
+@@ -848,6 +849,39 @@ static void stmmac_mac_flow_ctrl(struct stmmac_priv *priv, u32 duplex)
  			priv->pause, tx_cnt);
  }
  
-+static void stmmac_mac_config(struct net_device *dev)
++static void stmmac_validate(struct phylink_config *config,
++			    unsigned long *supported,
++			    struct phylink_link_state *state)
 +{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	struct phy_device *phydev = dev->phydev;
-+	u32 ctrl;
++	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
++	int tx_cnt = priv->plat->tx_queues_to_use;
++	int max_speed = priv->plat->max_speed;
 +
-+	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
-+
-+	if (phydev->speed != priv->speed) {
-+		ctrl &= ~priv->hw->link.speed_mask;
-+
-+		switch (phydev->speed) {
-+		case SPEED_1000:
-+			ctrl |= priv->hw->link.speed1000;
-+			break;
-+		case SPEED_100:
-+			ctrl |= priv->hw->link.speed100;
-+			break;
-+		case SPEED_10:
-+			ctrl |= priv->hw->link.speed10;
-+			break;
-+		default:
-+			netif_warn(priv, link, priv->dev,
-+				   "broken speed: %d\n", phydev->speed);
-+			phydev->speed = SPEED_UNKNOWN;
-+			break;
-+		}
-+
-+		if (phydev->speed != SPEED_UNKNOWN)
-+			stmmac_hw_fix_mac_speed(priv);
-+
-+		priv->speed = phydev->speed;
++	/* Cut down 1G if asked to */
++	if ((max_speed > 0) && (max_speed < 1000)) {
++		phylink_set(mask, 1000baseT_Full);
++		phylink_set(mask, 1000baseX_Full);
 +	}
 +
-+	/* Now we make sure that we can be in full duplex mode.
-+	 * If not, we operate in half-duplex mode. */
-+	if (phydev->duplex != priv->oldduplex) {
-+		if (!phydev->duplex)
-+			ctrl &= ~priv->hw->link.duplex;
-+		else
-+			ctrl |= priv->hw->link.duplex;
-+
-+		priv->oldduplex = phydev->duplex;
++	/* Half-Duplex can only work with single queue */
++	if (tx_cnt > 1) {
++		phylink_set(mask, 10baseT_Half);
++		phylink_set(mask, 100baseT_Half);
++		phylink_set(mask, 1000baseT_Half);
 +	}
 +
-+	/* Flow Control operation */
-+	if (phydev->pause)
-+		stmmac_mac_flow_ctrl(priv, phydev->duplex);
-+
-+	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
++	bitmap_andnot(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
++	bitmap_andnot(state->advertising, state->advertising, mask,
++		      __ETHTOOL_LINK_MODE_MASK_NBITS);
 +}
 +
-+static void stmmac_mac_link_down(struct net_device *dev, bool autoneg)
++static int stmmac_mac_link_state(struct phylink_config *config,
++				 struct phylink_link_state *state)
 +{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	stmmac_mac_set(priv, priv->ioaddr, false);
++	return -EOPNOTSUPP;
 +}
 +
-+static void stmmac_mac_link_up(struct net_device *dev, bool autoneg)
+ static void stmmac_mac_config(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+@@ -900,6 +934,11 @@ static void stmmac_mac_config(struct net_device *dev)
+ 	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
+ }
+ 
++static void stmmac_mac_an_restart(struct phylink_config *config)
 +{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	stmmac_mac_set(priv, priv->ioaddr, true);
++	/* Not Supported */
 +}
++
+ static void stmmac_mac_link_down(struct net_device *dev, bool autoneg)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+@@ -914,6 +953,15 @@ static void stmmac_mac_link_up(struct net_device *dev, bool autoneg)
+ 	stmmac_mac_set(priv, priv->ioaddr, true);
+ }
+ 
++static const struct phylink_mac_ops __maybe_unused stmmac_phylink_mac_ops = {
++	.validate = stmmac_validate,
++	.mac_link_state = stmmac_mac_link_state,
++	.mac_config = NULL, /* TO BE FILLED */
++	.mac_an_restart = stmmac_mac_an_restart,
++	.mac_link_down = NULL, /* TO BE FILLED */
++	.mac_link_up = NULL, /* TO BE FILLED */
++};
 +
  /**
   * stmmac_adjust_link - adjusts the link parameters
   * @dev: net device structure
-@@ -869,47 +935,7 @@ static void stmmac_adjust_link(struct net_device *dev)
- 	mutex_lock(&priv->lock);
- 
- 	if (phydev->link) {
--		u32 ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
--
--		/* Now we make sure that we can be in full duplex mode.
--		 * If not, we operate in half-duplex mode. */
--		if (phydev->duplex != priv->oldduplex) {
--			new_state = true;
--			if (!phydev->duplex)
--				ctrl &= ~priv->hw->link.duplex;
--			else
--				ctrl |= priv->hw->link.duplex;
--			priv->oldduplex = phydev->duplex;
--		}
--		/* Flow Control operation */
--		if (phydev->pause)
--			stmmac_mac_flow_ctrl(priv, phydev->duplex);
--
--		if (phydev->speed != priv->speed) {
--			new_state = true;
--			ctrl &= ~priv->hw->link.speed_mask;
--			switch (phydev->speed) {
--			case SPEED_1000:
--				ctrl |= priv->hw->link.speed1000;
--				break;
--			case SPEED_100:
--				ctrl |= priv->hw->link.speed100;
--				break;
--			case SPEED_10:
--				ctrl |= priv->hw->link.speed10;
--				break;
--			default:
--				netif_warn(priv, link, priv->dev,
--					   "broken speed: %d\n", phydev->speed);
--				phydev->speed = SPEED_UNKNOWN;
--				break;
--			}
--			if (phydev->speed != SPEED_UNKNOWN)
--				stmmac_hw_fix_mac_speed(priv);
--			priv->speed = phydev->speed;
--		}
--
--		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
-+		stmmac_mac_config(dev);
- 
- 		if (!priv->oldlink) {
- 			new_state = true;
-@@ -922,6 +948,11 @@ static void stmmac_adjust_link(struct net_device *dev)
- 		priv->oldduplex = DUPLEX_UNKNOWN;
- 	}
- 
-+	if (phydev->link)
-+		stmmac_mac_link_up(dev, false);
-+	else
-+		stmmac_mac_link_down(dev, false);
-+
- 	if (new_state && netif_msg_link(priv))
- 		phy_print_status(phydev);
- 
 -- 
 2.21.0
 
