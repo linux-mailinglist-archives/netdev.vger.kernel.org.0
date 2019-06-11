@@ -2,137 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17A293C0B2
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26AA83C0B8
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 02:57:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390670AbfFKAwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jun 2019 20:52:21 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33853 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390451AbfFKAwU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:52:20 -0400
-Received: by mail-pf1-f196.google.com with SMTP id c85so6288563pfc.1
-        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hhZ/KByUfrR3c40vnSKDoaexOoWUfOnCl7X+zK7kbKk=;
-        b=AWHlsWE4yd/kKd4Cn+nMnOiRvv21OBsPmSrxhm2AqAT5BfY0fuGuSgDcg5Mry+9Mn3
-         A3VUtLGgN+9+g1SYLbq1TP9gzRWPtfRtJX9uVad4Q368L9ar25tIJ3foObaREL9VxVPm
-         /07G4itUzdHWAPTGSI+hgTV7bGzEtu+1BMsjQoVbW+wLfvp1RKn/IQS2r7TPPASwH9VO
-         e6d/T2aSKgA4LCHH6XnFK+Df2MK4uGiBkNLw3Jlora5Fj+jfIMjRvKzdZhdMni86gkXs
-         ThYe4XtV4HIl7XgQ8rtc9GjvNxyT46mDFVd9pQlCy/gelllRz7Dal6IdJG4ryZsAKa6c
-         +owA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hhZ/KByUfrR3c40vnSKDoaexOoWUfOnCl7X+zK7kbKk=;
-        b=fP8hwtB/zHmHEgFcFKHEq4FOejdonjOfgpYe63W+0JT1MT0CVF8uRkau4BsTwbmxpy
-         3VoDWZTn0fGmfQLnRPRxeS+YItF1sAt2RfRLv5LPZiOw9jZwNGh6lgA+h0c5jRNQi7pj
-         FEeQ+8LqhN1SCCqMdFLmN/1KMnBn42f//2fAiucDlKt/WaMxv8CNtYKfLzNVYje+3IN9
-         PWeU0aW6k6N3sEoNdFL6NwO94+q2DAtjEUIs9xhdNpHcA3tJPMlQkIpkwAIXRHZLzy9g
-         QR6c9fXHdiv+QxhbyAvwPWdVyWJpimqosSV6gcKbpGZs/SOGTT1IOEpA78fw1ZEktxwv
-         v4rQ==
-X-Gm-Message-State: APjAAAWYP7/h8y8ZkkhAbYT2FA36alp7oX2vzPWeJjJIj/Xcj4XtkYoX
-        j5yz3t3xuwsxtPpIyaL8iI0Mra5u+K0Bw9r8fwo=
-X-Google-Smtp-Source: APXvYqw/K9RmJuf7qaxHGgflhF+n2IO6su38HKBu/VAc4agSWIQL1rQ77ly5p02hFq0+jn3vDlBadXwevckQligUD8g=
-X-Received: by 2002:a62:2e47:: with SMTP id u68mr77742229pfu.24.1560214339972;
- Mon, 10 Jun 2019 17:52:19 -0700 (PDT)
+        id S2388999AbfFKA46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jun 2019 20:56:58 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38926 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389164AbfFKA45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jun 2019 20:56:57 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5B0hoZB022150
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:56:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=srw5tfveHj9krlvBEHzIgoUlpexOB0gVJJfWJxn3m54=;
+ b=oaZ/Ksl//Y8Tm9fwIIpq2MEkB+ZQwEFu5gqzaziu8Jz2OBRqi9a9i+RlnWl36mH9e+UT
+ tsHDalmd5isBUBCcrGL/woUCte5hv3bYhZarC+KXM50hnk8SKTlxq3VOtL5cnYs5VzoQ
+ azjI1TPq7dLfKx03KSYq7hIFI3KK3Vb4cSY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t1r8j2hnx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 10 Jun 2019 17:56:56 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 10 Jun 2019 17:56:55 -0700
+Received: by devvm3632.prn2.facebook.com (Postfix, from userid 172007)
+        id 96FE2D0D72E0; Mon, 10 Jun 2019 17:56:53 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Hechao Li <hechaol@fb.com>
+Smtp-Origin-Hostname: devvm3632.prn2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <daniel@iogearbox.net>, <ast@kernel.org>,
+        <kernel-team@fb.com>, Hechao Li <hechaol@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v6 bpf-next 0/3] Add a new API libbpf_num_possible_cpus()
+Date:   Mon, 10 Jun 2019 17:56:49 -0700
+Message-ID: <20190611005652.3827331-1-hechaol@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <cover.1559322531.git.dcaratti@redhat.com> <CAM_iQpWir7R3AQ7KSeFA5QNXSPHGK-1Nc7WsRM1vhkFyxB5ekA@mail.gmail.com>
- <739e0a292a31b852e32fb1096520bb7d771f8579.camel@redhat.com>
- <CAM_iQpUmuHH8S35ERuJ-sFS=17aa-C8uHSWF-WF7toANX2edCQ@mail.gmail.com>
- <82ec3877-8026-67f7-90d8-6e9988513fef@mellanox.com> <CAM_iQpXsGc2EpGkLq_3tcgiD+Mshe1GvGuURwcmeBEqpmQaiTw@mail.gmail.com>
- <d480caba-16e2-da3e-be33-ff4aeb5c6420@mellanox.com> <CAM_iQpXqQ_smFtY4E6Jefki=htih_jW+jNzB1XNuzY1BzWqveQ@mail.gmail.com>
- <464000e5-3cb0-c837-4edb-9dfcbfeffcec@mellanox.com>
-In-Reply-To: <464000e5-3cb0-c837-4edb-9dfcbfeffcec@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 10 Jun 2019 17:52:08 -0700
-Message-ID: <CAM_iQpX=KqnYP6O139WxH-ouF=vM2=42HS4WLK9PK0E76J-GGw@mail.gmail.com>
-Subject: Re: [PATCH net v3 0/3] net/sched: fix actions reading the network
- header in case of QinQ packets
-To:     Eli Britstein <elibr@mellanox.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Shuang Li <shuali@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-10_10:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906110003
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 5, 2019 at 10:37 PM Eli Britstein <elibr@mellanox.com> wrote:
->
->
-> On 6/6/2019 4:42 AM, Cong Wang wrote:
-> > On Tue, Jun 4, 2019 at 11:19 AM Eli Britstein <elibr@mellanox.com> wrote:
-> >>
-> >> On 6/4/2019 8:55 PM, Cong Wang wrote:
-> >>> On Sat, Jun 1, 2019 at 9:22 PM Eli Britstein <elibr@mellanox.com> wrote:
-> >>>> I think that's because QinQ, or VLAN is not an encapsulation. There is
-> >>>> no outer/inner packets, and if you want to mangle fields in the packet
-> >>>> you can do it and the result is well-defined.
-> >>> Sort of, perhaps VLAN tags are too short to be called as an
-> >>> encapsulation, my point is that it still needs some endpoints to push
-> >>> or pop the tags, in a similar way we do encap/decap.
-> >>>
-> >>>
-> >>>> BTW, the motivation for my fix was a use case were 2 VGT VMs
-> >>>> communicating by OVS failed. Since OVS sees the same VLAN tag, it
-> >>>> doesn't add explicit VLAN pop/push actions (i.e pop, mangle, push). If
-> >>>> you force explicit pop/mangle/push you will break such applications.
-> >>>   From what you said, it seems act_csum is in the middle of packet
-> >>> receive/transmit path. So, which is the one pops the VLAN tags in
-> >>> this scenario? If the VM's are the endpoints, why not use act_csum
-> >>> there?
-> >> In a switchdev mode, we can passthru the VFs to VMs, and have their
-> >> representors in the host, enabling us to manipulate the HW eswitch
-> >> without knowledge of the VMs.
-> >>
-> >> To simplify it, consider the following setup:
-> >>
-> >> v1a <-> v1b and v2a <-> v2b are veth pairs.
-> >>
-> >> Now, we configure v1a.20 and v2a.20 as VLAN devices over v1a/v2a
-> >> respectively (and put the "a" devs in separate namespaces).
-> >>
-> >> The TC rules are on the "b" devs, for example:
-> >>
-> >> tc filter add dev v1b ... action pedit ... action csum ... action
-> >> redirect dev v2b
-> >>
-> >> Now, ping from v1a.20 to v1b.20. The namespaces transmit/receive tagged
-> >> packets, and are not aware of the packet manipulation (and the required
-> >> act_csum).
-> > This is what I said, v1b is not the endpoint which pops the vlan tag,
-> > v1b.20 is. So, why not simply move at least the csum action to
-> > v1b.20? With that, you can still filter and redirect packets on v1b,
-> > you still even modify it too, just defer the checksum fixup to the
-> > endpoint.
->
-> There are no vxb.20 ports:
->
-> ns0:     v1a.20 ----(VLAN)---- v1a ns1:    v2a ---- (VLAN) ---- v2a.20
->
-> |----(veth)---- v1b     <---- (TC) ---->    v2b ----(veth)----|
+Getting number of possible CPUs is commonly used for per-CPU BPF maps
+and perf_event_maps. Add a new API libbpf_num_possible_cpus() that
+helps user with per-CPU related operations and remove duplicate
+implementations in bpftool and selftests.
+
+v2: Save errno before calling pr_warning in case it is changed.
+v3: Make sure libbpf_num_possible_cpus never returns 0 so that user only
+    has to check if ret value < 0.
+v4: Fix error code when reading 0 bytes from possible CPU file.
+v5: Fix selftests compliation issue.
+v6: Split commit to reuse libbpf_num_possible_cpus() into two commits:
+    One commit to remove bpf_util.h from test BPF C programs.
+    One commit to reuse libbpf_num_possible_cpus() in bpftools 
+    and bpf_util.h.
 
 
-This diagram makes me even more confusing...
+Hechao Li (3):
+  bpf: add a new API libbpf_num_possible_cpus()
+  selftests/bpf: remove bpf_util.h from BPF C progs
+  bpf: use libbpf_num_possible_cpus internally
 
-Can you explicitly explain why there is no vxb.20? Is it a router or
-something?
+ tools/bpf/bpftool/common.c                    | 53 ++---------------
+ tools/lib/bpf/libbpf.c                        | 57 +++++++++++++++++++
+ tools/lib/bpf/libbpf.h                        | 16 ++++++
+ tools/lib/bpf/libbpf.map                      |  1 +
+ tools/testing/selftests/bpf/bpf_endian.h      |  1 +
+ tools/testing/selftests/bpf/bpf_util.h        | 37 ++----------
+ .../selftests/bpf/progs/sockmap_parse_prog.c  |  1 -
+ .../bpf/progs/sockmap_tcp_msg_prog.c          |  2 +-
+ .../bpf/progs/sockmap_verdict_prog.c          |  1 -
+ .../selftests/bpf/progs/test_sysctl_prog.c    |  5 +-
+ 10 files changed, 90 insertions(+), 84 deletions(-)
 
-By the way, even if it is router and you really want to checksum the
-packet at that point, you still don't have to move the skb->data
-pointer, you just need to parse the header and calculate the offset
-without touching skb->data. This could at least avoid restoring
-skb->data after it.
+-- 
+2.17.1
 
-Thanks.
