@@ -2,166 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0511241684
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BED64168C
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406921AbfFKVAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:00:17 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37205 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406802AbfFKVAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:00:16 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 19so7353926pfa.4
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:00:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dilger-ca.20150623.gappssmtp.com; s=20150623;
-        h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
-         :references;
-        bh=nUPaXZb2EyHCiKOm64w17o/WMgOXwq3cvo71tUNaOwE=;
-        b=1PkfIHxoAL100GHTIJPtUgnC6vtovLyncp9xFBxlnggPu12+zsDGgnLaBjug3WcCRF
-         ADQVr3JetSynDAQbtUt6ErvLUOeaCpig1636+Ma6Jq/Pzq9Wm8vruTUnsCFntkIJGXPX
-         wWnf8ZOx9s4y5y8Qm3ZvQvL2os1TOwaLQLvbm9ZJou9U0nJzedf/8LPDMnNkHoMmIRvm
-         0JVJjUBp99ct05cqa2egnpZd13j2INZwnsHocqWKQQe5RqyURZIMrPteLnuZG4T+3ubQ
-         FsvDJpuZH3QIeO3XlnkM7vdfDShdyMdLnG6hcUpiZJVNutSS2SeLa5Fxo2XceNqs4ysr
-         0rpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:message-id:mime-version:subject:date
-         :in-reply-to:cc:to:references;
-        bh=nUPaXZb2EyHCiKOm64w17o/WMgOXwq3cvo71tUNaOwE=;
-        b=NTCRJjzSDFuWtNT3oKQzIhMGLhNYZ9bqcnpMI/B7nYqjjGW+vJuimF+7hrdCazvlbw
-         E8Y9jCTDzAUMks6pP/Dtrw3RdR9Rt1DZgMwAcnr83UEr7aeBXtqo6BqU6Fy6zhsGCSnU
-         nohoY0ZRmnLbACA/XInTQUoba1KCJ8UjKw9sCH/7HzdhYC0zqsCLZCuRQobOpKkfYtN0
-         d0WhzTGQg4iC+QSZ5luS8zNHfxCMah0ZnIxNrG2Nfx8ZGKjvB459SDN+Cl7Bcl1dTLlC
-         UUTydMf6/B2QPnZXihgcYdI2L1k9/xsp0sxBMmhQ69RVvGCQ5q99nVN6a5SVnWDMVEoQ
-         JiFw==
-X-Gm-Message-State: APjAAAW4FqKj03L2vl5ZWJKKwFSynbaHlk3xtUhwWwNNj4p+vGFEgIWp
-        7ryjmYmi0kw+EFSEg3gxH/6P4iH3Yy/1eQ==
-X-Google-Smtp-Source: APXvYqw4YBmB5zv3pmuSF2o1Ro24lhPZ3aL8+7Yz5YYkMM5A75U9mLeByV4nZS/X2MAaqVMFGY5qAQ==
-X-Received: by 2002:a63:4419:: with SMTP id r25mr22692286pga.247.1560286815720;
-        Tue, 11 Jun 2019 14:00:15 -0700 (PDT)
-Received: from cabot.adilger.ext (S0106a84e3fe4b223.cg.shawcable.net. [70.77.216.213])
-        by smtp.gmail.com with ESMTPSA id l1sm14357897pgj.67.2019.06.11.14.00.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 14:00:14 -0700 (PDT)
-From:   Andreas Dilger <adilger@dilger.ca>
-Message-Id: <6DCAE4F8-3BEC-45F2-A733-F4D15850B7F3@dilger.ca>
-Content-Type: multipart/signed;
- boundary="Apple-Mail=_31ECB8A0-2497-4644-8BE0-DFE1190172F7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Subject: Re: [PATCH V2] include: linux: Regularise the use of FIELD_SIZEOF
- macro
-Date:   Tue, 11 Jun 2019 15:00:10 -0600
-In-Reply-To: <20190611134831.a60c11f4b691d14d04a87e29@linux-foundation.org>
-Cc:     Shyam Saini <shyam.saini@amarulasolutions.com>,
-        kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        netdev@vger.kernel.org, linux-ext4 <linux-ext4@vger.kernel.org>,
-        devel@lists.orangefs.org, linux-mm@kvack.org,
-        linux-sctp@vger.kernel.org, bpf@vger.kernel.org,
-        kvm@vger.kernel.org, mayhs11saini@gmail.com,
-        Alexey Dobriyan <adobriyan@gmail.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-References: <20190611193836.2772-1-shyam.saini@amarulasolutions.com>
- <20190611134831.a60c11f4b691d14d04a87e29@linux-foundation.org>
-X-Mailer: Apple Mail (2.3273)
+        id S2406954AbfFKVEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:04:05 -0400
+Received: from mga12.intel.com ([192.55.52.136]:33641 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406793AbfFKVEF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 17:04:05 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Jun 2019 14:03:55 -0700
+X-ExtLoop1: 1
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by FMSMGA003.fm.intel.com with ESMTP; 11 Jun 2019 14:03:55 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.13]) by
+ ORSMSX105.amr.corp.intel.com ([169.254.2.111]) with mapi id 14.03.0415.000;
+ Tue, 11 Jun 2019 14:03:54 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>
+Subject: Re: [PATCH net-next v1 5/7] taprio: Add support for txtime offload
+ mode.
+Thread-Topic: [PATCH net-next v1 5/7] taprio: Add support for txtime offload
+ mode.
+Thread-Index: AQHVFX1jB+iNR+raHE+empHywwSrKaaKeAIAgAH0TACABKJOgIAAJzGAgARF74CAAgDhgA==
+Date:   Tue, 11 Jun 2019 21:03:53 +0000
+Message-ID: <A8C0B7C0-BEA0-412E-9B3E-F3050E008D96@intel.com>
+References: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
+ <1559065608-27888-6-git-send-email-vedang.patel@intel.com>
+ <55c2daae-c69b-4847-f995-4df85c4ee8b8@ti.com>
+ <E6AB74F1-C942-4167-97EF-329831D73F6C@intel.com>
+ <7a8f56c5-69aa-52ed-3889-810466f80137@ti.com>
+ <7F0484D6-80AA-454B-B179-9FAC20D633FD@intel.com>
+ <89d1cea2-ae1c-bc1c-0327-29a3334cba49@ti.com>
+In-Reply-To: <89d1cea2-ae1c-bc1c-0327-29a3334cba49@ti.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.14.186]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <10E1911AAFA3364E9AD28A070B173284@intel.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---Apple-Mail=_31ECB8A0-2497-4644-8BE0-DFE1190172F7
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=us-ascii
-
-On Jun 11, 2019, at 2:48 PM, Andrew Morton <akpm@linux-foundation.org> =
-wrote:
->=20
-> On Wed, 12 Jun 2019 01:08:36 +0530 Shyam Saini =
-<shyam.saini@amarulasolutions.com> wrote:
->=20
->> Currently, there are 3 different macros, namely sizeof_field, =
-SIZEOF_FIELD
->> and FIELD_SIZEOF which are used to calculate the size of a member of
->> structure, so to bring uniformity in entire kernel source tree lets =
-use
->> FIELD_SIZEOF and replace all occurrences of other two macros with =
-this.
->>=20
->> For this purpose, redefine FIELD_SIZEOF in include/linux/stddef.h and
->> tools/testing/selftests/bpf/bpf_util.h and remove its defination from
->> include/linux/kernel.h
->>=20
->> In favour of FIELD_SIZEOF, this patch also deprecates other two =
-similar
->> macros sizeof_field and SIZEOF_FIELD.
->>=20
->> For code compatibility reason, retain sizeof_field macro as a wrapper =
-macro
->> to FIELD_SIZEOF
->=20
-> As Alexey has pointed out, C structs and unions don't have fields -
-> they have members.  So this is an opportunity to switch everything to
-> a new member_sizeof().
->=20
-> What do people think of that and how does this impact the patch =
-footprint?
-
-I did a check, and FIELD_SIZEOF() is used about 350x, while =
-sizeof_field()
-is about 30x, and SIZEOF_FIELD() is only about 5x.
-
-That said, I'm much more in favour of "sizeof_field()" or =
-"sizeof_member()"
-than FIELD_SIZEOF().  Not only does that better match "offsetof()", with
-which it is closely related, but is also closer to the original =
-"sizeof()".
-
-Since this is a rather trivial change, it can be split into a number of
-patches to get approval/landing via subsystem maintainers, and there is =
-no
-huge urgency to remove the original macros until the users are gone.  It
-would make sense to remove SIZEOF_FIELD() and sizeof_field() quickly so
-they don't gain more users, and the remaining FIELD_SIZEOF() users can =
-be
-whittled away as the patches come through the maintainer trees.
-
-Cheers, Andreas
-
-
-
-
-
-
---Apple-Mail=_31ECB8A0-2497-4644-8BE0-DFE1190172F7
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQIzBAEBCAAdFiEEDb73u6ZejP5ZMprvcqXauRfMH+AFAl0AFloACgkQcqXauRfM
-H+AuLxAAgNkosRb8jCBUvSkSZcRIz6m3CRCKyZBz9EPhtA2ihZfEB+0hz1uGmXS5
-opkX/nM8cIIrc2g/uiWBq6RVg8FFJxC3qVRDhPqDJ5b6jq6Q5WjV98HwBljIKIEM
-EWXmiEtnxAQAWrNcYoI0HAI5nMUxpIHxo0+hWnfLhk/fTPoUwgLgZawDmn+pwcND
-DU07/6GM67fcfUGYxZKD43X6a/s2lkR28Nn3MN7o2Y/exOm6J0otNWB4Vsu7d6t/
-cScoBhni7d5c02FbLXTpab1n/Sjq/+Ijd3yp3ooxjoFvhfqx6YoBYL5fKxZx29HO
-AXautmzcIwSccj17hB9lIvq/lLdXBL/k9qiKBcIzImCLxSa9+hMJFcl4gH3Qo4i7
-J+7jzFHXnFnx9g5J4rka5VIlGpbBM85N35g8vJZFGVc/juJm6r6YXA+48kKI6hZB
-uFH8fNhjYJGDFyiCh637pF5CObUattAasEPN8O8mQ3qxZKg8C/9jvOLgHlI9W9iK
-ijBEDk0atDHpIJe3dlUw/fQA7LZ4bvXe07VUBqnBUd+/+7KBLZxLkfnygJXf8nzX
-k0TILorUWagkDNgpBE/vwV1ER8UzU6NRxz/w4e6/N/mufG7iPcxZjCTtfJUS3GLW
-hPKj3bi6qV6cw+EyroLHp9igONkqhvnPjEFx5a4YA3gAxQ8viSE=
-=5D1y
------END PGP SIGNATURE-----
-
---Apple-Mail=_31ECB8A0-2497-4644-8BE0-DFE1190172F7--
+DQoNCj4gT24gSnVuIDEwLCAyMDE5LCBhdCA3OjI3IEFNLCBNdXJhbGkgS2FyaWNoZXJpIDxtLWth
+cmljaGVyaTJAdGkuY29tPiB3cm90ZToNCj4gDQo+IFZlZGFuZywNCj4gDQo+IE9uIDA2LzA3LzIw
+MTkgMDU6MTIgUE0sIFBhdGVsLCBWZWRhbmcgd3JvdGU6DQo+PiBIaSBNdXJhbGksDQo+Pj4gT24g
+SnVuIDcsIDIwMTksIGF0IDExOjUyIEFNLCBNdXJhbGkgS2FyaWNoZXJpIDxtLWthcmljaGVyaTJA
+dGkuY29tPiB3cm90ZToNCj4+PiANCj4+PiBPbiAwNi8wNC8yMDE5IDA0OjA2IFBNLCBQYXRlbCwg
+VmVkYW5nIHdyb3RlOg0KPj4+PiBIaSBNdXJhbGksDQo+Pj4+PiBPbiBKdW4gMywgMjAxOSwgYXQg
+NzoxNSBBTSwgTXVyYWxpIEthcmljaGVyaSA8bS1rYXJpY2hlcmkyQHRpLmNvbT4gd3JvdGU6DQo+
+Pj4+PiANCj4+Pj4+IEhpIFZlZGFuZywNCj4+Pj4+IA0KPj4+Pj4gT24gMDUvMjgvMjAxOSAwMTo0
+NiBQTSwgVmVkYW5nIFBhdGVsIHdyb3RlOg0KPj4+Pj4+IEN1cnJlbnRseSwgd2UgYXJlIHNlZWlu
+ZyBub24tY3JpdGljYWwgcGFja2V0cyBiZWluZyB0cmFuc21pdHRlZCBvdXRzaWRlDQo+Pj4+Pj4g
+b2YgdGhlaXIgdGltZXNsaWNlLiBXZSBjYW4gY29uZmlybSB0aGF0IHRoZSBwYWNrZXRzIGFyZSBi
+ZWluZyBkZXF1ZXVlZA0KPj4+Pj4+IGF0IHRoZSByaWdodCB0aW1lLiBTbywgdGhlIGRlbGF5IGlz
+IGluZHVjZWQgaW4gdGhlIGhhcmR3YXJlIHNpZGUuICBUaGUNCj4+Pj4+PiBtb3N0IGxpa2VseSBy
+ZWFzb24gaXMgdGhlIGhhcmR3YXJlIHF1ZXVlcyBhcmUgc3RhcnZpbmcgdGhlIGxvd2VyDQo+Pj4+
+Pj4gcHJpb3JpdHkgcXVldWVzLg0KPj4+Pj4+IEluIG9yZGVyIHRvIGltcHJvdmUgdGhlIHBlcmZv
+cm1hbmNlIG9mIHRhcHJpbywgd2Ugd2lsbCBiZSBtYWtpbmcgdXNlIG9mIHRoZQ0KPj4+Pj4+IHR4
+dGltZSBmZWF0dXJlIHByb3ZpZGVkIGJ5IHRoZSBFVEYgcWRpc2MuIEZvciBhbGwgdGhlIHBhY2tl
+dHMgd2hpY2ggZG8gbm90IGhhdmUNCj4+Pj4+PiB0aGUgU09fVFhUSU1FIG9wdGlvbiBzZXQsIHRh
+cHJpbyB3aWxsIHNldCB0aGUgdHJhbnNtaXQgdGltZXN0YW1wIChzZXQgaW4NCj4+Pj4+PiBza2It
+PnRzdGFtcCkgaW4gdGhpcyBtb2RlLiBUQVByaW8gUWRpc2Mgd2lsbCBlbnN1cmUgdGhhdCB0aGUg
+dHJhbnNtaXQgdGltZSBmb3INCj4+Pj4+PiB0aGUgcGFja2V0IGlzIHNldCB0byB3aGVuIHRoZSBn
+YXRlIGlzIG9wZW4uIElmIFNPX1RYVElNRSBpcyBzZXQsIHRoZSBUQVByaW8NCj4+Pj4+PiBxZGlz
+YyB3aWxsIHZhbGlkYXRlIHdoZXRoZXIgdGhlIHRpbWVzdGFtcCAoaW4gc2tiLT50c3RhbXApIG9j
+Y3VycyB3aGVuIHRoZSBnYXRlDQo+Pj4+Pj4gY29ycmVzcG9uZGluZyB0byBza2IncyB0cmFmZmlj
+IGNsYXNzIGlzIG9wZW4uDQo+Pj4+Pj4gRm9sbG93aW5nIGlzIHRoZSBleGFtcGxlIGNvbmZpZ3Vy
+YXRpb24gZm9yIGVuYWJsaW5nIHR4dGltZSBvZmZsb2FkOg0KPj4+Pj4+IHRjIHFkaXNjIHJlcGxh
+Y2UgZGV2IGV0aDAgcGFyZW50IHJvb3QgaGFuZGxlIDEwMCB0YXByaW8gXFwNCj4+Pj4+PiAgICAg
+ICBudW1fdGMgMyBcXA0KPj4+Pj4+ICAgICAgIG1hcCAyIDIgMSAwIDIgMiAyIDIgMiAyIDIgMiAy
+IDIgMiAyIFxcDQo+Pj4+Pj4gICAgICAgcXVldWVzIDFAMCAxQDAgMUAwIFxcDQo+Pj4+Pj4gICAg
+ICAgYmFzZS10aW1lIDE1NTg2NTM0MjQyNzk4NDI1NjggXFwNCj4+Pj4+PiAgICAgICBzY2hlZC1l
+bnRyeSBTIDAxIDMwMDAwMCBcXA0KPj4+Pj4+ICAgICAgIHNjaGVkLWVudHJ5IFMgMDIgMzAwMDAw
+IFxcDQo+Pj4+Pj4gICAgICAgc2NoZWQtZW50cnkgUyAwNCA0MDAwMDAgXFwNCj4+Pj4+PiAgICAg
+ICBvZmZsb2FkIDIgXFwNCj4+Pj4+PiAgICAgICB0eHRpbWUtZGVsYXkgNDAwMDAgXFwNCj4+Pj4+
+PiAgICAgICBjbG9ja2lkIENMT0NLX1RBSQ0KPj4+Pj4+IHRjIHFkaXNjIHJlcGxhY2UgZGV2ICRJ
+RkFDRSBwYXJlbnQgMTAwOjEgZXRmIHNraXBfc29ja19jaGVjayBcXA0KPj4+Pj4+ICAgICAgIG9m
+ZmxvYWQgZGVsdGEgMjAwMDAwIGNsb2NraWQgQ0xPQ0tfVEFJDQo+Pj4+Pj4gSGVyZSwgdGhlICJv
+ZmZsb2FkIiBwYXJhbWV0ZXIgaXMgaW5kaWNhdGluZyB0aGF0IHRoZSBUWFRJTUVfT0ZGTE9BRCBt
+b2RlIGlzDQo+Pj4+Pj4gZW5hYmxlZC4gQWxzbywgYWxsIHRoZSB0cmFmZmljIGNsYXNzZXMgYXJl
+IG1hcHBlZCB0byB0aGUgc2FtZSBxdWV1ZS4gIFRoaXMgaXMNCj4+Pj4+PiBvbmx5IHBvc3NpYmxl
+IGluIHRhcHJpbyB3aGVuIHR4dGltZSBvZmZsb2FkIGlzIGVuYWJsZWQuIEFsc28gbm90ZSB0aGF0
+IHRoZSBFVEYNCj4+Pj4+PiBRZGlzYyBpcyBlbmFibGVkIHdpdGggb2ZmbG9hZCBtb2RlIHNldC4N
+Cj4+Pj4+PiBJbiB0aGlzIG1vZGUsIGlmIHRoZSBwYWNrZXQncyB0cmFmZmljIGNsYXNzIGlzIG9w
+ZW4gYW5kIHRoZSBjb21wbGV0ZSBwYWNrZXQgY2FuDQo+Pj4+Pj4gYmUgdHJhbnNtaXR0ZWQsIHRh
+cHJpbyB3aWxsIHRyeSB0byB0cmFuc21pdCB0aGUgcGFja2V0IGltbWVkaWF0ZWx5LiBUaGlzIHdp
+bGwNCj4+Pj4+PiBiZSBkb25lIGJ5IHNldHRpbmcgc2tiLT50c3RhbXAgdG8gY3VycmVudF90aW1l
+ICsgdGhlIHRpbWUgZGVsdGEgaW5kaWNhdGVkIGluDQo+Pj4+Pj4gdGhlIHR4dGltZV9kZWxheSBw
+YXJhbWV0ZXIuIFRoaXMgcGFyYW1ldGVyIGluZGljYXRlcyB0aGUgdGltZSB0YWtlbiAoaW4NCj4+
+Pj4+PiBzb2Z0d2FyZSkgZm9yIHBhY2tldCB0byByZWFjaCB0aGUgbmV0d29yayBhZGFwdGVyLg0K
+Pj4+Pj4gDQo+Pj4+PiBJbiBUU04gVGltZSBhd2FyZSBzaGFwZXIsIHBhY2tldHMgYXJlIHNlbnQg
+d2hlbiBnYXRlIGZvciBhIHNwZWNpZmljDQo+Pj4+PiB0cmFmZmljIGNsYXNzIGlzIG9wZW4uIFNv
+IHBhY2tldHMgdGhhdCBhcmUgYXZhaWxhYmxlIGluIHRoZSBxdWV1ZXMgYXJlDQo+Pj4+PiBzZW50
+IGJ5IHRoZSBzY2hlZHVsZXIuIFNvIHRoZSBFVEYgaXMgbm90IHN0cmljdGx5IHJlcXVpcmVkIGZv
+ciB0aGlzDQo+Pj4+PiBmdW5jdGlvbi4NCj4+Pj4+IEkgdW5kZXJzdGFuZCBpZiB0aGUgYXBwbGlj
+YXRpb24gbmVlZHMgdG8gc2VuZCBwYWNrZXRzIHdpdGgNCj4+Pj4+IHNvbWUgbGF0ZW5jeSBleHBl
+Y3RhdGlvbiBzaG91bGQgdXNlIEVURiB0byBzY2hlZHVsZSB0aGUgcGFja2V0IGluIHN5bmMNCj4+
+Pj4+IHdpdGggdGhlIG5leHQgZ2F0ZSBvcGVuIHRpbWUuIFNvIHR4dGltZV9kZWxheSBpcyB1c2Vk
+IHRvIGFjY291bnQgZm9yDQo+Pj4+PiB0aGUgZGVsYXkgZm9yIHBhY2tldHMgdG8gdHJhdmVsIGZy
+b20gdXNlciBzcGFjZSB0byBuaWMuDQo+Pj4+IFRoaXMgaXMgbm90IHRydWUuIEFzIGV4cGxhaW5l
+ZCBpbiB0aGUgb3RoZXIgZW1haWwsIHR4dGltZS1kZWxheSBpcyB0aGUgbWF4aW11bSB0aW1lIGEg
+cGFja2V0IG1pZ2h0IHRha2UgYWZ0ZXIgcmVhY2hpbmcgdGFwcmlvX2VucXVldWUoKSBhc3N1bWlu
+ZyB0aGUgZ2F0ZSBjb3JyZXNwb25kaW5nIHRvIHRoYXQgcGFja2V0IHdhcyBhbHJlYWR5IG9wZW4u
+DQo+Pj4+PiBTbyBpdCBpcyBFVEYNCj4+Pj4+IHRoYXQgbmVlZCB0byBpbnNwZWN0IHRoZSBza2It
+PnRzdGFtcCBhbmQgYWxsb3cgb3IgaWYgdGltZSBtYXRjaCBvcg0KPj4+Pj4gZGlzY2FyZCBpZiBs
+YXRlLiBJcyB0aGlzIHRoZSBjYXNlPw0KPj4+Pj4gDQo+Pj4+IFRoZSByb2xlIG9mIEVURiBpcyBq
+dXN0IHRvIHNvcnQgcGFja2V0cyBhY2NvcmRpbmcgdG8gdGhlaXIgdHJhbnNtaXQgdGltZXN0YW1w
+IGFuZCBzZW5kIHRoZW0gdG8gdGhlIGhhcmR3YXJlIHF1ZXVlcyB0byB0cmFuc21pdCB3aGVuZXZl
+ciB0aGVpciB0aW1lIGNvbWVzLiBUaGlzIGlzIG5lZWRlZCBiZWNhdXNlIHRoZSBpMjEwIGhhcmR3
+YXJlIGRvZXMgbm90IGhhdmUgYW55IHNvcnQgZmVhdHVyZSB3aXRoaW4gaXRzIHF1ZXVlLiBJZiAy
+IHBhY2tldHMgYXJyaXZlIGFuZCB0aGUgZmlyc3QgcGFja2V0IGhhcyBhIHRyYW5zbWl0IHRpbWVz
+dGFtcCBsYXRlciB0aGFuIHRoZSBzZWNvbmQgcGFja2V0LCB0aGUgc2Vjb25kIHBhY2tldCB3b27i
+gJl0IGJlIHRyYW5zbWl0dGVkIG9uIHRpbWUuDQo+Pj4+IFRhcHJpbyBpbiB0aGUgdHh0aW1lIG9m
+ZmxvYWQgbW9kZSAoYnR3LCB0aGlzIHdpbGwgc29vbiBiZSByZW5hbWVkIHRvIHR4dGltZS1hc3Np
+c3QpIHdpbGwgc2V0IHRoZSB0cmFuc21pdCB0aW1lc3RhbXAgb2YgZWFjaCBwYWNrZXQgKGluIHNr
+Yi0+dHN0YW1wKSBhbmQgdGhlbiBzZW5kIGl0IHRvIEVURiBzbyB0aGF0IGl0IGNhbiBiZSBzb3J0
+ZWQgd2l0aCB0aGUgb3RoZXIgcGFja2V0cyBhbmQgc2VudCB0byBoYXJkd2FyZSB3aGVuZXZlciB0
+aGUgdGltZSBjb21lcy4gRVRGIHdpbGwgZGlzY2FyZCB0aGUgcGFja2V0IGlmIHRoZSB0cmFuc21p
+dCB0aW1lIGlzIGluIHRoZSBwYXN0IG9yIGJlZm9yZSB0aGUgdHJhbnNtaXQgdGltZSBvZiB0aGUg
+cGFja2V0IHdoaWNoIGlzIGFscmVhZHkgYmVlbiBzZW50IHRvIHRoZSBoYXJkd2FyZS4NCj4+Pj4g
+TGV0IG1lIGtub3cgaWYgeW91IGhhdmUgbW9yZSBxdWVzdGlvbnMgYWJvdXQgdGhpcy4NCj4+PiAN
+Cj4+PiBJdCBpcyBiaXQgY29uZnVzaW5nIHRvIGhhdmUgdGhpcyBtb2RlIGluIHRhcHJpby4gTXkg
+YXNzdW1wdGlvbiBpcw0KPj4+IHRoYXQgdGFwcmlvIGltcGxlbWVudHMgVFNOIHN0YW5kYXJkIDgw
+Mi4xUWJ2IHNjaGVkdWxlciB0aGF0IGlzDQo+Pj4gcmVzcG9uc2libGUgZm9yIG1hbmFnaW5nIHRo
+ZSBHYXRlIG9wZW4vY2xvc2UgYW5kIHNlbmRpbmcgZnJhbWVzDQo+Pj4gZm9yIHNwZWNpZmljIHRy
+YWZmaWMgY2xhc3MgZHVyaW5nIHRoZSBHYXRlIG9wZW4uIEFGQUlLLCB0aGlzDQo+Pj4gc2NoZWR1
+bGVyIGRvZXNuJ3QgaW5zcGVjdCB0aGUgcGFja2V0J3MgbWV0YWRhdGEgc3VjaCBhcyB0aW1lIHRv
+DQo+Pj4gc2VuZCBvciBzdWNoLiBTbyB3aHkgaXMgdHh0aW1lIG9mZmxvYWQgbW9kZSBpcyBhZGRl
+ZCB0byB0YXByaW8/DQo+Pj4gQ291bGQgeW91IHBsZWFzZSBleHBsYWluPw0KPj4+IA0KPj4+IE11
+cmFsaQ0KPj4+IA0KPj4gU2hvcnQgYW5zd2VyOiBUYXByaW8gc3RpbGwgaW1wbGVtZW50cyBhIDgw
+Mi4xUWJ2IGxpa2Ugc2NoZWR1bGUuIEJ1dCwgaXQgbGV2ZXJhZ2VzIHRoZSBmdW5jdGlvbmFsaXR5
+IGZyb20gRVRGIHRvIGRvIHNvLg0KPj4gTG9uZyBhbnN3ZXI6DQo+PiBUaGUgc29mdHdhcmUtb25s
+eSBpbXBsZW1lbnRhdGlvbiBvZiA4MDIuMVFidiBoYXMgcXVpdGUgYSBmZXcgbG93IHByaW9yaXR5
+IHBhY2tldHMgYmVpbmcgdHJhbnNtaXR0ZWQgb3V0c2lkZSB0aGVpciB0aW1lc2xpY2UuIFRoaXMg
+aXMgYmVjYXVzZSB0aGUgaGlnaGVyIHByaW9yaXR5IHF1ZXVlcyBpbiBpMjEwIGFyZSBzdGFydmlu
+ZyB0aGUgbG93ZXIgcHJpb3JpdHkgcXVldWVzLiBTbywgd2hhdCB0aGUgdHh0aW1lLWFzc2lzdCBt
+b2RlIGRvZXMgaXMgdG8gYXNzaWduIGFuIGV4cGxpY2l0IHR4IHRpbWVzdGFtcCBhbmQgdXNlIHRo
+ZSBsYXVuY2h0aW1lIGZlYXR1cmUgb2YgdGhlIGkyMTAgYWRhcHRlciBjYXJkIHRvIHRyYW5zbWl0
+IHRoZSBwYWNrZXRzIG9uIHRpbWUuIEl0IGlzIHN0aWxsIHNlbmRpbmcgZnJhbWVzIGZvciBhIHBh
+cnRpY3VsYXIgdHJhZmZpYyBjbGFzcyBvbmx5IHdoZW4gdGhlaXIgZ2F0ZSBpcyBvcGVuLiBBbHNv
+LCBpdCBpcyBub3QgbW9kaWZ5aW5nIGFueSBkYXRhIGluIHRoZSBwYWNrZXQgd2hpY2ggaXMgdHJh
+bnNtaXR0ZWQuIEp1c3Qgbm90aWZ5aW5nIHRoZSBOSUMgd2hlbiB0byB0cmFuc21pdCB0aGUgcGFj
+a2V0LiBJZiB0aGVyZSBpcyBhIHR4IHRpbWVzdGFtcCBhbHJlYWR5IGFzc2lnbmVkIHRvIGEgcGFj
+a2V0LCBpdCBkb2VzIG5vdCBjaGFuZ2UgaXQuIFNpbmNlIHdlIGFyZSBhc3NpZ25pbmcgdGhlIHR4
+IHRpbWVzdGFtcCwgd2UgaGF2ZSB0byByb3V0ZSB0aGUgcGFja2V0IHRocm91Z2ggdGhlIEVURiBx
+dWV1ZSBkaXNjIGZvciBzb3J0aW5nIHRoZSBwYWNrZXRzIGFjY29yZGluZyB0byB0aGVpciB0aW1l
+c3RhbXBzIGFuZCBzZW5kaW5nIGl0IHRvIHRoZSBOSUMuDQo+PiBXZSBoYXZlIHRvIGltcGxlbWVu
+dCB0aGUgYWJvdmUgbWVjaGFuaXNtIGJlY2F1c2UsIGN1cnJlbnRseSwgd2UgZG8gbm90IGhhdmUg
+dGhlIGNhcGFiaWxpdHkgdG8gb2ZmbG9hZCB0aGUgdGFwcmlvIHNjaGVkdWxlIHRvIHRoZSBoYXJk
+d2FyZS4NCj4gT2ssIFRoYW5rcyBmb3IgdGhlIHBhdGllbmNlIGFuZCBleHBsYW5hdGlvbi4gWWVz
+LCBpdCBoZWxwcy4NCj4gDQo+IE9uZSBsYXN0IHF1ZXN0aW9uLiBJZiB5b3VyIGhhcmR3YXJlIGky
+MTAgY2hlY2tzIHRoZSB0aW1lIGluIGEgcGFja2V0DQo+IGFuZCBmaW5kcyBpdCBpcyAgbGF0ZSwg
+ZG9lcyBpdCBkcm9wIHRoZSBwYWNrZXQ/IEkgdW5kZXJzdGFuZCB0aGF0DQo+IHR4dGltZS1kZWxh
+eSBpcyBmb3IgdHVuaW5nIHRoaXMgc3VjaCB0aGF0IGhhcmR3YXJlIHNlZSB0aGUgcGFja2V0IG9u
+DQo+IHRpbWUgYW5kIHRyYW5zbWl0LiBJIGFsc28gdW5kZXJzdGFuZCB0aGF0IHBhY2tldHMgZ2V0
+IGRyb3BwZWQNCj4gYXQgdGhlIEVURiBxZGlzYyBpZiBsYXRlLg0KPiANCj4gTXVyYWxpDQoNClRo
+ZSBpMjEwIGhhcmR3YXJlIGRvZXMgbm90IGRyb3AgcGFja2V0cyBpZiB0aGV5IGFyZSBsYXRlLiAN
+Cg0KSW4gaTIxMCBOSUMsIHRoZSBsYXVuY2h0aW1lIGZpZWxkIGlzIG9ubHkgMjUgYml0cyBsb25n
+IHdpdGggMzIgbnMgdW5pdHMuIFNvLCBpdCB3aWxsIGNvbXBhcmUgbGF1bmNodGltZSozMiB0byB0
+aGUgU1lTVElNTCByZWdpc3RlciAoaXQgc3RvcmVzIHRoZSBuYW5vc2Vjb25kIHBhcnQgb2YgdGhl
+IFBUUCB0aW1lKS4gSXQgd2lsbCBzZW5kIHRoZSBwYWNrZXQgaWYgdGhlIHRpbWUgaXMgZXhhY3Rs
+eSBzYW1lIGFzIGFib3ZlLiBJdCBpcyB0aGUgam9iIG9mIEVURiB0byBlbnN1cmUgdGhhdCB0aGUg
+cGFja2V0IGlzIG5vdCBzZW50IHRvbyBlYXJseSBieSBzZWxlY3RpbmcgdGhlIGRlbHRhIHdoaWNo
+IGlzIGxlc3MgdGhhbiAwLjUgc2VjLg0KDQpGb3IgbW9yZSBpbmZvcm1hdGlvbiwgeW91IGNhbiBs
+b29rIGF0IFNlY3Rpb24gNy4yLjIuMi4zIGFuZCBTZWN0aW9uIDcuMi43LjUuMyBvZiB0aGUgaTIx
+MCBkYXRhIHNoZWV0WzFdLiANCg0KVGhhbmtzLA0KVmVkYW5nDQoNClsxXSAtIGh0dHBzOi8vd3d3
+LmludGVsLmNvbS9jb250ZW50L2RhbS93d3cvcHVibGljL3VzL2VuL2RvY3VtZW50cy9kYXRhc2hl
+ZXRzL2kyMTAtZXRoZXJuZXQtY29udHJvbGxlci1kYXRhc2hlZXQucGRmDQoNCg==
