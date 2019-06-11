@@ -2,185 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B633D3D46F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 19:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3B73D4AA
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 19:57:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406615AbfFKRlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 13:41:39 -0400
-Received: from gateway24.websitewelcome.com ([192.185.50.73]:28709 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406104AbfFKRlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 13:41:39 -0400
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 345CE360D7B
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 12:41:38 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id akmAhJYsY4FKpakmAhcMG6; Tue, 11 Jun 2019 12:41:38 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.75.107] (port=55914 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hakm9-001IDy-KE; Tue, 11 Jun 2019 12:41:37 -0500
-Subject: Re: [PATCH] bpf: verifier: avoid fall-through warnings
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>
-References: <20190611132811.GA27212@embeddedor>
- <CAEf4BzaG=cQWAVNNj0hy4Ui7mHzXZgxs8J3rKbxjjVdEGdNkvA@mail.gmail.com>
- <4acbc6b9-e2aa-02d3-0e99-f641b67a3da3@embeddedor.com>
+        id S2406628AbfFKR5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 13:57:17 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:7998 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406287AbfFKR5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 13:57:17 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id x5BHvEeM011674
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jun 2019 11:57:14 -0600 (CST)
+Received: from eng1n65.eng.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x5BHvDWV040271
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Tue, 11 Jun 2019 11:57:13 -0600
+To:     netdev@vger.kernel.org
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
+From:   Robert Hancock <hancock@sedsystems.ca>
+Subject: net-next: KSZ switch driver oops in ksz_mib_read_work
 Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <07450b27-5c09-2156-e6ee-921fef174c78@embeddedor.com>
-Date:   Tue, 11 Jun 2019 12:41:35 -0500
+Autocrypt: addr=hancock@sedsystems.ca; prefer-encrypt=mutual; keydata=
+ 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
+Organization: SED Systems
+Message-ID: <6dc8cc46-6225-011c-68bc-c96a819fa00d@sedsystems.ca>
+Date:   Tue, 11 Jun 2019 11:57:13 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <4acbc6b9-e2aa-02d3-0e99-f641b67a3da3@embeddedor.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.75.107
-X-Source-L: No
-X-Exim-ID: 1hakm9-001IDy-KE
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.75.107]:55914
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 19
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We are using an embedded platform with a KSZ9897 switch. I am getting
+the oops below in ksz_mib_read_work when testing with net-next branch.
+After adding in some debug output, the problem is in this code:
+
+	for (i = 0; i < dev->mib_port_cnt; i++) {
+		p = &dev->ports[i];
+		mib = &p->mib;
+		mutex_lock(&mib->cnt_mutex);
+
+		/* Only read MIB counters when the port is told to do.
+		 * If not, read only dropped counters when link is not up.
+		 */
+		if (!p->read) {
+			const struct dsa_port *dp = dsa_to_port(dev->ds, i);
+
+			if (!netif_carrier_ok(dp->slave))
+				mib->cnt_ptr = dev->reg_mib_cnt;
+		}
+
+The oops is happening on port index 3 (i.e. 4th port) which is not
+connected on our platform and so has no entry in the device tree. For
+that port, dp->slave is NULL and so netif_carrier_ok explodes.
+
+If I change the code to skip the port entirely in the loop if dp->slave
+is NULL it seems to fix the crash, but I'm not that familiar with this
+code. Can someone confirm whether that is the proper fix?
+
+[   17.842829] Unable to handle kernel NULL pointer dereference at
+virtual address 0000002c
+[   17.850983] pgd = (ptrval)
+[   17.853711] [0000002c] *pgd=00000000
+[   17.857317] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[   17.862632] Modules linked in:
+[   17.865695] CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.2.0-rc3 #1
+[   17.872142] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[   17.878688] Workqueue: events ksz_mib_read_work
+[   17.883227] PC is at ksz_mib_read_work+0x58/0x94
+[   17.887848] LR is at ksz_mib_read_work+0x38/0x94
+[   17.887852] pc : [<c04843dc>]    lr : [<c04843bc>]    psr: 60070113
+[   17.887857] sp : e8147f08  ip : e8148000  fp : ffffe000
+[   17.887860] r10: 00000000  r9 : e8aa7040  r8 : e867cc44
+[   17.887865] r7 : 00000c20  r6 : e8aa7120  r5 : 00000003  r4 : e867c958
+[   17.887868] r3 : 00000000  r2 : 00000000  r1 : 00000003  r0 : e8aa7040
+[   17.887879] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM
+Segment none
+[   17.948224] Control: 10c5387d  Table: 38d9404a  DAC: 00000051
+[   17.948230] Process kworker/1:1 (pid: 21, stack limit = 0x(ptrval))
+[   17.948236] Stack: (0xe8147f08 to 0xe8148000)
+[   17.948245] 7f00:                   e8aa7120 e80a8080 eb7aef40
+eb7b2000 00000000 e8aa7124
+[   17.948254] 7f20: 00000000 c013865c 00000008 c0b03d00 e80a8080
+e80a8094 eb7aef40 00000008
+[   17.958073] systemd[1]: storage.mount: Unit is bound to inactive unit
+dev-mmcblk1p2.device. Stopping, too.
+[   17.963306] 7f40: c0b03d00 eb7aef58 eb7aef40 c01393a0 ffffe000
+c0b46b09 c084e464 00000000
+[   17.963314] 7f60: ffffe000 e8053140 e80530c0 00000000 e8146000
+e80a8080 c013935c e80a1eac
+[   17.963322] 7f80: e805315c c013e78c 00000000 e80530c0 c013e648
+00000000 00000000 00000000
+[   17.969893] random: systemd: uninitialized urandom read (16 bytes read)
+[   17.973942] 7fa0: 00000000 00000000 00000000 c01010e8 00000000
+00000000 00000000 00000000
+[   17.973949] 7fc0: 00000000 00000000 00000000 00000000 00000000
+00000000 00000000 00000000
+[   17.973958] 7fe0: 00000000 00000000 00000000 00000000 00000013
+00000000 00000000 00000000
+[   17.982246] random: systemd: uninitialized urandom read (16 bytes read)
+[   17.990329] [<c04843dc>] (ksz_mib_read_work) from [<c013865c>]
+(process_one_work+0x17c/0x390)
+[   17.990345] [<c013865c>] (process_one_work) from [<c01393a0>]
+(worker_thread+0x44/0x518)
+[   18.009394] random: systemd: uninitialized urandom read (16 bytes read)
+[   18.016344] [<c01393a0>] (worker_thread) from [<c013e78c>]
+(kthread+0x144/0x14c)
+[   18.016358] [<c013e78c>] (kthread) from [<c01010e8>]
+(ret_from_fork+0x14/0x2c)
+[   18.016362] Exception stack(0xe8147fb0 to 0xe8147ff8)
+[   18.016369] 7fa0:                                     00000000
+00000000 00000000 00000000
+[   18.031159] 7fc0: 00000000 00000000 00000000 00000000 00000000
+00000000 00000000 00000000
+[   18.031166] 7fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[   18.031176] Code: 1a000006 e51630e0 e0833405 e5933050 (e593302c)
+[   18.031279] ---[ end trace ca82392a6c2aa959 ]---
 
 
-On 6/11/19 12:27 PM, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 6/11/19 12:22 PM, Andrii Nakryiko wrote:
->> On Tue, Jun 11, 2019 at 7:05 AM Gustavo A. R. Silva
->> <gustavo@embeddedor.com> wrote:
->>>
->>> In preparation to enabling -Wimplicit-fallthrough, this patch silences
->>> the following warning:
->>
->> Your patch doesn't apply cleanly to neither bpf nor bpf-next tree.
->> Could you please rebase and re-submit? Please also include which tree
->> (probably bpf-next) you are designating this patch to in subject
->> prefix.
->>
-> 
-> This patch applies cleanly to linux-next (tag next-20190611).
-> 
-
-It seems that this commit hasn't been merged into bpf/bpf-next yet:
-
-983695fa676568fc0fe5ddd995c7267aabc24632
-
---
-Gustavo
-
->>>
->>> kernel/bpf/verifier.c: In function ‘check_return_code’:
->>> kernel/bpf/verifier.c:5509:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>>    if (env->prog->expected_attach_type == BPF_CGROUP_UDP4_RECVMSG ||
->>>       ^
->>> kernel/bpf/verifier.c:5512:2: note: here
->>>   case BPF_PROG_TYPE_CGROUP_SKB:
->>>   ^~~~
->>>
->>> Warning level 3 was used: -Wimplicit-fallthrough=3
->>>
->>> Notice that it's much clearer to explicitly add breaks in each case
->>> (that actually contains some code), rather than letting the code to
->>> fall through.
->>>
->>> This patch is part of the ongoing efforts to enable
->>> -Wimplicit-fallthrough.
->>>
->>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>> ---
->>>  kernel/bpf/verifier.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>> index 1e9d10b32984..e9fc28991548 100644
->>> --- a/kernel/bpf/verifier.c
->>> +++ b/kernel/bpf/verifier.c
->>> @@ -5509,11 +5509,13 @@ static int check_return_code(struct bpf_verifier_env *env)
->>>                 if (env->prog->expected_attach_type == BPF_CGROUP_UDP4_RECVMSG ||
->>>                     env->prog->expected_attach_type == BPF_CGROUP_UDP6_RECVMSG)
->>>                         range = tnum_range(1, 1);
->>> +               break;
->>>         case BPF_PROG_TYPE_CGROUP_SKB:
->>>                 if (env->prog->expected_attach_type == BPF_CGROUP_INET_EGRESS) {
->>>                         range = tnum_range(0, 3);
->>>                         enforce_attach_type_range = tnum_range(2, 3);
->>>                 }
->>> +               break;
->>>         case BPF_PROG_TYPE_CGROUP_SOCK:
->>>         case BPF_PROG_TYPE_SOCK_OPS:
->>>         case BPF_PROG_TYPE_CGROUP_DEVICE:
->>> --
->>> 2.21.0
->>>
+-- 
+Robert Hancock
+Senior Software Developer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
