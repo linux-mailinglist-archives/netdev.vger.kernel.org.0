@@ -2,124 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F443D3EA
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 19:23:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CE33D3EB
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 19:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406081AbfFKRXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 13:23:07 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45903 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405821AbfFKRXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 13:23:06 -0400
-Received: by mail-qt1-f193.google.com with SMTP id j19so15454981qtr.12;
-        Tue, 11 Jun 2019 10:23:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fJpMXr+NnksvkRmMWu25nN4h1uzoNawfgvQzE9rHA+8=;
-        b=Zd9Ji1wJ06DBu02p3GIu7ib7E14EX5jMOH62nvLOSunxZXxMLMiznLyP0kU76iJnQB
-         p+dRUsIY2c3C1/k7JWgXlLt/+aYI5MOGhJuz/s0TwHCHWjhOk684jz2y9CshV0ZpHgZy
-         98j9rnURnEjC3du4dRx/IrYg4Ag133+6mZPElkR2s5qzv3IUPG1WxTjLm2ET+yAXCqmS
-         bU34IT5yOSJMU9NN/Njn9orHwQwI4eMzdD0wqPZdmJAj4/urbcyazuPCdNJykRYzbCE6
-         WAfrs0AJq/rt+7wqzoK1FOr1iPGSH86cd/1EmrYM36EnHUCUKItllk9TfxRvOpEadKkk
-         7isw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fJpMXr+NnksvkRmMWu25nN4h1uzoNawfgvQzE9rHA+8=;
-        b=G9eOjUUF7q9+CDiL5tsQ59+hwgRIIMvdWsFSQhvRr+ZVwXggyn1PRC3s/YQI4EibTW
-         mW2xySRjdlORgilOlQlYzzsCbQ66WMS9PKc4Y3plGlu/R2Q8iu1V18EnVxCvQgUwP++0
-         qjb6qrX8mC5EO14YQPelAvARrEC0vG7Jwb5UhQc1TUI9Qm/liVZoqhhKQkQ5UuxmEPZo
-         M7nUh4cNMjB2UEInIcibkdcDDV8CDh+lgZ0nnN+xWjpsXZfsl0J0gU8ER8T3ezGVzP33
-         HV74GTKt+rMSikfpCxeBybTOrSCqIVOsKgvPFA+Hjtcf+5oh1YgJiXcJ/kZinGlu1ykj
-         PS2w==
-X-Gm-Message-State: APjAAAUZMKHktHXZbtFDuY8G+aavs4oDoIlmZZGEFDPspDnd4WPeVHM/
-        bMMwh8yc9BAsNCLHhiQdHcqIoXTgCXwfNMvKh0IovdJG
-X-Google-Smtp-Source: APXvYqwZSya4vlvbJFOQgLkCkgG2ELdO+otqiQUeSWQOTT8mHiCyU3QUdJJxB+UqEeJBYy+H1Nowool38e1PJcmzZeM=
-X-Received: by 2002:ac8:21b7:: with SMTP id 52mr47040577qty.59.1560273785202;
- Tue, 11 Jun 2019 10:23:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190611132811.GA27212@embeddedor>
-In-Reply-To: <20190611132811.GA27212@embeddedor>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 11 Jun 2019 10:22:54 -0700
-Message-ID: <CAEf4BzaG=cQWAVNNj0hy4Ui7mHzXZgxs8J3rKbxjjVdEGdNkvA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: verifier: avoid fall-through warnings
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>
+        id S2406125AbfFKRXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 13:23:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33460 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406105AbfFKRXL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 13:23:11 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id BBA097573D;
+        Tue, 11 Jun 2019 17:23:05 +0000 (UTC)
+Received: from ovpn-112-53.rdu2.redhat.com (ovpn-112-53.rdu2.redhat.com [10.10.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 59CCA5DE86;
+        Tue, 11 Jun 2019 17:22:59 +0000 (UTC)
+Message-ID: <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Date:   Tue, 11 Jun 2019 12:22:58 -0500
+In-Reply-To: <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 11 Jun 2019 17:23:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 7:05 AM Gustavo A. R. Silva
-<gustavo@embeddedor.com> wrote:
->
-> In preparation to enabling -Wimplicit-fallthrough, this patch silences
-> the following warning:
+On Tue, 2019-06-11 at 10:52 -0600, Subash Abhinov Kasiviswanathan
+wrote:
+> > The general plan (and I believe Daniele Palmas was working on it)
+> > was
+> > to eventually make qmi_wwan use rmnet rather than its internal
+> > sysfs-
+> > based implementation. qmi_wwan and ipa are at essentially the same
+> > level and both could utilize rmnet on top.
+> > 
+> > *That's* what I'd like to see. I don't want to see two different
+> > ways
+> > to get QMAP packets to modem firmware from two different drivers
+> > that
+> > really could use the same code.
+> > 
+> > Dan
+> 
+> qmi_wwan is based on USB and is very different from the IPA
+> interconnect
+> though. AFAIK, they do not have much in common (apart from sending &
+> receiving MAP packets from hardware).
 
-Your patch doesn't apply cleanly to neither bpf nor bpf-next tree.
-Could you please rebase and re-submit? Please also include which tree
-(probably bpf-next) you are designating this patch to in subject
-prefix.
+That is correct, they are very different drivers but as you state they
+send and receive MAP packets with the other end via some closer-to-
+hardware protocol (USB or GSI?) than QMAP.
 
->
-> kernel/bpf/verifier.c: In function =E2=80=98check_return_code=E2=80=99:
-> kernel/bpf/verifier.c:5509:6: warning: this statement may fall through [-=
-Wimplicit-fallthrough=3D]
->    if (env->prog->expected_attach_type =3D=3D BPF_CGROUP_UDP4_RECVMSG ||
->       ^
-> kernel/bpf/verifier.c:5512:2: note: here
->   case BPF_PROG_TYPE_CGROUP_SKB:
->   ^~~~
->
-> Warning level 3 was used: -Wimplicit-fallthrough=3D3
->
-> Notice that it's much clearer to explicitly add breaks in each case
-> (that actually contains some code), rather than letting the code to
-> fall through.
->
-> This patch is part of the ongoing efforts to enable
-> -Wimplicit-fallthrough.
->
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->  kernel/bpf/verifier.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 1e9d10b32984..e9fc28991548 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -5509,11 +5509,13 @@ static int check_return_code(struct bpf_verifier_=
-env *env)
->                 if (env->prog->expected_attach_type =3D=3D BPF_CGROUP_UDP=
-4_RECVMSG ||
->                     env->prog->expected_attach_type =3D=3D BPF_CGROUP_UDP=
-6_RECVMSG)
->                         range =3D tnum_range(1, 1);
-> +               break;
->         case BPF_PROG_TYPE_CGROUP_SKB:
->                 if (env->prog->expected_attach_type =3D=3D BPF_CGROUP_INE=
-T_EGRESS) {
->                         range =3D tnum_range(0, 3);
->                         enforce_attach_type_range =3D tnum_range(2, 3);
->                 }
-> +               break;
->         case BPF_PROG_TYPE_CGROUP_SOCK:
->         case BPF_PROG_TYPE_SOCK_OPS:
->         case BPF_PROG_TYPE_CGROUP_DEVICE:
-> --
-> 2.21.0
->
+rmnet should handle muxing the QMAP, QoS, and aggregation and pass the
+resulting packet to the lower layer. That lower layer could be IPA or
+qmi_wwan, which in turn passes that QMAP packet to USB or GSI or
+whatever. This is typically how Linux handles clean abstractions
+between different protocol layers in drivers.
+
+Similar to some WiFi drivers (drivers/net/wireless/marvell/libertas for
+example) where the same firmware interface can be accessed via PCI,
+SDIO, USB, SPI, etc. The bus-specific code is self-contained and does
+not creep into the upper more generic parts.
+
+Dan
+
