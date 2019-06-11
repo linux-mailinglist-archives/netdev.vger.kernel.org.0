@@ -2,69 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 126773C5DC
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 10:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE19B3C5E2
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 10:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404633AbfFKIYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 04:24:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60938 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404559AbfFKIYf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 04:24:35 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hac50-0006aU-0V; Tue, 11 Jun 2019 10:24:30 +0200
-Received: from [178.199.41.31] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hac4z-000AaS-Qg; Tue, 11 Jun 2019 10:24:29 +0200
-Subject: Re: [PATCH v2 bpf] bpf: lpm_trie: check left child of last leftmost
- node for NULL
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, yhs@fb.com,
-        ast@kernel.org
-Cc:     kernel-team@fb.com, netdev@vger.kernel.org
-References: <20190608195419.1137313-1-jonathan.lemon@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c739d394-0267-d032-a1d7-a85aa57d9274@iogearbox.net>
-Date:   Tue, 11 Jun 2019 10:24:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S2404727AbfFKI0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 04:26:47 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:40515 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403996AbfFKI0r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 04:26:47 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45NNQC5pVCz9sBp;
+        Tue, 11 Jun 2019 18:26:42 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1560241604;
+        bh=PeRbKliT0EifnHfr0s140XpRtxDlY3OUvNTQHClWPPU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=lQ8v5ML7hV3hen8t9DneukbifqX4mIMXzKEEZZ+6S8/ryhgGKaVyiR6P46BEpO0Z7
+         twa5225t327ZK5B6pCoPl5uVlKDrsO9AtMfTfmUUOrFogMLfvRGvQFUVINfrrtAaRd
+         NcrsMHqHkYUv1kqkgA9BXoyEE18k2WPe20OS+N5aJ2pr8lbwsTkDFQu5ZsdTJabmcz
+         Vk8Ig13k2eh8B3r/EAJ6Juspm+dIjT2mwYOT8JSpnPrZGRxDWxkAQp/rcgQzfZJ5L+
+         Xrsu4rUdxQJ4wiY+dpxW5d1+K9Fm5d8mlZ1V7jxpg0+e28CxTpkSQRy5oQ/6C4UQx8
+         uNARcOMz+bDxg==
+Date:   Tue, 11 Jun 2019 18:26:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20190611182640.44a4a73d@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20190608195419.1137313-1-jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25476/Mon Jun 10 09:55:34 2019)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/UoN_PsASjWyoilpmu=DVVDC"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/08/2019 09:54 PM, Jonathan Lemon wrote:
-> If the leftmost parent node of the tree has does not have a child
-> on the left side, then trie_get_next_key (and bpftool map dump) will
-> not look at the child on the right.  This leads to the traversal
-> missing elements.
-> 
-> Lookup is not affected.
-> 
-> Update selftest to handle this case.
-> 
-> Reproducer:
-> 
->  bpftool map create /sys/fs/bpf/lpm type lpm_trie key 6 \
->      value 1 entries 256 name test_lpm flags 1
->  bpftool map update pinned /sys/fs/bpf/lpm key  8 0 0 0  0   0 value 1
->  bpftool map update pinned /sys/fs/bpf/lpm key 16 0 0 0  0 128 value 2
->  bpftool map dump   pinned /sys/fs/bpf/lpm
-> 
-> Returns only 1 element. (2 expected)
-> 
-> Fixes: b471f2f1de8 ("bpf: implement MAP_GET_NEXT_KEY command for LPM_TRIE")
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+--Sig_/UoN_PsASjWyoilpmu=DVVDC
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks!
+Hi all,
+
+After merging the net-next tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
+
+drivers/net/ethernet/ti/cpts.c: In function 'cpts_of_mux_clk_setup':
+drivers/net/ethernet/ti/cpts.c:567:2: error: implicit declaration of functi=
+on 'of_clk_parent_fill'; did you mean 'of_clk_get_parent_name'? [-Werror=3D=
+implicit-function-declaration]
+  of_clk_parent_fill(refclk_np, parent_names, num_parents);
+  ^~~~~~~~~~~~~~~~~~
+  of_clk_get_parent_name
+drivers/net/ethernet/ti/cpts.c:575:11: error: implicit declaration of funct=
+ion 'clk_hw_register_mux_table'; did you mean 'clk_hw_register_clkdev'? [-W=
+error=3Dimplicit-function-declaration]
+  clk_hw =3D clk_hw_register_mux_table(cpts->dev, refclk_np->name,
+           ^~~~~~~~~~~~~~~~~~~~~~~~~
+           clk_hw_register_clkdev
+drivers/net/ethernet/ti/cpts.c:575:9: warning: assignment to 'struct clk_hw=
+ *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  clk_hw =3D clk_hw_register_mux_table(cpts->dev, refclk_np->name,
+         ^
+drivers/net/ethernet/ti/cpts.c:586:29: error: 'clk_hw_unregister_mux' undec=
+lared (first use in this function); did you mean 'clk_hw_register_clkdev'?
+            (void(*)(void *))clk_hw_unregister_mux,
+                             ^~~~~~~~~~~~~~~~~~~~~
+                             clk_hw_register_clkdev
+drivers/net/ethernet/ti/cpts.c:586:29: note: each undeclared identifier is =
+reported only once for each function it appears in
+drivers/net/ethernet/ti/cpts.c:593:8: error: implicit declaration of functi=
+on 'of_clk_add_hw_provider'; did you mean 'of_clk_get_from_provider'? [-Wer=
+ror=3Dimplicit-function-declaration]
+  ret =3D of_clk_add_hw_provider(refclk_np, of_clk_hw_simple_get, clk_hw);
+        ^~~~~~~~~~~~~~~~~~~~~~
+        of_clk_get_from_provider
+drivers/net/ethernet/ti/cpts.c:593:42: error: 'of_clk_hw_simple_get' undecl=
+ared (first use in this function); did you mean 'ida_simple_get'?
+  ret =3D of_clk_add_hw_provider(refclk_np, of_clk_hw_simple_get, clk_hw);
+                                          ^~~~~~~~~~~~~~~~~~~~
+                                          ida_simple_get
+drivers/net/ethernet/ti/cpts.c:598:29: error: 'of_clk_del_provider' undecla=
+red (first use in this function); did you mean 'of_clk_get_from_provider'?
+            (void(*)(void *))of_clk_del_provider,
+                             ^~~~~~~~~~~~~~~~~~~
+                             of_clk_get_from_provider
+cc1: some warnings being treated as errors
+
+Caused by commit
+
+  a3047a81ba13 ("net: ethernet: ti: cpts: add support for ext rftclk select=
+ion")
+
+of_clk_parent_fill() and others above are only available if
+CONFIG_COMMON_CLK is set (which it is not for this build).
+
+I have reverted that commit for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/UoN_PsASjWyoilpmu=DVVDC
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlz/ZcEACgkQAVBC80lX
+0Gzb1wgAiRuZPnzj+RLpIckzkvD5xxGkj1ZRMBFklt6VwXSYKQfJJkYVcxYWWJAS
+zpXFWgRfjp4IDlGUnRz39vgorkOjb4NrVqn292X0Ln6xm5e4umA4XB6nKDMURKGd
+6bplOtuP8SgPum8Opny8jtpWYpoGW1xMi0kw2JTKgF1UVf+wBkiTYBzRJkZpw3UQ
+cB0g26fbhOOg4ZFxfo2Q86dsTS6YZPnH7CaPaz6Wk2/W8hbq3SsJKMbXHGgp2Kxs
+fbrulPXP6tGFuku7vsQhP4SfPEp6dU34HzZPP/9rnsgQQmO5KvUTGerI+2GANgEE
+8RsZBLLFc5plpC6gkR+K0yiV5qWNeQ==
+=rjZT
+-----END PGP SIGNATURE-----
+
+--Sig_/UoN_PsASjWyoilpmu=DVVDC--
