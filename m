@@ -2,205 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD293C51D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4543C556
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 09:44:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404442AbfFKHaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 03:30:02 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42361 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404400AbfFKHaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:30:01 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x17so11708054wrl.9
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 00:30:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=JzyBNpw2ZNnfemR3jZKVgS7dkzwPKtIKYWzQ2f3x8qs=;
-        b=fK0Lcu6fLgzZPP/HRbTKB2m8t/gBuY+CQ4WdGp487n9QQR856m83u1EKC9psQL4TWH
-         8YpCRYYPvd2N5PWN/WBM4TkoDz8Gew5qoztX8JUEeqcCI0r59LbsWbkhHIKZ2dmTrWIb
-         2V9/TFuRI238rr6JoDNx3XOmZjycrfBmbivh8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JzyBNpw2ZNnfemR3jZKVgS7dkzwPKtIKYWzQ2f3x8qs=;
-        b=NYBLYMYO0LJfdoTWwifgHmHqUbNwdAoAUshLSmnl3+fRNTgHJ8hV3HwZKPnEhWMNWs
-         R+3wRYbB4vnQY5Ecsbs22RpCVXgeJnVxIhgyk5vPCL7ywffA1h8Ha6yNSaryrlkZLATc
-         VPZXo89wIJwHpGibqBlpuDIe25Ufr9jrv+UkPNkuchgcaOG14Wxv9wiWYNg1WKIsLAAK
-         Iru9xhFLWkgnzOYQTV3bGU6uCuah94KPPCaVjQDqBGdi1MaXpVvMIXOT2+NuYnH1fNj3
-         Bpk+RuNOBLMHTorfDBA5eIMMozhtJT9bLzoKaMqtNxz67/3gY62TZaGxH0yu1fPTKB9h
-         6eGw==
-X-Gm-Message-State: APjAAAW8b5fzfOeYDvMZc+Ss7TrNO9TN+D7vHKBm28FOga1Eo/pK29B3
-        pedllxsTYkF1yt1A8sUXIOxZ4g3vmtE=
-X-Google-Smtp-Source: APXvYqzJ4rMJZuu59eQ4uINzt6d5n1sQoJK7M1zAnfFxdh+18vEveuXbdB0QdDWbQFfbr2KYySrMEw==
-X-Received: by 2002:a5d:5510:: with SMTP id b16mr13769053wrv.267.1560238199127;
-        Tue, 11 Jun 2019 00:29:59 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 6sm13525388wrd.51.2019.06.11.00.29.57
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Jun 2019 00:29:57 -0700 (PDT)
-Subject: Re: [PATCH net-next] ipv4: Support multipath hashing on inner IP pkts
- for GRE tunnel
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
-References: <20190611003142.11626-1-ssuryaextr@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <076bc564-7c97-f591-6b4c-2e540db4cb87@cumulusnetworks.com>
-Date:   Tue, 11 Jun 2019 10:29:56 +0300
+        id S2404272AbfFKHoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 03:44:06 -0400
+Received: from mx-relay74-hz1.antispameurope.com ([94.100.133.237]:37018 "EHLO
+        mx-relay74-hz1.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2403897AbfFKHoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 03:44:05 -0400
+X-Greylist: delayed 447 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jun 2019 03:44:05 EDT
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay74-hz1.antispameurope.com;
+ Tue, 11 Jun 2019 09:36:30 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Tue, 11 Jun
+ 2019 09:36:16 +0200
+Subject: Re: DSA with MV88E6321 and imx28
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <20190605133102.GF19627@lunn.ch>
+ <20907497-526d-67b2-c100-37047fa1f0d8@eks-engel.de>
+ <20190605184724.GB19590@lunn.ch>
+ <c27f2b9b-90d7-db63-f01c-2dfaef7a014b@eks-engel.de>
+ <20190606122437.GA20899@lunn.ch>
+ <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
+ <20190606133501.GC19590@lunn.ch>
+ <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
+ <20190606135903.GE19590@lunn.ch>
+ <8903b07b-4ac5-019a-14a1-d2fc6a57c0bb@eks-engel.de>
+ <20190607124750.GJ20899@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <635c884a-185d-5b3b-7f91-ce058d9726f4@eks-engel.de>
+Date:   Tue, 11 Jun 2019 09:36:16 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190611003142.11626-1-ssuryaextr@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20190607124750.GJ20899@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay74-hz1.antispameurope.com with 9A18B70434A
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:8.249
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/06/2019 03:31, Stephen Suryaputra wrote:
-> Multipath hash policy value of 0 isn't distributing since the outer IP
-> dest and src aren't varied eventhough the inner ones are. Since the flow
-> is on the inner ones in the case of tunneled traffic, hashing on them is
-> desired.
-> 
-> This currently only supports IP over GRE and CONFIG_NET_GRE_DEMUX must
-> be compiled as built-in in the kernel.
-> 
-> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-> ---
->  Documentation/networking/ip-sysctl.txt |  4 ++
->  net/ipv4/route.c                       | 75 ++++++++++++++++++++++----
->  net/ipv4/sysctl_net_ipv4.c             |  2 +-
->  3 files changed, 70 insertions(+), 11 deletions(-)
-> 
-[snip]
-> @@ -1820,6 +1827,47 @@ static void ip_multipath_l3_keys(const struct sk_buff *skb,
->  	hash_keys->addrs.v4addrs.dst = key_iph->daddr;
->  }
->  
-> +static void ip_multipath_inner_l3_keys(const struct sk_buff *skb,
-> +				       struct flow_keys *hash_keys)
-> +{
-> +	const struct iphdr *outer_iph = ip_hdr(skb);
-> +	const struct iphdr *inner_iph;
-> +	struct iphdr _inner_iph;
-> +	int hdr_len;
-> +
-> +	switch (outer_iph->protocol) {
-> +#ifdef CONFIG_NET_GRE_DEMUX
-> +	case IPPROTO_GRE:
-> +		{
-> +			struct tnl_ptk_info tpi;
-> +			bool csum_err = false;
-> +
-> +			hdr_len = gre_parse_header(skb, &tpi, &csum_err,
-> +						   htons(ETH_P_IP),
-> +						   outer_iph->ihl * 4);
-> +			if (hdr_len > 0 && tpi.proto == htons(ETH_P_IP))
-> +				break;
+>> So all ports are now in forwarding mode (Switch port register 0x4 of all ports 
+>> are 0x7f), but I don't reach it over ping.
+> Hi
+>
+> The most common error for people new to DSA is forgetting to bring
+> the master interface up.
+>
+> The second thing to understand is that by default, all interfaces are
+> separated. So the switch won't bridge frames between ports, until you
+> add the ports to a Linux bridge. But you can give each interface its
+> own IP address.
+>
+>     Andrew
 
-Have you considered using the flow dissector and doing something similar to the bonding ?
-It does a full flow dissect via skb_flow_dissect_flow_keys() and uses whatever headers
-it needs, but that will support any tunneling protocol which the flow dissector
-recognizes and will be improved upon automatically by people adding to it.
-Also would avoid doing dissection by yourself.
+Hi Andrew,
+thanks for your help again. Sorry for the late reply we had a stats day yesterday. 
+What interface do you mean with master interface? I assume, you mean eth0 (cpu port)?
+I deleted the IP address of this interface and tried to add it to the bridge:
 
-The bond commit which added that was:
- 32819dc18348 ("bonding: modify the old and add new xmit hash policies")
+brctl addif bridge0 eth0
+brctl: bridge bridge0: Invalid argument
 
-> +		}
-> +		/* fallthrough */
-> +#endif
-> +	default:
-> +		/* Hash on outer for unknown tunnels, non IP tunneled, or non-
-> +		 * tunneled pkts
-> +		 */
-> +		ip_multipath_l3_keys(skb, hash_keys, outer_iph, 0);
-> +		return;
-> +	}
-> +	inner_iph = skb_header_pointer(skb,
-> +				       outer_iph->ihl * 4 + hdr_len,
-> +				       sizeof(struct iphdr), &_inner_iph);
-> +	if (inner_iph) {
-> +		ip_multipath_l3_keys(skb, hash_keys, inner_iph, hdr_len);
-> +	} else {
-> +		/* Use outer */
-> +		ip_multipath_l3_keys(skb, hash_keys, outer_iph, 0);
-> +	}
-> +}
-> +
->  /* if skb is set it will be used and fl4 can be NULL */
->  int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  		       const struct sk_buff *skb, struct flow_keys *flkeys)
-> @@ -1828,12 +1876,13 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  	struct flow_keys hash_keys;
->  	u32 mhash;
->  
-> +	memset(&hash_keys, 0, sizeof(hash_keys));
-> +
+I tried this with all lan1-4 interfaces and they just work and directly after
+I added them I got some information about the port:
 
-This was an optimization, it was done on purpose to avoid doing anything when we
-have L3+4 configured (1) and the skb has its hash already calculated.
+brctl addif br0 lan4
+[  156.085842] br0: port 4(lan4) entered blocking state
+[  156.091022] br0: port 4(lan4) entered disabled state
 
->  	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
->  	case 0:
-> -		memset(&hash_keys, 0, sizeof(hash_keys));
->  		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
->  		if (skb) {
-> -			ip_multipath_l3_keys(skb, &hash_keys);
-> +			ip_multipath_l3_keys(skb, &hash_keys, NULL, 0);
->  		} else {
->  			hash_keys.addrs.v4addrs.src = fl4->saddr;
->  			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-> @@ -1849,8 +1898,6 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  			if (skb->l4_hash)
->  				return skb_get_hash_raw(skb) >> 1;
->  
-> -			memset(&hash_keys, 0, sizeof(hash_keys));
-> -
->  			if (!flkeys) {
->  				skb_flow_dissect_flow_keys(skb, &keys, flag);
->  				flkeys = &keys;
-> @@ -1863,7 +1910,6 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  			hash_keys.ports.dst = flkeys->ports.dst;
->  			hash_keys.basic.ip_proto = flkeys->basic.ip_proto;
->  		} else {
-> -			memset(&hash_keys, 0, sizeof(hash_keys));
->  			hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
->  			hash_keys.addrs.v4addrs.src = fl4->saddr;
->  			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-> @@ -1872,6 +1918,15 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  			hash_keys.basic.ip_proto = fl4->flowi4_proto;
->  		}
->  		break;
-> +	case 2:
-> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-> +		if (skb) {
-> +			ip_multipath_inner_l3_keys(skb, &hash_keys);
-> +		} else {
-> +			hash_keys.addrs.v4addrs.src = fl4->saddr;
-> +			hash_keys.addrs.v4addrs.dst = fl4->daddr;
-> +		}
-> +		break;
->  	}
->  	mhash = flow_hash_from_keys(&hash_keys);
->  
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 2316c08e9591..e1efc2e62d21 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -960,7 +960,7 @@ static struct ctl_table ipv4_net_table[] = {
->  		.mode		= 0644,
->  		.proc_handler	= proc_fib_multipath_hash_policy,
->  		.extra1		= &zero,
-> -		.extra2		= &one,
-> +		.extra2		= &two,
->  	},
->  #endif
->  	{
-> 
+After I brought up the bridge with:
+
+ip link set br0 up
+[  445.313697] br0: port 4(lan4) entered blocking state
+[  445.318896] br0: port 4(lan4) entered forwarding state
+
+So I gave my eth0 an IP address and started tcpdump on eth0:
+
+tcpdump -i eth0
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes
+01:11:36.040006 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
+01:11:37.062283 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
+01:11:38.086465 ARP, Request who-has 192.168.10.1 tell 192.168.10.2, length 46
+
+How you can see, I get the ARP request but no reply from my device. No ping is
+working. All interfaces are up:
+
+ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,ALLMULTI,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.10.201/24 brd 192.168.10.255 scope global eth0
+       valid_lft forever preferred_lft forever
+3: Serdes0@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop switchid 00000000 state DOWN group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+4: Serdes1@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop switchid 00000000 state DOWN group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+5: lan1@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state UP group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+6: lan2@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+7: lan3@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+8: lan4@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue master br0 switchid 00000000 state LOWERLAYERDOWN group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+9: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 6a:d0:d5:9c:fe:f3 brd ff:ff:ff:ff:ff:ff
+
+Am I doing something wrong or maybe I forget something?
+
+Cheers,
+Benjamin
 
