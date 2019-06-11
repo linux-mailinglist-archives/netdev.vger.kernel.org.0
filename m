@@ -2,141 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9059E3CC99
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 15:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4AC33CCD5
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 15:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389744AbfFKNJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 09:09:42 -0400
-Received: from mx-relay92-hz2.antispameurope.com ([94.100.136.192]:39622 "EHLO
-        mx-relay92-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387560AbfFKNJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 09:09:42 -0400
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay92-hz2.antispameurope.com;
- Tue, 11 Jun 2019 15:09:38 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Tue, 11 Jun
- 2019 15:09:05 +0200
-Subject: Re: DSA with MV88E6321 and imx28
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>
-References: <20190605184724.GB19590@lunn.ch>
- <c27f2b9b-90d7-db63-f01c-2dfaef7a014b@eks-engel.de>
- <20190606122437.GA20899@lunn.ch>
- <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
- <20190606133501.GC19590@lunn.ch>
- <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
- <20190606135903.GE19590@lunn.ch>
- <8903b07b-4ac5-019a-14a1-d2fc6a57c0bb@eks-engel.de>
- <20190607124750.GJ20899@lunn.ch>
- <635c884a-185d-5b3b-7f91-ce058d9726f4@eks-engel.de>
- <20190611121938.GA20904@lunn.ch>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Message-ID: <68671792-a720-6fa5-0a6e-0cd9f57c67eb@eks-engel.de>
-Date:   Tue, 11 Jun 2019 15:09:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2390706AbfFKNX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 09:23:29 -0400
+Received: from mail-ot1-f46.google.com ([209.85.210.46]:44506 "EHLO
+        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387578AbfFKNX3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 09:23:29 -0400
+Received: by mail-ot1-f46.google.com with SMTP id b7so11799258otl.11
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 06:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4pFByX/gV8SRk15tIVamc1Q+Obh4R2wV+e3nxQGfMbU=;
+        b=VN3PefCcf6ZBx33aEZppw+UOr8b0JmdPHrn/AxdM3LA/TOK90kRKnkuAKb5ifwY/Te
+         4Xje3Z9w7NXhKYFHej+4lyKyaziqnH5O1EA4Re22ljfOQRwjlkmIXzOjMUrU5llC7tQC
+         JuljcioMxbYg+irLIC3XHyPcG0G0HnGa0PzAz0WSSc0pAs0SxfhwJw8CamoeAcifty7S
+         W9TNpzl+RYGsBY5S1Jp0aEBbsV67sERXsSrutjApGP6CVowZosisaNVE4nOn/ToY120a
+         0OYFOrVVeDGedlZbuV0DSYZzUoCwdNkdRI5fenHuUEYHcvIosfISUkNKZQ0ZHWaadMMd
+         LH2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4pFByX/gV8SRk15tIVamc1Q+Obh4R2wV+e3nxQGfMbU=;
+        b=OQBfbMDzJzKjtxP10EnPgh7hUfaVsLRVlV9PT1HvUffoucxx2v/wLP73XeNf6LeQbZ
+         fySqmvcBG7bPAMeng3jaWTTxikyAVC1+PESMys22NFTaYohfWnwUvRHCIgUrQ6ixYGil
+         /6mEwKS+UrJYC0AP87fHscasgYqtyaDrz0UioPtCiKQgfPHu5xKMQ94Rc7ww1HaxgA6M
+         JTyrTYqj24LZnlDECYA0PGs9pp/nR5j8lLL5yABQCSzdIEJ2G9dkbLwjRf2p9E0CGYNp
+         E7gIoWOhumdlqi4s3G/1KWtG9OZmbIFUOHReo9BolgEFkuU4fj7PeegmWlRm2G0KpQkD
+         5UiA==
+X-Gm-Message-State: APjAAAWxoYccvGOO2yJazA0HplvsjcLn0T8K2Wnztbcj0Z05efIF1AVa
+        hmHvZSZbuZK74rLcWXDIx9tlS173Nt0JqxRLWwxM2g==
+X-Google-Smtp-Source: APXvYqw04c5crPepK/1SeUOjGW0gpdNUga1WWqQEiJh4t/8usDrrtbdKXz+MaetJfkQfJj/08clqAr/yz65+YHu3weg=
+X-Received: by 2002:a05:6830:108d:: with SMTP id y13mr36088541oto.255.1560259408229;
+ Tue, 11 Jun 2019 06:23:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190611121938.GA20904@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay92-hz2.antispameurope.com with ED54B960669
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:27.13
+References: <CAHx7fy4nNq-iWVGF7CWuDi8W_BDRVLQg3QfS_R54eEO5bsXj3Q@mail.gmail.com>
+ <CADVnQymPcJJ-TnsNkZm-r+PrhxHjPLLLiDhf3GjeBjSTGJwbkw@mail.gmail.com>
+ <CAHx7fy5bSghKONyYSW-4oXbEKLHUxYC7vE=ZiKLXUED-iuuCdw@mail.gmail.com>
+ <CADVnQy=P=P1iPxrgqQ1U5xwY7Wj3H54XF1sfTyi92mQkLgjb6g@mail.gmail.com> <CAHx7fy68uTURceZtzYEnvdZ1pD2_F0dNJKjB7c7JTT8pjNKRSw@mail.gmail.com>
+In-Reply-To: <CAHx7fy68uTURceZtzYEnvdZ1pD2_F0dNJKjB7c7JTT8pjNKRSw@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Tue, 11 Jun 2019 09:23:11 -0400
+Message-ID: <CADVnQymT2zPDnmN6jp5NonQqyZHFRdW9CoiRL=MKKEbqVcySkA@mail.gmail.com>
+Subject: Re: tp->copied_seq used before assignment in tcp_check_urg
+To:     Zhongjie Wang <zwang048@ucr.edu>
+Cc:     Netdev <netdev@vger.kernel.org>, Zhiyun Qian <zhiyunq@cs.ucr.edu>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Tue, Jun 11, 2019 at 09:36:16AM +0200, Benjamin Beckmeyer wrote:
->>>> So all ports are now in forwarding mode (Switch port register 0x4 of all ports 
->>>> are 0x7f), but I don't reach it over ping.
->>> Hi
->>>
->>> The most common error for people new to DSA is forgetting to bring
->>> the master interface up.
->>>
->>> The second thing to understand is that by default, all interfaces are
->>> separated. So the switch won't bridge frames between ports, until you
->>> add the ports to a Linux bridge. But you can give each interface its
->>> own IP address.
->>>
->>>     Andrew
->> Hi Andrew,
->> thanks for your help again. Sorry for the late reply we had a stats day yesterday. 
->> What interface do you mean with master interface? I assume, you mean eth0 (cpu port)?
-> Yes. The master interface is the pipe between the host and the
-> switch. It is only used as a pipe. It needs to be up, but there is no
-> point having an IP address on it, since it cannot send packets itself.
+On Tue, Jun 11, 2019 at 2:46 AM Zhongjie Wang <zwang048@ucr.edu> wrote:
 >
-> lan1-4 are slave interfaces. They can have IP addresses.
+> Hi Neal,
 >
->> I deleted the IP address of this interface and tried to add it to the bridge:
->>
->> brctl addif bridge0 eth0
->> brctl: bridge bridge0: Invalid argument
-> Yes, you should not do this. Just have the master interface up, but
-> otherwise leave it alone. It also needs to be up before you bring the
-> slave interfaces up.
->
->> I tried this with all lan1-4 interfaces and they just work and directly after
->> I added them I got some information about the port:
->>
->> brctl addif br0 lan4
->> [  156.085842] br0: port 4(lan4) entered blocking state
->> [  156.091022] br0: port 4(lan4) entered disabled state
->>
->> After I brought up the bridge with:
->>
->> ip link set br0 up
->> [  445.313697] br0: port 4(lan4) entered blocking state
->> [  445.318896] br0: port 4(lan4) entered forwarding state
->>
->> So I gave my eth0 an IP address and started tcpdump on eth0:
-> No. If you have created a bridge, put the IP address on the bridge.
-> If you have a slave which is not part of the bridge, you can give it
-> an IP address. Just treat the interfaces as Linux interfaces. Run
-> dhclient on them, use ethtool, iproute2, an snmp agent, add them to a
-> bridge. They are just normal Linux interfaces, which can make use of
-> the switch hardware to accelerate some operations, like bridging
-> frames.
->
->    Andrew
+> Thanks for your valuable feedback! Yes, I think you are right.
+> It seems not a problem if tp->urg_data and tp->urg_seq are used together.
+> From our test results, we can only see there are some paths requiring
+> specific initial sequence number to reach.
+> But as you said, it would not cause a difference in the code logic.
+> We haven't observed any abnormal states.
 
-Hi Andrew,
-it set up a bridge now, added all four ethernet ports to it, brought all four
-interfaces up and the bridge up and gave the bridge an IP address.
-If I try to capture on the bridge interface nothing is coming in. On the eth0
-interface at least the ARP request comes in.
+Great. Thanks for confirming!
 
-I captured a ping from my device to my computer to look if outgoing is working
-(captured on both devices). Here is the output from my device where i started the:
-
-00:24:24.752057 ARP, Request who-has 192.168.10.2 tell 192.168.10.1, length 28
-	0x0000:  0001 0800 0604 0001 6a2a ad79 def5 c0a8  ........j*.y....
-	0x0010:  0a01 0000 0000 0000 c0a8 0a02            ............
-
-and here the output of the receiver:
-
-14:49:06.725940 MEDSA 0.2:0: ARP, Request who-has benjamin-HP tell 192.168.10.1, length 42
-	0x0000:  0000 4010 0000 0806 0001 0800 0604 0001  ..@.............
-	0x0010:  6a2a ad79 def5 c0a8 0a01 0000 0000 0000  j*.y............
-	0x0020:  c0a8 0a02 0000 0000 0000 0000 0000 0000  ................
-	0x0030:  0000
-
-I'm really stuck at the moment because I don't know what to do further. I think, 
-I did everything what is needed.
-And I know when I configure the switch manually via MDIO the connection is working.
-When I'm looking for traffic in ifconfig on all ports there is everywhere 0 bytes 
-except for eth0.
-Do you have any ideas?
-
-	Benjamin
-
+cheers,
+neal
