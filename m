@@ -2,94 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C61F4169A
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60729416A0
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 23:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407435AbfFKVHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 17:07:07 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:36404 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406793AbfFKVHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:07:07 -0400
-Received: by mail-yw1-f65.google.com with SMTP id t126so5863940ywf.3
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:07:06 -0700 (PDT)
+        id S2407465AbfFKVJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 17:09:09 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40595 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406793AbfFKVJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 17:09:09 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d30so7637601pgm.7
+        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 14:09:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hZZZVwpsso/EhIBbEdGMFWRVz1yWvhX8O+674DQfvlY=;
-        b=fD/S7sBJPQfwW9fdWa6fiz1msYWbP6QjZJqCXP1PcyvqR9DIUsOyo2o5IwEpbTf/0p
-         yKnnew/FwPEhSUl0qsJ0gzAn6cyYXKOXkw7/s7r/Og/J6X91wD0h3QURGjgjg0zQ8BTg
-         PjiCYay206/jQ9fH07OowhUeg1+fg2Ib7IRlJ4SvYumqtfojH8Ju6fqUVCiW3UYJzblF
-         58FOnmMt4wEmocPrVYRhqPWEKEzpA9uCvCetiPq3ur//TZWFKW/u3kgqBv6dKAFPnDD5
-         FN5bp2dIXN4syessdjP+j8XyWk2L4jqaeHRj+o/tBD3qrtdabTNQJ+bw9zf3PiQoCF4l
-         e1yw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uED7J3lKedIyzESAC/9YUIXNaBqTZXdB+UJJLBkB9p0=;
+        b=QMfjCX8h83N9YQvpKn0oXyzWv37gSObF83CxPwA5n1mOVeZb/bysbNkJ7N2QV+wNMh
+         IqMIhrpa1HURvZ1igmN6Te1CR6/QUtKTgAq4gYg0bvZ89KlUt93nUGU8Jk+n8fL/KDtX
+         9Kva/VS+Vlg9/Nk0UTbXBsGKPyejdCLGwbeb6Q76C0BpEeK1TWqfAL4NKYd2aY2jaQo3
+         GXqhAseZFssx1JIp4a48PSS2IsEUCRv0ydvfB+86WI81/05KDjEdp9mj/wQ4h7Ufb3hA
+         H0/B25WlsmHldeyfLcYKm5URSAcnwnv5ZUgvWV5tOJ2uYpftUdUBOXDKor7Atx9Edr1d
+         7z0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hZZZVwpsso/EhIBbEdGMFWRVz1yWvhX8O+674DQfvlY=;
-        b=aPjqUTwJomw7A2J/gw8sss4EfidCPSrlVS688WmFIbl5syKA2pSLgjnNbo+Je4qTnn
-         VIptrM3yHHCoKFX+dMjyz72S86Il9z1KomVpG2Ann1tS47GUf7u6SdOxNCVAGcn5M2C9
-         nN/G2S9U+2H8D1DifKxpY63SNtm39Nmr/OLYBEoMAEDmvOxrCCU6+2t5HowdMOw3yqVi
-         U6M5j0vKkqN+zlG1Q4dgnZKdzkVqF+HtzWVKUGht2oX0Gz7On3gJSYY/9v5tIJA8tO0f
-         qmODaVGpyYHpwqz9FavYSNEpcT6ZipK57C0rbsgSIRlPMyXO+nHz5pnsZhtlfBkjFbsK
-         VOCA==
-X-Gm-Message-State: APjAAAVta113ZjdElaclNnTZ4T37ctd/SIJDwMcxXZFefJ+F4nJBRX1t
-        UrZnHpw+6JHc6b6C7bhlR7MkS0d3sdCmG2NQDye9Xg==
-X-Google-Smtp-Source: APXvYqwptak8nsNPboA3DBwl8XzfNjWN5xoORBwTFZnNKI0yOywaLEHachDzdeduae+GCKhhKpbcJjY+bkhaUx6Dmgw=
-X-Received: by 2002:a81:2e93:: with SMTP id u141mr30138550ywu.21.1560287225866;
- Tue, 11 Jun 2019 14:07:05 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uED7J3lKedIyzESAC/9YUIXNaBqTZXdB+UJJLBkB9p0=;
+        b=iAJjzsB919I/VLIrE/2Ct8JvnXY5MOwviSu7/ePtMxYHgQ1LwPKB3m67kPbsgZmeeR
+         ElPJvdUOM/kn1sULjzWSvHZBLERdOlWY+7CzCADQ+zYABUkpC76LkWTHtyCDt5MzRlko
+         IBFOdIpcvcb8EQHXHQdSkHtcPYZsbTaFX8lIwkclGYCrORXLMQaA5eNtK7VOkq9OvcWI
+         xtvd4uYdV6kxbhxuFE5CeHBxbrxFh4BsQ2oSee6U3EzUrCgnhygIaeAjkI1dvApQw5pB
+         H7YM6RTWl0EGRNBaDPbWheZtuxi3PPu+NlrMBAYR+J+H2X5CoXhYoM7MwwLTp7EGsocY
+         zAxQ==
+X-Gm-Message-State: APjAAAWYUyimYzFttWU7Tl8dC3AJ6WqoGRInLCj/ea31wgQd0s6j4OBg
+        15S7iMHQR+hceDes/Qp9vLAuzgPuceI=
+X-Google-Smtp-Source: APXvYqyCRsUJo8WhjtN8tk3eG2UHMFpH4cCDhvvvDMSLyK9WK1en0eG7zcs2DtnMqFIA+XY1/MOfxA==
+X-Received: by 2002:a17:90a:ba93:: with SMTP id t19mr19557304pjr.139.1560287348230;
+        Tue, 11 Jun 2019 14:09:08 -0700 (PDT)
+Received: from [172.27.227.165] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id d7sm17565441pfn.89.2019.06.11.14.09.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 11 Jun 2019 14:09:07 -0700 (PDT)
+Subject: Re: [PATCH net v3 0/2] ipv6: Fix listing and flushing of cached route
+ exceptions
+To:     Martin Lau <kafai@fb.com>, Stefano Brivio <sbrivio@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        Wei Wang <weiwan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <cover.1560016091.git.sbrivio@redhat.com>
+ <37a62d04-0285-f6de-84b5-e1592c31a913@gmail.com>
+ <20190610235315.46faca79@redhat.com> <20190611004758.1e302288@redhat.com>
+ <20190611201946.tokf7su5hlxyrlhs@kafai-mbp.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <956e4bc4-c916-c069-cd5d-b8f4b309a437@gmail.com>
+Date:   Tue, 11 Jun 2019 15:09:05 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190611030334.138942-1-edumazet@google.com> <20190611.121601.1611337978166305865.davem@davemloft.net>
-In-Reply-To: <20190611.121601.1611337978166305865.davem@davemloft.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 11 Jun 2019 14:06:53 -0700
-Message-ID: <CANn89iJ3CnQ8X8qBN3MY7hjQq-BsUdMUfPQoES-qEFQjM5Gm+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: add optional per socket transmit delay
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190611201946.tokf7su5hlxyrlhs@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 12:16 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
-> Date: Mon, 10 Jun 2019 20:03:34 -0700
->
-> > This patchs adds TCP_TX_DELAY socket option, to set a delay in
-> > usec units.
-> >
-> >   unsigned int tx_delay = 10000; /* 10 msec */
-> >
-> >   setsockopt(fd, SOL_TCP, TCP_TX_DELAY, &tx_delay, sizeof(tx_delay));
->
-> I'm trying to think about what the implications are for allowing
-> arbitrary users to do this.
->
-> It allows a user to stuff a TCP cloned SKB in the queues for a certain
-> amount of time, and then multiply this by how big a send window the
-> user can create (this ramp up takes no time, as the TCP_TX_DELAY
-> option can be intentionally set only after the window is maxxed out)
-> and how many TCP flows the user can create.
->
-> Is this something worth considering?
+On 6/11/19 2:19 PM, Martin Lau wrote:
+> On Tue, Jun 11, 2019 at 12:47:58AM +0200, Stefano Brivio wrote:
+>> On Mon, 10 Jun 2019 23:53:15 +0200
+>> Stefano Brivio <sbrivio@redhat.com> wrote:
+>>
+>>> On Mon, 10 Jun 2019 15:38:06 -0600
+>>> David Ahern <dsahern@gmail.com> wrote:
+>>>
+>>>> in dot releases of stable trees, I think it would be better to converge
+>>>> on consistent behavior between v4 and v6. By that I mean without the
+>>>> CLONED flag, no exceptions are returned (default FIB dump). With the
+>>>> CLONED flag only exceptions are returned.  
+>>>
+>>> Again, this needs a change in iproute2, because RTM_F_CLONED is *not*
+>>> passed on 'flush'. And sure, let's *also* do that, but not everybody
+>>> runs recent versions of iproute2.
+>>
+>> One thing that sounds a bit more acceptable to me is:
+>>
+>> - dump (in IPv4 and IPv6):
+>>   - regular routes only, if !RTM_F_CLONED and NLM_F_MATCH
+>>   - exceptions only, if RTM_F_CLONED and NLM_F_MATCH
+> That seems reasonable since DavidAhern pointed out iproute2 already has
+> #define NLM_F_DUMP      (NLM_F_ROOT|NLM_F_MATCH)
+> 
+>>   - everything if !NLM_F_MATCH
+> I am not sure how may the kernel change looks like.  At least I don't
+> see the current ipv6/route.c or ipv6/ip6_fib.c is handling
+> nlmsg_flags.  I would defer to DavidAhern for comment.
 
-Absolutely worth.
+We might be battling change histories in 2 different code bases. We
+should compare behaviors of kernel and iproute2 for 4.14 (pre-change),
+4.15 (change), 4.19 (LTS), 5.0 (strict checking) and 5.2 and then look
+at what the proposed kernel change does with the various iproute2 versions.
 
-Note the issue is already there since eBPF hooks can already
-manipulate skb->tstamp
-to implement pacing (without going through HTB)
-
-We are working on implementing a max horizon in FQ.
-
-The idea is to add a max_horizon parameter, that could be set by
-default to 5 or 10 seconds,
-but could be tuned if some people want to test TCP to communicate to Mars :)
-
-(Name comes from Carousel paper :
-https://www.cc.gatech.edu/~amsmti3/files/carousel-sigcomm17.pdf)
