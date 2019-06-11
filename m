@@ -2,101 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 831193C805
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 12:03:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD8A3C80E
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 12:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391273AbfFKKDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 06:03:32 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38551 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728865AbfFKKDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 06:03:32 -0400
-Received: by mail-lj1-f195.google.com with SMTP id o13so10982027lji.5
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 03:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D1U2C9g+Bn7fkKn6QJKsmlU0kk4+d2eQYyM+C8yfSRs=;
-        b=sSKqCYAW9cYne1BgtwQIccsCBxTMI1ws+LxwuzGTMzxOoez3TrFBOA83sqjp8tUred
-         fjbue8+legI2MXiYWtb3zY0X/Hv8sdq4yjifCr7BKcCJQF7Ho1P+TNrB8imYB+Aubx4h
-         YA5kjQ58ss2+8Ie8SNJ22wtKIBX0RQR0QkzXdFhu27YmuRcBXXRrFEpE8c5I/b1SBxbr
-         fNbkN1EnzcoikW1zqdAE2FrZMwswk2lhhyhl0E6VdzsoZ7MCCQdUdWHdzhQ8YWNR/HMt
-         l3wMbqyKnl2oNyncfD5wXyKwqWYryf3/+Woac2v7EGek5fa1TRahsXD2KEbBKXIsT7hJ
-         pFww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D1U2C9g+Bn7fkKn6QJKsmlU0kk4+d2eQYyM+C8yfSRs=;
-        b=IsqMmbrv9NrItuZFZj7vmAFOj3c0haLjtdcXrH9T8qSvOL4zeSOPcsPyBTrXiaypvH
-         OHQzQFbmiTOR3n1wsGaifI8v3rI6OYx3w48apJlR5J7pyMzPyECy07QGOYfZTpjp/QTi
-         cJkHEOvcIrNLXg8Kil0xGvS1+lyA6+WnWofAen0TOmGcVQwM0VQpIaDcJvIJiiL/WHmQ
-         ikTU7YotrO0Pdrm0ZTQAQ0ucmPyzzItPMm9bX+nAQ4OuKQWoqbwkP0f3PHqDC4YFbEcd
-         jCds99Y2J3QwQyYbdT8tWoK5733L5yge0Z5yx5Ozt54Ii62G+/dvTE8DzYHPtdx3FQPk
-         cvTg==
-X-Gm-Message-State: APjAAAU5PW+Jj/RNOZek2rajbcEB1WFFf9rXNILTuvD3uB9jrJ4bBb23
-        Ouo90OVZj95HaE+v74HSd1CURQ==
-X-Google-Smtp-Source: APXvYqxvSxZxJ844lX9B8OhaWiKW5KxExfU5Kjz0dPieaKjSzc3z3mG2nPF0Pjc96WBjmcG1YlQQnw==
-X-Received: by 2002:a2e:8591:: with SMTP id b17mr28946871lji.71.1560247410437;
-        Tue, 11 Jun 2019 03:03:30 -0700 (PDT)
-Received: from mimer.lan (h-29-16.A159.priv.bahnhof.se. [79.136.29.16])
-        by smtp.gmail.com with ESMTPSA id e12sm2444755lfb.66.2019.06.11.03.03.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 03:03:29 -0700 (PDT)
-From:   Jonas Bonn <jonas@norrbonn.se>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jonas Bonn <jonas@norrbonn.se>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH 1/1] Address regression in inet6_validate_link_af
-Date:   Tue, 11 Jun 2019 12:03:27 +0200
-Message-Id: <20190611100327.16551-1-jonas@norrbonn.se>
-X-Mailer: git-send-email 2.20.1
+        id S2404575AbfFKKGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 06:06:01 -0400
+Received: from ozlabs.org ([203.11.71.1]:57065 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728937AbfFKKGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 06:06:01 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45NQcj5fd0z9sDX;
+        Tue, 11 Jun 2019 20:05:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1560247558;
+        bh=7U/XVQfmfn8ksgJsWS+ntJglSV9GfB0NOkUJ1PR2ASU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TYyrZ/RnmVdu8hnXhHmtS6Yw2EJ8C2Gsoiwha8KT+17ar9qtTPkN83ccTxdsTBDwo
+         EtRD00u1vRBtP+bkHD3EgbFx5XCbs+7Pvm7IQqzd+OP3XXKpli1MrkppVqhqepXaEZ
+         iLCkQ4rnaUG9y0w/26CrFiWedDmazHtMVlvy5cKOrbkbfWBII7uisz5I/eb7d3uXLx
+         tGnpB9zF5eI7+HxX1AW1sjIQRGTrIRWH0dQFP5GU+lrPQ3wDhE5eXt01U5OA3T3M85
+         z/LkQ6oDWnV4Y5MrrPaMpgaarb+XmDnbZSdjWTvYOuEPuVv85R5+qHLIpM4AombThv
+         JdWSjm8XmUf0g==
+Date:   Tue, 11 Jun 2019 20:05:56 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: linux-next: Fixes tag needs some work in the bpf tree
+Message-ID: <20190611200556.4a09514d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/7xsX+2aY0ikNJvTtDD9/vld"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 7dc2bccab0ee37ac28096b8fcdc390a679a15841 introduces a regression
-with systemd 241.  In that revision, systemd-networkd fails to pass the
-required flags early enough.  This appears to be addressed in later
-versions of systemd, but for users of version 241 where systemd-networkd
-nonetheless worked with earlier kernels, the strict check introduced by
-the patch causes a regression in behaviour.
+--Sig_/7xsX+2aY0ikNJvTtDD9/vld
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This patch converts the failure to supply the required flags from an
-error into a warning.  With this, systemd-networkd version 241 once
-again is able to bring up the link, albeit not quite as intended and
-thereby with a warning in the kernel log.
+Hi all,
 
-CC: Maxim Mikityanskiy <maximmi@mellanox.com>
-CC: David S. Miller <davem@davemloft.net>
-CC: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-CC: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
----
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+In commit
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 081bb517e40d..e2477bf92e12 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5696,7 +5696,8 @@ static int inet6_validate_link_af(const struct net_device *dev,
- 		return err;
- 
- 	if (!tb[IFLA_INET6_TOKEN] && !tb[IFLA_INET6_ADDR_GEN_MODE])
--		return -EINVAL;
-+		net_warn_ratelimited(
-+			"required link flag omitted: TOKEN/ADDR_GEN_MODE\n");
- 
- 	if (tb[IFLA_INET6_ADDR_GEN_MODE]) {
- 		u8 mode = nla_get_u8(tb[IFLA_INET6_ADDR_GEN_MODE]);
--- 
-2.20.1
+  605465dd0c27 ("bpf: lpm_trie: check left child of last leftmost node for =
+NULL")
 
+Fixes tag
+
+  Fixes: b471f2f1de8 ("bpf: implement MAP_GET_NEXT_KEY command for LPM_TRIE=
+")
+
+has these problem(s):
+
+  - SHA1 should be at least 12 digits long
+    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+    or later) just making sure it is not set (or set to "auto").
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/7xsX+2aY0ikNJvTtDD9/vld
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlz/fQQACgkQAVBC80lX
+0Gw7Wgf+NtaIzPwZpz/rKY47PD9aCIfaKCLRcxWh1n6vDHtaVi9uVFDOI3GTkO0z
+vffYFAo5iVot9EEt0kA4sgPs2s6dMXzD2BHpTuxeHb5hpX8twkOoFqTOSfjoINvz
+fCRzX6EgJ2z3ympwYDvDZ+PdEj5sAYOg7xF2su4qCAbTM9CBmTgMLIrlnvaURPUF
+ayTypYQ3OMzm4A4oop9McAnn+ku7/xIUfyLrMfOgY+sXZGCE/hQrEZvjAvVYX/1E
+hluUVGmdHmba/fCzsPIUorFrGVCEbI8nKOpo3axeBdhnaWTlDTncYmnu7TqOPq6e
+D/guwtPY9vuzOfIFuJsxEofV1N36Ng==
+=oDUu
+-----END PGP SIGNATURE-----
+
+--Sig_/7xsX+2aY0ikNJvTtDD9/vld--
