@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCCCF3D09F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 556DF3D0A0
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 17:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404649AbfFKPTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 11:19:02 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:45584 "EHLO
+        id S2404763AbfFKPTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 11:19:16 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:45616 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389686AbfFKPTC (ORCPT
+        by vger.kernel.org with ESMTP id S2404642AbfFKPTC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 11:19:02 -0400
-Received: from mailhost.synopsys.com (unknown [10.225.0.210])
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E574CC5944;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C5120C58FA;
         Tue, 11 Jun 2019 15:18:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1560266339; bh=mBpV3DPxMu1zOlFHKdZ74vSrOXCkS01TP7DfWxpo6LE=;
+        t=1560266340; bh=eEkTmGVbmwfnUfpgAWd6x6YowjJSD3vE18ly8AyVLYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=LMnEfbOGZioUaSW06OOpCrAT9xgC1MBxKvrD8Le3ahACfqkZeUXsE5kY3N0juWaAD
-         EaIKtjBUy8DbDSJyICWZFa5Y94Zq2dievNKOO3zTz3svOsc0rccciROPao8ZsMc2vr
-         b8lwfUsc4cHAqrqUtQOGFbRwOZOp/WqitSn4aNtexgPK5cZ9vwz/mgrO5h5qeLiN8L
-         x5JDD9i85vEmDg/wBz9Z8Z1WGjLpeg/j6Yee0g7tiX8clek2G8TBo1+kAMv7STo2Rx
-         K1yDp15Y5PZTXWpfLYWBGJzS0XoAE1/yLe+KWXLYDMKnhsA65+16Z8f+vzf418fYTq
-         tm1bF57Y6g6Ug==
-Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 33E35A022E;
+        b=hrKemdCgL5DoKSDwv19+PkYg0RKqQ0hhsMnB941/yrBFUdBbJ3H8M+HtK0BLWCNb6
+         UJqXk7OAh04ydiYyVP3f5imLYHyYSAFB6NqesoV5c6wemP359Yke7g1kYa27qA6+eK
+         Ym6qG9AVn9Ju4JFrEBSUU2SCeK3CGJ14oiQTk9M5Wfkx8gWvxOpIrfeqwcuq3d99TR
+         i6FzQnVJRMS+Nkb78H+zLzZDMxATnHvqZj/L+0IAVFy/4XoGmGiRStGeS0pMT74oij
+         upGsRVr/ZEJsewCmVYSVnjP4UvX1kgQ8pNvw+ADesSNHSi2Xd9t74nIP7Db8sGScAS
+         lTrLkJQEX44jA==
+Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 494CCA005E;
         Tue, 11 Jun 2019 15:18:58 +0000 (UTC)
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 1584D3FDBE;
+        by de02.synopsys.com (Postfix) with ESMTP id 290623FDC1;
         Tue, 11 Jun 2019 17:18:58 +0200 (CEST)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
@@ -43,9 +43,9 @@ Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 2/3] net: stmmac: Start adding phylink support
-Date:   Tue, 11 Jun 2019 17:18:46 +0200
-Message-Id: <7daa1ac5cf56152b9d6c969c24603bc82e0b7d55.1560266175.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove phylib logic
+Date:   Tue, 11 Jun 2019 17:18:47 +0200
+Message-Id: <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1560266175.git.joabreu@synopsys.com>
 References: <cover.1560266175.git.joabreu@synopsys.com>
@@ -56,7 +56,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start adding the phylink callbacks.
+Convert everything to phylink.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 Cc: Joao Pinto <jpinto@synopsys.com>
@@ -68,125 +68,818 @@ Cc: Andrew Lunn <andrew@lunn.ch>
 Cc: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |  1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  4 ++
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 48 +++++++++++++++++++
- 3 files changed, 53 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   2 -
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   3 -
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  81 +---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 364 ++++++------------
+ .../ethernet/stmicro/stmmac/stmmac_platform.c |  21 +-
+ 5 files changed, 132 insertions(+), 339 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 0b5c8d74c683..cf0c9f4f347a 100644
+index cf0c9f4f347a..c43e2da4e7e3 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
 +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -4,6 +4,7 @@ config STMMAC_ETH
+@@ -3,7 +3,6 @@ config STMMAC_ETH
+ 	tristate "STMicroelectronics 10/100/1000/EQOS Ethernet driver"
  	depends on HAS_IOMEM && HAS_DMA
  	select MII
- 	select PHYLIB
-+	select PHYLINK
+-	select PHYLIB
+ 	select PHYLINK
  	select CRC32
  	imply PTP_1588_CLOCK
- 	select RESET_CONTROLLER
+@@ -42,7 +41,6 @@ if STMMAC_PLATFORM
+ 
+ config DWMAC_DWC_QOS_ETH
+ 	tristate "Support for snps,dwc-qos-ethernet.txt DT binding."
+-	select PHYLIB
+ 	select CRC32
+ 	select MII
+ 	depends on OF && HAS_DMA
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index a16ada8b8507..b8386778f6c6 100644
+index b8386778f6c6..15523a4546f1 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -25,6 +25,7 @@
+@@ -24,7 +24,6 @@
+ 
  #include <linux/clk.h>
  #include <linux/stmmac.h>
- #include <linux/phy.h>
-+#include <linux/phylink.h>
+-#include <linux/phy.h>
+ #include <linux/phylink.h>
  #include <linux/pci.h>
  #include "common.h"
- #include <linux/ptp_clock_kernel.h>
-@@ -155,6 +156,9 @@ struct stmmac_priv {
- 	struct mii_bus *mii;
- 	int mii_irq[PHY_MAX_ADDR];
+@@ -148,9 +147,7 @@ struct stmmac_priv {
+ 	/* Generic channel for NAPI */
+ 	struct stmmac_channel channel[STMMAC_CH_MAX];
  
-+	struct phylink_config phylink_config;
-+	struct phylink *phylink;
+-	bool oldlink;
+ 	int speed;
+-	int oldduplex;
+ 	unsigned int flow_ctrl;
+ 	unsigned int pause;
+ 	struct mii_bus *mii;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index cec51ba34296..7729aa555a19 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -22,7 +22,7 @@
+ #include <linux/ethtool.h>
+ #include <linux/interrupt.h>
+ #include <linux/mii.h>
+-#include <linux/phy.h>
++#include <linux/phylink.h>
+ #include <linux/net_tstamp.h>
+ #include <asm/io.h>
+ 
+@@ -274,7 +274,6 @@ static int stmmac_ethtool_get_link_ksettings(struct net_device *dev,
+ 					     struct ethtool_link_ksettings *cmd)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+-	struct phy_device *phy = dev->phydev;
+ 
+ 	if (priv->hw->pcs & STMMAC_PCS_RGMII ||
+ 	    priv->hw->pcs & STMMAC_PCS_SGMII) {
+@@ -353,18 +352,7 @@ static int stmmac_ethtool_get_link_ksettings(struct net_device *dev,
+ 		return 0;
+ 	}
+ 
+-	if (phy == NULL) {
+-		pr_err("%s: %s: PHY is not registered\n",
+-		       __func__, dev->name);
+-		return -ENODEV;
+-	}
+-	if (!netif_running(dev)) {
+-		pr_err("%s: interface is disabled: we cannot track "
+-		"link speed / duplex setting\n", dev->name);
+-		return -EBUSY;
+-	}
+-	phy_ethtool_ksettings_get(phy, cmd);
+-	return 0;
++	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
+ }
+ 
+ static int
+@@ -372,8 +360,6 @@ stmmac_ethtool_set_link_ksettings(struct net_device *dev,
+ 				  const struct ethtool_link_ksettings *cmd)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+-	struct phy_device *phy = dev->phydev;
+-	int rc;
+ 
+ 	if (priv->hw->pcs & STMMAC_PCS_RGMII ||
+ 	    priv->hw->pcs & STMMAC_PCS_SGMII) {
+@@ -397,9 +383,7 @@ stmmac_ethtool_set_link_ksettings(struct net_device *dev,
+ 		return 0;
+ 	}
+ 
+-	rc = phy_ethtool_ksettings_set(phy, cmd);
+-
+-	return rc;
++	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
+ }
+ 
+ static u32 stmmac_ethtool_getmsglevel(struct net_device *dev)
+@@ -443,6 +427,13 @@ static void stmmac_ethtool_gregs(struct net_device *dev,
+ 	       NUM_DWMAC1000_DMA_REGS * 4);
+ }
+ 
++static int stmmac_nway_reset(struct net_device *dev)
++{
++	struct stmmac_priv *priv = netdev_priv(dev);
 +
- 	struct stmmac_extra_stats xstats ____cacheline_aligned_in_smp;
- 	struct stmmac_safety_stats sstats;
- 	struct plat_stmmacenet_data *plat;
++	return phylink_ethtool_nway_reset(priv->phylink);
++}
++
+ static void
+ stmmac_get_pauseparam(struct net_device *netdev,
+ 		      struct ethtool_pauseparam *pause)
+@@ -450,28 +441,13 @@ stmmac_get_pauseparam(struct net_device *netdev,
+ 	struct stmmac_priv *priv = netdev_priv(netdev);
+ 	struct rgmii_adv adv_lp;
+ 
+-	pause->rx_pause = 0;
+-	pause->tx_pause = 0;
+-
+ 	if (priv->hw->pcs && !stmmac_pcs_get_adv_lp(priv, priv->ioaddr, &adv_lp)) {
+ 		pause->autoneg = 1;
+ 		if (!adv_lp.pause)
+ 			return;
+ 	} else {
+-		if (!linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+-				       netdev->phydev->supported) ||
+-		    !linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+-				      netdev->phydev->supported))
+-			return;
++		phylink_ethtool_get_pauseparam(priv->phylink, pause);
+ 	}
+-
+-	pause->autoneg = netdev->phydev->autoneg;
+-
+-	if (priv->flow_ctrl & FLOW_RX)
+-		pause->rx_pause = 1;
+-	if (priv->flow_ctrl & FLOW_TX)
+-		pause->tx_pause = 1;
+-
+ }
+ 
+ static int
+@@ -479,39 +455,16 @@ stmmac_set_pauseparam(struct net_device *netdev,
+ 		      struct ethtool_pauseparam *pause)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(netdev);
+-	u32 tx_cnt = priv->plat->tx_queues_to_use;
+-	struct phy_device *phy = netdev->phydev;
+-	int new_pause = FLOW_OFF;
+ 	struct rgmii_adv adv_lp;
+ 
+ 	if (priv->hw->pcs && !stmmac_pcs_get_adv_lp(priv, priv->ioaddr, &adv_lp)) {
+ 		pause->autoneg = 1;
+ 		if (!adv_lp.pause)
+ 			return -EOPNOTSUPP;
++		return 0;
+ 	} else {
+-		if (!linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+-				       phy->supported) ||
+-		    !linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+-				      phy->supported))
+-			return -EOPNOTSUPP;
++		return phylink_ethtool_set_pauseparam(priv->phylink, pause);
+ 	}
+-
+-	if (pause->rx_pause)
+-		new_pause |= FLOW_RX;
+-	if (pause->tx_pause)
+-		new_pause |= FLOW_TX;
+-
+-	priv->flow_ctrl = new_pause;
+-	phy->autoneg = pause->autoneg;
+-
+-	if (phy->autoneg) {
+-		if (netif_running(netdev))
+-			return phy_start_aneg(phy);
+-	}
+-
+-	stmmac_flow_ctrl(priv, priv->hw, phy->duplex, priv->flow_ctrl,
+-			priv->pause, tx_cnt);
+-	return 0;
+ }
+ 
+ static void stmmac_get_ethtool_stats(struct net_device *dev,
+@@ -549,7 +502,7 @@ static void stmmac_get_ethtool_stats(struct net_device *dev,
+ 			}
+ 		}
+ 		if (priv->eee_enabled) {
+-			int val = phy_get_eee_err(dev->phydev);
++			int val = phylink_get_eee_err(priv->phylink);
+ 			if (val)
+ 				priv->xstats.phy_eee_wakeup_error_n = val;
+ 		}
+@@ -694,7 +647,7 @@ static int stmmac_ethtool_op_get_eee(struct net_device *dev,
+ 	edata->eee_active = priv->eee_active;
+ 	edata->tx_lpi_timer = priv->tx_lpi_timer;
+ 
+-	return phy_ethtool_get_eee(dev->phydev, edata);
++	return phylink_ethtool_get_eee(priv->phylink, edata);
+ }
+ 
+ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+@@ -715,7 +668,7 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+ 			return -EOPNOTSUPP;
+ 	}
+ 
+-	ret = phy_ethtool_set_eee(dev->phydev, edata);
++	ret = phylink_ethtool_set_eee(priv->phylink, edata);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -892,7 +845,7 @@ static const struct ethtool_ops stmmac_ethtool_ops = {
+ 	.get_regs = stmmac_ethtool_gregs,
+ 	.get_regs_len = stmmac_ethtool_get_regs_len,
+ 	.get_link = ethtool_op_get_link,
+-	.nway_reset = phy_ethtool_nway_reset,
++	.nway_reset = stmmac_nway_reset,
+ 	.get_pauseparam = stmmac_get_pauseparam,
+ 	.set_pauseparam = stmmac_set_pauseparam,
+ 	.self_test = stmmac_selftest_run,
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 6a2f072c0ce3..e2e69cb08fef 100644
+index e2e69cb08fef..ad007d8bf9d7 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -45,6 +45,7 @@
- #include <linux/seq_file.h>
- #endif /* CONFIG_DEBUG_FS */
- #include <linux/net_tstamp.h>
-+#include <linux/phylink.h>
- #include <net/pkt_cls.h>
- #include "stmmac_ptp.h"
- #include "stmmac.h"
-@@ -848,6 +849,39 @@ static void stmmac_mac_flow_ctrl(struct stmmac_priv *priv, u32 duplex)
- 			priv->pause, tx_cnt);
+@@ -328,21 +328,6 @@ static inline u32 stmmac_rx_dirty(struct stmmac_priv *priv, u32 queue)
+ 	return dirty;
  }
  
-+static void stmmac_validate(struct phylink_config *config,
-+			    unsigned long *supported,
-+			    struct phylink_link_state *state)
-+{
-+	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+	int tx_cnt = priv->plat->tx_queues_to_use;
-+	int max_speed = priv->plat->max_speed;
-+
-+	/* Cut down 1G if asked to */
-+	if ((max_speed > 0) && (max_speed < 1000)) {
-+		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+	}
-+
-+	/* Half-Duplex can only work with single queue */
-+	if (tx_cnt > 1) {
-+		phylink_set(mask, 10baseT_Half);
-+		phylink_set(mask, 100baseT_Half);
-+		phylink_set(mask, 1000baseT_Half);
-+	}
-+
-+	bitmap_andnot(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_andnot(state->advertising, state->advertising, mask,
-+		      __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static int stmmac_mac_link_state(struct phylink_config *config,
-+				 struct phylink_link_state *state)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static void stmmac_mac_config(struct net_device *dev)
+-/**
+- * stmmac_hw_fix_mac_speed - callback for speed selection
+- * @priv: driver private structure
+- * Description: on some platforms (e.g. ST), some HW system configuration
+- * registers have to be set according to the link speed negotiated.
+- */
+-static inline void stmmac_hw_fix_mac_speed(struct stmmac_priv *priv)
+-{
+-	struct net_device *ndev = priv->dev;
+-	struct phy_device *phydev = ndev->phydev;
+-
+-	if (likely(priv->plat->fix_mac_speed))
+-		priv->plat->fix_mac_speed(priv->plat->bsp_priv, phydev->speed);
+-}
+-
+ /**
+  * stmmac_enable_eee_mode - check and enter in LPI mode
+  * @priv: driver private structure
+@@ -406,14 +391,7 @@ static void stmmac_eee_ctrl_timer(struct timer_list *t)
+  */
+ bool stmmac_eee_init(struct stmmac_priv *priv)
  {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-@@ -900,6 +934,11 @@ static void stmmac_mac_config(struct net_device *dev)
+-	struct net_device *ndev = priv->dev;
+-	int interface = priv->plat->interface;
+-	bool ret = false;
+-
+-	if ((interface != PHY_INTERFACE_MODE_MII) &&
+-	    (interface != PHY_INTERFACE_MODE_GMII) &&
+-	    !phy_interface_mode_is_rgmii(interface))
+-		goto out;
++	int tx_lpi_timer = priv->tx_lpi_timer;
+ 
+ 	/* Using PCS we cannot dial with the phy registers at this stage
+ 	 * so we do not support extra feature like EEE.
+@@ -421,52 +399,32 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+ 	if ((priv->hw->pcs == STMMAC_PCS_RGMII) ||
+ 	    (priv->hw->pcs == STMMAC_PCS_TBI) ||
+ 	    (priv->hw->pcs == STMMAC_PCS_RTBI))
+-		goto out;
+-
+-	/* MAC core supports the EEE feature. */
+-	if (priv->dma_cap.eee) {
+-		int tx_lpi_timer = priv->tx_lpi_timer;
+-
+-		/* Check if the PHY supports EEE */
+-		if (phy_init_eee(ndev->phydev, 1)) {
+-			/* To manage at run-time if the EEE cannot be supported
+-			 * anymore (for example because the lp caps have been
+-			 * changed).
+-			 * In that case the driver disable own timers.
+-			 */
+-			mutex_lock(&priv->lock);
+-			if (priv->eee_active) {
+-				netdev_dbg(priv->dev, "disable EEE\n");
+-				del_timer_sync(&priv->eee_ctrl_timer);
+-				stmmac_set_eee_timer(priv, priv->hw, 0,
+-						tx_lpi_timer);
+-			}
+-			priv->eee_active = 0;
+-			mutex_unlock(&priv->lock);
+-			goto out;
+-		}
+-		/* Activate the EEE and start timers */
+-		mutex_lock(&priv->lock);
+-		if (!priv->eee_active) {
+-			priv->eee_active = 1;
+-			timer_setup(&priv->eee_ctrl_timer,
+-				    stmmac_eee_ctrl_timer, 0);
+-			mod_timer(&priv->eee_ctrl_timer,
+-				  STMMAC_LPI_T(eee_timer));
+-
+-			stmmac_set_eee_timer(priv, priv->hw,
+-					STMMAC_DEFAULT_LIT_LS, tx_lpi_timer);
+-		}
+-		/* Set HW EEE according to the speed */
+-		stmmac_set_eee_pls(priv, priv->hw, ndev->phydev->link);
++		return false;
+ 
+-		ret = true;
+-		mutex_unlock(&priv->lock);
++	/* Check if MAC core supports the EEE feature. */
++	if (!priv->dma_cap.eee)
++		return false;
++
++	mutex_lock(&priv->lock);
+ 
+-		netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
++	/* Check if it needs to be deactivated */
++	if (!priv->eee_active && priv->eee_enabled) {
++		netdev_dbg(priv->dev, "disable EEE\n");
++		del_timer_sync(&priv->eee_ctrl_timer);
++		stmmac_set_eee_timer(priv, priv->hw, 0, tx_lpi_timer);
++		return false;
+ 	}
+-out:
+-	return ret;
++
++	if (priv->eee_active && !priv->eee_enabled) {
++		timer_setup(&priv->eee_ctrl_timer, stmmac_eee_ctrl_timer, 0);
++		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(eee_timer));
++		stmmac_set_eee_timer(priv, priv->hw, STMMAC_DEFAULT_LIT_LS,
++				     tx_lpi_timer);
++	}
++
++	mutex_unlock(&priv->lock);
++	netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
++	return true;
+ }
+ 
+ /* stmmac_get_tx_hwtstamp - get HW TX timestamps
+@@ -882,54 +840,42 @@ static int stmmac_mac_link_state(struct phylink_config *config,
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static void stmmac_mac_config(struct net_device *dev)
++static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
++			      const struct phylink_link_state *state)
+ {
+-	struct stmmac_priv *priv = netdev_priv(dev);
+-	struct phy_device *phydev = dev->phydev;
++	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 	u32 ctrl;
+ 
+ 	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
++	ctrl &= ~priv->hw->link.speed_mask;
+ 
+-	if (phydev->speed != priv->speed) {
+-		ctrl &= ~priv->hw->link.speed_mask;
+-
+-		switch (phydev->speed) {
+-		case SPEED_1000:
+-			ctrl |= priv->hw->link.speed1000;
+-			break;
+-		case SPEED_100:
+-			ctrl |= priv->hw->link.speed100;
+-			break;
+-		case SPEED_10:
+-			ctrl |= priv->hw->link.speed10;
+-			break;
+-		default:
+-			netif_warn(priv, link, priv->dev,
+-				   "broken speed: %d\n", phydev->speed);
+-			phydev->speed = SPEED_UNKNOWN;
+-			break;
+-		}
+-
+-		if (phydev->speed != SPEED_UNKNOWN)
+-			stmmac_hw_fix_mac_speed(priv);
+-
+-		priv->speed = phydev->speed;
++	switch (state->speed) {
++	case SPEED_1000:
++		ctrl |= priv->hw->link.speed1000;
++		break;
++	case SPEED_100:
++		ctrl |= priv->hw->link.speed100;
++		break;
++	case SPEED_10:
++		ctrl |= priv->hw->link.speed10;
++		break;
++	default:
++		return;
+ 	}
+ 
+-	/* Now we make sure that we can be in full duplex mode.
+-	 * If not, we operate in half-duplex mode. */
+-	if (phydev->duplex != priv->oldduplex) {
+-		if (!phydev->duplex)
+-			ctrl &= ~priv->hw->link.duplex;
+-		else
+-			ctrl |= priv->hw->link.duplex;
++	priv->speed = state->speed;
+ 
+-		priv->oldduplex = phydev->duplex;
+-	}
++	if (priv->plat->fix_mac_speed)
++		priv->plat->fix_mac_speed(priv->plat->bsp_priv, state->speed);
++
++	if (!state->duplex)
++		ctrl &= ~priv->hw->link.duplex;
++	else
++		ctrl |= priv->hw->link.duplex;
+ 
+ 	/* Flow Control operation */
+-	if (phydev->pause)
+-		stmmac_mac_flow_ctrl(priv, phydev->duplex);
++	if (state->pause)
++		stmmac_mac_flow_ctrl(priv, state->duplex);
+ 
  	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
  }
- 
-+static void stmmac_mac_an_restart(struct phylink_config *config)
-+{
-+	/* Not Supported */
-+}
-+
- static void stmmac_mac_link_down(struct net_device *dev, bool autoneg)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-@@ -914,6 +953,15 @@ static void stmmac_mac_link_up(struct net_device *dev, bool autoneg)
- 	stmmac_mac_set(priv, priv->ioaddr, true);
+@@ -939,85 +885,40 @@ static void stmmac_mac_an_restart(struct phylink_config *config)
+ 	/* Not Supported */
  }
  
-+static const struct phylink_mac_ops __maybe_unused stmmac_phylink_mac_ops = {
-+	.validate = stmmac_validate,
-+	.mac_link_state = stmmac_mac_link_state,
-+	.mac_config = NULL, /* TO BE FILLED */
-+	.mac_an_restart = stmmac_mac_an_restart,
-+	.mac_link_down = NULL, /* TO BE FILLED */
-+	.mac_link_up = NULL, /* TO BE FILLED */
-+};
-+
+-static void stmmac_mac_link_down(struct net_device *dev, bool autoneg)
++static void stmmac_mac_link_down(struct phylink_config *config,
++				 unsigned int mode, phy_interface_t interface)
+ {
+-	struct stmmac_priv *priv = netdev_priv(dev);
++	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 
+ 	stmmac_mac_set(priv, priv->ioaddr, false);
++	priv->eee_active = false;
++	stmmac_eee_init(priv);
++	stmmac_set_eee_pls(priv, priv->hw, false);
+ }
+ 
+-static void stmmac_mac_link_up(struct net_device *dev, bool autoneg)
++static void stmmac_mac_link_up(struct phylink_config *config,
++			       unsigned int mode, phy_interface_t interface,
++			       struct phy_device *phy)
+ {
+-	struct stmmac_priv *priv = netdev_priv(dev);
++	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 
+ 	stmmac_mac_set(priv, priv->ioaddr, true);
++	if (phy) {
++		priv->eee_active = phy_init_eee(phy, 1) >= 0;
++		priv->eee_enabled = stmmac_eee_init(priv);
++		stmmac_set_eee_pls(priv, priv->hw, true);
++	}
+ }
+ 
+-static const struct phylink_mac_ops __maybe_unused stmmac_phylink_mac_ops = {
++static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
+ 	.validate = stmmac_validate,
+ 	.mac_link_state = stmmac_mac_link_state,
+-	.mac_config = NULL, /* TO BE FILLED */
++	.mac_config = stmmac_mac_config,
+ 	.mac_an_restart = stmmac_mac_an_restart,
+-	.mac_link_down = NULL, /* TO BE FILLED */
+-	.mac_link_up = NULL, /* TO BE FILLED */
++	.mac_link_down = stmmac_mac_link_down,
++	.mac_link_up = stmmac_mac_link_up,
+ };
+ 
+-/**
+- * stmmac_adjust_link - adjusts the link parameters
+- * @dev: net device structure
+- * Description: this is the helper called by the physical abstraction layer
+- * drivers to communicate the phy link status. According the speed and duplex
+- * this driver can invoke registered glue-logic as well.
+- * It also invoke the eee initialization because it could happen when switch
+- * on different networks (that are eee capable).
+- */
+-static void stmmac_adjust_link(struct net_device *dev)
+-{
+-	struct stmmac_priv *priv = netdev_priv(dev);
+-	struct phy_device *phydev = dev->phydev;
+-	bool new_state = false;
+-
+-	if (!phydev)
+-		return;
+-
+-	mutex_lock(&priv->lock);
+-
+-	if (phydev->link) {
+-		stmmac_mac_config(dev);
+-
+-		if (!priv->oldlink) {
+-			new_state = true;
+-			priv->oldlink = true;
+-		}
+-	} else if (priv->oldlink) {
+-		new_state = true;
+-		priv->oldlink = false;
+-		priv->speed = SPEED_UNKNOWN;
+-		priv->oldduplex = DUPLEX_UNKNOWN;
+-	}
+-
+-	if (phydev->link)
+-		stmmac_mac_link_up(dev, false);
+-	else
+-		stmmac_mac_link_down(dev, false);
+-
+-	if (new_state && netif_msg_link(priv))
+-		phy_print_status(phydev);
+-
+-	mutex_unlock(&priv->lock);
+-
+-	if (phydev->is_pseudo_fixed_link)
+-		/* Stop PHY layer to call the hook to adjust the link in case
+-		 * of a switch is attached to the stmmac driver.
+-		 */
+-		phydev->irq = PHY_IGNORE_INTERRUPT;
+-	else
+-		/* At this stage, init the EEE if supported.
+-		 * Never called in case of fixed_link.
+-		 */
+-		priv->eee_enabled = stmmac_eee_init(priv);
+-}
+-
  /**
-  * stmmac_adjust_link - adjusts the link parameters
-  * @dev: net device structure
+  * stmmac_check_pcs_mode - verify if RGMII/SGMII is supported
+  * @priv: driver private structure
+@@ -1054,79 +955,44 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
+ static int stmmac_init_phy(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+-	u32 tx_cnt = priv->plat->tx_queues_to_use;
+-	struct phy_device *phydev;
+-	char phy_id_fmt[MII_BUS_ID_SIZE + 3];
+-	char bus_id[MII_BUS_ID_SIZE];
+-	int interface = priv->plat->interface;
+-	int max_speed = priv->plat->max_speed;
+-	priv->oldlink = false;
+-	priv->speed = SPEED_UNKNOWN;
+-	priv->oldduplex = DUPLEX_UNKNOWN;
+-
+-	if (priv->plat->phy_node) {
+-		phydev = of_phy_connect(dev, priv->plat->phy_node,
+-					&stmmac_adjust_link, 0, interface);
+-	} else {
+-		snprintf(bus_id, MII_BUS_ID_SIZE, "stmmac-%x",
+-			 priv->plat->bus_id);
++	struct device_node *node;
++	int ret;
+ 
+-		snprintf(phy_id_fmt, MII_BUS_ID_SIZE + 3, PHY_ID_FMT, bus_id,
+-			 priv->plat->phy_addr);
+-		netdev_dbg(priv->dev, "%s: trying to attach to %s\n", __func__,
+-			   phy_id_fmt);
++	node = priv->plat->phy_node;
+ 
+-		phydev = phy_connect(dev, phy_id_fmt, &stmmac_adjust_link,
+-				     interface);
+-	}
++	if (node) {
++		ret = phylink_of_phy_connect(priv->phylink, node, 0);
++	} else {
++		int addr = priv->plat->phy_addr;
++		struct phy_device *phydev;
+ 
+-	if (IS_ERR_OR_NULL(phydev)) {
+-		netdev_err(priv->dev, "Could not attach to PHY\n");
+-		if (!phydev)
++		phydev = mdiobus_get_phy(priv->mii, addr);
++		if (!phydev) {
++			netdev_err(priv->dev, "no phy at addr %d\n", addr);
+ 			return -ENODEV;
++		}
+ 
+-		return PTR_ERR(phydev);
++		ret = phylink_connect_phy(priv->phylink, phydev);
+ 	}
+ 
+-	/* Stop Advertising 1000BASE Capability if interface is not GMII */
+-	if ((interface == PHY_INTERFACE_MODE_MII) ||
+-	    (interface == PHY_INTERFACE_MODE_RMII) ||
+-		(max_speed < 1000 && max_speed > 0))
+-		phy_set_max_speed(phydev, SPEED_100);
++	return ret;
++}
+ 
+-	/*
+-	 * Half-duplex mode not supported with multiqueue
+-	 * half-duplex can only works with single queue
+-	 */
+-	if (tx_cnt > 1) {
+-		phy_remove_link_mode(phydev,
+-				     ETHTOOL_LINK_MODE_10baseT_Half_BIT);
+-		phy_remove_link_mode(phydev,
+-				     ETHTOOL_LINK_MODE_100baseT_Half_BIT);
+-		phy_remove_link_mode(phydev,
+-				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+-	}
++static int stmmac_phy_setup(struct stmmac_priv *priv)
++{
++	struct device_node *node = priv->plat->phy_node;
++	int mode = priv->plat->interface;
++	struct phylink *phylink;
+ 
+-	/*
+-	 * Broken HW is sometimes missing the pull-up resistor on the
+-	 * MDIO line, which results in reads to non-existent devices returning
+-	 * 0 rather than 0xffff. Catch this here and treat 0 as a non-existent
+-	 * device as well.
+-	 * Note: phydev->phy_id is the result of reading the UID PHY registers.
+-	 */
+-	if (!priv->plat->phy_node && phydev->phy_id == 0) {
+-		phy_disconnect(phydev);
+-		return -ENODEV;
+-	}
++	priv->phylink_config.dev = &priv->dev->dev;
++	priv->phylink_config.type = PHYLINK_NETDEV;
+ 
+-	/* stmmac_adjust_link will change this to PHY_IGNORE_INTERRUPT to avoid
+-	 * subsequent PHY polling, make sure we force a link transition if
+-	 * we have a UP/DOWN/UP transition
+-	 */
+-	if (phydev->is_pseudo_fixed_link)
+-		phydev->irq = PHY_POLL;
++	phylink = phylink_create(&priv->phylink_config, of_fwnode_handle(node),
++				 mode, &stmmac_phylink_mac_ops);
++	if (IS_ERR(phylink))
++		return PTR_ERR(phylink);
+ 
+-	phy_attached_info(phydev);
++	priv->phylink = phylink;
+ 	return 0;
+ }
+ 
+@@ -2739,8 +2605,7 @@ static int stmmac_open(struct net_device *dev)
+ 
+ 	stmmac_init_tx_coalesce(priv);
+ 
+-	if (dev->phydev)
+-		phy_start(dev->phydev);
++	phylink_start(priv->phylink);
+ 
+ 	/* Request the IRQ lines */
+ 	ret = request_irq(dev->irq, stmmac_interrupt,
+@@ -2787,8 +2652,7 @@ static int stmmac_open(struct net_device *dev)
+ wolirq_error:
+ 	free_irq(dev->irq, dev);
+ irq_error:
+-	if (dev->phydev)
+-		phy_stop(dev->phydev);
++	phylink_stop(priv->phylink);
+ 
+ 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
+ 		del_timer_sync(&priv->tx_queue[chan].txtimer);
+@@ -2797,9 +2661,7 @@ static int stmmac_open(struct net_device *dev)
+ init_error:
+ 	free_dma_desc_resources(priv);
+ dma_desc_error:
+-	if (dev->phydev)
+-		phy_disconnect(dev->phydev);
+-
++	phylink_disconnect_phy(priv->phylink);
+ 	return ret;
+ }
+ 
+@@ -2818,10 +2680,8 @@ static int stmmac_release(struct net_device *dev)
+ 		del_timer_sync(&priv->eee_ctrl_timer);
+ 
+ 	/* Stop and disconnect the PHY */
+-	if (dev->phydev) {
+-		phy_stop(dev->phydev);
+-		phy_disconnect(dev->phydev);
+-	}
++	phylink_stop(priv->phylink);
++	phylink_disconnect_phy(priv->phylink);
+ 
+ 	stmmac_stop_all_queues(priv);
+ 
+@@ -3878,6 +3738,7 @@ static void stmmac_poll_controller(struct net_device *dev)
+  */
+ static int stmmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ {
++	struct stmmac_priv *priv = netdev_priv (dev);
+ 	int ret = -EOPNOTSUPP;
+ 
+ 	if (!netif_running(dev))
+@@ -3887,9 +3748,7 @@ static int stmmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	case SIOCGMIIPHY:
+ 	case SIOCGMIIREG:
+ 	case SIOCSMIIREG:
+-		if (!dev->phydev)
+-			return -EINVAL;
+-		ret = phy_mii_ioctl(dev->phydev, rq, cmd);
++		ret = phylink_mii_ioctl(priv->phylink, rq, cmd);
+ 		break;
+ 	case SIOCSHWTSTAMP:
+ 		ret = stmmac_hwtstamp_set(dev, rq);
+@@ -4480,6 +4339,12 @@ int stmmac_dvr_probe(struct device *device,
+ 		}
+ 	}
+ 
++	ret = stmmac_phy_setup(priv);
++	if (ret) {
++		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
++		goto error_phy_setup;
++	}
++
+ 	ret = register_netdev(ndev);
+ 	if (ret) {
+ 		dev_err(priv->device, "%s: ERROR %i registering the device\n",
+@@ -4497,6 +4362,8 @@ int stmmac_dvr_probe(struct device *device,
+ 	return ret;
+ 
+ error_netdev_register:
++	phylink_destroy(priv->phylink);
++error_phy_setup:
+ 	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
+ 	    priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+@@ -4538,6 +4405,7 @@ int stmmac_dvr_remove(struct device *dev)
+ 	stmmac_mac_set(priv, priv->ioaddr, false);
+ 	netif_carrier_off(ndev);
+ 	unregister_netdev(ndev);
++	phylink_destroy(priv->phylink);
+ 	if (priv->plat->stmmac_rst)
+ 		reset_control_assert(priv->plat->stmmac_rst);
+ 	clk_disable_unprepare(priv->plat->pclk);
+@@ -4568,8 +4436,7 @@ int stmmac_suspend(struct device *dev)
+ 	if (!ndev || !netif_running(ndev))
+ 		return 0;
+ 
+-	if (ndev->phydev)
+-		phy_stop(ndev->phydev);
++	phylink_stop(priv->phylink);
+ 
+ 	mutex_lock(&priv->lock);
+ 
+@@ -4594,9 +4461,7 @@ int stmmac_suspend(struct device *dev)
+ 	}
+ 	mutex_unlock(&priv->lock);
+ 
+-	priv->oldlink = false;
+ 	priv->speed = SPEED_UNKNOWN;
+-	priv->oldduplex = DUPLEX_UNKNOWN;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(stmmac_suspend);
+@@ -4680,8 +4545,7 @@ int stmmac_resume(struct device *dev)
+ 
+ 	mutex_unlock(&priv->lock);
+ 
+-	if (ndev->phydev)
+-		phy_start(ndev->phydev);
++	phylink_start(priv->phylink);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index f45bfbef97d0..898f94aced53 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -333,21 +333,6 @@ static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
+ 		{},
+ 	};
+ 
+-	/* If phy-handle property is passed from DT, use it as the PHY */
+-	plat->phy_node = of_parse_phandle(np, "phy-handle", 0);
+-	if (plat->phy_node)
+-		dev_dbg(dev, "Found phy-handle subnode\n");
+-
+-	/* If phy-handle is not specified, check if we have a fixed-phy */
+-	if (!plat->phy_node && of_phy_is_fixed_link(np)) {
+-		if ((of_phy_register_fixed_link(np) < 0))
+-			return -ENODEV;
+-
+-		dev_dbg(dev, "Found fixed-link subnode\n");
+-		plat->phy_node = of_node_get(np);
+-		mdio = false;
+-	}
+-
+ 	if (of_match_node(need_mdio_ids, np)) {
+ 		plat->mdio_node = of_get_child_by_name(np, "mdio");
+ 	} else {
+@@ -396,6 +381,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 
+ 	*mac = of_get_mac_address(np);
+ 	plat->interface = of_get_phy_mode(np);
++	plat->phy_node = np;
+ 
+ 	/* Get max speed of operation from device tree */
+ 	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
+@@ -591,11 +577,6 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ void stmmac_remove_config_dt(struct platform_device *pdev,
+ 			     struct plat_stmmacenet_data *plat)
+ {
+-	struct device_node *np = pdev->dev.of_node;
+-
+-	if (of_phy_is_fixed_link(np))
+-		of_phy_deregister_fixed_link(np);
+-	of_node_put(plat->phy_node);
+ 	of_node_put(plat->mdio_node);
+ }
+ #else
 -- 
 2.21.0
 
