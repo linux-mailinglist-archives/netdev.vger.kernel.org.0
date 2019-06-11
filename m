@@ -2,61 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2A23D5B0
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 086333D5BF
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729316AbfFKSoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 14:44:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50048 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389600AbfFKSoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:44:09 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B34DE15259C97;
-        Tue, 11 Jun 2019 11:44:08 -0700 (PDT)
-Date:   Tue, 11 Jun 2019 11:44:08 -0700 (PDT)
-Message-Id: <20190611.114408.1066206492769692313.davem@davemloft.net>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     netdev@vger.kernel.org, willemb@google.com,
-        syzkaller@googlegroups.com
-Subject: Re: [PATCH net] net: correct udp zerocopy refcnt also when
- zerocopy only on append
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190607215748.146484-1-willemdebruijn.kernel@gmail.com>
-References: <20190607215748.146484-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 11 Jun 2019 11:44:08 -0700 (PDT)
+        id S2392065AbfFKSsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 14:48:06 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52204 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392060AbfFKSsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 14:48:06 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 207so4041832wma.1;
+        Tue, 11 Jun 2019 11:48:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DxPgzH7JmzfidJ4UnyHoyfbbx6kdh98v9wymlp4AUqk=;
+        b=LwLWaZmu5HuVedTxkD7GZN90TxdMTTacKvHGGUODRDIYPtxtbKlgmuQZxK1XEblKBH
+         2H7mfrgZlAt/FztR69wqmzTv15Qc8lxM1R+UKrkz+u/lHD+G6oxjZuLFnsOZxWl2otZL
+         ZnpA0pIEJLhKsUW+pXxJC2u3ihVC0W7AZI+3VjNlwI7XAK0lLhY7l7jYAIKqwwQRpTGJ
+         vAnRkAJcHcvUhC7jFBXMQsHJQn1D6zlcK40d06mxPIKOF4HAHWVTyUh2DVvrfhJx/Um+
+         39zFdlGQ1MSJNjVt7+qR1efrKgwEmtoOEwKkJz5U+0JAanuIiqtEknxwbXuqm646Kgfk
+         O6QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DxPgzH7JmzfidJ4UnyHoyfbbx6kdh98v9wymlp4AUqk=;
+        b=tHRRBCiX1PbHK3hzb/pXAuzzYVP1ZXA22RRHh4sPACMEat6Q/br2McCliqZ1+qtYTS
+         43OkpHRx91r2spv0oxbeV2RyPxf4jZxTCo/KfvuCPFXXMEFJldZnrMF7hwjDdcdXcQ8c
+         CcfLj+9knlB72EPUaL2mPED+N4e5djk0EmbfULxd0SjN3LRFniEv+uLtK4imYEpL4xUc
+         Rv91BzlStrxzlfbsgkKCcAXKWOQV1mWinqv9oWSB+jJ2EDRG6tkGtdgzGwIs9wb1xkTN
+         Xs7AWq6AWItrL6G7x9gA05pyPQ/kj8qDKR8JrQeyGLI8xnLWXhO3C6eEWHqQ+QMX6hMt
+         Gh2w==
+X-Gm-Message-State: APjAAAWm87zuCDeCx9VtVFz5LggsS0nkwc9egYRlL4SMgpWPg75j9J2y
+        wf4o+mu3X7iFlgD1sEWAnHo=
+X-Google-Smtp-Source: APXvYqwbyObToAW8Km9r5qKriKBBaEXn+rcKOuoHpcF2P3H1s7GPnB74jTzka0u6DteFTPMPMrvSXw==
+X-Received: by 2002:a7b:cd8e:: with SMTP id y14mr18811496wmj.155.1560278883705;
+        Tue, 11 Jun 2019 11:48:03 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.252.192])
+        by smtp.gmail.com with ESMTPSA id x83sm3252909wmb.42.2019.06.11.11.48.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 11 Jun 2019 11:48:03 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        rdunlap@infradead.org, sfr@canb.auug.org.au, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: tag_sja1105: Select CONFIG_PACKING
+Date:   Tue, 11 Jun 2019 21:47:45 +0300
+Message-Id: <20190611184745.6104-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Fri,  7 Jun 2019 17:57:48 -0400
+The packing facility is needed to decode Ethernet meta frames containing
+source port and RX timestamping information.
 
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> The below patch fixes an incorrect zerocopy refcnt increment when
-> appending with MSG_MORE to an existing zerocopy udp skb.
-> 
->   send(.., MSG_ZEROCOPY | MSG_MORE);	// refcnt 1
->   send(.., MSG_ZEROCOPY | MSG_MORE);	// refcnt still 1 (bar frags)
-> 
-> But it missed that zerocopy need not be passed at the first send. The
-> right test whether the uarg is newly allocated and thus has extra
-> refcnt 1 is not !skb, but !skb_zcopy.
-> 
->   send(.., MSG_MORE);			// <no uarg>
->   send(.., MSG_ZEROCOPY);		// refcnt 1
-> 
-> Fixes: 100f6d8e09905 ("net: correct zerocopy refcnt with udp MSG_MORE")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+The DSA driver selects CONFIG_PACKING, but the tagger did not, and since
+taggers can be now compiled as modules independently from the drivers
+themselves, this is an issue now, as CONFIG_PACKING is disabled by
+default on all architectures.
 
-Applied, thanks Willem.
+Fixes: e53e18a6fe4d ("net: dsa: sja1105: Receive and decode meta frames")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+---
+ net/dsa/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index d449f78c1bd0..6e942dda1bcd 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -106,6 +106,7 @@ config NET_DSA_TAG_LAN9303
+ config NET_DSA_TAG_SJA1105
+ 	tristate "Tag driver for NXP SJA1105 switches"
+ 	select NET_DSA_TAG_8021Q
++	select PACKING
+ 	help
+ 	  Say Y or M if you want to enable support for tagging frames with the
+ 	  NXP SJA1105 switch family. Both the native tagging protocol (which
+-- 
+2.17.1
+
