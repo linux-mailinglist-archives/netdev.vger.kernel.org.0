@@ -2,119 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 919553D4BD
-	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 19:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 771483D4D5
+	for <lists+netdev@lfdr.de>; Tue, 11 Jun 2019 20:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406761AbfFKR6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 13:58:51 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35190 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406750AbfFKR6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 13:58:50 -0400
-Received: by mail-pl1-f195.google.com with SMTP id p1so5448313plo.2;
-        Tue, 11 Jun 2019 10:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7O7Ru3+l0O74nsHSw3FBczx/b+MRdjv8EnNhf40gnd0=;
-        b=UMYNlL1JStLpTHwOS2NiKeg51hIerdo4Zd3UgAz+ypA5DvTYyj8rTf1XCvbQAi4k2c
-         /lMNDLF4CoFMIRkzKdfalIJm1fKrPhLsHu183fANxaqoHyb8pzP47DOJl++biJWHIEU5
-         h3VWtbexf1/ldnGwAbF5UnMFXm4gPPZ8L+9MDMi1l7jJx5einN1e70s0xGEB+D8JLsfT
-         jysbQ5FsIgolc/Ke8vsEYlNZwtFn3VzzWg5IVntUHZZ6ATjjXPt6v4w5vzjixEyzSg3j
-         jQt5BC32PWnOjw1O/xXO4932ZBf23eNWWUMHCuQBalBUsOJ9pr3+reTbPcbBlYJOCp7W
-         rXjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7O7Ru3+l0O74nsHSw3FBczx/b+MRdjv8EnNhf40gnd0=;
-        b=ud+ukIhiZfCHrhEumGhEA10CPZBBFznPCPbImdqh6bBiGgpjxme/sETrDfKk+/2pa2
-         L/klVX84YNRFKqe828rl/V5KpSHIzhVTT0KEl1rDqbzqe3/oqwfejlkZqI4bzyGxQzYC
-         6SSQ6HhcjcXgClP42USG3SNkL3/Tjxdfe+shtZ5r3kjZgYPXUe8WtG9hbtZU2kdMtM/q
-         Z4+xv0on1lk8jGMU8C43Jw4HZEvULsM86FqM7S8SPt7W2/+2e5pJGfIycBsGF+gMsePf
-         oZf30XbLy9vh8ib66XKeJI0A8vRiwo96myeBPOzlt7tOcVwGnjyTx8aKA7ejJCjMaiEZ
-         mItw==
-X-Gm-Message-State: APjAAAW/aLT7pyKaZSwPMGIPsfxGbS+jyMRJr+Bp/SxyzU9oWkEyWrcY
-        8kW1qDFmkYtaj+Et+J1sKsASy/hy
-X-Google-Smtp-Source: APXvYqyiQwe71OfRqbIpE0WEbsjZnhVJzlFBUwrbKVsHtWtIyzZS9x7MotQhzQpxZuCnEGiRlw4yyA==
-X-Received: by 2002:a17:902:106:: with SMTP id 6mr13857570plb.64.1560275928967;
-        Tue, 11 Jun 2019 10:58:48 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s24sm15991182pfh.133.2019.06.11.10.58.46
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 10:58:46 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        iommu@lists.linux-foundation.org (open list:DMA MAPPING HELPERS),
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
-Subject: [PATCH 2/2] swiotlb: Return consistent SWIOTLB segments/nr_tbl
-Date:   Tue, 11 Jun 2019 10:58:25 -0700
-Message-Id: <20190611175825.572-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190611175825.572-1-f.fainelli@gmail.com>
-References: <20190611175825.572-1-f.fainelli@gmail.com>
+        id S2406736AbfFKSAg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Jun 2019 14:00:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39688 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406628AbfFKSAg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 14:00:36 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 94E903082E68;
+        Tue, 11 Jun 2019 18:00:30 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA5131001B0F;
+        Tue, 11 Jun 2019 18:00:22 +0000 (UTC)
+Date:   Tue, 11 Jun 2019 20:00:21 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v3 2/3] bpf_xdp_redirect_map: Perform map
+ lookup in eBPF helper
+Message-ID: <20190611200021.473138bc@carbon>
+In-Reply-To: <156026784011.26748.7290735899755011809.stgit@alrua-x1>
+References: <156026783994.26748.2899804283816365487.stgit@alrua-x1>
+        <156026784011.26748.7290735899755011809.stgit@alrua-x1>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 11 Jun 2019 18:00:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With a specifically contrived memory layout where there is no physical
-memory available to the kernel below the 4GB boundary, we will fail to
-perform the initial swiotlb_init() call and set no_iotlb_memory to true.
+On Tue, 11 Jun 2019 17:44:00 +0200
+Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 
-There are drivers out there that call into swiotlb_nr_tbl() to determine
-whether they can use the SWIOTLB. With the right DMA_BIT_MASK() value
-for these drivers (say 64-bit), they won't ever need to hit
-swiotlb_tbl_map_single() so this can go unoticed and we would be
-possibly lying about those drivers.
+> From: Toke Høiland-Jørgensen <toke@redhat.com>
+> 
+> The bpf_redirect_map() helper used by XDP programs doesn't return any
+> indication of whether it can successfully redirect to the map index it was
+> given. Instead, BPF programs have to track this themselves, leading to
+> programs using duplicate maps to track which entries are populated in the
+> devmap.
+> 
+> This patch fixes this by moving the map lookup into the bpf_redirect_map()
+> helper, which makes it possible to return failure to the eBPF program. The
+> lower bits of the flags argument is used as the return code, which means
+> that existing users who pass a '0' flag argument will get XDP_ABORTED.
+> 
+> With this, a BPF program can check the return code from the helper call and
+> react by, for instance, substituting a different redirect. This works for
+> any type of map used for redirect.
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  include/linux/filter.h   |    1 +
+>  include/uapi/linux/bpf.h |    8 ++++++++
+>  net/core/filter.c        |   26 ++++++++++++--------------
+>  3 files changed, 21 insertions(+), 14 deletions(-)
+> 
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 43b45d6db36d..f31ae8b9035a 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -580,6 +580,7 @@ struct bpf_skb_data_end {
+>  struct bpf_redirect_info {
+>  	u32 ifindex;
+>  	u32 flags;
+> +	void *item;
+>  	struct bpf_map *map;
+>  	struct bpf_map *map_to_flush;
+>  	u32 kern_flags;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 7c6aef253173..9931cf02de19 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3098,6 +3098,14 @@ enum xdp_action {
+>  	XDP_REDIRECT,
+>  };
+>  
+> +/* Flags for bpf_xdp_redirect_map helper */
+> +
+> +/* The lower flag bits will be the return code of bpf_xdp_redirect_map() helper
+> + * if the map lookup fails.
+> + */
+> +#define XDP_REDIRECT_INVALID_MASK (XDP_ABORTED | XDP_DROP | XDP_PASS | XDP_TX)
+> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_INVALID_MASK
+> +
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- kernel/dma/swiotlb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Slightly confused about the naming of the define, see later.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b2b5c5df273c..e906ef2e6315 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -129,15 +129,17 @@ setup_io_tlb_npages(char *str)
- }
- early_param("swiotlb", setup_io_tlb_npages);
- 
-+static bool no_iotlb_memory;
-+
- unsigned long swiotlb_nr_tbl(void)
- {
--	return io_tlb_nslabs;
-+	return unlikely(no_iotlb_memory) ? 0 : io_tlb_nslabs;
- }
- EXPORT_SYMBOL_GPL(swiotlb_nr_tbl);
- 
- unsigned int swiotlb_max_segment(void)
- {
--	return max_segment;
-+	return unlikely(no_iotlb_memory) ? 0 : max_segment;
- }
- EXPORT_SYMBOL_GPL(swiotlb_max_segment);
- 
-@@ -160,8 +162,6 @@ unsigned long swiotlb_size_or_default(void)
- 	return size ? size : (IO_TLB_DEFAULT_SIZE);
- }
- 
--static bool no_iotlb_memory;
--
- void swiotlb_print_info(void)
- {
- 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+>  /* user accessible metadata for XDP packet hook
+>   * new fields must be added to the end of this structure
+>   */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7a996887c500..dd43be497480 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_device *dev, struct xdp_buff *xdp,
+>  			       struct bpf_redirect_info *ri)
+>  {
+>  	u32 index = ri->ifindex;
+> -	void *fwd = NULL;
+> +	void *fwd = ri->item;
+>  	int err;
+>  
+>  	ri->ifindex = 0;
+> +	ri->item = NULL;
+>  	WRITE_ONCE(ri->map, NULL);
+>  
+> -	fwd = __xdp_map_lookup_elem(map, index);
+> -	if (unlikely(!fwd)) {
+> -		err = -EINVAL;
+> -		goto err;
+> -	}
+>  	if (ri->map_to_flush && unlikely(ri->map_to_flush != map))
+>  		xdp_do_flush_map();
+>  
+> @@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+>  {
+>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+>  	u32 index = ri->ifindex;
+> -	void *fwd = NULL;
+> +	void *fwd = ri->item;
+>  	int err = 0;
+>  
+>  	ri->ifindex = 0;
+> +	ri->item = NULL;
+>  	WRITE_ONCE(ri->map, NULL);
+>  
+> -	fwd = __xdp_map_lookup_elem(map, index);
+> -	if (unlikely(!fwd)) {
+> -		err = -EINVAL;
+> -		goto err;
+> -	}
+> -
+>  	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
+>  		struct bpf_dtab_netdev *dst = fwd;
+>  
+> @@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
+>  
+>  	ri->ifindex = ifindex;
+>  	ri->flags = flags;
+> +	ri->item = NULL;
+>  	WRITE_ONCE(ri->map, NULL);
+>  
+>  	return XDP_REDIRECT;
+> @@ -3753,9 +3745,15 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+>  {
+>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+>  
+> -	if (unlikely(flags))
+> +	if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
+>  		return XDP_ABORTED;
+>  
+> +	ri->item = __xdp_map_lookup_elem(map, ifindex);
+> +	if (unlikely(!ri->item)) {
+> +		WRITE_ONCE(ri->map, NULL);
+> +		return (flags & XDP_REDIRECT_INVALID_MASK);
+
+Maybe I'm reading it wrong, but shouldn't the mask be called the "valid" mask?
+
+> +	}
+> +
+>  	ri->ifindex = ifindex;
+>  	ri->flags = flags;
+>  	WRITE_ONCE(ri->map, map);
+> 
+
+
+
 -- 
-2.17.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
