@@ -2,129 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DB942F92
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF2642FD4
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727790AbfFLTKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 15:10:16 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42608 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727051AbfFLTKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:10:16 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so10213177pff.9;
-        Wed, 12 Jun 2019 12:10:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Re/8EnpYzudwaGvo8LCJj8Aad3O5n2uY5EksfH4Bs5A=;
-        b=bO3gQwlHDpZoT+3hWkMKPIoKO5rCHMoZEYYIeAa0T0kBvQGENp//usJZ7jkT/jBT28
-         Mi0fjZ6FUG6MCTnZm33FBTUgtH67bqBcHZT7CJxydbdF5JBrctLcX/d8lDL5YCGX+0xC
-         qYACv1rGWqtUJtmcCagC6TCY/nDlroBxidHn+qY+VO7p2KUgrMEH+kFWTC+G5IXN3aBb
-         7P0fbzvUbnKD9q7LuKlLCz9qqDQoz/iVakbXqT6xxeokDISMLnWYT+Jgpk4NEE0OxXgi
-         l9eqJhiX9fPtxoyX72Tq+bpQ6lLH/qLjSLLY4Il4zGcWLam9KVsAj1GK+AlQnwnAfZLg
-         yT3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Re/8EnpYzudwaGvo8LCJj8Aad3O5n2uY5EksfH4Bs5A=;
-        b=fBgY14SXvi0pT08n66VQeeh2fDR6yAvjy/vtz5CO+xrD6uMPJK9xfM80gmlsAmmrqU
-         8KLGSLXrrWtIaDDHKPiXLIINM+L0TzIyO/D5+NKjZ0wsI+LZHwQMSHgoqC/afN9mV63s
-         126KAH9LPzRijoYRhTQbKCtyCws6G03igtkW2+hylXu3ygt9cCnM9ldLkq31bauHrkxf
-         +npwVy2j8xh0WjylpOMtISCcmVAj0HpVK+nkDIm2NpbyH8M0DC4PgCb+fjkd0S9g/frd
-         NPSxSgv6g1qPqQDBz7FjvdcuQNiolAZqQ6w2fqTzRf3cXpKlGDyzFr29LXFmIfMOW/mg
-         4MuA==
-X-Gm-Message-State: APjAAAXPrZ9Tu1twBpFfgg42EcnlqH3RPZWujjkyo0LUN95e5Ssw/xU8
-        byOPDF/wjS3wNlECwh2VE6g=
-X-Google-Smtp-Source: APXvYqzry5CvLO0bFrrUYCMTXScjX8ABtUONCewomrEazCDE3PS+alIhd6oR3CZ50sFn7afpkvCUCw==
-X-Received: by 2002:a62:e417:: with SMTP id r23mr55442533pfh.160.1560366615867;
-        Wed, 12 Jun 2019 12:10:15 -0700 (PDT)
-Received: from [172.26.107.103] ([2620:10d:c090:180::1:1d4d])
-        by smtp.gmail.com with ESMTPSA id y133sm337791pfb.28.2019.06.12.12.10.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Jun 2019 12:10:15 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Maxim Mikityanskiy" <maximmi@mellanox.com>
-Cc:     "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
-        "Magnus Karlsson" <magnus.karlsson@intel.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Saeed Mahameed" <saeedm@mellanox.com>,
-        "Tariq Toukan" <tariqt@mellanox.com>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        "Maciej Fijalkowski" <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH bpf-next v4 00/17] AF_XDP infrastructure improvements and
- mlx5e support
-Date:   Wed, 12 Jun 2019 12:10:13 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <CE3CB766-517C-4B6A-B3E1-288A34EFACE9@gmail.com>
-In-Reply-To: <20190612155605.22450-1-maximmi@mellanox.com>
-References: <20190612155605.22450-1-maximmi@mellanox.com>
+        id S1727904AbfFLTTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 15:19:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43812 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727496AbfFLTTB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 15:19:01 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id BFE22AD78;
+        Wed, 12 Jun 2019 19:18:59 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 412ABE00E3; Wed, 12 Jun 2019 21:18:59 +0200 (CEST)
+Date:   Wed, 12 Jun 2019 21:18:59 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@mellanox.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Message-ID: <20190612191859.GJ31797@unicorn.suse.cz>
+References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
+ <20190612180239.GA3499@localhost.localdomain>
+ <20190612114627.4dd137ab@cakuba.netronome.com>
+ <60a0183a1f8508d0132feb7790baac86dd70fe52.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <60a0183a1f8508d0132feb7790baac86dd70fe52.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12 Jun 2019, at 8:56, Maxim Mikityanskiy wrote:
+On Wed, Jun 12, 2019 at 08:56:10PM +0200, Johannes Berg wrote:
+> (switching to my personal email)
+> 
+> > > I can't add these actions with current net-next and iproute-next:
+> > > # ~/iproute2/tc/tc action add action ctinfo dscp 0xfc000000 0x01000000
+> > > Error: NLA_F_NESTED is missing.
+> > > We have an error talking to the kernel
+> > > 
+> > > This also happens with the current post of act_ct and should also
+> > > happen with the act_mpls post (thus why Cc'ing John as well).
+> > > 
+> > > I'm not sure how we should fix this. In theory the kernel can't get
+> > > stricter with userspace here, as that breaks user applications as
+> > > above, so older actions can't use the more stricter parser. Should we
+> > > have some actions behaving one way, and newer ones in a different way?
+> > > That seems bad.
+> 
+> I think you could just fix all of the actions in userspace, since the
+> older kernel would allow both with and without the flag, and then from a
+> userspace POV it all behaves the same, just the kernel accepts some
+> things without the flag for compatibility with older iproute2?
+> 
+> > > Or maybe all actions should just use nla_parse_nested_deprecated()?
+> > > I'm thinking this last. Yet, then the _deprecated suffix may not make
+> > > much sense here. WDYT?
+> > 
+> > Surely for new actions we can require strict validation, there is
+> > no existing user space to speak of..  
+> 
+> That was the original idea.
+> 
+> > Perhaps act_ctinfo and act_ct
+> > got slightly confused with the race you described, but in principle
+> > there is nothing stopping new actions from implementing the user space
+> > correctly, right?
+> 
+> There's one potential thing where you have a new command in netlink
+> (which thus will use strict validation), but you use existing code in
+> userspace to build the netlink message or parts thereof?
+> 
+> But then again you can just fix that while you test it, and the current
+> and older kernel will accept the stricter version for the existing use
+> of the existing code too, right?
 
-> This series contains improvements to the AF_XDP kernel infrastructure
-> and AF_XDP support in mlx5e. The infrastructure improvements are
-> required for mlx5e, but also some of them benefit to all drivers, and
-> some can be useful for other drivers that want to implement AF_XDP.
->
-> The performance testing was performed on a machine with the following
-> configuration:
->
-> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
->
-> The results with retpoline disabled, single stream:
->
-> txonly: 33.3 Mpps (21.5 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 12.2 Mpps
-> l2fwd: 9.4 Mpps
->
-> The results with retpoline enabled, single stream:
->
-> txonly: 21.3 Mpps (14.1 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 9.9 Mpps
-> l2fwd: 6.8 Mpps
->
-> v2 changes:
->
-> Added patches for mlx5e and addressed the comments for v1. Rebased for
-> bpf-next.
->
-> v3 changes:
->
-> Rebased for the newer bpf-next, resolved conflicts in libbpf. Addressed
-> Björn's comments for coding style. Fixed a bug in error handling flow in
-> mlx5e_open_xsk.
->
-> v4 changes:
->
-> UAPI is not changed, XSK RX queues are exposed to the kernel. The lower
-> half of the available amount of RX queues are regular queues, and the
-> upper half are XSK RX queues. The patch "xsk: Extend channels to support
-> combined XSK/non-XSK traffic" was dropped. The final patch was reworked
-> accordingly.
->
-> Added "net/mlx5e: Attach/detach XDP program safely", as the changes
-> introduced in the XSK patch base on the stuff from this one.
->
-> Added "libbpf: Support drivers with non-combined channels", which aligns
-> the condition in libbpf with the condition in the kernel.
->
-> Rebased over the newer bpf-next.
+Userspace can safely set NLA_F_NESTED on every nested attribute as there
+are only few places in kernel where nla->type is accessed directly
+rather than through nla_type() and those are rather specific (mostly
+when attribute type is actually used as an array index). So the best
+course of action would be letting userspace always set NLA_F_NESTED.
+So kernel can only by strict on newly added attributes but userspace can
+(and should) set NLA_F_NESTED always.
 
-Very nice change for the RX queues!
-For the series:
+The opposite direction (kernel -> userspace) is more tricky as we can
+never be sure there isn't some userspace client accessing the type directly
+without masking out the flags. Thus kernel can only set NLA_F_NESTED on
+new attributes where there cannot be any userspace program used to it
+not being set.
 
-Tested-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Michal
