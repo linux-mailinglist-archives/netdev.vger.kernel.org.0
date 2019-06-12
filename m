@@ -2,115 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7C84278C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 15:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E6642797
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 15:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728187AbfFLNaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 09:30:13 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33428 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731349AbfFLNaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 09:30:13 -0400
-Received: by mail-pg1-f194.google.com with SMTP id k187so8443684pga.0
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 06:30:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r+Z6ENHOd/pxyq2jZaZiWtzwxfMq+O5WPqbpYAgDOps=;
-        b=GDlsuEVZRf+yO6PBnCD2wOaunv4j3CEhvGbv3DqihqG4+EaZLyfsda8tkLaizsWowA
-         A26/Sil5xltoWomq3WKONFSSL4iNL4USji1zYiScGAlmDU3LaKUsSwn86BfPIpTbet2F
-         9NE7FNQu2qO7HkjGcC1DgOhsesHBcRBBqgpNLgXdHjmAcEqxWSqEeuFRYaOp34nrZLns
-         GSsSB4dcEx/tv0i/+LAXSEBrvrXlubPalRm88TwmCS/vFD6Lyqqnm4gmRii6c+rEHVfM
-         P3CBL2Y1F40Ouilrsx0zPdMTpzIao1SXDj/yojPKo7Ao9+9LjfsCOE7ET1ERPiB3U4wt
-         hE5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r+Z6ENHOd/pxyq2jZaZiWtzwxfMq+O5WPqbpYAgDOps=;
-        b=R7bw9eLUsDlbr8igrN+EICa1XC27/DHtPEn5H7Tm4930dXoeQi+I4NRqiNvpwrDHoD
-         cN+n3NV5oQAHFAtqf+W74Zu4d3OH3YpvPyYqIz2ACRXbnMA+hkUITOopVKuv+iIf5wlE
-         aGCRewIbnRhf/Bu8WePZPbBF1QGO2Vvlmr+3msFvfcp4g7VoLJ1pd1CwyOk4i5L8eNjk
-         YHFqkREvTSDB2vw4HyoLM91GN9rXhN4KI8S0fI2BxfcOp7shNGI05lAJcaeXqjqAt+bI
-         M9DKFiXvKjBAJ1LRxbCXKjGRWgfAS17mDgGn+e6Mqad1gmpvdJbyKM18QpKYJaKkFy0o
-         sdmw==
-X-Gm-Message-State: APjAAAUDiW/XoUCj0YuwwhCTEbDAQcD31WWXKHrlJJhhR1iAWrxcoX0H
-        8GMbXkNwITTJ5O+HAn2amNF/nAYf13U=
-X-Google-Smtp-Source: APXvYqxXv2RSKFMOk/j0KIEjpJL0x+XXhw/h7pkOaa3OSYHl2Nuq9sjKRVLDaaFB2hq8emZpOnBfRw==
-X-Received: by 2002:a63:2848:: with SMTP id o69mr25205536pgo.258.1560346212608;
-        Wed, 12 Jun 2019 06:30:12 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i5sm4083pjj.8.2019.06.12.06.30.12
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 06:30:12 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 06:30:06 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 203867] New: invalid parameter to NL_SET_ERR_MSG_ATTR() in
- vxlan.c and geneve.c
-Message-ID: <20190612063006.31e27272@hermes.lan>
+        id S2439401AbfFLNcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 09:32:53 -0400
+Received: from mga04.intel.com ([192.55.52.120]:39218 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728141AbfFLNcw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 09:32:52 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jun 2019 06:32:52 -0700
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 12 Jun 2019 06:32:49 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hb3Mw-000DYM-BQ; Wed, 12 Jun 2019 21:32:50 +0800
+Date:   Wed, 12 Jun 2019 21:32:26 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kbuild-all@01.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [linux-next:master 4948/6049]
+ drivers/net/dsa/sja1105/sja1105_main.c:1718:6: sparse: sparse: symbol
+ 'sja1105_port_txtstamp' was not declared. Should it be static?
+Message-ID: <201906122110.yHrGtn9w%lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   81a72c79224f83af18e26dc0c599f917312e6c78
+commit: 47ed985e97f513b7746270e8c5d1f3a3f959b2da [4948/6049] net: dsa: sja1105: Add logic for TX timestamping
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        git checkout 47ed985e97f513b7746270e8c5d1f3a3f959b2da
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
 
 
-Begin forwarded message:
+sparse warnings: (new ones prefixed by >>)
 
-Date: Wed, 12 Jun 2019 07:49:06 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 203867] New: invalid parameter to NL_SET_ERR_MSG_ATTR() in vxlan.c and geneve.c
+>> drivers/net/dsa/sja1105/sja1105_main.c:1718:6: sparse: sparse: symbol 'sja1105_port_txtstamp' was not declared. Should it be static?
 
+Please review and possibly fold the followup patch.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=203867
-
-            Bug ID: 203867
-           Summary: invalid parameter to NL_SET_ERR_MSG_ATTR() in vxlan.c
-                    and geneve.c
-           Product: Networking
-           Version: 2.5
-    Kernel Version: v5.2.0-rc4
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: krkx2@sovintel.ru
-        Regression: No
-
-Created attachment 283213
-  --> https://bugzilla.kernel.org/attachment.cgi?id=283213&action=edit  
-patch for vxlan.c and geneve.c
-
-Looks like invalid 'attr' parameter is passed to NL_SET_ERR_MSG_ATTR() in
-drivers/net/vxlan.c and drivers/net/geneve.c for number of attributes.
-
-For example `tb[IFLA_VXLAN_PORT_RANGE]` instead of
-`data[IFLA_VXLAN_PORT_RANGE]` in piece of code below.
-
-        if (data[IFLA_VXLAN_PORT_RANGE]) {
-                const struct ifla_vxlan_port_range *p
-                        = nla_data(data[IFLA_VXLAN_PORT_RANGE]);
-
-                if (ntohs(p->high) < ntohs(p->low)) {
-                        NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_VXLAN_PORT_RANGE],
-                                            "Invalid source port range");
-                        return -EINVAL;
-                }
-        }
-
-In case this is really a bug, patch is provided in attach.
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
