@@ -2,69 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8264222E
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 12:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 028834222F
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 12:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727480AbfFLKSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 06:18:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44228 "EHLO mx1.redhat.com"
+        id S1727615AbfFLKSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 06:18:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45456 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727068AbfFLKSq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 06:18:46 -0400
+        id S1727068AbfFLKSr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 06:18:47 -0400
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7BED25D672;
-        Wed, 12 Jun 2019 10:18:46 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id BB19CC05B03F;
+        Wed, 12 Jun 2019 10:18:47 +0000 (UTC)
 Received: from localhost.localdomain.com (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 73E2A39B9;
-        Wed, 12 Jun 2019 10:18:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C2F1739B9;
+        Wed, 12 Jun 2019 10:18:46 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH net-next v3 0/2] net/mlx5: use indirect call wrappers
-Date:   Wed, 12 Jun 2019 12:18:34 +0200
-Message-Id: <cover.1560333783.git.pabeni@redhat.com>
+Subject: [PATCH net-next v3 1/2] net/mlx5e: use indirect calls wrapper for skb allocation
+Date:   Wed, 12 Jun 2019 12:18:35 +0200
+Message-Id: <a3fdbe3ca0f9304921c3f8ee45494043274b50ce.1560333783.git.pabeni@redhat.com>
+In-Reply-To: <cover.1560333783.git.pabeni@redhat.com>
+References: <cover.1560333783.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Wed, 12 Jun 2019 10:18:46 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Wed, 12 Jun 2019 10:18:47 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlx5_core driver uses several indirect calls in fast-path, some of them
-are invoked on each ingress packet, even for the XDP-only traffic.
+We can avoid an indirect call per packet wrapping the skb creation
+with the appropriate helper.
 
-This series leverage the indirect call wrappers infrastructure the avoid
-the expansive RETPOLINE overhead for 2 indirect calls in fast-path.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 22 ++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-Each call is addressed on a different patch, plus we need to introduce a couple
-of additional helpers to cope with the higher number of possible direct-call
-alternatives.
-
-v2 -> v3:
- - do not add more INDIRECT_CALL_* macros
- - use only the direct calls always available regardless of
-   the mlx5 build options in the last patch
-
-v1 -> v2:
- - update the direct call list and use a macro to define it,
-   as per Saeed suggestion. An intermediated additional
-   macro is needed to allow arg list expansion
- - patch 2/3 is unchanged, as the generated code looks better this way than
-   with possible alternative (dropping BP hits)
-
-Paolo Abeni (2):
-  net/mlx5e: use indirect calls wrapper for skb allocation
-  net/mlx5e: use indirect calls wrapper for the rx packet handler
-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 25 ++++++++++++++-----
- 1 file changed, 19 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 13133e7f088e..0fe5f13d07cc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -34,6 +34,7 @@
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>
+ #include <linux/tcp.h>
++#include <linux/indirect_call_wrapper.h>
+ #include <net/ip6_checksum.h>
+ #include <net/page_pool.h>
+ #include <net/inet_ecn.h>
+@@ -1092,7 +1093,10 @@ void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	wi       = get_frag(rq, ci);
+ 	cqe_bcnt = be32_to_cpu(cqe->byte_cnt);
+ 
+-	skb = rq->wqe.skb_from_cqe(rq, cqe, wi, cqe_bcnt);
++	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
++			      mlx5e_skb_from_cqe_linear,
++			      mlx5e_skb_from_cqe_nonlinear,
++			      rq, cqe, wi, cqe_bcnt);
+ 	if (!skb) {
+ 		/* probably for XDP */
+ 		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)) {
+@@ -1279,8 +1283,10 @@ void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 
+ 	cqe_bcnt = mpwrq_get_cqe_byte_cnt(cqe);
+ 
+-	skb = rq->mpwqe.skb_from_cqe_mpwrq(rq, wi, cqe_bcnt, head_offset,
+-					   page_idx);
++	skb = INDIRECT_CALL_2(rq->mpwqe.skb_from_cqe_mpwrq,
++			      mlx5e_skb_from_cqe_mpwrq_linear,
++			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
++			      rq, wi, cqe_bcnt, head_offset, page_idx);
+ 	if (!skb)
+ 		goto mpwrq_cqe_out;
+ 
+@@ -1437,7 +1443,10 @@ void mlx5i_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	wi       = get_frag(rq, ci);
+ 	cqe_bcnt = be32_to_cpu(cqe->byte_cnt);
+ 
+-	skb = rq->wqe.skb_from_cqe(rq, cqe, wi, cqe_bcnt);
++	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
++			      mlx5e_skb_from_cqe_linear,
++			      mlx5e_skb_from_cqe_nonlinear,
++			      rq, cqe, wi, cqe_bcnt);
+ 	if (!skb)
+ 		goto wq_free_wqe;
+ 
+@@ -1469,7 +1478,10 @@ void mlx5e_ipsec_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	wi       = get_frag(rq, ci);
+ 	cqe_bcnt = be32_to_cpu(cqe->byte_cnt);
+ 
+-	skb = rq->wqe.skb_from_cqe(rq, cqe, wi, cqe_bcnt);
++	skb = INDIRECT_CALL_2(rq->wqe.skb_from_cqe,
++			      mlx5e_skb_from_cqe_linear,
++			      mlx5e_skb_from_cqe_nonlinear,
++			      rq, cqe, wi, cqe_bcnt);
+ 	if (unlikely(!skb)) {
+ 		/* a DROP, save the page-reuse checks */
+ 		mlx5e_free_rx_wqe(rq, wi, true);
 -- 
 2.20.1
 
