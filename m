@@ -2,185 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB53A447F1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17AF0447D5
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729558AbfFMRDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:03:16 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42441 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729460AbfFLW4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 18:56:08 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s15so20372896qtk.9
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 15:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=rwIUelHuBwKm3odn4j/kyFgXxrPvIhVkoS3EqQWqZHE=;
-        b=kn+TCh4rcW0ZQQ+FDGv3UGCWsJDPT3wI28aa+oyId4qNNUeddnAvKEAr7rGknnH6xa
-         /r497R8WZS5cZQtEX3x193nDWpK147meOaWCyJDIQ4xp0ZNb9ylNG84Zajc+kynx05EX
-         iYldzxbKQ27h3fA+0PYA5VwUiUK07M3rf9oL9Z8/wAGpNoFK0/OFXI3/epNlGobVJEUE
-         kPS6xxeHkeADSGogBno96twERVvjXoDZ1SxikoFmcP/Zz6luq+NUs9CoiHvF8/wqqMQS
-         G6/JQoWCpyUsCT+g2/YkzfYJQZIxQ0hx9WAUVLJnDe06BozxPMiv660nRhYODwEyWiDg
-         ErYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=rwIUelHuBwKm3odn4j/kyFgXxrPvIhVkoS3EqQWqZHE=;
-        b=B1ImcroRrwIfiZm9rfpWZsxhFF5HwfgpDaD8Grum3xciYxuKVeb8ipO58ucLh0eqA5
-         8CzmHrQZuBQFyur3rZeuWMi5+mKsHtmuIlZGIXKfROS6GoaHJIWpBQbyNbrvx7iUPORP
-         CaqCWQI0Hju7S2n1bioTEN2JUbplObQ8H/PXY84HAoecvDFjaDAQgyZyU5lmnx478ke5
-         1SjegVGyPSqhlRBVw1XcX16mNCCtsJuZxJslGcq7nlWHIVHZ2fmUwHGAAy9lrjwo7E8J
-         VJxMcL4r09U5RPIFHVaWbQJZ4E8VbT2IwP+P/brbdUEbaplEYHjp3s8Vgmon4ypuvXMm
-         xa8w==
-X-Gm-Message-State: APjAAAUnRyeiL1VZn5BYqBpTwP9bMkLzRGLJuP4PwnZIjkgOX6Y+nHo+
-        VsCB8YOTxSJX7c9qRWMJDcwliQ==
-X-Google-Smtp-Source: APXvYqy8jgn8msBHtww5Cwbc2Pc6dQy0PWQe6hRatZPYWSkA7OUB4W2Zf3oqaR3JgAqXSf/2tH6OLw==
-X-Received: by 2002:ac8:2bf6:: with SMTP id n51mr72527919qtn.189.1560380167722;
-        Wed, 12 Jun 2019 15:56:07 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c5sm462231qtj.27.2019.06.12.15.56.06
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 15:56:07 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 15:56:03 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Xue Chaojing <xuechaojing@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoshaokai@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>,
-        <wulike1@huawei.com>
-Subject: Re: [PATCH net-next v2 1/2] hinic: add rss support
-Message-ID: <20190612155603.4078ebb3@cakuba.netronome.com>
-In-Reply-To: <20190611181234.4843-2-xuechaojing@huawei.com>
-References: <20190611181234.4843-1-xuechaojing@huawei.com>
-        <20190611181234.4843-2-xuechaojing@huawei.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729788AbfFMRCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:02:10 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:51224 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729526AbfFLXOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 19:14:55 -0400
+Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5CMvjjN027726;
+        Thu, 13 Jun 2019 00:14:44 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id; s=jan2016.eng;
+ bh=3/9fVxMqp4e6sql3CZJJK3vMtaZhSRLm+iq0QWzMWr8=;
+ b=QZW7xno+qkUEYa293pBpsYdZZ5fwt/rkQ/TFPnNcWc9sbWrJHmeuZynKf8Jlx6Ev8td5
+ kKqjqb2gFQ/fDoZNfbdSRsBS6Qd2xHFIuARY0wgCsR850MXfzZd46XXaHqy6m8Gp5EaO
+ 0RCLxKrY0dDNNlv8Eva9ejavRnl4lvDJWzlWcS/SwfMDJIVrUuM+uRP0x/GPk2Pk55WU
+ TkHgCtP9r1pmqe27LQIWOSP2KaF9ReRRhBHAFQYiTVlmVfF7ouBrgzvItATAzRHg9OiS
+ gPd6Tql8C557Y0okqFce9gBLjMJ1dt/fBvvG0i5jsdkUv5TrJ+duqlC+tJrw+iRa5C9M bQ== 
+Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 2t2macmg6g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jun 2019 00:14:44 +0100
+Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
+        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x5CN2lHU013869;
+        Wed, 12 Jun 2019 19:14:43 -0400
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint1.akamai.com with ESMTP id 2t08bwyvv7-1;
+        Wed, 12 Jun 2019 19:14:43 -0400
+Received: from bos-lpjec.kendall.corp.akamai.com (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id F1E4F1FCD8;
+        Wed, 12 Jun 2019 23:14:41 +0000 (GMT)
+From:   Jason Baron <jbaron@akamai.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Joshua Hunt <johunt@akamai.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next] gso: enable udp gso for virtual devices
+Date:   Wed, 12 Jun 2019 19:12:40 -0400
+Message-Id: <1560381160-19584-1-git-send-email-jbaron@akamai.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-12_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906120162
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-12_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906120162
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jun 2019 18:12:33 +0000, Xue Chaojing wrote:
-> This patch adds rss support for the HINIC driver.
-> 
-> Signed-off-by: Xue Chaojing <xuechaojing@huawei.com>
+Now that the stack supports UDP GRO, we can enable udp gso for virtual
+devices. If packets are looped back locally, and UDP GRO is not enabled
+then they will be segmented to gso_size via udp_rcv_segment(). This
+essentiallly just reverts: 8eea1ca gso: limit udp gso to egress-only
+virtual devices.
 
-> +static int hinic_rss_init(struct hinic_dev *nic_dev)
-> +{
-> +	u8 default_rss_key[HINIC_RSS_KEY_SIZE] = {
-> +			0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2,
-> +			0x41, 0x67, 0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0,
-> +			0xd0, 0xca, 0x2b, 0xcb, 0xae, 0x7b, 0x30, 0xb4,
-> +			0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30, 0xf2, 0x0c,
-> +			0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa};
+Tested by connecting two namespaces via macvlan and then ran
+udpgso_bench_tx:
 
-netdev_rss_key_fill()
+before:
+udp tx:   2068 MB/s    35085 calls/s  35085 msg/s
 
-> +	u32 indir_tbl[HINIC_RSS_INDIR_SIZE] = { 0 };
-> +	u8 tmpl_idx = nic_dev->rss_tmpl_idx;
-> +	int err, i;
-> +
-> +	for (i = 0; i < HINIC_RSS_INDIR_SIZE; i++)
-> +		indir_tbl[i] = (i / HINIC_RSS_INDIR_SIZE) * nic_dev->num_rss +
-> +				i % nic_dev->num_rss;
-> +
-> +	err = hinic_rss_set_template_tbl(nic_dev, tmpl_idx, default_rss_key);
-> +	if (err)
-> +		return err;
-> +
-> +	err = hinic_rss_set_indir_tbl(nic_dev, tmpl_idx, indir_tbl);
-> +	if (err)
-> +		return err;
-> +
-> +	err = hinic_set_rss_type(nic_dev, tmpl_idx, nic_dev->rss_type);
-> +	if (err)
-> +		return err;
-> +
-> +	err = hinic_rss_set_hash_engine(nic_dev, tmpl_idx,
-> +					nic_dev->rss_hash_engine);
-> +	if (err)
-> +		return err;
-> +
-> +	err = hinic_rss_cfg(nic_dev, 1, tmpl_idx);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static void hinic_rss_deinit(struct hinic_dev *nic_dev)
-> +{
-> +	hinic_rss_cfg(nic_dev, 0, nic_dev->rss_tmpl_idx);
-> +}
-> +
-> +static void hinic_init_rss_parameters(struct hinic_dev *nic_dev)
-> +{
-> +	nic_dev->rss_hash_engine = HINIC_RSS_HASH_ENGINE_TYPE_XOR;
-> +	nic_dev->rss_type.tcp_ipv6_ext = 1;
-> +	nic_dev->rss_type.ipv6_ext = 1;
-> +	nic_dev->rss_type.tcp_ipv6 = 1;
-> +	nic_dev->rss_type.ipv6 = 1;
-> +	nic_dev->rss_type.tcp_ipv4 = 1;
-> +	nic_dev->rss_type.ipv4 = 1;
-> +	nic_dev->rss_type.udp_ipv6 = 1;
-> +	nic_dev->rss_type.udp_ipv4 = 1;
+after (no UDP_GRO):
+udp tx:   3438 MB/s    58319 calls/s  58319 msg/s
 
-Usually UDP is disabled by default because fragmentation leads to
-reorders (NICs file all fragmented packets to queue 0 while other
-packets are distributed by RSS).
+after (UDP_GRO):
+udp tx:   8037 MB/s   136314 calls/s 136314 msg/s
 
-> +}
-> +
-> +static void hinic_enable_rss(struct hinic_dev *nic_dev)
-> +{
-> +	struct net_device *netdev = nic_dev->netdev;
-> +	struct hinic_hwdev *hwdev = nic_dev->hwdev;
-> +	struct hinic_hwif *hwif = hwdev->hwif;
-> +	struct pci_dev *pdev = hwif->pdev;
-> +	int i, node, err = 0;
-> +	u16 num_cpus = 0;
-> +
-> +	nic_dev->max_qps = hinic_hwdev_max_num_qps(hwdev);
-> +	if (nic_dev->max_qps <= 1) {
-> +		nic_dev->flags &= ~HINIC_RSS_ENABLE;
-> +		nic_dev->rss_limit = nic_dev->max_qps;
-> +		nic_dev->num_qps = nic_dev->max_qps;
-> +		nic_dev->num_rss = nic_dev->max_qps;
-> +
-> +		return;
-> +	}
-> +
-> +	err = hinic_rss_template_alloc(nic_dev, &nic_dev->rss_tmpl_idx);
-> +	if (err) {
-> +		netif_err(nic_dev, drv, netdev,
-> +			  "Failed to alloc tmpl_idx for rss, can't enable rss for this function\n");
-> +		nic_dev->flags &= ~HINIC_RSS_ENABLE;
-> +		nic_dev->max_qps = 1;
-> +		nic_dev->rss_limit = nic_dev->max_qps;
-> +		nic_dev->num_qps = nic_dev->max_qps;
-> +		nic_dev->num_rss = nic_dev->max_qps;
-> +
-> +		return;
-> +	}
-> +
-> +	nic_dev->flags |= HINIC_RSS_ENABLE;
-> +
-> +	for (i = 0; i < num_online_cpus(); i++) {
-> +		node = cpu_to_node(i);
-> +		if (node == dev_to_node(&pdev->dev))
-> +			num_cpus++;
-> +	}
-> +
-> +	if (!num_cpus)
-> +		num_cpus = num_online_cpus();
-> +
-> +	nic_dev->num_qps = min_t(u16, nic_dev->max_qps, num_cpus);
+Signed-off-by: Jason Baron <jbaron@akamai.com>
+Co-developed-by: Joshua Hunt <johunt@akamai.com>
+Signed-off-by: Joshua Hunt <johunt@akamai.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/bonding/bond_main.c | 5 ++---
+ drivers/net/team/team.c         | 5 ++---
+ include/linux/netdev_features.h | 1 +
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
-We generally use netif_get_num_default_rss_queues() for RX queues
-and num_online_cpus() for TX queues but I'm not sure you can do
-different counts, so it's probably fine.
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 4f5b3ba..c4260be 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1120,8 +1120,7 @@ static void bond_compute_features(struct bonding *bond)
+ 
+ done:
+ 	bond_dev->vlan_features = vlan_features;
+-	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
+-				    NETIF_F_GSO_UDP_L4;
++	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL;
+ 	bond_dev->mpls_features = mpls_features;
+ 	bond_dev->gso_max_segs = gso_max_segs;
+ 	netif_set_gso_max_size(bond_dev, gso_max_size);
+@@ -4308,7 +4307,7 @@ void bond_setup(struct net_device *bond_dev)
+ 				NETIF_F_HW_VLAN_CTAG_RX |
+ 				NETIF_F_HW_VLAN_CTAG_FILTER;
+ 
+-	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
++	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL;
+ 	bond_dev->features |= bond_dev->hw_features;
+ }
+ 
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index b48006e..30299e3 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -1003,8 +1003,7 @@ static void __team_compute_features(struct team *team)
+ 	}
+ 
+ 	team->dev->vlan_features = vlan_features;
+-	team->dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
+-				     NETIF_F_GSO_UDP_L4;
++	team->dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL;
+ 	team->dev->hard_header_len = max_hard_header_len;
+ 
+ 	team->dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
+@@ -2132,7 +2131,7 @@ static void team_setup(struct net_device *dev)
+ 			   NETIF_F_HW_VLAN_CTAG_RX |
+ 			   NETIF_F_HW_VLAN_CTAG_FILTER;
+ 
+-	dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
++	dev->hw_features |= NETIF_F_GSO_ENCAP_ALL;
+ 	dev->features |= dev->hw_features;
+ }
+ 
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 4b19c54..188127c 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -237,6 +237,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 				 NETIF_F_GSO_GRE_CSUM |			\
+ 				 NETIF_F_GSO_IPXIP4 |			\
+ 				 NETIF_F_GSO_IPXIP6 |			\
++				 NETIF_F_GSO_UDP_L4 |			\
+ 				 NETIF_F_GSO_UDP_TUNNEL |		\
+ 				 NETIF_F_GSO_UDP_TUNNEL_CSUM)
+ 
+-- 
+2.7.4
+
