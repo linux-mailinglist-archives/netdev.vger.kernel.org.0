@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C48642A67
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE5442AA7
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440018AbfFLPKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 11:10:15 -0400
-Received: from mail-pg1-f178.google.com ([209.85.215.178]:37981 "EHLO
-        mail-pg1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436492AbfFLPKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:10:15 -0400
-Received: by mail-pg1-f178.google.com with SMTP id v11so9077067pgl.5
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 08:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yHeV3Lzac5p3sGJ4yIBFOhgl5bzVmsaCMUNYFcwMdsY=;
-        b=gvGQ7MJBk6tinMUObTPVU5xkJ/XZyCa/S+dTwoqqUWgsoAHJe2sPkNwK31srRSP03I
-         WxzJgThHlaAlFXwkfLLGGEl43zcedNbjsZ/a2Ce3x2KNwcpAUQHPiJdes/dzxDg3T0G3
-         zeMJpMFISj0FO1ok0xNl5Qpw9xw7oqOY6MpSgYZSjnbCKPLiuwivy8HQkMQLZSIFaorx
-         eSbbn6jO6Hx+I8hcxPffZYH7I1xdFV2e70fpfi1fnmdscL9yGGmOkmfIxUnI8sWJjMYg
-         qck64Nejg1pkzgktarJ4tLUtbkmTWbY2P9JgDNvojCwOFNep/DHYgLPBjMmpSWGkRZrK
-         2tFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yHeV3Lzac5p3sGJ4yIBFOhgl5bzVmsaCMUNYFcwMdsY=;
-        b=RSR/2StuQheWTaVfDxCm7mTenNaTHNoWbvvKF6T5htS+UeXpR08assuNzuKSUp6PIX
-         Uj3s49IzwqPQE+zHvYLZOcmpq4D3kEEX7XxJB3xOTMOtefuw0t/hrrZ+G5wtvChwFoRf
-         +B6tHGOhzl5YZmfqdDoUiqPgIw//7WrZWrXUHfn5CU1ASpIDO7LJGEahybnAfW5Xua3h
-         I95pVH5ie3+UnI90lbCQwzFusXPsEHnn3tcmFYj753xWd3BSu+a498hgz0zeVADrcxIX
-         1qK7QwZS37zu8UWVXuZ/XfvS22ibCvHlHGecvY/Q/1NjKb78CbPQmi5KiJN9eu7lMeg1
-         31MQ==
-X-Gm-Message-State: APjAAAXlPe7qC4JWTF2/0wmtHV9/JgWb6jHeXz8Ox7oNJaoPZkG//S0M
-        SnAqoG3OQ1/Qecu+seXLygxrH0vTpbY=
-X-Google-Smtp-Source: APXvYqzbcAnjqEm/3xGSfv2zxsGBLBSS8RewFUzqeARnioRcfRs/c7/H37bXFtJJ9Qa32wmpdL/dmw==
-X-Received: by 2002:a17:90a:c503:: with SMTP id k3mr33767600pjt.46.1560352214256;
-        Wed, 12 Jun 2019 08:10:14 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f17sm17599012pgv.16.2019.06.12.08.10.13
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 08:10:14 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 08:10:07 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Transmit VLAN with AF_PACKET
-Message-ID: <20190612081007.32dcb7ec@hermes.lan>
+        id S1729567AbfFLPSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 11:18:45 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:46931 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbfFLPSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:18:45 -0400
+X-Originating-IP: 90.88.159.246
+Received: from mc-bl-xps13.lan (aaubervilliers-681-1-40-246.w90-88.abo.wanadoo.fr [90.88.159.246])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 9184BFF81C;
+        Wed, 12 Jun 2019 15:18:40 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>
+Subject: [PATCH net v2] net: ethtool: Allow matching on vlan DEI bit
+Date:   Wed, 12 Jun 2019 17:18:38 +0200
+Message-Id: <20190612151838.7455-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sending VLAN packets through AF_PACKET over Hyper-V netvsc driver doesn't work now.
-The question is what is best option for fixing it?
+Using ethtool, users can specify a classification action matching on the
+full vlan tag, which includes the DEI bit (also previously called CFI).
 
-AF_PACKET handles VLAN stripping on receive, but there currently is no mechanism
-for VLAN offload on transmit. Instead an application may form a raw packet with
-a VLAN header and inject it into the kernel. This works fine for most drivers.
+However, when converting the ethool_flow_spec to a flow_rule, we use
+dissector keys to represent the matching patterns.
 
-The problem is that in order to send a VLAN packet through Hyper-V, the VLAN
-tag must be stripped and placed in the NDIS meta data. If the VLAN header is
-inline in the packet it gets dropped by the vswitch rules as an invalid packet.
+Since the vlan dissector key doesn't include the DEI bit, this
+information was silently discarded when translating the ethtool
+flow spec in to a flow_rule.
 
-There a several options for fixing this and would like some consensus.
+This commit adds the DEI bit into the vlan dissector key, and allows
+propagating the information to the driver when parsing the ethtool flow
+spec.
 
-Option #1: Add code in netvsc transmit to look at packet and do a
-VLAN pop if necessary before doing the normal VLAN tag handling on
-transmit.
+Fixes: eca4205f9ec3 ("ethtool: add ethtool_rx_flow_spec to flow_rule structure translator")
+Reported-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+V1 -> V2: Use "DEI" instead of the old name "CFI", as suggested by Toshiaki.
+          Perform endianness swap on the constant, sothat it's done at
+	  build-time, as suggested by Jakub.
 
-Option #2: Do a generic solution in AF_PACKET so that if application
-sends a packet with VLAN header, it gets popped and inserted into skb.
+ include/net/flow_dissector.h | 1 +
+ net/core/ethtool.c           | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-Option #3: Add new tpacket header on transmit to match the Rx VLAN
-tag strip on receive.
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 7c5a8d9a8d2a..dfabc0503446 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -46,6 +46,7 @@ struct flow_dissector_key_tags {
+ 
+ struct flow_dissector_key_vlan {
+ 	u16	vlan_id:12,
++		vlan_dei:1,
+ 		vlan_priority:3;
+ 	__be16	vlan_tpid;
+ };
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index d08b1e19ce9c..4d1011b2e24f 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -3020,6 +3020,11 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+ 			match->mask.vlan.vlan_id =
+ 				ntohs(ext_m_spec->vlan_tci) & 0x0fff;
+ 
++			match->key.vlan.vlan_dei =
++				!!(ext_h_spec->vlan_tci & htons(0x1000));
++			match->mask.vlan.vlan_dei =
++				!!(ext_m_spec->vlan_tci & htons(0x1000));
++
+ 			match->key.vlan.vlan_priority =
+ 				(ntohs(ext_h_spec->vlan_tci) & 0xe000) >> 13;
+ 			match->mask.vlan.vlan_priority =
+-- 
+2.20.1
+
