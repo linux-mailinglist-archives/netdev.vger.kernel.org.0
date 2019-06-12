@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3890426B2
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B73426B3
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437433AbfFLMwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:52:18 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40039 "EHLO
+        id S2439313AbfFLMwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:52:24 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:43158 "EHLO
         mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437347AbfFLMwR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:52:17 -0400
-Received: by mail-ed1-f67.google.com with SMTP id k8so10946406eds.7
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 05:52:16 -0700 (PDT)
+        with ESMTP id S2437322AbfFLMwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:52:19 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w33so25557221edb.10
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 05:52:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5HCngsw5PusIl0ZveLMtuHXSj36iGGEvUDttYU9vuRA=;
-        b=2L4Qwrs4rmZ1hPpLiyiNezc7gZC4hJ/oMe8vXT3G/m8/VFWqf0S98tD6tGFtLXWBHe
-         EhKiRfkeIlqGF2zgW+0FDhg26khSJdyDtHtTcp3UtDLUWERXJd30UqiR+M+pJ7qFApnw
-         HNAEqqT49eM1XZm+QCgcmarpP2hzwC8s/fSU8GxoPnec7ohB+FmDU+1Ybmf743REJ0y9
-         qT50MZaAqT/0YairP9b5IIMh4B260jkErZzqOB9N7SCU1pE+FVHb43HG1L2G2QYmogmB
-         NY3QVPXjpitCqKqpPTYFFkpm/6PfCXDlQjK26rH1xX12xVq4OKyzbLd9qpvIU3J7ecOl
-         Gqjw==
+        bh=Bw+ctLUbISziNZHFZUmDDvlVUCOXrvgv6bfM+sLLdeU=;
+        b=BPFsMxi7UOh0TXmmVZ3E73gq31k8EphLSzojU4NkrkXiOeE8ebiP7sRwwv1L1KcFPz
+         50Cubp6kzlae30XL5b5l2OUpcOqG8EiZ/GARX5Ln5pAtLOA/iJzD5noAQq2oabzG/JPR
+         UCyz4FXlRx8pMBROL68sz3u54qNmABpoGF2JbEl60RJ+hkiOuX2N2DsMBz/IbIVsUeql
+         yweLM/F/VdVvymtGnvCqyBSB/7EqagkEfgXRKS+EV+z4iN2EuVf/XsaOKm5sLo7tSiNW
+         m1de83uh9ooJ7F5k25cnvsEJxj8PoG4qlgM6WHLqONClY/7Sfu7ni0MiQ5GxzZZoelov
+         mHFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=5HCngsw5PusIl0ZveLMtuHXSj36iGGEvUDttYU9vuRA=;
-        b=HTCBrD3JJ4IScddluGfx5Pr+qarHTgXGlFV29p9BIYLUmsJS1NJCVgtrycK91IUEQc
-         MGMVj6WbC9/7hga+3+CPc00NxWsjEOvPIxvn3sfBlUzHP6zEoCOeoZ7y4TWdCrUi9dPV
-         Vyfvlj994edAGwK1tNxqkcTh3AawME+JGzpnYhtNufyjGgvM09WEBBC020cCSqh8H8DR
-         FlghDVIb3KTYPZWYVqrAnAv8Xu0rKavbMGvBJ2h07dnz0228ZJlBVPaC+Bzah8kRTRwE
-         4GspEwZ51t03YEVRaJGCG2wWJN4fWzRCIWV9Mqp2tWRiw7A9dU7m7lGlcUYtpWnRVP94
-         7wwg==
-X-Gm-Message-State: APjAAAWbmPe2of46zA7Ifr/Q9q23xq8L4W984tNadxQVUbfYt2sO+jr8
-        zg47JAT7BALlL1UX31b6C0kSv6h3fqA=
-X-Google-Smtp-Source: APXvYqy/LM/2MakpktjnMVbHIsdE+ZscOPqqMj/eZTpHbV51d9GSgy/dBh6FQKaD8LcjSYIfyi6j+A==
-X-Received: by 2002:aa7:d4cf:: with SMTP id t15mr28718446edr.215.1560343935260;
-        Wed, 12 Jun 2019 05:52:15 -0700 (PDT)
+        bh=Bw+ctLUbISziNZHFZUmDDvlVUCOXrvgv6bfM+sLLdeU=;
+        b=JbOJzp4Wpz7axIX61ur6Gfjsg1lNSEe2m10rFMW6KEtG941rl3r5RseotsGxRNBRjG
+         hsKuoHO2v0JTBKkkf5REKmiqwxqb8FjYEV4y7WseHtu0N3DXN28kfUSYkcPdOmgfWX3V
+         O5mIn0n2uXy7owN0j0VGy9hsol+sdVOfG78zsNkhfTJ+v9hoVr72F0mI3pVZh7EsEZAG
+         +xKgZWWZ4DsjPC6K4iovjHqJasYLrW+9TiPEBug0Xx+GcHQswlxOm4zWSyQuUdRGImsE
+         Fk3I4Uk3J6+6v4mr3Q2jJkFX8+B5G0AGhbt5DmUsjsUP8D1ajwS4XVZ50ZmgjlUNNGe+
+         9FRA==
+X-Gm-Message-State: APjAAAWqIdw/h7fKhXb9B2s09lKL0BL8aeY146d4BO9ER9tDLNKBSzPH
+        2ryeCqnHYSdgT3TAllVy5StaFyYobVs=
+X-Google-Smtp-Source: APXvYqwbq/ibXTn0kytmg2G9N3dV8Yy8SaQp2xv+uUMc8RRHJm1Ri6zxes31S6cL6Rtl/2SIOk60jg==
+X-Received: by 2002:a17:906:c315:: with SMTP id s21mr51820195ejz.238.1560343936422;
+        Wed, 12 Jun 2019 05:52:16 -0700 (PDT)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id u15sm17043eja.32.2019.06.12.05.52.13
+        by smtp.gmail.com with ESMTPSA id u15sm17043eja.32.2019.06.12.05.52.15
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 12 Jun 2019 05:52:14 -0700 (PDT)
+        Wed, 12 Jun 2019 05:52:15 -0700 (PDT)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
         simon.horman@netronome.com, jakub.kicinski@netronome.com,
         oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 2/3] net: sched: include mpls actions in hardware intermediate representation
-Date:   Wed, 12 Jun 2019 13:51:45 +0100
-Message-Id: <1560343906-19426-3-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net-next 3/3] selftests: tc-tests: actions: add MPLS tests
+Date:   Wed, 12 Jun 2019 13:51:46 +0100
+Message-Id: <1560343906-19426-4-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560343906-19426-1-git-send-email-john.hurley@netronome.com>
 References: <1560343906-19426-1-git-send-email-john.hurley@netronome.com>
@@ -59,165 +59,766 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent addition to TC actions is the ability to manipulate the MPLS
-headers on packets.
-
-In preparation to offload such actions to hardware, update the IR code to
-accept and prepare the new actions.
+Add a new series of selftests to verify the functionality of act_mpls in
+TC.
 
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- include/net/flow_offload.h   | 10 +++++++
- include/net/tc_act/tc_mpls.h | 64 ++++++++++++++++++++++++++++++++++++++++++++
- net/sched/cls_api.c          | 26 ++++++++++++++++++
- 3 files changed, 100 insertions(+)
+ .../tc-testing/tc-tests/actions/mpls.json          | 744 +++++++++++++++++++++
+ 1 file changed, 744 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 36fdb85..e26ae81 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -123,6 +123,10 @@ enum flow_action_id {
- 	FLOW_ACTION_QUEUE,
- 	FLOW_ACTION_SAMPLE,
- 	FLOW_ACTION_POLICE,
-+	FLOW_ACTION_MPLS_PUSH,
-+	FLOW_ACTION_MPLS_POP,
-+	FLOW_ACTION_MPLS_MANGLE,
-+	FLOW_ACTION_MPLS_DEC_TTL,
- };
- 
- /* This is mirroring enum pedit_header_type definition for easy mapping between
-@@ -172,6 +176,12 @@ struct flow_action_entry {
- 			s64			burst;
- 			u64			rate_bytes_ps;
- 		} police;
-+		struct {				/* FLOW_ACTION_MPLS */
-+			u32		label;
-+			__be16		proto;
-+			u8		tc;
-+			u8		ttl;
-+		} mpls;
- 	};
- };
- 
-diff --git a/include/net/tc_act/tc_mpls.h b/include/net/tc_act/tc_mpls.h
-index ca7393a..4320de9 100644
---- a/include/net/tc_act/tc_mpls.h
-+++ b/include/net/tc_act/tc_mpls.h
-@@ -24,4 +24,68 @@ struct tcf_mpls {
- };
- #define to_mpls(a) ((struct tcf_mpls *)a)
- 
-+static inline bool is_tcf_mpls(const struct tc_action *a)
-+{
-+#ifdef CONFIG_NET_CLS_ACT
-+	if (a->ops && a->ops->id == TCA_ACT_MPLS)
-+		return true;
-+#endif
-+	return false;
-+}
-+
-+static inline u32 tcf_mpls_action(const struct tc_action *a)
-+{
-+	u32 tcfm_action;
-+
-+	rcu_read_lock();
-+	tcfm_action = rcu_dereference(to_mpls(a)->mpls_p)->tcfm_action;
-+	rcu_read_unlock();
-+
-+	return tcfm_action;
-+}
-+
-+static inline u32 tcf_mpls_label(const struct tc_action *a)
-+{
-+	u32 tcfm_label;
-+
-+	rcu_read_lock();
-+	tcfm_label = rcu_dereference(to_mpls(a)->mpls_p)->tcfm_label;
-+	rcu_read_unlock();
-+
-+	return tcfm_label;
-+}
-+
-+static inline u8 tcf_mpls_tc(const struct tc_action *a)
-+{
-+	u8 tcfm_tc;
-+
-+	rcu_read_lock();
-+	tcfm_tc = rcu_dereference(to_mpls(a)->mpls_p)->tcfm_tc;
-+	rcu_read_unlock();
-+
-+	return tcfm_tc;
-+}
-+
-+static inline u8 tcf_mpls_ttl(const struct tc_action *a)
-+{
-+	u8 tcfm_ttl;
-+
-+	rcu_read_lock();
-+	tcfm_ttl = rcu_dereference(to_mpls(a)->mpls_p)->tcfm_ttl;
-+	rcu_read_unlock();
-+
-+	return tcfm_ttl;
-+}
-+
-+static inline __be16 tcf_mpls_proto(const struct tc_action *a)
-+{
-+	__be16 tcfm_proto;
-+
-+	rcu_read_lock();
-+	tcfm_proto = rcu_dereference(to_mpls(a)->mpls_p)->tcfm_proto;
-+	rcu_read_unlock();
-+
-+	return tcfm_proto;
-+}
-+
- #endif /* __NET_TC_MPLS_H */
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index ad36bbc..d41de2e 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -35,6 +35,7 @@
- #include <net/tc_act/tc_police.h>
- #include <net/tc_act/tc_sample.h>
- #include <net/tc_act/tc_skbedit.h>
-+#include <net/tc_act/tc_mpls.h>
- 
- extern const struct nla_policy rtm_tca_policy[TCA_MAX + 1];
- 
-@@ -3266,6 +3267,31 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 			entry->police.burst = tcf_police_tcfp_burst(act);
- 			entry->police.rate_bytes_ps =
- 				tcf_police_rate_bytes_ps(act);
-+		} else if (is_tcf_mpls(act)) {
-+			switch (tcf_mpls_action(act)) {
-+			case TCA_MPLS_ACT_PUSH:
-+				entry->id = FLOW_ACTION_MPLS_PUSH;
-+				entry->mpls.label = tcf_mpls_label(act);
-+				entry->mpls.proto = tcf_mpls_proto(act);
-+				entry->mpls.tc = tcf_mpls_tc(act);
-+				entry->mpls.ttl = tcf_mpls_ttl(act);
-+				break;
-+			case TCA_MPLS_ACT_POP:
-+				entry->id = FLOW_ACTION_MPLS_POP;
-+				entry->mpls.proto = tcf_mpls_proto(act);
-+				break;
-+			case TCA_MPLS_ACT_MODIFY:
-+				entry->id = FLOW_ACTION_MPLS_MANGLE;
-+				entry->mpls.label = tcf_mpls_label(act);
-+				entry->mpls.tc = tcf_mpls_tc(act);
-+				entry->mpls.ttl = tcf_mpls_ttl(act);
-+				break;
-+			case TCA_MPLS_ACT_DEC_TTL:
-+				entry->id = FLOW_ACTION_MPLS_DEC_TTL;
-+				break;
-+			default:
-+				goto err_out;
-+			}
- 		} else {
- 			goto err_out;
- 		}
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json b/tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
+new file mode 100644
+index 0000000..e1a14f4e0
+--- /dev/null
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
+@@ -0,0 +1,744 @@
++[
++    {
++        "id": "a933",
++        "name": "Add MPLS dec_ttl action with pipe opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl pipe index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*pipe.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "08d1",
++        "name": "Add mpls dec_ttl action with pass opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl pass index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action mpls index 8",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*pass.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "d786",
++        "name": "Add mpls dec_ttl action with drop opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl drop index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action mpls index 8",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*drop.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "f334",
++        "name": "Add mpls dec_ttl action with reclassify opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl reclassify index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action mpls index 8",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*reclassify.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "29bd",
++        "name": "Add mpls dec_ttl action with continue opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl continue index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action mpls index 8",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*continue.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "48df",
++        "name": "Add mpls dec_ttl action with jump opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl jump 10 index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*jump 10.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "62eb",
++        "name": "Add mpls dec_ttl action with trap opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl trap index 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl trap.*index 8 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "9118",
++        "name": "Add mpls dec_ttl action with invalid opcode",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl foo index 8",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*foo.*index 8 ref",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "6ce1",
++        "name": "Add mpls dec_ttl action with label (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl label 20",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*label.*20.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "352f",
++        "name": "Add mpls dec_ttl action with tc (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl tc 3",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*tc.*3.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "fa1c",
++        "name": "Add mpls dec_ttl action with ttl (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls dec_ttl ttl 20",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*dec_ttl.*ttl.*20.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "d4c4",
++        "name": "Add mpls pop action with ip proto",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop protocol ipv4",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*protocol.*ip.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "92fe",
++        "name": "Add mpls pop action with mpls proto",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop protocol mpls_mc",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*protocol.*mpls_mc.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "7e23",
++        "name": "Add mpls pop action with no protocol (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "6182",
++        "name": "Add mpls pop action with label (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop protocol ipv4 label 20",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*label.*20.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "6475",
++        "name": "Add mpls pop action with tc (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop protocol ipv4 tc 3",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*tc.*3.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "067b",
++        "name": "Add mpls pop action with ttl (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls pop protocol ipv4 ttl 20",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*ttl.*20.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "38cc",
++        "name": "Add mpls push action with label",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push label 20",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*20.*ttl.*[0-9]+.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "c281",
++        "name": "Add mpls push action with mpls_mc protocol",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push protocol mpls_mc label 20",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_mc.*label.*20.*ttl.*[0-9]+.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "5db4",
++        "name": "Add mpls push action with label, tc and ttl",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push label 20 tc 3 ttl 128",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*20.*tc.*3.*ttl.*128.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "d69d",
++        "name": "Add mpls push action with no label (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "e8e4",
++        "name": "Add mpls push action with ipv4 protocol (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push protocol ipv4 label 20",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*20.*ttl.*[0-9]+.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "ecd0",
++        "name": "Add mpls push action with out of range label (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push label 1048576",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*1048576.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "d303",
++        "name": "Add mpls push action with out of range tc (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push label 20 tc 8",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*20.*tc.*8.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "fd6e",
++        "name": "Add mpls push action with ttl of 0 (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls push label 20 ttl 0",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*20.*ttl.*0.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "19e9",
++        "name": "Add mpls mod action with mpls label",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls mod label 20",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*modify.*label.*20.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "04b5",
++        "name": "Add mpls mod action with mpls tc",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls mod tc 3",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*modify.*tc.*3.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "6ed5",
++        "name": "Add mpls mod action with mpls label",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls mod ttl 128",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*modify.*ttl.*128.*pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "db7c",
++        "name": "Add mpls mod action with protocol (invalid)",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action mpls mod protocol ipv4",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*modify.*protocol.*ip.*pipe",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "b070",
++        "name": "Replace existing mpls push action with new ID",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ],
++            "$TC actions add action mpls push label 20 pipe index 12"
++        ],
++        "cmdUnderTest": "$TC actions replace action mpls push label 30 pipe index 12",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action mpls index 12",
++        "matchPattern": "action order [0-9]+: mpls.*push.*protocol.*mpls_uc.*label.*30.*pipe.*index 12 ref",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action mpls"
++        ]
++    },
++    {
++        "id": "6cce",
++        "name": "Delete mpls pop action",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ],
++            "$TC actions add action mpls pop protocol ipv4 index 44"
++        ],
++        "cmdUnderTest": "$TC actions del action mpls index 44",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*pop.*index 44 ref",
++        "matchCount": "0",
++        "teardown": []
++    },
++    {
++        "id": "d138",
++        "name": "Flush mpls actions",
++        "category": [
++            "actions",
++            "mpls"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action mpls",
++                0,
++                1,
++                255
++            ],
++            "$TC actions add action mpls push label 10 index 10",
++            "$TC actions add action mpls push label 20 index 20",
++            "$TC actions add action mpls push label 30 index 30",
++            "$TC actions add action mpls push label 40 index 40"
++        ],
++        "cmdUnderTest": "$TC actions flush action mpls",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions list action mpls",
++        "matchPattern": "action order [0-9]+: mpls.*push.*",
++        "matchCount": "0",
++        "teardown": []
++    }
++]
 -- 
 2.7.4
 
