@@ -2,65 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E722542E5B
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 20:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDCDF42E63
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 20:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728992AbfFLSIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 14:08:53 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:39406 "EHLO
+        id S1726685AbfFLSNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 14:13:13 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39466 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728940AbfFLSIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 14:08:52 -0400
+        with ESMTP id S1725878AbfFLSNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 14:13:13 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0C97E15283810;
-        Wed, 12 Jun 2019 11:08:52 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 11:08:51 -0700 (PDT)
-Message-Id: <20190612.110851.2217938591330502137.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, petrm@mellanox.com,
-        alexpe@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net 0/7] mlxsw: Various fixes
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A03B91528381F;
+        Wed, 12 Jun 2019 11:13:12 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 11:13:12 -0700 (PDT)
+Message-Id: <20190612.111312.2259455687333205958.davem@davemloft.net>
+To:     maxime.chevallier@bootlin.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com,
+        gregory.clement@bootlin.com, miquel.raynal@bootlin.com,
+        nadavh@marvell.com, stefanc@marvell.com, mw@semihalf.com
+Subject: Re: [PATCH net 0/2] net: mvpp2: prs: Fixes for VID filtering
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190611071946.11089-1-idosch@idosch.org>
-References: <20190611071946.11089-1-idosch@idosch.org>
+In-Reply-To: <20190611095143.2810-1-maxime.chevallier@bootlin.com>
+References: <20190611095143.2810-1-maxime.chevallier@bootlin.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Jun 2019 11:08:52 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Jun 2019 11:13:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Tue, 11 Jun 2019 10:19:39 +0300
+From: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Date: Tue, 11 Jun 2019 11:51:41 +0200
 
-> From: Ido Schimmel <idosch@mellanox.com>
+> This series fixes some issues with VID filtering offload, mainly due to
+> the wrong ranges being used in the TCAM header parser.
 > 
-> This patchset contains various fixes for mlxsw.
+> The first patch fixes a bug where removing a VLAN from a port's
+> whitelist would also remove it from other port's, if they are on the
+> same PPv2 instance.
 > 
-> Patch #1 fixes an hash polarization problem when a nexthop device is a
-> LAG device. This is caused by the fact that the same seed is used for
-> the LAG and ECMP hash functions.
-> 
-> Patch #2 fixes an issue in which the driver fails to refresh a nexthop
-> neighbour after it becomes dead. This prevents the nexthop from ever
-> being written to the adjacency table and used to forward traffic. Patch
-> #3 is a test case.
-> 
-> Patch #4 fixes a wrong extraction of TOS value in flower offload code.
-> Patch #5 is a test case.
-> 
-> Patch #6 works around a buffer issue in Spectrum-2 by reducing the
-> default sizes of the shared buffer pools.
-> 
-> Patch #7 prevents prio-tagged packets from entering the switch when PVID
-> is removed from the bridge port.
-> 
-> Please consider patches #2, #4 and #6 for 5.1.y
+> The second patch makes so that we don't invalidate the wrong TCAM
+> entries when clearing the whole whitelist.
 
-Series applied and queued up for -stable.
+Series applied.
