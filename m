@@ -2,94 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 683C141C85
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 08:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C41B141D33
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 09:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731224AbfFLGsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 02:48:04 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39924 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726685AbfFLGsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 02:48:04 -0400
-Received: from mail-pf1-f197.google.com ([209.85.210.197])
-        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1hax3C-0000VQ-0C
-        for netdev@vger.kernel.org; Wed, 12 Jun 2019 06:48:02 +0000
-Received: by mail-pf1-f197.google.com with SMTP id c17so11351125pfb.21
-        for <netdev@vger.kernel.org>; Tue, 11 Jun 2019 23:48:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=iQGtsCBn1c5Cv/4lGqwB4bSu8wIK/ZdJUuePfHlu3Os=;
-        b=SbRYP/IGjNcDq56GLxNAyhtupCUIc95O/ImkxvS3Fg0cGOf4w1jzJAEk04/1SDcBXc
-         A+u7shpNQol8Ha6OUqYb9DNkKwZOrhEtUP0XuNLiAt1XDc+1smbfgGh334ngANi4vyIF
-         jJw5jqvx4E44UN8Y3rJYpyFp5x2JDkMZTce0VGcVcVr5do8oT3Te5BBirPUjeqR22Fqt
-         l3BTVOEmh2htv7Mp9RLx5su73EeMeOQDYNG10RpGHh1XurB69qEwcbZ8QJqXQoaZT8Oo
-         5GIj7TKiRnbK5VbwgAm0y9IDAQ4zVyFN7oTkGEnucKAjhFPOX+gOyyueFMfPJ9hpnkq0
-         khnQ==
-X-Gm-Message-State: APjAAAXQaIyJPq4GgmxyadpuuRtuiYUcMJpJRAIaDVVc6x36e0dkuCYJ
-        VidG7tzWft/Ct3tBOeIZoQhSnYyGvKISVll6JJGKd12opc/v+SVFbee3e5qblGb6tlD3ftNN7ex
-        gIW2TArUz8kj5/FpHKJJAkycSoNaN8oZx
-X-Received: by 2002:a17:902:2926:: with SMTP id g35mr34534391plb.269.1560322080596;
-        Tue, 11 Jun 2019 23:48:00 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqydXTegqwqULkVpf/E0LtN7OvqKB1CDRD/xCDPTfnA0oYlo/soUUvOX7voWPt0GmlHRFF0Cpg==
-X-Received: by 2002:a17:902:2926:: with SMTP id g35mr34534368plb.269.1560322080271;
-        Tue, 11 Jun 2019 23:48:00 -0700 (PDT)
-Received: from Leggiero.taipei.internal (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id p68sm9888878pfb.80.2019.06.11.23.47.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 11 Jun 2019 23:47:59 -0700 (PDT)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     davem@davemloft.net, shuah@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/net: skip psock_tpacket test if KALLSYMS was not enabled
-Date:   Wed, 12 Jun 2019 14:47:52 +0800
-Message-Id: <20190612064752.6701-1-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        id S2407944AbfFLHHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 03:07:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2407185AbfFLHHF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 03:07:05 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CCD5B205ED;
+        Wed, 12 Jun 2019 07:07:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560323224;
+        bh=GtigtzkEAHr+VEjATWqUUDT5Nt8U4B4G0dSmvG/CfD4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y9ZY+szQVuDeeYvSNyGaG6WXfZrwHvAkiNTdcNhJCvGNtkQZy7XsIlOzYpumLZxBa
+         SmhNYffk8n3TlA8fYmSael5PHZyDaHygbZTycIRZRD9z+cpBHZFwYSO0zFJBKRMzow
+         s1Gf4jbf7iY1fEGuyBkzQJrYjZ3h9uBRk2fZqx98=
+Date:   Wed, 12 Jun 2019 09:07:01 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Vasily Khoruzhick <anarsoul@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] Revert "Bluetooth: Align minimum encryption key size for
+ LE and BR/EDR connections"
+Message-ID: <20190612070701.GA13320@kroah.com>
+References: <20190522052002.10411-1-anarsoul@gmail.com>
+ <6BD1D3F7-E2F2-4B2D-9479-06E27049133C@holtmann.org>
+ <7B7F362B-6C8B-4112-8772-FB6BC708ABF5@holtmann.org>
+ <CA+E=qVfopSA90vG2Kkh+XzdYdNn=M-hJN_AptW=R+B5v3HB9eA@mail.gmail.com>
+ <CA+E=qVdLOS9smt-nBxg9Lon0iTZr87kONSp-XPKj9tqB4bvnqw@mail.gmail.com>
+ <723142BB-8217-4A01-A2B9-F527174FDC0F@holtmann.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <723142BB-8217-4A01-A2B9-F527174FDC0F@holtmann.org>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The psock_tpacket test will need to access /proc/kallsyms, this would
-require the kernel config CONFIG_KALLSYMS to be enabled first.
+On Tue, Jun 11, 2019 at 11:36:26PM +0200, Marcel Holtmann wrote:
+> Hi Vasily,
+> 
+> > Can we get this revert merged into stable branches? Bluetooth HID has
+> > been broken for many devices for quite a while now and RFC patch that
+> > fixes the breakage hasn't seen any movement for almost a month.
+> 
+> lets send the RFC patch upstream since it got enough feedback that it fixes the issue.
 
-Check the file existence to determine if we can run this test.
+According to Hans, the workaround did not work.
 
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
----
- tools/testing/selftests/net/run_afpackettests | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+So can we just get this reverted so that people's machines go back to
+working?
 
-diff --git a/tools/testing/selftests/net/run_afpackettests b/tools/testing/selftests/net/run_afpackettests
-index ea5938e..8b42e8b 100755
---- a/tools/testing/selftests/net/run_afpackettests
-+++ b/tools/testing/selftests/net/run_afpackettests
-@@ -21,12 +21,16 @@ fi
- echo "--------------------"
- echo "running psock_tpacket test"
- echo "--------------------"
--./in_netns.sh ./psock_tpacket
--if [ $? -ne 0 ]; then
--	echo "[FAIL]"
--	ret=1
-+if [ -f /proc/kallsyms ]; then
-+	./in_netns.sh ./psock_tpacket
-+	if [ $? -ne 0 ]; then
-+		echo "[FAIL]"
-+		ret=1
-+	else
-+		echo "[PASS]"
-+	fi
- else
--	echo "[PASS]"
-+	echo "[SKIP] CONFIG_KALLSYMS not enabled"
- fi
- 
- echo "--------------------"
--- 
-2.7.4
+thanks,
 
+greg k-h
