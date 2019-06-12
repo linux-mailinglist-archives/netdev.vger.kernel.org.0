@@ -2,239 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7453142043
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 11:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA64C4203A
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 11:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408175AbfFLJIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 05:08:23 -0400
-Received: from nsg-static-220.246.72.182.airtel.in ([182.72.246.220]:15744
-        "EHLO swlab-raju.vitesse.org" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2407719AbfFLJIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 05:08:22 -0400
-Received: by swlab-raju.vitesse.org (Postfix, from userid 1001)
-        id 8847F15225D2; Wed, 12 Jun 2019 14:27:10 +0530 (IST)
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     netdev@vger.kernel.org
-Cc:     UNGLinuxDriver@microchip.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-Subject: [RFC, net-next v0 2/2] net: phy: mscc: Add PHY driver for Cable Diagnostics command
-Date:   Wed, 12 Jun 2019 14:27:07 +0530
-Message-Id: <1560329827-6345-3-git-send-email-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1560329827-6345-1-git-send-email-Raju.Lakkaraju@microchip.com>
-References: <1560329827-6345-1-git-send-email-Raju.Lakkaraju@microchip.com>
+        id S2437184AbfFLJF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 05:05:29 -0400
+Received: from mx-relay73-hz1.antispameurope.com ([94.100.132.237]:35209 "EHLO
+        mx-relay73-hz1.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390115AbfFLJF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 05:05:28 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay73-hz1.antispameurope.com;
+ Wed, 12 Jun 2019 11:05:26 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Wed, 12 Jun
+ 2019 11:05:22 +0200
+Subject: Re: DSA with MV88E6321 and imx28
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <20190606122437.GA20899@lunn.ch>
+ <86c1e7b1-ef38-7383-5617-94f9e677370b@eks-engel.de>
+ <20190606133501.GC19590@lunn.ch>
+ <e01b05e4-5190-1da6-970d-801e9fba6d49@eks-engel.de>
+ <20190606135903.GE19590@lunn.ch>
+ <8903b07b-4ac5-019a-14a1-d2fc6a57c0bb@eks-engel.de>
+ <20190607124750.GJ20899@lunn.ch>
+ <635c884a-185d-5b3b-7f91-ce058d9726f4@eks-engel.de>
+ <20190611121938.GA20904@lunn.ch>
+ <68671792-a720-6fa5-0a6e-0cd9f57c67eb@eks-engel.de>
+ <20190611132746.GA22832@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <93127324-0b09-7ea7-d54a-42d247570e73@eks-engel.de>
+Date:   Wed, 12 Jun 2019 11:05:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <20190611132746.GA22832@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay73-hz1.antispameurope.com with 3812F709265
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:1.260
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 
-Add the Cable diagnostics command to VSC85xx PHYs.
+>> I captured a ping from my device to my computer to look if outgoing is working
+>> (captured on both devices). Here is the output from my device where i started the:
+>>
+>> 00:24:24.752057 ARP, Request who-has 192.168.10.2 tell 192.168.10.1, length 28
+>> 	0x0000:  0001 0800 0604 0001 6a2a ad79 def5 c0a8  ........j*.y....
+>> 	0x0010:  0a01 0000 0000 0000 c0a8 0a02            ............
+>>
+>> and here the output of the receiver:
+>>
+>> 14:49:06.725940 MEDSA 0.2:0: ARP, Request who-has benjamin-HP tell 192.168.10.1, length 42
+>> 	0x0000:  0000 4010 0000 0806 0001 0800 0604 0001  ..@.............
+>> 	0x0010:  6a2a ad79 def5 c0a8 0a01 0000 0000 0000  j*.y............
+>> 	0x0020:  c0a8 0a02 0000 0000 0000 0000 0000 0000  ................
+>> 	0x0030:  0000
+>>
+>> I'm really stuck at the moment because I don't know what to do further. I think, 
+>> I did everything what is needed.
+>> And I know when I configure the switch manually via MDIO the connection is working.
+>> When I'm looking for traffic in ifconfig on all ports there is everywhere 0 bytes 
+>> except for eth0.
+>> Do you have any ideas?
+> I would start simple and build up. Don't use a bridge. Just put the IP
+> address 192.168.10.1 on the slave interface for port 2.
+>
+> So something like:
+>
+> ip link set eth0 up
+> ip addr add 192.168.10.1/24 dev lan2
+> ip link set lan2 up
+>
+> then you can try ping 192.168.10.2.
+>
+> Then trace the packet along the path. Does the ARP request make it to
+> 192.168.10.2? Is a reply sent? ethtool -S lan2 will show you the
+> packet counts. Do the counters show the ARP going out and the reply
+> coming back?
+>
+>        Andrew
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
----
- drivers/net/phy/mscc.c | 128 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+Hi Andrew,
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index 28676af..98e3925 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -153,9 +153,29 @@ enum rgmii_rx_clock_delay {
- #define MSCC_PHY_EXT_PHY_CNTL_4		  23
- #define PHY_CNTL_4_ADDR_POS		  11
- 
-+#define MSCC_PHY_VERIPHY_CNTL_1           24
-+#define VERIPHY_TRIGGER_CNTL_MASK	  0x8000
-+#define VERIPHY_VALID_MASK		  0x4000
-+#define VERIPHY_PAIR_A_DISTANCE_MASK	  0x2F00
-+#define VERIPHY_PAIR_A_DISTANCE_POS	  8
-+#define VERIPHY_PAIR_B_DISTANCE_MASK	  0x002F
-+#define VERIPHY_PAIR_B_DISTANCE_POS	  0
-+
- #define MSCC_PHY_VERIPHY_CNTL_2		  25
-+#define VERIPHY_PAIR_C_DISTANCE_MASK	  0x2F00
-+#define VERIPHY_PAIR_C_DISTANCE_POS	  8
-+#define VERIPHY_PAIR_D_DISTANCE_MASK	  0x002F
-+#define VERIPHY_PAIR_D_DISTANCE_POS	  0
- 
- #define MSCC_PHY_VERIPHY_CNTL_3		  26
-+#define VERIPHY_PAIR_A_STATUS_MASK	  0xF000
-+#define VERIPHY_PAIR_A_STATUS_POS	  12
-+#define VERIPHY_PAIR_B_STATUS_MASK	  0x0F00
-+#define VERIPHY_PAIR_B_STATUS_POS	  8
-+#define VERIPHY_PAIR_C_STATUS_MASK	  0x00F0
-+#define VERIPHY_PAIR_C_STATUS_POS	  4
-+#define VERIPHY_PAIR_D_STATUS_MASK	  0x000F
-+#define VERIPHY_PAIR_D_STATUS_POS	  0
- 
- /* Extended Page 2 Registers */
- #define MSCC_PHY_CU_PMD_TX_CNTL		  16
-@@ -442,6 +462,107 @@ static int vsc85xx_phy_write_page(struct phy_device *phydev, int page)
- 	return __phy_write(phydev, MSCC_EXT_PAGE_ACCESS, page);
- }
- 
-+static int vsc85xx_cabdiag_request(struct phy_device *phydev,
-+				   struct phy_cabdiag_req *cfg)
-+{
-+	u16 reg_val;
-+	u8 timeout_cnt = 0;
-+	int rc;
-+
-+	if (cfg->pairs_bitmask < CABDIAG_PAIR_A_MASK   ||
-+	    (cfg->pairs_bitmask > (CABDIAG_PAIR_A_MASK |
-+				   CABDIAG_PAIR_B_MASK |
-+				   CABDIAG_PAIR_C_MASK |
-+				   CABDIAG_PAIR_D_MASK))) {
-+		cfg->op_status = CD_REQ_INVALID_PAIR_MASK;
-+		return 0;
-+	}
-+	if (cfg->timeout_cnt == 0) {
-+		cfg->op_status = CD_REQ_INVALID_TIMEOUT;
-+		return 0;
-+	}
-+
-+	mutex_lock(&phydev->lock);
-+	rc = phy_select_page(phydev, MSCC_PHY_PAGE_EXTENDED);
-+	if (rc < 0)
-+		goto out_unlock;
-+
-+	reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_1);
-+	if (reg_val & VERIPHY_TRIGGER_CNTL_MASK) {
-+		cfg->op_status = CD_REQ_REJECTED_BUSY;
-+		goto out_unlock;
-+	}
-+	/* Start Cable Diagnostics operation */
-+	reg_val |= VERIPHY_TRIGGER_CNTL_MASK;
-+	__phy_write(phydev, MSCC_PHY_VERIPHY_CNTL_1, reg_val);
-+
-+	/* Wait till VeriPHY has completed */
-+	do {
-+		msleep(30);
-+		reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_1);
-+	} while ((reg_val & VERIPHY_TRIGGER_CNTL_MASK) &&
-+		 (timeout_cnt++ < cfg->timeout_cnt));
-+
-+	if (timeout_cnt >= cfg->timeout_cnt) {
-+		cfg->op_status = CD_STATUS_FAILED_TIMEOUT;
-+		goto out_unlock;
-+	}
-+	cfg->timeout_cnt = timeout_cnt;
-+
-+	if (reg_val & VERIPHY_VALID_MASK) {
-+		/* VeriPHY results are valid */
-+		if (cfg->pairs_bitmask & CABDIAG_PAIR_A_MASK) {
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_1);
-+			cfg->pairs[CABDIAG_PAIR_A].length =
-+			(reg_val & VERIPHY_PAIR_A_DISTANCE_MASK) >>
-+			VERIPHY_PAIR_A_DISTANCE_POS;
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_3);
-+			cfg->pairs[CABDIAG_PAIR_A].status =
-+			(reg_val & VERIPHY_PAIR_A_STATUS_MASK) >>
-+			VERIPHY_PAIR_A_STATUS_POS;
-+		}
-+		if (cfg->pairs_bitmask & CABDIAG_PAIR_B_MASK) {
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_1);
-+			cfg->pairs[CABDIAG_PAIR_B].length =
-+			(reg_val & VERIPHY_PAIR_B_DISTANCE_MASK) >>
-+			VERIPHY_PAIR_B_DISTANCE_POS;
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_3);
-+			cfg->pairs[CABDIAG_PAIR_B].status =
-+			(reg_val & VERIPHY_PAIR_B_STATUS_MASK) >>
-+			VERIPHY_PAIR_B_STATUS_POS;
-+		}
-+		if (cfg->pairs_bitmask & CABDIAG_PAIR_C_MASK) {
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_2);
-+			cfg->pairs[CABDIAG_PAIR_C].length =
-+			(reg_val & VERIPHY_PAIR_C_DISTANCE_MASK) >>
-+			VERIPHY_PAIR_C_DISTANCE_POS;
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_3);
-+			cfg->pairs[CABDIAG_PAIR_C].status =
-+			(reg_val & VERIPHY_PAIR_C_STATUS_MASK) >>
-+			VERIPHY_PAIR_C_STATUS_POS;
-+		}
-+		if (cfg->pairs_bitmask & CABDIAG_PAIR_D_MASK) {
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_2);
-+			cfg->pairs[CABDIAG_PAIR_D].length =
-+			(reg_val & VERIPHY_PAIR_D_DISTANCE_MASK) >>
-+			VERIPHY_PAIR_D_DISTANCE_POS;
-+			reg_val = __phy_read(phydev, MSCC_PHY_VERIPHY_CNTL_3);
-+			cfg->pairs[CABDIAG_PAIR_D].status =
-+			(reg_val & VERIPHY_PAIR_D_STATUS_MASK) >>
-+			VERIPHY_PAIR_D_STATUS_POS;
-+		}
-+		cfg->op_status = CD_STATUS_SUCCESS;
-+	} else {
-+		cfg->op_status = CD_STATUS_FAILED_INVALID;
-+	}
-+
-+out_unlock:
-+	phy_restore_page(phydev, rc, rc > 0 ? 0 : rc);
-+	mutex_unlock(&phydev->lock);
-+
-+	return rc;
-+}
-+
- static int vsc85xx_get_sset_count(struct phy_device *phydev)
- {
- 	struct vsc8531_private *priv = phydev->priv;
-@@ -2343,6 +2464,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8530,
-@@ -2368,6 +2490,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8531,
-@@ -2393,6 +2516,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8540,
-@@ -2418,6 +2542,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8541,
-@@ -2443,6 +2568,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8574,
-@@ -2469,6 +2595,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- },
- {
- 	.phy_id		= PHY_ID_VSC8584,
-@@ -2493,6 +2620,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_sset_count = &vsc85xx_get_sset_count,
- 	.get_strings    = &vsc85xx_get_strings,
- 	.get_stats      = &vsc85xx_get_stats,
-+	.request_cable_diag = &vsc85xx_cabdiag_request,
- }
- 
- };
--- 
-2.7.4
+it is finally running in DSA mode. Thanks so much, Andrew. I can set an
+IP address to all ports individually and running it now in a bridge with 
+all 4 copper ports. Set an IP address to the bridge and get a ping reply 
+from  all ports. So far, that is all what I have to test, for now. 
+
+I warned you before, I will go back to another custom board. But now with 
+more experience thanks to you.
+
+Cheers,
+Benjamin
 
