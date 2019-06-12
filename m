@@ -2,140 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5282642BDB
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 18:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 718B442BDE
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 18:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409494AbfFLQNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 12:13:32 -0400
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:41769 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2409458AbfFLQNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 12:13:25 -0400
-Received: by mail-pl1-f171.google.com with SMTP id s24so6814235plr.8
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 09:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e4ItLxshqMfqM68z4YCARRhGpvs/wbTADgtzp6LLi8k=;
-        b=EByOcF5oR5p8jLYaIHj/W3OAyPEwMFyxrCSaDMZ710yE5WD1Y/b+UNqhkabWO+KS1l
-         IgRWkQvJ2NjRclyAP+f+rEMc+so66/pJayjBsfvCjka+fdtro0rRT+G7kG/mV7cxYud+
-         DqLOkvG+jeTuQuRkwivcdqKUg66y8+r9eNK3GSX6WWwVM0LTkEGNYmcMgV8xtaI71jUo
-         gFzG+TD6/zdIHpyrirE/qQrbJQeDR0ghIWFeujzm+5W4gmflXpO4QMnJsFIg6kJrAry+
-         pv87Rmlg0j8CYSgiU2v0e0ld97KdTEUF+/M94iRv9qKosgsTDP8ev18imoJavVyGJMMs
-         5lxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e4ItLxshqMfqM68z4YCARRhGpvs/wbTADgtzp6LLi8k=;
-        b=kOb8mfmAimgtl61FvGNYqxlZW84Jo/r8z5xbDRqIsNDWar6ZcjGcDLyq24is4sF+Vd
-         L5PKBcmbD+9cJJmYsZhWu/J1wgWtyDvzQMsIbec/1eY/oCPkJjVTXWdsL5oh42sgYNwu
-         ijLBXN+C6ZoSD9H87oVbI5G2nXvjSPXM3pvz4EoSvaNDCGLUgyHbuKJF3InXtKX3SMxT
-         6gLXEBa5uWBn7Yrmm93uUo9uczAaeHVLpFEFcSsu4DUaCTq9CMlwdtgGV3AGUDJaJuhF
-         DtLUYovjJN5h8kcBPOksmmp2sUYDx8RVqu/i7dT5rf5Ybu+onzuuhAF9wtXz1Qy6SkIx
-         4ZZA==
-X-Gm-Message-State: APjAAAXKJlCjZrfVlT264F+j4R6q8P3wmIt4LCGBkXJop4loC/HCo02R
-        7CCM/dTNU4+a4VvAGrzBe/5ywgzS9TeOVFqzFkYrEQ==
-X-Google-Smtp-Source: APXvYqzmdD5qKrrrXe+HCEiDQQKVQS4JJibsx3w0GVW5imo8nYDvtycFLQxTBoJXvBBVIDupEJMTzYRQD7ldjOaUjJg=
-X-Received: by 2002:a17:902:1566:: with SMTP id b35mr84417865plh.147.1560356003612;
- Wed, 12 Jun 2019 09:13:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000927a7b0586561537@google.com> <MN2PR18MB263783F52CAD4A335FD8BB34A01A0@MN2PR18MB2637.namprd18.prod.outlook.com>
- <CACT4Y+aQzBkAq86Hx4jNFnAUzjXnq8cS2NZKfeCaFrZa__g-cg@mail.gmail.com>
- <MN2PR18MB26372D98386D79736A7947EEA0140@MN2PR18MB2637.namprd18.prod.outlook.com>
- <MN2PR18MB263710E8F1F8FFA06B2EDB3CA0EC0@MN2PR18MB2637.namprd18.prod.outlook.com>
-In-Reply-To: <MN2PR18MB263710E8F1F8FFA06B2EDB3CA0EC0@MN2PR18MB2637.namprd18.prod.outlook.com>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Wed, 12 Jun 2019 18:13:12 +0200
-Message-ID: <CAAeHK+wpzHG73AbB+199-TN35Kb1kEjGrKScSqU++7q7RSUGGg@mail.gmail.com>
-Subject: Re: [EXT] INFO: trying to register non-static key in del_timer_sync (2)
-To:     Ganapathi Bhat <gbhat@marvell.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>,
-        "amitkarwar@gmail.com" <amitkarwar@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "huxinming820@gmail.com" <huxinming820@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        id S1728810AbfFLQOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 12:14:22 -0400
+Received: from mail-eopbgr40073.outbound.protection.outlook.com ([40.107.4.73]:9607
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727126AbfFLQOV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 12:14:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s0UG5MivXE2CJVVos6FzuiRWhJ8UxBcWPuhuHFcAqU8=;
+ b=Y/HOK0vdY/cJyQsOtmvJLQJc2xMXRwRIforv5L7zQ+/HdE/xbeYQfE2Z4/6wUEx3aniVgxHDu135QV3WiMeIpxfxKL13l5InRlBBGKjigDB8laoMAdOEO+h7EUlbyedfkoceq1HWzJPKmcqiAWIk6lai1+mT7PlVO0gEhLQmvPQ=
+Received: from AM6PR05MB5879.eurprd05.prod.outlook.com (20.179.0.76) by
+ AM6PR05MB6344.eurprd05.prod.outlook.com (20.179.5.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.11; Wed, 12 Jun 2019 16:14:18 +0000
+Received: from AM6PR05MB5879.eurprd05.prod.outlook.com
+ ([fe80::9527:fe9d:2a02:41d5]) by AM6PR05MB5879.eurprd05.prod.outlook.com
+ ([fe80::9527:fe9d:2a02:41d5%5]) with mapi id 15.20.1987.010; Wed, 12 Jun 2019
+ 16:14:18 +0000
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nishants@marvell.com" <nishants@marvell.com>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
-Content-Type: multipart/mixed; boundary="00000000000052860b058b22b16c"
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: [PATCH bpf-next] net: Don't uninstall an XDP program when none is
+ installed
+Thread-Topic: [PATCH bpf-next] net: Don't uninstall an XDP program when none
+ is installed
+Thread-Index: AQHVITnjNkqLzd5XB0OcDX35ut8GrA==
+Date:   Wed, 12 Jun 2019 16:14:18 +0000
+Message-ID: <20190612161405.24064-1-maximmi@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0335.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a4::35) To AM6PR05MB5879.eurprd05.prod.outlook.com
+ (2603:10a6:20b:a2::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=maximmi@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.19.1
+x-originating-ip: [141.226.120.58]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 600e4692-07a0-46fb-166d-08d6ef51057f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB6344;
+x-ms-traffictypediagnostic: AM6PR05MB6344:
+x-microsoft-antispam-prvs: <AM6PR05MB63446B33EC6C9C778D08C523D1EC0@AM6PR05MB6344.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0066D63CE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(346002)(39860400002)(136003)(376002)(189003)(199004)(53936002)(7416002)(54906003)(110136005)(6116002)(68736007)(50226002)(5660300002)(316002)(256004)(5024004)(71200400001)(3846002)(66066001)(71190400001)(1076003)(6512007)(2906002)(81156014)(81166006)(8936002)(8676002)(478600001)(305945005)(7736002)(66946007)(6436002)(66476007)(25786009)(86362001)(4326008)(66556008)(486006)(14454004)(6486002)(73956011)(64756008)(2616005)(476003)(52116002)(26005)(6506007)(36756003)(386003)(99286004)(66446008)(186003)(107886003)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6344;H:AM6PR05MB5879.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: jo8RiJYnen3kj5gM2mZ0csTTGHjq9Y4lMxaqCRN55FH5zh2h/LjOJq5ZdAALHcxFGitjgjdvOau06FtHI8NYgjo1bw5D00oPrqp24Ja6Vr4iz/kZ5pTu35rmOZhDU6SXVlkTC1g1iYQQmc1yCiLpQn5OewmgudAy/60r+0QApk7FLwBzNfqWILuyjL6P10eJZZIxyX0IO4F6v+7Zcvnlkp/YuiI5DHWfPkc7arx7SEGiEubZ0lYZ1wMy02zhg2g/JxPyYntiQ6zw2MekcOAZGop9SuUQiosCV7jxtb+NA5r2qjs0yr8M5MGRJiXICWMxJbBA9l09s+LTuNbuVJuNSV6NqlwlFPRF98D271L4ZOi+vTKvWPfbi/z1sdALDL7r3abiV1PWx6yVijFKSO1qupHF2tqCDI8ITCc1dlafZKY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9D11AFBE9FBF7040958FA3BCEAB2ACB7@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 600e4692-07a0-46fb-166d-08d6ef51057f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2019 16:14:18.6676
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: maximmi@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6344
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000052860b058b22b16c
-Content-Type: text/plain; charset="UTF-8"
-
-On Wed, Jun 12, 2019 at 6:03 PM Ganapathi Bhat <gbhat@marvell.com> wrote:
->
-> Hi Dmitry,
->
-> We have a patch to fix this: https://patchwork.kernel.org/patch/10990275/
-
-Hi Ganapathi,
-
-Great, thanks for working on this!
-
-We can ask syzbot to test the fix:
-
-#syz test: https://github.com/google/kasan.git usb-fuzzer
-
-Thanks!
-
->
-> Regards,
-> Ganapathi
-
---00000000000052860b058b22b16c
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="mwifiex-avoid-deleting-uninitialized-timer-during-USB-cleanup.diff"
-Content-Disposition: attachment; 
-	filename="mwifiex-avoid-deleting-uninitialized-timer-during-USB-cleanup.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_jwtfnzut0>
-X-Attachment-Id: f_jwtfnzut0
-
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmlleC91c2IuYyBi
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmlleC91c2IuYwppbmRleCBjMjM2NWVl
-Li45MzlmMWU5IDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZp
-ZXgvdXNiLmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWFydmVsbC9td2lmaWV4L3VzYi5j
-CkBAIC0xMzQ4LDYgKzEzNDgsOCBAQCBzdGF0aWMgdm9pZCBtd2lmaWV4X3VzYl9jbGVhbnVwX3R4
-X2FnZ3Ioc3RydWN0IG13aWZpZXhfYWRhcHRlciAqYWRhcHRlcikKIAogCWZvciAoaWR4ID0gMDsg
-aWR4IDwgTVdJRklFWF9UWF9EQVRBX1BPUlQ7IGlkeCsrKSB7CiAJCXBvcnQgPSAmY2FyZC0+cG9y
-dFtpZHhdOworCQlpZiAoIXBvcnQtPnR4X2RhdGFfZXApCisJCQljb250aW51ZTsKIAkJaWYgKGFk
-YXB0ZXItPmJ1c19hZ2dyLmVuYWJsZSkKIAkJCXdoaWxlICgoc2tiX3RtcCA9CiAJCQkJc2tiX2Rl
-cXVldWUoJnBvcnQtPnR4X2FnZ3IuYWdncl9saXN0KSkpCkBAIC0xMzY1LDggKzEzNjcsNiBAQCBz
-dGF0aWMgdm9pZCBtd2lmaWV4X3VucmVnaXN0ZXJfZGV2KHN0cnVjdCBtd2lmaWV4X2FkYXB0ZXIg
-KmFkYXB0ZXIpCiAKIAltd2lmaWV4X3VzYl9mcmVlKGNhcmQpOwogCi0JbXdpZmlleF91c2JfY2xl
-YW51cF90eF9hZ2dyKGFkYXB0ZXIpOwotCiAJY2FyZC0+YWRhcHRlciA9IE5VTEw7CiB9CiAKQEAg
-LTE1MTAsNyArMTUxMCw3IEBAIHN0YXRpYyBpbnQgbXdpZmlleF9wcm9nX2Z3X3dfaGVscGVyKHN0
-cnVjdCBtd2lmaWV4X2FkYXB0ZXIgKmFkYXB0ZXIsCiBzdGF0aWMgaW50IG13aWZpZXhfdXNiX2Ru
-bGRfZncoc3RydWN0IG13aWZpZXhfYWRhcHRlciAqYWRhcHRlciwKIAkJCXN0cnVjdCBtd2lmaWV4
-X2Z3X2ltYWdlICpmdykKIHsKLQlpbnQgcmV0OworCWludCByZXQgPSAwOwogCXN0cnVjdCB1c2Jf
-Y2FyZF9yZWMgKmNhcmQgPSAoc3RydWN0IHVzYl9jYXJkX3JlYyAqKWFkYXB0ZXItPmNhcmQ7CiAK
-IAlpZiAoY2FyZC0+dXNiX2Jvb3Rfc3RhdGUgPT0gVVNCOFhYWF9GV19ETkxEKSB7CkBAIC0xNTIz
-LDEwICsxNTIzLDYgQEAgc3RhdGljIGludCBtd2lmaWV4X3VzYl9kbmxkX2Z3KHN0cnVjdCBtd2lm
-aWV4X2FkYXB0ZXIgKmFkYXB0ZXIsCiAJCQlyZXR1cm4gLTE7CiAJfQogCi0JcmV0ID0gbXdpZmll
-eF91c2JfcnhfaW5pdChhZGFwdGVyKTsKLQlpZiAoIXJldCkKLQkJcmV0ID0gbXdpZmlleF91c2Jf
-dHhfaW5pdChhZGFwdGVyKTsKLQogCXJldHVybiByZXQ7CiB9CiAKQEAgLTE1ODQsNyArMTU4MCwy
-OSBAQCBzdGF0aWMgdm9pZCBtd2lmaWV4X3VzYl9zdWJtaXRfcmVtX3J4X3VyYnMoc3RydWN0IG13
-aWZpZXhfYWRhcHRlciAqYWRhcHRlcikKIAlyZXR1cm4gMDsKIH0KIAorc3RhdGljIGludCBtd2lm
-aWV4X2luaXRfdXNiKHN0cnVjdCBtd2lmaWV4X2FkYXB0ZXIgKmFkYXB0ZXIpCit7CisJc3RydWN0
-IHVzYl9jYXJkX3JlYyAqY2FyZCA9IChzdHJ1Y3QgdXNiX2NhcmRfcmVjICopYWRhcHRlci0+Y2Fy
-ZDsKKwlpbnQgcmV0ID0gMDsKKworCWlmIChjYXJkLT51c2JfYm9vdF9zdGF0ZSA9PSBVU0I4WFhY
-X0ZXX0ROTEQpCisJCXJldHVybiAwOworCisJcmV0ID0gbXdpZmlleF91c2JfcnhfaW5pdChhZGFw
-dGVyKTsKKwlpZiAoIXJldCkKKwkJcmV0ID0gbXdpZmlleF91c2JfdHhfaW5pdChhZGFwdGVyKTsK
-KworCXJldHVybiByZXQ7Cit9CisKK3N0YXRpYyB2b2lkIG13aWZpZXhfY2xlYW51cF91c2Ioc3Ry
-dWN0IG13aWZpZXhfYWRhcHRlciAqYWRhcHRlcikKK3sKKwltd2lmaWV4X3VzYl9jbGVhbnVwX3R4
-X2FnZ3IoYWRhcHRlcik7Cit9CisKIHN0YXRpYyBzdHJ1Y3QgbXdpZmlleF9pZl9vcHMgdXNiX29w
-cyA9IHsKKwkuaW5pdF9pZiA9CQltd2lmaWV4X2luaXRfdXNiLAorCS5jbGVhbnVwX2lmID0JCW13
-aWZpZXhfY2xlYW51cF91c2IsCiAJLnJlZ2lzdGVyX2RldiA9CQltd2lmaWV4X3JlZ2lzdGVyX2Rl
-diwKIAkudW5yZWdpc3Rlcl9kZXYgPQltd2lmaWV4X3VucmVnaXN0ZXJfZGV2LAogCS53YWtldXAg
-PQkJbXdpZmlleF9wbV93YWtldXBfY2FyZCwK
---00000000000052860b058b22b16c--
+ZGV2X2NoYW5nZV94ZHBfZmQgZG9lc24ndCBwZXJmb3JtIGFueSBjaGVja3MgaW4gY2FzZSBpdCB1
+bmluc3RhbGxzIGFuDQpYRFAgcHJvZ3JhbS4gSXQgbWVhbnMgdGhhdCB0aGUgZHJpdmVyJ3MgbmRv
+X2JwZiBjYW4gYmUgY2FsbGVkIHdpdGgNClhEUF9TRVRVUF9QUk9HIGFza2luZyB0byBzZXQgaXQg
+dG8gTlVMTCBldmVuIGlmIGl0J3MgYWxyZWFkeSBOVUxMLiBUaGlzDQpjYXNlIGhhcHBlbnMgaWYg
+dGhlIHVzZXIgcnVucyBgaXAgbGluayBzZXQgZXRoMCB4ZHAgb2ZmYCB3aGVuIHRoZXJlIGlzDQpu
+byBYRFAgcHJvZ3JhbSBhdHRhY2hlZC4NCg0KVGhlIGRyaXZlcnMgdHlwaWNhbGx5IHBlcmZvcm0g
+c29tZSBoZWF2eSBvcGVyYXRpb25zIG9uIFhEUF9TRVRVUF9QUk9HLA0Kc28gdGhleSBhbGwgaGF2
+ZSB0byBoYW5kbGUgdGhpcyBjYXNlIGludGVybmFsbHkgdG8gcmV0dXJuIGVhcmx5IGlmIGl0DQpo
+YXBwZW5zLiBUaGlzIHBhdGNoIHB1dHMgdGhpcyBjaGVjayBpbnRvIHRoZSBrZXJuZWwgY29kZSwg
+c28gdGhhdCBhbGwNCmRyaXZlcnMgd2lsbCBiZW5lZml0IGZyb20gaXQuDQoNClNpZ25lZC1vZmYt
+Ynk6IE1heGltIE1pa2l0eWFuc2tpeSA8bWF4aW1taUBtZWxsYW5veC5jb20+DQotLS0NCkJqw7Zy
+biwgcGxlYXNlIHRha2UgYSBsb29rIGF0IHRoaXMsIFNhZWVkIHRvbGQgbWUgeW91IHdlcmUgZG9p
+bmcNCnNvbWV0aGluZyByZWxhdGVkLCBidXQgSSBjb3VsZG4ndCBmaW5kIGl0LiBJZiB0aGlzIGZp
+eCBpcyBhbHJlYWR5DQpjb3ZlcmVkIGJ5IHlvdXIgd29yaywgcGxlYXNlIHRlbGwgYWJvdXQgdGhh
+dC4NCg0KIG5ldC9jb3JlL2Rldi5jIHwgMyArKysNCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRp
+b25zKCspDQoNCmRpZmYgLS1naXQgYS9uZXQvY29yZS9kZXYuYyBiL25ldC9jb3JlL2Rldi5jDQpp
+bmRleCA2NmY3NTA4ODI1YmQuLjY4YjNlMzMyMGNlYiAxMDA2NDQNCi0tLSBhL25ldC9jb3JlL2Rl
+di5jDQorKysgYi9uZXQvY29yZS9kZXYuYw0KQEAgLTgwODksNiArODA4OSw5IEBAIGludCBkZXZf
+Y2hhbmdlX3hkcF9mZChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBzdHJ1Y3QgbmV0bGlua19leHRf
+YWNrICpleHRhY2ssDQogCQkJYnBmX3Byb2dfcHV0KHByb2cpOw0KIAkJCXJldHVybiAtRUlOVkFM
+Ow0KIAkJfQ0KKwl9IGVsc2Ugew0KKwkJaWYgKCFfX2Rldl94ZHBfcXVlcnkoZGV2LCBicGZfb3As
+IHF1ZXJ5KSkNCisJCQlyZXR1cm4gMDsNCiAJfQ0KIA0KIAllcnIgPSBkZXZfeGRwX2luc3RhbGwo
+ZGV2LCBicGZfb3AsIGV4dGFjaywgZmxhZ3MsIHByb2cpOw0KLS0gDQoyLjE5LjENCg0K
