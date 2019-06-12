@@ -2,96 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A3B42A3B
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 132CA42A48
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439909AbfFLPFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 11:05:02 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40305 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437202AbfFLPFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:05:01 -0400
-Received: by mail-wr1-f65.google.com with SMTP id p11so17310815wre.7
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 08:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=/8xGsHTP+iy8Gt814Xxy96+5BPKtVpOqeBb/34Fcdsc=;
-        b=g1wuq8ZC3FrlxZnzk/tg2ghabRbnhlqq1svD63JFaD8bNT6kXTBtJkliGf76EJBEoG
-         HQjwS8sX/ZZL/lIzjOlBLpTbLxmEvEdKGDxyOhaJI41Necw2mglhxCckY8RL0vsf1RAH
-         D+mkhZf8/oboa/9BTrxltIkV8DB3MZkFr+HkY+Yp/qRL/YONUD2rn1ADkpoqqCmfebJI
-         pfQDZDA9r9mZtRtRx3OhJvAY6R3rwZ3/HV6NbKKI7X7kIOy5XRUtuvTUec+91B6/q7hD
-         b/9xC8jWOp6OLvkNYCsVVbmZiwsBu1XQ1mLsEPTiUArNxgN7REnPfY8zS6ny2DeYkHo0
-         IJ1Q==
+        id S2439959AbfFLPGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 11:06:36 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38020 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437202AbfFLPGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:06:36 -0400
+Received: by mail-qt1-f195.google.com with SMTP id n11so16738387qtl.5;
+        Wed, 12 Jun 2019 08:06:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=/8xGsHTP+iy8Gt814Xxy96+5BPKtVpOqeBb/34Fcdsc=;
-        b=oLVjZLMMtygL1Fe6J5oxS5XKli3tPwcUl/7Ctc/9DPVZbnQ86lYac/HC48XQDQ2VYA
-         FmNj3EKO7W9cpS03Q6XjvVrqGeaI0aqenmqOepbh+nhV43GpKhV2usTC2o/Zq0hhg2Fe
-         AOLNkm8asVVSI/MIIt8z8Sm2O9y4weR1NFLYtYT/sYucHF8lihsrmQb2l0BXeyQkms3r
-         6S9IScrCQavPPEdSjvuM2APF1XLCru4jo3MSHGKMGSSc2tDSB5WZaT3QKAovKyq5ItF+
-         4eh26GkS6grA9bg+BlV1pCfJadNQ2y+PpTVyhbJLucKtJq/6Jvc12yFEPZYeLCA/H3Hz
-         h6HA==
-X-Gm-Message-State: APjAAAVNZ9Pj2tKnMacUJVuAhEQ3pl8GOQ2EwrzWxSsgIEOQdv+D4xlv
-        I5ttLysixR7Dgi74GHe3sdjR/G9PxfA=
-X-Google-Smtp-Source: APXvYqwynzIh/Ayl7mDoHmJk3NzZTAW6WJr9XTtGtd1QClAaZnhA09cDDPHnPROIn7I/bJWYQqy8WA==
-X-Received: by 2002:adf:fc85:: with SMTP id g5mr55231190wrr.324.1560351899790;
-        Wed, 12 Jun 2019 08:04:59 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id 11sm307964wmd.23.2019.06.12.08.04.58
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 12 Jun 2019 08:04:58 -0700 (PDT)
-References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com> <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jiong Wang <jiong.wang@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH] bpf: optimize constant blinding
-In-reply-to: <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
-Date:   Wed, 12 Jun 2019 16:04:56 +0100
-Message-ID: <87sgse26av.fsf@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1g7s/UPWJzJeB4LrTKmbsG4ivrcvy+TUBuxC551yLEY=;
+        b=d66shXrNt0O/ILQOmOrlpZDjdgEODCMdtsY8L/CJMIu4+IkFvmEazMfTJ7Au8U64Rq
+         4P+o2ddPKPEQSDUifBXoloUYWwr9qwk5e+JW89rzkgiw+lEvwwhWtrsYLOz6hEnb4Jkr
+         ibemJxSrT015Q/RbN1pNo4NjbDkvR0VD/tl66yBVm+sPiGbXZdjlFc1ZURJMoZRLl/Xh
+         lH/YUbdq2+jZDlEXh+hk230IGhooh1F/ijF2BQItVkmBkdkGPwhI8FSUPc1/hnsGGdwc
+         82XGN5iEKnO84hvhgyMQspDGrGIxCs9KXUSJLKEATjSdqnlYmREfwsKEBeFqegjQI9jq
+         W0Og==
+X-Gm-Message-State: APjAAAXMtyjaTD2zZw160HMJCu7MGGQCPI9NeL+6/WFh3PhbVAGwttLz
+        dc13i4VXfStaElvT1PcbT2xAFgUu0zPQJ/wQ6OQ=
+X-Google-Smtp-Source: APXvYqzOMpjxx8OTt1LYucvtT3ec0rHQVDXxOvYnWwFFLgDetKQQiEnhNqtCjwvLI9BT1ZM6g2S2uumX596TBUy4Jug=
+X-Received: by 2002:ac8:8dd:: with SMTP id y29mr5832711qth.304.1560351994976;
+ Wed, 12 Jun 2019 08:06:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+ <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+ <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+ <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+ <36bca57c999f611353fd9741c55bb2a7@codeaurora.org> <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+ <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com> <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+In-Reply-To: <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 12 Jun 2019 17:06:17 +0200
+Message-ID: <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Dan Williams <dcbw@redhat.com>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 12, 2019 at 4:28 PM Dan Williams <dcbw@redhat.com> wrote:
+> On Wed, 2019-06-12 at 10:31 +0200, Arnd Bergmann wrote:
+> > On Tue, Jun 11, 2019 at 7:23 PM Dan Williams <dcbw@redhat.com> wrote:
+> I was trying to make the point that rmnet doesn't need to care about
+> how the QMAP packets get to the device itself; it can be pretty generic
+> so that it can be used by IPA/qmi_wwan/rmnet_smd/etc.
 
-Alexei Starovoitov writes:
+rmnet at the moment is completely generic in that regard already,
+however it is implemented as a tunnel driver talking to another
+device rather than an abstraction layer below that driver.
 
-> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
-> <naveen.n.rao@linux.vnet.ibm.com> wrote:
->>
->> Currently, for constant blinding, we re-allocate the bpf program to
->> account for its new size and adjust all branches to accommodate the
->> same, for each BPF instruction that needs constant blinding. This is
->> inefficient and can lead to soft lockup with sufficiently large
->> programs, such as the new verifier scalability test (ld_dw: xor
->> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
+> > The current rmnet model is different in that by design the upper
+> > layer
+> > (rmnet) and the lower layer (qmi_wwan, ipa, ...) are kept independent
+> > in
+> > both directions, i.e. ipa has (almost) no knowledge of rmnet, and
+> > just
+> > has pointers to the other net_device:
+> >
+> >        ipa_device
+> >            net_device
+> >
+> >        rmnet_port
+> >            net_device
+> >
+> > I understand that the rmnet model was intended to provide a cleaner
+> > abstraction, but it's not how we normally structure subsystems in
+> > Linux, and moving to a model more like how wireless_dev works
+> > would improve both readability and performance, as you describe
+> > it, it would be more like (ignoring for now the need for multiple
+> > connections):
+> >
+> >    ipa_dev
+> >         rmnet_dev
+> >                wwan_dev
+> >                       net_device
 >
-> Slowdown you see is due to patch_insn right?
-> In such case I prefer to fix the scaling issue of patch_insn instead.
-> This specific fix for blinding only is not addressing the core of the problem.
-> Jiong,
-> how is the progress on fixing patch_insn?
+> Perhaps I'm assuming too much from this diagram but this shows a 1:1
+> between wwan_dev and "lower" devices.
+>
+> What Johannes is proposing (IIRC) is something a bit looser where a
+> wwan_dev does not necessarily provide netdev itself, but is instead the
+> central point that various channels (control, data, gps, sim card, etc)
+> register with. That way the wwan_dev can provide an overall view of the
+> WWAN device to userspace, and userspace can talk to the wwan_dev to ask
+> the lower drivers (ipa, rmnet, etc) to create new channels (netdev,
+> tty, otherwise) when the control channel has told the modem firmware to
+> expect one.
 
-I actually was about to reply this email as we have discussed exactly the
-same issue on jit blinding here:
+Right, as I noted above, I simplified it a bit. We probably want to
+have multiple net_device instances for an ipa_dev, so there has
+to be a 1:n relationship instead of 1:1 at one of the intermediate
+levels, but it's not obvious which level that should be.
 
-  https://www.spinics.net/lists/bpf/msg01836.html
+In theory we could even have a single net_device instance correspond
+to the ipa_dev, but then have multiple IP addresses bound to it,
+so each IP address corresponds to a channel/queue/napi_struct,
+but the user visible object remains a single device.
 
-And sorry for the slow progress on fixing patch_insn, please give me one
-more week, I will try to send out a RFC for it.
+I trust that you and Johannes are more qualified than me to make
+the call on that point.
 
-Regards,
-Jiong
+       Arnd
