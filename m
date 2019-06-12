@@ -2,85 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4E9425C5
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3006425D2
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438685AbfFLM3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:29:40 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:43400 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729008AbfFLM3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:29:40 -0400
-Received: by mail-pg1-f193.google.com with SMTP id f25so8851799pgv.10;
-        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WFcM32SS6XaD8HSCn00NiHqd+wcd7qBRLAizzgTZVxY=;
-        b=Y5ihkDG2CTC5uDcLFLVuhq8mJ16YaC9ICO39gSxNlGpbmCnDIiAfbPqIQF2Gca5+Ml
-         GK1oVU3LgZTkLnWXBh3hjs2Fs3Zp6FYzsw3Nk1Pp+JuecJeh16b8AhxsQ1l6QSlVX/JO
-         SIMMiP0QKEX05LnnY3C5JwauagNbOYdrg9zRe5sfpzCEK+zqKqQMjMxPMG55oyiNJYNr
-         aKhxxSoINBvHAo0Biht/1CnrO2EmUpxxuMTSuOaGu+kO2QSci6XYIffhg9UvZ6fkW1dG
-         2qEGgWc+FYHiRN4L3MXMwgBgiRdmVpd58V2+4i1atT3dnz6vZpk7IrySBS+uxgaJbTca
-         q/bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WFcM32SS6XaD8HSCn00NiHqd+wcd7qBRLAizzgTZVxY=;
-        b=HpBN4VOyPfoYJJpTA6tndS3D8PlwXU1IzDhqjfsvb476HL2uWC8OES106TqPhxQdpm
-         YtBqtq8y7KhpjzjJD5escvyhfNxSQOqw9dVqt/woZ0h0M/GkozztHTI4vG2aYNJA2mxi
-         8WPHsg1dhDSkFNR1qLUyfKKqHiO9iJyWT4e9/TOiyQ1JyAtEGYTOvMnYY2fJnY4GBltM
-         vfvB1EJ4It6ZYwH05j9rlKD70DPkC2dv7r1dOdM+nMiwRhh/Prz/ydPCgtvs71dysijE
-         xwkTjd6m+rHpHdTBFZCUR0T7+mECsexCNUBxkW/H7YXKTsbNQVzerVj7q6G3eNE51DZN
-         07qw==
-X-Gm-Message-State: APjAAAWfGE+2D4twMEi34nOPRZml9X9TwZEJnZd7fIRX5OKPib4kMylJ
-        VFHJCkKBY69WvL2BsrCkYgE=
-X-Google-Smtp-Source: APXvYqy/SY9OVqCPDYbiHArI3JT+x/0Z0xR5oGUlcaPHGqGLYEZFSqG2z2BlJ1c9lItzkcr9REzpfg==
-X-Received: by 2002:a62:e917:: with SMTP id j23mr80596145pfh.55.1560342579591;
-        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
-Received: from masabert (150-66-71-0m5.mineo.jp. [150.66.71.0])
-        by smtp.gmail.com with ESMTPSA id b26sm14993505pfo.129.2019.06.12.05.29.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
-Received: by masabert (Postfix, from userid 1000)
-        id 5FF482011BF; Wed, 12 Jun 2019 21:29:35 +0900 (JST)
-From:   Masanari Iida <standby24x7@gmail.com>
-To:     santosh.shilimkar@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Cc:     Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] linux-next: DOC: RDS: Fix a typo in rds.txt
-Date:   Wed, 12 Jun 2019 21:29:34 +0900
-Message-Id: <20190612122934.3515-1-standby24x7@gmail.com>
-X-Mailer: git-send-email 2.22.0
+        id S2438952AbfFLMaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:30:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45036 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2438948AbfFLMaq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 08:30:46 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0C1B9302451A;
+        Wed, 12 Jun 2019 12:30:41 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D06B1001B07;
+        Wed, 12 Jun 2019 12:30:38 +0000 (UTC)
+Message-ID: <e11118334595e6517e618e80406e0135402cacf1.camel@redhat.com>
+Subject: Re: tc tp creation performance degratation since kernel 5.1
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     vladbu@mellanox.com, pablo@netfilter.org, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com, mlxsw@mellanox.com, alexanderk@mellanox.com
+Date:   Wed, 12 Jun 2019 14:30:37 +0200
+In-Reply-To: <20190612120341.GA2207@nanopsycho>
+References: <20190612120341.GA2207@nanopsycho>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 12 Jun 2019 12:30:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a spelling typo in rds.txt
+Hi,
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
----
- Documentation/networking/rds.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, 2019-06-12 at 14:03 +0200, Jiri Pirko wrote:
+> I did simple prifiling using perf. Output on 5.1 kernel:
+>     77.85%  tc               [kernel.kallsyms]  [k] tcf_chain_tp_find
+>      3.30%  tc               [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+>      1.33%  tc_pref_scale.s  [kernel.kallsyms]  [k] do_syscall_64
+>      0.60%  tc_pref_scale.s  libc-2.28.so       [.] malloc
+>      0.55%  tc               [kernel.kallsyms]  [k] mutex_spin_on_owner
+>      0.51%  tc               libc-2.28.so       [.] __memset_sse2_unaligned_erms
+>      0.40%  tc_pref_scale.s  libc-2.28.so       [.] __gconv_transform_utf8_internal
+>      0.38%  tc_pref_scale.s  libc-2.28.so       [.] _int_free
+>      0.37%  tc_pref_scale.s  libc-2.28.so       [.] __GI___strlen_sse2
+>      0.37%  tc               [kernel.kallsyms]  [k] idr_get_free
+> 
+> Output on net-next:
+>     39.26%  tc               [kernel.vmlinux]  [k] lock_is_held_type
 
-diff --git a/Documentation/networking/rds.txt b/Documentation/networking/rds.txt
-index 0235ae69af2a..f2a0147c933d 100644
---- a/Documentation/networking/rds.txt
-+++ b/Documentation/networking/rds.txt
-@@ -389,7 +389,7 @@ Multipath RDS (mprds)
-   a common (to all paths) part, and a per-path struct rds_conn_path. All
-   I/O workqs and reconnect threads are driven from the rds_conn_path.
-   Transports such as TCP that are multipath capable may then set up a
--  TPC socket per rds_conn_path, and this is managed by the transport via
-+  TCP socket per rds_conn_path, and this is managed by the transport via
-   the transport privatee cp_transport_data pointer.
- 
-   Transports announce themselves as multipath capable by setting the
--- 
-2.22.0
+It looks like you have lockdep enabled here, but not on the 5.1 build.
+
+That would explain such a large perf difference.
+
+Can you please double check?
+
+thanks,
+
+Paolo
 
