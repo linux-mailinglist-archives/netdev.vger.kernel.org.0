@@ -2,106 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 410E64311C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:49:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3AA543135
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389476AbfFLUtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 16:49:21 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:17381 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388615AbfFLUtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:49:20 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id x5CKnF0B004867
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jun 2019 14:49:16 -0600 (CST)
-Received: from SED.RFC1918.192.168.sedsystems.ca (eng1n65.eng.sedsystems.ca [172.21.1.65])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id x5CKnCV4014125
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 12 Jun 2019 14:49:14 -0600
-From:   Robert Hancock <hancock@sedsystems.ca>
-To:     netdev@vger.kernel.org
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        Robert Hancock <hancock@sedsystems.ca>
-Subject: [PATCH net-next 2/2] net: dsa: microchip: Support optional 125MHz SYNCLKO output
-Date:   Wed, 12 Jun 2019 14:49:06 -0600
-Message-Id: <1560372546-3153-3-git-send-email-hancock@sedsystems.ca>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1560372546-3153-1-git-send-email-hancock@sedsystems.ca>
-References: <1560372546-3153-1-git-send-email-hancock@sedsystems.ca>
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+        id S2389499AbfFLUzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 16:55:48 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41264 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388338AbfFLUzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:55:47 -0400
+Received: by mail-wr1-f66.google.com with SMTP id c2so18363591wrm.8;
+        Wed, 12 Jun 2019 13:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lZ7Q02f4JEf34T5luLcOREHyEm4npQ5trSJ/nqzq8KI=;
+        b=mg3vmtbO7GQE8XVffQtxwJcZF/oIwU11kK+Acbjymrr2vinDGw7IyBsL9IgNyBZY9n
+         JLZ1XMsuYOhdNuxjBwTsptARffVdoBVduDOSs2kjL+wL4qr0Cn69+PcfWtsYo2lPTdKD
+         qdZDu8w4Ept3hxTEEOvo7hmqhqvgbFNm1rGKbUXi0HrzXU9wTGDdix1/vZmZhsbf52/U
+         WshRL/dw4YLGTk2yPYQTPDe32v753sbqy3j1Oc+Qh1oLxit5GuF6kl1u2b41+PmFmsWU
+         jvFVIRWqhMTU+LglW3YXP38+DkPHcVWHoKnl4DyBQXl/Ftbq9KZ110zaZjuQBKV5+kLJ
+         Ld2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lZ7Q02f4JEf34T5luLcOREHyEm4npQ5trSJ/nqzq8KI=;
+        b=ivQOh/JdcB2qn9jzLl6p8PrGlAT7RUZ8Fi/6MFaD0AGnOBixCtHqvHKXTJ6TifVP2y
+         SqI4GTf3xCwgTiPN5heG6X3+zrXMQ8aYDaMb+LGJnlb5Rpu+QNAVbl9HhgESypb4MGX6
+         6COhFq9l/h0S09Qwq/OrkKJount0eQRayMk8HUEr8TDQgfzwx7cp3WS+R4fOhja1XnfG
+         8UPqbbFg3JTmm3lBTGHHyqOCDgD8/HJp/qdFn1IGSbkvoMi1oYscq7zg2qoeUSo5VYjE
+         DTjB37xUmPCzRPD51er8HaHqieCtZZXhDwciko6tPSdnKlLI0BNtMSXQDeKdL5iY8lO3
+         ZLag==
+X-Gm-Message-State: APjAAAXmhoiXhJLfygI//+fcryfNBUXW1c9vBo9qvIuWGVd3yHW2ddwI
+        nWTe9XE7wJrDl2Q5hXx04Zw=
+X-Google-Smtp-Source: APXvYqzPwLw3bVyQPoGki1H86cxQv/CaJAP/waZtaKCPgu6NSjHMKfqFNAFW/GHXnLzN8dcf/35BJQ==
+X-Received: by 2002:a5d:6212:: with SMTP id y18mr8369049wru.178.1560372945219;
+        Wed, 12 Jun 2019 13:55:45 -0700 (PDT)
+Received: from blackbox.darklights.net (p200300F133DDA400428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:33dd:a400:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id s7sm3445793wmc.2.2019.06.12.13.55.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 13:55:44 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-amlogic@lists.infradead.org, khilman@baylibre.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
+        robin.murphy@arm.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 0/4] Ethernet PHY reset GPIO updates for Amlogic SoCs
+Date:   Wed, 12 Jun 2019 22:55:25 +0200
+Message-Id: <20190612205529.19834-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The KSZ9477 series chips have a SYNCLKO pin which by default outputs a
-25MHz clock, but some board setups require a 125MHz clock instead. Added
-a microchip,synclko-125 device tree property to allow indicating a
-125MHz clock output is required.
+While trying to add the Ethernet PHY interrupt on the X96 Max I found
+that the current reset line definition is incorrect. Patch #1 fixes
+this.
 
-Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
----
- Documentation/devicetree/bindings/net/dsa/ksz.txt | 2 ++
- drivers/net/dsa/microchip/ksz9477.c               | 4 ++++
- drivers/net/dsa/microchip/ksz_common.c            | 2 ++
- drivers/net/dsa/microchip/ksz_priv.h              | 1 +
- 4 files changed, 9 insertions(+)
+Since the fix requires moving from the deprecated "snps,reset-gpio"
+property to the generic Ethernet PHY reset bindings I decided to move
+all Amlogic boards over to the non-deprecated bindings. That's what
+patches #2 and #3 do.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/ksz.txt b/Documentation/devicetree/bindings/net/dsa/ksz.txt
-index e7db726..4ac21ce 100644
---- a/Documentation/devicetree/bindings/net/dsa/ksz.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/ksz.txt
-@@ -16,6 +16,8 @@ Required properties:
- Optional properties:
- 
- - reset-gpios		: Should be a gpio specifier for a reset line
-+- microchip,synclko-125 : Set if the output SYNCLKO frequency should be set to
-+			  125MHz instead of 25MHz.
- 
- See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
- required and optional properties.
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 7be6d84..508380f 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -258,6 +258,10 @@ static int ksz9477_reset_switch(struct ksz_device *dev)
- 	data16 |= (BROADCAST_STORM_VALUE * BROADCAST_STORM_PROT_RATE) / 100;
- 	ksz_write16(dev, REG_SW_MAC_CTRL_2, data16);
- 
-+	if (dev->synclko_125)
-+		ksz_write8(dev, REG_SW_GLOBAL_OUTPUT_CTRL__1,
-+			   SW_ENABLE_REFCLKO | SW_REFCLKO_IS_125MHZ);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 39dace8..40c57d8 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -460,6 +460,8 @@ int ksz_switch_register(struct ksz_device *dev,
- 		ret = of_get_phy_mode(dev->dev->of_node);
- 		if (ret >= 0)
- 			dev->interface = ret;
-+		dev->synclko_125 = of_property_read_bool(dev->dev->of_node,
-+							 "microchip,synclko-125");
- 	}
- 
- 	ret = dsa_register_switch(dev->ds);
-diff --git a/drivers/net/dsa/microchip/ksz_priv.h b/drivers/net/dsa/microchip/ksz_priv.h
-index 724301d..c615d2a 100644
---- a/drivers/net/dsa/microchip/ksz_priv.h
-+++ b/drivers/net/dsa/microchip/ksz_priv.h
-@@ -78,6 +78,7 @@ struct ksz_device {
- 	phy_interface_t interface;
- 	u32 regs_size;
- 	bool phy_errata_9477;
-+	bool synclko_125;
- 
- 	struct vlan_table *vlan_cache;
- 
+Finally I found that Odroid-N2 doesn't define the Ethernet PHY's reset
+GPIO yet. I don't have that board so I can't test whether it really
+works but based on the schematics it should. 
+
+This series is a partial successor to "stmmac: honor the GPIO flags
+for the PHY reset GPIO" from [0]. I decided not to take Linus W.'s
+Reviewed-by from patch #4 of that series because I had to change the
+wording and I want to be sure that he's happy with that now.
+
+One quick note regarding patches #1 and #4: I decided to violate the
+"max 80 characters per line" (by 4 characters) limit because I find
+that the result is easier to read then it would be if I split the
+line.
+
+
+Changes since v1 at [1]:
+- fixed the reset deassert delay for RTL8211F PHYs - spotted by Robin
+  Murphy (thank you). according to the public RTL8211E datasheet the
+  correct values seem to be: 10ms assert, 30ms deassert
+- fixed the reset assert and deassert delays for IP101GR PHYs. There
+  are two values given in the public datasheet, use the higher one
+  (10ms instead of 2.5)
+- update the patch descriptions to quote the datasheets (the RTL8211F
+  quotes are taken from the public RTL8211E datasheet because as far
+  as I can tell the reset sequence is identical on both PHYs)
+
+
+[0] https://patchwork.kernel.org/cover/10983801/
+[1] https://patchwork.kernel.org/cover/10985155/
+
+
+Martin Blumenstingl (4):
+  arm64: dts: meson: g12a: x96-max: fix the Ethernet PHY reset line
+  ARM: dts: meson: switch to the generic Ethernet PHY reset bindings
+  arm64: dts: meson: use the generic Ethernet PHY reset GPIO bindings
+  arm64: dts: meson: g12b: odroid-n2: add the Ethernet PHY reset line
+
+ arch/arm/boot/dts/meson8b-ec100.dts                   |  9 +++++----
+ arch/arm/boot/dts/meson8b-mxq.dts                     |  9 +++++----
+ arch/arm/boot/dts/meson8b-odroidc1.dts                |  9 +++++----
+ arch/arm/boot/dts/meson8m2-mxiii-plus.dts             |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts    |  7 ++++---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts  |  4 ++++
+ arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts  |  9 +++++----
+ .../arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts   |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts       |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi  |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi     |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts  | 11 ++++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts | 10 +++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts   |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxm-q200.dts        | 11 ++++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts    |  8 ++++----
+ 17 files changed, 80 insertions(+), 66 deletions(-)
+
 -- 
-1.8.3.1
+2.22.0
 
