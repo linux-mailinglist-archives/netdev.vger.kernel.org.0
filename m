@@ -2,66 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5707E42795
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 15:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFE5427F5
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 15:49:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439415AbfFLNcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 09:32:53 -0400
-Received: from mga06.intel.com ([134.134.136.31]:53879 "EHLO mga06.intel.com"
+        id S2436898AbfFLNtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 09:49:23 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48684 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728401AbfFLNcx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 09:32:53 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jun 2019 06:32:52 -0700
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jun 2019 06:32:50 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hb3Mw-000DZN-Cy; Wed, 12 Jun 2019 21:32:50 +0800
-Date:   Wed, 12 Jun 2019 21:32:26 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kbuild-all@01.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH linux-next] net: dsa: sja1105: sja1105_port_txtstamp()
- can be static
-Message-ID: <20190612133226.GA10859@lkp-kbuild03>
-References: <201906122110.yHrGtn9w%lkp@intel.com>
+        id S2436750AbfFLNtX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 09:49:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=26lC4u1mGzTrFbxBa1LHdt26klqvOKqg9m2EWgNfPJA=; b=xGaR8d62T7u2Gi8ZgrpggbgK6u
+        7q97IU4YmT7eD+NbgyKPIUUDyZ2nxV1G2KdmwBqEv8xF4ct7RJS7yyBqLZGJjsHojoTBp8+l/x4it
+        pMxYdzWrdnK/Hl/4DkVNo21eyKvWdQjJNltjPLwOJImtAZrBvgQgjXlKciFiPq2CDJn4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hb3cs-0004zh-PW; Wed, 12 Jun 2019 15:49:18 +0200
+Date:   Wed, 12 Jun 2019 15:49:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Hancock <hancock@sedsystems.ca>
+Cc:     netdev@vger.kernel.org, anirudh@xilinx.com, John.Linn@xilinx.com
+Subject: Re: [PATCH net-next] net: axienet: move use of resource after
+ validity check
+Message-ID: <20190612134918.GA18923@lunn.ch>
+References: <1560272162-14856-1-git-send-email-hancock@sedsystems.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <201906122110.yHrGtn9w%lkp@intel.com>
-X-Patchwork-Hint: ignore
+In-Reply-To: <1560272162-14856-1-git-send-email-hancock@sedsystems.ca>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 11, 2019 at 10:56:02AM -0600, Robert Hancock wrote:
+> We were accessing the pointer returned from platform_get_resource before
+> checking if it was valid, causing an oops if it was not. Move this access
+> after the call to devm_ioremap_resource which does the validity check.
+> 
+> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
 
-Fixes: 47ed985e97f5 ("net: dsa: sja1105: Add logic for TX timestamping")
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
- sja1105_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 121cecc..6112ab50 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1715,8 +1715,8 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
-  * the skb and have it available in DSA_SKB_CB in the .port_deferred_xmit
-  * callback, where we will timestamp it synchronously.
-  */
--bool sja1105_port_txtstamp(struct dsa_switch *ds, int port,
--			   struct sk_buff *skb, unsigned int type)
-+static bool sja1105_port_txtstamp(struct dsa_switch *ds, int port,
-+				  struct sk_buff *skb, unsigned int type)
- {
- 	struct sja1105_private *priv = ds->priv;
- 	struct sja1105_port *sp = &priv->ports[port];
+    Andrew
