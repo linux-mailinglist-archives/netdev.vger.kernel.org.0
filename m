@@ -2,70 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C41B141D33
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 09:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0F441D46
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 09:15:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407944AbfFLHHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 03:07:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42018 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407185AbfFLHHF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 03:07:05 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CCD5B205ED;
-        Wed, 12 Jun 2019 07:07:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560323224;
-        bh=GtigtzkEAHr+VEjATWqUUDT5Nt8U4B4G0dSmvG/CfD4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y9ZY+szQVuDeeYvSNyGaG6WXfZrwHvAkiNTdcNhJCvGNtkQZy7XsIlOzYpumLZxBa
-         SmhNYffk8n3TlA8fYmSael5PHZyDaHygbZTycIRZRD9z+cpBHZFwYSO0zFJBKRMzow
-         s1Gf4jbf7iY1fEGuyBkzQJrYjZ3h9uBRk2fZqx98=
-Date:   Wed, 12 Jun 2019 09:07:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Vasily Khoruzhick <anarsoul@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] Revert "Bluetooth: Align minimum encryption key size for
- LE and BR/EDR connections"
-Message-ID: <20190612070701.GA13320@kroah.com>
-References: <20190522052002.10411-1-anarsoul@gmail.com>
- <6BD1D3F7-E2F2-4B2D-9479-06E27049133C@holtmann.org>
- <7B7F362B-6C8B-4112-8772-FB6BC708ABF5@holtmann.org>
- <CA+E=qVfopSA90vG2Kkh+XzdYdNn=M-hJN_AptW=R+B5v3HB9eA@mail.gmail.com>
- <CA+E=qVdLOS9smt-nBxg9Lon0iTZr87kONSp-XPKj9tqB4bvnqw@mail.gmail.com>
- <723142BB-8217-4A01-A2B9-F527174FDC0F@holtmann.org>
+        id S2407995AbfFLHOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 03:14:42 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59547 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2405266AbfFLHOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 03:14:41 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 12 Jun 2019 10:14:39 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.213.18.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5C7Ecxj020922;
+        Wed, 12 Jun 2019 10:14:38 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next] net: sched: ingress: set 'unlocked' flag for Qdisc ops
+Date:   Wed, 12 Jun 2019 10:14:35 +0300
+Message-Id: <20190612071435.7367-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <723142BB-8217-4A01-A2B9-F527174FDC0F@holtmann.org>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 11:36:26PM +0200, Marcel Holtmann wrote:
-> Hi Vasily,
-> 
-> > Can we get this revert merged into stable branches? Bluetooth HID has
-> > been broken for many devices for quite a while now and RFC patch that
-> > fixes the breakage hasn't seen any movement for almost a month.
-> 
-> lets send the RFC patch upstream since it got enough feedback that it fixes the issue.
+To remove rtnl lock dependency in tc filter update API when using ingress
+Qdisc, set QDISC_CLASS_OPS_DOIT_UNLOCKED flag in ingress Qdisc_class_ops.
 
-According to Hans, the workaround did not work.
+Ingress Qdisc ops don't require any modifications to be used without rtnl
+lock on tc filter update path. Ingress implementation never changes its
+q->block and only releases it when Qdisc is being destroyed. This means it
+is enough for RTM_{NEWTFILTER|DELTFILTER|GETTFILTER} message handlers to
+hold ingress Qdisc reference while using it without relying on rtnl lock
+protection. Unlocked Qdisc ops support is already implemented in filter
+update path by unlocked cls API patch set.
 
-So can we just get this reverted so that people's machines go back to
-working?
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
+ net/sched/sch_ingress.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-thanks,
+diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+index 0f65f617756b..d5382554e281 100644
+--- a/net/sched/sch_ingress.c
++++ b/net/sched/sch_ingress.c
+@@ -114,6 +114,7 @@ static int ingress_dump(struct Qdisc *sch, struct sk_buff *skb)
+ }
+ 
+ static const struct Qdisc_class_ops ingress_class_ops = {
++	.flags		=	QDISC_CLASS_OPS_DOIT_UNLOCKED,
+ 	.leaf		=	ingress_leaf,
+ 	.find		=	ingress_find,
+ 	.walk		=	ingress_walk,
+-- 
+2.21.0
 
-greg k-h
