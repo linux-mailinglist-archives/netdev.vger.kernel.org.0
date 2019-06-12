@@ -2,105 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF2642FD4
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8478643032
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727904AbfFLTTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 15:19:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43812 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727496AbfFLTTB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 15:19:01 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id BFE22AD78;
-        Wed, 12 Jun 2019 19:18:59 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 412ABE00E3; Wed, 12 Jun 2019 21:18:59 +0200 (CEST)
-Date:   Wed, 12 Jun 2019 21:18:59 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
-Message-ID: <20190612191859.GJ31797@unicorn.suse.cz>
-References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
- <20190612180239.GA3499@localhost.localdomain>
- <20190612114627.4dd137ab@cakuba.netronome.com>
- <60a0183a1f8508d0132feb7790baac86dd70fe52.camel@sipsolutions.net>
+        id S1728328AbfFLTbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 15:31:38 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33802 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727879AbfFLTbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:31:37 -0400
+Received: by mail-wr1-f67.google.com with SMTP id e16so18179523wrn.1;
+        Wed, 12 Jun 2019 12:31:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=piJHUi4lk+8l3N6vpCR4aXaFS5oizipdYRkQO+KF1qQ=;
+        b=Z16lXH8fCl6C5qbOQPQTz2P6w/DihSOJFI8TyxYwWTfTBbw73Du2lc+fqNe2U3KzZl
+         v51mK6JVlP5ZEoQ9IMShm+xVQ665mKx/QvFUTY7eQAa6sEbwxr/Vk6tKBZTRiR9K7P3F
+         RMufcoChyle0YhJhhHNS0sbZbvdG+uzCi754D7DDW6j/4U8+KP70WWcPVNnAFbknuyc0
+         z7eGRB59ZaKuTptvlulTj5Kiarslp+WO7D8JdVUwG8jTkNzN1SbzqPp9OjK17VNnJPG0
+         9uzQ5TmybU/EmZzxvo+WeSAXkDgAuSHBQlGkjmS/PdZAyTE0VHWulxTdhAd1gcNMlX+r
+         RnMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=piJHUi4lk+8l3N6vpCR4aXaFS5oizipdYRkQO+KF1qQ=;
+        b=em+OC/EObBnWljYsZdDrq8NBJ7rGulgRh8OO5gLpQ5isMzINh6naFqsahA5OpvlZx8
+         ij6qb8Po+4gJOemsYBswtYN+/kFfHYNTawozZgspX/AHsZnWyW/9lKtiadN4THaNUuIx
+         JxdCGSufnBtoNoUNFaG7O5MoB8PYhLH62o3cjMDZk0o0w/0b5haUgwzHkE3kzKwm9m6a
+         rp6bo01fjk9CSfzEDu3QyLvcrCsXafWtKcE7pQO4p7WthzbrILgzOkYAh4sIxtszjHc8
+         VXIhR0shHUoPhJ7CPiwPD0t+wXqQr5n0HGCqditg/5OdLkDyrdpo5C2xhEArpfeJEilO
+         F4Fw==
+X-Gm-Message-State: APjAAAU2UErmRhfw+eVPMd/vrgiWwrcG8+5Zoo7eYsjgEXxuZrSZd2lj
+        poSt3DNQ/phxoI2rKs3wZZ03+msk
+X-Google-Smtp-Source: APXvYqyGq9L4GORx9QxsX5rk1418GVqtaX0ZpZZsqVbJqkJiH4gzhyYbqE2/1oCnWRloDJhytm05cg==
+X-Received: by 2002:adf:e2c7:: with SMTP id d7mr1272968wrj.272.1560367894513;
+        Wed, 12 Jun 2019 12:31:34 -0700 (PDT)
+Received: from blackbox.darklights.net (p200300F133DDA400428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:33dd:a400:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id q15sm379054wrr.19.2019.06.12.12.31.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 12:31:33 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
+        andrew@lunn.ch
+Cc:     linus.walleij@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        maxime.ripard@bootlin.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH net-next v2 0/1] stmmac: honor the GPIO flags for the PHY reset GPIO
+Date:   Wed, 12 Jun 2019 21:31:14 +0200
+Message-Id: <20190612193115.6751-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <60a0183a1f8508d0132feb7790baac86dd70fe52.camel@sipsolutions.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 08:56:10PM +0200, Johannes Berg wrote:
-> (switching to my personal email)
-> 
-> > > I can't add these actions with current net-next and iproute-next:
-> > > # ~/iproute2/tc/tc action add action ctinfo dscp 0xfc000000 0x01000000
-> > > Error: NLA_F_NESTED is missing.
-> > > We have an error talking to the kernel
-> > > 
-> > > This also happens with the current post of act_ct and should also
-> > > happen with the act_mpls post (thus why Cc'ing John as well).
-> > > 
-> > > I'm not sure how we should fix this. In theory the kernel can't get
-> > > stricter with userspace here, as that breaks user applications as
-> > > above, so older actions can't use the more stricter parser. Should we
-> > > have some actions behaving one way, and newer ones in a different way?
-> > > That seems bad.
-> 
-> I think you could just fix all of the actions in userspace, since the
-> older kernel would allow both with and without the flag, and then from a
-> userspace POV it all behaves the same, just the kernel accepts some
-> things without the flag for compatibility with older iproute2?
-> 
-> > > Or maybe all actions should just use nla_parse_nested_deprecated()?
-> > > I'm thinking this last. Yet, then the _deprecated suffix may not make
-> > > much sense here. WDYT?
-> > 
-> > Surely for new actions we can require strict validation, there is
-> > no existing user space to speak of..  
-> 
-> That was the original idea.
-> 
-> > Perhaps act_ctinfo and act_ct
-> > got slightly confused with the race you described, but in principle
-> > there is nothing stopping new actions from implementing the user space
-> > correctly, right?
-> 
-> There's one potential thing where you have a new command in netlink
-> (which thus will use strict validation), but you use existing code in
-> userspace to build the netlink message or parts thereof?
-> 
-> But then again you can just fix that while you test it, and the current
-> and older kernel will accept the stricter version for the existing use
-> of the existing code too, right?
+Recent Amlogic SoCs (G12A which includes S905X2 and S905D2 as well as
+G12B which includes S922X) use GPIOZ_14 or GPIOZ_15 for the PHY reset
+line. These GPIOs are special because they are marked as "3.3V input
+tolerant open drain (OD) pins" which means they can only drive the pin
+output LOW (to reset the PHY) or to switch to input mode (to take the
+PHY out of reset).
+The GPIO subsystem already supports this with the GPIO_OPEN_DRAIN and
+GPIO_OPEN_SOURCE flags in the devicetree bindings.
 
-Userspace can safely set NLA_F_NESTED on every nested attribute as there
-are only few places in kernel where nla->type is accessed directly
-rather than through nla_type() and those are rather specific (mostly
-when attribute type is actually used as an array index). So the best
-course of action would be letting userspace always set NLA_F_NESTED.
-So kernel can only by strict on newly added attributes but userspace can
-(and should) set NLA_F_NESTED always.
+The goal of this series to add support for these special GPIOs in
+stmmac (even though the "snps,reset-gpio" binding is deprecated).
 
-The opposite direction (kernel -> userspace) is more tricky as we can
-never be sure there isn't some userspace client accessing the type directly
-without masking out the flags. Thus kernel can only set NLA_F_NESTED on
-new attributes where there cannot be any userspace program used to it
-not being set.
+My test-cases were:
+- X96 Max: snps,reset-gpio = <&gpio GPIOZ_15 0> with and without
+           snps,reset-active-low before these patches. The PHY was
+           not detected.
+- X96 Max: snps,reset-gpio = <&gpio GPIOZ_15
+                              (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>.
+           The PHY is now detected correctly
+- Meson8b EC100: snps,reset-gpio = <&gpio GPIOH_4 0> with
+                 snps,reset-active-low. Before and after these
+                 patches the PHY is detected correctly.
+- Meson8b EC100: snps,reset-gpio = <&gpio GPIOH_4 0> without
+                 snps,reset-active-low. Before and after these
+                 patches the PHY is not detected (this is expected
+                 because we need to set the output LOW to take the
+                 PHY out of reset).
+- Meson8b EC100: snps,reset-gpio = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>
+                 but without snps,reset-active-low. Before these
+                 patches the PHY was not detected. With these patches
+                 the PHY is now detected correctly.
 
-Michal
+
+Changes since RFC v1 at [0]:
+- dropped all patches except the main patch which changes
+  stmmac_mdio_reset to use GPIO descriptors (I will send the cleanup
+  patches in a separate series once this patch is merged)
+- drop the active_low field from struct stmmac_mdio_bus_data
+- added Linus Walleij's Reviewed-by (thank you!)
+
+
+DEPENDENCIES:
+This has a runtime dependency on the preparation patch [0] from
+Linus W.'s GPIO tree. Without that dependency the
+snps,reset-active-low property (which quite a few .dts files use)
+will be ignored.
+Linus created an immutable branch which can be pulled into net-next:
+git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git
+ib-snps-reset-gpio
+gitweb for this immutable branch: [2]
+
+
+[0] https://patchwork.kernel.org/cover/10983801/
+[1] https://patchwork.ozlabs.org/cover/1113217/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=ib-snps-reset-gpio
+
+
+Martin Blumenstingl (1):
+  net: stmmac: use GPIO descriptors in stmmac_mdio_reset
+
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 27 +++++++++----------
+ include/linux/stmmac.h                        |  2 +-
+ 2 files changed, 14 insertions(+), 15 deletions(-)
+
+-- 
+2.22.0
+
