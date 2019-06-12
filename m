@@ -2,100 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06701447CA
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2DC544792
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729632AbfFMRBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:01:53 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38272 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729554AbfFLXZ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 19:25:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TRyReCI1ZeePA/icNnPhOvHy30z5zcIQ4eMJuqV5Y3c=; b=oGxWdiauJRI9/slWVWnwf/k9o
-        wnzKtSm7pz6zS2y3zFyBOrnUrhBCya5fGnKpFxfGoBy94fQBaeNyaLRY8d+meDaxqpkIO7Qmgz8LK
-        CsNGKlQkWc17xzZbL/pa+BhiGvQX/Q6jkQdYFxAU85yLEU6m7c6YTfe34szwXUo6jQ1x+yGyvVWxL
-        T6VPHxV9Jb0k0JU0UIxl2+KahRZjkFEKqwU8sSnKsM4PQlfRHtsVshlRwf7euYg8MFfL/QJ4pgMnK
-        VsEffHH7xrIeVuJ4JqRJBpD9WrO0UbIbYtJz77cV74kV+u/uQt6O13FG2xIQqRewkMl9pN19ycWl4
-        eatMURxTQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38640)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hbCcs-0007hB-Vc; Thu, 13 Jun 2019 00:25:55 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hbCcq-0000fu-MX; Thu, 13 Jun 2019 00:25:52 +0100
-Date:   Thu, 13 Jun 2019 00:25:52 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: do not flood CPU with
- unknown multicast
-Message-ID: <20190612232552.pzsp5rdadlaiht2n@shell.armlinux.org.uk>
-References: <20190612223344.28781-1-vivien.didelot@gmail.com>
+        id S2393229AbfFMRAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:00:41 -0400
+Received: from mail-qk1-f175.google.com ([209.85.222.175]:45700 "EHLO
+        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729766AbfFLX7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 19:59:17 -0400
+Received: by mail-qk1-f175.google.com with SMTP id s22so11567669qkj.12
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 16:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JFCIBTn7iNCSMtjYWt8+Qq946k7xcjQ4EApQswxqkZY=;
+        b=l+V1MsR/7bnKQwFDTe26mBFavfFtRYwnzIbSdgLtgpv6oFB9oACuJmmVowPlqs+R6p
+         4Kv3VLX9VDz7cT81EuEsE6HMipl0yp9FJtOLcyUiVdGm3xOj3b1haz3Crnw5KJVExEhV
+         nAHzGRKXZA/VZmvutuzqHLUeN0Hsv961Mnydq9GUhTvqQrqx3K68Q36e4o2CuQR1c3bB
+         yCL8/9wjYZ8yxWagjGmGGAyqmKpDk/Jy6KpTBPobJSwBbEVW2+ukLhXDP0SVQs9btDZw
+         dGkiLNKtTSMkzlWYWgSZiwhrekbfFVUZUAVuVicRD2rMNeXk7HdNyEI3+j7HzUXaNy72
+         Z+bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JFCIBTn7iNCSMtjYWt8+Qq946k7xcjQ4EApQswxqkZY=;
+        b=RbI9ZLwDMbfqEIQzGiXkfgqsiU0XdaUCfv/IPKedtDLwwtiqt5ME33Z9DxCfaWBux6
+         BAysMpvN9IzOTEqQh138jILtikc4fcoSYWc+R0rf+CiqmT16Yjo8c31Q2AtoefV0n3BT
+         A66hHrNWWhhcnfRX1ktLRZyR8ugGgwe8pH2CVdvIKaT1ObhxHIZYiipiT10JcOJlC6UJ
+         1MlYXLOIQINLs5+02M3DTU8nSL7i0xYxk/8Hy7TRqRFJ+1+vhDXGzBi2f7QemNN6XwAH
+         6dmWjKN/h6MpxbsOfKSrJz2K5L5U8lGbbDn69nQ63BKvnioOuVe+Y57LT0VwJ3Upp2Pz
+         Cz/A==
+X-Gm-Message-State: APjAAAUltmcH+I3FbwLT8970U3E5SoC96YMMCfFJPlQNRpWEcrW9u4Qc
+        IfXV5SrD5OIbvQVAfdBqNlubPg==
+X-Google-Smtp-Source: APXvYqxKrvikanJDzoN8jlzVW9mBMsiKJknUIWt8YUpX+7tx0BrUSCbR9RcV6Tebm4JMbv2WYlbiVw==
+X-Received: by 2002:ae9:ed0a:: with SMTP id c10mr66473951qkg.207.1560383956696;
+        Wed, 12 Jun 2019 16:59:16 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id p4sm490891qkb.84.2019.06.12.16.59.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Jun 2019 16:59:16 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/2] nfp: add two user friendly errors
+Date:   Wed, 12 Jun 2019 16:59:01 -0700
+Message-Id: <20190612235903.8954-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190612223344.28781-1-vivien.didelot@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 06:33:44PM -0400, Vivien Didelot wrote:
-> The DSA ports must flood unknown unicast and multicast, but the switch
-> must not flood the CPU ports with unknown multicast, as this results
-> in a lot of undesirable traffic that the network stack needs to filter
-> in software.
+Hi!
 
-What if you have configured IPv6 on the bridge device, and are expecting
-the multicasted IPv6 frames for neighbour discovery to work?
+This small series adds two error messages based on recent
+bug reports which turned out not to be bugs..
 
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index d8d1781810e2..e412ccabd104 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -2111,15 +2111,13 @@ static int mv88e6xxx_setup_message_port(struct mv88e6xxx_chip *chip, int port)
->  static int mv88e6xxx_setup_egress_floods(struct mv88e6xxx_chip *chip, int port)
->  {
->  	struct dsa_switch *ds = chip->ds;
-> -	bool flood;
-> +	bool uc = dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port);
-> +	bool mc = dsa_is_dsa_port(ds, port);
->  
-> -	/* Upstream ports flood frames with unknown unicast or multicast DA */
-> -	flood = dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port);
-> -	if (chip->info->ops->port_set_egress_floods)
-> -		return chip->info->ops->port_set_egress_floods(chip, port,
-> -							       flood, flood);
-> +	if (!chip->info->ops->port_set_egress_floods)
-> +		return 0;
->  
-> -	return 0;
-> +	return chip->info->ops->port_set_egress_floods(chip, port, uc, mc);
->  }
->  
->  static int mv88e6xxx_serdes_power(struct mv88e6xxx_chip *chip, int port,
-> -- 
-> 2.21.0
-> 
-> 
+Jakub Kicinski (2):
+  nfp: update the old flash error message
+  nfp: print a warning when binding VFs to PF driver
+
+ drivers/net/ethernet/netronome/nfp/nfp_main.c        | 4 ++++
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.c | 7 ++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.21.0
+
