@@ -2,88 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D10B941E39
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 09:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1E3A41EB1
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 10:12:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408520AbfFLHuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 03:50:09 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38028 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408491AbfFLHuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 03:50:08 -0400
-Received: by mail-lj1-f195.google.com with SMTP id o13so14222253lji.5
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 00:50:06 -0700 (PDT)
+        id S1730113AbfFLIMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 04:12:00 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34129 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730042AbfFLIMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 04:12:00 -0400
+Received: by mail-lf1-f65.google.com with SMTP id y198so11362309lfa.1
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 01:11:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IEaEkHGgpzdEriV3OpBUDcZF+KYsAf8LOl6nPBOdL0I=;
-        b=MxOgXdPvNtfxAeQKrsT6Hhks3ZJt5BbhJTAVPBRxH2NTM0bwdeOB3XxaszrRVJ8l9+
-         VWsL6ISsBFvP+YlNVumKlbdeBsd+Vq8pbeA033UZIughCukKYSKF8MrVmIYZHq53An+P
-         l0wBipa1xKndvyvg0c7UF5i8yf5YpBtkZsSqPn6GdysoNn+e6HfsSyT7R3Hc9FyYmUms
-         lAHjkrVnZoVr8d3Iy/SeNcpqx4mJBq4WV5Ncbd+DHQQxYYu4ww6iSaeJ6VxbaIXPibCu
-         4QTq+nY14JrmffPXRcD6eoSD80Fu329m6RZWZEYnYUjyQx9jBka1uKNwyHZ2UB1vbM93
-         gdjw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lFS4BBAAFXbjrbCxdYjYSGPzdbbXyO/GncmZQneFLcA=;
+        b=qin+oZhf13sdSKn1SKVta6xNQYBa7ZCymdbgUUHhuXuNkSdmsnN+xPwGBDrKl1DDKA
+         9eirix1ojbveQYt3vkTmM3znNupkTqQ8im6xurMFPDyRXfonbylfyKnt15BDcEym4lMm
+         zbtDPDw9VXTMVRkSt4rI+FWRMj1Xt9LbcvKTqAjccyQz1RgkOT7KcWQMjwFvReihwunX
+         5IId7kX7++BKRB2fbN9hvksAPw8W2FWW8C3fA5ZdlzJyuJ3b7B0RFoEVakEDyZ633Z8p
+         MGnaSs3SJUvJl5KKJ4xQOKm/SeukK6uVQdR8m6q9ikusAy5ui1WToMXZfIqpBKQxclhK
+         4grA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IEaEkHGgpzdEriV3OpBUDcZF+KYsAf8LOl6nPBOdL0I=;
-        b=ppeCx0IcRKQhwQyjT2RWU3duWBCvXPJSCPKz2Fw2F8+SyrN3fd/YY44UDZBg3zjy3A
-         GWCH5YHCvGTkXqzseclPHhZeTc0VCpcgFHqoObCUJdQL3xGST2pfU+EagWH8mNOSDpLY
-         ilhW5saUQCRTUEH/mOP3+Q9fmWLScV1kLKa0sLcN7sqf/zNYuXnsVLNqH7SZkHafisB3
-         DSQEBTpNGuytbqX7YTNLrGvFivk42ZpDnO6wUje3oe5OfSJ/E6BE4OaCrDtDhjldatRH
-         Qb80CmAIO04Xm9GMecHkX+yeHcYzKw82qc/zN3OfBGip7WtufaBEicFBEHvO9wxRWPfS
-         c6aQ==
-X-Gm-Message-State: APjAAAWi2stuUuKoKCq5TxRFzuw1oUPjcsqv1oGZf9Rkht60JQk046G0
-        DtS/hl4L3LOJhnFkBjKNIlyZ6ux2qTMOjXBdFC8u8Q==
-X-Google-Smtp-Source: APXvYqzzh0lP2GP0zIA0B/CjEu8rHnPuiyl2/5JjJotWd+XukV1gNSf6KSOn2KcSDsb1T6tKaT1WrBmGn5bHZWiacxo=
-X-Received: by 2002:a2e:5bdd:: with SMTP id m90mr33630569lje.46.1560325806228;
- Wed, 12 Jun 2019 00:50:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lFS4BBAAFXbjrbCxdYjYSGPzdbbXyO/GncmZQneFLcA=;
+        b=kfCq48bbsOaUJBJ8wphIwq2HezmdyOGEPrlCEmt9jnKOq30haEynxwOr6xMwBdDWAZ
+         vJq8yUNDf/xk5fsXrBY1rasM5M8TstRh2aipSA/tpiv09f4dE/ycU37l26ku0mvbN4LW
+         ggOJ46ltnQoXg9864oxPf9x+YdGs6zQk4XCjduttJCJ9Akcu+dU0PdpuxXwoSjmK7MjL
+         tnHTbOWSDhilw/k73w2Kf/CndcjXqvzAUBTn8EJbxI3bx6Mk8GVMBZmtii67wFQn5Weg
+         IBJH8ct4W9ZM4q+EzECNBjCJQyXoZtq9Mjl034RW8qs6Q981MgW7nKtTBu4NAOmgDz01
+         aGFw==
+X-Gm-Message-State: APjAAAXGtfL7SCGTp4r9rjffP8D7KDO94HFDq98tUty/AJGZXrvmoPS8
+        5mV1+FWye5RPsnDc3PkkRtlDWA==
+X-Google-Smtp-Source: APXvYqzFkbRzv2cUwnOkrG34fAgQA5tXqMO36EKSSBfuGGn0JzJjJC6Fc/hggdqH7MAIezjdsxEYaQ==
+X-Received: by 2002:ac2:4466:: with SMTP id y6mr13435120lfl.0.1560327118141;
+        Wed, 12 Jun 2019 01:11:58 -0700 (PDT)
+Received: from localhost (c-1c3670d5.07-21-73746f28.bbcust.telenor.se. [213.112.54.28])
+        by smtp.gmail.com with ESMTPSA id z6sm2544076ljk.57.2019.06.12.01.11.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 01:11:57 -0700 (PDT)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     davem@davemloft.net
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        linus.walleij@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH v2] drivers: net: dsa: fix warning same module names
+Date:   Wed, 12 Jun 2019 10:11:47 +0200
+Message-Id: <20190612081147.1372-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190610170523.26554-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20190610170523.26554-1-martin.blumenstingl@googlemail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 12 Jun 2019 09:49:54 +0200
-Message-ID: <CACRpkdboUO1iEipXTvhy2x6bxuVJuwxd5FduMdk-KtK3f8FeaA@mail.gmail.com>
-Subject: Re: [PATCH 0/1] gpio: of: prepare for switching stmmac to GPIO descriptors
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 7:05 PM Martin Blumenstingl
-<martin.blumenstingl@googlemail.com> wrote:
+When building with CONFIG_NET_DSA_REALTEK_SMI and CONFIG_REALTEK_PHY
+enabled as loadable modules, we see the following warning:
 
-> This is a preparation patch which is needed before we can switch stmmac
-> to GPIO descriptors. stmmac has a custom "snps,reset-active-low"
-> property because it has ignored the GPIO flags including the polarity.
->
-> Add the parsing to gpiolib-of so we can port stmmac over to GPIO
-> descriptors.
->
-> This patch is split from my series at [0].
->
-> Linus W.: please create an immutable branch as discussed so I can send
-> the stmmac patches to the net-next tree (which will then have to pull
-> in your immutable branch).
+warning: same module names found:
+  drivers/net/phy/realtek.ko
+  drivers/net/dsa/realtek.ko
 
-Thanks Martin!
-I have applied the patch and created an immutable branch:
-git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git
-ib-snps-reset-gpio
+Rework so the driver name is rtl8366 instead of realtek.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=ib-snps-reset-gpio
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ drivers/net/dsa/Makefile                        | 4 ++--
+ drivers/net/dsa/{rtl8366.c => rtl8366-common.c} | 0
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+ rename drivers/net/dsa/{rtl8366.c => rtl8366-common.c} (100%)
 
-Please refer to this so the network maintainer can pull it in.
+diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+index fefb6aaa82ba..d7a282eb2ff9 100644
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
+@@ -9,8 +9,8 @@ obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+ obj-$(CONFIG_NET_DSA_MT7530)	+= mt7530.o
+ obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
+ obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+-obj-$(CONFIG_NET_DSA_REALTEK_SMI) += realtek.o
+-realtek-objs			:= realtek-smi.o rtl8366.o rtl8366rb.o
++obj-$(CONFIG_NET_DSA_REALTEK_SMI) += rtl8366.o
++rtl8366-objs			:= realtek-smi.o rtl8366-common.o rtl8366rb.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366-common.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8366.c
+rename to drivers/net/dsa/rtl8366-common.c
+-- 
+2.20.1
 
-It is based on v5.2-rc1
-
-Yours,
-Linus Walleij
