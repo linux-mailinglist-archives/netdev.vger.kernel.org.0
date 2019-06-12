@@ -2,107 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D17A4307F
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A194307E
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387853AbfFLT7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 15:59:17 -0400
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:33105 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387468AbfFLT7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:59:17 -0400
-Received: by mail-vk1-f195.google.com with SMTP id y130so941725vkc.0
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 12:59:16 -0700 (PDT)
+        id S2388615AbfFLT7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 15:59:20 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:41494 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387605AbfFLT7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:59:19 -0400
+Received: by mail-pl1-f194.google.com with SMTP id s24so7058265plr.8
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Ybob6G4/RgxkIUDWvbYn3Dj2Z5pOioBKuJ32kUZtOb4=;
-        b=VUFgYUy/L2lnjtYNdM6Qtqgd/edTRKpJPk3wvG+vRsDfwQblECyair288QVyMWN6Xx
-         2KCbIUt80VMbCkDhwsem9Z7I9ThHvXOb6KwzE+b2Bf2WiZr2ZAoYxkpz8zlbB9pEZDiy
-         QdF8tDPqWu0zQiHNUX7yWE2wL0OJt6jrZQ3X7MJbrI1+obKoB9hgX2cAycK9l2jG/E93
-         /0YXsl6PD/jGQ4zqqx/uhocrfyYaHR0RbnZj5xAwLV/isuQi6sLZ6lnjBPO1koSNo79U
-         YR3VHsiMtrCBF0iBW6mt2YyKndEjR8C3GNxLJ/eYnsWXCCRbGLquLt6Z0LiYMoUckT66
-         fZXw==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YXo2pGsL2sbCtFbNaUybVNbLhzgrUMJfssd/0MYAwv4=;
+        b=Mk6XLOnnW4QppyMWHCS0NldCM8XQo6tVC9topS+WELsexNMe1y/C8KGilpQerlBFJj
+         DnMOKyWFt6WUWMIFAnQBHRl8CdlY9s88IvfWGPjXTPF5fsSUMfuxHbvywegHVYu1pYy0
+         AM2CwytV9VdN9jArYV/n/+/GIWwBddUm0k7CFA5I8Yw+h1LUl+FWSkBzyS+0OSbT185d
+         rYi/neTA5heUcGU9CBaFVvzl9xTEN1nPt8s9iJ0n+Hi6rSf/TbLLpTiO+ubt12Nn8QAk
+         bwA2EXVL1wepKJYli61odG4XLR/Ux9PscZw9z2cEgtx/Ce3lrFo0eetZ08EgMjQkE5cA
+         54CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Ybob6G4/RgxkIUDWvbYn3Dj2Z5pOioBKuJ32kUZtOb4=;
-        b=gfRAb0eQgPRD0jPAVdu7Nvf36kPo7c5nH3E1VFXa6q6TcNvCm3dAE8s+C33+XFx+zy
-         Qwdk/ePJATgqQu4dTXMY9Ps0BJcyx+pj2drL0OKKIWvP5sAc/uC6CyYA1zL4+6l2ymlM
-         FyUm7mDrFbAb7pJ4aHBKR1YIvILn6cQ4XiWbrop2Koq38CiNYsr3qBrrGAcazuNTuH8g
-         NTFQLu9mbVIzQmu4SB9Qlyj03pXFuSMhGD7dg1IGBtjOOyEKyJQPDiPYnrorYsV841/K
-         1U9nRqQY/llJ9k1NTr+hgbrWgLEhOAuHg4wicabKV4LD+rRmZa16gvj7VqUKE46A7kh4
-         c4OA==
-X-Gm-Message-State: APjAAAXem6/xPF85ON0X31EYGUAEz4VJz77MJYcIWvRox0FshLHTEAmd
-        E0D/h7pHk5rPVMRy2Uut7+/1pw==
-X-Google-Smtp-Source: APXvYqzf7zquRH5DAjzGb65HiAYfn8puj5zPaUOZhtehgtgFrm66azwNRJtGNYQxusE1XqozQ7PZMg==
-X-Received: by 2002:a1f:6347:: with SMTP id x68mr19508435vkb.64.1560369556242;
-        Wed, 12 Jun 2019 12:59:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g41sm461937uah.12.2019.06.12.12.59.15
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YXo2pGsL2sbCtFbNaUybVNbLhzgrUMJfssd/0MYAwv4=;
+        b=iDTZgxftxc7Ty7RH8VXQVreytoD4SKZD3qNjSlDqB4yrLJuVVAZ0LYNvDVtacKPnIr
+         5+HlPWCkyg0DNIlE/423teI82llA4xKZw8DxQUWOyt+6jbBq2fjbe82UHVO2wPXXqnei
+         kz3wISFZJJMycLuqF3sh+h9iWMkWAjMGoLueuuZbzEFccH/deQUY6QPib1Tu5ODK+B4+
+         OVqDGLOyGcLLvtIejdYcgDb1tMXYPoz9Uv6HiJkbVeCGcd9EnCaz7oIXPd7HxYjnoClN
+         oiRXm/htQ/cMYqTz906OFfkcKiDhNNJFcYFDPM94J8rROvWN5FuvmC7qEH4mwrohgZ9o
+         RX6g==
+X-Gm-Message-State: APjAAAVoCp++CeX5x8cDmcPOok4gbhDgMgEixEw5YLEr6TOWg+iKdmcO
+        8FFoBTxIdNMTxf0m2q6p/gq8cQ==
+X-Google-Smtp-Source: APXvYqzD31Hsp4P/+qMUXYuo1N6szXTfwcLhfCZBVbKOe5ErKLSWoOUqoIIRNFREzuTBc7uVhVv+vA==
+X-Received: by 2002:a17:902:848c:: with SMTP id c12mr82093141plo.17.1560369558603;
+        Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id u20sm283242pgm.56.2019.06.12.12.59.17
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 12:59:16 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 12:59:11 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     peterz@infradead.org, netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH] locking/static_key: always define
- static_branch_deferred_inc
-Message-ID: <20190612125911.509d79f2@cakuba.netronome.com>
-In-Reply-To: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
-References: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 12:59:17 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 2/2] bpf: Add test for SO_REUSEPORT_DETACH_BPF
+Message-ID: <20190612195917.GB9056@mini-arch>
+References: <20190612190536.2340077-1-kafai@fb.com>
+ <20190612190539.2340343-1-kafai@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190612190539.2340343-1-kafai@fb.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jun 2019 15:44:09 -0400, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On 06/12, Martin KaFai Lau wrote:
+> This patch adds a test for the new sockopt SO_REUSEPORT_DETACH_BPF.
 > 
-> This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
-> available also when jump labels are disabled.
+> '-I../../../../usr/include/' is added to the Makefile to get
+> the newly added SO_REUSEPORT_DETACH_BPF.
 > 
-> Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> 
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > ---
+>  tools/testing/selftests/bpf/Makefile          |  1 +
+>  .../selftests/bpf/test_select_reuseport.c     | 50 +++++++++++++++++++
+>  2 files changed, 51 insertions(+)
 > 
-> The original patch went into 5.2-rc1, but this interface is not yet
-> used, so this could target either 5.2 or 5.3.
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 44fb61f4d502..c7370361fa81 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -16,6 +16,7 @@ LLVM_OBJCOPY	?= llvm-objcopy
+>  LLVM_READELF	?= llvm-readelf
+>  BTF_PAHOLE	?= pahole
+>  CFLAGS += -Wall -O2 -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR) -I$(GENDIR) $(GENFLAGS) -I../../../include \
+> +	  -I../../../../usr/include/ \
+Why not copy inlude/uapi/asm-generic/socket.h into tools/include
+instead? Will that work?
 
-Can we drop the Fixes tag?  It's an ugly omission but not a bug fix.
-
-Are you planning to switch clean_acked_data_enable() to the helper once
-merged?
-
-Thanks!
-
-> diff --git a/include/linux/jump_label_ratelimit.h b/include/linux/jump_label_ratelimit.h
-> index 42710d5949ba..8c3ee291b2d8 100644
-> --- a/include/linux/jump_label_ratelimit.h
-> +++ b/include/linux/jump_label_ratelimit.h
-> @@ -60,8 +60,6 @@ extern void jump_label_update_timeout(struct work_struct *work);
->  						   0),			\
->  	}
->  
-> -#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
-> -
->  #else	/* !CONFIG_JUMP_LABEL */
->  struct static_key_deferred {
->  	struct static_key  key;
-> @@ -95,4 +93,7 @@ jump_label_rate_limit(struct static_key_deferred *key,
->  	STATIC_KEY_CHECK_USE(key);
+>  	  -Dbpf_prog_load=bpf_prog_test_load \
+>  	  -Dbpf_load_program=bpf_test_load_program
+>  LDLIBS += -lcap -lelf -lrt -lpthread
+> diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
+> index 75646d9b34aa..5aa00b4a4702 100644
+> --- a/tools/testing/selftests/bpf/test_select_reuseport.c
+> +++ b/tools/testing/selftests/bpf/test_select_reuseport.c
+> @@ -523,6 +523,54 @@ static void test_pass_on_err(int type, sa_family_t family)
+>  	printf("OK\n");
 >  }
->  #endif	/* CONFIG_JUMP_LABEL */
+>  
+> +static void test_detach_bpf(int type, sa_family_t family)
+> +{
+> +	__u32 nr_run_before = 0, nr_run_after = 0, tmp, i;
+> +	struct epoll_event ev;
+> +	int cli_fd, err, nev;
+> +	struct cmd cmd = {};
+> +	int optvalue = 0;
 > +
-> +#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
+> +	printf("%s: ", __func__);
+> +	err = setsockopt(sk_fds[0], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
+> +			 &optvalue, sizeof(optvalue));
+> +	CHECK(err == -1, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
+> +	      "err:%d errno:%d\n", err, errno);
 > +
->  #endif	/* _LINUX_JUMP_LABEL_RATELIMIT_H */
-
+> +	err = setsockopt(sk_fds[1], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
+> +			 &optvalue, sizeof(optvalue));
+> +	CHECK(err == 0 || errno != ENOENT, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
+> +	      "err:%d errno:%d\n", err, errno);
+> +
+> +	for (i = 0; i < NR_RESULTS; i++) {
+> +		err = bpf_map_lookup_elem(result_map, &i, &tmp);
+> +		CHECK(err == -1, "lookup_elem(result_map)",
+> +		      "i:%u err:%d errno:%d\n", i, err, errno);
+> +		nr_run_before += tmp;
+> +	}
+> +
+> +	cli_fd = send_data(type, family, &cmd, sizeof(cmd), PASS);
+> +	nev = epoll_wait(epfd, &ev, 1, 5);
+> +	CHECK(nev <= 0, "nev <= 0",
+> +	      "nev:%d expected:1 type:%d family:%d data:(0, 0)\n",
+> +	      nev,  type, family);
+> +
+> +	for (i = 0; i < NR_RESULTS; i++) {
+> +		err = bpf_map_lookup_elem(result_map, &i, &tmp);
+> +		CHECK(err == -1, "lookup_elem(result_map)",
+> +		      "i:%u err:%d errno:%d\n", i, err, errno);
+> +		nr_run_after += tmp;
+> +	}
+> +
+> +	CHECK(nr_run_before != nr_run_after,
+> +	      "nr_run_before != nr_run_after",
+> +	      "nr_run_before:%u nr_run_after:%u\n",
+> +	      nr_run_before, nr_run_after);
+> +
+> +	printf("OK\n");
+> +	close(cli_fd);
+> +}
+> +
+>  static void prepare_sk_fds(int type, sa_family_t family, bool inany)
+>  {
+>  	const int first = REUSEPORT_ARRAY_SIZE - 1;
+> @@ -664,6 +712,8 @@ static void test_all(void)
+>  			test_pass(type, family);
+>  			test_syncookie(type, family);
+>  			test_pass_on_err(type, family);
+> +			/* Must be the last test */
+> +			test_detach_bpf(type, family);
+>  
+>  			cleanup_per_test();
+>  			printf("\n");
+> -- 
+> 2.17.1
+> 
