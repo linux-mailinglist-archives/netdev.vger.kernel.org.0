@@ -2,115 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92EF942D94
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 19:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4520742DB3
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 19:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408506AbfFLRdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 13:33:07 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:47054 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407844AbfFLRdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 13:33:07 -0400
-Received: by mail-lf1-f66.google.com with SMTP id z15so10132570lfh.13
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 10:33:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZDaptEHLSaWv0/yscgWZ7Z0Qpkpt3zya2Vb1Aqws+7k=;
-        b=RPOmX3LYuDSoHYLUuPQQTXy4M2vbBdH+NUbOU9CFXCQFv1wFWuq7pqKINnaMQuSbts
-         qGJ+MNne5an7UQQEqoHlZO/h+kB/Kj+U5xczS2xTACbIhXyC7HoS+ouWj7VeJOxWsRND
-         cJQDKh3I152KQ548tdW7Y3yw6I+mbUhJfecMl9v0+9awmQMmkVVUiMPM6e8Mwy+ZmPot
-         ZklbPg1qm2G3Tez1QezXdD/argVq0bWXGGwHcmFXCSPpMV6zgi8m4Qvv5a1pPFZC9ecB
-         gnMILjYwnyHajZBOAVf3Szi01waRSXm0l0JL7Y2BU9lIbPXOTleERAWkMFNIjZX7Qxhw
-         vPkw==
-X-Gm-Message-State: APjAAAXRLnXvjAvfFRrq7hgy4j5efe8i2KKz6+t0EIPRJcgM4hQ2/1mA
-        wHyoa7lI3CCpa90k+E2idiq0KKLPmmvx+vbh3dLCfCAHD34=
-X-Google-Smtp-Source: APXvYqywOfOkCJOltaKObzYfHeW9YjQNvLyBpbdZfv12RhvZ/3nJq7xJys2GcOQRH9NgmkOQ83BXid1tgQIz96q58A8=
-X-Received: by 2002:a19:ed07:: with SMTP id y7mr44341815lfy.56.1560360785426;
- Wed, 12 Jun 2019 10:33:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190611180326.30597-1-mcroce@redhat.com> <20190612085307.35e42bf4@hermes.lan>
- <CAGnkfhyT0W=CYU8FJYrDtzqxtcHakO5CWx2qzLuWOXVj6dyKMA@mail.gmail.com>
-In-Reply-To: <CAGnkfhyT0W=CYU8FJYrDtzqxtcHakO5CWx2qzLuWOXVj6dyKMA@mail.gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Wed, 12 Jun 2019 19:32:29 +0200
-Message-ID: <CAGnkfhz-W64f-j+Sgbi47BO6VKfyaYQ1W865sihXhCjChh_kFQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2] testsuite: don't clobber /tmp
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S2387846AbfFLRvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 13:51:17 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39046 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387793AbfFLRvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 13:51:17 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C3FAA1527DCD5;
+        Wed, 12 Jun 2019 10:51:16 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 10:51:14 -0700 (PDT)
+Message-Id: <20190612.105114.943734766905038441.davem@davemloft.net>
+To:     vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: lock mutex in
+ port_fdb_dump
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190612164247.29921-1-vivien.didelot@gmail.com>
+References: <20190612164247.29921-1-vivien.didelot@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Jun 2019 10:51:17 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 6:04 PM Matteo Croce <mcroce@redhat.com> wrote:
->
-> On Wed, Jun 12, 2019 at 5:55 PM Stephen Hemminger
-> <stephen@networkplumber.org> wrote:
-> >
-> > On Tue, 11 Jun 2019 20:03:26 +0200
-> > Matteo Croce <mcroce@redhat.com> wrote:
-> >
-> > > Even if not running the testsuite, every build will leave
-> > > a stale tc_testkenv.* file in the system temp directory.
-> > > Conditionally create the temp file only if we're running the testsuite.
-> > >
-> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> > > ---
-> > >  testsuite/Makefile | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/testsuite/Makefile b/testsuite/Makefile
-> > > index 7f247bbc..5353244b 100644
-> > > --- a/testsuite/Makefile
-> > > +++ b/testsuite/Makefile
-> > > @@ -14,7 +14,9 @@ TESTS_DIR := $(dir $(TESTS))
-> > >
-> > >  IPVERS := $(filter-out iproute2/Makefile,$(wildcard iproute2/*))
-> > >
-> > > -KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
-> > > +ifeq ($(MAKECMDGOALS),alltests)
-> > > +     KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
-> > > +endif
-> > >  ifneq (,$(wildcard /proc/config.gz))
-> > >       KCPATH := /proc/config.gz
-> > >  else
-> > > @@ -94,3 +96,4 @@ endif
-> > >               rm "$$TMP_ERR" "$$TMP_OUT"; \
-> > >               sudo dmesg > $(RESULTS_DIR)/$@.$$o.dmesg; \
-> > >       done
-> > > +     @$(RM) $(KENVFN)
-> >
-> > My concern is that there are several targets in this one Makefile.
-> >
-> > Why not use -u which gives name but does not create the file?
->
-> As the manpage says, this is unsafe, as a file with the same name can
-> be created in the meantime.
-> Another option is to run the mktemp in the target shell, but this will
-> require to escape every single end of line to make it a single shell
-> command, e.g.:
->
->         KENVFN=$$(mktemp /tmp/tc_testkenv.XXXXXX); \
->         if [ "$(KCPATH)" = "/proc/config.gz" ]; then \
->                 gunzip -c $(KCPATH) >$$KENVFN; \
->         ...
->         done ; \
->         $(RM) $$KENVFN
->
-> --
-> Matteo Croce
-> per aspera ad upstream
+From: Vivien Didelot <vivien.didelot@gmail.com>
+Date: Wed, 12 Jun 2019 12:42:47 -0400
 
-Anyway, looking for "tc" instead of "alltests" is probably better, as
-it only runs mktemp when at least the tc test is selected, both
-manually or via make check from topdir, eg.g
+> During a port FDB dump operation, the mutex protecting the concurrent
+> access to the switch registers is currently held by the internal
+> mv88e6xxx_port_db_dump and mv88e6xxx_port_db_dump_fid helpers.
+> 
+> It must be held at the higher level in mv88e6xxx_port_fdb_dump which
+> is called directly by DSA through ds->ops->port_fdb_dump. Fix this.
+> 
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
-ifeq ($(MAKECMDGOALS),tc)
-
-Do you agree?
--- 
-Matteo Croce
-per aspera ad upstream
+Applied.
