@@ -2,123 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0866430F4
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:24:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A849430F8
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388879AbfFLUX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 16:23:58 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41405 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388244AbfFLUX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:23:58 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 33so11814149qtr.8
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
+        id S2388389AbfFLUZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 16:25:55 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:43056 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727321AbfFLUZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:25:55 -0400
+Received: by mail-ed1-f66.google.com with SMTP id w33so27590388edb.10;
+        Wed, 12 Jun 2019 13:25:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=VkQAk94Ge0qPIQosJvnCX3sqqpgBJ/mS9uh8sxkVDMY=;
-        b=UKKENOaJQwhp2kCs1cEs+W/wKCPoQOv31D10SE5NYt+ujeE5WeX1Wgw/BVVdAMxCyh
-         H9i57ivMLV516UQkYyg2ZeIpgrFomoxZnhfya75oBbRSQKvLn9tgdejYyfXYhPwNqxhh
-         r//PB6nOGc/YQh95zIeNumYpIfkCkJVyWmOr2BMSiOCgJdyNj/fx0Kw5IgewUrOkw5UM
-         Pyg8dCOeH5ntmP2tAHc0qEpsEl0Y7g5C3Z1pXIHZoVutd8GMNbv4EUbsxRM7dlIkdxPa
-         LLyycNFvX4VdppDy3XQ0V2ZGJtSzJEnYAPBf4v1AUf2zGQOG0y6Oecoy8+ClaHw0WRAJ
-         +AwA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rr+UcwlwJTbzLmZhG++5L+DhQclZfV3f5YAuqDmwmms=;
+        b=IgwSAmIwB8o5pnvJP5+NLLZOxDikb0JvO0/F234+brtJzV8E2lrrQqCwOVsfbfj6nd
+         0Z+ntNXkXCjGtA9qweTdOBTa8wN97UiTZsF+XgsJ4ScA6rfPYx02ZtTyd71R/7ecFmkR
+         by1Td0EP68yHWlkLx7dzJL8mLMyjSPzoaOXtSuPFGfoyHClO0BEw13D6SkCf4yrv69/j
+         KZHgKJayT5NCD7fPOTZSgAtDVquxpSuMg3INmuzzrSFt1e2JU8QYUI0PWnbRjzFL4/Fd
+         ZFpFK7UMVW6mCl4OFynsy4x7J+UrB3sEUfmq6PYxWYYucF934lHL4Ke0RxhkMJz4XwNV
+         eQcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=VkQAk94Ge0qPIQosJvnCX3sqqpgBJ/mS9uh8sxkVDMY=;
-        b=KH0adYFgLrbqdz3fEZfZKm659s5hlJAi049/B7ovWlt44B+gOYrjfaHzZm2HlSwby2
-         gesMxpz7mkJtKWlU7d0EI6wWQ2PkaBT4ZTAAVnMTRV3gOh3P0Qis6x4e3DnRN0dlQZX9
-         sjD4u5J0hrXFpjkuNqKCDjsEEBzHD1v/dBMt2RuTG6Zmh1XAGE0gq42FkBpC3SYZeQ8d
-         MVrTiSaeknq5gkVfW+YjtVPk83rflAxXrRT3GLQPr5FbD9LZLgsopZD0pGnX/QmlQJ1d
-         /Dg21qdoO4siGY5uoaUd2H9qRaiOZcWrnkHEZEdz2Q2dukkE4D6OF1VfySwLxqmdEhrY
-         XU6w==
-X-Gm-Message-State: APjAAAUGhIFrLpvPG74aBy358WFKN5uDCuYKMMc4g7qP9AC9Yx4Gr1J+
-        v5bRVlvS5tBBd32QurHn2kUG/g==
-X-Google-Smtp-Source: APXvYqyPZNuGmnycKeKF0o0zCKOmnD9TYU2AjUPGkH6zRoRPPTpmPO4UQSNRXm3wmkkzEKsXm+nWyQ==
-X-Received: by 2002:a0c:bd1d:: with SMTP id m29mr375832qvg.181.1560371037471;
-        Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id o33sm446679qtk.67.2019.06.12.13.23.55
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 13:23:52 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
- non-combined channels
-Message-ID: <20190612132352.7ee27bf3@cakuba.netronome.com>
-In-Reply-To: <20190612155605.22450-8-maximmi@mellanox.com>
-References: <20190612155605.22450-1-maximmi@mellanox.com>
-        <20190612155605.22450-8-maximmi@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rr+UcwlwJTbzLmZhG++5L+DhQclZfV3f5YAuqDmwmms=;
+        b=ItPVYC8e+4A+TEMuPJt5SbcSVdKkKi9ix1XRgUAgEqasYSfOezL4n89CXEpG5WoTyx
+         uQie1icN2kY3PKxZQIn9JImzLdq6c3VriB/2mdtZFSnKuAJSOpookpN3yr+IO/yBLGm1
+         7xmKIkkIAzNlDnR5gmnlIuva0zj1H8QyCKF3nXb0NsirOQsVjCdpf+5AzN8ZbWsh2hIw
+         JIJuTKNe/kxlc5v+V7GskrfaBouPsGD3Vm39Ouhw55mQXrKb57qUKclE/jGzXQVNDtXs
+         Mke1f+kX92gST5EsWgF77koRfGBz/r4RJtZ8xIxSqJ+nHmawZ9SKYG5WUm6YVSbkcOY0
+         O4Kg==
+X-Gm-Message-State: APjAAAWaBxdIY8Gi5/yuKIPMIXfsXn0nd+DXZWDueY6e/WxTBK/uDjtm
+        3Zaun4B/uv+864yNhdNwgYKHPVu0tcQkrpc0Mps=
+X-Google-Smtp-Source: APXvYqx74hE7v8eNCwzdJlUe3z2p/fD1umQGPHswC0VFB/Ly6HT5L9+CGRV6bC2Kz4csAyuk9Zqj+Q0sSUTIsIsCNKw=
+X-Received: by 2002:a17:906:7712:: with SMTP id q18mr71477734ejm.133.1560371153299;
+ Wed, 12 Jun 2019 13:25:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com> <20190612125911.509d79f2@cakuba.netronome.com>
+In-Reply-To: <20190612125911.509d79f2@cakuba.netronome.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 12 Jun 2019 16:25:16 -0400
+Message-ID: <CAF=yD-JAZfEG5JoNEQn60gnucJB1gsrFeT38DieG12NQb9DFnQ@mail.gmail.com>
+Subject: Re: [PATCH] locking/static_key: always define static_branch_deferred_inc
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     peterz@infradead.org, Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jun 2019 15:56:48 +0000, Maxim Mikityanskiy wrote:
-> Currently, libbpf uses the number of combined channels as the maximum
-> queue number. However, the kernel has a different limitation:
-> 
-> - xdp_reg_umem_at_qid() allows up to max(RX queues, TX queues).
-> 
-> - ethtool_set_channels() checks for UMEMs in queues up to
->   combined_count + max(rx_count, tx_count).
-> 
-> libbpf shouldn't limit applications to a lower max queue number. Account
-> for non-combined RX and TX channels when calculating the max queue
-> number. Use the same formula that is used in ethtool.
-> 
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+On Wed, Jun 12, 2019 at 3:59 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Wed, 12 Jun 2019 15:44:09 -0400, Willem de Bruijn wrote:
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
+> > available also when jump labels are disabled.
+> >
+> > Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> >
+> > ---
+> >
+> > The original patch went into 5.2-rc1, but this interface is not yet
+> > used, so this could target either 5.2 or 5.3.
+>
+> Can we drop the Fixes tag?  It's an ugly omission but not a bug fix.
+>
+> Are you planning to switch clean_acked_data_enable() to the helper once
+> merged?
 
-I don't think this is correct.  max_tx tells you how many TX channels
-there can be, you can't add that to combined.  Correct calculations is:
+Definitely, can do.
 
-max_num_chans = max(max_combined, max(max_rx, max_tx))
-
->  tools/lib/bpf/xsk.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index bf15a80a37c2..86107857e1f0 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -334,13 +334,13 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
->  		goto out;
->  	}
->  
-> -	if (channels.max_combined == 0 || errno == EOPNOTSUPP)
-> +	ret = channels.max_combined + max(channels.max_rx, channels.max_tx);
-> +
-> +	if (ret == 0 || errno == EOPNOTSUPP)
->  		/* If the device says it has no channels, then all traffic
->  		 * is sent to a single stream, so max queues = 1.
->  		 */
->  		ret = 1;
-> -	else
-> -		ret = channels.max_combined;
->  
->  out:
->  	close(fd);
-
+Perhaps it's easiest to send both as a single patch set through net-next, then?
