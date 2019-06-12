@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E5C42607
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C47426B0
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408385AbfFLMhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:37:02 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:35446 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405938AbfFLMg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:36:58 -0400
-Received: by mail-lf1-f68.google.com with SMTP id a25so11974747lfg.2
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 05:36:57 -0700 (PDT)
+        id S2437162AbfFLMwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:52:14 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:35514 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730492AbfFLMwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:52:14 -0400
+Received: by mail-ed1-f67.google.com with SMTP id p26so21555775edr.2
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 05:52:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W5ZcUb3ZYYyqexpun8Qj0H696dbroHsPGYQhJd7Effk=;
-        b=VwfILO09T4Z5Vgxg5LLncNH+Qmr7pUmjfT+5Jzb3WzyN6G7A2tBfEgXyftXagfT8Du
-         s6akg89YgtZnGgiA+o++zwTAO8XQmO0IDJGtMmUvUGY3nn76Ej3S5XXdZ/81lWVUPtlS
-         s+ToGxwqYWUZFi/Il+qYx2HotqrkUDbrxWg8OgHZ1q6Cv6W9S04F8AK4BjAakKzgCdeE
-         2Hab1EhG3q99Md/eLX9voBH8EpSdv4tefeLKacQaIyA/2ry0SG9gi9mZL/zs1vXk/BfZ
-         w0TIRRKQZVbfLUkD5SMr/h+O1GZWPU/lMQtC4rt3K7JTj8f9apLM7tSL58gdgQ1LHG8U
-         Bmjg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=5CZDhiASChEeRvpaq90YY2XiRHdt8LTxffpW/umEMhU=;
+        b=FSVV6UhNhcpVLU8N5e2sIxxVcwaGZ8vRCKtC/NGyk+lIgMsQ0W2z5mvlGIKcRTSGQI
+         Wg1w7QZ7VehYT1F1iNXxv1q5+VlFGD2yDAA7DTA+K9OL0kQ1sl5F3f1ZBYLyTmjY408x
+         y+AHbA4h+LqGwVbFPpk+mz8XPoFWbu66QmhItIdxZvctA5sIWtngABlkbM5mYXnrRkii
+         bAYjVfSShr+ke/SYbzcIgWFk0lrDtwlBkQwy/ztxgh4brveNDaWIQl8LGM9C3JCP5igu
+         EWpc1NQ/B0UOONFyeZ106i4PfDp5rabfXi0lu22R5PwIklCfXKBmPvwNbZTPAolKfcSA
+         5n0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W5ZcUb3ZYYyqexpun8Qj0H696dbroHsPGYQhJd7Effk=;
-        b=qtkBuS/+nBX8KuCxWqNpsfMlaG47wAJNr1PsNjmp5Zemy6fZoP9IkAU1qrehXhuwNH
-         19hQJSGGyCgHK5XtY45D0NFJ6xru6X3pZe/BNRAPEVsx13ZNJsoNi9mEfL69/GfJSb40
-         5PoMvtOrLsyyRo/0Dnh6D/MInQserAteIzE4JPhGBHymKSMJ6FqtbgrY3E3RR35YJvVg
-         Bx7LKYZ259bg6uEtL+kJN0KYdhzDz2+YgVoqUT/xt++EyNIAMku+hiulO8oBJg5NKKml
-         Pbvht+OiX5iGAtmYM4I2l3h21HojPhIX4L1/qnuLDpKWoqKiwtwR+92oGXnXHlkcP8Wb
-         IkHg==
-X-Gm-Message-State: APjAAAUoZg8dJG/src+een2aWigmsBd170xi4JD25H40TnVGXAf2GXX1
-        GPWeavovqea58j/yxZQffbm4NN3dLRIF1RUzhqH85g==
-X-Google-Smtp-Source: APXvYqwItuntklbPWZ740m/jW/60/m/o5TFEDtlKeNXqgWJx53OWmMyLvLS322F9vXpV1FpMsEDBzyjEugWzC7+3ics=
-X-Received: by 2002:ac2:598d:: with SMTP id w13mr39607037lfn.165.1560343016604;
- Wed, 12 Jun 2019 05:36:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190612081147.1372-1-anders.roxell@linaro.org>
-In-Reply-To: <20190612081147.1372-1-anders.roxell@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 12 Jun 2019 14:36:44 +0200
-Message-ID: <CACRpkdbhRAdybqKdMgyM9Jy=eSJaRHjTpuOZO=KBgeaCbcP88Q@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers: net: dsa: fix warning same module names
-To:     Anders Roxell <anders.roxell@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5CZDhiASChEeRvpaq90YY2XiRHdt8LTxffpW/umEMhU=;
+        b=JPhKyGrR/4PavN/N0EOvAlfTIGAn6p5u4bc/hqXYNdjnJwWdANTKddM3XFaqKDkPr+
+         1tEBzlY3rFOhGBLWmd801dvguA04Ap38Vf/iVdC9dCDqAv96nlMIRZwjAGmep+Bp8y4f
+         h2U9k6vWDaL7BZRWQNmleI4w3l9OsIwTnLkmdWeq9LOu205gX3wVvt6FcS7tJMVPqbKN
+         nkxtPJIPmlaKLczNIjQyrD3KeVIEZKiH2J1qlKN8vDJKtSZ0N2bB2gkL3xRyabgjfwma
+         ibwPY4OeORMpKgo+pmm9vo/FQ/bMVeNHkpUIDPqkx6VYF3c+MUIInYAO1HOmVwprG7j7
+         L/RQ==
+X-Gm-Message-State: APjAAAXH/mUxqo+CU9P3wWJEFKAmoCT9cc637tU4av4zh9AJTL0gE+Dl
+        M+oFrI2Hosu6no1O0vT3o9BtdFl2v+8=
+X-Google-Smtp-Source: APXvYqxdwvOQ202dNzm0yGpbhiX8IvfuRm/KeLzi6NOmpTUshJYNi4Nz+8rIKUA3XDiElCE5icU01Q==
+X-Received: by 2002:a50:b14b:: with SMTP id l11mr61103600edd.76.1560343932487;
+        Wed, 12 Jun 2019 05:52:12 -0700 (PDT)
+Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
+        by smtp.gmail.com with ESMTPSA id u15sm17043eja.32.2019.06.12.05.52.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 12 Jun 2019 05:52:11 -0700 (PDT)
+From:   John Hurley <john.hurley@netronome.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, jakub.kicinski@netronome.com,
+        oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
+Subject: [PATCH net-next 0/3] Add MPLS actions to TC
+Date:   Wed, 12 Jun 2019 13:51:43 +0100
+Message-Id: <1560343906-19426-1-git-send-email-john.hurley@netronome.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 10:11 AM Anders Roxell <anders.roxell@linaro.org> wrote:
+This patchset introduces a new TC action module that allows the
+manipulation of the MPLS headers of packets. The code impliments
+functionality including push, pop, and modify.
 
-> When building with CONFIG_NET_DSA_REALTEK_SMI and CONFIG_REALTEK_PHY
-> enabled as loadable modules, we see the following warning:
->
-> warning: same module names found:
->   drivers/net/phy/realtek.ko
->   drivers/net/dsa/realtek.ko
->
-> Rework so the driver name is rtl8366 instead of realtek.
->
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Also included is a update to the IR action preparation code to allow the
+new MPLS actions to be offloaded to HW.
 
-Sorry for giving bad advice here on IRC... my wrong.
+John Hurley (3):
+  net: sched: add mpls manipulation actions to TC
+  net: sched: include mpls actions in hardware intermediate
+    representation
+  selftests: tc-tests: actions: add MPLS tests
 
-> -obj-$(CONFIG_NET_DSA_REALTEK_SMI) += realtek.o
-> -realtek-objs                   := realtek-smi.o rtl8366.o rtl8366rb.o
-> +obj-$(CONFIG_NET_DSA_REALTEK_SMI) += rtl8366.o
-> +rtl8366-objs                   := realtek-smi.o rtl8366-common.o rtl8366rb.o
+ include/net/flow_offload.h                         |  10 +
+ include/net/tc_act/tc_mpls.h                       |  91 +++
+ include/uapi/linux/pkt_cls.h                       |   2 +
+ include/uapi/linux/tc_act/tc_mpls.h                |  32 +
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_mpls.c                               | 450 +++++++++++++
+ net/sched/cls_api.c                                |  26 +
+ .../tc-testing/tc-tests/actions/mpls.json          | 744 +++++++++++++++++++++
+ 9 files changed, 1367 insertions(+)
+ create mode 100644 include/net/tc_act/tc_mpls.h
+ create mode 100644 include/uapi/linux/tc_act/tc_mpls.h
+ create mode 100644 net/sched/act_mpls.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
 
-What is common for this family is not the name rtl8366
-(there is for example rtl8369 in this family, we just haven't
-added it yet) but the common technical item is SMI.
+-- 
+2.7.4
 
-So I would suggest something like:
-
-obj-$(CONFIG_NET_DSA_REALTEK_SMI) += realtek-smi.o
-realtek-smi-objs := realtek-smi-core.o rtl8366.o rtl8366rb.o
-
-I.e. rename the realtel-smi.c to realtek-smi-core.c instead
-and go with that.
-
-With that change:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
