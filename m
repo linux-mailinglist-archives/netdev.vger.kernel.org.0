@@ -2,116 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B624259C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4E9425C5
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731221AbfFLM0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:26:09 -0400
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:34430 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727079AbfFLM0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:26:08 -0400
-Received: by mail-ua1-f66.google.com with SMTP id c4so1346262uad.1
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 05:26:08 -0700 (PDT)
+        id S2438685AbfFLM3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:29:40 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43400 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729008AbfFLM3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:29:40 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f25so8851799pgv.10;
+        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=7goNvhglzUO2C7xjkqDQYZkLXNCnrE6QZxOYE9iirMg=;
-        b=PI8YDnw3uUtj+5PSxCJUN9Mt10dWUuswZQbQmfrjW1h2+ZuLxEORSTfDBNYbXFC/34
-         C6bPlD1pj5Z7LAEvrCGlS4tv32l01lFu+mFDE8mY17grUO0OxTmfTN3SUstIYGOTqepr
-         D5j/tWhCRh+zMgsuTQnY/YNTROZIdktGE+WRDfqcy8h+qnHQ2rXWVtu/Y6l7UK0IL4g8
-         BYWMLJdiVB0RjOoyD7cKvc9PX365ZnpfikcglTFATQSuNIIXjbNHcRtoIGLSObZ7mhs8
-         FnvlkEa4HhelMXacq3doefoTFwxVLh1C9j/rggHGZ7gI+Z0zJgxICfHXfqhUj2nGFc8R
-         evMw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WFcM32SS6XaD8HSCn00NiHqd+wcd7qBRLAizzgTZVxY=;
+        b=Y5ihkDG2CTC5uDcLFLVuhq8mJ16YaC9ICO39gSxNlGpbmCnDIiAfbPqIQF2Gca5+Ml
+         GK1oVU3LgZTkLnWXBh3hjs2Fs3Zp6FYzsw3Nk1Pp+JuecJeh16b8AhxsQ1l6QSlVX/JO
+         SIMMiP0QKEX05LnnY3C5JwauagNbOYdrg9zRe5sfpzCEK+zqKqQMjMxPMG55oyiNJYNr
+         aKhxxSoINBvHAo0Biht/1CnrO2EmUpxxuMTSuOaGu+kO2QSci6XYIffhg9UvZ6fkW1dG
+         2qEGgWc+FYHiRN4L3MXMwgBgiRdmVpd58V2+4i1atT3dnz6vZpk7IrySBS+uxgaJbTca
+         q/bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=7goNvhglzUO2C7xjkqDQYZkLXNCnrE6QZxOYE9iirMg=;
-        b=Myxwc1giIcrmNmh/1/rRX35t4avhp+uQ1mr2fq4fxDDLtD/HLm8BvBuCeN+OtCzyYC
-         mXW+l0DcG2S/WK4KR0Edzwxzq55/EX3MBE9dbhtO39bXPEpodzj8O7ZXIL/CFXEMHu+Y
-         wLc/8crBtoocfUKPGHRVyscUj+5TQn0kpgOm3+gnN2+qgr9NDyrPuzPyc8rN92ixPmbt
-         Xis7NKIojD32VMuMvbRltzn2CVrAzEhIgfGm5OFj8tJ8kVpa0K+lQNserCQNiHofpbLu
-         cRG5EIaxDeN7DQxO706NXCf2Db5KTK9VqNu8B239I1Vlid6YY53AwIeeSgF05YEVQg5j
-         PDEg==
-X-Gm-Message-State: APjAAAVADZ1hg2RWrxZEX2SrkBEsK2HdmbR/5e2TQJoh+lj2nEVjgjNh
-        D7Pepsmxnuh8BzHBqxcYIHh9YoAmbEo57UELPpKmIQ==
-X-Google-Smtp-Source: APXvYqynk/i4mwDYyq1YwQCoVDH2UoekfgAzWEDjsTxXRLr9MT2bobgcnziipLn/hbKAG3Ebca2LtGryZgNmE6HOrUs=
-X-Received: by 2002:ab0:734f:: with SMTP id k15mr28416792uap.28.1560342367656;
- Wed, 12 Jun 2019 05:26:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WFcM32SS6XaD8HSCn00NiHqd+wcd7qBRLAizzgTZVxY=;
+        b=HpBN4VOyPfoYJJpTA6tndS3D8PlwXU1IzDhqjfsvb476HL2uWC8OES106TqPhxQdpm
+         YtBqtq8y7KhpjzjJD5escvyhfNxSQOqw9dVqt/woZ0h0M/GkozztHTI4vG2aYNJA2mxi
+         8WPHsg1dhDSkFNR1qLUyfKKqHiO9iJyWT4e9/TOiyQ1JyAtEGYTOvMnYY2fJnY4GBltM
+         vfvB1EJ4It6ZYwH05j9rlKD70DPkC2dv7r1dOdM+nMiwRhh/Prz/ydPCgtvs71dysijE
+         xwkTjd6m+rHpHdTBFZCUR0T7+mECsexCNUBxkW/H7YXKTsbNQVzerVj7q6G3eNE51DZN
+         07qw==
+X-Gm-Message-State: APjAAAWfGE+2D4twMEi34nOPRZml9X9TwZEJnZd7fIRX5OKPib4kMylJ
+        VFHJCkKBY69WvL2BsrCkYgE=
+X-Google-Smtp-Source: APXvYqy/SY9OVqCPDYbiHArI3JT+x/0Z0xR5oGUlcaPHGqGLYEZFSqG2z2BlJ1c9lItzkcr9REzpfg==
+X-Received: by 2002:a62:e917:: with SMTP id j23mr80596145pfh.55.1560342579591;
+        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
+Received: from masabert (150-66-71-0m5.mineo.jp. [150.66.71.0])
+        by smtp.gmail.com with ESMTPSA id b26sm14993505pfo.129.2019.06.12.05.29.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Jun 2019 05:29:39 -0700 (PDT)
+Received: by masabert (Postfix, from userid 1000)
+        id 5FF482011BF; Wed, 12 Jun 2019 21:29:35 +0900 (JST)
+From:   Masanari Iida <standby24x7@gmail.com>
+To:     santosh.shilimkar@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Cc:     Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] linux-next: DOC: RDS: Fix a typo in rds.txt
+Date:   Wed, 12 Jun 2019 21:29:34 +0900
+Message-Id: <20190612122934.3515-1-standby24x7@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Received: by 2002:ab0:108a:0:0:0:0:0 with HTTP; Wed, 12 Jun 2019 05:26:07
- -0700 (PDT)
-X-Originating-IP: [5.35.24.158]
-In-Reply-To: <20190612120909.GI31797@unicorn.suse.cz>
-References: <20190612113348.59858-1-dkirjanov@suse.com> <20190612113348.59858-3-dkirjanov@suse.com>
- <20190612120909.GI31797@unicorn.suse.cz>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Wed, 12 Jun 2019 15:26:07 +0300
-Message-ID: <CAOJe8K0x-OFg656266oc8ky6VtcX9tUOm03_gWtVBfiXgjJ73w@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] ipoib: correcly show a VF hardware address
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     davem@davemloft.net, dledford@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/12/19, Michal Kubecek <mkubecek@suse.cz> wrote:
-> On Wed, Jun 12, 2019 at 01:33:47PM +0200, Denis Kirjanov wrote:
->> in the case of IPoIB with SRIOV enabled hardware
->> ip link show command incorrecly prints
->> 0 instead of a VF hardware address. To correcly print the address
->> add a new field to specify an address length.
->>
->> Before:
->> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
->> state UP mode DEFAULT group default qlen 256
->>     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->>     vf 0 MAC 00:00:00:00:00:00, spoof checking off, link-state disable,
->> trust off, query_rss off
->> ...
->> After:
->> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
->> state UP mode DEFAULT group default qlen 256
->>     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->>     vf 0     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
->> checking off, link-state disable, trust off, query_rss off
->> ...
->>
->> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
->> ---
-> ...
->> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
->> index 5b225ff63b48..904ee1a7330b 100644
->> --- a/include/uapi/linux/if_link.h
->> +++ b/include/uapi/linux/if_link.h
->> @@ -702,6 +702,7 @@ enum {
->>  struct ifla_vf_mac {
->>  	__u32 vf;
->>  	__u8 mac[32]; /* MAX_ADDR_LEN */
->> +	__u8 addr_len;
->>  };
->
-> This structure is part of userspace API, adding a member would break
-> compatibility between new kernel and old iproute2 and vice versa. Do we
-> need to pass MAC address length for each VF if (AFAICS) it's always the
-> same as dev->addr_len?
+This patch fixes a spelling typo in rds.txt
 
-I believe so, initially I thought that it's required to pass a length
-but looks like I can use RTA_DATA/RTA_PAYLOAD() for that.
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+---
+ Documentation/networking/rds.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/Documentation/networking/rds.txt b/Documentation/networking/rds.txt
+index 0235ae69af2a..f2a0147c933d 100644
+--- a/Documentation/networking/rds.txt
++++ b/Documentation/networking/rds.txt
+@@ -389,7 +389,7 @@ Multipath RDS (mprds)
+   a common (to all paths) part, and a per-path struct rds_conn_path. All
+   I/O workqs and reconnect threads are driven from the rds_conn_path.
+   Transports such as TCP that are multipath capable may then set up a
+-  TPC socket per rds_conn_path, and this is managed by the transport via
++  TCP socket per rds_conn_path, and this is managed by the transport via
+   the transport privatee cp_transport_data pointer.
+ 
+   Transports announce themselves as multipath capable by setting the
+-- 
+2.22.0
 
->
-> Michal
->
->
