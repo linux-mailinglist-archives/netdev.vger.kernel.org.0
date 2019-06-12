@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E1604312D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:56:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 404334313A
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390065AbfFLUzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 16:55:52 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:34590 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389710AbfFLUzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:55:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id w9so5106840wmd.1;
-        Wed, 12 Jun 2019 13:55:50 -0700 (PDT)
+        id S2390571AbfFLU4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 16:56:33 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46960 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390503AbfFLU4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:56:33 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h21so20037476qtn.13
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 13:56:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/gDKxCzkOGRMbdoCC0wOn2Sy/Yhww68pPHd5X9PQ/go=;
-        b=rUFa0q2c0ueMNjFCD1Ac5K6Fk3nNqiUfkEeny7sxh9dWEiE47qRnzWq/iyJskI1FN6
-         TkvKq+3i0BEq+hEvnmDXfmeMkxmbmaEeWY7Al9ZAMXzhvuIb9UTLv4OqgxxaucaebMeg
-         HglMyVVyQVo1UvCHaN4eTBCMv6080H2AYZzxmGKwLBpLGuZLsdg+A3gDjedobRasNnVX
-         oaNucyrsFv/jrfCh0Qim+CfblXfOK1UP/F3mfsKW+kk5Lq2GmcyG9an87uJWAmMbNQxx
-         EI32FZJtuNT9y8crY9P8KETEaPvzZOjxyWZSv8f5bsUX3LIc4AyJBC6fj12cVvNpwplH
-         F5gA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=hgV/CiEIlJWIILSVW8jGibEn5u8thvNr5+oTjP3VnLs=;
+        b=rmjuNjK0kAMRgu4iGfKElp1iP70egkIDMeoEaW616528yzFiFG3EdzeeUe7kjDvXJA
+         X0bs7jyf9WAQoVf5xFcdstrX3iEguGZylSrOztxFP4VxIxhDYRLd9SP7lAkeofgoOSCk
+         h1n3AR5yvNLBJgXCi0QVBQPvj3zkuUqym0vbzuZQhV7WUNZkXj5MWXMVVENx6WbhntQj
+         l7Wq+E/SWQoG+FwKOH4Zl3OQUk3Xn8IgzCCn7xCUbgubL9diM6UThxhEn7M06D97c2VG
+         d4xRMTBwtu1O0J7tn4hjn4ot+n1BG7cr0AQqpoKEeBneZOvnM2xygoE+bleodUYfQwpP
+         Z2dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/gDKxCzkOGRMbdoCC0wOn2Sy/Yhww68pPHd5X9PQ/go=;
-        b=LQY51wi0dYzqG+xVyhJAicXxyPtoK3E+hi7+NIJM4wD8vGVncXIXQC4Jzib6sqM7Iq
-         6eULmr6l0x9OR9LwaLDeLJBo8vww4kUrk8V7WVBWz8j34jpofb9+LELY1ebav7xi+gEE
-         myIZQmko/i3+IUNSe0nK3lmPtyjU9OPZ52pvKDKv5/ZFQMnrAJe643mPlcGLVAlAMH3l
-         hYREmcanGi7KSu+9XQZGLjaRcCs38CLhTaU25vNWzV6YJZO7twr2KW4nfDik9hgQnteR
-         NfB1hIAP9/YNUdEHzCd8HrKufFq/lComMrAR0km+2CVbH4PRlEd7GIXwji4S3qzfXpM4
-         YHMQ==
-X-Gm-Message-State: APjAAAWrBb8FwK8zirJQLt+87lKuYDGPaC0jWd4ERyOcesaGaSVvy1iw
-        Z5br/MF2BihxQ4xc0eP8PkI=
-X-Google-Smtp-Source: APXvYqzcczDON40ZlWQv3oZhlUvn1FVQLcLqir1pA8IDNtA5z7hDUzg0Hn0fX1zXP3GmKNC7Wsrr/Q==
-X-Received: by 2002:a7b:c081:: with SMTP id r1mr820317wmh.76.1560372949589;
-        Wed, 12 Jun 2019 13:55:49 -0700 (PDT)
-Received: from blackbox.darklights.net (p200300F133DDA400428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:33dd:a400:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id s7sm3445793wmc.2.2019.06.12.13.55.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=hgV/CiEIlJWIILSVW8jGibEn5u8thvNr5+oTjP3VnLs=;
+        b=UBrOIWowWqvu6ZuYnP68lUr44dfReTGW+uzs4soupOZEL9+AzVc6vau7taB0Kq+LOF
+         QkOZOJrKAoczF821lH/7RoSo+mYCeMTYjLlLYRnegevPeHyDCjlfgC9Ng8Xi3JG3QeDZ
+         s6mF7Jfwh2vua07Q58edkVFf0g7+pRLs+P1FrMSJVEiZy26ysKSVQLnpwmarCm52Ghzg
+         gvUPggeS8y2WwfCnAK4QGCE1PVUE2tXVNgkOEUDnWFEhKUdd42ONZmU4RN+rBBDhJYFL
+         T44K4FIbuEZGB4PS+xxoGeVYa17W1DOhp06qRB1VySrV8Pdo1OqWYOsiHyznEh8tRiBa
+         1tQA==
+X-Gm-Message-State: APjAAAUxdHd/kOVSzQLAXNlivYkhwSr5Iv8ZDpV21lCui6WiLvn1c2kN
+        HFs7Vj1MvkgXh9u3iNo9nxaISQ==
+X-Google-Smtp-Source: APXvYqxn/XEHvdG1GlmscEu1eACbjgspPlvlp9HH6r9+L1p+oqOBIhAX4GodoEY9Y4dilUDJedQL4g==
+X-Received: by 2002:a0c:b036:: with SMTP id k51mr437829qvc.103.1560372991976;
+        Wed, 12 Jun 2019 13:56:31 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t67sm385964qkf.34.2019.06.12.13.56.31
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 13:55:48 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-amlogic@lists.infradead.org, khilman@baylibre.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        robin.murphy@arm.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 4/4] arm64: dts: meson: g12b: odroid-n2: add the Ethernet PHY reset line
-Date:   Wed, 12 Jun 2019 22:55:29 +0200
-Message-Id: <20190612205529.19834-5-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190612205529.19834-1-martin.blumenstingl@googlemail.com>
-References: <20190612205529.19834-1-martin.blumenstingl@googlemail.com>
+        Wed, 12 Jun 2019 13:56:31 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 13:56:27 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        peterz@infradead.org
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH] locking/static_key: always define
+ static_branch_deferred_inc
+Message-ID: <20190612135627.5eac995d@cakuba.netronome.com>
+In-Reply-To: <CAF=yD-JAZfEG5JoNEQn60gnucJB1gsrFeT38DieG12NQb9DFnQ@mail.gmail.com>
+References: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
+        <20190612125911.509d79f2@cakuba.netronome.com>
+        <CAF=yD-JAZfEG5JoNEQn60gnucJB1gsrFeT38DieG12NQb9DFnQ@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The reset line of the RTL8211F PHY is routed to the GPIOZ_15 pad.
-Describe this in the device tree so the PHY framework can bring the PHY
-into a known state when initializing it. GPIOZ_15 doesn't support
-driving the output HIGH (to take the PHY out of reset, only output LOW
-to reset the PHY is supported). The datasheet states it's an "3.3V input
-tolerant open drain (OD) output pin". Instead there's a pull-up resistor
-on the board to take the PHY out of reset. The GPIO itself will be set
-to INPUT mode to take the PHY out of reset and LOW to reset the PHY,
-which is achieved with the flags (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN).
+On Wed, 12 Jun 2019 16:25:16 -0400, Willem de Bruijn wrote:
+> On Wed, Jun 12, 2019 at 3:59 PM Jakub Kicinski
+> <jakub.kicinski@netronome.com> wrote:
+> >
+> > On Wed, 12 Jun 2019 15:44:09 -0400, Willem de Bruijn wrote:  
+> > > From: Willem de Bruijn <willemb@google.com>
+> > >
+> > > This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
+> > > available also when jump labels are disabled.
+> > >
+> > > Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
+> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > >
+> > > ---
+> > >
+> > > The original patch went into 5.2-rc1, but this interface is not yet
+> > > used, so this could target either 5.2 or 5.3.  
+> >
+> > Can we drop the Fixes tag?  It's an ugly omission but not a bug fix.
+> >
+> > Are you planning to switch clean_acked_data_enable() to the helper once
+> > merged?  
+> 
+> Definitely, can do.
+> 
+> Perhaps it's easiest to send both as a single patch set through net-next, then?
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
-index 4146cd84989c..f911bbdc4e70 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
-@@ -186,6 +186,10 @@
- 		/* Realtek RTL8211F (0x001cc916) */	
- 		reg = <0>;
- 		max-speed = <1000>;
-+
-+		reset-assert-us = <10000>;
-+		reset-deassert-us = <30000>;
-+		reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
- 	};
- };
- 
--- 
-2.22.0
-
+I'd think so too, perhaps we can get a blessing from Peter for that :)
