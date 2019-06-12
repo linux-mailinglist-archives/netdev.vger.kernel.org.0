@@ -2,112 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BC541992
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 02:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C755419BC
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 02:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391816AbfFLAi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 20:38:29 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:58993 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388810AbfFLAi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 20:38:29 -0400
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1harHT-0002wx-P8; Tue, 11 Jun 2019 20:38:26 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     linux-sctp@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v4 net] sctp: Free cookie before we memdup a new one
-Date:   Tue, 11 Jun 2019 20:38:14 -0400
-Message-Id: <20190612003814.7219-1-nhorman@tuxdriver.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190610163456.7778-1-nhorman@tuxdriver.com>
-References: <20190610163456.7778-1-nhorman@tuxdriver.com>
+        id S2406363AbfFLAy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 20:54:57 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:33145 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406117AbfFLAy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jun 2019 20:54:57 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45NpLP2K5tz9s00;
+        Wed, 12 Jun 2019 10:54:53 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1560300894;
+        bh=jJVvQRYv+RNct+AwT6tYADRT40DSB6dPMv1XUCrWfrQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GRfIjh5qO9TFHNI6LP9yAJ+evoY6UDmuBo/eJPcDq47EE/3P/6Y7Hh/O98St9VyuH
+         Xgmz51MjoE/Aqxz9qyrw4gdZjBl+VYOUu3lBl98r+XQSA3ZRU53kWgP0dCRLssonnH
+         y3GGqJBtaM1cJAPJRhq4BjoRKykv07tqDrfxSggWgxuwnSz4Tx62ouOvuGZmnI7ZiO
+         lP8U6VbaLGqWbjo7IDXk++gJ4Ek8VUlLFo6LZW83dGv0sn3egQ36wSzZm3dLuCf4LH
+         YiHXm23S+L2pnPHK/LnsWbN54EjUX29x/y9ySKlIbfaijgfMlHwpz/FizpKKztibuk
+         BaHtOMH00Zh9w==
+Date:   Wed, 12 Jun 2019 10:54:51 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-next@vger.kernel.org>
+Subject: Re: [RESEND PATCH net-next] net: ethernet: ti: cpts: fix build
+ failure for powerpc
+Message-ID: <20190612105451.4d2e9aa3@canb.auug.org.au>
+In-Reply-To: <20190611111632.9444-1-grygorii.strashko@ti.com>
+References: <20190611111632.9444-1-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/2bUUK0tUc_lYIUql4YF9vie"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on comments from Xin, even after fixes for our recent syzbot
-report of cookie memory leaks, its possible to get a resend of an INIT
-chunk which would lead to us leaking cookie memory.
+--Sig_/2bUUK0tUc_lYIUql4YF9vie
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-To ensure that we don't leak cookie memory, free any previously
-allocated cookie first.
+Hi all,
 
----
-Change notes
-v1->v2
-update subsystem tag in subject (davem)
-repeat kfree check for peer_random and peer_hmacs (xin)
+On Tue, 11 Jun 2019 14:16:32 +0300 Grygorii Strashko <grygorii.strashko@ti.=
+com> wrote:
+>
+> Add dependency to TI CPTS from Common CLK framework COMMON_CLK to fix
+> allyesconfig build for Powerpc:
+>=20
+> drivers/net/ethernet/ti/cpts.c: In function 'cpts_of_mux_clk_setup':
+> drivers/net/ethernet/ti/cpts.c:567:2: error: implicit declaration of func=
+tion 'of_clk_parent_fill'; did you mean 'of_clk_get_parent_name'? [-Werror=
+=3Dimplicit-function-declaration]
+>   of_clk_parent_fill(refclk_np, parent_names, num_parents);
+>   ^~~~~~~~~~~~~~~~~~
+>   of_clk_get_parent_name
+>=20
+> Fixes: a3047a81ba13 ("net: ethernet: ti: cpts: add support for ext rftclk=
+ selection")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 
-v2->v3
-net->sctp
-also free peer_chunks
+I have applied this to linu-next today instead of reverting a3047a81ba13.
 
-v3->v4
-fix subject tags
+--=20
+Cheers,
+Stephen Rothwell
 
-Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-CC: Xin Long <lucien.xin@gmail.com>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: netdev@vger.kernel.org
----
- net/sctp/sm_make_chunk.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+--Sig_/2bUUK0tUc_lYIUql4YF9vie
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index f17908f5c4f3..9b0e5b0d701a 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2583,6 +2583,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 	case SCTP_PARAM_STATE_COOKIE:
- 		asoc->peer.cookie_len =
- 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-+		if (asoc->peer.cookie)
-+			kfree(asoc->peer.cookie);
- 		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
- 		if (!asoc->peer.cookie)
- 			retval = 0;
-@@ -2647,6 +2649,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
- 
- 		/* Save peer's random parameter */
-+		if (asoc->peer.peer_random)
-+			kfree(asoc->peer.peer_random);
- 		asoc->peer.peer_random = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_random) {
-@@ -2660,6 +2664,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
- 
- 		/* Save peer's HMAC list */
-+		if (asoc->peer.peer_hmacs)
-+			kfree(asoc->peer.peer_hmacs);
- 		asoc->peer.peer_hmacs = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_hmacs) {
-@@ -2675,6 +2681,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 		if (!ep->auth_enable)
- 			goto fall_through;
- 
-+		if (asoc->peer.peer_chunks)
-+			kfree(asoc->peer.peer_chunks);
- 		asoc->peer.peer_chunks = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_chunks)
--- 
-2.20.1
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0ATVsACgkQAVBC80lX
+0GxUiQf8DC0a5Zd5gWjOT5FiuKW9u3jmojquQB/VqM7zhVpf/34wTw93JvoiIAd1
+I59WfIfDCzPwFE3bFMjxeReBhZStQocz5ADc5lGleJ0qHX7z3rbEcbgGILSWOEsm
+r10tVBmqphIvQdQLzkL2WIYdE0fVC931lkcUf1UV/qc7MdsKrAi3wG72YWNjfMXM
+zYlhw6DI3nrwlUaiiAbo3FhdeIVmlUdaEBJI6BDDB/dPjo4u8YFj9OGeNldl4+2L
+3L3q5ZPggrEF4VbF/CBnL3uEMzGHU2PhkMxAexpzCZmUpNzF2MDbsN6RqjgN+KpX
+5DO2V/Uv91jWR4z8BmxK/rwXZoQAsw==
+=Cbkw
+-----END PGP SIGNATURE-----
+
+--Sig_/2bUUK0tUc_lYIUql4YF9vie--
