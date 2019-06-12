@@ -2,101 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 817EF4305C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D7843062
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbfFLToX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 15:44:23 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45966 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727626AbfFLToX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:44:23 -0400
-Received: by mail-qt1-f193.google.com with SMTP id j19so19811286qtr.12;
-        Wed, 12 Jun 2019 12:44:22 -0700 (PDT)
+        id S1728362AbfFLTqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 15:46:08 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:37637 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728141AbfFLTqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:46:07 -0400
+Received: by mail-vs1-f66.google.com with SMTP id v6so11068912vsq.4
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 12:46:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EQNm8uL0go3b8Bxj6w0oMavlHo0z6dLALS5bDmoD9/4=;
-        b=g9UzUN4zq8DBrEcBqzUqYAKqkoLzuAR07saSKkI16jE8m1SNjDHLana+Pn5/558AJT
-         nnbD2YkzFpWIbhlAyVvpfpc/K5hUGU+QeDyTKggdx37lXdwepR2RlkfsOoJh6T6C3wsp
-         PiIbpqgvAuuSPf8gh14YfCxGfcRGs+RpZFHzGUycchex/uOWIorXVt/KyPWK6laOV0cf
-         hm9Mc8DdG23HrEocajvIQqdL4pa3nE1834qeyCdN2OA2V8czop9f/M3PNeska134OX3L
-         RHMxkojlpGbmcIKqdFjhTRwVL1en7Up8UszvyzFhiI6lZTvYBQQ7VAVrB+2xDXzDY/vW
-         ymGw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=DdS68VhoUad0DraxYuovb10RwvmZbIGxKt3Y2AstAqY=;
+        b=kAjuSjfdSHGM434nMYlrfCq8XkJOEWNQdlqVoveLixVpFCzTpFhhPJ7NvdpgA+q2K3
+         vMNxN12ZrOWT/b1uKfxGlcwlj3FwzYlVfpDV3u5oP71EKA6nAzagrW6gaEFyewapZ6RP
+         AUJ7woUfnOW0hKRhah7ISU0n0mBOvDF5sd5qyYfVtPrLsNSMK+0Sl00iYKSEoM98CuXn
+         z2TCHJrTUgKRA6Fv81OuCjfGDlxkIwnsgT3m9lL9PfDfeYbq/rFKC+tP3DjD8oxczTRr
+         vYddvokBzGlX3HxND8GvLDcIWL2g+UDjP0TUc4yOGvZnm6yCPhNdzz1xiQo7tXX3zw+f
+         Zhcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EQNm8uL0go3b8Bxj6w0oMavlHo0z6dLALS5bDmoD9/4=;
-        b=O+boH1oShnmJZf88BoH3vTtQZlQClWm/QuVkaitqLTOCvQklQjp9FkI79Bg/GCfMFX
-         qLbq3EzpOxgLXEnE2JOAUVTGWHMpz4I6qwY6C9wLbEJgUopv0cvxLBvMggPUKdAlUJ5E
-         0YKT6jvNPAR9Z2g6vt8MBtDVhABfzLz2H5mDsHV3n/y2idCrqGxTOM+95Q3Ss552j+VR
-         11VyLC6Q/7rtUFIZVLRYr0o0STbudVPJfMyVs9hEnxWnTA/hWqsyk2jeZq3w7v1P72Zg
-         1xSG8FmTgslzqssWFhaB+2qZnN+YkPTQm2H/rlzD3epaiOAPfUqpTIZzgS6/h2QnoOS1
-         JGgQ==
-X-Gm-Message-State: APjAAAV0AhqOjqgem8Jf57ngWxtEazUhOc/xH43vu9og0mK11/sIpmGI
-        B23BvoLCB95Av+rCEOmRszfXhlep
-X-Google-Smtp-Source: APXvYqzxnjx9+oK8YDCDGfy/ycUOk2BXRdFvFRzofd6E/WETjLfPT0eyTkrFzFwJFpQsbrTk+UJMQQ==
-X-Received: by 2002:ac8:275a:: with SMTP id h26mr53009993qth.345.1560368662354;
-        Wed, 12 Jun 2019 12:44:22 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id r5sm327581qkc.42.2019.06.12.12.44.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=DdS68VhoUad0DraxYuovb10RwvmZbIGxKt3Y2AstAqY=;
+        b=ONpLI/XBZ8U4sBdlIM6gtxDl0zCMMow5gzvLs57uBZ43aJIk0sUSbL3AmCXOI7xpX3
+         Uu7YbJKpaZ+Ie9C4vS7uAbXyFfjKRA2dhGM1nrzBGSawC+ETtyCo/kyWSFuu7UfFxES9
+         ZTBDMrBiRjjbxAq1a689BvO24X7+8VCZD76HM3J2wyRU9Xuzhy1/YC+eJdb4qXZRGwR2
+         tJBPzcvDxEbZVIjYuRi++ZZQErVjKpPiWjcDH8LUSJbixhqaKo7UL/WPUIhkhPmejaG0
+         gh3eXo1g+lVkgTBYZN9pDPCaTJudixM3p51pm9SAvUn20NxWEUJCmaHlJ3x9TgVP0z14
+         ZfOQ==
+X-Gm-Message-State: APjAAAVjjWAsLu5+iAH1Jh4P+M2KM586xPXBauYCrr5SYSTrGF5xKQFW
+        GKn5XEWIibZh2frWBebbQ2NALg==
+X-Google-Smtp-Source: APXvYqy6SCFS6Sxo5YQOzimlfjb+odzTokZp+hEuG+Vc6j3QSc4Y37+5Lx9IeqL19emwSwQWWr2VAw==
+X-Received: by 2002:a67:df8a:: with SMTP id x10mr37344622vsk.220.1560368766809;
+        Wed, 12 Jun 2019 12:46:06 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v133sm576622vkv.5.2019.06.12.12.46.05
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 12:44:21 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     jakub.kicinski@netronome.com, peterz@infradead.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH] locking/static_key: always define static_branch_deferred_inc
-Date:   Wed, 12 Jun 2019 15:44:09 -0400
-Message-Id: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+        Wed, 12 Jun 2019 12:46:06 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 12:45:59 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     netdev@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/3] bpf_xdp_redirect_map: Perform map
+ lookup in eBPF helper
+Message-ID: <20190612124559.5f48e546@cakuba.netronome.com>
+In-Reply-To: <87k1drf80y.fsf@toke.dk>
+References: <156026783994.26748.2899804283816365487.stgit@alrua-x1>
+        <156026784011.26748.7290735899755011809.stgit@alrua-x1>
+        <20190611144818.7cf159c3@cakuba.netronome.com>
+        <87k1drf80y.fsf@toke.dk>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Wed, 12 Jun 2019 11:49:17 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Jakub Kicinski <jakub.kicinski@netronome.com> writes:
+>=20
+> > On Tue, 11 Jun 2019 17:44:00 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote: =20
+> >> +#define XDP_REDIRECT_INVALID_MASK (XDP_ABORTED | XDP_DROP | XDP_PASS =
+| XDP_TX) =20
+> >
+> > It feels a little strange to OR in values which are not bits, even if
+> > it happens to work today (since those are values of 0, 1, 2, 3)... =20
+>=20
+> Yeah, I agree. But it also nicely expresses the extent in code.
+> Otherwise that would need to be in a comment, like
+>=20
+> // we allow return codes of ABORTED/DROP/PASS/TX
+> #define XDP_REDIRECT_INVALID_MASK 3
+>=20
+>=20
+> Or do you have a better idea?
 
-This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
-available also when jump labels are disabled.
+flags > XDP_TX
 
-Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+In the future when we add more fields in flags:
 
----
+if (flags & ~XDP_REDIRECT_FLAGS_MASK)
+	return -EBLA;
+if ((flags & XDP_REDIRECT_RETCODE_MASK) > XDP_TX))
+	return -EFOO;
 
-The original patch went into 5.2-rc1, but this interface is not yet
-used, so this could target either 5.2 or 5.3.
-
----
- include/linux/jump_label_ratelimit.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/jump_label_ratelimit.h b/include/linux/jump_label_ratelimit.h
-index 42710d5949ba..8c3ee291b2d8 100644
---- a/include/linux/jump_label_ratelimit.h
-+++ b/include/linux/jump_label_ratelimit.h
-@@ -60,8 +60,6 @@ extern void jump_label_update_timeout(struct work_struct *work);
- 						   0),			\
- 	}
- 
--#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
--
- #else	/* !CONFIG_JUMP_LABEL */
- struct static_key_deferred {
- 	struct static_key  key;
-@@ -95,4 +93,7 @@ jump_label_rate_limit(struct static_key_deferred *key,
- 	STATIC_KEY_CHECK_USE(key);
- }
- #endif	/* CONFIG_JUMP_LABEL */
-+
-+#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
-+
- #endif	/* _LINUX_JUMP_LABEL_RATELIMIT_H */
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
-
+?
