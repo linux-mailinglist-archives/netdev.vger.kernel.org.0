@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 331CE4251F
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DBB042523
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437105AbfFLMKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:10:52 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38426 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727233AbfFLMKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:10:52 -0400
-Received: by mail-pf1-f194.google.com with SMTP id a186so9557288pfa.5;
-        Wed, 12 Jun 2019 05:10:51 -0700 (PDT)
+        id S2438652AbfFLMLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:11:01 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42160 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727252AbfFLMLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:11:00 -0400
+Received: by mail-pl1-f195.google.com with SMTP id go2so6548911plb.9;
+        Wed, 12 Jun 2019 05:11:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3H4KBLy7rzn4N4rsqKL3jtODKunPIFRmncDUCrNEJAQ=;
-        b=ZvA1/rmDgqi6AF3tfYkhRg6JSLJi0m6MUeJ8pOWABX5bcOaz3sIUxHwqxiXzJTmWGm
-         fy+ym2zGLysa8c9LZsJwKHEspTaSwVerpWDs7+7P44ZhWgioY2+IMARE4K3/ELMo+9aF
-         CeSXANVb9g4fv1JQ1Ra71p8lNqBlorNglK8fIRdV2TEyIpD7O07r+5BkoL0KHL2CuGOS
-         S6/wtvtF3P1vnfYLNayD93v37Zp+/6m2RfgTT9YceAfBH1xgOCMy3nYgsvRcBiiPa7eO
-         vrJgiSNf+5eZOAvx3ISQVKYGncCcoE+ZRDGjABmgZmzOm2crS+sFAcOoF18tKDcjZsgz
-         gwkw==
+        bh=OcNe+Ykv8pNI9AsJnYaHIthvaQkPPzEoKbyDzZPPFUQ=;
+        b=OyAx8oEtH/7qb7ZcfOcQCkmZIY6KpFzOsj2RUbbM46j9eGpnTEV7DhfEQgRk2QwnI6
+         nhryKjE6BT1mG2qXheqyOuKXz1wg4wUmp3BKsthcyffnvQ2hHFKsFWZ5ybK9n3deGyK0
+         Lgvd5LxDOJbuU5z/FjpUlX4RnSQ+ZM4m/GOUtqjJnXA+EHnd4QdCokj96nYOhTQ8Y12C
+         As+NlACfpVgzbwLiE//O25sCnpgLWkhkfayVQkblkjAJH0btXcY0L/8hjmtLbvelL5Gd
+         d6lQQ8HfujSdQVFllW7fHCXpfoYXTGSPAplA8sljcabbHssoVmVNSF5Mhq8hH2BEd+pi
+         nyCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3H4KBLy7rzn4N4rsqKL3jtODKunPIFRmncDUCrNEJAQ=;
-        b=PRUzMWKlaJdn7mUzj6316zkZybJMcw1z8hXagnAmzzeyE15rAlpYDm7MrA+1SqhFP3
-         TqnoglhdT72AGDB3eBypMDb0JJlHvZxwWIJBLFZ2E5mJ9M7w/QDg3LySsnZ0CNZjeq8m
-         tEK0E5fSv4I48lKZqIwXVLXflHR8qebZFscizrDTpWMuNYg45UfM3pEDy0e06l8B8NFW
-         4it5Y5VN1l1kBvASRZrrZksVBh4SEUtPe+R6YsSs1PnlCtHf6DGjXB4n8qLtu18rHpF6
-         vFnDVEVNcXiime56LA0vl3b+g2f5rQpKrlT7kPtioQT2Nm4oWV4WAqJD5i+IM5oAjyM5
-         /5vA==
-X-Gm-Message-State: APjAAAX2cVD4U8pqwhagW5fhibP0+EOgOnAsoK0xL/JXxD8pg5/m8Uub
-        cj97syaLdJfUvbCKqyIuNKo=
-X-Google-Smtp-Source: APXvYqx8YwldwgXedozTQN/uqbDckBhnDXJyP7tva/d98nOtwHCKo8qsRH0r4zreASsukzFDuTSnyQ==
-X-Received: by 2002:a65:5241:: with SMTP id q1mr23177763pgp.298.1560341451233;
-        Wed, 12 Jun 2019 05:10:51 -0700 (PDT)
+        bh=OcNe+Ykv8pNI9AsJnYaHIthvaQkPPzEoKbyDzZPPFUQ=;
+        b=dgBMPA5Ebvjh/uEC+1FcOIHG1JotvML7How5RJQ1j+x/sdksxHoSpp9JFDvcaMQV9C
+         +duDH3ZCGwIbntu60zf2vCo6wv75ZruJhXXwEzwKn5pgGU2OJe0YTvbmcRkNsmxKxz3z
+         7s6amFTfsoILZPjOg8keyz7qyVFCHSnh4+QUS7c9o/wKYWeVeDxj/DuJJP2MNLu+ofdr
+         X6oSqSfSQEtz/a2rKScuP00jrqscnrwD97qZWWjo1dX7jOaIw+0Nu8GhQoloD0qQQi6v
+         pxH1wszT9A7GdX8ThOuoN+N9Vz3/xGUYWtveO1YI6Apt9oDclyY4wyVjWq3b/xQi6XNu
+         sFDQ==
+X-Gm-Message-State: APjAAAUXQ9CQ83UWRhsz1FjmzUUAr0HEjGlisq+nRkBXTFjjZlsbiG7i
+        zfCOMnYtTmLBVFMfbG/HUeo=
+X-Google-Smtp-Source: APXvYqwEAEYrpAy3DKUJ4PFemUBZIB2HEUdg28z4c86rdecR/mAQ1vmRRjJTwNfNfGQH3ki7Uo4ggw==
+X-Received: by 2002:a17:902:768b:: with SMTP id m11mr9693804pll.191.1560341459773;
+        Wed, 12 Jun 2019 05:10:59 -0700 (PDT)
 Received: from bridge.tencent.com ([119.28.31.106])
-        by smtp.gmail.com with ESMTPSA id s5sm5035653pji.9.2019.06.12.05.10.47
+        by smtp.gmail.com with ESMTPSA id s5sm5035653pji.9.2019.06.12.05.10.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Jun 2019 05:10:50 -0700 (PDT)
+        Wed, 12 Jun 2019 05:10:59 -0700 (PDT)
 From:   Wenbin Zeng <wenbin.zeng@gmail.com>
 X-Google-Original-From: Wenbin Zeng <wenbinzeng@tencent.com>
 To:     bfields@fieldses.org, davem@davemloft.net, viro@zeniv.linux.org.uk
@@ -52,10 +52,11 @@ Cc:     jlayton@kernel.org, trond.myklebust@hammerspace.com,
         edumazet@google.com, jakub.kicinski@netronome.com,
         tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
-Subject: [PATCH v3 2/3] netns: add netns_evict into netns_operations
-Date:   Wed, 12 Jun 2019 20:09:29 +0800
-Message-Id: <1560341370-24197-3-git-send-email-wenbinzeng@tencent.com>
+        netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
+        "J. Bruce Fields" <bfields@redhat.com>
+Subject: [PATCH v3 3/3] auth_gss: fix deadlock that blocks rpcsec_gss_exit_net when use-gss-proxy==1
+Date:   Wed, 12 Jun 2019 20:09:30 +0800
+Message-Id: <1560341370-24197-4-git-send-email-wenbinzeng@tencent.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1560341370-24197-1-git-send-email-wenbinzeng@tencent.com>
 References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
@@ -65,67 +66,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The newly added netns_evict() shall be called when the netns inode being
-evicted. It provides another path to release netns refcounts, previously
-netns_put() is the only choice, but it is not able to release all netns
-refcount, for example, a rpc client holds two netns refcounts, these
-refcounts are supposed to be released when the rpc client is freed, but
-the code to free rpc client is normally triggered by put() callback only
-when netns refcount gets to 0, specifically:
-    refcount=0 -> cleanup_net() -> ops_exit_list -> free rpc client
-But netns refcount will never get to 0 before rpc client gets freed, to
-break the deadlock, the code to free rpc client can be put into the newly
-added netns_evict.
+When use-gss-proxy is set to 1, write_gssp() creates a rpc client in
+gssp_rpc_create(), this increases netns refcount by 2, these refcounts are
+supposed to be released in rpcsec_gss_exit_net(), but it will never happen
+because rpcsec_gss_exit_net() is triggered only when netns refcount gets
+to 0, specifically:
+    refcount=0 -> cleanup_net() -> ops_exit_list -> rpcsec_gss_exit_net
+It is a deadlock situation here, refcount will never get to 0 unless
+rpcsec_gss_exit_net() is called.
+
+This fix introduced a new callback i.e. evict in struct proc_ns_operations,
+which is called in nsfs_evict. Moving rpcsec_gss_exit_net to evict path
+gives it a chance to get called and avoids the above deadlock situation.
 
 Signed-off-by: Wenbin Zeng <wenbinzeng@tencent.com>
-Acked-by: David S. Miller <davem@davemloft.net>
+Cc: J. Bruce Fields <bfields@redhat.com>
 ---
- include/net/net_namespace.h |  1 +
- net/core/net_namespace.c    | 12 ++++++++++++
- 2 files changed, 13 insertions(+)
+ net/sunrpc/auth_gss/auth_gss.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 12689dd..c44306a 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -357,6 +357,7 @@ struct pernet_operations {
- 	int (*init)(struct net *net);
- 	void (*exit)(struct net *net);
- 	void (*exit_batch)(struct list_head *net_exit_list);
-+	void (*evict)(struct net *net);
- 	unsigned int *id;
- 	size_t size;
- };
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 7e6dcc6..0626fc4 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -1296,6 +1296,17 @@ static void netns_put(struct ns_common *ns)
- 	put_net(to_net_ns(ns));
+diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
+index 3fd56c0..3e76c8a 100644
+--- a/net/sunrpc/auth_gss/auth_gss.c
++++ b/net/sunrpc/auth_gss/auth_gss.c
+@@ -2136,14 +2136,14 @@ static __net_init int rpcsec_gss_init_net(struct net *net)
+ 	return gss_svc_init_net(net);
  }
  
-+static void netns_evict(struct ns_common *ns)
-+{
-+	struct net *net = to_net_ns(ns);
-+	const struct pernet_operations *ops;
-+
-+	list_for_each_entry_reverse(ops, &pernet_list, list) {
-+		if (ops->evict)
-+			ops->evict(net);
-+	}
-+}
-+
- static int netns_install(struct nsproxy *nsproxy, struct ns_common *ns)
+-static __net_exit void rpcsec_gss_exit_net(struct net *net)
++static void rpcsec_gss_evict_net(struct net *net)
  {
- 	struct net *net = to_net_ns(ns);
-@@ -1319,6 +1330,7 @@ static struct user_namespace *netns_owner(struct ns_common *ns)
- 	.type		= CLONE_NEWNET,
- 	.get		= netns_get,
- 	.put		= netns_put,
-+	.evict		= netns_evict,
- 	.install	= netns_install,
- 	.owner		= netns_owner,
+ 	gss_svc_shutdown_net(net);
+ }
+ 
+ static struct pernet_operations rpcsec_gss_net_ops = {
+ 	.init = rpcsec_gss_init_net,
+-	.exit = rpcsec_gss_exit_net,
++	.evict = rpcsec_gss_evict_net,
  };
+ 
+ /*
 -- 
 1.8.3.1
 
