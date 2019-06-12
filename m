@@ -2,105 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D55F442D5F
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 19:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0403542D85
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 19:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406443AbfFLRYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 13:24:11 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35837 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728091AbfFLRYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 13:24:10 -0400
-Received: by mail-io1-f68.google.com with SMTP id m24so13633670ioo.2
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 10:24:10 -0700 (PDT)
+        id S2405127AbfFLRao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 13:30:44 -0400
+Received: from mail-yw1-f73.google.com ([209.85.161.73]:39674 "EHLO
+        mail-yw1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406395AbfFLRan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 13:30:43 -0400
+Received: by mail-yw1-f73.google.com with SMTP id w127so18000007ywe.6
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 10:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=dR4ULyP2ZUmYk12NNS+F8xi8tml4Imeh7ETZvZ7ywsY=;
-        b=ZvGoRmTGCUBFcipozkDESxQ7D5Ejyhh1XacNxM8IXvOMkXzdAx/MSKZQQG0O0d+tTv
-         9t/f4fHMwkkCPcfn4ypKvI7PMr89fwU7NVUkBDGq8INo96L2OpiBo/z2ToWzGzSdHRnu
-         VN+Csz1ImuLIlZOHc7oBGsQRsDEcJJKHPkkLa8zRDLjpK7JAEIl7dqQ7gxdomkTrJCks
-         /xvgY90KBVdb2iSd4xdP+7Kbjp/X58d15dYTfHsQmZ/pnjQEf8bC0SAk/DLMduVhihNd
-         raf0tKc0mtQcXah3UlcdPX+SSheg8GQx1s6NkcJnunukHck7+kVrbnBjeCQFVtLi4O2d
-         Bhvg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=aYBwDRPMLFch8pErCdIVdR1XezeWG6lP+OS+4p/QF+c=;
+        b=CpQCaylW6r4KuQiFK2ncRi0OFhoAF4GV8L7k1BLZzapxVl+Frhylr8y2Y3R2qRTIo4
+         BbquX9A6+i3MWQ/FW2no1uDA4zc4cUprLSu5f2XAiEma7k4Wrb1qqDkWT3kCeD08tAIY
+         EpLbDFfcgRluPaUt2hwGk5Lr1pQENs+1+J/hQL5W50c3OOdGZ/blvI7+jdhipHCXP7Vd
+         t5j4Y5TGVmyoFoSY3OtXw/CSIOkkDFHnCgzSoiJofYlKTY/fnnrhRGnt1hI3WCxlhEQ4
+         nq75c0i/yISy3tY6rsM0P+lO2bwNd1CVXnazov+L8hYJlgEd4f4BHAzBerePOK2fcLvm
+         RumQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=dR4ULyP2ZUmYk12NNS+F8xi8tml4Imeh7ETZvZ7ywsY=;
-        b=BUeTIkyjwFwNixVpUoDRYLbjxtRlH93DX3KeJ/Mc7RgZkMXYnS+/X4iqHpIyCLe+EC
-         iNtSzd8Fiie6a4LUF1kN7XldE8aAlQma3esArLifPdsIgwUb2zfODg+bwFBEAsxP2i7s
-         tLomoTImAU3nX+c62OD6o2tUZZqtUzAYdKgmn+IYbfligAXlQcJS90duAapKcuGc4owU
-         v3ZInBuOvDjlXCk4zdcdcAte8HCG2Pjew2WCNVXJR6YStpEDNz5PV/lckg47KMfcm/CS
-         2Yd5u8TKUXMpdoZyqyneXo3hmIupASEvKv86OOSNa62iiobF1JkGetBtPJlOwKx/ftp1
-         wfig==
-X-Gm-Message-State: APjAAAWhmKIuPCvXKabfKh+UYEJOC0QxSmNpC4hfGqglSFRFGZF2TU4d
-        6Cz36fobzMQTpghdjlUPZso=
-X-Google-Smtp-Source: APXvYqx84uBUFYMZlm0Oe9ZeaNACvU3zpbqEZJ7Sh0cH0uVlxRr4tOK43C7sJQ3WeMgUoanN2YoWFQ==
-X-Received: by 2002:a5e:8210:: with SMTP id l16mr3671142iom.240.1560360250035;
-        Wed, 12 Jun 2019 10:24:10 -0700 (PDT)
-Received: from [192.168.122.156] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a130sm204543itb.14.2019.06.12.10.24.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Jun 2019 10:24:09 -0700 (PDT)
-Subject: [net PATCH v2] net: tls,
- correctly account for copied bytes with multiple sk_msgs
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     steinar+kernel@gunderson.no, daniel@iogearbox.net, andre@tomt.net
-Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
-        davem@davemloft.net
-Date:   Wed, 12 Jun 2019 17:23:57 +0000
-Message-ID: <156036023770.7273.14464005268434910852.stgit@ubuntu-kvm1>
-User-Agent: StGit/0.17.1-dirty
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=aYBwDRPMLFch8pErCdIVdR1XezeWG6lP+OS+4p/QF+c=;
+        b=fT4nI9wSn7RLK0H4xwdWBhJ99ywplIzNbjHOqj8eBUhBTYXTARlpThxQiJEf3i9NpD
+         djGnSkQhilnDWOXxxr/DMgG+RXVP4Bx7aJIgObx/wEHE2ZH6nWZECtsEwn4U8yZvzxCw
+         rVieCHXZapJc0RC7GQXrFla1ziDbYcFsCYcFp9L+IV1eU/F97gXG4BuTB18qQ4lajD7q
+         2DZ0CCctThNt/7cH7NcvgKz+LG+vXBASYrGwvpO9Lg3D3Gm+XdKiTKhMt65CNzx3tO6s
+         DGCo7kUchUotC/Rx8Au2ZQN4Lb5L0WbqNf1B3EPsPNSwzqrznsdlpR2K5Uu//8AiB8Fz
+         Ys5g==
+X-Gm-Message-State: APjAAAWQmZ9MXUnQA2y0SamHJEUsd84YNG5TT9gCHUS+4zu/2MDL8ktV
+        gBXSZDVt9YZyIU08Valk89Zimaqy7Oi0DOXFJgQOqYRU0FNvk6XGCIVEgEGz+V7ypJ5HRkzA8R+
+        tS9vX7f/+9dhE3w6Qp3uBYuQpoZMjMkZ4rKrlZio2DXTq1DvlYhkv8Q==
+X-Google-Smtp-Source: APXvYqwsn4/amuGEz22WG8rYKmA2pTovjkohArEshMqJ0nEKfzISTDi8W5ZDi2i3k6uBkVUHB+OSj+g=
+X-Received: by 2002:a81:f90:: with SMTP id 138mr36999084ywp.425.1560360642931;
+ Wed, 12 Jun 2019 10:30:42 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 10:30:37 -0700
+Message-Id: <20190612173040.61944-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+Subject: [PATCH bpf-next 1/4] bpf: export bpf_sock for BPF_PROG_TYPE_CGROUP_SOCK_ADDR
+ prog type
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>, Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tls_sw_do_sendpage needs to return the total number of bytes sent
-regardless of how many sk_msgs are allocated. Unfortunately, copied
-(the value we return up the stack) is zero'd before each new sk_msg
-is allocated so we only return the copied size of the last sk_msg used.
+And let it use bpf_sk_storage_{get,delete} helpers to access socket
+storage. Kernel context (struct bpf_sock_addr_kern) already has sk
+member, so I just expose it to the BPF hooks. Using PTR_TO_SOCKET
+instead of PTR_TO_SOCK_COMMON should be safe because the hook is
+called on bind/connect.
 
-The caller (splice, etc.) of sendpage will then believe only part
-of its data was sent and send the missing chunks again. However,
-because the data actually was sent the receiver will get multiple
-copies of the same data.
-
-To reproduce this do multiple sendfile calls with a length close to
-the max record size. This will in turn call splice/sendpage, sendpage
-may use multiple sk_msg in this case and then returns the incorrect
-number of bytes. This will cause splice to resend creating duplicate
-data on the receiver. Andre created a C program that can easily
-generate this case so we will push a similar selftest for this to
-bpf-next shortly.
-
-The fix is to _not_ zero the copied field so that the total sent
-bytes is returned.
-
-Reported-by: Steinar H. Gunderson <steinar+kernel@gunderson.no>
-Reported-by: Andre Tomt <andre@tomt.net>
-Tested-by: Andre Tomt <andre@tomt.net>
-Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Cc: Martin Lau <kafai@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- net/tls/tls_sw.c |    1 -
- 1 file changed, 1 deletion(-)
+ include/uapi/linux/bpf.h |  1 +
+ net/core/filter.c        | 16 ++++++++++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 960494f437ac..455a782c7658 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1143,7 +1143,6 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index ae0907d8c03a..8815fc418cde 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3247,6 +3247,7 @@ struct bpf_sock_addr {
+ 	__u32 msg_src_ip6[4];	/* Allows 1,2,4-byte read an 4-byte write.
+ 				 * Stored in network byte order.
+ 				 */
++	__bpf_md_ptr(struct bpf_sock *, sk);
+ };
  
- 		full_record = false;
- 		record_room = TLS_MAX_PAYLOAD_SIZE - msg_pl->sg.size;
--		copied = 0;
- 		copy = size;
- 		if (copy >= record_room) {
- 			copy = record_room;
+ /* User bpf_sock_ops struct to access socket values and specify request ops
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a5e4ac7fcbe5..37c4a2fd559b 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5922,6 +5922,10 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	case BPF_FUNC_skc_lookup_tcp:
+ 		return &bpf_sock_addr_skc_lookup_tcp_proto;
+ #endif /* CONFIG_INET */
++	case BPF_FUNC_sk_storage_get:
++		return &bpf_sk_storage_get_proto;
++	case BPF_FUNC_sk_storage_delete:
++		return &bpf_sk_storage_delete_proto;
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
+@@ -6828,6 +6832,13 @@ static bool sock_addr_is_valid_access(int off, int size,
+ 		if (size != size_default)
+ 			return false;
+ 		break;
++	case offsetof(struct bpf_sock_addr, sk):
++		if (type != BPF_READ)
++			return false;
++		if (size != sizeof(__u64))
++			return false;
++		info->reg_type = PTR_TO_SOCKET;
++		break;
+ 	default:
+ 		if (type == BPF_READ) {
+ 			if (size != size_default)
+@@ -7778,6 +7789,11 @@ static u32 sock_addr_convert_ctx_access(enum bpf_access_type type,
+ 			struct bpf_sock_addr_kern, struct in6_addr, t_ctx,
+ 			s6_addr32[0], BPF_SIZE(si->code), off, tmp_reg);
+ 		break;
++	case offsetof(struct bpf_sock_addr, sk):
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_sock_addr_kern, sk),
++				      si->dst_reg, si->src_reg,
++				      offsetof(struct bpf_sock_addr_kern, sk));
++		break;
+ 	}
+ 
+ 	return insn - insn_buf;
+-- 
+2.22.0.rc2.383.gf4fbbf30c2-goog
 
