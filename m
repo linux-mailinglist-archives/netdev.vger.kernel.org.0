@@ -2,126 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 132CA42A48
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:07:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C132C42A4E
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 17:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439959AbfFLPGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 11:06:36 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38020 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437202AbfFLPGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:06:36 -0400
-Received: by mail-qt1-f195.google.com with SMTP id n11so16738387qtl.5;
-        Wed, 12 Jun 2019 08:06:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1g7s/UPWJzJeB4LrTKmbsG4ivrcvy+TUBuxC551yLEY=;
-        b=d66shXrNt0O/ILQOmOrlpZDjdgEODCMdtsY8L/CJMIu4+IkFvmEazMfTJ7Au8U64Rq
-         4P+o2ddPKPEQSDUifBXoloUYWwr9qwk5e+JW89rzkgiw+lEvwwhWtrsYLOz6hEnb4Jkr
-         ibemJxSrT015Q/RbN1pNo4NjbDkvR0VD/tl66yBVm+sPiGbXZdjlFc1ZURJMoZRLl/Xh
-         lH/YUbdq2+jZDlEXh+hk230IGhooh1F/ijF2BQItVkmBkdkGPwhI8FSUPc1/hnsGGdwc
-         82XGN5iEKnO84hvhgyMQspDGrGIxCs9KXUSJLKEATjSdqnlYmREfwsKEBeFqegjQI9jq
-         W0Og==
-X-Gm-Message-State: APjAAAXMtyjaTD2zZw160HMJCu7MGGQCPI9NeL+6/WFh3PhbVAGwttLz
-        dc13i4VXfStaElvT1PcbT2xAFgUu0zPQJ/wQ6OQ=
-X-Google-Smtp-Source: APXvYqzOMpjxx8OTt1LYucvtT3ec0rHQVDXxOvYnWwFFLgDetKQQiEnhNqtCjwvLI9BT1ZM6g2S2uumX596TBUy4Jug=
-X-Received: by 2002:ac8:8dd:: with SMTP id y29mr5832711qth.304.1560351994976;
- Wed, 12 Jun 2019 08:06:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
- <36bca57c999f611353fd9741c55bb2a7@codeaurora.org> <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
- <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com> <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-In-Reply-To: <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 12 Jun 2019 17:06:17 +0200
-Message-ID: <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Dan Williams <dcbw@redhat.com>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
-        Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
+        id S2439977AbfFLPHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 11:07:00 -0400
+Received: from smtp1.de.adit-jv.com ([93.241.18.167]:38907 "EHLO
+        smtp1.de.adit-jv.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437171AbfFLPHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 11:07:00 -0400
+Received: from localhost (smtp1.de.adit-jv.com [127.0.0.1])
+        by smtp1.de.adit-jv.com (Postfix) with ESMTP id 13CE63C00C6;
+        Wed, 12 Jun 2019 17:06:56 +0200 (CEST)
+Received: from smtp1.de.adit-jv.com ([127.0.0.1])
+        by localhost (smtp1.de.adit-jv.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id oIFPVGe6i6WH; Wed, 12 Jun 2019 17:06:49 +0200 (CEST)
+Received: from HI2EXCH01.adit-jv.com (hi2exch01.adit-jv.com [10.72.92.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 60ACF3C00DD;
+        Wed, 12 Jun 2019 17:06:47 +0200 (CEST)
+Received: from vmlxhi-102.adit-jv.com (10.72.93.184) by HI2EXCH01.adit-jv.com
+ (10.72.92.24) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 12 Jun
+ 2019 17:06:47 +0200
+Date:   Wed, 12 Jun 2019 17:06:44 +0200
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     Marc Zyngier <marc.zyngier@arm.com>
+CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Kalle Valo <kvalo@codeaurora.org>, Eyal Reizer <eyalr@ti.com>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+        Spyridon Papageorgiou <spapageorgiou@de.adit-jv.com>,
+        Joshua Frkuska <joshua_frkuska@mentor.com>,
+        "George G . Davis" <george_davis@mentor.com>,
+        Andrey Gusakov <andrey.gusakov@cogentembedded.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Harish Jenny K N <harish_kandiga@mentor.com>
+Subject: Re: [PATCH] wlcore/wl18xx: Add invert-irq OF property for physically
+ inverted IRQ
+Message-ID: <20190612150644.GA22002@vmlxhi-102.adit-jv.com>
+References: <20190607172958.20745-1-erosca@de.adit-jv.com>
+ <87tvcxncuq.fsf@codeaurora.org>
+ <20190610083012.GV5447@atomide.com>
+ <CAMuHMdUOc17ocqmt=oNmyN1UT_K7_y=af1pwjwr5PTgQL2o2OQ@mail.gmail.com>
+ <08bc4755-5f47-d792-8b5a-927b5fbe7619@arm.com>
+ <20190612094538.GA16575@vmlxhi-102.adit-jv.com>
+ <86d0jjglax.wl-marc.zyngier@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <86d0jjglax.wl-marc.zyngier@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.72.93.184]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 4:28 PM Dan Williams <dcbw@redhat.com> wrote:
-> On Wed, 2019-06-12 at 10:31 +0200, Arnd Bergmann wrote:
-> > On Tue, Jun 11, 2019 at 7:23 PM Dan Williams <dcbw@redhat.com> wrote:
-> I was trying to make the point that rmnet doesn't need to care about
-> how the QMAP packets get to the device itself; it can be pretty generic
-> so that it can be used by IPA/qmi_wwan/rmnet_smd/etc.
+Hi Marc,
 
-rmnet at the moment is completely generic in that regard already,
-however it is implemented as a tunnel driver talking to another
-device rather than an abstraction layer below that driver.
+Thanks for your comment.
 
-> > The current rmnet model is different in that by design the upper
-> > layer
-> > (rmnet) and the lower layer (qmi_wwan, ipa, ...) are kept independent
-> > in
-> > both directions, i.e. ipa has (almost) no knowledge of rmnet, and
-> > just
-> > has pointers to the other net_device:
-> >
-> >        ipa_device
-> >            net_device
-> >
-> >        rmnet_port
-> >            net_device
-> >
-> > I understand that the rmnet model was intended to provide a cleaner
-> > abstraction, but it's not how we normally structure subsystems in
-> > Linux, and moving to a model more like how wireless_dev works
-> > would improve both readability and performance, as you describe
-> > it, it would be more like (ignoring for now the need for multiple
-> > connections):
-> >
-> >    ipa_dev
-> >         rmnet_dev
-> >                wwan_dev
-> >                       net_device
->
-> Perhaps I'm assuming too much from this diagram but this shows a 1:1
-> between wwan_dev and "lower" devices.
->
-> What Johannes is proposing (IIRC) is something a bit looser where a
-> wwan_dev does not necessarily provide netdev itself, but is instead the
-> central point that various channels (control, data, gps, sim card, etc)
-> register with. That way the wwan_dev can provide an overall view of the
-> WWAN device to userspace, and userspace can talk to the wwan_dev to ask
-> the lower drivers (ipa, rmnet, etc) to create new channels (netdev,
-> tty, otherwise) when the control channel has told the modem firmware to
-> expect one.
+On Wed, Jun 12, 2019 at 11:17:10AM +0100, Marc Zyngier wrote:
+> Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
+> > On Tue, Jun 11, 2019 at 10:00:41AM +0100, Marc Zyngier wrote:
+[..]
+> > > We already have plenty of that in the tree, the canonical example
+> > > probably being drivers/irqchip/irq-mtk-sysirq.c. It should be pretty
+> > > easy to turn this driver into something more generic.
+> > 
+> > I don't think drivers/irqchip/irq-mtk-sysirq.c can serve the
+> > use-case/purpose of this patch. The MTK driver seems to be dealing with
+> > the polarity inversion of on-SoC interrupts which are routed to GiC,
+> > whereas in this patch we are talking about an off-chip interrupt
+> > wired to R-Car GPIO controller.
+> 
+> And how different is that? The location of the interrupt source is
+> pretty irrelevant here.
 
-Right, as I noted above, I simplified it a bit. We probably want to
-have multiple net_device instances for an ipa_dev, so there has
-to be a 1:n relationship instead of 1:1 at one of the intermediate
-levels, but it's not obvious which level that should be.
+The main difference which I sense is that a driver like irq-mtk-sysirq
+mostly (if not exclusively) deals with internal kernel implementation
+detail (tuned via DT) whilst adding an inverter for GPIO IRQs raises
+a whole bunch of new questions (e.g. how to arbitrate between
+kernel-space and user-space IRQ polarity configuration?).
 
-In theory we could even have a single net_device instance correspond
-to the ipa_dev, but then have multiple IP addresses bound to it,
-so each IP address corresponds to a channel/queue/napi_struct,
-but the user visible object remains a single device.
+> The point is that there is already a general
+> scheme to deal with these "signal altering widgets", and that we
+> should try to reuse at least the concept, if not the code.
 
-I trust that you and Johannes are more qualified than me to make
-the call on that point.
+Since Harish Jenny K N might be working on a new driver doing GPIO IRQ
+inversion, I have CC-ed him as well to avoid any overlapping work.
 
-       Arnd
+> 
+> > It looks to me that the nice DTS sketch shared by Linus Walleij in [5]
+> > might come closer to the concept proposed by Geert? FWIW, the
+> > infrastructure/implementation to make this possible is still not
+> > ready.
+> 
+> Which looks like what I'm suggesting.
+
+Then we are on the same page. Thanks.
+
+> 
+> 	M.
+> 
+> -- 
+> Jazz is not dead, it just smells funny.
+
+-- 
+Best Regards,
+Eugeniu.
