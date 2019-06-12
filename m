@@ -2,138 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54E67430F0
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0866430F4
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388346AbfFLUVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 16:21:41 -0400
-Received: from mga04.intel.com ([192.55.52.120]:3337 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727924AbfFLUVk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 16:21:40 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jun 2019 13:21:39 -0700
-X-ExtLoop1: 1
-Received: from lcarlos-mobl.amr.corp.intel.com ([10.252.140.234])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jun 2019 13:21:39 -0700
-Message-ID: <5e818fb4bf253fc69259093e7ff68122e4a4044c.camel@intel.com>
-Subject: Re: [PATCH v1 09/31] docs: driver-model: convert docs to ReST and
- rename to *.rst
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
+        id S2388879AbfFLUX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 16:23:58 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41405 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388244AbfFLUX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:23:58 -0400
+Received: by mail-qt1-f196.google.com with SMTP id 33so11814149qtr.8
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=VkQAk94Ge0qPIQosJvnCX3sqqpgBJ/mS9uh8sxkVDMY=;
+        b=UKKENOaJQwhp2kCs1cEs+W/wKCPoQOv31D10SE5NYt+ujeE5WeX1Wgw/BVVdAMxCyh
+         H9i57ivMLV516UQkYyg2ZeIpgrFomoxZnhfya75oBbRSQKvLn9tgdejYyfXYhPwNqxhh
+         r//PB6nOGc/YQh95zIeNumYpIfkCkJVyWmOr2BMSiOCgJdyNj/fx0Kw5IgewUrOkw5UM
+         Pyg8dCOeH5ntmP2tAHc0qEpsEl0Y7g5C3Z1pXIHZoVutd8GMNbv4EUbsxRM7dlIkdxPa
+         LLyycNFvX4VdppDy3XQ0V2ZGJtSzJEnYAPBf4v1AUf2zGQOG0y6Oecoy8+ClaHw0WRAJ
+         +AwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=VkQAk94Ge0qPIQosJvnCX3sqqpgBJ/mS9uh8sxkVDMY=;
+        b=KH0adYFgLrbqdz3fEZfZKm659s5hlJAi049/B7ovWlt44B+gOYrjfaHzZm2HlSwby2
+         gesMxpz7mkJtKWlU7d0EI6wWQ2PkaBT4ZTAAVnMTRV3gOh3P0Qis6x4e3DnRN0dlQZX9
+         sjD4u5J0hrXFpjkuNqKCDjsEEBzHD1v/dBMt2RuTG6Zmh1XAGE0gq42FkBpC3SYZeQ8d
+         MVrTiSaeknq5gkVfW+YjtVPk83rflAxXrRT3GLQPr5FbD9LZLgsopZD0pGnX/QmlQJ1d
+         /Dg21qdoO4siGY5uoaUd2H9qRaiOZcWrnkHEZEdz2Q2dukkE4D6OF1VfySwLxqmdEhrY
+         XU6w==
+X-Gm-Message-State: APjAAAUGhIFrLpvPG74aBy358WFKN5uDCuYKMMc4g7qP9AC9Yx4Gr1J+
+        v5bRVlvS5tBBd32QurHn2kUG/g==
+X-Google-Smtp-Source: APXvYqyPZNuGmnycKeKF0o0zCKOmnD9TYU2AjUPGkH6zRoRPPTpmPO4UQSNRXm3wmkkzEKsXm+nWyQ==
+X-Received: by 2002:a0c:bd1d:: with SMTP id m29mr375832qvg.181.1560371037471;
+        Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o33sm446679qtk.67.2019.06.12.13.23.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 13:23:57 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 13:23:52 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        cocci@systeme.lip6.fr
-Date:   Wed, 12 Jun 2019 13:21:38 -0700
-In-Reply-To: <c90bb60d65aaba4ce5957894cc6890ebe5048d95.1560364494.git.mchehab+samsung@kernel.org>
-References: <cover.1560364493.git.mchehab+samsung@kernel.org>
-         <c90bb60d65aaba4ce5957894cc6890ebe5048d95.1560364494.git.mchehab+samsung@kernel.org>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-ty+pfSLvRBl9i77r2BhF"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
+ non-combined channels
+Message-ID: <20190612132352.7ee27bf3@cakuba.netronome.com>
+In-Reply-To: <20190612155605.22450-8-maximmi@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com>
+        <20190612155605.22450-8-maximmi@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 12 Jun 2019 15:56:48 +0000, Maxim Mikityanskiy wrote:
+> Currently, libbpf uses the number of combined channels as the maximum
+> queue number. However, the kernel has a different limitation:
+> 
+> - xdp_reg_umem_at_qid() allows up to max(RX queues, TX queues).
+> 
+> - ethtool_set_channels() checks for UMEMs in queues up to
+>   combined_count + max(rx_count, tx_count).
+> 
+> libbpf shouldn't limit applications to a lower max queue number. Account
+> for non-combined RX and TX channels when calculating the max queue
+> number. Use the same formula that is used in ethtool.
+> 
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 
---=-ty+pfSLvRBl9i77r2BhF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I don't think this is correct.  max_tx tells you how many TX channels
+there can be, you can't add that to combined.  Correct calculations is:
 
-On Wed, 2019-06-12 at 15:38 -0300, Mauro Carvalho Chehab wrote:
-> Convert the various documents at the driver-model, preparing
-> them to be part of the driver-api book.
->=20
-> The conversion is actually:
->   - add blank lines and identation in order to identify paragraphs;
->   - fix tables markups;
->   - add some lists markups;
->   - mark literal blocks;
->   - adjust title markups.
->=20
-> At its new index.rst, let's add a :orphan: while this is not linked to
-> the main index.rst file, in order to avoid build warnings.
->=20
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+max_num_chans = max(max_combined, max(max_rx, max_tx))
 
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
-For the ice driver comment change.
-
-> ---
->  Documentation/driver-api/gpio/driver.rst      |   2 +-
->  .../driver-model/{binding.txt =3D> binding.rst} |  20 +-
->  .../driver-model/{bus.txt =3D> bus.rst}         |  69 ++--
->  .../driver-model/{class.txt =3D> class.rst}     |  74 ++--
->  ...esign-patterns.txt =3D> design-patterns.rst} | 106 +++---
->  .../driver-model/{device.txt =3D> device.rst}   |  57 +--
->  .../driver-model/{devres.txt =3D> devres.rst}   |  50 +--
->  .../driver-model/{driver.txt =3D> driver.rst}   | 112 +++---
->  Documentation/driver-model/index.rst          |  26 ++
->  .../{overview.txt =3D> overview.rst}            |  37 +-
->  .../{platform.txt =3D> platform.rst}            |  30 +-
->  .../driver-model/{porting.txt =3D> porting.rst} | 333 +++++++++---------
->  Documentation/eisa.txt                        |   4 +-
->  Documentation/hwmon/submitting-patches.rst    |   2 +-
->  drivers/base/platform.c                       |   2 +-
->  drivers/gpio/gpio-cs5535.c                    |   2 +-
->  drivers/net/ethernet/intel/ice/ice_main.c     |   2 +-
->  scripts/coccinelle/free/devm_free.cocci       |   2 +-
->  18 files changed, 489 insertions(+), 441 deletions(-)
->  rename Documentation/driver-model/{binding.txt =3D> binding.rst} (92%)
->  rename Documentation/driver-model/{bus.txt =3D> bus.rst} (76%)
->  rename Documentation/driver-model/{class.txt =3D> class.rst} (75%)
->  rename Documentation/driver-model/{design-patterns.txt =3D> design-
-> patterns.rst} (59%)
->  rename Documentation/driver-model/{device.txt =3D> device.rst} (71%)
->  rename Documentation/driver-model/{devres.txt =3D> devres.rst} (93%)
->  rename Documentation/driver-model/{driver.txt =3D> driver.rst} (75%)
->  create mode 100644 Documentation/driver-model/index.rst
->  rename Documentation/driver-model/{overview.txt =3D> overview.rst} (90%)
->  rename Documentation/driver-model/{platform.txt =3D> platform.rst} (95%)
->  rename Documentation/driver-model/{porting.txt =3D> porting.rst} (62%)
-
-
---=-ty+pfSLvRBl9i77r2BhF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl0BXtIACgkQ5W/vlVpL
-7c4pqBAAjI5ICv0jNPfnf/dx8MCYTQgnqe5o0zbkpxSHIeNyftE7ga/fAa4J66pK
-yJP9+EJIO8IGMCFSZxybwq9AxxQOK2fzpm2zrm3AGZ3MFesW3u/zxqGzp88XgqBY
-uaqSUJIuYPlDkVay8iLBiUKm5StnPJ25soquD3pRqHCStCU5HPM7ML9AFbK4UgSA
-OMbmXcdKoJubrdWd/CPIgMdGwRBzHl0L072QPnapJLJBNfn8OwkeoO67N7mCvitG
-o/I05rRyNIeunWTmiqmwVe6j+DQ8QzKPvXSKGGBM3Dl7QxP+fcV9jXkVulrjlpa6
-HDOQMLdRX6T5+6JPGHDTnY5PfWXf/hsMIF+szh+iI9+ZaetLbA/OQYm12foIxcbr
-2qu1iOn6RrRS4COcCFq6oTUEXRBBrlTI9iPVImuRF2Jt2+g/dQvfwK9U4XWCd0vG
-s0BFVM5A4CGFCBMGI6jYrSm+Q8Z3IpvMC/l7CmzZW5YPhplS8mPud5eqllLmFfr/
-8y0YyBAxXFpm9ajncxSc6m3TyBAmSevKYdvoL31TfZKLDN+W6ZyM47U1z1baDJBu
-3RBxzmVNXxu+DScqKTxYKsW5UY06Grs3HuDWGthqSztzc2+H6gK7s7YfT2S2diKe
-4vi2AzHXn4ghgp0OW4Kcg1YC5aeP7xdjVYDhaIeLEaaYaB6IiGw=
-=Uy44
------END PGP SIGNATURE-----
-
---=-ty+pfSLvRBl9i77r2BhF--
+>  tools/lib/bpf/xsk.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index bf15a80a37c2..86107857e1f0 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -334,13 +334,13 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+>  		goto out;
+>  	}
+>  
+> -	if (channels.max_combined == 0 || errno == EOPNOTSUPP)
+> +	ret = channels.max_combined + max(channels.max_rx, channels.max_tx);
+> +
+> +	if (ret == 0 || errno == EOPNOTSUPP)
+>  		/* If the device says it has no channels, then all traffic
+>  		 * is sent to a single stream, so max queues = 1.
+>  		 */
+>  		ret = 1;
+> -	else
+> -		ret = channels.max_combined;
+>  
+>  out:
+>  	close(fd);
 
