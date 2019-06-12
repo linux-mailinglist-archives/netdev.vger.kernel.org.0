@@ -2,71 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9AEA42F5C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 20:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31AA842F5D
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 20:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727826AbfFLSwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 14:52:18 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:36388 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726454AbfFLSwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 14:52:18 -0400
-Received: by mail-yb1-f195.google.com with SMTP id b22so5228083yba.3
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 11:52:18 -0700 (PDT)
+        id S1727844AbfFLSwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 14:52:23 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33012 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbfFLSwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 14:52:23 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x2so18754717qtr.0
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 11:52:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MvXZkHYaRJ/G5sOdpdD0Ju+Q6y1BtRzvQQbKkNY5wy0=;
-        b=uBS8ftAc8/df3QcrYMqBu8yfmuiqiC96/couzCebBImBPflqWyNOQGkixJlJMXqhkZ
-         QsQ+jWibExvFV14St243EggkUT1AIte1v7kpHlLEuFt1dkMLF3QLjO7oEq92yGpX6+Tu
-         FDxDx1ldc4RPvMadOVlPdHoHlE4aZMrawbVyi7uPIsboktEGkH/U3wB0FtPZxApMm5v1
-         an5QFFb4t/qIV455Cxw65c2j58k7bsQpRaggekc5KbnHD7P3xc4XCVfRBWaP/YiVzKRH
-         Ge4ZgWO2GvRWaxJwWvLE6KJLVDERxozx9DGVn01QI4m3+H0qiiij9Xv9WoC1B1jC1N4e
-         TyAQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=5HEpHiZZqLSYJmZTImcPaOUkV3ZzlMOc/BOTY/7R83E=;
+        b=MNK9zygkriOzvyyGgO9dxSyP8Kgsfx7HArawKAkPQHtFyrzyEq++sJhb6A98HrdtP6
+         jp1bXaqlpdjfH6sR9LPKkxZGFjwf0KGSb3ot+hogeUmn1Eyd9OTYOkfqnLZx5XnisQ63
+         AkCHmftmwoCvJCamtLyDH0fAANiN1bxYJDHt/WaHY/0syu7zKGMDHKv8l1bF8SR/Bn66
+         WpL7Yo97rqkVPGrKjWG+S1TBzz628z9MKYsfXJE3UtH4ttC5HCCqcKDu2BoALIIAxmtQ
+         2rN0welLNDcz/6PEP5D0PcFlpwDqvOqx/StVk3B/CGNIwsgIL/Qs4eapXqe6gUvmKvSk
+         YURg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MvXZkHYaRJ/G5sOdpdD0Ju+Q6y1BtRzvQQbKkNY5wy0=;
-        b=W0nGcqWjH3RXX2vo7pxn2UPPDwzV9isOt1kBNJS/+28WrbhK45xjgXnAvwvsCNH+q3
-         /jt1KOQ+9OnLWyK86+lLks6tfNdrvZFDqYwWTH46US2uCLHxDUDq40VLGNsQVsMyG6Sa
-         Eh/+GCAtT9p1mfKWjyO/mzmK6NtHPQL5gqvAaSeFNmm0EJGQMAi0fii4+byjmBc0awGY
-         3AnhM265SItcDs8FUVDcPdP2YxFLNbWH5CAwyikxB90Arbxf7FjR2DZO1mW7Bbw+iHgb
-         ul2c5xtjUOn72rMbBcoZSbv/jw8dFqB8pJylbp4pn4j1EnrLLVojBaKaaWdth3tDL2ni
-         6Alw==
-X-Gm-Message-State: APjAAAX/J7qi7s7RMWty+CPbWzl5jAyJfMTiUzkM/+7w3dSBD3VLFvSU
-        +dPPoVZCvTldutw94aLLJYHY/ezPcdGaBok/mavhOx6pdis=
-X-Google-Smtp-Source: APXvYqw4H6PmylIqYof6T4gagqbYZrxVHGEuxRf/HDNzL8lYGle7hRZw85DA8D9aStGNqdPUQES7KIF/Ie3UeRi3EK4=
-X-Received: by 2002:a25:4557:: with SMTP id s84mr39512633yba.504.1560365537134;
- Wed, 12 Jun 2019 11:52:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=5HEpHiZZqLSYJmZTImcPaOUkV3ZzlMOc/BOTY/7R83E=;
+        b=gVlMIOQ1BlZ/oVtndz3kmwQmRTtJtiQomq6d6jxmoX4Caylyu9qwi807+58RXkDaul
+         MvEBQK5QDq00TiIwG1dzxtFtY2himFRwa9yBYpeM/6ajgkQzBbnu6v8IPsU7Y0LZa2yR
+         rnazwxjnxghJKsuTLTyZAZzjs2RpkI5XyTyYWOIxCxTNN+ugCu+KACfHETC4oM4GmDBg
+         pPfJtampL/qYFb3IcHeibYKhaL/Y6Jl5KuImLyB/VxQVP7HiGHOtMg1qHwqSNO7S/TXg
+         XvsLzAUjzNw0m7F4vV6QznWCYhLLUkTjZCobj12A7cB5uWKg87YRfqkLbbDg+wmoZ2DG
+         ldtg==
+X-Gm-Message-State: APjAAAVwK9XORWC87wrUvgWzy6YHknFD17kWGiKr+W9CV2YMAs0Y2Lty
+        1USaZ4ekcx/a2Af0wq0ViBQ=
+X-Google-Smtp-Source: APXvYqxzsWt1xo/RoQ8TTHkl7iq01cxIvI4msLNbfm3vOEOxfSC2xhUPPzAOU8XBaSsLeCguHJtjkA==
+X-Received: by 2002:a0c:a8d2:: with SMTP id h18mr161441qvc.16.1560365542097;
+        Wed, 12 Jun 2019 11:52:22 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:7487:3cda:3612:d867:343f])
+        by smtp.gmail.com with ESMTPSA id s11sm385056qte.49.2019.06.12.11.52.20
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 11:52:21 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C3FECC0FFC; Wed, 12 Jun 2019 15:52:18 -0300 (-03)
+Date:   Wed, 12 Jun 2019 15:52:18 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@mellanox.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Johannes Berg <johannes.berg@intel.com>, dcaratti@redhat.com,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Message-ID: <20190612185218.GE3436@localhost.localdomain>
+References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
+ <20190612180239.GA3499@localhost.localdomain>
+ <20190612114627.4dd137ab@cakuba.netronome.com>
 MIME-Version: 1.0
-References: <20190611030334.138942-1-edumazet@google.com> <20190612.110344.817827105748265826.davem@davemloft.net>
- <20190612.112114.818829552569501636.davem@davemloft.net>
-In-Reply-To: <20190612.112114.818829552569501636.davem@davemloft.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Jun 2019 11:52:05 -0700
-Message-ID: <CANn89i+sgDq4chT5EJTS_Sd+vd2jZtACUOReEPSF--tBK2CKSA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: add optional per socket transmit delay
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190612114627.4dd137ab@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 11:21 AM David Miller <davem@davemloft.net> wrote:
->
-> From: David Miller <davem@davemloft.net>
-> Date: Wed, 12 Jun 2019 11:03:44 -0700 (PDT)
->
-> > Applied to net-next and build testing.
->
-> Missing symbol export it seems...
->
-> ERROR: "tcp_tx_delay_enabled" [net/ipv6/ipv6.ko] undefined!
-> make[1]: *** [scripts/Makefile.modpost:91: __modpost] Error 1
+On Wed, Jun 12, 2019 at 11:46:27AM -0700, Jakub Kicinski wrote:
+> On Wed, 12 Jun 2019 15:02:39 -0300, Marcelo Ricardo Leitner wrote:
+> > On Tue, May 28, 2019 at 05:03:50PM +0000, Kevin 'ldir' Darbyshire-Bryant wrote:
+> > ...
+> > > +static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
+> > > +			   struct nlattr *est, struct tc_action **a,
+> > > +			   int ovr, int bind, bool rtnl_held,
+> > > +			   struct tcf_proto *tp,
+> > > +			   struct netlink_ext_ack *extack)
+> > > +{
+> > > +	struct tc_action_net *tn = net_generic(net, ctinfo_net_id);
+> > > +	struct nlattr *tb[TCA_CTINFO_MAX + 1];
+> > > +	struct tcf_ctinfo_params *cp_new;
+> > > +	struct tcf_chain *goto_ch = NULL;
+> > > +	u32 dscpmask = 0, dscpstatemask;
+> > > +	struct tc_ctinfo *actparm;
+> > > +	struct tcf_ctinfo *ci;
+> > > +	u8 dscpmaskshift;
+> > > +	int ret = 0, err;
+> > > +
+> > > +	if (!nla)
+> > > +		return -EINVAL;
+> > > +
+> > > +	err = nla_parse_nested(tb, TCA_CTINFO_MAX, nla, ctinfo_policy, NULL);  
+> >                                                                        ^^^^
+> > Hi, two things here:
+> > Why not use the extack parameter here? Took me a while to notice
+> > that the EINVAL was actually hiding the issue below.
+> > And also on the other two EINVALs this function returns.
+> > 
+> > 
+> > Seems there was a race when this code went in and the stricter check
+> > added by
+> > b424e432e770 ("netlink: add validation of NLA_F_NESTED flag") and
+> > 8cb081746c03 ("netlink: make validation more configurable for future
+> > strictness").
+> > 
+> > I can't add these actions with current net-next and iproute-next:
+> > # ~/iproute2/tc/tc action add action ctinfo dscp 0xfc000000 0x01000000
+> > Error: NLA_F_NESTED is missing.
+> > We have an error talking to the kernel
+> > 
+> > This also happens with the current post of act_ct and should also
+> > happen with the act_mpls post (thus why Cc'ing John as well).
+> > 
+> > I'm not sure how we should fix this. In theory the kernel can't get
+> > stricter with userspace here, as that breaks user applications as
+> > above, so older actions can't use the more stricter parser. Should we
+> > have some actions behaving one way, and newer ones in a different way?
+> > That seems bad.
+> > 
+> > Or maybe all actions should just use nla_parse_nested_deprecated()?
+> > I'm thinking this last. Yet, then the _deprecated suffix may not make
+> > much sense here. WDYT?
+> 
+> Surely for new actions we can require strict validation, there is
+> no existing user space to speak of..  Perhaps act_ctinfo and act_ct
 
-Oh right, I will send a v2, thanks.
+Other than the inconsistency amongst the actions, agreed.
+
+> got slightly confused with the race you described, but in principle
+> there is nothing stopping new actions from implementing the user space
+> correctly, right?
+
+AFAICT we need to patch iproute2 outside of the action code to cope
+with it. Something like:
+
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -214,7 +214,7 @@ done0:
+                         tail = addattr_nest(n, MAX_MSG, ++prio);
+                         addattr_l(n, MAX_MSG, TCA_ACT_KIND, k, strlen(k) + 1);
+
+-                       ret = a->parse_aopt(a, &argc, &argv, TCA_ACT_OPTIONS,
++                       ret = a->parse_aopt(a, &argc, &argv, TCA_ACT_OPTIONS | NLA_F_NESTED,
+
+This wouldn't break the older actions, yes, but then again, to expect
+a different parsing behavior from different actions.. seems weird. :)
+
+  Marcelo
