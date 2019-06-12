@@ -2,112 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9AD429E6
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 16:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D3842A0A
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 16:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408869AbfFLOtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 10:49:31 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:33633 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732553AbfFLOtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 10:49:31 -0400
-Received: by mail-lf1-f65.google.com with SMTP id y17so12365623lfe.0;
-        Wed, 12 Jun 2019 07:49:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xEKT6ItiZQHVhHf54W42oiyZcYvIqaQ579wMUJoLtLc=;
-        b=POYD+8CxBItHMDs3+dOewoJ9vXWx8ZfLpkap2WxaRkaR0pSUJkpPK/PdqyaQCJSNuB
-         DmmWRHYKYOV04Zi4LlYpq3yNsa/3SQDtImpJrtkdVsWylxZ71pm0L5DUNqIcsCv2uSso
-         d1EyL0UhLHPHdI0bB+5ZwqweGHBx2vGMp6eQXOcEkPfInjjTesDk5ZbxCdsDHFxqcz0/
-         +dBWc1uMJipk3VAwAAOxjdhq/2Pqy6D78gGr3SczRr2UbF/qfrMejNY1O0pdTMMcDURq
-         PhNkhxJNgnVkFWSOgsu1BFT9ioNDyt/SQsns84hNeNjkH5ar1EEZ/je0Ng+lq40aIAHW
-         jfHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xEKT6ItiZQHVhHf54W42oiyZcYvIqaQ579wMUJoLtLc=;
-        b=tlH8mA+4YkrYksT8pUfXpDqaMGB5TiLh0+dGtQSdrIo4eXUPW/7nVs3ploaLsbM6/O
-         UJZg9WEzJhd3LwHmZMYAvePffYrpIbyqPYAf/M3+BR26NQbCbK80fndRJ6g+b1FGevtO
-         IB1MyRjkJyhJ8PB6JmkwBPaKHWA+p5dxR4mPz4iWkEDlKpdAshsLGBVQT+d09BCGWCmU
-         6kf6RfazVaTmca9TbdC1RwST5Rs4dqQ93tLA1+KlKkPIUAzgWfeeD+BHr653Qr5lZDBV
-         FokLVTqixjRSo1WzsPViLGnMjK2wmw/4kXLu+q7PWgCGUYR9eOHPDAdMMikVb0/VjGID
-         XLSw==
-X-Gm-Message-State: APjAAAXmhaTSxjO8S30DIVtHUXYKguHjfm+kfnanut16FFPla9LDa2VR
-        IOnCBMI1AolW3p6AOIW9Rm2oHO8KXMWpDalwUCg=
-X-Google-Smtp-Source: APXvYqz3x46DS6iUxojDs9ZM6LZTE/NGP7E799OcOVLOMtWEww2bEKHAJOBdRjb0MGq0QrsuT80f5rE+run0i0iEhWg=
-X-Received: by 2002:a19:ab1a:: with SMTP id u26mr3825421lfe.6.1560350969202;
- Wed, 12 Jun 2019 07:49:29 -0700 (PDT)
+        id S2438107AbfFLO4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 10:56:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47570 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727121AbfFLO4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 10:56:18 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hb4fe-00007v-4O; Wed, 12 Jun 2019 16:56:14 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hb4fd-0005or-V5; Wed, 12 Jun 2019 16:56:13 +0200
+Subject: Re: [PATCH] bpf/core.c - silence warning messages
+To:     =?UTF-8?Q?Valdis_Kl=c4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <29466.1559875167@turing-police>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d693c3bd-7491-588e-3648-59bbef3b88fa@iogearbox.net>
+Date:   Wed, 12 Jun 2019 16:56:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-References: <20190612132645.19385-1-m@lambda.lt>
-In-Reply-To: <20190612132645.19385-1-m@lambda.lt>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 12 Jun 2019 07:49:17 -0700
-Message-ID: <CAADnVQKNmAp-HeVE3-r_GV0in=PuVU9UE6LZ=-+09zzRWyyGEA@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Simplify definition of BPF_FIB_LOOKUP related flags
-To:     Martynas Pumputis <m@lambda.lt>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <29466.1559875167@turing-police>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25478/Wed Jun 12 10:14:54 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 6:25 AM Martynas Pumputis <m@lambda.lt> wrote:
->
-> Previously, the BPF_FIB_LOOKUP_{DIRECT,OUTPUT} flags were defined
-> with the help of BIT macro. This had the following issues:
->
-> - In order to user any of the flags, a user was required to depend
->   on <linux/bits.h>.
-> - No other flag in bpf.h uses the macro, so it seems that an unwritten
->   convention is to use (1 << (nr)) to define BPF-related flags.
->
-> Signed-off-by: Martynas Pumputis <m@lambda.lt>
-> ---
->  include/uapi/linux/bpf.h       | 4 ++--
->  tools/include/uapi/linux/bpf.h | 4 ++--
->  2 files changed, 4 insertions(+), 4 deletions(-)
+On 06/07/2019 04:39 AM, Valdis Klētnieks wrote:
+> Compiling kernel/bpf/core.c with W=1 causes a flood of warnings:
+> 
+> kernel/bpf/core.c:1198:65: warning: initialized field overwritten [-Woverride-init]
+>  1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+>       |                                                                 ^~~~
+> kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+>  1087 |  INSN_3(ALU, ADD,  X),   \
+>       |  ^~~~~~
+> kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+>  1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+>       |   ^~~~~~~~~~~~
+> kernel/bpf/core.c:1198:65: note: (near initialization for 'public_insntable[12]')
+>  1198 | #define BPF_INSN_3_TBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = true
+>       |                                                                 ^~~~
+> kernel/bpf/core.c:1087:2: note: in expansion of macro 'BPF_INSN_3_TBL'
+>  1087 |  INSN_3(ALU, ADD,  X),   \
+>       |  ^~~~~~
+> kernel/bpf/core.c:1202:3: note: in expansion of macro 'BPF_INSN_MAP'
+>  1202 |   BPF_INSN_MAP(BPF_INSN_2_TBL, BPF_INSN_3_TBL),
+>       |   ^~~~~~~~~~~~
+> 
+> 98 copies of the above.
+> 
+> The attached patch silences the warnings, because we *know* we're overwriting
+> the default initializer. That leaves bpf/core.c with only 6 other warnings,
+> which become more visible in comparison.
+> 
+> Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
 
-Makes sense to me.
-Please split it into two patches.
-One for kernel uapi and one for user space.
-Since user bits are synced to github/libbpf independently.
-
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 63e0cf66f01a..a8f17bc86732 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3376,8 +3376,8 @@ struct bpf_raw_tracepoint_args {
->  /* DIRECT:  Skip the FIB rules and go to FIB table associated with device
->   * OUTPUT:  Do lookup from egress perspective; default is ingress
->   */
-> -#define BPF_FIB_LOOKUP_DIRECT  BIT(0)
-> -#define BPF_FIB_LOOKUP_OUTPUT  BIT(1)
-> +#define BPF_FIB_LOOKUP_DIRECT  (1U << 0)
-> +#define BPF_FIB_LOOKUP_OUTPUT  (1U << 1)
->
->  enum {
->         BPF_FIB_LKUP_RET_SUCCESS,      /* lookup successful */
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 63e0cf66f01a..a8f17bc86732 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3376,8 +3376,8 @@ struct bpf_raw_tracepoint_args {
->  /* DIRECT:  Skip the FIB rules and go to FIB table associated with device
->   * OUTPUT:  Do lookup from egress perspective; default is ingress
->   */
-> -#define BPF_FIB_LOOKUP_DIRECT  BIT(0)
-> -#define BPF_FIB_LOOKUP_OUTPUT  BIT(1)
-> +#define BPF_FIB_LOOKUP_DIRECT  (1U << 0)
-> +#define BPF_FIB_LOOKUP_OUTPUT  (1U << 1)
->
->  enum {
->         BPF_FIB_LKUP_RET_SUCCESS,      /* lookup successful */
-> --
-> 2.21.0
->
+Makes sense, applied!
