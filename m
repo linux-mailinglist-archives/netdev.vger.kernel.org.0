@@ -2,164 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A194307E
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 21:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8D7430AB
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 22:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388615AbfFLT7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 15:59:20 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:41494 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387605AbfFLT7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 15:59:19 -0400
-Received: by mail-pl1-f194.google.com with SMTP id s24so7058265plr.8
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
+        id S2388188AbfFLUBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 16:01:23 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37224 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387605AbfFLUBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 16:01:22 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 19so9467927pfa.4
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 13:01:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YXo2pGsL2sbCtFbNaUybVNbLhzgrUMJfssd/0MYAwv4=;
-        b=Mk6XLOnnW4QppyMWHCS0NldCM8XQo6tVC9topS+WELsexNMe1y/C8KGilpQerlBFJj
-         DnMOKyWFt6WUWMIFAnQBHRl8CdlY9s88IvfWGPjXTPF5fsSUMfuxHbvywegHVYu1pYy0
-         AM2CwytV9VdN9jArYV/n/+/GIWwBddUm0k7CFA5I8Yw+h1LUl+FWSkBzyS+0OSbT185d
-         rYi/neTA5heUcGU9CBaFVvzl9xTEN1nPt8s9iJ0n+Hi6rSf/TbLLpTiO+ubt12Nn8QAk
-         bwA2EXVL1wepKJYli61odG4XLR/Ux9PscZw9z2cEgtx/Ce3lrFo0eetZ08EgMjQkE5cA
-         54CA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bP4Wv0eOl5zUrh4FGixzw5n7FaG9305MNzDqpGakCSY=;
+        b=tpW5VPNsI6iCL3hAEkxdPfyyti5rnZum2zReHc2fepaE38AWaCNZKO/DW2E09xLm2y
+         2pDKjC1w9Jrd4s5LV51PGsEhmKxbd7o1PEb5LTz1kJJFW7J3TDX+ol+B4HT6ratLvD/j
+         v//01Wnp1emzYMTp+D/PVVPIm7RvwT5JcWN4HtVHPVH5uX3wrRORsX0HdnrsWo/bqHAY
+         mbTYzv0EHRBcwliWPtCKTwsIcVlGgP8csjGkNPL7R1Sg975qc+rg3XhJBpnPFDSpg8ld
+         DVT4WpzLD6kUxDCPocY5+fW3oXiZ5ZkiaH3NA0BQdXgQlr2Zyd/4bIpzQCVOBBNURJi5
+         v8fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YXo2pGsL2sbCtFbNaUybVNbLhzgrUMJfssd/0MYAwv4=;
-        b=iDTZgxftxc7Ty7RH8VXQVreytoD4SKZD3qNjSlDqB4yrLJuVVAZ0LYNvDVtacKPnIr
-         5+HlPWCkyg0DNIlE/423teI82llA4xKZw8DxQUWOyt+6jbBq2fjbe82UHVO2wPXXqnei
-         kz3wISFZJJMycLuqF3sh+h9iWMkWAjMGoLueuuZbzEFccH/deQUY6QPib1Tu5ODK+B4+
-         OVqDGLOyGcLLvtIejdYcgDb1tMXYPoz9Uv6HiJkbVeCGcd9EnCaz7oIXPd7HxYjnoClN
-         oiRXm/htQ/cMYqTz906OFfkcKiDhNNJFcYFDPM94J8rROvWN5FuvmC7qEH4mwrohgZ9o
-         RX6g==
-X-Gm-Message-State: APjAAAVoCp++CeX5x8cDmcPOok4gbhDgMgEixEw5YLEr6TOWg+iKdmcO
-        8FFoBTxIdNMTxf0m2q6p/gq8cQ==
-X-Google-Smtp-Source: APXvYqzD31Hsp4P/+qMUXYuo1N6szXTfwcLhfCZBVbKOe5ErKLSWoOUqoIIRNFREzuTBc7uVhVv+vA==
-X-Received: by 2002:a17:902:848c:: with SMTP id c12mr82093141plo.17.1560369558603;
-        Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id u20sm283242pgm.56.2019.06.12.12.59.17
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 12:59:18 -0700 (PDT)
-Date:   Wed, 12 Jun 2019 12:59:17 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bP4Wv0eOl5zUrh4FGixzw5n7FaG9305MNzDqpGakCSY=;
+        b=DB7Wj8DB2hZvzbSq0xSGv837f1kzN/7U6HCYZpAPWjdBt8fl0KwJZZEJQ39q5Eqv4S
+         TutEla4LKRS6yK4MGdRRQJF9J3/BgclazzBwHMqH+nxKhjVJDd9zYrDhS0/9ZJu111nK
+         Cdeq4rN4JPFEGs50r/2RR3LRV3cOccYgT66VPnr0quoJ0AIXLJasf5hYtxwWTCak5mOi
+         ywLCyCY6Ev8JVX6qmiIeFHVrtrUZJQI6IQqAcn2CEDDyN81D+EI04WcCHpnxluL1kgeN
+         IkoN1acuNeV+DmzYdA+X0ijPpx1a7M02OcGw/zzUPZ5rFqMbVJ3rS9Dyl2I+aSeUT8Jg
+         tLng==
+X-Gm-Message-State: APjAAAVlAk5ADTwzGXwL9x67Mqv5Xv3umk9h7rcaSGIDV2TjAoNUUpDx
+        z4D9Br7ejfJxC6F0pFKB/1c=
+X-Google-Smtp-Source: APXvYqzDIGuZ1o3GUTP+14uMHWm625/bCQOiMJJwlanXV2QNvmCyKFqM/lNAN07JoKJhUa/ixHsMug==
+X-Received: by 2002:a63:5d45:: with SMTP id o5mr27026200pgm.40.1560369681774;
+        Wed, 12 Jun 2019 13:01:21 -0700 (PDT)
+Received: from localhost ([192.55.54.45])
+        by smtp.gmail.com with ESMTPSA id b8sm424659pff.20.2019.06.12.13.01.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 12 Jun 2019 13:01:21 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 22:01:05 +0200
+From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 2/2] bpf: Add test for SO_REUSEPORT_DETACH_BPF
-Message-ID: <20190612195917.GB9056@mini-arch>
-References: <20190612190536.2340077-1-kafai@fb.com>
- <20190612190539.2340343-1-kafai@fb.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/3] bpf_xdp_redirect_map: Perform map
+ lookup in eBPF helper
+Message-ID: <20190612220105.00000d39@gmail.com>
+In-Reply-To: <87y328f0m9.fsf@toke.dk>
+References: <156026783994.26748.2899804283816365487.stgit@alrua-x1>
+        <156026784011.26748.7290735899755011809.stgit@alrua-x1>
+        <20190611200021.473138bc@carbon>
+        <87y328f0m9.fsf@toke.dk>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190612190539.2340343-1-kafai@fb.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/12, Martin KaFai Lau wrote:
-> This patch adds a test for the new sockopt SO_REUSEPORT_DETACH_BPF.
-> 
-> '-I../../../../usr/include/' is added to the Makefile to get
-> the newly added SO_REUSEPORT_DETACH_BPF.
-> 
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  tools/testing/selftests/bpf/Makefile          |  1 +
->  .../selftests/bpf/test_select_reuseport.c     | 50 +++++++++++++++++++
->  2 files changed, 51 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 44fb61f4d502..c7370361fa81 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -16,6 +16,7 @@ LLVM_OBJCOPY	?= llvm-objcopy
->  LLVM_READELF	?= llvm-readelf
->  BTF_PAHOLE	?= pahole
->  CFLAGS += -Wall -O2 -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR) -I$(GENDIR) $(GENFLAGS) -I../../../include \
-> +	  -I../../../../usr/include/ \
-Why not copy inlude/uapi/asm-generic/socket.h into tools/include
-instead? Will that work?
+On Tue, 11 Jun 2019 20:17:02 +0200
+Toke H=F8iland-J=F8rgensen <toke@redhat.com> wrote:
 
->  	  -Dbpf_prog_load=bpf_prog_test_load \
->  	  -Dbpf_load_program=bpf_test_load_program
->  LDLIBS += -lcap -lelf -lrt -lpthread
-> diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
-> index 75646d9b34aa..5aa00b4a4702 100644
-> --- a/tools/testing/selftests/bpf/test_select_reuseport.c
-> +++ b/tools/testing/selftests/bpf/test_select_reuseport.c
-> @@ -523,6 +523,54 @@ static void test_pass_on_err(int type, sa_family_t family)
->  	printf("OK\n");
->  }
->  
-> +static void test_detach_bpf(int type, sa_family_t family)
-> +{
-> +	__u32 nr_run_before = 0, nr_run_after = 0, tmp, i;
-> +	struct epoll_event ev;
-> +	int cli_fd, err, nev;
-> +	struct cmd cmd = {};
-> +	int optvalue = 0;
-> +
-> +	printf("%s: ", __func__);
-> +	err = setsockopt(sk_fds[0], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
-> +			 &optvalue, sizeof(optvalue));
-> +	CHECK(err == -1, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
-> +	      "err:%d errno:%d\n", err, errno);
-> +
-> +	err = setsockopt(sk_fds[1], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
-> +			 &optvalue, sizeof(optvalue));
-> +	CHECK(err == 0 || errno != ENOENT, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
-> +	      "err:%d errno:%d\n", err, errno);
-> +
-> +	for (i = 0; i < NR_RESULTS; i++) {
-> +		err = bpf_map_lookup_elem(result_map, &i, &tmp);
-> +		CHECK(err == -1, "lookup_elem(result_map)",
-> +		      "i:%u err:%d errno:%d\n", i, err, errno);
-> +		nr_run_before += tmp;
-> +	}
-> +
-> +	cli_fd = send_data(type, family, &cmd, sizeof(cmd), PASS);
-> +	nev = epoll_wait(epfd, &ev, 1, 5);
-> +	CHECK(nev <= 0, "nev <= 0",
-> +	      "nev:%d expected:1 type:%d family:%d data:(0, 0)\n",
-> +	      nev,  type, family);
-> +
-> +	for (i = 0; i < NR_RESULTS; i++) {
-> +		err = bpf_map_lookup_elem(result_map, &i, &tmp);
-> +		CHECK(err == -1, "lookup_elem(result_map)",
-> +		      "i:%u err:%d errno:%d\n", i, err, errno);
-> +		nr_run_after += tmp;
-> +	}
-> +
-> +	CHECK(nr_run_before != nr_run_after,
-> +	      "nr_run_before != nr_run_after",
-> +	      "nr_run_before:%u nr_run_after:%u\n",
-> +	      nr_run_before, nr_run_after);
-> +
-> +	printf("OK\n");
-> +	close(cli_fd);
-> +}
-> +
->  static void prepare_sk_fds(int type, sa_family_t family, bool inany)
->  {
->  	const int first = REUSEPORT_ARRAY_SIZE - 1;
-> @@ -664,6 +712,8 @@ static void test_all(void)
->  			test_pass(type, family);
->  			test_syncookie(type, family);
->  			test_pass_on_err(type, family);
-> +			/* Must be the last test */
-> +			test_detach_bpf(type, family);
->  
->  			cleanup_per_test();
->  			printf("\n");
-> -- 
-> 2.17.1
-> 
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>=20
+> > On Tue, 11 Jun 2019 17:44:00 +0200
+> > Toke H=F8iland-J=F8rgensen <toke@redhat.com> wrote:
+> > =20
+> >> From: Toke H=F8iland-J=F8rgensen <toke@redhat.com>
+> >>=20
+> >> The bpf_redirect_map() helper used by XDP programs doesn't return any
+> >> indication of whether it can successfully redirect to the map index it=
+ was
+> >> given. Instead, BPF programs have to track this themselves, leading to
+> >> programs using duplicate maps to track which entries are populated in =
+the
+> >> devmap.
+> >>=20
+> >> This patch fixes this by moving the map lookup into the bpf_redirect_m=
+ap()
+> >> helper, which makes it possible to return failure to the eBPF program.=
+ The
+> >> lower bits of the flags argument is used as the return code, which mea=
+ns
+> >> that existing users who pass a '0' flag argument will get XDP_ABORTED.
+> >>=20
+> >> With this, a BPF program can check the return code from the helper cal=
+l and
+> >> react by, for instance, substituting a different redirect. This works =
+for
+> >> any type of map used for redirect.
+> >>=20
+> >> Signed-off-by: Toke H=F8iland-J=F8rgensen <toke@redhat.com>
+> >> ---
+> >>  include/linux/filter.h   |    1 +
+> >>  include/uapi/linux/bpf.h |    8 ++++++++
+> >>  net/core/filter.c        |   26 ++++++++++++--------------
+> >>  3 files changed, 21 insertions(+), 14 deletions(-)
+> >>=20
+> >> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> >> index 43b45d6db36d..f31ae8b9035a 100644
+> >> --- a/include/linux/filter.h
+> >> +++ b/include/linux/filter.h
+> >> @@ -580,6 +580,7 @@ struct bpf_skb_data_end {
+> >>  struct bpf_redirect_info {
+> >>  	u32 ifindex;
+> >>  	u32 flags;
+> >> +	void *item;
+> >>  	struct bpf_map *map;
+> >>  	struct bpf_map *map_to_flush;
+> >>  	u32 kern_flags;
+> >> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> >> index 7c6aef253173..9931cf02de19 100644
+> >> --- a/include/uapi/linux/bpf.h
+> >> +++ b/include/uapi/linux/bpf.h
+> >> @@ -3098,6 +3098,14 @@ enum xdp_action {
+> >>  	XDP_REDIRECT,
+> >>  };
+> >> =20
+> >> +/* Flags for bpf_xdp_redirect_map helper */
+> >> +
+> >> +/* The lower flag bits will be the return code of bpf_xdp_redirect_ma=
+p() helper
+> >> + * if the map lookup fails.
+> >> + */
+> >> +#define XDP_REDIRECT_INVALID_MASK (XDP_ABORTED | XDP_DROP | XDP_PASS =
+| XDP_TX)
+> >> +#define XDP_REDIRECT_ALL_FLAGS XDP_REDIRECT_INVALID_MASK
+> >> + =20
+> >
+> > Slightly confused about the naming of the define, see later.
+> > =20
+> >>  /* user accessible metadata for XDP packet hook
+> >>   * new fields must be added to the end of this structure
+> >>   */
+> >> diff --git a/net/core/filter.c b/net/core/filter.c
+> >> index 7a996887c500..dd43be497480 100644
+> >> --- a/net/core/filter.c
+> >> +++ b/net/core/filter.c
+> >> @@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_devi=
+ce *dev, struct xdp_buff *xdp,
+> >>  			       struct bpf_redirect_info *ri)
+> >>  {
+> >>  	u32 index =3D ri->ifindex;
+> >> -	void *fwd =3D NULL;
+> >> +	void *fwd =3D ri->item;
+> >>  	int err;
+> >> =20
+> >>  	ri->ifindex =3D 0;
+> >> +	ri->item =3D NULL;
+> >>  	WRITE_ONCE(ri->map, NULL);
+> >> =20
+> >> -	fwd =3D __xdp_map_lookup_elem(map, index);
+> >> -	if (unlikely(!fwd)) {
+> >> -		err =3D -EINVAL;
+> >> -		goto err;
+> >> -	}
+> >>  	if (ri->map_to_flush && unlikely(ri->map_to_flush !=3D map))
+> >>  		xdp_do_flush_map();
+> >> =20
+> >> @@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct =
+net_device *dev,
+> >>  {
+> >>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+> >>  	u32 index =3D ri->ifindex;
+> >> -	void *fwd =3D NULL;
+> >> +	void *fwd =3D ri->item;
+> >>  	int err =3D 0;
+> >> =20
+> >>  	ri->ifindex =3D 0;
+> >> +	ri->item =3D NULL;
+> >>  	WRITE_ONCE(ri->map, NULL);
+> >> =20
+> >> -	fwd =3D __xdp_map_lookup_elem(map, index);
+> >> -	if (unlikely(!fwd)) {
+> >> -		err =3D -EINVAL;
+> >> -		goto err;
+> >> -	}
+> >> -
+> >>  	if (map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP) {
+> >>  		struct bpf_dtab_netdev *dst =3D fwd;
+> >> =20
+> >> @@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, =
+flags)
+> >> =20
+> >>  	ri->ifindex =3D ifindex;
+> >>  	ri->flags =3D flags;
+> >> +	ri->item =3D NULL;
+> >>  	WRITE_ONCE(ri->map, NULL);
+> >> =20
+> >>  	return XDP_REDIRECT;
+> >> @@ -3753,9 +3745,15 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map=
+ *, map, u32, ifindex,
+> >>  {
+> >>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+> >> =20
+> >> -	if (unlikely(flags))
+> >> +	if (unlikely(flags & ~XDP_REDIRECT_ALL_FLAGS))
+> >>  		return XDP_ABORTED;
+> >> =20
+
+Here you don't allow the flags to get different value than
+XDP_REDIRECT_ALL_FLAGS.
+
+> >> +	ri->item =3D __xdp_map_lookup_elem(map, ifindex);
+> >> +	if (unlikely(!ri->item)) {
+> >> +		WRITE_ONCE(ri->map, NULL);
+> >> +		return (flags & XDP_REDIRECT_INVALID_MASK); =20
+
+So here you could just return flags? Don't we know that the flags value is
+legit here? Am I missing something? TBH the v2 was more clear to me.
+
+> >
+> > Maybe I'm reading it wrong, but shouldn't the mask be called the "valid=
+" mask? =20
+>=20
+> It's the mask that is applied when the index looked up is invalid (i.e.,
+> the entry doesn't exist)? But yeah, can see how the name can be
+> confusing; maybe it should just be "RETURN_MASK" or something like that?
+
+Maybe something along ALLOWED_RETVAL_MASK?
+
+>=20
+> -Toke
+
