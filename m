@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A15442572
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2747742598
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 14:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438815AbfFLMUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jun 2019 08:20:30 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:39734 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438796AbfFLMUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 08:20:25 -0400
-Received: from penelope.horms.nl (ip4dab7138.direct-adsl.nl [77.171.113.56])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id F038E25AEA9;
-        Wed, 12 Jun 2019 22:20:22 +1000 (AEST)
-Received: by penelope.horms.nl (Postfix, from userid 7100)
-        id E8276E21FE5; Wed, 12 Jun 2019 14:20:20 +0200 (CEST)
-Date:   Wed, 12 Jun 2019 14:20:20 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
-Message-ID: <20190612122020.sgp5q427ilh6bbbg@verge.net.au>
-References: <1557429622-31676-1-git-send-email-fabrizio.castro@bp.renesas.com>
- <TY1PR01MB1770D2AAF2ED748575CA4CBFC0100@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+        id S1731089AbfFLM0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jun 2019 08:26:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:47758 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727079AbfFLM0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jun 2019 08:26:00 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 8A7D6AD3E;
+        Wed, 12 Jun 2019 12:25:59 +0000 (UTC)
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH v2 1/2] net: ethernet: wiznet: w5X00 add device tree support
+Date:   Wed, 12 Jun 2019 14:25:25 +0200
+Message-Id: <20190612122526.14332-1-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <TY1PR01MB1770D2AAF2ED748575CA4CBFC0100@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave,
+The w5X00 chip provides an SPI to Ethernet inteface. This patch allows
+platform devices to be defined through the device tree.
 
-are you comfortable with me taking these patches
-through the renesas tree? Or perhaps should they be reposted
-to you for inclusion in net-next?
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ drivers/net/ethernet/wiznet/w5100-spi.c | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
-They have been stuck for a long time now.
+diff --git a/drivers/net/ethernet/wiznet/w5100-spi.c b/drivers/net/ethernet/wiznet/w5100-spi.c
+index 918b3e50850a..2b4126d2427d 100644
+--- a/drivers/net/ethernet/wiznet/w5100-spi.c
++++ b/drivers/net/ethernet/wiznet/w5100-spi.c
+@@ -15,6 +15,7 @@
+ #include <linux/delay.h>
+ #include <linux/netdevice.h>
+ #include <linux/of_net.h>
++#include <linux/of_device.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "w5100.h"
+@@ -409,14 +410,32 @@ static const struct w5100_ops w5500_ops = {
+ 	.init = w5500_spi_init,
+ };
+ 
++static const struct of_device_id w5100_of_match[] = {
++	{ .compatible = "wiznet,w5100", .data = (const void*)W5100, },
++	{ .compatible = "wiznet,w5200", .data = (const void*)W5200, },
++	{ .compatible = "wiznet,w5500", .data = (const void*)W5500, },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, w5100_of_match);
++
+ static int w5100_spi_probe(struct spi_device *spi)
+ {
+-	const struct spi_device_id *id = spi_get_device_id(spi);
++	const struct of_device_id *of_id;
+ 	const struct w5100_ops *ops;
++	kernel_ulong_t driver_data;
+ 	int priv_size;
+ 	const void *mac = of_get_mac_address(spi->dev.of_node);
+ 
+-	switch (id->driver_data) {
++	if (spi->dev.of_node) {
++		of_id = of_match_device(w5100_of_match, &spi->dev);
++		if (!of_id)
++			return -ENODEV;
++		driver_data = (kernel_ulong_t)of_id->data;
++	} else {
++		driver_data = spi_get_device_id(spi)->driver_data;
++	}
++
++	switch (driver_data) {
+ 	case W5100:
+ 		ops = &w5100_spi_ops;
+ 		priv_size = 0;
+@@ -453,6 +472,7 @@ static struct spi_driver w5100_spi_driver = {
+ 	.driver		= {
+ 		.name	= "w5100",
+ 		.pm	= &w5100_pm_ops,
++		.of_match_table = w5100_of_match,
+ 	},
+ 	.probe		= w5100_spi_probe,
+ 	.remove		= w5100_spi_remove,
+-- 
+2.21.0
 
-On Fri, Jun 07, 2019 at 10:02:13AM +0000, Fabrizio Castro wrote:
-> Dear All,
-> 
-> These patches have been around for a very long time now, is anybody willing to take them?
-> 
-> Cheers,
-> Fab
-> 
-> > From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> > Sent: 09 May 2019 20:20
-> > Subject: [PATCH repost 0/5] Repost CAN and CANFD dt-bindings
-> > 
-> > Dear All,
-> > 
-> > I am reposting some CAN and CANFD related dt-bindings changes for
-> > Renesas' R-Car and RZ/G devices that have been originally sent
-> > end of last year and beginning of this year.
-> > 
-> > Thanks,
-> > Fab
-> > 
-> > Fabrizio Castro (3):
-> >   dt-bindings: can: rcar_can: Fix RZ/G2 CAN clocks
-> >   dt-bindings: can: rcar_can: Add r8a774c0 support
-> >   dt-bindings: can: rcar_canfd: document r8a774c0 support
-> > 
-> > Marek Vasut (2):
-> >   dt-bindings: can: rcar_canfd: document r8a77965 support
-> >   dt-bindings: can: rcar_canfd: document r8a77990 support
-> > 
-> >  Documentation/devicetree/bindings/net/can/rcar_can.txt   | 13 ++++---------
-> >  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 16 ++++++++++------
-> >  2 files changed, 14 insertions(+), 15 deletions(-)
-> > 
-> > --
-> > 2.7.4
-> 
