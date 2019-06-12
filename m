@@ -2,43 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB4741A24
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 03:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BABBE41A6F
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 04:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437104AbfFLB4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 21:56:19 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:33782 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406016AbfFLB4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 21:56:19 -0400
+        id S2436514AbfFLCkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 22:40:00 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37130 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406202AbfFLCkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 22:40:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xR6+1PyIqEmaA8/bOtvN0hFQ+RMhvQfDLxGeET655CQ=; b=jqJrIgKbPqixulb5RqwDZPu1Up
-        DMka96rc045kccJWgznJDbskc9aN8KGmGStOPFNk+XPTwElypCI+Ua2k7eC2KUxtSeT9s/SXUPam3
-        nVkPYSd9hJKCoFYiamYCxV94uy0ZvAD5n6Zt7CW7P0ox7ijyntubOABgD7LByobX4FemE6PuO39I+
-        q1UDqgZS/P6PO7GnSPm/WfvrdgJ6RzQWHF6BJhlwvDhHN2Jty7M6hQ0wZZoOvKujX8NTOVWlg0ghO
-        1BViAtO6Y/AKr1WMjc5lfzW+/3LIwT32vccQkHGCIwhKcFJD6tJrwSRxxr77QxKMXcntgpRcDi/sn
-        iwfBqRzQ==;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=yvy/gkrIuOAqW1aZMYOf3AGFTiXylWG+oKPZyKjIo4w=; b=juH7/uOYpZ8jrItAQ7kbO3cWF
+        t2fmGc+ksnS3y/SXiuvQqTb5NklWSxrFgXXQqRQJBtZuS6QRqiZHTPq9vlQg6cjARtYfByfwJlBLR
+        kcj2xXFRseqw4IJnSFvuZrvQmLORk+DHSNqOzXJi+mUdIWusr4FOXjaDoZWOrlGYciRlbNQglynUX
+        743DguT32rU6j1hOn0ql6TVad55xC17RcI54BJgfyEslIfGMPjDx/ZzpMt3HLV0RHad2QERo47mSG
+        4JabUXwBWYCbBwT3MM/PtaiQ/lEhqv0D9WNmZo7V2YXhrAbwVHXJWQqDz+JdNlJTOVJykIWAa/ZSi
+        4kx41DZbA==;
 Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
-        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hasUp-0002QX-Vl; Wed, 12 Jun 2019 01:56:16 +0000
-Subject: Re: [PATCH net-next] net: dsa: tag_sja1105: Select CONFIG_PACKING
-To:     Vladimir Oltean <olteanv@gmail.com>, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, sfr@canb.auug.org.au,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org
-References: <20190611184745.6104-1-olteanv@gmail.com>
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hatB9-0006Wi-L2; Wed, 12 Jun 2019 02:39:59 +0000
+Subject: Re: [PATCH net] mpls: fix af_mpls dependencies
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Ahern <dsahern@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+References: <20190608125019.417-1-mcroce@redhat.com>
+ <20190609.195742.739339469351067643.davem@davemloft.net>
+ <d19abcd4-799c-ac2f-ffcb-fa749d17950c@infradead.org>
+ <CAGnkfhyS15NPEO2ygkjazECULtUDkJgPk8wCYFhA9zL2+w27pg@mail.gmail.com>
 From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <005d0239-c0fa-7cd2-aed7-df9c46096b60@infradead.org>
-Date:   Tue, 11 Jun 2019 18:56:13 -0700
+Message-ID: <49b58181-90da-4ee4-cbb0-80e226d040fc@infradead.org>
+Date:   Tue, 11 Jun 2019 19:39:51 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190611184745.6104-1-olteanv@gmail.com>
+In-Reply-To: <CAGnkfhyS15NPEO2ygkjazECULtUDkJgPk8wCYFhA9zL2+w27pg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -47,41 +54,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/11/19 11:47 AM, Vladimir Oltean wrote:
-> The packing facility is needed to decode Ethernet meta frames containing
-> source port and RX timestamping information.
+On 6/11/19 5:08 PM, Matteo Croce wrote:
+> On Wed, Jun 12, 2019 at 1:07 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>
+>> On 6/9/19 7:57 PM, David Miller wrote:
+>>> From: Matteo Croce <mcroce@redhat.com>
+>>> Date: Sat,  8 Jun 2019 14:50:19 +0200
+>>>
+>>>> MPLS routing code relies on sysctl to work, so let it select PROC_SYSCTL.
+>>>>
+>>>> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+>>>> Suggested-by: David Ahern <dsahern@gmail.com>
+>>>> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+>>>
+>>> Applied, thanks.
+>>>
+>>
+>> This patch causes build errors when
+>> # CONFIG_PROC_FS is not set
+>> because PROC_SYSCTL depends on PROC_FS.  The build errors are not
+>> in fs/proc/ but in other places in the kernel that never expect to see
+>> PROC_FS not set but PROC_SYSCTL=y.
+>>
 > 
-> The DSA driver selects CONFIG_PACKING, but the tagger did not, and since
-> taggers can be now compiled as modules independently from the drivers
-> themselves, this is an issue now, as CONFIG_PACKING is disabled by
-> default on all architectures.
+> Hi,
 > 
-> Fixes: e53e18a6fe4d ("net: dsa: sja1105: Receive and decode meta frames")
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Maybe I'm missing something, if PROC_SYSCTL depends on PROC_FS, how is
+> possible to have PROC_FS not set but PROC_SYSCTL=y?
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+When MPLS=y and MPLS_ROUTING=[y|m], MPLS_ROUTING selects PROC_SYSCTL.
+That enables PROC_SYSCTL, whether PROC_FS is set/enabled or not.
 
-Thanks.
+There is a warning about this in Documentation/kbuild/kconfig-language.rst:
 
-> ---
->  net/dsa/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+  Note:
+	select should be used with care. select will force
+	a symbol to a value without visiting the dependencies.
+	By abusing select you are able to select a symbol FOO even
+	if FOO depends on BAR that is not set.
+	In general use select only for non-visible symbols
+	(no prompts anywhere) and for symbols with no dependencies.
+	That will limit the usefulness but on the other hand avoid
+	the illegal configurations all over.
+
+
+> I tried it by manually editing .config. but make oldconfig warns:
 > 
-> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-> index d449f78c1bd0..6e942dda1bcd 100644
-> --- a/net/dsa/Kconfig
-> +++ b/net/dsa/Kconfig
-> @@ -106,6 +106,7 @@ config NET_DSA_TAG_LAN9303
->  config NET_DSA_TAG_SJA1105
->  	tristate "Tag driver for NXP SJA1105 switches"
->  	select NET_DSA_TAG_8021Q
-> +	select PACKING
->  	help
->  	  Say Y or M if you want to enable support for tagging frames with the
->  	  NXP SJA1105 switch family. Both the native tagging protocol (which
-> 
+> WARNING: unmet direct dependencies detected for PROC_SYSCTL
+>   Depends on [n]: PROC_FS [=n]
+>   Selected by [m]:
+>   - MPLS_ROUTING [=m] && NET [=y] && MPLS [=y] && (NET_IP_TUNNEL [=n]
+> || NET_IP_TUNNEL [=n]=n)
 
+Yes, I get this also.
+
+> *
+> * Restart config...
+> *
+> *
+> * Configure standard kernel features (expert users)
+> *
+> Configure standard kernel features (expert users) (EXPERT) [Y/?] y
+>   Multiple users, groups and capabilities support (MULTIUSER) [Y/n/?] y
+>   sgetmask/ssetmask syscalls support (SGETMASK_SYSCALL) [N/y/?] n
+>   Sysfs syscall support (SYSFS_SYSCALL) [N/y/?] n
+>   Sysctl syscall support (SYSCTL_SYSCALL) [N/y/?] (NEW)
+
+So I still say that MPLS_ROUTING should depend on PROC_SYSCTL,
+not select it.
 
 -- 
 ~Randy
