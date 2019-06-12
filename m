@@ -2,96 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C755419BC
-	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 02:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB4741A24
+	for <lists+netdev@lfdr.de>; Wed, 12 Jun 2019 03:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406363AbfFLAy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jun 2019 20:54:57 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:33145 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406117AbfFLAy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jun 2019 20:54:57 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45NpLP2K5tz9s00;
-        Wed, 12 Jun 2019 10:54:53 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1560300894;
-        bh=jJVvQRYv+RNct+AwT6tYADRT40DSB6dPMv1XUCrWfrQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GRfIjh5qO9TFHNI6LP9yAJ+evoY6UDmuBo/eJPcDq47EE/3P/6Y7Hh/O98St9VyuH
-         Xgmz51MjoE/Aqxz9qyrw4gdZjBl+VYOUu3lBl98r+XQSA3ZRU53kWgP0dCRLssonnH
-         y3GGqJBtaM1cJAPJRhq4BjoRKykv07tqDrfxSggWgxuwnSz4Tx62ouOvuGZmnI7ZiO
-         lP8U6VbaLGqWbjo7IDXk++gJ4Ek8VUlLFo6LZW83dGv0sn3egQ36wSzZm3dLuCf4LH
-         YiHXm23S+L2pnPHK/LnsWbN54EjUX29x/y9ySKlIbfaijgfMlHwpz/FizpKKztibuk
-         BaHtOMH00Zh9w==
-Date:   Wed, 12 Jun 2019 10:54:51 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-next@vger.kernel.org>
-Subject: Re: [RESEND PATCH net-next] net: ethernet: ti: cpts: fix build
- failure for powerpc
-Message-ID: <20190612105451.4d2e9aa3@canb.auug.org.au>
-In-Reply-To: <20190611111632.9444-1-grygorii.strashko@ti.com>
-References: <20190611111632.9444-1-grygorii.strashko@ti.com>
+        id S2437104AbfFLB4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jun 2019 21:56:19 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:33782 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406016AbfFLB4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jun 2019 21:56:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xR6+1PyIqEmaA8/bOtvN0hFQ+RMhvQfDLxGeET655CQ=; b=jqJrIgKbPqixulb5RqwDZPu1Up
+        DMka96rc045kccJWgznJDbskc9aN8KGmGStOPFNk+XPTwElypCI+Ua2k7eC2KUxtSeT9s/SXUPam3
+        nVkPYSd9hJKCoFYiamYCxV94uy0ZvAD5n6Zt7CW7P0ox7ijyntubOABgD7LByobX4FemE6PuO39I+
+        q1UDqgZS/P6PO7GnSPm/WfvrdgJ6RzQWHF6BJhlwvDhHN2Jty7M6hQ0wZZoOvKujX8NTOVWlg0ghO
+        1BViAtO6Y/AKr1WMjc5lfzW+/3LIwT32vccQkHGCIwhKcFJD6tJrwSRxxr77QxKMXcntgpRcDi/sn
+        iwfBqRzQ==;
+Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=dragon.dunlab)
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hasUp-0002QX-Vl; Wed, 12 Jun 2019 01:56:16 +0000
+Subject: Re: [PATCH net-next] net: dsa: tag_sja1105: Select CONFIG_PACKING
+To:     Vladimir Oltean <olteanv@gmail.com>, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, sfr@canb.auug.org.au,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org
+References: <20190611184745.6104-1-olteanv@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <005d0239-c0fa-7cd2-aed7-df9c46096b60@infradead.org>
+Date:   Tue, 11 Jun 2019 18:56:13 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/2bUUK0tUc_lYIUql4YF9vie"; protocol="application/pgp-signature"
+In-Reply-To: <20190611184745.6104-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/2bUUK0tUc_lYIUql4YF9vie
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 6/11/19 11:47 AM, Vladimir Oltean wrote:
+> The packing facility is needed to decode Ethernet meta frames containing
+> source port and RX timestamping information.
+> 
+> The DSA driver selects CONFIG_PACKING, but the tagger did not, and since
+> taggers can be now compiled as modules independently from the drivers
+> themselves, this is an issue now, as CONFIG_PACKING is disabled by
+> default on all architectures.
+> 
+> Fixes: e53e18a6fe4d ("net: dsa: sja1105: Receive and decode meta frames")
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
 
-Hi all,
+Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
 
-On Tue, 11 Jun 2019 14:16:32 +0300 Grygorii Strashko <grygorii.strashko@ti.=
-com> wrote:
->
-> Add dependency to TI CPTS from Common CLK framework COMMON_CLK to fix
-> allyesconfig build for Powerpc:
->=20
-> drivers/net/ethernet/ti/cpts.c: In function 'cpts_of_mux_clk_setup':
-> drivers/net/ethernet/ti/cpts.c:567:2: error: implicit declaration of func=
-tion 'of_clk_parent_fill'; did you mean 'of_clk_get_parent_name'? [-Werror=
-=3Dimplicit-function-declaration]
->   of_clk_parent_fill(refclk_np, parent_names, num_parents);
->   ^~~~~~~~~~~~~~~~~~
->   of_clk_get_parent_name
->=20
-> Fixes: a3047a81ba13 ("net: ethernet: ti: cpts: add support for ext rftclk=
- selection")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Thanks.
 
-I have applied this to linu-next today instead of reverting a3047a81ba13.
+> ---
+>  net/dsa/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+> index d449f78c1bd0..6e942dda1bcd 100644
+> --- a/net/dsa/Kconfig
+> +++ b/net/dsa/Kconfig
+> @@ -106,6 +106,7 @@ config NET_DSA_TAG_LAN9303
+>  config NET_DSA_TAG_SJA1105
+>  	tristate "Tag driver for NXP SJA1105 switches"
+>  	select NET_DSA_TAG_8021Q
+> +	select PACKING
+>  	help
+>  	  Say Y or M if you want to enable support for tagging frames with the
+>  	  NXP SJA1105 switch family. Both the native tagging protocol (which
+> 
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/2bUUK0tUc_lYIUql4YF9vie
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0ATVsACgkQAVBC80lX
-0GxUiQf8DC0a5Zd5gWjOT5FiuKW9u3jmojquQB/VqM7zhVpf/34wTw93JvoiIAd1
-I59WfIfDCzPwFE3bFMjxeReBhZStQocz5ADc5lGleJ0qHX7z3rbEcbgGILSWOEsm
-r10tVBmqphIvQdQLzkL2WIYdE0fVC931lkcUf1UV/qc7MdsKrAi3wG72YWNjfMXM
-zYlhw6DI3nrwlUaiiAbo3FhdeIVmlUdaEBJI6BDDB/dPjo4u8YFj9OGeNldl4+2L
-3L3q5ZPggrEF4VbF/CBnL3uEMzGHU2PhkMxAexpzCZmUpNzF2MDbsN6RqjgN+KpX
-5DO2V/Uv91jWR4z8BmxK/rwXZoQAsw==
-=Cbkw
------END PGP SIGNATURE-----
-
---Sig_/2bUUK0tUc_lYIUql4YF9vie--
+-- 
+~Randy
