@@ -2,136 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 325934494A
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D6C54493F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbfFMRQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:16:21 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38933 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728693AbfFLVlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 17:41:22 -0400
-Received: by mail-wm1-f68.google.com with SMTP id z23so7990331wma.4
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 14:41:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=asZ5lmyvgT58LBzufU9l93Qwdtjz8P3ycJRb1GrvpeA=;
-        b=jOWZj4PbKtFwuRB/GJYLOD/e0R3kX2IbZqdCONo9gCcSj89vRBwzrnYXo+Eo3UIZl4
-         HF3edaCpLHr0ERHIAjXIBEe7nFsR+FsO+Oo86K3198ifypSM07Mr696eNSF71dNkzDHG
-         9W0NMu8Li1GUG+5HXXwp250Jkuw5ks5JVcgP/8uFxTiKjTQURa+VnYScQhPI9M07VaXN
-         i75QvTG4wnWeX6JiyPYt24MIhtz0KwP4nUBuorK5TEShabUlaJSu7lEEnM2Z0JFvFOpw
-         Gx1IjRs1SjtQsdkb8J0rXtHTZ3+bV30BgLHAO8DtOsyBg2XryO/5Cqsp9M9xDodAZZgo
-         MpPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=asZ5lmyvgT58LBzufU9l93Qwdtjz8P3ycJRb1GrvpeA=;
-        b=RIsNnz4EpYpBaMziK62O3DAwmu02uGkwn7n2w8Pu5knyljzp2JapLU2XCWS572/9Qe
-         6oQDU8Wmc8byeNH9VbQloFtjRDFjOLwG3097WLUXeq0toYerXTxfwwRmA5n4t71M/Nrf
-         JvPAK20HMLeg2DnbZhpD4WuCab9Ab5BE/dsJI7lYtvMnBjB7q53m1tiq3H09bR1PdGhq
-         2ni4VfGiUX0LdSMK4JAdHPjRhe4OGvrgcFp52MBy4yNFnMxXtPklNQtuLQeUq8oVFf/n
-         YUKvkDIT9pg+ngWH50PuY9TScDcVLvyIt6pINeV6+1N4AInBK5W6GydEmoKuJidzyWmi
-         fbhA==
-X-Gm-Message-State: APjAAAVB91Yl77i80Ga1RejLG25tb/6ZhRHt52V8Sv30HEbvBqqOBgtJ
-        fhKbggpcmkPUsbZ/4uLgz58=
-X-Google-Smtp-Source: APXvYqxe2YDrEeEaMpmiBAJX2h1nqf5AVTcDtZFuN2F5sNfYn8rMlhMIHYYRH2i7SJacxLUFk/CbSw==
-X-Received: by 2002:a1c:480a:: with SMTP id v10mr843083wma.120.1560375679070;
-        Wed, 12 Jun 2019 14:41:19 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 17sm538634wmx.47.2019.06.12.14.41.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Jun 2019 14:41:18 -0700 (PDT)
-Subject: Re: [PATCH net] net: dsa: microchip: Don't try to read stats for
- unused ports
-To:     Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-References: <1560371612-31848-1-git-send-email-hancock@sedsystems.ca>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d7873258-9404-74f6-08a8-470ab1092484@gmail.com>
-Date:   Wed, 12 Jun 2019 14:41:10 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <1560371612-31848-1-git-send-email-hancock@sedsystems.ca>
-Content-Type: text/plain; charset=utf-8
+        id S1729194AbfFMRQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:16:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50018 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728729AbfFLVro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 17:47:44 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5CLleBd000812;
+        Wed, 12 Jun 2019 14:47:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=8LXXR8WGSmTXtXMu3e8cWsAgW/66TR3+i28iwl+pNhI=;
+ b=ZEyU6SvOHJIR22ezXmhmnRdGxxPYTSNx4xgO+l+WVUH589zU4U7jisw6Fu0IlAjVXPbg
+ nE0J9hacUfcmmwUeVk1JvSuFLDHXpNMVV5E0nD4mIxXtYahPlDmfr+qpE0LDYTKZO9Xf
+ oOL9d3q4+KfYo3Ut+A6kXbALwEsrRNP56uU= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t37b0ggar-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 12 Jun 2019 14:47:40 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 12 Jun 2019 14:47:35 -0700
+Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 12 Jun 2019 14:47:34 -0700
+Received: from NAM01-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Wed, 12 Jun 2019 14:47:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8LXXR8WGSmTXtXMu3e8cWsAgW/66TR3+i28iwl+pNhI=;
+ b=hT2UyHFnedbVqNXfkox7gglUS2nSFvLovmUbWZIpzdJ7T+opHgoSNsjlw/BT/SkW3iGS4n+gdV8JckUkZ9rORsLl+p5khwwb307pp7eNiQ+I1U3Etjtg7PxrSIoKuRuLrtu+7/2Ugo6yLSABeq+cb8UbuPn7jnxo+2lizMELTik=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
+ MWHPR15MB1597.namprd15.prod.outlook.com (10.173.234.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Wed, 12 Jun 2019 21:47:33 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1987.010; Wed, 12 Jun 2019
+ 21:47:33 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 2/2] bpf: Add test for SO_REUSEPORT_DETACH_BPF
+Thread-Topic: [PATCH bpf-next 2/2] bpf: Add test for SO_REUSEPORT_DETACH_BPF
+Thread-Index: AQHVIVHaRrrhQKOS0kuUzzPvAtDO2KaYb/6AgAAeNwA=
+Date:   Wed, 12 Jun 2019 21:47:33 +0000
+Message-ID: <20190612214726.dx42e2yjbk3eng6y@kafai-mbp.dhcp.thefacebook.com>
+References: <20190612190536.2340077-1-kafai@fb.com>
+ <20190612190539.2340343-1-kafai@fb.com> <20190612195917.GB9056@mini-arch>
+In-Reply-To: <20190612195917.GB9056@mini-arch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR08CA0014.namprd08.prod.outlook.com
+ (2603:10b6:301:5f::27) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:53::10)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:564c]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 542dac74-a384-4d36-731e-08d6ef7f934e
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1597;
+x-ms-traffictypediagnostic: MWHPR15MB1597:
+x-microsoft-antispam-prvs: <MWHPR15MB1597DBA5DA2CFD96AA2E475AD5EC0@MWHPR15MB1597.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
+x-forefront-prvs: 0066D63CE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(376002)(136003)(39860400002)(346002)(366004)(199004)(189003)(5660300002)(52116002)(229853002)(14444005)(76176011)(386003)(256004)(6506007)(102836004)(6486002)(68736007)(6116002)(71200400001)(71190400001)(1076003)(6436002)(73956011)(64756008)(66946007)(66556008)(99286004)(66476007)(66446008)(6512007)(9686003)(53936002)(25786009)(476003)(186003)(305945005)(7736002)(316002)(6916009)(4326008)(2906002)(8936002)(446003)(81166006)(8676002)(14454004)(86362001)(81156014)(6246003)(11346002)(46003)(486006)(478600001)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1597;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: qcOtqM4HpWMd1G9reqQzUhOvVM7XQiBwgxWzDzWbx2EwlcqAvGoh2u2dckDknIHiyTDJlH7mcu501reB8Ah3Jo+mTD5rdNpKDtAtoZklE7L1eO6WWN5Cn0+/SbzSmxCdjHFvStSLkJ1X5FRa9fkURNHFHqTkhm5GaXCGUfLHxmhyxmT3fyAo8WjRv/rbbgvnYCL7Fnju5d1WQLcuxygLhLtfzbEouzfYiDBHBooYJqrDA7A9sXINTjp/JitRhpvtQk9Ew81+yQ41jL3Zh0vs87MlaB7dsVWNLvvJoIqS7e1UEkLuqSs8OYpkE2E2xkygmsBCsiNh2NTs7c7FN1B1zajn/0hw3F0CCqF+PKhd6EInmABJO4XsY/fN+Wgodlx/oTCAwexlExsmogUl+zRSdFH/G54letrKF0d9yJBSMpk=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DDD13CA509EF3D44A6882209C6FE045C@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 542dac74-a384-4d36-731e-08d6ef7f934e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2019 21:47:33.5354
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1597
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-12_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=926 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906120151
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/12/19 1:33 PM, Robert Hancock wrote:
-> If some of the switch ports were not listed in the device tree, due to
-> being unused, the ksz_mib_read_work function ended up accessing a NULL
-> dp->slave pointer and causing an oops. Skip checking statistics for any
-> unused ports.
-> 
-> Fixes: 7c6ff470aa867f53 ("net: dsa: microchip: add MIB counter reading
-> support")
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+On Wed, Jun 12, 2019 at 12:59:17PM -0700, Stanislav Fomichev wrote:
+> On 06/12, Martin KaFai Lau wrote:
+> > This patch adds a test for the new sockopt SO_REUSEPORT_DETACH_BPF.
+> >=20
+> > '-I../../../../usr/include/' is added to the Makefile to get
+> > the newly added SO_REUSEPORT_DETACH_BPF.
+> >=20
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> >  tools/testing/selftests/bpf/Makefile          |  1 +
+> >  .../selftests/bpf/test_select_reuseport.c     | 50 +++++++++++++++++++
+> >  2 files changed, 51 insertions(+)
+> >=20
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selft=
+ests/bpf/Makefile
+> > index 44fb61f4d502..c7370361fa81 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -16,6 +16,7 @@ LLVM_OBJCOPY	?=3D llvm-objcopy
+> >  LLVM_READELF	?=3D llvm-readelf
+> >  BTF_PAHOLE	?=3D pahole
+> >  CFLAGS +=3D -Wall -O2 -I$(APIDIR) -I$(LIBDIR) -I$(BPFDIR) -I$(GENDIR) =
+$(GENFLAGS) -I../../../include \
+> > +	  -I../../../../usr/include/ \
+> Why not copy inlude/uapi/asm-generic/socket.h into tools/include
+> instead? Will that work?
+Sure. I am ok with copy.  I don't think we need to sync very often.
+Do you know how to do that considering multiple arch's socket.h
+have been changed in Patch 1?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Is copy better?
+
+>=20
+> >  	  -Dbpf_prog_load=3Dbpf_prog_test_load \
+> >  	  -Dbpf_load_program=3Dbpf_test_load_program
+> >  LDLIBS +=3D -lcap -lelf -lrt -lpthread
+> > diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tool=
+s/testing/selftests/bpf/test_select_reuseport.c
+> > index 75646d9b34aa..5aa00b4a4702 100644
+> > --- a/tools/testing/selftests/bpf/test_select_reuseport.c
+> > +++ b/tools/testing/selftests/bpf/test_select_reuseport.c
+> > @@ -523,6 +523,54 @@ static void test_pass_on_err(int type, sa_family_t=
+ family)
+> >  	printf("OK\n");
+> >  }
+> > =20
+> > +static void test_detach_bpf(int type, sa_family_t family)
+> > +{
+> > +	__u32 nr_run_before =3D 0, nr_run_after =3D 0, tmp, i;
+> > +	struct epoll_event ev;
+> > +	int cli_fd, err, nev;
+> > +	struct cmd cmd =3D {};
+> > +	int optvalue =3D 0;
+> > +
+> > +	printf("%s: ", __func__);
+> > +	err =3D setsockopt(sk_fds[0], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
+> > +			 &optvalue, sizeof(optvalue));
+> > +	CHECK(err =3D=3D -1, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
+> > +	      "err:%d errno:%d\n", err, errno);
+> > +
+> > +	err =3D setsockopt(sk_fds[1], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
+> > +			 &optvalue, sizeof(optvalue));
+> > +	CHECK(err =3D=3D 0 || errno !=3D ENOENT, "setsockopt(SO_DETACH_REUSEP=
+ORT_BPF)",
+> > +	      "err:%d errno:%d\n", err, errno);
+> > +
+> > +	for (i =3D 0; i < NR_RESULTS; i++) {
+> > +		err =3D bpf_map_lookup_elem(result_map, &i, &tmp);
+> > +		CHECK(err =3D=3D -1, "lookup_elem(result_map)",
+> > +		      "i:%u err:%d errno:%d\n", i, err, errno);
+> > +		nr_run_before +=3D tmp;
+> > +	}
+> > +
+> > +	cli_fd =3D send_data(type, family, &cmd, sizeof(cmd), PASS);
+> > +	nev =3D epoll_wait(epfd, &ev, 1, 5);
+> > +	CHECK(nev <=3D 0, "nev <=3D 0",
+> > +	      "nev:%d expected:1 type:%d family:%d data:(0, 0)\n",
+> > +	      nev,  type, family);
+> > +
+> > +	for (i =3D 0; i < NR_RESULTS; i++) {
+> > +		err =3D bpf_map_lookup_elem(result_map, &i, &tmp);
+> > +		CHECK(err =3D=3D -1, "lookup_elem(result_map)",
+> > +		      "i:%u err:%d errno:%d\n", i, err, errno);
+> > +		nr_run_after +=3D tmp;
+> > +	}
+> > +
+> > +	CHECK(nr_run_before !=3D nr_run_after,
+> > +	      "nr_run_before !=3D nr_run_after",
+> > +	      "nr_run_before:%u nr_run_after:%u\n",
+> > +	      nr_run_before, nr_run_after);
+> > +
+> > +	printf("OK\n");
+> > +	close(cli_fd);
+> > +}
+> > +
+> >  static void prepare_sk_fds(int type, sa_family_t family, bool inany)
+> >  {
+> >  	const int first =3D REUSEPORT_ARRAY_SIZE - 1;
+> > @@ -664,6 +712,8 @@ static void test_all(void)
+> >  			test_pass(type, family);
+> >  			test_syncookie(type, family);
+> >  			test_pass_on_err(type, family);
+> > +			/* Must be the last test */
+> > +			test_detach_bpf(type, family);
+> > =20
+> >  			cleanup_per_test();
+> >  			printf("\n");
+> > --=20
+> > 2.17.1
+> >=20
