@@ -2,138 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC79643E0C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBA943DF8
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733197AbfFMPq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:46:56 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45176 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731773AbfFMJer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:34:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=7p/hY7wM7ahv5sC5AyaRyYyHc8h6pj1SFEqxSa8Y0lY=; b=Mt3u8nHCp+T+ZtsD3ws+rdoUw
-        J4RHYypZx/OJHuuwSj252YL8U34HBLWa8sE5CN+FC/CQCO7jCKYZjgPbXmUOY6jOAXDNzkUcuOXMC
-        Gpq1wEi//+/JTG1hiIPW6zCeNtrrzfnrmYxiTbYZ6xo/uEb/x6D3FdrRyJvVXTkmwLIxjNZubk+sG
-        v8gTVOqk0ScDd1FndTU87z5Vr6qCEHLAlKiRrhyIV8ah3bySacOxAP2Ih7EQMwKZZavw3C6gtsAuS
-        HIkwGtFhkp4gXFcf5XuEmbAdlnYUZvhNPZ6HWntI8dl0jBsL6LWPwwLs2bBcS//IfaN9qOhQagued
-        LYduM682w==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38652)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hbM80-000251-Ec; Thu, 13 Jun 2019 10:34:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hbM7x-00016z-Qc; Thu, 13 Jun 2019 10:34:37 +0100
-Date:   Thu, 13 Jun 2019 10:34:37 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
-Message-ID: <20190613093437.p4c6xiolrwzikmhq@shell.armlinux.org.uk>
-References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
- <20190613081400.2cicsjpslxoidoox@shell.armlinux.org.uk>
- <VI1PR0402MB2800B6F4FC9C90C96E22979AE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+        id S2389430AbfFMPqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:46:40 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43840 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731786AbfFMJkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:40:31 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f25so10626844pgv.10;
+        Thu, 13 Jun 2019 02:40:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S785yMePDE021tloy76IdFNKeU0Irn+hedVlKYK5ipY=;
+        b=TlShaR6epnwL9p3CfCwrB2g6iuxpQoNMpwhNhC3CLXs3o/HZOl58AoynO+xl+dhNVB
+         XoNuku3lQPC8g82X2kn8pKX0ecCsvxuo8JrSkHXCCDG16KJjhK1ioaQ0778T1z3dW87T
+         SjdOhV6PzC1NwCYDiWnF+BVkO/wvjhWt5dUnOm2W6uUtJIf/5//koj4eHJEYKaeqHVaB
+         Buku0/USyDgFp2sWu/qm8/94GNzTFCWWG3aAOH+rDJ2VqtuUNM9nm68aHJP8uvKT9awd
+         /i5cSaSgnJ3A4U1kLOsGaAVpkFUD+fe9sqYenPIp5wpxLrwrNKIWLLALGcQ3BwyTrWBM
+         fHSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S785yMePDE021tloy76IdFNKeU0Irn+hedVlKYK5ipY=;
+        b=Y6UkC7GqkYyU4GOqTN2eDDh4XgJF8/GR8IbJzGOd0zJGS5gyrjNwCqr2zbtmA9d2pR
+         6zt2OspPNIUZ6ORWYyhzDVemInB1qZt9PWwYJzmbYzl1JW0m24Hto8QFYJRllGH4tYEH
+         fqm6Q4rZOTCr60QgU9wfWfiwTAddUAetpPTvg3J6O3fD4yN3QRblfDXWzQMuDRL6VIu9
+         sRG1bSP+AnHp1gHp4j1cSCgBs+u3ikrG1pWA2I29OhmW1++Xe8gU0XEExJknGMcRQT5L
+         ZCYKS5CT/Wq5H1q4aUJ1DisX9F1DVBip/CPDIXFkiQoZfxvhz5fgipP65uMB9Dartufb
+         9qzA==
+X-Gm-Message-State: APjAAAUbqUHQDdiRNKswQPrZx4FNmQff+PJSCf3GoKEySRpQBcc5Z1hn
+        0blrYr0+Skdgha4RMloR7Bc=
+X-Google-Smtp-Source: APXvYqxBO4VpcMKL6uWlpGsa+GzR1EPPEvrVE3sbX1Y8jJSJ+Rdn+SnIhOakvtu6HF8uE4vOgLZWrQ==
+X-Received: by 2002:a17:90a:372a:: with SMTP id u39mr4402627pjb.2.1560418830360;
+        Thu, 13 Jun 2019 02:40:30 -0700 (PDT)
+Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id y1sm2501015pfe.19.2019.06.13.02.40.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 02:40:29 -0700 (PDT)
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH v3 bpf-next 0/2] veth: Bulk XDP_TX
+Date:   Thu, 13 Jun 2019 18:39:57 +0900
+Message-Id: <20190613093959.2796-1-toshiaki.makita1@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB2800B6F4FC9C90C96E22979AE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 08:55:16AM +0000, Ioana Ciornei wrote:
-> > Subject: Re: [PATCH] net: phylink: set the autoneg state in
-> > phylink_phy_change
-> > 
-> > On Thu, Jun 13, 2019 at 09:37:51AM +0300, Ioana Ciornei wrote:
-> > > The phy_state field of phylink should carry only valid information
-> > > especially when this can be passed to the .mac_config callback.
-> > > Update the an_enabled field with the autoneg state in the
-> > > phylink_phy_change function.
-> > 
-> > an_enabled is meaningless to mac_config for PHY mode.  Why do you think
-> > this is necessary?
-> 
-> Well, it's not necessarily used in PHY mode but, from my opinion, it should be set to the correct value nonetheless.
-> 
-> Just to give you more context, I am working on adding phylink support on NXP's DPAA2 platforms where any interaction between the PHY management layer and the Ethernet devices is made through a firmware.
-> When the .mac_config callback is invoked, the driver communicates the new configuration to the firmware so that the corresponding net_device can see the correct info.
-> In this case, the an_enabled field is not used for other purpose than to inform the net_device of the current configuration and nothing more.
+This introduces bulk XDP_TX in veth.
+Improves XDP_TX performance by approximately 9%. The detailed
+explanation and performance numbers are shown in patch 2.
 
-The fields that are applicable depend on the negotiation mode:
+v2:
+- Use stack for bulk queue instead of a global variable.
 
-- Non-inband (PHY or FIXED): set the speed, duplex and pause h/w
-   parameters as per the state's speed, duplex and pause settings.
-   Every other state setting should be ignored; they are not defined
-   for this mode of operation.
+v3:
+- Add act field to xdp_bulk_tx tracepoint to be in line with other XDP
+  tracepoints.
 
-- Inband SGMII: set for inband SGMII reporting of speed and duplex
-   h/w parameters.  Set pause mode h/w parameters as per the state's
-   pause settings.  Every other state setting should be ignored; they
-   are not defined for this mode of operation.
+Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 
-- Inband 802.3z: set for 1G or 2.5G depending on the PHY interface mode.
-   If an_enabled is true, allow inband 802.3z to set the duplex h/w
-   parameter.  If an_enabled and the MLO_PAUSE_AN bit of the pause
-   setting are true, allow 802.3z to set the pause h/w parameter.
-   Advertise capabilities depending on the 'advertising' setting.
+Toshiaki Makita (2):
+  xdp: Add tracepoint for bulk XDP_TX
+  veth: Support bulk XDP_TX
 
-There's only one case where an_enabled is used, which is 802.3z
-negotiation, because the MAC side is responsible for negotiating the
-link mode.  In all other cases, the MAC is not responsible for any
-autonegotiation.
-
-It is important to stick to the above, which will ensure correct
-functioning of your driver - going off and doing your own thing (such
-as reading from other fields) is not guaranteed to give good results.
-
-> 
-> --
-> Ioana
-> 
-> 
-> > 
-> > >
-> > > Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-> > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > > ---
-> > >  drivers/net/phy/phylink.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > > index 5d0af041b8f9..dd1feb7b5472 100644
-> > > --- a/drivers/net/phy/phylink.c
-> > > +++ b/drivers/net/phy/phylink.c
-> > > @@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device
-> > *phydev, bool up,
-> > >  		pl->phy_state.pause |= MLO_PAUSE_ASYM;
-> > >  	pl->phy_state.interface = phydev->interface;
-> > >  	pl->phy_state.link = up;
-> > > +	pl->phy_state.an_enabled = phydev->autoneg;
-> > >  	mutex_unlock(&pl->state_mutex);
-> > >
-> > >  	phylink_run_resolve(pl);
-> > > --
-> > > 1.9.1
-> > >
-> > >
-> 
-> 
+ drivers/net/veth.c         | 60 ++++++++++++++++++++++++++++++++++++----------
+ include/trace/events/xdp.h | 29 ++++++++++++++++++++++
+ kernel/bpf/core.c          |  1 +
+ 3 files changed, 78 insertions(+), 12 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+1.8.3.1
+
