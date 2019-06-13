@@ -2,196 +2,600 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9DF43BC7
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11E643BC6
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730416AbfFMPbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:31:40 -0400
-Received: from mail-eopbgr60049.outbound.protection.outlook.com ([40.107.6.49]:15939
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728610AbfFMLBX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 07:01:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=darbyshire-bryant.me.uk; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JINyEK86Hil42VR5rMNs2F4bVrw1vCQUT2OxYFj/FQ4=;
- b=Tg//ifNrJ1q5WihC/ETjG9dCKjVs/Nz12CHb2lqusIlXK26R/LSEgsOBqF541U0ZgD3mliIl6xzhQVufEYXNoQkFZfsFIhMnihh+k9F+sPhJdwpP3RNX7bV2PUA1IcRyiWUaArftwEZqOxf30Uj1Ydjl5P/vsZnZ4d3W4Z7R2yY=
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
- VI1PR0302MB2686.eurprd03.prod.outlook.com (10.171.104.148) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Thu, 13 Jun 2019 11:00:37 +0000
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::74:c526:8946:7cf3]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::74:c526:8946:7cf3%2]) with mapi id 15.20.1965.017; Thu, 13 Jun 2019
- 11:00:37 +0000
-From:   Kevin Darbyshire-Bryant <kevin@darbyshire-bryant.me.uk>
-To:     Paul Blakey <paulb@mellanox.com>
-CC:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1728612AbfFMPbi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 11:31:38 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:46376 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728607AbfFMLCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 07:02:11 -0400
+Received: by mail-ed1-f65.google.com with SMTP id d4so7241526edr.13
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 04:02:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=KibIE3KFlMH0/p4zMm2F8PRhAavzY1vp6rPEZsMIT74=;
+        b=uiYVFPAJ3HL5AbalwvheLI3UOAY90ZXwWB1CQCydIpfNE6QxpIBVoXSSc4nBmWoQpn
+         d5T8T5KcS/qAiIE0NHBt5TfST/hj/+oBnmWRoqAj0IdFRvenaxa0ws9phnFIcs78d/w7
+         fKu8MEiEyFTqeOMnHeEUz4hZcZO2to7OOnbi9sbLXCbzNIMmDEX+SPv4juBpbhKBXqpH
+         fXzIwbBLds+meMLNpec4oZiTl/P/hEcr25M7hAHNk+tnjAYmVM47WB7LMjXiKQrWnLJM
+         LmGX+eyGEjczz+tNzApxLCsWPcRUiys8ty3DQgfCnxxV9LT3fcndH4xHh0mgCoGBLYDd
+         EF/A==
+X-Gm-Message-State: APjAAAVDFZJf7rMXWxvfXwE7ppaQdRaflgqsud6ewvAP2WPRGLfl8SKo
+        lQtm2/FFblgNzlIi0fBvDkStpw==
+X-Google-Smtp-Source: APXvYqyPRbNGiSK6E8hQOu4nMPccRY0LaVo2s0ipMf/cWcHD2CpI93HTdh6+WamZv98lvsWXl84lwg==
+X-Received: by 2002:a17:906:7855:: with SMTP id p21mr14766316ejm.287.1560423728749;
+        Thu, 13 Jun 2019 04:02:08 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id z3sm496372ejm.33.2019.06.13.04.02.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 04:02:08 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 346661804AF; Thu, 13 Jun 2019 13:02:07 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
-Thread-Topic: [PATCH net-next 1/3] net/sched: Introduce action ct
-Thread-Index: AQHVIF3qkU1UoG8F9UmD/l8WI3EjR6aWf3mAgALuPoA=
-Date:   Thu, 13 Jun 2019 11:00:37 +0000
-Message-ID: <6417F7F3-51F5-4384-B01F-00976D135BE2@darbyshire-bryant.me.uk>
-References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
- <1560259713-25603-2-git-send-email-paulb@mellanox.com>
- <87d0jkgr3r.fsf@toke.dk> <da87a939-9000-8371-672a-a949f834caea@mellanox.com>
-In-Reply-To: <da87a939-9000-8371-672a-a949f834caea@mellanox.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=kevin@darbyshire-bryant.me.uk; 
-x-originating-ip: [62.214.5.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 61478eb7-25af-4a98-425f-08d6efee5dff
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(5600148)(711020)(4605104)(1401327)(2017052603328)(49563074)(7193020);SRVR:VI1PR0302MB2686;
-x-ms-traffictypediagnostic: VI1PR0302MB2686:
-x-microsoft-antispam-prvs: <VI1PR0302MB2686D7DE8418257CD9A4DF0FA5EF0@VI1PR0302MB2686.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(39830400003)(396003)(366004)(136003)(189003)(199004)(74482002)(486006)(11346002)(86362001)(446003)(2616005)(6512007)(4326008)(476003)(8936002)(53936002)(6116002)(3846002)(25786009)(36756003)(2906002)(508600001)(6246003)(71190400001)(81156014)(81166006)(68736007)(305945005)(71200400001)(8676002)(7736002)(256004)(91956017)(76116006)(6486002)(66946007)(66556008)(64756008)(66446008)(66616009)(6436002)(33656002)(99936001)(5660300002)(6916009)(66066001)(7416002)(26005)(229853002)(53546011)(66476007)(316002)(99286004)(102836004)(73956011)(76176011)(54906003)(14454004)(6506007)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB2686;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: fW5Io2YkwH3HpFMXrqa2Hp9l4xeUq3QZ4Bn7iaSTmLAXCSe8QVBNx/jSuHisT1fKBq/Cm4lwI56EyidhjpVGCIDFo+rswTrFs5M0Pfew+R7s+IFDnfDxCPZjT5dehksT6duuJiRqRGThwyowSRd6smwSqpq7WJXL5tS0OjH9c5e1uHBkkC24VTJzTouOqgEjCW/2TPN0lieQgipJvhZZyawzAmGsPo5lZw6q6lx4sdpnkI4jWYOfJicl/3OmXCMOZU2Qm98MWLZVfAaGPscsB1D86c8BJQNiN8yRGXRClRgyOBsdrAIwysRBmxS3JU+cmTaI5BKmk5+0Q/IWjgmlVrGRyzwQfT7vsdXS9wxHJhbEc5P+/NXjw3DmIidzKHiGbpP7LTYn9hOHIFPLOV2CdMI802LL+HeI8p0B8t3K9gQ=
-Content-Type: multipart/signed;
-        boundary="Apple-Mail=_C282E2E8-BE77-4254-A11E-2F524A2F96D7";
-        protocol="application/pgp-signature";
-        micalg=pgp-sha256
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/3] devmap/cpumap: Use flush list instead of bitmap
+In-Reply-To: <CAEf4BzYVJ6sQcNAh_3xUO2dstO6kqJ9=hsk19_heUrCNhyE6NQ@mail.gmail.com>
+References: <156026783994.26748.2899804283816365487.stgit@alrua-x1> <156026784005.26748.1807371376992707392.stgit@alrua-x1> <CAEf4BzYVJ6sQcNAh_3xUO2dstO6kqJ9=hsk19_heUrCNhyE6NQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 13 Jun 2019 13:02:07 +0200
+Message-ID: <87muileok0.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: darbyshire-bryant.me.uk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61478eb7-25af-4a98-425f-08d6efee5dff
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 11:00:37.7007
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB2686
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Apple-Mail=_C282E2E8-BE77-4254-A11E-2F524A2F96D7
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+
+> On Tue, Jun 11, 2019 at 9:42 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> From: Toke Høiland-Jørgensen <toke@redhat.com>
+>>
+>> The socket map uses a linked list instead of a bitmap to keep track of
+>> which entries to flush. Do the same for devmap and cpumap, as this means we
+>> don't have to care about the map index when enqueueing things into the
+>> map (and so we can cache the map lookup).
+>>
+>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>> ---
+>>  kernel/bpf/cpumap.c |   97 ++++++++++++++++++++++++---------------------------
+>>  kernel/bpf/devmap.c |   93 ++++++++++++++++++++++---------------------------
+>>  net/core/filter.c   |    2 -
+>>  3 files changed, 87 insertions(+), 105 deletions(-)
+>>
+>> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+>> index b31a71909307..02dc3503ef4d 100644
+>> --- a/kernel/bpf/cpumap.c
+>> +++ b/kernel/bpf/cpumap.c
+>> @@ -38,8 +38,13 @@
+>>   */
+>>
+>>  #define CPU_MAP_BULK_SIZE 8  /* 8 == one cacheline on 64-bit archs */
+>> +struct bpf_cpu_map_entry;
+>> +struct bpf_cpu_map;
+>> +
+>>  struct xdp_bulk_queue {
+>>         void *q[CPU_MAP_BULK_SIZE];
+>> +       struct list_head flush_node;
+>> +       struct bpf_cpu_map_entry *obj;
+>>         unsigned int count;
+>>  };
+>>
+>> @@ -52,6 +57,8 @@ struct bpf_cpu_map_entry {
+>>         /* XDP can run multiple RX-ring queues, need __percpu enqueue store */
+>>         struct xdp_bulk_queue __percpu *bulkq;
+>>
+>> +       struct bpf_cpu_map *cmap;
+>> +
+>>         /* Queue with potential multi-producers, and single-consumer kthread */
+>>         struct ptr_ring *queue;
+>>         struct task_struct *kthread;
+>> @@ -65,23 +72,17 @@ struct bpf_cpu_map {
+>>         struct bpf_map map;
+>>         /* Below members specific for map type */
+>>         struct bpf_cpu_map_entry **cpu_map;
+>> -       unsigned long __percpu *flush_needed;
+>> +       struct list_head __percpu *flush_list;
+>>  };
+>>
+>> -static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
+>> -                            struct xdp_bulk_queue *bq, bool in_napi_ctx);
+>> -
+>> -static u64 cpu_map_bitmap_size(const union bpf_attr *attr)
+>> -{
+>> -       return BITS_TO_LONGS(attr->max_entries) * sizeof(unsigned long);
+>> -}
+>> +static int bq_flush_to_queue(struct xdp_bulk_queue *bq, bool in_napi_ctx);
+>>
+>>  static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>>  {
+>>         struct bpf_cpu_map *cmap;
+>>         int err = -ENOMEM;
+>> +       int ret, cpu;
+>>         u64 cost;
+>> -       int ret;
+>>
+>>         if (!capable(CAP_SYS_ADMIN))
+>>                 return ERR_PTR(-EPERM);
+>> @@ -105,7 +106,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>>
+>>         /* make sure page count doesn't overflow */
+>>         cost = (u64) cmap->map.max_entries * sizeof(struct bpf_cpu_map_entry *);
+>> -       cost += cpu_map_bitmap_size(attr) * num_possible_cpus();
+>> +       cost += sizeof(struct list_head) * num_possible_cpus();
+>>
+>>         /* Notice returns -EPERM on if map size is larger than memlock limit */
+>>         ret = bpf_map_charge_init(&cmap->map.memory, cost);
+>> @@ -115,11 +116,13 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>>         }
+>>
+>>         /* A per cpu bitfield with a bit per possible CPU in map  */
+>
+> Comment is wrong now.
+
+Good catch! And not the only comment that is wrong; will fix them all.
+
+>> -       cmap->flush_needed = __alloc_percpu(cpu_map_bitmap_size(attr),
+>> -                                           __alignof__(unsigned long));
+>> -       if (!cmap->flush_needed)
+>> +       cmap->flush_list = alloc_percpu(struct list_head);
+>> +       if (!cmap->flush_list)
+>>                 goto free_charge;
+>>
+>> +       for_each_possible_cpu(cpu)
+>> +               INIT_LIST_HEAD(per_cpu_ptr(cmap->flush_list, cpu));
+>> +
+>>         /* Alloc array for possible remote "destination" CPUs */
+>>         cmap->cpu_map = bpf_map_area_alloc(cmap->map.max_entries *
+>>                                            sizeof(struct bpf_cpu_map_entry *),
+>> @@ -129,7 +132,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>>
+>>         return &cmap->map;
+>>  free_percpu:
+>> -       free_percpu(cmap->flush_needed);
+>> +       free_percpu(cmap->flush_list);
+>>  free_charge:
+>>         bpf_map_charge_finish(&cmap->map.memory);
+>>  free_cmap:
+>> @@ -331,7 +334,8 @@ static struct bpf_cpu_map_entry *__cpu_map_entry_alloc(u32 qsize, u32 cpu,
+>>  {
+>>         gfp_t gfp = GFP_KERNEL | __GFP_NOWARN;
+>>         struct bpf_cpu_map_entry *rcpu;
+>> -       int numa, err;
+>> +       struct xdp_bulk_queue *bq;
+>> +       int numa, err, i;
+>>
+>>         /* Have map->numa_node, but choose node of redirect target CPU */
+>>         numa = cpu_to_node(cpu);
+>> @@ -346,6 +350,11 @@ static struct bpf_cpu_map_entry *__cpu_map_entry_alloc(u32 qsize, u32 cpu,
+>>         if (!rcpu->bulkq)
+>>                 goto free_rcu;
+>>
+>> +       for_each_possible_cpu(i) {
+>> +               bq = per_cpu_ptr(rcpu->bulkq, i);
+>> +               bq->obj = rcpu;
+>> +       }
+>> +
+>>         /* Alloc queue */
+>>         rcpu->queue = kzalloc_node(sizeof(*rcpu->queue), gfp, numa);
+>>         if (!rcpu->queue)
+>> @@ -402,7 +411,7 @@ static void __cpu_map_entry_free(struct rcu_head *rcu)
+>>                 struct xdp_bulk_queue *bq = per_cpu_ptr(rcpu->bulkq, cpu);
+>>
+>>                 /* No concurrent bq_enqueue can run at this point */
+>> -               bq_flush_to_queue(rcpu, bq, false);
+>> +               bq_flush_to_queue(bq, false);
+>>         }
+>>         free_percpu(rcpu->bulkq);
+>>         /* Cannot kthread_stop() here, last put free rcpu resources */
+>> @@ -485,6 +494,7 @@ static int cpu_map_update_elem(struct bpf_map *map, void *key, void *value,
+>>                 rcpu = __cpu_map_entry_alloc(qsize, key_cpu, map->id);
+>>                 if (!rcpu)
+>>                         return -ENOMEM;
+>> +               rcpu->cmap = cmap;
+>>         }
+>>         rcu_read_lock();
+>>         __cpu_map_entry_replace(cmap, key_cpu, rcpu);
+>> @@ -516,9 +526,9 @@ static void cpu_map_free(struct bpf_map *map)
+>>          * from the program we can assume no new bits will be set.
+>>          */
+>>         for_each_online_cpu(cpu) {
+>> -               unsigned long *bitmap = per_cpu_ptr(cmap->flush_needed, cpu);
+>> +               struct list_head *flush_list = per_cpu_ptr(cmap->flush_list, cpu);
+>>
+>> -               while (!bitmap_empty(bitmap, cmap->map.max_entries))
+>> +               while (!list_empty(flush_list))
+>>                         cond_resched();
+>>         }
+>>
+>> @@ -535,7 +545,7 @@ static void cpu_map_free(struct bpf_map *map)
+>>                 /* bq flush and cleanup happens after RCU graze-period */
+>>                 __cpu_map_entry_replace(cmap, i, NULL); /* call_rcu */
+>>         }
+>> -       free_percpu(cmap->flush_needed);
+>> +       free_percpu(cmap->flush_list);
+>>         bpf_map_area_free(cmap->cpu_map);
+>>         kfree(cmap);
+>>  }
+>> @@ -587,9 +597,9 @@ const struct bpf_map_ops cpu_map_ops = {
+>>         .map_check_btf          = map_check_no_btf,
+>>  };
+>>
+>> -static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
+>> -                            struct xdp_bulk_queue *bq, bool in_napi_ctx)
+>> +static int bq_flush_to_queue(struct xdp_bulk_queue *bq, bool in_napi_ctx)
+>>  {
+>> +       struct bpf_cpu_map_entry *rcpu = bq->obj;
+>>         unsigned int processed = 0, drops = 0;
+>>         const int to_cpu = rcpu->cpu;
+>>         struct ptr_ring *q;
+>> @@ -618,6 +628,9 @@ static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
+>>         bq->count = 0;
+>>         spin_unlock(&q->producer_lock);
+>>
+>> +       __list_del(bq->flush_node.prev, bq->flush_node.next);
+>> +       bq->flush_node.prev = NULL;
+>> +
+>>         /* Feedback loop via tracepoints */
+>>         trace_xdp_cpumap_enqueue(rcpu->map_id, processed, drops, to_cpu);
+>>         return 0;
+>> @@ -628,10 +641,11 @@ static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
+>>   */
+>>  static int bq_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_frame *xdpf)
+>>  {
+>> +       struct list_head *flush_list = this_cpu_ptr(rcpu->cmap->flush_list);
+>>         struct xdp_bulk_queue *bq = this_cpu_ptr(rcpu->bulkq);
+>>
+>>         if (unlikely(bq->count == CPU_MAP_BULK_SIZE))
+>> -               bq_flush_to_queue(rcpu, bq, true);
+>> +               bq_flush_to_queue(bq, true);
+>>
+>>         /* Notice, xdp_buff/page MUST be queued here, long enough for
+>>          * driver to code invoking us to finished, due to driver
+>> @@ -643,6 +657,10 @@ static int bq_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_frame *xdpf)
+>>          * operation, when completing napi->poll call.
+>>          */
+>>         bq->q[bq->count++] = xdpf;
+>> +
+>> +       if (!bq->flush_node.prev)
+>> +               list_add(&bq->flush_node, flush_list);
+>> +
+>>         return 0;
+>>  }
+>>
+>> @@ -662,41 +680,16 @@ int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
+>>         return 0;
+>>  }
+>>
+>> -void __cpu_map_insert_ctx(struct bpf_map *map, u32 bit)
+>> -{
+>> -       struct bpf_cpu_map *cmap = container_of(map, struct bpf_cpu_map, map);
+>> -       unsigned long *bitmap = this_cpu_ptr(cmap->flush_needed);
+>> -
+>> -       __set_bit(bit, bitmap);
+>> -}
+>> -
+>>  void __cpu_map_flush(struct bpf_map *map)
+>>  {
+>>         struct bpf_cpu_map *cmap = container_of(map, struct bpf_cpu_map, map);
+>> -       unsigned long *bitmap = this_cpu_ptr(cmap->flush_needed);
+>> -       u32 bit;
+>> -
+>> -       /* The napi->poll softirq makes sure __cpu_map_insert_ctx()
+>> -        * and __cpu_map_flush() happen on same CPU. Thus, the percpu
+>> -        * bitmap indicate which percpu bulkq have packets.
+>> -        */
+>> -       for_each_set_bit(bit, bitmap, map->max_entries) {
+>> -               struct bpf_cpu_map_entry *rcpu = READ_ONCE(cmap->cpu_map[bit]);
+>> -               struct xdp_bulk_queue *bq;
+>> -
+>> -               /* This is possible if entry is removed by user space
+>> -                * between xdp redirect and flush op.
+>> -                */
+>> -               if (unlikely(!rcpu))
+>> -                       continue;
+>> -
+>> -               __clear_bit(bit, bitmap);
+>> +       struct list_head *flush_list = this_cpu_ptr(cmap->flush_list);
+>> +       struct xdp_bulk_queue *bq, *tmp;
+>>
+>> -               /* Flush all frames in bulkq to real queue */
+>> -               bq = this_cpu_ptr(rcpu->bulkq);
+>> -               bq_flush_to_queue(rcpu, bq, true);
+>> +       list_for_each_entry_safe(bq, tmp, flush_list, flush_node) {
+>> +               bq_flush_to_queue(bq, true);
+>>
+>>                 /* If already running, costs spin_lock_irqsave + smb_mb */
+>> -               wake_up_process(rcpu->kthread);
+>> +               wake_up_process(bq->obj->kthread);
+>>         }
+>>  }
+>> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+>> index 5ae7cce5ef16..c945518225f3 100644
+>> --- a/kernel/bpf/devmap.c
+>> +++ b/kernel/bpf/devmap.c
+>> @@ -56,9 +56,13 @@
+>>         (BPF_F_NUMA_NODE | BPF_F_RDONLY | BPF_F_WRONLY)
+>>
+>>  #define DEV_MAP_BULK_SIZE 16
+>> +struct bpf_dtab_netdev;
+>> +
+>>  struct xdp_bulk_queue {
+>>         struct xdp_frame *q[DEV_MAP_BULK_SIZE];
+>> +       struct list_head flush_node;
+>>         struct net_device *dev_rx;
+>> +       struct bpf_dtab_netdev *obj;
+>>         unsigned int count;
+>>  };
+>>
+>> @@ -73,23 +77,19 @@ struct bpf_dtab_netdev {
+>>  struct bpf_dtab {
+>>         struct bpf_map map;
+>>         struct bpf_dtab_netdev **netdev_map;
+>> -       unsigned long __percpu *flush_needed;
+>> +       struct list_head __percpu *flush_list;
+>>         struct list_head list;
+>>  };
+>>
+>>  static DEFINE_SPINLOCK(dev_map_lock);
+>>  static LIST_HEAD(dev_map_list);
+>>
+>> -static u64 dev_map_bitmap_size(const union bpf_attr *attr)
+>> -{
+>> -       return BITS_TO_LONGS((u64) attr->max_entries) * sizeof(unsigned long);
+>> -}
+>> -
+>>  static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+>>  {
+>>         struct bpf_dtab *dtab;
+>>         int err = -EINVAL;
+>>         u64 cost;
+>> +       int cpu;
+>>
+>>         if (!capable(CAP_NET_ADMIN))
+>>                 return ERR_PTR(-EPERM);
+>> @@ -107,7 +107,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+>>
+>>         /* make sure page count doesn't overflow */
+>>         cost = (u64) dtab->map.max_entries * sizeof(struct bpf_dtab_netdev *);
+>> -       cost += dev_map_bitmap_size(attr) * num_possible_cpus();
+>> +       cost += sizeof(struct list_head) * num_possible_cpus();
+>>
+>>         /* if map size is larger than memlock limit, reject it */
+>>         err = bpf_map_charge_init(&dtab->map.memory, cost);
+>> @@ -116,28 +116,30 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+>>
+>>         err = -ENOMEM;
+>>
+>> -       /* A per cpu bitfield with a bit per possible net device */
+>> -       dtab->flush_needed = __alloc_percpu_gfp(dev_map_bitmap_size(attr),
+>> -                                               __alignof__(unsigned long),
+>> -                                               GFP_KERNEL | __GFP_NOWARN);
+>> -       if (!dtab->flush_needed)
+>> +       dtab->flush_list = alloc_percpu(struct list_head);
+>
+> Is it ok to lose __GFP_NOWARN bit, which was previously provided?
+
+Yeah, I believe so. This is a pretty standard allocation failure, so no
+real reason to mask the warning. The devmap is the only place that sets
+the NOWARN bit anyway (neither cpumap nor xskmap do), so I think it's
+probably just a coincidental setting here...
+
+>> +       if (!dtab->flush_list)
+>>                 goto free_charge;
+>>
+>> +       for_each_possible_cpu(cpu)
+>> +               INIT_LIST_HEAD(per_cpu_ptr(dtab->flush_list, cpu));
+>> +
+>>         dtab->netdev_map = bpf_map_area_alloc(dtab->map.max_entries *
+>>                                               sizeof(struct bpf_dtab_netdev *),
+>>                                               dtab->map.numa_node);
+>>         if (!dtab->netdev_map)
+>> -               goto free_charge;
+>> +               goto free_percpu;
+>>
+>>         spin_lock(&dev_map_lock);
+>>         list_add_tail_rcu(&dtab->list, &dev_map_list);
+>>         spin_unlock(&dev_map_lock);
+>>
+>>         return &dtab->map;
+>> +
+>> +free_percpu:
+>> +       free_percpu(dtab->flush_list);
+>>  free_charge:
+>>         bpf_map_charge_finish(&dtab->map.memory);
+>>  free_dtab:
+>> -       free_percpu(dtab->flush_needed);
+>>         kfree(dtab);
+>>         return ERR_PTR(err);
+>>  }
+>> @@ -171,9 +173,9 @@ static void dev_map_free(struct bpf_map *map)
+>>          * from the program we can assume no new bits will be set.
+>>          */
+>>         for_each_online_cpu(cpu) {
+>> -               unsigned long *bitmap = per_cpu_ptr(dtab->flush_needed, cpu);
+>> +               struct list_head *flush_list = per_cpu_ptr(dtab->flush_list, cpu);
+>>
+>> -               while (!bitmap_empty(bitmap, dtab->map.max_entries))
+>> +               while (!list_empty(flush_list))
+>>                         cond_resched();
+>>         }
+>>
+>> @@ -188,7 +190,7 @@ static void dev_map_free(struct bpf_map *map)
+>>                 kfree(dev);
+>>         }
+>>
+>> -       free_percpu(dtab->flush_needed);
+>> +       free_percpu(dtab->flush_list);
+>>         bpf_map_area_free(dtab->netdev_map);
+>>         kfree(dtab);
+>>  }
+>> @@ -210,18 +212,11 @@ static int dev_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+>>         return 0;
+>>  }
+>>
+>> -void __dev_map_insert_ctx(struct bpf_map *map, u32 bit)
+>> -{
+>> -       struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+>> -       unsigned long *bitmap = this_cpu_ptr(dtab->flush_needed);
+>> -
+>> -       __set_bit(bit, bitmap);
+>> -}
+>> -
+>> -static int bq_xmit_all(struct bpf_dtab_netdev *obj,
+>> -                      struct xdp_bulk_queue *bq, u32 flags,
+>> +static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags,
+>>                        bool in_napi_ctx)
+>>  {
+>> +
+>
+> extra line?
+
+Right, will remove.
+
+>> +       struct bpf_dtab_netdev *obj = bq->obj;
+>>         struct net_device *dev = obj->dev;
+>>         int sent = 0, drops = 0, err = 0;
+>>         int i;
+>> @@ -248,6 +243,8 @@ static int bq_xmit_all(struct bpf_dtab_netdev *obj,
+>>         trace_xdp_devmap_xmit(&obj->dtab->map, obj->bit,
+>>                               sent, drops, bq->dev_rx, dev, err);
+>>         bq->dev_rx = NULL;
+>> +       __list_del(bq->flush_node.prev, bq->flush_node.next);
+>> +       bq->flush_node.prev = NULL;
+>>         return 0;
+>>  error:
+>>         /* If ndo_xdp_xmit fails with an errno, no frames have been
+>> @@ -276,24 +273,11 @@ static int bq_xmit_all(struct bpf_dtab_netdev *obj,
+>>  void __dev_map_flush(struct bpf_map *map)
+>>  {
+>>         struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+>> -       unsigned long *bitmap = this_cpu_ptr(dtab->flush_needed);
+>> -       u32 bit;
+>> +       struct list_head *flush_list = this_cpu_ptr(dtab->flush_list);
+>> +       struct xdp_bulk_queue *bq, *tmp;
+>>
+>> -       for_each_set_bit(bit, bitmap, map->max_entries) {
+>> -               struct bpf_dtab_netdev *dev = READ_ONCE(dtab->netdev_map[bit]);
+>> -               struct xdp_bulk_queue *bq;
+>> -
+>> -               /* This is possible if the dev entry is removed by user space
+>> -                * between xdp redirect and flush op.
+>> -                */
+>> -               if (unlikely(!dev))
+>> -                       continue;
+>> -
+>> -               __clear_bit(bit, bitmap);
+>> -
+>> -               bq = this_cpu_ptr(dev->bulkq);
+>> -               bq_xmit_all(dev, bq, XDP_XMIT_FLUSH, true);
+>> -       }
+>> +       list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
+>> +               bq_xmit_all(bq, XDP_XMIT_FLUSH, true);
+>>  }
+>>
+>>  /* rcu_read_lock (from syscall and BPF contexts) ensures that if a delete and/or
+>> @@ -319,10 +303,11 @@ static int bq_enqueue(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf,
+>>                       struct net_device *dev_rx)
+>>
+>>  {
+>> +       struct list_head *flush_list = this_cpu_ptr(obj->dtab->flush_list);
+>>         struct xdp_bulk_queue *bq = this_cpu_ptr(obj->bulkq);
+>>
+>>         if (unlikely(bq->count == DEV_MAP_BULK_SIZE))
+>> -               bq_xmit_all(obj, bq, 0, true);
+>> +               bq_xmit_all(bq, 0, true);
+>>
+>>         /* Ingress dev_rx will be the same for all xdp_frame's in
+>>          * bulk_queue, because bq stored per-CPU and must be flushed
+>> @@ -332,6 +317,10 @@ static int bq_enqueue(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf,
+>>                 bq->dev_rx = dev_rx;
+>>
+>>         bq->q[bq->count++] = xdpf;
+>> +
+>> +       if (!bq->flush_node.prev)
+>> +               list_add(&bq->flush_node, flush_list);
+>> +
+>>         return 0;
+>>  }
+>>
+>> @@ -382,16 +371,11 @@ static void dev_map_flush_old(struct bpf_dtab_netdev *dev)
+>>  {
+>>         if (dev->dev->netdev_ops->ndo_xdp_xmit) {
+>>                 struct xdp_bulk_queue *bq;
+>> -               unsigned long *bitmap;
+>> -
+>>                 int cpu;
+>>
+>>                 for_each_online_cpu(cpu) {
+>> -                       bitmap = per_cpu_ptr(dev->dtab->flush_needed, cpu);
+>> -                       __clear_bit(dev->bit, bitmap);
+>> -
+>>                         bq = per_cpu_ptr(dev->bulkq, cpu);
+>> -                       bq_xmit_all(dev, bq, XDP_XMIT_FLUSH, false);
+>> +                       bq_xmit_all(bq, XDP_XMIT_FLUSH, false);
+>>                 }
+>>         }
+>>  }
+>> @@ -439,6 +423,8 @@ static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+>>         struct bpf_dtab_netdev *dev, *old_dev;
+>>         u32 i = *(u32 *)key;
+>>         u32 ifindex = *(u32 *)value;
+>
+> can you please fix reverse Christmas tree order, while you are here?
+
+Sure!
+
+>> +       struct xdp_bulk_queue *bq;
+>> +       int cpu;
+>>
+>>         if (unlikely(map_flags > BPF_EXIST))
+>>                 return -EINVAL;
+>> @@ -461,6 +447,11 @@ static int dev_map_update_elem(struct bpf_map *map, void *key, void *value,
+>>                         return -ENOMEM;
+>>                 }
+>>
+>> +               for_each_possible_cpu(cpu) {
+>> +                       bq = per_cpu_ptr(dev->bulkq, cpu);
+>> +                       bq->obj = dev;
+>> +               }
+>> +
+>>                 dev->dev = dev_get_by_index(net, ifindex);
+>>                 if (!dev->dev) {
+>>                         free_percpu(dev->bulkq);
+>> diff --git a/net/core/filter.c b/net/core/filter.c
+>> index 55bfc941d17a..7a996887c500 100644
+>> --- a/net/core/filter.c
+>> +++ b/net/core/filter.c
+>> @@ -3526,7 +3526,6 @@ static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+>>                 err = dev_map_enqueue(dst, xdp, dev_rx);
+>>                 if (unlikely(err))
+>>                         return err;
+>> -               __dev_map_insert_ctx(map, index);
+>>                 break;
+>>         }
+>>         case BPF_MAP_TYPE_CPUMAP: {
+>> @@ -3535,7 +3534,6 @@ static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+>>                 err = cpu_map_enqueue(rcpu, xdp, dev_rx);
+>>                 if (unlikely(err))
+>>                         return err;
+>> -               __cpu_map_insert_ctx(map, index);
+>>                 break;
+>>         }
+>>         case BPF_MAP_TYPE_XSKMAP: {
+>>
 
 
-
-> On 11 Jun 2019, at 16:15, Paul Blakey <paulb@mellanox.com> wrote:
->=20
->=20
-> On 6/11/2019 4:59 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Paul Blakey <paulb@mellanox.com> writes:
->>=20
->>> Allow sending a packet to conntrack and set conntrack zone, mark,
->>> labels and nat parameters.
->> How is this different from the newly merged ctinfo action?
->>=20
->> -Toke
->=20
-> Hi,
->=20
-> ctinfo does one of two very specific things,
->=20
-> 1) copies DSCP values that have been placed in the firewall conntrack
-> mark back into the IPv4/v6 diffserv field
->=20
-> 2) copies the firewall conntrack mark to the skb's mark field (like
-> act_connmark)
-
-It can do both at the same time if required, taking advantage of the =
-single
-conntrack entry lookup for both packet/skb mangling operations, but this =
-isn=E2=80=99t
-relevant to the discussion really.
-
->=20
-> Originally ctinfo action was named conndscp (then conntrack, which is
-> what our ct shorthand stands for).
->=20
-> We also talked about merging both at some point, but they seem only
-> coincidentally related.
->=20
-> don't know how it was then be agreed to be named ctinfo suggesting it
-> does something else but the above.
-
-I=E2=80=99m a newbie around here so trying to fit in.  conndscp did one =
-thing, then it
-suggested that as it was doing a similar lookup to act_connmark that the =
-connmark
-functionality could also be integrated.  There was a brief flirtation =
-with a
-new =E2=80=98act ct=E2=80=99 it sort of =E2=80=98fell out=E2=80=99 that =
-they were only semi-related in function
-by name only.
-
-conndscp was clearly the wrong name for what act_ctinfo had become, =
-amalgamating
-two functions, so I thought it=E2=80=99s a =E2=80=9Cconntrack =
-information lookup/user/extractor/mangler=E2=80=99
-and thought =E2=80=98ctinfo=E2=80=99 was as good as anything - and =
-nobody screamed and AFAIK no
-kittens died :-)
-
-But as a newbie around here I=E2=80=99m happy to fit in with whatever =
-consensus is reached
-as long as it is reached.
-
->=20
-> This action sends packets to conntrack, configures nat, and doesn't =
-get
-> "info" from conntrack, while the ctinfo already expects packets to be
-> passed conntrack
->=20
-> by some other kernel mechanism.
->=20
-
-Yeah, one is pulling, the other is pushing :-)
-
-Kevin
-
-
---Apple-Mail=_C282E2E8-BE77-4254-A11E-2F524A2F96D7
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEASyssijGxT6XdZEjs6I4m53iM0oFAl0CLNMACgkQs6I4m53i
-M0rLlQ//TJ4Z0DrA45wcLcbzv3hT8UGYMz6jomxobgn+5qvTFkWzSgC8ZSZ95UEh
-o6R/rnd+t0yWCUOE777Vryr32R7CGKUfXrLIXfy81eFIjH1WFB2/LSot/KVh06Xv
-Gob5E7egrI7JU/rA4Gu7OwiTyTZbBTGS8ZmWVCNxpX/Z1mLSe92pOQojitDXgfw/
-o3BgME/+wLck7xqOM8c7sb+uAjsL5I0HTCYp+CuUAs0121KoscWt3zgHe9/Ncc4V
-eQaUh4O3v89k/ff3gL7IqXsewq2zmg3neL+hChuKodnsb3tjhTcmrg3/y6qjEj6g
-oxsEqCiR8uf8riV9SvxN04oFcQl0aboIhqKDQGGKbAy2VROvZ76LzIcyCUBHUsRI
-2oceUH0onVeS3cyW+dGagqCqVlSfuhH03z4GtIvcqrKtvCO8BqrAJIrBQrKwoKWr
-ALFvJbLMqBrc4ugx81kHuQwzQErrWMPxUP8eCytVcAw1wPl3E06YGuHQ7W3fk7SV
-pPRzxWI6kl8FibSI3u7RW37U0S8Vc7zID/QN9epIj0l3sZP+kT0uUU8Cjf8J9Nvr
-ZYlD8hlCsT8NFYs6NYJlxwXQYjBtL12i6rXuzbVgJhcCd9j9iA9rCehuRUb8MisC
-pO5eS70ouZIPyAizEb3NGUymbRBozCCDN+PUeKHgMGqwSzLZtyY=
-=p+3N
------END PGP SIGNATURE-----
-
---Apple-Mail=_C282E2E8-BE77-4254-A11E-2F524A2F96D7--
+-Toke
