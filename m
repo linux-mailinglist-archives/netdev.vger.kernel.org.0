@@ -2,254 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F93744EFA
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:09:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E590244EFE
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727468AbfFMWJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 18:09:37 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:36816 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbfFMWJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:09:37 -0400
-Received: by mail-qt1-f195.google.com with SMTP id p15so275124qtl.3;
-        Thu, 13 Jun 2019 15:09:36 -0700 (PDT)
+        id S1727126AbfFMWNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 18:13:38 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38940 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbfFMWNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:13:37 -0400
+Received: by mail-pf1-f194.google.com with SMTP id j2so108659pfe.6
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:13:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cnTi/u0P4e0aI3dtv2F71stnIMWYitOp9OEn8Ix+Sgg=;
-        b=dFqdJnEKgPH9v0pD94Ig3v69N9qH2EzA4Tyq54Ct8MwBqTbrXLLA49bFC0a7jzUqYI
-         uGkhnJ2/0jQiNMFGIfogufAGMOc0Z2VsGypybuBScmfDggTTvtN5AWuD+NpAD1Z1Bnz3
-         b1MX1dUb3d+LUNLi3ESssndH1ScWJIVNDF8W8qgRBZ0vLlqpr/hsPWulivkfGyrYh9Bo
-         oyjM2A7JKmMi1DStKxhuqDn/WPBeC1ddHjYhrkoInVRObWwDx7uuca38Nh7NT58E1BL6
-         avJbTX0eP1yi6ofvDncpmzJMVdvJloKnZIevouubuPN/qUqfRKLtMSAVhTK0CmBA/YPb
-         7/qg==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vBpV239lVZGsVFttEgs6I1loquWTjGM2fybPXSc6kXE=;
+        b=zF/ntvzau96uXYha0NGrQYwz8Sn8ybozie8+n1svcbT2JMl8P9RmSLT1Spc6zV024K
+         LsMRy+UOABU6LMgIS/IZpEp6mfxSS6XrIxrgBSc7pLpMpyrkMYiX+hbT/16LeAP85J8Q
+         KovE8gKHVdjiILwA/eDiX+WPqsnrx//bMQHpFkbjxKX7qGI+AWeXDQZW4/Mc3wpjX/oh
+         60OpiPvdD+DmyNLUCwr8ybxFyBZDU0SGB49YGosURVSijxEpYXDXnI+AwTUc5voEvSRO
+         dWWf0nqmQGYbkLq/K6kiEPWBNjwvyt4Xm5lpx2Nff2QHRHL+B2jv8Vie4H+ftaoDi6ow
+         gdGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cnTi/u0P4e0aI3dtv2F71stnIMWYitOp9OEn8Ix+Sgg=;
-        b=oZqZwBqLkiFLdAuKZpOkVw2W+w1CPFp4yDp+iLZX7DN25A/J+tEdQDDzm7YQv/KmXA
-         bM/gEZMDXeKu2gcax4zm4gKGAO4m6o1NhPJExBqnf6rkEU9Mb/bm9StHCiKoOGONcaUL
-         ljH+TrfbziPUMs2RbLNCv7VcFKuCNhSv4VnSgG9hxfolFJRlCd7xu9WhoQYEh9p1x/Px
-         nneA4GGxpAtOFIPD5oh93Dzu6PFM2/IMYnuYLzOi3NxALWHkLCqwfrFnGq0gtND/JbV1
-         WqLMrI3tYwIq9rTtLRoRNpkalfSmMwgeUEbv5Y4ohiSRFXOeTZR2wcZ7eSoXe83wBmsq
-         1EiA==
-X-Gm-Message-State: APjAAAVWK2U/HXcWHA9hGgtUGGm5bDJR+9KxGvuo0OuUITYeZQbwl4ZW
-        UIhk3oJg8JaUFxTQPDL5Q1silavfGq2b7m1Wq0+ikxZ5
-X-Google-Smtp-Source: APXvYqwjv2HCE1BpLrrIr4cch7Q+x+EifRQU8H0TDdFaX/EbZjjEFe8HpdSeLKwMD0vu1iiMWbALqymJq3ADWK4amQA=
-X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr54174069qta.93.1560463776148;
- Thu, 13 Jun 2019 15:09:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190613042003.3791852-1-ast@kernel.org> <20190613042003.3791852-3-ast@kernel.org>
-In-Reply-To: <20190613042003.3791852-3-ast@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 13 Jun 2019 15:09:24 -0700
-Message-ID: <CAEf4BzZPt_HwFiECemTsgXsE7J418rNa554-RZoPowrEosoXQA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/9] selftests/bpf: fix tests due to const spill/fill
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vBpV239lVZGsVFttEgs6I1loquWTjGM2fybPXSc6kXE=;
+        b=kTA+fZo8z+LSsxuMf1nf6B5zQry7il7/Xxx6+sCYof88w2BiHETsUERmI1j/CDfzA7
+         keuROZtIVQch/IzCfikXZk0C+j8Tg1zpSlxsjE8Gkpz/M6EpnduRpGTAN7TzSGOfrvQt
+         AkoIkQmFykLon+VuC2iyuNAkFHpf3TI55b5vse+uzM9nNZfKK+Hr0u/c1ix5m3o2eHb3
+         Gha0KAtmlHyKqFoxAfwDzDPCO/u93sO+asXswEbzuZ7RaHlDt+0x1P01jqn1x9qElq1F
+         2A1MbKTeLjSEGmpnZaXMm4Ya3X5/g8r4n1AnTEMjLV+kb8JLM9VKMMLpzbpfNwKsaUXi
+         X1/A==
+X-Gm-Message-State: APjAAAUuF/QFaV2NcWhpCKojglN++jllomEAoSVrmr6WcUk17PElUWl9
+        z4Th8bRW/nnS2YlXP7F8/d5aaA==
+X-Google-Smtp-Source: APXvYqzW7UzSpBgBw41cIlZh4MHki33bwIjljD7aQxSQSHGuM7qhtjsFYIfrPg7/35SWtKNBSAkxDg==
+X-Received: by 2002:aa7:8dd2:: with SMTP id j18mr26011901pfr.88.1560464016997;
+        Thu, 13 Jun 2019 15:13:36 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id 128sm660652pfd.66.2019.06.13.15.13.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 15:13:36 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 15:13:35 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Edward Cree <ecree@solarflare.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, Jann Horn <jannh@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@davemloft.net>, kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 0/3] bpf: net: Detach BPF prog from reuseport
+ sk
+Message-ID: <20190613221335.GD9636@mini-arch>
+References: <20190613215959.3095374-1-kafai@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190613215959.3095374-1-kafai@fb.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 9:50 AM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> fix tests that incorrectly assumed that the verifier
-> cannot track constants through stack.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+On 06/13, Martin KaFai Lau wrote:
+> v3:
+> - Use rcu_swap_protected (Stanislav Fomichev)
+> - Use 0x0047 for SO_DETACH_REUSEPORT_BPF for sparc (kbuild test robot <lkp@intel.com>)
+> 
+> v2:
+> - Copy asm-generic/socket.h to tools/ in the new patch 2 (Stanislav Fomichev)
+> 
+> This patch adds SO_DETACH_REUSEPORT_BPF to detach BPF prog from
+> reuseport sk.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+For the series:
 
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
->  .../bpf/verifier/direct_packet_access.c       |  3 +-
->  .../bpf/verifier/helper_access_var_len.c      | 28 ++++++++++---------
->  2 files changed, 17 insertions(+), 14 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/verifier/direct_packet_access.c b/tools/testing/selftests/bpf/verifier/direct_packet_access.c
-> index d5c596fdc4b9..2c5fbe7bcd27 100644
-> --- a/tools/testing/selftests/bpf/verifier/direct_packet_access.c
-> +++ b/tools/testing/selftests/bpf/verifier/direct_packet_access.c
-> @@ -511,7 +511,8 @@
->                     offsetof(struct __sk_buff, data)),
->         BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_1,
->                     offsetof(struct __sk_buff, data_end)),
-> -       BPF_MOV64_IMM(BPF_REG_0, 0xffffffff),
-> +       BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-> +                   offsetof(struct __sk_buff, mark)),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_0, -8),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -8),
->         BPF_ALU64_IMM(BPF_AND, BPF_REG_0, 0xffff),
-> diff --git a/tools/testing/selftests/bpf/verifier/helper_access_var_len.c b/tools/testing/selftests/bpf/verifier/helper_access_var_len.c
-> index 1f39d845c64f..67ab12410050 100644
-> --- a/tools/testing/selftests/bpf/verifier/helper_access_var_len.c
-> +++ b/tools/testing/selftests/bpf/verifier/helper_access_var_len.c
-> @@ -29,9 +29,9 @@
->  {
->         "helper access to variable memory: stack, bitwise AND, zero included",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_ALU64_IMM(BPF_AND, BPF_REG_2, 64),
-> @@ -46,9 +46,9 @@
->  {
->         "helper access to variable memory: stack, bitwise AND + JMP, wrong max",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_ALU64_IMM(BPF_AND, BPF_REG_2, 65),
-> @@ -122,9 +122,9 @@
->  {
->         "helper access to variable memory: stack, JMP, bounds + offset",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_JMP_IMM(BPF_JGT, BPF_REG_2, 64, 5),
-> @@ -143,9 +143,9 @@
->  {
->         "helper access to variable memory: stack, JMP, wrong max",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_JMP_IMM(BPF_JGT, BPF_REG_2, 65, 4),
-> @@ -163,9 +163,9 @@
->  {
->         "helper access to variable memory: stack, JMP, no max check",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_MOV64_IMM(BPF_REG_4, 0),
-> @@ -183,9 +183,9 @@
->  {
->         "helper access to variable memory: stack, JMP, no min check",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_JMP_IMM(BPF_JGT, BPF_REG_2, 64, 3),
-> @@ -201,9 +201,9 @@
->  {
->         "helper access to variable memory: stack, JMP (signed), no min check",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
-> -       BPF_MOV64_IMM(BPF_REG_2, 16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, -128),
->         BPF_JMP_IMM(BPF_JSGT, BPF_REG_2, 64, 3),
-> @@ -244,6 +244,7 @@
->  {
->         "helper access to variable memory: map, JMP, wrong max",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
->         BPF_ST_MEM(BPF_DW, BPF_REG_2, 0, 0),
-> @@ -251,7 +252,7 @@
->         BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
->         BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 10),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-> -       BPF_MOV64_IMM(BPF_REG_2, sizeof(struct test_val)),
-> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_10, -128),
->         BPF_JMP_IMM(BPF_JSGT, BPF_REG_2, sizeof(struct test_val) + 1, 4),
-> @@ -262,7 +263,7 @@
->         BPF_MOV64_IMM(BPF_REG_0, 0),
->         BPF_EXIT_INSN(),
->         },
-> -       .fixup_map_hash_48b = { 3 },
-> +       .fixup_map_hash_48b = { 4 },
->         .errstr = "invalid access to map value, value_size=48 off=0 size=49",
->         .result = REJECT,
->         .prog_type = BPF_PROG_TYPE_TRACEPOINT,
-> @@ -296,6 +297,7 @@
->  {
->         "helper access to variable memory: map adjusted, JMP, wrong max",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
->         BPF_ST_MEM(BPF_DW, BPF_REG_2, 0, 0),
-> @@ -304,7 +306,7 @@
->         BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 11),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 20),
-> -       BPF_MOV64_IMM(BPF_REG_2, sizeof(struct test_val)),
-> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_10, -128),
->         BPF_JMP_IMM(BPF_JSGT, BPF_REG_2, sizeof(struct test_val) - 19, 4),
-> @@ -315,7 +317,7 @@
->         BPF_MOV64_IMM(BPF_REG_0, 0),
->         BPF_EXIT_INSN(),
->         },
-> -       .fixup_map_hash_48b = { 3 },
-> +       .fixup_map_hash_48b = { 4 },
->         .errstr = "R1 min value is outside of the array range",
->         .result = REJECT,
->         .prog_type = BPF_PROG_TYPE_TRACEPOINT,
-> @@ -337,8 +339,8 @@
->  {
->         "helper access to variable memory: size > 0 not allowed on NULL (ARG_PTR_TO_MEM_OR_NULL)",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 0),
->         BPF_MOV64_IMM(BPF_REG_1, 0),
-> -       BPF_MOV64_IMM(BPF_REG_2, 1),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_10, -128),
->         BPF_ALU64_IMM(BPF_AND, BPF_REG_2, 64),
-> @@ -562,6 +564,7 @@
->  {
->         "helper access to variable memory: 8 bytes leak",
->         .insns = {
-> +       BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_1, 8),
->         BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
->         BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -64),
->         BPF_MOV64_IMM(BPF_REG_0, 0),
-> @@ -572,7 +575,6 @@
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_0, -24),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_0, -16),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_0, -8),
-> -       BPF_MOV64_IMM(BPF_REG_2, 1),
->         BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -128),
->         BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_10, -128),
->         BPF_ALU64_IMM(BPF_AND, BPF_REG_2, 63),
-> --
-> 2.20.0
->
+> Martin KaFai Lau (3):
+>   bpf: net: Add SO_DETACH_REUSEPORT_BPF
+>   bpf: Sync asm-generic/socket.h to tools/
+>   bpf: Add test for SO_REUSEPORT_DETACH_BPF
+> 
+>  arch/alpha/include/uapi/asm/socket.h          |  2 +
+>  arch/mips/include/uapi/asm/socket.h           |  2 +
+>  arch/parisc/include/uapi/asm/socket.h         |  2 +
+>  arch/sparc/include/uapi/asm/socket.h          |  2 +
+>  include/net/sock_reuseport.h                  |  2 +
+>  include/uapi/asm-generic/socket.h             |  2 +
+>  net/core/sock.c                               |  4 ++
+>  net/core/sock_reuseport.c                     | 24 +++++++++
+>  .../include}/uapi/asm-generic/socket.h        |  2 +
+>  .../selftests/bpf/test_select_reuseport.c     | 54 +++++++++++++++++++
+>  10 files changed, 96 insertions(+)
+>  copy {include => tools/include}/uapi/asm-generic/socket.h (98%)
+> 
+> -- 
+> 2.17.1
+> 
