@@ -2,153 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB4E44D09
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 394D244D0C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729460AbfFMUIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 16:08:55 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38426 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbfFMUIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 16:08:54 -0400
-Received: by mail-qt1-f196.google.com with SMTP id n11so21948413qtl.5
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 13:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WtZSiqOyyYDm2KSvapb+1O5WsoKBBmhoVRpL4EkcewU=;
-        b=O+dSn+T4rETNgoXo0DSXSdMM2Z1xp2JzcoUbtFg4dKb6pl2nexxHH9aH8jAyY0ly35
-         LjwDMiBFjzdPMPbxGQwftZqUPb+XFGjKArf/3jfeNyutf433AtpVH19uN74qqUW3US/X
-         7JxSx3N8gv9QtqroFEDLqMXHlUrfchLTdHhmEgOpPxtBF9rdB7FpbWIrOYLNvGOhHebU
-         1V4qWNpezLbFqJNS4IUyVnUIylVkatv4dJOmVlsdb39AW4+1bhvTCgoJ1wCuQkABrc8k
-         AdZW90v8h1zXARTCBgM+aWUTk/NSRMnvYj5SEtoy95HsyJnu4CKnzenLb0xJMlAsd3x2
-         enow==
+        id S1729532AbfFMUJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 16:09:38 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43525 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729483AbfFMUJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 16:09:38 -0400
+Received: by mail-qt1-f193.google.com with SMTP id z24so10862234qtj.10;
+        Thu, 13 Jun 2019 13:09:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WtZSiqOyyYDm2KSvapb+1O5WsoKBBmhoVRpL4EkcewU=;
-        b=PWKVYqUrpgTuCvRUXWytmK1l2melqYl5y+k3zfyQd8l529D1l1ZlmQL2+OmB4Vvod/
-         X+HphJy/BZ3KsuVDiEkgLUQeviEptRnVdEgt951L56pWQQaVhdUggHSv7i+yx3QWl7wm
-         Yonm4w/yBJ9RPIfkS31hN91or4DVPyXnv6o9fFr3ZrHfBv+AVxh3bB1bhpyyFrfdWEYl
-         d3ywW2rwedOtvfWSwS0crUC1zou7nVCTyZblFxUDzsSiuP3jH6wsGCikCQw8q/Ohr7PF
-         unxpw1BDeRGFK93oSiF0/SBARlgh/zpTq7Vyx+WVX6TaId6hj8sakUX3HD9/oM8PWjno
-         0tlg==
-X-Gm-Message-State: APjAAAXsd1vzheIzQWFXnHxokbm3KLuZqgekWtg3rjsWXjCLiCG7o1iE
-        KzgdCg/XDeGeCjN4vyIbwD0=
-X-Google-Smtp-Source: APXvYqwqgBInLR375po/q578p/otUDtv7d0dO8Li4aGlHXPpDnhUSr8uphT7JxiwZNlYcks8ArwTKQ==
-X-Received: by 2002:aed:3ec5:: with SMTP id o5mr49702895qtf.199.1560456532744;
-        Thu, 13 Jun 2019 13:08:52 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:278e:68eb:7f4f:8f57:4b3a])
-        by smtp.gmail.com with ESMTPSA id f3sm382027qkb.58.2019.06.13.13.08.51
+        bh=EsoRqTCzQK8XeT4CpX6/tA1R/n5u3cPoinlZbGIMxfg=;
+        b=XDg8fn1AlUSzoRQ5Ycyjdrx2aMC/FuVRtv74/9kcNzJNCh7qfpzdIDO5Z2vllWTGQE
+         v5FwdYLjLWbomL5PwX3w+p0G6iTm/ucZSb0ps23gUmUFRzdklhfE5YxROLcL07aCXwnT
+         +gWESIm6VMnxOKPYB3CdnR5XnUL/yHsrsrg1R2y4plD6aJWRChVkbnhkO+sGulstoGQh
+         iZeL7wX5bau33xw+a1F1fd8cg+LTzLCVLvCuGheDVJmRYWh3YohmXfVgJDzymNTU5dUz
+         9lQA6HU4vAe4Gn2O+lfe5JlmQWl4bQ7ylCK2qViX4ow2OBk303YyzGtDcePfi2Wjjweq
+         oX6g==
+X-Gm-Message-State: APjAAAXlbZc34UQK//B8LK11NNh1b5Um/2ZT80CoiRuk5KSwNhH73/T/
+        dFne+0j02CqP4sv6MXCy1A==
+X-Google-Smtp-Source: APXvYqwBj3qKm7jFPhoNU8lB+im0laB+BDLfUfdNdKNo4biXs7z8jC8txvk0mfb+BZ6IseYD9aYagw==
+X-Received: by 2002:a0c:d24d:: with SMTP id o13mr5132746qvh.86.1560456577255;
+        Thu, 13 Jun 2019 13:09:37 -0700 (PDT)
+Received: from localhost ([64.188.179.243])
+        by smtp.gmail.com with ESMTPSA id u19sm459747qka.35.2019.06.13.13.09.36
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 13:08:51 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 1F63EC1BC6; Thu, 13 Jun 2019 17:08:49 -0300 (-03)
-Date:   Thu, 13 Jun 2019 17:08:49 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Cc:     Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Johannes Berg <johannes.berg@intel.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
-Message-ID: <20190613200849.GH3436@localhost.localdomain>
-References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
- <20190612180239.GA3499@localhost.localdomain>
- <20190612114627.4dd137ab@cakuba.netronome.com>
- <20190613083329.dmkmpl3djd3lewww@netronome.com>
- <97632F5C-6AB9-4B71-8DE6-A2A3ED02226A@darbyshire-bryant.me.uk>
+        Thu, 13 Jun 2019 13:09:36 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 14:09:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
+Cc:     Tristram.Ha@microchip.com, kernel@pengutronix.de,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [RFC 3/3] dt-bindings: net: dsa: document additional Microchip
+ KSZ8863 family switches
+Message-ID: <20190613200935.GA16851@bogus>
+References: <20190508211330.19328-1-m.grzeschik@pengutronix.de>
+ <20190508211330.19328-4-m.grzeschik@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <97632F5C-6AB9-4B71-8DE6-A2A3ED02226A@darbyshire-bryant.me.uk>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190508211330.19328-4-m.grzeschik@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 09:09:47AM +0000, Kevin 'ldir' Darbyshire-Bryant wrote:
+On Wed, May 08, 2019 at 11:13:30PM +0200, Michael Grzeschik wrote:
+> Document additional Microchip KSZ8863 family switches.
 > 
+> Show how KSZ8863 switch should be configured as the host port is port 3.
 > 
-> > On 13 Jun 2019, at 10:33, Simon Horman <simon.horman@netronome.com> wrote:
-> > 
-> > On Wed, Jun 12, 2019 at 11:46:27AM -0700, Jakub Kicinski wrote:
-> >> On Wed, 12 Jun 2019 15:02:39 -0300, Marcelo Ricardo Leitner wrote:
-> >>> On Tue, May 28, 2019 at 05:03:50PM +0000, Kevin 'ldir' Darbyshire-Bryant wrote:
-> >>> ...
-> >>>> +static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
-> >>>> +			   struct nlattr *est, struct tc_action **a,
-> >>>> +			   int ovr, int bind, bool rtnl_held,
-> >>>> +			   struct tcf_proto *tp,
-> >>>> +			   struct netlink_ext_ack *extack)
-> >>>> +{
-> >>>> +	struct tc_action_net *tn = net_generic(net, ctinfo_net_id);
-> >>>> +	struct nlattr *tb[TCA_CTINFO_MAX + 1];
-> >>>> +	struct tcf_ctinfo_params *cp_new;
-> >>>> +	struct tcf_chain *goto_ch = NULL;
-> >>>> +	u32 dscpmask = 0, dscpstatemask;
-> >>>> +	struct tc_ctinfo *actparm;
-> >>>> +	struct tcf_ctinfo *ci;
-> >>>> +	u8 dscpmaskshift;
-> >>>> +	int ret = 0, err;
-> >>>> +
-> >>>> +	if (!nla)
-> >>>> +		return -EINVAL;
-> >>>> +
-> >>>> +	err = nla_parse_nested(tb, TCA_CTINFO_MAX, nla, ctinfo_policy, NULL);
-> >>>                                                                       ^^^^
-> >>> Hi, two things here:
-> >>> Why not use the extack parameter here? Took me a while to notice
-> >>> that the EINVAL was actually hiding the issue below.
-> >>> And also on the other two EINVALs this function returns.
-> >>> 
-> >>> 
-> >>> Seems there was a race when this code went in and the stricter check
-> >>> added by
-> >>> b424e432e770 ("netlink: add validation of NLA_F_NESTED flag") and
-> >>> 8cb081746c03 ("netlink: make validation more configurable for future
-> >>> strictness").
-> >>> 
-> >>> I can't add these actions with current net-next and iproute-next:
-> >>> # ~/iproute2/tc/tc action add action ctinfo dscp 0xfc000000 0x01000000
-> >>> Error: NLA_F_NESTED is missing.
-> >>> We have an error talking to the kernel
-> >>> 
-> >>> This also happens with the current post of act_ct and should also
-> >>> happen with the act_mpls post (thus why Cc'ing John as well).
-> >>> 
-> >>> I'm not sure how we should fix this. In theory the kernel can't get
-> >>> stricter with userspace here, as that breaks user applications as
-> >>> above, so older actions can't use the more stricter parser. Should we
-> >>> have some actions behaving one way, and newer ones in a different way?
-> >>> That seems bad.
-> >>> 
-> >>> Or maybe all actions should just use nla_parse_nested_deprecated()?
-> >>> I'm thinking this last. Yet, then the _deprecated suffix may not make
-> >>> much sense here. WDYT?
-> >> 
-> >> Surely for new actions we can require strict validation, there is
-> >> no existing user space to speak of..  Perhaps act_ctinfo and act_ct
-> >> got slightly confused with the race you described, but in principle
-> >> there is nothing stopping new actions from implementing the user space
-> >> correctly, right?
-> > 
-> > FWIW, that is my thinking too.
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> ---
+>  .../devicetree/bindings/net/dsa/ksz.txt       | 44 +++++++++++++++++++
+>  1 file changed, 44 insertions(+)
 > 
-> 
-> Hi everyone,
-> 
-> Apologies that somehow I seem to have caused a bit of trouble.  If need be
+> diff --git a/Documentation/devicetree/bindings/net/dsa/ksz.txt b/Documentation/devicetree/bindings/net/dsa/ksz.txt
+> index e7db7268fd0fd..4ac576e1cc34e 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/ksz.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/ksz.txt
+> @@ -5,6 +5,8 @@ Required properties:
+>  
+>  - compatible: For external switch chips, compatible string must be exactly one
+>    of the following:
+> +  - "microchip,ksz8863"
+> +  - "microchip,ksz8873"
+>    - "microchip,ksz9477"
+>    - "microchip,ksz9897"
+>    - "microchip,ksz9896"
+> @@ -31,6 +33,48 @@ Ethernet switch connected via SPI to the host, CPU port wired to eth0:
+>  		};
+>  	};
+>  
+> +	mdio0: mdio-gpio {
 
-No need to be. :-)
+Does this example show something new? Examples don't need to instantiate 
+every possible option.
 
-  Marcelo
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_mdio_1>;
+> +		compatible = "virtual,mdio-gpio";
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		gpios = <&gpio1 31 0 &gpio1 22 0>;
+> +
+> +		ksz8863@3 {
+> +			compatible = "microchip,ksz8863";
+> +			interrupt-parrent = <&gpio3>;
+> +			interrupt = <30 IRQ_TYPE_LEVEL_HIGH>;
+> +			reg = <0>;
+> +
+> +			ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				ports@0 {
+> +					reg = <0>;
+> +					label = "lan1";
+> +				};
+> +
+> +				ports@1 {
+> +					reg = <1>;
+> +					label = "lan2";
+> +				};
+> +
+> +				ports@2 {
+> +					reg = <2>;
+> +					label = "cpu";
+> +					ethernet = <&eth0>;
+> +
+> +					fixed-link {
+> +						speed = <100>;
+> +						full-duplex;
+> +					};
+> +				};
+> +			};
+> +		};
+> +	};
+> +
+>  	spi1: spi@f8008000 {
+>  		pinctrl-0 = <&pinctrl_spi_ksz>;
+>  		cs-gpios = <&pioC 25 0>;
+> -- 
+> 2.20.1
+> 
