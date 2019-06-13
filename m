@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96EDE438C2
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFF5438C5
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733286AbfFMPIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:08:22 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39006 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732886AbfFMPIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:08:21 -0400
-Received: by mail-qt1-f194.google.com with SMTP id i34so22923279qta.6;
-        Thu, 13 Jun 2019 08:08:21 -0700 (PDT)
+        id S2387749AbfFMPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:08:29 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:42220 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733210AbfFMPIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:08:22 -0400
+Received: by mail-qk1-f193.google.com with SMTP id b18so12947660qkc.9;
+        Thu, 13 Jun 2019 08:08:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NM86v/g7D2pxbif/CtotD7mg7Of2Y0H8jgV6mxk3r7w=;
-        b=JjAOpihmy54WG2SZzRzlpXDCurNpV6fkt/PA0AHkY24Zf/jQNeHsJRYBLpgnTk3Uth
-         Z5o+cXC8quJuc8v5Ww4p7zXVuur3gHwJZskR03Tq0K/BVarzrVf/ES+S1cpSKRYGY3He
-         aChfP36jXnWam19h6ktm/hwREpSKkjTaGWEee4P0VWUfJx8J0KhUUS31LMnt8agC3Qrd
-         z4QtZRjz7pWq2DvsFKPmfvRye7rLtGIp0/VPDueaIPOmcTLSbj0OZumKTxrZqIKVI88w
-         wHJsYPW4LXD73Ay/HaNLrrXvyVTRhV97yxNdpgfLHY7a1R1ya8tgrVBJvoKZC6vIid0x
-         z3Lw==
+        bh=PKoiguvdOsKNMoylire+/80q+X2cUmMINdCgWVkvQq4=;
+        b=RJ27S6NnwvYIrs2n89pYWkYIyY2rEA77Q7H27tsj9VEuTIw5yaAh53WL9p0GJ30Shn
+         yzoyaosv22UMCZJvKmekrQksj+xyKqPUX5yGOQJtnNXhfrJ6HrtC6c8wP+k9YJipbUpX
+         IopVqwGvjQRw8X5ReY8pGukRIBLT7VqMVgjkItjLJ4oo7F2AiAjkD33FzDJLj6oTyw5T
+         AGB7xshAtbXBINDFHAaXRG++CJZ79mkWGTGBTGJgsasm4BVKMC0gpf7Q1C9/yXjJ4PlN
+         JnM3rbo8qE6J3AvEBwM5ySIjGo0xZV1Jkb8rWltFGrdzctnVIKkmKsdKpPHzJ7srADMM
+         NziQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NM86v/g7D2pxbif/CtotD7mg7Of2Y0H8jgV6mxk3r7w=;
-        b=p0eyCDgdhIk+Vw1lrjT5q1jmHnV36ZPd6MalwE33Aq/WvZnH/vdmScJkt3GWP2lFNR
-         KAkom7rcX1C6anoLwRKPPfNc+FqHWCcNAMz9/OKKkF8UWmAUNbEiQUbVZAqixRhkEJ7B
-         Nur5NxpqOYpCMDqHUgr07780KFIKHs+P4e3qbbeq2KN+HZHhMIH7yl+NjNs7V4g84ZB2
-         LdT1eRbk52RhPLEbWYA2ualZuCnXz558rZTTc7mo8pQPcly8YdhTx9MkqcjvZ8p0RAkY
-         kQdGtFqCyi0Se1svsaOdE7G6Rkrzsl6SmHgIgP1GkcHerdl+5bLEvTxz7E/5w23YoY+c
-         6bHA==
-X-Gm-Message-State: APjAAAViDgsLvYIzE8acFHdFrIUbK9cluWB97hmopY+8IzNxGdGt12eq
-        FRVZpkQAKzrGQF8EtrTLLbM=
-X-Google-Smtp-Source: APXvYqymmrqksCNR2TzjqJTxLKTez3Rqa9+i9DKOUnm9ktIhzT/+epy495o0i3qSjJMP8+1br+eRSA==
-X-Received: by 2002:ac8:17f7:: with SMTP id r52mr77196979qtk.235.1560438500713;
-        Thu, 13 Jun 2019 08:08:20 -0700 (PDT)
+        bh=PKoiguvdOsKNMoylire+/80q+X2cUmMINdCgWVkvQq4=;
+        b=KagJrULVDXOJ6D+b6i0uFGvLBrls7Lp7HMnEHb96599Kli2InAqivdqkIn8oBL5o+J
+         Qjg26dD3NKUb+zC36xQCwWtnY2qCHJxdsj/5RK4uw3o4kCq/x8FEGA3FSWO5KI86eJ95
+         j2S7vfMihaCaOGgK27qA/NFaXMCxGeUcsEKhCsEQl5Q5m5S3uOmwA6XCI1V9sc0Q6HTk
+         zbE0lP12+pSc5N588vtAEEGdVr6SvKqkpX1SWO4en7gHyMaiCTMcIInc4PGF+OC+Et3v
+         8xj8+IcQT6c0NMhAA2oHz7Dm2TOOMDgqCvdNyis9R52p68GY0kLA/W/mp5WTwKAE40S5
+         Zepg==
+X-Gm-Message-State: APjAAAUfZ/az6qFQyEkEdmyJg6BnEqIWJFYRh1sm2lUy9CyG5f41LMPM
+        dat2rPyTUxk1Ai7Fxz6D/ag=
+X-Google-Smtp-Source: APXvYqydIsClpk8mAH1HWuUD+/BmCDGGL6PYMPu0u7Z+MOQVii7G3eIl/xbIiIDVjBncXqBiwZk6qA==
+X-Received: by 2002:a37:8ca:: with SMTP id 193mr19364139qki.124.1560438501832;
+        Thu, 13 Jun 2019 08:08:21 -0700 (PDT)
 Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id d188sm1641989qkf.40.2019.06.13.08.08.19
+        by smtp.gmail.com with ESMTPSA id d188sm1641989qkf.40.2019.06.13.08.08.20
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 08:08:20 -0700 (PDT)
+        Thu, 13 Jun 2019 08:08:21 -0700 (PDT)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     jakub.kicinski@netronome.com, peterz@infradead.org
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         linux-kernel@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next 1/2] locking/static_key: always define static_branch_deferred_inc
-Date:   Thu, 13 Jun 2019 11:08:15 -0400
-Message-Id: <20190613150816.83198-2-willemdebruijn.kernel@gmail.com>
+Subject: [PATCH net-next 2/2] tcp: use static_branch_deferred_inc for clean_acked_data_enabled
+Date:   Thu, 13 Jun 2019 11:08:16 -0400
+Message-Id: <20190613150816.83198-3-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
 In-Reply-To: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
 References: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
@@ -63,36 +63,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
-available also when jump labels are off.
+Deferred static key clean_acked_data_enabled uses the deferred
+variants of dec and flush. Do the same for inc.
 
 Signed-off-by: Willem de Bruijn <willemb@google.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/linux/jump_label_ratelimit.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/jump_label_ratelimit.h b/include/linux/jump_label_ratelimit.h
-index 42710d5949ba..8c3ee291b2d8 100644
---- a/include/linux/jump_label_ratelimit.h
-+++ b/include/linux/jump_label_ratelimit.h
-@@ -60,8 +60,6 @@ extern void jump_label_update_timeout(struct work_struct *work);
- 						   0),			\
- 	}
- 
--#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
--
- #else	/* !CONFIG_JUMP_LABEL */
- struct static_key_deferred {
- 	struct static_key  key;
-@@ -95,4 +93,7 @@ jump_label_rate_limit(struct static_key_deferred *key,
- 	STATIC_KEY_CHECK_USE(key);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 08a477e74cf3..9269bbfc05f9 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -119,7 +119,7 @@ void clean_acked_data_enable(struct inet_connection_sock *icsk,
+ 			     void (*cad)(struct sock *sk, u32 ack_seq))
+ {
+ 	icsk->icsk_clean_acked = cad;
+-	static_branch_inc(&clean_acked_data_enabled.key);
++	static_branch_deferred_inc(&clean_acked_data_enabled);
  }
- #endif	/* CONFIG_JUMP_LABEL */
-+
-+#define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
-+
- #endif	/* _LINUX_JUMP_LABEL_RATELIMIT_H */
+ EXPORT_SYMBOL_GPL(clean_acked_data_enable);
+ 
 -- 
 2.22.0.rc2.383.gf4fbbf30c2-goog
 
