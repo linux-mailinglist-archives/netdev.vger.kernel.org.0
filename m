@@ -2,185 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2729E43991
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 952A043ADA
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732977AbfFMPOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:14:38 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45833 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732248AbfFMPOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:14:37 -0400
-Received: by mail-qt1-f194.google.com with SMTP id j19so22939979qtr.12
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 08:14:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BGsJ73w+MLOSe60JnmsACb1QedRcajWtXmOr33e/mjo=;
-        b=TIk6TaZO4TZ/AhUlFwcE8EuHlOTKuMCtbbpEXKm/ybIgThy2dofIwB5au1E+jR74Os
-         1MmRd17BOaXMr0XaJz/1l+Ti43EvulbRN1tpeaDvQK5IuEm8kt7rF+IyRJp2xBOPd2MT
-         JIc7OUETyFHY5SshPqLfXGJzYt0dBR4hHAW0MMBKykPbgHP1dGXq6262bn8gX5ThjibD
-         gBJdoAvlT0cjYnulrsxVMRm9qVfZle04Jx7I/4RCxG0HdbzP0FbnEh/4ab6YWPfRg1/R
-         W4FCiAqFp5vJLf9pkDQFU2KDlPiA/RbTKRUEy9j03hqc/jfdn29TrKbbci5H3UgWWvc9
-         97fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BGsJ73w+MLOSe60JnmsACb1QedRcajWtXmOr33e/mjo=;
-        b=ZEEFwPhLaBsmxCMaFwvRXf0QNguSoUyFALz61fBK2K0QG9SMZ6FcmUApfcMnU50WZh
-         76nWIeBz5wO2n9Gv8OYbrK0FvymjmL2LZTlRug7yF2iW7Hu+KFiyVc44Odrr6d4k4F5K
-         JUo108ZE2GOVIdK33Be0PyukyfbC8h/FjDiawzlIit/2cMxDR76r4g2yS3611D6bHIo5
-         k6qd14CX7UOAdjvR+RinM44pBlxQkD7WY5xyWtjsNDucsZf+RAiCPTrRWKbZ77PXaue4
-         y2ytxjBXEWyhjhnwr8J56+xycqf21QY9q7MLvroTIvLuYmZhvjJnzJ7sfJesfJ/Oth7m
-         OxSA==
-X-Gm-Message-State: APjAAAXrPzngLXFNHssIoCIP9jy0Ty76yHbJb5WrT+U2eGhsroYBsl/h
-        WF9oJsZ1ZDLNUlDNpmTV3ElkSD4qqKnYvcpxkZg=
-X-Google-Smtp-Source: APXvYqxS6vFZSIS1JdK7J4P5jBkmu6GuOrRs6MCYyXVJb+gIEJPiDy09cXbu0ASrGY1bhcoYKq/kYGUZKPHhD5hks/I=
-X-Received: by 2002:aed:3e7c:: with SMTP id m57mr71109818qtf.204.1560438875951;
- Thu, 13 Jun 2019 08:14:35 -0700 (PDT)
+        id S2388687AbfFMPYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:24:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38956 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388244AbfFMPYN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 11:24:13 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id F3BD42F8BFD;
+        Thu, 13 Jun 2019 15:24:12 +0000 (UTC)
+Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0AF0619C67;
+        Thu, 13 Jun 2019 15:24:11 +0000 (UTC)
+Message-ID: <33dc8df3cb95e76c906ddb88041ba974bbe73a1c.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 1/2] ipoib: correcly show a VF hardware
+ address
+From:   Doug Ledford <dledford@redhat.com>
+To:     Denis Kirjanov <kda@linux-powerpc.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mkubecek@suse.cz
+Date:   Thu, 13 Jun 2019 11:24:09 -0400
+In-Reply-To: <20190613142003.129391-3-dkirjanov@suse.com>
+References: <20190613142003.129391-1-dkirjanov@suse.com>
+         <20190613142003.129391-3-dkirjanov@suse.com>
+Organization: Red Hat, Inc.
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-HdDD15E8H0DGo1j/KQ/U"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
-References: <cover.1560287477.git.rspmn@arcor.de>
-In-Reply-To: <cover.1560287477.git.rspmn@arcor.de>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Thu, 13 Jun 2019 17:14:24 +0200
-Message-ID: <CAGRyCJF39NQmwNAUoxFHTSnZ8WCGXKuWVyPoPQ0KnHcAAsmR+A@mail.gmail.com>
-Subject: Re: [PATCH 0/4] qmi_wwan: fix QMAP handling
-To:     Reinhard Speyerer <rspmn@arcor.de>
-Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 13 Jun 2019 15:24:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Reinhard,
 
-Il giorno mer 12 giu 2019 alle ore 19:02 Reinhard Speyerer
-<rspmn@arcor.de> ha scritto:
->
-> This series addresses the following issues observed when using the
-> QMAP support of the qmi_wwan driver:
->
-> 1. The QMAP code in the qmi_wwan driver is based on the CodeAurora
->    GobiNet driver ([1], [2]) which does not process QMAP padding
->    in the RX path correctly. This causes qmimux_rx_fixup() to pass
->    incorrect data to the IP stack when padding is used.
->
-> 2. qmimux devices currently lack proper network device usage statistics.
->
-> 3. RCU stalls on device disconnect with QMAP activated like this
->
->    # echo Y > /sys/class/net/wwan0/qmi/raw_ip
->    # echo 1 > /sys/class/net/wwan0/qmi/add_mux
->    # echo 2 > /sys/class/net/wwan0/qmi/add_mux
->    # echo 3 > /sys/class/net/wwan0/qmi/add_mux
->
->    have been observed in certain setups:
->
->    [ 2273.676593] option1 ttyUSB16: GSM modem (1-port) converter now disc=
-onnected from ttyUSB16
->    [ 2273.676617] option 6-1.2:1.0: device disconnected
->    [ 2273.676774] WARNING: CPU: 1 PID: 141 at kernel/rcu/tree_plugin.h:34=
-2 rcu_note_context_switch+0x2a/0x3d0
->    [ 2273.676776] Modules linked in: option qmi_wwan cdc_mbim cdc_ncm qcs=
-erial cdc_wdm usb_wwan sierra sierra_net usbnet mii edd coretemp iptable_ma=
-ngle ip6_tables iptable_filter ip_tables cdc_acm dm_mod dax iTCO_wdt evdev =
-iTCO_vendor_support sg ftdi_sio usbserial e1000e ptp pps_core i2c_i801 ehci=
-_pci button lpc_ich i2c_core mfd_core uhci_hcd ehci_hcd rtc_cmos usbcore us=
-b_common sd_mod fan ata_piix thermal
->    [ 2273.676817] CPU: 1 PID: 141 Comm: kworker/1:1 Not tainted 4.19.38-r=
-sp-1 #1
->    [ 2273.676819] Hardware name: Not Applicable   Not Applicable  /CX-GS/=
-GM45-GL40             , BIOS V1.11      03/23/2011
->    [ 2273.676828] Workqueue: usb_hub_wq hub_event [usbcore]
->    [ 2273.676832] EIP: rcu_note_context_switch+0x2a/0x3d0
->    [ 2273.676834] Code: 55 89 e5 57 56 89 c6 53 83 ec 14 89 45 f0 e8 5d f=
-f ff ff 89 f0 64 8b 3d 24 a6 86 c0 84 c0 8b 87 04 02 00 00 75 7a 85 c0 7e 7=
-a <0f> 0b 80 bf 08 02 00 00 00 0f 84 87 00 00 00 e8 b2 e2 ff ff bb dc
->    [ 2273.676836] EAX: 00000001 EBX: f614bc00 ECX: 00000001 EDX: c0715b81
->    [ 2273.676838] ESI: 00000000 EDI: f18beb40 EBP: f1a3dc20 ESP: f1a3dc00
->    [ 2273.676840] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00=
-010002
->    [ 2273.676842] CR0: 80050033 CR2: b7e97230 CR3: 2f9c4000 CR4: 000406b0
->    [ 2273.676843] Call Trace:
->    [ 2273.676847]  ? preempt_count_add+0xa5/0xc0
->    [ 2273.676852]  __schedule+0x4e/0x4f0
->    [ 2273.676855]  ? __queue_work+0xf1/0x2a0
->    [ 2273.676858]  ? _raw_spin_lock_irqsave+0x14/0x40
->    [ 2273.676860]  ? preempt_count_add+0x52/0xc0
->    [ 2273.676862]  schedule+0x33/0x80
->    [ 2273.676865]  _synchronize_rcu_expedited+0x24e/0x280
->    [ 2273.676867]  ? rcu_accelerate_cbs_unlocked+0x70/0x70
->    [ 2273.676871]  ? wait_woken+0x70/0x70
->    [ 2273.676873]  ? rcu_accelerate_cbs_unlocked+0x70/0x70
->    [ 2273.676875]  ? _synchronize_rcu_expedited+0x280/0x280
->    [ 2273.676877]  synchronize_rcu_expedited+0x22/0x30
->    [ 2273.676881]  synchronize_net+0x25/0x30
->    [ 2273.676885]  dev_deactivate_many+0x133/0x230
->    [ 2273.676887]  ? preempt_count_add+0xa5/0xc0
->    [ 2273.676890]  __dev_close_many+0x4d/0xc0
->    [ 2273.676892]  ? skb_dequeue+0x40/0x50
->    [ 2273.676895]  dev_close_many+0x5d/0xd0
->    [ 2273.676898]  rollback_registered_many+0xbf/0x4c0
->    [ 2273.676901]  ? raw_notifier_call_chain+0x1a/0x20
->    [ 2273.676904]  ? call_netdevice_notifiers_info+0x23/0x60
->    [ 2273.676906]  ? netdev_master_upper_dev_get+0xe/0x70
->    [ 2273.676908]  rollback_registered+0x1f/0x30
->    [ 2273.676911]  unregister_netdevice_queue+0x47/0xb0
->    [ 2273.676915]  qmimux_unregister_device+0x1f/0x30 [qmi_wwan]
->    [ 2273.676917]  qmi_wwan_disconnect+0x5d/0x90 [qmi_wwan]
->    ...
->    [ 2273.677001] ---[ end trace 0fcc5f88496b485a ]---
->    [ 2294.679136] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
->    [ 2294.679140] rcu:  Tasks blocked on level-0 rcu_node (CPUs 0-1): P14=
-1
->    [ 2294.679144] rcu:  (detected by 0, t=3D21002 jiffies, g=3D265857, q=
-=3D8446)
->    [ 2294.679148] kworker/1:1     D    0   141      2 0x80000000
->
->
-> In addition the permitted QMAP mux_id value range is extended for
-> compatibility with ip(8) and the rmnet driver.
->
-> Reinhard
->
+--=-HdDD15E8H0DGo1j/KQ/U
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I tested your patch-set with LM940 and it seems working properly.
+On Thu, 2019-06-13 at 16:20 +0200, Denis Kirjanov wrote:
+> in the case of IPoIB with SRIOV enabled hardware
+> ip link show command incorrecly prints
+> 0 instead of a VF hardware address. To correcly print the address
+> add a new field to specify an address length.
+>=20
+> Before:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0 MAC 00:00:00:00:00:00, spoof checking off, link-state
+> disable,
+> trust off, query_rss off
+> ...
+> After:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+> checking off, link-state disable, trust off, query_rss off
+>=20
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> ---
+>  drivers/infiniband/ulp/ipoib/ipoib_main.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c
+> b/drivers/infiniband/ulp/ipoib/ipoib_main.c
+> index 9b5e11d3fb85..04ea7db08e87 100644
+> --- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
+> +++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
+> @@ -1998,6 +1998,7 @@ static int ipoib_get_vf_config(struct
+> net_device *dev, int vf,
+>  		return err;
+> =20
+>  	ivf->vf =3D vf;
+> +	memcpy(ivf->mac, dev->dev_addr, dev->addr_len);
+> =20
+>  	return 0;
+>  }
 
-If you think it is worth, the tag
+I'm ok with the patch, but your commit message does not match what the
+patch does at all.  You need to correct the commit message.
 
-Tested-by: Daniele Palmas <dnlplm@gmail.com>
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57
+2FDD
 
-can be added.
+--=-HdDD15E8H0DGo1j/KQ/U
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-By the way, not related to your patches, but I've received reports of
-throughput tests with LM960
-(dl-max-datagrams=3D32,dl-datagram-max-size=3D16384, single PDN, UDP)
-reaching around 1.15 Gbps in downlink, so the driver seems to be
-working pretty well. This, however, requires usbnet rx_urb_size to be
-changed (currently I'm just modifying the parent network adapter MTU
-to achieve this).
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
-Daniele
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl0CapkACgkQuCajMw5X
+L91/aA/+MR47RawkBMXJ/bSYCXW7AvbOUTMjz2UQxIf0GZmzzIrRgjlgMJEwpCRm
+/67/5C9MWE4T6rvcWKm0CgRnTj60iywwAUerkZ78u3n02Kw5gf9QvP73vXcQKKhB
+D802Nv2+cFjFsyDSyYnDsR+AhKVuTizufIJ6O6x7DIKT/6nzSF9+Wsu55TbRZ8bv
+HSCODKg8rrjzony1YQEJhzG75INnHPzo7sp5U3pofn1CaddwmLpTQS6UPIfd7FvR
+hk92P8Vgjj6PK11twdWXgv7CZCKvqnqdbfaLMd/Ty3GJ7CxVBxwy1ynRvPu2KVu/
+Z6tCgNv5Q8sp0hwguoEgmXXf2Wxr94cPafzLTor1oRMLQFlZHTkmKcS5djnl/3ee
+pVVa97Dg+qDZc6a58kiZ5A/Cpa5Sn7ECxPNCz+NmMdU39FwVYGaWxLQMeDYG07XJ
+pOINrrIsEFBMZZ7vPchHbFUCZPB/yKtOkL39jZW5z4+hrFscAT67eiQgaO+9KjYU
+UZAYxTPLVkR7ffQRGMeVt+FwNq00Id3XxaHCrnh5tHMQbxiTmTHielZmadGaM6/Y
+tiWvtR1wVYqGKBQ+tn8mKi0937mL+PP+2/D1+7nxe/Nqh1fwGoevz70m7EJRA6ny
+mQ4lopbC2xmu75oQdMs22IF6KdLIWQNvbwOaXcRjIWQxFyhFMJ4=
+=InDf
+-----END PGP SIGNATURE-----
 
-> [1]: https://portland.source.codeaurora.org/patches/quic/gobi
-> [2]: https://portland.source.codeaurora.org/quic/qsdk/oss/lklm/gobinet/
->
-> Reinhard Speyerer (4):
->   qmi_wwan: add support for QMAP padding in the RX path
->   qmi_wwan: add network device usage statistics for qmimux devices
->   qmi_wwan: avoid RCU stalls on device disconnect when in QMAP mode
->   qmi_wwan: extend permitted QMAP mux_id value range
->
->  Documentation/ABI/testing/sysfs-class-net-qmi |   4 +-
->  drivers/net/usb/qmi_wwan.c                    | 103 ++++++++++++++++++++=
-++----
->  2 files changed, 91 insertions(+), 16 deletions(-)
->
-> --
-> 2.11.0
->
+--=-HdDD15E8H0DGo1j/KQ/U--
+
