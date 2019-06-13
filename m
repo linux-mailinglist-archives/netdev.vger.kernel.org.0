@@ -2,114 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA175442B9
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F682444D2
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388895AbfFMQZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:25:10 -0400
-Received: from mail-vk1-f193.google.com ([209.85.221.193]:40706 "EHLO
-        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728789AbfFMQZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:25:09 -0400
-Received: by mail-vk1-f193.google.com with SMTP id s16so4220266vke.7
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 09:25:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4QF5aHDq01mrvmqrbhsgiXkss+ghjibQPk8bwaI3rCI=;
-        b=a1ZGCklkE23KFukqsdi9Wk3NktOq9ie/nvkwCmcVyaRv46yLbCXhg2nrddnchIKajk
-         XnyKDI26bmLffhJ5t7EVlgt0b3QJy7ygzSNERWZfqyq2wpiZGTMeg8E/5I5jsQ3csGxb
-         ckKLX0vnpKfVgZd4iAaI4+05t+5nz1qR5tXWYdrvbIuJEH2K8V6LCWMkWntwtkbRD/M6
-         skUAllHs9iYcs8KwqptPEhZ6MQD3hLCK7hpKd5D/U6+YzJWr2tF4LqKGBNkOKu7+FCf+
-         hJbaQpCqBaYjVTM/WnofjE8f4SLlJqVDtXG6O7Ap4IrPlOhuuEcj2g5NgANiqE1PAMQJ
-         Bubg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4QF5aHDq01mrvmqrbhsgiXkss+ghjibQPk8bwaI3rCI=;
-        b=C1baJ2tnU1E1DsIoqYH6nsQEXbI+6aPpck3RtTXOEaDPPESpkPYzUAaKMSLFR/Aaqh
-         KQ0AXW8h/QS3h8PZ9spG7hIY+NFZU2Kt20SGLm1/Nyx14usT16k2lfiAH6aHz9R+2TGj
-         YkegfBl7SbJS4p+V0kBkTk9RW4ZbEUhgISr+dVKMoY2VK9BRdTHzYz6jxs2dsL1RZZ35
-         Sk9vxeGhZWCTe2HEmcB4Onuwsgk6475rFWbl7Fj888nHVmDI84GDisq6JHCW//76wkg2
-         9FTM8U/ik6irUWTMXFcsz2qpuGuDdxNO/uhyZcicx/894WiZhUSnUVREEWmRJfQEUO15
-         xd2A==
-X-Gm-Message-State: APjAAAUFDN/peORWK8BJ8wob0XFOSD0c/03YIDfuw2OGdsokQF8FbBi9
-        E3C3H3qjgZbBFXO4O0pg2qYLdo63
-X-Google-Smtp-Source: APXvYqzzyEcjOlTDMfKP11DyX55eeXtsXUZX/j/v3cihYoWztaltL2hFvl8kZ8PnhqZfsucY2o288Q==
-X-Received: by 2002:a1f:c251:: with SMTP id s78mr11044998vkf.7.1560443107581;
-        Thu, 13 Jun 2019 09:25:07 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id t5sm194018vke.51.2019.06.13.09.25.06
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 09:25:06 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jasowang@redhat.com, mst@redhat.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] virtio_net: enable napi_tx by default
-Date:   Thu, 13 Jun 2019 12:24:57 -0400
-Message-Id: <20190613162457.143518-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
+        id S2403813AbfFMQjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:39:45 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42674 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2392609AbfFMQjo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 12:39:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id EACE0ADD9;
+        Thu, 13 Jun 2019 16:39:41 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 4D0E1E00E3; Thu, 13 Jun 2019 18:39:41 +0200 (CEST)
+Date:   Thu, 13 Jun 2019 18:39:41 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Denis Kirjanov <kda@linux-powerpc.org>
+Cc:     davem@davemloft.net, dledford@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/2] ipoib: show VF broadcast address
+Message-ID: <20190613163941.GK31797@unicorn.suse.cz>
+References: <20190613142003.129391-1-dkirjanov@suse.com>
+ <20190613142003.129391-4-dkirjanov@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190613142003.129391-4-dkirjanov@suse.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Thu, Jun 13, 2019 at 04:20:03PM +0200, Denis Kirjanov wrote:
+> in IPoIB case we can't see a VF broadcast address for but
+> can see for PF
+> 
+> Before:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
+> trust off, query_rss off
+> ...
+> 
+> After:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+> checking off, link-state disable, trust off, query_rss off
+> 
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> ---
+>  include/uapi/linux/if_link.h | 5 +++++
+>  net/core/rtnetlink.c         | 6 ++++++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 5b225ff63b48..1f36dd3a45d6 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -681,6 +681,7 @@ enum {
+>  enum {
+>  	IFLA_VF_UNSPEC,
+>  	IFLA_VF_MAC,		/* Hardware queue specific attributes */
+> +	IFLA_VF_BROADCAST,
+>  	IFLA_VF_VLAN,		/* VLAN ID and QoS */
+>  	IFLA_VF_TX_RATE,	/* Max TX Bandwidth Allocation */
+>  	IFLA_VF_SPOOFCHK,	/* Spoof Checking on/off switch */
 
-NAPI tx mode improves TCP behavior by enabling TCP small queues (TSQ).
-TSQ reduces queuing ("bufferbloat") and burstiness.
+Oops, I forgot to mention one important point when reviewing v1: the new
+attribute type must be added at the end (just before __IFLA_VF_MAX) so
+that you do not change value of existing IFLA_VF_* constants (this would
+break compatibility).
 
-Previous measurements have shown significant improvement for
-TCP_STREAM style workloads. Such as those in commit 86a5df1495cc
-("Merge branch 'virtio-net-tx-napi'").
+> @@ -704,6 +705,10 @@ struct ifla_vf_mac {
+>  	__u8 mac[32]; /* MAX_ADDR_LEN */
+>  };
+>  
+> +struct ifla_vf_broadcast {
+> +	__u8 broadcast[32];
+> +};
+> +
+>  struct ifla_vf_vlan {
+>  	__u32 vf;
+>  	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
 
-There has been uncertainty about smaller possible regressions in
-latency due to increased reliance on tx interrupts.
+My first idea was that to question the need of a wrapping structure as
+we couldn't modify that structure in the future anyway so that there
+does not seem to be any gain against simply passing the address as a
+binary with attribute length equal to address length (like we do with
+IFLA_ADDRESS and IFLA_BROADCAST).
 
-The above results did not show that, nor did I observe this when
-rerunning TCP_RR on Linux 5.1 this week on a pair of guests in the
-same rack. This may be subject to other settings, notably interrupt
-coalescing.
+But then I checked other IFLA_VF_* attributes and I'm confused. The
+structure seems to be
 
-In the unlikely case of regression, we have landed a credible runtime
-solution. Ethtool can configure it with -C tx-frames [0|1] as of
-commit 0c465be183c7 ("virtio_net: ethtool tx napi configuration").
+    IFLA_VF_INFO_LIST
+        IFLA_VF_INFO
+            IFLA_VF_MAC
+            IFLA_VF_VLAN
+            ...
+        IFLA_VF_INFO
+            IFLA_VF_MAC
+            IFLA_VF_VLAN
+            ...
+        ...
 
-NAPI tx mode has been the default in Google Container-Optimized OS
-(COS) for over half a year, as of release M70 in October 2018,
-without any negative reports.
+Each IFLA_VF_INFO corresponds to one virtual function but its number is
+not determined by an attribute within this nest. Instead, each of the
+neste IFLA_VF_* attributes is a structure containing "__u32 vf" and it's
+only matter of convention that within one IFLA_VF_INFO nest, all data
+belongs to the same VF, neither do_setlink() nor do_setvfinfo() check
+it.
 
-Link: https://marc.info/?l=linux-netdev&m=149305618416472
-Link: https://lwn.net/Articles/507065/
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+I guess you should either follow this weird pattern or introduce proper
+IFLA_VF_ID to be used for IFLA_VF_BROADCAST and all future IFLA_VF_*
+attributes. However, each new attribute makes IFLA_VF_INFO bigger and
+lowers the number of VFs that can be stored in an IFLA_VF_INFO_LIST nest
+without exceeding the hard limit of 65535 bytes so that we cannot afford
+to add too many.
 
----
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index cec60583931f..88304212f127 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+...
+> @@ -1753,6 +1758,7 @@ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+>  
+>  static const struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
+>  	[IFLA_VF_MAC]		= { .len = sizeof(struct ifla_vf_mac) },
+> +	[IFLA_VF_BROADCAST]	= {. len = sizeof(struct ifla_vf_broadcast) },
+>  	[IFLA_VF_VLAN]		= { .len = sizeof(struct ifla_vf_vlan) },
+>  	[IFLA_VF_VLAN_LIST]     = { .type = NLA_NESTED },
+>  	[IFLA_VF_TX_RATE]	= { .len = sizeof(struct ifla_vf_tx_rate) },
 
-now that we have ethtool support and real production deployment,
-it seemed like a good time to revisit this discussion.
+As you do not implement setting the broadcast address (is that possible
+at all?), NLA_REJECT would be more appropriate so that the request isn't
+silently ignored.
 
----
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 0d4115c9e20b..4f3de0ac8b0b 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -26,7 +26,7 @@
- static int napi_weight = NAPI_POLL_WEIGHT;
- module_param(napi_weight, int, 0444);
- 
--static bool csum = true, gso = true, napi_tx;
-+static bool csum = true, gso = true, napi_tx = true;
- module_param(csum, bool, 0444);
- module_param(gso, bool, 0444);
- module_param(napi_tx, bool, 0644);
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
-
+Michal
