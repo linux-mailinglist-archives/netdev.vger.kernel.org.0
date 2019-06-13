@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E33B44B28
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A7644B2F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:53:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729100AbfFMSxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:53:33 -0400
-Received: from mga12.intel.com ([192.55.52.136]:64322 "EHLO mga12.intel.com"
+        id S1729440AbfFMSxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 14:53:46 -0400
+Received: from mga12.intel.com ([192.55.52.136]:64320 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729222AbfFMSxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729236AbfFMSxb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 13 Jun 2019 14:53:31 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,13 +20,13 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 13 Jun 2019 11:53:30 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Doug Dziggel <douglas.a.dziggel@intel.com>, netdev@vger.kernel.org,
+Cc:     Sergey Nemov <sergey.nemov@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 06/12] i40e: Improve AQ log granularity
-Date:   Thu, 13 Jun 2019 11:53:41 -0700
-Message-Id: <20190613185347.16361-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 07/12] i40e: add input validation for virtchnl handlers
+Date:   Thu, 13 Jun 2019 11:53:42 -0700
+Message-Id: <20190613185347.16361-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
 References: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
@@ -37,137 +37,275 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Doug Dziggel <douglas.a.dziggel@intel.com>
+From: Sergey Nemov <sergey.nemov@intel.com>
 
-This patch makes it possible to log only AQ descriptors, without the
-entire AQ message buffers being dumped too. It should greatly reduce
-kernel log size in cases where a full AQ dump is not needed.
-Selection is made by setting flags in hw->debug_mask.
+Change some data to unsigned int instead of integer when we compare.
 
-Additionally, some debug messages that preceded an AQ dump have been
-moved to I40E_DEBUG_AQ_COMMAND class, which seems more appropriate.
+Check LUT values in VIRTCHNL_OP_CONFIG_RSS_LUT handler.
 
-Signed-off-by: Doug Dziggel <douglas.a.dziggel@intel.com>
+Also enhance error/warning messages to print the real values of
+I40E_MAX_VF_QUEUES, I40E_MAX_VF_VSI and I40E_DEFAULT_QUEUES_PER_VF
+instead of plain text.
+
+Refactor code to comply with 'check first then assign' policy.
+
+Remove duplicate checks for VIRTCHNL_OP_CONFIG_RSS_KEY and
+VIRTCHNL_OP_CONFIG_RSS_LUT opcodes in i40e_vc_process_vf_msg(). We have
+the very same checks inside the handlers already.
+
+Signed-off-by: Sergey Nemov <sergey.nemov@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_adminq.c |  8 ++--
- drivers/net/ethernet/intel/i40e/i40e_common.c | 40 ++++++++++---------
- 2 files changed, 25 insertions(+), 23 deletions(-)
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 74 ++++++++-----------
+ 1 file changed, 31 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq.c b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-index 243dcd4bec19..814acbe79ffd 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-@@ -675,7 +675,7 @@ static u16 i40e_clean_asq(struct i40e_hw *hw)
- 	desc = I40E_ADMINQ_DESC(*asq, ntc);
- 	details = I40E_ADMINQ_DETAILS(*asq, ntc);
- 	while (rd32(hw, hw->aq.asq.head) != ntc) {
--		i40e_debug(hw, I40E_DEBUG_AQ_MESSAGE,
-+		i40e_debug(hw, I40E_DEBUG_AQ_COMMAND,
- 			   "ntc %d head %d.\n", ntc, rd32(hw, hw->aq.asq.head));
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index c4c71cf7c4d7..ac3a130ee7d4 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -470,14 +470,15 @@ static int i40e_config_iwarp_qvlist(struct i40e_vf *vf,
+ 		qv_info = &qvlist_info->qv_info[i];
+ 		if (!qv_info)
+ 			continue;
+-		v_idx = qv_info->v_idx;
  
- 		if (details->callback) {
-@@ -835,7 +835,7 @@ i40e_status i40e_asq_send_command(struct i40e_hw *hw,
+ 		/* Validate vector id belongs to this vf */
+-		if (!i40e_vc_isvalid_vector_id(vf, v_idx)) {
++		if (!i40e_vc_isvalid_vector_id(vf, qv_info->v_idx)) {
+ 			ret = -EINVAL;
+ 			goto err_free;
+ 		}
+ 
++		v_idx = qv_info->v_idx;
++
+ 		vf->qvlist_info->qv_info[i] = *qv_info;
+ 
+ 		reg_idx = ((msix_vf - 1) * vf->vf_id) + (v_idx - 1);
+@@ -2327,7 +2328,6 @@ static int i40e_vc_enable_queues_msg(struct i40e_vf *vf, u8 *msg)
+ 	struct virtchnl_queue_select *vqs =
+ 	    (struct virtchnl_queue_select *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+-	u16 vsi_id = vqs->vsi_id;
+ 	i40e_status aq_ret = 0;
+ 	int i;
+ 
+@@ -2336,7 +2336,7 @@ static int i40e_vc_enable_queues_msg(struct i40e_vf *vf, u8 *msg)
+ 		goto error_param;
  	}
  
- 	/* bump the tail */
--	i40e_debug(hw, I40E_DEBUG_AQ_MESSAGE, "AQTX: desc and buffer:\n");
-+	i40e_debug(hw, I40E_DEBUG_AQ_COMMAND, "AQTX: desc and buffer:\n");
- 	i40e_debug_aq(hw, I40E_DEBUG_AQ_COMMAND, (void *)desc_on_ring,
- 		      buff, buff_size);
- 	(hw->aq.asq.next_to_use)++;
-@@ -886,7 +886,7 @@ i40e_status i40e_asq_send_command(struct i40e_hw *hw,
- 		hw->aq.asq_last_status = (enum i40e_admin_queue_err)retval;
+-	if (!i40e_vc_isvalid_vsi_id(vf, vsi_id)) {
++	if (!i40e_vc_isvalid_vsi_id(vf, vqs->vsi_id)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto error_param;
  	}
- 
--	i40e_debug(hw, I40E_DEBUG_AQ_MESSAGE,
-+	i40e_debug(hw, I40E_DEBUG_AQ_COMMAND,
- 		   "AQTX: desc and buffer writeback:\n");
- 	i40e_debug_aq(hw, I40E_DEBUG_AQ_COMMAND, (void *)desc, buff, buff_size);
- 
-@@ -995,7 +995,7 @@ i40e_status i40e_clean_arq_element(struct i40e_hw *hw,
- 		memcpy(e->msg_buf, hw->aq.arq.r.arq_bi[desc_idx].va,
- 		       e->msg_len);
- 
--	i40e_debug(hw, I40E_DEBUG_AQ_MESSAGE, "AQRX: desc and buffer:\n");
-+	i40e_debug(hw, I40E_DEBUG_AQ_COMMAND, "AQRX: desc and buffer:\n");
- 	i40e_debug_aq(hw, I40E_DEBUG_AQ_COMMAND, (void *)desc, e->msg_buf,
- 		      hw->aq.arq_buf_size);
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
-index ecb1adaa54ec..641b500ad919 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_common.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
-@@ -281,47 +281,49 @@ void i40e_debug_aq(struct i40e_hw *hw, enum i40e_debug_mask mask, void *desc,
- 		   void *buffer, u16 buf_len)
+@@ -2436,18 +2436,14 @@ static int i40e_vc_request_queues_msg(struct i40e_vf *vf, u8 *msg)
  {
- 	struct i40e_aq_desc *aq_desc = (struct i40e_aq_desc *)desc;
-+	u32 effective_mask = hw->debug_mask & mask;
-+	char prefix[27];
- 	u16 len;
- 	u8 *buf = (u8 *)buffer;
+ 	struct virtchnl_vf_res_request *vfres =
+ 		(struct virtchnl_vf_res_request *)msg;
+-	int req_pairs = vfres->num_queue_pairs;
+-	int cur_pairs = vf->num_queue_pairs;
++	u16 req_pairs = vfres->num_queue_pairs;
++	u8 cur_pairs = vf->num_queue_pairs;
+ 	struct i40e_pf *pf = vf->pf;
  
--	if ((!(mask & hw->debug_mask)) || (desc == NULL))
-+	if (!effective_mask || !desc)
- 		return;
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states))
+ 		return -EINVAL;
  
- 	len = le16_to_cpu(aq_desc->datalen);
+-	if (req_pairs <= 0) {
+-		dev_err(&pf->pdev->dev,
+-			"VF %d tried to request %d queues.  Ignoring.\n",
+-			vf->vf_id, req_pairs);
+-	} else if (req_pairs > I40E_MAX_VF_QUEUES) {
++	if (req_pairs > I40E_MAX_VF_QUEUES) {
+ 		dev_err(&pf->pdev->dev,
+ 			"VF %d tried to request more than %d queues.\n",
+ 			vf->vf_id,
+@@ -2596,12 +2592,11 @@ static int i40e_vc_add_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+ 	    (struct virtchnl_ether_addr_list *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = al->vsi_id;
+ 	i40e_status ret = 0;
+ 	int i;
  
--	i40e_debug(hw, mask,
-+	i40e_debug(hw, mask & I40E_DEBUG_AQ_DESCRIPTOR,
- 		   "AQ CMD: opcode 0x%04X, flags 0x%04X, datalen 0x%04X, retval 0x%04X\n",
- 		   le16_to_cpu(aq_desc->opcode),
- 		   le16_to_cpu(aq_desc->flags),
- 		   le16_to_cpu(aq_desc->datalen),
- 		   le16_to_cpu(aq_desc->retval));
--	i40e_debug(hw, mask, "\tcookie (h,l) 0x%08X 0x%08X\n",
-+	i40e_debug(hw, mask & I40E_DEBUG_AQ_DESCRIPTOR,
-+		   "\tcookie (h,l) 0x%08X 0x%08X\n",
- 		   le32_to_cpu(aq_desc->cookie_high),
- 		   le32_to_cpu(aq_desc->cookie_low));
--	i40e_debug(hw, mask, "\tparam (0,1)  0x%08X 0x%08X\n",
-+	i40e_debug(hw, mask & I40E_DEBUG_AQ_DESCRIPTOR,
-+		   "\tparam (0,1)  0x%08X 0x%08X\n",
- 		   le32_to_cpu(aq_desc->params.internal.param0),
- 		   le32_to_cpu(aq_desc->params.internal.param1));
--	i40e_debug(hw, mask, "\taddr (h,l)   0x%08X 0x%08X\n",
-+	i40e_debug(hw, mask & I40E_DEBUG_AQ_DESCRIPTOR,
-+		   "\taddr (h,l)   0x%08X 0x%08X\n",
- 		   le32_to_cpu(aq_desc->params.external.addr_high),
- 		   le32_to_cpu(aq_desc->params.external.addr_low));
- 
--	if ((buffer != NULL) && (aq_desc->datalen != 0)) {
-+	if (buffer && buf_len != 0 && len != 0 &&
-+	    (effective_mask & I40E_DEBUG_AQ_DESC_BUFFER)) {
- 		i40e_debug(hw, mask, "AQ CMD Buffer:\n");
- 		if (buf_len < len)
- 			len = buf_len;
--		/* write the full 16-byte chunks */
--		if (hw->debug_mask & mask) {
--			char prefix[27];
--
--			snprintf(prefix, sizeof(prefix),
--				 "i40e %02x:%02x.%x: \t0x",
--				 hw->bus.bus_id,
--				 hw->bus.device,
--				 hw->bus.func);
--
--			print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET,
--				       16, 1, buf, len, false);
--		}
-+
-+		snprintf(prefix, sizeof(prefix),
-+			 "i40e %02x:%02x.%x: \t0x",
-+			 hw->bus.bus_id,
-+			 hw->bus.device,
-+			 hw->bus.func);
-+
-+		print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET,
-+			       16, 1, buf, len, false);
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id)) {
++	    !i40e_vc_isvalid_vsi_id(vf, al->vsi_id)) {
+ 		ret = I40E_ERR_PARAM;
+ 		goto error_param;
  	}
- }
+@@ -2666,12 +2661,11 @@ static int i40e_vc_del_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+ 	    (struct virtchnl_ether_addr_list *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = al->vsi_id;
+ 	i40e_status ret = 0;
+ 	int i;
  
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id)) {
++	    !i40e_vc_isvalid_vsi_id(vf, al->vsi_id)) {
+ 		ret = I40E_ERR_PARAM;
+ 		goto error_param;
+ 	}
+@@ -2735,7 +2729,6 @@ static int i40e_vc_add_vlan_msg(struct i40e_vf *vf, u8 *msg)
+ 	    (struct virtchnl_vlan_filter_list *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = vfl->vsi_id;
+ 	i40e_status aq_ret = 0;
+ 	int i;
+ 
+@@ -2746,7 +2739,7 @@ static int i40e_vc_add_vlan_msg(struct i40e_vf *vf, u8 *msg)
+ 		goto error_param;
+ 	}
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id)) {
++	    !i40e_vc_isvalid_vsi_id(vf, vfl->vsi_id)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto error_param;
+ 	}
+@@ -2807,12 +2800,11 @@ static int i40e_vc_remove_vlan_msg(struct i40e_vf *vf, u8 *msg)
+ 	    (struct virtchnl_vlan_filter_list *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = vfl->vsi_id;
+ 	i40e_status aq_ret = 0;
+ 	int i;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id)) {
++	    !i40e_vc_isvalid_vsi_id(vf, vfl->vsi_id)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto error_param;
+ 	}
+@@ -2929,11 +2921,10 @@ static int i40e_vc_config_rss_key(struct i40e_vf *vf, u8 *msg)
+ 		(struct virtchnl_rss_key *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = vrk->vsi_id;
+ 	i40e_status aq_ret = 0;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id) ||
++	    !i40e_vc_isvalid_vsi_id(vf, vrk->vsi_id) ||
+ 	    (vrk->key_len != I40E_HKEY_ARRAY_SIZE)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto err;
+@@ -2960,16 +2951,22 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
+ 		(struct virtchnl_rss_lut *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
+-	u16 vsi_id = vrl->vsi_id;
+ 	i40e_status aq_ret = 0;
++	u16 i;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
+-	    !i40e_vc_isvalid_vsi_id(vf, vsi_id) ||
++	    !i40e_vc_isvalid_vsi_id(vf, vrl->vsi_id) ||
+ 	    (vrl->lut_entries != I40E_VF_HLUT_ARRAY_SIZE)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto err;
+ 	}
+ 
++	for (i = 0; i < vrl->lut_entries; i++)
++		if (vrl->lut[i] >= vf->num_queue_pairs) {
++			aq_ret = I40E_ERR_PARAM;
++			goto err;
++		}
++
+ 	vsi = pf->vsi[vf->lan_vsi_idx];
+ 	aq_ret = i40e_config_rss(vsi, NULL, vrl->lut, I40E_VF_HLUT_ARRAY_SIZE);
+ 	/* send the response to the VF */
+@@ -3050,14 +3047,15 @@ static int i40e_vc_set_rss_hena(struct i40e_vf *vf, u8 *msg)
+  **/
+ static int i40e_vc_enable_vlan_stripping(struct i40e_vf *vf, u8 *msg)
+ {
+-	struct i40e_vsi *vsi = vf->pf->vsi[vf->lan_vsi_idx];
+ 	i40e_status aq_ret = 0;
++	struct i40e_vsi *vsi;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto err;
+ 	}
+ 
++	vsi = vf->pf->vsi[vf->lan_vsi_idx];
+ 	i40e_vlan_stripping_enable(vsi);
+ 
+ 	/* send the response to the VF */
+@@ -3075,14 +3073,15 @@ static int i40e_vc_enable_vlan_stripping(struct i40e_vf *vf, u8 *msg)
+  **/
+ static int i40e_vc_disable_vlan_stripping(struct i40e_vf *vf, u8 *msg)
+ {
+-	struct i40e_vsi *vsi = vf->pf->vsi[vf->lan_vsi_idx];
+ 	i40e_status aq_ret = 0;
++	struct i40e_vsi *vsi;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states)) {
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto err;
+ 	}
+ 
++	vsi = vf->pf->vsi[vf->lan_vsi_idx];
+ 	i40e_vlan_stripping_disable(vsi);
+ 
+ 	/* send the response to the VF */
+@@ -3540,8 +3539,9 @@ static int i40e_vc_add_qch_msg(struct i40e_vf *vf, u8 *msg)
+ 		(struct virtchnl_tc_info *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_link_status *ls = &pf->hw.phy.link_info;
+-	int i, adq_request_qps = 0, speed = 0;
++	int i, adq_request_qps = 0;
+ 	i40e_status aq_ret = 0;
++	u64 speed = 0;
+ 
+ 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states)) {
+ 		aq_ret = I40E_ERR_PARAM;
+@@ -3567,8 +3567,8 @@ static int i40e_vc_add_qch_msg(struct i40e_vf *vf, u8 *msg)
+ 	/* max number of traffic classes for VF currently capped at 4 */
+ 	if (!tci->num_tc || tci->num_tc > I40E_MAX_VF_VSI) {
+ 		dev_err(&pf->pdev->dev,
+-			"VF %d trying to set %u TCs, valid range 1-4 TCs per VF\n",
+-			vf->vf_id, tci->num_tc);
++			"VF %d trying to set %u TCs, valid range 1-%u TCs per VF\n",
++			vf->vf_id, tci->num_tc, I40E_MAX_VF_VSI);
+ 		aq_ret = I40E_ERR_PARAM;
+ 		goto err;
+ 	}
+@@ -3578,8 +3578,9 @@ static int i40e_vc_add_qch_msg(struct i40e_vf *vf, u8 *msg)
+ 		if (!tci->list[i].count ||
+ 		    tci->list[i].count > I40E_DEFAULT_QUEUES_PER_VF) {
+ 			dev_err(&pf->pdev->dev,
+-				"VF %d: TC %d trying to set %u queues, valid range 1-4 queues per TC\n",
+-				vf->vf_id, i, tci->list[i].count);
++				"VF %d: TC %d trying to set %u queues, valid range 1-%u queues per TC\n",
++				vf->vf_id, i, tci->list[i].count,
++				I40E_DEFAULT_QUEUES_PER_VF);
+ 			aq_ret = I40E_ERR_PARAM;
+ 			goto err;
+ 		}
+@@ -3739,19 +3740,6 @@ int i40e_vc_process_vf_msg(struct i40e_pf *pf, s16 vf_id, u32 v_opcode,
+ 	/* perform basic checks on the msg */
+ 	ret = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg, msglen);
+ 
+-	/* perform additional checks specific to this driver */
+-	if (v_opcode == VIRTCHNL_OP_CONFIG_RSS_KEY) {
+-		struct virtchnl_rss_key *vrk = (struct virtchnl_rss_key *)msg;
+-
+-		if (vrk->key_len != I40E_HKEY_ARRAY_SIZE)
+-			ret = -EINVAL;
+-	} else if (v_opcode == VIRTCHNL_OP_CONFIG_RSS_LUT) {
+-		struct virtchnl_rss_lut *vrl = (struct virtchnl_rss_lut *)msg;
+-
+-		if (vrl->lut_entries != I40E_VF_HLUT_ARRAY_SIZE)
+-			ret = -EINVAL;
+-	}
+-
+ 	if (ret) {
+ 		i40e_vc_send_resp_to_vf(vf, v_opcode, I40E_ERR_PARAM);
+ 		dev_err(&pf->pdev->dev, "Invalid message from VF %d, opcode %d, len %d\n",
 -- 
 2.21.0
 
