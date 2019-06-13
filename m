@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DE744B2E
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:53:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C8A44B29
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729424AbfFMSxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:53:45 -0400
-Received: from mga12.intel.com ([192.55.52.136]:64322 "EHLO mga12.intel.com"
+        id S1729355AbfFMSxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 14:53:35 -0400
+Received: from mga12.intel.com ([192.55.52.136]:64320 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729261AbfFMSxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727224AbfFMSxb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 13 Jun 2019 14:53:31 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 11:53:30 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 11:53:31 -0700
 X-ExtLoop1: 1
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 13 Jun 2019 11:53:30 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Adam Ludkiewicz <adam.ludkiewicz@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 09/12] i40e: Check if the BAR size is large enough before writing to registers
-Date:   Thu, 13 Jun 2019 11:53:44 -0700
-Message-Id: <20190613185347.16361-10-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 10/12] i40e: remove duplicate stat calculation for tx_errors
+Date:   Thu, 13 Jun 2019 11:53:45 -0700
+Message-Id: <20190613185347.16361-11-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
 References: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
@@ -37,43 +37,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Adam Ludkiewicz <adam.ludkiewicz@intel.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-This patch fixes the problem with a kernel panic occurring when trying
-to bind the i40e driver to a non-i40e port. The problem is fixed by
-checking if the BAR size in the device is large enough by reading the
-highest register.
+The tx_errors statistic was being calculated twice in
+i40e_update_eth_stats.
 
-Signed-off-by: Adam Ludkiewicz <adam.ludkiewicz@intel.com>
+This appears to be as of commit 201db2898f2c ("i40e: add missing VSI
+statistics", 2014-03-25).
+
+Remove the extra i40e_stat_update32 call for GLV_TEPC.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 12ae4d99109b..1d78db15c65a 100644
+index 1d78db15c65a..7c43ec533385 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -14205,7 +14205,17 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -636,9 +636,6 @@ void i40e_update_eth_stats(struct i40e_vsi *vsi)
+ 	i40e_stat_update32(hw, I40E_GLV_RUPP(stat_idx),
+ 			   vsi->stat_offsets_loaded,
+ 			   &oes->rx_unknown_protocol, &es->rx_unknown_protocol);
+-	i40e_stat_update32(hw, I40E_GLV_TEPC(stat_idx),
+-			   vsi->stat_offsets_loaded,
+-			   &oes->tx_errors, &es->tx_errors);
  
- 	pf->ioremap_len = min_t(int, pci_resource_len(pdev, 0),
- 				I40E_MAX_CSR_SPACE);
--
-+	/* We believe that the highest register to read is
-+	 * I40E_GLGEN_STAT_CLEAR, so we check if the BAR size
-+	 * is not less than that before mapping to prevent a
-+	 * kernel panic.
-+	 */
-+	if (pf->ioremap_len < I40E_GLGEN_STAT_CLEAR) {
-+		dev_err(&pdev->dev, "Cannot map registers, bar size 0x%X too small, aborting\n",
-+			pf->ioremap_len);
-+		err = -ENOMEM;
-+		goto err_ioremap;
-+	}
- 	hw->hw_addr = ioremap(pci_resource_start(pdev, 0), pf->ioremap_len);
- 	if (!hw->hw_addr) {
- 		err = -EIO;
+ 	i40e_stat_update48(hw, I40E_GLV_GORCH(stat_idx),
+ 			   I40E_GLV_GORCL(stat_idx),
 -- 
 2.21.0
 
