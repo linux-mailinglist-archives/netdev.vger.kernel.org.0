@@ -2,176 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1063544652
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:50:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA6A44639
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404371AbfFMQut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:50:49 -0400
-Received: from mail-eopbgr720109.outbound.protection.outlook.com ([40.107.72.109]:60366
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730169AbfFMDwc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jun 2019 23:52:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=ZxtNbcauMWzBTXAV+6qA34f6owTL0BDTbjxXiK1vam30cu1xYi1+q/CR1i3SxoPxPECOTAJ4/5E+RVrgSKk43nzBKWR2MwzZ3z2shVUfDJBECq8/uAnntMNiFpGsFEnEbKeooNTxDhCRVkMscsSd7l5LpRUU6ZJs+C4yC1J8V5o=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iq+cdw9l6d9VnSoac3CHgw+jrQd6XPnt0ZaNval5z60=;
- b=B9mHQrGzzPno4U7XgxVIrRkNUY4wWEY6x8A30A5rg21vogQsCTYMN7AXEbkV8WeLM/oXF3/rux1KF0ilNakYAFHbsSW6HNkxLBGodz0Owt7V3IxKSJ9ohdoDCV+VtpEVJ4zofRSWCbPrh10r4fpQ23z0TPMT52LCdxGKm01Z05c=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iq+cdw9l6d9VnSoac3CHgw+jrQd6XPnt0ZaNval5z60=;
- b=h5uY+iPU+G17t9UnyYDDcYuApORtJ3TeORWg5/sxNMaqbrjpOB88OGpljAJFgC8IFcz7TGsFPp2/bs9jUPYQP/agA+Hz+myAoNixF05w/+7dc2JxWTuue86xYWWvpNpUaglz+6oZ9AbGeNl5v3id+mTIqgd78JB2iA8f+a06NVA=
-Received: from MW2PR2101MB1116.namprd21.prod.outlook.com (2603:10b6:302:a::33)
- by MW2PR2101MB1049.namprd21.prod.outlook.com (2603:10b6:302:a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.2; Thu, 13 Jun
- 2019 03:52:27 +0000
-Received: from MW2PR2101MB1116.namprd21.prod.outlook.com
- ([fe80::a1f6:c002:82ba:ad47]) by MW2PR2101MB1116.namprd21.prod.outlook.com
- ([fe80::a1f6:c002:82ba:ad47%9]) with mapi id 15.20.2008.002; Thu, 13 Jun 2019
- 03:52:27 +0000
-From:   Sunil Muthuswamy <sunilmut@microsoft.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH net-next] vsock: correct removal of socket from the list
-Thread-Topic: [PATCH net-next] vsock: correct removal of socket from the list
-Thread-Index: AdUhmo8Nxo5lupZASBWL+cOgCNqu2w==
-Date:   Thu, 13 Jun 2019 03:52:27 +0000
-Message-ID: <MW2PR2101MB11162BBAEC52B232A7B1EFAFC0EF0@MW2PR2101MB1116.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=sunilmut@microsoft.com; 
-x-originating-ip: [2001:4898:80e8:2:b9f7:3762:5546:eb5f]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4fbcdf1a-3318-478c-a2f7-08d6efb28d7b
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:MW2PR2101MB1049;
-x-ms-traffictypediagnostic: MW2PR2101MB1049:
-x-microsoft-antispam-prvs: <MW2PR2101MB10492DF9904E03832B3F21D5C0EF0@MW2PR2101MB1049.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(39860400002)(366004)(396003)(376002)(189003)(199004)(64756008)(66556008)(66446008)(6116002)(73956011)(66476007)(55016002)(76116006)(68736007)(86362001)(6506007)(7696005)(66946007)(52396003)(22452003)(305945005)(478600001)(14454004)(7736002)(316002)(9686003)(2501003)(8990500004)(10290500003)(46003)(186003)(486006)(6436002)(102836004)(476003)(99286004)(81156014)(81166006)(2906002)(8936002)(110136005)(33656002)(8676002)(54906003)(53936002)(4326008)(2201001)(5660300002)(107886003)(71200400001)(74316002)(256004)(10090500001)(52536014)(71190400001)(25786009)(14444005);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR2101MB1049;H:MW2PR2101MB1116.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: FGzPrZhBkmbS8y2++Y+1asXnvrrx3+a1iKnMGRBHK1qBxdgpZ/cDn5tA5KdwIUDSN5gTBOYryUdf2RsOZOgxrzaw3cuITYGroiSvgmBxpshq56LGeFqPumVQINyBhv1R9hU6u3nRWbm1WR0OZnCL58XISYBwy41A28iZvtxJDstApt6EUHenT6TTVD0TAaht1sR6E/6Dily54fjtP/AHHvVgGVAlbuCSprQdf/9s7ZCPUXfwbre4HAaphbAMshfL5v7fpu+rItUEbApoaDZpCbNxehfxl+LEujYRpKaOtPheV8sJHp69RUWvFeApYg1PkAHZgm+27rqAoR0F3QWZ8csAAk2lfA30KGS9UrGeQ5DlblZCYbn2I8D7qwlgEJEeYWJoCnzhPS0WeAgmA952rJTjjA4Bozms+0C8C4Mx7Ac=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726028AbfFMQt5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 12:49:57 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33334 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726017AbfFMEUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 00:20:12 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x5D4HIHi010663
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:20:10 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2t3562209t-12
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:20:10 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 12 Jun 2019 21:20:07 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 53E23760CD6; Wed, 12 Jun 2019 21:20:03 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <jakub.kicinski@netronome.com>,
+        <ecree@solarflare.com>, <john.fastabend@gmail.com>,
+        <andriin@fb.com>, <jannh@google.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/9] bpf: bounded loops and other features
+Date:   Wed, 12 Jun 2019 21:19:54 -0700
+Message-ID: <20190613042003.3791852-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fbcdf1a-3318-478c-a2f7-08d6efb28d7b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 03:52:27.4602
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1049
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-13_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=815 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906130033
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current vsock code for removal of socket from the list is both
-subject to race and inefficient. It takes the lock, checks whether
-the socket is in the list, drops the lock and if the socket was on the
-list, deletes it from the list. This is subject to race because as soon
-as the lock is dropped once it is checked for presence, that condition
-cannot be relied upon for any decision. It is also inefficient because
-if the socket is present in the list, it takes the lock twice.
+Hi,
 
-Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
----
- net/vmw_vsock/af_vsock.c | 38 +++++++-------------------------------
- 1 file changed, 7 insertions(+), 31 deletions(-)
+this patch set introduces verifier support for bounded loops and
+adds several other improvements.
+Ideally they would be introduced one at a time,
+but to support bounded loop the verifier needs to 'step back'
+in the patch 1. That patch introduces tracking of spill/fill
+of constants through the stack. Though it's a useful feature
+it hurts cilium tests.
+Patch 3 introduces another feature by extending is_branch_taken
+logic to 'if rX op rY' conditions. This feature is also
+necessary to support bounded loops.
+Then patch 4 adds support for the loops while adding
+key heuristics with jmp_processed.
+Introduction of parentage chain of verifier states in patch 4
+allows patch 9 to add backtracking of precise scalar registers
+which finally resolves degradation from patch 1.
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index d892000..6f063ed 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -282,7 +282,8 @@ EXPORT_SYMBOL_GPL(vsock_insert_connected);
- void vsock_remove_bound(struct vsock_sock *vsk)
- {
- 	spin_lock_bh(&vsock_table_lock);
--	__vsock_remove_bound(vsk);
-+	if (__vsock_in_bound_table(vsk))
-+		__vsock_remove_bound(vsk);
- 	spin_unlock_bh(&vsock_table_lock);
- }
- EXPORT_SYMBOL_GPL(vsock_remove_bound);
-@@ -290,7 +291,8 @@ EXPORT_SYMBOL_GPL(vsock_remove_bound);
- void vsock_remove_connected(struct vsock_sock *vsk)
- {
- 	spin_lock_bh(&vsock_table_lock);
--	__vsock_remove_connected(vsk);
-+	if (__vsock_in_connected_table(vsk))
-+		__vsock_remove_connected(vsk);
- 	spin_unlock_bh(&vsock_table_lock);
- }
- EXPORT_SYMBOL_GPL(vsock_remove_connected);
-@@ -326,35 +328,10 @@ struct sock *vsock_find_connected_socket(struct socka=
-ddr_vm *src,
- }
- EXPORT_SYMBOL_GPL(vsock_find_connected_socket);
-=20
--static bool vsock_in_bound_table(struct vsock_sock *vsk)
--{
--	bool ret;
--
--	spin_lock_bh(&vsock_table_lock);
--	ret =3D __vsock_in_bound_table(vsk);
--	spin_unlock_bh(&vsock_table_lock);
--
--	return ret;
--}
--
--static bool vsock_in_connected_table(struct vsock_sock *vsk)
--{
--	bool ret;
--
--	spin_lock_bh(&vsock_table_lock);
--	ret =3D __vsock_in_connected_table(vsk);
--	spin_unlock_bh(&vsock_table_lock);
--
--	return ret;
--}
--
- void vsock_remove_sock(struct vsock_sock *vsk)
- {
--	if (vsock_in_bound_table(vsk))
--		vsock_remove_bound(vsk);
--
--	if (vsock_in_connected_table(vsk))
--		vsock_remove_connected(vsk);
-+	vsock_remove_bound(vsk);
-+	vsock_remove_connected(vsk);
- }
- EXPORT_SYMBOL_GPL(vsock_remove_sock);
-=20
-@@ -485,8 +462,7 @@ static void vsock_pending_work(struct work_struct *work=
-)
- 	 * incoming packets can't find this socket, and to reduce the reference
- 	 * count.
- 	 */
--	if (vsock_in_connected_table(vsk))
--		vsock_remove_connected(vsk);
-+	vsock_remove_connected(vsk);
-=20
- 	sk->sk_state =3D TCP_CLOSE;
-=20
---=20
-2.7.4
+The end result is much faster verifier for existing programs
+and new support for loops.
+See patch 8 for many kinds of loops that are now validated.
+Patch 9 is the most tricky one and could be rewritten with
+a different algorithm in the future.
+
+Alexei Starovoitov (9):
+  bpf: track spill/fill of constants
+  selftests/bpf: fix tests due to const spill/fill
+  bpf: extend is_branch_taken to registers
+  bpf: introduce bounded loops
+  bpf: fix callees pruning callers
+  selftests/bpf: fix tests
+  selftests/bpf: add basic verifier tests for loops
+  selftests/bpf: add realistic loop tests
+  bpf: precise scalar_value tracking
+
+ include/linux/bpf_verifier.h                  |  69 +-
+ kernel/bpf/verifier.c                         | 688 ++++++++++++++++--
+ .../bpf/prog_tests/bpf_verif_scale.c          |  67 +-
+ tools/testing/selftests/bpf/progs/loop1.c     |  28 +
+ tools/testing/selftests/bpf/progs/loop2.c     |  28 +
+ tools/testing/selftests/bpf/progs/loop3.c     |  22 +
+ tools/testing/selftests/bpf/progs/pyperf.h    |   6 +-
+ tools/testing/selftests/bpf/progs/pyperf600.c |   9 +
+ .../selftests/bpf/progs/pyperf600_nounroll.c  |   8 +
+ .../testing/selftests/bpf/progs/strobemeta.c  |  10 +
+ .../testing/selftests/bpf/progs/strobemeta.h  | 528 ++++++++++++++
+ .../bpf/progs/strobemeta_nounroll1.c          |   9 +
+ .../bpf/progs/strobemeta_nounroll2.c          |   9 +
+ .../selftests/bpf/progs/test_seg6_loop.c      | 261 +++++++
+ .../selftests/bpf/progs/test_sysctl_loop1.c   |  68 ++
+ .../selftests/bpf/progs/test_sysctl_loop2.c   |  69 ++
+ .../selftests/bpf/progs/test_xdp_loop.c       | 231 ++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  11 +-
+ tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
+ tools/testing/selftests/bpf/verifier/cfg.c    |  11 +-
+ .../bpf/verifier/direct_packet_access.c       |   3 +-
+ .../bpf/verifier/helper_access_var_len.c      |  28 +-
+ tools/testing/selftests/bpf/verifier/loops1.c | 161 ++++
+ 23 files changed, 2258 insertions(+), 88 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/loop1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop3.c
+ create mode 100644 tools/testing/selftests/bpf/progs/pyperf600.c
+ create mode 100644 tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.h
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_seg6_loop.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_loop.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/loops1.c
+
+-- 
+2.20.0
 
