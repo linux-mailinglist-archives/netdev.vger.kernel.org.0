@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6635743C51
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA50643C0F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727897AbfFMPfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:35:14 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43939 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727905AbfFMKaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 06:30:14 -0400
-Received: from mail-wr1-f70.google.com ([209.85.221.70])
-        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1hbMyW-0002n6-6c
-        for netdev@vger.kernel.org; Thu, 13 Jun 2019 10:28:56 +0000
-Received: by mail-wr1-f70.google.com with SMTP id u2so8694157wrr.3
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 03:28:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3vJoe4QOYmSpzL3TX3nF/EcZqCXILy8LMNIEV2dPMlw=;
-        b=Xeu12PQbKO8JBmhUuLdjiZ0Fu2g+sCa2oY7FGJuveVjBPI/cYisBpkbprqQJhEUTwM
-         6mbdGSx5DKI/Yn8oTKtOtYYvhfJyWv93XFQ0V0LJayFbcI2LLmJwWRc4xw/WlZCvBmBR
-         Ij9IZM5LquXOTHULc4rX+juN1iKepxbFdylFRdj+KvkxlrLa9z7mxJvD01O6Z2DhIDN2
-         ABmqrXUOiYSapvEUE0vYEUAaTOItTo266TjA6WwDV9kk9TtQX0ApQBnCzaWhwo6zdyt4
-         w/z9bvfkHk9ZXEkAcAYd5oEvwW2tlXJneGRrjrvCCBTIxNSwmAp1BwH+uQnRiYYWwGdq
-         DubA==
-X-Gm-Message-State: APjAAAUY2yC8OXZ+lOVG2JL6+4J6c4J4hE1Oir4VUGcGmixxCsGUUOQ/
-        CLuuJH0xkBPw8Rzoh3I2Vx3ZWbaVtAVvNaRlpH1KsdNbgRlu8gOW9Ghqn6aMBe5f9axf8sy0bWe
-        MexpjVRNHAiCB3rql7a9CyLDMP++0GhSxgrDF5gnscM3ZMafk
-X-Received: by 2002:a7b:c313:: with SMTP id k19mr3050157wmj.2.1560421735773;
-        Thu, 13 Jun 2019 03:28:55 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwgKUzFv9JlTv26cq3GlGgLVgjVoMCkwh6CKsBT7LawKThQzRDyIbi5mMPqn4/bfa1JwGFkSAyBv6iKEvpwYik=
-X-Received: by 2002:a7b:c313:: with SMTP id k19mr3050140wmj.2.1560421735553;
- Thu, 13 Jun 2019 03:28:55 -0700 (PDT)
+        id S1728356AbfFMPdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:33:44 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:42038 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728292AbfFMKgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 06:36:21 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hbN5U-00084n-PL; Thu, 13 Jun 2019 06:36:11 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     linux-sctp@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
+        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH v5 net] sctp: Free cookie before we memdup a new one
+Date:   Thu, 13 Jun 2019 06:35:59 -0400
+Message-Id: <20190613103559.2603-1-nhorman@tuxdriver.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190610163456.7778-1-nhorman@tuxdriver.com>
+References: <20190610163456.7778-1-nhorman@tuxdriver.com>
 MIME-Version: 1.0
-References: <20190612064752.6701-1-po-hsu.lin@canonical.com> <20190612.092711.1626983045451710048.davem@davemloft.net>
-In-Reply-To: <20190612.092711.1626983045451710048.davem@davemloft.net>
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Thu, 13 Jun 2019 18:28:44 +0800
-Message-ID: <CAMy_GT8YjDhRSHMYBALHeqDhKYhr2Z+--=imZ+T5WV0wCz_v6g@mail.gmail.com>
-Subject: Re: [PATCH] selftests/net: skip psock_tpacket test if KALLSYMS was
- not enabled
-To:     David Miller <davem@davemloft.net>
-Cc:     shuah <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Based on comments from Xin, even after fixes for our recent syzbot
+report of cookie memory leaks, its possible to get a resend of an INIT
+chunk which would lead to us leaking cookie memory.
 
-This issue was spotted on Ubuntu linux-kvm kernel, on which the
-CONFIG_KALLSYMS was disabled intentionally.
-I think this extra check could be helpful when running the net test directly.
-$ make -C tools/testing/selftests TARGETS=net run_tests
+To ensure that we don't leak cookie memory, free any previously
+allocated cookie first.
 
-Also, there is an identical check implemented in the ftrace
-kprobe_args_symbol test.
+Change notes
+v1->v2
+update subsystem tag in subject (davem)
+repeat kfree check for peer_random and peer_hmacs (xin)
 
-I can send V2 along with CONFIG_KALLSYMS appended to the "config" file
-if you agree with this.
+v2->v3
+net->sctp
+also free peer_chunks
 
-Thanks
+v3->v4
+fix subject tags
 
-On Thu, Jun 13, 2019 at 12:27 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Po-Hsu Lin <po-hsu.lin@canonical.com>
-> Date: Wed, 12 Jun 2019 14:47:52 +0800
->
-> > The psock_tpacket test will need to access /proc/kallsyms, this would
-> > require the kernel config CONFIG_KALLSYMS to be enabled first.
-> >
-> > Check the file existence to determine if we can run this test.
-> >
-> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
->
-> Please just add CONFIG_KALLSYMS to "config".
+v4->v5
+remove cut line
+
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
+CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+CC: Xin Long <lucien.xin@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+---
+ net/sctp/sm_make_chunk.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index f17908f5c4f3..9b0e5b0d701a 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2583,6 +2583,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 	case SCTP_PARAM_STATE_COOKIE:
+ 		asoc->peer.cookie_len =
+ 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
++		if (asoc->peer.cookie)
++			kfree(asoc->peer.cookie);
+ 		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
+ 		if (!asoc->peer.cookie)
+ 			retval = 0;
+@@ -2647,6 +2649,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 			goto fall_through;
+ 
+ 		/* Save peer's random parameter */
++		if (asoc->peer.peer_random)
++			kfree(asoc->peer.peer_random);
+ 		asoc->peer.peer_random = kmemdup(param.p,
+ 					    ntohs(param.p->length), gfp);
+ 		if (!asoc->peer.peer_random) {
+@@ -2660,6 +2664,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 			goto fall_through;
+ 
+ 		/* Save peer's HMAC list */
++		if (asoc->peer.peer_hmacs)
++			kfree(asoc->peer.peer_hmacs);
+ 		asoc->peer.peer_hmacs = kmemdup(param.p,
+ 					    ntohs(param.p->length), gfp);
+ 		if (!asoc->peer.peer_hmacs) {
+@@ -2675,6 +2681,8 @@ static int sctp_process_param(struct sctp_association *asoc,
+ 		if (!ep->auth_enable)
+ 			goto fall_through;
+ 
++		if (asoc->peer.peer_chunks)
++			kfree(asoc->peer.peer_chunks);
+ 		asoc->peer.peer_chunks = kmemdup(param.p,
+ 					    ntohs(param.p->length), gfp);
+ 		if (!asoc->peer.peer_chunks)
+-- 
+2.20.1
+
