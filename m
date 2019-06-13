@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9393444AA5
+	by mail.lfdr.de (Postfix) with ESMTP id 28E6A44AA4
 	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbfFMS2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:28:13 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58974 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728711AbfFMS2M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728148AbfFMS2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 13 Jun 2019 14:28:12 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+Received: from mx1.redhat.com ([209.132.183.28]:36082 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727179AbfFMS2L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 14:28:11 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 620A13082E6B;
-        Thu, 13 Jun 2019 18:28:07 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 497E55D60F;
+        Thu, 13 Jun 2019 18:28:11 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-44.brq.redhat.com [10.40.200.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 297D559140;
-        Thu, 13 Jun 2019 18:28:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D826254213;
+        Thu, 13 Jun 2019 18:28:07 +0000 (UTC)
 Received: from [192.168.5.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id E85DE3009AEFD;
-        Thu, 13 Jun 2019 20:28:01 +0200 (CEST)
-Subject: [PATCH net-next v1 00/11] xdp: page_pool fixes and in-flight
- accounting
+        by firesoul.localdomain (Postfix) with ESMTP id 084EE31256FCA;
+        Thu, 13 Jun 2019 20:28:07 +0200 (CEST)
+Subject: [PATCH net-next v1 01/11] net: page_pool: add helper function to
+ retrieve dma addresses
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -32,69 +32,46 @@ To:     netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     toshiaki.makita1@gmail.com, grygorii.strashko@ti.com,
         ivan.khoronzhuk@linaro.org, mcroce@redhat.com
-Date:   Thu, 13 Jun 2019 20:28:01 +0200
-Message-ID: <156045046024.29115.11802895015973488428.stgit@firesoul>
+Date:   Thu, 13 Jun 2019 20:28:07 +0200
+Message-ID: <156045048696.29115.1338915143858015398.stgit@firesoul>
+In-Reply-To: <156045046024.29115.11802895015973488428.stgit@firesoul>
+References: <156045046024.29115.11802895015973488428.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 13 Jun 2019 18:28:12 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Thu, 13 Jun 2019 18:28:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset fix page_pool API and users, such that drivers can use it for
-DMA-mapping. A number of places exist, where the DMA-mapping would not get
-released/unmapped, all these are fixed. This occurs e.g. when an xdp_frame
-gets converted to an SKB. As network stack doesn't have any callback for XDP
-memory models.
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-The patchset also address a shutdown race-condition. Today removing a XDP
-memory model, based on page_pool, is only delayed one RCU grace period. This
-isn't enough as redirected xdp_frames can still be in-flight on different
-queues (remote driver TX, cpumap or veth).
+On a previous patch dma addr was stored in 'struct page'.
+Use that to retrieve DMA addresses used by network drivers
 
-We stress that when drivers use page_pool for DMA-mapping, then they MUST
-use one packet per page. This might change in the future, but more work lies
-ahead, before we can lift this restriction.
-
-This patchset change the page_pool API to be more strict, as in-flight page
-accounting is added.
-
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
+ include/net/page_pool.h |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-Ilias Apalodimas (2):
-      net: page_pool: add helper function to retrieve dma addresses
-      net: page_pool: add helper function to unmap dma addresses
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index 694d055e01ef..b885d86cb7a1 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -132,6 +132,11 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+ 	__page_pool_put_page(pool, page, true);
+ }
+ 
++static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
++{
++	return page->dma_addr;
++}
++
+ static inline bool is_page_pool_compiled_in(void)
+ {
+ #ifdef CONFIG_PAGE_POOL
 
-Jesper Dangaard Brouer (9):
-      xdp: fix leak of IDA cyclic id if rhashtable_insert_slow fails
-      xdp: page_pool related fix to cpumap
-      veth: use xdp_release_frame for XDP_PASS
-      page_pool: introduce page_pool_free and use in mlx5
-      mlx5: more strict use of page_pool API
-      xdp: tracking page_pool resources and safe removal
-      xdp: force mem allocator removal and periodic warning
-      xdp: add tracepoints for XDP mem
-      page_pool: add tracepoints for page_pool with details need by XDP
-
-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c |   12 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   |    3 -
- drivers/net/veth.c                                |    1 
- include/net/page_pool.h                           |   69 +++++++++++-
- include/net/xdp.h                                 |   15 +++
- include/net/xdp_priv.h                            |   23 ++++
- include/trace/events/page_pool.h                  |   87 +++++++++++++++
- include/trace/events/xdp.h                        |  115 ++++++++++++++++++++
- kernel/bpf/cpumap.c                               |    3 +
- net/core/net-traces.c                             |    4 +
- net/core/page_pool.c                              |   87 +++++++++++++--
- net/core/xdp.c                                    |  120 ++++++++++++++++++---
- 12 files changed, 494 insertions(+), 45 deletions(-)
- create mode 100644 include/net/xdp_priv.h
- create mode 100644 include/trace/events/page_pool.h
-
---
