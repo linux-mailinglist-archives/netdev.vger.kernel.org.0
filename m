@@ -2,66 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 615A14455A
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F63944556
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392837AbfFMQng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:43:36 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:36592 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730456AbfFMGen (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 02:34:43 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 136856DBF8070409289A;
-        Thu, 13 Jun 2019 14:34:39 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Thu, 13 Jun 2019
- 14:34:37 +0800
-Subject: Re: [PATCH net v2] tcp: avoid creating multiple req socks with the
- same tuples
-To:     David Miller <davem@davemloft.net>
-References: <20190612035715.166676-1-maowenan@huawei.com>
- <20190612.092507.915453305221203158.davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <edumazet@google.com>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <2d3d6b84-acaa-b98a-8454-96546fbe012d@huawei.com>
-Date:   Thu, 13 Jun 2019 14:34:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
-MIME-Version: 1.0
-In-Reply-To: <20190612.092507.915453305221203158.davem@davemloft.net>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+        id S1726958AbfFMQnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:43:31 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:47598 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730459AbfFMGiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 02:38:07 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A17692000C7;
+        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 91E7F20006F;
+        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 34162205DB;
+        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
+Date:   Thu, 13 Jun 2019 09:37:51 +0300
+Message-Id: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The phy_state field of phylink should carry only valid information
+especially when this can be passed to the .mac_config callback.
+Update the an_enabled field with the autoneg state in the
+phylink_phy_change function.
 
+Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/phy/phylink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 2019/6/13 0:25, David Miller wrote:
-> From: Mao Wenan <maowenan@huawei.com>
-> Date: Wed, 12 Jun 2019 11:57:15 +0800
-> 
->> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
->> index c4503073248b..b6a1b5334565 100644
->> --- a/net/ipv4/inet_hashtables.c
->> +++ b/net/ipv4/inet_hashtables.c
->> @@ -477,6 +477,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
->>  	struct inet_ehash_bucket *head;
->>  	spinlock_t *lock;
->>  	bool ret = true;
->> +	struct sock *reqsk = NULL;
-> 
-> Please preserve the reverse christmas tree local variable ordering here.
-
-ok, thanks.
-> 
-> Thank you.
-> 
-> .
-> 
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 5d0af041b8f9..dd1feb7b5472 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device *phydev, bool up,
+ 		pl->phy_state.pause |= MLO_PAUSE_ASYM;
+ 	pl->phy_state.interface = phydev->interface;
+ 	pl->phy_state.link = up;
++	pl->phy_state.an_enabled = phydev->autoneg;
+ 	mutex_unlock(&pl->state_mutex);
+ 
+ 	phylink_run_resolve(pl);
+-- 
+1.9.1
 
