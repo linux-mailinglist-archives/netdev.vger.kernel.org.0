@@ -2,453 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3496A44D3C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902B644D96
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729871AbfFMUQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 16:16:38 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41166 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbfFMUQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 16:16:37 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 83so133231pgg.8;
-        Thu, 13 Jun 2019 13:16:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=j51vLeeFrAnI5E7KIxETV6kEmvegcIKMimu8e2BZxls=;
-        b=kQAJ+QeyWHCubTc4tAJuK1QG237UvFpyQVfx2/t+Ku4SiEVHCFbMB64pO36eUXWqqu
-         8s9XqSo6eUtyqKff7wScjLm01HIZQMD+XsvYIzgCChVTXojF9YoaviltZ7cyKRpuM43a
-         VhyFk5ALKsXiQqUlFwvw97EjJENQMNd3Mi+yrEtuV9EyU3REUwp5VrEhesrk+Oiudrh1
-         1uPICQBySsUCIjzKiA0UapKLtf1VoKIXLpNqprNkcbeJDCFZn0F0aDDjBKyDlUGl+mmN
-         kOQzTJZw4hyGXTnmB78gWZvqbnBXrQn7zpu3/jGo0sO1h5+aV9ndxVcqIDLvvxZ27IMJ
-         GinQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=j51vLeeFrAnI5E7KIxETV6kEmvegcIKMimu8e2BZxls=;
-        b=OelPhsWZJPwh+c086C3X/fy1iDlN84E9i9lALr1bnXVl73/20hqfjViuEbLR9Ewk44
-         gbJhngnDxio7Crs7ddFFx+cr0Zi+VxKDj/H5g55tTnyyo/FMr7G/SNBwUwjtxGH/nZFV
-         yjSB3n5Vfv6fsgzmyzdLSM88h3xOerIJlKvl6EtPv4TLL/ujzSljiRPPD1lntjgD0iKC
-         yLdTpCWKgAaVY9p71pCoIsX6qnEPGV0yE+kdnS0ni2aqBMxUbif4Y09h/4hbBb/gEjSL
-         3etOfoUWA0PO9tfWjlw1xbE8IJknbXncWSU90EAsq+fJQo6GV24X/ZjJHsZoEN21MF1a
-         wJuQ==
-X-Gm-Message-State: APjAAAXO/O4HFIIv0vvYMCFv9aYPMi0S5TVD902tWWOfEXbgmIzhlx0U
-        GaLemqDFNResOE/FTTKMjr8=
-X-Google-Smtp-Source: APXvYqyVENW7+m+QNyImMzaGiX05I3nCOuvrSVmEEaY+7RTNcASvnhQ66HeTKtU5a52uuhhc6o6MkQ==
-X-Received: by 2002:a63:1d10:: with SMTP id d16mr22516587pgd.446.1560456996568;
-        Thu, 13 Jun 2019 13:16:36 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:e034])
-        by smtp.gmail.com with ESMTPSA id h12sm930626pje.12.2019.06.13.13.16.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 13 Jun 2019 13:16:35 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 13:16:34 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, Martin Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: implement getsockopt and setsockopt
- hooks
-Message-ID: <20190613201632.t7npizqhtnohzwmc@ast-mbp.dhcp.thefacebook.com>
-References: <20190610210830.105694-1-sdf@google.com>
- <20190610210830.105694-2-sdf@google.com>
+        id S1727508AbfFMUjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 16:39:20 -0400
+Received: from mail-eopbgr80088.outbound.protection.outlook.com ([40.107.8.88]:9974
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726779AbfFMUjU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 16:39:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y8eYGSE7ywsCW2leRr3f/7pXd6Ge6V/7RrcP3tlK0NI=;
+ b=rsrLn4KWeq5c5KaGdqnMYE///IJnf+GPH26KgTrkHT876ptTfyZrnlgzabIcnf4lNSbEwcQsQXtJemuJmC0tt73g30VHV3TDSS0fVh9voOAK5OMCNKIDrlM1a3TXJsrOtqnXhJ8q5Yly0RJLdyUiwW+M9y8hqD5E9eKJnONJ3zc=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2629.eurprd05.prod.outlook.com (10.172.225.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1965.15; Thu, 13 Jun 2019 20:39:13 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
+ 20:39:13 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next v2 00/15] Mellanox, mlx5 Firmware devlink
+ health and sw reset
+Thread-Topic: [pull request][net-next v2 00/15] Mellanox, mlx5 Firmware
+ devlink health and sw reset
+Thread-Index: AQHVIigPgPPXcxR3yUOcmtqLp2AdPg==
+Date:   Thu, 13 Jun 2019 20:39:13 +0000
+Message-ID: <20190613203825.31049-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR02CA0020.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::33) To DB6PR0501MB2759.eurprd05.prod.outlook.com
+ (2603:10a6:4:84::7)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 81748737-414d-4cb7-c447-08d6f03f319b
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2629;
+x-ms-traffictypediagnostic: DB6PR0501MB2629:
+x-microsoft-antispam-prvs: <DB6PR0501MB2629F89577C875BD04164E84BEEF0@DB6PR0501MB2629.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0067A8BA2A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(366004)(39860400002)(376002)(346002)(199004)(189003)(8676002)(6916009)(81156014)(81166006)(2616005)(316002)(25786009)(4326008)(6512007)(86362001)(476003)(486006)(8936002)(6436002)(50226002)(6486002)(66066001)(36756003)(26005)(305945005)(7736002)(186003)(73956011)(66946007)(64756008)(66446008)(66556008)(66476007)(53936002)(6116002)(256004)(14444005)(3846002)(1076003)(71190400001)(71200400001)(2906002)(478600001)(99286004)(52116002)(14454004)(102836004)(54906003)(5660300002)(6506007)(107886003)(386003)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2629;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Fp8NFiCi6ZgQaB2x2gowkpQ8FCAWmVVzxRmtfPK6r9C4tNXtcY9TLkWkdDcQCebpOv09c+WuXfkXMHy5AbqSsBA4bdbK+fYrZEGTRHqDk0aaLiongeuzHBxO0CWoPsgeKs8A1Q6URxzb57lg8NNJDzHUPUAPQS9swjMcJ7WZrYtKjMBHha1ZFfNeVDEMPl0eSK3PSQKticpS4arDrx0tYgtDXe4F1gYYMevlOOUIhDfv4H7xcsBaL2DVF9EWHA0Wa7wVn8HAzyNKTzB9saCdG2PZw95o63HvjkkfSV8WVqwI0Xzjtil937QO8S5dquDKJtW4biWZdeJMu5c6Q4+XWgHWbPW2AhE6BTnlPMa5WEvYUJAFP4iSyd0DEuH7Cn32HNIXD7hzQN943ZmmSPfHVl5hmeq1/HYDT3YfX/mVrEs=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190610210830.105694-2-sdf@google.com>
-User-Agent: NeoMutt/20180223
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 81748737-414d-4cb7-c447-08d6f03f319b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 20:39:13.1696
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2629
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 02:08:23PM -0700, Stanislav Fomichev wrote:
-> Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
-> BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
-> 
-> BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
-> BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
-> Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
-> 
-> The buffer memory is pre-allocated (because I don't think there is
-> a precedent for working with __user memory from bpf). This might be
-> slow to do for each {s,g}etsockopt call, that's why I've added
-> __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
-> attached to a cgroup. Note, however, that there is a race between
-> __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
-> program layout might have changed; this should not be a problem
-> because in general there is a race between multiple calls to
-> {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
-> 
-> The return code of the BPF program is handled as follows:
-> * 0: EPERM
-> * 1: success, execute kernel {s,g}etsockopt path after BPF prog exits
-> * 2: success, do _not_ execute kernel {s,g}etsockopt path after BPF
->      prog exits
-> 
-> v5:
-> * skip copy_to_user() and put_user() when ret == 0 (Martin Lau)
-> 
-> v4:
-> * don't export bpf_sk_fullsock helper (Martin Lau)
-> * size != sizeof(__u64) for uapi pointers (Martin Lau)
-> * offsetof instead of bpf_ctx_range when checking ctx access (Martin Lau)
-> 
-> v3:
-> * typos in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY comments (Andrii Nakryiko)
-> * reverse christmas tree in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY (Andrii
->   Nakryiko)
-> * use __bpf_md_ptr instead of __u32 for optval{,_end} (Martin Lau)
-> * use BPF_FIELD_SIZEOF() for consistency (Martin Lau)
-> * new CG_SOCKOPT_ACCESS macro to wrap repeated parts
-> 
-> v2:
-> * moved bpf_sockopt_kern fields around to remove a hole (Martin Lau)
-> * aligned bpf_sockopt_kern->buf to 8 bytes (Martin Lau)
-> * bpf_prog_array_is_empty instead of bpf_prog_array_length (Martin Lau)
-> * added [0,2] return code check to verifier (Martin Lau)
-> * dropped unused buf[64] from the stack (Martin Lau)
-> * use PTR_TO_SOCKET for bpf_sockopt->sk (Martin Lau)
-> * dropped bpf_target_off from ctx rewrites (Martin Lau)
-> * use return code for kernel bypass (Martin Lau & Andrii Nakryiko)
-> 
-> Cc: Martin Lau <kafai@fb.com>
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  include/linux/bpf-cgroup.h |  29 +++++
->  include/linux/bpf.h        |  45 +++++++
->  include/linux/bpf_types.h  |   1 +
->  include/linux/filter.h     |  13 ++
->  include/uapi/linux/bpf.h   |  13 ++
->  kernel/bpf/cgroup.c        | 260 +++++++++++++++++++++++++++++++++++++
->  kernel/bpf/core.c          |   9 ++
->  kernel/bpf/syscall.c       |  19 +++
->  kernel/bpf/verifier.c      |  15 +++
->  net/core/filter.c          |   2 +-
->  net/socket.c               |  18 +++
->  11 files changed, 423 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> index b631ee75762d..406f1ba82531 100644
-> --- a/include/linux/bpf-cgroup.h
-> +++ b/include/linux/bpf-cgroup.h
-> @@ -124,6 +124,13 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
->  				   loff_t *ppos, void **new_buf,
->  				   enum bpf_attach_type type);
->  
-> +int __cgroup_bpf_run_filter_setsockopt(struct sock *sock, int level,
-> +				       int optname, char __user *optval,
-> +				       unsigned int optlen);
-> +int __cgroup_bpf_run_filter_getsockopt(struct sock *sock, int level,
-> +				       int optname, char __user *optval,
-> +				       int __user *optlen);
-> +
->  static inline enum bpf_cgroup_storage_type cgroup_storage_type(
->  	struct bpf_map *map)
->  {
-> @@ -280,6 +287,26 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
->  	__ret;								       \
->  })
->  
-> +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen)   \
-> +({									       \
-> +	int __ret = 0;							       \
-> +	if (cgroup_bpf_enabled)						       \
-> +		__ret = __cgroup_bpf_run_filter_setsockopt(sock, level,	       \
-> +							   optname, optval,    \
-> +							   optlen);	       \
-> +	__ret;								       \
-> +})
-> +
-> +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen)   \
-> +({									       \
-> +	int __ret = 0;							       \
-> +	if (cgroup_bpf_enabled)						       \
-> +		__ret = __cgroup_bpf_run_filter_getsockopt(sock, level,	       \
-> +							   optname, optval,    \
-> +							   optlen);	       \
-> +	__ret;								       \
-> +})
-> +
->  int cgroup_bpf_prog_attach(const union bpf_attr *attr,
->  			   enum bpf_prog_type ptype, struct bpf_prog *prog);
->  int cgroup_bpf_prog_detach(const union bpf_attr *attr,
-> @@ -349,6 +376,8 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
->  #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops) ({ 0; })
->  #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type,major,minor,access) ({ 0; })
->  #define BPF_CGROUP_RUN_PROG_SYSCTL(head,table,write,buf,count,pos,nbuf) ({ 0; })
-> +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
-> +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
->  
->  #define for_each_cgroup_storage_type(stype) for (; false; )
->  
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index e5a309e6a400..194a47ca622f 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -520,6 +520,7 @@ struct bpf_prog_array {
->  struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
->  void bpf_prog_array_free(struct bpf_prog_array *progs);
->  int bpf_prog_array_length(struct bpf_prog_array *progs);
-> +bool bpf_prog_array_is_empty(struct bpf_prog_array *array);
->  int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
->  				__u32 __user *prog_ids, u32 cnt);
->  
-> @@ -606,6 +607,49 @@ _out:							\
->  		_ret;					\
->  	})
->  
-> +/* To be used by BPF_PROG_TYPE_CGROUP_SOCKOPT program type.
-> + *
-> + * Expected BPF program return values are:
-> + *   0: return -EPERM to the userspace
-> + *   1: sockopt was not handled by BPF, kernel should do it
-> + *   2: sockopt was handled by BPF, kernel should _not_ do it and return
-> + *      to the userspace instead
-> + *
-> + * Note, that return '0' takes precedence over everything else. In other
-> + * words, if any single program in the prog array has returned 0,
-> + * the userspace will get -EPERM (regardless of what other programs
-> + * return).
-> + *
-> + * The macro itself returns:
-> + *        0: sockopt was not handled by BPF, kernel should do it
-> + *        1: sockopt was handled by BPF, kernel should _not_ do it
-> + *   -EPERM: return error back to userspace
-> + */
-> +#define BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY(array, ctx, func)		\
-> +	({								\
-> +		struct bpf_prog_array_item *_item;			\
-> +		struct bpf_prog_array *_array;				\
-> +		struct bpf_prog *_prog;					\
-> +		u32 _success = 1;					\
-> +		u32 _bypass = 0;					\
-> +		u32 ret;						\
-> +		preempt_disable();					\
-> +		rcu_read_lock();					\
-> +		_array = rcu_dereference(array);			\
-> +		_item = &_array->items[0];				\
-> +		while ((_prog = READ_ONCE(_item->prog))) {		\
-> +			bpf_cgroup_storage_set(_item->cgroup_storage);	\
-> +			ret = func(_prog, ctx);				\
-> +			_success &= (ret > 0);				\
-> +			_bypass |= (ret == 2);				\
-> +			_item++;					\
-> +		}							\
-> +		rcu_read_unlock();					\
-> +		preempt_enable();					\
-> +		ret = _success ? _bypass : -EPERM;			\
-> +		ret;							\
-> +	})
-> +
->  #define BPF_PROG_RUN_ARRAY(array, ctx, func)		\
->  	__BPF_PROG_RUN_ARRAY(array, ctx, func, false)
->  
-> @@ -1054,6 +1098,7 @@ extern const struct bpf_func_proto bpf_spin_unlock_proto;
->  extern const struct bpf_func_proto bpf_get_local_storage_proto;
->  extern const struct bpf_func_proto bpf_strtol_proto;
->  extern const struct bpf_func_proto bpf_strtoul_proto;
-> +extern const struct bpf_func_proto bpf_tcp_sock_proto;
->  
->  /* Shared helpers among cBPF and eBPF. */
->  void bpf_user_rnd_init_once(void);
-> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> index 5a9975678d6f..eec5aeeeaf92 100644
-> --- a/include/linux/bpf_types.h
-> +++ b/include/linux/bpf_types.h
-> @@ -30,6 +30,7 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE, raw_tracepoint_writable)
->  #ifdef CONFIG_CGROUP_BPF
->  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_DEVICE, cg_dev)
->  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl)
-> +BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt)
->  #endif
->  #ifdef CONFIG_BPF_LIRC_MODE2
->  BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 43b45d6db36d..6e64d01e4e36 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -1199,4 +1199,17 @@ struct bpf_sysctl_kern {
->  	u64 tmp_reg;
->  };
->  
-> +struct bpf_sockopt_kern {
-> +	struct sock	*sk;
-> +	u8		*optval;
-> +	u8		*optval_end;
-> +	s32		level;
-> +	s32		optname;
-> +	u32		optlen;
-> +
-> +	/* Small on-stack optval buffer to avoid small allocations.
-> +	 */
-> +	u8 buf[64] __aligned(8);
-> +};
-> +
->  #endif /* __LINUX_FILTER_H__ */
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 7c6aef253173..afaa7e28d1e4 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -170,6 +170,7 @@ enum bpf_prog_type {
->  	BPF_PROG_TYPE_FLOW_DISSECTOR,
->  	BPF_PROG_TYPE_CGROUP_SYSCTL,
->  	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
-> +	BPF_PROG_TYPE_CGROUP_SOCKOPT,
->  };
->  
->  enum bpf_attach_type {
-> @@ -192,6 +193,8 @@ enum bpf_attach_type {
->  	BPF_LIRC_MODE2,
->  	BPF_FLOW_DISSECTOR,
->  	BPF_CGROUP_SYSCTL,
-> +	BPF_CGROUP_GETSOCKOPT,
-> +	BPF_CGROUP_SETSOCKOPT,
->  	__MAX_BPF_ATTACH_TYPE
->  };
->  
-> @@ -3533,4 +3536,14 @@ struct bpf_sysctl {
->  				 */
->  };
->  
-> +struct bpf_sockopt {
-> +	__bpf_md_ptr(struct bpf_sock *, sk);
-> +	__bpf_md_ptr(void *, optval);
-> +	__bpf_md_ptr(void *, optval_end);
-> +
-> +	__s32	level;
-> +	__s32	optname;
-> +	__u32	optlen;
-> +};
-> +
->  #endif /* _UAPI__LINUX_BPF_H__ */
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index 1b65ab0df457..9085a218a1a8 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -18,6 +18,7 @@
->  #include <linux/bpf.h>
->  #include <linux/bpf-cgroup.h>
->  #include <net/sock.h>
-> +#include <net/bpf_sk_storage.h>
->  
->  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
->  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
-> @@ -924,6 +925,140 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
->  }
->  EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
->  
-> +static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
-> +					     enum bpf_attach_type attach_type)
-> +{
-> +	struct bpf_prog_array *prog_array;
-> +	bool empty;
-> +
-> +	rcu_read_lock();
-> +	prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
-> +	empty = bpf_prog_array_is_empty(prog_array);
-> +	rcu_read_unlock();
-> +
-> +	return empty;
-> +}
-> +
-> +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
-> +{
-> +	if (unlikely(max_optlen > PAGE_SIZE))
-> +		return -EINVAL;
-> +
-> +	if (likely(max_optlen <= sizeof(ctx->buf))) {
-> +		ctx->optval = ctx->buf;
-> +	} else {
-> +		ctx->optval = kzalloc(max_optlen, GFP_USER);
-> +		if (!ctx->optval)
-> +			return -ENOMEM;
-> +	}
-> +
-> +	ctx->optval_end = ctx->optval + max_optlen;
-> +	ctx->optlen = max_optlen;
-> +
-> +	return 0;
-> +}
-> +
-> +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
-> +{
-> +	if (unlikely(ctx->optval != ctx->buf))
-> +		kfree(ctx->optval);
-> +}
-> +
-> +int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int level,
-> +				       int optname, char __user *optval,
-> +				       unsigned int optlen)
-> +{
-> +	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> +	struct bpf_sockopt_kern ctx = {
-> +		.sk = sk,
-> +		.level = level,
-> +		.optname = optname,
-> +	};
-> +	int ret;
-> +
-> +	/* Opportunistic check to see whether we have any BPF program
-> +	 * attached to the hook so we don't waste time allocating
-> +	 * memory and locking the socket.
-> +	 */
-> +	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
-> +		return 0;
-> +
-> +	ret = sockopt_alloc_buf(&ctx, optlen);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (copy_from_user(ctx.optval, optval, optlen) != 0) {
-> +		sockopt_free_buf(&ctx);
-> +		return -EFAULT;
-> +	}
-> +
-> +	lock_sock(sk);
-> +	ret = BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY(
-> +		cgrp->bpf.effective[BPF_CGROUP_SETSOCKOPT],
-> +		&ctx, BPF_PROG_RUN);
-> +	release_sock(sk);
-
-C based example doesn't use ret=1.
-imo that's a sign that something is odd in the api.
-In particular ret=1 doesn't prohibit bpf prog to modify the optval.
-Multiple progs can overwrite it and still return 1.
-But that optval is not going to be processed by the kernel.
-Should we do copy_to_user(optval, ctx.optval, ctx.optlen) here
-and let kernel pick it up from there?
-Should bpf prog be allowed to change optlen as well?
-ret=1 would mean that bpf prog did something and needs kernel
-to continue.
-
-Now consider a sequence of bpf progs.
-Some are doing ret=1. Some others are doing ret=2
-ret=2 will supersede.
-If first executed prog (child in cgroup) did ret=2
-the parent has no way to tell kernel to handle it.
-Even if parent does ret=1, it's effectively ignored.
-Parent can enforce rejection with ret=0, but it's a weird
-discrepancy.
-The rule for cgroup progs was 'all yes is yes, any no is no'.
-
-So if ret=1 means 'kernel handles it'. Should it be almost
-as strong as 'reject it': any prog doing ret=1 means 'kernel does it'
-(unless some prog did ret=0. then reject it) ?
-if ret=1 means 'bpf did some and needs kernel to continue' that's
-another story.
-For ret=2 being 'bpf handled it completely', should parent overwrite it?
-
-May be retval from child prog should be seen by parent prog?
-
-In some sense kernel can be seen as another bpf prog in a sequence.
-
-Whatever new behavior is with 3 values it needs to be
-documented in uapi/bpf.h
-We were sloppy with such docs in the past, but that's not
-a reason to continue.
-
+DQpIaSBEYXZlLA0KDQpUaGlzIHNlcmllcyBwcm92aWRlcyB0aGUgc3VwcG9ydCBmb3IgbWx4NSBG
+aXJtd2FyZSBkZXZsaW5rIGhlYWx0aCBhbmQNCnN3IHJlc2V0Lg0KDQpGb3IgbW9yZSBpbmZvcm1h
+dGlvbiBwbGVhc2Ugc2VlIHRhZyBsb2cgYmVsb3cuDQoNClBsZWFzZSBwdWxsIGFuZCBsZXQgbWUg
+a25vdyBpZiB0aGVyZSBpcyBhbnkgcHJvYmxlbS4NCg0KVGhpcyBpcyBhIHJlLXNwaW4gb2YgYSBw
+cmV2aW91c2x5IHNlbnQgc2VyaWVzIG9uIDUuMiBrZXJuZWwNCnJlbGVhc2UuDQoNCnYyOg0KIC0g
+SW1wcm92ZWQgbWx4NSBrZXJuZWwgZG9jdW1lbnRhdGlvbg0KIC0gQWRkcmVzc2VkIEppcmkncyBj
+b21tZW50czoNCiAgICAgIFByb3BlciBsaW5rYWdlIHRvIHJlZ2lvbiBhbmQgc25hcHNob3QgaW4g
+ZGV2bGluayBjb3JlLg0KICAgICAgRm9ybWF0IHRyYWNlIGR1bXBzIHVzaW5nIGZtc2cgaGVscGVy
+cy4NCg0KVGhhbmtzLA0KU2FlZWQuDQoNCi0tLQ0KVGhlIGZvbGxvd2luZyBjaGFuZ2VzIHNpbmNl
+IGNvbW1pdCBhODQyZmUxNDI1Y2IyMGY0NTdhYmQzZjhlZjk4YjQ2OGY4M2NhOThiOg0KDQogIHRj
+cDogYWRkIG9wdGlvbmFsIHBlciBzb2NrZXQgdHJhbnNtaXQgZGVsYXkgKDIwMTktMDYtMTIgMTM6
+MDU6NDMgLTA3MDApDQoNCmFyZSBhdmFpbGFibGUgaW4gdGhlIEdpdCByZXBvc2l0b3J5IGF0Og0K
+DQogIGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zYWVlZC9s
+aW51eC5naXQgdGFncy9tbHg1LXVwZGF0ZXMtMjAxOS0wNi0xMw0KDQpmb3IgeW91IHRvIGZldGNo
+IGNoYW5nZXMgdXAgdG8gMDZlZmViNTU1NTI0YThjNjVlZjQyOWYyNjAzODg1YzMxYTUyMTJiMToN
+Cg0KICBEb2N1bWVudGF0aW9uOiBuZXQ6IG1seDU6IERldmxpbmsgaGVhbHRoIGRvY3VtZW50YXRp
+b24gKDIwMTktMDYtMTMgMTM6MjM6MTkgLTA3MDApDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCm1seDUtdXBkYXRlcy0y
+MDE5LTA2LTEzDQoNCk1seDUgZGV2bGluayBoZWFsdGggZncgcmVwb3J0ZXJzIGFuZCBzdyByZXNl
+dCBzdXBwb3J0DQoNClRoaXMgc2VyaWVzIHByb3ZpZGVzIG1seDUgZmlybXdhcmUgcmVzZXQgc3Vw
+cG9ydCBhbmQgZmlybXdhcmUgZGV2bGluayBoZWFsdGgNCnJlcG9ydGVycy4NCg0KMSkgQWRkIGlu
+aXRpYWwgbWx4NSBrZXJuZWwgZG9jdW1lbnRhdGlvbiBhbmQgaW5jbHVkZSBkZXZsaW5rIGhlYWx0
+aCByZXBvcnRlcnMNCg0KMikgQWRkIENSLVNwYWNlIGFjY2VzcyBhbmQgRlcgQ3JkdW1wIHNuYXBz
+aG90IHN1cHBvcnQgdmlhIGRldmxpbmsgcmVnaW9uX3NuYXBzaG90DQoNCjMpIElzc3VlIHNvZnR3
+YXJlIHJlc2V0IHVwb24gRlcgYXNzZXJ0cw0KDQo0KSBBZGQgZncgYW5kIGZ3X2ZhdGFsIGRldmxp
+bmsgaGVhdGggcmVwb3J0ZXJzIHRvIGZvbGxvdyBmdyBlcnJvcnMgaW5kaWNhdGlvbiBieQ0KZHVt
+cCBhbmQgcmVjb3ZlciBwcm9jZWR1cmVzIGFuZCBlbmFibGUgdHJpZ2dlciB0aGVzZSBmdW5jdGlv
+bmFsaXR5IGJ5IHVzZXIuDQoNCjQuMSkgZncgcmVwb3J0ZXI6DQpUaGUgZncgcmVwb3J0ZXIgaW1w
+bGVtZW50cyBkaWFnbm9zZSBhbmQgZHVtcCBjYWxsYmFja3MuDQpJdCBmb2xsb3dzIHN5bXB0b21z
+IG9mIGZ3IGVycm9yIHN1Y2ggYXMgZncgc3luZHJvbWUgYnkgdHJpZ2dlcmluZw0KZncgY29yZSBk
+dW1wIGFuZCBzdG9yaW5nIGl0IGFuZCBhbnkgb3RoZXIgZncgdHJhY2UgaW50byB0aGUgZHVtcCBi
+dWZmZXIuDQpUaGUgZncgcmVwb3J0ZXIgZGlhZ25vc2UgY29tbWFuZCBjYW4gYmUgdHJpZ2dlcmVk
+IGFueSB0aW1lIGJ5IHRoZSB1c2VyIHRvIGNoZWNrDQpjdXJyZW50IGZ3IHN0YXR1cy4NCg0KNC4y
+KSBmd19mYXRhbCByZXBvdGVyOg0KVGhlIGZ3X2ZhdGFsIHJlcG9ydGVyIGltcGxlbWVudHMgZHVt
+cCBhbmQgcmVjb3ZlciBjYWxsYmFja3MuDQpJdCBmb2xsb3dzIGZhdGFsIGVycm9ycyBpbmRpY2F0
+aW9ucyBieSBDUi1zcGFjZSBkdW1wIGFuZCByZWNvdmVyIGZsb3cuDQpUaGUgQ1Itc3BhY2UgZHVt
+cCB1c2VzIHZzYyBpbnRlcmZhY2Ugd2hpY2ggaXMgdmFsaWQgZXZlbiBpZiB0aGUgRlcgY29tbWFu
+ZA0KaW50ZXJmYWNlIGlzIG5vdCBmdW5jdGlvbmFsLCB3aGljaCBpcyB0aGUgY2FzZSBpbiBtb3N0
+IEZXIGZhdGFsIGVycm9ycy4gVGhlDQpDUi1zcGFjZSBkdW1wIGlzIHN0b3JlZCBhcyBhIG1lbW9y
+eSByZWdpb24gc25hcHNob3QgdG8gZWFzZSByZWFkIGJ5IGFkZHJlc3MuDQpUaGUgcmVjb3ZlciBm
+dW5jdGlvbiBydW5zIHJlY292ZXIgZmxvdyB3aGljaCByZWxvYWRzIHRoZSBkcml2ZXIgYW5kIHRy
+aWdnZXJzIGZ3DQpyZXNldCBpZiBuZWVkZWQuDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCkFsZXggVmVza2VyICgyKToN
+CiAgICAgIG5ldC9tbHg1OiBBZGQgVmVuZG9yIFNwZWNpZmljIENhcGFiaWxpdHkgYWNjZXNzIGdh
+dGV3YXkNCiAgICAgIG5ldC9tbHg1OiBBZGQgQ3JkdW1wIHN1cHBvcnQNCg0KQXlhIExldmluICgx
+KToNCiAgICAgIGRldmxpbms6IEhhbmcgcmVwb3J0ZXIncyBkdW1wIG1ldGhvZCBvbiBhIGR1bXBp
+dCBjYg0KDQpFcmFuIEJlbiBFbGlzaGEgKDEpOg0KICAgICAgbmV0L21seDU6IE1vdmUgYWxsIGRl
+dmxpbmsgcmVsYXRlZCBmdW5jdGlvbnMgY2FsbHMgdG8gZGV2bGluay5jDQoNCkZlcmFzIERhb3Vk
+ICgzKToNCiAgICAgIG5ldC9tbHg1OiBIYW5kbGUgU1cgcmVzZXQgb2YgRlcgaW4gZXJyb3IgZmxv
+dw0KICAgICAgbmV0L21seDU6IENvbnRyb2wgQ1Itc3BhY2UgYWNjZXNzIGJ5IGRpZmZlcmVudCBQ
+RnMNCiAgICAgIG5ldC9tbHg1OiBJc3N1ZSBTVyByZXNldCBvbiBGVyBhc3NlcnQNCg0KTW9zaGUg
+U2hlbWVzaCAoNyk6DQogICAgICBuZXQvbWx4NTogQ3JlYXRlIEZXIGRldmxpbmtfaGVhbHRoX3Jl
+cG9ydGVyDQogICAgICBuZXQvbWx4NTogQWRkIHN1cHBvcnQgZm9yIEZXIHJlcG9ydGVyIGR1bXAN
+CiAgICAgIG5ldC9tbHg1OiBSZXBvcnQgZGV2bGluayBoZWFsdGggb24gRlcgaXNzdWVzDQogICAg
+ICBuZXQvbWx4NTogQWRkIGZ3IGZhdGFsIGRldmxpbmtfaGVhbHRoX3JlcG9ydGVyDQogICAgICBu
+ZXQvbWx4NTogQWRkIHN1cHBvcnQgZm9yIEZXIGZhdGFsIHJlcG9ydGVyIGR1bXANCiAgICAgIG5l
+dC9tbHg1OiBSZXBvcnQgZGV2bGluayBoZWFsdGggb24gRlcgZmF0YWwgaXNzdWVzDQogICAgICBE
+b2N1bWVudGF0aW9uOiBuZXQ6IG1seDU6IERldmxpbmsgaGVhbHRoIGRvY3VtZW50YXRpb24NCg0K
+U2FlZWQgTWFoYW1lZWQgKDEpOg0KICAgICAgRG9jdW1lbnRhdGlvbjogbmV0OiBtbHg1OiBBZGQg
+bWx4NSBpbml0aWFsIGRvY3VtZW50YXRpb24NCg0KIERvY3VtZW50YXRpb24vbmV0d29ya2luZy9k
+ZXZpY2VfZHJpdmVycy9pbmRleC5yc3QgIHwgICAxICsNCiAuLi4vbmV0d29ya2luZy9kZXZpY2Vf
+ZHJpdmVycy9tZWxsYW5veC9tbHg1LnJzdCAgICB8IDE3MyArKysrKysrDQogTUFJTlRBSU5FUlMg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDEgKw0KIGRyaXZlcnMv
+bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9NYWtlZmlsZSAgIHwgICAzICstDQogZHJp
+dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2RldmxpbmsuYyAgfCAgNTggKysr
+DQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2RldmxpbmsuaCAgfCAg
+MTQgKw0KIC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2RpYWcvY3JkdW1wLmMg
+IHwgMTE1ICsrKysrDQogLi4uL2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9kaWFnL2Z3X3Ry
+YWNlci5jICAgfCAxMzkgKysrKysNCiAuLi4vZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Rp
+YWcvZndfdHJhY2VyLmggICB8ICAyMCArDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZW5fc2VsZnRlc3QuYyAgfCAgIDIgKy0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
+YW5veC9tbHg1L2NvcmUvaGVhbHRoLmMgICB8IDU2OSArKysrKysrKysrKysrKysrKystLS0NCiBk
+cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL21seDUuaCB8ICAgMyAr
+DQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL3BjaV92c2MuYyAgfCAz
+MTYgKysrKysrKysrKysrDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGli
+L3BjaV92c2MuaCAgfCAgMzIgKysNCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvbWFpbi5jICAgICB8ICA2NSArLS0NCiAuLi4vbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9tbHg1X2NvcmUuaCAgICB8ICAgOCArLQ0KIGluY2x1ZGUvbGludXgvbWx4NS9kZXZp
+Y2UuaCAgICAgICAgICAgICAgICAgICAgICAgIHwgIDEwICstDQogaW5jbHVkZS9saW51eC9tbHg1
+L2RyaXZlci5oICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTMgKy0NCiBuZXQvY29yZS9kZXZs
+aW5rLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IDExOCArKysrLQ0KIDE5IGZp
+bGVzIGNoYW5nZWQsIDE1MTYgaW5zZXJ0aW9ucygrKSwgMTQ0IGRlbGV0aW9ucygtKQ0KIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvZGV2aWNlX2RyaXZlcnMvbWVs
+bGFub3gvbWx4NS5yc3QNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvZXRoZXJuZXQv
+bWVsbGFub3gvbWx4NS9jb3JlL2RldmxpbmsuYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJz
+L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZGV2bGluay5oDQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9kaWFnL2NyZHVt
+cC5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9saWIvcGNpX3ZzYy5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L2V0
+aGVybmV0L21lbGxhbm94L21seDUvY29yZS9saWIvcGNpX3ZzYy5oDQo=
