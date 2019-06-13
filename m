@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C10F440EC
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:11:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D04B440F3
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390701AbfFMQKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:10:44 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46091 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727966AbfFMQKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:10:43 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 81so12118212pfy.13
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 09:10:43 -0700 (PDT)
+        id S1732517AbfFMQKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:10:54 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:33589 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732845AbfFMQKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:10:44 -0400
+Received: by mail-pl1-f194.google.com with SMTP id c14so2075625plo.0
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 09:10:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DvY26Du1th1GgD3VAP9trjb3pQSfFkZH5hxAJJMMCSs=;
-        b=d1x3U5wpCFoW2Pl7gno/f7ZWGPlDhX1O25F7nGpo93sF3I9xWbPpalZO/MLnTworV1
-         E2vAaQdbUkQe1T+s7OXcv5qHf0OzhTcoC7tvz/fXcKOw/b0kYs9WHBn1cA7Z9VYDxnDJ
-         m8Atj0PVGNASebTbplKePh1RpZTky6SnAfZvOjmuTFwpiq9RynAinSo5a+eQym6kQZhL
-         w32zJYeiqqvt4QFVljmi/DiikPhNYhQcM1c/3fPyOpMHVUPs3yOlhv9hOnlfXARhIAYO
-         Hia3hq2bh3oUli4hVylL+RIYYRbMa6JnMFpIhHtrUpcY/m/zZb+lbNOph+r71DBPTMAZ
-         qgTQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6DW7ReEmFUuBGFp6WLPwUD/d9R/t22ShIFaBwJLcskQ=;
+        b=tGxAqZRuolOpTZprdtnwamTpw1Y0g2Kgpb65RKyoQmGoVGxmXv/pgxmOWFBJb7iMwu
+         tG77WiWTWlRsLb91xjSYcUL22FGfc6TGMCIrIVm+kAq+UEEeC1qVKWutQdhZgk9WFigy
+         mKp7frusW3UkSqwBPew0Ag6629MjG3x4ggSlsaQObIUvzSqgwqCJmRkf8bc4yEm/fhqv
+         r7IB7yeclIYUZrD7tvpf0jhfrOaemZS6r1AmciR0ao4+ybVEztQ15zMXGDEgz7zmUpKw
+         z4PiDhpSpL13I9cRilS4Hrt8q6z/WjZkiSfl1ZxhH0n1RY2wAmiO41+ViSE7d2N+530J
+         oTOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DvY26Du1th1GgD3VAP9trjb3pQSfFkZH5hxAJJMMCSs=;
-        b=D7jYUrppbqAJo1GQ1PPtGBNTBshawQul9pmcHx5eJps79yyEZ467pForobuhu0jq5C
-         LBnwf/+vbkAOy8oOPctbhbI5fF3BTnS9QveqEkbscUE+kedl+E9y62aZwCkW8zBcNN2u
-         8L8fdZdwjzaqoM0NV8aKgrZdMHTNp725IeJYcpJSzBH/An4oFA0wSvOTu9h5mr3olaol
-         /bRSAD9Nw1HpfVNZghhL0ufrYAgsmePmyLxayQ9HABo3YK/v57i7O4YNieCbHatzu+7U
-         hrp6mgzLIgTlDZy4TXG6Yh1U4LDfb5mOK3xD9sw8Zpmxvg2oeJBELUK2GUU2euYeIl0a
-         ruCQ==
-X-Gm-Message-State: APjAAAXsr7B2caqCvR8s8tRgeNfPUXHfFMxJw2l5zmtMkhWyfIVoqIkL
-        NNJNm+BIYRx041UcEIMibjoARd8Q9Go=
-X-Google-Smtp-Source: APXvYqxUAwd5QdHP00Wvc8+L1qyr3KhCNToVq4bGGkEdovyUIpgi1/n5PzdQYS0bVsHM4cL//UUtKg==
-X-Received: by 2002:a63:6881:: with SMTP id d123mr5821337pgc.201.1560442242639;
-        Thu, 13 Jun 2019 09:10:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6DW7ReEmFUuBGFp6WLPwUD/d9R/t22ShIFaBwJLcskQ=;
+        b=oV3oUib+Ko6y/PnfkQP2vXaMpn674+YpPaRLbOi0Tw4tYWw/oHTNW1D8Lj1eeZdeQE
+         QynD98IuyPjMu1Y3C4rsr9RcLjFNi0dwAp59j5ilJq7wcdKtTEV5VUfB6N/0CYtW5NDN
+         uPTAVxZvNmTFD5c4/f/rSmMhz+uN1RjePZjDz9AiNu8sTW5A1j3Wc1+fonszZQHPi/Td
+         p1YxGTR/YbYQFn3+8HFQsr6RNgvWK1YbP2GaHAAY3ifnnKM+klf21LwtNKD/oQku0QHo
+         nvcAjglFj69K/Fdy5cjnj+eV3x5l4NKyyX69BhYEM3Oy0vHhzxRVr+2Snw1ykrDXdzy2
+         gEFw==
+X-Gm-Message-State: APjAAAUdb8a+I/Hw9zSz/zI2np8haG/j3b43cTrgzooifcQZlJYaUaOh
+        KaCYe/3IzqlZoFt0rr+3RtoYZQ+f1Jk=
+X-Google-Smtp-Source: APXvYqzhcnbFUke66h9Lgd8K7/XYGRz+hmBH+k6fWFY2zj8SerFBugDBPGe8wo/Y7u9d6SIzxu7GeQ==
+X-Received: by 2002:a17:902:4222:: with SMTP id g31mr10109575pld.41.1560442243441;
+        Thu, 13 Jun 2019 09:10:43 -0700 (PDT)
 Received: from dancer.lab.teklibre.com ([2603:3024:1536:86f0:eea8:6bff:fefe:9a2])
-        by smtp.gmail.com with ESMTPSA id l2sm254350pgs.33.2019.06.13.09.10.41
+        by smtp.gmail.com with ESMTPSA id l2sm254350pgs.33.2019.06.13.09.10.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
         Thu, 13 Jun 2019 09:10:42 -0700 (PDT)
 From:   Dave Taht <dave.taht@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Dave Taht <dave.taht@gmail.com>
-Subject: [RFC PATCH net-next 0/1] Allow 0.0.0.0/8 as a valid address range
-Date:   Thu, 13 Jun 2019 09:10:36 -0700
-Message-Id: <1560442237-6336-1-git-send-email-dave.taht@gmail.com>
+Subject: [RFC PATCH net-next 1/1] Allow 0.0.0.0/8 as a valid address range
+Date:   Thu, 13 Jun 2019 09:10:37 -0700
+Message-Id: <1560442237-6336-2-git-send-email-dave.taht@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1560442237-6336-1-git-send-email-dave.taht@gmail.com>
+References: <1560442237-6336-1-git-send-email-dave.taht@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My talk's slides and video at netdev 0x13 about
+The longstanding prohibition against using 0.0.0.0/8 dates back
+to two issues with the early internet.
 
-"Potential IPv4 Unicast expansions" is up, here: 
+There was an interoperability problem with BSD 4.2 in 1984, fixed in
+BSD 4.3 in 1986. BSD 4.2 has long since been retired. 
 
-https://netdevconf.org/0x13/session.html?talk-ipv4-unicast-expansions
+Secondly, addresses of the form 0.x.y.z were initially defined only as
+a source address in an ICMP datagram, indicating "node number x.y.z on
+this IPv4 network", by nodes that know their address on their local
+network, but do not yet know their network prefix, in RFC0792 (page
+19).  This usage of 0.x.y.z was later repealed in RFC1122 (section
+3.2.2.7), because the original ICMP-based mechanism for learning the
+network prefix was unworkable on many networks such as Ethernet (which
+have longer addresses that would not fit into the 24 "node number"
+bits).  Modern networks use reverse ARP (RFC0903) or BOOTP (RFC0951)
+or DHCP (RFC2131) to find their full 32-bit address and CIDR netmask
+(and other parameters such as default gateways). 0.x.y.z has had
+16,777,215 addresses in 0.0.0.0/8 space left unused and reserved for
+future use, since 1989.
 
-There are roughly 419 million IPv4 addresses that are unallocated and
-unused in the 0, localhost, reserved future multicast, and 240/4
-spaces.
+This patch allows for these 16m new IPv4 addresses to appear within
+a box or on the wire. Layer 2 switches don't care.
 
-Linux already supports 240/4 fully. SDN's such as AWS already support
-the entire IPv4 address space as a unicast playground.
+0.0.0.0/32 is still prohibited, of course.
 
-This first patch for 0/8 is intended primarily as a conversation
-starter - arguably we should rename the function across 22 fairly
-"hot" files - but:
+Signed-off-by: Dave Taht <dave.taht@gmail.com>
 
-Should Linux treat these ranges as policy, and no longer enforce via
-mechanism?
-
-A full patchset for the remainder of the address spaces is on github:
-https://github.com/dtaht/unicast-extensions
-
-with the very few needed patches for routing daemons and BSD also
-available there.
-
-Dave Taht (1):
-  Allow 0.0.0.0/8 as a valid address range
-
+---
  include/linux/in.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/include/linux/in.h b/include/linux/in.h
+index 4d2fedfb753a..1873ef642605 100644
+--- a/include/linux/in.h
++++ b/include/linux/in.h
+@@ -63,7 +63,7 @@ static inline bool ipv4_is_all_snoopers(__be32 addr)
+ 
+ static inline bool ipv4_is_zeronet(__be32 addr)
+ {
+-	return (addr & htonl(0xff000000)) == htonl(0x00000000);
++	return (addr == 0);
+ }
+ 
+ /* Special-Use IPv4 Addresses (RFC3330) */
 -- 
 2.17.1
 
