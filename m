@@ -2,114 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4B3449BB
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2092449BD
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726473AbfFMR3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:29:43 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38683 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbfFMR3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:29:42 -0400
-Received: by mail-qt1-f195.google.com with SMTP id n11so21353687qtl.5
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Vkz0EExAX+LyWJhpQLekP+MxHO5+Vrab4RkRIVz5TI4=;
-        b=jYJbRrX9v6Ln6k5PC/tNPKRlTuv1PGDu99M4fLHTGHzPYEi61JmDXa1PzRDIXYVT3k
-         NN0RcUDmwcYuixseOcJtyR1W1EYCJPxpbXai8Rz/vkBjz0S4dDgNK3D4vZkJbNtgSGcP
-         hcL8CG+FqTHo5ZZJ/0/7jcozkdW95UQwdZ13WOasVZfyU6kEboFEKEJCvnS3W93hrXPq
-         swE+6nb8Wi4D95ukWQDv+CIaJ67X8an3z+hXyaZP72UgO1zU990KWedBaNSn6EM53VxF
-         uC5Sdu0ruEKaZ4puFz6r1ub1ymS2UU+nXbmHLMGQlTdvC8c2nW+/nMMKWNhIrTypkPnc
-         aCkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Vkz0EExAX+LyWJhpQLekP+MxHO5+Vrab4RkRIVz5TI4=;
-        b=JMudbhjnzvyRX3IJMHdD2+NhIP7gq8YAoERcna2crHUwRJRoIrU9nY7snYmXdvoCuU
-         cs0yXWqGgWYXIJkXoHngFTCnDRoTHmE/UJxaxuZ7hf5He6dVyQJvLdoR6PuYpoBNB7Zu
-         Q5kNxyzordoReo6faQQMxFup0CQpAneDDTqAV/t4bhBUQlEHu2r3mvUD4Xa4aJMyphjx
-         LubRWRCJAoNZV1pDNrcE7tGEKmB6MGM3QVY0Hdjr5SkVzSGYyMYyfjHiBSuVss248WJb
-         IKas/LUi3ewKicDkmCclcyFlpNTYGlmm/Q3bw0k6uipUWK4fKm7+Ve0uHVKy7R9iRUUj
-         mZRw==
-X-Gm-Message-State: APjAAAW+8IZUNaQQHO1pQmaboxJS+6b0qZJNXOs3cpzlRSelUnG3Y22R
-        O8FSGBg26xWC0R1va91djjzyfo/6hVM=
-X-Google-Smtp-Source: APXvYqxA/hsjUjmBs9SM6QXlL8NL+RTmlFAowM1RUue8CWvRAMj1II8Y3KSlaa/YWX1Lh8iVT6iKHg==
-X-Received: by 2002:a0c:f9c1:: with SMTP id j1mr4501017qvo.235.1560446981811;
-        Thu, 13 Jun 2019 10:29:41 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s134sm111885qke.51.2019.06.13.10.29.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 10:29:41 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 10:29:36 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?Qmo=?= =?UTF-8?B?w7ZybiBUw7ZwZWw=?= 
-        <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH bpf-next v4 05/17] xsk: Change the default frame size to
- 4096 and allow controlling it
-Message-ID: <20190613102936.2c8979ed@cakuba.netronome.com>
-In-Reply-To: <b7217210-1ce6-4b27-9964-b4daa4929e8b@mellanox.com>
-References: <20190612155605.22450-1-maximmi@mellanox.com>
-        <20190612155605.22450-6-maximmi@mellanox.com>
-        <20190612131017.766b4e82@cakuba.netronome.com>
-        <b7217210-1ce6-4b27-9964-b4daa4929e8b@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        id S1726826AbfFMRco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:32:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34480 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725825AbfFMRco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 13:32:44 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 540BC218FC;
+        Thu, 13 Jun 2019 17:32:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560447163;
+        bh=Z9+nxGUJArxeFNYRLc7IZW2T3WdcyvPDoWI9vdbOCxs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PS5kC4e73Tv2xsIzb5MWZQ9bzHBAklZop5cN4+cyF5arB+Vn5FbzZ2fgmpJcKv7gO
+         eGC+3fD3AqJbh7v46e3A0F9+quva2hYH3aB99ktr2A9pBGHLSOdwY5ODN9Kkxc01uZ
+         ErQYE9mGDWs8yus4piR5x1SKr32Vxm8ZVwHa3U5s=
+Received: by mail-qk1-f178.google.com with SMTP id r6so13307572qkc.0;
+        Thu, 13 Jun 2019 10:32:43 -0700 (PDT)
+X-Gm-Message-State: APjAAAXUkNCdMZ3psPLdGVnmTzpx5vGJCFDPbVC9/msEe7q96wTC4kEW
+        9Ybxi/XaBHQZ/V791eXx8UTFrM8kQ9NlZ5Bd0Q==
+X-Google-Smtp-Source: APXvYqyQf5z98o/AaM03N71A5iiVUyUqY3CW7taVTqWxgwcOdoed18snklLHmhUZo6pOY3PC3itTfd1UgNrr739MpLY=
+X-Received: by 2002:a37:a6c9:: with SMTP id p192mr74202516qke.184.1560447162583;
+ Thu, 13 Jun 2019 10:32:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
+ <d198d29119b37b2fdb700d8992b31963e98b6693.1560158667.git-series.maxime.ripard@bootlin.com>
+ <20190610143139.GG28724@lunn.ch> <CAL_JsqJahCJcdu=+fA=ewbGezuEJ2W6uwMVxkQpdY6w+1OWVVA@mail.gmail.com>
+ <20190611145856.ua2ggkn6ccww6vpp@flea>
+In-Reply-To: <20190611145856.ua2ggkn6ccww6vpp@flea>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 13 Jun 2019 11:32:30 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+KwH-j8f+r+fWhMuqJPWcHdBQau+nUz3NRAXYTpsyuvg@mail.gmail.com>
+Message-ID: <CAL_Jsq+KwH-j8f+r+fWhMuqJPWcHdBQau+nUz3NRAXYTpsyuvg@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] dt-bindings: net: sun4i-emac: Convert the
+ binding to a schemas
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jun 2019 14:01:39 +0000, Maxim Mikityanskiy wrote:
-> On 2019-06-12 23:10, Jakub Kicinski wrote:
-> > On Wed, 12 Jun 2019 15:56:43 +0000, Maxim Mikityanskiy wrote:  
-> >> The typical XDP memory scheme is one packet per page. Change the AF_XDP
-> >> frame size in libbpf to 4096, which is the page size on x86, to allow
-> >> libbpf to be used with the drivers with the packet-per-page scheme.  
-> > 
-> > This is slightly surprising.  Why does the driver care about the bufsz?  
-> 
-> The classic XDP implementation supports only the packet-per-page scheme. 
-> mlx5e implements this scheme, because it perfectly fits with xdp_return 
-> and page pool APIs. AF_XDP relies on XDP, and even though AF_XDP doesn't 
-> really allocate or release pages, it works on top of XDP, and XDP 
-> implementation in mlx5e does allocate and release pages (in general 
-> case) and works with the packet-per-page scheme.
+On Thu, Jun 13, 2019 at 7:25 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> Hi Rob,
+>
+> On Mon, Jun 10, 2019 at 12:59:29PM -0600, Rob Herring wrote:
+> > On Mon, Jun 10, 2019 at 8:31 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > > +required:
+> > > > +  - compatible
+> > > > +  - reg
+> > > > +  - interrupts
+> > > > +  - clocks
+> > > > +  - phy
+> > > > +  - allwinner,sram
+> > >
+> > > Quoting ethernet.txt:
+> > >
+> > > - phy: the same as "phy-handle" property, not recommended for new bindings.
+> > >
+> > > - phy-handle: phandle, specifies a reference to a node representing a PHY
+> > >   device; this property is described in the Devicetree Specification and so
+> > >   preferred;
+> > >
+> > > Can this be expressed in Yaml? Accept phy, but give a warning. Accept
+> > > phy-handle without a warning? Enforce that one or the other is
+> > > present?
+> >
+> > The common schema could have 'phy: false'. This works as long as we've
+> > updated (or plan to) all the dts files to use phy-handle. The issue is
+> > how far back do you need kernels to work with newer dtbs.
+>
+> I guess another question being raised by this is how hard do we want
+> to be a deprecating things, and should the DT validation be a tool to
+> enforce that validation.
+>
+> For example, you've used in you GPIO meta-schema false for anything
+> ending with -gpio, since it's deprecated. This means that we can't
+> convert any binding using a deprecated property without introducing a
+> build error in the schemas, which in turn means that you'll have a lot
+> of friction to support schemas, since you would have to convert your
+> driver to support the new way of doing things, before being able to
+> have a schema for your binding.
 
-Yes, okay, I get that.  But I still don't know what's the exact use you
-have for AF_XDP buffers being 4k..  Could you point us in the code to
-the place which relies on all buffers being 4k in any XDP scenario?
+I've err'ed on the stricter side. We may need to back off on some
+things to get to warning free builds. Really, I'd like to have levels
+to separate checks for existing bindings, new bindings, and pedantic
+checks.
 
-> > You're not supposed to so page operations on UMEM pages, anyway.
-> > And the RX size filter should be configured according to MTU regardless
-> > of XDP state.  
-> 
-> Yes, of course, MTU is taken into account.
-> 
-> > Can you explain?
-> >   
-> >> Add a command line option -f to xdpsock to allow to specify a custom
-> >> frame size.
-> >>
-> >> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> >> Acked-by: Saeed Mahameed <saeedm@mellanox.com>  
+For '-gpio', we may be okay because the suffix is handled in the GPIO
+core. It should be safe to update the binding to use the preferred
+form.
+
+> And then, we need to agree on how to express the deprecation. I guess
+> we could allow the deprecated keyword that will be there in the
+> draft-8, instead of ad-hoc solutions?
+
+Oh, nice! I hadn't seen that. Seems like we should use that. We can
+start even without draft-8 support because unknown keywords are
+ignored (though we probably have to add it to our meta-schema). Then
+at some point we can add a 'disallow deprecated' flag to the tool.
+
+Rob
