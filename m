@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAD843BEB
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA8C43D67
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727755AbfFMPcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:32:36 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42484 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbfFMPce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:32:34 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q10so12058642pff.9
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 08:32:34 -0700 (PDT)
+        id S1730780AbfFMPl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:41:56 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:36044 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387546AbfFMPlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:41:55 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f21so5158153pgi.3
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 08:41:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TD2H9Hhj3S+Krmty7ZqGdgy5CKS4QMDwo6kREYn96xQ=;
-        b=Cq6HuyO4bDdlNTIqwl6xwH9kgUiKInbq+xLqOLxh/BeqTnneGb9Urvf34iqJu+7rTQ
-         ssFL6laY7TJFMfMCJkwwrRkjCMaeiErU9nuYYp7lDWQBJjRBXiqa8PZAh2VySdjxZ1Id
-         Thbx9VOwFTQQAiOIEkBf6hIo+5z5ZegX6Ruj+gDKhYiK8tiSM68ea61JDrLpzmeus+a2
-         9Sg4TzBDoB0AaGlZXk0ttN6VLmt9GmJmeu+TsHGuTrZpm+BAbxvK4a0PCKNaPUpUHSQB
-         GfvESD767p6+aGZskS97M8xVm7+Zt0KqpcbH2J996qzD3EJ6ZpVaV65S+ynyjswi0SOa
-         P63w==
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=mWJyZbm7F3Ahz/ql/XF8euQ1ksW5Cu4zLDVBU8U4GDo=;
+        b=o6aVXpjqvNPmGOyOlXbaR8Zo2sjLjrACsvivGycW9GMFCBZxRG+Giv9O1YysXycFpR
+         36efE76JYm0/qUZIYkJ8E/5xHl/zIQDBAxcZFm7df4gRFn92NVCHGd7RMoUe4jCeKYdg
+         ah6tzVeUt1temIghkERv5YTXkb3gJlcKj9AquTF0HfKWqYh9/ZYXYCAC8ZNWZ8z7XZa0
+         xY8CvRkfk8wTNYTCECshfLGPOJccuAvmQ2fwGbYINT4izbMXhOJ646s5DgeMB20iLzzT
+         fKeVbj9TYL//xAu2cpuoxoQzHwqQTI9DB/FIt7Ensd9XV/FEnVK5ZJJF6EcP9EKnT8z0
+         JuDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TD2H9Hhj3S+Krmty7ZqGdgy5CKS4QMDwo6kREYn96xQ=;
-        b=e4rj12KVNK1WJTn0NbNTINIHv+g/NBUVgHxxbccDjCRttF7dM8gMujeThb4UiJH9Q5
-         WSX1Ko30nIkkFgIckWperJL60xpxmJ0GmpSOjdX7zFPzu4OmruKdBvGOuP6O0eb/WprH
-         PxCHKpgQPnZjcZP76YRqVM2uNblh/XtEWTahyoRM0rkOdtPVhSk+3sSdoQzFnW+digUB
-         LmkJzRItj2Os4D+XLENLrG3xHZxZbIe+eNk8tu0gVekTCLzexNeKQbmtsC6FUCcwKGuT
-         3x0VodPUqkpXvvWPvQkUzV9NJ7A5WD9PEcUtV8dIxvZXMRB/2KD2Uf0OiXUJJhxoWxZL
-         wcIA==
-X-Gm-Message-State: APjAAAULCtTN87mOI0l+KnAH1ERS9GHuw+dtQrkNbiOPYFHtCowxRNGF
-        9TaH6QkgMkOD964gNz/+xVcMNQA=
-X-Google-Smtp-Source: APXvYqyFnQ03x2HJTRPqVGsDA/9/mGuMdKnhJezVh3cDN5MYou1XCC+JjN52BXsiFMUHEb5HrN32Kw==
-X-Received: by 2002:a62:fb18:: with SMTP id x24mr93174922pfm.76.1560439954161;
-        Thu, 13 Jun 2019 08:32:34 -0700 (PDT)
-Received: from ubuntu ([12.38.14.8])
-        by smtp.gmail.com with ESMTPSA id s5sm147300pgj.60.2019.06.13.08.32.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 13 Jun 2019 08:32:33 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 11:32:26 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv4: Support multipath hashing on inner IP
- pkts for GRE tunnel
-Message-ID: <20190613153226.GA4250@ubuntu>
-References: <20190611003142.11626-1-ssuryaextr@gmail.com>
- <076bc564-7c97-f591-6b4c-2e540db4cb87@cumulusnetworks.com>
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=mWJyZbm7F3Ahz/ql/XF8euQ1ksW5Cu4zLDVBU8U4GDo=;
+        b=mJUfrx373NDxFW34VWzAlD3Tn+dbzUGMDykrHN8qu87++fIXT40kyO79XHpKzbjDxs
+         hHQPRuTxSOdNWjqTNyoJS/AHZRr2LqqPPQJWXWnvfoFkj54HvR5fitHK6+JgEvH0zff5
+         ZDBPtqez+VeJt1HnzYPsBiueWqADVpSlKGo0397mTbnlMrdiC/lp6uMenEGv94FRQh6H
+         EH0aDsMloGJgt2vRJWYwxrrUV2VVXNarU7dvDI/WtDp+y5NMHx1bQ5qWvBOz6Z9OlWhT
+         r+uaPFt30cbjtwfOWoTvlZmQl9ZTibvyQ4Ftoh0lOx0KwaYEDmvNdVm6o8ZBOoAOOUWo
+         nyig==
+X-Gm-Message-State: APjAAAUaKLU1UaXuqaIUaaqdm83xsGFYA2qUTVIRkHIjyf0l5EjBCJOU
+        329BwhKPnbfGY/ynr2GYSl7t6Q==
+X-Google-Smtp-Source: APXvYqz665NIJnk8Z4SVgLXBrXMXtYkxyBLHoq/yncNrUZ0q/8CMlIVoc2MY1UgABSwK3TkEspaEgw==
+X-Received: by 2002:a17:90b:d8b:: with SMTP id bg11mr6287697pjb.30.1560440514297;
+        Thu, 13 Jun 2019 08:41:54 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id x6sm111580pfx.17.2019.06.13.08.41.53
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 08:41:53 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 08:41:52 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Arthur Fabre <afabre@cloudflare.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] bpf: selftests: Fix warning in flow_dissector
+Message-ID: <20190613154152.GA9636@mini-arch>
+References: <20190613112709.7215-1-afabre@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <076bc564-7c97-f591-6b4c-2e540db4cb87@cumulusnetworks.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190613112709.7215-1-afabre@cloudflare.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 10:29:56AM +0300, Nikolay Aleksandrov wrote:
+On 06/13, Arthur Fabre wrote:
+> Building the userspace part of the flow_dissector resulted in:
 > 
-> Have you considered using the flow dissector and doing something similar to the bonding ?
-> It does a full flow dissect via skb_flow_dissect_flow_keys() and uses whatever headers
-> it needs, but that will support any tunneling protocol which the flow dissector
-> recognizes and will be improved upon automatically by people adding to it.
-> Also would avoid doing dissection by yourself.
+> prog_tests/flow_dissector.c: In function ‘tx_tap’:
+> prog_tests/flow_dissector.c:176:9: warning: implicit declaration
+> of function ‘writev’; did you mean ‘write’? [-Wimplicit-function-declaration]
+>   return writev(fd, iov, ARRAY_SIZE(iov));
+>          ^~~~~~
+>          write
 > 
-> The bond commit which added that was:
->  32819dc18348 ("bonding: modify the old and add new xmit hash policies")
-> 
+> Include <sys/uio.h> to fix this.
+Wasn't it fixed already?
 
-I didn't consider it and should. Thanks for pointing me to that
-direction. It's simpler.
+See
+https://lore.kernel.org/netdev/20190528190218.GA6950@ip-172-31-44-144.us-west-2.compute.internal/
 
-> >  /* if skb is set it will be used and fl4 can be NULL */
-> >  int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
-> >  		       const struct sk_buff *skb, struct flow_keys *flkeys)
-> > @@ -1828,12 +1876,13 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
-> >  	struct flow_keys hash_keys;
-> >  	u32 mhash;
-> >  
-> > +	memset(&hash_keys, 0, sizeof(hash_keys));
-> > +
+> Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> This was an optimization, it was done on purpose to avoid doing anything when we
-> have L3+4 configured (1) and the skb has its hash already calculated.
+> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> index fbd1d88a6095..c938283ac232 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> @@ -3,6 +3,7 @@
+>  #include <error.h>
+>  #include <linux/if.h>
+>  #include <linux/if_tun.h>
+> +#include <sys/uio.h>
+>  
+>  #define CHECK_FLOW_KEYS(desc, got, expected)				\
+>  	CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,		\
+> -- 
+> 2.20.1
 > 
-Will revert to the original lines.
-
-Thanks.
