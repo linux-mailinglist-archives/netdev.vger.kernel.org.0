@@ -2,94 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF4444696
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E7244693
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389389AbfFMQwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:52:49 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40623 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730103AbfFMDHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 23:07:33 -0400
-Received: by mail-pf1-f195.google.com with SMTP id p184so7553187pfp.7
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 20:07:32 -0700 (PDT)
+        id S1730211AbfFMQws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:52:48 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34319 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730104AbfFMDIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 23:08:42 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c85so10864065pfc.1
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 20:08:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7ubb/3xIFo4hdvzIstCkG1DXHANL+nvtWX801y7iEAo=;
-        b=kfjSRwn2PnGQxNeVTk/GGeOk9WJLQ91uz9hcEEsgD4w4LpWb1E59aPS6XDENBN6vSu
-         CzM7w5nwifPBibL9nRtGqFzIwp0c7jXSEtjG4aHnxqP93uI9+4hpjK76bLWHnKvfiHxd
-         FBCyHM5biFuNqv423gvlzuhc04KcWWoh/3+dhMThP2w7BTQthtJTJVVppATZQRfIwj8K
-         WgLWo5P2LMs+kzqp7j8VrLk8dHH5JD9019GhUNiMBBaCLOgDt/99KfTNJP5IELlSlvsU
-         eotiVjJWsBljGESFmKrUZc7sGt7ny8+jbh2T1ykq9+PrbEXlx5ecaLSLimfER/fFWVoV
-         bO/A==
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vV5fKqGk+N2mytNHkWC1FMzq50T9li1RdfIOITLo9ow=;
+        b=Lr8EbTN+b+BW3Bd/WW4kzCQY9mRRc8jDGhlZWd06l/B0Ai2wku4iP0P8xrTaObjiF/
+         zd6evtW7/2UUz1JC9YvrZkrmyk30blPk51EHmh987sfbL4HjJ+iDQTdZ7dMjLKho3L8J
+         w0nveA03o9XNeeaZzX9U2MeT+j6YBnStUf+Clz51/g/3E8p7yC+psxN/Z9zlmu3ylGvG
+         FhB4El2kUlqTWDHTjUus9w8nE9mAKSBbazVrTBrg3TR1vJZZctKIhslaAfJ/nJPVP+bX
+         4pt/KTIs9s2PvDKAojz/00ULP9ZbY/GwuxoCjxrIYEAjYF7+m9QEK0jQwdrP7Oc+4Asz
+         jkVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7ubb/3xIFo4hdvzIstCkG1DXHANL+nvtWX801y7iEAo=;
-        b=jvOkzumTmi3JFq3+Z62Rok46/BRfXsg2LLVFozPMGF2ST50jubsqizEH1enUi2LfL5
-         E3GfYgugEM2qPI+Zs/Z7F5GcJWAJ9tseyuBBo3wPQxWeHk+7ikLWY6NxdK2kBwvEiDSW
-         3eyrr0uaRuNaiUhuQPNhU3AEBvRPSbXFFS+BLCNWFKY+CW0J8KvWVmscL7B7OfDoZU5A
-         gMkIMW+fJmTpNibU1gM+Zc+YAsrRgBghlpA71vHVaJg3SvznkSzEiGJ+AeJD/yYdGcNa
-         r8ysFVTK65hWtzSI/s3pcaP3nJH8ppNf6uXDvng2dOYvuka7lYCmYtIQqOI7ubs/Smtn
-         DZbA==
-X-Gm-Message-State: APjAAAXASMBcWMDbHly4l0bFDhzHeTkC6w6YeVCJEGaSwOXO1bVXhd+1
-        FXG3ENvvr1XxrX1F42AHHb4=
-X-Google-Smtp-Source: APXvYqzpX5w6030JhtNuOEsizY8oAdFqVfGQNes99scd4ZJPV7/v32SvU7AdY49C/XmCpo/YVRR37g==
-X-Received: by 2002:a63:dd53:: with SMTP id g19mr18432483pgj.3.1560395252453;
-        Wed, 12 Jun 2019 20:07:32 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f21sm724315pjq.2.2019.06.12.20.07.30
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 20:07:31 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 11:07:22 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Roman Mashak <mrv@mojatatu.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Phil Sutter <phil@nwl.cc>
-Subject: Re: [iproute2 net-next PATCH] ip: add a new parameter -Numeric
-Message-ID: <20190613030722.GD18865@dhcp-12-139.nay.redhat.com>
-References: <20190612092115.30043-1-liuhangbin@gmail.com>
- <85imtaiyi7.fsf@mojatatu.com>
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vV5fKqGk+N2mytNHkWC1FMzq50T9li1RdfIOITLo9ow=;
+        b=R4VD0onQeqg1ZqWs255xceqO7xK9xC98WZcHfkwrk2EWHTHbDftho/sYmzLoxdosy2
+         p0SgdjQljChFV8McQStaWg/wYyW3V79vz68h6QiyQigqIbL2YNdv+1bBDSzkTtb2q35l
+         bAi8VP0cCi1V9SWJOk1iBdu5DfnL5upeJmWVWG0IKm4Cg/m7MwQFdjqFmK2LFLzdyemi
+         5ABZtQXb4Ny7m0+mokT6xJNlYTutAftEZ2ohTZmDacPaDJftA8H0EW06qohvgqqSC7hw
+         86MCJ/kVQfFoUATBFpE15VKMQE1yR/oAnUn3pbHFXbCD3wY+VLOXygiCxyboL0aohoWa
+         +71Q==
+X-Gm-Message-State: APjAAAU5KPEa1GAXB8L7HvFF8SfqG3Ez5JYlan0kzKC+sTCuIvZ0LaG2
+        j5aaIj2WNTGN5lec3a85P/Q=
+X-Google-Smtp-Source: APXvYqwFjs8J48ryBYp1XENnDtmoNJJGvOuqA7OWPyQ16P+o51cWlqnI9p6ujkQP+2VPs6tizhM8vw==
+X-Received: by 2002:a17:90a:dd42:: with SMTP id u2mr2466499pjv.118.1560395322081;
+        Wed, 12 Jun 2019 20:08:42 -0700 (PDT)
+Received: from [10.230.1.150] ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id t18sm788491pgm.69.2019.06.12.20.08.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Jun 2019 20:08:41 -0700 (PDT)
+Subject: Re: [PATCH RFC 09/13] net: phy: marvell: Add cable test support
+To:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Raju.Lakkaraju@microchip.com
+References: <20190612160534.23533-1-andrew@lunn.ch>
+ <20190612160534.23533-10-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <c74f9b02-2e1d-8b85-d7b2-ad379df8601e@gmail.com>
+Date:   Wed, 12 Jun 2019 20:08:39 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <85imtaiyi7.fsf@mojatatu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190612160534.23533-10-andrew@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roman,
-On Wed, Jun 12, 2019 at 12:01:20PM -0400, Roman Mashak wrote:
-> Hangbin Liu <liuhangbin@gmail.com> writes:
-> 
-> > Add a new parameter '-Numeric' to show the number of protocol, scope,
-> > dsfield, etc directly instead of converting it to human readable name.
-> > Do the same on tc and ss.
-> >
-> > This patch is based on David Ahern's previous patch.
-> >
-> 
-> [...]
-> 
-> It would be good idea to specify the numerical format, e.g. hex or dec,
-> very often hex is more conveninet representation (for example, when
-> skbmark is encoded of IP address or such).
 
-Some functions use hex and some functions use integer. It's looks hard to
-unit all functions.
 
-I tried to make all the functions use itself printf to keep the compatibility.
-Only changed function nl_proto_n2a as it was only called by ss, and we
-removed function nl_proto_n2a.
-
-Thanks
-Hangbin
+On 6/12/2019 9:05 AM, Andrew Lunn wrote:
+> The Marvell PHYs have a couple of different register sets for
+> performing cable tests. Page 7 provides the simplest to use. However,
+> it does not provide cable length, only length to a fault, when there
+> is a fault.
 > 
-> Could you think of extending it '-Numeric' to have an optional argument
-> hex, and use decimal as default.
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+[snip]
+
+> + 	bmcr = phy_read(phydev, MII_BMCR);
+> +	if (bmcr < 0)
+> +		return bmcr;
+> +
+> +	bmsr = phy_read(phydev, MII_BMCR);
+
+Should this second read be for MII_BMSR?
+-- 
+Florian
