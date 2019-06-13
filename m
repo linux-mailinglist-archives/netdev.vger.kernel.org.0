@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 589AD439C6
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29A1439B9
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732361AbfFMPQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:16:12 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35834 "EHLO mx1.redhat.com"
+        id S1732787AbfFMPPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:15:37 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46016 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732208AbfFMNXw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 09:23:52 -0400
+        id S1732215AbfFMNXy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 09:23:54 -0400
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E21E130F1BA3;
-        Thu, 13 Jun 2019 13:23:46 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id E193BF9E9A;
+        Thu, 13 Jun 2019 13:23:49 +0000 (UTC)
 Received: from treble.redhat.com (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B95F6541F8;
-        Thu, 13 Jun 2019 13:23:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1611954201;
+        Thu, 13 Jun 2019 13:23:46 +0000 (UTC)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     x86@kernel.org
 Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -26,145 +26,167 @@ Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
         Song Liu <songliubraving@fb.com>,
         Kairui Song <kasong@redhat.com>
-Subject: [PATCH 5/9] x86/bpf: Support SIB byte generation
-Date:   Thu, 13 Jun 2019 08:21:02 -0500
-Message-Id: <30e798c2a5b5d89908e6beea03bf2938eaf2a1ca.1560431531.git.jpoimboe@redhat.com>
+Subject: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
+Date:   Thu, 13 Jun 2019 08:21:03 -0500
+Message-Id: <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
 In-Reply-To: <cover.1560431531.git.jpoimboe@redhat.com>
 References: <cover.1560431531.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 13 Jun 2019 13:23:52 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 13 Jun 2019 13:23:53 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for using R12 indexing instructions in BPF JIT code, add
-support for generating the x86 SIB byte.
+The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
+thus prevents the FP unwinder from unwinding through JIT generated code.
 
+RBP is currently used as the BPF stack frame pointer register.  The
+actual register used is opaque to the user, as long as it's a
+callee-saved register.  Change it to use R12 instead.
+
+Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
+Reported-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 69 +++++++++++++++++++++++++++++--------
- 1 file changed, 54 insertions(+), 15 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 43 +++++++++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
 
 diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 485692d4b163..e649f977f8e1 100644
+index e649f977f8e1..bb1968fea50a 100644
 --- a/arch/x86/net/bpf_jit_comp.c
 +++ b/arch/x86/net/bpf_jit_comp.c
-@@ -143,6 +143,12 @@ static bool is_axreg(u32 reg)
- 	return reg == BPF_REG_0;
+@@ -100,9 +100,8 @@ static int bpf_size_to_x86_bytes(int bpf_size)
+ /*
+  * The following table maps BPF registers to x86-64 registers.
+  *
+- * x86-64 register R12 is unused, since if used as base address
+- * register in load/store instructions, it always needs an
+- * extra byte of encoding and is callee saved.
++ * RBP isn't used; it needs to be preserved to allow the unwinder to move
++ * through generated code stacks.
+  *
+  * Also x86-64 register R9 is unused. x86-64 register R10 is
+  * used for blinding (if enabled).
+@@ -118,7 +117,7 @@ static const int reg2hex[] = {
+ 	[BPF_REG_7] = 5,  /* R13 callee saved */
+ 	[BPF_REG_8] = 6,  /* R14 callee saved */
+ 	[BPF_REG_9] = 7,  /* R15 callee saved */
+-	[BPF_REG_FP] = 5, /* RBP readonly */
++	[BPF_REG_FP] = 4, /* R12 readonly */
+ 	[BPF_REG_AX] = 2, /* R10 temp register */
+ 	[AUX_REG] = 3,    /* R11 temp register */
+ };
+@@ -135,6 +134,7 @@ static bool is_ereg(u32 reg)
+ 			     BIT(BPF_REG_7) |
+ 			     BIT(BPF_REG_8) |
+ 			     BIT(BPF_REG_9) |
++			     BIT(BPF_REG_FP) |
+ 			     BIT(BPF_REG_AX));
  }
  
-+static bool is_sib_reg(u32 reg)
-+{
-+	/* R12 isn't used yet */
-+	false;
-+}
-+
- /* Add modifiers if 'reg' maps to x86-64 registers R8..R15 */
- static u8 add_1mod(u8 byte, u32 reg)
+@@ -145,8 +145,7 @@ static bool is_axreg(u32 reg)
+ 
+ static bool is_sib_reg(u32 reg)
  {
-@@ -779,10 +785,19 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 		case BPF_ST | BPF_MEM | BPF_DW:
- 			EMIT2(add_1mod(0x48, dst_reg), 0xC7);
+-	/* R12 isn't used yet */
+-	false;
++	return reg == BPF_REG_FP;
+ }
  
--st:			if (is_imm8(insn->off))
--				EMIT2(add_1reg(0x40, dst_reg), insn->off);
-+st:
-+			if (is_imm8(insn->off))
-+				EMIT1(add_1reg(0x40, dst_reg));
-+			else
-+				EMIT1(add_1reg(0x80, dst_reg));
-+
-+			if (is_sib_reg(dst_reg))
-+				EMIT1(add_1reg(0x20, dst_reg));
-+
-+			if (is_imm8(insn->off))
-+				EMIT1(insn->off);
- 			else
--				EMIT1_off32(add_1reg(0x80, dst_reg), insn->off);
-+				EMIT(insn->off, 4);
+ /* Add modifiers if 'reg' maps to x86-64 registers R8..R15 */
+@@ -192,7 +191,7 @@ struct jit_context {
+ #define BPF_MAX_INSN_SIZE	128
+ #define BPF_INSN_SAFETY		64
  
- 			EMIT(imm32, bpf_size_to_x86_bytes(BPF_SIZE(insn->code)));
- 			break;
-@@ -811,11 +826,19 @@ st:			if (is_imm8(insn->off))
- 			goto stx;
- 		case BPF_STX | BPF_MEM | BPF_DW:
- 			EMIT2(add_2mod(0x48, dst_reg, src_reg), 0x89);
--stx:			if (is_imm8(insn->off))
--				EMIT2(add_2reg(0x40, dst_reg, src_reg), insn->off);
-+stx:
-+			if (is_imm8(insn->off))
-+				EMIT1(add_2reg(0x40, dst_reg, src_reg));
- 			else
--				EMIT1_off32(add_2reg(0x80, dst_reg, src_reg),
--					    insn->off);
-+				EMIT1(add_2reg(0x80, dst_reg, src_reg));
-+
-+			if (is_sib_reg(dst_reg))
-+				EMIT1(add_1reg(0x20, dst_reg));
-+
-+			if (is_imm8(insn->off))
-+				EMIT1(insn->off);
-+			else
-+				EMIT(insn->off, 4);
- 			break;
+-#define PROLOGUE_SIZE		20
++#define PROLOGUE_SIZE		25
  
- 			/* LDX: dst_reg = *(u8*)(src_reg + off) */
-@@ -837,16 +860,24 @@ stx:			if (is_imm8(insn->off))
- 		case BPF_LDX | BPF_MEM | BPF_DW:
- 			/* Emit 'mov rax, qword ptr [rax+0x14]' */
- 			EMIT2(add_2mod(0x48, src_reg, dst_reg), 0x8B);
--ldx:			/*
-+ldx:
-+			/*
- 			 * If insn->off == 0 we can save one extra byte, but
- 			 * special case of x86 R13 which always needs an offset
- 			 * is not worth the hassle
- 			 */
- 			if (is_imm8(insn->off))
--				EMIT2(add_2reg(0x40, src_reg, dst_reg), insn->off);
-+				EMIT1(add_2reg(0x40, src_reg, dst_reg));
-+			else
-+				EMIT1(add_2reg(0x80, src_reg, dst_reg));
-+
-+			if (is_sib_reg(src_reg))
-+				EMIT1(add_1reg(0x20, src_reg));
-+
-+			if (is_imm8(insn->off))
-+				EMIT1(insn->off);
- 			else
--				EMIT1_off32(add_2reg(0x80, src_reg, dst_reg),
--					    insn->off);
-+				EMIT(insn->off, 4);
- 			break;
+ /*
+  * Emit x86-64 prologue code for BPF program and check its size.
+@@ -203,14 +202,20 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
+ 	u8 *prog = *pprog;
+ 	int cnt = 0;
  
- 			/* STX XADD: lock *(u32*)(dst_reg + off) += src_reg */
-@@ -859,11 +890,19 @@ stx:			if (is_imm8(insn->off))
- 			goto xadd;
- 		case BPF_STX | BPF_XADD | BPF_DW:
- 			EMIT3(0xF0, add_2mod(0x48, dst_reg, src_reg), 0x01);
--xadd:			if (is_imm8(insn->off))
--				EMIT2(add_2reg(0x40, dst_reg, src_reg), insn->off);
-+xadd:
-+			if (is_imm8(insn->off))
-+				EMIT1(add_2reg(0x40, dst_reg, src_reg));
-+			else
-+				EMIT1(add_2reg(0x80, dst_reg, src_reg));
++	/* push rbp */
++	EMIT1(0x55);
 +
-+			if (is_sib_reg(dst_reg))
-+				EMIT1(add_1reg(0x20, dst_reg));
++	/* mov rbp, rsp */
++	EMIT3(0x48, 0x89, 0xE5);
 +
-+			if (is_imm8(insn->off))
-+				EMIT1(insn->off);
- 			else
--				EMIT1_off32(add_2reg(0x80, dst_reg, src_reg),
--					    insn->off);
-+				EMIT(insn->off, 4);
- 			break;
+ 	/* push r15 */
+ 	EMIT2(0x41, 0x57);
+ 	/* push r14 */
+ 	EMIT2(0x41, 0x56);
+ 	/* push r13 */
+ 	EMIT2(0x41, 0x55);
+-	/* push rbp */
+-	EMIT1(0x55);
++	/* push r12 */
++	EMIT2(0x41, 0x54);
+ 	/* push rbx */
+ 	EMIT1(0x53);
  
- 			/* call */
+@@ -223,12 +228,12 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
+ 	EMIT2(0x6a, 0x00);
+ 
+ 	/*
+-	 * RBP is used for the BPF program's FP register.  It points to the end
++	 * R12 is used for the BPF program's FP register.  It points to the end
+ 	 * of the program's stack area.
+ 	 *
+-	 * mov rbp, rsp
++	 * mov r12, rsp
+ 	 */
+-	EMIT3(0x48, 0x89, 0xE5);
++	EMIT3(0x49, 0x89, 0xE4);
+ 
+ 	/* sub rsp, rounded_stack_depth */
+ 	EMIT3_off32(0x48, 0x81, 0xEC, round_up(stack_depth, 8));
+@@ -243,19 +248,21 @@ static void emit_epilogue(u8 **pprog)
+ 	u8 *prog = *pprog;
+ 	int cnt = 0;
+ 
+-	/* lea rsp, [rbp+0x8] */
+-	EMIT4(0x48, 0x8D, 0x65, 0x08);
++	/* lea rsp, [rbp-0x28] */
++	EMIT4(0x48, 0x8D, 0x65, 0xD8);
+ 
+ 	/* pop rbx */
+ 	EMIT1(0x5B);
+-	/* pop rbp */
+-	EMIT1(0x5D);
++	/* pop r12 */
++	EMIT2(0x41, 0x5C);
+ 	/* pop r13 */
+ 	EMIT2(0x41, 0x5D);
+ 	/* pop r14 */
+ 	EMIT2(0x41, 0x5E);
+ 	/* pop r15 */
+ 	EMIT2(0x41, 0x5F);
++	/* pop rbp */
++	EMIT1(0x5D);
+ 
+ 	/* ret */
+ 	EMIT1(0xC3);
+@@ -304,13 +311,13 @@ static void emit_bpf_tail_call(u8 **pprog)
+ 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+ 	 *	goto out;
+ 	 */
+-	EMIT3(0x8B, 0x45, 0x04);                  /* mov eax, dword ptr [rbp + 4] */
++	EMIT3(0x8B, 0x45, 0xD4);                  /* mov eax, dword ptr [rbp - 44] */
+ 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
+ #define OFFSET2 (27 + RETPOLINE_RAX_BPF_JIT_SIZE)
+ 	EMIT2(X86_JA, OFFSET2);                   /* ja out */
+ 	label2 = cnt;
+ 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
+-	EMIT3(0x89, 0x45, 0x04);                  /* mov dword ptr [rbp + 4], eax */
++	EMIT3(0x89, 0x45, 0xD4);                  /* mov dword ptr [rbp - 44], eax */
+ 
+ 	/* prog = array->ptrs[index]; */
+ 	EMIT4_off32(0x48, 0x8B, 0x84, 0xD6,       /* mov rax, [rsi + rdx * 8 + offsetof(...)] */
 -- 
 2.20.1
 
