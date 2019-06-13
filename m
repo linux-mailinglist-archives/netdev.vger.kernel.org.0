@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D28A43A70
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBA643A6C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732090AbfFMPU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:20:56 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:40932 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732007AbfFMMuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:50:19 -0400
-Received: by mail-qt1-f193.google.com with SMTP id a15so22335989qtn.7;
-        Thu, 13 Jun 2019 05:50:18 -0700 (PDT)
+        id S1732076AbfFMPUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:20:55 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36125 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732008AbfFMMvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:51:00 -0400
+Received: by mail-qt1-f194.google.com with SMTP id p15so2966355qtl.3;
+        Thu, 13 Jun 2019 05:50:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=0dXwiQ9boMkcoIRiyMAKQVrSPhK0KAhhtxiIsNmxnz8=;
-        b=h22vNLsi0/LmtzV80veF+h4wX/7PF55PrixcMt51YG+nrMi1mFPRT4drh8N515IV1B
-         aJDayiyouB+cvV5WIUeNqlDLVKCwB14bgmm2pRhb/q2QhYP3UcHqTeUyPtFkuZQDm25V
-         PLu9rZYKTMkfV/mfVQV/CGJ2U7Wgoj3BVaZEYa1iYY+BHlC5hXMEwwVsATacV2SHOIKt
-         h6mLetn1dYyycQpuBYIL0hLB9gZZGzdzSJbE/l4dHedwLYLrMaiQLgQDBjrW2aKhxWAA
-         J7sWHh50RA/r2/TQXlYWINqj1ns2pkXYv9SNOdm/pUP6Hx/IYWSyZPot0uUbF8pIvv5G
-         KIvw==
+        bh=eFeTWMKs9ihsaxA0AMESBJJwqP1y2EWmZQjeKE8K34M=;
+        b=g5eY/mfWcMvcmnpqGn2etP9f3/asNRaHlIAs5gV8VVQ6yPoHjSg+rVwmOwS6qCpwEj
+         QjuZ4D6LHa/z+UUOhBFFepzlsFgLOznDJzFwY+58biydtFsuFPDItfCCzURn/sXk2tPa
+         RtdixHbu1KRM7Fp0CiCZUQ1SydMXrXVeRl4yHq9lqlwYzY0O4O/GZ3zlwDbkNaj+UnD7
+         EMQrH8P6rvOvhuYBy0miVndqTdKG6cKEA55DHUMAK7snvZKD4n8UjWnoFtYGYVeFhw/7
+         QKqyvcTRhK9MHquBODj/SoQzVbdZi2FDYOI+8YzSRpAZFjbyuN7ehFy9Ws3JxMd47bX5
+         EkAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0dXwiQ9boMkcoIRiyMAKQVrSPhK0KAhhtxiIsNmxnz8=;
-        b=OcAC9aK2opUYWzTyIu6t3PkSM8LvL/CEJQP9EUYC/cYc2ZafnJ6T3dnsoqtRDY7ODt
-         LKKx/xt+BfujcqwB2MRfk7yvo7dRquD8Ov6zye7j/VqYbPF/pVpllYHdA1Q7dQlEjRJr
-         AbQqiNY4WL2EMqoEQNabEccibzHzMf1r73AUFL2ieQrB/oyppIvyD1gXHZGmk0bEKCcx
-         272yW31+DoNKq1+ss2JgSKIgiA8JxLIm1v0hal21YPI/GouQMb7/VZ+figGWqc7SQKeV
-         +OQnzb5D9r6U/OOqpp3MjSJFDV3y2rSxbq2bFpuYGfcpfpg0xqDMfsaiX2blreCVg5u5
-         Lo/A==
-X-Gm-Message-State: APjAAAV05OJLkabTqKJot6iutJxqeDQrb9bEU6C/BQrZoN0FArxu5KQV
-        BWfTttP2FI4n3Hao/4iDX3mVbq2lZ+Azmjfnoxw=
-X-Google-Smtp-Source: APXvYqx5Wd2lLoIVcKsrc9UNRJPUPE+8ZEA957etRFWQZwieRHK6GS/2QNAmi4q5aSc1OG19VX+HDVk/L+NhfH3wouU=
-X-Received: by 2002:ac8:219d:: with SMTP id 29mr12847045qty.37.1560430217912;
- Thu, 13 Jun 2019 05:50:17 -0700 (PDT)
+        bh=eFeTWMKs9ihsaxA0AMESBJJwqP1y2EWmZQjeKE8K34M=;
+        b=Wc8uVpP6qL28FfEJy3AuotRPleTiLB+QvYymZur/SUZW40QeEzu3RRD4q07oXXjeo3
+         MCUpRlg6HZvuCyigIiAaQ6bQ8gPWba+lZgh0x4b0rvgMdmzKDP3+I16mOE9QYzoAvQKq
+         o4JYl64AbsZ/ymkISvd2DRxaN3q91L9zDrGGPvCPSC4EqET2oEnrZhdTaeKEzQT3FPrH
+         LB7rrKbCp6srQYVTOQtCoO7nHFQznkn8VQyZlGdu7+DGS93fOxq4O/ZkWJvxQZ5MP8Ra
+         ImEcM+Cc4XBMbGn2MyoWR/ah+T2Dwx0ThG9xayZd7UmEAfyNl9SrZIeF21lvT13NMWDg
+         LecA==
+X-Gm-Message-State: APjAAAUuSuZDLwMEdws2VyQGCv78hD/buoVIJJ2unj8iVFNTH07h0W7s
+        1Zz4vVPaNRbc1R8O3CXY1JJCSWvExgc0JPRUKmEkz35B/hw=
+X-Google-Smtp-Source: APXvYqy2gXCzoqY0x4AZYdCUX9xjwFSaqKkDV96iAkDMv+zLdRoVgp+PmpJyydQqVfs7bEIfIWTz8aSzq/BrCSjLpcQ=
+X-Received: by 2002:a0c:d0b6:: with SMTP id z51mr3471771qvg.3.1560430258625;
+ Thu, 13 Jun 2019 05:50:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-3-maximmi@mellanox.com>
-In-Reply-To: <20190612155605.22450-3-maximmi@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-4-maximmi@mellanox.com>
+In-Reply-To: <20190612155605.22450-4-maximmi@mellanox.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 13 Jun 2019 14:50:06 +0200
-Message-ID: <CAJ+HfNhY0fMa2QiJJM0xnrzcPWw4ZYKoFjMrD03wfL0aKSnoyg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 02/17] xsk: Add API to check for available
- entries in FQ
+Date:   Thu, 13 Jun 2019 14:50:47 +0200
+Message-ID: <CAJ+HfNi7a7X3X-1q8TKWn1t6oyX=3r2NzD_Omk3NQXWdtNPMTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 03/17] xsk: Add getsockopt XDP_OPTIONS
 To:     Maxim Mikityanskiy <maximmi@mellanox.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -73,10 +72,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, 12 Jun 2019 at 20:05, Maxim Mikityanskiy <maximmi@mellanox.com> wro=
 te:
 >
-> Add a function that checks whether the Fill Ring has the specified
-> amount of descriptors available. It will be useful for mlx5e that wants
-> to check in advance, whether it can allocate a bulk of RX descriptors,
-> to get the best performance.
+> Make it possible for the application to determine whether the AF_XDP
+> socket is running in zero-copy mode. To achieve this, add a new
+> getsockopt option XDP_OPTIONS that returns flags. The only flag
+> supported for now is the zero-copy mode indicator.
 >
 
 Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
@@ -85,112 +84,96 @@ Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 > Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 > Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 > ---
->  include/net/xdp_sock.h | 21 +++++++++++++++++++++
->  net/xdp/xsk.c          |  6 ++++++
->  net/xdp/xsk_queue.h    | 14 ++++++++++++++
->  3 files changed, 41 insertions(+)
+>  include/uapi/linux/if_xdp.h       |  8 ++++++++
+>  net/xdp/xsk.c                     | 20 ++++++++++++++++++++
+>  tools/include/uapi/linux/if_xdp.h |  8 ++++++++
+>  3 files changed, 36 insertions(+)
 >
-> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> index ae0f368a62bb..b6f5ebae43a1 100644
-> --- a/include/net/xdp_sock.h
-> +++ b/include/net/xdp_sock.h
-> @@ -77,6 +77,7 @@ int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
->  void xsk_flush(struct xdp_sock *xs);
->  bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
->  /* Used from netdev driver */
-> +bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
->  u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
->  void xsk_umem_discard_addr(struct xdp_umem *umem);
->  void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
-> @@ -99,6 +100,16 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp_=
-umem *umem, u64 addr)
->  }
+> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+> index caed8b1614ff..faaa5ca2a117 100644
+> --- a/include/uapi/linux/if_xdp.h
+> +++ b/include/uapi/linux/if_xdp.h
+> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+>  #define XDP_UMEM_FILL_RING             5
+>  #define XDP_UMEM_COMPLETION_RING       6
+>  #define XDP_STATISTICS                 7
+> +#define XDP_OPTIONS                    8
 >
->  /* Reuse-queue aware version of FILL queue helpers */
-> +static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
-> +{
-> +       struct xdp_umem_fq_reuse *rq =3D umem->fq_reuse;
-> +
-> +       if (rq->length >=3D cnt)
-> +               return true;
-> +
-> +       return xsk_umem_has_addrs(umem, cnt - rq->length);
-> +}
-> +
->  static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *add=
-r)
->  {
->         struct xdp_umem_fq_reuse *rq =3D umem->fq_reuse;
-> @@ -146,6 +157,11 @@ static inline bool xsk_is_setup_for_bpf_map(struct x=
-dp_sock *xs)
->         return false;
->  }
+>  struct xdp_umem_reg {
+>         __u64 addr; /* Start of packet data area */
+> @@ -60,6 +61,13 @@ struct xdp_statistics {
+>         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>  };
 >
-> +static inline bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
-> +{
-> +       return false;
-> +}
+> +struct xdp_options {
+> +       __u32 flags;
+> +};
 > +
->  static inline u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
->  {
->         return NULL;
-> @@ -200,6 +216,11 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp=
-_umem *umem, u64 addr)
->         return 0;
->  }
->
-> +static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
-> +{
-> +       return false;
-> +}
+> +/* Flags for the flags field of struct xdp_options */
+> +#define XDP_OPTIONS_ZEROCOPY (1 << 0)
 > +
->  static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *add=
-r)
->  {
->         return NULL;
+>  /* Pgoff for mmaping the rings */
+>  #define XDP_PGOFF_RX_RING                        0
+>  #define XDP_PGOFF_TX_RING               0x80000000
 > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index a14e8864e4fa..b68a380f50b3 100644
+> index b68a380f50b3..35ca531ac74e 100644
 > --- a/net/xdp/xsk.c
 > +++ b/net/xdp/xsk.c
-> @@ -37,6 +37,12 @@ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
->                 READ_ONCE(xs->umem->fq);
->  }
+> @@ -650,6 +650,26 @@ static int xsk_getsockopt(struct socket *sock, int l=
+evel, int optname,
 >
-> +bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
-> +{
-> +       return xskq_has_addrs(umem->fq, cnt);
-> +}
-> +EXPORT_SYMBOL(xsk_umem_has_addrs);
+>                 return 0;
+>         }
+> +       case XDP_OPTIONS:
+> +       {
+> +               struct xdp_options opts =3D {};
 > +
->  u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
->  {
->         return xskq_peek_addr(umem->fq, addr);
-> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> index 88b9ae24658d..12b49784a6d5 100644
-> --- a/net/xdp/xsk_queue.h
-> +++ b/net/xdp/xsk_queue.h
-> @@ -117,6 +117,20 @@ static inline u32 xskq_nb_free(struct xsk_queue *q, =
-u32 producer, u32 dcnt)
->         return q->nentries - (producer - q->cons_tail);
->  }
+> +               if (len < sizeof(opts))
+> +                       return -EINVAL;
+> +
+> +               mutex_lock(&xs->mutex);
+> +               if (xs->zc)
+> +                       opts.flags |=3D XDP_OPTIONS_ZEROCOPY;
+> +               mutex_unlock(&xs->mutex);
+> +
+> +               len =3D sizeof(opts);
+> +               if (copy_to_user(optval, &opts, len))
+> +                       return -EFAULT;
+> +               if (put_user(len, optlen))
+> +                       return -EFAULT;
+> +
+> +               return 0;
+> +       }
+>         default:
+>                 break;
+>         }
+> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux=
+/if_xdp.h
+> index caed8b1614ff..faaa5ca2a117 100644
+> --- a/tools/include/uapi/linux/if_xdp.h
+> +++ b/tools/include/uapi/linux/if_xdp.h
+> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+>  #define XDP_UMEM_FILL_RING             5
+>  #define XDP_UMEM_COMPLETION_RING       6
+>  #define XDP_STATISTICS                 7
+> +#define XDP_OPTIONS                    8
 >
-> +static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
-> +{
-> +       u32 entries =3D q->prod_tail - q->cons_tail;
-> +
-> +       if (entries >=3D cnt)
-> +               return true;
-> +
-> +       /* Refresh the local pointer. */
-> +       q->prod_tail =3D READ_ONCE(q->ring->producer);
-> +       entries =3D q->prod_tail - q->cons_tail;
-> +
-> +       return entries >=3D cnt;
-> +}
-> +
->  /* UMEM queue */
+>  struct xdp_umem_reg {
+>         __u64 addr; /* Start of packet data area */
+> @@ -60,6 +61,13 @@ struct xdp_statistics {
+>         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>  };
 >
->  static inline bool xskq_is_valid_addr(struct xsk_queue *q, u64 addr)
+> +struct xdp_options {
+> +       __u32 flags;
+> +};
+> +
+> +/* Flags for the flags field of struct xdp_options */
+> +#define XDP_OPTIONS_ZEROCOPY (1 << 0)
+> +
+>  /* Pgoff for mmaping the rings */
+>  #define XDP_PGOFF_RX_RING                        0
+>  #define XDP_PGOFF_TX_RING               0x80000000
 > --
 > 2.19.1
 >
