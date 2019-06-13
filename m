@@ -2,147 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 571674466B
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:51:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3EB4468E
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727244AbfFMQvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:51:40 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44795 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfFMQvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:51:38 -0400
-Received: by mail-qt1-f195.google.com with SMTP id x47so23304042qtk.11;
-        Thu, 13 Jun 2019 09:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4bYDz3KWsV5Knp+WIDXyIDkyFa8fxFXYjH3Hm9bQxyE=;
-        b=faifONQj49ZFgKruY2TCMJgN5FBj6KRHIZkz4wbzoH4dRM/bAwjRT7YmLYxwDqhlQD
-         0Eevmz5hpjzwWAr0CPc6NuJrp2Nt9Atw/uL4uoJUQUs3ejGTxGNcJ9Yv/vFJ2QwNEMPZ
-         0MpwFWlHApnct4RFYlHbA5DZ/jAyZmhRipFUMHMUehbKkj5MsrGeRtav5PuRpjdT8WH0
-         64Ett5TmOB+E072o1dHeVbnmsFdigX8qNhfqKPqHTAn16kezURBxW21+ihoIneOoc+ji
-         h0+jr4DxtiaGkXc8iiS4MJiEzRxp+wjOzzY15rHihYF/R6IkGrobxSgD48gZ6vs19XeQ
-         ZNZA==
+        id S2393079AbfFMQw4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 12:52:56 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:34284 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393070AbfFMQwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:52:55 -0400
+Received: by mail-ed1-f67.google.com with SMTP id s49so2396685edb.1
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 09:52:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4bYDz3KWsV5Knp+WIDXyIDkyFa8fxFXYjH3Hm9bQxyE=;
-        b=V1eZO/9wQwaOY5sqAbXsiUwNT9L3EgrTUdpK66cH35aYL1KWZeS0OuRkz+B2ytZXlL
-         eYPxOa3EOlHymfBzqtQ/1L3/k3aApXzss5CTOzGujB+OCYvBPF3v7rsLzNyGQDXJGPLq
-         llmDRMOOxaFjnapffjhh/hy/+d80IquyceihsFAULEuLf2JZVDqKCKWnV52ZsvpMlwmr
-         r4v4zMhCQBpT0wtZNYNEnUiU06hY9o3heKe4QOPfT0388ekUXXZa0rPupZAgVmJZ9xoN
-         Rb1l6VknRK37lt+UHV7Ey26nLkkstXeRX4yU/21xpIy96HdkB0FBqXMd75CHb2Q4sFjt
-         Wivg==
-X-Gm-Message-State: APjAAAWfamhDfZ29GImF86v1vD+csPhXVaVex/tB9vvQD5110cTOFbhg
-        2Wcy65QhyC6ld15xTllObXY=
-X-Google-Smtp-Source: APXvYqyo5Lk0Bs+9Rji9YmDTbc2gLdKcGIpFr53k1axFRi1GjjPbr8hwolW2qw9D9uZdCeXEe6fJ4w==
-X-Received: by 2002:a0c:afd5:: with SMTP id t21mr4524601qvc.105.1560444697482;
-        Thu, 13 Jun 2019 09:51:37 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:278e:68eb:7f4f:8f57:4b3a])
-        by smtp.gmail.com with ESMTPSA id 39sm74166qtx.71.2019.06.13.09.51.36
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=0ymyy89d7lOM589UjZFM5ihwy9u+Ix4p70B5qereb8w=;
+        b=CtYzv3it98Zg5mAczFxMXFALDdUOvSrDI54mnugn5S3j29IdobPve88FYZLO2LGnBV
+         6ujOgxdCXcEh5xxHeBjgKWStLZmay/qo1eN/Xd/htNp3SZ8TJOObcgtnjX8v9/gbZi+d
+         zWgYRwkiG15FgkB9us7jL4Recpk5lP/k0uHwhyH/NZiDCfkZmxK5BzwEkwz5ZWollpSl
+         7aaIUz5dq1j6kOfldu/ukslnzlVQLCz3V9N4LUPB6iW6aRH3MMlQqqrySj52gGvH0d8u
+         lddZ2TTX6WiAzat/BouoTftD6NFjlgxh4c24opxitIOlg3V/fJBjcrRE5ZKQ8QLQc2ef
+         +NEg==
+X-Gm-Message-State: APjAAAV4aSKTt0pDSpz9E5Y2lNrN0cWg7pChzhI5KH6vJPw99YDpHtxC
+        jAkYwz3tFF0822HzpR+Y0CRwe/fhQNU=
+X-Google-Smtp-Source: APXvYqy+Av9/cp39EkoD919Ud8uZDinT3KM1OVbj3g/AePAYpPg5Z0k9OkE3jiTeJEWt7gT5I/ZPFw==
+X-Received: by 2002:a50:90fa:: with SMTP id d55mr48010605eda.210.1560444774043;
+        Thu, 13 Jun 2019 09:52:54 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id g16sm69028edc.76.2019.06.13.09.52.53
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 09:51:36 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 0E566C1BC7; Thu, 13 Jun 2019 13:51:34 -0300 (-03)
-Date:   Thu, 13 Jun 2019 13:51:34 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v5 net] sctp: Free cookie before we memdup a new one
-Message-ID: <20190613165133.GD3500@localhost.localdomain>
-References: <20190610163456.7778-1-nhorman@tuxdriver.com>
- <20190613103559.2603-1-nhorman@tuxdriver.com>
+        Thu, 13 Jun 2019 09:52:53 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9E5691804AF; Thu, 13 Jun 2019 18:52:52 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Dave Taht <dave.taht@gmail.com>, netdev@vger.kernel.org
+Cc:     Dave Taht <dave.taht@gmail.com>
+Subject: Re: [RFC PATCH net-next 1/1] Allow 0.0.0.0/8 as a valid address range
+In-Reply-To: <1560442237-6336-2-git-send-email-dave.taht@gmail.com>
+References: <1560442237-6336-1-git-send-email-dave.taht@gmail.com> <1560442237-6336-2-git-send-email-dave.taht@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 13 Jun 2019 18:52:52 +0200
+Message-ID: <87zhmlctqz.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190613103559.2603-1-nhorman@tuxdriver.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 06:35:59AM -0400, Neil Horman wrote:
-> Based on comments from Xin, even after fixes for our recent syzbot
-> report of cookie memory leaks, its possible to get a resend of an INIT
-> chunk which would lead to us leaking cookie memory.
-> 
-> To ensure that we don't leak cookie memory, free any previously
-> allocated cookie first.
-> 
-> Change notes
-> v1->v2
-> update subsystem tag in subject (davem)
-> repeat kfree check for peer_random and peer_hmacs (xin)
-> 
-> v2->v3
-> net->sctp
-> also free peer_chunks
-> 
-> v3->v4
-> fix subject tags
-> 
-> v4->v5
-> remove cut line
-> 
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> CC: Xin Long <lucien.xin@gmail.com>
-> CC: "David S. Miller" <davem@davemloft.net>
-> CC: netdev@vger.kernel.org
+Dave Taht <dave.taht@gmail.com> writes:
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> The longstanding prohibition against using 0.0.0.0/8 dates back
+> to two issues with the early internet.
+>
+> There was an interoperability problem with BSD 4.2 in 1984, fixed in
+> BSD 4.3 in 1986. BSD 4.2 has long since been retired. 
+>
+> Secondly, addresses of the form 0.x.y.z were initially defined only as
+> a source address in an ICMP datagram, indicating "node number x.y.z on
+> this IPv4 network", by nodes that know their address on their local
+> network, but do not yet know their network prefix, in RFC0792 (page
+> 19).  This usage of 0.x.y.z was later repealed in RFC1122 (section
+> 3.2.2.7), because the original ICMP-based mechanism for learning the
+> network prefix was unworkable on many networks such as Ethernet (which
+> have longer addresses that would not fit into the 24 "node number"
+> bits).  Modern networks use reverse ARP (RFC0903) or BOOTP (RFC0951)
+> or DHCP (RFC2131) to find their full 32-bit address and CIDR netmask
+> (and other parameters such as default gateways). 0.x.y.z has had
+> 16,777,215 addresses in 0.0.0.0/8 space left unused and reserved for
+> future use, since 1989.
+>
+> This patch allows for these 16m new IPv4 addresses to appear within
+> a box or on the wire. Layer 2 switches don't care.
+>
+> 0.0.0.0/32 is still prohibited, of course.
+>
+> Signed-off-by: Dave Taht <dave.taht@gmail.com>
 
-> ---
->  net/sctp/sm_make_chunk.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> index f17908f5c4f3..9b0e5b0d701a 100644
-> --- a/net/sctp/sm_make_chunk.c
-> +++ b/net/sctp/sm_make_chunk.c
-> @@ -2583,6 +2583,8 @@ static int sctp_process_param(struct sctp_association *asoc,
->  	case SCTP_PARAM_STATE_COOKIE:
->  		asoc->peer.cookie_len =
->  			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-> +		if (asoc->peer.cookie)
-> +			kfree(asoc->peer.cookie);
->  		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
->  		if (!asoc->peer.cookie)
->  			retval = 0;
-> @@ -2647,6 +2649,8 @@ static int sctp_process_param(struct sctp_association *asoc,
->  			goto fall_through;
->  
->  		/* Save peer's random parameter */
-> +		if (asoc->peer.peer_random)
-> +			kfree(asoc->peer.peer_random);
->  		asoc->peer.peer_random = kmemdup(param.p,
->  					    ntohs(param.p->length), gfp);
->  		if (!asoc->peer.peer_random) {
-> @@ -2660,6 +2664,8 @@ static int sctp_process_param(struct sctp_association *asoc,
->  			goto fall_through;
->  
->  		/* Save peer's HMAC list */
-> +		if (asoc->peer.peer_hmacs)
-> +			kfree(asoc->peer.peer_hmacs);
->  		asoc->peer.peer_hmacs = kmemdup(param.p,
->  					    ntohs(param.p->length), gfp);
->  		if (!asoc->peer.peer_hmacs) {
-> @@ -2675,6 +2681,8 @@ static int sctp_process_param(struct sctp_association *asoc,
->  		if (!ep->auth_enable)
->  			goto fall_through;
->  
-> +		if (asoc->peer.peer_chunks)
-> +			kfree(asoc->peer.peer_chunks);
->  		asoc->peer.peer_chunks = kmemdup(param.p,
->  					    ntohs(param.p->length), gfp);
->  		if (!asoc->peer.peer_chunks)
-> -- 
-> 2.20.1
-> 
+Well, I see no reason why we shouldn't allow this.
+
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
