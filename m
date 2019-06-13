@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 210F144B56
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 026B044B58
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729202AbfFMSxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:53:30 -0400
+        id S1730275AbfFMSyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 14:54:45 -0400
 Received: from mga12.intel.com ([192.55.52.136]:64320 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727224AbfFMSxa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725838AbfFMSxa (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 13 Jun 2019 14:53:30 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,13 +20,13 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 13 Jun 2019 11:53:29 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+Cc:     Piotr Kwapulinski <piotr.kwapulinski@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/12] i40e: add functions stubs to support EEE
-Date:   Thu, 13 Jun 2019 11:53:36 -0700
-Message-Id: <20190613185347.16361-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 02/12] i40e: let untrusted VF to create up to 16 VLANs
+Date:   Thu, 13 Jun 2019 11:53:37 -0700
+Message-Id: <20190613185347.16361-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
 References: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
@@ -37,47 +37,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+From: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
 
-This patch adds functions stubs to support EEE on/off.
+This patch lets untrusted VF to create up to 16 VLANs.
+It was implemented by increasing I40E_VC_MAX_VLAN_PER_VF up to 16.
+Without this patch untrusted VF could create only up to 8 VLANs.
 
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Signed-off-by: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index 7545b21bee3c..7f7d04ab1515 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -5181,6 +5181,16 @@ static int i40e_get_module_eeprom(struct net_device *netdev,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 09a7fd4d24e8..2390bfff7581 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2509,7 +2509,7 @@ static int i40e_vc_get_stats_msg(struct i40e_vf *vf, u8 *msg)
+  * MAC filters: 16 for multicast, 1 for MAC, 1 for broadcast
+  */
+ #define I40E_VC_MAX_MAC_ADDR_PER_VF (16 + 1 + 1)
+-#define I40E_VC_MAX_VLAN_PER_VF 8
++#define I40E_VC_MAX_VLAN_PER_VF 16
  
-+static int i40e_get_eee(struct net_device *netdev, struct ethtool_eee *edata)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static int i40e_set_eee(struct net_device *netdev, struct ethtool_eee *edata)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static const struct ethtool_ops i40e_ethtool_recovery_mode_ops = {
- 	.set_eeprom		= i40e_set_eeprom,
- 	.get_eeprom_len		= i40e_get_eeprom_len,
-@@ -5208,6 +5218,8 @@ static const struct ethtool_ops i40e_ethtool_ops = {
- 	.set_rxnfc		= i40e_set_rxnfc,
- 	.self_test		= i40e_diag_test,
- 	.get_strings		= i40e_get_strings,
-+	.get_eee		= i40e_get_eee,
-+	.set_eee		= i40e_set_eee,
- 	.set_phys_id		= i40e_set_phys_id,
- 	.get_sset_count		= i40e_get_sset_count,
- 	.get_ethtool_stats	= i40e_get_ethtool_stats,
+ /**
+  * i40e_check_vf_permission
 -- 
 2.21.0
 
