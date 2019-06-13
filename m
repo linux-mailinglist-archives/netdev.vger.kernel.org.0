@@ -2,122 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28F1044423
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36344443EC
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730737AbfFMQfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:35:04 -0400
-Received: from mail-eopbgr50060.outbound.protection.outlook.com ([40.107.5.60]:7350
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730740AbfFMHqC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 03:46:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BXNSbaK7JGte3IFO3cRP0pGO3Drm7EDpvjPz4/s5wiU=;
- b=Be0/8fmQsin4gjIIRhgYDLYzOMbn53rdUsyTCSaVXvsgtPHgoKSpwpx/xkQaRswj2hTM+DPg5D5wY0658OBZV40L5e2SIv6K1waFThnCIe7nzkXDHJI7ie70axGOoueNszokpR2kTqBDFhKcyuZSwhG1HKs0De3tdYSNEe87ius=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB2782.eurprd04.prod.outlook.com (10.175.24.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Thu, 13 Jun 2019 07:45:59 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
- 07:45:59 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
-Thread-Topic: [PATCH] net: phylink: set the autoneg state in
- phylink_phy_change
-Thread-Index: AQHVIbKP9yXQ7A3ipUiyPT36szP9naaZMu3w
-Date:   Thu, 13 Jun 2019 07:45:59 +0000
-Message-ID: <VI1PR0402MB280044028DE01C06D4A1FEECE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
-In-Reply-To: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a0f94dcc-9a60-40cc-4840-08d6efd32d0a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2782;
-x-ms-traffictypediagnostic: VI1PR0402MB2782:
-x-ms-exchange-purlcount: 2
-x-microsoft-antispam-prvs: <VI1PR0402MB2782B51B9F0124129A75F647E0EF0@VI1PR0402MB2782.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(396003)(376002)(346002)(136003)(199004)(189003)(73956011)(229853002)(6116002)(74316002)(8676002)(66946007)(81156014)(66556008)(66476007)(2501003)(66446008)(76116006)(7736002)(3846002)(305945005)(64756008)(25786009)(81166006)(8936002)(5660300002)(33656002)(966005)(6436002)(52536014)(478600001)(53936002)(6246003)(6306002)(55016002)(9686003)(68736007)(4326008)(2906002)(14454004)(316002)(110136005)(102836004)(446003)(26005)(7696005)(76176011)(6506007)(14444005)(186003)(256004)(11346002)(486006)(99286004)(476003)(44832011)(86362001)(2201001)(71190400001)(66066001)(71200400001)(6606295002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2782;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: dCMnCUqP9b1p/ZDmE+f+3XCEe5vQHRtA8YcEiw6z1y/VJr2Li0BKTVezyNvpBTlSLJ6osQvVM4wd3HPWgO7H3PSWqamh6tyxbnTqLmg0EvNVYHD6pnlJOiRM1rU4KLYJug7dvxbzM2vsZNIGPPoEh8KT2xcd/rUVZmJBjM+NeyEQukjkNesXj7jRUl0TS2xZeIeiiug3CjQ3ygJA9t3owH5nt2bjwXV9jPzW+QgsKcPiHbGOaQ1psuHYjVogRIp+PeQUJ3xHqOZNCP8EE0ytjHDGg1ISEeNQMnUEDzXBQfOqq5fgef/JiPcTGsz8ZuTDvUK+7Y4w9CmkfkMwv8tlUNv1v9RRWEjH6xQLkZM4kHRZJI9UtP4zU0u2cB9VjxSn04tcvO2FLIOF9bgpQv7OCyuRW2PACoqm02DABIsNL3I=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0f94dcc-9a60-40cc-4840-08d6efd32d0a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 07:45:59.1219
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2782
+        id S1730818AbfFMQdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:33:24 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:45253 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730820AbfFMIHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 04:07:37 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id E867DE49A4;
+        Thu, 13 Jun 2019 18:07:31 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received; s=mail_dkim; t=1560413251; bh=PG6Bg
+        rw+6QUWi1LieFk9hLcFGDmDyZpBIV7MRFY7Ja0=; b=Fi5vPICtJHEq8SUX3WBfk
+        R/TSDlUBoQ/qOvZF5DwugFYTE452Ev5YiHliIG0sH2dpnGAGrLzmRwCWt12YABgk
+        JsHEWSLuPo0c6blr6WxIW9YE0n8nl+ohCsmXxdxaqoDXpiSRRWy1Kg69KvxlmzIJ
+        1JY6iiycw3gzwAldu55ZnM=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id V6rKn6Nnrbwy; Thu, 13 Jun 2019 18:07:31 +1000 (AEST)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id C9313E49C8;
+        Thu, 13 Jun 2019 18:07:31 +1000 (AEST)
+Received: from build.dek-tpc.internal (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id 3C018E49A4;
+        Thu, 13 Jun 2019 18:07:30 +1000 (AEST)
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     dsahern@gmail.com, jon.maloy@ericsson.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [iproute2-next v5] tipc: support interface name when activating UDP bearer
+Date:   Thu, 13 Jun 2019 15:07:19 +0700
+Message-Id: <20190613080719.22081-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH] net: phylink: set the autoneg state in phylink_phy_chang=
-e
->=20
-> The phy_state field of phylink should carry only valid information especi=
-ally
-> when this can be passed to the .mac_config callback.
-> Update the an_enabled field with the autoneg state in the phylink_phy_cha=
-nge
-> function.
->=20
-> Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
->  drivers/net/phy/phylink.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c index
-> 5d0af041b8f9..dd1feb7b5472 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device
-> *phydev, bool up,
->  		pl->phy_state.pause |=3D MLO_PAUSE_ASYM;
->  	pl->phy_state.interface =3D phydev->interface;
->  	pl->phy_state.link =3D up;
-> +	pl->phy_state.an_enabled =3D phydev->autoneg;
->  	mutex_unlock(&pl->state_mutex);
->=20
->  	phylink_run_resolve(pl);
-> --
-> 1.9.1
+Support for indicating interface name has an ip address in parallel
+with specifying ip address when activating UDP bearer.
+This liberates the user from keeping track of the current ip address
+for each device.
 
-Unfortunately, I am not able to find this patch on any netdev list archive.
+Old command syntax:
+$tipc bearer enable media udp name NAME localip IP
 
-One other interesting thing that I noticed is that both netdev and the linu=
-x-kernel list received the last message around '12 Jun 2019 21:15'. [1][2]
-I am just trying to see if there is a problem on my side or something else.
+New command syntax:
+$tipc bearer enable media udp name NAME [localip IP|dev DEVICE]
 
---
-Ioana
+v2:
+    - Removed initial value for fd
+    - Fixed the returning value for cmd_bearer_validate_and_get_addr
+      to make its consistent with using: zero or non-zero
+v3: - Switch to use helper 'get_ifname' to retrieve interface name
+v4: - Replace legacy SIOCGIFADDR by netlink
+v5: - Fix leaky rtnl_handle
 
-[1] https://marc.info/?l=3Dlinux-netdev&m=3D156037411432212&w=3D2
-[2] https://marc.info/?l=3Dlinux-kernel&m=3D156037415432226&w=3D2
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+---
+ tipc/bearer.c | 92 ++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 87 insertions(+), 5 deletions(-)
+
+diff --git a/tipc/bearer.c b/tipc/bearer.c
+index 1f3a4d44441e..e17e2477c1ad 100644
+--- a/tipc/bearer.c
++++ b/tipc/bearer.c
+@@ -19,10 +19,12 @@
+ #include <linux/tipc_netlink.h>
+ #include <linux/tipc.h>
+ #include <linux/genetlink.h>
++#include <linux/if.h>
+ 
+ #include <libmnl/libmnl.h>
+ #include <sys/socket.h>
+ 
++#include "utils.h"
+ #include "cmdl.h"
+ #include "msg.h"
+ #include "bearer.h"
+@@ -68,7 +70,7 @@ static void cmd_bearer_enable_l2_help(struct cmdl *cmdl, char *media)
+ static void cmd_bearer_enable_udp_help(struct cmdl *cmdl, char *media)
+ {
+ 	fprintf(stderr,
+-		"Usage: %s bearer enable [OPTIONS] media %s name NAME localip IP [UDP OPTIONS]\n\n"
++		"Usage: %s bearer enable [OPTIONS] media %s name NAME [localip IP|device DEVICE] [UDP OPTIONS]\n\n"
+ 		"OPTIONS\n"
+ 		" domain DOMAIN		- Discovery domain\n"
+ 		" priority PRIORITY	- Bearer priority\n\n"
+@@ -119,6 +121,74 @@ static int generate_multicast(short af, char *buf, int bufsize)
+ 	return 0;
+ }
+ 
++static struct ifreq ifr = {};
++static int nl_dump_addr_filter(struct nlmsghdr *nlh, void *arg)
++{
++	struct ifaddrmsg *ifa = NLMSG_DATA(nlh);
++	char *r_addr = (char *)arg;
++	int len = nlh->nlmsg_len;
++	struct rtattr *addr_attr;
++
++	if (ifr.ifr_ifindex != ifa->ifa_index)
++		return 0;
++
++	if (strlen(r_addr) > 0)
++		return 1;
++
++	addr_attr = parse_rtattr_one(IFA_ADDRESS, IFA_RTA(ifa),
++				     len - NLMSG_LENGTH(sizeof(*ifa)));
++	if (!addr_attr)
++		return 0;
++
++	if (ifa->ifa_family == AF_INET) {
++		struct sockaddr_in ip4addr;
++		memcpy(&ip4addr.sin_addr, RTA_DATA(addr_attr),
++		       sizeof(struct in_addr));
++		if (inet_ntop(AF_INET, &ip4addr.sin_addr, r_addr,
++			      INET_ADDRSTRLEN) == NULL)
++			return 0;
++	} else if (ifa->ifa_family == AF_INET6) {
++		struct sockaddr_in6 ip6addr;
++		memcpy(&ip6addr.sin6_addr, RTA_DATA(addr_attr),
++		       sizeof(struct in6_addr));
++		if (inet_ntop(AF_INET6, &ip6addr.sin6_addr, r_addr,
++			      INET6_ADDRSTRLEN) == NULL)
++			return 0;
++	}
++	return 1;
++}
++
++static int cmd_bearer_validate_and_get_addr(const char *name, char *r_addr)
++{
++	struct rtnl_handle rth ={ .fd = -1 };
++
++	memset(&ifr, 0, sizeof(ifr));
++	if (!name || !r_addr || get_ifname(ifr.ifr_name, name))
++		return 0;
++
++	ifr.ifr_ifindex = ll_name_to_index(ifr.ifr_name);
++	if (!ifr.ifr_ifindex)
++		return 0;
++
++	/* remove from cache */
++	ll_drop_by_index(ifr.ifr_ifindex);
++
++	if (rtnl_open(&rth, 0) < 0)
++		return 0;
++
++	if (rtnl_addrdump_req(&rth, AF_UNSPEC, 0) < 0) {
++		rtnl_close(&rth);
++		return 0;
++	}
++
++	if (rtnl_dump_filter(&rth, nl_dump_addr_filter, r_addr) < 0) {
++		rtnl_close(&rth);
++		return 0;
++	}
++	rtnl_close(&rth);
++	return 1;
++}
++
+ static int nl_add_udp_enable_opts(struct nlmsghdr *nlh, struct opt *opts,
+ 				  struct cmdl *cmdl)
+ {
+@@ -136,13 +206,25 @@ static int nl_add_udp_enable_opts(struct nlmsghdr *nlh, struct opt *opts,
+ 		.ai_family = AF_UNSPEC,
+ 		.ai_socktype = SOCK_DGRAM
+ 	};
++	char addr[INET6_ADDRSTRLEN] = {0};
+ 
+-	if (!(opt = get_opt(opts, "localip"))) {
+-		fprintf(stderr, "error, udp bearer localip missing\n");
+-		cmd_bearer_enable_udp_help(cmdl, "udp");
++	opt = get_opt(opts, "device");
++	if (opt && !cmd_bearer_validate_and_get_addr(opt->val, addr)) {
++		fprintf(stderr, "error, no device name available\n");
+ 		return -EINVAL;
+ 	}
+-	locip = opt->val;
++
++	if (strlen(addr) > 0) {
++		locip = addr;
++	} else {
++		opt = get_opt(opts, "localip");
++		if (!opt) {
++			fprintf(stderr, "error, udp bearer localip/device missing\n");
++			cmd_bearer_enable_udp_help(cmdl, "udp");
++			return -EINVAL;
++		}
++		locip = opt->val;
++	}
+ 
+ 	if ((opt = get_opt(opts, "remoteip")))
+ 		remip = opt->val;
+-- 
+2.17.1
 
