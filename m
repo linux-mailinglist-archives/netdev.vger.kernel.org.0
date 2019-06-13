@@ -2,393 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 412EE4443C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F1044423
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731776AbfFMQfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:35:47 -0400
-Received: from mga06.intel.com ([134.134.136.31]:23443 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730708AbfFMHiK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 03:38:10 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 00:38:10 -0700
-X-ExtLoop1: 1
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.ger.corp.intel.com) ([10.103.211.41])
-  by orsmga004.jf.intel.com with ESMTP; 13 Jun 2019 00:38:05 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com
-Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
-        xiaolong.ye@intel.com, qi.z.zhang@intel.com, maximmi@mellanox.com,
-        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
-        ilias.apalodimas@linaro.org, kiran.patil@intel.com,
-        axboe@kernel.dk, maciej.fijalkowski@intel.com,
-        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next 6/6] samples/bpf: add use of need_sleep flag in xdpsock
-Date:   Thu, 13 Jun 2019 09:37:30 +0200
-Message-Id: <1560411450-29121-7-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1560411450-29121-1-git-send-email-magnus.karlsson@intel.com>
-References: <1560411450-29121-1-git-send-email-magnus.karlsson@intel.com>
+        id S1730737AbfFMQfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:35:04 -0400
+Received: from mail-eopbgr50060.outbound.protection.outlook.com ([40.107.5.60]:7350
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730740AbfFMHqC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 03:46:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BXNSbaK7JGte3IFO3cRP0pGO3Drm7EDpvjPz4/s5wiU=;
+ b=Be0/8fmQsin4gjIIRhgYDLYzOMbn53rdUsyTCSaVXvsgtPHgoKSpwpx/xkQaRswj2hTM+DPg5D5wY0658OBZV40L5e2SIv6K1waFThnCIe7nzkXDHJI7ie70axGOoueNszokpR2kTqBDFhKcyuZSwhG1HKs0De3tdYSNEe87ius=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB2782.eurprd04.prod.outlook.com (10.175.24.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Thu, 13 Jun 2019 07:45:59 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
+ 07:45:59 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
+Thread-Topic: [PATCH] net: phylink: set the autoneg state in
+ phylink_phy_change
+Thread-Index: AQHVIbKP9yXQ7A3ipUiyPT36szP9naaZMu3w
+Date:   Thu, 13 Jun 2019 07:45:59 +0000
+Message-ID: <VI1PR0402MB280044028DE01C06D4A1FEECE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+In-Reply-To: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a0f94dcc-9a60-40cc-4840-08d6efd32d0a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2782;
+x-ms-traffictypediagnostic: VI1PR0402MB2782:
+x-ms-exchange-purlcount: 2
+x-microsoft-antispam-prvs: <VI1PR0402MB2782B51B9F0124129A75F647E0EF0@VI1PR0402MB2782.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0067A8BA2A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(396003)(376002)(346002)(136003)(199004)(189003)(73956011)(229853002)(6116002)(74316002)(8676002)(66946007)(81156014)(66556008)(66476007)(2501003)(66446008)(76116006)(7736002)(3846002)(305945005)(64756008)(25786009)(81166006)(8936002)(5660300002)(33656002)(966005)(6436002)(52536014)(478600001)(53936002)(6246003)(6306002)(55016002)(9686003)(68736007)(4326008)(2906002)(14454004)(316002)(110136005)(102836004)(446003)(26005)(7696005)(76176011)(6506007)(14444005)(186003)(256004)(11346002)(486006)(99286004)(476003)(44832011)(86362001)(2201001)(71190400001)(66066001)(71200400001)(6606295002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2782;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: dCMnCUqP9b1p/ZDmE+f+3XCEe5vQHRtA8YcEiw6z1y/VJr2Li0BKTVezyNvpBTlSLJ6osQvVM4wd3HPWgO7H3PSWqamh6tyxbnTqLmg0EvNVYHD6pnlJOiRM1rU4KLYJug7dvxbzM2vsZNIGPPoEh8KT2xcd/rUVZmJBjM+NeyEQukjkNesXj7jRUl0TS2xZeIeiiug3CjQ3ygJA9t3owH5nt2bjwXV9jPzW+QgsKcPiHbGOaQ1psuHYjVogRIp+PeQUJ3xHqOZNCP8EE0ytjHDGg1ISEeNQMnUEDzXBQfOqq5fgef/JiPcTGsz8ZuTDvUK+7Y4w9CmkfkMwv8tlUNv1v9RRWEjH6xQLkZM4kHRZJI9UtP4zU0u2cB9VjxSn04tcvO2FLIOF9bgpQv7OCyuRW2PACoqm02DABIsNL3I=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0f94dcc-9a60-40cc-4840-08d6efd32d0a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 07:45:59.1219
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2782
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds using the need_sleep flag to the xdpsock sample
-application. It is turned on by default as we think it is a feature
-that seems to always produce a performance benefit, if the application
-has been written taking advantage of it. It can be turned off in the
-sample app by using the '-m' command line option.
+> Subject: [PATCH] net: phylink: set the autoneg state in phylink_phy_chang=
+e
+>=20
+> The phy_state field of phylink should carry only valid information especi=
+ally
+> when this can be passed to the .mac_config callback.
+> Update the an_enabled field with the autoneg state in the phylink_phy_cha=
+nge
+> function.
+>=20
+> Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+>  drivers/net/phy/phylink.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c index
+> 5d0af041b8f9..dd1feb7b5472 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device
+> *phydev, bool up,
+>  		pl->phy_state.pause |=3D MLO_PAUSE_ASYM;
+>  	pl->phy_state.interface =3D phydev->interface;
+>  	pl->phy_state.link =3D up;
+> +	pl->phy_state.an_enabled =3D phydev->autoneg;
+>  	mutex_unlock(&pl->state_mutex);
+>=20
+>  	phylink_run_resolve(pl);
+> --
+> 1.9.1
 
-The txpush and l2fwd sub applications have also been updated to
-support poll() with multiple sockets.
+Unfortunately, I am not able to find this patch on any netdev list archive.
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- samples/bpf/xdpsock_user.c | 191 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 119 insertions(+), 72 deletions(-)
+One other interesting thing that I noticed is that both netdev and the linu=
+x-kernel list received the last message around '12 Jun 2019 21:15'. [1][2]
+I am just trying to see if there is a problem on my side or something else.
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index d08ee1a..4b760b8 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -67,7 +67,9 @@ static int opt_ifindex;
- static int opt_queue;
- static int opt_poll;
- static int opt_interval = 1;
--static u32 opt_xdp_bind_flags;
-+static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
-+static int opt_timeout = 1000;
-+static bool opt_might_sleep = true;
- static __u32 prog_id;
- 
- struct xsk_umem_info {
-@@ -346,6 +348,7 @@ static struct option long_options[] = {
- 	{"interval", required_argument, 0, 'n'},
- 	{"zero-copy", no_argument, 0, 'z'},
- 	{"copy", no_argument, 0, 'c'},
-+	{"no-might-sleep", no_argument, 0, 'm'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -365,6 +368,7 @@ static void usage(const char *prog)
- 		"  -n, --interval=n	Specify statistics update interval (default 1 sec).\n"
- 		"  -z, --zero-copy      Force zero-copy mode.\n"
- 		"  -c, --copy           Force copy mode.\n"
-+		"  -m, --no-might-sleep Turn off use of driver might sleep flag.\n"
- 		"\n";
- 	fprintf(stderr, str, prog);
- 	exit(EXIT_FAILURE);
-@@ -377,7 +381,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:psSNn:cz", long_options,
-+		c = getopt_long(argc, argv, "Frtli:q:psSNn:czm", long_options,
- 				&option_index);
- 		if (c == -1)
- 			break;
-@@ -420,6 +424,10 @@ static void parse_command_line(int argc, char **argv)
- 		case 'F':
- 			opt_xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'm':
-+			opt_might_sleep = false;
-+			opt_xdp_bind_flags &= ~XDP_USE_NEED_WAKEUP;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 		}
-@@ -444,7 +452,8 @@ static void kick_tx(struct xsk_socket_info *xsk)
- 	exit_with_error(errno);
- }
- 
--static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
-+static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
-+				     struct pollfd *fds)
- {
- 	u32 idx_cq = 0, idx_fq = 0;
- 	unsigned int rcvd;
-@@ -453,7 +462,9 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_might_sleep || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+		kick_tx(xsk);
-+
- 	ndescs = (xsk->outstanding_tx > BATCH_SIZE) ? BATCH_SIZE :
- 		xsk->outstanding_tx;
- 
-@@ -467,6 +478,8 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
-+			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+				ret = poll(fds, num_socks, opt_timeout);
- 			ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
- 						     &idx_fq);
- 		}
-@@ -490,7 +503,8 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_might_sleep || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+		kick_tx(xsk);
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, BATCH_SIZE, &idx);
- 	if (rcvd > 0) {
-@@ -500,20 +514,25 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	}
- }
- 
--static void rx_drop(struct xsk_socket_info *xsk)
-+static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
- 	unsigned int rcvd, i;
- 	u32 idx_rx = 0, idx_fq = 0;
- 	int ret;
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
--	if (!rcvd)
-+	if (!rcvd) {
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
- 		return;
-+	}
- 
- 	ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	while (ret != rcvd) {
- 		if (ret < 0)
- 			exit_with_error(-ret);
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
- 		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	}
- 
-@@ -534,42 +553,65 @@ static void rx_drop(struct xsk_socket_info *xsk)
- static void rx_drop_all(void)
- {
- 	struct pollfd fds[MAX_SOCKS + 1];
--	int i, ret, timeout, nfds = 1;
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
- 
- 	for (i = 0; i < num_socks; i++) {
- 		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
- 		fds[i].events = POLLIN;
--		timeout = 1000; /* 1sn */
- 	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, opt_timeout);
- 			if (ret <= 0)
- 				continue;
- 		}
- 
- 		for (i = 0; i < num_socks; i++)
--			rx_drop(xsks[i]);
-+			rx_drop(xsks[i], fds);
-+	}
-+}
-+
-+static void tx_only(struct xsk_socket_info *xsk, u32 frame_nb)
-+{
-+	u32 idx;
-+
-+	if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) == BATCH_SIZE) {
-+		unsigned int i;
-+
-+		for (i = 0; i < BATCH_SIZE; i++) {
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr	=
-+				(frame_nb + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
-+				sizeof(pkt_data) - 1;
-+		}
-+
-+		xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
-+		xsk->outstanding_tx += BATCH_SIZE;
-+		frame_nb += BATCH_SIZE;
-+		frame_nb %= NUM_FRAMES;
- 	}
-+
-+	complete_tx_only(xsk);
- }
- 
--static void tx_only(struct xsk_socket_info *xsk)
-+static void tx_only_all(void)
- {
--	int timeout, ret, nfds = 1;
--	struct pollfd fds[nfds + 1];
--	u32 idx, frame_nb = 0;
-+	struct pollfd fds[MAX_SOCKS];
-+	u32 frame_nb[MAX_SOCKS] = {};
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
--	fds[0].fd = xsk_socket__fd(xsk->xsk);
--	fds[0].events = POLLOUT;
--	timeout = 1000; /* 1sn */
-+	for (i = 0; i < num_socks; i++) {
-+		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[0].events = POLLOUT;
-+	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, opt_timeout);
- 			if (ret <= 0)
- 				continue;
- 
-@@ -577,70 +619,75 @@ static void tx_only(struct xsk_socket_info *xsk)
- 				continue;
- 		}
- 
--		if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) ==
--		    BATCH_SIZE) {
--			unsigned int i;
--
--			for (i = 0; i < BATCH_SIZE; i++) {
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr
--					= (frame_nb + i) <<
--					XSK_UMEM__DEFAULT_FRAME_SHIFT;
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
--					sizeof(pkt_data) - 1;
--			}
--
--			xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
--			xsk->outstanding_tx += BATCH_SIZE;
--			frame_nb += BATCH_SIZE;
--			frame_nb %= NUM_FRAMES;
--		}
--
--		complete_tx_only(xsk);
-+		for (i = 0; i < num_socks; i++)
-+			tx_only(xsks[i], frame_nb[i]);
- 	}
- }
- 
--static void l2fwd(struct xsk_socket_info *xsk)
-+static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
--	for (;;) {
--		unsigned int rcvd, i;
--		u32 idx_rx = 0, idx_tx = 0;
--		int ret;
-+	unsigned int rcvd, i;
-+	u32 idx_rx = 0, idx_tx = 0;
-+	int ret;
- 
--		for (;;) {
--			complete_tx_l2fwd(xsk);
-+	complete_tx_l2fwd(xsk, fds);
- 
--			rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE,
--						   &idx_rx);
--			if (rcvd > 0)
--				break;
--		}
-+	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
-+	if (!rcvd) {
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
-+		return;
-+	}
- 
-+	ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
-+	while (ret != rcvd) {
-+		if (ret < 0)
-+			exit_with_error(-ret);
-+		if (xsk_ring_prod__needs_wakeup(&xsk->tx))
-+			kick_tx(xsk);
- 		ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		while (ret != rcvd) {
--			if (ret < 0)
--				exit_with_error(-ret);
--			ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		}
-+	}
-+
-+	for (i = 0; i < rcvd; i++) {
-+		u64 addr = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx)->addr;
-+		u32 len = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++)->len;
-+		char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
-+
-+		swap_mac_addresses(pkt);
- 
--		for (i = 0; i < rcvd; i++) {
--			u64 addr = xsk_ring_cons__rx_desc(&xsk->rx,
--							  idx_rx)->addr;
--			u32 len = xsk_ring_cons__rx_desc(&xsk->rx,
--							 idx_rx++)->len;
--			char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
-+		hex_dump(pkt, len, addr);
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
-+	}
- 
--			swap_mac_addresses(pkt);
-+	xsk_ring_prod__submit(&xsk->tx, rcvd);
-+	xsk_ring_cons__release(&xsk->rx, rcvd);
- 
--			hex_dump(pkt, len, addr);
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
--		}
-+	xsk->rx_npkts += rcvd;
-+	xsk->outstanding_tx += rcvd;
-+}
-+
-+static void l2fwd_all(void)
-+{
-+	struct pollfd fds[MAX_SOCKS];
-+	int i, ret;
-+
-+	memset(fds, 0, sizeof(fds));
-+
-+	for (i = 0; i < num_socks; i++) {
-+		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[i].events = POLLOUT | POLLIN;
-+	}
- 
--		xsk_ring_prod__submit(&xsk->tx, rcvd);
--		xsk_ring_cons__release(&xsk->rx, rcvd);
-+	for (;;) {
-+		if (opt_poll) {
-+			ret = poll(fds, num_socks, opt_timeout);
-+			if (ret <= 0)
-+				continue;
-+		}
- 
--		xsk->rx_npkts += rcvd;
--		xsk->outstanding_tx += rcvd;
-+		for (i = 0; i < num_socks; i++)
-+			l2fwd(xsks[i], fds);
- 	}
- }
- 
-@@ -693,9 +740,9 @@ int main(int argc, char **argv)
- 	if (opt_bench == BENCH_RXDROP)
- 		rx_drop_all();
- 	else if (opt_bench == BENCH_TXONLY)
--		tx_only(xsks[0]);
-+		tx_only_all();
- 	else
--		l2fwd(xsks[0]);
-+		l2fwd_all();
- 
- 	return 0;
- }
--- 
-2.7.4
+--
+Ioana
+
+[1] https://marc.info/?l=3Dlinux-netdev&m=3D156037411432212&w=3D2
+[2] https://marc.info/?l=3Dlinux-kernel&m=3D156037415432226&w=3D2
 
