@@ -2,91 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18CA44486F
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F05B54489D
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393320AbfFMRG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:06:57 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:45715 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393316AbfFMRGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:06:55 -0400
-Received: by mail-ed1-f65.google.com with SMTP id a14so30357658edv.12
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:06:54 -0700 (PDT)
+        id S2393382AbfFMRJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:09:42 -0400
+Received: from mail-qk1-f169.google.com ([209.85.222.169]:42998 "EHLO
+        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393316AbfFMRJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:09:28 -0400
+Received: by mail-qk1-f169.google.com with SMTP id b18so13226982qkc.9
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:09:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=bkktTI29Mprq/WraaWR/iipIfzJhh3C703MvSQ8ZEuo=;
+        b=SH6nMieXOV6x0XG3n36Q1FY3qs3vmVq92SmZudcVjmFRsbibFR0lsmi2u3vHELAUO5
+         wZ137JahP55hpbb3NlKXidQhNhOZBHgWuyFLJkmdPdPiLSFe7FUO3GjyFfQcQUOsIAQW
+         dvY8qQY+MOKXy3dRGh6BaBiH8mo+xTMqboB2hgbA728HU60TA7iZvPPJjL7t+PR4C6kC
+         cdRUNupYDfO+ZUdqvkyelEyX2BMjeWyYZBVdwnWZntxiLKy4pS4l4M3bILvFHx2J50rI
+         9JLRCFNev6/EJBAq5ZpzQ2S9430pT2PC8KW9zSOgoqokzZUFQpi0Y4mRITuj+JGNjicE
+         zofQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4qGmeV3x69yuLe0Tgd0ptE/Ne+7fNuOjO6KsPPNkVJk=;
-        b=FGo8wqLqaNODUW7pSsr8T8qxkpWFJszTo9xVaP8/j63MYJqUr9PN4SdBD37epkf6e5
-         BjjspeVE0+mAaId31ddFTmFm9yEVSmBwMP4zCtjTk82ueBtvdlt7I4s0icGuv3O8lKy2
-         IWsJuEZvydrj0D9C6MRqXJgGjkA+IfZiWOSQxP8XYN6HhwmhEFIiBNfI0RC3BjL3lRos
-         emo6sx8OxDmQpfM4LEnqA8tv2g6bL4tpG5Nr0bU06Lm57ZIyC8rJwSHfw+KcqeDwnxeu
-         QxwiM9s4fwduFGwTvA93cu4TWq7x7Q8oeMlIh1PraVVAm/FGzQToyh42JV6MTf6Ltl+U
-         PuUQ==
-X-Gm-Message-State: APjAAAX3G5t32Tg+2UtBrqgDV1jGwx2DI+/wXz8IbZ2m447RBL5exmY5
-        on7xXCGYvM23SqcFrIBLNHvGc5AKZ4Ll1J7j50QvMw==
-X-Google-Smtp-Source: APXvYqzPslmnv+ruwTU1kTQ26hkm3+iNaMJ3g8cToQx4BfFooy4XornCbIQ0QzxHDHAMpU3RhSOQbzI/FKkm+eg/b6g=
-X-Received: by 2002:a50:ac07:: with SMTP id v7mr49556490edc.205.1560445613273;
- Thu, 13 Jun 2019 10:06:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=bkktTI29Mprq/WraaWR/iipIfzJhh3C703MvSQ8ZEuo=;
+        b=kquil+gh0HQFQmwaM5+JjLynJf83GmkLYxkOWe/DKcMMUIDDwmf9K8x2dBHCCm2NeQ
+         F6aZyaWiL3Nk24eufdJeeL0cq6WrDuk8SSIzyVCx0j4RAQaOHJwq5ipI7bk9X9Tu1sUZ
+         ewo/oRw+aEuRO4K/8k00eDlP5PHlNaawrKRSPU9daZAhOVnN2dORjEVqGDN8qq6rlGIn
+         4GJHV8myeANuu135Wo2dCSwJp63wVYNfklBHOKD6HMzu8B61zCTWjhGwH2DD6pzmlxFW
+         1Cb5R34K0wOnyWAAtflSN7/bGsZfNa6AZiJ/0EircejwqfxnDSgV5FT/SO1HpuLmnHX4
+         fA3A==
+X-Gm-Message-State: APjAAAWz6t3MWzVZLLMtkV++iE1UPNeLgTlEjI5vGwURLM2Ib8Mg8OM1
+        qld6f83SA0PuI/j0Xz5x02hdBg==
+X-Google-Smtp-Source: APXvYqxOtlsJBNr4RXkYgj3XdzHIOqikXnzMKvAi6Mz6sFxjcG+k9LyFuV8RHHVv9ENQS6UdATtSwQ==
+X-Received: by 2002:a37:9a50:: with SMTP id c77mr72065503qke.12.1560445767909;
+        Thu, 13 Jun 2019 10:09:27 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id h4sm72458qkk.39.2019.06.13.10.09.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 10:09:27 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 10:09:23 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     peterz@infradead.org, netdev@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, linux-kernel@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH net-next 0/2] enable and use static_branch_deferred_inc
+Message-ID: <20190613100923.397a6081@cakuba.netronome.com>
+In-Reply-To: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
+References: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190611161031.12898-1-mcroce@redhat.com>
-In-Reply-To: <20190611161031.12898-1-mcroce@redhat.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Thu, 13 Jun 2019 19:07:20 +0200
-Message-ID: <CAPpH65yOS8OKX1cUDtvjVHwXSTEifbCGXQhMUKg9R-aEbMNnWQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2 v2 0/3] refactor the cmd_exec()
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 6:11 PM Matteo Croce <mcroce@redhat.com> wrote:
->
-> Refactor the netns and ipvrf code so less steps are needed to exec commands
-> in a netns or a VRF context.
-> Also remove some code which became dead. bloat-o-meter output:
->
-> $ bloat-o-meter ip.old ip
-> add/remove: 1/4 grow/shrink: 3/4 up/down: 174/-312 (-138)
-> Function                                     old     new   delta
-> netns_add                                    971    1058     +87
-> cmd_exec                                     207     256     +49
-> on_netns_exec                                 32      60     +28
-> do_switch                                      -      10     +10
-> netns_restore                                 69      67      -2
-> do_ipvrf                                     811     802      -9
-> netns_switch                                 838     822     -16
-> on_netns_label                                45       -     -45
-> do_netns                                    1226    1180     -46
-> do_each_netns                                 57       -     -57
-> on_netns                                      60       -     -60
-> netns_save                                    77       -     -77
-> Total: Before=668234, After=668096, chg -0.02%
->
-> Matteo Croce (3):
->   netns: switch netns in the child when executing commands
->   ip vrf: use hook to change VRF in the child
->   netns: make netns_{save,restore} static
->
->  include/namespace.h |  2 --
->  include/utils.h     |  6 ++---
->  ip/ip.c             |  1 -
->  ip/ipnetns.c        | 56 +++++++++++++++++++++++++++++++++------------
->  ip/ipvrf.c          | 12 ++++++----
->  lib/exec.c          |  7 +++++-
->  lib/namespace.c     | 31 -------------------------
->  lib/utils.c         | 27 ----------------------
->  8 files changed, 58 insertions(+), 84 deletions(-)
->
-> --
-> 2.21.0
->
+On Thu, 13 Jun 2019 11:08:14 -0400, Willem de Bruijn wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> 1. make static_branch_deferred_inc available if !CONFIG_JUMP_LABEL
+> 2. convert the existing STATIC_KEY_DEFERRED_FALSE user to this api
 
-For patch series:
-Reviewed-and-tested-by: Andrea Claudi <aclaudi@redhat.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+
+Thanks/sorry :)
