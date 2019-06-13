@@ -2,112 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3208843BAB
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8D543BAC
 	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730328AbfFMPak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:30:40 -0400
-Received: from nautica.notk.org ([91.121.71.147]:47360 "EHLO nautica.notk.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728691AbfFMLKq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 07:10:46 -0400
-Received: by nautica.notk.org (Postfix, from userid 1001)
-        id F0942C009; Thu, 13 Jun 2019 13:10:42 +0200 (CEST)
-Date:   Thu, 13 Jun 2019 13:10:27 +0200
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Lu Shuaibing <shuaibinglu@126.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] 9p: Transport error uninitialized
-Message-ID: <20190613111027.GB9525@nautica>
-References: <20190613070854.10434-1-shuaibinglu@126.com>
+        id S1730184AbfFMPah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:30:37 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36839 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728699AbfFMLLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 07:11:40 -0400
+Received: by mail-wm1-f67.google.com with SMTP id u8so9681127wmm.1
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 04:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=l5O3ZbHPTNATOyk0AZKZTtGFgjZMaMFhSxd61K+M44k=;
+        b=uvITb8gp4TnZyF50y9+SLt+YD0uOwh8Bbiv/qgv5/5ndE3w1cyJmH8WxkjbFruvcIT
+         clDfUTzyKPlNruYhDJ1qpB7lZliFHZXWlL4p1OMRoa9CllDOF+9Z7HOaMGKwCg967doP
+         NRjfTMguL2iXkGkeypo0X15OjnrBJLjCGTPHLox0TWJWGvlriEXtptMp4fSM9h+QHMO6
+         VQN54CjaEc7hLF0vYBdZx13nAoOKnbL+XSUeBpJmgCeIey09P/3LnT239hfAGHN1KxZM
+         +FfSRwYj6JmfBo1wmBEIv/ekRNj7Gq53qZFHEQatzldV7nDouKQb2H5UAqnfTjGtr71/
+         j7Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=l5O3ZbHPTNATOyk0AZKZTtGFgjZMaMFhSxd61K+M44k=;
+        b=tUvCmV94MD7CLsyupu0hHW0X2kPUbrScHNtqwCAmIaFIDKEA5Z15h8YCE524hdZFco
+         RjVHTm4OI4lFiRkdCYLYQ9Wo7gnH8N8EPq0qg10AMgcPC0eB4UDegO6z7KIws9iab2pi
+         KIXbetc+DkvpcVZ+xCKU3ctB+leYdnBv/wJa8qePmmbHuAiHuIipCXrQ/QZrW5AMvTf5
+         wV9oMhS5DNXeA4U/crHC+n42ReFaeTDijL5Wb2yliJrOJVgRj+PQyY8NaY6em5Ngn2xp
+         6jcefNeEUd24fkeX2NfZP6D7rWtTebPuXGUuYW3XsXhliCDooLCzzyxQzH5nSCvWNAmR
+         gXnQ==
+X-Gm-Message-State: APjAAAU3Co1fS7TMY2EDCQDqY3n4YOFoadG22pOH/jJluFheYfWGeBiN
+        mTgxEFbc8OHNlmxYR+FIHmjQ2Q==
+X-Google-Smtp-Source: APXvYqwomXDhN384n2mFSwBc6taHEjXveebeitg14+IjhV52eOyV8Y59IUR1av7MluGQ6N+aseLZNA==
+X-Received: by 2002:a1c:a002:: with SMTP id j2mr3261879wme.131.1560424297368;
+        Thu, 13 Jun 2019 04:11:37 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id g8sm1423265wme.20.2019.06.13.04.11.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 04:11:36 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 13:11:35 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>, mlxsw <mlxsw@mellanox.com>,
+        Alex Kushnarov <alexanderk@mellanox.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: Re: tc tp creation performance degratation since kernel 5.1
+Message-ID: <20190613111135.GA2201@nanopsycho.orion>
+References: <20190612120341.GA2207@nanopsycho>
+ <20190613081152.GC2254@nanopsycho.orion>
+ <vbfblz123vt.fsf@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190613070854.10434-1-shuaibinglu@126.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <vbfblz123vt.fsf@mellanox.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lu Shuaibing wrote on Thu, Jun 13, 2019:
-> The p9_tag_alloc() does not initialize the transport error t_err field.
-> The struct p9_req_t *req is allocated and stored in a struct p9_client
-> variable. The field t_err is never initialized before p9_conn_cancel()
-> checks its value.
-> 
-> KUMSAN(KernelUninitializedMemorySantizer, a new error detection tool)
-> reports this bug.
-> 
-> ==================================================================
-> BUG: KUMSAN: use of uninitialized memory in p9_conn_cancel+0x2d9/0x3b0
-> Read of size 4 at addr ffff88805f9b600c by task kworker/1:2/1216
-> 
-> CPU: 1 PID: 1216 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #28
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
-> Workqueue: events p9_write_work
-> Call Trace:
->  dump_stack+0x75/0xae
->  __kumsan_report+0x17c/0x3e6
->  kumsan_report+0xe/0x20
->  p9_conn_cancel+0x2d9/0x3b0
->  p9_write_work+0x183/0x4a0
->  process_one_work+0x4d1/0x8c0
->  worker_thread+0x6e/0x780
->  kthread+0x1ca/0x1f0
->  ret_from_fork+0x35/0x40
-> 
-> Allocated by task 1979:
->  save_stack+0x19/0x80
->  __kumsan_kmalloc.constprop.3+0xbc/0x120
->  kmem_cache_alloc+0xa7/0x170
->  p9_client_prepare_req.part.9+0x3b/0x380
->  p9_client_rpc+0x15e/0x880
->  p9_client_create+0x3d0/0xac0
->  v9fs_session_init+0x192/0xc80
->  v9fs_mount+0x67/0x470
->  legacy_get_tree+0x70/0xd0
->  vfs_get_tree+0x4a/0x1c0
->  do_mount+0xba9/0xf90
->  ksys_mount+0xa8/0x120
->  __x64_sys_mount+0x62/0x70
->  do_syscall_64+0x6d/0x1e0
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Freed by task 0:
-> (stack is not available)
-> 
-> The buggy address belongs to the object at ffff88805f9b6008
->  which belongs to the cache p9_req_t of size 144
-> The buggy address is located 4 bytes inside of
->  144-byte region [ffff88805f9b6008, ffff88805f9b6098)
-> The buggy address belongs to the page:
-> page:ffffea00017e6d80 refcount:1 mapcount:0 mapping:ffff888068b63740 index:0xffff88805f9b7d90 compound_mapcount: 0
-> flags: 0x100000000010200(slab|head)
-> raw: 0100000000010200 ffff888068b66450 ffff888068b66450 ffff888068b63740
-> raw: ffff88805f9b7d90 0000000000100001 00000001ffffffff 0000000000000000
-> page dumped because: kumsan: bad access detected
-> ==================================================================
-> 
-> Signed-off-by: Lu Shuaibing <shuaibinglu@126.com>
+Thu, Jun 13, 2019 at 12:09:32PM CEST, vladbu@mellanox.com wrote:
+>On Thu 13 Jun 2019 at 11:11, Jiri Pirko <jiri@resnulli.us> wrote:
+>> I made a mistake during measurements, sorry about that.
+>>
+>> This is the correct script:
+>> -----------------------------------------------------------------------
+>> #!/bin/bash
+>>
+>> dev=testdummy
+>> ip link add name $dev type dummy
+>> ip link set dev $dev up
+>> tc qdisc add dev $dev ingress
+>>
+>> tmp_file_name=$(date +"/tmp/tc_batch.%s.%N.tmp")
+>> pref_id=1
+>>
+>> while [ $pref_id -lt 20000 ]
+>> do
+>>         echo "filter add dev $dev ingress proto ip pref $pref_id flower action drop" >> $tmp_file_name
+>>         #echo "filter add dev $dev ingress proto ip pref $pref_id matchall action drop" >> $tmp_file_name
+>>         ((pref_id++))
+>> done
+>>
+>> start=$(date +"%s")
+>> tc -b $tmp_file_name
+>> stop=$(date +"%s")
+>> echo "Insertion duration: $(($stop - $start)) sec"
+>> rm -f $tmp_file_name
+>>
+>> ip link del dev $dev
+>> -----------------------------------------------------------------------
+>>
+>> Note the commented out matchall. I don't see the regression with
+>> matchall. However, I see that with flower:
+>> kernel 5.1
+>> Insertion duration: 4 sec
+>> kernel 5.2
+>> Insertion duration: 163 sec
+>>
+>> I don't see any significant difference in perf:
+>> kernel 5.1
+>>     77.24%  tc               [kernel.vmlinux]    [k] tcf_chain_tp_find
+>>      1.67%  tc               [kernel.vmlinux]    [k] mutex_spin_on_owner
+>>      1.44%  tc               [kernel.vmlinux]    [k] _raw_spin_unlock_irqrestore
+>>      0.93%  tc               [kernel.vmlinux]    [k] idr_get_free
+>>      0.79%  tc_pref_scale_o  [kernel.vmlinux]    [k] do_syscall_64
+>>      0.69%  tc               [kernel.vmlinux]    [k] finish_task_switch
+>>      0.53%  tc               libc-2.28.so        [.] __memset_sse2_unaligned_erms
+>>      0.49%  tc               [kernel.vmlinux]    [k] __memset
+>>      0.36%  tc_pref_scale_o  libc-2.28.so        [.] malloc
+>>      0.30%  tc_pref_scale_o  libc-2.28.so        [.] _int_free
+>>      0.24%  tc               [kernel.vmlinux]    [k] __memcpy
+>>      0.23%  tc               [cls_flower]        [k] fl_change
+>>      0.23%  tc               [kernel.vmlinux]    [k] __nla_validate_parse
+>>      0.22%  tc               [kernel.vmlinux]    [k] __slab_alloc
+>>
+>>
+>>     75.57%  tc               [kernel.kallsyms]  [k] tcf_chain_tp_find
+>>      2.70%  tc               [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
+>>      1.13%  tc_pref_scale_o  [kernel.kallsyms]  [k] do_syscall_64
+>>      0.87%  tc               libc-2.28.so       [.] __memset_sse2_unaligned_erms
+>>      0.86%  ip               [kernel.kallsyms]  [k] finish_task_switch
+>>      0.67%  tc               [kernel.kallsyms]  [k] memset
+>>      0.63%  tc               [kernel.kallsyms]  [k] mutex_spin_on_owner
+>>      0.52%  tc_pref_scale_o  libc-2.28.so       [.] malloc
+>>      0.48%  tc               [kernel.kallsyms]  [k] idr_get_free
+>>      0.46%  tc               [kernel.kallsyms]  [k] fl_change
+>>      0.42%  tc_pref_scale_o  libc-2.28.so       [.] _int_free
+>>      0.35%  tc_pref_scale_o  libc-2.28.so       [.] __GI___strlen_sse2
+>>      0.35%  tc_pref_scale_o  libc-2.28.so       [.] __mbrtowc
+>>      0.34%  tc_pref_scale_o  libc-2.28.so       [.] __fcntl64_nocancel_adjusted
+>>
+>> Any ideas?
+>
+>Thanks for providing reproduction script!
+>
+>I've investigate the problem and found the root cause. First of all I
+>noticed that CPU utilization during problematic tc run is quite low
+>(<10%), so I decided to investigate why tc sleeps so much. I've used bcc
+>and obtained following off-CPU trace (uninteresting traces are omitted
+>for brevity):
+>
+>~$ sudo /usr/share/bcc/tools/offcputime -K -p `pgrep -nx tc`
+>Tracing off-CPU time (us) of PID 2069 by kernel stack... Hit Ctrl-C to end.
+>...
+>    finish_task_switch
+>    __sched_text_start
+>    schedule
+>    schedule_timeout
+>    wait_for_completion
+>    __wait_rcu_gp
+>    synchronize_rcu
+>    fl_change
+>    tc_new_tfilter
+>    rtnetlink_rcv_msg
+>    netlink_rcv_skb
+>    netlink_unicast
+>    netlink_sendmsg
+>    sock_sendmsg
+>    ___sys_sendmsg
+>    __sys_sendmsg
+>    do_syscall_64
+>    entry_SYSCALL_64_after_hwframe
+>    -                tc (2069)
+>        142284953
+>
+>As you can see 142 seconds are spent sleeping in synchronize_rcu(). The
+>code is in fl_create_new_mask() function:
+>
+>	err = rhashtable_replace_fast(&head->ht, &mask->ht_node,
+>				      &newmask->ht_node, mask_ht_params);
+>	if (err)
+>		goto errout_destroy;
+>
+>	/* Wait until any potential concurrent users of mask are finished */
+>	synchronize_rcu();
+>
+>The justification for this is described in comment in
+>fl_check_assign_mask() (user of fl_create_new_mask()):
+>
+>	/* Insert mask as temporary node to prevent concurrent creation of mask
+>	 * with same key. Any concurrent lookups with same key will return
+>	 * -EAGAIN because mask's refcnt is zero. It is safe to insert
+>	 * stack-allocated 'mask' to masks hash table because we call
+>	 * synchronize_rcu() before returning from this function (either in case
+>	 * of error or after replacing it with heap-allocated mask in
+>	 * fl_create_new_mask()).
+>	 */
+>	fnew->mask = rhashtable_lookup_get_insert_fast(&head->ht,
+>						       &mask->ht_node,
+>						       mask_ht_params);
+>
+>The offending commit is part of my series that implements unlocked
+>flower: 195c234d15c9 ("net: sched: flower: handle concurrent mask
+>insertion")
+>
+>The justification presented in it is no longer relevant since Ivan
+>Vecera changed mask to be dynamically allocated in commit 2cddd2014782
+>("net/sched: cls_flower: allocate mask dynamically in fl_change()").
+>With this we can just change fl_change() to deallocate temporary mask
+>with rcu grace period and remove offending syncrhonize_rcu() call.
+>
+>Any other suggestions?
 
-Looks good to me, will queue it up for -next after I've had time to run
-some tests - probably early next week.
-
-This made me realize that this refcount_set is too late, it is possible
-in theory to find the request with p9_tag_lookup as soon as the tag
-alloc worked so both this req->t_err and refcount initialization should
-go before the idr chunk with the other field initializations.
-
-I also checked by the way that no other fields were forgotten, the only
-field that is not initialized now is ->aux, but that field is never used
-so it might be just as fast to remove the field instead...
-I'll submit a couple of patches to move these two inits up and remove
-the aux field when I find time.
-
-
-Thanks!
--- 
-Dominique
+So basically you just change synchronize_rcu() to kfree_rcu(mask),
+   correct?
