@@ -2,229 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F464384E
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9DC4382A
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732463AbfFMPEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:04:55 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36481 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732466AbfFMOSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 10:18:25 -0400
-Received: by mail-wm1-f66.google.com with SMTP id u8so10331698wmm.1
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 07:18:23 -0700 (PDT)
+        id S1732805AbfFMPD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:03:56 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:44522 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732481AbfFMOUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 10:20:11 -0400
+Received: by mail-ed1-f66.google.com with SMTP id k8so31431936edr.11
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 07:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hnqPodsnXRhtyXTS5/jOUXyEiqHytL9QSOkl9ggAjmY=;
-        b=nR8UmPPoUkZZ6g1DZ61ugUFJtTPKsgWnARYsoI1J4oQksoFoqxbXhxg/ZMlIwxkxRm
-         /QMPAwZYoHKmycwG4BANl7BnwjI9A8LAAI2PNDy8NsTJ/lgmNo6zY7v3110Foayuue2d
-         ZA3anvfR96GxXA0wbm1boKsKm6NpdircJloDzOsMCHAprqJJJShMUKNCeSDs696cSrLk
-         ZyKBMl+W75zVkjlu9YznHdbvDtQHUbomKuG8OtmZnK2MBaBWOYBttDo4qHaFh7qK8lEJ
-         DnF6VxsHlOybEfb+C+8v1TBARqMglNZw/CfNVvrGIRx4kb/piR67OFOAktzM+kVvNzaG
-         lEEg==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=WwF+R4Lrs6HkJMUvOOkA/vlqjdor9u8SE8zxnPHP64g=;
+        b=YlW4j9MiK43UaPPNp3NcnSbwoouWOaR5Tt1J1uSyLaCtOSGU7wNQkYQ+u36ShXbFgs
+         4jix3t87R4H4jdPR/24G35HTJrWTFACeaeQwwZ9fhwg9W0NT639UwqePoagPMrQXXsse
+         hMHFWTHYO/E9uSyRcEFVRmvfAQ/Z5bqeX2pPTp5u35qTiNBmpqSemN8n5lwhvQz2uvBY
+         UagS8DRqx6+RRfq716VVrujv85WVXDDpLCavczHzVPRM9V26garys8KQBywm0+Ff9pOt
+         M+1b5Y1YoFH9A6u1DrbvmM8aKxrKQZxUdqu1VzO070TNGOFjFhzXe8kalXYX3YACcIkK
+         l08w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hnqPodsnXRhtyXTS5/jOUXyEiqHytL9QSOkl9ggAjmY=;
-        b=b++j0uAR4iC1dIz4qKsHWzJElk+Hsbivxnichg2pKtTVFbwdhTW4/aTvqQoOF0gaTr
-         Stn9m/QN+sqti32Osr9qb5DdB1LrMExgXpPqI2rVjQxhalkcgFpTYHgjKrSS2FMCApx2
-         8e4/BieU3wNnDMLcHgR2fWRe74vVnkQYUKs9/2XhiW+xTs8T1rK++LNMWM7STuz1rF5h
-         ueDJ3rCNCNRJ0pCZwRIyO/tS8p87fylw+Z2CDeVtuPfXVsZPflCogKqcJsWziYCMw1iX
-         yyxx+AYsxy+CZlg7pJClLNlzvZpahb5PhByleWOlNDxhpJfrDOZduW5l/hq40Z3h3WKh
-         Lzaw==
-X-Gm-Message-State: APjAAAWlP3nNKCnMZWUaVLwjf3ROkAZKLwNG06X5cG8cEoZS3iAsGG/8
-        0LxdOhlJiHEgJLJEeFom+ND4/w==
-X-Google-Smtp-Source: APXvYqy8h7XKowpxYKZNFQ5VYa23RZr3ogY+2ZlUiYJKSBZ8HB8IO6ZxcxPS6glWJiOF0ob+wCI8lg==
-X-Received: by 2002:a1c:5f09:: with SMTP id t9mr4263284wmb.112.1560435502883;
-        Thu, 13 Jun 2019 07:18:22 -0700 (PDT)
-Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id w14sm3726194wrt.59.2019.06.13.07.18.22
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 07:18:22 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 16:18:21 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>, mlxsw <mlxsw@mellanox.com>,
-        Alex Kushnarov <alexanderk@mellanox.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: tc tp creation performance degratation since kernel 5.1
-Message-ID: <20190613141821.GA2242@nanopsycho>
-References: <20190612120341.GA2207@nanopsycho>
- <20190613081152.GC2254@nanopsycho.orion>
- <vbfblz123vt.fsf@mellanox.com>
- <20190613111135.GA2201@nanopsycho.orion>
- <vbfa7el20ff.fsf@mellanox.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <vbfa7el20ff.fsf@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WwF+R4Lrs6HkJMUvOOkA/vlqjdor9u8SE8zxnPHP64g=;
+        b=ShOzBe59Lgda+m11JDm3D62SHlrI9B9ssiZRup2BVTl1iBmaAtt8PiXOqxPMg80XA2
+         hfyIE8s9OwXvUvvzQTZMPcNhDm/hBVQ0wkJjQBu5KXsVwCC97aXpnd4hXvdPjEB5GzoX
+         WD2iV/U5O/QwQ+8sXvWulsDL4hTjYGV53n34RuflwuRKE7HnZzxor8VGYUchMYhVq4KK
+         WeKTQoIyf4dO5WI0SeaaqIXcELiCBMrFWFCBVBxllCKhL8+im2DI9UoGOdLLXFV8uE2d
+         iA4+fMtNE5dxW8BTsWgsDiNlShXI3D9ZQAd9Xm2VfmqsTpvuGsJu0vIn1mIZE/1NwiSP
+         rrZw==
+X-Gm-Message-State: APjAAAWRp075aB3LYxGI1gs1LlsUsx3lGdbQszYlBi/cYQLGCBcUjQB2
+        ottKLVLtLta/2/4jt3XbNltdHw==
+X-Google-Smtp-Source: APXvYqwO9PywANz7atN1rsYR8nc0F1gYU6Knxg6dvs1rRl85CPqOVEmsFwigyaGm9ONRLxA9TcuExA==
+X-Received: by 2002:a50:cb04:: with SMTP id g4mr83562162edi.181.1560435609787;
+        Thu, 13 Jun 2019 07:20:09 -0700 (PDT)
+Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
+        by smtp.gmail.com with ESMTPSA id s57sm931939edd.54.2019.06.13.07.20.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 13 Jun 2019 07:20:09 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
+To:     davem@davemloft.net, dledford@redhat.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mkubecek@suse.cz, Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH 1/2] ipoib: correcly show a VF hardware address
+Date:   Thu, 13 Jun 2019 16:20:00 +0200
+Message-Id: <20190613142003.129391-1-dkirjanov@suse.com>
+X-Mailer: git-send-email 2.12.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 13, 2019 at 01:26:17PM CEST, vladbu@mellanox.com wrote:
->
->On Thu 13 Jun 2019 at 14:11, Jiri Pirko <jiri@resnulli.us> wrote:
->> Thu, Jun 13, 2019 at 12:09:32PM CEST, vladbu@mellanox.com wrote:
->>>On Thu 13 Jun 2019 at 11:11, Jiri Pirko <jiri@resnulli.us> wrote:
->>>> I made a mistake during measurements, sorry about that.
->>>>
->>>> This is the correct script:
->>>> -----------------------------------------------------------------------
->>>> #!/bin/bash
->>>>
->>>> dev=testdummy
->>>> ip link add name $dev type dummy
->>>> ip link set dev $dev up
->>>> tc qdisc add dev $dev ingress
->>>>
->>>> tmp_file_name=$(date +"/tmp/tc_batch.%s.%N.tmp")
->>>> pref_id=1
->>>>
->>>> while [ $pref_id -lt 20000 ]
->>>> do
->>>>         echo "filter add dev $dev ingress proto ip pref $pref_id flower action drop" >> $tmp_file_name
->>>>         #echo "filter add dev $dev ingress proto ip pref $pref_id matchall action drop" >> $tmp_file_name
->>>>         ((pref_id++))
->>>> done
->>>>
->>>> start=$(date +"%s")
->>>> tc -b $tmp_file_name
->>>> stop=$(date +"%s")
->>>> echo "Insertion duration: $(($stop - $start)) sec"
->>>> rm -f $tmp_file_name
->>>>
->>>> ip link del dev $dev
->>>> -----------------------------------------------------------------------
->>>>
->>>> Note the commented out matchall. I don't see the regression with
->>>> matchall. However, I see that with flower:
->>>> kernel 5.1
->>>> Insertion duration: 4 sec
->>>> kernel 5.2
->>>> Insertion duration: 163 sec
->>>>
->>>> I don't see any significant difference in perf:
->>>> kernel 5.1
->>>>     77.24%  tc               [kernel.vmlinux]    [k] tcf_chain_tp_find
->>>>      1.67%  tc               [kernel.vmlinux]    [k] mutex_spin_on_owner
->>>>      1.44%  tc               [kernel.vmlinux]    [k] _raw_spin_unlock_irqrestore
->>>>      0.93%  tc               [kernel.vmlinux]    [k] idr_get_free
->>>>      0.79%  tc_pref_scale_o  [kernel.vmlinux]    [k] do_syscall_64
->>>>      0.69%  tc               [kernel.vmlinux]    [k] finish_task_switch
->>>>      0.53%  tc               libc-2.28.so        [.] __memset_sse2_unaligned_erms
->>>>      0.49%  tc               [kernel.vmlinux]    [k] __memset
->>>>      0.36%  tc_pref_scale_o  libc-2.28.so        [.] malloc
->>>>      0.30%  tc_pref_scale_o  libc-2.28.so        [.] _int_free
->>>>      0.24%  tc               [kernel.vmlinux]    [k] __memcpy
->>>>      0.23%  tc               [cls_flower]        [k] fl_change
->>>>      0.23%  tc               [kernel.vmlinux]    [k] __nla_validate_parse
->>>>      0.22%  tc               [kernel.vmlinux]    [k] __slab_alloc
->>>>
->>>>
->>>>     75.57%  tc               [kernel.kallsyms]  [k] tcf_chain_tp_find
->>>>      2.70%  tc               [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
->>>>      1.13%  tc_pref_scale_o  [kernel.kallsyms]  [k] do_syscall_64
->>>>      0.87%  tc               libc-2.28.so       [.] __memset_sse2_unaligned_erms
->>>>      0.86%  ip               [kernel.kallsyms]  [k] finish_task_switch
->>>>      0.67%  tc               [kernel.kallsyms]  [k] memset
->>>>      0.63%  tc               [kernel.kallsyms]  [k] mutex_spin_on_owner
->>>>      0.52%  tc_pref_scale_o  libc-2.28.so       [.] malloc
->>>>      0.48%  tc               [kernel.kallsyms]  [k] idr_get_free
->>>>      0.46%  tc               [kernel.kallsyms]  [k] fl_change
->>>>      0.42%  tc_pref_scale_o  libc-2.28.so       [.] _int_free
->>>>      0.35%  tc_pref_scale_o  libc-2.28.so       [.] __GI___strlen_sse2
->>>>      0.35%  tc_pref_scale_o  libc-2.28.so       [.] __mbrtowc
->>>>      0.34%  tc_pref_scale_o  libc-2.28.so       [.] __fcntl64_nocancel_adjusted
->>>>
->>>> Any ideas?
->>>
->>>Thanks for providing reproduction script!
->>>
->>>I've investigate the problem and found the root cause. First of all I
->>>noticed that CPU utilization during problematic tc run is quite low
->>>(<10%), so I decided to investigate why tc sleeps so much. I've used bcc
->>>and obtained following off-CPU trace (uninteresting traces are omitted
->>>for brevity):
->>>
->>>~$ sudo /usr/share/bcc/tools/offcputime -K -p `pgrep -nx tc`
->>>Tracing off-CPU time (us) of PID 2069 by kernel stack... Hit Ctrl-C to end.
->>>...
->>>    finish_task_switch
->>>    __sched_text_start
->>>    schedule
->>>    schedule_timeout
->>>    wait_for_completion
->>>    __wait_rcu_gp
->>>    synchronize_rcu
->>>    fl_change
->>>    tc_new_tfilter
->>>    rtnetlink_rcv_msg
->>>    netlink_rcv_skb
->>>    netlink_unicast
->>>    netlink_sendmsg
->>>    sock_sendmsg
->>>    ___sys_sendmsg
->>>    __sys_sendmsg
->>>    do_syscall_64
->>>    entry_SYSCALL_64_after_hwframe
->>>    -                tc (2069)
->>>        142284953
->>>
->>>As you can see 142 seconds are spent sleeping in synchronize_rcu(). The
->>>code is in fl_create_new_mask() function:
->>>
->>>	err = rhashtable_replace_fast(&head->ht, &mask->ht_node,
->>>				      &newmask->ht_node, mask_ht_params);
->>>	if (err)
->>>		goto errout_destroy;
->>>
->>>	/* Wait until any potential concurrent users of mask are finished */
->>>	synchronize_rcu();
->>>
->>>The justification for this is described in comment in
->>>fl_check_assign_mask() (user of fl_create_new_mask()):
->>>
->>>	/* Insert mask as temporary node to prevent concurrent creation of mask
->>>	 * with same key. Any concurrent lookups with same key will return
->>>	 * -EAGAIN because mask's refcnt is zero. It is safe to insert
->>>	 * stack-allocated 'mask' to masks hash table because we call
->>>	 * synchronize_rcu() before returning from this function (either in case
->>>	 * of error or after replacing it with heap-allocated mask in
->>>	 * fl_create_new_mask()).
->>>	 */
->>>	fnew->mask = rhashtable_lookup_get_insert_fast(&head->ht,
->>>						       &mask->ht_node,
->>>						       mask_ht_params);
->>>
->>>The offending commit is part of my series that implements unlocked
->>>flower: 195c234d15c9 ("net: sched: flower: handle concurrent mask
->>>insertion")
->>>
->>>The justification presented in it is no longer relevant since Ivan
->>>Vecera changed mask to be dynamically allocated in commit 2cddd2014782
->>>("net/sched: cls_flower: allocate mask dynamically in fl_change()").
->>>With this we can just change fl_change() to deallocate temporary mask
->>>with rcu grace period and remove offending syncrhonize_rcu() call.
->>>
->>>Any other suggestions?
->>
->> So basically you just change synchronize_rcu() to kfree_rcu(mask),
->>    correct?
->
->Not really. I remove synchronize_rcu() and change all kfree(mask) in
->fl_change() to tcf_queue_work(&mask->rwork, fl_mask_free_work) which
->uses queue_rcu_work() internally. This would allow us to deallocate
->fl_flow_mask in same manner on all code paths and doesn't require any
->extensions in fl_flow_mask struct (kfree_rcu would require extending it
->with rcu_head).
+in the case of IPoIB with SRIOV enabled hardware
+ip link show command incorrecly prints
+0 instead of a VF hardware address. To correcly print the address
+add a new field to specify an address length.
 
-Got it. Makes sense to me. Thanks!
+Before:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+    link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+    vf 0 MAC 00:00:00:00:00:00, spoof checking off, link-state disable,
+trust off, query_rss off
+...
+After:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+    link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+    vf 0     link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+checking off, link-state disable, trust off, query_rss off
+
+v1->v2: just copy an address without modifing ifla_vf_mac
+
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+---
+ drivers/infiniband/ulp/ipoib/ipoib_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c b/drivers/infiniband/ulp/ipoib/ipoib_main.c
+index 9b5e11d3fb85..04ea7db08e87 100644
+--- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
++++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
+@@ -1998,6 +1998,7 @@ static int ipoib_get_vf_config(struct net_device *dev, int vf,
+ 		return err;
+ 
+ 	ivf->vf = vf;
++	memcpy(ivf->mac, dev->dev_addr, dev->addr_len);
+ 
+ 	return 0;
+ }
+-- 
+2.12.3
+
