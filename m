@@ -2,102 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E590244EFE
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A674E44F11
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:26:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfFMWNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 18:13:38 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38940 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfFMWNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:13:37 -0400
-Received: by mail-pf1-f194.google.com with SMTP id j2so108659pfe.6
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:13:37 -0700 (PDT)
+        id S1727312AbfFMW0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 18:26:08 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42019 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726519AbfFMW0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:26:07 -0400
+Received: by mail-lj1-f193.google.com with SMTP id t28so300747lje.9
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vBpV239lVZGsVFttEgs6I1loquWTjGM2fybPXSc6kXE=;
-        b=zF/ntvzau96uXYha0NGrQYwz8Sn8ybozie8+n1svcbT2JMl8P9RmSLT1Spc6zV024K
-         LsMRy+UOABU6LMgIS/IZpEp6mfxSS6XrIxrgBSc7pLpMpyrkMYiX+hbT/16LeAP85J8Q
-         KovE8gKHVdjiILwA/eDiX+WPqsnrx//bMQHpFkbjxKX7qGI+AWeXDQZW4/Mc3wpjX/oh
-         60OpiPvdD+DmyNLUCwr8ybxFyBZDU0SGB49YGosURVSijxEpYXDXnI+AwTUc5voEvSRO
-         dWWf0nqmQGYbkLq/K6kiEPWBNjwvyt4Xm5lpx2Nff2QHRHL+B2jv8Vie4H+ftaoDi6ow
-         gdGQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rks0Y0tF/0uIFUiwoag1iJEl5awYzobXVEIXdeNluJI=;
+        b=MK/Zd796Vs4QS13x0pfCu9Imp3xKpR1nhntOF84QSXr5Uw9zbZHWH4zQ3UrICyMJz+
+         Nj+vHEJo7iSReHyon88G3i1+v3jb7Fn+6DeQJOf8TEu1p2ZS3iQXzklujD6tgZ2BXvQt
+         rqUR2Dl43wU8an7C2F/hf/MBLM9bO+ip6eJpn2Lciswn0M955MnHLZE8Ob/cT1URg3PD
+         7h4wifMCfcXKuL/eyufIjUHXhR9/5FeEDROxd4tTR0pw17HBwY3HFOHcDK0VyvwX1Meq
+         h8e/2sn36L/gqXkwaWdUoYer4jsFPoMXOFi8tM8K73TFF2n1d0lZy/BFaqYehZkTJwOc
+         OGqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vBpV239lVZGsVFttEgs6I1loquWTjGM2fybPXSc6kXE=;
-        b=kTA+fZo8z+LSsxuMf1nf6B5zQry7il7/Xxx6+sCYof88w2BiHETsUERmI1j/CDfzA7
-         keuROZtIVQch/IzCfikXZk0C+j8Tg1zpSlxsjE8Gkpz/M6EpnduRpGTAN7TzSGOfrvQt
-         AkoIkQmFykLon+VuC2iyuNAkFHpf3TI55b5vse+uzM9nNZfKK+Hr0u/c1ix5m3o2eHb3
-         Gha0KAtmlHyKqFoxAfwDzDPCO/u93sO+asXswEbzuZ7RaHlDt+0x1P01jqn1x9qElq1F
-         2A1MbKTeLjSEGmpnZaXMm4Ya3X5/g8r4n1AnTEMjLV+kb8JLM9VKMMLpzbpfNwKsaUXi
-         X1/A==
-X-Gm-Message-State: APjAAAUuF/QFaV2NcWhpCKojglN++jllomEAoSVrmr6WcUk17PElUWl9
-        z4Th8bRW/nnS2YlXP7F8/d5aaA==
-X-Google-Smtp-Source: APXvYqzW7UzSpBgBw41cIlZh4MHki33bwIjljD7aQxSQSHGuM7qhtjsFYIfrPg7/35SWtKNBSAkxDg==
-X-Received: by 2002:aa7:8dd2:: with SMTP id j18mr26011901pfr.88.1560464016997;
-        Thu, 13 Jun 2019 15:13:36 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id 128sm660652pfd.66.2019.06.13.15.13.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rks0Y0tF/0uIFUiwoag1iJEl5awYzobXVEIXdeNluJI=;
+        b=Iy+ujRwt1vObwpMFJsgOMaMMqiYLYBw374n1toE0XtdZEwLXw/lUaD6aDIsCpcj16F
+         WPMg39S+xSCD0WqfLImYn6vyW8HF3HWsE8h4fy13tL29/fff7Cn60NvM4+kPN+M8lCu/
+         8tX3zB9DcPz7QdUb5mPy4K8Lb8Ap1riAkcuZCJk9TvfFZb7FygyA1ot+H1TKd27P88yE
+         uNVVGohymL3kzyRQkJkyQLX7J1MGy6UpJZXVnPuPY5C23orqBmLiTpsxIt02Iavavz/w
+         v42WuRVssysrhRTJ8gzga35+R1yuTgUBGussOzxuuPr0bxAOP+a6qA84ORaEQDLolakJ
+         vKMA==
+X-Gm-Message-State: APjAAAWZRlWGatgOpTxZhHhVs0PL9jbw7N9RFgnO0fhvB61vEMXc67d4
+        VgzAiJr95l1D58JeujEP16ktwg==
+X-Google-Smtp-Source: APXvYqyJJUWkAVC1m+mNjBXOAnLM9kHysFWdmgkivnUSsar+kIF/OEeAk40uIGO3g1ibTAIhyYiL7A==
+X-Received: by 2002:a2e:2c04:: with SMTP id s4mr23657051ljs.61.1560464765716;
+        Thu, 13 Jun 2019 15:26:05 -0700 (PDT)
+Received: from linux.local (c-d2cd225c.014-348-6c756e10.bbcust.telenor.se. [92.34.205.210])
+        by smtp.gmail.com with ESMTPSA id b62sm213433ljb.71.2019.06.13.15.26.04
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 15:13:36 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 15:13:35 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 0/3] bpf: net: Detach BPF prog from reuseport
- sk
-Message-ID: <20190613221335.GD9636@mini-arch>
-References: <20190613215959.3095374-1-kafai@fb.com>
+        Thu, 13 Jun 2019 15:26:04 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] net: dsa: rtl8366: Fix up VLAN filtering
+Date:   Fri, 14 Jun 2019 00:25:20 +0200
+Message-Id: <20190613222520.19182-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190613215959.3095374-1-kafai@fb.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/13, Martin KaFai Lau wrote:
-> v3:
-> - Use rcu_swap_protected (Stanislav Fomichev)
-> - Use 0x0047 for SO_DETACH_REUSEPORT_BPF for sparc (kbuild test robot <lkp@intel.com>)
-> 
-> v2:
-> - Copy asm-generic/socket.h to tools/ in the new patch 2 (Stanislav Fomichev)
-> 
-> This patch adds SO_DETACH_REUSEPORT_BPF to detach BPF prog from
-> reuseport sk.
+We get this regression when using RTL8366RB as part of a bridge
+with OpenWrt:
 
-For the series:
+WARNING: CPU: 0 PID: 1347 at net/switchdev/switchdev.c:291
+	 switchdev_port_attr_set_now+0x80/0xa4
+lan0: Commit of attribute (id=7) failed.
+(...)
+realtek-smi switch lan0: failed to initialize vlan filtering on this port
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+This is because it is trying to disable VLAN filtering
+on VLAN0, as we have forgot to add 1 to the port number
+to get the right VLAN in rtl8366_vlan_filtering(): when
+we initialize the VLAN we associate VLAN1 with port 0,
+VLAN2 with port 1 etc, so we need to add 1 to the port
+offset.
 
-> Martin KaFai Lau (3):
->   bpf: net: Add SO_DETACH_REUSEPORT_BPF
->   bpf: Sync asm-generic/socket.h to tools/
->   bpf: Add test for SO_REUSEPORT_DETACH_BPF
-> 
->  arch/alpha/include/uapi/asm/socket.h          |  2 +
->  arch/mips/include/uapi/asm/socket.h           |  2 +
->  arch/parisc/include/uapi/asm/socket.h         |  2 +
->  arch/sparc/include/uapi/asm/socket.h          |  2 +
->  include/net/sock_reuseport.h                  |  2 +
->  include/uapi/asm-generic/socket.h             |  2 +
->  net/core/sock.c                               |  4 ++
->  net/core/sock_reuseport.c                     | 24 +++++++++
->  .../include}/uapi/asm-generic/socket.h        |  2 +
->  .../selftests/bpf/test_select_reuseport.c     | 54 +++++++++++++++++++
->  10 files changed, 96 insertions(+)
->  copy {include => tools/include}/uapi/asm-generic/socket.h (98%)
-> 
-> -- 
-> 2.17.1
-> 
+Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/net/dsa/rtl8366.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index 6dedd43442cc..35b767baf21f 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -307,7 +307,8 @@ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
+ 	struct rtl8366_vlan_4k vlan4k;
+ 	int ret;
+ 
+-	if (!smi->ops->is_vlan_valid(smi, port))
++	/* Use VLAN nr port + 1 since VLAN0 is not valid */
++	if (!smi->ops->is_vlan_valid(smi, port + 1))
+ 		return -EINVAL;
+ 
+ 	dev_info(smi->dev, "%s filtering on port %d\n",
+@@ -318,12 +319,12 @@ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
+ 	 * The hardware support filter ID (FID) 0..7, I have no clue how to
+ 	 * support this in the driver when the callback only says on/off.
+ 	 */
+-	ret = smi->ops->get_vlan_4k(smi, port, &vlan4k);
++	ret = smi->ops->get_vlan_4k(smi, port + 1, &vlan4k);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* Just set the filter to FID 1 for now then */
+-	ret = rtl8366_set_vlan(smi, port,
++	ret = rtl8366_set_vlan(smi, port + 1,
+ 			       vlan4k.member,
+ 			       vlan4k.untag,
+ 			       1);
+-- 
+2.21.0
+
