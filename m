@@ -2,219 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E75439B8
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56450439B6
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388002AbfFMPPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:15:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59468 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732216AbfFMNX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 09:23:57 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 132F83082126;
-        Thu, 13 Jun 2019 13:23:57 +0000 (UTC)
-Received: from treble.redhat.com (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C325351C66;
-        Thu, 13 Jun 2019 13:23:52 +0000 (UTC)
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>
-Subject: [PATCH 9/9] x86/bpf: Convert MOV function/macro argument ordering to AT&T syntax
-Date:   Thu, 13 Jun 2019 08:21:06 -0500
-Message-Id: <38ff1c9af6fc572aa962f171413dc7495453584c.1560431531.git.jpoimboe@redhat.com>
-In-Reply-To: <cover.1560431531.git.jpoimboe@redhat.com>
-References: <cover.1560431531.git.jpoimboe@redhat.com>
+        id S1733181AbfFMPPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:15:35 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46026 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732222AbfFMNZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 09:25:16 -0400
+Received: by mail-wr1-f65.google.com with SMTP id f9so20747826wre.12
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 06:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H/XDzYueXffv1rUyJx1oEFA1jQkKQnEoAqI3KBmpQNQ=;
+        b=keerC7oubO4xWDPqVdCuDXHlcwDp1ZGxBs6OtO0Jg9F0rB7opUoNZfaXAywrlZu5nM
+         I+zPjctobOUMBWt7rFEArKp/IUuJNRdB1ulWSYXLeVdokX5WmkPYMWrbdMbkyTKUHevZ
+         7GdZskEhnLXcF6vcGs9LuGOSp+WrsAhmO4RsU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H/XDzYueXffv1rUyJx1oEFA1jQkKQnEoAqI3KBmpQNQ=;
+        b=oHffPCWkl8R0+GDqKxGyVEJeiL2r4uYt1fQ/5Yhdjo4UWLlAxCyzAhM9ePyEkpbenY
+         cIroQVSDCClxfDI9MLh2FD+vPuFxo0RZN4P17MxnBNyzaxbyPNGOhlWrqE0Finj6oLHi
+         05D035qvEmq9gy3SLRpX3H3Hb8ejtb7S94a7wLo2buS4z9aZOsBZEjY2i/YMs2QwLgsH
+         4g1mOqlvJVnJpOGJEM5aScsM4TG9QBl+isrGcmt1u7E73eiLFbQHE+FpvREwMUuaTXrz
+         554G02dFunI5MIg56ZJDOQZRcEizlcx51PZGG2V1aIKWuEKfSvaGLvlDctFOwmNTSmON
+         YIgA==
+X-Gm-Message-State: APjAAAVRwhN4P6sdiAel/kshd/rK2ZUfgPT8e2MsEdhiI3xL8WkwG/Yo
+        Y6gWXbbK1KGy6/K/NCDG5naD7Q==
+X-Google-Smtp-Source: APXvYqwDEPlruy2eVqw9ZQATbv3Dsj0ZxtvE79jIaKuGvWhxiukBuyyX3IRiItW0qa3pl3HgnhuzQA==
+X-Received: by 2002:adf:c5c1:: with SMTP id v1mr41961383wrg.129.1560432313294;
+        Thu, 13 Jun 2019 06:25:13 -0700 (PDT)
+Received: from localhost.localdomain ([147.12.216.9])
+        by smtp.gmail.com with ESMTPSA id d10sm3324109wrp.74.2019.06.13.06.25.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 06:25:12 -0700 (PDT)
+From:   Arthur Fabre <afabre@cloudflare.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Arthur Fabre <afabre@cloudflare.com>
+Subject: [PATCH bpf-next] bpf: sk_storage: Fix out of bounds memory access
+Date:   Thu, 13 Jun 2019 14:24:34 +0100
+Message-Id: <20190613132433.17213-1-afabre@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 13 Jun 2019 13:23:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the comments have been converted to AT&T syntax, swap the order
-of the src/dst arguments in the MOV-related functions and macros to
-match the ordering of AT&T syntax.
+bpf_sk_storage maps use multiple spin locks to reduce contention.
+The number of locks to use is determined by the number of possible CPUs.
+With only 1 possible CPU, bucket_log == 0, and 2^0 = 1 locks are used.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+When updating elements, the correct lock is determined with hash_ptr().
+Calling hash_ptr() with 0 bits is undefined behavior, as it does:
+
+x >> (64 - bits)
+
+Using the value results in an out of bounds memory access.
+In my case, this manifested itself as a page fault when raw_spin_lock_bh()
+is called later, when running the self tests:
+
+./tools/testing/selftests/bpf/test_verifier 773 775
+
+[   16.366342] BUG: unable to handle page fault for address: ffff8fe7a66f93f8
+[   16.367139] #PF: supervisor write access in kernel mode
+[   16.367751] #PF: error_code(0x0002) - not-present page
+[   16.368323] PGD 35a01067 P4D 35a01067 PUD 0
+[   16.368796] Oops: 0002 [#1] SMP PTI
+[   16.369175] CPU: 0 PID: 189 Comm: test_verifier Not tainted 5.2.0-rc2+ #10
+[   16.369960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+[   16.371021] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
+[ 16.371571] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
+All code
+========
+   0:	02 00                	add    (%rax),%al
+   2:	00 31                	add    %dh,(%rcx)
+   4:	c0 ba ff 00 00 00 3e 	sarb   $0x3e,0xff(%rdx)
+   b:	0f b1 17             	cmpxchg %edx,(%rdi)
+   e:	75 01                	jne    0x11
+  10:	c3                   	retq
+  11:	e9 82 12 5f ff       	jmpq   0xffffffffff5f1298
+  16:	66 90                	xchg   %ax,%ax
+  18:	65 81 05 ad 14 6f 41 	addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
+  1f:	00 02 00 00
+  23:	31 c0                	xor    %eax,%eax
+  25:	ba 01 00 00 00       	mov    $0x1,%edx
+  2a:	3e 0f b1 17          	cmpxchg %edx,%ds:*(%rdi)		<-- trapping instruction
+  2e:	75 01                	jne    0x31
+  30:	c3                   	retq
+  31:	89 c6                	mov    %eax,%esi
+  33:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f0328
+  38:	b8 00 02 00 00       	mov    $0x200,%eax
+  3d:	3e                   	ds
+  3e:	0f                   	.byte 0xf
+  3f:	c1                   	.byte 0xc1
+
+Code starting with the faulting instruction
+===========================================
+   0:	3e 0f b1 17          	cmpxchg %edx,%ds:(%rdi)
+   4:	75 01                	jne    0x7
+   6:	c3                   	retq
+   7:	89 c6                	mov    %eax,%esi
+   9:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f02fe
+   e:	b8 00 02 00 00       	mov    $0x200,%eax
+  13:	3e                   	ds
+  14:	0f                   	.byte 0xf
+  15:	c1                   	.byte 0xc1
+[   16.373398] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
+[   16.373954] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
+[   16.374645] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
+[   16.375338] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
+[   16.376028] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
+[   16.376719] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
+[   16.377413] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
+[   16.378204] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   16.378763] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
+[   16.379453] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   16.380144] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   16.380864] Call Trace:
+[   16.381112] selem_link_map (/home/afabre/linux/./include/linux/compiler.h:221 /home/afabre/linux/net/core/bpf_sk_storage.c:243)
+[   16.381476] sk_storage_update (/home/afabre/linux/net/core/bpf_sk_storage.c:355 /home/afabre/linux/net/core/bpf_sk_storage.c:414)
+[   16.381888] bpf_sk_storage_get (/home/afabre/linux/net/core/bpf_sk_storage.c:760 /home/afabre/linux/net/core/bpf_sk_storage.c:741)
+[   16.382285] ___bpf_prog_run (/home/afabre/linux/kernel/bpf/core.c:1447)
+[   16.382679] ? __bpf_prog_run32 (/home/afabre/linux/kernel/bpf/core.c:1603)
+[   16.383074] ? alloc_file_pseudo (/home/afabre/linux/fs/file_table.c:232)
+[   16.383486] ? kvm_clock_get_cycles (/home/afabre/linux/arch/x86/kernel/kvmclock.c:98)
+[   16.383906] ? ktime_get (/home/afabre/linux/kernel/time/timekeeping.c:265 /home/afabre/linux/kernel/time/timekeeping.c:369 /home/afabre/linux/kernel/time/timekeeping.c:754)
+[   16.384243] ? bpf_test_run (/home/afabre/linux/net/bpf/test_run.c:47)
+[   16.384613] ? bpf_prog_test_run_skb (/home/afabre/linux/net/bpf/test_run.c:313)
+[   16.385065] ? security_capable (/home/afabre/linux/security/security.c:696 (discriminator 19))
+[   16.385460] ? __do_sys_bpf (/home/afabre/linux/kernel/bpf/syscall.c:2072 /home/afabre/linux/kernel/bpf/syscall.c:2848)
+[   16.385854] ? __handle_mm_fault (/home/afabre/linux/mm/memory.c:3507 /home/afabre/linux/mm/memory.c:3532 /home/afabre/linux/mm/memory.c:3666 /home/afabre/linux/mm/memory.c:3897 /home/afabre/linux/mm/memory.c:4021)
+[   16.386273] ? __dentry_kill (/home/afabre/linux/fs/dcache.c:595)
+[   16.386652] ? do_syscall_64 (/home/afabre/linux/arch/x86/entry/common.c:301)
+[   16.387031] ? entry_SYSCALL_64_after_hwframe (/home/afabre/linux/./include/trace/events/initcall.h:10 /home/afabre/linux/./include/trace/events/initcall.h:10)
+[   16.387541] Modules linked in:
+[   16.387846] CR2: ffff8fe7a66f93f8
+[   16.388175] ---[ end trace 891cf27b5b9c9cc6 ]---
+[   16.388628] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
+[ 16.389089] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
+All code
+========
+   0:	02 00                	add    (%rax),%al
+   2:	00 31                	add    %dh,(%rcx)
+   4:	c0 ba ff 00 00 00 3e 	sarb   $0x3e,0xff(%rdx)
+   b:	0f b1 17             	cmpxchg %edx,(%rdi)
+   e:	75 01                	jne    0x11
+  10:	c3                   	retq
+  11:	e9 82 12 5f ff       	jmpq   0xffffffffff5f1298
+  16:	66 90                	xchg   %ax,%ax
+  18:	65 81 05 ad 14 6f 41 	addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
+  1f:	00 02 00 00
+  23:	31 c0                	xor    %eax,%eax
+  25:	ba 01 00 00 00       	mov    $0x1,%edx
+  2a:	3e 0f b1 17          	cmpxchg %edx,%ds:*(%rdi)		<-- trapping instruction
+  2e:	75 01                	jne    0x31
+  30:	c3                   	retq
+  31:	89 c6                	mov    %eax,%esi
+  33:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f0328
+  38:	b8 00 02 00 00       	mov    $0x200,%eax
+  3d:	3e                   	ds
+  3e:	0f                   	.byte 0xf
+  3f:	c1                   	.byte 0xc1
+
+Code starting with the faulting instruction
+===========================================
+   0:	3e 0f b1 17          	cmpxchg %edx,%ds:(%rdi)
+   4:	75 01                	jne    0x7
+   6:	c3                   	retq
+   7:	89 c6                	mov    %eax,%esi
+   9:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f02fe
+   e:	b8 00 02 00 00       	mov    $0x200,%eax
+  13:	3e                   	ds
+  14:	0f                   	.byte 0xf
+  15:	c1                   	.byte 0xc1
+[   16.390899] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
+[   16.391410] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
+[   16.392102] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
+[   16.392795] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
+[   16.393481] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
+[   16.394169] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
+[   16.394870] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
+[   16.395641] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   16.396193] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
+[   16.396876] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   16.397557] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   16.398246] Kernel panic - not syncing: Fatal exception in interrupt
+[   16.399067] Kernel Offset: 0x3ce00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[   16.400098] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+
+Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
+Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
 ---
- arch/x86/net/bpf_jit_comp.c | 44 ++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ net/core/bpf_sk_storage.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index a92c2445441d..0d0e96f84992 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -59,9 +59,9 @@ static bool is_uimm32(u64 value)
- }
- 
- /* mov src, dst */
--#define EMIT_mov(DST, SRC)								 \
-+#define EMIT_mov(SRC, DST)								 \
- 	do {										 \
--		if (DST != SRC)								 \
-+		if (SRC != DST)								 \
- 			EMIT3(add_2mod(0x48, DST, SRC), 0x89, add_2reg(0xC0, DST, SRC)); \
- 	} while (0)
- 
-@@ -352,7 +352,7 @@ static void emit_bpf_tail_call(u8 **pprog)
- }
- 
- static void emit_mov_imm32(u8 **pprog, bool sign_propagate,
--			   u32 dst_reg, const u32 imm32)
-+			   const u32 imm32, u32 dst_reg)
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index f40e3d35fd9c..7ae0686c5418 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -90,7 +90,13 @@ struct bpf_sk_storage {
+ static struct bucket *select_bucket(struct bpf_sk_storage_map *smap,
+ 				    struct bpf_sk_storage_elem *selem)
  {
- 	u8 *prog = *pprog;
- 	u8 b1, b2, b3;
-@@ -392,8 +392,8 @@ static void emit_mov_imm32(u8 **pprog, bool sign_propagate,
- 	*pprog = prog;
+-	return &smap->buckets[hash_ptr(selem, smap->bucket_log)];
++	/* hash_ptr is undefined behavior with 0 bits */
++	int bucket = 0;
++	if (smap->bucket_log != 0) {
++		bucket = hash_ptr(selem, smap->bucket_log);
++	}
++
++	return &smap->buckets[bucket];
  }
  
--static void emit_mov_imm64(u8 **pprog, u32 dst_reg,
--			   const u32 imm32_hi, const u32 imm32_lo)
-+static void emit_mov_imm64(u8 **pprog, const u32 imm32_hi, const u32 imm32_lo,
-+			   u32 dst_reg)
- {
- 	u8 *prog = *pprog;
- 	int cnt = 0;
-@@ -405,7 +405,7 @@ static void emit_mov_imm64(u8 **pprog, u32 dst_reg,
- 		 * directly, so save couple of bytes by just doing
- 		 * 'mov imm32, %eax' instead.
- 		 */
--		emit_mov_imm32(&prog, false, dst_reg, imm32_lo);
-+		emit_mov_imm32(&prog, false, imm32_lo, dst_reg);
- 	} else {
- 		/* movabs imm64, %rax */
- 		EMIT2(add_1mod(0x48, dst_reg), add_1reg(0xB8, dst_reg));
-@@ -416,17 +416,17 @@ static void emit_mov_imm64(u8 **pprog, u32 dst_reg,
- 	*pprog = prog;
- }
- 
--static void emit_mov_reg(u8 **pprog, bool is64, u32 dst_reg, u32 src_reg)
-+static void emit_mov_reg(u8 **pprog, bool is64, u32 src_reg, u32 dst_reg)
- {
- 	u8 *prog = *pprog;
- 	int cnt = 0;
- 
- 	if (is64) {
- 		/* mov src, dst */
--		EMIT_mov(dst_reg, src_reg);
-+		EMIT_mov(src_reg, dst_reg);
- 	} else {
- 		/* mov32 src, dst */
--		if (is_ereg(dst_reg) || is_ereg(src_reg))
-+		if (is_ereg(src_reg) || is_ereg(dst_reg))
- 			EMIT1(add_2mod(0x40, dst_reg, src_reg));
- 		EMIT2(0x89, add_2reg(0xC0, dst_reg, src_reg));
- 	}
-@@ -487,7 +487,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 		case BPF_ALU | BPF_MOV | BPF_X:
- 			emit_mov_reg(&prog,
- 				     BPF_CLASS(insn->code) == BPF_ALU64,
--				     dst_reg, src_reg);
-+				     src_reg, dst_reg);
- 			break;
- 
- 			/* neg dst */
-@@ -553,11 +553,11 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 		case BPF_ALU64 | BPF_MOV | BPF_K:
- 		case BPF_ALU | BPF_MOV | BPF_K:
- 			emit_mov_imm32(&prog, BPF_CLASS(insn->code) == BPF_ALU64,
--				       dst_reg, imm32);
-+				       imm32, dst_reg);
- 			break;
- 
- 		case BPF_LD | BPF_IMM | BPF_DW:
--			emit_mov_imm64(&prog, dst_reg, insn[1].imm, insn[0].imm);
-+			emit_mov_imm64(&prog, insn[1].imm, insn[0].imm, dst_reg);
- 			insn++;
- 			i++;
- 			break;
-@@ -576,13 +576,13 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 
- 			if (BPF_SRC(insn->code) == BPF_X)
- 				/* mov src_reg, %r11 */
--				EMIT_mov(AUX_REG, src_reg);
-+				EMIT_mov(src_reg, AUX_REG);
- 			else
- 				/* mov imm32, %r11 */
- 				EMIT3_off32(0x49, 0xC7, 0xC3, imm32);
- 
- 			/* mov dst_reg, %rax */
--			EMIT_mov(BPF_REG_0, dst_reg);
-+			EMIT_mov(dst_reg, BPF_REG_0);
- 
- 			/*
- 			 * xor %edx, %edx
-@@ -608,7 +608,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 			EMIT1(0x58); /* pop %rax */
- 
- 			/* mov %r11, dst_reg */
--			EMIT_mov(dst_reg, AUX_REG);
-+			EMIT_mov(AUX_REG, dst_reg);
- 			break;
- 
- 		case BPF_ALU | BPF_MUL | BPF_K:
-@@ -624,12 +624,12 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 				EMIT1(0x52); /* push %rdx */
- 
- 			/* mov dst_reg, %r11 */
--			EMIT_mov(AUX_REG, dst_reg);
-+			EMIT_mov(dst_reg, AUX_REG);
- 
- 			if (BPF_SRC(insn->code) == BPF_X)
--				emit_mov_reg(&prog, is64, BPF_REG_0, src_reg);
-+				emit_mov_reg(&prog, is64, src_reg, BPF_REG_0);
- 			else
--				emit_mov_imm32(&prog, is64, BPF_REG_0, imm32);
-+				emit_mov_imm32(&prog, is64, imm32, BPF_REG_0);
- 
- 			if (is64)
- 				EMIT1(add_1mod(0x48, AUX_REG));
-@@ -642,7 +642,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 				EMIT1(0x5A); /* pop %rdx */
- 			if (dst_reg != BPF_REG_0) {
- 				/* mov %rax, dst_reg */
--				EMIT_mov(dst_reg, BPF_REG_0);
-+				EMIT_mov(BPF_REG_0, dst_reg);
- 				EMIT1(0x58); /* pop %rax */
- 			}
- 			break;
-@@ -681,7 +681,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 			/* Check for bad case when dst_reg == %rcx */
- 			if (dst_reg == BPF_REG_4) {
- 				/* mov dst_reg, %r11 */
--				EMIT_mov(AUX_REG, dst_reg);
-+				EMIT_mov(dst_reg, AUX_REG);
- 				dst_reg = AUX_REG;
- 			}
- 
-@@ -689,7 +689,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 				EMIT1(0x51); /* push %rcx */
- 
- 				/* mov src_reg, %rcx */
--				EMIT_mov(BPF_REG_4, src_reg);
-+				EMIT_mov(src_reg, BPF_REG_4);
- 			}
- 
- 			/* shl %cl, %rax | shr %cl, %rax | sar %cl, %rax */
-@@ -710,7 +710,7 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 
- 			if (insn->dst_reg == BPF_REG_4)
- 				/* mov %r11, dst_reg */
--				EMIT_mov(insn->dst_reg, AUX_REG);
-+				EMIT_mov(AUX_REG, insn->dst_reg);
- 			break;
- 
- 		case BPF_ALU | BPF_END | BPF_FROM_BE:
+ static int omem_charge(struct sock *sk, unsigned int size)
 -- 
 2.20.1
 
