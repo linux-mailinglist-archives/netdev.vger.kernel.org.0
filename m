@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 339FF43A86
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D28A43A70
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733138AbfFMPVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:21:53 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:41315 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731992AbfFMMs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:48:29 -0400
-Received: by mail-qk1-f195.google.com with SMTP id c11so12596911qkk.8;
-        Thu, 13 Jun 2019 05:48:28 -0700 (PDT)
+        id S1732090AbfFMPU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:20:56 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40932 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732007AbfFMMuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:50:19 -0400
+Received: by mail-qt1-f193.google.com with SMTP id a15so22335989qtn.7;
+        Thu, 13 Jun 2019 05:50:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=yw5Ck4XGy2ADHG1GZU/5KWNGDLzwNftuwE1cefPpTzg=;
-        b=dviP3sKe7FebJZ+/9rxLAQ7AFaKHEJK0kJUsCND3BW0K7I3noRQ0dRX24G6Epb+8jU
-         n61pZA/OW6F4bHZNC4fSbqnEzg9ed+WhFaCI1Jt/LFkUqOcmGHoyyW03bnqGHEtumcz1
-         N9+j43HCWVOCQ8ckaLN9Ja4YmMt0toBK6c/S4JhN1SEnlwXfsXD7vfcyg6GKARhfyBsT
-         y//WS7JppDX70dCl7mvrsnHcUZ8BaWd36F1B40PckqiwVpMZd+XxTldKfPir0OrghSvh
-         VDzQ6s0M/9/B08HvHuhN8QEz9XWqCil1euBzw3eHPbr+FD9xo4mzTD+9cVafq8hSdX6n
-         GBcg==
+        bh=0dXwiQ9boMkcoIRiyMAKQVrSPhK0KAhhtxiIsNmxnz8=;
+        b=h22vNLsi0/LmtzV80veF+h4wX/7PF55PrixcMt51YG+nrMi1mFPRT4drh8N515IV1B
+         aJDayiyouB+cvV5WIUeNqlDLVKCwB14bgmm2pRhb/q2QhYP3UcHqTeUyPtFkuZQDm25V
+         PLu9rZYKTMkfV/mfVQV/CGJ2U7Wgoj3BVaZEYa1iYY+BHlC5hXMEwwVsATacV2SHOIKt
+         h6mLetn1dYyycQpuBYIL0hLB9gZZGzdzSJbE/l4dHedwLYLrMaiQLgQDBjrW2aKhxWAA
+         J7sWHh50RA/r2/TQXlYWINqj1ns2pkXYv9SNOdm/pUP6Hx/IYWSyZPot0uUbF8pIvv5G
+         KIvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yw5Ck4XGy2ADHG1GZU/5KWNGDLzwNftuwE1cefPpTzg=;
-        b=kRD/2rnr/mcXYC5oyz592nyHFNapN8K3cV92X3qAkrHWpJeg0pn79o9CtFBSBh70S5
-         fB2Y1LhCHuDVx5JZLNCrPtP43paQj+tiQmnj49GcgLEISw/+yfjiP5eakfpnwZjWuLbM
-         cbJpnkkZ1JbGwsC//3HyvLflC6OFuw43sCrfvBL5YIajxvuZTATthMgxb4KWiYDLDGVQ
-         awRCcXS+mafHDswWnvwPSWRHFcoGZ0LE6BTaHNDMgF3rnGb53JdKBPxrSfoDfvpvX2s2
-         bLmk9lPnyV680Ubb4buREUIX9N/8BQbJLKonc0YktWQgCPVA4hfZ02CwyLXd62s/RhGW
-         FRTg==
-X-Gm-Message-State: APjAAAXotvcmGX2P1I7wocI0Zi1g1i17RGji98s/6os5BzGJF0zrnE91
-        YARX/T2hjPOCoEOkMWp52KjCtf/G+HDbB1lWQz0=
-X-Google-Smtp-Source: APXvYqwaxHaNIao6ZZ3d7Yub5xpSwG7JI9uqWONYKr9tQF29Y9W568QiT0nFrg6/+TlRZL5SSbbz+mQ7M3DTdU5OQxw=
-X-Received: by 2002:a37:490f:: with SMTP id w15mr71385472qka.165.1560430108287;
- Thu, 13 Jun 2019 05:48:28 -0700 (PDT)
+        bh=0dXwiQ9boMkcoIRiyMAKQVrSPhK0KAhhtxiIsNmxnz8=;
+        b=OcAC9aK2opUYWzTyIu6t3PkSM8LvL/CEJQP9EUYC/cYc2ZafnJ6T3dnsoqtRDY7ODt
+         LKKx/xt+BfujcqwB2MRfk7yvo7dRquD8Ov6zye7j/VqYbPF/pVpllYHdA1Q7dQlEjRJr
+         AbQqiNY4WL2EMqoEQNabEccibzHzMf1r73AUFL2ieQrB/oyppIvyD1gXHZGmk0bEKCcx
+         272yW31+DoNKq1+ss2JgSKIgiA8JxLIm1v0hal21YPI/GouQMb7/VZ+figGWqc7SQKeV
+         +OQnzb5D9r6U/OOqpp3MjSJFDV3y2rSxbq2bFpuYGfcpfpg0xqDMfsaiX2blreCVg5u5
+         Lo/A==
+X-Gm-Message-State: APjAAAV05OJLkabTqKJot6iutJxqeDQrb9bEU6C/BQrZoN0FArxu5KQV
+        BWfTttP2FI4n3Hao/4iDX3mVbq2lZ+Azmjfnoxw=
+X-Google-Smtp-Source: APXvYqx5Wd2lLoIVcKsrc9UNRJPUPE+8ZEA957etRFWQZwieRHK6GS/2QNAmi4q5aSc1OG19VX+HDVk/L+NhfH3wouU=
+X-Received: by 2002:ac8:219d:: with SMTP id 29mr12847045qty.37.1560430217912;
+ Thu, 13 Jun 2019 05:50:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-7-maximmi@mellanox.com>
-In-Reply-To: <20190612155605.22450-7-maximmi@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-3-maximmi@mellanox.com>
+In-Reply-To: <20190612155605.22450-3-maximmi@mellanox.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 13 Jun 2019 14:48:16 +0200
-Message-ID: <CAJ+HfNhsjsCoDx5NCEu=AqrT-ENRb8JnqzJfo2m8kD2xraHc+w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 06/17] xsk: Return the whole xdp_desc from xsk_umem_consume_tx
+Date:   Thu, 13 Jun 2019 14:50:06 +0200
+Message-ID: <CAJ+HfNhY0fMa2QiJJM0xnrzcPWw4ZYKoFjMrD03wfL0aKSnoyg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 02/17] xsk: Add API to check for available
+ entries in FQ
 To:     Maxim Mikityanskiy <maximmi@mellanox.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,12 +73,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, 12 Jun 2019 at 20:05, Maxim Mikityanskiy <maximmi@mellanox.com> wro=
 te:
 >
-> Some drivers want to access the data transmitted in order to implement
-> acceleration features of the NICs. It is also useful in AF_XDP TX flow.
->
-> Change the xsk_umem_consume_tx API to return the whole xdp_desc, that
-> contains the data pointer, length and DMA address, instead of only the
-> latter two. Adapt the implementation of i40e and ixgbe to this change.
+> Add a function that checks whether the Fill Ring has the specified
+> amount of descriptors available. It will be useful for mlx5e that wants
+> to check in advance, whether it can allocate a bulk of RX descriptors,
+> to get the best performance.
 >
 
 Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
@@ -85,176 +84,113 @@ Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 > Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 > Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 > Acked-by: Saeed Mahameed <saeedm@mellanox.com>
-> Cc: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
 > ---
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c   | 12 +++++++-----
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 15 +++++++++------
->  include/net/xdp_sock.h                       |  6 +++---
->  net/xdp/xsk.c                                | 10 +++-------
->  4 files changed, 22 insertions(+), 21 deletions(-)
+>  include/net/xdp_sock.h | 21 +++++++++++++++++++++
+>  net/xdp/xsk.c          |  6 ++++++
+>  net/xdp/xsk_queue.h    | 14 ++++++++++++++
+>  3 files changed, 41 insertions(+)
 >
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/eth=
-ernet/intel/i40e/i40e_xsk.c
-> index 1b17486543ac..eae6fafad1b8 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> @@ -640,8 +640,8 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, =
-unsigned int budget)
->         struct i40e_tx_desc *tx_desc =3D NULL;
->         struct i40e_tx_buffer *tx_bi;
->         bool work_done =3D true;
-> +       struct xdp_desc desc;
->         dma_addr_t dma;
-> -       u32 len;
->
->         while (budget-- > 0) {
->                 if (!unlikely(I40E_DESC_UNUSED(xdp_ring))) {
-> @@ -650,21 +650,23 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring=
-, unsigned int budget)
->                         break;
->                 }
->
-> -               if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &dma, &len))
-> +               if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &desc))
->                         break;
->
-> -               dma_sync_single_for_device(xdp_ring->dev, dma, len,
-> +               dma =3D xdp_umem_get_dma(xdp_ring->xsk_umem, desc.addr);
-> +
-> +               dma_sync_single_for_device(xdp_ring->dev, dma, desc.len,
->                                            DMA_BIDIRECTIONAL);
->
->                 tx_bi =3D &xdp_ring->tx_bi[xdp_ring->next_to_use];
-> -               tx_bi->bytecount =3D len;
-> +               tx_bi->bytecount =3D desc.len;
->
->                 tx_desc =3D I40E_TX_DESC(xdp_ring, xdp_ring->next_to_use)=
-;
->                 tx_desc->buffer_addr =3D cpu_to_le64(dma);
->                 tx_desc->cmd_type_offset_bsz =3D
->                         build_ctob(I40E_TX_DESC_CMD_ICRC
->                                    | I40E_TX_DESC_CMD_EOP,
-> -                                  0, len, 0);
-> +                                  0, desc.len, 0);
->
->                 xdp_ring->next_to_use++;
->                 if (xdp_ring->next_to_use =3D=3D xdp_ring->count)
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/e=
-thernet/intel/ixgbe/ixgbe_xsk.c
-> index bfe95ce0bd7f..0297a70a4e2d 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> @@ -621,8 +621,9 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring=
-, unsigned int budget)
->         union ixgbe_adv_tx_desc *tx_desc =3D NULL;
->         struct ixgbe_tx_buffer *tx_bi;
->         bool work_done =3D true;
-> -       u32 len, cmd_type;
-> +       struct xdp_desc desc;
->         dma_addr_t dma;
-> +       u32 cmd_type;
->
->         while (budget-- > 0) {
->                 if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
-> @@ -631,14 +632,16 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ri=
-ng, unsigned int budget)
->                         break;
->                 }
->
-> -               if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &dma, &len))
-> +               if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &desc))
->                         break;
->
-> -               dma_sync_single_for_device(xdp_ring->dev, dma, len,
-> +               dma =3D xdp_umem_get_dma(xdp_ring->xsk_umem, desc.addr);
-> +
-> +               dma_sync_single_for_device(xdp_ring->dev, dma, desc.len,
->                                            DMA_BIDIRECTIONAL);
->
->                 tx_bi =3D &xdp_ring->tx_buffer_info[xdp_ring->next_to_use=
-];
-> -               tx_bi->bytecount =3D len;
-> +               tx_bi->bytecount =3D desc.len;
->                 tx_bi->xdpf =3D NULL;
->
->                 tx_desc =3D IXGBE_TX_DESC(xdp_ring, xdp_ring->next_to_use=
-);
-> @@ -648,10 +651,10 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ri=
-ng, unsigned int budget)
->                 cmd_type =3D IXGBE_ADVTXD_DTYP_DATA |
->                            IXGBE_ADVTXD_DCMD_DEXT |
->                            IXGBE_ADVTXD_DCMD_IFCS;
-> -               cmd_type |=3D len | IXGBE_TXD_CMD;
-> +               cmd_type |=3D desc.len | IXGBE_TXD_CMD;
->                 tx_desc->read.cmd_type_len =3D cpu_to_le32(cmd_type);
->                 tx_desc->read.olinfo_status =3D
-> -                       cpu_to_le32(len << IXGBE_ADVTXD_PAYLEN_SHIFT);
-> +                       cpu_to_le32(desc.len << IXGBE_ADVTXD_PAYLEN_SHIFT=
-);
->
->                 xdp_ring->next_to_use++;
->                 if (xdp_ring->next_to_use =3D=3D xdp_ring->count)
 > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> index b6f5ebae43a1..057b159ff8b9 100644
+> index ae0f368a62bb..b6f5ebae43a1 100644
 > --- a/include/net/xdp_sock.h
 > +++ b/include/net/xdp_sock.h
-> @@ -81,7 +81,7 @@ bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)=
-;
+> @@ -77,6 +77,7 @@ int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
+>  void xsk_flush(struct xdp_sock *xs);
+>  bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
+>  /* Used from netdev driver */
+> +bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
 >  u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
 >  void xsk_umem_discard_addr(struct xdp_umem *umem);
 >  void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
-> -bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t *dma, u32 *le=
-n);
-> +bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc);
->  void xsk_umem_consume_tx_done(struct xdp_umem *umem);
->  struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries);
->  struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
-> @@ -175,8 +175,8 @@ static inline void xsk_umem_complete_tx(struct xdp_um=
-em *umem, u32 nb_entries)
->  {
+> @@ -99,6 +100,16 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp_=
+umem *umem, u64 addr)
 >  }
 >
-> -static inline bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t=
- *dma,
-> -                                      u32 *len)
-> +static inline bool xsk_umem_consume_tx(struct xdp_umem *umem,
-> +                                      struct xdp_desc *desc)
+>  /* Reuse-queue aware version of FILL queue helpers */
+> +static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
+> +{
+> +       struct xdp_umem_fq_reuse *rq =3D umem->fq_reuse;
+> +
+> +       if (rq->length >=3D cnt)
+> +               return true;
+> +
+> +       return xsk_umem_has_addrs(umem, cnt - rq->length);
+> +}
+> +
+>  static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *add=
+r)
 >  {
+>         struct xdp_umem_fq_reuse *rq =3D umem->fq_reuse;
+> @@ -146,6 +157,11 @@ static inline bool xsk_is_setup_for_bpf_map(struct x=
+dp_sock *xs)
 >         return false;
 >  }
+>
+> +static inline bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
+> +{
+> +       return false;
+> +}
+> +
+>  static inline u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
+>  {
+>         return NULL;
+> @@ -200,6 +216,11 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp=
+_umem *umem, u64 addr)
+>         return 0;
+>  }
+>
+> +static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
+> +{
+> +       return false;
+> +}
+> +
+>  static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *add=
+r)
+>  {
+>         return NULL;
 > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 35ca531ac74e..74417a851ed5 100644
+> index a14e8864e4fa..b68a380f50b3 100644
 > --- a/net/xdp/xsk.c
 > +++ b/net/xdp/xsk.c
-> @@ -172,22 +172,18 @@ void xsk_umem_consume_tx_done(struct xdp_umem *umem=
-)
+> @@ -37,6 +37,12 @@ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
+>                 READ_ONCE(xs->umem->fq);
 >  }
->  EXPORT_SYMBOL(xsk_umem_consume_tx_done);
 >
-> -bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t *dma, u32 *le=
-n)
-> +bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc)
+> +bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
+> +{
+> +       return xskq_has_addrs(umem->fq, cnt);
+> +}
+> +EXPORT_SYMBOL(xsk_umem_has_addrs);
+> +
+>  u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
 >  {
-> -       struct xdp_desc desc;
->         struct xdp_sock *xs;
+>         return xskq_peek_addr(umem->fq, addr);
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index 88b9ae24658d..12b49784a6d5 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -117,6 +117,20 @@ static inline u32 xskq_nb_free(struct xsk_queue *q, =
+u32 producer, u32 dcnt)
+>         return q->nentries - (producer - q->cons_tail);
+>  }
 >
->         rcu_read_lock();
->         list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
-> -               if (!xskq_peek_desc(xs->tx, &desc))
-> +               if (!xskq_peek_desc(xs->tx, desc))
->                         continue;
+> +static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
+> +{
+> +       u32 entries =3D q->prod_tail - q->cons_tail;
+> +
+> +       if (entries >=3D cnt)
+> +               return true;
+> +
+> +       /* Refresh the local pointer. */
+> +       q->prod_tail =3D READ_ONCE(q->ring->producer);
+> +       entries =3D q->prod_tail - q->cons_tail;
+> +
+> +       return entries >=3D cnt;
+> +}
+> +
+>  /* UMEM queue */
 >
-> -               if (xskq_produce_addr_lazy(umem->cq, desc.addr))
-> +               if (xskq_produce_addr_lazy(umem->cq, desc->addr))
->                         goto out;
->
-> -               *dma =3D xdp_umem_get_dma(umem, desc.addr);
-> -               *len =3D desc.len;
-> -
->                 xskq_discard_desc(xs->tx);
->                 rcu_read_unlock();
->                 return true;
+>  static inline bool xskq_is_valid_addr(struct xsk_queue *q, u64 addr)
 > --
 > 2.19.1
 >
