@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFF5438C5
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BAA43901
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387749AbfFMPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:08:29 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:42220 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733210AbfFMPIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:08:22 -0400
-Received: by mail-qk1-f193.google.com with SMTP id b18so12947660qkc.9;
-        Thu, 13 Jun 2019 08:08:22 -0700 (PDT)
+        id S2387722AbfFMPKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:10:50 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:41562 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387703AbfFMPKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:10:49 -0400
+Received: by mail-ed1-f66.google.com with SMTP id p15so31703605eds.8;
+        Thu, 13 Jun 2019 08:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PKoiguvdOsKNMoylire+/80q+X2cUmMINdCgWVkvQq4=;
-        b=RJ27S6NnwvYIrs2n89pYWkYIyY2rEA77Q7H27tsj9VEuTIw5yaAh53WL9p0GJ30Shn
-         yzoyaosv22UMCZJvKmekrQksj+xyKqPUX5yGOQJtnNXhfrJ6HrtC6c8wP+k9YJipbUpX
-         IopVqwGvjQRw8X5ReY8pGukRIBLT7VqMVgjkItjLJ4oo7F2AiAjkD33FzDJLj6oTyw5T
-         AGB7xshAtbXBINDFHAaXRG++CJZ79mkWGTGBTGJgsasm4BVKMC0gpf7Q1C9/yXjJ4PlN
-         JnM3rbo8qE6J3AvEBwM5ySIjGo0xZV1Jkb8rWltFGrdzctnVIKkmKsdKpPHzJ7srADMM
-         NziQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mAbHERgF4sto4JY9qhor9hoPyVKuDFgaFK9ym+Lnfq4=;
+        b=IljlBi848cDotU9HAggCvYc2rtkmeLfV3n60dmhdsQxkIqED7ZzO/fLT6mA99lu4In
+         zjvUQ5rI4XEuna8pNvpVqUoUOzLC8JDkPUD7wz8hd/BRzzOouiCyKcRj+AiBFqzCvRHx
+         OM8BqnsIcsU01rhogxhFLydNIHsH2R/mP1HJ0s94lt07HvEoTXrnJ4hfE6sizBVokoSQ
+         c+si9G2TfRKZaWIlR1C+kJLNTmupqeCKm72of2ztxN9Y+NVhd2lPE0celODf7z4qiYOQ
+         usDebGD0eDinEPG2wdynqR9paBDGys1BuNAZiK7FjmLLkTk0oG5SSHhGFRJ90jNnUEeY
+         oJpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PKoiguvdOsKNMoylire+/80q+X2cUmMINdCgWVkvQq4=;
-        b=KagJrULVDXOJ6D+b6i0uFGvLBrls7Lp7HMnEHb96599Kli2InAqivdqkIn8oBL5o+J
-         Qjg26dD3NKUb+zC36xQCwWtnY2qCHJxdsj/5RK4uw3o4kCq/x8FEGA3FSWO5KI86eJ95
-         j2S7vfMihaCaOGgK27qA/NFaXMCxGeUcsEKhCsEQl5Q5m5S3uOmwA6XCI1V9sc0Q6HTk
-         zbE0lP12+pSc5N588vtAEEGdVr6SvKqkpX1SWO4en7gHyMaiCTMcIInc4PGF+OC+Et3v
-         8xj8+IcQT6c0NMhAA2oHz7Dm2TOOMDgqCvdNyis9R52p68GY0kLA/W/mp5WTwKAE40S5
-         Zepg==
-X-Gm-Message-State: APjAAAUfZ/az6qFQyEkEdmyJg6BnEqIWJFYRh1sm2lUy9CyG5f41LMPM
-        dat2rPyTUxk1Ai7Fxz6D/ag=
-X-Google-Smtp-Source: APXvYqydIsClpk8mAH1HWuUD+/BmCDGGL6PYMPu0u7Z+MOQVii7G3eIl/xbIiIDVjBncXqBiwZk6qA==
-X-Received: by 2002:a37:8ca:: with SMTP id 193mr19364139qki.124.1560438501832;
-        Thu, 13 Jun 2019 08:08:21 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id d188sm1641989qkf.40.2019.06.13.08.08.20
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 08:08:21 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     jakub.kicinski@netronome.com, peterz@infradead.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        linux-kernel@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next 2/2] tcp: use static_branch_deferred_inc for clean_acked_data_enabled
-Date:   Thu, 13 Jun 2019 11:08:16 -0400
-Message-Id: <20190613150816.83198-3-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
-In-Reply-To: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
-References: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mAbHERgF4sto4JY9qhor9hoPyVKuDFgaFK9ym+Lnfq4=;
+        b=cgVdN/0p3iGnO8L8Qxb58vz2yk5EEhljhv4YVxGTGtB+ouKhfgpjQx1eOf3iFPaiH8
+         36ZBPNajIIgyTZKP1VQQbXkeagcSRsHiapbGTkZJgOedWvv67CKAlFfBuwKZE3nWH5Fw
+         7hztVV0LqB0tVaGf0K5rrv+9ISZm8Owp4wz/upHaOiGrmKX72q5HBd9kGVce8PF9+YVI
+         qxEYkfve6eaKbjyb8y6Fp9BLvcZE+d47RsIr6hnfVNV2Z3EO4jEg8DTFIWm06nx/fukN
+         gSM1mtBW786aDUj6MmDjeGzh0xaoZzedz7D4cc1kPxQP/jLk5ZSw9C5Rhk0Wf0h37beM
+         MUXA==
+X-Gm-Message-State: APjAAAXzALqQ3SKxSzm/46m0VKJjBoDf/gFhFJTtaNBVuxAOLW0VvxCz
+        JV0G9esvHsaEV0Fm1as7mTZI562VhZdRKes4Ijs=
+X-Google-Smtp-Source: APXvYqz0k4MszdACORNyt1eXDvIYuQYDIn0HwkX2TGQG1YYgSqRHw8uiM55UW3Ynq1HDSf2znfG+IZfnuUrQo3ot3QM=
+X-Received: by 2002:a50:b1db:: with SMTP id n27mr50072785edd.62.1560438647208;
+ Thu, 13 Jun 2019 08:10:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
+ <20190612125911.509d79f2@cakuba.netronome.com> <CAF=yD-JAZfEG5JoNEQn60gnucJB1gsrFeT38DieG12NQb9DFnQ@mail.gmail.com>
+ <20190612135627.5eac995d@cakuba.netronome.com> <20190613093345.GQ3402@hirez.programming.kicks-ass.net>
+In-Reply-To: <20190613093345.GQ3402@hirez.programming.kicks-ass.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 13 Jun 2019 11:10:11 -0400
+Message-ID: <CAF=yD-+DO4Khnn64LqxWNVZpNSqtc81N5tFwEYtYOQ=x-Afnxw@mail.gmail.com>
+Subject: Re: [PATCH] locking/static_key: always define static_branch_deferred_inc
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Thu, Jun 13, 2019 at 5:33 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Wed, Jun 12, 2019 at 01:56:27PM -0700, Jakub Kicinski wrote:
+> > On Wed, 12 Jun 2019 16:25:16 -0400, Willem de Bruijn wrote:
+> > > On Wed, Jun 12, 2019 at 3:59 PM Jakub Kicinski
+> > > <jakub.kicinski@netronome.com> wrote:
+> > > >
+> > > > On Wed, 12 Jun 2019 15:44:09 -0400, Willem de Bruijn wrote:
+> > > > > From: Willem de Bruijn <willemb@google.com>
+> > > > >
+> > > > > This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
+> > > > > available also when jump labels are disabled.
+> > > > >
+> > > > > Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
+> > > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > > > >
+> > > > > ---
+> > > > >
+> > > > > The original patch went into 5.2-rc1, but this interface is not yet
+> > > > > used, so this could target either 5.2 or 5.3.
+> > > >
+> > > > Can we drop the Fixes tag?  It's an ugly omission but not a bug fix.
+> > > >
+> > > > Are you planning to switch clean_acked_data_enable() to the helper once
+> > > > merged?
+> > >
+> > > Definitely, can do.
+> > >
+> > > Perhaps it's easiest to send both as a single patch set through net-next, then?
+> >
+> > I'd think so too, perhaps we can get a blessing from Peter for that :)
+>
+> Sure that works, I don't think there's anything else pending for this
+> file to conflict with.
+>
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-Deferred static key clean_acked_data_enabled uses the deferred
-variants of dec and flush. Do the same for inc.
+Great, thanks. Sent
 
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/ipv4/tcp_input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 08a477e74cf3..9269bbfc05f9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -119,7 +119,7 @@ void clean_acked_data_enable(struct inet_connection_sock *icsk,
- 			     void (*cad)(struct sock *sk, u32 ack_seq))
- {
- 	icsk->icsk_clean_acked = cad;
--	static_branch_inc(&clean_acked_data_enabled.key);
-+	static_branch_deferred_inc(&clean_acked_data_enabled);
- }
- EXPORT_SYMBOL_GPL(clean_acked_data_enable);
- 
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
-
+http://patchwork.ozlabs.org/project/netdev/list/?series=113601
