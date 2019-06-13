@@ -2,64 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1AD44E24
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0871D44E39
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:17:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729897AbfFMVLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 17:11:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36644 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfFMVLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:11:38 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hbX0S-0004am-6r; Thu, 13 Jun 2019 23:11:36 +0200
-Received: from [178.199.41.31] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hbX0S-000WZf-1i; Thu, 13 Jun 2019 23:11:36 +0200
-Subject: Re: [PATCH 0/2] powerpc/bpf: DIV64 instruction fix
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <cover.1560364574.git.naveen.n.rao@linux.vnet.ibm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a6fe940f-94bb-1b8f-ecd2-5e8e003a3f57@iogearbox.net>
-Date:   Thu, 13 Jun 2019 23:11:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726047AbfFMVRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 17:17:25 -0400
+Received: from mail-qt1-f181.google.com ([209.85.160.181]:40292 "EHLO
+        mail-qt1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfFMVRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:17:24 -0400
+Received: by mail-qt1-f181.google.com with SMTP id a15so101103qtn.7
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zYgmybo+c8Qn6p83RotXNWk5iCT3nqmVNkA/ta5FxoY=;
+        b=BHcIbG3mwOxs5Q+ODILwa5tbilhwSU2wZILgryJ4+e5NYSOxlfBy4V6SEDbNUcSq7b
+         L4cgoiAdd3+9qt2RlJBMpq4Tb/4DTSzncFbd66BaT56XMNnjdQipSTJvgSIw+dPfbWqF
+         /rQUSXs5s6ODEeXYoL5ZqOHW2NpxuoApNv/8/AjksfmhUVZLUxx0ojMG8RfOCbMSscc3
+         IgQMP0LMuA5FhwPTDuwknMLIrB/8mqmQpofcfRMQVPaoHQhdgaSX/5vRyqJihxdDytiG
+         8bYdI97nzuSIK/ypTVDq5TqtVh5ZReIm0NV3q4h4AM1uAEkwGhAbFuX0yYNIx+AgEEZx
+         5UoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zYgmybo+c8Qn6p83RotXNWk5iCT3nqmVNkA/ta5FxoY=;
+        b=XpbXG/+oU+XB0jxLLFVEcxmDcgSzVCHK8EXcDpEOaZtZ2OrO1r88rl5i4Kijh1XzdR
+         h169oX7OlEL0rQsTXN5cnd7FOk3VKlA2dhNVT4PT0QrwpRenyIX6PIl1lW7JBBY6uOAz
+         tn3zi1jkjIdY/j744PNldwMqQVieQrxwFYlvMFFa70RxnLJEIAMsiIPCs0S2NOL/pKP9
+         YSM4P2+EChv7evJKqz3UfSObVRQnNFpOYv9c2bLRz5+Tjd+MCeMkLuiRUKgCsH5EPRjh
+         VxmioOE5qrtKdyHT5h+48NKl2GYc7HCcVyCStG/opK78RDD4XF6fIj2knCKIAzPCUh0m
+         /Whw==
+X-Gm-Message-State: APjAAAXvHhHIFh6xycucMAUmvIW0ybaFc8MxjfnNNMkQWagalPuxipeT
+        dP7nHKuf52H9uvzkUDBza5Wq9w==
+X-Google-Smtp-Source: APXvYqwQ+7l0Qwf1PWpj0B2w8Enqkv/RKz4BzCUwjz+LcWycEccr4dvPHAqbmDkVhlVg0qlCH1QFwQ==
+X-Received: by 2002:ac8:2f7b:: with SMTP id k56mr66301092qta.376.1560460643764;
+        Thu, 13 Jun 2019 14:17:23 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x7sm497322qth.37.2019.06.13.14.17.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 14:17:23 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/3] nfp: flower: loosen L4 checks and add extack to flower offload
+Date:   Thu, 13 Jun 2019 14:17:08 -0700
+Message-Id: <20190613211711.5505-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <cover.1560364574.git.naveen.n.rao@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25479/Thu Jun 13 10:12:53 2019)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/12/2019 08:51 PM, Naveen N. Rao wrote:
-> The first patch updates DIV64 overflow tests to properly detect error 
-> conditions. The second patch fixes powerpc64 JIT to generate the proper 
-> unsigned division instruction for BPF_ALU64.
-> 
-> - Naveen
-> 
-> Naveen N. Rao (2):
->   bpf: fix div64 overflow tests to properly detect errors
->   powerpc/bpf: use unsigned division instruction for 64-bit operations
-> 
->  arch/powerpc/include/asm/ppc-opcode.h              |  1 +
->  arch/powerpc/net/bpf_jit.h                         |  2 +-
->  arch/powerpc/net/bpf_jit_comp64.c                  |  8 ++++----
->  .../testing/selftests/bpf/verifier/div_overflow.c  | 14 ++++++++++----
->  4 files changed, 16 insertions(+), 9 deletions(-)
-> 
+Hi!
 
-LGTM, applied to bpf, thanks!
+Pieter says:
+
+This set allows the offload of filters that make use of an unknown
+ip protocol, given that layer 4 is being wildcarded. The set then
+aims to make use of extack messaging for flower offloads. It adds
+about 70 extack messages to the driver.
+
+Pieter Jansen van Vuuren (3):
+  nfp: flower: check L4 matches on unknown IP protocols
+  nfp: flower: use extack messages in flower offload
+  nfp: flower: extend extack messaging for flower match and actions
+
+ .../ethernet/netronome/nfp/flower/action.c    | 205 ++++++++++++------
+ .../ethernet/netronome/nfp/flower/lag_conf.c  |   4 +-
+ .../net/ethernet/netronome/nfp/flower/main.h  |  12 +-
+ .../net/ethernet/netronome/nfp/flower/match.c |  14 +-
+ .../ethernet/netronome/nfp/flower/metadata.c  |  28 ++-
+ .../ethernet/netronome/nfp/flower/offload.c   | 126 ++++++++---
+ 6 files changed, 286 insertions(+), 103 deletions(-)
+
+-- 
+2.21.0
+
