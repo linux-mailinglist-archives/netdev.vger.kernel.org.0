@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 575CD443DE
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DC22443D9
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392325AbfFMQdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:33:07 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41820 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbfFMIL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 04:11:57 -0400
-Received: by mail-wr1-f68.google.com with SMTP id c2so19677826wrm.8
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 01:11:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=AitPxLfAJNZhZTcRdPLQwPVtmSp7enkC/up/50kbHLQ=;
-        b=xAL1HwJOSEwDffEHuj82ZYSqkaiKIWcL3mTCZ5mRYDjzjI0rewTNyD7oinbev9JKjg
-         mlXMBrOrRQWFlXqabQZ6Oo1leWdjGE6YBp591qwz9nbAbeEayO8z+X+szxgZi8OqFJHM
-         KYmxKFKRrGlbvfJriEKr0ADIuf18x4xPAQHScLhiuku196ZcIEa8NfvPCPBFfj4vCifX
-         teQcs6ZpPu6ulaBlvfmi4jhBJaL1DCbndYDo3RsmhqMowmeR9MH7GF9ePScBOtmK6pDy
-         eRyj7zDGpA0PWWEpcO497rfivYntNCh1pkLcLSvXj5+NLGl156QaUX9eRRKmNWwAizWy
-         cCZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=AitPxLfAJNZhZTcRdPLQwPVtmSp7enkC/up/50kbHLQ=;
-        b=cXjNqbiqmqLsDxG233dy0bfRI2GDRrIHBmYffmWwVMAaZa9eP3li3nsoqygf/dY1uc
-         ulV1NJ/aiUU4cswTMlo7SXnZeyPIArqaUX5pCX4btRq/rL+uOiZHDxc4QPXqKOSuwPXm
-         OT9zKxHtjSQZg5npufBfxqJkJqeNW1ofS62x4p0/3C+POOnoCcKt40cHZ9RTHdU7ILbX
-         diqBJC0mw8Hi8XTFEe+xOMLvir1Vlx9fc9CGUPzFI0KKeeBtLhb0YzcTdT5AaapoZ4Z0
-         s52QowaawdmP9G6vX7CF1JP8TcYW5O4ortWp0mbZI5LJkGu3m0ufbLuD0aopCiXWQisp
-         MfNw==
-X-Gm-Message-State: APjAAAUp+ocOXjmA3+OaDcYhYhIuPMe5sdFs8CQy/o7ifW6H9T77zff/
-        qCTypKLWU7LYldTMW/PHhjEcY1EOfi4=
-X-Google-Smtp-Source: APXvYqxnjOGJFVMj2C6ZEIf8tmmHrfl0cpgll84ci04IZ0+XHcWOiDk7FXUG8ARF1UKahrO+dW/SgQ==
-X-Received: by 2002:a5d:430c:: with SMTP id h12mr2780016wrq.163.1560413514773;
-        Thu, 13 Jun 2019 01:11:54 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l16sm1893857wrw.42.2019.06.13.01.11.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 01:11:53 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 10:11:52 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     vladbu@mellanox.com, pablo@netfilter.org, xiyou.wangcong@gmail.com,
-        jhs@mojatatu.com, mlxsw@mellanox.com, alexanderk@mellanox.com,
-        pabeni@redhat.com
-Subject: Re: tc tp creation performance degratation since kernel 5.1
-Message-ID: <20190613081152.GC2254@nanopsycho.orion>
-References: <20190612120341.GA2207@nanopsycho>
+        id S2392491AbfFMQc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:32:59 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44134 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730841AbfFMIOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 04:14:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=J7X7uJi1JYKIwnbThJAOinat2g1jgpldkmszoNhWNj4=; b=loDuZPwJcezFEx/l0714xtWaG
+        UIs7h8Qcm6dbuQdxI7pykqHnzqXpXpmhsHkLUVXAL74F2mHb9kT/wcD0dGBQsy7mVppqCj8tfJLd1
+        CicHAjCh4B9r7V5rUGtBCmtwvtul68Yp5g1LGB2JdXxuK7kB0w6u1InM1yflO/mg7kFvm2meCmxyf
+        Zs9jt+E+U4FBuySUm1p+tRYAy8aIraomB7ozBaScPiFRwKq0HhIElbDoXusLug3Bdjq+gHVLu0WoX
+        NuzEQlqMw5RnuOz+vogCE7h619FO5F9mrnyfczJcgbsU52YgckktQ+LkwjJu0ADOVxmPBHYKUn1p3
+        wTiqDOBcg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52994)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hbKs0-0001db-3n; Thu, 13 Jun 2019 09:14:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hbKrw-00014t-PI; Thu, 13 Jun 2019 09:14:00 +0100
+Date:   Thu, 13 Jun 2019 09:14:00 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
+Message-ID: <20190613081400.2cicsjpslxoidoox@shell.armlinux.org.uk>
+References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190612120341.GA2207@nanopsycho>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I made a mistake during measurements, sorry about that.
+On Thu, Jun 13, 2019 at 09:37:51AM +0300, Ioana Ciornei wrote:
+> The phy_state field of phylink should carry only valid information
+> especially when this can be passed to the .mac_config callback.
+> Update the an_enabled field with the autoneg state in the
+> phylink_phy_change function.
 
-This is the correct script:
------------------------------------------------------------------------
-#!/bin/bash
+an_enabled is meaningless to mac_config for PHY mode.  Why do you think
+this is necessary?
 
-dev=testdummy
-ip link add name $dev type dummy
-ip link set dev $dev up
-tc qdisc add dev $dev ingress
+> 
+> Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+>  drivers/net/phy/phylink.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 5d0af041b8f9..dd1feb7b5472 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device *phydev, bool up,
+>  		pl->phy_state.pause |= MLO_PAUSE_ASYM;
+>  	pl->phy_state.interface = phydev->interface;
+>  	pl->phy_state.link = up;
+> +	pl->phy_state.an_enabled = phydev->autoneg;
+>  	mutex_unlock(&pl->state_mutex);
+>  
+>  	phylink_run_resolve(pl);
+> -- 
+> 1.9.1
+> 
+> 
 
-tmp_file_name=$(date +"/tmp/tc_batch.%s.%N.tmp")
-pref_id=1
-
-while [ $pref_id -lt 20000 ]
-do
-        echo "filter add dev $dev ingress proto ip pref $pref_id flower action drop" >> $tmp_file_name
-        #echo "filter add dev $dev ingress proto ip pref $pref_id matchall action drop" >> $tmp_file_name
-        ((pref_id++))
-done
-
-start=$(date +"%s")
-tc -b $tmp_file_name
-stop=$(date +"%s")
-echo "Insertion duration: $(($stop - $start)) sec"
-rm -f $tmp_file_name
-
-ip link del dev $dev
------------------------------------------------------------------------
-
-Note the commented out matchall. I don't see the regression with
-matchall. However, I see that with flower:
-kernel 5.1
-Insertion duration: 4 sec
-kernel 5.2
-Insertion duration: 163 sec
-
-I don't see any significant difference in perf:
-kernel 5.1
-    77.24%  tc               [kernel.vmlinux]    [k] tcf_chain_tp_find
-     1.67%  tc               [kernel.vmlinux]    [k] mutex_spin_on_owner
-     1.44%  tc               [kernel.vmlinux]    [k] _raw_spin_unlock_irqrestore
-     0.93%  tc               [kernel.vmlinux]    [k] idr_get_free
-     0.79%  tc_pref_scale_o  [kernel.vmlinux]    [k] do_syscall_64
-     0.69%  tc               [kernel.vmlinux]    [k] finish_task_switch
-     0.53%  tc               libc-2.28.so        [.] __memset_sse2_unaligned_erms
-     0.49%  tc               [kernel.vmlinux]    [k] __memset
-     0.36%  tc_pref_scale_o  libc-2.28.so        [.] malloc
-     0.30%  tc_pref_scale_o  libc-2.28.so        [.] _int_free
-     0.24%  tc               [kernel.vmlinux]    [k] __memcpy
-     0.23%  tc               [cls_flower]        [k] fl_change
-     0.23%  tc               [kernel.vmlinux]    [k] __nla_validate_parse
-     0.22%  tc               [kernel.vmlinux]    [k] __slab_alloc
-
-
-    75.57%  tc               [kernel.kallsyms]  [k] tcf_chain_tp_find
-     2.70%  tc               [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
-     1.13%  tc_pref_scale_o  [kernel.kallsyms]  [k] do_syscall_64
-     0.87%  tc               libc-2.28.so       [.] __memset_sse2_unaligned_erms
-     0.86%  ip               [kernel.kallsyms]  [k] finish_task_switch
-     0.67%  tc               [kernel.kallsyms]  [k] memset
-     0.63%  tc               [kernel.kallsyms]  [k] mutex_spin_on_owner
-     0.52%  tc_pref_scale_o  libc-2.28.so       [.] malloc
-     0.48%  tc               [kernel.kallsyms]  [k] idr_get_free
-     0.46%  tc               [kernel.kallsyms]  [k] fl_change
-     0.42%  tc_pref_scale_o  libc-2.28.so       [.] _int_free
-     0.35%  tc_pref_scale_o  libc-2.28.so       [.] __GI___strlen_sse2
-     0.35%  tc_pref_scale_o  libc-2.28.so       [.] __mbrtowc
-     0.34%  tc_pref_scale_o  libc-2.28.so       [.] __fcntl64_nocancel_adjusted
-
-Any ideas?
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
