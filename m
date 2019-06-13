@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A37744AA6
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:28:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26F044AA7
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbfFMS2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:28:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36958 "EHLO mx1.redhat.com"
+        id S1728801AbfFMS22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 14:28:28 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59632 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728120AbfFMS2V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 14:28:21 -0400
+        id S1727380AbfFMS22 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 14:28:28 -0400
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 96313307D848;
-        Thu, 13 Jun 2019 18:28:16 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 54F8F4E919;
+        Thu, 13 Jun 2019 18:28:19 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-44.brq.redhat.com [10.40.200.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E78951001B2D;
-        Thu, 13 Jun 2019 18:28:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 046781001B18;
+        Thu, 13 Jun 2019 18:28:18 +0000 (UTC)
 Received: from [192.168.5.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 1AF293009AEFD;
-        Thu, 13 Jun 2019 20:28:12 +0200 (CEST)
-Subject: [PATCH net-next v1 02/11] net: page_pool: add helper function to
- unmap dma addresses
+        by firesoul.localdomain (Postfix) with ESMTP id 2CC9B3009AEFD;
+        Thu, 13 Jun 2019 20:28:17 +0200 (CEST)
+Subject: [PATCH net-next v1 03/11] xdp: fix leak of IDA cyclic id if
+ rhashtable_insert_slow fails
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -32,8 +32,8 @@ To:     netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     toshiaki.makita1@gmail.com, grygorii.strashko@ti.com,
         ivan.khoronzhuk@linaro.org, mcroce@redhat.com
-Date:   Thu, 13 Jun 2019 20:28:12 +0200
-Message-ID: <156045049204.29115.16513866032635344395.stgit@firesoul>
+Date:   Thu, 13 Jun 2019 20:28:17 +0200
+Message-ID: <156045049711.29115.2664025005921561636.stgit@firesoul>
 In-Reply-To: <156045046024.29115.11802895015973488428.stgit@firesoul>
 References: <156045046024.29115.11802895015973488428.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
@@ -41,52 +41,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 13 Jun 2019 18:28:21 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 13 Jun 2019 18:28:28 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Fix error handling case, where inserting ID with rhashtable_insert_slow
+fails in xdp_rxq_info_reg_mem_model, which leads to never releasing the IDA
+ID, as the lookup in xdp_rxq_info_unreg_mem_model fails and thus
+ida_simple_remove() is never called.
 
-On a previous patch dma addr was stored in 'struct page'.
-Use that to unmap DMA addresses used by network drivers
+Fix by releasing ID via ida_simple_remove(), and mark xdp_rxq->mem.id with
+zero, which is already checked in xdp_rxq_info_unreg_mem_model().
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
- include/net/page_pool.h |    1 +
- net/core/page_pool.c    |    7 +++++++
- 2 files changed, 8 insertions(+)
+ net/core/xdp.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index b885d86cb7a1..ad218cef88c5 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -110,6 +110,7 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
- struct page_pool *page_pool_create(const struct page_pool_params *params);
- 
- void page_pool_destroy(struct page_pool *pool);
-+void page_pool_unmap_page(struct page_pool *pool, struct page *page);
- 
- /* Never call this directly, use helpers below */
- void __page_pool_put_page(struct page_pool *pool,
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 5b2252c6d49b..205af7bd6d09 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -190,6 +190,13 @@ static void __page_pool_clean_page(struct page_pool *pool,
- 	page->dma_addr = 0;
- }
- 
-+/* unmap the page and clean our state */
-+void page_pool_unmap_page(struct page_pool *pool, struct page *page)
-+{
-+	__page_pool_clean_page(pool, page);
-+}
-+EXPORT_SYMBOL(page_pool_unmap_page);
-+
- /* Return a page to the page allocator, cleaning up our state */
- static void __page_pool_return_page(struct page_pool *pool, struct page *page)
- {
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 4b2b194f4f1f..762abeb89847 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -301,6 +301,8 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 	/* Insert allocator into ID lookup table */
+ 	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+ 	if (IS_ERR(ptr)) {
++		ida_simple_remove(&mem_id_pool, xdp_rxq->mem.id);
++		xdp_rxq->mem.id = 0;
+ 		errno = PTR_ERR(ptr);
+ 		goto err;
+ 	}
 
