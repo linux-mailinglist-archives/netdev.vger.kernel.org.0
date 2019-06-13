@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA50643C0F
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA62543BFD
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:33:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728356AbfFMPdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:33:44 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:42038 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728292AbfFMKgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 06:36:21 -0400
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hbN5U-00084n-PL; Thu, 13 Jun 2019 06:36:11 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     linux-sctp@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v5 net] sctp: Free cookie before we memdup a new one
-Date:   Thu, 13 Jun 2019 06:35:59 -0400
-Message-Id: <20190613103559.2603-1-nhorman@tuxdriver.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190610163456.7778-1-nhorman@tuxdriver.com>
-References: <20190610163456.7778-1-nhorman@tuxdriver.com>
+        id S1729382AbfFMPdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:33:16 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42622 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728414AbfFMKpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 06:45:04 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q10so11576882pff.9;
+        Thu, 13 Jun 2019 03:45:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=xTm8k6po7bjp3Ha8AosDhse0S/jiEFLFTIo5UOLT5jg=;
+        b=qMKJ1Nu0C1R8lwpK0IQ9vBQMP6/MGgzUZrbQqi8zl8uAjAjOSTpBUrS0ostsbDH2Nn
+         FoCnkKfzbCaQd5zNxOWhfwWwFJaSY1kc6OPZsIxrCzhYNXjdgeWIRshLbi+1gZki1WQC
+         tdXUazIntJ4w+8FKx6SOf3Jh9EkFJ8HoWzDXakbL5oTgiO0CvjCFx9JjHeOFYlHbzmWt
+         c3PKW23lGhSRwnnLw4M+ogCQvH4X/ZkGFtwGW12moRmVROJzkF5leihb8djdaIKJgm2i
+         x/K2+wUFVlOIiqzP6oUuRQRwoHyN42EKBIDCFER59PUSs49nA3SyFoo4DgdCMpdJrRv6
+         q5sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=xTm8k6po7bjp3Ha8AosDhse0S/jiEFLFTIo5UOLT5jg=;
+        b=s9Y+Y2FFYvie7FZfFw5D9WuvOTpsSrBb/ZRD7uP0j5TSJ3BwvUI2jg6chpdVh89HET
+         sX45oF1g9ZqF7sqx+dp9wtBUSlrPbojBjx8ls7GZ3ZpirIclxJh64cutZ+VwWg91trQ1
+         ZpnDmCaQAS7/IPZnxk4SPM2pYdKl7oWfmQlH6HNruNV4C9GxKNB6O6NYFHvVf+OUxhhw
+         GNPks7pGuTV33A2ZZZboVbyM/2Pld8blvc8IXBV5v/0F98sXmUeXYg5D1KZLCjhBrluO
+         9VbEs12hCIzS2smD0K753tuy1EqYn8Src7NlpatuKZjShhtc/VNHDvzb+JhQl80WVPtn
+         sQkA==
+X-Gm-Message-State: APjAAAWqC4eb6GnBd8OkQMa+4JmTfmwRZ48z4RxwTjoDcbAgrBFdek7r
+        QtTT+AIsbBE6F/8ssgEbjKKICoAeJe/C5g==
+X-Google-Smtp-Source: APXvYqyoFTjHlG0lG+mwUb84qwW3ZXILCiRfHcDzlhE9hUfa7FT3F5ONsJ527thEIuo3Y9HEf5dmBg==
+X-Received: by 2002:a63:5207:: with SMTP id g7mr29149456pgb.356.1560422703319;
+        Thu, 13 Jun 2019 03:45:03 -0700 (PDT)
+Received: from hjy-HP-Notebook ([2409:8900:2650:d5a2:b9ff:4ab3:d77c:10b3])
+        by smtp.gmail.com with ESMTPSA id m24sm2161452pgh.75.2019.06.13.03.45.01
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 03:45:02 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 18:44:57 +0800
+From:   JingYi Hou <houjingyi647@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] fix double-fetch bug in sock_getsockopt()
+Message-ID: <20190613104457.GA6296@hjy-HP-Notebook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on comments from Xin, even after fixes for our recent syzbot
-report of cookie memory leaks, its possible to get a resend of an INIT
-chunk which would lead to us leaking cookie memory.
+In sock_getsockopt(), 'optlen' is fetched the first time from userspace.
+'len < 0' is then checked. Then in condition 'SO_MEMINFO', 'optlen' is
+fetched the second time from userspace without check.
 
-To ensure that we don't leak cookie memory, free any previously
-allocated cookie first.
+if a malicious user can change it between two fetches may cause security
+problems or unexpected behaivor.
 
-Change notes
-v1->v2
-update subsystem tag in subject (davem)
-repeat kfree check for peer_random and peer_hmacs (xin)
+To fix this, we need to recheck it in the second fetch.
 
-v2->v3
-net->sctp
-also free peer_chunks
-
-v3->v4
-fix subject tags
-
-v4->v5
-remove cut line
-
-Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-CC: Xin Long <lucien.xin@gmail.com>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: netdev@vger.kernel.org
+Signed-off-by: JingYi Hou <houjingyi647@gmail.com>
 ---
- net/sctp/sm_make_chunk.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/core/sock.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index f17908f5c4f3..9b0e5b0d701a 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2583,6 +2583,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 	case SCTP_PARAM_STATE_COOKIE:
- 		asoc->peer.cookie_len =
- 			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
-+		if (asoc->peer.cookie)
-+			kfree(asoc->peer.cookie);
- 		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
- 		if (!asoc->peer.cookie)
- 			retval = 0;
-@@ -2647,6 +2649,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 2b3701958486..577780c935ee 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1479,6 +1479,8 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
  
- 		/* Save peer's random parameter */
-+		if (asoc->peer.peer_random)
-+			kfree(asoc->peer.peer_random);
- 		asoc->peer.peer_random = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_random) {
-@@ -2660,6 +2664,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 			goto fall_through;
+ 		if (get_user(len, optlen))
+ 			return -EFAULT;
++		if (len < 0)
++			return -EINVAL;
  
- 		/* Save peer's HMAC list */
-+		if (asoc->peer.peer_hmacs)
-+			kfree(asoc->peer.peer_hmacs);
- 		asoc->peer.peer_hmacs = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_hmacs) {
-@@ -2675,6 +2681,8 @@ static int sctp_process_param(struct sctp_association *asoc,
- 		if (!ep->auth_enable)
- 			goto fall_through;
+ 		sk_get_meminfo(sk, meminfo);
  
-+		if (asoc->peer.peer_chunks)
-+			kfree(asoc->peer.peer_chunks);
- 		asoc->peer.peer_chunks = kmemdup(param.p,
- 					    ntohs(param.p->length), gfp);
- 		if (!asoc->peer.peer_chunks)
 -- 
 2.20.1
 
