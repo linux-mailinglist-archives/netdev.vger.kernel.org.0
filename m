@@ -2,232 +2,433 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56450439B6
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC05C4394C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733181AbfFMPPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:15:35 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46026 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732222AbfFMNZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 09:25:16 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f9so20747826wre.12
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 06:25:14 -0700 (PDT)
+        id S2388242AbfFMPMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:12:55 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:45397 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732272AbfFMNip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 09:38:45 -0400
+Received: by mail-io1-f65.google.com with SMTP id e3so16899905ioc.12
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 06:38:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H/XDzYueXffv1rUyJx1oEFA1jQkKQnEoAqI3KBmpQNQ=;
-        b=keerC7oubO4xWDPqVdCuDXHlcwDp1ZGxBs6OtO0Jg9F0rB7opUoNZfaXAywrlZu5nM
-         I+zPjctobOUMBWt7rFEArKp/IUuJNRdB1ulWSYXLeVdokX5WmkPYMWrbdMbkyTKUHevZ
-         7GdZskEhnLXcF6vcGs9LuGOSp+WrsAhmO4RsU=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cjugGdvW5DvEE4bbKb+LEJ0kMWqS0TFzydPYcwh19sI=;
+        b=LLWAXSFgaqgJHXRivusuZhs4aFUPQfyCjX8Wq9XcvyDlE12avrAr8jDrpIcaVx001B
+         dIJUmv2/xdUd5trw/UB/klg0lAe8jUmkS5iJua6s3N5zTS8MjKPU3tDOKcg3RFQ9xsDM
+         Mw/ntGTq9g+7GuzDdkFqEnNhzd7gn56Y3C1X8KXM5ZMjdcCo9l98FdrtrhXtErhzylZJ
+         FTcFzWriQDntsqV8Sf1v5TjEQZlidM+UDQpf8PDj/nKZ0sVuoB3WBxEpEg3o5AB8S/eZ
+         PD+GLk+WUBkstUxr99R0dk7Nbjko0s81M67VDS9P4Y1KGgy/DqwxmtKX3T+So/C3m9B7
+         dO8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H/XDzYueXffv1rUyJx1oEFA1jQkKQnEoAqI3KBmpQNQ=;
-        b=oHffPCWkl8R0+GDqKxGyVEJeiL2r4uYt1fQ/5Yhdjo4UWLlAxCyzAhM9ePyEkpbenY
-         cIroQVSDCClxfDI9MLh2FD+vPuFxo0RZN4P17MxnBNyzaxbyPNGOhlWrqE0Finj6oLHi
-         05D035qvEmq9gy3SLRpX3H3Hb8ejtb7S94a7wLo2buS4z9aZOsBZEjY2i/YMs2QwLgsH
-         4g1mOqlvJVnJpOGJEM5aScsM4TG9QBl+isrGcmt1u7E73eiLFbQHE+FpvREwMUuaTXrz
-         554G02dFunI5MIg56ZJDOQZRcEizlcx51PZGG2V1aIKWuEKfSvaGLvlDctFOwmNTSmON
-         YIgA==
-X-Gm-Message-State: APjAAAVRwhN4P6sdiAel/kshd/rK2ZUfgPT8e2MsEdhiI3xL8WkwG/Yo
-        Y6gWXbbK1KGy6/K/NCDG5naD7Q==
-X-Google-Smtp-Source: APXvYqwDEPlruy2eVqw9ZQATbv3Dsj0ZxtvE79jIaKuGvWhxiukBuyyX3IRiItW0qa3pl3HgnhuzQA==
-X-Received: by 2002:adf:c5c1:: with SMTP id v1mr41961383wrg.129.1560432313294;
-        Thu, 13 Jun 2019 06:25:13 -0700 (PDT)
-Received: from localhost.localdomain ([147.12.216.9])
-        by smtp.gmail.com with ESMTPSA id d10sm3324109wrp.74.2019.06.13.06.25.12
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 06:25:12 -0700 (PDT)
-From:   Arthur Fabre <afabre@cloudflare.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Arthur Fabre <afabre@cloudflare.com>
-Subject: [PATCH bpf-next] bpf: sk_storage: Fix out of bounds memory access
-Date:   Thu, 13 Jun 2019 14:24:34 +0100
-Message-Id: <20190613132433.17213-1-afabre@cloudflare.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cjugGdvW5DvEE4bbKb+LEJ0kMWqS0TFzydPYcwh19sI=;
+        b=q2hAMl+wwVRzsm67YpIpId1tZ3uiN+xNY7CIYc3YGPKp4Z30UnHwQqjRIK1Vucp75S
+         tx75txH2It+jv1jQl6xG6dppNlYI2ScyNgNizYmAhQIywnvhQBy4jW2nqYTM8cAVbBvu
+         dIFjKeUGEkCWXpQZj+7fsfl/+SVOd/XezbGaYOa1z6YihmicTb+1Iby0p8ZXuGh4fOcV
+         CqDFvsJ9zXuIc8iMbJnTGQyeWccWNHbzfHYrfQX/bJ4lAeK3QSZY5f6DVPD56Rz9v+ga
+         FZR5ZpqVrunUC1ce1NkKcQuvskPCeQfKV8cimYW7oBfgGWS/60P1dnnNyuPALRbf8xn7
+         XNnA==
+X-Gm-Message-State: APjAAAVLpZI2RT3Bzdfc4EJv9+4DugPfVhd1iCfIhTvNIvo3VjSp8856
+        xMXTzBKkJKXg5GoE7sQ7+Tj9uTPcC9hz0mmGTtzcQQ==
+X-Google-Smtp-Source: APXvYqyVBApvlT6V0hudE4nMaSbmptwcmq6o2wG/ouHBlmrwmgyM0BBpjdiLSRgWbt47Q1Anpfq1wZN1dvVuR8dNMlE=
+X-Received: by 2002:a02:5502:: with SMTP id e2mr33698769jab.87.1560433123964;
+ Thu, 13 Jun 2019 06:38:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1560343906-19426-1-git-send-email-john.hurley@netronome.com>
+ <1560343906-19426-2-git-send-email-john.hurley@netronome.com> <20190612180336.GB3499@localhost.localdomain>
+In-Reply-To: <20190612180336.GB3499@localhost.localdomain>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Thu, 13 Jun 2019 14:38:32 +0100
+Message-ID: <CAK+XE=kDEu5RubWxFpR+wO79JpyGpskwN6GzbEKcZq_yQArWaA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: sched: add mpls manipulation actions to TC
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_sk_storage maps use multiple spin locks to reduce contention.
-The number of locks to use is determined by the number of possible CPUs.
-With only 1 possible CPU, bucket_log == 0, and 2^0 = 1 locks are used.
+On Wed, Jun 12, 2019 at 7:03 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, Jun 12, 2019 at 01:51:44PM +0100, John Hurley wrote:
+> > Currently, TC offers the ability to match on the MPLS fields of a packet
+> > through the use of the flow_dissector_key_mpls struct. However, as yet, TC
+> > actions do not allow the modification or manipulation of such fields.
+> >
+> > Add a new module that registers TC action ops to allow manipulation of
+> > MPLS. This includes the ability to push and pop headers as well as modify
+> > the contents of new or existing headers. A further action to decrement the
+> > TTL field of an MPLS header is also provided.
+> >
+> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > ---
+> >  include/net/tc_act/tc_mpls.h        |  27 +++
+> >  include/uapi/linux/pkt_cls.h        |   2 +
+> >  include/uapi/linux/tc_act/tc_mpls.h |  32 +++
+> >  net/sched/Kconfig                   |  11 +
+> >  net/sched/Makefile                  |   1 +
+> >  net/sched/act_mpls.c                | 450 ++++++++++++++++++++++++++++++++++++
+> >  6 files changed, 523 insertions(+)
+> >  create mode 100644 include/net/tc_act/tc_mpls.h
+> >  create mode 100644 include/uapi/linux/tc_act/tc_mpls.h
+> >  create mode 100644 net/sched/act_mpls.c
+> >
+> > diff --git a/include/net/tc_act/tc_mpls.h b/include/net/tc_act/tc_mpls.h
+> > new file mode 100644
+> > index 0000000..ca7393a
+> > --- /dev/null
+> > +++ b/include/net/tc_act/tc_mpls.h
+> > @@ -0,0 +1,27 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+> > +/* Copyright (C) 2019 Netronome Systems, Inc. */
+> > +
+> > +#ifndef __NET_TC_MPLS_H
+> > +#define __NET_TC_MPLS_H
+> > +
+> > +#include <linux/tc_act/tc_mpls.h>
+> > +#include <net/act_api.h>
+> > +
+> > +struct tcf_mpls_params {
+> > +     int tcfm_action;
+> > +     u32 tcfm_label;
+> > +     u8 tcfm_tc;
+> > +     u8 tcfm_ttl;
+> > +     __be16 tcfm_proto;
+> > +     struct rcu_head rcu;
+> > +};
+> > +
+> > +#define ACT_MPLS_TC_NOT_SET  0xff
+> > +
+> > +struct tcf_mpls {
+> > +     struct tc_action common;
+> > +     struct tcf_mpls_params __rcu *mpls_p;
+> > +};
+> > +#define to_mpls(a) ((struct tcf_mpls *)a)
+> > +
+> > +#endif /* __NET_TC_MPLS_H */
+> > diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+> > index a93680f..197621a 100644
+> > --- a/include/uapi/linux/pkt_cls.h
+> > +++ b/include/uapi/linux/pkt_cls.h
+> > @@ -83,6 +83,7 @@ enum {
+> >  #define TCA_ACT_SIMP 22
+> >  #define TCA_ACT_IFE 25
+> >  #define TCA_ACT_SAMPLE 26
+> > +#define TCA_ACT_MPLS 27
+> >
+> >  /* Action type identifiers*/
+> >  enum tca_id {
+> > @@ -104,6 +105,7 @@ enum tca_id {
+> >       TCA_ID_SIMP = TCA_ACT_SIMP,
+> >       TCA_ID_IFE = TCA_ACT_IFE,
+> >       TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
+> > +     TCA_ID_MPLS = TCA_ACT_MPLS,
+> >       /* other actions go here */
+> >       TCA_ID_CTINFO,
+> >       __TCA_ID_MAX = 255
+> > diff --git a/include/uapi/linux/tc_act/tc_mpls.h b/include/uapi/linux/tc_act/tc_mpls.h
+> > new file mode 100644
+> > index 0000000..6e8907b
+> > --- /dev/null
+> > +++ b/include/uapi/linux/tc_act/tc_mpls.h
+> > @@ -0,0 +1,32 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> > +/* Copyright (C) 2019 Netronome Systems, Inc. */
+> > +
+> > +#ifndef __LINUX_TC_MPLS_H
+> > +#define __LINUX_TC_MPLS_H
+> > +
+> > +#include <linux/pkt_cls.h>
+> > +
+> > +#define TCA_MPLS_ACT_POP     1
+> > +#define TCA_MPLS_ACT_PUSH    2
+> > +#define TCA_MPLS_ACT_MODIFY  3
+> > +#define TCA_MPLS_ACT_DEC_TTL 4
+> > +
+> > +struct tc_mpls {
+> > +     tc_gen;
+> > +     int m_action;
+> > +};
+> > +
+> > +enum {
+> > +     TCA_MPLS_UNSPEC,
+> > +     TCA_MPLS_TM,
+> > +     TCA_MPLS_PARMS,
+> > +     TCA_MPLS_PAD,
+> > +     TCA_MPLS_PROTO,
+> > +     TCA_MPLS_LABEL,
+> > +     TCA_MPLS_TC,
+> > +     TCA_MPLS_TTL,
+> > +     __TCA_MPLS_MAX,
+> > +};
+> > +#define TCA_MPLS_MAX (__TCA_MPLS_MAX - 1)
+> > +
+> > +#endif
+> > diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> > index d104f7e..a34dcd3 100644
+> > --- a/net/sched/Kconfig
+> > +++ b/net/sched/Kconfig
+> > @@ -842,6 +842,17 @@ config NET_ACT_CSUM
+> >         To compile this code as a module, choose M here: the
+> >         module will be called act_csum.
+> >
+> > +config NET_ACT_MPLS
+> > +     tristate "MPLS manipulation"
+> > +     depends on NET_CLS_ACT
+> > +     help
+> > +       Say Y here to push or pop MPLS headers.
+> > +
+> > +       If unsure, say N.
+> > +
+> > +       To compile this code as a module, choose M here: the
+> > +       module will be called act_mpls.
+> > +
+> >  config NET_ACT_VLAN
+> >          tristate "Vlan manipulation"
+> >          depends on NET_CLS_ACT
+> > diff --git a/net/sched/Makefile b/net/sched/Makefile
+> > index d54bfcb..c266036 100644
+> > --- a/net/sched/Makefile
+> > +++ b/net/sched/Makefile
+> > @@ -18,6 +18,7 @@ obj-$(CONFIG_NET_ACT_PEDIT) += act_pedit.o
+> >  obj-$(CONFIG_NET_ACT_SIMP)   += act_simple.o
+> >  obj-$(CONFIG_NET_ACT_SKBEDIT)        += act_skbedit.o
+> >  obj-$(CONFIG_NET_ACT_CSUM)   += act_csum.o
+> > +obj-$(CONFIG_NET_ACT_MPLS)   += act_mpls.o
+> >  obj-$(CONFIG_NET_ACT_VLAN)   += act_vlan.o
+> >  obj-$(CONFIG_NET_ACT_BPF)    += act_bpf.o
+> >  obj-$(CONFIG_NET_ACT_CONNMARK)       += act_connmark.o
+> > diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+> > new file mode 100644
+> > index 0000000..ff56ada
+> > --- /dev/null
+> > +++ b/net/sched/act_mpls.c
+> > @@ -0,0 +1,450 @@
+> > +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +/* Copyright (C) 2019 Netronome Systems, Inc. */
+> > +
+> > +#include <linux/init.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mpls.h>
+> > +#include <linux/rtnetlink.h>
+> > +#include <linux/skbuff.h>
+> > +#include <linux/tc_act/tc_mpls.h>
+> > +#include <net/mpls.h>
+> > +#include <net/netlink.h>
+> > +#include <net/pkt_sched.h>
+> > +#include <net/pkt_cls.h>
+> > +#include <net/tc_act/tc_mpls.h>
+> > +
+> > +static unsigned int mpls_net_id;
+> > +static struct tc_action_ops act_mpls_ops;
+> > +
+> > +#define ACT_MPLS_TTL_DEFAULT 255
+> > +
+> > +static void tcf_mpls_mod_lse(struct mpls_shim_hdr *lse,
+> > +                          struct tcf_mpls_params *p, bool set_bos)
+> > +{
+> > +     u32 new_lse = be32_to_cpu(lse->label_stack_entry);
+> > +
+> > +     if (p->tcfm_label) {
+> > +             new_lse &= ~MPLS_LS_LABEL_MASK;
+> > +             new_lse |= p->tcfm_label << MPLS_LS_LABEL_SHIFT;
+> > +     }
+> > +     if (p->tcfm_ttl) {
+> > +             new_lse &= ~MPLS_LS_TTL_MASK;
+> > +             new_lse |= p->tcfm_ttl << MPLS_LS_TTL_SHIFT;
+> > +     }
+> > +     if (p->tcfm_tc != ACT_MPLS_TC_NOT_SET) {
+> > +             new_lse &= ~MPLS_LS_TC_MASK;
+> > +             new_lse |= p->tcfm_tc << MPLS_LS_TC_SHIFT;
+> > +     }
+> > +     if (set_bos)
+> > +             new_lse |= 1 << MPLS_LS_S_SHIFT;
+> > +
+> > +     lse->label_stack_entry = cpu_to_be32(new_lse);
+> > +}
+> > +
+> > +static inline void tcf_mpls_set_eth_type(struct sk_buff *skb, __be16 ethertype)
+> > +{
+> > +     struct ethhdr *hdr = eth_hdr(skb);
+> > +
+> > +     skb_postpull_rcsum(skb, &hdr->h_proto, ETH_TLEN);
+> > +     hdr->h_proto = ethertype;
+> > +     skb_postpush_rcsum(skb, &hdr->h_proto, ETH_TLEN);
+> > +}
+> > +
+> > +static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+> > +                     struct tcf_result *res)
+> > +{
+> > +     struct tcf_mpls *m = to_mpls(a);
+> > +     struct mpls_shim_hdr *lse;
+> > +     struct tcf_mpls_params *p;
+> > +     u32 temp_lse;
+> > +     int ret;
+> > +     u8 ttl;
+> > +
+> > +     tcf_lastuse_update(&m->tcf_tm);
+> > +     bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
+> > +
+> > +     /* Ensure 'data' points at mac_header prior calling mpls manipulating
+> > +      * functions.
+> > +      */
+> > +     if (skb_at_tc_ingress(skb))
+> > +             skb_push_rcsum(skb, skb->mac_len);
+> > +
+> > +     ret = READ_ONCE(m->tcf_action);
+> > +
+> > +     p = rcu_dereference_bh(m->mpls_p);
+> > +
+> > +     switch (p->tcfm_action) {
+> > +     case TCA_MPLS_ACT_POP:
+> > +             if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                     goto out;
+> > +
+> > +             if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                     goto drop;
+> > +
+> > +             skb_postpull_rcsum(skb, mpls_hdr(skb), MPLS_HLEN);
+> > +             memmove(skb->data + MPLS_HLEN, skb->data, ETH_HLEN);
+> > +
+> > +             __skb_pull(skb, MPLS_HLEN);
+> > +             skb_reset_mac_header(skb);
+> > +             skb_set_network_header(skb, ETH_HLEN);
+> > +
+> > +             tcf_mpls_set_eth_type(skb, p->tcfm_proto);
+> > +             skb->protocol = p->tcfm_proto;
+> > +             break;
+> > +     case TCA_MPLS_ACT_PUSH:
+> > +             if (unlikely(skb_cow_head(skb, MPLS_HLEN)))
+> > +                     goto drop;
+> > +
+> > +             skb_push(skb, MPLS_HLEN);
+> > +             memmove(skb->data, skb->data + MPLS_HLEN, ETH_HLEN);
+> > +             skb_reset_mac_header(skb);
+> > +             skb_set_network_header(skb, ETH_HLEN);
+> > +
+> > +             lse = mpls_hdr(skb);
+> > +             lse->label_stack_entry = 0;
+> > +             tcf_mpls_mod_lse(lse, p, !eth_p_mpls(skb->protocol));
+> > +             skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +
+> > +             tcf_mpls_set_eth_type(skb, p->tcfm_proto);
+> > +             skb->protocol = p->tcfm_proto;
+> > +             break;
+> > +     case TCA_MPLS_ACT_MODIFY:
+> > +             if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                     goto out;
+> > +
+> > +             if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                     goto drop;
+> > +
+> > +             lse = mpls_hdr(skb);
+> > +             skb_postpull_rcsum(skb, lse, MPLS_HLEN);
+> > +             tcf_mpls_mod_lse(lse, p, false);
+> > +             skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +             break;
+> > +     case TCA_MPLS_ACT_DEC_TTL:
+> > +             if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                     goto out;
+> > +
+> > +             if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                     goto drop;
+> > +
+> > +             lse = mpls_hdr(skb);
+> > +             temp_lse = be32_to_cpu(lse->label_stack_entry);
+> > +             ttl = (temp_lse & MPLS_LS_TTL_MASK) >> MPLS_LS_TTL_SHIFT;
+> > +             if (!--ttl)
+> > +                     goto drop;
+> > +
+> > +             temp_lse &= ~MPLS_LS_TTL_MASK;
+> > +             temp_lse |= ttl << MPLS_LS_TTL_SHIFT;
+> > +             skb_postpull_rcsum(skb, lse, MPLS_HLEN);
+> > +             lse->label_stack_entry = cpu_to_be32(temp_lse);
+> > +             skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +             break;
+> > +     default:
+> > +             WARN_ONCE(1, "Invalid MPLS action\n");
+> > +     }
+> > +
+> > +out:
+> > +     if (skb_at_tc_ingress(skb))
+> > +             skb_pull_rcsum(skb, skb->mac_len);
+> > +
+> > +     return ret;
+> > +
+> > +drop:
+> > +     qstats_drop_inc(this_cpu_ptr(m->common.cpu_qstats));
+> > +     return TC_ACT_SHOT;
+> > +}
+> > +
+> > +static int valid_label(const struct nlattr *attr,
+> > +                    struct netlink_ext_ack *extack)
+> > +{
+> > +     const u32 *label = nla_data(attr);
+> > +
+> > +     if (!*label || *label & ~MPLS_LABEL_MASK) {
+> > +             NL_SET_ERR_MSG_MOD(extack, "MPLS label out of range");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct nla_policy mpls_policy[TCA_MPLS_MAX + 1] = {
+> > +     [TCA_MPLS_PARMS]        = NLA_POLICY_EXACT_LEN(sizeof(struct tc_mpls)),
+> > +     [TCA_MPLS_PROTO]        = { .type = NLA_U16 },
+> > +     [TCA_MPLS_LABEL]        = NLA_POLICY_VALIDATE_FN(NLA_U32, valid_label),
+> > +     [TCA_MPLS_TC]           = NLA_POLICY_RANGE(NLA_U8, 0, 7),
+> > +     [TCA_MPLS_TTL]          = NLA_POLICY_MIN(NLA_U8, 1),
+> > +};
+> > +
+> > +static int tcf_mpls_init(struct net *net, struct nlattr *nla,
+> > +                      struct nlattr *est, struct tc_action **a,
+> > +                      int ovr, int bind, bool rtnl_held,
+> > +                      struct tcf_proto *tp, struct netlink_ext_ack *extack)
+> > +{
+> > +     struct tc_action_net *tn = net_generic(net, mpls_net_id);
+> > +     struct nlattr *tb[TCA_MPLS_MAX + 1];
+> > +     struct tcf_chain *goto_ch = NULL;
+> > +     struct tcf_mpls_params *p;
+> > +     struct tc_mpls *parm;
+> > +     bool exists = false;
+> > +     struct tcf_mpls *m;
+> > +     int ret = 0, err;
+> > +     u8 mpls_ttl = 0;
+> > +
+> > +     if (!nla) {
+> > +             NL_SET_ERR_MSG_MOD(extack, "missing netlink attributes");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     err = nla_parse_nested(tb, TCA_MPLS_MAX, nla, mpls_policy, extack);
+>
+> Please see my reply to
+> [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+> regarding the usage of nla_parse_nested() here. Thanks.
+>
 
-When updating elements, the correct lock is determined with hash_ptr().
-Calling hash_ptr() with 0 bits is undefined behavior, as it does:
-
-x >> (64 - bits)
-
-Using the value results in an out of bounds memory access.
-In my case, this manifested itself as a page fault when raw_spin_lock_bh()
-is called later, when running the self tests:
-
-./tools/testing/selftests/bpf/test_verifier 773 775
-
-[   16.366342] BUG: unable to handle page fault for address: ffff8fe7a66f93f8
-[   16.367139] #PF: supervisor write access in kernel mode
-[   16.367751] #PF: error_code(0x0002) - not-present page
-[   16.368323] PGD 35a01067 P4D 35a01067 PUD 0
-[   16.368796] Oops: 0002 [#1] SMP PTI
-[   16.369175] CPU: 0 PID: 189 Comm: test_verifier Not tainted 5.2.0-rc2+ #10
-[   16.369960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-[   16.371021] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
-[ 16.371571] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
-All code
-========
-   0:	02 00                	add    (%rax),%al
-   2:	00 31                	add    %dh,(%rcx)
-   4:	c0 ba ff 00 00 00 3e 	sarb   $0x3e,0xff(%rdx)
-   b:	0f b1 17             	cmpxchg %edx,(%rdi)
-   e:	75 01                	jne    0x11
-  10:	c3                   	retq
-  11:	e9 82 12 5f ff       	jmpq   0xffffffffff5f1298
-  16:	66 90                	xchg   %ax,%ax
-  18:	65 81 05 ad 14 6f 41 	addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
-  1f:	00 02 00 00
-  23:	31 c0                	xor    %eax,%eax
-  25:	ba 01 00 00 00       	mov    $0x1,%edx
-  2a:	3e 0f b1 17          	cmpxchg %edx,%ds:*(%rdi)		<-- trapping instruction
-  2e:	75 01                	jne    0x31
-  30:	c3                   	retq
-  31:	89 c6                	mov    %eax,%esi
-  33:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f0328
-  38:	b8 00 02 00 00       	mov    $0x200,%eax
-  3d:	3e                   	ds
-  3e:	0f                   	.byte 0xf
-  3f:	c1                   	.byte 0xc1
-
-Code starting with the faulting instruction
-===========================================
-   0:	3e 0f b1 17          	cmpxchg %edx,%ds:(%rdi)
-   4:	75 01                	jne    0x7
-   6:	c3                   	retq
-   7:	89 c6                	mov    %eax,%esi
-   9:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f02fe
-   e:	b8 00 02 00 00       	mov    $0x200,%eax
-  13:	3e                   	ds
-  14:	0f                   	.byte 0xf
-  15:	c1                   	.byte 0xc1
-[   16.373398] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
-[   16.373954] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
-[   16.374645] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
-[   16.375338] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
-[   16.376028] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
-[   16.376719] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
-[   16.377413] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
-[   16.378204] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.378763] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
-[   16.379453] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   16.380144] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   16.380864] Call Trace:
-[   16.381112] selem_link_map (/home/afabre/linux/./include/linux/compiler.h:221 /home/afabre/linux/net/core/bpf_sk_storage.c:243)
-[   16.381476] sk_storage_update (/home/afabre/linux/net/core/bpf_sk_storage.c:355 /home/afabre/linux/net/core/bpf_sk_storage.c:414)
-[   16.381888] bpf_sk_storage_get (/home/afabre/linux/net/core/bpf_sk_storage.c:760 /home/afabre/linux/net/core/bpf_sk_storage.c:741)
-[   16.382285] ___bpf_prog_run (/home/afabre/linux/kernel/bpf/core.c:1447)
-[   16.382679] ? __bpf_prog_run32 (/home/afabre/linux/kernel/bpf/core.c:1603)
-[   16.383074] ? alloc_file_pseudo (/home/afabre/linux/fs/file_table.c:232)
-[   16.383486] ? kvm_clock_get_cycles (/home/afabre/linux/arch/x86/kernel/kvmclock.c:98)
-[   16.383906] ? ktime_get (/home/afabre/linux/kernel/time/timekeeping.c:265 /home/afabre/linux/kernel/time/timekeeping.c:369 /home/afabre/linux/kernel/time/timekeeping.c:754)
-[   16.384243] ? bpf_test_run (/home/afabre/linux/net/bpf/test_run.c:47)
-[   16.384613] ? bpf_prog_test_run_skb (/home/afabre/linux/net/bpf/test_run.c:313)
-[   16.385065] ? security_capable (/home/afabre/linux/security/security.c:696 (discriminator 19))
-[   16.385460] ? __do_sys_bpf (/home/afabre/linux/kernel/bpf/syscall.c:2072 /home/afabre/linux/kernel/bpf/syscall.c:2848)
-[   16.385854] ? __handle_mm_fault (/home/afabre/linux/mm/memory.c:3507 /home/afabre/linux/mm/memory.c:3532 /home/afabre/linux/mm/memory.c:3666 /home/afabre/linux/mm/memory.c:3897 /home/afabre/linux/mm/memory.c:4021)
-[   16.386273] ? __dentry_kill (/home/afabre/linux/fs/dcache.c:595)
-[   16.386652] ? do_syscall_64 (/home/afabre/linux/arch/x86/entry/common.c:301)
-[   16.387031] ? entry_SYSCALL_64_after_hwframe (/home/afabre/linux/./include/trace/events/initcall.h:10 /home/afabre/linux/./include/trace/events/initcall.h:10)
-[   16.387541] Modules linked in:
-[   16.387846] CR2: ffff8fe7a66f93f8
-[   16.388175] ---[ end trace 891cf27b5b9c9cc6 ]---
-[   16.388628] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
-[ 16.389089] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
-All code
-========
-   0:	02 00                	add    (%rax),%al
-   2:	00 31                	add    %dh,(%rcx)
-   4:	c0 ba ff 00 00 00 3e 	sarb   $0x3e,0xff(%rdx)
-   b:	0f b1 17             	cmpxchg %edx,(%rdi)
-   e:	75 01                	jne    0x11
-  10:	c3                   	retq
-  11:	e9 82 12 5f ff       	jmpq   0xffffffffff5f1298
-  16:	66 90                	xchg   %ax,%ax
-  18:	65 81 05 ad 14 6f 41 	addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
-  1f:	00 02 00 00
-  23:	31 c0                	xor    %eax,%eax
-  25:	ba 01 00 00 00       	mov    $0x1,%edx
-  2a:	3e 0f b1 17          	cmpxchg %edx,%ds:*(%rdi)		<-- trapping instruction
-  2e:	75 01                	jne    0x31
-  30:	c3                   	retq
-  31:	89 c6                	mov    %eax,%esi
-  33:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f0328
-  38:	b8 00 02 00 00       	mov    $0x200,%eax
-  3d:	3e                   	ds
-  3e:	0f                   	.byte 0xf
-  3f:	c1                   	.byte 0xc1
-
-Code starting with the faulting instruction
-===========================================
-   0:	3e 0f b1 17          	cmpxchg %edx,%ds:(%rdi)
-   4:	75 01                	jne    0x7
-   6:	c3                   	retq
-   7:	89 c6                	mov    %eax,%esi
-   9:	e9 f0 02 5f ff       	jmpq   0xffffffffff5f02fe
-   e:	b8 00 02 00 00       	mov    $0x200,%eax
-  13:	3e                   	ds
-  14:	0f                   	.byte 0xf
-  15:	c1                   	.byte 0xc1
-[   16.390899] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
-[   16.391410] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
-[   16.392102] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
-[   16.392795] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
-[   16.393481] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
-[   16.394169] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
-[   16.394870] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
-[   16.395641] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.396193] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
-[   16.396876] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   16.397557] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   16.398246] Kernel panic - not syncing: Fatal exception in interrupt
-[   16.399067] Kernel Offset: 0x3ce00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-[   16.400098] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
-
-Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
-Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
----
- net/core/bpf_sk_storage.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index f40e3d35fd9c..7ae0686c5418 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -90,7 +90,13 @@ struct bpf_sk_storage {
- static struct bucket *select_bucket(struct bpf_sk_storage_map *smap,
- 				    struct bpf_sk_storage_elem *selem)
- {
--	return &smap->buckets[hash_ptr(selem, smap->bucket_log)];
-+	/* hash_ptr is undefined behavior with 0 bits */
-+	int bucket = 0;
-+	if (smap->bucket_log != 0) {
-+		bucket = hash_ptr(selem, smap->bucket_log);
-+	}
-+
-+	return &smap->buckets[bucket];
- }
- 
- static int omem_charge(struct sock *sk, unsigned int size)
--- 
-2.20.1
-
+Hi Marcelo,
+I was following that discussion.
+It seems that we are in consensus that the 'new' nla_parse_nested as
+used in this patch is ok.
+Fwiw, in my iproute2 code to test this, i or'd in the NLA_F_NESTED
+flag in my new m_mpls.c file but we can move it to the main m_action.c
+file if it doesn't affect older act modules
