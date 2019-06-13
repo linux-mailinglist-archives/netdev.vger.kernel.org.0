@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23C2643E63
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C759A43E6F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389718AbfFMPt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:49:29 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:18156 "EHLO huawei.com"
+        id S1731875AbfFMPts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:49:48 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:18155 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731704AbfFMJOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731706AbfFMJOW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 13 Jun 2019 05:14:22 -0400
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 40042B02302B93BA9EC7;
+        by Forcepoint Email with ESMTP id 377B3CB890F0F6847C2D;
         Thu, 13 Jun 2019 17:14:19 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 13 Jun 2019 17:14:08 +0800
+ 14.3.439.0; Thu, 13 Jun 2019 17:14:09 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 09/12] net: hns3: fix for dereferencing before null checking
-Date:   Thu, 13 Jun 2019 17:12:29 +0800
-Message-ID: <1560417152-53050-10-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 10/12] net: hns3: fix for skb leak when doing selftest
+Date:   Thu, 13 Jun 2019 17:12:30 +0800
+Message-ID: <1560417152-53050-11-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560417152-53050-1-git-send-email-tanhuazhong@huawei.com>
 References: <1560417152-53050-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,49 +41,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yunsheng Lin <linyunsheng@huawei.com>
 
-The netdev is dereferenced before null checking in the function
-hns3_setup_tc.
+If hns3_nic_net_xmit does not return NETDEV_TX_BUSY when doing
+a loopback selftest, the skb is not freed in hns3_clean_tx_ring
+or hns3_nic_net_xmit, which causes skb not freed problem.
 
-This patch moves the dereferencing after the null checking.
+This patch fixes it by freeing skb when hns3_nic_net_xmit does
+not return NETDEV_TX_OK.
 
-Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
+Fixes: c39c4d98dc65 ("net: hns3: Add mac loopback selftest support in hns3 driver")
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 73de4b0..1a602bd 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1510,12 +1510,12 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
- static int hns3_setup_tc(struct net_device *netdev, void *type_data)
- {
- 	struct tc_mqprio_qopt_offload *mqprio_qopt = type_data;
--	struct hnae3_handle *h = hns3_get_handle(netdev);
--	struct hnae3_knic_private_info *kinfo = &h->kinfo;
- 	u8 *prio_tc = mqprio_qopt->qopt.prio_tc_map;
-+	struct hnae3_knic_private_info *kinfo;
- 	u8 tc = mqprio_qopt->qopt.num_tc;
- 	u16 mode = mqprio_qopt->mode;
- 	u8 hw = mqprio_qopt->qopt.hw;
-+	struct hnae3_handle *h;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 6ce724d..0998647 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -250,11 +250,13 @@ static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
  
- 	if (!((hw == TC_MQPRIO_HW_OFFLOAD_TCS &&
- 	       mode == TC_MQPRIO_MODE_CHANNEL) || (!hw && tc == 0)))
-@@ -1527,6 +1527,9 @@ static int hns3_setup_tc(struct net_device *netdev, void *type_data)
- 	if (!netdev)
- 		return -EINVAL;
- 
-+	h = hns3_get_handle(netdev);
-+	kinfo = &h->kinfo;
-+
- 	return (kinfo->dcb_ops && kinfo->dcb_ops->setup_tc) ?
- 		kinfo->dcb_ops->setup_tc(h, tc, prio_tc) : -EOPNOTSUPP;
- }
+ 		skb_get(skb);
+ 		tx_ret = hns3_nic_net_xmit(skb, ndev);
+-		if (tx_ret == NETDEV_TX_OK)
++		if (tx_ret == NETDEV_TX_OK) {
+ 			good_cnt++;
+-		else
++		} else {
++			kfree_skb(skb);
+ 			netdev_err(ndev, "hns3_lb_run_test xmit failed: %d\n",
+ 				   tx_ret);
++		}
+ 	}
+ 	if (good_cnt != HNS3_NIC_LB_TEST_PKT_NUM) {
+ 		ret_val = HNS3_NIC_LB_TEST_TX_CNT_ERR;
 -- 
 2.7.4
 
