@@ -2,122 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE4B449DD
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4F6449F4
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726978AbfFMRqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:46:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55934 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726535AbfFMRqh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 13:46:37 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7E85B37E88;
-        Thu, 13 Jun 2019 17:46:37 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (ovpn-117-172.ams2.redhat.com [10.36.117.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BA7D1001B05;
-        Thu, 13 Jun 2019 17:46:35 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-Subject: Fhern@kernel.org:qrom 3734f49cbe4b7543f09236d02cbe78b515af1e28 Mon Sep 17 00:00:00 2001
-Date:   Thu, 13 Jun 2019 19:47:02 +0200
-Message-Id: <20190613174702.6243-1-aclaudi@redhat.com>
+        id S1726884AbfFMRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:53:17 -0400
+Received: from mail-qt1-f174.google.com ([209.85.160.174]:34543 "EHLO
+        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbfFMRxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:53:16 -0400
+Received: by mail-qt1-f174.google.com with SMTP id m29so23592765qtu.1
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:53:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Uy066ZV7bgAktFEXl4WYIMVfekGzUJn9sDijeqz/6js=;
+        b=ppvRcj2fAvxAjLvxfx37Nx8VsHo8Zn84KOQIFwh3nkP68zAI/pJDwz6o+YNhmCDWpC
+         laWqQisfVdfx2bN6+IhaVNLtv8THGpCBPvW+VImBxk0zY+NeB+TlvnaXYp6DhIpFoBPN
+         IkFrKZ80Tns1S8o/GZbrf65MFIq96UYTVnMUn1FaaHizgbOVBQaQZye0boOknbXmnV6M
+         rKvLk9s4eqUb3iVqdbNIwm66vxO1yDPZEdoq2VbCNlg+HlmFXN944pX1IJGXvEC7qY4L
+         wqI+ptqVTFF3HIUDO/xsLq1v8WBE/f7srOOfnwPoachOPpzn2nYvPkLJZWggfYaa9qoD
+         uayQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Uy066ZV7bgAktFEXl4WYIMVfekGzUJn9sDijeqz/6js=;
+        b=mhOydPEg2Mz3OmKNrLtxNcZk97gmG4NPPAFjjrte2TlWea0rOyDbzyNQwDo6lCWaPp
+         9Soo4YBwWicSWrM07idbcIoydKnJ1GHq90+3Zfsh8r//CGLCFKkupsZtFBAks0AR8TtO
+         tg1Ds1A8T6t4Ue7sMLVOb+nXsp6CUAEy0Ph9MPKn2VFR1jHUhwozlOpgyC3cbeX+8AcN
+         MgxB5q1ZK78wWAUeyYJr/LBSMQJaufVWBsxjeu1wOa2VN9+4wUmVAb/c7CsdbmhSnfq8
+         XlQV8MGanaThu8ox2LztBpnybHRSoh+Sz0Jn1HH73XDZP2XpS1o/Z1BNtSc9qOzF9bwB
+         ygOQ==
+X-Gm-Message-State: APjAAAX4X2tWUDutMzion7aSqWxvqpHlkbdhaJe9eWoPSCtoJ6uh0YrD
+        97GB3S2U7jpoK2sNnjyHOaCahx/389nMlzIToQLJRG7i1T7Y3w==
+X-Google-Smtp-Source: APXvYqzkT447i3R9IhbIClKX63YPdh9gzEn8y6slBvWgGiQka3EvlzqGEoCmY/PUe8lHb4NKJjMoQgPBaSXMEsnpq/w=
+X-Received: by 2002:a0c:8a23:: with SMTP id 32mr4732749qvt.231.1560448395630;
+ Thu, 13 Jun 2019 10:53:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Thu, 13 Jun 2019 17:46:37 +0000 (UTC)
+From:   Nathan Huckleberry <nhuck@google.com>
+Date:   Thu, 13 Jun 2019 10:53:05 -0700
+Message-ID: <CAJkfWY5ZuDsmV6u1p=DPZF84ijYS3Mu2NeySGgfCXgLGnruu_A@mail.gmail.com>
+Subject: Cleanup of -Wunused-const-variable in drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+To:     maxime.chevallier@bootlin.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-make provides a handy -C option to change directory before reading
-the makefiles or doing anything else.
+Hey all,
 
-Use that instead of the "cd dir && make && cd .." pattern, thus
-simplifying sintax for some makefiles.
+I'm looking into cleaning up ignored warnings in the kernel so we can
+remove compiler flags to ignore warnings.
 
-Changes from v1:
-- Drop an obviously wrong leftover on testsuite/iproute2/Makefile
+There's an unused variable 'mvpp2_dbgfs_prs_pmap_fops' in
+mvpp2_debugfs.c. It looks like this code is for dumping useful
+information into userspace. I'd like to either remove the variable or
+dump it to userspace in the same way the other variables are.
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- Makefile                    | 3 ++-
- testsuite/Makefile          | 6 +++---
- testsuite/iproute2/Makefile | 6 +++---
- 3 files changed, 8 insertions(+), 7 deletions(-)
+Wanted to reach out for opinions on the best course of action before
+submitting a patch.
 
-diff --git a/Makefile b/Makefile
-index 48f469b0d0a85..a87826fee84dd 100644
---- a/Makefile
-+++ b/Makefile
-@@ -114,7 +114,8 @@ clobber:
- distclean: clobber
- 
- check: all
--	cd testsuite && $(MAKE) && $(MAKE) alltests
-+	$(MAKE) -C testsuite
-+	$(MAKE) -C testsuite alltests
- 	@if command -v man >/dev/null 2>&1; then \
- 		echo "Checking manpages for syntax errors..."; \
- 		$(MAKE) -C man check; \
-diff --git a/testsuite/Makefile b/testsuite/Makefile
-index 7f247bbc1c803..94a4a8c646ef7 100644
---- a/testsuite/Makefile
-+++ b/testsuite/Makefile
-@@ -26,10 +26,10 @@ endif
- .PHONY: compile listtests alltests configure $(TESTS)
- 
- configure:
--	echo "Entering iproute2" && cd iproute2 && $(MAKE) configure && cd ..;
-+	$(MAKE) -C iproute2 configure
- 
- compile: configure generate_nlmsg
--	echo "Entering iproute2" && cd iproute2 && $(MAKE) && cd ..;
-+	$(MAKE) -C iproute2
- 
- listtests:
- 	@for t in $(TESTS); do \
-@@ -51,7 +51,7 @@ clean: testclean
- 	$(MAKE) -C tools clean
- 
- distclean: clean
--	echo "Entering iproute2" && cd iproute2 && $(MAKE) distclean && cd ..;
-+	$(MAKE) -C iproute2 distclean
- 
- $(TESTS): generate_nlmsg testclean
- ifeq (,$(IPVERS))
-diff --git a/testsuite/iproute2/Makefile b/testsuite/iproute2/Makefile
-index b8a7d5153175a..f8946058b3a99 100644
---- a/testsuite/iproute2/Makefile
-+++ b/testsuite/iproute2/Makefile
-@@ -4,7 +4,7 @@ SUBDIRS := $(filter-out Makefile,$(wildcard *))
- 
- all: configure
- 	@for dir in $(SUBDIRS); do \
--		echo "Entering $$dir" && cd $$dir && $(MAKE) && cd ..; \
-+		$(MAKE) -C $$dir; \
- 	done
- 
- link:
-@@ -19,12 +19,12 @@ configure: link
- 
- clean: link
- 	@for dir in $(SUBDIRS); do \
--		echo "Entering $$dir" && cd $$dir && $(MAKE) clean && cd ..; \
-+		$(MAKE) -C $$dir clean; \
- 	done
- 
- distclean: clean
- 	@for dir in $(SUBDIRS); do \
--		echo "Entering $$dir" && cd $$dir && $(MAKE) distclean && cd ..; \
-+		$(MAKE) -C $$dir distclean; \
- 	done
- 
- show: link
--- 
-2.20.1
+https://github.com/ClangBuiltLinux/linux/issues/529
 
+Thanks,
+Nathan Huckleberry
