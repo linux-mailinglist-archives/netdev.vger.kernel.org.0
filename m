@@ -2,154 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC5B45036
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 01:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 037F74505D
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 01:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbfFMXmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 19:42:20 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38556 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727623AbfFMXmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 19:42:15 -0400
-Received: by mail-pg1-f195.google.com with SMTP id v11so398766pgl.5
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 16:42:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=asAFKY/6kW404t0swx66t/dNtCEl6Thr0JYkBAqMaR4=;
-        b=AtrQETD8maXPKp1qgnGxA8eeBx7Cjs5OFntvEBHxx8Y63Hfo8STjQB7T1kmrZIxhVv
-         baf4wlarO3zBU4HJwEuF2UysuOBmjOTzr1oAY/Po2KQUJFEL9/7sBH979Ox2KI22TRcV
-         NauLNa3uQxNcDx/j3YUJ7eaChBlNbfov6fKsA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=asAFKY/6kW404t0swx66t/dNtCEl6Thr0JYkBAqMaR4=;
-        b=CBovOYo1dmRtWIVmC4ngNW4WFvkNWGpn5T2fX8hfnfMcVu3BKmHbjdt3CLpmVgOtAR
-         +tGLttSGY8ok31gaJwDE5581UPzB8IwayZWr43E/Oq3EFV7f1XL2WpzC5BqTy8NDIe0I
-         7smjO8Mym6qnv+dq3JZ9ESw3kUiLp7U6hsipm0JbyJUKagMOpaUbE22+gymuHgIdlMYf
-         oskPBli/QmsnyYQn6+4VGmXxYB9xSwJrIFUs5MN7OCd3fv/z7D0Q24mrIMK6u/bP+ASn
-         pL4x63lzya0yuO7f17ZQH59im1So2awJIqFmStn9R0CJTL8GwqjI4h9aPj6Yuq55Uj95
-         u2AQ==
-X-Gm-Message-State: APjAAAWmm9rPcPsiTKG6uM009DVpi+SdlLYf3LO+OMDlSihlk8XFd9oN
-        gpjL5T55ZDuQ8sOOLS/118m2dQ==
-X-Google-Smtp-Source: APXvYqw9ZPafeIz8wf7SJLyfTJw4AF/ZuccsnJmitqQ0R7cOeNBJgsKmhTK6uMW7wmx88DQONcxcAw==
-X-Received: by 2002:a17:90a:ad89:: with SMTP id s9mr8114489pjq.41.1560469334233;
-        Thu, 13 Jun 2019 16:42:14 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id p7sm781088pfp.131.2019.06.13.16.42.13
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 16:42:13 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        linux-wireless@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        Douglas Anderson <dianders@chromium.org>,
-        Franky Lin <franky.lin@broadcom.com>,
-        linux-kernel@vger.kernel.org,
-        Madhan Mohan R <MadhanMohan.R@cypress.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v4 5/5] brcmfmac: sdio: Don't tune while the card is off
-Date:   Thu, 13 Jun 2019 16:41:53 -0700
-Message-Id: <20190613234153.59309-6-dianders@chromium.org>
-X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
-In-Reply-To: <20190613234153.59309-1-dianders@chromium.org>
-References: <20190613234153.59309-1-dianders@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727309AbfFMX4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 19:56:46 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:34600 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725836AbfFMX4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 19:56:33 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5919420050F;
+        Fri, 14 Jun 2019 01:56:31 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4C305200503;
+        Fri, 14 Jun 2019 01:56:31 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E2CDC205DC;
+        Fri, 14 Jun 2019 01:56:30 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     linux@armlinux.org.uk, hkallweit1@gmail.com, f.fainelli@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, alexandru.marginean@nxp.com,
+        ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH RFC 0/6] DPAA2 MAC Driver
+Date:   Fri, 14 Jun 2019 02:55:47 +0300
+Message-Id: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When Broadcom SDIO cards are idled they go to sleep and a whole
-separate subsystem takes over their SDIO communication.  This is the
-Always-On-Subsystem (AOS) and it can't handle tuning requests.
+After today's discussion with Russell King about what phylink exposes in
+.mac_config(): https://marc.info/?l=linux-netdev&m=156043794316709&w=2
+I am submitting for initial review the dpaa2-mac driver model.
 
-Specifically, as tested on rk3288-veyron-minnie (which reports having
-BCM4354/1 in dmesg), if I force a retune in brcmf_sdio_kso_control()
-when "on = 1" (aka we're transition from sleep to wake) by whacking:
-  bus->sdiodev->func1->card->host->need_retune = 1
-...then I can often see tuning fail.  In this case dw_mmc reports "All
-phases bad!").  Note that I don't get 100% failure, presumably because
-sometimes the card itself has already transitioned away from the AOS
-itself by the time we try to wake it up.  If I force retuning when "on
-= 0" (AKA force retuning right before sending the command to go to
-sleep) then retuning is always OK.
+At the moment, pause frame support is missing so inherently all the USXGMII
+modes that rely on backpressure applied by the PHY in rate adaptation between
+network side and system side don't work properly.
 
-NOTE: we need _both_ this patch and the patch to avoid triggering
-tuning due to CRC errors in the sleep/wake transition, AKA ("brcmfmac:
-sdio: Disable auto-tuning around commands expected to fail").  Though
-both patches handle issues with Broadcom's AOS, the problems are
-distinct:
-1. We want to defer (but not ignore) asynchronous (like
-   timer-requested) tuning requests till the card is awake.  However,
-   we want to ignore CRC errors during the transition, we don't want
-   to queue deferred tuning request.
-2. You could imagine that the AOS could implement retuning but we
-   could still get errors while transitioning in and out of the AOS.
-   Similarly you could imagine a seamless transition into and out of
-   the AOS (with no CRC errors) even if the AOS couldn't handle
-   tuning.
+As next steps, the driver will have to be integrated with the SFP bus so
+commands such as 'ethtool --dump-module-eeprom' will have to work through the
+current callpath through firmware. This poses somewhat of a problem, as
+dpaa2-eth lacks any handle to the phy so it will probably need further
+modification to the API that the firmware exposes (same applies to 'ethtool
+--phy-statistics').
 
-ALSO NOTE: presumably there is never a desperate need to retune in
-order to wake up the card, since doing so is impossible.  Luckily the
-only way the card can get into sleep state is if we had a good enough
-tuning to send it a sleep command, so presumably that "good enough"
-tuning is enough to wake us up, at least with a few retries.
+The documentation patch provides a more complete view of the software
+architecture and the current implementation.
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+Ioana Ciornei (4):
+  net: phy: update the autoneg state in phylink_phy_change
+  dpaa2-mac: add MC API for the DPMAC object
+  dpaa2-mac: add initial driver
+  net: documentation: add MAC/PHY proxy driver documentation
 
-Changes in v4:
-- Adjust to API rename (Adrian).
+Ioana Radulescu (2):
+  dpaa2-eth: add support for new link state APIs
+  dpaa2-eth: add autoneg support
 
-Changes in v3:
-- ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
+ .../freescale/dpaa2/dpmac-driver.rst               | 159 ++++++
+ .../device_drivers/freescale/dpaa2/index.rst       |   1 +
+ MAINTAINERS                                        |   8 +
+ drivers/net/ethernet/freescale/dpaa2/Kconfig       |  13 +
+ drivers/net/ethernet/freescale/dpaa2/Makefile      |   2 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |  83 +++-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c   | 541 +++++++++++++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h   | 107 ++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.c       | 369 ++++++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.h       | 210 ++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h    |  35 ++
+ drivers/net/ethernet/freescale/dpaa2/dpni.c        |  70 +++
+ drivers/net/ethernet/freescale/dpaa2/dpni.h        |  27 +
+ drivers/net/phy/phylink.c                          |   1 +
+ 14 files changed, 1612 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/dpmac-driver.rst
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.c
+ create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.h
 
-Changes in v2: None
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ee76593259a7..629140b6d7e2 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -669,6 +669,10 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 
- 	sdio_retune_crc_disable(bus->sdiodev->func1);
- 
-+	/* Cannot re-tune if device is asleep; defer till we're awake */
-+	if (on)
-+		sdio_retune_hold_now(bus->sdiodev->func1);
-+
- 	wr_val = (on << SBSDIO_FUNC1_SLEEPCSR_KSO_SHIFT);
- 	/* 1st KSO write goes to AOS wake up core if device is asleep  */
- 	brcmf_sdiod_writeb(bus->sdiodev, SBSDIO_FUNC1_SLEEPCSR, wr_val, &err);
-@@ -729,6 +733,9 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 	if (try_cnt > MAX_KSO_ATTEMPTS)
- 		brcmf_err("max tries: rd_val=0x%x err=%d\n", rd_val, err);
- 
-+	if (on)
-+		sdio_retune_release(bus->sdiodev->func1);
-+
- 	sdio_retune_crc_enable(bus->sdiodev->func1);
- 
- 	return err;
 -- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
+1.9.1
 
