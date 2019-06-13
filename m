@@ -2,128 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 952A043ADA
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAD843BEB
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388687AbfFMPYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:24:14 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38956 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388244AbfFMPYN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 11:24:13 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id F3BD42F8BFD;
-        Thu, 13 Jun 2019 15:24:12 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0AF0619C67;
-        Thu, 13 Jun 2019 15:24:11 +0000 (UTC)
-Message-ID: <33dc8df3cb95e76c906ddb88041ba974bbe73a1c.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 1/2] ipoib: correcly show a VF hardware
- address
-From:   Doug Ledford <dledford@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        mkubecek@suse.cz
-Date:   Thu, 13 Jun 2019 11:24:09 -0400
-In-Reply-To: <20190613142003.129391-3-dkirjanov@suse.com>
-References: <20190613142003.129391-1-dkirjanov@suse.com>
-         <20190613142003.129391-3-dkirjanov@suse.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-HdDD15E8H0DGo1j/KQ/U"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        id S1727755AbfFMPcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:32:36 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42484 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbfFMPce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:32:34 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so12058642pff.9
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 08:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TD2H9Hhj3S+Krmty7ZqGdgy5CKS4QMDwo6kREYn96xQ=;
+        b=Cq6HuyO4bDdlNTIqwl6xwH9kgUiKInbq+xLqOLxh/BeqTnneGb9Urvf34iqJu+7rTQ
+         ssFL6laY7TJFMfMCJkwwrRkjCMaeiErU9nuYYp7lDWQBJjRBXiqa8PZAh2VySdjxZ1Id
+         Thbx9VOwFTQQAiOIEkBf6hIo+5z5ZegX6Ruj+gDKhYiK8tiSM68ea61JDrLpzmeus+a2
+         9Sg4TzBDoB0AaGlZXk0ttN6VLmt9GmJmeu+TsHGuTrZpm+BAbxvK4a0PCKNaPUpUHSQB
+         GfvESD767p6+aGZskS97M8xVm7+Zt0KqpcbH2J996qzD3EJ6ZpVaV65S+ynyjswi0SOa
+         P63w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TD2H9Hhj3S+Krmty7ZqGdgy5CKS4QMDwo6kREYn96xQ=;
+        b=e4rj12KVNK1WJTn0NbNTINIHv+g/NBUVgHxxbccDjCRttF7dM8gMujeThb4UiJH9Q5
+         WSX1Ko30nIkkFgIckWperJL60xpxmJ0GmpSOjdX7zFPzu4OmruKdBvGOuP6O0eb/WprH
+         PxCHKpgQPnZjcZP76YRqVM2uNblh/XtEWTahyoRM0rkOdtPVhSk+3sSdoQzFnW+digUB
+         LmkJzRItj2Os4D+XLENLrG3xHZxZbIe+eNk8tu0gVekTCLzexNeKQbmtsC6FUCcwKGuT
+         3x0VodPUqkpXvvWPvQkUzV9NJ7A5WD9PEcUtV8dIxvZXMRB/2KD2Uf0OiXUJJhxoWxZL
+         wcIA==
+X-Gm-Message-State: APjAAAULCtTN87mOI0l+KnAH1ERS9GHuw+dtQrkNbiOPYFHtCowxRNGF
+        9TaH6QkgMkOD964gNz/+xVcMNQA=
+X-Google-Smtp-Source: APXvYqyFnQ03x2HJTRPqVGsDA/9/mGuMdKnhJezVh3cDN5MYou1XCC+JjN52BXsiFMUHEb5HrN32Kw==
+X-Received: by 2002:a62:fb18:: with SMTP id x24mr93174922pfm.76.1560439954161;
+        Thu, 13 Jun 2019 08:32:34 -0700 (PDT)
+Received: from ubuntu ([12.38.14.8])
+        by smtp.gmail.com with ESMTPSA id s5sm147300pgj.60.2019.06.13.08.32.31
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 13 Jun 2019 08:32:33 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 11:32:26 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] ipv4: Support multipath hashing on inner IP
+ pkts for GRE tunnel
+Message-ID: <20190613153226.GA4250@ubuntu>
+References: <20190611003142.11626-1-ssuryaextr@gmail.com>
+ <076bc564-7c97-f591-6b4c-2e540db4cb87@cumulusnetworks.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 13 Jun 2019 15:24:13 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <076bc564-7c97-f591-6b4c-2e540db4cb87@cumulusnetworks.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 11, 2019 at 10:29:56AM +0300, Nikolay Aleksandrov wrote:
+> 
+> Have you considered using the flow dissector and doing something similar to the bonding ?
+> It does a full flow dissect via skb_flow_dissect_flow_keys() and uses whatever headers
+> it needs, but that will support any tunneling protocol which the flow dissector
+> recognizes and will be improved upon automatically by people adding to it.
+> Also would avoid doing dissection by yourself.
+> 
+> The bond commit which added that was:
+>  32819dc18348 ("bonding: modify the old and add new xmit hash policies")
+> 
 
---=-HdDD15E8H0DGo1j/KQ/U
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I didn't consider it and should. Thanks for pointing me to that
+direction. It's simpler.
 
-On Thu, 2019-06-13 at 16:20 +0200, Denis Kirjanov wrote:
-> in the case of IPoIB with SRIOV enabled hardware
-> ip link show command incorrecly prints
-> 0 instead of a VF hardware address. To correcly print the address
-> add a new field to specify an address length.
->=20
-> Before:
-> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-> state UP mode DEFAULT group default qlen 256
->     link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->     vf 0 MAC 00:00:00:00:00:00, spoof checking off, link-state
-> disable,
-> trust off, query_rss off
-> ...
-> After:
-> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-> state UP mode DEFAULT group default qlen 256
->     link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->     vf 0     link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
-> checking off, link-state disable, trust off, query_rss off
->=20
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-> ---
->  drivers/infiniband/ulp/ipoib/ipoib_main.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c
-> b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-> index 9b5e11d3fb85..04ea7db08e87 100644
-> --- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
-> +++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-> @@ -1998,6 +1998,7 @@ static int ipoib_get_vf_config(struct
-> net_device *dev, int vf,
->  		return err;
-> =20
->  	ivf->vf =3D vf;
-> +	memcpy(ivf->mac, dev->dev_addr, dev->addr_len);
-> =20
->  	return 0;
->  }
+> >  /* if skb is set it will be used and fl4 can be NULL */
+> >  int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+> >  		       const struct sk_buff *skb, struct flow_keys *flkeys)
+> > @@ -1828,12 +1876,13 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+> >  	struct flow_keys hash_keys;
+> >  	u32 mhash;
+> >  
+> > +	memset(&hash_keys, 0, sizeof(hash_keys));
+> > +
+> 
+> This was an optimization, it was done on purpose to avoid doing anything when we
+> have L3+4 configured (1) and the skb has its hash already calculated.
+> 
+Will revert to the original lines.
 
-I'm ok with the patch, but your commit message does not match what the
-patch does at all.  You need to correct the commit message.
-
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57
-2FDD
-
---=-HdDD15E8H0DGo1j/KQ/U
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl0CapkACgkQuCajMw5X
-L91/aA/+MR47RawkBMXJ/bSYCXW7AvbOUTMjz2UQxIf0GZmzzIrRgjlgMJEwpCRm
-/67/5C9MWE4T6rvcWKm0CgRnTj60iywwAUerkZ78u3n02Kw5gf9QvP73vXcQKKhB
-D802Nv2+cFjFsyDSyYnDsR+AhKVuTizufIJ6O6x7DIKT/6nzSF9+Wsu55TbRZ8bv
-HSCODKg8rrjzony1YQEJhzG75INnHPzo7sp5U3pofn1CaddwmLpTQS6UPIfd7FvR
-hk92P8Vgjj6PK11twdWXgv7CZCKvqnqdbfaLMd/Ty3GJ7CxVBxwy1ynRvPu2KVu/
-Z6tCgNv5Q8sp0hwguoEgmXXf2Wxr94cPafzLTor1oRMLQFlZHTkmKcS5djnl/3ee
-pVVa97Dg+qDZc6a58kiZ5A/Cpa5Sn7ECxPNCz+NmMdU39FwVYGaWxLQMeDYG07XJ
-pOINrrIsEFBMZZ7vPchHbFUCZPB/yKtOkL39jZW5z4+hrFscAT67eiQgaO+9KjYU
-UZAYxTPLVkR7ffQRGMeVt+FwNq00Id3XxaHCrnh5tHMQbxiTmTHielZmadGaM6/Y
-tiWvtR1wVYqGKBQ+tn8mKi0937mL+PP+2/D1+7nxe/Nqh1fwGoevz70m7EJRA6ny
-mQ4lopbC2xmu75oQdMs22IF6KdLIWQNvbwOaXcRjIWQxFyhFMJ4=
-=InDf
------END PGP SIGNATURE-----
-
---=-HdDD15E8H0DGo1j/KQ/U--
-
+Thanks.
