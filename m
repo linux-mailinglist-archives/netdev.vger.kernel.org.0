@@ -2,106 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAA8C43D67
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFDC43D84
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbfFMPl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:41:56 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:36044 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387546AbfFMPlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:41:55 -0400
-Received: by mail-pg1-f195.google.com with SMTP id f21so5158153pgi.3
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 08:41:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=mWJyZbm7F3Ahz/ql/XF8euQ1ksW5Cu4zLDVBU8U4GDo=;
-        b=o6aVXpjqvNPmGOyOlXbaR8Zo2sjLjrACsvivGycW9GMFCBZxRG+Giv9O1YysXycFpR
-         36efE76JYm0/qUZIYkJ8E/5xHl/zIQDBAxcZFm7df4gRFn92NVCHGd7RMoUe4jCeKYdg
-         ah6tzVeUt1temIghkERv5YTXkb3gJlcKj9AquTF0HfKWqYh9/ZYXYCAC8ZNWZ8z7XZa0
-         xY8CvRkfk8wTNYTCECshfLGPOJccuAvmQ2fwGbYINT4izbMXhOJ646s5DgeMB20iLzzT
-         fKeVbj9TYL//xAu2cpuoxoQzHwqQTI9DB/FIt7Ensd9XV/FEnVK5ZJJF6EcP9EKnT8z0
-         JuDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=mWJyZbm7F3Ahz/ql/XF8euQ1ksW5Cu4zLDVBU8U4GDo=;
-        b=mJUfrx373NDxFW34VWzAlD3Tn+dbzUGMDykrHN8qu87++fIXT40kyO79XHpKzbjDxs
-         hHQPRuTxSOdNWjqTNyoJS/AHZRr2LqqPPQJWXWnvfoFkj54HvR5fitHK6+JgEvH0zff5
-         ZDBPtqez+VeJt1HnzYPsBiueWqADVpSlKGo0397mTbnlMrdiC/lp6uMenEGv94FRQh6H
-         EH0aDsMloGJgt2vRJWYwxrrUV2VVXNarU7dvDI/WtDp+y5NMHx1bQ5qWvBOz6Z9OlWhT
-         r+uaPFt30cbjtwfOWoTvlZmQl9ZTibvyQ4Ftoh0lOx0KwaYEDmvNdVm6o8ZBOoAOOUWo
-         nyig==
-X-Gm-Message-State: APjAAAUaKLU1UaXuqaIUaaqdm83xsGFYA2qUTVIRkHIjyf0l5EjBCJOU
-        329BwhKPnbfGY/ynr2GYSl7t6Q==
-X-Google-Smtp-Source: APXvYqz665NIJnk8Z4SVgLXBrXMXtYkxyBLHoq/yncNrUZ0q/8CMlIVoc2MY1UgABSwK3TkEspaEgw==
-X-Received: by 2002:a17:90b:d8b:: with SMTP id bg11mr6287697pjb.30.1560440514297;
-        Thu, 13 Jun 2019 08:41:54 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id x6sm111580pfx.17.2019.06.13.08.41.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 08:41:53 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 08:41:52 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Arthur Fabre <afabre@cloudflare.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bpf: selftests: Fix warning in flow_dissector
-Message-ID: <20190613154152.GA9636@mini-arch>
-References: <20190613112709.7215-1-afabre@cloudflare.com>
+        id S1728107AbfFMPnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:43:17 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:42624 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726700AbfFMPm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 11:42:59 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 45Pp0Z4QQJz1rZ0T;
+        Thu, 13 Jun 2019 17:42:54 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 45Pp0Z3cMHz1qqkR;
+        Thu, 13 Jun 2019 17:42:54 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 9YOcWsdlzCy0; Thu, 13 Jun 2019 17:42:53 +0200 (CEST)
+X-Auth-Info: mkAhY639dHiUgP0pgd/tVI9bibCwrTnW/Vhhbw0AWfc=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 13 Jun 2019 17:42:53 +0200 (CEST)
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190528192324.28862-1-marex@denx.de>
+ <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
+ <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+ <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+ <20190528195806.GV18059@lunn.ch>
+ <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+ <20190528212252.GW18059@lunn.ch>
+ <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
+ <20190529232930.GF18059@lunn.ch>
+ <19f9e596-5b51-8c76-396e-572d3e8da463@denx.de>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <f9bb1f48-b69d-09b2-5b48-e3f09ce9107e@denx.de>
+Date:   Thu, 13 Jun 2019 17:42:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <19f9e596-5b51-8c76-396e-572d3e8da463@denx.de>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190613112709.7215-1-afabre@cloudflare.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/13, Arthur Fabre wrote:
-> Building the userspace part of the flow_dissector resulted in:
+On 5/30/19 1:46 AM, Marek Vasut wrote:
+> On 5/30/19 1:29 AM, Andrew Lunn wrote:
+>> On Tue, May 28, 2019 at 11:33:33PM +0200, Marek Vasut wrote:
+>>> On 5/28/19 11:22 PM, Andrew Lunn wrote:
+>>>>> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
+>>>>> so I better use all the interrupt sources to nudge the PHY subsystem and
+>>>>> have it check the link change.
+>>>>
+>>>> Then it sounds like you should just ignore interrupts and stay will
+>>>> polling for the TJA1100.
+>>>
+>>> Polling for the link status change is slow(er) than the IRQ driven
+>>> operation, so I would much rather use the interrupts.
+>>
+>> I agree about the speed, but it seems like interrupts on this PHY are
+>> not so reliable. Polling always works. But unfortunately, you cannot
+>> have both interrupts and polling to fix up problems when interrupts
+>> fail. Your call, do you think interrupts really do work?
 > 
-> prog_tests/flow_dissector.c: In function ‘tx_tap’:
-> prog_tests/flow_dissector.c:176:9: warning: implicit declaration
-> of function ‘writev’; did you mean ‘write’? [-Wimplicit-function-declaration]
->   return writev(fd, iov, ARRAY_SIZE(iov));
->          ^~~~~~
->          write
+> It works fine for me this way. And mind you, it's only the TJA1100
+> that's flaky, the TJA1101 is better.
 > 
-> Include <sys/uio.h> to fix this.
-Wasn't it fixed already?
+>> If you say that tja1101 works as expected, then please just use the
+>> link up/down bits for it.
+> 
+> I still don't know which bits really trigger link status changes, so I'd
+> like to play it safe and just trigger on all of them.
 
-See
-https://lore.kernel.org/netdev/20190528190218.GA6950@ip-172-31-44-144.us-west-2.compute.internal/
+So what do we do here ?
 
-> Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> index fbd1d88a6095..c938283ac232 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> @@ -3,6 +3,7 @@
->  #include <error.h>
->  #include <linux/if.h>
->  #include <linux/if_tun.h>
-> +#include <sys/uio.h>
->  
->  #define CHECK_FLOW_KEYS(desc, got, expected)				\
->  	CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,		\
-> -- 
-> 2.20.1
-> 
+-- 
+Best regards,
+Marek Vasut
