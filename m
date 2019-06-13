@@ -2,122 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF7144498
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 198C44445A
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730628AbfFMQht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:37:49 -0400
-Received: from m15-111.126.com ([220.181.15.111]:58751 "EHLO m15-111.126.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730618AbfFMHKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 03:10:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=pQt7H
-        gkGjDiOkh+wd5Sa+sRL4h8CMsOHEzAP3mBBeC8=; b=VKaOqZrlpaLx1J+5Bg/Cx
-        7ltBFnLNLNqG6vgB2T4PCQ7ZgqZbbzpbGeSOQQybU4a3oOJFvdKhWZODRoJPP0n0
-        It9lqYyN01oPi0970JeyUDIZniH0eP6Bz4gPgwudRCWlM5P2kw6DfmU4mlMybFU/
-        MfqzH8cLakatQT+rv0rdU8=
-Received: from localhost.localdomain (unknown [159.226.223.206])
-        by smtp1 (Coremail) with SMTP id C8mowADXoDSj9gFdCHxqCg--.49261S2;
-        Thu, 13 Jun 2019 15:09:23 +0800 (CST)
-From:   Lu Shuaibing <shuaibinglu@126.com>
-To:     ericvh@gmail.com
-Cc:     lucho@ionkov.net, asmadeus@codewreck.org, davem@davemloft.net,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lu Shuaibing <shuaibinglu@126.com>
-Subject: [PATCH] 9p: Transport error uninitialized
-Date:   Thu, 13 Jun 2019 15:08:54 +0800
-Message-Id: <20190613070854.10434-1-shuaibinglu@126.com>
-X-Mailer: git-send-email 2.19.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowADXoDSj9gFdCHxqCg--.49261S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWrZr1fJr4UKFW5tw45GFg_yoW5XFW5pr
-        nIkrWxCr48tryUZF4Dtay8Ar18JF4DZ3W7XryIyr12yanrGr18Aa4UKrWUWFyUCr15AFy7
-        JF1qq3y5tr1UGaUanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jJ6pPUUUUU=
-X-Originating-IP: [159.226.223.206]
-X-CM-SenderInfo: 5vkxtxpelqwzbx6rjloofrz/1tbiFxHSq1pD8kc0nAABs6
+        id S1731860AbfFMQg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:36:27 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:33794 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730690AbfFMHe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 03:34:26 -0400
+X-Greylist: delayed 496 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Jun 2019 03:34:24 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id 28A7CE245A;
+        Thu, 13 Jun 2019 17:26:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received; s=mail_dkim; t=1560410766; bh=TlAqb
+        Y+Y/Nk/xinv0oXwaBI/JgLTGJM+BcFsiZMUIdQ=; b=Qn9jJjdyaCFzRtnqLQMMs
+        JDk+MyoVg/uUEz1xEpBXdnOkHBx6mmXDdKJhhu6qWku736ZiMF7+2Kyl6g29CYWA
+        K73l6Huu3jnUvOPjqZ0Rlxiehsar1dZ7UGCuEMUQk0uygn0tDtbAlFe8dvdw2a27
+        vd7/gyWCxjjRrP9IFauusg=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id NE5pbgZEfpVu; Thu, 13 Jun 2019 17:26:06 +1000 (AEST)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id AB2F3E492F;
+        Thu, 13 Jun 2019 17:26:05 +1000 (AEST)
+Received: from build.dek-tpc.internal (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id C04DAE245A;
+        Thu, 13 Jun 2019 17:26:03 +1000 (AEST)
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     dsahern@gmail.com, jon.maloy@ericsson.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [iproute2-next v4] tipc: support interface name when activating UDP bearer
+Date:   Thu, 13 Jun 2019 14:25:53 +0700
+Message-Id: <20190613072553.20747-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The p9_tag_alloc() does not initialize the transport error t_err field.
-The struct p9_req_t *req is allocated and stored in a struct p9_client
-variable. The field t_err is never initialized before p9_conn_cancel()
-checks its value.
+Support for indicating interface name has an ip address in parallel
+with specifying ip address when activating UDP bearer.
+This liberates the user from keeping track of the current ip address
+for each device.
 
-KUMSAN(KernelUninitializedMemorySantizer, a new error detection tool)
-reports this bug.
+Old command syntax:
+$tipc bearer enable media udp name NAME localip IP
 
-==================================================================
-BUG: KUMSAN: use of uninitialized memory in p9_conn_cancel+0x2d9/0x3b0
-Read of size 4 at addr ffff88805f9b600c by task kworker/1:2/1216
+New command syntax:
+$tipc bearer enable media udp name NAME [localip IP|dev DEVICE]
 
-CPU: 1 PID: 1216 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #28
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
-Workqueue: events p9_write_work
-Call Trace:
- dump_stack+0x75/0xae
- __kumsan_report+0x17c/0x3e6
- kumsan_report+0xe/0x20
- p9_conn_cancel+0x2d9/0x3b0
- p9_write_work+0x183/0x4a0
- process_one_work+0x4d1/0x8c0
- worker_thread+0x6e/0x780
- kthread+0x1ca/0x1f0
- ret_from_fork+0x35/0x40
+v2:
+    - Removed initial value for fd
+    - Fixed the returning value for cmd_bearer_validate_and_get_addr
+      to make its consistent with using: zero or non-zero
+v3:
+    - Switch to use helper 'get_ifname' to retrieve interface name
 
-Allocated by task 1979:
- save_stack+0x19/0x80
- __kumsan_kmalloc.constprop.3+0xbc/0x120
- kmem_cache_alloc+0xa7/0x170
- p9_client_prepare_req.part.9+0x3b/0x380
- p9_client_rpc+0x15e/0x880
- p9_client_create+0x3d0/0xac0
- v9fs_session_init+0x192/0xc80
- v9fs_mount+0x67/0x470
- legacy_get_tree+0x70/0xd0
- vfs_get_tree+0x4a/0x1c0
- do_mount+0xba9/0xf90
- ksys_mount+0xa8/0x120
- __x64_sys_mount+0x62/0x70
- do_syscall_64+0x6d/0x1e0
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+v4:
+    - Replace legacy SIOCGIFADDR using by netlink
 
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff88805f9b6008
- which belongs to the cache p9_req_t of size 144
-The buggy address is located 4 bytes inside of
- 144-byte region [ffff88805f9b6008, ffff88805f9b6098)
-The buggy address belongs to the page:
-page:ffffea00017e6d80 refcount:1 mapcount:0 mapping:ffff888068b63740 index:0xffff88805f9b7d90 compound_mapcount: 0
-flags: 0x100000000010200(slab|head)
-raw: 0100000000010200 ffff888068b66450 ffff888068b66450 ffff888068b63740
-raw: ffff88805f9b7d90 0000000000100001 00000001ffffffff 0000000000000000
-page dumped because: kumsan: bad access detected
-==================================================================
-
-Signed-off-by: Lu Shuaibing <shuaibinglu@126.com>
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 ---
- net/9p/client.c | 1 +
- 1 file changed, 1 insertion(+)
+ tipc/bearer.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 84 insertions(+), 5 deletions(-)
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 9622f3e469f6..148acdcd0217 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -310,6 +310,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
- 	 */
- 	refcount_set(&req->refcount.refcount, 2);
+diff --git a/tipc/bearer.c b/tipc/bearer.c
+index 1f3a4d44441e..367ec8a2630f 100644
+--- a/tipc/bearer.c
++++ b/tipc/bearer.c
+@@ -19,10 +19,12 @@
+ #include <linux/tipc_netlink.h>
+ #include <linux/tipc.h>
+ #include <linux/genetlink.h>
++#include <linux/if.h>
  
-+	req->t_err = 0;
- 	return req;
+ #include <libmnl/libmnl.h>
+ #include <sys/socket.h>
  
- free:
++#include "utils.h"
+ #include "cmdl.h"
+ #include "msg.h"
+ #include "bearer.h"
+@@ -68,7 +70,7 @@ static void cmd_bearer_enable_l2_help(struct cmdl *cmdl, char *media)
+ static void cmd_bearer_enable_udp_help(struct cmdl *cmdl, char *media)
+ {
+ 	fprintf(stderr,
+-		"Usage: %s bearer enable [OPTIONS] media %s name NAME localip IP [UDP OPTIONS]\n\n"
++		"Usage: %s bearer enable [OPTIONS] media %s name NAME [localip IP|device DEVICE] [UDP OPTIONS]\n\n"
+ 		"OPTIONS\n"
+ 		" domain DOMAIN		- Discovery domain\n"
+ 		" priority PRIORITY	- Bearer priority\n\n"
+@@ -119,6 +121,71 @@ static int generate_multicast(short af, char *buf, int bufsize)
+ 	return 0;
+ }
+ 
++static struct ifreq ifr;
++static int nl_dump_addr_filter(struct nlmsghdr *nlh, void *arg)
++{
++	struct ifaddrmsg *ifa = NLMSG_DATA(nlh);
++	char *r_addr = (char *)arg;
++	int len = nlh->nlmsg_len;
++	struct rtattr *addr_attr;
++
++	if (ifr.ifr_ifindex != ifa->ifa_index)
++		return 0;
++
++	if (strlen(r_addr) > 0)
++		return 1;
++
++	addr_attr = parse_rtattr_one(IFA_ADDRESS, IFA_RTA(ifa),
++				     len - NLMSG_LENGTH(sizeof(*ifa)));
++	if (!addr_attr)
++		return 0;
++
++	if (ifa->ifa_family == AF_INET) {
++		struct sockaddr_in ip4addr;
++		memcpy(&ip4addr.sin_addr, RTA_DATA(addr_attr),
++		       sizeof(struct in_addr));
++		if (inet_ntop(AF_INET, &ip4addr.sin_addr, r_addr,
++			      INET_ADDRSTRLEN) == NULL)
++			return 0;
++	} else if (ifa->ifa_family == AF_INET6) {
++		struct sockaddr_in6 ip6addr;
++		memcpy(&ip6addr.sin6_addr, RTA_DATA(addr_attr),
++		       sizeof(struct in6_addr));
++		if (inet_ntop(AF_INET6, &ip6addr.sin6_addr, r_addr,
++			      INET6_ADDRSTRLEN) == NULL)
++			return 0;
++	}
++	return 1;
++}
++
++static int cmd_bearer_validate_and_get_addr(const char *name, char *r_addr)
++{
++	struct rtnl_handle rth = { .fd = -1 };
++
++	memset(&ifr, 0, sizeof(ifr));
++	if (!name || !r_addr || get_ifname(ifr.ifr_name, name))
++		return 0;
++
++	ifr.ifr_ifindex = ll_name_to_index(ifr.ifr_name);
++	if (!ifr.ifr_ifindex)
++		return 0;
++
++	/* remove from cache */
++	ll_drop_by_index(ifr.ifr_ifindex);
++
++	if (rtnl_open(&rth, 0) < 0)
++		return 0;
++
++	if (rtnl_addrdump_req(&rth, AF_UNSPEC, 0) < 0)
++		return 0;
++
++	if (rtnl_dump_filter(&rth, nl_dump_addr_filter, r_addr) < 0)
++		return 0;
++
++	rtnl_close(&rth);
++	return 1;
++}
++
+ static int nl_add_udp_enable_opts(struct nlmsghdr *nlh, struct opt *opts,
+ 				  struct cmdl *cmdl)
+ {
+@@ -136,13 +203,25 @@ static int nl_add_udp_enable_opts(struct nlmsghdr *nlh, struct opt *opts,
+ 		.ai_family = AF_UNSPEC,
+ 		.ai_socktype = SOCK_DGRAM
+ 	};
++	char addr[INET6_ADDRSTRLEN] = {0};
+ 
+-	if (!(opt = get_opt(opts, "localip"))) {
+-		fprintf(stderr, "error, udp bearer localip missing\n");
+-		cmd_bearer_enable_udp_help(cmdl, "udp");
++	opt = get_opt(opts, "device");
++	if (opt && !cmd_bearer_validate_and_get_addr(opt->val, addr)) {
++		fprintf(stderr, "error, no device name available\n");
+ 		return -EINVAL;
+ 	}
+-	locip = opt->val;
++
++	if (strlen(addr) > 0) {
++		locip = addr;
++	} else {
++		opt = get_opt(opts, "localip");
++		if (!opt) {
++			fprintf(stderr, "error, udp bearer localip/device missing\n");
++			cmd_bearer_enable_udp_help(cmdl, "udp");
++			return -EINVAL;
++		}
++		locip = opt->val;
++	}
+ 
+ 	if ((opt = get_opt(opts, "remoteip")))
+ 		remip = opt->val;
 -- 
-2.19.1
+2.17.1
 
