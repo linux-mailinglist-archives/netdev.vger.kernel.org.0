@@ -2,172 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC0344EC1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8537644ED3
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:58:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727236AbfFMVyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 17:54:03 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39297 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725843AbfFMVyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:54:03 -0400
-Received: by mail-pl1-f196.google.com with SMTP id b7so89895pls.6
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:54:02 -0700 (PDT)
+        id S1727716AbfFMV6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 17:58:13 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40477 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbfFMV6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:58:12 -0400
+Received: by mail-pl1-f195.google.com with SMTP id a93so92389pla.7;
+        Thu, 13 Jun 2019 14:58:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=2zPhlS5tYzS/EqHTw3l8OFTmK5mpWFJNAMacfatPMCo=;
-        b=aNEUo992PsV3H1dD31kX4IvhmXly5KhO6qCLUJpcV/JeUNi1h7BPuCpGFWTlii89oM
-         f6K+oa2tikAS0f+/qEQKxVuWlTxfu8CquhDT6G4fJ7XQZkXQAkY+a4pPfEp55kRg/5IR
-         4oMfD6gpb+4po1KV/fqejz7Pqc6rQ7S0ddj3FweXTe2a5LmrbbEbq3+JPStKgVZhf6TN
-         rZlKee6+so6FRI22ibRj6lBjhwHcsaGUzpF33pett46uwbW1Ezg/gXluCKKainW7Y+dX
-         B1c2Pd0Y/2Q8rFAVpkoms4NK9felUjpVws7ITHVhTyvNytBDnavDQABjjmSukGnHrLWY
-         /cMw==
+        bh=UgX/twFRvWeH3GOio6+WgkRLrlXF1WlNpv4jZgJXeN4=;
+        b=iWMgkqUtLROkrabF/g8NyTx6+PxfvDT4al+AvzYnirt8OFYTAHZ7DGd0EL0xU9WUX8
+         niJa2m/EpWdjOaaJMjv1yBARfXIV4tP74lELKvoFddDHa+WYuqNIBksCs8DlSt9WUNkk
+         qGWwp1jJ+0PGO+LkI/RgtBnmy6nD0GEMah/pZRJchpdlC8b8UufXDCj9yc5v/i9dn4AR
+         tfDRByjHm55StncPfXVqphTDPip4aq/AxQlQr/ZAq1IMDvWfXBqitYFgEryQsGlOgCJN
+         hxKejuzc+3dWEeZoIeTEf/vRAAbYSjOaeGL2XZASmxJhphWcOeYnpIsQDLB9Sz3/czFP
+         IR8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2zPhlS5tYzS/EqHTw3l8OFTmK5mpWFJNAMacfatPMCo=;
-        b=t0lFMe4rQ73H4+cBBwmm57Z6Z61v9mET8KwG/H4VUum3GTTWfV7Zx7GUXXGknA3yy9
-         4zIKIhv0a10teFzxO380ySeR5orWbCsUv8UFPHCpxeEIpY4WYxfXJy5H0pTPz2XVpUt5
-         S7DIZhfuOYVTSQDjVfjUDMqnGioXl0DCRPyMuZP6quvLRtVXrvCFEWT26wQdHdwq6DHk
-         fnVMYa0ku7P4kDkRwPoS36v6Y4zzxEEemw+txia3Pp8lbGKQAI4Q0VUyd8ra6cpZn1hG
-         fo3qgIugQREsHSoh0wJxDMcWlvDpa4GmFwyZ6FxGvsyMIkYJ+ldbY0wtVQ9H8CM0mmDv
-         sh2Q==
-X-Gm-Message-State: APjAAAUwMY3aoRaR1jvBsS6Zxl3Z1xxuVuXUQmdISajjREqwR3IIhdx7
-        8aAhSSg0B7BthuHIlCjOi1uCzA==
-X-Google-Smtp-Source: APXvYqziH7kVJfOAFVKpApPnO5wm5hdESaWbHNAZmLmq64xgIGf1e3/GSay40YjkcF3FsL31M8HPJg==
-X-Received: by 2002:a17:902:f01:: with SMTP id 1mr89281288ply.170.1560462842620;
-        Thu, 13 Jun 2019 14:54:02 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id 14sm742412pgp.37.2019.06.13.14.54.01
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 14:54:01 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 14:54:00 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=UgX/twFRvWeH3GOio6+WgkRLrlXF1WlNpv4jZgJXeN4=;
+        b=qEC39tZqeLAt2KiuTRzubspgO1MiZyhnWYI6tv8fbuNe7Gij8QCblkR/9/vL5+fORD
+         vEQMHpmm721w9LuOTAaW5USmXTk6D5tBIKDtxARYKfRzXiD9kxVoikF2hzIS68ZUV7m1
+         /4Ap+24plkSJkdp14E/VECKg7FMnqt9VVwRA1DLfs+ZiigMol+P6i3byRDct81qLmuo2
+         q1a95LdQbu5qfY2dCRwvTf6Gym4vTURrTUk94s3bTT4ZT56dPU1QsIKxhWCAMdEZd8iM
+         V7yVN8/HMJ0Tw1g7D7A+ybwSiwKD79LCtK0Y0Uw0li/zBblyZp1QyraHfKvK2IcQsTHD
+         wI/A==
+X-Gm-Message-State: APjAAAW7pD1VvceHAd3vhtPkUUMkPvsyPgnCxJidofJO8tZUO1qqWghx
+        HKYuWbdG6D6DkUGy7aIdoac=
+X-Google-Smtp-Source: APXvYqyCot9boqYe3zZh8zf9o7E8QgZclmSm+JdTGJT6yfBNMz2PM0EDuRtr1EmljLaYdC+4MnjyMA==
+X-Received: by 2002:a17:902:830c:: with SMTP id bd12mr12011539plb.237.1560463091883;
+        Thu, 13 Jun 2019 14:58:11 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:e034])
+        by smtp.gmail.com with ESMTPSA id j7sm595663pfa.184.2019.06.13.14.58.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 14:58:11 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 14:58:09 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: implement getsockopt and setsockopt
- hooks
-Message-ID: <20190613215400.GC9636@mini-arch>
-References: <20190610210830.105694-1-sdf@google.com>
- <20190610210830.105694-2-sdf@google.com>
- <20190613201632.t7npizqhtnohzwmc@ast-mbp.dhcp.thefacebook.com>
- <20190613212020.GB9636@mini-arch>
- <CAEf4Bza0D6=4a6D1ErpT+nh8_byufOz4qhvBmCsBV9zLFHP0eA@mail.gmail.com>
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
+Message-ID: <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bza0D6=4a6D1ErpT+nh8_byufOz4qhvBmCsBV9zLFHP0eA@mail.gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/13, Andrii Nakryiko wrote:
-> On Thu, Jun 13, 2019 at 2:20 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> >
-> > On 06/13, Alexei Starovoitov wrote:
-> > > C based example doesn't use ret=1.
-> > > imo that's a sign that something is odd in the api.
-> > I decided not to test ret=1 it because there are tests in the test_sockopt.c
-> > for ret=1 usecase. But I can certainly extend C based test to cover
-> > ret=1 as well. I agree that C based test can be used as an example,
-> > will extend that to cover ret=0/1/2.
-> >
-> > > In particular ret=1 doesn't prohibit bpf prog to modify the optval.
-> > That's a good point, Martin brought that up as well. We were trying
-> > to remedy it by doing copy_to_user only if any program returned 2 ("BPF
-> > handled that, bypass the kernel"). But I agree, the fact that the prog in
-> > the chain can modify optval and return 1 is suboptimal. Especially if
-> > the previous one filled in some valid data and returned 2.
-> >
-> > > Multiple progs can overwrite it and still return 1.
-> > > But that optval is not going to be processed by the kernel.
-> > > Should we do copy_to_user(optval, ctx.optval, ctx.optlen) here
-> > > and let kernel pick it up from there?
-> > I was thinking initially about that, that kernel can "transparently"
-> > modify user buffer and then kernel (or next BPF program in the chain)
-> > can run standard getsockopt on that.
-> >
-> > But it sounds a bit complicated and I don't really have a good use case
-> > for that.
-> >
-> > > Should bpf prog be allowed to change optlen as well?
-> > > ret=1 would mean that bpf prog did something and needs kernel
-> > > to continue.
-> > >
-> > > Now consider a sequence of bpf progs.
-> > > Some are doing ret=1. Some others are doing ret=2
-> > > ret=2 will supersede.
-> > > If first executed prog (child in cgroup) did ret=2
-> > > the parent has no way to tell kernel to handle it.
-> > > Even if parent does ret=1, it's effectively ignored.
-> > > Parent can enforce rejection with ret=0, but it's a weird
-> > > discrepancy.
-> > > The rule for cgroup progs was 'all yes is yes, any no is no'.
-> > My canonical example when reasoning about multiple progs was that each one
-> > of them would implement handling for a particular level+optname. So only
-> > a single one form the chain would return 2 or 0, the rest would return 1
-> > without touching the buffer. I can't come up with a good use-case where
-> > two programs in the chain can both return 2 and fill out the buffer.
-> > The majority of the sockopts would still be handled by the kernel,
-> > we'd have only a handful of bpf progs that handle a tiny subset
-> > and delegate the rest to the kernel.
-> >
-> > How about we stop further processing as soon as some program in the chain
-> > returned 2? I think that would address most of the concerns?
+On Thu, Jun 13, 2019 at 08:21:03AM -0500, Josh Poimboeuf wrote:
+> The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
+> thus prevents the FP unwinder from unwinding through JIT generated code.
 > 
-> What about a case of passive "auditing" BPF programs, that are not
-> modifying anything, but want to capture every single
-> getsockopt/setsockopt call? This premature stop would render that
-> whole approach broken.
-In that case you'd attach that program to the root of a cgroup
-(sub)tree what you want to audit (and it would be always executed and
-would return 1)? And you'd have to attach it first.
+> RBP is currently used as the BPF stack frame pointer register.  The
+> actual register used is opaque to the user, as long as it's a
+> callee-saved register.  Change it to use R12 instead.
+> 
+> Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
+> Reported-by: Song Liu <songliubraving@fb.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 43 +++++++++++++++++++++----------------
+>  1 file changed, 25 insertions(+), 18 deletions(-)
+> 
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index e649f977f8e1..bb1968fea50a 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -100,9 +100,8 @@ static int bpf_size_to_x86_bytes(int bpf_size)
+>  /*
+>   * The following table maps BPF registers to x86-64 registers.
+>   *
+> - * x86-64 register R12 is unused, since if used as base address
+> - * register in load/store instructions, it always needs an
+> - * extra byte of encoding and is callee saved.
+> + * RBP isn't used; it needs to be preserved to allow the unwinder to move
+> + * through generated code stacks.
 
-> > Maybe, in this case, also stop further processing as soon as
-> > we get ret=0 (EPERM) for consistency?
-> >
-> > > So if ret=1 means 'kernel handles it'. Should it be almost
-> > > as strong as 'reject it': any prog doing ret=1 means 'kernel does it'
-> > > (unless some prog did ret=0. then reject it) ?
-> > > if ret=1 means 'bpf did some and needs kernel to continue' that's
-> > > another story.
-> > > For ret=2 being 'bpf handled it completely', should parent overwrite it?
-> > See above, I was thinking the opposite. Treat ret=1 from the BPF
-> > program as "I'm not interested in this level+optname, other BPF
-> > program or kernel should do the job". Essentially, as soon as bpf program
-> > returns 2, that means BPF had consumed the request and no further processing
-> > from neither BPF, nor kernel is requred; we can return to userspace.
-> >
-> > There is a problem that some prog in the chain might do some
-> > "background" work and still return 1, but so far I don't see why
-> > that can be useful. The pattern should be: filter the option
-> > you want, handle it, otherwise return 1 to let the other progs/kernel
-> > run.
-> >
-> > That BPF_F_ALLOW_MULTI use-case probably deserves another selftest :-/
-> >
-> > > May be retval from child prog should be seen by parent prog?
-> > >
-> > > In some sense kernel can be seen as another bpf prog in a sequence.
-> > >
-> > > Whatever new behavior is with 3 values it needs to be
-> > > documented in uapi/bpf.h
-> > > We were sloppy with such docs in the past, but that's not
-> > > a reason to continue.
-> > Good point on documenting that, I was trying to document everything
-> > in Documentation/bpf/prog_cgroup_sockopt.rst, uapi/bpf.h seems too
-> > constrained (I didn't find a good place to put that ret 1 vs 2 info).
-> > Do you think having a file under Documentation/ with all the details
-> > is not enough? Where can I put this ret=0/1/2 handing info in the
-> > uapi/bpf.h?
+Extra register save/restore is kinda annoying just to fix ORC.
+Also every stack access from bpf prog will be encoded via r12 and consume
+extra byte of encoding. I really don't like this approach.
+Can you teach ORC to understand JIT-ed frames instead?
+
