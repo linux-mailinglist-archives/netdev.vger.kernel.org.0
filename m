@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 650F044E3C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E6D844E3B
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727966AbfFMVRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728170AbfFMVRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 13 Jun 2019 17:17:31 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43450 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727159AbfFMVR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:17:28 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z24so81592qtj.10
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:17:27 -0700 (PDT)
+Received: from mail-qk1-f173.google.com ([209.85.222.173]:41011 "EHLO
+        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfFMVRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:17:30 -0400
+Received: by mail-qk1-f173.google.com with SMTP id c11so339088qkk.8
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:17:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gEmeSZ8ZzdB4ydH58exHVYGNRS2j3/RANg3V2CbE4IY=;
-        b=oBgaS+T2pwL0PDHz/QX4CDpOCZSS9uuSi9lKxb6f2+A4UyzoMAszNtasJaqPbM5H8i
-         C0ddaCcS1su/H3YVQut/+yrIYo0f8npNUtAUOmsYljYJsRMouYGTcBcKpNouV1zhFwYe
-         F8pwSSHWavtRiwkSBnKJsmcQdPgkEWxh/4tJTY5wPFZoFN0N4EdG/wV39Lv5NgGsspYl
-         aspaExD2hV9WG0ZxFDaonfZ556NrF1CV7NPVVw181q0eNio/w0fwodDzH/YAwUBBTOx5
-         o9hmao4DoRDwUZdtPc40UbSHWdEc5aBD7I0cNzqRZ3FTAb0lmLr86MMDEvh5Sb6O84dB
-         uDVA==
+        bh=XF1ryB/FS0GUz6g8vYYgiLtJkcEtFDiJGXqGBvwy3Tw=;
+        b=M2RwFMcIeZYmrkHLC5b3+TQ80GLdVUpNGFZLnKJGwq0FZv2u5AaGsw+o7/BUXwKDSr
+         VcTgZf/2tBtWfJ43ViXu88C4p6/GS2lF81JXHkgxordmZkxxJBoXpAuGdhyhPWrefymx
+         4N+/a1FNyP10s7hotjFeex1N7gkYOLs+GikA2EItYM1lRqCx70gX9xWgndkd7Iez2aCY
+         3D+uKNJZ2oU+irnzDl0vy+Gy0kLCVSAHYbJSH2emwv+EjWRAbbJCEOm+j64q4D5TsJ0I
+         uf7NdXQeI58PZKXnA41W9hXoGc+V+eVGyAN8lEEmP/JIGoX0t3CHDZr6umWg44R3RjAD
+         arSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gEmeSZ8ZzdB4ydH58exHVYGNRS2j3/RANg3V2CbE4IY=;
-        b=fC7pY/b+KWmgTnz9z8j25fLvQy7i8/e7MakwvAzhJkOSXHoJOUqlga318eS1ah9jXG
-         8fjRlb/TzQteG9Uw7WXUMcw0EDFsQaPsERl8l7v0IJP958Arl9gE8/LJKXLF9KzWyYq9
-         XrWJdMVrW4dmxfI00+Ff5dSox/DcVE0qgUHUPfRklWrR5F0IenoyouhXyHGGOoiaN/lH
-         1JnKyH2++6B9uirTIsXtwGhs40IUK0EaZv6jeQj5cqX2S+Mf/Xc/mru3cifeAXuolwkO
-         8m6TfGnKBJb1A3FANtTpz1oz5JlSZ6qWG9qKgrm9F1Zync5FHu6TL5cV4pTSRMHtUnG5
-         vYRw==
-X-Gm-Message-State: APjAAAVD28GH2vOYSbwdzrwVT1C4UbxlJpZmymJRCx7H+NKFTgw4awMU
-        b0ftP46Ft8fcOEQjMdx1uBhW6QM7o9w=
-X-Google-Smtp-Source: APXvYqzZxCqFT+bEjbIkcyTjHWi2flGtGmwgkDABVois6ZQMEq+LbllOTMfb5t/CMQHd8v/4W3hKZQ==
-X-Received: by 2002:ac8:6c59:: with SMTP id z25mr416480qtu.43.1560460646660;
-        Thu, 13 Jun 2019 14:17:26 -0700 (PDT)
+        bh=XF1ryB/FS0GUz6g8vYYgiLtJkcEtFDiJGXqGBvwy3Tw=;
+        b=RF0oD5rGoBaGINRuuJlFDHZCoibY6P4vRCzUtcjQtgWVIygKNkT6/pmTg8Ui7M25x2
+         FwLfXHjsCvKi7W13+apmNl8Nwl6DHthzUrsOb6KDgkYc/m/LyWwKtxmYJ5gP1mxuctsY
+         zRelGVGNWXu6YQdupP+SjEMJ67osS/YXcsOl4DAq5axYyrFp6MhvfudLBbNhOmlwK6UB
+         PPG4QS1UA5KUH3bT0VcmYPZMSPbOmDnobl08VZKGujnWf3zi2kZragbbOyE6wBLDbQrr
+         IuhqHG2IfajCirkeKnIeClLpk17Eiz6enRbAGpFJSbFAOFFAI4wCBc+2+GrMEwlpYXBJ
+         limw==
+X-Gm-Message-State: APjAAAV0v4C12NNx/B+d3jFvJKkuV2AiBrvRuevqfAbdhbPfrST748mn
+        nVJhoLpPHYlLU8cHYU2Vlu0McQ==
+X-Google-Smtp-Source: APXvYqymn6UcHzZ+2zEtoPIvFbyTVHHCfGLm/FUSjSo8WGHkG3BVw9m8mZzs2MRYRRcEVptS3RMxTw==
+X-Received: by 2002:a05:620a:16ba:: with SMTP id s26mr580710qkj.301.1560460648281;
+        Thu, 13 Jun 2019 14:17:28 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x7sm497322qth.37.2019.06.13.14.17.25
+        by smtp.gmail.com with ESMTPSA id x7sm497322qth.37.2019.06.13.14.17.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 13 Jun 2019 14:17:26 -0700 (PDT)
+        Thu, 13 Jun 2019 14:17:27 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -51,9 +51,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         <pieter.jansenvanvuuren@netronome.com>,
         Simon Horman <simon.horman@netronome.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 2/3] nfp: flower: use extack messages in flower offload
-Date:   Thu, 13 Jun 2019 14:17:10 -0700
-Message-Id: <20190613211711.5505-3-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 3/3] nfp: flower: extend extack messaging for flower match and actions
+Date:   Thu, 13 Jun 2019 14:17:11 -0700
+Message-Id: <20190613211711.5505-4-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190613211711.5505-1-jakub.kicinski@netronome.com>
 References: <20190613211711.5505-1-jakub.kicinski@netronome.com>
@@ -66,318 +66,826 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 
-Use extack messages in flower offload, specifically focusing on
-the extack use in add offload, remove offload and get stats paths.
+Use extack messages in flower offload when compiling match and actions
+messages that will configure hardware.
 
 Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- .../ethernet/netronome/nfp/flower/offload.c   | 105 +++++++++++++-----
- 1 file changed, 80 insertions(+), 25 deletions(-)
+ .../ethernet/netronome/nfp/flower/action.c    | 205 ++++++++++++------
+ .../ethernet/netronome/nfp/flower/lag_conf.c  |   4 +-
+ .../net/ethernet/netronome/nfp/flower/main.h  |  12 +-
+ .../net/ethernet/netronome/nfp/flower/match.c |  14 +-
+ .../ethernet/netronome/nfp/flower/metadata.c  |  28 ++-
+ .../ethernet/netronome/nfp/flower/offload.c   |  10 +-
+ 6 files changed, 196 insertions(+), 77 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 3cccd0911e31..26d24b103317 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -142,10 +142,13 @@ static bool nfp_flower_check_higher_than_l3(struct tc_cls_flower_offload *f)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/action.c b/drivers/net/ethernet/netronome/nfp/flower/action.c
+index c56e31d9f8a4..8bea3004d66c 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/action.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
+@@ -54,7 +54,8 @@ nfp_fl_push_vlan(struct nfp_fl_push_vlan *push_vlan,
  
  static int
- nfp_flower_calc_opt_layer(struct flow_match_enc_opts *enc_opts,
--			  u32 *key_layer_two, int *key_size)
-+			  u32 *key_layer_two, int *key_size,
-+			  struct netlink_ext_ack *extack)
+ nfp_fl_pre_lag(struct nfp_app *app, const struct flow_action_entry *act,
+-	       struct nfp_fl_payload *nfp_flow, int act_len)
++	       struct nfp_fl_payload *nfp_flow, int act_len,
++	       struct netlink_ext_ack *extack)
  {
--	if (enc_opts->key->len > NFP_FL_MAX_GENEVE_OPT_KEY)
-+	if (enc_opts->key->len > NFP_FL_MAX_GENEVE_OPT_KEY) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: geneve options exceed maximum length");
+ 	size_t act_size = sizeof(struct nfp_fl_pre_lag);
+ 	struct nfp_fl_pre_lag *pre_lag;
+@@ -65,8 +66,10 @@ nfp_fl_pre_lag(struct nfp_app *app, const struct flow_action_entry *act,
+ 	if (!out_dev || !netif_is_lag_master(out_dev))
+ 		return 0;
+ 
+-	if (act_len + act_size > NFP_FL_MAX_A_SIZ)
++	if (act_len + act_size > NFP_FL_MAX_A_SIZ) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at LAG action");
  		return -EOPNOTSUPP;
 +	}
  
- 	if (enc_opts->key->len > 0) {
- 		*key_layer_two |= NFP_FLOWER_LAYER2_GENEVE_OP;
-@@ -160,7 +163,8 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 				struct net_device *netdev,
- 				struct nfp_fl_key_ls *ret_key_ls,
- 				struct tc_cls_flower_offload *flow,
--				enum nfp_flower_tun_type *tun_type)
-+				enum nfp_flower_tun_type *tun_type,
-+				struct netlink_ext_ack *extack)
- {
- 	struct flow_rule *rule = tc_cls_flower_offload_flow_rule(flow);
- 	struct flow_dissector *dissector = rule->match.dissector;
-@@ -171,14 +175,18 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 	int key_size;
- 	int err;
+ 	/* Pre_lag action must be first on action list.
+ 	 * If other actions already exist they need pushed forward.
+@@ -76,7 +79,7 @@ nfp_fl_pre_lag(struct nfp_app *app, const struct flow_action_entry *act,
+ 			nfp_flow->action_data, act_len);
  
--	if (dissector->used_keys & ~NFP_FLOWER_WHITELIST_DISSECTOR)
-+	if (dissector->used_keys & ~NFP_FLOWER_WHITELIST_DISSECTOR) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	/* If any tun dissector is used then the required set must be used. */
- 	if (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR &&
- 	    (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR_R)
--	    != NFP_FLOWER_WHITELIST_TUN_DISSECTOR_R)
-+	    != NFP_FLOWER_WHITELIST_TUN_DISSECTOR_R) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: tunnel match not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	key_layer_two = 0;
- 	key_layer = NFP_FLOWER_LAYER_PORT;
-@@ -196,8 +204,10 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 
- 		flow_rule_match_vlan(rule, &vlan);
- 		if (!(priv->flower_ext_feats & NFP_FL_FEATS_VLAN_PCP) &&
--		    vlan.key->vlan_priority)
-+		    vlan.key->vlan_priority) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support VLAN PCP offload");
- 			return -EOPNOTSUPP;
-+		}
- 	}
- 
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
-@@ -208,18 +218,27 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 
- 		flow_rule_match_enc_control(rule, &enc_ctl);
- 
--		if (enc_ctl.mask->addr_type != 0xffff ||
--		    enc_ctl.key->addr_type != FLOW_DISSECTOR_KEY_IPV4_ADDRS)
-+		if (enc_ctl.mask->addr_type != 0xffff) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: wildcarded protocols on tunnels are not supported");
-+			return -EOPNOTSUPP;
-+		}
-+		if (enc_ctl.key->addr_type != FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only IPv4 tunnels are supported");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		/* These fields are already verified as used. */
- 		flow_rule_match_enc_ipv4_addrs(rule, &ipv4_addrs);
--		if (ipv4_addrs.mask->dst != cpu_to_be32(~0))
-+		if (ipv4_addrs.mask->dst != cpu_to_be32(~0)) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only an exact match IPv4 destination address is supported");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		flow_rule_match_enc_ports(rule, &enc_ports);
--		if (enc_ports.mask->dst != cpu_to_be16(~0))
-+		if (enc_ports.mask->dst != cpu_to_be16(~0)) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only an exact match L4 destination port is supported");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_OPTS))
- 			flow_rule_match_enc_opts(rule, &enc_op);
-@@ -230,12 +249,16 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			key_layer |= NFP_FLOWER_LAYER_VXLAN;
- 			key_size += sizeof(struct nfp_flower_ipv4_udp_tun);
- 
--			if (enc_op.key)
-+			if (enc_op.key) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: encap options not supported on vxlan tunnels");
- 				return -EOPNOTSUPP;
-+			}
- 			break;
- 		case htons(GENEVE_UDP_PORT):
--			if (!(priv->flower_ext_feats & NFP_FL_FEATS_GENEVE))
-+			if (!(priv->flower_ext_feats & NFP_FL_FEATS_GENEVE)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support geneve offload");
- 				return -EOPNOTSUPP;
-+			}
- 			*tun_type = NFP_FL_TUNNEL_GENEVE;
- 			key_layer |= NFP_FLOWER_LAYER_EXT_META;
- 			key_size += sizeof(struct nfp_flower_ext_meta);
-@@ -244,20 +267,26 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 
- 			if (!enc_op.key)
- 				break;
--			if (!(priv->flower_ext_feats & NFP_FL_FEATS_GENEVE_OPT))
-+			if (!(priv->flower_ext_feats &
-+			      NFP_FL_FEATS_GENEVE_OPT)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support geneve option offload");
- 				return -EOPNOTSUPP;
-+			}
- 			err = nfp_flower_calc_opt_layer(&enc_op, &key_layer_two,
--							&key_size);
-+							&key_size, extack);
- 			if (err)
- 				return err;
- 			break;
- 		default:
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: tunnel type unknown");
- 			return -EOPNOTSUPP;
- 		}
- 
- 		/* Ensure the ingress netdev matches the expected tun type. */
--		if (!nfp_fl_netdev_is_tunnel_type(netdev, *tun_type))
-+		if (!nfp_fl_netdev_is_tunnel_type(netdev, *tun_type)) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ingress netdev does not match the expected tunnel type");
- 			return -EOPNOTSUPP;
-+		}
- 	}
- 
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC))
-@@ -280,6 +309,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 		 * because we rely on it to get to the host.
- 		 */
- 		case cpu_to_be16(ETH_P_ARP):
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ARP not supported");
- 			return -EOPNOTSUPP;
- 
- 		case cpu_to_be16(ETH_P_MPLS_UC):
-@@ -298,8 +328,10 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			/* Other ethtype - we need check the masks for the
- 			 * remainder of the key to ensure we can offload.
- 			 */
--			if (nfp_flower_check_higher_than_mac(flow))
-+			if (nfp_flower_check_higher_than_mac(flow)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: non IPv4/IPv6 offload with L3/L4 matches not supported");
- 				return -EOPNOTSUPP;
-+			}
- 			break;
- 		}
- 	}
-@@ -318,8 +350,10 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			/* Other ip proto - we need check the masks for the
- 			 * remainder of the key to ensure we can offload.
- 			 */
--			if (nfp_flower_check_higher_than_l3(flow))
-+			if (nfp_flower_check_higher_than_l3(flow)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unknown IP protocol with L4 matches not supported");
- 				return -EOPNOTSUPP;
-+			}
- 			break;
- 		}
- 	}
-@@ -331,22 +365,28 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 		flow_rule_match_tcp(rule, &tcp);
- 		tcp_flags = be16_to_cpu(tcp.key->flags);
- 
--		if (tcp_flags & ~NFP_FLOWER_SUPPORTED_TCPFLAGS)
-+		if (tcp_flags & ~NFP_FLOWER_SUPPORTED_TCPFLAGS) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: no match support for selected TCP flags");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		/* We only support PSH and URG flags when either
- 		 * FIN, SYN or RST is present as well.
- 		 */
- 		if ((tcp_flags & (TCPHDR_PSH | TCPHDR_URG)) &&
--		    !(tcp_flags & (TCPHDR_FIN | TCPHDR_SYN | TCPHDR_RST)))
-+		    !(tcp_flags & (TCPHDR_FIN | TCPHDR_SYN | TCPHDR_RST))) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: PSH and URG is only supported when used with FIN, SYN or RST");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		/* We need to store TCP flags in the either the IPv4 or IPv6 key
- 		 * space, thus we need to ensure we include a IPv4/IPv6 key
- 		 * layer if we have not done so already.
- 		 */
--		if (!basic.key)
-+		if (!basic.key) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match on TCP flags requires a match on L3 protocol");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		if (!(key_layer & NFP_FLOWER_LAYER_IPV4) &&
- 		    !(key_layer & NFP_FLOWER_LAYER_IPV6)) {
-@@ -362,6 +402,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 				break;
- 
- 			default:
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match on TCP flags requires a match on IPv4/IPv6");
- 				return -EOPNOTSUPP;
- 			}
- 		}
-@@ -371,8 +412,10 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 		struct flow_match_control ctl;
- 
- 		flow_rule_match_control(rule, &ctl);
--		if (ctl.key->flags & ~NFP_FLOWER_SUPPORTED_CTLFLAGS)
-+		if (ctl.key->flags & ~NFP_FLOWER_SUPPORTED_CTLFLAGS) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: match on unknown control flag");
- 			return -EOPNOTSUPP;
-+		}
- 	}
- 
- 	ret_key_ls->key_layer = key_layer;
-@@ -878,11 +921,13 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
- {
- 	enum nfp_flower_tun_type tun_type = NFP_FL_TUNNEL_NONE;
- 	struct nfp_flower_priv *priv = app->priv;
-+	struct netlink_ext_ack *extack = NULL;
- 	struct nfp_fl_payload *flow_pay;
- 	struct nfp_fl_key_ls *key_layer;
- 	struct nfp_port *port = NULL;
- 	int err;
- 
-+	extack = flow->common.extack;
- 	if (nfp_netdev_is_nfp_repr(netdev))
- 		port = nfp_port_from_netdev(netdev);
- 
-@@ -891,7 +936,7 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
- 		return -ENOMEM;
- 
- 	err = nfp_flower_calculate_key_layers(app, netdev, key_layer, flow,
--					      &tun_type);
-+					      &tun_type, extack);
+ 	pre_lag = (struct nfp_fl_pre_lag *)nfp_flow->action_data;
+-	err = nfp_flower_lag_populate_pre_action(app, out_dev, pre_lag);
++	err = nfp_flower_lag_populate_pre_action(app, out_dev, pre_lag, extack);
  	if (err)
- 		goto err_free_key_ls;
+ 		return err;
  
-@@ -917,8 +962,10 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
- 	flow_pay->tc_flower_cookie = flow->cookie;
- 	err = rhashtable_insert_fast(&priv->flow_table, &flow_pay->fl_node,
- 				     nfp_flower_table_params);
+@@ -93,7 +96,8 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
+ 	      const struct flow_action_entry *act,
+ 	      struct nfp_fl_payload *nfp_flow,
+ 	      bool last, struct net_device *in_dev,
+-	      enum nfp_flower_tun_type tun_type, int *tun_out_cnt)
++	      enum nfp_flower_tun_type tun_type, int *tun_out_cnt,
++	      struct netlink_ext_ack *extack)
+ {
+ 	size_t act_size = sizeof(struct nfp_fl_output);
+ 	struct nfp_flower_priv *priv = app->priv;
+@@ -104,18 +108,24 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
+ 	output->head.len_lw = act_size >> NFP_FL_LW_SIZ;
+ 
+ 	out_dev = act->dev;
+-	if (!out_dev)
++	if (!out_dev) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid egress interface for mirred action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	tmp_flags = last ? NFP_FL_OUT_FLAGS_LAST : 0;
+ 
+ 	if (tun_type) {
+ 		/* Verify the egress netdev matches the tunnel type. */
+-		if (!nfp_fl_netdev_is_tunnel_type(out_dev, tun_type))
++		if (!nfp_fl_netdev_is_tunnel_type(out_dev, tun_type)) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: egress interface does not match the required tunnel type");
+ 			return -EOPNOTSUPP;
++		}
+ 
+-		if (*tun_out_cnt)
++		if (*tun_out_cnt) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: cannot offload more than one tunnel mirred output per filter");
+ 			return -EOPNOTSUPP;
++		}
+ 		(*tun_out_cnt)++;
+ 
+ 		output->flags = cpu_to_be16(tmp_flags |
+@@ -127,8 +137,10 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
+ 
+ 		output->flags = cpu_to_be16(tmp_flags);
+ 		gid = nfp_flower_lag_get_output_id(app, out_dev);
+-		if (gid < 0)
++		if (gid < 0) {
++			NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot find group id for LAG action");
+ 			return gid;
++		}
+ 		output->port = cpu_to_be32(NFP_FL_LAG_OUT | gid);
+ 	} else {
+ 		/* Set action output parameters. */
+@@ -136,16 +148,22 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
+ 
+ 		if (nfp_netdev_is_nfp_repr(in_dev)) {
+ 			/* Confirm ingress and egress are on same device. */
+-			if (!netdev_port_same_parent_id(in_dev, out_dev))
++			if (!netdev_port_same_parent_id(in_dev, out_dev)) {
++				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ingress and egress interfaces are on different devices");
+ 				return -EOPNOTSUPP;
++			}
+ 		}
+ 
+-		if (!nfp_netdev_is_nfp_repr(out_dev))
++		if (!nfp_netdev_is_nfp_repr(out_dev)) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: egress interface is not an nfp port");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		output->port = cpu_to_be32(nfp_repr_get_port_id(out_dev));
+-		if (!output->port)
++		if (!output->port) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid port id for egress interface");
+ 			return -EOPNOTSUPP;
++		}
+ 	}
+ 	nfp_flow->meta.shortcut = output->port;
+ 
+@@ -194,7 +212,8 @@ static struct nfp_fl_pre_tunnel *nfp_fl_pre_tunnel(char *act_data, int act_len)
+ 
+ static int
+ nfp_fl_push_geneve_options(struct nfp_fl_payload *nfp_fl, int *list_len,
+-			   const struct flow_action_entry *act)
++			   const struct flow_action_entry *act,
++			   struct netlink_ext_ack *extack)
+ {
+ 	struct ip_tunnel_info *ip_tun = (struct ip_tunnel_info *)act->tunnel;
+ 	int opt_len, opt_cnt, act_start, tot_push_len;
+@@ -212,20 +231,26 @@ nfp_fl_push_geneve_options(struct nfp_fl_payload *nfp_fl, int *list_len,
+ 		struct geneve_opt *opt = (struct geneve_opt *)src;
+ 
+ 		opt_cnt++;
+-		if (opt_cnt > NFP_FL_MAX_GENEVE_OPT_CNT)
++		if (opt_cnt > NFP_FL_MAX_GENEVE_OPT_CNT) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed number of geneve options exceeded");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		tot_push_len += sizeof(struct nfp_fl_push_geneve) +
+ 			       opt->length * 4;
+-		if (tot_push_len > NFP_FL_MAX_GENEVE_OPT_ACT)
++		if (tot_push_len > NFP_FL_MAX_GENEVE_OPT_ACT) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at push geneve options");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		opt_len -= sizeof(struct geneve_opt) + opt->length * 4;
+ 		src += sizeof(struct geneve_opt) + opt->length * 4;
+ 	}
+ 
+-	if (*list_len + tot_push_len > NFP_FL_MAX_A_SIZ)
++	if (*list_len + tot_push_len > NFP_FL_MAX_A_SIZ) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at push geneve options");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	act_start = *list_len;
+ 	*list_len += tot_push_len;
+@@ -261,7 +286,8 @@ nfp_fl_set_ipv4_udp_tun(struct nfp_app *app,
+ 			const struct flow_action_entry *act,
+ 			struct nfp_fl_pre_tunnel *pre_tun,
+ 			enum nfp_flower_tun_type tun_type,
+-			struct net_device *netdev)
++			struct net_device *netdev,
++			struct netlink_ext_ack *extack)
+ {
+ 	size_t act_size = sizeof(struct nfp_fl_set_ipv4_udp_tun);
+ 	const struct ip_tunnel_info *ip_tun = act->tunnel;
+@@ -275,8 +301,10 @@ nfp_fl_set_ipv4_udp_tun(struct nfp_app *app,
+ 		     NFP_FL_TUNNEL_GENEVE_OPT != TUNNEL_GENEVE_OPT);
+ 	if (ip_tun->options_len &&
+ 	    (tun_type != NFP_FL_TUNNEL_GENEVE ||
+-	    !(priv->flower_ext_feats & NFP_FL_FEATS_GENEVE_OPT)))
++	    !(priv->flower_ext_feats & NFP_FL_FEATS_GENEVE_OPT))) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support geneve options offload");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	set_tun->head.jump_id = NFP_FL_ACTION_OPCODE_SET_IPV4_TUNNEL;
+ 	set_tun->head.len_lw = act_size >> NFP_FL_LW_SIZ;
+@@ -316,8 +344,10 @@ nfp_fl_set_ipv4_udp_tun(struct nfp_app *app,
+ 	set_tun->tos = ip_tun->key.tos;
+ 
+ 	if (!(ip_tun->key.tun_flags & NFP_FL_TUNNEL_KEY) ||
+-	    ip_tun->key.tun_flags & ~NFP_FL_SUPPORTED_IPV4_UDP_TUN_FLAGS)
++	    ip_tun->key.tun_flags & ~NFP_FL_SUPPORTED_IPV4_UDP_TUN_FLAGS) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support tunnel flag offload");
+ 		return -EOPNOTSUPP;
++	}
+ 	set_tun->tun_flags = ip_tun->key.tun_flags;
+ 
+ 	if (tun_type == NFP_FL_TUNNEL_GENEVE) {
+@@ -345,18 +375,22 @@ static void nfp_fl_set_helper32(u32 value, u32 mask, u8 *p_exact, u8 *p_mask)
+ 
+ static int
+ nfp_fl_set_eth(const struct flow_action_entry *act, u32 off,
+-	       struct nfp_fl_set_eth *set_eth)
++	       struct nfp_fl_set_eth *set_eth, struct netlink_ext_ack *extack)
+ {
+ 	u32 exact, mask;
+ 
+-	if (off + 4 > ETH_ALEN * 2)
++	if (off + 4 > ETH_ALEN * 2) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit ethernet action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	mask = ~act->mangle.mask;
+ 	exact = act->mangle.val;
+ 
+-	if (exact & ~mask)
++	if (exact & ~mask) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit ethernet action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	nfp_fl_set_helper32(exact, mask, &set_eth->eth_addr_val[off],
+ 			    &set_eth->eth_addr_mask[off]);
+@@ -377,7 +411,8 @@ struct ipv4_ttl_word {
+ static int
+ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
+ 	       struct nfp_fl_set_ip4_addrs *set_ip_addr,
+-	       struct nfp_fl_set_ip4_ttl_tos *set_ip_ttl_tos)
++	       struct nfp_fl_set_ip4_ttl_tos *set_ip_ttl_tos,
++	       struct netlink_ext_ack *extack)
+ {
+ 	struct ipv4_ttl_word *ttl_word_mask;
+ 	struct ipv4_ttl_word *ttl_word;
+@@ -389,8 +424,10 @@ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
+ 	mask = (__force __be32)~act->mangle.mask;
+ 	exact = (__force __be32)act->mangle.val;
+ 
+-	if (exact & ~mask)
++	if (exact & ~mask) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv4 action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	switch (off) {
+ 	case offsetof(struct iphdr, daddr):
+@@ -413,8 +450,10 @@ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
+ 		ttl_word_mask = (struct ipv4_ttl_word *)&mask;
+ 		ttl_word = (struct ipv4_ttl_word *)&exact;
+ 
+-		if (ttl_word_mask->protocol || ttl_word_mask->check)
++		if (ttl_word_mask->protocol || ttl_word_mask->check) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv4 ttl action");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		set_ip_ttl_tos->ipv4_ttl_mask |= ttl_word_mask->ttl;
+ 		set_ip_ttl_tos->ipv4_ttl &= ~ttl_word_mask->ttl;
+@@ -429,8 +468,10 @@ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
+ 		tos_word = (struct iphdr *)&exact;
+ 
+ 		if (tos_word_mask->version || tos_word_mask->ihl ||
+-		    tos_word_mask->tot_len)
++		    tos_word_mask->tot_len) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv4 tos action");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		set_ip_ttl_tos->ipv4_tos_mask |= tos_word_mask->tos;
+ 		set_ip_ttl_tos->ipv4_tos &= ~tos_word_mask->tos;
+@@ -441,6 +482,7 @@ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
+ 					      NFP_FL_LW_SIZ;
+ 		break;
+ 	default:
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: pedit on unsupported section of IPv4 header");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -468,7 +510,8 @@ struct ipv6_hop_limit_word {
+ 
+ static int
+ nfp_fl_set_ip6_hop_limit_flow_label(u32 off, __be32 exact, __be32 mask,
+-				    struct nfp_fl_set_ipv6_tc_hl_fl *ip_hl_fl)
++				    struct nfp_fl_set_ipv6_tc_hl_fl *ip_hl_fl,
++				    struct netlink_ext_ack *extack)
+ {
+ 	struct ipv6_hop_limit_word *fl_hl_mask;
+ 	struct ipv6_hop_limit_word *fl_hl;
+@@ -478,8 +521,10 @@ nfp_fl_set_ip6_hop_limit_flow_label(u32 off, __be32 exact, __be32 mask,
+ 		fl_hl_mask = (struct ipv6_hop_limit_word *)&mask;
+ 		fl_hl = (struct ipv6_hop_limit_word *)&exact;
+ 
+-		if (fl_hl_mask->nexthdr || fl_hl_mask->payload_len)
++		if (fl_hl_mask->nexthdr || fl_hl_mask->payload_len) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv6 hop limit action");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		ip_hl_fl->ipv6_hop_limit_mask |= fl_hl_mask->hop_limit;
+ 		ip_hl_fl->ipv6_hop_limit &= ~fl_hl_mask->hop_limit;
+@@ -488,8 +533,10 @@ nfp_fl_set_ip6_hop_limit_flow_label(u32 off, __be32 exact, __be32 mask,
+ 		break;
+ 	case round_down(offsetof(struct ipv6hdr, flow_lbl), 4):
+ 		if (mask & ~IPV6_FLOW_LABEL_MASK ||
+-		    exact & ~IPV6_FLOW_LABEL_MASK)
++		    exact & ~IPV6_FLOW_LABEL_MASK) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv6 flow label action");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		ip_hl_fl->ipv6_label_mask |= mask;
+ 		ip_hl_fl->ipv6_label &= ~mask;
+@@ -507,7 +554,8 @@ static int
+ nfp_fl_set_ip6(const struct flow_action_entry *act, u32 off,
+ 	       struct nfp_fl_set_ipv6_addr *ip_dst,
+ 	       struct nfp_fl_set_ipv6_addr *ip_src,
+-	       struct nfp_fl_set_ipv6_tc_hl_fl *ip_hl_fl)
++	       struct nfp_fl_set_ipv6_tc_hl_fl *ip_hl_fl,
++	       struct netlink_ext_ack *extack)
+ {
+ 	__be32 exact, mask;
+ 	int err = 0;
+@@ -517,12 +565,14 @@ nfp_fl_set_ip6(const struct flow_action_entry *act, u32 off,
+ 	mask = (__force __be32)~act->mangle.mask;
+ 	exact = (__force __be32)act->mangle.val;
+ 
+-	if (exact & ~mask)
++	if (exact & ~mask) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv6 action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	if (off < offsetof(struct ipv6hdr, saddr)) {
+ 		err = nfp_fl_set_ip6_hop_limit_flow_label(off, exact, mask,
+-							  ip_hl_fl);
++							  ip_hl_fl, extack);
+ 	} else if (off < offsetof(struct ipv6hdr, daddr)) {
+ 		word = (off - offsetof(struct ipv6hdr, saddr)) / sizeof(exact);
+ 		nfp_fl_set_ip6_helper(NFP_FL_ACTION_OPCODE_SET_IPV6_SRC, word,
+@@ -533,6 +583,7 @@ nfp_fl_set_ip6(const struct flow_action_entry *act, u32 off,
+ 		nfp_fl_set_ip6_helper(NFP_FL_ACTION_OPCODE_SET_IPV6_DST, word,
+ 				      exact, mask, ip_dst);
+ 	} else {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: pedit on unsupported section of IPv6 header");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -541,18 +592,23 @@ nfp_fl_set_ip6(const struct flow_action_entry *act, u32 off,
+ 
+ static int
+ nfp_fl_set_tport(const struct flow_action_entry *act, u32 off,
+-		 struct nfp_fl_set_tport *set_tport, int opcode)
++		 struct nfp_fl_set_tport *set_tport, int opcode,
++		 struct netlink_ext_ack *extack)
+ {
+ 	u32 exact, mask;
+ 
+-	if (off)
++	if (off) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: pedit on unsupported section of L4 header");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	mask = ~act->mangle.mask;
+ 	exact = act->mangle.val;
+ 
+-	if (exact & ~mask)
++	if (exact & ~mask) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit L4 action");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	nfp_fl_set_helper32(exact, mask, set_tport->tp_port_val,
+ 			    set_tport->tp_port_mask);
+@@ -695,7 +751,8 @@ nfp_fl_commit_mangle(struct tc_cls_flower_offload *flow, char *nfp_action,
+ static int
+ nfp_fl_pedit(const struct flow_action_entry *act,
+ 	     struct tc_cls_flower_offload *flow, char *nfp_action, int *a_len,
+-	     u32 *csum_updated, struct nfp_flower_pedit_acts *set_act)
++	     u32 *csum_updated, struct nfp_flower_pedit_acts *set_act,
++	     struct netlink_ext_ack *extack)
+ {
+ 	enum flow_action_mangle_base htype;
+ 	u32 offset;
+@@ -705,21 +762,22 @@ nfp_fl_pedit(const struct flow_action_entry *act,
+ 
+ 	switch (htype) {
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_ETH:
+-		return nfp_fl_set_eth(act, offset, &set_act->set_eth);
++		return nfp_fl_set_eth(act, offset, &set_act->set_eth, extack);
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP4:
+ 		return nfp_fl_set_ip4(act, offset, &set_act->set_ip_addr,
+-				      &set_act->set_ip_ttl_tos);
++				      &set_act->set_ip_ttl_tos, extack);
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP6:
+ 		return nfp_fl_set_ip6(act, offset, &set_act->set_ip6_dst,
+ 				      &set_act->set_ip6_src,
+-				      &set_act->set_ip6_tc_hl_fl);
++				      &set_act->set_ip6_tc_hl_fl, extack);
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_TCP:
+ 		return nfp_fl_set_tport(act, offset, &set_act->set_tport,
+-					NFP_FL_ACTION_OPCODE_SET_TCP);
++					NFP_FL_ACTION_OPCODE_SET_TCP, extack);
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_UDP:
+ 		return nfp_fl_set_tport(act, offset, &set_act->set_tport,
+-					NFP_FL_ACTION_OPCODE_SET_UDP);
++					NFP_FL_ACTION_OPCODE_SET_UDP, extack);
+ 	default:
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: pedit on unsupported header");
+ 		return -EOPNOTSUPP;
+ 	}
+ }
+@@ -730,7 +788,8 @@ nfp_flower_output_action(struct nfp_app *app,
+ 			 struct nfp_fl_payload *nfp_fl, int *a_len,
+ 			 struct net_device *netdev, bool last,
+ 			 enum nfp_flower_tun_type *tun_type, int *tun_out_cnt,
+-			 int *out_cnt, u32 *csum_updated)
++			 int *out_cnt, u32 *csum_updated,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+ 	struct nfp_fl_output *output;
+@@ -739,15 +798,19 @@ nfp_flower_output_action(struct nfp_app *app,
+ 	/* If csum_updated has not been reset by now, it means HW will
+ 	 * incorrectly update csums when they are not requested.
+ 	 */
+-	if (*csum_updated)
++	if (*csum_updated) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: set actions without updating checksums are not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+-	if (*a_len + sizeof(struct nfp_fl_output) > NFP_FL_MAX_A_SIZ)
++	if (*a_len + sizeof(struct nfp_fl_output) > NFP_FL_MAX_A_SIZ) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: mirred output increases action list size beyond the allowed maximum");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	output = (struct nfp_fl_output *)&nfp_fl->action_data[*a_len];
+ 	err = nfp_fl_output(app, output, act, nfp_fl, last, netdev, *tun_type,
+-			    tun_out_cnt);
++			    tun_out_cnt, extack);
+ 	if (err)
+ 		return err;
+ 
+@@ -757,11 +820,13 @@ nfp_flower_output_action(struct nfp_app *app,
+ 		/* nfp_fl_pre_lag returns -err or size of prelag action added.
+ 		 * This will be 0 if it is not egressing to a lag dev.
+ 		 */
+-		prelag_size = nfp_fl_pre_lag(app, act, nfp_fl, *a_len);
+-		if (prelag_size < 0)
++		prelag_size = nfp_fl_pre_lag(app, act, nfp_fl, *a_len, extack);
++		if (prelag_size < 0) {
+ 			return prelag_size;
+-		else if (prelag_size > 0 && (!last || *out_cnt))
++		} else if (prelag_size > 0 && (!last || *out_cnt)) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: LAG action has to be last action in action list");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		*a_len += prelag_size;
+ 	}
+@@ -777,7 +842,8 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 		       struct net_device *netdev,
+ 		       enum nfp_flower_tun_type *tun_type, int *tun_out_cnt,
+ 		       int *out_cnt, u32 *csum_updated,
+-		       struct nfp_flower_pedit_acts *set_act)
++		       struct nfp_flower_pedit_acts *set_act,
++		       struct netlink_ext_ack *extack)
+ {
+ 	struct nfp_fl_set_ipv4_udp_tun *set_tun;
+ 	struct nfp_fl_pre_tunnel *pre_tun;
+@@ -792,20 +858,23 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 	case FLOW_ACTION_REDIRECT:
+ 		err = nfp_flower_output_action(app, act, nfp_fl, a_len, netdev,
+ 					       true, tun_type, tun_out_cnt,
+-					       out_cnt, csum_updated);
++					       out_cnt, csum_updated, extack);
+ 		if (err)
+ 			return err;
+ 		break;
+ 	case FLOW_ACTION_MIRRED:
+ 		err = nfp_flower_output_action(app, act, nfp_fl, a_len, netdev,
+ 					       false, tun_type, tun_out_cnt,
+-					       out_cnt, csum_updated);
++					       out_cnt, csum_updated, extack);
+ 		if (err)
+ 			return err;
+ 		break;
+ 	case FLOW_ACTION_VLAN_POP:
+-		if (*a_len + sizeof(struct nfp_fl_pop_vlan) > NFP_FL_MAX_A_SIZ)
++		if (*a_len +
++		    sizeof(struct nfp_fl_pop_vlan) > NFP_FL_MAX_A_SIZ) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at pop vlan");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		pop_v = (struct nfp_fl_pop_vlan *)&nfp_fl->action_data[*a_len];
+ 		nfp_fl->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_POPV);
+@@ -814,8 +883,11 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 		*a_len += sizeof(struct nfp_fl_pop_vlan);
+ 		break;
+ 	case FLOW_ACTION_VLAN_PUSH:
+-		if (*a_len + sizeof(struct nfp_fl_push_vlan) > NFP_FL_MAX_A_SIZ)
++		if (*a_len +
++		    sizeof(struct nfp_fl_push_vlan) > NFP_FL_MAX_A_SIZ) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at push vlan");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		psh_v = (struct nfp_fl_push_vlan *)&nfp_fl->action_data[*a_len];
+ 		nfp_fl->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_NULL);
+@@ -827,31 +899,37 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 		const struct ip_tunnel_info *ip_tun = act->tunnel;
+ 
+ 		*tun_type = nfp_fl_get_tun_from_act_l4_port(app, act);
+-		if (*tun_type == NFP_FL_TUNNEL_NONE)
++		if (*tun_type == NFP_FL_TUNNEL_NONE) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported tunnel type in action list");
+ 			return -EOPNOTSUPP;
++		}
+ 
+-		if (ip_tun->mode & ~NFP_FL_SUPPORTED_TUNNEL_INFO_FLAGS)
++		if (ip_tun->mode & ~NFP_FL_SUPPORTED_TUNNEL_INFO_FLAGS) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported tunnel flags in action list");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		/* Pre-tunnel action is required for tunnel encap.
+ 		 * This checks for next hop entries on NFP.
+ 		 * If none, the packet falls back before applying other actions.
+ 		 */
+ 		if (*a_len + sizeof(struct nfp_fl_pre_tunnel) +
+-		    sizeof(struct nfp_fl_set_ipv4_udp_tun) > NFP_FL_MAX_A_SIZ)
++		    sizeof(struct nfp_fl_set_ipv4_udp_tun) > NFP_FL_MAX_A_SIZ) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at tunnel encap");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		pre_tun = nfp_fl_pre_tunnel(nfp_fl->action_data, *a_len);
+ 		nfp_fl->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_NULL);
+ 		*a_len += sizeof(struct nfp_fl_pre_tunnel);
+ 
+-		err = nfp_fl_push_geneve_options(nfp_fl, a_len, act);
++		err = nfp_fl_push_geneve_options(nfp_fl, a_len, act, extack);
+ 		if (err)
+ 			return err;
+ 
+ 		set_tun = (void *)&nfp_fl->action_data[*a_len];
+ 		err = nfp_fl_set_ipv4_udp_tun(app, set_tun, act, pre_tun,
+-					      *tun_type, netdev);
++					      *tun_type, netdev, extack);
+ 		if (err)
+ 			return err;
+ 		*a_len += sizeof(struct nfp_fl_set_ipv4_udp_tun);
+@@ -862,13 +940,15 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 		return 0;
+ 	case FLOW_ACTION_MANGLE:
+ 		if (nfp_fl_pedit(act, flow, &nfp_fl->action_data[*a_len],
+-				 a_len, csum_updated, set_act))
++				 a_len, csum_updated, set_act, extack))
+ 			return -EOPNOTSUPP;
+ 		break;
+ 	case FLOW_ACTION_CSUM:
+ 		/* csum action requests recalc of something we have not fixed */
+-		if (act->csum_flags & ~*csum_updated)
++		if (act->csum_flags & ~*csum_updated) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported csum update action in action list");
+ 			return -EOPNOTSUPP;
++		}
+ 		/* If we will correctly fix the csum we can remove it from the
+ 		 * csum update list. Which will later be used to check support.
+ 		 */
+@@ -876,6 +956,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
+ 		break;
+ 	default:
+ 		/* Currently we do not handle any other actions. */
++		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported action in action list");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -921,7 +1002,8 @@ static bool nfp_fl_check_mangle_end(struct flow_action *flow_act,
+ int nfp_flower_compile_action(struct nfp_app *app,
+ 			      struct tc_cls_flower_offload *flow,
+ 			      struct net_device *netdev,
+-			      struct nfp_fl_payload *nfp_flow)
++			      struct nfp_fl_payload *nfp_flow,
++			      struct netlink_ext_ack *extack)
+ {
+ 	int act_len, act_cnt, err, tun_out_cnt, out_cnt, i;
+ 	struct nfp_flower_pedit_acts set_act;
+@@ -942,7 +1024,8 @@ int nfp_flower_compile_action(struct nfp_app *app,
+ 			memset(&set_act, 0, sizeof(set_act));
+ 		err = nfp_flower_loop_action(app, act, flow, nfp_flow, &act_len,
+ 					     netdev, &tun_type, &tun_out_cnt,
+-					     &out_cnt, &csum_updated, &set_act);
++					     &out_cnt, &csum_updated, &set_act,
++					     extack);
+ 		if (err)
+ 			return err;
+ 		act_cnt++;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
+index 5db838f45694..63907aeb3884 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
+@@ -156,7 +156,8 @@ nfp_fl_lag_find_group_for_master_with_lag(struct nfp_fl_lag *lag,
+ 
+ int nfp_flower_lag_populate_pre_action(struct nfp_app *app,
+ 				       struct net_device *master,
+-				       struct nfp_fl_pre_lag *pre_act)
++				       struct nfp_fl_pre_lag *pre_act,
++				       struct netlink_ext_ack *extack)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+ 	struct nfp_fl_lag_group *group = NULL;
+@@ -167,6 +168,7 @@ int nfp_flower_lag_populate_pre_action(struct nfp_app *app,
+ 							  master);
+ 	if (!group) {
+ 		mutex_unlock(&priv->nfp_lag.lock);
++		NL_SET_ERR_MSG_MOD(extack, "invalid entry: group does not exist for LAG action");
+ 		return -ENOENT;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 40957a8dbfe6..1f165d89582d 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -347,15 +347,18 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
+ 				  struct nfp_fl_key_ls *key_ls,
+ 				  struct net_device *netdev,
+ 				  struct nfp_fl_payload *nfp_flow,
+-				  enum nfp_flower_tun_type tun_type);
++				  enum nfp_flower_tun_type tun_type,
++				  struct netlink_ext_ack *extack);
+ int nfp_flower_compile_action(struct nfp_app *app,
+ 			      struct tc_cls_flower_offload *flow,
+ 			      struct net_device *netdev,
+-			      struct nfp_fl_payload *nfp_flow);
++			      struct nfp_fl_payload *nfp_flow,
++			      struct netlink_ext_ack *extack);
+ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 			      struct tc_cls_flower_offload *flow,
+ 			      struct nfp_fl_payload *nfp_flow,
+-			      struct net_device *netdev);
++			      struct net_device *netdev,
++			      struct netlink_ext_ack *extack);
+ void __nfp_modify_flow_metadata(struct nfp_flower_priv *priv,
+ 				struct nfp_fl_payload *nfp_flow);
+ int nfp_modify_flow_metadata(struct nfp_app *app,
+@@ -389,7 +392,8 @@ int nfp_flower_lag_netdev_event(struct nfp_flower_priv *priv,
+ bool nfp_flower_lag_unprocessed_msg(struct nfp_app *app, struct sk_buff *skb);
+ int nfp_flower_lag_populate_pre_action(struct nfp_app *app,
+ 				       struct net_device *master,
+-				       struct nfp_fl_pre_lag *pre_act);
++				       struct nfp_fl_pre_lag *pre_act,
++				       struct netlink_ext_ack *extack);
+ int nfp_flower_lag_get_output_id(struct nfp_app *app,
+ 				 struct net_device *master);
+ void nfp_flower_qos_init(struct nfp_app *app);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/match.c b/drivers/net/ethernet/netronome/nfp/flower/match.c
+index bfa4bf34911d..371b5be33dc7 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/match.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/match.c
+@@ -54,7 +54,8 @@ nfp_flower_compile_ext_meta(struct nfp_flower_ext_meta *frame, u32 key_ext)
+ 
+ static int
+ nfp_flower_compile_port(struct nfp_flower_in_port *frame, u32 cmsg_port,
+-			bool mask_version, enum nfp_flower_tun_type tun_type)
++			bool mask_version, enum nfp_flower_tun_type tun_type,
++			struct netlink_ext_ack *extack)
+ {
+ 	if (mask_version) {
+ 		frame->in_port = cpu_to_be32(~0);
+@@ -64,8 +65,10 @@ nfp_flower_compile_port(struct nfp_flower_in_port *frame, u32 cmsg_port,
+ 	if (tun_type) {
+ 		frame->in_port = cpu_to_be32(NFP_FL_PORT_TYPE_TUN | tun_type);
+ 	} else {
+-		if (!cmsg_port)
++		if (!cmsg_port) {
++			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid ingress interface for match offload");
+ 			return -EOPNOTSUPP;
++		}
+ 		frame->in_port = cpu_to_be32(cmsg_port);
+ 	}
+ 
+@@ -324,7 +327,8 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
+ 				  struct nfp_fl_key_ls *key_ls,
+ 				  struct net_device *netdev,
+ 				  struct nfp_fl_payload *nfp_flow,
+-				  enum nfp_flower_tun_type tun_type)
++				  enum nfp_flower_tun_type tun_type,
++				  struct netlink_ext_ack *extack)
+ {
+ 	u32 port_id;
+ 	int err;
+@@ -357,13 +361,13 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
+ 
+ 	/* Populate Exact Port data. */
+ 	err = nfp_flower_compile_port((struct nfp_flower_in_port *)ext,
+-				      port_id, false, tun_type);
++				      port_id, false, tun_type, extack);
+ 	if (err)
+ 		return err;
+ 
+ 	/* Populate Mask Port Data. */
+ 	err = nfp_flower_compile_port((struct nfp_flower_in_port *)msk,
+-				      port_id, true, tun_type);
++				      port_id, true, tun_type, extack);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+index 3d326efdc814..dae60961c1eb 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+@@ -292,7 +292,8 @@ nfp_check_mask_remove(struct nfp_app *app, char *mask_data, u32 mask_len,
+ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 			      struct tc_cls_flower_offload *flow,
+ 			      struct nfp_fl_payload *nfp_flow,
+-			      struct net_device *netdev)
++			      struct net_device *netdev,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct nfp_fl_stats_ctx_to_flow *ctx_entry;
+ 	struct nfp_flower_priv *priv = app->priv;
+@@ -302,8 +303,10 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 	int err;
+ 
+ 	err = nfp_get_stats_entry(app, &stats_cxt);
 -	if (err)
 +	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot insert flow into tables for offloads");
- 		goto err_release_metadata;
++		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot allocate new stats context");
+ 		return err;
 +	}
  
- 	err = nfp_flower_xmit_flow(app, flow_pay,
- 				   NFP_FLOWER_CMSG_TYPE_FLOW_ADD);
-@@ -1036,16 +1083,20 @@ nfp_flower_del_offload(struct nfp_app *app, struct net_device *netdev,
- 		       struct tc_cls_flower_offload *flow)
+ 	nfp_flow->meta.host_ctx_id = cpu_to_be32(stats_cxt);
+ 	nfp_flow->meta.host_cookie = cpu_to_be64(flow->cookie);
+@@ -328,6 +331,12 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 	if (!nfp_check_mask_add(app, nfp_flow->mask_data,
+ 				nfp_flow->meta.mask_len,
+ 				&nfp_flow->meta.flags, &new_mask_id)) {
++		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot allocate a new mask id");
++		if (nfp_release_stats_entry(app, stats_cxt)) {
++			NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot release stats context");
++			err = -EINVAL;
++			goto err_remove_rhash;
++		}
+ 		err = -ENOENT;
+ 		goto err_remove_rhash;
+ 	}
+@@ -343,6 +352,21 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 
+ 	check_entry = nfp_flower_search_fl_table(app, flow->cookie, netdev);
+ 	if (check_entry) {
++		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot offload duplicate flow entry");
++		if (nfp_release_stats_entry(app, stats_cxt)) {
++			NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot release stats context");
++			err = -EINVAL;
++			goto err_remove_mask;
++		}
++
++		if (!nfp_check_mask_remove(app, nfp_flow->mask_data,
++					   nfp_flow->meta.mask_len,
++					   NULL, &new_mask_id)) {
++			NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot release mask id");
++			err = -EINVAL;
++			goto err_remove_mask;
++		}
++
+ 		err = -EEXIST;
+ 		goto err_remove_mask;
+ 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 26d24b103317..39e6599f2bd7 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -825,12 +825,14 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
  {
+ 	struct tc_cls_flower_offload merge_tc_off;
  	struct nfp_flower_priv *priv = app->priv;
 +	struct netlink_ext_ack *extack = NULL;
- 	struct nfp_fl_payload *nfp_flow;
- 	struct nfp_port *port = NULL;
+ 	struct nfp_fl_payload *merge_flow;
+ 	struct nfp_fl_key_ls merge_key_ls;
  	int err;
  
-+	extack = flow->common.extack;
- 	if (nfp_netdev_is_nfp_repr(netdev))
- 		port = nfp_port_from_netdev(netdev);
+ 	ASSERT_RTNL();
  
- 	nfp_flow = nfp_flower_search_fl_table(app, flow->cookie, netdev);
--	if (!nfp_flow)
-+	if (!nfp_flow) {
-+		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot remove flow that does not exist");
- 		return -ENOENT;
-+	}
++	extack = merge_tc_off.common.extack;
+ 	if (sub_flow1 == sub_flow2 ||
+ 	    nfp_flower_is_merge_flow(sub_flow1) ||
+ 	    nfp_flower_is_merge_flow(sub_flow2))
+@@ -868,7 +870,7 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
  
- 	err = nfp_modify_flow_metadata(app, nfp_flow);
+ 	merge_tc_off.cookie = merge_flow->tc_flower_cookie;
+ 	err = nfp_compile_flow_metadata(app, &merge_tc_off, merge_flow,
+-					merge_flow->ingress_dev);
++					merge_flow->ingress_dev, extack);
  	if (err)
-@@ -1139,12 +1190,16 @@ nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
- 		     struct tc_cls_flower_offload *flow)
- {
- 	struct nfp_flower_priv *priv = app->priv;
-+	struct netlink_ext_ack *extack = NULL;
- 	struct nfp_fl_payload *nfp_flow;
- 	u32 ctx_id;
+ 		goto err_unlink_sub_flow2;
  
-+	extack = flow->common.extack;
- 	nfp_flow = nfp_flower_search_fl_table(app, flow->cookie, netdev);
--	if (!nfp_flow)
-+	if (!nfp_flow) {
-+		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot dump stats for flow that does not exist");
- 		return -EINVAL;
-+	}
+@@ -947,15 +949,15 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
+ 	}
  
- 	ctx_id = be32_to_cpu(nfp_flow->meta.host_ctx_id);
+ 	err = nfp_flower_compile_flow_match(app, flow, key_layer, netdev,
+-					    flow_pay, tun_type);
++					    flow_pay, tun_type, extack);
+ 	if (err)
+ 		goto err_destroy_flow;
+ 
+-	err = nfp_flower_compile_action(app, flow, netdev, flow_pay);
++	err = nfp_flower_compile_action(app, flow, netdev, flow_pay, extack);
+ 	if (err)
+ 		goto err_destroy_flow;
+ 
+-	err = nfp_compile_flow_metadata(app, flow, flow_pay, netdev);
++	err = nfp_compile_flow_metadata(app, flow, flow_pay, netdev, extack);
+ 	if (err)
+ 		goto err_destroy_flow;
  
 -- 
 2.21.0
