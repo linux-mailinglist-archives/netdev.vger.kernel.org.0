@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D4E4475E
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67797446F1
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404280AbfFMQ7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:59:12 -0400
-Received: from outgoing-stata.csail.mit.edu ([128.30.2.210]:53158 "EHLO
-        outgoing-stata.csail.mit.edu" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729848AbfFMAeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 20:34:24 -0400
-X-Greylist: delayed 493 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jun 2019 20:34:23 EDT
-Received: from [4.30.142.84] (helo=srivatsab-a01.vmware.com)
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1hbDYq-000Xfo-J5; Wed, 12 Jun 2019 20:25:48 -0400
-Subject: Re: [PATCH v4 18/28] docs: convert docs to ReST and rename to *.rst
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1560361364.git.mchehab+samsung@kernel.org>
- <fac44e1fbab5ea755a93601a4fdfa34fcc57ae9e.1560361364.git.mchehab+samsung@kernel.org>
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-Message-ID: <7dc94cb4-ebf1-22ab-29c9-fcb2b875a9ac@csail.mit.edu>
-Date:   Wed, 12 Jun 2019 17:25:39 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S2393067AbfFMQzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:55:37 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:34154 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729986AbfFMB4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jun 2019 21:56:47 -0400
+Received: by mail-qt1-f195.google.com with SMTP id m29so20804075qtu.1
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 18:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=1JpltMjdf+HSwEhY9B0lNZwBJ01nmnlcIIN4Pm81l+M=;
+        b=TkZyPk2f2b/gK1FgROx0TsaAgu3YQ6G+YsZpeeo9gDc2zR+4kVrtyvc/eBeolIx5Zb
+         rRsqeXr3fXqUMkOBDldhMozvDnjhtGsnYFovPL6usa2v/S/lmB5Ch/JDwOVZhuna4UAF
+         jdNFfNCh02IwNMaaiZyXjB/ArIjtdVNsleOPPMbuvgq607iDO2/BD5XWhWLfrP5YzvTm
+         eU1pFS9iJtw6PcLAdtoei2h1GIh3cs8GYECaq0Q6/2816ctIdiBQ6YAYQ8QqKTywNOKs
+         bBSgvAKaQlcY/E5A3W/BijjNYUEIfirc8c+YeCZj/dvWeyIBVz99K1N9aGYxnUHgdQnQ
+         g0Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=1JpltMjdf+HSwEhY9B0lNZwBJ01nmnlcIIN4Pm81l+M=;
+        b=hboMbjbO5NycEpyodC0Oc6LSbl8ziHj/7JpWhQPlMN5hzDm4gk6kwljdHOPnLgGB9m
+         YNxNf0g4WVx3koPBBIH3v6B259xUtzB3ePOIpFbofQ9iXONxt9xtGdPf+y1BNXhfgC31
+         Yhe35h73g6XNPkC//u8Ua11VN2fTkMYTYHN829QlHf9yn0iZm+fqpS9+8h9h0N5rz1iv
+         TlOkGgiIsbq+5TLCahDa0mpYNDxw2j3BT+Xqw8QPesHo5qkHETB2uAFxl5OrseaqLzTu
+         EZMpmtddplt7Nsck8OswovxglF89p11AM5MNafAhdYfglUpbtfdZ+JbGDVHtQsIZsL68
+         Z0/Q==
+X-Gm-Message-State: APjAAAUaeQunQakbQmOoRf6hF/zbWmO4nz0Ro50ZQ0V7oDDst2HjlBeD
+        K+PtR7dAquPi+1zP7BKISEaUt6I6dQM=
+X-Google-Smtp-Source: APXvYqzx6QLZQXfnSlPNcd881M2ZLICsWbl9xM31ET0iDVyyRZ1b3A5hnG46KDO6ckZkfEECkVtAfQ==
+X-Received: by 2002:a0c:b0c6:: with SMTP id p6mr1280474qvc.225.1560391006843;
+        Wed, 12 Jun 2019 18:56:46 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id u4sm690103qkb.16.2019.06.12.18.56.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 12 Jun 2019 18:56:46 -0700 (PDT)
+Date:   Wed, 12 Jun 2019 21:56:44 -0400
+Message-ID: <20190612215644.GB32026@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: do not flood CPU with
+ unknown multicast
+In-Reply-To: <20190612232552.pzsp5rdadlaiht2n@shell.armlinux.org.uk>
+References: <20190612223344.28781-1-vivien.didelot@gmail.com>
+ <20190612232552.pzsp5rdadlaiht2n@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <fac44e1fbab5ea755a93601a4fdfa34fcc57ae9e.1560361364.git.mchehab+samsung@kernel.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/12/19 10:52 AM, Mauro Carvalho Chehab wrote:
-> Convert the PM documents to ReST, in order to allow them to
-> build with Sphinx.
+Hi Russell,
+
+On Thu, 13 Jun 2019 00:25:52 +0100, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+> On Wed, Jun 12, 2019 at 06:33:44PM -0400, Vivien Didelot wrote:
+> > The DSA ports must flood unknown unicast and multicast, but the switch
+> > must not flood the CPU ports with unknown multicast, as this results
+> > in a lot of undesirable traffic that the network stack needs to filter
+> > in software.
 > 
-> The conversion is actually:
->   - add blank lines and identation in order to identify paragraphs;
->   - fix tables markups;
->   - add some lists markups;
->   - mark literal blocks;
->   - adjust title markups.
-> 
-> At its new index.rst, let's add a :orphan: while this is not linked to
-> the main index.rst file, in order to avoid build warnings.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
-> ---
+> What if you have configured IPv6 on the bridge device, and are expecting
+> the multicasted IPv6 frames for neighbour discovery to work?
 
-[...]
+Multicast management should still be flooded, so I would expect this
+to work? Can you describe the test you want me to run for this case?
 
-> diff --git a/Documentation/power/suspend-and-cpuhotplug.txt b/Documentation/power/suspend-and-cpuhotplug.rst
-> similarity index 90%
-> rename from Documentation/power/suspend-and-cpuhotplug.txt
-> rename to Documentation/power/suspend-and-cpuhotplug.rst
-> index a8751b8df10e..9df664f5423a 100644
-> --- a/Documentation/power/suspend-and-cpuhotplug.txt
-> +++ b/Documentation/power/suspend-and-cpuhotplug.rst
-> @@ -1,10 +1,15 @@
-> +====================================================================
->  Interaction of Suspend code (S3) with the CPU hotplug infrastructure
-> +====================================================================
->  
-> -     (C) 2011 - 2014 Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
-> +(C) 2011 - 2014 Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
->  
->  
-> -I. How does the regular CPU hotplug code differ from how the Suspend-to-RAM
-> -   infrastructure uses it internally? And where do they share common code?
-> +I. Differences between CPU hotplug and Suspend-to-RAM
-> +======================================================
-> +
-> +How does the regular CPU hotplug code differ from how the Suspend-to-RAM
-> +infrastructure uses it internally? And where do they share common code?
->  
->  Well, a picture is worth a thousand words... So ASCII art follows :-)
->  
 
-[...]
-
-> @@ -101,7 +108,7 @@ execution during resume):
->  
->  It is to be noted here that the system_transition_mutex lock is acquired at the very
->  beginning, when we are just starting out to suspend, and then released only
-> -after the entire cycle is complete (i.e., suspend + resume).
-> +after the entire cycle is complete (i.e., suspend + resume)::
->  
-
-I think that should be a period, not a colon, because it is clarifying
-the text above it (as opposed to referring to the example below it).
-
-Other than that, for suspend-and-cpuhotplug.txt:
-
-Acked-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
- 
-Regards,
-Srivatsa
-VMware Photon OS
+Thanks,
+Vivien
