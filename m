@@ -2,144 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F2CB4377C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 16:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0904377F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 16:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732611AbfFMO70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 10:59:26 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33715 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732612AbfFMOyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 10:54:01 -0400
-Received: by mail-qt1-f194.google.com with SMTP id x2so21976357qtr.0;
-        Thu, 13 Jun 2019 07:54:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=t93Vsea+mncWu5w81OgAOHS5fdn/ySDdn/QB0hnie8U=;
-        b=EXawz2vZWlzFlzQyD9VZwDi3+WtUwrKm8U07fUaB2DwR7+4uVpTYLZnzCS2wgRAIj3
-         u2YGaruDx+u8XGmgSiEbgOMfnJMMpuYKdYYc/jgUqoaJNafS014IqcmLVAZzHThgooer
-         gmWJacZQ1lpZxVpbvhTSDvp5H8S1IBmqfIOeMMzYkJ1MAq8/Kpid0MH06l6YciBblGvN
-         YWIzTIZ+CY4jVZAVCHmtaWBzYSgayoZpXajjvTSKhImYmC41NihaQFP1aqI9KeX9AzWk
-         uPzuUMVtcTbCkbeRohteOEarB39rdEMW/vWAOqivpamyg+mCA/6lAlAcozgdx9ZmEoDa
-         ACEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=t93Vsea+mncWu5w81OgAOHS5fdn/ySDdn/QB0hnie8U=;
-        b=qsmoSt8zuRZwIdWfgBY0xCelyCG0iRkebnSKsNtMdUclfWmQ1sp2vy115pfbYsTElb
-         polX3ta4w8cJISWseHcujAywL8cZkVTk8MImJZF08dgTTUOeoApjbVW82BthpMGXW5Or
-         zb9G0YiqskvJKvOA+TvTmQIt7tOS+YOzOy9S9c2JjRhIpkoO1JXVSirOu/hxBWH8wCPd
-         UMlsthmUsWEvOYSb3qDuawsWLYPdpAi8O4/icJmpEaMJEoz/6y1aa8YBFrr3F5P4faZl
-         y+tyvkyWt1fOT3ociAHo+yFqzar3dhJki2kKJwTDCmWPiwr2h7t39F6YbMwxNGvOElpp
-         57rw==
-X-Gm-Message-State: APjAAAUI65v4Xmn0SzKJqihviGmehCrbdqGbBO2/6AkRGZQfmtN6iC1a
-        eu6qC/NWauyiMD0HRLCOLtrCnp9MEykrmLsZ7c0=
-X-Google-Smtp-Source: APXvYqzX3gepabt+63Au///TfQueZRwESZe9fkZBCrUg5i4MNAbFRFc0ZBbqMJA3Nb1+zqHnyL07+K6KKMZqusv9y7E=
-X-Received: by 2002:ac8:19ac:: with SMTP id u41mr58061798qtj.46.1560437640073;
- Thu, 13 Jun 2019 07:54:00 -0700 (PDT)
+        id S1732700AbfFMO7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 10:59:25 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55095 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732613AbfFMOyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 10:54:21 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 13 Jun 2019 17:54:13 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.213.18.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5DEsDgb006771;
+        Thu, 13 Jun 2019 17:54:13 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, pablo@netfilter.org, alexanderk@mellanox.com,
+        pabeni@redhat.com, mlxsw@mellanox.com,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [PATCH net] net: sched: flower: don't call synchronize_rcu() on mask creation
+Date:   Thu, 13 Jun 2019 17:54:04 +0300
+Message-Id: <20190613145404.4774-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612134805.3bf4ea25@cakuba.netronome.com>
- <CAJ+HfNh3KcoZC5W6CLgnx2tzH41Kz11Zs__2QkOKF+CyEMzdMQ@mail.gmail.com>
- <65cf2b7b-79a5-c660-358c-a265fc03b495@mellanox.com> <54a8ed28-0690-565e-f470-2c81a990251e@intel.com>
-In-Reply-To: <54a8ed28-0690-565e-f470-2c81a990251e@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 13 Jun 2019 16:53:47 +0200
-Message-ID: <CAJ+HfNiXbPUh2zhMJN9=O2a_8nBak2yOeVvZNJaofY4S624N+w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 00/17] AF_XDP infrastructure improvements and
- mlx5e support
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jun 2019 at 16:11, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>=
- wrote:
->
->
-> On 2019-06-13 16:01, Maxim Mikityanskiy wrote:
-> > On 2019-06-13 15:58, Bj=C3=B6rn T=C3=B6pel wrote:
-> >> On Wed, 12 Jun 2019 at 22:49, Jakub Kicinski
-> >> <jakub.kicinski@netronome.com> wrote:
-> >>>
-> >>> On Wed, 12 Jun 2019 15:56:33 +0000, Maxim Mikityanskiy wrote:
-> >>>> UAPI is not changed, XSK RX queues are exposed to the kernel. The lo=
-wer
-> >>>> half of the available amount of RX queues are regular queues, and th=
-e
-> >>>> upper half are XSK RX queues.
-> >>>
-> >>> If I have 32 queues enabled on the NIC and I install AF_XDP socket on
-> >>> queue 10, does the NIC now have 64 RQs, but only first 32 are in the
-> >>> normal RSS map?
-> >>>
-> >>
-> >> Additional, related, question to Jakub's: Say that I'd like to hijack
-> >> all 32 Rx queues of the NIC. I create 32 AF_XDP socket and attach them
-> >> in zero-copy mode to the device. What's the result?
-> >
-> > There are 32 regular RX queues (0..31) and 32 XSK RX queues (32..63). I=
-f
-> > you want 32 zero-copy AF_XDP sockets, you can attach them to queues
-> > 32..63, and the regular traffic won't be affected at all.
-> >
-> Thanks for getting back! More questions!
->
-> Ok, so I cannot (with zero-copy) get the regular traffic into AF_XDP
-> sockets?
->
-> How does qids map? Can I only bind a zero-copy socket to qid 32..63 in
-> the example above?
->
-> Say that I have a a copy-mode AF_XDP socket bound to queue 2. In this
-> case I will receive the regular traffic from queue 2. Enabling zero-copy
-> for the same queue, will this give an error, or receive AF_XDP specific
-> traffic from queue 2+32? Or return an error, and require an explicit
-> bind to any of the queues 32..63?
->
->
+Current flower mask creating code assumes that temporary mask that is used
+when inserting new filter is stack allocated. To prevent race condition
+with data patch synchronize_rcu() is called every time fl_create_new_mask()
+replaces temporary stack allocated mask. As reported by Jiri, this
+increases runtime of creating 20000 flower classifiers from 4 seconds to
+163 seconds. However, this design is no longer necessary since temporary
+mask was converted to be dynamically allocated by commit 2cddd2014782
+("net/sched: cls_flower: allocate mask dynamically in fl_change()").
 
-Let me expand a bit on why I'm asking these qid questions.
+Remove synchronize_rcu() calls from mask creation code. Instead, refactor
+fl_change() to always deallocate temporary mask with rcu grace period.
 
-It's unfortunate that vendors have different view/mapping on
-"qids". For Intel, we allow to bind a zero-copy socket to all Rx
-qids. For Mellanox, a certain set of qids are allowed for zero-copy
-sockets.
+Fixes: 195c234d15c9 ("net: sched: flower: handle concurrent mask insertion")
+Reported-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
+ net/sched/cls_flower.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
-This highlights a need for a better abstraction for queues than "some
-queue id from ethtool". This will take some time, and I think that we
-have to accept for now that we'll have different behavior/mapping for
-zero-copy sockets on different NICs.
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index c388372df0e2..eedd5786c084 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -320,10 +320,13 @@ static int fl_init(struct tcf_proto *tp)
+ 	return rhashtable_init(&head->ht, &mask_ht_params);
+ }
+ 
+-static void fl_mask_free(struct fl_flow_mask *mask)
++static void fl_mask_free(struct fl_flow_mask *mask, bool mask_init_done)
+ {
+-	WARN_ON(!list_empty(&mask->filters));
+-	rhashtable_destroy(&mask->ht);
++	/* temporary masks don't have their filters list and ht initialized */
++	if (mask_init_done) {
++		WARN_ON(!list_empty(&mask->filters));
++		rhashtable_destroy(&mask->ht);
++	}
+ 	kfree(mask);
+ }
+ 
+@@ -332,7 +335,15 @@ static void fl_mask_free_work(struct work_struct *work)
+ 	struct fl_flow_mask *mask = container_of(to_rcu_work(work),
+ 						 struct fl_flow_mask, rwork);
+ 
+-	fl_mask_free(mask);
++	fl_mask_free(mask, true);
++}
++
++static void fl_uninit_mask_free_work(struct work_struct *work)
++{
++	struct fl_flow_mask *mask = container_of(to_rcu_work(work),
++						 struct fl_flow_mask, rwork);
++
++	fl_mask_free(mask, false);
+ }
+ 
+ static bool fl_mask_put(struct cls_fl_head *head, struct fl_flow_mask *mask)
+@@ -1346,9 +1357,6 @@ static struct fl_flow_mask *fl_create_new_mask(struct cls_fl_head *head,
+ 	if (err)
+ 		goto errout_destroy;
+ 
+-	/* Wait until any potential concurrent users of mask are finished */
+-	synchronize_rcu();
+-
+ 	spin_lock(&head->masks_lock);
+ 	list_add_tail_rcu(&newmask->list, &head->masks);
+ 	spin_unlock(&head->masks_lock);
+@@ -1375,11 +1383,7 @@ static int fl_check_assign_mask(struct cls_fl_head *head,
+ 
+ 	/* Insert mask as temporary node to prevent concurrent creation of mask
+ 	 * with same key. Any concurrent lookups with same key will return
+-	 * -EAGAIN because mask's refcnt is zero. It is safe to insert
+-	 * stack-allocated 'mask' to masks hash table because we call
+-	 * synchronize_rcu() before returning from this function (either in case
+-	 * of error or after replacing it with heap-allocated mask in
+-	 * fl_create_new_mask()).
++	 * -EAGAIN because mask's refcnt is zero.
+ 	 */
+ 	fnew->mask = rhashtable_lookup_get_insert_fast(&head->ht,
+ 						       &mask->ht_node,
+@@ -1414,8 +1418,6 @@ static int fl_check_assign_mask(struct cls_fl_head *head,
+ errout_cleanup:
+ 	rhashtable_remove_fast(&head->ht, &mask->ht_node,
+ 			       mask_ht_params);
+-	/* Wait until any potential concurrent users of mask are finished */
+-	synchronize_rcu();
+ 	return ret;
+ }
+ 
+@@ -1644,7 +1646,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ 	*arg = fnew;
+ 
+ 	kfree(tb);
+-	kfree(mask);
++	tcf_queue_work(&mask->rwork, fl_uninit_mask_free_work);
+ 	return 0;
+ 
+ errout_ht:
+@@ -1664,7 +1666,7 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ errout_tb:
+ 	kfree(tb);
+ errout_mask_alloc:
+-	kfree(mask);
++	tcf_queue_work(&mask->rwork, fl_uninit_mask_free_work);
+ errout_fold:
+ 	if (fold)
+ 		__fl_put(fold);
+-- 
+2.21.0
 
-Let's address this need for a better queue abstraction, but that
-shouldn't block this series IMO. Other than patch:
-
-"[PATCH bpf-next v4 07/17] libbpf: Support drivers with non-combined channe=
-ls"
-
-which I'd like to see a bit more discussion on, I'm OK with this
-series. I haven't been able to test it (no hardware "hint, hint"), but
-I know Jonathan has been running it.
-
-Thanks for working on this, Max!
-
-Bj=C3=B6rn
