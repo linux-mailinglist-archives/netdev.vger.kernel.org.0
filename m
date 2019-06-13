@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAC644EE4
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDCA44EE7
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728850AbfFMWAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 18:00:11 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38904 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727727AbfFMWAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:00:11 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5DLwGl5019532
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:09 -0700
+        id S1728901AbfFMWAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 18:00:20 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38214 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727727AbfFMWAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:00:19 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5DLr4L2027996
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:18 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=BtD7W0wv2RDXWR2irAaVpl2hKq5GGSC8OYd8JSvKc0I=;
- b=MogxOj1kGgerj3hQRl4i+I4z9Z+4brJqI0CjtBAl/r1/3HEG9ZgVmhZsLpDGddkQD2QM
- l0xv86By6+K/TCzjnUUgNE8qf3d+P2naXDGk6xj6RQneLG++6N28R0TqUa3ob9+fSvu0
- Q5AhwAPhRvh3NcVfp3q7v7h/+m3OE1gI1xA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t3pr5hurj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:09 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 13 Jun 2019 15:00:08 -0700
+ content-type; s=facebook; bh=G9Qvn4W0vyFE+eSObH1gaAkGjLJ6ViJzH32ICMKUTDU=;
+ b=GI3of1hD7+DgaWPqoMhbVjt+/+3rKyGadm2HV+uZTzY4lJHh0IfQ7fyFL5zXgHVAKiiW
+ YeudCTYUZiJ+fE0q6tgTSI23EdBGADFkLk2gMtKNE++s+WpoxHID6ALe9p7Y299xNAoE
+ AASROIxsChK/2PYHPAFS1yt0+NyQIy9O+t8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t3uh08qgm-13
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:18 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 13 Jun 2019 15:00:11 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 7E4AA2943408; Thu, 13 Jun 2019 15:00:03 -0700 (PDT)
+        id AF5662943408; Thu, 13 Jun 2019 15:00:05 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@fb.com>,
         David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
         Stanislav Fomichev <sdf@fomichev.me>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 2/3] bpf: Sync asm-generic/socket.h to tools/
-Date:   Thu, 13 Jun 2019 15:00:03 -0700
-Message-ID: <20190613220003.3095654-1-kafai@fb.com>
+Subject: [PATCH v3 bpf-next 3/3] bpf: Add test for SO_REUSEPORT_DETACH_BPF
+Date:   Thu, 13 Jun 2019 15:00:05 -0700
+Message-ID: <20190613220005.3095815-1-kafai@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190613215959.3095374-1-kafai@fb.com>
 References: <20190613215959.3095374-1-kafai@fb.com>
@@ -53,176 +53,93 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=672 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906130165
+ mlxlogscore=897 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906130164
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SO_DETACH_REUSEPORT_BPF is needed for the test in the next patch.
-It is defined in the socket.h.
+This patch adds a test for the new sockopt SO_REUSEPORT_DETACH_BPF.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- tools/include/uapi/asm-generic/socket.h | 147 ++++++++++++++++++++++++
- 1 file changed, 147 insertions(+)
- create mode 100644 tools/include/uapi/asm-generic/socket.h
+ .../selftests/bpf/test_select_reuseport.c     | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/tools/include/uapi/asm-generic/socket.h b/tools/include/uapi/asm-generic/socket.h
-new file mode 100644
-index 000000000000..77f7c1638eb1
---- /dev/null
-+++ b/tools/include/uapi/asm-generic/socket.h
-@@ -0,0 +1,147 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef __ASM_GENERIC_SOCKET_H
-+#define __ASM_GENERIC_SOCKET_H
+diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
+index 75646d9b34aa..7566c13eb51a 100644
+--- a/tools/testing/selftests/bpf/test_select_reuseport.c
++++ b/tools/testing/selftests/bpf/test_select_reuseport.c
+@@ -523,6 +523,58 @@ static void test_pass_on_err(int type, sa_family_t family)
+ 	printf("OK\n");
+ }
+ 
++static void test_detach_bpf(int type, sa_family_t family)
++{
++#ifdef SO_DETACH_REUSEPORT_BPF
++	__u32 nr_run_before = 0, nr_run_after = 0, tmp, i;
++	struct epoll_event ev;
++	int cli_fd, err, nev;
++	struct cmd cmd = {};
++	int optvalue = 0;
 +
-+#include <linux/posix_types.h>
-+#include <asm/sockios.h>
++	printf("%s: ", __func__);
++	err = setsockopt(sk_fds[0], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
++			 &optvalue, sizeof(optvalue));
++	CHECK(err == -1, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
++	      "err:%d errno:%d\n", err, errno);
 +
-+/* For setsockopt(2) */
-+#define SOL_SOCKET	1
++	err = setsockopt(sk_fds[1], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
++			 &optvalue, sizeof(optvalue));
++	CHECK(err == 0 || errno != ENOENT, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
++	      "err:%d errno:%d\n", err, errno);
 +
-+#define SO_DEBUG	1
-+#define SO_REUSEADDR	2
-+#define SO_TYPE		3
-+#define SO_ERROR	4
-+#define SO_DONTROUTE	5
-+#define SO_BROADCAST	6
-+#define SO_SNDBUF	7
-+#define SO_RCVBUF	8
-+#define SO_SNDBUFFORCE	32
-+#define SO_RCVBUFFORCE	33
-+#define SO_KEEPALIVE	9
-+#define SO_OOBINLINE	10
-+#define SO_NO_CHECK	11
-+#define SO_PRIORITY	12
-+#define SO_LINGER	13
-+#define SO_BSDCOMPAT	14
-+#define SO_REUSEPORT	15
-+#ifndef SO_PASSCRED /* powerpc only differs in these */
-+#define SO_PASSCRED	16
-+#define SO_PEERCRED	17
-+#define SO_RCVLOWAT	18
-+#define SO_SNDLOWAT	19
-+#define SO_RCVTIMEO_OLD	20
-+#define SO_SNDTIMEO_OLD	21
-+#endif
++	for (i = 0; i < NR_RESULTS; i++) {
++		err = bpf_map_lookup_elem(result_map, &i, &tmp);
++		CHECK(err == -1, "lookup_elem(result_map)",
++		      "i:%u err:%d errno:%d\n", i, err, errno);
++		nr_run_before += tmp;
++	}
 +
-+/* Security levels - as per NRL IPv6 - don't actually do anything */
-+#define SO_SECURITY_AUTHENTICATION		22
-+#define SO_SECURITY_ENCRYPTION_TRANSPORT	23
-+#define SO_SECURITY_ENCRYPTION_NETWORK		24
++	cli_fd = send_data(type, family, &cmd, sizeof(cmd), PASS);
++	nev = epoll_wait(epfd, &ev, 1, 5);
++	CHECK(nev <= 0, "nev <= 0",
++	      "nev:%d expected:1 type:%d family:%d data:(0, 0)\n",
++	      nev,  type, family);
 +
-+#define SO_BINDTODEVICE	25
++	for (i = 0; i < NR_RESULTS; i++) {
++		err = bpf_map_lookup_elem(result_map, &i, &tmp);
++		CHECK(err == -1, "lookup_elem(result_map)",
++		      "i:%u err:%d errno:%d\n", i, err, errno);
++		nr_run_after += tmp;
++	}
 +
-+/* Socket filtering */
-+#define SO_ATTACH_FILTER	26
-+#define SO_DETACH_FILTER	27
-+#define SO_GET_FILTER		SO_ATTACH_FILTER
++	CHECK(nr_run_before != nr_run_after,
++	      "nr_run_before != nr_run_after",
++	      "nr_run_before:%u nr_run_after:%u\n",
++	      nr_run_before, nr_run_after);
 +
-+#define SO_PEERNAME		28
-+
-+#define SO_ACCEPTCONN		30
-+
-+#define SO_PEERSEC		31
-+#define SO_PASSSEC		34
-+
-+#define SO_MARK			36
-+
-+#define SO_PROTOCOL		38
-+#define SO_DOMAIN		39
-+
-+#define SO_RXQ_OVFL             40
-+
-+#define SO_WIFI_STATUS		41
-+#define SCM_WIFI_STATUS	SO_WIFI_STATUS
-+#define SO_PEEK_OFF		42
-+
-+/* Instruct lower device to use last 4-bytes of skb data as FCS */
-+#define SO_NOFCS		43
-+
-+#define SO_LOCK_FILTER		44
-+
-+#define SO_SELECT_ERR_QUEUE	45
-+
-+#define SO_BUSY_POLL		46
-+
-+#define SO_MAX_PACING_RATE	47
-+
-+#define SO_BPF_EXTENSIONS	48
-+
-+#define SO_INCOMING_CPU		49
-+
-+#define SO_ATTACH_BPF		50
-+#define SO_DETACH_BPF		SO_DETACH_FILTER
-+
-+#define SO_ATTACH_REUSEPORT_CBPF	51
-+#define SO_ATTACH_REUSEPORT_EBPF	52
-+
-+#define SO_CNX_ADVICE		53
-+
-+#define SCM_TIMESTAMPING_OPT_STATS	54
-+
-+#define SO_MEMINFO		55
-+
-+#define SO_INCOMING_NAPI_ID	56
-+
-+#define SO_COOKIE		57
-+
-+#define SCM_TIMESTAMPING_PKTINFO	58
-+
-+#define SO_PEERGROUPS		59
-+
-+#define SO_ZEROCOPY		60
-+
-+#define SO_TXTIME		61
-+#define SCM_TXTIME		SO_TXTIME
-+
-+#define SO_BINDTOIFINDEX	62
-+
-+#define SO_TIMESTAMP_OLD        29
-+#define SO_TIMESTAMPNS_OLD      35
-+#define SO_TIMESTAMPING_OLD     37
-+
-+#define SO_TIMESTAMP_NEW        63
-+#define SO_TIMESTAMPNS_NEW      64
-+#define SO_TIMESTAMPING_NEW     65
-+
-+#define SO_RCVTIMEO_NEW         66
-+#define SO_SNDTIMEO_NEW         67
-+
-+#define SO_DETACH_REUSEPORT_BPF 68
-+
-+#if !defined(__KERNEL__)
-+
-+#if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-+/* on 64-bit and x32, avoid the ?: operator */
-+#define SO_TIMESTAMP		SO_TIMESTAMP_OLD
-+#define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
-+#define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
-+
-+#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
++	printf("OK\n");
++	close(cli_fd);
 +#else
-+#define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
-+#define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
-+#define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
++	printf("%s: SKIP\n", __func__);
 +#endif
++}
 +
-+#define SCM_TIMESTAMP           SO_TIMESTAMP
-+#define SCM_TIMESTAMPNS         SO_TIMESTAMPNS
-+#define SCM_TIMESTAMPING        SO_TIMESTAMPING
-+
-+#endif
-+
-+#endif /* __ASM_GENERIC_SOCKET_H */
+ static void prepare_sk_fds(int type, sa_family_t family, bool inany)
+ {
+ 	const int first = REUSEPORT_ARRAY_SIZE - 1;
+@@ -664,6 +716,8 @@ static void test_all(void)
+ 			test_pass(type, family);
+ 			test_syncookie(type, family);
+ 			test_pass_on_err(type, family);
++			/* Must be the last test */
++			test_detach_bpf(type, family);
+ 
+ 			cleanup_per_test();
+ 			printf("\n");
 -- 
 2.17.1
 
