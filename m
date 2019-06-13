@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E4344AAD
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE5544AAF
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 20:29:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbfFMS2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 14:28:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57390 "EHLO mx1.redhat.com"
+        id S1728951AbfFMS25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 14:28:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:32876 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727058AbfFMS2w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 14:28:52 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        id S1727058AbfFMS25 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 14:28:57 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5F902356DB;
-        Thu, 13 Jun 2019 18:28:51 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 4C6E119CF77;
+        Thu, 13 Jun 2019 18:28:56 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-44.brq.redhat.com [10.40.200.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 729225C28C;
-        Thu, 13 Jun 2019 18:28:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 83CD71001B18;
+        Thu, 13 Jun 2019 18:28:53 +0000 (UTC)
 Received: from [192.168.5.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 9B2343009AEFD;
-        Thu, 13 Jun 2019 20:28:47 +0200 (CEST)
-Subject: [PATCH net-next v1 09/11] xdp: force mem allocator removal and
- periodic warning
+        by firesoul.localdomain (Postfix) with ESMTP id AD0C63009AEFD;
+        Thu, 13 Jun 2019 20:28:52 +0200 (CEST)
+Subject: [PATCH net-next v1 10/11] xdp: add tracepoints for XDP mem
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -32,174 +31,251 @@ To:     netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     toshiaki.makita1@gmail.com, grygorii.strashko@ti.com,
         ivan.khoronzhuk@linaro.org, mcroce@redhat.com
-Date:   Thu, 13 Jun 2019 20:28:47 +0200
-Message-ID: <156045052757.29115.17148153291969774246.stgit@firesoul>
+Date:   Thu, 13 Jun 2019 20:28:52 +0200
+Message-ID: <156045053264.29115.10831775176215182897.stgit@firesoul>
 In-Reply-To: <156045046024.29115.11802895015973488428.stgit@firesoul>
 References: <156045046024.29115.11802895015973488428.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Thu, 13 Jun 2019 18:28:51 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Thu, 13 Jun 2019 18:28:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If bugs exists or are introduced later e.g. by drivers misusing the API,
-then we want to warn about the issue, such that developer notice. This patch
-will generate a bit of noise in form of periodic pr_warn every 30 seconds.
+These tracepoints make it easier to troubleshoot XDP mem id disconnect.
 
-It is not nice to have this stall warning running forever. Thus, this patch
-will (after 120 attempts) force disconnect the mem id (from the rhashtable)
-and free the page_pool object. This will cause fallback to the put_page() as
-before, which only potentially leak DMA-mappings, if objects are really
-stuck for this long. In that unlikely case, a WARN_ONCE should show us the
-call stack.
+The xdp:mem_disconnect tracepoint cannot be replaced via kprobe. It is
+placed at the last stable place for the pointer to struct xdp_mem_allocator,
+just before it's scheduled for RCU removal. It also extract info on
+'safe_to_remove' and 'force'.
+
+Detailed info about in-flight pages is not available at this layer. The next
+patch will added tracepoints needed at the page_pool layer for this.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- net/core/page_pool.c |   18 +++++++++++++++++-
- net/core/xdp.c       |   37 +++++++++++++++++++++++++++++++------
- 2 files changed, 48 insertions(+), 7 deletions(-)
+ include/net/xdp_priv.h     |   23 +++++++++
+ include/trace/events/xdp.h |  115 ++++++++++++++++++++++++++++++++++++++++++++
+ net/core/xdp.c             |   21 ++------
+ 3 files changed, 143 insertions(+), 16 deletions(-)
+ create mode 100644 include/net/xdp_priv.h
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 8679e24fd665..42c3b0a5a259 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -330,11 +330,27 @@ static void __page_pool_empty_ring(struct page_pool *pool)
- 	}
- }
+diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+new file mode 100644
+index 000000000000..6a8cba6ea79a
+--- /dev/null
++++ b/include/net/xdp_priv.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_NET_XDP_PRIV_H__
++#define __LINUX_NET_XDP_PRIV_H__
++
++#include <linux/rhashtable.h>
++
++/* Private to net/core/xdp.c, but used by trace/events/xdp.h */
++struct xdp_mem_allocator {
++	struct xdp_mem_info mem;
++	union {
++		void *allocator;
++		struct page_pool *page_pool;
++		struct zero_copy_allocator *zc_alloc;
++	};
++	int disconnect_cnt;
++	unsigned long defer_start;
++	struct rhash_head node;
++	struct rcu_head rcu;
++	struct delayed_work defer_wq;
++	unsigned long defer_warn;
++};
++
++#endif /* __LINUX_NET_XDP_PRIV_H__ */
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index e95cb86b65cf..bb5e380e2ef3 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -269,6 +269,121 @@ TRACE_EVENT(xdp_devmap_xmit,
+ 		  __entry->from_ifindex, __entry->to_ifindex, __entry->err)
+ );
  
-+static void __warn_in_flight(struct page_pool *pool)
-+{
-+	u32 release_cnt = atomic_read(&pool->pages_state_release_cnt);
-+	u32 hold_cnt = READ_ONCE(pool->pages_state_hold_cnt);
-+	s32 distance;
++/* Expect users already include <net/xdp.h>, but not xdp_priv.h */
++#include <net/xdp_priv.h>
 +
-+	distance = _distance(hold_cnt, release_cnt);
++#define __MEM_TYPE_MAP(FN)	\
++	FN(PAGE_SHARED)		\
++	FN(PAGE_ORDER0)		\
++	FN(PAGE_POOL)		\
++	FN(ZERO_COPY)
 +
-+	/* Drivers should fix this, but only problematic when DMA is used */
-+	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
-+	     distance, hold_cnt, release_cnt);
-+}
++#define __MEM_TYPE_TP_FN(x)	\
++	TRACE_DEFINE_ENUM(MEM_TYPE_##x);
++#define __MEM_TYPE_SYM_FN(x)	\
++	{ MEM_TYPE_##x, #x },
++#define __MEM_TYPE_SYM_TAB	\
++	__MEM_TYPE_MAP(__MEM_TYPE_SYM_FN) { -1, 0 }
++__MEM_TYPE_MAP(__MEM_TYPE_TP_FN)
 +
- void __page_pool_free(struct page_pool *pool)
- {
- 	WARN(pool->alloc.count, "API usage violation");
- 	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
--	WARN(!__page_pool_safe_to_destroy(pool), "still in-flight pages");
++TRACE_EVENT(mem_disconnect,
 +
-+	/* Can happen due to forced shutdown */
-+	if (!__page_pool_safe_to_destroy(pool))
-+		__warn_in_flight(pool);
++	TP_PROTO(const struct xdp_mem_allocator *xa,
++		 bool safe_to_remove, bool force),
++
++	TP_ARGS(xa, safe_to_remove, force),
++
++	TP_STRUCT__entry(
++		__field(const struct xdp_mem_allocator *,	xa)
++		__field(u32,		mem_id)
++		__field(u32,		mem_type)
++		__field(const void *,	allocator)
++		__field(bool,		safe_to_remove)
++		__field(bool,		force)
++		__field(int,		disconnect_cnt)
++	),
++
++	TP_fast_assign(
++		__entry->xa		= xa;
++		__entry->mem_id		= xa->mem.id;
++		__entry->mem_type	= xa->mem.type;
++		__entry->allocator	= xa->allocator;
++		__entry->safe_to_remove	= safe_to_remove;
++		__entry->force		= force;
++		__entry->disconnect_cnt	= xa->disconnect_cnt;
++	),
++
++	TP_printk("mem_id=%d mem_type=%s allocator=%p"
++		  " safe_to_remove=%s force=%s disconnect_cnt=%d",
++		  __entry->mem_id,
++		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
++		  __entry->allocator,
++		  __entry->safe_to_remove ? "true" : "false",
++		  __entry->force ? "true" : "false",
++		  __entry->disconnect_cnt
++	)
++);
++
++TRACE_EVENT(mem_connect,
++
++	TP_PROTO(const struct xdp_mem_allocator *xa,
++		 const struct xdp_rxq_info *rxq),
++
++	TP_ARGS(xa, rxq),
++
++	TP_STRUCT__entry(
++		__field(const struct xdp_mem_allocator *,	xa)
++		__field(u32,		mem_id)
++		__field(u32,		mem_type)
++		__field(const void *,	allocator)
++		__field(const struct xdp_rxq_info *,		rxq)
++		__field(int,		ifindex)
++	),
++
++	TP_fast_assign(
++		__entry->xa		= xa;
++		__entry->mem_id		= xa->mem.id;
++		__entry->mem_type	= xa->mem.type;
++		__entry->allocator	= xa->allocator;
++		__entry->rxq		= rxq;
++		__entry->ifindex	= rxq->dev->ifindex;
++	),
++
++	TP_printk("mem_id=%d mem_type=%s allocator=%p"
++		  " ifindex=%d",
++		  __entry->mem_id,
++		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
++		  __entry->allocator,
++		  __entry->ifindex
++	)
++);
++
++TRACE_EVENT(mem_return_failed,
++
++	TP_PROTO(const struct xdp_mem_info *mem,
++		 const struct page *page),
++
++	TP_ARGS(mem, page),
++
++	TP_STRUCT__entry(
++		__field(const struct page *,	page)
++		__field(u32,		mem_id)
++		__field(u32,		mem_type)
++	),
++
++	TP_fast_assign(
++		__entry->page		= page;
++		__entry->mem_id		= mem->id;
++		__entry->mem_type	= mem->type;
++	),
++
++	TP_printk("mem_id=%d mem_type=%s page=%p",
++		  __entry->mem_id,
++		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
++		  __entry->page
++	)
++);
++
+ #endif /* _TRACE_XDP_H */
  
- 	ptr_ring_cleanup(&pool->ring, NULL);
- 	kfree(pool);
+ #include <trace/define_trace.h>
 diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 2b7bad227030..53bce4fa776a 100644
+index 53bce4fa776a..4ad9e48b76a8 100644
 --- a/net/core/xdp.c
 +++ b/net/core/xdp.c
-@@ -39,6 +39,9 @@ struct xdp_mem_allocator {
- 	struct rhash_head node;
- 	struct rcu_head rcu;
- 	struct delayed_work defer_wq;
-+	unsigned long defer_start;
-+	unsigned long defer_warn;
-+	int disconnect_cnt;
- };
+@@ -14,6 +14,8 @@
+ #include <net/page_pool.h>
  
+ #include <net/xdp.h>
++#include <net/xdp_priv.h> /* struct xdp_mem_allocator */
++#include <trace/events/xdp.h>
+ 
+ #define REG_STATE_NEW		0x0
+ #define REG_STATE_REGISTERED	0x1
+@@ -29,21 +31,6 @@ static int mem_id_next = MEM_ID_MIN;
+ static bool mem_id_init; /* false */
+ static struct rhashtable *mem_id_ht;
+ 
+-struct xdp_mem_allocator {
+-	struct xdp_mem_info mem;
+-	union {
+-		void *allocator;
+-		struct page_pool *page_pool;
+-		struct zero_copy_allocator *zc_alloc;
+-	};
+-	struct rhash_head node;
+-	struct rcu_head rcu;
+-	struct delayed_work defer_wq;
+-	unsigned long defer_start;
+-	unsigned long defer_warn;
+-	int disconnect_cnt;
+-};
+-
  static u32 xdp_mem_id_hashfn(const void *data, u32 len, u32 seed)
-@@ -95,7 +98,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
- 	kfree(xa);
- }
- 
--bool __mem_id_disconnect(int id)
-+bool __mem_id_disconnect(int id, bool force)
  {
- 	struct xdp_mem_allocator *xa;
- 	bool safe_to_remove = true;
-@@ -108,29 +111,47 @@ bool __mem_id_disconnect(int id)
- 		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
- 		return true;
- 	}
-+	xa->disconnect_cnt++;
- 
- 	/* Detects in-flight packet-pages for page_pool */
+ 	const u32 *k = data;
+@@ -117,7 +104,7 @@ bool __mem_id_disconnect(int id, bool force)
  	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
  		safe_to_remove = page_pool_request_shutdown(xa->page_pool);
  
--	if (safe_to_remove &&
-+	/* TODO: Tracepoint will be added here in next-patch */
-+
-+	if ((safe_to_remove || force) &&
+-	/* TODO: Tracepoint will be added here in next-patch */
++	trace_mem_disconnect(xa, safe_to_remove, force);
+ 
+ 	if ((safe_to_remove || force) &&
  	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
- 		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+@@ -385,6 +372,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
  
  	mutex_unlock(&mem_id_lock);
--	return safe_to_remove;
-+	return (safe_to_remove|force);
- }
  
- #define DEFER_TIME (msecs_to_jiffies(1000))
-+#define DEFER_WARN_INTERVAL (30 * HZ)
-+#define DEFER_MAX_RETRIES 120
- 
- static void mem_id_disconnect_defer_retry(struct work_struct *wq)
- {
- 	struct delayed_work *dwq = to_delayed_work(wq);
- 	struct xdp_mem_allocator *xa = container_of(dwq, typeof(*xa), defer_wq);
-+	bool force = false;
-+
-+	if (xa->disconnect_cnt > DEFER_MAX_RETRIES)
-+		force = true;
- 
--	if (__mem_id_disconnect(xa->mem.id))
-+	if (__mem_id_disconnect(xa->mem.id, force))
- 		return;
- 
-+	/* Periodic warning */
-+	if (time_after_eq(jiffies, xa->defer_warn)) {
-+		int sec = (s32)((u32)jiffies - (u32)xa->defer_start) / HZ;
-+
-+		pr_warn("%s() stalled mem.id=%u shutdown %d attempts %d sec\n",
-+			__func__, xa->mem.id, xa->disconnect_cnt, sec);
-+		xa->defer_warn = jiffies + DEFER_WARN_INTERVAL;
-+	}
-+
- 	/* Still not ready to be disconnected, retry later */
- 	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
- }
-@@ -153,7 +174,7 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
- 	if (id == 0)
- 		return;
- 
--	if (__mem_id_disconnect(id))
-+	if (__mem_id_disconnect(id, false))
- 		return;
- 
- 	/* Could not disconnect, defer new disconnect attempt to later */
-@@ -164,6 +185,8 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
- 		mutex_unlock(&mem_id_lock);
- 		return;
- 	}
-+	xa->defer_start = jiffies;
-+	xa->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
- 
- 	INIT_DELAYED_WORK(&xa->defer_wq, mem_id_disconnect_defer_retry);
++	trace_mem_connect(xdp_alloc, xdp_rxq);
+ 	return 0;
+ err:
  	mutex_unlock(&mem_id_lock);
-@@ -388,10 +411,12 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
- 		/* mem->id is valid, checked in xdp_rxq_info_reg_mem_model() */
- 		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
- 		page = virt_to_head_page(data);
--		if (xa) {
-+		if (likely(xa)) {
- 			napi_direct &= !xdp_return_frame_no_direct();
- 			page_pool_put_page(xa->page_pool, page, napi_direct);
+@@ -417,6 +405,7 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
  		} else {
-+			/* Hopefully stack show who to blame for late return */
-+			WARN_ONCE(1, "page_pool gone mem.id=%d", mem->id);
+ 			/* Hopefully stack show who to blame for late return */
+ 			WARN_ONCE(1, "page_pool gone mem.id=%d", mem->id);
++			trace_mem_return_failed(mem, page);
  			put_page(page);
  		}
  		rcu_read_unlock();
