@@ -2,118 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E55E0444DA
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:40:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF7144498
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730876AbfFMQj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:39:58 -0400
-Received: from mail-eopbgr10058.outbound.protection.outlook.com ([40.107.1.58]:29558
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730587AbfFMHGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 03:06:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FBjyWyo2FoEu/5Sce6oAA7WOadG/3AoQCXBsXMJu7Xw=;
- b=rS+kWsCR6naKxUMQl1ZozxwCyayBM1idFDXc48eLMh7lSdtOlc2uUn6bm//JF0HRgEYhBftz+2Zf/b/UwqP6MlNHpBWou0GbKEddWvlRzBdc6ltu3wUoAQftiR/W9PssuKhlh0k7b7GGA5u0haj33k4IR7556ntwGkYCuPwxVBM=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4685.eurprd05.prod.outlook.com (20.176.3.158) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.11; Thu, 13 Jun 2019 07:06:38 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3021:5bae:ebbe:701f]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3021:5bae:ebbe:701f%6]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
- 07:06:38 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>
-Subject: Re: [PATCH net-next] net: sched: ingress: set 'unlocked' flag for
- Qdisc ops
-Thread-Topic: [PATCH net-next] net: sched: ingress: set 'unlocked' flag for
- Qdisc ops
-Thread-Index: AQHVIO6FEqeVh055u0aWQnsdk+poUqaYNzGAgAD0AoA=
-Date:   Thu, 13 Jun 2019 07:06:38 +0000
-Message-ID: <vbf4l4u7yme.fsf@mellanox.com>
-References: <20190612071435.7367-1-vladbu@mellanox.com>
- <52082ab2-7db8-b047-f42f-a5c69ba9c303@iogearbox.net>
-In-Reply-To: <52082ab2-7db8-b047-f42f-a5c69ba9c303@iogearbox.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0107.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:c::23) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: beeed3dd-a0c3-4f05-9860-08d6efcdad44
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR05MB4685;
-x-ms-traffictypediagnostic: VI1PR05MB4685:
-x-microsoft-antispam-prvs: <VI1PR05MB4685C4859D2BD8CCF960B316ADEF0@VI1PR05MB4685.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(39860400002)(396003)(346002)(366004)(199004)(189003)(316002)(102836004)(6506007)(54906003)(386003)(99286004)(76176011)(52116002)(53546011)(6486002)(66066001)(68736007)(6916009)(478600001)(26005)(186003)(14454004)(81156014)(8676002)(73956011)(66556008)(14444005)(66476007)(66446008)(256004)(81166006)(53936002)(66946007)(64756008)(8936002)(36756003)(86362001)(5660300002)(6512007)(71190400001)(7736002)(305945005)(229853002)(6436002)(2616005)(486006)(476003)(11346002)(2906002)(446003)(4326008)(71200400001)(25786009)(6116002)(3846002)(6246003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4685;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: JTTns4eiNF5IozB/OzAnlNZ0InnvCnAd0oCEuwiWXfJ44kOHZH1Ws+V3e1RBIYVtDRRz0Q4qJj9hndK6WVHI8p/ILlSVsBJNLvJ6LRSySGysNU4duZfBPBj8/ADoL/rDgRSV0FzFhHWHj6mDcEJ6Ommwo8QxLl8XofMtEbueKspPh4uDejx69ycSHMlXKRhEfboAP1sM7FCL1Yyjko1tDFsHccvEsHeffKhAQP3tsgykAKza8JJFvQjPnyGxGdgoY1Xtfup7zHngVbVIsgQix3lvgDiQrwoid9r7L9sEMIAHyRr8fDIXdJKNHkWYzRjcLzRQsoa2t1rjSEnaeWRT+adsfU1vTZ+5n2OIlld3UCZ0h1yqIhKJ+HVQXRGVfJpGZYxntd28qVnrWNxW3rR7tdXx0baKfHA1c3BHsykVvZk=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1730628AbfFMQht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:37:49 -0400
+Received: from m15-111.126.com ([220.181.15.111]:58751 "EHLO m15-111.126.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730618AbfFMHKA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 03:10:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=pQt7H
+        gkGjDiOkh+wd5Sa+sRL4h8CMsOHEzAP3mBBeC8=; b=VKaOqZrlpaLx1J+5Bg/Cx
+        7ltBFnLNLNqG6vgB2T4PCQ7ZgqZbbzpbGeSOQQybU4a3oOJFvdKhWZODRoJPP0n0
+        It9lqYyN01oPi0970JeyUDIZniH0eP6Bz4gPgwudRCWlM5P2kw6DfmU4mlMybFU/
+        MfqzH8cLakatQT+rv0rdU8=
+Received: from localhost.localdomain (unknown [159.226.223.206])
+        by smtp1 (Coremail) with SMTP id C8mowADXoDSj9gFdCHxqCg--.49261S2;
+        Thu, 13 Jun 2019 15:09:23 +0800 (CST)
+From:   Lu Shuaibing <shuaibinglu@126.com>
+To:     ericvh@gmail.com
+Cc:     lucho@ionkov.net, asmadeus@codewreck.org, davem@davemloft.net,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lu Shuaibing <shuaibinglu@126.com>
+Subject: [PATCH] 9p: Transport error uninitialized
+Date:   Thu, 13 Jun 2019 15:08:54 +0800
+Message-Id: <20190613070854.10434-1-shuaibinglu@126.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: beeed3dd-a0c3-4f05-9860-08d6efcdad44
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 07:06:38.2736
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4685
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8mowADXoDSj9gFdCHxqCg--.49261S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWrZr1fJr4UKFW5tw45GFg_yoW5XFW5pr
+        nIkrWxCr48tryUZF4Dtay8Ar18JF4DZ3W7XryIyr12yanrGr18Aa4UKrWUWFyUCr15AFy7
+        JF1qq3y5tr1UGaUanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jJ6pPUUUUU=
+X-Originating-IP: [159.226.223.206]
+X-CM-SenderInfo: 5vkxtxpelqwzbx6rjloofrz/1tbiFxHSq1pD8kc0nAABs6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiBXZWQgMTIgSnVuIDIwMTkgYXQgMTk6MzMsIERhbmllbCBCb3JrbWFubiA8ZGFuaWVsQGlv
-Z2VhcmJveC5uZXQ+IHdyb3RlOg0KPiBPbiAwNi8xMi8yMDE5IDA5OjE0IEFNLCBWbGFkIEJ1c2xv
-diB3cm90ZToNCj4+IFRvIHJlbW92ZSBydG5sIGxvY2sgZGVwZW5kZW5jeSBpbiB0YyBmaWx0ZXIg
-dXBkYXRlIEFQSSB3aGVuIHVzaW5nIGluZ3Jlc3MNCj4+IFFkaXNjLCBzZXQgUURJU0NfQ0xBU1Nf
-T1BTX0RPSVRfVU5MT0NLRUQgZmxhZyBpbiBpbmdyZXNzIFFkaXNjX2NsYXNzX29wcy4NCj4+DQo+
-PiBJbmdyZXNzIFFkaXNjIG9wcyBkb24ndCByZXF1aXJlIGFueSBtb2RpZmljYXRpb25zIHRvIGJl
-IHVzZWQgd2l0aG91dCBydG5sDQo+PiBsb2NrIG9uIHRjIGZpbHRlciB1cGRhdGUgcGF0aC4gSW5n
-cmVzcyBpbXBsZW1lbnRhdGlvbiBuZXZlciBjaGFuZ2VzIGl0cw0KPj4gcS0+YmxvY2sgYW5kIG9u
-bHkgcmVsZWFzZXMgaXQgd2hlbiBRZGlzYyBpcyBiZWluZyBkZXN0cm95ZWQuIFRoaXMgbWVhbnMg
-aXQNCj4+IGlzIGVub3VnaCBmb3IgUlRNX3tORVdURklMVEVSfERFTFRGSUxURVJ8R0VUVEZJTFRF
-Un0gbWVzc2FnZSBoYW5kbGVycyB0bw0KPj4gaG9sZCBpbmdyZXNzIFFkaXNjIHJlZmVyZW5jZSB3
-aGlsZSB1c2luZyBpdCB3aXRob3V0IHJlbHlpbmcgb24gcnRubCBsb2NrDQo+PiBwcm90ZWN0aW9u
-LiBVbmxvY2tlZCBRZGlzYyBvcHMgc3VwcG9ydCBpcyBhbHJlYWR5IGltcGxlbWVudGVkIGluIGZp
-bHRlcg0KPj4gdXBkYXRlIHBhdGggYnkgdW5sb2NrZWQgY2xzIEFQSSBwYXRjaCBzZXQuDQo+Pg0K
-Pj4gU2lnbmVkLW9mZi1ieTogVmxhZCBCdXNsb3YgPHZsYWRidUBtZWxsYW5veC5jb20+DQo+PiAt
-LS0NCj4+ICBuZXQvc2NoZWQvc2NoX2luZ3Jlc3MuYyB8IDEgKw0KPj4gIDEgZmlsZSBjaGFuZ2Vk
-LCAxIGluc2VydGlvbigrKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9uZXQvc2NoZWQvc2NoX2luZ3Jl
-c3MuYyBiL25ldC9zY2hlZC9zY2hfaW5ncmVzcy5jDQo+PiBpbmRleCAwZjY1ZjYxNzc1NmIuLmQ1
-MzgyNTU0ZTI4MSAxMDA2NDQNCj4+IC0tLSBhL25ldC9zY2hlZC9zY2hfaW5ncmVzcy5jDQo+PiAr
-KysgYi9uZXQvc2NoZWQvc2NoX2luZ3Jlc3MuYw0KPj4gQEAgLTExNCw2ICsxMTQsNyBAQCBzdGF0
-aWMgaW50IGluZ3Jlc3NfZHVtcChzdHJ1Y3QgUWRpc2MgKnNjaCwgc3RydWN0IHNrX2J1ZmYgKnNr
-YikNCj4+ICB9DQo+Pg0KPj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgUWRpc2NfY2xhc3Nfb3BzIGlu
-Z3Jlc3NfY2xhc3Nfb3BzID0gew0KPj4gKwkuZmxhZ3MJCT0JUURJU0NfQ0xBU1NfT1BTX0RPSVRf
-VU5MT0NLRUQsDQo+PiAgCS5sZWFmCQk9CWluZ3Jlc3NfbGVhZiwNCj4+ICAJLmZpbmQJCT0JaW5n
-cmVzc19maW5kLA0KPj4gIAkud2FsawkJPQlpbmdyZXNzX3dhbGssDQo+Pg0KPg0KPiBWbGFkLCB3
-aHkgaXMgY2xzYWN0X2NsYXNzX29wcyBub3QgdXBkYXRlZCBoZXJlPyBQbGVhc2UgZWxhYm9yYXRl
-IQ0KDQpEYW5pZWwsIG5vIHBhcnRpY3VsYXIgcmVhc29uIHRvIG5vdCBlbmFibGUgdW5sb2NrZWQg
-ZXhlY3V0aW9uIGZvcg0KY2xzYWN0LiBJIHNldCB0aGUgdW5sb2NrZWQgZmxhZyBmb3IgaW5ncmVz
-cyBiZWNhdXNlIHRoYXQgd2FzIHRoZSBRZGlzYw0KdGhhdCBJIHRlc3RlZCBhbGwgbXkgcGFyYWxs
-ZWwgdGMgY2hhbmdlcyBvbi4gSG93ZXZlciwgaW5ncmVzcyBhbmQgY2xzYWN0DQppbXBsZW1lbnRh
-dGlvbnMgYXJlIHF1aXRlIHNpbWlsYXIsIHNvIEkgY2FuIHNlbmQgYSBmb2xsb3d1cCBwYXRjaCB0
-aGF0DQp1cGRhdGVzIGNsc2FjdF9jbGFzc19vcHMsIGlmIHlvdSB3YW50Lg0K
+The p9_tag_alloc() does not initialize the transport error t_err field.
+The struct p9_req_t *req is allocated and stored in a struct p9_client
+variable. The field t_err is never initialized before p9_conn_cancel()
+checks its value.
+
+KUMSAN(KernelUninitializedMemorySantizer, a new error detection tool)
+reports this bug.
+
+==================================================================
+BUG: KUMSAN: use of uninitialized memory in p9_conn_cancel+0x2d9/0x3b0
+Read of size 4 at addr ffff88805f9b600c by task kworker/1:2/1216
+
+CPU: 1 PID: 1216 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #28
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
+Workqueue: events p9_write_work
+Call Trace:
+ dump_stack+0x75/0xae
+ __kumsan_report+0x17c/0x3e6
+ kumsan_report+0xe/0x20
+ p9_conn_cancel+0x2d9/0x3b0
+ p9_write_work+0x183/0x4a0
+ process_one_work+0x4d1/0x8c0
+ worker_thread+0x6e/0x780
+ kthread+0x1ca/0x1f0
+ ret_from_fork+0x35/0x40
+
+Allocated by task 1979:
+ save_stack+0x19/0x80
+ __kumsan_kmalloc.constprop.3+0xbc/0x120
+ kmem_cache_alloc+0xa7/0x170
+ p9_client_prepare_req.part.9+0x3b/0x380
+ p9_client_rpc+0x15e/0x880
+ p9_client_create+0x3d0/0xac0
+ v9fs_session_init+0x192/0xc80
+ v9fs_mount+0x67/0x470
+ legacy_get_tree+0x70/0xd0
+ vfs_get_tree+0x4a/0x1c0
+ do_mount+0xba9/0xf90
+ ksys_mount+0xa8/0x120
+ __x64_sys_mount+0x62/0x70
+ do_syscall_64+0x6d/0x1e0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 0:
+(stack is not available)
+
+The buggy address belongs to the object at ffff88805f9b6008
+ which belongs to the cache p9_req_t of size 144
+The buggy address is located 4 bytes inside of
+ 144-byte region [ffff88805f9b6008, ffff88805f9b6098)
+The buggy address belongs to the page:
+page:ffffea00017e6d80 refcount:1 mapcount:0 mapping:ffff888068b63740 index:0xffff88805f9b7d90 compound_mapcount: 0
+flags: 0x100000000010200(slab|head)
+raw: 0100000000010200 ffff888068b66450 ffff888068b66450 ffff888068b63740
+raw: ffff88805f9b7d90 0000000000100001 00000001ffffffff 0000000000000000
+page dumped because: kumsan: bad access detected
+==================================================================
+
+Signed-off-by: Lu Shuaibing <shuaibinglu@126.com>
+---
+ net/9p/client.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 9622f3e469f6..148acdcd0217 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -310,6 +310,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
+ 	 */
+ 	refcount_set(&req->refcount.refcount, 2);
+ 
++	req->t_err = 0;
+ 	return req;
+ 
+ free:
+-- 
+2.19.1
+
