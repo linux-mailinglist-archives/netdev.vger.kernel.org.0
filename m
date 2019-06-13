@@ -2,125 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C18943C97
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6635743C51
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:35:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732596AbfFMPg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:36:26 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50030 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727143AbfFMKRJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 06:17:09 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7D66530F1BA8;
-        Thu, 13 Jun 2019 10:17:07 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C5DC52FD0;
-        Thu, 13 Jun 2019 10:16:59 +0000 (UTC)
-Message-ID: <a08bde08fce26054754172786ced8bd671079833.camel@redhat.com>
-Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Paul Blakey <paulb@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>
-Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-In-Reply-To: <1560259713-25603-2-git-send-email-paulb@mellanox.com>
-References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
-         <1560259713-25603-2-git-send-email-paulb@mellanox.com>
-Organization: red hat
+        id S1727897AbfFMPfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:35:14 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43939 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727905AbfFMKaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 06:30:14 -0400
+Received: from mail-wr1-f70.google.com ([209.85.221.70])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1hbMyW-0002n6-6c
+        for netdev@vger.kernel.org; Thu, 13 Jun 2019 10:28:56 +0000
+Received: by mail-wr1-f70.google.com with SMTP id u2so8694157wrr.3
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 03:28:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3vJoe4QOYmSpzL3TX3nF/EcZqCXILy8LMNIEV2dPMlw=;
+        b=Xeu12PQbKO8JBmhUuLdjiZ0Fu2g+sCa2oY7FGJuveVjBPI/cYisBpkbprqQJhEUTwM
+         6mbdGSx5DKI/Yn8oTKtOtYYvhfJyWv93XFQ0V0LJayFbcI2LLmJwWRc4xw/WlZCvBmBR
+         Ij9IZM5LquXOTHULc4rX+juN1iKepxbFdylFRdj+KvkxlrLa9z7mxJvD01O6Z2DhIDN2
+         ABmqrXUOiYSapvEUE0vYEUAaTOItTo266TjA6WwDV9kk9TtQX0ApQBnCzaWhwo6zdyt4
+         w/z9bvfkHk9ZXEkAcAYd5oEvwW2tlXJneGRrjrvCCBTIxNSwmAp1BwH+uQnRiYYWwGdq
+         DubA==
+X-Gm-Message-State: APjAAAUY2yC8OXZ+lOVG2JL6+4J6c4J4hE1Oir4VUGcGmixxCsGUUOQ/
+        CLuuJH0xkBPw8Rzoh3I2Vx3ZWbaVtAVvNaRlpH1KsdNbgRlu8gOW9Ghqn6aMBe5f9axf8sy0bWe
+        MexpjVRNHAiCB3rql7a9CyLDMP++0GhSxgrDF5gnscM3ZMafk
+X-Received: by 2002:a7b:c313:: with SMTP id k19mr3050157wmj.2.1560421735773;
+        Thu, 13 Jun 2019 03:28:55 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwgKUzFv9JlTv26cq3GlGgLVgjVoMCkwh6CKsBT7LawKThQzRDyIbi5mMPqn4/bfa1JwGFkSAyBv6iKEvpwYik=
+X-Received: by 2002:a7b:c313:: with SMTP id k19mr3050140wmj.2.1560421735553;
+ Thu, 13 Jun 2019 03:28:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190612064752.6701-1-po-hsu.lin@canonical.com> <20190612.092711.1626983045451710048.davem@davemloft.net>
+In-Reply-To: <20190612.092711.1626983045451710048.davem@davemloft.net>
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+Date:   Thu, 13 Jun 2019 18:28:44 +0800
+Message-ID: <CAMy_GT8YjDhRSHMYBALHeqDhKYhr2Z+--=imZ+T5WV0wCz_v6g@mail.gmail.com>
+Subject: Re: [PATCH] selftests/net: skip psock_tpacket test if KALLSYMS was
+ not enabled
+To:     David Miller <davem@davemloft.net>
+Cc:     shuah <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Date:   Thu, 13 Jun 2019 12:16:59 +0200
-Mime-Version: 1.0
-User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 13 Jun 2019 10:17:09 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello Paul!
+Hello,
 
-On Tue, 2019-06-11 at 16:28 +0300, Paul Blakey wrote:
+This issue was spotted on Ubuntu linux-kvm kernel, on which the
+CONFIG_KALLSYMS was disabled intentionally.
+I think this extra check could be helpful when running the net test directly.
+$ make -C tools/testing/selftests TARGETS=net run_tests
 
-> +#endif /* __NET_TC_CT_H */
-> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-> index a93680f..c5264d7 100644
-> --- a/include/uapi/linux/pkt_cls.h
-> +++ b/include/uapi/linux/pkt_cls.h
-> @@ -83,6 +83,7 @@ enum {
->  #define TCA_ACT_SIMP 22
->  #define TCA_ACT_IFE 25
->  #define TCA_ACT_SAMPLE 26
-> +#define TCA_ACT_CT 27
+Also, there is an identical check implemented in the ftrace
+kprobe_args_symbol test.
 
-^^  I think you can't use 27 (act_ctinfo forgot to explicitly define it),
-or the uAPI will break. See below:
+I can send V2 along with CONFIG_KALLSYMS appended to the "config" file
+if you agree with this.
 
->  /* Action type identifiers*/
->  enum tca_id {
-> @@ -106,6 +107,7 @@ enum tca_id {
->  	TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
->  	/* other actions go here */
->  	TCA_ID_CTINFO,
-> +	TCA_ID_CT,
->  	__TCA_ID_MAX = 255
->  };
+Thanks
 
-and (minor ntit) the comment 
-
-/* other actions go here */
-
-should be interpreted like 
-
-/* other actions go right above this comment */
-
-otherwise the comment will float up as we continue adding new TC actions.
-
-After your patch CTinfo and CT will have the same ID:
-
-[dcaratti@localhost tmp.j4kzBzv3oe]$ cat prova.c 
-#include <stdio.h>
-
-#define UNO 1
-#define DUE 2
-#define TRE 3
-#define QUATTRO 4
-
-enum {
-        TCA_ID_UNO = UNO,
-        TCA_ID_DUE = DUE,
-        TCA_ID_TRE = TRE,
-        TCA_ID_CTINFO,
-        TCA_ID_QUATTRO = QUATTRO,
-        TCA_ID_MAX
-};
-
-int main (int argc, const char *argv[])
-{
-        printf("%d %d %d %d %d %d\n", TCA_ID_UNO, TCA_ID_DUE, TCA_ID_TRE,
-TCA_ID_CTINFO, TCA_ID_QUATTRO, TCA_ID_MAX);
-        return 0;
-}
-[dcaratti@localhost tmp.j4kzBzv3oe]$ gcc prova.c -o prova
-[dcaratti@localhost tmp.j4kzBzv3oe]$ ./prova 
-1 2 3 4 4 5
-[dcaratti@localhost tmp.j4kzBzv3oe]$ 
-
-so, I think you should use 28. And I will send a patch for net-next now
-that adds the missing define for TCA_ID_CTINFO. Ok?
-
--- 
-davide
-
+On Thu, Jun 13, 2019 at 12:27 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Po-Hsu Lin <po-hsu.lin@canonical.com>
+> Date: Wed, 12 Jun 2019 14:47:52 +0800
+>
+> > The psock_tpacket test will need to access /proc/kallsyms, this would
+> > require the kernel config CONFIG_KALLSYMS to be enabled first.
+> >
+> > Check the file existence to determine if we can run this test.
+> >
+> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+>
+> Please just add CONFIG_KALLSYMS to "config".
