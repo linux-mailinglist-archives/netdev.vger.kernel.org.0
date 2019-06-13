@@ -2,85 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3EB4468E
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F271B44834
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393079AbfFMQw4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 12:52:56 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:34284 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393070AbfFMQwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 12:52:55 -0400
-Received: by mail-ed1-f67.google.com with SMTP id s49so2396685edb.1
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 09:52:54 -0700 (PDT)
+        id S2393397AbfFMRFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:05:24 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32882 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389476AbfFMRFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:05:24 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x2so22497907qtr.0
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:05:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=4K7zwXAPgbVzwuM1IVU5EiM5bpOmaNDg2s3SE0Ufa/c=;
+        b=BbMVeyDc3s4q1ZPpUHAds4LmmaQwVF7ygF92jvsLICXyJKhg58j6zgVk7LLz87jEMC
+         iMOuYgitHyB1z7p2nzwFLFTvtAN3sNA/ZjTxPUp1DVBgCBxL0NMe9uvvE1tB3Dgv7j1v
+         M+T+2fh0rn2ohlmHKYP5eLPyVHOb4D/ra7fAYt4Ejc6msTk3jeA/0KXbt6RwVRVtuKXL
+         zjQ4MTY2+XXwxLnbv3Qu4wrsuRsDUJ4l3UzXRII9PvTTXMsdHBorhTkDlHlN+6A1pJVZ
+         nIARV7gkwF3ERltNdBlknG+1BUpE+o+I+vrJl2cu8CjXR1MJnSyiqe5GeJnJsDirS3Jg
+         LVNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0ymyy89d7lOM589UjZFM5ihwy9u+Ix4p70B5qereb8w=;
-        b=CtYzv3it98Zg5mAczFxMXFALDdUOvSrDI54mnugn5S3j29IdobPve88FYZLO2LGnBV
-         6ujOgxdCXcEh5xxHeBjgKWStLZmay/qo1eN/Xd/htNp3SZ8TJOObcgtnjX8v9/gbZi+d
-         zWgYRwkiG15FgkB9us7jL4Recpk5lP/k0uHwhyH/NZiDCfkZmxK5BzwEkwz5ZWollpSl
-         7aaIUz5dq1j6kOfldu/ukslnzlVQLCz3V9N4LUPB6iW6aRH3MMlQqqrySj52gGvH0d8u
-         lddZ2TTX6WiAzat/BouoTftD6NFjlgxh4c24opxitIOlg3V/fJBjcrRE5ZKQ8QLQc2ef
-         +NEg==
-X-Gm-Message-State: APjAAAV4aSKTt0pDSpz9E5Y2lNrN0cWg7pChzhI5KH6vJPw99YDpHtxC
-        jAkYwz3tFF0822HzpR+Y0CRwe/fhQNU=
-X-Google-Smtp-Source: APXvYqy+Av9/cp39EkoD919Ud8uZDinT3KM1OVbj3g/AePAYpPg5Z0k9OkE3jiTeJEWt7gT5I/ZPFw==
-X-Received: by 2002:a50:90fa:: with SMTP id d55mr48010605eda.210.1560444774043;
-        Thu, 13 Jun 2019 09:52:54 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id g16sm69028edc.76.2019.06.13.09.52.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 09:52:53 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9E5691804AF; Thu, 13 Jun 2019 18:52:52 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Dave Taht <dave.taht@gmail.com>, netdev@vger.kernel.org
-Cc:     Dave Taht <dave.taht@gmail.com>
-Subject: Re: [RFC PATCH net-next 1/1] Allow 0.0.0.0/8 as a valid address range
-In-Reply-To: <1560442237-6336-2-git-send-email-dave.taht@gmail.com>
-References: <1560442237-6336-1-git-send-email-dave.taht@gmail.com> <1560442237-6336-2-git-send-email-dave.taht@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 13 Jun 2019 18:52:52 +0200
-Message-ID: <87zhmlctqz.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4K7zwXAPgbVzwuM1IVU5EiM5bpOmaNDg2s3SE0Ufa/c=;
+        b=eAns2Jvd2A+vaeYpA71z7+DdvCZO+ACHDY+RRar2E4x+PpemEJDkO5bTMg1e8YAsNh
+         yXqRMI3ryNecZ+oqBRRj6otkukMMDpKu91uGGt1LHbjFOseyaAAVkb1fnMBBAK8hswbB
+         wxQb1/ELJ3psT+Q33m1XJiA/G3YVc90fSzBHIn5vw83lmJqTmd2SOiXGzKUZJUVV0Dlk
+         bD8sEooB8X7A5gfGJC6xUUSjGprlJdw7uTvqCB2lhFnt2awRvgroBui46mtQnO/VUFCF
+         /l8R7M2hH0Upfd4goO2Aw81gvXyDlwMY2CSx1b8dzdEJy9Jnp4/Hl/wBTtSqqIKvEa1z
+         MSjg==
+X-Gm-Message-State: APjAAAU8ALg3kbrV4j+C7YArnaRdqpjRSb8SzhtS8l778aRxQSqqrVfz
+        bOM8ip0tYwFxXz+Uu8zpuQ0JB5HbPg==
+X-Google-Smtp-Source: APXvYqwV0gI2xqLlRQq8Myyn4eJANjRRm9FYrTfhNM+gI9sg/6WWTvCpW6k+1UfHRm0i1FzhAaeBAg==
+X-Received: by 2002:a0c:fd48:: with SMTP id j8mr4521696qvs.10.1560445522548;
+        Thu, 13 Jun 2019 10:05:22 -0700 (PDT)
+Received: from localhost.localdomain ([104.238.32.36])
+        by smtp.gmail.com with ESMTPSA id v186sm71988qkc.36.2019.06.13.10.05.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 10:05:21 -0700 (PDT)
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     nikolay@cumulusnetworks.com,
+        Stephen Suryaputra <ssuryaextr@gmail.com>
+Subject: [PATCH net-next v2] ipv4: Support multipath hashing on inner IP pkts for GRE tunnel
+Date:   Thu, 13 Jun 2019 13:03:30 -0400
+Message-Id: <20190613170330.8783-1-ssuryaextr@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave Taht <dave.taht@gmail.com> writes:
+Multipath hash policy value of 0 isn't distributing since the outer IP
+dest and src aren't varied eventhough the inner ones are. Since the flow
+is on the inner ones in the case of tunneled traffic, hashing on them is
+desired.
 
-> The longstanding prohibition against using 0.0.0.0/8 dates back
-> to two issues with the early internet.
->
-> There was an interoperability problem with BSD 4.2 in 1984, fixed in
-> BSD 4.3 in 1986. BSD 4.2 has long since been retired. 
->
-> Secondly, addresses of the form 0.x.y.z were initially defined only as
-> a source address in an ICMP datagram, indicating "node number x.y.z on
-> this IPv4 network", by nodes that know their address on their local
-> network, but do not yet know their network prefix, in RFC0792 (page
-> 19).  This usage of 0.x.y.z was later repealed in RFC1122 (section
-> 3.2.2.7), because the original ICMP-based mechanism for learning the
-> network prefix was unworkable on many networks such as Ethernet (which
-> have longer addresses that would not fit into the 24 "node number"
-> bits).  Modern networks use reverse ARP (RFC0903) or BOOTP (RFC0951)
-> or DHCP (RFC2131) to find their full 32-bit address and CIDR netmask
-> (and other parameters such as default gateways). 0.x.y.z has had
-> 16,777,215 addresses in 0.0.0.0/8 space left unused and reserved for
-> future use, since 1989.
->
-> This patch allows for these 16m new IPv4 addresses to appear within
-> a box or on the wire. Layer 2 switches don't care.
->
-> 0.0.0.0/32 is still prohibited, of course.
->
-> Signed-off-by: Dave Taht <dave.taht@gmail.com>
+This is done mainly for IP over GRE, hence only tested for that. But
+anything else supported by flow dissection should work.
 
-Well, I see no reason why we shouldn't allow this.
+v2: Use skb_flow_dissect_flow_keys() directly so that other tunneling
+    can be supported through flow dissection (per Nikolay Aleksandrov).
+Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+---
+ Documentation/networking/ip-sysctl.txt |  1 +
+ net/ipv4/route.c                       | 20 ++++++++++++++++++++
+ net/ipv4/sysctl_net_ipv4.c             |  2 +-
+ 3 files changed, 22 insertions(+), 1 deletion(-)
 
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 5eedc6941ce5..2f3bc910895a 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -80,6 +80,7 @@ fib_multipath_hash_policy - INTEGER
+ 	Possible values:
+ 	0 - Layer 3
+ 	1 - Layer 4
++	2 - Inner Layer 3 for tunneled IP packets.
+ 
+ fib_sync_mem - UNSIGNED INTEGER
+ 	Amount of dirty memory from fib entries that can be backlogged before
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 14c7fdacaa72..c3e03bce0a3a 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1872,6 +1872,26 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+ 			hash_keys.basic.ip_proto = fl4->flowi4_proto;
+ 		}
+ 		break;
++	case 2:
++		memset(&hash_keys, 0, sizeof(hash_keys));
++		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++		/* skb is currently provided only when forwarding */
++		if (skb) {
++			struct flow_keys keys;
++
++			skb_flow_dissect_flow_keys(skb, &keys, 0);
++
++			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
++			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
++			hash_keys.ports.src = keys.ports.src;
++			hash_keys.ports.dst = keys.ports.dst;
++			hash_keys.basic.ip_proto = keys.basic.ip_proto;
++		} else {
++			/* Same as case 0 */
++			hash_keys.addrs.v4addrs.src = fl4->saddr;
++			hash_keys.addrs.v4addrs.dst = fl4->daddr;
++		}
++		break;
+ 	}
+ 	mhash = flow_hash_from_keys(&hash_keys);
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 2316c08e9591..e1efc2e62d21 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -960,7 +960,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_fib_multipath_hash_policy,
+ 		.extra1		= &zero,
+-		.extra2		= &one,
++		.extra2		= &two,
+ 	},
+ #endif
+ 	{
+-- 
+2.17.1
+
