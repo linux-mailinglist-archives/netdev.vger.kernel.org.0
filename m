@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8541B449B1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69977449B5
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729232AbfFMR2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:28:20 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34104 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727230AbfFMR2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:28:20 -0400
-Received: by mail-qt1-f196.google.com with SMTP id m29so23501359qtu.1;
-        Thu, 13 Jun 2019 10:28:19 -0700 (PDT)
+        id S1727472AbfFMR3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:29:08 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39497 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726092AbfFMR3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:29:07 -0400
+Received: by mail-qk1-f194.google.com with SMTP id i125so13288411qkd.6;
+        Thu, 13 Jun 2019 10:29:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=pWffWnnz+ElhG5m21Q51hYVp+tij/VSIEpeJT0zysCo=;
-        b=oedfKylP7XiL91oxgUEhfNz3Oaa6XwtxNRkYrb0ywhdVbK4s9LxWo5pLBQhnXqxVZO
-         mQmpKjRfP0sZ5gjNnC12F6dtaDg5slkw/5ciFU3u4mtMsLQzsH7NMW2N7UmdHFaASSM0
-         cGaq1uX0ej4sv3xkM96UfT/TXHrL46MQn3De1qrKpbYbxzrWCub6xik5bNveeDUfXWF/
-         AvzBwr/tpr0s6ndXcAyU3KDLNISllkEOBGNnx9slxbBQaY+8nEIKOUt4hnI/kf8vQ4E7
-         j2P546W3vp9q1ksff5L+cAFA+Z+Z/TXjVvIOUKg3YWtBH+X1rtszOlcIOQRefn9D4JK4
-         dmmw==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding:user-agent;
+        bh=+HhoAIOFBzZF13yTI/CQ3NdpHv8MGgGEKfl3+bPeWz0=;
+        b=NL9CsUG9/kgj3/SNK7q02oUYioIhuzBov6pOfX/aaZ6pU+6sMwRN4AtRlnNzhHaiuC
+         8x0HPVXnavDQUk0kLOpHF+/ydIxXgaY5Wwt7gaLvfCavBjfbzLW9anycfZJxMASpU2ko
+         /KrqqTHnekwV+2xD+EACGPyF27FCGt21hMflIazX/USHzc+XExaCMVREekqc8NmBNN5O
+         d976rqt0WX3JlMMlyqTzOQpZ1SNr4nH1R+sKZ16DGY3pszsKM9/HOLa5TGq5fBYGun9D
+         9pPoPOjwvjn4ZGpNikIpaKaoMFECPFQN58t3KR6gsq6K13widwW0znUOTWl8R4Sy18TO
+         roCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=pWffWnnz+ElhG5m21Q51hYVp+tij/VSIEpeJT0zysCo=;
-        b=USvEjfh5qkt7p6fCDUVo66/vnkiIaMlQky1LeGlEsmDA1u3AK2PJCCQizYzqc49yUV
-         s2V9javFkbY3wsg/fE/QWUG4kgSa56vjmSrcE1tiVrPFiNS5W8ksJFoFuxXHZTrw1sgm
-         GjRIqs2mRt1bvc5NdgqxHwHJpSQ0pR2UPdbIr9kgeDzioV79RX7YIaCSGxCJS1r6OQiv
-         RivaQPt1Nwn2OZ7vT8D1mrE4rTaLMljCLpElZn4xnY1MIJUCVeIQPzaGhxG8Qw73d2s4
-         Q4q0n9yUZ7HihJMVMk6phnv7ZejMP0oc5eKrGIc4n9tjsv70XDDR+rFb+sYS+Y4Xb7hn
-         gGHA==
-X-Gm-Message-State: APjAAAXwQXVaUVRE8bzmzaRvuB3UBvTeK4l+5QimzV3roi2nED2ampOb
-        GT0RgypP/TVOSHBQ76cGKvCPrCJ00v0=
-X-Google-Smtp-Source: APXvYqwKFxHoQKwE6Ki+8lrALnBTAGhN8kPBYMCaULDNfD3O3utvkzhcOIHcXWul9rQWJKSU31pIcw==
-X-Received: by 2002:a0c:b0e4:: with SMTP id p33mr4659392qvc.208.1560446899040;
-        Thu, 13 Jun 2019 10:28:19 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id s134sm109461qke.51.2019.06.13.10.28.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 10:28:18 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 13:28:17 -0400
-Message-ID: <20190613132817.GB22277@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, f.fainelli@gmail.com,
-        andrew@lunn.ch
-Subject: Re: [PATCH net-next 0/4] net: dsa: use switchdev attr and obj
- handlers
-In-Reply-To: <20190611214747.22285-1-vivien.didelot@gmail.com>
-References: <20190611214747.22285-1-vivien.didelot@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding:user-agent;
+        bh=+HhoAIOFBzZF13yTI/CQ3NdpHv8MGgGEKfl3+bPeWz0=;
+        b=Wku1yvJNLEDAeJcu0q+3PoGp913Bhy2rjCj9PYgFtfpLF3/iKRFUoBmbU5/ofUu0uI
+         kt3r+7QQG2QiApsGSHKKL2BY+sBGUW7SSyHQupJddvo2I2SQ0LJSH1ghaY3ZbZmwqfq4
+         DtdTYIl80GaqWlyGAm4jvVw9lb5uAjE0rHFXaFOAwZfjwcKBv+0WvH62PMCgXPjT9bta
+         rW9QqwekVP/C94AYfbW5hiK9CVCX9nxC2QLvCtfSbasC14yIOkP6n+TC5DBnUW4jCjog
+         huZDjeZJY+nI8tD6RkvMKgHiw3KG5nhPE74xC72HPS6IgjYTm/Rl4jGtRrYOHjZxVJdj
+         K2OA==
+X-Gm-Message-State: APjAAAVg5y9Wsemf5mwbzewntejPsbp7K4Ejg6CYebgLAe+8tn9HIfEZ
+        k6KVm5CZ60h+95d9GXudCeFqejxcmr4=
+X-Google-Smtp-Source: APXvYqzH4zrPPHYCqCJe+XI9RwZBI0wEFhqyMCm7QAeyMqzZzU3HPaAy/HUwQnuyPuG1ZpUFVSAKDA==
+X-Received: by 2002:a37:ea0c:: with SMTP id t12mr3203598qkj.117.1560446946381;
+        Thu, 13 Jun 2019 10:29:06 -0700 (PDT)
+Received: from debie ([2804:431:f704:c7eb:af:a4f9:dcbb:96b3])
+        by smtp.gmail.com with ESMTPSA id d141sm131721qke.3.2019.06.13.10.29.04
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 13 Jun 2019 10:29:05 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 14:28:41 -0300
+From:   Charles <18oliveira.charles@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rodrigosiqueiramelo@gmail.com
+Subject: [PATCH] net: ipva: fix uninitialized variable warning
+Message-ID: <20190613172841.s4ig3p53wpd2z3nb@debie>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Avoid following compiler warning on uninitialized variable
 
-On Tue, 11 Jun 2019 17:47:43 -0400, Vivien Didelot <vivien.didelot@gmail.com> wrote:
-> This series reduces boilerplate in the handling of switchdev attribute and
-> object operations by using the switchdev_handle_* helpers, which check the
-> targeted devices and recurse into their lower devices.
-> 
-> This also brings back the ability to inspect operations targeting the bridge
-> device itself (where .orig_dev is the bridge device and .dev is the slave),
-> even though that is of no use yet and skipped by this series.
-> 
-> Vivien Didelot (4):
->   net: dsa: do not check orig_dev in vlan del
->   net: dsa: make cpu_dp non const
->   net: dsa: make dsa_slave_dev_check use const
->   net: dsa: use switchdev handle helpers
-> 
->  include/net/dsa.h |  2 +-
->  net/dsa/port.c    |  9 ------
->  net/dsa/slave.c   | 81 ++++++++++++++++++++---------------------------
->  3 files changed, 36 insertions(+), 56 deletions(-)
+net/ipv4/fib_semantics.c: In function ‘fib_check_nh_v4_gw’:
+net/ipv4/fib_semantics.c:1023:12: warning: ‘err’ may be used
+uninitialized in this function [-Wmaybe-uninitialized]
+   if (!tbl || err) {
 
-Please do not merge. The orig_dev != dev test in patch 4 is not correct,
-because it skips the programming of the HOST_MDB object. I'll respin in a few.
+Signed-off-by: Charles Oliveira <18oliveira.charles@gmail.com>
+---
+ net/ipv4/fib_semantics.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index b80410673915..ae47e046695c 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -964,7 +964,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
+ {
+ 	struct net_device *dev;
+ 	struct fib_result res;
+-	int err;
++	int err = -EINVAL;
+ 
+ 	if (nh->fib_nh_flags & RTNH_F_ONLINK) {
+ 		unsigned int addr_type;
+-- 
+2.11.0
 
-Thanks,
-Vivien
