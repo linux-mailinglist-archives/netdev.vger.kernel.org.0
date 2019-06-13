@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A117644628
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5542744625
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404193AbfFMQtc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 12:49:32 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58368 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727095AbfFMEU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 00:20:29 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5D4HN4f023071
+        id S2404324AbfFMQte convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 12:49:34 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59202 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727060AbfFMEU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 00:20:27 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5D4EhpI019412
         for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:20:24 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0b-00082601.pphosted.com with ESMTP id 2t3a7dgtne-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:20:23 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 12 Jun 2019 21:20:20 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t38w7151g-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:20:24 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 12 Jun 2019 21:20:22 -0700
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id A3286760CD6; Wed, 12 Jun 2019 21:20:19 -0700 (PDT)
+        id B05DB760CD6; Wed, 12 Jun 2019 21:20:21 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -33,9 +33,9 @@ CC:     <daniel@iogearbox.net>, <jakub.kicinski@netronome.com>,
         <andriin@fb.com>, <jannh@google.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 8/9] selftests/bpf: add realistic loop tests
-Date:   Wed, 12 Jun 2019 21:20:02 -0700
-Message-ID: <20190613042003.3791852-9-ast@kernel.org>
+Subject: [PATCH bpf-next 9/9] bpf: precise scalar_value tracking
+Date:   Wed, 12 Jun 2019 21:20:03 -0700
+Message-ID: <20190613042003.3791852-10-ast@kernel.org>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20190613042003.3791852-1-ast@kernel.org>
 References: <20190613042003.3791852-1-ast@kernel.org>
@@ -46,8 +46,8 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-13_02:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ malwarescore=0 suspectscore=4 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1906130033
 X-FB-Internal: deliver
@@ -56,1532 +56,795 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a bunch of loop tests. Most of them are created by replacing
-'#pragma unroll' with '#pragma clang loop unroll(disable)'
+Introduce precision tracking logic that
+helps cilium programs the most:
+                  old clang  old clang    new clang  new clang
+                          with all patches         with all patches
+bpf_lb-DLB_L3.o      1838     2728         1923      2216
+bpf_lb-DLB_L4.o      3218     3562         3077      3390
+bpf_lb-DUNKNOWN.o    1064     544          1062      543
+bpf_lxc-DDROP_ALL.o  26935    15989        166729    15372
+bpf_lxc-DUNKNOWN.o   34439    26043        174607    22156
+bpf_netdev.o         9721     8062         8407      7312
+bpf_overlay.o        6184     6138         5420      5555
+bpf_lxc_jit.o        39389    39452        39389     39452
 
-Several tests are artificially large:
-  /* partial unroll. llvm will unroll loop ~150 times.
-   * C loop count -> 600.
-   * Asm loop count -> 4.
-   * 16k insns in loop body.
-   * Total of 5 such loops. Total program size ~82k insns.
-   */
-  "./pyperf600.o",
+Consider code:
+654: (85) call bpf_get_hash_recalc#34
+655: (bf) r7 = r0
+656: (15) if r8 == 0x0 goto pc+29
+657: (bf) r2 = r10
+658: (07) r2 += -48
+659: (18) r1 = 0xffff8881e41e1b00
+661: (85) call bpf_map_lookup_elem#1
+662: (15) if r0 == 0x0 goto pc+23
+663: (69) r1 = *(u16 *)(r0 +0)
+664: (15) if r1 == 0x0 goto pc+21
+665: (bf) r8 = r7
+666: (57) r8 &= 65535
+667: (bf) r2 = r8
+668: (3f) r2 /= r1
+669: (2f) r2 *= r1
+670: (bf) r1 = r8
+671: (1f) r1 -= r2
+672: (57) r1 &= 255
+673: (25) if r1 > 0x1e goto pc+12
+ R0=map_value(id=0,off=0,ks=20,vs=64,imm=0) R1_w=inv(id=0,umax_value=30,var_off=(0x0; 0x1f))
+674: (67) r1 <<= 1
+675: (0f) r0 += r1
 
-  /* no unroll at all.
-   * C loop count -> 600.
-   * ASM loop count -> 600.
-   * ~110 insns in loop body.
-   * Total of 5 such loops. Total program size ~1500 insns.
-   */
-  "./pyperf600_nounroll.o",
+At this point the verifier will notice that scalar R1 is used in map pointer adjustment.
+R1 has to be precise for later operations on R0 to be validated properly.
 
-  /* partial unroll. 19k insn in a loop.
-   * Total program size 20.8k insn.
-   * ~350k processed_insns
-   */
-  "./strobemeta.o",
+The verifier will backtrack the above code in the following way:
+last_idx 675 first_idx 664
+regs=2 stack=0 before 675: (0f) r0 += r1         // started backtracking R1 regs=2 is a bitmask
+regs=2 stack=0 before 674: (67) r1 <<= 1
+regs=2 stack=0 before 673: (25) if r1 > 0x1e goto pc+12
+regs=2 stack=0 before 672: (57) r1 &= 255
+regs=2 stack=0 before 671: (1f) r1 -= r2         // now both R1 and R2 has to be precise -> regs=6 mask
+regs=6 stack=0 before 670: (bf) r1 = r8          // after this insn R8 and R2 has to be precise
+regs=104 stack=0 before 669: (2f) r2 *= r1       // after this one R8, R2, and R1
+regs=106 stack=0 before 668: (3f) r2 /= r1
+regs=106 stack=0 before 667: (bf) r2 = r8
+regs=102 stack=0 before 666: (57) r8 &= 65535
+regs=102 stack=0 before 665: (bf) r8 = r7
+regs=82 stack=0 before 664: (15) if r1 == 0x0 goto pc+21
+ // this is the end of verifier state. The following regs will be marked precised:
+ R1_rw=invP(id=0,umax_value=65535,var_off=(0x0; 0xffff)) R7_rw=invP(id=0)
+parent didn't have regs=82 stack=0 marks         // so backtracking continues into parent state
+last_idx 663 first_idx 655
+regs=82 stack=0 before 663: (69) r1 = *(u16 *)(r0 +0)   // R1 was assigned no need to track it further
+regs=80 stack=0 before 662: (15) if r0 == 0x0 goto pc+23    // keep tracking R7
+regs=80 stack=0 before 661: (85) call bpf_map_lookup_elem#1  // keep tracking R7
+regs=80 stack=0 before 659: (18) r1 = 0xffff8881e41e1b00
+regs=80 stack=0 before 658: (07) r2 += -48
+regs=80 stack=0 before 657: (bf) r2 = r10
+regs=80 stack=0 before 656: (15) if r8 == 0x0 goto pc+29
+regs=80 stack=0 before 655: (bf) r7 = r0                // here the assignment into R7
+ // mark R0 to be precise:
+ R0_rw=invP(id=0)
+parent didn't have regs=1 stack=0 marks                 // regs=1 -> tracking R0
+last_idx 654 first_idx 644
+regs=1 stack=0 before 654: (85) call bpf_get_hash_recalc#34 // and in the parent frame it was a return value
+  // nothing further to backtrack
+
+Two scalar registers not marked precise are equivalent from state pruning point of view.
+More details in the patch comments.
+
+It doesn't support bpf2bpf calls yet and enabled for root only.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- .../bpf/prog_tests/bpf_verif_scale.c          |  67 ++-
- tools/testing/selftests/bpf/progs/loop1.c     |  28 +
- tools/testing/selftests/bpf/progs/loop2.c     |  28 +
- tools/testing/selftests/bpf/progs/loop3.c     |  22 +
- tools/testing/selftests/bpf/progs/pyperf.h    |   6 +-
- tools/testing/selftests/bpf/progs/pyperf600.c |   9 +
- .../selftests/bpf/progs/pyperf600_nounroll.c  |   8 +
- .../testing/selftests/bpf/progs/strobemeta.c  |  10 +
- .../testing/selftests/bpf/progs/strobemeta.h  | 528 ++++++++++++++++++
- .../bpf/progs/strobemeta_nounroll1.c          |   9 +
- .../bpf/progs/strobemeta_nounroll2.c          |   9 +
- .../selftests/bpf/progs/test_seg6_loop.c      | 261 +++++++++
- .../selftests/bpf/progs/test_sysctl_loop1.c   |  68 +++
- .../selftests/bpf/progs/test_sysctl_loop2.c   |  69 +++
- .../selftests/bpf/progs/test_xdp_loop.c       | 231 ++++++++
- 15 files changed, 1341 insertions(+), 12 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/loop1.c
- create mode 100644 tools/testing/selftests/bpf/progs/loop2.c
- create mode 100644 tools/testing/selftests/bpf/progs/loop3.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf600.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.h
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_seg6_loop.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_loop.c
+ include/linux/bpf_verifier.h |  18 ++
+ kernel/bpf/verifier.c        | 461 ++++++++++++++++++++++++++++++++++-
+ 2 files changed, 469 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-index c0091137074b..e1b55261526f 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-@@ -5,7 +5,7 @@ static int libbpf_debug_print(enum libbpf_print_level level,
- 			      const char *format, va_list args)
- {
- 	if (level != LIBBPF_DEBUG)
--		return 0;
-+		return vfprintf(stderr, format, args);
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 03037373b447..19393b0964a8 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -139,6 +139,8 @@ struct bpf_reg_state {
+ 	 */
+ 	s32 subreg_def;
+ 	enum bpf_reg_liveness live;
++	/* if (!precise && SCALAR_VALUE) min/max/tnum don't affect safety */
++	bool precise;
+ };
  
- 	if (!strstr(format, "verifier log"))
- 		return 0;
-@@ -32,24 +32,69 @@ static int check_load(const char *file, enum bpf_prog_type type)
+ enum bpf_stack_slot_type {
+@@ -190,6 +192,11 @@ struct bpf_func_state {
+ 	struct bpf_stack_state *stack;
+ };
  
- void test_bpf_verif_scale(void)
- {
--	const char *scale[] = {
--		"./test_verif_scale1.o", "./test_verif_scale2.o", "./test_verif_scale3.o"
-+	const char *sched_cls[] = {
-+		"./test_verif_scale1.o", "./test_verif_scale2.o", "./test_verif_scale3.o",
- 	};
--	const char *pyperf[] = {
--		"./pyperf50.o",	"./pyperf100.o", "./pyperf180.o"
-+	const char *raw_tp[] = {
-+		/* full unroll by llvm */
-+		"./pyperf50.o",	"./pyperf100.o", "./pyperf180.o",
++struct bpf_idx_pair {
++	u32 prev_idx;
++	u32 idx;
++};
 +
-+		/* partial unroll. llvm will unroll loop ~150 times.
-+		 * C loop count -> 600.
-+		 * Asm loop count -> 4.
-+		 * 16k insns in loop body.
-+		 * Total of 5 such loops. Total program size ~82k insns.
-+		 */
-+		"./pyperf600.o",
+ #define MAX_CALL_FRAMES 8
+ struct bpf_verifier_state {
+ 	/* call stack tracking */
+@@ -245,6 +252,17 @@ struct bpf_verifier_state {
+ 	u32 curframe;
+ 	u32 active_spin_lock;
+ 	bool speculative;
 +
-+		/* no unroll at all.
-+		 * C loop count -> 600.
-+		 * ASM loop count -> 600.
-+		 * ~110 insns in loop body.
-+		 * Total of 5 such loops. Total program size ~1500 insns.
-+		 */
-+		"./pyperf600_nounroll.o",
-+
-+		"./loop1.o", "./loop2.o",
-+
-+		/* partial unroll. 19k insn in a loop.
-+		 * Total program size 20.8k insn.
-+		 * ~350k processed_insns
-+		 */
-+		"./strobemeta.o",
-+
-+		/* no unroll, tiny loops */
-+		"./strobemeta_nounroll1.o",
-+		"./strobemeta_nounroll2.o",
-+	};
-+	const char *cg_sysctl[] = {
-+		"./test_sysctl_loop1.o", "./test_sysctl_loop2.o",
- 	};
- 	int err, i;
++	/* first and last insn idx of this verifier state */
++	u32 first_insn_idx;
++	u32 last_insn_idx;
++	/* jmp history recorded from first to last.
++	 * backtracking is using it to go from last to first.
++	 * For most states jmp_history_cnt is [0-3].
++	 * For loops can go up to ~40.
++	 */
++	struct bpf_idx_pair *jmp_history;
++	u32 jmp_history_cnt;
+ };
  
- 	if (verifier_stats)
- 		libbpf_set_print(libbpf_debug_print);
- 
--	for (i = 0; i < ARRAY_SIZE(scale); i++) {
--		err = check_load(scale[i], BPF_PROG_TYPE_SCHED_CLS);
--		printf("test_scale:%s:%s\n", scale[i], err ? "FAIL" : "OK");
-+	err = check_load("./loop3.o", BPF_PROG_TYPE_RAW_TRACEPOINT);
-+	printf("test_scale:loop3:%s\n", err ? (error_cnt--, "OK") : "FAIL");
-+
-+	for (i = 0; i < ARRAY_SIZE(sched_cls); i++) {
-+		err = check_load(sched_cls[i], BPF_PROG_TYPE_SCHED_CLS);
-+		printf("test_scale:%s:%s\n", sched_cls[i], err ? "FAIL" : "OK");
- 	}
- 
--	for (i = 0; i < ARRAY_SIZE(pyperf); i++) {
--		err = check_load(pyperf[i], BPF_PROG_TYPE_RAW_TRACEPOINT);
--		printf("test_scale:%s:%s\n", pyperf[i], err ? "FAIL" : "OK");
-+	for (i = 0; i < ARRAY_SIZE(raw_tp); i++) {
-+		err = check_load(raw_tp[i], BPF_PROG_TYPE_RAW_TRACEPOINT);
-+		printf("test_scale:%s:%s\n", raw_tp[i], err ? "FAIL" : "OK");
- 	}
-+
-+	for (i = 0; i < ARRAY_SIZE(cg_sysctl); i++) {
-+		err = check_load(cg_sysctl[i], BPF_PROG_TYPE_CGROUP_SYSCTL);
-+		printf("test_scale:%s:%s\n", cg_sysctl[i], err ? "FAIL" : "OK");
-+	}
-+	err = check_load("./test_xdp_loop.o", BPF_PROG_TYPE_XDP);
-+	printf("test_scale:test_xdp_loop:%s\n", err ? "FAIL" : "OK");
-+
-+	err = check_load("./test_seg6_loop.o", BPF_PROG_TYPE_LWT_SEG6LOCAL);
-+	printf("test_scale:test_seg6_loop:%s\n", err ? "FAIL" : "OK");
- }
-diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
-new file mode 100644
-index 000000000000..dea395af9ea9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/loop1.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/sched.h>
-+#include <linux/ptrace.h>
-+#include <stdint.h>
-+#include <stddef.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("raw_tracepoint/kfree_skb")
-+int nested_loops(volatile struct pt_regs* ctx)
-+{
-+	int i, j, sum = 0, m;
-+
-+	for (j = 0; j < 300; j++)
-+		for (i = 0; i < j; i++) {
-+			if (j & 1)
-+				m = ctx->rax;
-+			else
-+				m = j;
-+			sum += i * m;
+ #define bpf_get_spilled_reg(slot, frame)				\
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index ef2b69b7bc01..41b41d39c295 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -455,12 +455,12 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+ 		verbose(env, " R%d", i);
+ 		print_liveness(env, reg->live);
+ 		verbose(env, "=%s", reg_type_str[t]);
++		if (t == SCALAR_VALUE && reg->precise)
++			verbose(env, "P");
+ 		if ((t == SCALAR_VALUE || t == PTR_TO_STACK) &&
+ 		    tnum_is_const(reg->var_off)) {
+ 			/* reg->off should be 0 for SCALAR_VALUE */
+ 			verbose(env, "%lld", reg->var_off.value + reg->off);
+-			if (t == PTR_TO_STACK)
+-				verbose(env, ",call_%d", func(env, reg)->callsite);
+ 		} else {
+ 			verbose(env, "(id=%d", reg->id);
+ 			if (reg_type_may_be_refcounted_or_null(t))
+@@ -522,11 +522,17 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+ 			continue;
+ 		verbose(env, " fp%d", (-i - 1) * BPF_REG_SIZE);
+ 		print_liveness(env, state->stack[i].spilled_ptr.live);
+-		if (state->stack[i].slot_type[0] == STACK_SPILL)
+-			verbose(env, "=%s",
+-				reg_type_str[state->stack[i].spilled_ptr.type]);
+-		else
++		if (state->stack[i].slot_type[0] == STACK_SPILL) {
++			reg = &state->stack[i].spilled_ptr;
++			t = reg->type;
++			verbose(env, "=%s", reg_type_str[t]);
++			if (t == SCALAR_VALUE && reg->precise)
++				verbose(env, "P");
++			if (t == SCALAR_VALUE && tnum_is_const(reg->var_off))
++				verbose(env, "%lld", reg->var_off.value + reg->off);
++		} else {
+ 			verbose(env, "=%s", types_buf);
 +		}
-+
-+	return sum;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
-new file mode 100644
-index 000000000000..0637bd8e8bcf
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/loop2.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/sched.h>
-+#include <linux/ptrace.h>
-+#include <stdint.h>
-+#include <stddef.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("raw_tracepoint/consume_skb")
-+int while_true(volatile struct pt_regs* ctx)
+ 	}
+ 	if (state->acquired_refs && state->refs[0].id) {
+ 		verbose(env, " refs=%d", state->refs[0].id);
+@@ -675,6 +681,13 @@ static void free_func_state(struct bpf_func_state *state)
+ 	kfree(state);
+ }
+ 
++static void clear_jmp_history(struct bpf_verifier_state *state)
 +{
-+	int i = 0;
++	kfree(state->jmp_history);
++	state->jmp_history = NULL;
++	state->jmp_history_cnt = 0;
++}
 +
-+	while (true) {
-+		if (ctx->rax & 1)
-+			i += 3;
-+		else
-+			i += 7;
-+		if (i > 40)
-+			break;
+ static void free_verifier_state(struct bpf_verifier_state *state,
+ 				bool free_self)
+ {
+@@ -684,6 +697,7 @@ static void free_verifier_state(struct bpf_verifier_state *state,
+ 		free_func_state(state->frame[i]);
+ 		state->frame[i] = NULL;
+ 	}
++	clear_jmp_history(state);
+ 	if (free_self)
+ 		kfree(state);
+ }
+@@ -711,8 +725,17 @@ static int copy_verifier_state(struct bpf_verifier_state *dst_state,
+ 			       const struct bpf_verifier_state *src)
+ {
+ 	struct bpf_func_state *dst;
++	u32 jmp_sz = sizeof(struct bpf_idx_pair) * src->jmp_history_cnt;
+ 	int i, err;
+ 
++	if (dst_state->jmp_history_cnt < src->jmp_history_cnt) {
++		kfree(dst_state->jmp_history);
++		if (!(dst_state->jmp_history = kmalloc(jmp_sz, GFP_USER)))
++			return -ENOMEM;
 +	}
++	memcpy(dst_state->jmp_history, src->jmp_history, jmp_sz);
++	dst_state->jmp_history_cnt = src->jmp_history_cnt;
 +
+ 	/* if dst has more stack frames then src frame, free them */
+ 	for (i = src->curframe + 1; i <= dst_state->curframe; i++) {
+ 		free_func_state(dst_state->frame[i]);
+@@ -723,6 +746,8 @@ static int copy_verifier_state(struct bpf_verifier_state *dst_state,
+ 	dst_state->active_spin_lock = src->active_spin_lock;
+ 	dst_state->branches = src->branches;
+ 	dst_state->parent = src->parent;
++	dst_state->first_insn_idx = src->first_insn_idx;
++	dst_state->last_insn_idx = src->last_insn_idx;
+ 	for (i = 0; i <= src->curframe; i++) {
+ 		dst = dst_state->frame[i];
+ 		if (!dst) {
+@@ -958,6 +983,17 @@ static void __reg_bound_offset(struct bpf_reg_state *reg)
+ 	reg->var_off = tnum_intersect(reg->var_off,
+ 				      tnum_range(reg->umin_value,
+ 						 reg->umax_value));
++	/* if register became known constant after a sequence of comparisons
++	 * or arithmetic operations mark it precise now, since backtracking
++	 * cannot follow such logic.
++	 * Example:
++	 * r0 = get_random();
++	 * if (r0 < 1) goto ..
++	 * if (r0 > 1) goto ..
++	 * r0 is const here
++	 */
++	if (tnum_is_const(reg->var_off))
++		reg->precise = true;
+ }
+ 
+ /* Reset the min/max bounds of a register */
+@@ -967,6 +1003,9 @@ static void __mark_reg_unbounded(struct bpf_reg_state *reg)
+ 	reg->smax_value = S64_MAX;
+ 	reg->umin_value = 0;
+ 	reg->umax_value = U64_MAX;
++
++	/* constant backtracking is enabled for root only for now */
++	reg->precise = capable(CAP_SYS_ADMIN) ? false : true;
+ }
+ 
+ /* Mark a register as having a completely unknown (scalar) value. */
+@@ -1445,6 +1484,9 @@ static int check_stack_write(struct bpf_verifier_env *env,
+ 
+ 	if (reg && size == BPF_REG_SIZE && register_is_const(reg) &&
+ 	    !tnum_equals_const(reg->var_off, 0)) {
++		if (env->prog->insnsi[insn_idx].dst_reg != BPF_REG_FP)
++			/* backtracking logic can only recognize explicit [fp-X] */
++			reg->precise = true;
+ 		goto save_reg_state;
+ 	} else if (reg && is_spillable_regtype(reg->type)) {
+ 		/* register containing pointer is being spilled into stack */
+@@ -1607,6 +1649,10 @@ static int check_stack_read(struct bpf_verifier_env *env,
+ 				 * so the whole register == const_zero
+ 				 */
+ 				__mark_reg_const_zero(&state->regs[value_regno]);
++				/* backtracking doesn't support STACK_ZERO yet,
++				 * so conservatively mark it precise
++				 */
++				state->regs[value_regno].precise = true;
+ 			} else {
+ 				/* have read misc data from the stack */
+ 				mark_reg_unknown(env, state->regs, value_regno);
+@@ -2732,6 +2778,369 @@ static int int_ptr_type_to_size(enum bpf_arg_type type)
+ 	return -EINVAL;
+ }
+ 
++/* for any branch, call, exit record the history of jmps in the given state */
++static int push_jmp_history(struct bpf_verifier_env *env,
++			    struct bpf_verifier_state *cur)
++{
++	struct bpf_idx_pair *p;
++	u32 cnt = cur->jmp_history_cnt;
++
++	cnt++;
++	p = krealloc(cur->jmp_history, cnt * sizeof(*p), GFP_USER);
++	if (!p)
++		return -ENOMEM;
++	p[cnt - 1].idx = env->insn_idx;
++	p[cnt - 1].prev_idx = env->prev_insn_idx;
++	cur->jmp_history = p;
++	cur->jmp_history_cnt = cnt;
++	return 0;
++}
++
++/* Backtrack one insn at a time. If idx is not at the top of recorded
++ * history then previous instruction came from straight line execution.
++ */
++static int pop_and_get_prev_idx(struct bpf_verifier_state *st, int i)
++{
++	u32 cnt = st->jmp_history_cnt;
++
++	if (cnt && st->jmp_history[cnt - 1].idx == i) {
++		i = st->jmp_history[cnt - 1].prev_idx;
++		st->jmp_history_cnt--;
++	} else {
++		i--;
++	}
 +	return i;
 +}
-diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
-new file mode 100644
-index 000000000000..30a0f6cba080
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/loop3.c
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/sched.h>
-+#include <linux/ptrace.h>
-+#include <stdint.h>
-+#include <stddef.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
 +
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("raw_tracepoint/consume_skb")
-+int while_true(volatile struct pt_regs* ctx)
++/* For given verifier state backtrack_insn() is called from the last insn to
++ * the first insn. Its purpose is to compute a bitmask of registers and
++ * stack slots that needs precision in the parent verifier state.
++ */
++static int backtrack_insn(struct bpf_verifier_env *env, int idx,
++			  u32 *reg_mask, u64 *stack_mask)
 +{
-+	__u64 i = 0, sum = 0;
-+	do {
-+		i++;
-+		sum += ctx->rax;
-+	} while (i < 0x100000000ULL);
-+	return sum;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/pyperf.h b/tools/testing/selftests/bpf/progs/pyperf.h
-index 0cc5e4ee90bd..6b0781391be5 100644
---- a/tools/testing/selftests/bpf/progs/pyperf.h
-+++ b/tools/testing/selftests/bpf/progs/pyperf.h
-@@ -220,7 +220,11 @@ static inline __attribute__((__always_inline__)) int __on_event(struct pt_regs *
- 		int32_t* symbol_counter = bpf_map_lookup_elem(&symbolmap, &sym);
- 		if (symbol_counter == NULL)
- 			return 0;
--#pragma unroll
-+#ifdef NO_UNROLL
-+#pragma clang loop unroll(disable)
-+#else
-+#pragma clang loop unroll(full)
-+#endif
- 		/* Unwind python stack */
- 		for (int i = 0; i < STACK_MAX_LEN; ++i) {
- 			if (frame_ptr && get_frame_data(frame_ptr, pidData, &frame, &sym)) {
-diff --git a/tools/testing/selftests/bpf/progs/pyperf600.c b/tools/testing/selftests/bpf/progs/pyperf600.c
-new file mode 100644
-index 000000000000..cb49b89e37cd
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf600.c
-@@ -0,0 +1,9 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#define STACK_MAX_LEN 600
-+/* clang will not unroll the loop 600 times.
-+ * Instead it will unroll it to the amount it deemed
-+ * appropriate, but the loop will still execute 600 times.
-+ * Total program size is around 90k insns
-+ */
-+#include "pyperf.h"
-diff --git a/tools/testing/selftests/bpf/progs/pyperf600_nounroll.c b/tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
-new file mode 100644
-index 000000000000..6beff7502f4d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
-@@ -0,0 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#define STACK_MAX_LEN 600
-+#define NO_UNROLL
-+/* clang will not unroll at all.
-+ * Total program size is around 2k insns
-+ */
-+#include "pyperf.h"
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta.c b/tools/testing/selftests/bpf/progs/strobemeta.c
-new file mode 100644
-index 000000000000..d3df3d86f092
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/strobemeta.c
-@@ -0,0 +1,10 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+// Copyright (c) 2019 Facebook
-+
-+#define STROBE_MAX_INTS 2
-+#define STROBE_MAX_STRS 25
-+#define STROBE_MAX_MAPS 100
-+#define STROBE_MAX_MAP_ENTRIES 20
-+/* full unroll by llvm #undef NO_UNROLL */
-+#include "strobemeta.h"
-+
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
-new file mode 100644
-index 000000000000..1ff73f60a3e4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/strobemeta.h
-@@ -0,0 +1,528 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <stdint.h>
-+#include <stddef.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include <linux/ptrace.h>
-+#include <linux/sched.h>
-+#include <linux/types.h>
-+#include "bpf_helpers.h"
-+
-+typedef uint32_t pid_t;
-+struct task_struct {};
-+
-+#define TASK_COMM_LEN 16
-+#define PERF_MAX_STACK_DEPTH 127
-+
-+#define STROBE_TYPE_INVALID 0
-+#define STROBE_TYPE_INT 1
-+#define STROBE_TYPE_STR 2
-+#define STROBE_TYPE_MAP 3
-+
-+#define STACK_TABLE_EPOCH_SHIFT 20
-+#define STROBE_MAX_STR_LEN 1
-+#define STROBE_MAX_CFGS 32
-+#define STROBE_MAX_PAYLOAD						\
-+	(STROBE_MAX_STRS * STROBE_MAX_STR_LEN +				\
-+	STROBE_MAX_MAPS * (1 + STROBE_MAX_MAP_ENTRIES * 2) * STROBE_MAX_STR_LEN)
-+
-+struct strobe_value_header {
-+	/*
-+	 * meaning depends on type:
-+	 * 1. int: 0, if value not set, 1 otherwise
-+	 * 2. str: 1 always, whether value is set or not is determined by ptr
-+	 * 3. map: 1 always, pointer points to additional struct with number
-+	 *    of entries (up to STROBE_MAX_MAP_ENTRIES)
-+	 */
-+	uint16_t len;
-+	/*
-+	 * _reserved might be used for some future fields/flags, but we always
-+	 * want to keep strobe_value_header to be 8 bytes, so BPF can read 16
-+	 * bytes in one go and get both header and value
-+	 */
-+	uint8_t _reserved[6];
-+};
-+
-+/*
-+ * strobe_value_generic is used from BPF probe only, but needs to be a union
-+ * of strobe_value_int/strobe_value_str/strobe_value_map
-+ */
-+struct strobe_value_generic {
-+	struct strobe_value_header header;
-+	union {
-+		int64_t val;
-+		void *ptr;
++	const struct bpf_insn_cbs cbs = {
++		.cb_print	= verbose,
++		.private_data	= env,
 +	};
-+};
++	struct bpf_insn *insn = env->prog->insnsi + idx;
++	u8 class = BPF_CLASS(insn->code);
++	u8 opcode = BPF_OP(insn->code);
++	u8 mode = BPF_MODE(insn->code);
++	u32 dreg = 1u << insn->dst_reg;
++	u32 sreg = 1u << insn->src_reg;
++	u32 spi;
 +
-+struct strobe_value_int {
-+	struct strobe_value_header header;
-+	int64_t value;
-+};
-+
-+struct strobe_value_str {
-+	struct strobe_value_header header;
-+	const char* value;
-+};
-+
-+struct strobe_value_map {
-+	struct strobe_value_header header;
-+	const struct strobe_map_raw* value;
-+};
-+
-+struct strobe_map_entry {
-+	const char* key;
-+	const char* val;
-+};
-+
-+/*
-+ * Map of C-string key/value pairs with fixed maximum capacity. Each map has
-+ * corresponding int64 ID, which application can use (or ignore) in whatever
-+ * way appropriate. Map is "write-only", there is no way to get data out of
-+ * map. Map is intended to be used to provide metadata for profilers and is
-+ * not to be used for internal in-app communication. All methods are
-+ * thread-safe.
-+ */
-+struct strobe_map_raw {
-+	/*
-+	 * general purpose unique ID that's up to application to decide
-+	 * whether and how to use; for request metadata use case id is unique
-+	 * request ID that's used to match metadata with stack traces on
-+	 * Strobelight backend side
-+	 */
-+	int64_t id;
-+	/* number of used entries in map */
-+	int64_t cnt;
-+	/*
-+	 * having volatile doesn't change anything on BPF side, but clang
-+	 * emits warnings for passing `volatile const char *` into
-+	 * bpf_probe_read_str that expects just `const char *`
-+	 */
-+	const char* tag;
-+	/*
-+	 * key/value entries, each consisting of 2 pointers to key and value
-+	 * C strings
-+	 */
-+	struct strobe_map_entry entries[STROBE_MAX_MAP_ENTRIES];
-+};
-+
-+/* Following values define supported values of TLS mode */
-+#define TLS_NOT_SET -1
-+#define TLS_LOCAL_EXEC 0
-+#define TLS_IMM_EXEC 1
-+#define TLS_GENERAL_DYN 2
-+
-+/*
-+ * structure that universally represents TLS location (both for static
-+ * executables and shared libraries)
-+ */
-+struct strobe_value_loc {
-+	/*
-+	 * tls_mode defines what TLS mode was used for particular metavariable:
-+	 * - -1 (TLS_NOT_SET) - no metavariable;
-+	 * - 0 (TLS_LOCAL_EXEC) - Local Executable mode;
-+	 * - 1 (TLS_IMM_EXEC) - Immediate Executable mode;
-+	 * - 2 (TLS_GENERAL_DYN) - General Dynamic mode;
-+	 * Local Dynamic mode is not yet supported, because never seen in
-+	 * practice.  Mode defines how offset field is interpreted. See
-+	 * calc_location() in below for details.
-+	 */
-+	int64_t tls_mode;
-+	/*
-+	 * TLS_LOCAL_EXEC: offset from thread pointer (fs:0 for x86-64,
-+	 * tpidr_el0 for aarch64).
-+	 * TLS_IMM_EXEC: absolute address of GOT entry containing offset
-+	 * from thread pointer;
-+	 * TLS_GENERAL_DYN: absolute addres of double GOT entry
-+	 * containing tls_index_t struct;
-+	 */
-+	int64_t offset;
-+};
-+
-+struct strobemeta_cfg {
-+	int64_t req_meta_idx;
-+	struct strobe_value_loc int_locs[STROBE_MAX_INTS];
-+	struct strobe_value_loc str_locs[STROBE_MAX_STRS];
-+	struct strobe_value_loc map_locs[STROBE_MAX_MAPS];
-+};
-+
-+struct strobe_map_descr {
-+	uint64_t id;
-+	int16_t tag_len;
-+	/*
-+	 * cnt <0 - map value isn't set;
-+	 * 0 - map has id set, but no key/value entries
-+	 */
-+	int16_t cnt;
-+	/*
-+	 * both key_lens[i] and val_lens[i] should be >0 for present key/value
-+	 * entry
-+	 */
-+	uint16_t key_lens[STROBE_MAX_MAP_ENTRIES];
-+	uint16_t val_lens[STROBE_MAX_MAP_ENTRIES];
-+};
-+
-+struct strobemeta_payload {
-+	/* req_id has valid request ID, if req_meta_valid == 1 */
-+	int64_t req_id;
-+	uint8_t req_meta_valid;
-+	/*
-+	 * mask has Nth bit set to 1, if Nth metavar was present and
-+	 * successfully read
-+	 */
-+	uint64_t int_vals_set_mask;
-+	int64_t int_vals[STROBE_MAX_INTS];
-+	/* len is >0 for present values */
-+	uint16_t str_lens[STROBE_MAX_STRS];
-+	/* if map_descrs[i].cnt == -1, metavar is not present/set */
-+	struct strobe_map_descr map_descrs[STROBE_MAX_MAPS];
-+	/*
-+	 * payload has compactly packed values of str and map variables in the
-+	 * form: strval1\0strval2\0map1key1\0map1val1\0map2key1\0map2val1\0
-+	 * (and so on); str_lens[i], key_lens[i] and val_lens[i] determines
-+	 * value length
-+	 */
-+	char payload[STROBE_MAX_PAYLOAD];
-+};
-+
-+struct strobelight_bpf_sample {
-+	uint64_t ktime;
-+	char comm[TASK_COMM_LEN];
-+	pid_t pid;
-+	int user_stack_id;
-+	int kernel_stack_id;
-+	int has_meta;
-+	struct strobemeta_payload metadata;
-+	/*
-+	 * makes it possible to pass (<real payload size> + 1) as data size to
-+	 * perf_submit() to avoid perf_submit's paranoia about passing zero as
-+	 * size, as it deduces that <real payload size> might be
-+	 * **theoretically** zero
-+	 */
-+	char dummy_safeguard;
-+};
-+
-+struct bpf_map_def SEC("maps") samples = {
-+	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-+	.key_size = sizeof(int),
-+	.value_size = sizeof(int),
-+	.max_entries = 32,
-+};
-+
-+struct bpf_map_def SEC("maps") stacks_0 = {
-+	.type = BPF_MAP_TYPE_STACK_TRACE,
-+	.key_size = sizeof(uint32_t),
-+	.value_size = sizeof(uint64_t) * PERF_MAX_STACK_DEPTH,
-+	.max_entries = 16,
-+};
-+
-+struct bpf_map_def SEC("maps") stacks_1 = {
-+	.type = BPF_MAP_TYPE_STACK_TRACE,
-+	.key_size = sizeof(uint32_t),
-+	.value_size = sizeof(uint64_t) * PERF_MAX_STACK_DEPTH,
-+	.max_entries = 16,
-+};
-+
-+struct bpf_map_def SEC("maps") sample_heap = {
-+	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-+	.key_size = sizeof(uint32_t),
-+	.value_size = sizeof(struct strobelight_bpf_sample),
-+	.max_entries = 1,
-+};
-+
-+struct bpf_map_def SEC("maps") strobemeta_cfgs = {
-+	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-+	.key_size = sizeof(pid_t),
-+	.value_size = sizeof(struct strobemeta_cfg),
-+	.max_entries = STROBE_MAX_CFGS,
-+};
-+
-+/* Type for the dtv.  */
-+/* https://github.com/lattera/glibc/blob/master/nptl/sysdeps/x86_64/tls.h#L34 */
-+typedef union dtv {
-+	size_t counter;
-+	struct {
-+		void* val;
-+		bool is_static;
-+	} pointer;
-+} dtv_t;
-+
-+/* Partial definition for tcbhead_t */
-+/* https://github.com/bminor/glibc/blob/master/sysdeps/x86_64/nptl/tls.h#L42 */
-+struct tcbhead {
-+	void* tcb;
-+	dtv_t* dtv;
-+};
-+
-+/*
-+ * TLS module/offset information for shared library case.
-+ * For x86-64, this is mapped onto two entries in GOT.
-+ * For aarch64, this is pointed to by second GOT entry.
-+ */
-+struct tls_index {
-+	uint64_t module;
-+	uint64_t offset;
-+};
-+
-+static inline __attribute__((always_inline))
-+void *calc_location(struct strobe_value_loc *loc, void *tls_base)
-+{
-+	/*
-+	 * tls_mode value is:
-+	 * - -1 (TLS_NOT_SET), if no metavar is present;
-+	 * - 0 (TLS_LOCAL_EXEC), if metavar uses Local Executable mode of TLS
-+	 * (offset from fs:0 for x86-64 or tpidr_el0 for aarch64);
-+	 * - 1 (TLS_IMM_EXEC), if metavar uses Immediate Executable mode of TLS;
-+	 * - 2 (TLS_GENERAL_DYN), if metavar uses General Dynamic mode of TLS;
-+	 * This schema allows to use something like:
-+	 * (tls_mode + 1) * (tls_base + offset)
-+	 * to get NULL for "no metavar" location, or correct pointer for local
-+	 * executable mode without doing extra ifs.
-+	 */
-+	if (loc->tls_mode <= TLS_LOCAL_EXEC) {
-+		/* static executable is simple, we just have offset from
-+		 * tls_base */
-+		void *addr = tls_base + loc->offset;
-+		/* multiply by (tls_mode + 1) to get NULL, if we have no
-+		 * metavar in this slot */
-+		return (void *)((loc->tls_mode + 1) * (int64_t)addr);
-+	}
-+	/*
-+	 * Other modes are more complicated, we need to jump through few hoops.
-+	 *
-+	 * For immediate executable mode (currently supported only for aarch64):
-+	 *  - loc->offset is pointing to a GOT entry containing fixed offset
-+	 *  relative to tls_base;
-+	 *
-+	 * For general dynamic mode:
-+	 *  - loc->offset is pointing to a beginning of double GOT entries;
-+	 *  - (for aarch64 only) second entry points to tls_index_t struct;
-+	 *  - (for x86-64 only) two GOT entries are already tls_index_t;
-+	 *  - tls_index_t->module is used to find start of TLS section in
-+	 *  which variable resides;
-+	 *  - tls_index_t->offset provides offset within that TLS section,
-+	 *  pointing to value of variable.
-+	 */
-+	struct tls_index tls_index;
-+	dtv_t *dtv;
-+	void *tls_ptr;
-+
-+	bpf_probe_read(&tls_index, sizeof(struct tls_index),
-+		       (void *)loc->offset);
-+	/* valid module index is always positive */
-+	if (tls_index.module > 0) {
-+		/* dtv = ((struct tcbhead *)tls_base)->dtv[tls_index.module] */
-+		bpf_probe_read(&dtv, sizeof(dtv),
-+			       &((struct tcbhead *)tls_base)->dtv);
-+		dtv += tls_index.module;
-+	} else {
-+		dtv = NULL;
-+	}
-+	bpf_probe_read(&tls_ptr, sizeof(void *), dtv);
-+	/* if pointer has (void *)-1 value, then TLS wasn't initialized yet */
-+	return tls_ptr && tls_ptr != (void *)-1
-+		? tls_ptr + tls_index.offset
-+		: NULL;
-+}
-+
-+static inline __attribute__((always_inline))
-+void read_int_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
-+		  struct strobe_value_generic *value,
-+		  struct strobemeta_payload *data)
-+{
-+	void *location = calc_location(&cfg->int_locs[idx], tls_base);
-+	if (!location)
-+		return;
-+
-+	bpf_probe_read(value, sizeof(struct strobe_value_generic), location);
-+	data->int_vals[idx] = value->val;
-+	if (value->header.len)
-+		data->int_vals_set_mask |= (1 << idx);
-+}
-+
-+static inline __attribute__((always_inline))
-+uint64_t read_str_var(struct strobemeta_cfg* cfg, size_t idx, void *tls_base,
-+		      struct strobe_value_generic *value,
-+		      struct strobemeta_payload *data, void *payload)
-+{
-+	void *location;
-+	uint32_t len;
-+
-+	data->str_lens[idx] = 0;
-+	location = calc_location(&cfg->str_locs[idx], tls_base);
-+	if (!location)
++	if (insn->code == 0)
 +		return 0;
-+
-+	bpf_probe_read(value, sizeof(struct strobe_value_generic), location);
-+	len = bpf_probe_read_str(payload, STROBE_MAX_STR_LEN, value->ptr);
-+	/*
-+	 * if bpf_probe_read_str returns error (<0), due to casting to
-+	 * unsinged int, it will become big number, so next check is
-+	 * sufficient to check for errors AND prove to BPF verifier, that
-+	 * bpf_probe_read_str won't return anything bigger than
-+	 * STROBE_MAX_STR_LEN
-+	 */
-+	if (len > STROBE_MAX_STR_LEN)
-+		return 0;
-+
-+	data->str_lens[idx] = len;
-+	return len;
-+}
-+
-+static inline __attribute__((always_inline))
-+void *read_map_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
-+		   struct strobe_value_generic *value,
-+		   struct strobemeta_payload* data, void *payload)
-+{
-+	struct strobe_map_descr* descr = &data->map_descrs[idx];
-+	struct strobe_map_raw map;
-+	void *location;
-+	uint32_t len;
-+	int i;
-+
-+	descr->tag_len = 0; /* presume no tag is set */
-+	descr->cnt = -1; /* presume no value is set */
-+
-+	location = calc_location(&cfg->map_locs[idx], tls_base);
-+	if (!location)
-+		return payload;
-+
-+	bpf_probe_read(value, sizeof(struct strobe_value_generic), location);
-+	if (bpf_probe_read(&map, sizeof(struct strobe_map_raw), value->ptr))
-+		return payload;
-+
-+	descr->id = map.id;
-+	descr->cnt = map.cnt;
-+	if (cfg->req_meta_idx == idx) {
-+		data->req_id = map.id;
-+		data->req_meta_valid = 1;
++	if (env->log.level & BPF_LOG_LEVEL) {
++		verbose(env, "regs=%x stack=%llx before ", *reg_mask, *stack_mask);
++		verbose(env, "%d: ", idx);
++		print_bpf_insn(&cbs, insn, env->allow_ptr_leaks);
 +	}
 +
-+	len = bpf_probe_read_str(payload, STROBE_MAX_STR_LEN, map.tag);
-+	if (len <= STROBE_MAX_STR_LEN) {
-+		descr->tag_len = len;
-+		payload += len;
-+	}
-+
-+#ifdef NO_UNROLL
-+#pragma clang loop unroll(disable)
-+#else
-+#pragma unroll
-+#endif
-+	for (int i = 0; i < STROBE_MAX_MAP_ENTRIES && i < map.cnt; ++i) {
-+		descr->key_lens[i] = 0;
-+		len = bpf_probe_read_str(payload, STROBE_MAX_STR_LEN,
-+					 map.entries[i].key);
-+		if (len <= STROBE_MAX_STR_LEN) {
-+			descr->key_lens[i] = len;
-+			payload += len;
-+		}
-+		descr->val_lens[i] = 0;
-+		len = bpf_probe_read_str(payload, STROBE_MAX_STR_LEN,
-+					 map.entries[i].val);
-+		if (len <= STROBE_MAX_STR_LEN) {
-+			descr->val_lens[i] = len;
-+			payload += len;
-+		}
-+	}
-+
-+	return payload;
-+}
-+
-+/*
-+ * read_strobe_meta returns NULL, if no metadata was read; otherwise returns
-+ * pointer to *right after* payload ends
-+ */
-+static inline __attribute__((always_inline))
-+void *read_strobe_meta(struct task_struct* task,
-+		       struct strobemeta_payload* data) {
-+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
-+	struct strobe_value_generic value = {0};
-+	struct strobemeta_cfg *cfg;
-+	void *tls_base, *payload;
-+
-+	cfg = bpf_map_lookup_elem(&strobemeta_cfgs, &pid);
-+	if (!cfg)
-+		return NULL;
-+
-+	data->int_vals_set_mask = 0;
-+	data->req_meta_valid = 0;
-+	payload = data->payload;
-+	/*
-+	 * we don't have struct task_struct definition, it should be:
-+	 * tls_base = (void *)task->thread.fsbase;
-+	 */
-+	tls_base = (void *)task;
-+
-+#ifdef NO_UNROLL
-+#pragma clang loop unroll(disable)
-+#else
-+#pragma unroll
-+#endif
-+	for (int i = 0; i < STROBE_MAX_INTS; ++i) {
-+		read_int_var(cfg, i, tls_base, &value, data);
-+	}
-+#ifdef NO_UNROLL
-+#pragma clang loop unroll(disable)
-+#else
-+#pragma unroll
-+#endif
-+	for (int i = 0; i < STROBE_MAX_STRS; ++i) {
-+		payload += read_str_var(cfg, i, tls_base, &value, data, payload);
-+	}
-+#ifdef NO_UNROLL
-+#pragma clang loop unroll(disable)
-+#else
-+#pragma unroll
-+#endif
-+	for (int i = 0; i < STROBE_MAX_MAPS; ++i) {
-+		payload = read_map_var(cfg, i, tls_base, &value, data, payload);
-+	}
-+	/*
-+	 * return pointer right after end of payload, so it's possible to
-+	 * calculate exact amount of useful data that needs to be sent
-+	 */
-+	return payload;
-+}
-+
-+SEC("raw_tracepoint/kfree_skb")
-+int on_event(struct pt_regs *ctx) {
-+	pid_t pid =  bpf_get_current_pid_tgid() >> 32;
-+	struct strobelight_bpf_sample* sample;
-+	struct task_struct *task;
-+	uint32_t zero = 0;
-+	uint64_t ktime_ns;
-+	void *sample_end;
-+
-+	sample = bpf_map_lookup_elem(&sample_heap, &zero);
-+	if (!sample)
-+		return 0; /* this will never happen */
-+
-+	sample->pid = pid;
-+	bpf_get_current_comm(&sample->comm, TASK_COMM_LEN);
-+	ktime_ns = bpf_ktime_get_ns();
-+	sample->ktime = ktime_ns;
-+
-+	task = (struct task_struct *)bpf_get_current_task();
-+	sample_end = read_strobe_meta(task, &sample->metadata);
-+	sample->has_meta = sample_end != NULL;
-+	sample_end = sample_end ? : &sample->metadata;
-+
-+	if ((ktime_ns >> STACK_TABLE_EPOCH_SHIFT) & 1) {
-+		sample->kernel_stack_id = bpf_get_stackid(ctx, &stacks_1, 0);
-+		sample->user_stack_id = bpf_get_stackid(ctx, &stacks_1, BPF_F_USER_STACK);
-+	} else {
-+		sample->kernel_stack_id = bpf_get_stackid(ctx, &stacks_0, 0);
-+		sample->user_stack_id = bpf_get_stackid(ctx, &stacks_0, BPF_F_USER_STACK);
-+	}
-+
-+	uint64_t sample_size = sample_end - (void *)sample;
-+	/* should always be true */
-+	if (sample_size < sizeof(struct strobelight_bpf_sample))
-+		bpf_perf_event_output(ctx, &samples, 0, sample, 1 + sample_size);
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c b/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
-new file mode 100644
-index 000000000000..f0a1669e11d6
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
-@@ -0,0 +1,9 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+// Copyright (c) 2019 Facebook
-+
-+#define STROBE_MAX_INTS 2
-+#define STROBE_MAX_STRS 25
-+#define STROBE_MAX_MAPS 13
-+#define STROBE_MAX_MAP_ENTRIES 20
-+#define NO_UNROLL
-+#include "strobemeta.h"
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c b/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
-new file mode 100644
-index 000000000000..4291a7d642e7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
-@@ -0,0 +1,9 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+// Copyright (c) 2019 Facebook
-+
-+#define STROBE_MAX_INTS 2
-+#define STROBE_MAX_STRS 25
-+#define STROBE_MAX_MAPS 30
-+#define STROBE_MAX_MAP_ENTRIES 20
-+#define NO_UNROLL
-+#include "strobemeta.h"
-diff --git a/tools/testing/selftests/bpf/progs/test_seg6_loop.c b/tools/testing/selftests/bpf/progs/test_seg6_loop.c
-new file mode 100644
-index 000000000000..463964d79f73
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_seg6_loop.c
-@@ -0,0 +1,261 @@
-+#include <stddef.h>
-+#include <inttypes.h>
-+#include <errno.h>
-+#include <linux/seg6_local.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+#include "bpf_endian.h"
-+
-+/* Packet parsing state machine helpers. */
-+#define cursor_advance(_cursor, _len) \
-+	({ void *_tmp = _cursor; _cursor += _len; _tmp; })
-+
-+#define SR6_FLAG_ALERT (1 << 4)
-+
-+#define htonll(x) ((bpf_htonl(1)) == 1 ? (x) : ((uint64_t)bpf_htonl((x) & \
-+				0xFFFFFFFF) << 32) | bpf_htonl((x) >> 32))
-+#define ntohll(x) ((bpf_ntohl(1)) == 1 ? (x) : ((uint64_t)bpf_ntohl((x) & \
-+				0xFFFFFFFF) << 32) | bpf_ntohl((x) >> 32))
-+#define BPF_PACKET_HEADER __attribute__((packed))
-+
-+struct ip6_t {
-+	unsigned int ver:4;
-+	unsigned int priority:8;
-+	unsigned int flow_label:20;
-+	unsigned short payload_len;
-+	unsigned char next_header;
-+	unsigned char hop_limit;
-+	unsigned long long src_hi;
-+	unsigned long long src_lo;
-+	unsigned long long dst_hi;
-+	unsigned long long dst_lo;
-+} BPF_PACKET_HEADER;
-+
-+struct ip6_addr_t {
-+	unsigned long long hi;
-+	unsigned long long lo;
-+} BPF_PACKET_HEADER;
-+
-+struct ip6_srh_t {
-+	unsigned char nexthdr;
-+	unsigned char hdrlen;
-+	unsigned char type;
-+	unsigned char segments_left;
-+	unsigned char first_segment;
-+	unsigned char flags;
-+	unsigned short tag;
-+
-+	struct ip6_addr_t segments[0];
-+} BPF_PACKET_HEADER;
-+
-+struct sr6_tlv_t {
-+	unsigned char type;
-+	unsigned char len;
-+	unsigned char value[0];
-+} BPF_PACKET_HEADER;
-+
-+static __attribute__((always_inline)) struct ip6_srh_t *get_srh(struct __sk_buff *skb)
-+{
-+	void *cursor, *data_end;
-+	struct ip6_srh_t *srh;
-+	struct ip6_t *ip;
-+	uint8_t *ipver;
-+
-+	data_end = (void *)(long)skb->data_end;
-+	cursor = (void *)(long)skb->data;
-+	ipver = (uint8_t *)cursor;
-+
-+	if ((void *)ipver + sizeof(*ipver) > data_end)
-+		return NULL;
-+
-+	if ((*ipver >> 4) != 6)
-+		return NULL;
-+
-+	ip = cursor_advance(cursor, sizeof(*ip));
-+	if ((void *)ip + sizeof(*ip) > data_end)
-+		return NULL;
-+
-+	if (ip->next_header != 43)
-+		return NULL;
-+
-+	srh = cursor_advance(cursor, sizeof(*srh));
-+	if ((void *)srh + sizeof(*srh) > data_end)
-+		return NULL;
-+
-+	if (srh->type != 4)
-+		return NULL;
-+
-+	return srh;
-+}
-+
-+static __attribute__((always_inline))
-+int update_tlv_pad(struct __sk_buff *skb, uint32_t new_pad,
-+		   uint32_t old_pad, uint32_t pad_off)
-+{
-+	int err;
-+
-+	if (new_pad != old_pad) {
-+		err = bpf_lwt_seg6_adjust_srh(skb, pad_off,
-+					  (int) new_pad - (int) old_pad);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (new_pad > 0) {
-+		char pad_tlv_buf[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-+					0, 0, 0};
-+		struct sr6_tlv_t *pad_tlv = (struct sr6_tlv_t *) pad_tlv_buf;
-+
-+		pad_tlv->type = SR6_TLV_PADDING;
-+		pad_tlv->len = new_pad - 2;
-+
-+		err = bpf_lwt_seg6_store_bytes(skb, pad_off,
-+					       (void *)pad_tlv_buf, new_pad);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static __attribute__((always_inline))
-+int is_valid_tlv_boundary(struct __sk_buff *skb, struct ip6_srh_t *srh,
-+			  uint32_t *tlv_off, uint32_t *pad_size,
-+			  uint32_t *pad_off)
-+{
-+	uint32_t srh_off, cur_off;
-+	int offset_valid = 0;
-+	int err;
-+
-+	srh_off = (char *)srh - (char *)(long)skb->data;
-+	// cur_off = end of segments, start of possible TLVs
-+	cur_off = srh_off + sizeof(*srh) +
-+		sizeof(struct ip6_addr_t) * (srh->first_segment + 1);
-+
-+	*pad_off = 0;
-+
-+	// we can only go as far as ~10 TLVs due to the BPF max stack size
-+	#pragma clang loop unroll(disable)
-+	for (int i = 0; i < 100; i++) {
-+		struct sr6_tlv_t tlv;
-+
-+		if (cur_off == *tlv_off)
-+			offset_valid = 1;
-+
-+		if (cur_off >= srh_off + ((srh->hdrlen + 1) << 3))
-+			break;
-+
-+		err = bpf_skb_load_bytes(skb, cur_off, &tlv, sizeof(tlv));
-+		if (err)
-+			return err;
-+
-+		if (tlv.type == SR6_TLV_PADDING) {
-+			*pad_size = tlv.len + sizeof(tlv);
-+			*pad_off = cur_off;
-+
-+			if (*tlv_off == srh_off) {
-+				*tlv_off = cur_off;
-+				offset_valid = 1;
++	if (class == BPF_ALU || class == BPF_ALU64) {
++		if (!(*reg_mask & dreg))
++			return 0;
++		if (opcode == BPF_MOV) {
++			if (BPF_SRC(insn->code) == BPF_X) {
++				/* dreg = sreg
++				 * dreg needs precision after this insn
++				 * sreg needs precision before this insn
++				 */
++				*reg_mask &= ~dreg;
++				*reg_mask |= sreg;
++			} else {
++				/* dreg = K
++				 * dreg needs precision after this insn.
++				 * Corresponding register is already marked
++				 * as precise=true in this verifier state.
++				 * No further markings in parent are necessary
++				 */
++				*reg_mask &= ~dreg;
 +			}
-+			break;
-+
-+		} else if (tlv.type == SR6_TLV_HMAC) {
-+			break;
++		} else {
++			if (BPF_SRC(insn->code) == BPF_X) {
++				/* dreg += sreg
++				 * both dreg and sreg need precision
++				 * before this insn
++				 */
++				*reg_mask |= sreg;
++			} /* else dreg += K
++			   * dreg still needs precision before this insn
++			   */
 +		}
++	} else if (class == BPF_LDX) {
++		if (!(*reg_mask & dreg))
++			return 0;
++		*reg_mask &= ~dreg;
 +
-+		cur_off += sizeof(tlv) + tlv.len;
-+	} // we reached the padding or HMAC TLVs, or the end of the SRH
++		/* scalars can only be spilled into stack w/o losing precision.
++		 * Load from any other memory can be zero extended.
++		 * The desire to keep that precision is already indicated
++		 * by 'precise' mark in corresponding register of this state.
++		 * No further tracking necessary.
++		 */
++		if (insn->src_reg != BPF_REG_FP)
++			return 0;
++		if (BPF_SIZE(insn->code) != BPF_DW)
++			return 0;
 +
-+	if (*pad_off == 0)
-+		*pad_off = cur_off;
-+
-+	if (*tlv_off == -1)
-+		*tlv_off = cur_off;
-+	else if (!offset_valid)
-+		return -EINVAL;
-+
++		/* dreg = *(u64 *)[fp - off] was a fill from the stack.
++		 * that [fp - off] slot contains scalar that needs to be
++		 * tracked with precision
++		 */
++		spi = (-insn->off - 1) / BPF_REG_SIZE;
++		if (spi >= 64) {
++			verbose(env, "BUG spi %d\n", spi);
++			WARN_ONCE(1, "verifier backtracking bug");
++			return -EFAULT;
++		}
++		*stack_mask |= 1ull << spi;
++	} else if (class == BPF_STX) {
++		if (*reg_mask & dreg)
++			/* stx shouldn't be using _scalar_ dst_reg
++			 * to access memory. It means backtracking
++			 * encountered a case of pointer subtraction.
++			 */
++			return -ENOTSUPP;
++		/* scalars can only be spilled into stack */
++		if (insn->dst_reg != BPF_REG_FP)
++			return 0;
++		if (BPF_SIZE(insn->code) != BPF_DW)
++			return 0;
++		spi = (-insn->off - 1) / BPF_REG_SIZE;
++		if (spi >= 64) {
++			verbose(env, "BUG spi %d\n", spi);
++			WARN_ONCE(1, "verifier backtracking bug");
++			return -EFAULT;
++		}
++		if (!(*stack_mask & (1ull << spi)))
++			return 0;
++		*stack_mask &= ~(1ull << spi);
++		*reg_mask |= sreg;
++	} else if (class == BPF_JMP || class == BPF_JMP32) {
++		if (opcode == BPF_CALL) {
++			if (insn->src_reg == BPF_PSEUDO_CALL)
++				return -ENOTSUPP;
++			else
++				/* regular helper call sets R0 */
++				*reg_mask &= ~1;
++		} else if (opcode == BPF_EXIT) {
++			return -ENOTSUPP;
++		}
++	} else if (class == BPF_LD) {
++		if (!(*reg_mask & dreg))
++			return 0;
++		*reg_mask &= ~dreg;
++		/* It's ld_imm64 or ld_abs or ld_ind.
++		 * For ld_imm64 no further tracking of precision
++		 * into parent is necessary
++		 */
++		if (mode == BPF_IND || mode == BPF_ABS)
++			/* to be analyzed */
++			return -ENOTSUPP;
++	} else if (class == BPF_ST) {
++		if (*reg_mask & dreg) {
++			/* likely pointer subtraction */
++			return -ENOTSUPP;
++		}
++	}
 +	return 0;
 +}
 +
-+static __attribute__((always_inline))
-+int add_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh, uint32_t tlv_off,
-+	    struct sr6_tlv_t *itlv, uint8_t tlv_size)
++/* the scalar precision tracking algorithm:
++ * . at the start all registers have precise=false.
++ * . scalar ranges are tracked as normal through alu and jmp insns.
++ * . once precise value of the scalar register is used in:
++ *   .  ptr + scalar alu
++ *   . if (scalar cond K|scalar)
++ *   .  helper_call(.., scalar, ...) where ARG_CONST is expected
++ *   backtrack through the verifier states and mark all registers and
++ *   stack slots with spilled constants that these scalar regisers
++ *   should be precise.
++ * . during state pruning two registers (or spilled stack slots)
++ *   are equivalent if both are not precise.
++ *
++ * Note the verifier cannot simply walk register parentage chain,
++ * since many different registers and stack slots could have been
++ * used to compute single precise scalar.
++ *
++ * It's not safe to start with precise=true and backtrack
++ * when passing scalar register into a helper that takes ARG_ANYTHING.
++ *
++ * It's ok to walk single parentage chain of the verifier states.
++ * It's possible that this backtracking will go all the way till 1st insn.
++ * All other branches will be explored for needing precision later.
++ *
++ * The backtracking needs to deal with cases like:
++ *   R8=map_value(id=0,off=0,ks=4,vs=1952,imm=0) R9_w=map_value(id=0,off=40,ks=4,vs=1952,imm=0)
++ * r9 -= r8
++ * r5 = r9
++ * if r5 > 0x79f goto pc+7
++ *    R5_w=inv(id=0,umax_value=1951,var_off=(0x0; 0x7ff))
++ * r5 += 1
++ * ...
++ * call bpf_perf_event_output#25
++ *   where .arg5_type = ARG_CONST_SIZE_OR_ZERO
++ *
++ * and this case:
++ * r6 = 1
++ * call foo // uses callee's r6 inside to compute r0
++ * r0 += r6
++ * if r0 == 0 goto
++ *
++ * to track above reg_mask/stack_mask needs to be independent for each frame.
++ *
++ * Alslo if parent's curframe > frame where backtracking started,
++ * the verifier need to mark registers in both frames, otherwise callees
++ * may incorrectly prune callers. This is similar to
++ * commit 7640ead93924 ("bpf: verifier: make sure callees don't prune with caller differences")
++ *
++ * For now backtracking falls back into conservative marking.
++ */
++static void mark_all_scalars_precise(struct bpf_verifier_env *env,
++				     struct bpf_verifier_state *st)
 +{
-+	uint32_t srh_off = (char *)srh - (char *)(long)skb->data;
-+	uint8_t len_remaining, new_pad;
-+	uint32_t pad_off = 0;
-+	uint32_t pad_size = 0;
-+	uint32_t partial_srh_len;
++	struct bpf_func_state *func;
++	struct bpf_reg_state *reg;
++	int i, j;
++
++	/* big hammer: mark all scalars precise in this path.
++	 * pop_stack may still get !precise scalars.
++	 */
++	for (; st; st = st->parent)
++		for (i = 0; i <= st->curframe; i++) {
++			func = st->frame[i];
++			for (j = 0; j < BPF_REG_FP; j++) {
++				reg = &func->regs[j];
++				if (reg->type != SCALAR_VALUE)
++					continue;
++				reg->precise = true;
++			}
++			for (j = 0; j < func->allocated_stack / BPF_REG_SIZE; j++) {
++				if (func->stack[j].slot_type[0] != STACK_SPILL)
++					continue;
++				reg = &func->stack[j].spilled_ptr;
++				if (reg->type != SCALAR_VALUE)
++					continue;
++				reg->precise = true;
++			}
++		}
++}
++
++static int mark_chain_precision(struct bpf_verifier_env *env, int regno)
++{
++	struct bpf_verifier_state *st = env->cur_state, *parent = st->parent;
++	int last_idx = env->insn_idx;
++	int first_idx = st->first_insn_idx;
++	struct bpf_func_state *func;
++	struct bpf_reg_state *reg;
++	u32 reg_mask = 1u << regno;
++	u64 stack_mask = 0;
++	int i, err;
++
++	func = st->frame[st->curframe];
++	reg = &func->regs[regno];
++	if (reg->type != SCALAR_VALUE) {
++		WARN_ONCE(1, "backtracing misuse");
++		return -EFAULT;
++	}
++	if (reg->precise)
++		return 0;
++	func->regs[regno].precise = true;
++
++	for (;;) {
++		DECLARE_BITMAP(mask, 64);
++		bool new_marks = false;
++
++		if (env->log.level & BPF_LOG_LEVEL)
++			verbose(env, "last_idx %d first_idx %d\n", last_idx, first_idx);
++		for (i = last_idx;;) {
++			err = backtrack_insn(env, i, &reg_mask, &stack_mask);
++			if (err == -ENOTSUPP) {
++				mark_all_scalars_precise(env, st);
++				return 0;
++			} else if (err) {
++				return err;
++			}
++			if (!reg_mask && !stack_mask)
++				/* Found assignment(s) into tracked register in this state.
++				 * Since this state is already marked, just return.
++				 * Nothing to be tracked further in the parent state.
++				 */
++				return 0;
++			if (i == first_idx)
++				break;
++			i = pop_and_get_prev_idx(st, i);
++			if (i >= env->prog->len) {
++				/* This can happen if backtracking reached insn 0
++				 * and there are still reg_mask or stack_mask
++				 * to backtrack.
++				 * It means the backtracking missed the spot where
++				 * particular register was initialized with a constant.
++				 */
++				verbose(env, "BUG backtracking idx %d\n", i);
++				WARN_ONCE(1, "verifier backtracking bug");
++				return -EFAULT;
++			}
++		}
++		st = parent;
++		if (!st)
++			break;
++
++		func = st->frame[st->curframe];
++		bitmap_from_u64(mask, reg_mask);
++		for_each_set_bit(i, mask, 32) {
++			reg = &func->regs[i];
++			if (reg->type != SCALAR_VALUE)
++				continue;
++			if (!reg->precise)
++				new_marks = true;
++			reg->precise = true;
++		}
++
++		bitmap_from_u64(mask, stack_mask);
++		for_each_set_bit(i, mask, 64) {
++			if (i >= func->allocated_stack / BPF_REG_SIZE) {
++				/* This can happen if backtracking
++				 * is propagating stack precision where
++				 * caller has larger stack frame
++				 * than callee, but backtrack_insn() should
++				 * have returned -ENOTSUPP.
++				 */
++				verbose(env, "BUG spi %d stack_size %d\n",
++					i, func->allocated_stack);
++				WARN_ONCE(1, "verifier backtracking bug");
++				return -EFAULT;
++			}
++
++			if (func->stack[i].slot_type[0] != STACK_SPILL)
++				continue;
++			reg = &func->stack[i].spilled_ptr;
++			if (reg->type != SCALAR_VALUE)
++				continue;
++			if (!reg->precise)
++				new_marks = true;
++			reg->precise = true;
++		}
++		if (env->log.level & BPF_LOG_LEVEL) {
++			print_verifier_state(env, func);
++			verbose(env, "parent %s regs=%x stack=%llx marks\n",
++				new_marks ? "didn't have" : "already had",
++				reg_mask, stack_mask);
++		}
++
++		if (!new_marks)
++			break;
++
++		parent = st->parent;
++		last_idx = st->last_insn_idx;
++		first_idx = st->first_insn_idx;
++	}
++	return 0;
++}
++
+ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
+ 			  enum bpf_arg_type arg_type,
+ 			  struct bpf_call_arg_meta *meta)
+@@ -2922,6 +3331,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
+ 		err = check_helper_mem_access(env, regno - 1,
+ 					      reg->umax_value,
+ 					      zero_size_allowed, meta);
++		if (!err)
++			err = mark_chain_precision(env, regno);
+ 	} else if (arg_type_is_int_ptr(arg_type)) {
+ 		int size = int_ptr_type_to_size(arg_type);
+ 
+@@ -4117,6 +4528,9 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 		return 0;
+ 	}
+ 
++	if (src_reg.precise)
++		dst_reg->precise = true;
++
+ 	switch (opcode) {
+ 	case BPF_ADD:
+ 		ret = sanitize_val_alu(env, insn);
+@@ -4358,6 +4772,7 @@ static int adjust_reg_min_max_vals(struct bpf_verifier_env *env,
+ 	struct bpf_reg_state *regs = state->regs, *dst_reg, *src_reg;
+ 	struct bpf_reg_state *ptr_reg = NULL, off_reg = {0};
+ 	u8 opcode = BPF_OP(insn->code);
 +	int err;
-+
-+	if (tlv_off != -1)
-+		tlv_off += srh_off;
-+
-+	if (itlv->type == SR6_TLV_PADDING || itlv->type == SR6_TLV_HMAC)
-+		return -EINVAL;
-+
-+	err = is_valid_tlv_boundary(skb, srh, &tlv_off, &pad_size, &pad_off);
-+	if (err)
-+		return err;
-+
-+	err = bpf_lwt_seg6_adjust_srh(skb, tlv_off, sizeof(*itlv) + itlv->len);
-+	if (err)
-+		return err;
-+
-+	err = bpf_lwt_seg6_store_bytes(skb, tlv_off, (void *)itlv, tlv_size);
-+	if (err)
-+		return err;
-+
-+	// the following can't be moved inside update_tlv_pad because the
-+	// bpf verifier has some issues with it
-+	pad_off += sizeof(*itlv) + itlv->len;
-+	partial_srh_len = pad_off - srh_off;
-+	len_remaining = partial_srh_len % 8;
-+	new_pad = 8 - len_remaining;
-+
-+	if (new_pad == 1) // cannot pad for 1 byte only
-+		new_pad = 9;
-+	else if (new_pad == 8)
-+		new_pad = 0;
-+
-+	return update_tlv_pad(skb, new_pad, pad_size, pad_off);
-+}
-+
-+// Add an Egress TLV fc00::4, add the flag A,
-+// and apply End.X action to fc42::1
-+SEC("lwt_seg6local")
-+int __add_egr_x(struct __sk_buff *skb)
-+{
-+	unsigned long long hi = 0xfc42000000000000;
-+	unsigned long long lo = 0x1;
-+	struct ip6_srh_t *srh = get_srh(skb);
-+	uint8_t new_flags = SR6_FLAG_ALERT;
-+	struct ip6_addr_t addr;
-+	int err, offset;
-+
-+	if (srh == NULL)
-+		return BPF_DROP;
-+
-+	uint8_t tlv[20] = {2, 18, 0, 0, 0xfd, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-+			   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4};
-+
-+	err = add_tlv(skb, srh, (srh->hdrlen+1) << 3,
-+		      (struct sr6_tlv_t *)&tlv, 20);
-+	if (err)
-+		return BPF_DROP;
-+
-+	offset = sizeof(struct ip6_t) + offsetof(struct ip6_srh_t, flags);
-+	err = bpf_lwt_seg6_store_bytes(skb, offset,
-+				       (void *)&new_flags, sizeof(new_flags));
-+	if (err)
-+		return BPF_DROP;
-+
-+	addr.lo = htonll(lo);
-+	addr.hi = htonll(hi);
-+	err = bpf_lwt_seg6_action(skb, SEG6_LOCAL_ACTION_END_X,
-+				  (void *)&addr, sizeof(addr));
-+	if (err)
-+		return BPF_DROP;
-+	return BPF_REDIRECT;
-+}
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-new file mode 100644
-index 000000000000..06e793c96b41
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-@@ -0,0 +1,68 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <stdint.h>
-+#include <string.h>
-+
-+#include <linux/stddef.h>
-+#include <linux/bpf.h>
-+
-+#include "bpf_helpers.h"
-+#include "bpf_util.h"
-+
-+/* tcp_mem sysctl has only 3 ints, but this test is doing TCP_MEM_LOOPS */
-+#define TCP_MEM_LOOPS 28  /* because 30 doesn't fit into 512 bytes of stack */
-+#define MAX_ULONG_STR_LEN 7
-+#define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
-+
-+static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
-+{
-+	volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
-+	unsigned char i;
-+	char name[64];
-+	int ret;
-+
-+	memset(name, 0, sizeof(name));
-+	ret = bpf_sysctl_get_name(ctx, name, sizeof(name), 0);
-+	if (ret < 0 || ret != sizeof(tcp_mem_name) - 1)
-+		return 0;
-+
-+#pragma clang loop unroll(disable)
-+	for (i = 0; i < sizeof(tcp_mem_name); ++i)
-+		if (name[i] != tcp_mem_name[i])
-+			return 0;
-+
-+	return 1;
-+}
-+
-+SEC("cgroup/sysctl")
-+int sysctl_tcp_mem(struct bpf_sysctl *ctx)
-+{
-+	unsigned long tcp_mem[TCP_MEM_LOOPS] = {};
-+	char value[MAX_VALUE_STR_LEN];
-+	unsigned char i, off = 0;
-+	int ret;
-+
-+	if (ctx->write)
-+		return 0;
-+
-+	if (!is_tcp_mem(ctx))
-+		return 0;
-+
-+	ret = bpf_sysctl_get_current_value(ctx, value, MAX_VALUE_STR_LEN);
-+	if (ret < 0 || ret >= MAX_VALUE_STR_LEN)
-+		return 0;
-+
-+#pragma clang loop unroll(disable)
-+	for (i = 0; i < ARRAY_SIZE(tcp_mem); ++i) {
-+		ret = bpf_strtoul(value + off, MAX_ULONG_STR_LEN, 0,
-+				  tcp_mem + i);
-+		if (ret <= 0 || ret > MAX_ULONG_STR_LEN)
-+			return 0;
-+		off += ret & MAX_ULONG_STR_LEN;
-+	}
-+
-+	return tcp_mem[0] < tcp_mem[1] && tcp_mem[1] < tcp_mem[2];
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-new file mode 100644
-index 000000000000..80690db292a5
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-@@ -0,0 +1,69 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <stdint.h>
-+#include <string.h>
-+
-+#include <linux/stddef.h>
-+#include <linux/bpf.h>
-+
-+#include "bpf_helpers.h"
-+#include "bpf_util.h"
-+
-+/* tcp_mem sysctl has only 3 ints, but this test is doing TCP_MEM_LOOPS */
-+#define TCP_MEM_LOOPS 20  /* because 30 doesn't fit into 512 bytes of stack */
-+#define MAX_ULONG_STR_LEN 7
-+#define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
-+
-+static __attribute__((noinline)) int is_tcp_mem(struct bpf_sysctl *ctx)
-+{
-+	volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
-+	unsigned char i;
-+	char name[64];
-+	int ret;
-+
-+	memset(name, 0, sizeof(name));
-+	ret = bpf_sysctl_get_name(ctx, name, sizeof(name), 0);
-+	if (ret < 0 || ret != sizeof(tcp_mem_name) - 1)
-+		return 0;
-+
-+#pragma clang loop unroll(disable)
-+	for (i = 0; i < sizeof(tcp_mem_name); ++i)
-+		if (name[i] != tcp_mem_name[i])
-+			return 0;
-+
-+	return 1;
-+}
-+
-+
-+SEC("cgroup/sysctl")
-+int sysctl_tcp_mem(struct bpf_sysctl *ctx)
-+{
-+	unsigned long tcp_mem[TCP_MEM_LOOPS] = {};
-+	char value[MAX_VALUE_STR_LEN];
-+	unsigned char i, off = 0;
-+	int ret;
-+
-+	if (ctx->write)
-+		return 0;
-+
-+	if (!is_tcp_mem(ctx))
-+		return 0;
-+
-+	ret = bpf_sysctl_get_current_value(ctx, value, MAX_VALUE_STR_LEN);
-+	if (ret < 0 || ret >= MAX_VALUE_STR_LEN)
-+		return 0;
-+
-+#pragma clang loop unroll(disable)
-+	for (i = 0; i < ARRAY_SIZE(tcp_mem); ++i) {
-+		ret = bpf_strtoul(value + off, MAX_ULONG_STR_LEN, 0,
-+				  tcp_mem + i);
-+		if (ret <= 0 || ret > MAX_ULONG_STR_LEN)
-+			return 0;
-+		off += ret & MAX_ULONG_STR_LEN;
-+	}
-+
-+	return tcp_mem[0] < tcp_mem[1] && tcp_mem[1] < tcp_mem[2];
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_loop.c b/tools/testing/selftests/bpf/progs/test_xdp_loop.c
-new file mode 100644
-index 000000000000..7fa4677df22e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_loop.c
-@@ -0,0 +1,231 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <stddef.h>
-+#include <string.h>
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <linux/in.h>
-+#include <linux/udp.h>
-+#include <linux/tcp.h>
-+#include <linux/pkt_cls.h>
-+#include <sys/socket.h>
-+#include "bpf_helpers.h"
-+#include "bpf_endian.h"
-+#include "test_iptunnel_common.h"
-+
-+int _version SEC("version") = 1;
-+
-+struct bpf_map_def SEC("maps") rxcnt = {
-+	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-+	.key_size = sizeof(__u32),
-+	.value_size = sizeof(__u64),
-+	.max_entries = 256,
-+};
-+
-+struct bpf_map_def SEC("maps") vip2tnl = {
-+	.type = BPF_MAP_TYPE_HASH,
-+	.key_size = sizeof(struct vip),
-+	.value_size = sizeof(struct iptnl_info),
-+	.max_entries = MAX_IPTNL_ENTRIES,
-+};
-+
-+static __always_inline void count_tx(__u32 protocol)
-+{
-+	__u64 *rxcnt_count;
-+
-+	rxcnt_count = bpf_map_lookup_elem(&rxcnt, &protocol);
-+	if (rxcnt_count)
-+		*rxcnt_count += 1;
-+}
-+
-+static __always_inline int get_dport(void *trans_data, void *data_end,
-+				     __u8 protocol)
-+{
-+	struct tcphdr *th;
-+	struct udphdr *uh;
-+
-+	switch (protocol) {
-+	case IPPROTO_TCP:
-+		th = (struct tcphdr *)trans_data;
-+		if (th + 1 > data_end)
-+			return -1;
-+		return th->dest;
-+	case IPPROTO_UDP:
-+		uh = (struct udphdr *)trans_data;
-+		if (uh + 1 > data_end)
-+			return -1;
-+		return uh->dest;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static __always_inline void set_ethhdr(struct ethhdr *new_eth,
-+				       const struct ethhdr *old_eth,
-+				       const struct iptnl_info *tnl,
-+				       __be16 h_proto)
-+{
-+	memcpy(new_eth->h_source, old_eth->h_dest, sizeof(new_eth->h_source));
-+	memcpy(new_eth->h_dest, tnl->dmac, sizeof(new_eth->h_dest));
-+	new_eth->h_proto = h_proto;
-+}
-+
-+static __always_inline int handle_ipv4(struct xdp_md *xdp)
-+{
-+	void *data_end = (void *)(long)xdp->data_end;
-+	void *data = (void *)(long)xdp->data;
-+	struct iptnl_info *tnl;
-+	struct ethhdr *new_eth;
-+	struct ethhdr *old_eth;
-+	struct iphdr *iph = data + sizeof(struct ethhdr);
-+	__u16 *next_iph;
-+	__u16 payload_len;
-+	struct vip vip = {};
-+	int dport;
-+	__u32 csum = 0;
-+	int i;
-+
-+	if (iph + 1 > data_end)
-+		return XDP_DROP;
-+
-+	dport = get_dport(iph + 1, data_end, iph->protocol);
-+	if (dport == -1)
-+		return XDP_DROP;
-+
-+	vip.protocol = iph->protocol;
-+	vip.family = AF_INET;
-+	vip.daddr.v4 = iph->daddr;
-+	vip.dport = dport;
-+	payload_len = bpf_ntohs(iph->tot_len);
-+
-+	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-+	/* It only does v4-in-v4 */
-+	if (!tnl || tnl->family != AF_INET)
-+		return XDP_PASS;
-+
-+	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
-+		return XDP_DROP;
-+
-+	data = (void *)(long)xdp->data;
-+	data_end = (void *)(long)xdp->data_end;
-+
-+	new_eth = data;
-+	iph = data + sizeof(*new_eth);
-+	old_eth = data + sizeof(*iph);
-+
-+	if (new_eth + 1 > data_end ||
-+	    old_eth + 1 > data_end ||
-+	    iph + 1 > data_end)
-+		return XDP_DROP;
-+
-+	set_ethhdr(new_eth, old_eth, tnl, bpf_htons(ETH_P_IP));
-+
-+	iph->version = 4;
-+	iph->ihl = sizeof(*iph) >> 2;
-+	iph->frag_off =	0;
-+	iph->protocol = IPPROTO_IPIP;
-+	iph->check = 0;
-+	iph->tos = 0;
-+	iph->tot_len = bpf_htons(payload_len + sizeof(*iph));
-+	iph->daddr = tnl->daddr.v4;
-+	iph->saddr = tnl->saddr.v4;
-+	iph->ttl = 8;
-+
-+	next_iph = (__u16 *)iph;
-+#pragma clang loop unroll(disable)
-+	for (i = 0; i < sizeof(*iph) >> 1; i++)
-+		csum += *next_iph++;
-+
-+	iph->check = ~((csum & 0xffff) + (csum >> 16));
-+
-+	count_tx(vip.protocol);
-+
-+	return XDP_TX;
-+}
-+
-+static __always_inline int handle_ipv6(struct xdp_md *xdp)
-+{
-+	void *data_end = (void *)(long)xdp->data_end;
-+	void *data = (void *)(long)xdp->data;
-+	struct iptnl_info *tnl;
-+	struct ethhdr *new_eth;
-+	struct ethhdr *old_eth;
-+	struct ipv6hdr *ip6h = data + sizeof(struct ethhdr);
-+	__u16 payload_len;
-+	struct vip vip = {};
-+	int dport;
-+
-+	if (ip6h + 1 > data_end)
-+		return XDP_DROP;
-+
-+	dport = get_dport(ip6h + 1, data_end, ip6h->nexthdr);
-+	if (dport == -1)
-+		return XDP_DROP;
-+
-+	vip.protocol = ip6h->nexthdr;
-+	vip.family = AF_INET6;
-+	memcpy(vip.daddr.v6, ip6h->daddr.s6_addr32, sizeof(vip.daddr));
-+	vip.dport = dport;
-+	payload_len = ip6h->payload_len;
-+
-+	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-+	/* It only does v6-in-v6 */
-+	if (!tnl || tnl->family != AF_INET6)
-+		return XDP_PASS;
-+
-+	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
-+		return XDP_DROP;
-+
-+	data = (void *)(long)xdp->data;
-+	data_end = (void *)(long)xdp->data_end;
-+
-+	new_eth = data;
-+	ip6h = data + sizeof(*new_eth);
-+	old_eth = data + sizeof(*ip6h);
-+
-+	if (new_eth + 1 > data_end || old_eth + 1 > data_end ||
-+	    ip6h + 1 > data_end)
-+		return XDP_DROP;
-+
-+	set_ethhdr(new_eth, old_eth, tnl, bpf_htons(ETH_P_IPV6));
-+
-+	ip6h->version = 6;
-+	ip6h->priority = 0;
-+	memset(ip6h->flow_lbl, 0, sizeof(ip6h->flow_lbl));
-+	ip6h->payload_len = bpf_htons(bpf_ntohs(payload_len) + sizeof(*ip6h));
-+	ip6h->nexthdr = IPPROTO_IPV6;
-+	ip6h->hop_limit = 8;
-+	memcpy(ip6h->saddr.s6_addr32, tnl->saddr.v6, sizeof(tnl->saddr.v6));
-+	memcpy(ip6h->daddr.s6_addr32, tnl->daddr.v6, sizeof(tnl->daddr.v6));
-+
-+	count_tx(vip.protocol);
-+
-+	return XDP_TX;
-+}
-+
-+SEC("xdp_tx_iptunnel")
-+int _xdp_tx_iptunnel(struct xdp_md *xdp)
-+{
-+	void *data_end = (void *)(long)xdp->data_end;
-+	void *data = (void *)(long)xdp->data;
-+	struct ethhdr *eth = data;
-+	__u16 h_proto;
-+
-+	if (eth + 1 > data_end)
-+		return XDP_DROP;
-+
-+	h_proto = eth->h_proto;
-+
-+	if (h_proto == bpf_htons(ETH_P_IP))
-+		return handle_ipv4(xdp);
-+	else if (h_proto == bpf_htons(ETH_P_IPV6))
-+
-+		return handle_ipv6(xdp);
-+	else
-+		return XDP_DROP;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+ 
+ 	dst_reg = &regs[insn->dst_reg];
+ 	src_reg = NULL;
+@@ -4384,11 +4799,17 @@ static int adjust_reg_min_max_vals(struct bpf_verifier_env *env,
+ 				 * This is legal, but we have to reverse our
+ 				 * src/dest handling in computing the range
+ 				 */
++				err = mark_chain_precision(env, insn->dst_reg);
++				if (err)
++					return err;
+ 				return adjust_ptr_min_max_vals(env, insn,
+ 							       src_reg, dst_reg);
+ 			}
+ 		} else if (ptr_reg) {
+ 			/* pointer += scalar */
++			err = mark_chain_precision(env, insn->src_reg);
++			if (err)
++				return err;
+ 			return adjust_ptr_min_max_vals(env, insn,
+ 						       dst_reg, src_reg);
+ 		}
+@@ -5345,6 +5766,13 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+ check_taken:
+ 		pred = is_branch_taken(dst_reg, cond_val, opcode, is_jmp32);
+ 
++		if (pred >= 0) {
++			err = mark_chain_precision(env, insn->dst_reg);
++			if (BPF_SRC(insn->code) == BPF_X && !err)
++				err = mark_chain_precision(env, insn->src_reg);
++			if (err)
++				return err;
++		}
+ 		if (pred == 1) {
+ 			 /* only follow the goto, ignore fall-through */
+ 			*insn_idx += insn->off;
+@@ -5828,6 +6256,11 @@ static int check_cfg(struct bpf_verifier_env *env)
+ 				goto peek_stack;
+ 			else if (ret < 0)
+ 				goto err_free;
++			/* unconditional jmp is not a good pruning point,
++			 * but it's marked, since backtracking needs
++			 * to record jmp history in is_state_visited().
++			 */
++			init_explored_state(env, t + insns[t].off + 1);
+ 			/* tell verifier to check for equivalent states
+ 			 * after every call and jump
+ 			 */
+@@ -6328,6 +6761,8 @@ static bool regsafe(struct bpf_reg_state *rold, struct bpf_reg_state *rcur,
+ 	switch (rold->type) {
+ 	case SCALAR_VALUE:
+ 		if (rcur->type == SCALAR_VALUE) {
++			if (!rold->precise && !rcur->precise)
++				return true;
+ 			/* new val must satisfy old val knowledge */
+ 			return range_within(rold, rcur) &&
+ 			       tnum_in(rold->var_off, rcur->var_off);
+@@ -6678,6 +7113,7 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 	int i, j, err, states_cnt = 0;
+ 	bool add_new_state = false;
+ 
++	cur->last_insn_idx = env->prev_insn_idx;
+ 	if (!env->insn_aux_data[insn_idx].prune_point)
+ 		/* this 'insn_idx' instruction wasn't marked, so we will not
+ 		 * be doing state search here
+@@ -6794,10 +7230,10 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 		env->max_states_per_insn = states_cnt;
+ 
+ 	if (!env->allow_ptr_leaks && states_cnt > BPF_COMPLEXITY_LIMIT_STATES)
+-		return 0;
++		return push_jmp_history(env, cur);
+ 
+ 	if (!add_new_state)
+-		return 0;
++		return push_jmp_history(env, cur);
+ 
+ 	/* there were no equivalent states, remember current one.
+ 	 * technically the current state is not proven to be safe yet,
+@@ -6825,7 +7261,10 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 	new->insn_idx = insn_idx;
+ 	WARN_ONCE(new->branches != 1,
+ 		  "BUG is_state_visited:branches_to_explore=%d insn %d\n", new->branches, insn_idx);
++
+ 	cur->parent = new;
++	cur->first_insn_idx = insn_idx;
++	clear_jmp_history(cur);
+ 	new_sl->next = *explored_state(env, insn_idx);
+ 	*explored_state(env, insn_idx) = new_sl;
+ 	/* connect new state to parentage chain. Current frame needs all
+@@ -6905,6 +7344,7 @@ static int do_check(struct bpf_verifier_env *env)
+ 	struct bpf_reg_state *regs;
+ 	int insn_cnt = env->prog->len;
+ 	bool do_print_state = false;
++	int prev_insn_idx = -1;
+ 
+ 	env->prev_linfo = NULL;
+ 
+@@ -6930,6 +7370,7 @@ static int do_check(struct bpf_verifier_env *env)
+ 		u8 class;
+ 		int err;
+ 
++		env->prev_insn_idx = prev_insn_idx;
+ 		if (env->insn_idx >= insn_cnt) {
+ 			verbose(env, "invalid insn idx %d insn_cnt %d\n",
+ 				env->insn_idx, insn_cnt);
+@@ -7002,6 +7443,7 @@ static int do_check(struct bpf_verifier_env *env)
+ 
+ 		regs = cur_regs(env);
+ 		env->insn_aux_data[env->insn_idx].seen = true;
++		prev_insn_idx = env->insn_idx;
+ 
+ 		if (class == BPF_ALU || class == BPF_ALU64) {
+ 			err = check_alu_op(env, insn);
+@@ -7175,7 +7617,6 @@ static int do_check(struct bpf_verifier_env *env)
+ 
+ 				if (state->curframe) {
+ 					/* exit from nested function */
+-					env->prev_insn_idx = env->insn_idx;
+ 					err = prepare_func_exit(env, &env->insn_idx);
+ 					if (err)
+ 						return err;
+@@ -7207,7 +7648,7 @@ static int do_check(struct bpf_verifier_env *env)
+ 					return err;
+ process_bpf_exit:
+ 				update_branch_counts(env, env->cur_state);
+-				err = pop_stack(env, &env->prev_insn_idx,
++				err = pop_stack(env, &prev_insn_idx,
+ 						&env->insn_idx);
+ 				if (err < 0) {
+ 					if (err != -ENOENT)
 -- 
 2.20.0
 
