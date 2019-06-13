@@ -2,352 +2,453 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 174AE44D34
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3496A44D3C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 22:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729744AbfFMUPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 16:15:32 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52376 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726855AbfFMUPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 16:15:31 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5DKAwuw010723;
-        Thu, 13 Jun 2019 13:15:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=YnVyZ1hQwp5C/WnJoo9Yn+RT/QB9zaTBcYsIS0MGsJE=;
- b=FTJ1wKF9yxu+kGzZsU1Wns5UhsdT/bQUj4Rdi08LFgj9bP+GmAqLi8f1M2TzEIT3tRUo
- v7U1Fmryd2UVcLkfUUY9312HIdeSYr4dpwjTdnGbFYByKhMY3nEQQfidTqqMii+kTyg2
- ee/zv93z0dNKr0W/ZLIUR9fEmbllvyldquo= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t3pashn1f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 13 Jun 2019 13:15:02 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 13 Jun 2019 13:15:00 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 13 Jun 2019 13:15:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YnVyZ1hQwp5C/WnJoo9Yn+RT/QB9zaTBcYsIS0MGsJE=;
- b=iNHpzdlYhDGrRNPChH+FldnK7mxkYgd2cSh9wy9LFatJjt/Rsoe4C25DU9SoG8dYEukFmNGdIugzdoYU9BQ8TS9dWhjXus0mtXpwIuLscvMCXMrC7NI/t3PgD5M2m4HQjm4YUGRDdAgllT2Xl4FRiNeLNzt1UzW07jDtiEob+5I=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
- MWHPR15MB1663.namprd15.prod.outlook.com (10.175.141.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.11; Thu, 13 Jun 2019 20:14:59 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::6590:7f75:5516:3871%3]) with mapi id 15.20.1987.010; Thu, 13 Jun 2019
- 20:14:59 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Arthur Fabre <afabre@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf: sk_storage: Fix out of bounds memory access
-Thread-Topic: [PATCH bpf-next] bpf: sk_storage: Fix out of bounds memory
- access
-Thread-Index: AQHVIetyB27HX7/RZ0OWVcircfV4UqaZ02YAgAAyGoA=
-Date:   Thu, 13 Jun 2019 20:14:59 +0000
-Message-ID: <20190613201457.hv5z3pbi46z2cfwn@kafai-mbp.dhcp.thefacebook.com>
-References: <20190613132433.17213-1-afabre@cloudflare.com>
- <CAEf4BzYp0ZtbojxP++GYsc097RpoLBb08Aj7NM0s+GoM7RpvXg@mail.gmail.com>
-In-Reply-To: <CAEf4BzYp0ZtbojxP++GYsc097RpoLBb08Aj7NM0s+GoM7RpvXg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR14CA0017.namprd14.prod.outlook.com
- (2603:10b6:300:ae::27) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:53::10)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:857]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c259dfd8-b067-4ab2-a2aa-08d6f03bcf29
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1663;
-x-ms-traffictypediagnostic: MWHPR15MB1663:
-x-microsoft-antispam-prvs: <MWHPR15MB1663848D8A150F60B4942AA0D5EF0@MWHPR15MB1663.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(366004)(346002)(39860400002)(376002)(136003)(189003)(199004)(14454004)(6916009)(25786009)(476003)(11346002)(446003)(4326008)(6246003)(386003)(5660300002)(6506007)(53546011)(99286004)(46003)(478600001)(2906002)(52116002)(45080400002)(6436002)(6486002)(71190400001)(229853002)(76176011)(71200400001)(53936002)(316002)(86362001)(305945005)(9686003)(6512007)(54906003)(186003)(8936002)(102836004)(7736002)(1076003)(66476007)(66446008)(64756008)(81166006)(73956011)(66556008)(6116002)(256004)(8676002)(14444005)(486006)(81156014)(66946007)(68736007);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1663;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: X9NFRxBRK8WcsCObelXbQtJe8K6OSrk2C7Xd1088tnLqGOfqzRnxb8x0zcXkf7MiYA44Nesg4LLLZP3VyBPIZWC9UmCL8/gCrwmncKEZ2Cr7IaWMcQkERC3NTrfKbKze3CAKo+rZhPAHx/R06Dm8PlmwpVwwdBMsoys9+NLzL8I2L6gcpASBBEosjmqgltApQJUUHjjB3YGMiuSV8Ae7VWBUkp4+IHtsKdYFM8MNI4Izmj86JcKBu5woXjXQ1DxFmsS55o7e9d6jgPhrT8p4bLXrutVJVvjCcRtWDARoMMV0cPAL12EwxeVO/+mHC7sb4qYtcV8VHt403FJ3faU16h3qTudQjf7TPQdCIswEL1TCTQgJ9BQZA+3mNKJS/TYM8XbNB4K348mSw4iP76SfJ/RTvf9rioIHxHm2GTPqDwY=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <086A11AC96104241A27151038F1B3148@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729871AbfFMUQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 16:16:38 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41166 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfFMUQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 16:16:37 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 83so133231pgg.8;
+        Thu, 13 Jun 2019 13:16:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=j51vLeeFrAnI5E7KIxETV6kEmvegcIKMimu8e2BZxls=;
+        b=kQAJ+QeyWHCubTc4tAJuK1QG237UvFpyQVfx2/t+Ku4SiEVHCFbMB64pO36eUXWqqu
+         8s9XqSo6eUtyqKff7wScjLm01HIZQMD+XsvYIzgCChVTXojF9YoaviltZ7cyKRpuM43a
+         VhyFk5ALKsXiQqUlFwvw97EjJENQMNd3Mi+yrEtuV9EyU3REUwp5VrEhesrk+Oiudrh1
+         1uPICQBySsUCIjzKiA0UapKLtf1VoKIXLpNqprNkcbeJDCFZn0F0aDDjBKyDlUGl+mmN
+         kOQzTJZw4hyGXTnmB78gWZvqbnBXrQn7zpu3/jGo0sO1h5+aV9ndxVcqIDLvvxZ27IMJ
+         GinQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=j51vLeeFrAnI5E7KIxETV6kEmvegcIKMimu8e2BZxls=;
+        b=OelPhsWZJPwh+c086C3X/fy1iDlN84E9i9lALr1bnXVl73/20hqfjViuEbLR9Ewk44
+         gbJhngnDxio7Crs7ddFFx+cr0Zi+VxKDj/H5g55tTnyyo/FMr7G/SNBwUwjtxGH/nZFV
+         yjSB3n5Vfv6fsgzmyzdLSM88h3xOerIJlKvl6EtPv4TLL/ujzSljiRPPD1lntjgD0iKC
+         yLdTpCWKgAaVY9p71pCoIsX6qnEPGV0yE+kdnS0ni2aqBMxUbif4Y09h/4hbBb/gEjSL
+         3etOfoUWA0PO9tfWjlw1xbE8IJknbXncWSU90EAsq+fJQo6GV24X/ZjJHsZoEN21MF1a
+         wJuQ==
+X-Gm-Message-State: APjAAAXO/O4HFIIv0vvYMCFv9aYPMi0S5TVD902tWWOfEXbgmIzhlx0U
+        GaLemqDFNResOE/FTTKMjr8=
+X-Google-Smtp-Source: APXvYqyVENW7+m+QNyImMzaGiX05I3nCOuvrSVmEEaY+7RTNcASvnhQ66HeTKtU5a52uuhhc6o6MkQ==
+X-Received: by 2002:a63:1d10:: with SMTP id d16mr22516587pgd.446.1560456996568;
+        Thu, 13 Jun 2019 13:16:36 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:e034])
+        by smtp.gmail.com with ESMTPSA id h12sm930626pje.12.2019.06.13.13.16.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 13:16:35 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 13:16:34 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, Martin Lau <kafai@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v5 1/8] bpf: implement getsockopt and setsockopt
+ hooks
+Message-ID: <20190613201632.t7npizqhtnohzwmc@ast-mbp.dhcp.thefacebook.com>
+References: <20190610210830.105694-1-sdf@google.com>
+ <20190610210830.105694-2-sdf@google.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: c259dfd8-b067-4ab2-a2aa-08d6f03bcf29
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 20:14:59.7349
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kafai@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1663
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-13_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=721 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906130151
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190610210830.105694-2-sdf@google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 10:15:38AM -0700, Andrii Nakryiko wrote:
-> On Thu, Jun 13, 2019 at 8:16 AM Arthur Fabre <afabre@cloudflare.com> wrot=
-e:
-> >
-> > bpf_sk_storage maps use multiple spin locks to reduce contention.
-> > The number of locks to use is determined by the number of possible CPUs=
-.
-> > With only 1 possible CPU, bucket_log =3D=3D 0, and 2^0 =3D 1 locks are =
-used.
-Thanks for report.
+On Mon, Jun 10, 2019 at 02:08:23PM -0700, Stanislav Fomichev wrote:
+> Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
+> BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
+> 
+> BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
+> BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
+> Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
+> 
+> The buffer memory is pre-allocated (because I don't think there is
+> a precedent for working with __user memory from bpf). This might be
+> slow to do for each {s,g}etsockopt call, that's why I've added
+> __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
+> attached to a cgroup. Note, however, that there is a race between
+> __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
+> program layout might have changed; this should not be a problem
+> because in general there is a race between multiple calls to
+> {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
+> 
+> The return code of the BPF program is handled as follows:
+> * 0: EPERM
+> * 1: success, execute kernel {s,g}etsockopt path after BPF prog exits
+> * 2: success, do _not_ execute kernel {s,g}etsockopt path after BPF
+>      prog exits
+> 
+> v5:
+> * skip copy_to_user() and put_user() when ret == 0 (Martin Lau)
+> 
+> v4:
+> * don't export bpf_sk_fullsock helper (Martin Lau)
+> * size != sizeof(__u64) for uapi pointers (Martin Lau)
+> * offsetof instead of bpf_ctx_range when checking ctx access (Martin Lau)
+> 
+> v3:
+> * typos in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY comments (Andrii Nakryiko)
+> * reverse christmas tree in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY (Andrii
+>   Nakryiko)
+> * use __bpf_md_ptr instead of __u32 for optval{,_end} (Martin Lau)
+> * use BPF_FIELD_SIZEOF() for consistency (Martin Lau)
+> * new CG_SOCKOPT_ACCESS macro to wrap repeated parts
+> 
+> v2:
+> * moved bpf_sockopt_kern fields around to remove a hole (Martin Lau)
+> * aligned bpf_sockopt_kern->buf to 8 bytes (Martin Lau)
+> * bpf_prog_array_is_empty instead of bpf_prog_array_length (Martin Lau)
+> * added [0,2] return code check to verifier (Martin Lau)
+> * dropped unused buf[64] from the stack (Martin Lau)
+> * use PTR_TO_SOCKET for bpf_sockopt->sk (Martin Lau)
+> * dropped bpf_target_off from ctx rewrites (Martin Lau)
+> * use return code for kernel bypass (Martin Lau & Andrii Nakryiko)
+> 
+> Cc: Martin Lau <kafai@fb.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  include/linux/bpf-cgroup.h |  29 +++++
+>  include/linux/bpf.h        |  45 +++++++
+>  include/linux/bpf_types.h  |   1 +
+>  include/linux/filter.h     |  13 ++
+>  include/uapi/linux/bpf.h   |  13 ++
+>  kernel/bpf/cgroup.c        | 260 +++++++++++++++++++++++++++++++++++++
+>  kernel/bpf/core.c          |   9 ++
+>  kernel/bpf/syscall.c       |  19 +++
+>  kernel/bpf/verifier.c      |  15 +++
+>  net/core/filter.c          |   2 +-
+>  net/socket.c               |  18 +++
+>  11 files changed, 423 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> index b631ee75762d..406f1ba82531 100644
+> --- a/include/linux/bpf-cgroup.h
+> +++ b/include/linux/bpf-cgroup.h
+> @@ -124,6 +124,13 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+>  				   loff_t *ppos, void **new_buf,
+>  				   enum bpf_attach_type type);
+>  
+> +int __cgroup_bpf_run_filter_setsockopt(struct sock *sock, int level,
+> +				       int optname, char __user *optval,
+> +				       unsigned int optlen);
+> +int __cgroup_bpf_run_filter_getsockopt(struct sock *sock, int level,
+> +				       int optname, char __user *optval,
+> +				       int __user *optlen);
+> +
+>  static inline enum bpf_cgroup_storage_type cgroup_storage_type(
+>  	struct bpf_map *map)
+>  {
+> @@ -280,6 +287,26 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+>  	__ret;								       \
+>  })
+>  
+> +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen)   \
+> +({									       \
+> +	int __ret = 0;							       \
+> +	if (cgroup_bpf_enabled)						       \
+> +		__ret = __cgroup_bpf_run_filter_setsockopt(sock, level,	       \
+> +							   optname, optval,    \
+> +							   optlen);	       \
+> +	__ret;								       \
+> +})
+> +
+> +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen)   \
+> +({									       \
+> +	int __ret = 0;							       \
+> +	if (cgroup_bpf_enabled)						       \
+> +		__ret = __cgroup_bpf_run_filter_getsockopt(sock, level,	       \
+> +							   optname, optval,    \
+> +							   optlen);	       \
+> +	__ret;								       \
+> +})
+> +
+>  int cgroup_bpf_prog_attach(const union bpf_attr *attr,
+>  			   enum bpf_prog_type ptype, struct bpf_prog *prog);
+>  int cgroup_bpf_prog_detach(const union bpf_attr *attr,
+> @@ -349,6 +376,8 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
+>  #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type,major,minor,access) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_SYSCTL(head,table,write,buf,count,pos,nbuf) ({ 0; })
+> +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
+> +#define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen) ({ 0; })
+>  
+>  #define for_each_cgroup_storage_type(stype) for (; false; )
+>  
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index e5a309e6a400..194a47ca622f 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -520,6 +520,7 @@ struct bpf_prog_array {
+>  struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
+>  void bpf_prog_array_free(struct bpf_prog_array *progs);
+>  int bpf_prog_array_length(struct bpf_prog_array *progs);
+> +bool bpf_prog_array_is_empty(struct bpf_prog_array *array);
+>  int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
+>  				__u32 __user *prog_ids, u32 cnt);
+>  
+> @@ -606,6 +607,49 @@ _out:							\
+>  		_ret;					\
+>  	})
+>  
+> +/* To be used by BPF_PROG_TYPE_CGROUP_SOCKOPT program type.
+> + *
+> + * Expected BPF program return values are:
+> + *   0: return -EPERM to the userspace
+> + *   1: sockopt was not handled by BPF, kernel should do it
+> + *   2: sockopt was handled by BPF, kernel should _not_ do it and return
+> + *      to the userspace instead
+> + *
+> + * Note, that return '0' takes precedence over everything else. In other
+> + * words, if any single program in the prog array has returned 0,
+> + * the userspace will get -EPERM (regardless of what other programs
+> + * return).
+> + *
+> + * The macro itself returns:
+> + *        0: sockopt was not handled by BPF, kernel should do it
+> + *        1: sockopt was handled by BPF, kernel should _not_ do it
+> + *   -EPERM: return error back to userspace
+> + */
+> +#define BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY(array, ctx, func)		\
+> +	({								\
+> +		struct bpf_prog_array_item *_item;			\
+> +		struct bpf_prog_array *_array;				\
+> +		struct bpf_prog *_prog;					\
+> +		u32 _success = 1;					\
+> +		u32 _bypass = 0;					\
+> +		u32 ret;						\
+> +		preempt_disable();					\
+> +		rcu_read_lock();					\
+> +		_array = rcu_dereference(array);			\
+> +		_item = &_array->items[0];				\
+> +		while ((_prog = READ_ONCE(_item->prog))) {		\
+> +			bpf_cgroup_storage_set(_item->cgroup_storage);	\
+> +			ret = func(_prog, ctx);				\
+> +			_success &= (ret > 0);				\
+> +			_bypass |= (ret == 2);				\
+> +			_item++;					\
+> +		}							\
+> +		rcu_read_unlock();					\
+> +		preempt_enable();					\
+> +		ret = _success ? _bypass : -EPERM;			\
+> +		ret;							\
+> +	})
+> +
+>  #define BPF_PROG_RUN_ARRAY(array, ctx, func)		\
+>  	__BPF_PROG_RUN_ARRAY(array, ctx, func, false)
+>  
+> @@ -1054,6 +1098,7 @@ extern const struct bpf_func_proto bpf_spin_unlock_proto;
+>  extern const struct bpf_func_proto bpf_get_local_storage_proto;
+>  extern const struct bpf_func_proto bpf_strtol_proto;
+>  extern const struct bpf_func_proto bpf_strtoul_proto;
+> +extern const struct bpf_func_proto bpf_tcp_sock_proto;
+>  
+>  /* Shared helpers among cBPF and eBPF. */
+>  void bpf_user_rnd_init_once(void);
+> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> index 5a9975678d6f..eec5aeeeaf92 100644
+> --- a/include/linux/bpf_types.h
+> +++ b/include/linux/bpf_types.h
+> @@ -30,6 +30,7 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE, raw_tracepoint_writable)
+>  #ifdef CONFIG_CGROUP_BPF
+>  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_DEVICE, cg_dev)
+>  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl)
+> +BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt)
+>  #endif
+>  #ifdef CONFIG_BPF_LIRC_MODE2
+>  BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 43b45d6db36d..6e64d01e4e36 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1199,4 +1199,17 @@ struct bpf_sysctl_kern {
+>  	u64 tmp_reg;
+>  };
+>  
+> +struct bpf_sockopt_kern {
+> +	struct sock	*sk;
+> +	u8		*optval;
+> +	u8		*optval_end;
+> +	s32		level;
+> +	s32		optname;
+> +	u32		optlen;
+> +
+> +	/* Small on-stack optval buffer to avoid small allocations.
+> +	 */
+> +	u8 buf[64] __aligned(8);
+> +};
+> +
+>  #endif /* __LINUX_FILTER_H__ */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 7c6aef253173..afaa7e28d1e4 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -170,6 +170,7 @@ enum bpf_prog_type {
+>  	BPF_PROG_TYPE_FLOW_DISSECTOR,
+>  	BPF_PROG_TYPE_CGROUP_SYSCTL,
+>  	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
+> +	BPF_PROG_TYPE_CGROUP_SOCKOPT,
+>  };
+>  
+>  enum bpf_attach_type {
+> @@ -192,6 +193,8 @@ enum bpf_attach_type {
+>  	BPF_LIRC_MODE2,
+>  	BPF_FLOW_DISSECTOR,
+>  	BPF_CGROUP_SYSCTL,
+> +	BPF_CGROUP_GETSOCKOPT,
+> +	BPF_CGROUP_SETSOCKOPT,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
+>  
+> @@ -3533,4 +3536,14 @@ struct bpf_sysctl {
+>  				 */
+>  };
+>  
+> +struct bpf_sockopt {
+> +	__bpf_md_ptr(struct bpf_sock *, sk);
+> +	__bpf_md_ptr(void *, optval);
+> +	__bpf_md_ptr(void *, optval_end);
+> +
+> +	__s32	level;
+> +	__s32	optname;
+> +	__u32	optlen;
+> +};
+> +
+>  #endif /* _UAPI__LINUX_BPF_H__ */
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 1b65ab0df457..9085a218a1a8 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/bpf-cgroup.h>
+>  #include <net/sock.h>
+> +#include <net/bpf_sk_storage.h>
+>  
+>  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
+>  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
+> @@ -924,6 +925,140 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+>  }
+>  EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
+>  
+> +static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+> +					     enum bpf_attach_type attach_type)
+> +{
+> +	struct bpf_prog_array *prog_array;
+> +	bool empty;
+> +
+> +	rcu_read_lock();
+> +	prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
+> +	empty = bpf_prog_array_is_empty(prog_array);
+> +	rcu_read_unlock();
+> +
+> +	return empty;
+> +}
+> +
+> +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> +{
+> +	if (unlikely(max_optlen > PAGE_SIZE))
+> +		return -EINVAL;
+> +
+> +	if (likely(max_optlen <= sizeof(ctx->buf))) {
+> +		ctx->optval = ctx->buf;
+> +	} else {
+> +		ctx->optval = kzalloc(max_optlen, GFP_USER);
+> +		if (!ctx->optval)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	ctx->optval_end = ctx->optval + max_optlen;
+> +	ctx->optlen = max_optlen;
+> +
+> +	return 0;
+> +}
+> +
+> +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
+> +{
+> +	if (unlikely(ctx->optval != ctx->buf))
+> +		kfree(ctx->optval);
+> +}
+> +
+> +int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int level,
+> +				       int optname, char __user *optval,
+> +				       unsigned int optlen)
+> +{
+> +	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> +	struct bpf_sockopt_kern ctx = {
+> +		.sk = sk,
+> +		.level = level,
+> +		.optname = optname,
+> +	};
+> +	int ret;
+> +
+> +	/* Opportunistic check to see whether we have any BPF program
+> +	 * attached to the hook so we don't waste time allocating
+> +	 * memory and locking the socket.
+> +	 */
+> +	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
+> +		return 0;
+> +
+> +	ret = sockopt_alloc_buf(&ctx, optlen);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (copy_from_user(ctx.optval, optval, optlen) != 0) {
+> +		sockopt_free_buf(&ctx);
+> +		return -EFAULT;
+> +	}
+> +
+> +	lock_sock(sk);
+> +	ret = BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY(
+> +		cgrp->bpf.effective[BPF_CGROUP_SETSOCKOPT],
+> +		&ctx, BPF_PROG_RUN);
+> +	release_sock(sk);
 
-> >
-> > When updating elements, the correct lock is determined with hash_ptr().
-> > Calling hash_ptr() with 0 bits is undefined behavior, as it does:
-> >
-> > x >> (64 - bits)
-> >
-> > Using the value results in an out of bounds memory access.
-> > In my case, this manifested itself as a page fault when raw_spin_lock_b=
-h()
-> > is called later, when running the self tests:
-> >
-> > ./tools/testing/selftests/bpf/test_verifier 773 775
-> >
-> > [   16.366342] BUG: unable to handle page fault for address: ffff8fe7a6=
-6f93f8
-> > [   16.367139] #PF: supervisor write access in kernel mode
-> > [   16.367751] #PF: error_code(0x0002) - not-present page
-> > [   16.368323] PGD 35a01067 P4D 35a01067 PUD 0
-> > [   16.368796] Oops: 0002 [#1] SMP PTI
-> > [   16.369175] CPU: 0 PID: 189 Comm: test_verifier Not tainted 5.2.0-rc=
-2+ #10
-> > [   16.369960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
-IOS 1.12.0-1 04/01/2014
-> > [   16.371021] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./includ=
-e/trace/events/initcall.h:48)
-> > [ 16.371571] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e=
-9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <=
-3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   02 00                   add    (%rax),%al
-> >    2:   00 31                   add    %dh,(%rcx)
-> >    4:   c0 ba ff 00 00 00 3e    sarb   $0x3e,0xff(%rdx)
-> >    b:   0f b1 17                cmpxchg %edx,(%rdi)
-> >    e:   75 01                   jne    0x11
-> >   10:   c3                      retq
-> >   11:   e9 82 12 5f ff          jmpq   0xffffffffff5f1298
-> >   16:   66 90                   xchg   %ax,%ax
-> >   18:   65 81 05 ad 14 6f 41    addl   $0x200,%gs:0x416f14ad(%rip)     =
-   # 0x416f14d0
-> >   1f:   00 02 00 00
-> >   23:   31 c0                   xor    %eax,%eax
-> >   25:   ba 01 00 00 00          mov    $0x1,%edx
-> >   2a:   3e 0f b1 17             cmpxchg %edx,%ds:*(%rdi)               =
- <-- trapping instruction
-> >   2e:   75 01                   jne    0x31
-> >   30:   c3                      retq
-> >   31:   89 c6                   mov    %eax,%esi
-> >   33:   e9 f0 02 5f ff          jmpq   0xffffffffff5f0328
-> >   38:   b8 00 02 00 00          mov    $0x200,%eax
-> >   3d:   3e                      ds
-> >   3e:   0f                      .byte 0xf
-> >   3f:   c1                      .byte 0xc1
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   3e 0f b1 17             cmpxchg %edx,%ds:(%rdi)
-> >    4:   75 01                   jne    0x7
-> >    6:   c3                      retq
-> >    7:   89 c6                   mov    %eax,%esi
-> >    9:   e9 f0 02 5f ff          jmpq   0xffffffffff5f02fe
-> >    e:   b8 00 02 00 00          mov    $0x200,%eax
-> >   13:   3e                      ds
-> >   14:   0f                      .byte 0xf
-> >   15:   c1                      .byte 0xc1
-> > [   16.373398] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
-> > [   16.373954] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000=
-000000040
-> > [   16.374645] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe=
-7a66f93f8
-> > [   16.375338] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fd=
-af9f0d0c0
-> > [   16.376028] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fd=
-afa346700
-> > [   16.376719] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000=
-000000001
-> > [   16.377413] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) kn=
-lGS:0000000000000000
-> > [   16.378204] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [   16.378763] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000=
-000360ef0
-> > [   16.379453] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000=
-000000000
-> > [   16.380144] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000=
-000000400
-> > [   16.380864] Call Trace:
-> > [   16.381112] selem_link_map (/home/afabre/linux/./include/linux/compi=
-ler.h:221 /home/afabre/linux/net/core/bpf_sk_storage.c:243)
-> > [   16.381476] sk_storage_update (/home/afabre/linux/net/core/bpf_sk_st=
-orage.c:355 /home/afabre/linux/net/core/bpf_sk_storage.c:414)
-> > [   16.381888] bpf_sk_storage_get (/home/afabre/linux/net/core/bpf_sk_s=
-torage.c:760 /home/afabre/linux/net/core/bpf_sk_storage.c:741)
-> > [   16.382285] ___bpf_prog_run (/home/afabre/linux/kernel/bpf/core.c:14=
-47)
-> > [   16.382679] ? __bpf_prog_run32 (/home/afabre/linux/kernel/bpf/core.c=
-:1603)
-> > [   16.383074] ? alloc_file_pseudo (/home/afabre/linux/fs/file_table.c:=
-232)
-> > [   16.383486] ? kvm_clock_get_cycles (/home/afabre/linux/arch/x86/kern=
-el/kvmclock.c:98)
-> > [   16.383906] ? ktime_get (/home/afabre/linux/kernel/time/timekeeping.=
-c:265 /home/afabre/linux/kernel/time/timekeeping.c:369 /home/afabre/linux/k=
-ernel/time/timekeeping.c:754)
-> > [   16.384243] ? bpf_test_run (/home/afabre/linux/net/bpf/test_run.c:47=
-)
-> > [   16.384613] ? bpf_prog_test_run_skb (/home/afabre/linux/net/bpf/test=
-_run.c:313)
-> > [   16.385065] ? security_capable (/home/afabre/linux/security/security=
-.c:696 (discriminator 19))
-> > [   16.385460] ? __do_sys_bpf (/home/afabre/linux/kernel/bpf/syscall.c:=
-2072 /home/afabre/linux/kernel/bpf/syscall.c:2848)
-> > [   16.385854] ? __handle_mm_fault (/home/afabre/linux/mm/memory.c:3507=
- /home/afabre/linux/mm/memory.c:3532 /home/afabre/linux/mm/memory.c:3666 /h=
-ome/afabre/linux/mm/memory.c:3897 /home/afabre/linux/mm/memory.c:4021)
-> > [   16.386273] ? __dentry_kill (/home/afabre/linux/fs/dcache.c:595)
-> > [   16.386652] ? do_syscall_64 (/home/afabre/linux/arch/x86/entry/commo=
-n.c:301)
-> > [   16.387031] ? entry_SYSCALL_64_after_hwframe (/home/afabre/linux/./i=
-nclude/trace/events/initcall.h:10 /home/afabre/linux/./include/trace/events=
-/initcall.h:10)
-> > [   16.387541] Modules linked in:
-> > [   16.387846] CR2: ffff8fe7a66f93f8
-> > [   16.388175] ---[ end trace 891cf27b5b9c9cc6 ]---
-> > [   16.388628] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./includ=
-e/trace/events/initcall.h:48)
-> > [ 16.389089] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e=
-9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <=
-3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   02 00                   add    (%rax),%al
-> >    2:   00 31                   add    %dh,(%rcx)
-> >    4:   c0 ba ff 00 00 00 3e    sarb   $0x3e,0xff(%rdx)
-> >    b:   0f b1 17                cmpxchg %edx,(%rdi)
-> >    e:   75 01                   jne    0x11
-> >   10:   c3                      retq
-> >   11:   e9 82 12 5f ff          jmpq   0xffffffffff5f1298
-> >   16:   66 90                   xchg   %ax,%ax
-> >   18:   65 81 05 ad 14 6f 41    addl   $0x200,%gs:0x416f14ad(%rip)     =
-   # 0x416f14d0
-> >   1f:   00 02 00 00
-> >   23:   31 c0                   xor    %eax,%eax
-> >   25:   ba 01 00 00 00          mov    $0x1,%edx
-> >   2a:   3e 0f b1 17             cmpxchg %edx,%ds:*(%rdi)               =
- <-- trapping instruction
-> >   2e:   75 01                   jne    0x31
-> >   30:   c3                      retq
-> >   31:   89 c6                   mov    %eax,%esi
-> >   33:   e9 f0 02 5f ff          jmpq   0xffffffffff5f0328
-> >   38:   b8 00 02 00 00          mov    $0x200,%eax
-> >   3d:   3e                      ds
-> >   3e:   0f                      .byte 0xf
-> >   3f:   c1                      .byte 0xc1
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   3e 0f b1 17             cmpxchg %edx,%ds:(%rdi)
-> >    4:   75 01                   jne    0x7
-> >    6:   c3                      retq
-> >    7:   89 c6                   mov    %eax,%esi
-> >    9:   e9 f0 02 5f ff          jmpq   0xffffffffff5f02fe
-> >    e:   b8 00 02 00 00          mov    $0x200,%eax
-> >   13:   3e                      ds
-> >   14:   0f                      .byte 0xf
-> >   15:   c1                      .byte 0xc1
-> > [   16.390899] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
-> > [   16.391410] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000=
-000000040
-> > [   16.392102] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe=
-7a66f93f8
-> > [   16.392795] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fd=
-af9f0d0c0
-> > [   16.393481] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fd=
-afa346700
-> > [   16.394169] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000=
-000000001
-> > [   16.394870] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) kn=
-lGS:0000000000000000
-> > [   16.395641] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [   16.396193] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000=
-000360ef0
-> > [   16.396876] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000=
-000000000
-> > [   16.397557] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000=
-000000400
-> > [   16.398246] Kernel panic - not syncing: Fatal exception in interrupt
-> > [   16.399067] Kernel Offset: 0x3ce00000 from 0xffffffff81000000 (reloc=
-ation range: 0xffffffff80000000-0xffffffffbfffffff)
-> > [   16.400098] ---[ end Kernel panic - not syncing: Fatal exception in =
-interrupt ]---
-> >
-> > Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
-> > Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
-> > ---
-> >  net/core/bpf_sk_storage.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-> > index f40e3d35fd9c..7ae0686c5418 100644
-> > --- a/net/core/bpf_sk_storage.c
-> > +++ b/net/core/bpf_sk_storage.c
-> > @@ -90,7 +90,13 @@ struct bpf_sk_storage {
-> >  static struct bucket *select_bucket(struct bpf_sk_storage_map *smap,
-> >                                     struct bpf_sk_storage_elem *selem)
-> >  {
-> > -       return &smap->buckets[hash_ptr(selem, smap->bucket_log)];
-> > +       /* hash_ptr is undefined behavior with 0 bits */
-> > +       int bucket =3D 0;
-> > +       if (smap->bucket_log !=3D 0) {
-> > +               bucket =3D hash_ptr(selem, smap->bucket_log);
-> > +       }
->=20
-> Would it be better instead to make sure that bucket_log is always at
-> least 1? Having bucket_log as zero can bite us in the future again.
-I also think it is better off to have a max_t(u32, 1, ...) done in
-bpf_sk_storage_map_alloc().  Having an extra bucket should be fine in
-this case.
+C based example doesn't use ret=1.
+imo that's a sign that something is odd in the api.
+In particular ret=1 doesn't prohibit bpf prog to modify the optval.
+Multiple progs can overwrite it and still return 1.
+But that optval is not going to be processed by the kernel.
+Should we do copy_to_user(optval, ctx.optval, ctx.optlen) here
+and let kernel pick it up from there?
+Should bpf prog be allowed to change optlen as well?
+ret=1 would mean that bpf prog did something and needs kernel
+to continue.
 
->=20
-> > +
-> > +       return &smap->buckets[bucket];
-> >  }
-> >
-> >  static int omem_charge(struct sock *sk, unsigned int size)
-> > --
-> > 2.20.1
-> >
+Now consider a sequence of bpf progs.
+Some are doing ret=1. Some others are doing ret=2
+ret=2 will supersede.
+If first executed prog (child in cgroup) did ret=2
+the parent has no way to tell kernel to handle it.
+Even if parent does ret=1, it's effectively ignored.
+Parent can enforce rejection with ret=0, but it's a weird
+discrepancy.
+The rule for cgroup progs was 'all yes is yes, any no is no'.
+
+So if ret=1 means 'kernel handles it'. Should it be almost
+as strong as 'reject it': any prog doing ret=1 means 'kernel does it'
+(unless some prog did ret=0. then reject it) ?
+if ret=1 means 'bpf did some and needs kernel to continue' that's
+another story.
+For ret=2 being 'bpf handled it completely', should parent overwrite it?
+
+May be retval from child prog should be seen by parent prog?
+
+In some sense kernel can be seen as another bpf prog in a sequence.
+
+Whatever new behavior is with 3 values it needs to be
+documented in uapi/bpf.h
+We were sloppy with such docs in the past, but that's not
+a reason to continue.
+
