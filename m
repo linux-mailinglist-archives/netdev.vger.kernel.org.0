@@ -2,117 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A674E44F11
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5772E44F0F
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727312AbfFMW0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 18:26:08 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42019 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726519AbfFMW0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:26:07 -0400
-Received: by mail-lj1-f193.google.com with SMTP id t28so300747lje.9
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:26:06 -0700 (PDT)
+        id S1727126AbfFMWZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 18:25:36 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:36184 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbfFMWZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:25:35 -0400
+Received: by mail-qt1-f195.google.com with SMTP id p15so316006qtl.3;
+        Thu, 13 Jun 2019 15:25:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rks0Y0tF/0uIFUiwoag1iJEl5awYzobXVEIXdeNluJI=;
-        b=MK/Zd796Vs4QS13x0pfCu9Imp3xKpR1nhntOF84QSXr5Uw9zbZHWH4zQ3UrICyMJz+
-         Nj+vHEJo7iSReHyon88G3i1+v3jb7Fn+6DeQJOf8TEu1p2ZS3iQXzklujD6tgZ2BXvQt
-         rqUR2Dl43wU8an7C2F/hf/MBLM9bO+ip6eJpn2Lciswn0M955MnHLZE8Ob/cT1URg3PD
-         7h4wifMCfcXKuL/eyufIjUHXhR9/5FeEDROxd4tTR0pw17HBwY3HFOHcDK0VyvwX1Meq
-         h8e/2sn36L/gqXkwaWdUoYer4jsFPoMXOFi8tM8K73TFF2n1d0lZy/BFaqYehZkTJwOc
-         OGqw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SAkygIH5C9UlAf+F0XPGYXuilILEPnzWb2xQLbIoG6E=;
+        b=tMTCZP8uhWrar+Q+DHwSPZqVR9wPquJnLg6ADwNI5O8XEMjuRVs6O+jqgDCLEgd5fY
+         gRHaIdS3iy0ISaNJpxD4uVRSnXcpdZlbgBG9pw6VY95JlLH2eh57Drg/pdHjgaAwk4L9
+         5Kijf2k6YFvJiFfmxiDv1FY2zE4i7Ps7ZvKRcT0o+nZeKUU9U3zi5MmLD3q32qhDWuTp
+         PV2A+9iY5coo/hSiWWVoki48XmCIk3uo/aoZjsAqrocN5CIDiGRAj/wR5vtU7FRa15rL
+         ATbbV3osB3bm7S3yel/C7fwWaNBIOgHEhoHjS+c0rEk5aWcvyifWLQwvTaL96sGsWLA1
+         oCEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rks0Y0tF/0uIFUiwoag1iJEl5awYzobXVEIXdeNluJI=;
-        b=Iy+ujRwt1vObwpMFJsgOMaMMqiYLYBw374n1toE0XtdZEwLXw/lUaD6aDIsCpcj16F
-         WPMg39S+xSCD0WqfLImYn6vyW8HF3HWsE8h4fy13tL29/fff7Cn60NvM4+kPN+M8lCu/
-         8tX3zB9DcPz7QdUb5mPy4K8Lb8Ap1riAkcuZCJk9TvfFZb7FygyA1ot+H1TKd27P88yE
-         uNVVGohymL3kzyRQkJkyQLX7J1MGy6UpJZXVnPuPY5C23orqBmLiTpsxIt02Iavavz/w
-         v42WuRVssysrhRTJ8gzga35+R1yuTgUBGussOzxuuPr0bxAOP+a6qA84ORaEQDLolakJ
-         vKMA==
-X-Gm-Message-State: APjAAAWZRlWGatgOpTxZhHhVs0PL9jbw7N9RFgnO0fhvB61vEMXc67d4
-        VgzAiJr95l1D58JeujEP16ktwg==
-X-Google-Smtp-Source: APXvYqyJJUWkAVC1m+mNjBXOAnLM9kHysFWdmgkivnUSsar+kIF/OEeAk40uIGO3g1ibTAIhyYiL7A==
-X-Received: by 2002:a2e:2c04:: with SMTP id s4mr23657051ljs.61.1560464765716;
-        Thu, 13 Jun 2019 15:26:05 -0700 (PDT)
-Received: from linux.local (c-d2cd225c.014-348-6c756e10.bbcust.telenor.se. [92.34.205.210])
-        by smtp.gmail.com with ESMTPSA id b62sm213433ljb.71.2019.06.13.15.26.04
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 15:26:04 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        stable@vger.kernel.org
-Subject: [PATCH] net: dsa: rtl8366: Fix up VLAN filtering
-Date:   Fri, 14 Jun 2019 00:25:20 +0200
-Message-Id: <20190613222520.19182-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SAkygIH5C9UlAf+F0XPGYXuilILEPnzWb2xQLbIoG6E=;
+        b=SJY4bF9i1QOLtF0NdL7brQCtOFLyh1HvEYrukzs9irCpznwTEKzu4dHD07IausN6y9
+         d1TXY31cvhcbF4VVCw5pp9XpkbvBlDKRaOMSCyVr7I12zTfsW0bd+5DrIOrIiB710vaY
+         4HXnejf6eVWxczNnPwgkNVO298k+WslLGSAittOjDCynll3iv2HPViVLEqve5nrnRqFK
+         lt2kGyymk8BjxnWulNioLskxKIw+oI7H1zQfZXi/fywoGCLdBjsVcHNiDNIdd3rYU1ru
+         4GeILIJUMCyb9Aq3jBR43Ovwg+5E0a08G2aekuzcMsM5y6a2kzERfdqI5/a+b2V1qSNZ
+         6ezw==
+X-Gm-Message-State: APjAAAXZp0LAItr82PIJBam6e7U13R9FVn8gqP1Qox6Pkb+8jAbdXP/l
+        IHJR5YHp5KagcGReDnSrPPthq22vyevhSTwh0vo=
+X-Google-Smtp-Source: APXvYqzWD+udJfeMcLoXhIGySSdZ/Ziw2ElgE3ng0TbWLO9xMzWbj4nI7kCMrwYzK6mWLbfLVhXweY4rEvHcXhqIs5Q=
+X-Received: by 2002:ac8:21b7:: with SMTP id 52mr58864931qty.59.1560464734433;
+ Thu, 13 Jun 2019 15:25:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190613042003.3791852-1-ast@kernel.org> <20190613042003.3791852-4-ast@kernel.org>
+In-Reply-To: <20190613042003.3791852-4-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 13 Jun 2019 15:25:23 -0700
+Message-ID: <CAEf4BzZ0Dt-3hdCnSWtFGc0Yob5N2C8QgGAB=PwC5OgZMVEtsQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/9] bpf: extend is_branch_taken to registers
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Edward Cree <ecree@solarflare.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, Jann Horn <jannh@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We get this regression when using RTL8366RB as part of a bridge
-with OpenWrt:
+On Thu, Jun 13, 2019 at 9:50 AM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> This patch extends is_branch_taken() logic from JMP+K instructions
+> to JMP+X instructions.
+> Conditional branches are often done when src and dst registers
+> contain known scalars. In such case the verifier can follow
+> the branch that is going to be taken when program executes on CPU.
+> That speeds up the verification and essential feature to support
 
-WARNING: CPU: 0 PID: 1347 at net/switchdev/switchdev.c:291
-	 switchdev_port_attr_set_now+0x80/0xa4
-lan0: Commit of attribute (id=7) failed.
-(...)
-realtek-smi switch lan0: failed to initialize vlan filtering on this port
+typo: and *is* essential
 
-This is because it is trying to disable VLAN filtering
-on VLAN0, as we have forgot to add 1 to the port number
-to get the right VLAN in rtl8366_vlan_filtering(): when
-we initialize the VLAN we associate VLAN1 with port 0,
-VLAN2 with port 1 etc, so we need to add 1 to the port
-offset.
+> bounded loops.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  kernel/bpf/verifier.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index a21bafd7d931..c79c09586a9e 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5263,10 +5263,11 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+>         struct bpf_verifier_state *this_branch = env->cur_state;
+>         struct bpf_verifier_state *other_branch;
+>         struct bpf_reg_state *regs = this_branch->frame[this_branch->curframe]->regs;
+> -       struct bpf_reg_state *dst_reg, *other_branch_regs;
+> +       struct bpf_reg_state *dst_reg, *other_branch_regs, *src_reg = NULL;
+>         u8 opcode = BPF_OP(insn->code);
+>         bool is_jmp32;
+>         int err;
+> +       u64 cond_val;
 
-Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/net/dsa/rtl8366.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+reverse Christmas tree
 
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 6dedd43442cc..35b767baf21f 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -307,7 +307,8 @@ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
- 	struct rtl8366_vlan_4k vlan4k;
- 	int ret;
- 
--	if (!smi->ops->is_vlan_valid(smi, port))
-+	/* Use VLAN nr port + 1 since VLAN0 is not valid */
-+	if (!smi->ops->is_vlan_valid(smi, port + 1))
- 		return -EINVAL;
- 
- 	dev_info(smi->dev, "%s filtering on port %d\n",
-@@ -318,12 +319,12 @@ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
- 	 * The hardware support filter ID (FID) 0..7, I have no clue how to
- 	 * support this in the driver when the callback only says on/off.
- 	 */
--	ret = smi->ops->get_vlan_4k(smi, port, &vlan4k);
-+	ret = smi->ops->get_vlan_4k(smi, port + 1, &vlan4k);
- 	if (ret)
- 		return ret;
- 
- 	/* Just set the filter to FID 1 for now then */
--	ret = rtl8366_set_vlan(smi, port,
-+	ret = rtl8366_set_vlan(smi, port + 1,
- 			       vlan4k.member,
- 			       vlan4k.untag,
- 			       1);
--- 
-2.21.0
+>
+>         /* Only conditional jumps are expected to reach here. */
+>         if (opcode == BPF_JA || opcode > BPF_JSLE) {
+> @@ -5290,6 +5291,7 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+>                                 insn->src_reg);
+>                         return -EACCES;
+>                 }
+> +               src_reg = &regs[insn->src_reg];
+>         } else {
+>                 if (insn->src_reg != BPF_REG_0) {
+>                         verbose(env, "BPF_JMP/JMP32 uses reserved fields\n");
+> @@ -5306,8 +5308,11 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+>         is_jmp32 = BPF_CLASS(insn->code) == BPF_JMP32;
+>
+>         if (BPF_SRC(insn->code) == BPF_K) {
+> -               int pred = is_branch_taken(dst_reg, insn->imm, opcode,
+> -                                          is_jmp32);
+> +               int pred;
+> +
+> +               cond_val = insn->imm;
+> +check_taken:
+> +               pred = is_branch_taken(dst_reg, cond_val, opcode, is_jmp32);
+>
+>                 if (pred == 1) {
+>                          /* only follow the goto, ignore fall-through */
+> @@ -5319,6 +5324,11 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+>                          */
+>                         return 0;
+>                 }
+> +       } else if (BPF_SRC(insn->code) == BPF_X &&
+> +                  src_reg->type == SCALAR_VALUE &&
+> +                  tnum_is_const(src_reg->var_off)) {
+> +               cond_val = src_reg->var_off.value;
+> +               goto check_taken;
+>         }
 
+To eliminate goto, how about this;
+
+int pred = -1;
+
+if (BPF_SRC(insn->code) == BPF_K)
+         pred = is_branch_taken(dst_reg, insn->imm, opcode, is_jmp32);
+else if (BPF_SRC(insn->code) == BPF_X &&
+                 src_reg->type == SCALAR_VALUE &&
+                 tnum_is_const(src_reg->var_off)
+         pred = is_branch_taken(dst_reg, src_reg->var_off.value,
+opcode, is_jmp32);
+
+/* here do pred == 1 and pred == 0 special handling, otherwise fall-through */
+
+Again, more linear and no unnecessary gotos. pred == -1 has already a
+meaning of "don't know, have to try both".
+
+>
+>         other_branch = push_stack(env, *insn_idx + insn->off + 1, *insn_idx,
+> --
+> 2.20.0
+>
