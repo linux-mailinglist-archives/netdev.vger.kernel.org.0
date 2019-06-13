@@ -2,73 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F05B54489D
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C42448A3
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393382AbfFMRJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:09:42 -0400
-Received: from mail-qk1-f169.google.com ([209.85.222.169]:42998 "EHLO
-        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393316AbfFMRJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:09:28 -0400
-Received: by mail-qk1-f169.google.com with SMTP id b18so13226982qkc.9
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:09:28 -0700 (PDT)
+        id S2393266AbfFMRKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:10:08 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39860 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727629AbfFMRKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:10:07 -0400
+Received: by mail-wm1-f66.google.com with SMTP id z23so10903632wma.4
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:10:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=bkktTI29Mprq/WraaWR/iipIfzJhh3C703MvSQ8ZEuo=;
-        b=SH6nMieXOV6x0XG3n36Q1FY3qs3vmVq92SmZudcVjmFRsbibFR0lsmi2u3vHELAUO5
-         wZ137JahP55hpbb3NlKXidQhNhOZBHgWuyFLJkmdPdPiLSFe7FUO3GjyFfQcQUOsIAQW
-         dvY8qQY+MOKXy3dRGh6BaBiH8mo+xTMqboB2hgbA728HU60TA7iZvPPJjL7t+PR4C6kC
-         cdRUNupYDfO+ZUdqvkyelEyX2BMjeWyYZBVdwnWZntxiLKy4pS4l4M3bILvFHx2J50rI
-         9JLRCFNev6/EJBAq5ZpzQ2S9430pT2PC8KW9zSOgoqokzZUFQpi0Y4mRITuj+JGNjicE
-         zofQ==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=hvCARmY3koL00K51Yl35jh30n/0xzcHqZ+8s3BMtB3c=;
+        b=NW4Un36HdNFEpKmOwg9F7Ie4ZZrA+D8Y35Iz5xcUQuqVsmRwJ/V10pbuZNkt3clx0O
+         A9fCQBwoCdCfm263WrSGPIsda07buvQCOuslqHP8b/2jdtBepCgEbhw1UqpVMW4/GOpj
+         /flNOw84QhSlyJlMNdu8q/2Xe2WcLEOocmvIg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=bkktTI29Mprq/WraaWR/iipIfzJhh3C703MvSQ8ZEuo=;
-        b=kquil+gh0HQFQmwaM5+JjLynJf83GmkLYxkOWe/DKcMMUIDDwmf9K8x2dBHCCm2NeQ
-         F6aZyaWiL3Nk24eufdJeeL0cq6WrDuk8SSIzyVCx0j4RAQaOHJwq5ipI7bk9X9Tu1sUZ
-         ewo/oRw+aEuRO4K/8k00eDlP5PHlNaawrKRSPU9daZAhOVnN2dORjEVqGDN8qq6rlGIn
-         4GJHV8myeANuu135Wo2dCSwJp63wVYNfklBHOKD6HMzu8B61zCTWjhGwH2DD6pzmlxFW
-         1Cb5R34K0wOnyWAAtflSN7/bGsZfNa6AZiJ/0EircejwqfxnDSgV5FT/SO1HpuLmnHX4
-         fA3A==
-X-Gm-Message-State: APjAAAWz6t3MWzVZLLMtkV++iE1UPNeLgTlEjI5vGwURLM2Ib8Mg8OM1
-        qld6f83SA0PuI/j0Xz5x02hdBg==
-X-Google-Smtp-Source: APXvYqxOtlsJBNr4RXkYgj3XdzHIOqikXnzMKvAi6Mz6sFxjcG+k9LyFuV8RHHVv9ENQS6UdATtSwQ==
-X-Received: by 2002:a37:9a50:: with SMTP id c77mr72065503qke.12.1560445767909;
-        Thu, 13 Jun 2019 10:09:27 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id h4sm72458qkk.39.2019.06.13.10.09.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 10:09:27 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 10:09:23 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     peterz@infradead.org, netdev@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, linux-kernel@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net-next 0/2] enable and use static_branch_deferred_inc
-Message-ID: <20190613100923.397a6081@cakuba.netronome.com>
-In-Reply-To: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
-References: <20190613150816.83198-1-willemdebruijn.kernel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hvCARmY3koL00K51Yl35jh30n/0xzcHqZ+8s3BMtB3c=;
+        b=i27AePVK8SQwGFyX3z2Q4RT4qKC0Rp0jtpGQ369i7b4LenIb3RikrYi3iB1kPJH1nP
+         t/2vvK3p/KwUwh4STxMi99GuER0RA+NsgLECffnycFwTPU1mbcNRyM+RzVrbz8zXNGBS
+         MOsWucpKOF2gypYYyOCFhsDG3mMEpRLiGQEZpJ3XxHtfBAqvA502qYBp2CNW1Z7IVOjr
+         l9ih9vrx5c7LZWiMyHUBHlwkg1Qea0HtzlMt3KBJeFUykZ1r6ItY6gMq0lcNpPAHw7R1
+         fPmG1VT3cfYUU4q4LKt3eaCbVS3EB7af+UReSHvjxSEwADIbX/7+tx4d2OIShvOJuZgw
+         u6lQ==
+X-Gm-Message-State: APjAAAU1OCvP97gEWh2RY4L1H71N1bXzMDDvtPF2wgX3kvZIdR74TvMn
+        y9VXEazc/l2STyzOdFsAtjdnBVzIhqI=
+X-Google-Smtp-Source: APXvYqz3i4ih2NP5h7TwP8+Nqvf9xUe36gGStLtnnd4OysDf9tR8DclpcWXC7QuAT0evOuFEeI4JuA==
+X-Received: by 2002:a1c:6c08:: with SMTP id h8mr4809663wmc.62.1560445805190;
+        Thu, 13 Jun 2019 10:10:05 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id h84sm614237wmf.43.2019.06.13.10.10.04
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 10:10:04 -0700 (PDT)
+Subject: Re: [PATCH net-next v2] ipv4: Support multipath hashing on inner IP
+ pkts for GRE tunnel
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
+References: <20190613170330.8783-1-ssuryaextr@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <3fc341e0-68f5-8a77-3f44-f050a83ce295@cumulusnetworks.com>
+Date:   Thu, 13 Jun 2019 20:10:03 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190613170330.8783-1-ssuryaextr@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jun 2019 11:08:14 -0400, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On 13/06/2019 20:03, Stephen Suryaputra wrote:
+> Multipath hash policy value of 0 isn't distributing since the outer IP
+> dest and src aren't varied eventhough the inner ones are. Since the flow
+> is on the inner ones in the case of tunneled traffic, hashing on them is
+> desired.
 > 
-> 1. make static_branch_deferred_inc available if !CONFIG_JUMP_LABEL
-> 2. convert the existing STATIC_KEY_DEFERRED_FALSE user to this api
+> This is done mainly for IP over GRE, hence only tested for that. But
+> anything else supported by flow dissection should work.
+> 
+> v2: Use skb_flow_dissect_flow_keys() directly so that other tunneling
+>     can be supported through flow dissection (per Nikolay Aleksandrov).
+> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt |  1 +
+>  net/ipv4/route.c                       | 20 ++++++++++++++++++++
+>  net/ipv4/sysctl_net_ipv4.c             |  2 +-
+>  3 files changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index 5eedc6941ce5..2f3bc910895a 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -80,6 +80,7 @@ fib_multipath_hash_policy - INTEGER
+>  	Possible values:
+>  	0 - Layer 3
+>  	1 - Layer 4
+> +	2 - Inner Layer 3 for tunneled IP packets.
 
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Hmm, but you're using the ports below, so it's not L3 ?
 
-Thanks/sorry :)
+>  
+>  fib_sync_mem - UNSIGNED INTEGER
+>  	Amount of dirty memory from fib entries that can be backlogged before
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index 14c7fdacaa72..c3e03bce0a3a 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -1872,6 +1872,26 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+>  			hash_keys.basic.ip_proto = fl4->flowi4_proto;
+>  		}
+>  		break;
+> +	case 2:
+> +		memset(&hash_keys, 0, sizeof(hash_keys));
+> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+> +		/* skb is currently provided only when forwarding */
+> +		if (skb) {
+> +			struct flow_keys keys;
+> +
+> +			skb_flow_dissect_flow_keys(skb, &keys, 0);
+> +
+> +			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
+> +			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
+> +			hash_keys.ports.src = keys.ports.src;
+> +			hash_keys.ports.dst = keys.ports.dst;
+> +			hash_keys.basic.ip_proto = keys.basic.ip_proto;
+
+This is inconsistent with the code below, you're using ports when we have skb and
+using only addresses when we don't (host traffic). So either make it L3-only and
+use addresses or make sure you're using the correct ports as well.
+
+> +		} else {
+> +			/* Same as case 0 */
+> +			hash_keys.addrs.v4addrs.src = fl4->saddr;
+> +			hash_keys.addrs.v4addrs.dst = fl4->daddr;
+> +		}
+> +		break;
+>  	}
+>  	mhash = flow_hash_from_keys(&hash_keys);
+>  
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index 2316c08e9591..e1efc2e62d21 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -960,7 +960,7 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_fib_multipath_hash_policy,
+>  		.extra1		= &zero,
+> -		.extra2		= &one,
+> +		.extra2		= &two,
+>  	},
+>  #endif
+>  	{
+> 
+
