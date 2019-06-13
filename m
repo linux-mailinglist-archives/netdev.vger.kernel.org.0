@@ -2,88 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A42F43E06
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC79643E0C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388766AbfFMPq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1733197AbfFMPq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 13 Jun 2019 11:46:56 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:48466 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731771AbfFMJd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:33:56 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45176 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731773AbfFMJer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:34:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=lH95QDBu3WX8kdNvVLm8TNXGj4gft8us1GpfjIszCYo=; b=SVS9YERrgSCIMXtUf8Jwx8ivf
-        9OumC65a7EXEOXw4g2YElyLy8o5qvIzHQCBxTZ5FrcUvx+Zvt4aGfQCPAlgBg0LlUrITOytrN3C9y
-        UkBkMaCiJ3K4qVp9MIEspB17yKrKTkAsstsWacvKcUq4PA3tdnL5vfWitdN0EdtG4kxnp3Tfd9Jtz
-        +KhWVA9Pkau7MQNr0vyCFqk4yA3J8pkcSuMe3taNerIYuw8nlXthCootn3EV3A9GTftMkQVN53gIE
-        TwK9TTrsA0FKbsPtfBw5QPKmIHaSMmulBeb0fB8gw+JCm+O/QxX0SDWpFxJVCIbGzqseo6QiBcI5i
-        15fgUMBpA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hbM78-00015h-DW; Thu, 13 Jun 2019 09:33:46 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 372B5209C844F; Thu, 13 Jun 2019 11:33:45 +0200 (CEST)
-Date:   Thu, 13 Jun 2019 11:33:45 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH] locking/static_key: always define
- static_branch_deferred_inc
-Message-ID: <20190613093345.GQ3402@hirez.programming.kicks-ass.net>
-References: <20190612194409.197461-1-willemdebruijn.kernel@gmail.com>
- <20190612125911.509d79f2@cakuba.netronome.com>
- <CAF=yD-JAZfEG5JoNEQn60gnucJB1gsrFeT38DieG12NQb9DFnQ@mail.gmail.com>
- <20190612135627.5eac995d@cakuba.netronome.com>
+         bh=7p/hY7wM7ahv5sC5AyaRyYyHc8h6pj1SFEqxSa8Y0lY=; b=Mt3u8nHCp+T+ZtsD3ws+rdoUw
+        J4RHYypZx/OJHuuwSj252YL8U34HBLWa8sE5CN+FC/CQCO7jCKYZjgPbXmUOY6jOAXDNzkUcuOXMC
+        Gpq1wEi//+/JTG1hiIPW6zCeNtrrzfnrmYxiTbYZ6xo/uEb/x6D3FdrRyJvVXTkmwLIxjNZubk+sG
+        v8gTVOqk0ScDd1FndTU87z5Vr6qCEHLAlKiRrhyIV8ah3bySacOxAP2Ih7EQMwKZZavw3C6gtsAuS
+        HIkwGtFhkp4gXFcf5XuEmbAdlnYUZvhNPZ6HWntI8dl0jBsL6LWPwwLs2bBcS//IfaN9qOhQagued
+        LYduM682w==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38652)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hbM80-000251-Ec; Thu, 13 Jun 2019 10:34:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hbM7x-00016z-Qc; Thu, 13 Jun 2019 10:34:37 +0100
+Date:   Thu, 13 Jun 2019 10:34:37 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
+Message-ID: <20190613093437.p4c6xiolrwzikmhq@shell.armlinux.org.uk>
+References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+ <20190613081400.2cicsjpslxoidoox@shell.armlinux.org.uk>
+ <VI1PR0402MB2800B6F4FC9C90C96E22979AE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190612135627.5eac995d@cakuba.netronome.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <VI1PR0402MB2800B6F4FC9C90C96E22979AE0EF0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 01:56:27PM -0700, Jakub Kicinski wrote:
-> On Wed, 12 Jun 2019 16:25:16 -0400, Willem de Bruijn wrote:
-> > On Wed, Jun 12, 2019 at 3:59 PM Jakub Kicinski
-> > <jakub.kicinski@netronome.com> wrote:
-> > >
-> > > On Wed, 12 Jun 2019 15:44:09 -0400, Willem de Bruijn wrote:  
-> > > > From: Willem de Bruijn <willemb@google.com>
-> > > >
-> > > > This interface is currently only defined if CONFIG_JUMP_LABEL. Make it
-> > > > available also when jump labels are disabled.
-> > > >
-> > > > Fixes: ad282a8117d50 ("locking/static_key: Add support for deferred static branches")
-> > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > >
-> > > > ---
-> > > >
-> > > > The original patch went into 5.2-rc1, but this interface is not yet
-> > > > used, so this could target either 5.2 or 5.3.  
-> > >
-> > > Can we drop the Fixes tag?  It's an ugly omission but not a bug fix.
-> > >
-> > > Are you planning to switch clean_acked_data_enable() to the helper once
-> > > merged?  
+On Thu, Jun 13, 2019 at 08:55:16AM +0000, Ioana Ciornei wrote:
+> > Subject: Re: [PATCH] net: phylink: set the autoneg state in
+> > phylink_phy_change
 > > 
-> > Definitely, can do.
+> > On Thu, Jun 13, 2019 at 09:37:51AM +0300, Ioana Ciornei wrote:
+> > > The phy_state field of phylink should carry only valid information
+> > > especially when this can be passed to the .mac_config callback.
+> > > Update the an_enabled field with the autoneg state in the
+> > > phylink_phy_change function.
 > > 
-> > Perhaps it's easiest to send both as a single patch set through net-next, then?
+> > an_enabled is meaningless to mac_config for PHY mode.  Why do you think
+> > this is necessary?
 > 
-> I'd think so too, perhaps we can get a blessing from Peter for that :)
+> Well, it's not necessarily used in PHY mode but, from my opinion, it should be set to the correct value nonetheless.
+> 
+> Just to give you more context, I am working on adding phylink support on NXP's DPAA2 platforms where any interaction between the PHY management layer and the Ethernet devices is made through a firmware.
+> When the .mac_config callback is invoked, the driver communicates the new configuration to the firmware so that the corresponding net_device can see the correct info.
+> In this case, the an_enabled field is not used for other purpose than to inform the net_device of the current configuration and nothing more.
 
-Sure that works, I don't think there's anything else pending for this
-file to conflict with.
+The fields that are applicable depend on the negotiation mode:
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+- Non-inband (PHY or FIXED): set the speed, duplex and pause h/w
+   parameters as per the state's speed, duplex and pause settings.
+   Every other state setting should be ignored; they are not defined
+   for this mode of operation.
+
+- Inband SGMII: set for inband SGMII reporting of speed and duplex
+   h/w parameters.  Set pause mode h/w parameters as per the state's
+   pause settings.  Every other state setting should be ignored; they
+   are not defined for this mode of operation.
+
+- Inband 802.3z: set for 1G or 2.5G depending on the PHY interface mode.
+   If an_enabled is true, allow inband 802.3z to set the duplex h/w
+   parameter.  If an_enabled and the MLO_PAUSE_AN bit of the pause
+   setting are true, allow 802.3z to set the pause h/w parameter.
+   Advertise capabilities depending on the 'advertising' setting.
+
+There's only one case where an_enabled is used, which is 802.3z
+negotiation, because the MAC side is responsible for negotiating the
+link mode.  In all other cases, the MAC is not responsible for any
+autonegotiation.
+
+It is important to stick to the above, which will ensure correct
+functioning of your driver - going off and doing your own thing (such
+as reading from other fields) is not guaranteed to give good results.
+
+> 
+> --
+> Ioana
+> 
+> 
+> > 
+> > >
+> > > Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > > ---
+> > >  drivers/net/phy/phylink.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> > > index 5d0af041b8f9..dd1feb7b5472 100644
+> > > --- a/drivers/net/phy/phylink.c
+> > > +++ b/drivers/net/phy/phylink.c
+> > > @@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device
+> > *phydev, bool up,
+> > >  		pl->phy_state.pause |= MLO_PAUSE_ASYM;
+> > >  	pl->phy_state.interface = phydev->interface;
+> > >  	pl->phy_state.link = up;
+> > > +	pl->phy_state.an_enabled = phydev->autoneg;
+> > >  	mutex_unlock(&pl->state_mutex);
+> > >
+> > >  	phylink_run_resolve(pl);
+> > > --
+> > > 1.9.1
+> > >
+> > >
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
