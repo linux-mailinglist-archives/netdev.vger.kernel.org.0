@@ -2,159 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DA443CF8
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:38:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F2043CD1
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:38:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732051AbfFMPid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:38:33 -0400
-Received: from casper.infradead.org ([85.118.1.10]:33510 "EHLO
-        casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731947AbfFMJ7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:59:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=X6go1h+qBvd8UqStxDka25oSP1lwn219vXM1njzftqM=; b=st/cCkCW17JvfhPcMMlIiWlWs7
-        IjzbMHLeCgNGoALijV6IG+3mBu2hWh+zDF/ixgeztGRJFvKYWEb/k1hwDtOuJEM+LaN5VPyeL2Nyt
-        pUW3p7YE7JRXzR5AqF9H3+IiwxYWckQCRps/QFoMco8bS1sS+v518UWrrJXO7ml5NcscdFDSXeQVX
-        ZKduv2MoYrDVAMjIkypzrzv1fDu9De18EdqyKnVmVA/jtlt3lbqFtvB/kKq3/UdhRk448WORt2zGk
-        vyVeBQhaltTvjNhKaj4bDz1fJNL7g5eIVBQzyzZatNVk3zR46pfOQJ6fi4X1Ul2gzhVbF7Xgp5Fcx
-        8jdm6Tow==;
-Received: from 201.86.169.251.dynamic.adsl.gvt.net.br ([201.86.169.251] helo=coco.lan)
-        by casper.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hbMVS-0000iN-9Z; Thu, 13 Jun 2019 09:58:54 +0000
-Date:   Thu, 13 Jun 2019 06:58:43 -0300
-From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To:     "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4 18/28] docs: convert docs to ReST and rename to *.rst
-Message-ID: <20190613065843.100f72dd@coco.lan>
-In-Reply-To: <7dc94cb4-ebf1-22ab-29c9-fcb2b875a9ac@csail.mit.edu>
-References: <cover.1560361364.git.mchehab+samsung@kernel.org>
-        <fac44e1fbab5ea755a93601a4fdfa34fcc57ae9e.1560361364.git.mchehab+samsung@kernel.org>
-        <7dc94cb4-ebf1-22ab-29c9-fcb2b875a9ac@csail.mit.edu>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S2387691AbfFMPiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:38:02 -0400
+Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:57559
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726700AbfFMKLT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 06:11:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4h4j57tjNS6vuAz+tZMq33p3VjwGS1lCra5mdJKh4Og=;
+ b=QefzRzcj7T9ZDqAxe+msSJ7RloG69NxYIdvq62hAQqj4K1NosycMAowx+JAAQfmPv3MdYovhJNmDIOfjkFmBQbElp9z3GPyS0zkySEuY9A7C+Yk7wKK7fzPgY2IEjy1OtvNBlB2ujIeS0/WeO6+1n4671QRzj1/3O0/8ph+mghw=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB6189.eurprd05.prod.outlook.com (20.178.123.160) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Thu, 13 Jun 2019 10:09:32 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3021:5bae:ebbe:701f]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3021:5bae:ebbe:701f%6]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
+ 10:09:32 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>, mlxsw <mlxsw@mellanox.com>,
+        Alex Kushnarov <alexanderk@mellanox.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: Re: tc tp creation performance degratation since kernel 5.1
+Thread-Topic: tc tp creation performance degratation since kernel 5.1
+Thread-Index: AQHVIRbjnv8d5ZZGnkSVzGrTJvp9YqaZPSIAgAAg2QA=
+Date:   Thu, 13 Jun 2019 10:09:32 +0000
+Message-ID: <vbfblz123vt.fsf@mellanox.com>
+References: <20190612120341.GA2207@nanopsycho>
+ <20190613081152.GC2254@nanopsycho.orion>
+In-Reply-To: <20190613081152.GC2254@nanopsycho.orion>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0450.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:e::30) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cc3f2481-d9ac-4f24-c8e9-08d6efe73a85
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6189;
+x-ms-traffictypediagnostic: VI1PR05MB6189:
+x-microsoft-antispam-prvs: <VI1PR05MB6189DD4AA113DA3F361CEF12ADEF0@VI1PR05MB6189.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:291;
+x-forefront-prvs: 0067A8BA2A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(39860400002)(366004)(346002)(396003)(136003)(199004)(189003)(25786009)(5660300002)(2906002)(26005)(73956011)(53936002)(7736002)(54906003)(68736007)(186003)(4326008)(478600001)(6116002)(229853002)(36756003)(6512007)(3846002)(6486002)(86362001)(6436002)(8936002)(486006)(66066001)(76176011)(2616005)(6916009)(476003)(66556008)(66446008)(11346002)(66946007)(81166006)(64756008)(66476007)(8676002)(71190400001)(446003)(14454004)(6246003)(81156014)(71200400001)(256004)(305945005)(102836004)(99286004)(52116002)(316002)(386003)(6506007)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6189;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: FXscKfk6I89TbikgukViePXP0qEQ4HZcD0Ug4hVxIsgsfGbh2XD+BMt/ijz9SpimM89dyg90ZtlmRqb4QS8QjS54i5ot/eDS5mzxRBV3/OAfCFSXrj9/1FLTrp4C3iuC5l5J7tkGCLw0YlSqmi9pk92K+eiQNjqbhmtcBiK8/oHTvCNszA3nNkKE6hsrAzlBtQuWRAN6dbLFZ94FPJu82giVMoaqho8xFgq+fxTMoBRIPJWZFfqE75XRm+G/TlvSR9G1snHxrChUMo85lv1ak+bQNezK9gt8Ck1CViAL/aiKmGmQV8EatwStjcbf2pZsDZVhT+RO7L6bF9fqage0WraVCuxNMbnMEGcEIMg2RZWKqdYrc3/V/qdlXxV/EfkHy2ywfXoxQi18RPHSferYrZ8140oFWZ+16B3ySc73a04=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc3f2481-d9ac-4f24-c8e9-08d6efe73a85
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 10:09:32.1042
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6189
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, 12 Jun 2019 17:25:39 -0700
-"Srivatsa S. Bhat" <srivatsa@csail.mit.edu> escreveu:
-
-> On 6/12/19 10:52 AM, Mauro Carvalho Chehab wrote:
-> > Convert the PM documents to ReST, in order to allow them to
-> > build with Sphinx.
-> > 
-> > The conversion is actually:
-> >   - add blank lines and identation in order to identify paragraphs;
-> >   - fix tables markups;
-> >   - add some lists markups;
-> >   - mark literal blocks;
-> >   - adjust title markups.
-> > 
-> > At its new index.rst, let's add a :orphan: while this is not linked to
-> > the main index.rst file, in order to avoid build warnings.
-> > 
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > Acked-by: Mark Brown <broonie@kernel.org>
-> > ---  
-> 
-> [...]
-> 
-> > diff --git a/Documentation/power/suspend-and-cpuhotplug.txt b/Documentation/power/suspend-and-cpuhotplug.rst
-> > similarity index 90%
-> > rename from Documentation/power/suspend-and-cpuhotplug.txt
-> > rename to Documentation/power/suspend-and-cpuhotplug.rst
-> > index a8751b8df10e..9df664f5423a 100644
-> > --- a/Documentation/power/suspend-and-cpuhotplug.txt
-> > +++ b/Documentation/power/suspend-and-cpuhotplug.rst
-> > @@ -1,10 +1,15 @@
-> > +====================================================================
-> >  Interaction of Suspend code (S3) with the CPU hotplug infrastructure
-> > +====================================================================
-> >  
-> > -     (C) 2011 - 2014 Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
-> > +(C) 2011 - 2014 Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
-> >  
-> >  
-> > -I. How does the regular CPU hotplug code differ from how the Suspend-to-RAM
-> > -   infrastructure uses it internally? And where do they share common code?
-> > +I. Differences between CPU hotplug and Suspend-to-RAM
-> > +======================================================
-> > +
-> > +How does the regular CPU hotplug code differ from how the Suspend-to-RAM
-> > +infrastructure uses it internally? And where do they share common code?
-> >  
-> >  Well, a picture is worth a thousand words... So ASCII art follows :-)
-> >    
-> 
-> [...]
-> 
-> > @@ -101,7 +108,7 @@ execution during resume):
-> >  
-> >  It is to be noted here that the system_transition_mutex lock is acquired at the very
-> >  beginning, when we are just starting out to suspend, and then released only
-> > -after the entire cycle is complete (i.e., suspend + resume).
-> > +after the entire cycle is complete (i.e., suspend + resume)::
-> >    
-> 
-> I think that should be a period, not a colon, because it is clarifying
-> the text above it (as opposed to referring to the example below it).
-> 
-> Other than that, for suspend-and-cpuhotplug.txt:
-> 
-> Acked-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-
-Ah, ok. I'll change it to:
-
-	after the entire cycle is complete (i.e., suspend + resume).
-
-	::
-
-and add your acked-by.
-
->  
-> Regards,
-> Srivatsa
-> VMware Photon OS
-
-
-
-Thanks,
-Mauro
+T24gVGh1IDEzIEp1biAyMDE5IGF0IDExOjExLCBKaXJpIFBpcmtvIDxqaXJpQHJlc251bGxpLnVz
+PiB3cm90ZToNCj4gSSBtYWRlIGEgbWlzdGFrZSBkdXJpbmcgbWVhc3VyZW1lbnRzLCBzb3JyeSBh
+Ym91dCB0aGF0Lg0KPg0KPiBUaGlzIGlzIHRoZSBjb3JyZWN0IHNjcmlwdDoNCj4gLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0NCj4gIyEvYmluL2Jhc2gNCj4NCj4gZGV2PXRlc3RkdW1teQ0KPiBpcCBsaW5rIGFkZCBu
+YW1lICRkZXYgdHlwZSBkdW1teQ0KPiBpcCBsaW5rIHNldCBkZXYgJGRldiB1cA0KPiB0YyBxZGlz
+YyBhZGQgZGV2ICRkZXYgaW5ncmVzcw0KPg0KPiB0bXBfZmlsZV9uYW1lPSQoZGF0ZSArIi90bXAv
+dGNfYmF0Y2guJXMuJU4udG1wIikNCj4gcHJlZl9pZD0xDQo+DQo+IHdoaWxlIFsgJHByZWZfaWQg
+LWx0IDIwMDAwIF0NCj4gZG8NCj4gICAgICAgICBlY2hvICJmaWx0ZXIgYWRkIGRldiAkZGV2IGlu
+Z3Jlc3MgcHJvdG8gaXAgcHJlZiAkcHJlZl9pZCBmbG93ZXIgYWN0aW9uIGRyb3AiID4+ICR0bXBf
+ZmlsZV9uYW1lDQo+ICAgICAgICAgI2VjaG8gImZpbHRlciBhZGQgZGV2ICRkZXYgaW5ncmVzcyBw
+cm90byBpcCBwcmVmICRwcmVmX2lkIG1hdGNoYWxsIGFjdGlvbiBkcm9wIiA+PiAkdG1wX2ZpbGVf
+bmFtZQ0KPiAgICAgICAgICgocHJlZl9pZCsrKSkNCj4gZG9uZQ0KPg0KPiBzdGFydD0kKGRhdGUg
+KyIlcyIpDQo+IHRjIC1iICR0bXBfZmlsZV9uYW1lDQo+IHN0b3A9JChkYXRlICsiJXMiKQ0KPiBl
+Y2hvICJJbnNlcnRpb24gZHVyYXRpb246ICQoKCRzdG9wIC0gJHN0YXJ0KSkgc2VjIg0KPiBybSAt
+ZiAkdG1wX2ZpbGVfbmFtZQ0KPg0KPiBpcCBsaW5rIGRlbCBkZXYgJGRldg0KPiAtLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLQ0KPg0KPiBOb3RlIHRoZSBjb21tZW50ZWQgb3V0IG1hdGNoYWxsLiBJIGRvbid0IHNlZSB0
+aGUgcmVncmVzc2lvbiB3aXRoDQo+IG1hdGNoYWxsLiBIb3dldmVyLCBJIHNlZSB0aGF0IHdpdGgg
+Zmxvd2VyOg0KPiBrZXJuZWwgNS4xDQo+IEluc2VydGlvbiBkdXJhdGlvbjogNCBzZWMNCj4ga2Vy
+bmVsIDUuMg0KPiBJbnNlcnRpb24gZHVyYXRpb246IDE2MyBzZWMNCj4NCj4gSSBkb24ndCBzZWUg
+YW55IHNpZ25pZmljYW50IGRpZmZlcmVuY2UgaW4gcGVyZjoNCj4ga2VybmVsIDUuMQ0KPiAgICAg
+NzcuMjQlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIHRjZl9jaGFp
+bl90cF9maW5kDQo+ICAgICAgMS42NyUgIHRjICAgICAgICAgICAgICAgW2tlcm5lbC52bWxpbnV4
+XSAgICBba10gbXV0ZXhfc3Bpbl9vbl9vd25lcg0KPiAgICAgIDEuNDQlICB0YyAgICAgICAgICAg
+ICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIF9yYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZQ0K
+PiAgICAgIDAuOTMlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIGlk
+cl9nZXRfZnJlZQ0KPiAgICAgIDAuNzklICB0Y19wcmVmX3NjYWxlX28gIFtrZXJuZWwudm1saW51
+eF0gICAgW2tdIGRvX3N5c2NhbGxfNjQNCj4gICAgICAwLjY5JSAgdGMgICAgICAgICAgICAgICBb
+a2VybmVsLnZtbGludXhdICAgIFtrXSBmaW5pc2hfdGFza19zd2l0Y2gNCj4gICAgICAwLjUzJSAg
+dGMgICAgICAgICAgICAgICBsaWJjLTIuMjguc28gICAgICAgIFsuXSBfX21lbXNldF9zc2UyX3Vu
+YWxpZ25lZF9lcm1zDQo+ICAgICAgMC40OSUgIHRjICAgICAgICAgICAgICAgW2tlcm5lbC52bWxp
+bnV4XSAgICBba10gX19tZW1zZXQNCj4gICAgICAwLjM2JSAgdGNfcHJlZl9zY2FsZV9vICBsaWJj
+LTIuMjguc28gICAgICAgIFsuXSBtYWxsb2MNCj4gICAgICAwLjMwJSAgdGNfcHJlZl9zY2FsZV9v
+ICBsaWJjLTIuMjguc28gICAgICAgIFsuXSBfaW50X2ZyZWUNCj4gICAgICAwLjI0JSAgdGMgICAg
+ICAgICAgICAgICBba2VybmVsLnZtbGludXhdICAgIFtrXSBfX21lbWNweQ0KPiAgICAgIDAuMjMl
+ICB0YyAgICAgICAgICAgICAgIFtjbHNfZmxvd2VyXSAgICAgICAgW2tdIGZsX2NoYW5nZQ0KPiAg
+ICAgIDAuMjMlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIF9fbmxh
+X3ZhbGlkYXRlX3BhcnNlDQo+ICAgICAgMC4yMiUgIHRjICAgICAgICAgICAgICAgW2tlcm5lbC52
+bWxpbnV4XSAgICBba10gX19zbGFiX2FsbG9jDQo+DQo+DQo+ICAgICA3NS41NyUgIHRjICAgICAg
+ICAgICAgICAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSB0Y2ZfY2hhaW5fdHBfZmluZA0KPiAgICAg
+IDIuNzAlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwua2FsbHN5bXNdICBba10gX3Jhd19zcGlu
+X3VubG9ja19pcnFyZXN0b3JlDQo+ICAgICAgMS4xMyUgIHRjX3ByZWZfc2NhbGVfbyAgW2tlcm5l
+bC5rYWxsc3ltc10gIFtrXSBkb19zeXNjYWxsXzY0DQo+ICAgICAgMC44NyUgIHRjICAgICAgICAg
+ICAgICAgbGliYy0yLjI4LnNvICAgICAgIFsuXSBfX21lbXNldF9zc2UyX3VuYWxpZ25lZF9lcm1z
+DQo+ICAgICAgMC44NiUgIGlwICAgICAgICAgICAgICAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSBm
+aW5pc2hfdGFza19zd2l0Y2gNCj4gICAgICAwLjY3JSAgdGMgICAgICAgICAgICAgICBba2VybmVs
+LmthbGxzeW1zXSAgW2tdIG1lbXNldA0KPiAgICAgIDAuNjMlICB0YyAgICAgICAgICAgICAgIFtr
+ZXJuZWwua2FsbHN5bXNdICBba10gbXV0ZXhfc3Bpbl9vbl9vd25lcg0KPiAgICAgIDAuNTIlICB0
+Y19wcmVmX3NjYWxlX28gIGxpYmMtMi4yOC5zbyAgICAgICBbLl0gbWFsbG9jDQo+ICAgICAgMC40
+OCUgIHRjICAgICAgICAgICAgICAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSBpZHJfZ2V0X2ZyZWUN
+Cj4gICAgICAwLjQ2JSAgdGMgICAgICAgICAgICAgICBba2VybmVsLmthbGxzeW1zXSAgW2tdIGZs
+X2NoYW5nZQ0KPiAgICAgIDAuNDIlICB0Y19wcmVmX3NjYWxlX28gIGxpYmMtMi4yOC5zbyAgICAg
+ICBbLl0gX2ludF9mcmVlDQo+ICAgICAgMC4zNSUgIHRjX3ByZWZfc2NhbGVfbyAgbGliYy0yLjI4
+LnNvICAgICAgIFsuXSBfX0dJX19fc3RybGVuX3NzZTINCj4gICAgICAwLjM1JSAgdGNfcHJlZl9z
+Y2FsZV9vICBsaWJjLTIuMjguc28gICAgICAgWy5dIF9fbWJydG93Yw0KPiAgICAgIDAuMzQlICB0
+Y19wcmVmX3NjYWxlX28gIGxpYmMtMi4yOC5zbyAgICAgICBbLl0gX19mY250bDY0X25vY2FuY2Vs
+X2FkanVzdGVkDQo+DQo+IEFueSBpZGVhcz8NCg0KVGhhbmtzIGZvciBwcm92aWRpbmcgcmVwcm9k
+dWN0aW9uIHNjcmlwdCENCg0KSSd2ZSBpbnZlc3RpZ2F0ZSB0aGUgcHJvYmxlbSBhbmQgZm91bmQg
+dGhlIHJvb3QgY2F1c2UuIEZpcnN0IG9mIGFsbCBJDQpub3RpY2VkIHRoYXQgQ1BVIHV0aWxpemF0
+aW9uIGR1cmluZyBwcm9ibGVtYXRpYyB0YyBydW4gaXMgcXVpdGUgbG93DQooPDEwJSksIHNvIEkg
+ZGVjaWRlZCB0byBpbnZlc3RpZ2F0ZSB3aHkgdGMgc2xlZXBzIHNvIG11Y2guIEkndmUgdXNlZCBi
+Y2MNCmFuZCBvYnRhaW5lZCBmb2xsb3dpbmcgb2ZmLUNQVSB0cmFjZSAodW5pbnRlcmVzdGluZyB0
+cmFjZXMgYXJlIG9taXR0ZWQNCmZvciBicmV2aXR5KToNCg0KfiQgc3VkbyAvdXNyL3NoYXJlL2Jj
+Yy90b29scy9vZmZjcHV0aW1lIC1LIC1wIGBwZ3JlcCAtbnggdGNgDQpUcmFjaW5nIG9mZi1DUFUg
+dGltZSAodXMpIG9mIFBJRCAyMDY5IGJ5IGtlcm5lbCBzdGFjay4uLiBIaXQgQ3RybC1DIHRvIGVu
+ZC4NCi4uLg0KICAgIGZpbmlzaF90YXNrX3N3aXRjaA0KICAgIF9fc2NoZWRfdGV4dF9zdGFydA0K
+ICAgIHNjaGVkdWxlDQogICAgc2NoZWR1bGVfdGltZW91dA0KICAgIHdhaXRfZm9yX2NvbXBsZXRp
+b24NCiAgICBfX3dhaXRfcmN1X2dwDQogICAgc3luY2hyb25pemVfcmN1DQogICAgZmxfY2hhbmdl
+DQogICAgdGNfbmV3X3RmaWx0ZXINCiAgICBydG5ldGxpbmtfcmN2X21zZw0KICAgIG5ldGxpbmtf
+cmN2X3NrYg0KICAgIG5ldGxpbmtfdW5pY2FzdA0KICAgIG5ldGxpbmtfc2VuZG1zZw0KICAgIHNv
+Y2tfc2VuZG1zZw0KICAgIF9fX3N5c19zZW5kbXNnDQogICAgX19zeXNfc2VuZG1zZw0KICAgIGRv
+X3N5c2NhbGxfNjQNCiAgICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUNCiAgICAtICAg
+ICAgICAgICAgICAgIHRjICgyMDY5KQ0KICAgICAgICAxNDIyODQ5NTMNCg0KQXMgeW91IGNhbiBz
+ZWUgMTQyIHNlY29uZHMgYXJlIHNwZW50IHNsZWVwaW5nIGluIHN5bmNocm9uaXplX3JjdSgpLiBU
+aGUNCmNvZGUgaXMgaW4gZmxfY3JlYXRlX25ld19tYXNrKCkgZnVuY3Rpb246DQoNCgllcnIgPSBy
+aGFzaHRhYmxlX3JlcGxhY2VfZmFzdCgmaGVhZC0+aHQsICZtYXNrLT5odF9ub2RlLA0KCQkJCSAg
+ICAgICZuZXdtYXNrLT5odF9ub2RlLCBtYXNrX2h0X3BhcmFtcyk7DQoJaWYgKGVycikNCgkJZ290
+byBlcnJvdXRfZGVzdHJveTsNCg0KCS8qIFdhaXQgdW50aWwgYW55IHBvdGVudGlhbCBjb25jdXJy
+ZW50IHVzZXJzIG9mIG1hc2sgYXJlIGZpbmlzaGVkICovDQoJc3luY2hyb25pemVfcmN1KCk7DQoN
+ClRoZSBqdXN0aWZpY2F0aW9uIGZvciB0aGlzIGlzIGRlc2NyaWJlZCBpbiBjb21tZW50IGluDQpm
+bF9jaGVja19hc3NpZ25fbWFzaygpICh1c2VyIG9mIGZsX2NyZWF0ZV9uZXdfbWFzaygpKToNCg0K
+CS8qIEluc2VydCBtYXNrIGFzIHRlbXBvcmFyeSBub2RlIHRvIHByZXZlbnQgY29uY3VycmVudCBj
+cmVhdGlvbiBvZiBtYXNrDQoJICogd2l0aCBzYW1lIGtleS4gQW55IGNvbmN1cnJlbnQgbG9va3Vw
+cyB3aXRoIHNhbWUga2V5IHdpbGwgcmV0dXJuDQoJICogLUVBR0FJTiBiZWNhdXNlIG1hc2sncyBy
+ZWZjbnQgaXMgemVyby4gSXQgaXMgc2FmZSB0byBpbnNlcnQNCgkgKiBzdGFjay1hbGxvY2F0ZWQg
+J21hc2snIHRvIG1hc2tzIGhhc2ggdGFibGUgYmVjYXVzZSB3ZSBjYWxsDQoJICogc3luY2hyb25p
+emVfcmN1KCkgYmVmb3JlIHJldHVybmluZyBmcm9tIHRoaXMgZnVuY3Rpb24gKGVpdGhlciBpbiBj
+YXNlDQoJICogb2YgZXJyb3Igb3IgYWZ0ZXIgcmVwbGFjaW5nIGl0IHdpdGggaGVhcC1hbGxvY2F0
+ZWQgbWFzayBpbg0KCSAqIGZsX2NyZWF0ZV9uZXdfbWFzaygpKS4NCgkgKi8NCglmbmV3LT5tYXNr
+ID0gcmhhc2h0YWJsZV9sb29rdXBfZ2V0X2luc2VydF9mYXN0KCZoZWFkLT5odCwNCgkJCQkJCSAg
+ICAgICAmbWFzay0+aHRfbm9kZSwNCgkJCQkJCSAgICAgICBtYXNrX2h0X3BhcmFtcyk7DQoNClRo
+ZSBvZmZlbmRpbmcgY29tbWl0IGlzIHBhcnQgb2YgbXkgc2VyaWVzIHRoYXQgaW1wbGVtZW50cyB1
+bmxvY2tlZA0KZmxvd2VyOiAxOTVjMjM0ZDE1YzkgKCJuZXQ6IHNjaGVkOiBmbG93ZXI6IGhhbmRs
+ZSBjb25jdXJyZW50IG1hc2sNCmluc2VydGlvbiIpDQoNClRoZSBqdXN0aWZpY2F0aW9uIHByZXNl
+bnRlZCBpbiBpdCBpcyBubyBsb25nZXIgcmVsZXZhbnQgc2luY2UgSXZhbg0KVmVjZXJhIGNoYW5n
+ZWQgbWFzayB0byBiZSBkeW5hbWljYWxseSBhbGxvY2F0ZWQgaW4gY29tbWl0IDJjZGRkMjAxNDc4
+Mg0KKCJuZXQvc2NoZWQ6IGNsc19mbG93ZXI6IGFsbG9jYXRlIG1hc2sgZHluYW1pY2FsbHkgaW4g
+ZmxfY2hhbmdlKCkiKS4NCldpdGggdGhpcyB3ZSBjYW4ganVzdCBjaGFuZ2UgZmxfY2hhbmdlKCkg
+dG8gZGVhbGxvY2F0ZSB0ZW1wb3JhcnkgbWFzaw0Kd2l0aCByY3UgZ3JhY2UgcGVyaW9kIGFuZCBy
+ZW1vdmUgb2ZmZW5kaW5nIHN5bmNyaG9uaXplX3JjdSgpIGNhbGwuDQoNCkFueSBvdGhlciBzdWdn
+ZXN0aW9ucz8NCg==
