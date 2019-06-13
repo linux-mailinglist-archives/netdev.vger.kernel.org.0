@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBA643A6C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B2043A63
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732076AbfFMPUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:20:55 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36125 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732008AbfFMMvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:51:00 -0400
-Received: by mail-qt1-f194.google.com with SMTP id p15so2966355qtl.3;
-        Thu, 13 Jun 2019 05:50:59 -0700 (PDT)
+        id S1732062AbfFMPUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:20:41 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:37530 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732013AbfFMMvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:51:45 -0400
+Received: by mail-qk1-f196.google.com with SMTP id d15so12632666qkl.4;
+        Thu, 13 Jun 2019 05:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=eFeTWMKs9ihsaxA0AMESBJJwqP1y2EWmZQjeKE8K34M=;
-        b=g5eY/mfWcMvcmnpqGn2etP9f3/asNRaHlIAs5gV8VVQ6yPoHjSg+rVwmOwS6qCpwEj
-         QjuZ4D6LHa/z+UUOhBFFepzlsFgLOznDJzFwY+58biydtFsuFPDItfCCzURn/sXk2tPa
-         RtdixHbu1KRM7Fp0CiCZUQ1SydMXrXVeRl4yHq9lqlwYzY0O4O/GZ3zlwDbkNaj+UnD7
-         EMQrH8P6rvOvhuYBy0miVndqTdKG6cKEA55DHUMAK7snvZKD4n8UjWnoFtYGYVeFhw/7
-         QKqyvcTRhK9MHquBODj/SoQzVbdZi2FDYOI+8YzSRpAZFjbyuN7ehFy9Ws3JxMd47bX5
-         EkAA==
+        bh=KKmmN038phC2yyCTzlT5LiooKBRVC9oBOIL2DAtYXHI=;
+        b=soAA2vJV34Qwpz+g+a+jRrA1WGyNJKN2hFvIR6ikg4238mXH4YS1bWju86ixTCeeVK
+         MRoqutqT+TGzg+SFIWw6kYEqFakRiuq0c07C6AT8YjWBrG+m3SSnRktNfemBxCdMSAka
+         /7Cjw6S481a+c+GelAAxoyyHbZrM/ZcVF2ruc+kRLU0ar0qZqo3tPRzhTtAJw6YUJJX8
+         aaaW/9nfaxxfXts+6EXpdTrqQ2SxUOziGuXZeTWojZBNhJVHyj6f6MvmGwR7J4Nl4KKW
+         eenh6Us4d0ajRZ6ZS++QOc2fTfmm62TGKWpu/G/p2diKAsdIaQ6NNzh7CMNb4624P0eU
+         8kYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eFeTWMKs9ihsaxA0AMESBJJwqP1y2EWmZQjeKE8K34M=;
-        b=Wc8uVpP6qL28FfEJy3AuotRPleTiLB+QvYymZur/SUZW40QeEzu3RRD4q07oXXjeo3
-         MCUpRlg6HZvuCyigIiAaQ6bQ8gPWba+lZgh0x4b0rvgMdmzKDP3+I16mOE9QYzoAvQKq
-         o4JYl64AbsZ/ymkISvd2DRxaN3q91L9zDrGGPvCPSC4EqET2oEnrZhdTaeKEzQT3FPrH
-         LB7rrKbCp6srQYVTOQtCoO7nHFQznkn8VQyZlGdu7+DGS93fOxq4O/ZkWJvxQZ5MP8Ra
-         ImEcM+Cc4XBMbGn2MyoWR/ah+T2Dwx0ThG9xayZd7UmEAfyNl9SrZIeF21lvT13NMWDg
-         LecA==
-X-Gm-Message-State: APjAAAUuSuZDLwMEdws2VyQGCv78hD/buoVIJJ2unj8iVFNTH07h0W7s
-        1Zz4vVPaNRbc1R8O3CXY1JJCSWvExgc0JPRUKmEkz35B/hw=
-X-Google-Smtp-Source: APXvYqy2gXCzoqY0x4AZYdCUX9xjwFSaqKkDV96iAkDMv+zLdRoVgp+PmpJyydQqVfs7bEIfIWTz8aSzq/BrCSjLpcQ=
-X-Received: by 2002:a0c:d0b6:: with SMTP id z51mr3471771qvg.3.1560430258625;
- Thu, 13 Jun 2019 05:50:58 -0700 (PDT)
+        bh=KKmmN038phC2yyCTzlT5LiooKBRVC9oBOIL2DAtYXHI=;
+        b=WJ+0si0OEyyHycaQ4BWpmqUhhDwWc44JqtNcr6sX3MyIRAol3zOy9CRTl46B3/F6Kc
+         jm45ATEA/37Tftowv2CAGD7PzyrmROVDV2Gg1SQHXVd08i4V4yT0WeBUwe6GLrQ0LK7t
+         u16/8TdUs97bXQSznh6ihcc70LyZ9AzpJ+2S8PRkYbKnIJPEZpOvq3iEuY1IIMz2D+vy
+         hu/pDyxCECDT3CGndrJxmOSKl1OhTy4jzww62vWus/N6xZ255peao8FOm69pypE39YQi
+         KjwtfdMJDnAILfKnlyhQ55nbH5+KSXCMTczXqUXxysmPe/YjDANq9M4clj9npEqiA3/T
+         dCnA==
+X-Gm-Message-State: APjAAAV6O+8X8Fmp2FkzzbHJODY6c9jxX9bD4oW5Dy9zIWFWabJ0aQMp
+        LI7/qhAlfwMrQqCzcPqe+dPbUIVVjVMCarv77VY=
+X-Google-Smtp-Source: APXvYqzSCHWJZE39A4jxOogJeI2vT1/4trVEnSOXtusaQUUF+WLaaaLehcvwCpGrQhe2x5wuhiXscWJf/zf7kurN7HA=
+X-Received: by 2002:a05:620a:12c4:: with SMTP id e4mr20397748qkl.81.1560430304403;
+ Thu, 13 Jun 2019 05:51:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-4-maximmi@mellanox.com>
-In-Reply-To: <20190612155605.22450-4-maximmi@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-5-maximmi@mellanox.com>
+In-Reply-To: <20190612155605.22450-5-maximmi@mellanox.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 13 Jun 2019 14:50:47 +0200
-Message-ID: <CAJ+HfNi7a7X3X-1q8TKWn1t6oyX=3r2NzD_Omk3NQXWdtNPMTQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 03/17] xsk: Add getsockopt XDP_OPTIONS
+Date:   Thu, 13 Jun 2019 14:51:32 +0200
+Message-ID: <CAJ+HfNi1ERWq=ifGVupQ2yYXQQLibfx-yv6Fyi8ut3R8ttrLCQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 04/17] libbpf: Support getsockopt XDP_OPTIONS
 To:     Maxim Mikityanskiy <maximmi@mellanox.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,10 +72,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, 12 Jun 2019 at 20:05, Maxim Mikityanskiy <maximmi@mellanox.com> wro=
 te:
 >
-> Make it possible for the application to determine whether the AF_XDP
-> socket is running in zero-copy mode. To achieve this, add a new
-> getsockopt option XDP_OPTIONS that returns flags. The only flag
-> supported for now is the zero-copy mode indicator.
+> Query XDP_OPTIONS in libbpf to determine if the zero-copy mode is active
+> or not.
 >
 
 Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
@@ -84,96 +82,50 @@ Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 > Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 > Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 > ---
->  include/uapi/linux/if_xdp.h       |  8 ++++++++
->  net/xdp/xsk.c                     | 20 ++++++++++++++++++++
->  tools/include/uapi/linux/if_xdp.h |  8 ++++++++
->  3 files changed, 36 insertions(+)
+>  tools/lib/bpf/xsk.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 >
-> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-> index caed8b1614ff..faaa5ca2a117 100644
-> --- a/include/uapi/linux/if_xdp.h
-> +++ b/include/uapi/linux/if_xdp.h
-> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
->  #define XDP_UMEM_FILL_RING             5
->  #define XDP_UMEM_COMPLETION_RING       6
->  #define XDP_STATISTICS                 7
-> +#define XDP_OPTIONS                    8
->
->  struct xdp_umem_reg {
->         __u64 addr; /* Start of packet data area */
-> @@ -60,6 +61,13 @@ struct xdp_statistics {
->         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index 7ef6293b4fd7..bf15a80a37c2 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -65,6 +65,7 @@ struct xsk_socket {
+>         int xsks_map_fd;
+>         __u32 queue_id;
+>         char ifname[IFNAMSIZ];
+> +       bool zc;
 >  };
 >
-> +struct xdp_options {
-> +       __u32 flags;
-> +};
-> +
-> +/* Flags for the flags field of struct xdp_options */
-> +#define XDP_OPTIONS_ZEROCOPY (1 << 0)
-> +
->  /* Pgoff for mmaping the rings */
->  #define XDP_PGOFF_RX_RING                        0
->  #define XDP_PGOFF_TX_RING               0x80000000
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index b68a380f50b3..35ca531ac74e 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -650,6 +650,26 @@ static int xsk_getsockopt(struct socket *sock, int l=
-evel, int optname,
->
->                 return 0;
+>  struct xsk_nl_info {
+> @@ -480,6 +481,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, c=
+onst char *ifname,
+>         void *rx_map =3D NULL, *tx_map =3D NULL;
+>         struct sockaddr_xdp sxdp =3D {};
+>         struct xdp_mmap_offsets off;
+> +       struct xdp_options opts;
+>         struct xsk_socket *xsk;
+>         socklen_t optlen;
+>         int err;
+> @@ -597,6 +599,16 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, =
+const char *ifname,
 >         }
-> +       case XDP_OPTIONS:
-> +       {
-> +               struct xdp_options opts =3D {};
+>
+>         xsk->prog_fd =3D -1;
 > +
-> +               if (len < sizeof(opts))
-> +                       return -EINVAL;
-> +
-> +               mutex_lock(&xs->mutex);
-> +               if (xs->zc)
-> +                       opts.flags |=3D XDP_OPTIONS_ZEROCOPY;
-> +               mutex_unlock(&xs->mutex);
-> +
-> +               len =3D sizeof(opts);
-> +               if (copy_to_user(optval, &opts, len))
-> +                       return -EFAULT;
-> +               if (put_user(len, optlen))
-> +                       return -EFAULT;
-> +
-> +               return 0;
+> +       optlen =3D sizeof(opts);
+> +       err =3D getsockopt(xsk->fd, SOL_XDP, XDP_OPTIONS, &opts, &optlen)=
+;
+> +       if (err) {
+> +               err =3D -errno;
+> +               goto out_mmap_tx;
 > +       }
->         default:
->                 break;
->         }
-> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux=
-/if_xdp.h
-> index caed8b1614ff..faaa5ca2a117 100644
-> --- a/tools/include/uapi/linux/if_xdp.h
-> +++ b/tools/include/uapi/linux/if_xdp.h
-> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
->  #define XDP_UMEM_FILL_RING             5
->  #define XDP_UMEM_COMPLETION_RING       6
->  #define XDP_STATISTICS                 7
-> +#define XDP_OPTIONS                    8
->
->  struct xdp_umem_reg {
->         __u64 addr; /* Start of packet data area */
-> @@ -60,6 +61,13 @@ struct xdp_statistics {
->         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
->  };
->
-> +struct xdp_options {
-> +       __u32 flags;
-> +};
 > +
-> +/* Flags for the flags field of struct xdp_options */
-> +#define XDP_OPTIONS_ZEROCOPY (1 << 0)
+> +       xsk->zc =3D opts.flags & XDP_OPTIONS_ZEROCOPY;
 > +
->  /* Pgoff for mmaping the rings */
->  #define XDP_PGOFF_RX_RING                        0
->  #define XDP_PGOFF_TX_RING               0x80000000
+>         if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_L=
+OAD)) {
+>                 err =3D xsk_setup_xdp_prog(xsk);
+>                 if (err)
 > --
 > 2.19.1
 >
