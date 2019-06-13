@@ -2,202 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA2143B74
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C1643B56
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731059AbfFMP3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:29:03 -0400
-Received: from mail-eopbgr130081.outbound.protection.outlook.com ([40.107.13.81]:16288
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728901AbfFML0X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 07:26:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Mp78sydqGLyMnOR5aUNmNdVcy4IwcmnDBkbuQhvcCZQ=;
- b=cgF+n3R9sD3t/DYAl9JyCUqgl7cDgLVbyBqCevmQhPO272fJbh7UH0AYnb+d8168gOT27OniU84iRXK9eeQflZaE0R+71UW/Ij1rifka/+zLu54eCDndbb4WaMpcg+aSISsDv5q+SXmFgyaqiVi6fEEnuMu1oHvxeRhOkBlupeQ=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4607.eurprd05.prod.outlook.com (20.176.3.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Thu, 13 Jun 2019 11:26:17 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3021:5bae:ebbe:701f]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3021:5bae:ebbe:701f%6]) with mapi id 15.20.1987.012; Thu, 13 Jun 2019
- 11:26:17 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>, mlxsw <mlxsw@mellanox.com>,
-        Alex Kushnarov <alexanderk@mellanox.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: tc tp creation performance degratation since kernel 5.1
-Thread-Topic: tc tp creation performance degratation since kernel 5.1
-Thread-Index: AQHVIRbjnv8d5ZZGnkSVzGrTJvp9YqaZPSIAgAAg2QCAABFdgIAAA30A
-Date:   Thu, 13 Jun 2019 11:26:17 +0000
-Message-ID: <vbfa7el20ff.fsf@mellanox.com>
-References: <20190612120341.GA2207@nanopsycho>
- <20190613081152.GC2254@nanopsycho.orion> <vbfblz123vt.fsf@mellanox.com>
- <20190613111135.GA2201@nanopsycho.orion>
-In-Reply-To: <20190613111135.GA2201@nanopsycho.orion>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0182.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a::26) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5db8fec6-7ddb-4839-8b97-08d6eff1f347
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4607;
-x-ms-traffictypediagnostic: VI1PR05MB4607:
-x-microsoft-antispam-prvs: <VI1PR05MB4607FE8900817E29E37A6107ADEF0@VI1PR05MB4607.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(136003)(366004)(39860400002)(396003)(189003)(199004)(316002)(6246003)(2906002)(54906003)(6916009)(4326008)(6486002)(25786009)(6116002)(229853002)(3846002)(86362001)(6512007)(14444005)(256004)(6436002)(8936002)(8676002)(36756003)(81156014)(81166006)(186003)(476003)(2616005)(66476007)(64756008)(66446008)(14454004)(305945005)(7736002)(53936002)(5660300002)(486006)(478600001)(73956011)(26005)(71190400001)(71200400001)(446003)(386003)(6506007)(102836004)(99286004)(76176011)(52116002)(11346002)(66946007)(66066001)(66556008)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4607;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Csn/8Qy2ADPJD6RWs7uyzhl//+w0LkRx5ZwG8CbMiNaZSO3Y0IqMNhVBIqDeloT9BTGTcWqMAE8M6VmkAfwBbgZQPTDyqb0jwVgcqoHW+t35w8v3WRBMOTi60QJwSUQq8g1liRY+0Jc6lYwS1MlCIKN8o6cAWZn6h0qFWAIYNkBgBsDngGGcuFXPVDEjOWhkCqlzaR1npIHa6jR4M37rdNxE0DbfE8iD/OKd5K6EtKE/FFmxbg11CNupyrBOAhNqWLumtsLMMMZxB8uujuWD7RKMkjsp9yAvAl/UGKAIte+56X3QudHzEdEoifq3ZxbqoISNO/EgvViEKbLiP3+en1rE972M3kK0yMciTu/xW8yl/DRjh+lpeVnGib6gbk6Btck4w4GxxFj96EUzpbpGHzP8SgymbWTWxOnPFdxdF0o=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728985AbfFMP2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:28:01 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38896 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728974AbfFMLc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 07:32:59 -0400
+Received: by mail-wr1-f66.google.com with SMTP id d18so20373831wrs.5
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 04:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AF1205N89OZNViaP6acWXh6mHKPDql5m0Yi3tu1T8h8=;
+        b=TbGt75o/WSp1OSUJTHNYCciigYJKAYY6solbnb+OPu7egwRHpZFyTp57t0BC1acpgS
+         TAPKFVoWfjLIyWlG5lM6ccnEx04BY1qZTdskF0iD/gBFok1EC4Jb4k98qIWfHxkzKXFg
+         UCMZerFSt04ZfSvT63r76NMFvJdbfCUTVST3Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AF1205N89OZNViaP6acWXh6mHKPDql5m0Yi3tu1T8h8=;
+        b=SNpiOC3NVtu34/9RuPUnBGjkdPY7a3527OmSBfy46cyRsxWc8E7QuNES1so/1XxjkN
+         IO4jF/94iAn9qejkBICux5kovGCIEVBM3p4KGsC5Dj2UKHsQC6xXlIbj/wguqMSRKhrz
+         igLWxHW045JeyCQ2AmW1se/UuKwA26dS5NAA9m/2w19K3cI5n2ke7hf0UA03V9X7DLY6
+         1ZbLk6P32z6kDKBWeb3OGP+z+Y/CJ+fkznBS1i5U/uNOP6en667PPG+20hzjbP9MpEao
+         ZZWYZWwwj00w8lNmQfVt5t4YYAcB/6hnsCWY73TxZwdo593ZzVe08Mx2oK0vRWly8Jyy
+         tb2g==
+X-Gm-Message-State: APjAAAVFg/xHcxS7UMJYOj7hSIsF5eviwW2VrZUuKG9H32NEf9OgiCK3
+        O7KPtLokHve8uOIA/2z77q9efw==
+X-Google-Smtp-Source: APXvYqyrdLnXSnjStU6hbkGo3KfeeAceiBKHAZw2YLa7AT/MAbzkQIg0WRzmMIvQXvl4kd3Mo2rHUA==
+X-Received: by 2002:a05:6000:128f:: with SMTP id f15mr5748511wrx.196.1560425577814;
+        Thu, 13 Jun 2019 04:32:57 -0700 (PDT)
+Received: from localhost.localdomain ([147.12.216.9])
+        by smtp.gmail.com with ESMTPSA id f2sm2646740wmc.34.2019.06.13.04.32.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 04:32:57 -0700 (PDT)
+From:   Arthur Fabre <afabre@cloudflare.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Arthur Fabre <afabre@cloudflare.com>
+Subject: [PATCH] bpf: selftests: Fix warning in flow_dissector
+Date:   Thu, 13 Jun 2019 12:27:09 +0100
+Message-Id: <20190613112709.7215-1-afabre@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5db8fec6-7ddb-4839-8b97-08d6eff1f347
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 11:26:17.1330
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4607
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiBUaHUgMTMgSnVuIDIwMTkgYXQgMTQ6MTEsIEppcmkgUGlya28gPGppcmlAcmVzbnVsbGku
-dXM+IHdyb3RlOg0KPiBUaHUsIEp1biAxMywgMjAxOSBhdCAxMjowOTozMlBNIENFU1QsIHZsYWRi
-dUBtZWxsYW5veC5jb20gd3JvdGU6DQo+Pk9uIFRodSAxMyBKdW4gMjAxOSBhdCAxMToxMSwgSmly
-aSBQaXJrbyA8amlyaUByZXNudWxsaS51cz4gd3JvdGU6DQo+Pj4gSSBtYWRlIGEgbWlzdGFrZSBk
-dXJpbmcgbWVhc3VyZW1lbnRzLCBzb3JyeSBhYm91dCB0aGF0Lg0KPj4+DQo+Pj4gVGhpcyBpcyB0
-aGUgY29ycmVjdCBzY3JpcHQ6DQo+Pj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4+PiAjIS9iaW4vYmFzaA0K
-Pj4+DQo+Pj4gZGV2PXRlc3RkdW1teQ0KPj4+IGlwIGxpbmsgYWRkIG5hbWUgJGRldiB0eXBlIGR1
-bW15DQo+Pj4gaXAgbGluayBzZXQgZGV2ICRkZXYgdXANCj4+PiB0YyBxZGlzYyBhZGQgZGV2ICRk
-ZXYgaW5ncmVzcw0KPj4+DQo+Pj4gdG1wX2ZpbGVfbmFtZT0kKGRhdGUgKyIvdG1wL3RjX2JhdGNo
-LiVzLiVOLnRtcCIpDQo+Pj4gcHJlZl9pZD0xDQo+Pj4NCj4+PiB3aGlsZSBbICRwcmVmX2lkIC1s
-dCAyMDAwMCBdDQo+Pj4gZG8NCj4+PiAgICAgICAgIGVjaG8gImZpbHRlciBhZGQgZGV2ICRkZXYg
-aW5ncmVzcyBwcm90byBpcCBwcmVmICRwcmVmX2lkIGZsb3dlciBhY3Rpb24gZHJvcCIgPj4gJHRt
-cF9maWxlX25hbWUNCj4+PiAgICAgICAgICNlY2hvICJmaWx0ZXIgYWRkIGRldiAkZGV2IGluZ3Jl
-c3MgcHJvdG8gaXAgcHJlZiAkcHJlZl9pZCBtYXRjaGFsbCBhY3Rpb24gZHJvcCIgPj4gJHRtcF9m
-aWxlX25hbWUNCj4+PiAgICAgICAgICgocHJlZl9pZCsrKSkNCj4+PiBkb25lDQo+Pj4NCj4+PiBz
-dGFydD0kKGRhdGUgKyIlcyIpDQo+Pj4gdGMgLWIgJHRtcF9maWxlX25hbWUNCj4+PiBzdG9wPSQo
-ZGF0ZSArIiVzIikNCj4+PiBlY2hvICJJbnNlcnRpb24gZHVyYXRpb246ICQoKCRzdG9wIC0gJHN0
-YXJ0KSkgc2VjIg0KPj4+IHJtIC1mICR0bXBfZmlsZV9uYW1lDQo+Pj4NCj4+PiBpcCBsaW5rIGRl
-bCBkZXYgJGRldg0KPj4+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+Pj4NCj4+PiBOb3RlIHRoZSBjb21tZW50
-ZWQgb3V0IG1hdGNoYWxsLiBJIGRvbid0IHNlZSB0aGUgcmVncmVzc2lvbiB3aXRoDQo+Pj4gbWF0
-Y2hhbGwuIEhvd2V2ZXIsIEkgc2VlIHRoYXQgd2l0aCBmbG93ZXI6DQo+Pj4ga2VybmVsIDUuMQ0K
-Pj4+IEluc2VydGlvbiBkdXJhdGlvbjogNCBzZWMNCj4+PiBrZXJuZWwgNS4yDQo+Pj4gSW5zZXJ0
-aW9uIGR1cmF0aW9uOiAxNjMgc2VjDQo+Pj4NCj4+PiBJIGRvbid0IHNlZSBhbnkgc2lnbmlmaWNh
-bnQgZGlmZmVyZW5jZSBpbiBwZXJmOg0KPj4+IGtlcm5lbCA1LjENCj4+PiAgICAgNzcuMjQlICB0
-YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIHRjZl9jaGFpbl90cF9maW5k
-DQo+Pj4gICAgICAxLjY3JSAgdGMgICAgICAgICAgICAgICBba2VybmVsLnZtbGludXhdICAgIFtr
-XSBtdXRleF9zcGluX29uX293bmVyDQo+Pj4gICAgICAxLjQ0JSAgdGMgICAgICAgICAgICAgICBb
-a2VybmVsLnZtbGludXhdICAgIFtrXSBfcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUNCj4+PiAg
-ICAgIDAuOTMlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIGlkcl9n
-ZXRfZnJlZQ0KPj4+ICAgICAgMC43OSUgIHRjX3ByZWZfc2NhbGVfbyAgW2tlcm5lbC52bWxpbnV4
-XSAgICBba10gZG9fc3lzY2FsbF82NA0KPj4+ICAgICAgMC42OSUgIHRjICAgICAgICAgICAgICAg
-W2tlcm5lbC52bWxpbnV4XSAgICBba10gZmluaXNoX3Rhc2tfc3dpdGNoDQo+Pj4gICAgICAwLjUz
-JSAgdGMgICAgICAgICAgICAgICBsaWJjLTIuMjguc28gICAgICAgIFsuXSBfX21lbXNldF9zc2Uy
-X3VuYWxpZ25lZF9lcm1zDQo+Pj4gICAgICAwLjQ5JSAgdGMgICAgICAgICAgICAgICBba2VybmVs
-LnZtbGludXhdICAgIFtrXSBfX21lbXNldA0KPj4+ICAgICAgMC4zNiUgIHRjX3ByZWZfc2NhbGVf
-byAgbGliYy0yLjI4LnNvICAgICAgICBbLl0gbWFsbG9jDQo+Pj4gICAgICAwLjMwJSAgdGNfcHJl
-Zl9zY2FsZV9vICBsaWJjLTIuMjguc28gICAgICAgIFsuXSBfaW50X2ZyZWUNCj4+PiAgICAgIDAu
-MjQlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51eF0gICAgW2tdIF9fbWVtY3B5DQo+
-Pj4gICAgICAwLjIzJSAgdGMgICAgICAgICAgICAgICBbY2xzX2Zsb3dlcl0gICAgICAgIFtrXSBm
-bF9jaGFuZ2UNCj4+PiAgICAgIDAuMjMlICB0YyAgICAgICAgICAgICAgIFtrZXJuZWwudm1saW51
-eF0gICAgW2tdIF9fbmxhX3ZhbGlkYXRlX3BhcnNlDQo+Pj4gICAgICAwLjIyJSAgdGMgICAgICAg
-ICAgICAgICBba2VybmVsLnZtbGludXhdICAgIFtrXSBfX3NsYWJfYWxsb2MNCj4+Pg0KPj4+DQo+
-Pj4gICAgIDc1LjU3JSAgdGMgICAgICAgICAgICAgICBba2VybmVsLmthbGxzeW1zXSAgW2tdIHRj
-Zl9jaGFpbl90cF9maW5kDQo+Pj4gICAgICAyLjcwJSAgdGMgICAgICAgICAgICAgICBba2VybmVs
-LmthbGxzeW1zXSAgW2tdIF9yYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZQ0KPj4+ICAgICAgMS4x
-MyUgIHRjX3ByZWZfc2NhbGVfbyAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSBkb19zeXNjYWxsXzY0
-DQo+Pj4gICAgICAwLjg3JSAgdGMgICAgICAgICAgICAgICBsaWJjLTIuMjguc28gICAgICAgWy5d
-IF9fbWVtc2V0X3NzZTJfdW5hbGlnbmVkX2VybXMNCj4+PiAgICAgIDAuODYlICBpcCAgICAgICAg
-ICAgICAgIFtrZXJuZWwua2FsbHN5bXNdICBba10gZmluaXNoX3Rhc2tfc3dpdGNoDQo+Pj4gICAg
-ICAwLjY3JSAgdGMgICAgICAgICAgICAgICBba2VybmVsLmthbGxzeW1zXSAgW2tdIG1lbXNldA0K
-Pj4+ICAgICAgMC42MyUgIHRjICAgICAgICAgICAgICAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSBt
-dXRleF9zcGluX29uX293bmVyDQo+Pj4gICAgICAwLjUyJSAgdGNfcHJlZl9zY2FsZV9vICBsaWJj
-LTIuMjguc28gICAgICAgWy5dIG1hbGxvYw0KPj4+ICAgICAgMC40OCUgIHRjICAgICAgICAgICAg
-ICAgW2tlcm5lbC5rYWxsc3ltc10gIFtrXSBpZHJfZ2V0X2ZyZWUNCj4+PiAgICAgIDAuNDYlICB0
-YyAgICAgICAgICAgICAgIFtrZXJuZWwua2FsbHN5bXNdICBba10gZmxfY2hhbmdlDQo+Pj4gICAg
-ICAwLjQyJSAgdGNfcHJlZl9zY2FsZV9vICBsaWJjLTIuMjguc28gICAgICAgWy5dIF9pbnRfZnJl
-ZQ0KPj4+ICAgICAgMC4zNSUgIHRjX3ByZWZfc2NhbGVfbyAgbGliYy0yLjI4LnNvICAgICAgIFsu
-XSBfX0dJX19fc3RybGVuX3NzZTINCj4+PiAgICAgIDAuMzUlICB0Y19wcmVmX3NjYWxlX28gIGxp
-YmMtMi4yOC5zbyAgICAgICBbLl0gX19tYnJ0b3djDQo+Pj4gICAgICAwLjM0JSAgdGNfcHJlZl9z
-Y2FsZV9vICBsaWJjLTIuMjguc28gICAgICAgWy5dIF9fZmNudGw2NF9ub2NhbmNlbF9hZGp1c3Rl
-ZA0KPj4+DQo+Pj4gQW55IGlkZWFzPw0KPj4NCj4+VGhhbmtzIGZvciBwcm92aWRpbmcgcmVwcm9k
-dWN0aW9uIHNjcmlwdCENCj4+DQo+PkkndmUgaW52ZXN0aWdhdGUgdGhlIHByb2JsZW0gYW5kIGZv
-dW5kIHRoZSByb290IGNhdXNlLiBGaXJzdCBvZiBhbGwgSQ0KPj5ub3RpY2VkIHRoYXQgQ1BVIHV0
-aWxpemF0aW9uIGR1cmluZyBwcm9ibGVtYXRpYyB0YyBydW4gaXMgcXVpdGUgbG93DQo+Pig8MTAl
-KSwgc28gSSBkZWNpZGVkIHRvIGludmVzdGlnYXRlIHdoeSB0YyBzbGVlcHMgc28gbXVjaC4gSSd2
-ZSB1c2VkIGJjYw0KPj5hbmQgb2J0YWluZWQgZm9sbG93aW5nIG9mZi1DUFUgdHJhY2UgKHVuaW50
-ZXJlc3RpbmcgdHJhY2VzIGFyZSBvbWl0dGVkDQo+PmZvciBicmV2aXR5KToNCj4+DQo+Pn4kIHN1
-ZG8gL3Vzci9zaGFyZS9iY2MvdG9vbHMvb2ZmY3B1dGltZSAtSyAtcCBgcGdyZXAgLW54IHRjYA0K
-Pj5UcmFjaW5nIG9mZi1DUFUgdGltZSAodXMpIG9mIFBJRCAyMDY5IGJ5IGtlcm5lbCBzdGFjay4u
-LiBIaXQgQ3RybC1DIHRvIGVuZC4NCj4+Li4uDQo+PiAgICBmaW5pc2hfdGFza19zd2l0Y2gNCj4+
-ICAgIF9fc2NoZWRfdGV4dF9zdGFydA0KPj4gICAgc2NoZWR1bGUNCj4+ICAgIHNjaGVkdWxlX3Rp
-bWVvdXQNCj4+ICAgIHdhaXRfZm9yX2NvbXBsZXRpb24NCj4+ICAgIF9fd2FpdF9yY3VfZ3ANCj4+
-ICAgIHN5bmNocm9uaXplX3JjdQ0KPj4gICAgZmxfY2hhbmdlDQo+PiAgICB0Y19uZXdfdGZpbHRl
-cg0KPj4gICAgcnRuZXRsaW5rX3Jjdl9tc2cNCj4+ICAgIG5ldGxpbmtfcmN2X3NrYg0KPj4gICAg
-bmV0bGlua191bmljYXN0DQo+PiAgICBuZXRsaW5rX3NlbmRtc2cNCj4+ICAgIHNvY2tfc2VuZG1z
-Zw0KPj4gICAgX19fc3lzX3NlbmRtc2cNCj4+ICAgIF9fc3lzX3NlbmRtc2cNCj4+ICAgIGRvX3N5
-c2NhbGxfNjQNCj4+ICAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZQ0KPj4gICAgLSAg
-ICAgICAgICAgICAgICB0YyAoMjA2OSkNCj4+ICAgICAgICAxNDIyODQ5NTMNCj4+DQo+PkFzIHlv
-dSBjYW4gc2VlIDE0MiBzZWNvbmRzIGFyZSBzcGVudCBzbGVlcGluZyBpbiBzeW5jaHJvbml6ZV9y
-Y3UoKS4gVGhlDQo+PmNvZGUgaXMgaW4gZmxfY3JlYXRlX25ld19tYXNrKCkgZnVuY3Rpb246DQo+
-Pg0KPj4JZXJyID0gcmhhc2h0YWJsZV9yZXBsYWNlX2Zhc3QoJmhlYWQtPmh0LCAmbWFzay0+aHRf
-bm9kZSwNCj4+CQkJCSAgICAgICZuZXdtYXNrLT5odF9ub2RlLCBtYXNrX2h0X3BhcmFtcyk7DQo+
-PglpZiAoZXJyKQ0KPj4JCWdvdG8gZXJyb3V0X2Rlc3Ryb3k7DQo+Pg0KPj4JLyogV2FpdCB1bnRp
-bCBhbnkgcG90ZW50aWFsIGNvbmN1cnJlbnQgdXNlcnMgb2YgbWFzayBhcmUgZmluaXNoZWQgKi8N
-Cj4+CXN5bmNocm9uaXplX3JjdSgpOw0KPj4NCj4+VGhlIGp1c3RpZmljYXRpb24gZm9yIHRoaXMg
-aXMgZGVzY3JpYmVkIGluIGNvbW1lbnQgaW4NCj4+ZmxfY2hlY2tfYXNzaWduX21hc2soKSAodXNl
-ciBvZiBmbF9jcmVhdGVfbmV3X21hc2soKSk6DQo+Pg0KPj4JLyogSW5zZXJ0IG1hc2sgYXMgdGVt
-cG9yYXJ5IG5vZGUgdG8gcHJldmVudCBjb25jdXJyZW50IGNyZWF0aW9uIG9mIG1hc2sNCj4+CSAq
-IHdpdGggc2FtZSBrZXkuIEFueSBjb25jdXJyZW50IGxvb2t1cHMgd2l0aCBzYW1lIGtleSB3aWxs
-IHJldHVybg0KPj4JICogLUVBR0FJTiBiZWNhdXNlIG1hc2sncyByZWZjbnQgaXMgemVyby4gSXQg
-aXMgc2FmZSB0byBpbnNlcnQNCj4+CSAqIHN0YWNrLWFsbG9jYXRlZCAnbWFzaycgdG8gbWFza3Mg
-aGFzaCB0YWJsZSBiZWNhdXNlIHdlIGNhbGwNCj4+CSAqIHN5bmNocm9uaXplX3JjdSgpIGJlZm9y
-ZSByZXR1cm5pbmcgZnJvbSB0aGlzIGZ1bmN0aW9uIChlaXRoZXIgaW4gY2FzZQ0KPj4JICogb2Yg
-ZXJyb3Igb3IgYWZ0ZXIgcmVwbGFjaW5nIGl0IHdpdGggaGVhcC1hbGxvY2F0ZWQgbWFzayBpbg0K
-Pj4JICogZmxfY3JlYXRlX25ld19tYXNrKCkpLg0KPj4JICovDQo+PglmbmV3LT5tYXNrID0gcmhh
-c2h0YWJsZV9sb29rdXBfZ2V0X2luc2VydF9mYXN0KCZoZWFkLT5odCwNCj4+CQkJCQkJICAgICAg
-ICZtYXNrLT5odF9ub2RlLA0KPj4JCQkJCQkgICAgICAgbWFza19odF9wYXJhbXMpOw0KPj4NCj4+
-VGhlIG9mZmVuZGluZyBjb21taXQgaXMgcGFydCBvZiBteSBzZXJpZXMgdGhhdCBpbXBsZW1lbnRz
-IHVubG9ja2VkDQo+PmZsb3dlcjogMTk1YzIzNGQxNWM5ICgibmV0OiBzY2hlZDogZmxvd2VyOiBo
-YW5kbGUgY29uY3VycmVudCBtYXNrDQo+Pmluc2VydGlvbiIpDQo+Pg0KPj5UaGUganVzdGlmaWNh
-dGlvbiBwcmVzZW50ZWQgaW4gaXQgaXMgbm8gbG9uZ2VyIHJlbGV2YW50IHNpbmNlIEl2YW4NCj4+
-VmVjZXJhIGNoYW5nZWQgbWFzayB0byBiZSBkeW5hbWljYWxseSBhbGxvY2F0ZWQgaW4gY29tbWl0
-IDJjZGRkMjAxNDc4Mg0KPj4oIm5ldC9zY2hlZDogY2xzX2Zsb3dlcjogYWxsb2NhdGUgbWFzayBk
-eW5hbWljYWxseSBpbiBmbF9jaGFuZ2UoKSIpLg0KPj5XaXRoIHRoaXMgd2UgY2FuIGp1c3QgY2hh
-bmdlIGZsX2NoYW5nZSgpIHRvIGRlYWxsb2NhdGUgdGVtcG9yYXJ5IG1hc2sNCj4+d2l0aCByY3Ug
-Z3JhY2UgcGVyaW9kIGFuZCByZW1vdmUgb2ZmZW5kaW5nIHN5bmNyaG9uaXplX3JjdSgpIGNhbGwu
-DQo+Pg0KPj5Bbnkgb3RoZXIgc3VnZ2VzdGlvbnM/DQo+DQo+IFNvIGJhc2ljYWxseSB5b3UganVz
-dCBjaGFuZ2Ugc3luY2hyb25pemVfcmN1KCkgdG8ga2ZyZWVfcmN1KG1hc2spLA0KPiAgICBjb3Jy
-ZWN0Pw0KDQpOb3QgcmVhbGx5LiBJIHJlbW92ZSBzeW5jaHJvbml6ZV9yY3UoKSBhbmQgY2hhbmdl
-IGFsbCBrZnJlZShtYXNrKSBpbg0KZmxfY2hhbmdlKCkgdG8gdGNmX3F1ZXVlX3dvcmsoJm1hc2st
-PnJ3b3JrLCBmbF9tYXNrX2ZyZWVfd29yaykgd2hpY2gNCnVzZXMgcXVldWVfcmN1X3dvcmsoKSBp
-bnRlcm5hbGx5LiBUaGlzIHdvdWxkIGFsbG93IHVzIHRvIGRlYWxsb2NhdGUNCmZsX2Zsb3dfbWFz
-ayBpbiBzYW1lIG1hbm5lciBvbiBhbGwgY29kZSBwYXRocyBhbmQgZG9lc24ndCByZXF1aXJlIGFu
-eQ0KZXh0ZW5zaW9ucyBpbiBmbF9mbG93X21hc2sgc3RydWN0IChrZnJlZV9yY3Ugd291bGQgcmVx
-dWlyZSBleHRlbmRpbmcgaXQNCndpdGggcmN1X2hlYWQpLg0K
+Building the userspace part of the flow_dissector resulted in:
+
+prog_tests/flow_dissector.c: In function ‘tx_tap’:
+prog_tests/flow_dissector.c:176:9: warning: implicit declaration
+of function ‘writev’; did you mean ‘write’? [-Wimplicit-function-declaration]
+  return writev(fd, iov, ARRAY_SIZE(iov));
+         ^~~~~~
+         write
+
+Include <sys/uio.h> to fix this.
+
+Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
+---
+ tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+index fbd1d88a6095..c938283ac232 100644
+--- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
++++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+@@ -3,6 +3,7 @@
+ #include <error.h>
+ #include <linux/if.h>
+ #include <linux/if_tun.h>
++#include <sys/uio.h>
+ 
+ #define CHECK_FLOW_KEYS(desc, got, expected)				\
+ 	CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,		\
+-- 
+2.20.1
+
