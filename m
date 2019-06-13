@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4F6449F4
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 036EA449F9
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 19:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfFMRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 13:53:17 -0400
-Received: from mail-qt1-f174.google.com ([209.85.160.174]:34543 "EHLO
-        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfFMRxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:53:16 -0400
-Received: by mail-qt1-f174.google.com with SMTP id m29so23592765qtu.1
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:53:16 -0700 (PDT)
+        id S1727086AbfFMRyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 13:54:37 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40047 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbfFMRyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 13:54:36 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d30so11373538pgm.7
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 10:54:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Uy066ZV7bgAktFEXl4WYIMVfekGzUJn9sDijeqz/6js=;
-        b=ppvRcj2fAvxAjLvxfx37Nx8VsHo8Zn84KOQIFwh3nkP68zAI/pJDwz6o+YNhmCDWpC
-         laWqQisfVdfx2bN6+IhaVNLtv8THGpCBPvW+VImBxk0zY+NeB+TlvnaXYp6DhIpFoBPN
-         IkFrKZ80Tns1S8o/GZbrf65MFIq96UYTVnMUn1FaaHizgbOVBQaQZye0boOknbXmnV6M
-         rKvLk9s4eqUb3iVqdbNIwm66vxO1yDPZEdoq2VbCNlg+HlmFXN944pX1IJGXvEC7qY4L
-         wqI+ptqVTFF3HIUDO/xsLq1v8WBE/f7srOOfnwPoachOPpzn2nYvPkLJZWggfYaa9qoD
-         uayQ==
+        d=babayev.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=NbtgBFNRjapeV7XwkkOgD05mL4VUy7Y9ZUCxRxVNsds=;
+        b=SmteWydlDNz3KP2yLordqEQPllb6c8yoRGXU/vCkKFLYVVGRIKLhwz8a/jlM+M6yN8
+         cQT/siSuukJCgOHrZYp/m6tNMZjN0SztWpbUpUlBm0VkgCKFTaRt4rFLzj9xD/1dBnRH
+         n6KIMJimpDWWcyNP+FtnMyMwjrvEjO46YVCxc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Uy066ZV7bgAktFEXl4WYIMVfekGzUJn9sDijeqz/6js=;
-        b=mhOydPEg2Mz3OmKNrLtxNcZk97gmG4NPPAFjjrte2TlWea0rOyDbzyNQwDo6lCWaPp
-         9Soo4YBwWicSWrM07idbcIoydKnJ1GHq90+3Zfsh8r//CGLCFKkupsZtFBAks0AR8TtO
-         tg1Ds1A8T6t4Ue7sMLVOb+nXsp6CUAEy0Ph9MPKn2VFR1jHUhwozlOpgyC3cbeX+8AcN
-         MgxB5q1ZK78wWAUeyYJr/LBSMQJaufVWBsxjeu1wOa2VN9+4wUmVAb/c7CsdbmhSnfq8
-         XlQV8MGanaThu8ox2LztBpnybHRSoh+Sz0Jn1HH73XDZP2XpS1o/Z1BNtSc9qOzF9bwB
-         ygOQ==
-X-Gm-Message-State: APjAAAX4X2tWUDutMzion7aSqWxvqpHlkbdhaJe9eWoPSCtoJ6uh0YrD
-        97GB3S2U7jpoK2sNnjyHOaCahx/389nMlzIToQLJRG7i1T7Y3w==
-X-Google-Smtp-Source: APXvYqzkT447i3R9IhbIClKX63YPdh9gzEn8y6slBvWgGiQka3EvlzqGEoCmY/PUe8lHb4NKJjMoQgPBaSXMEsnpq/w=
-X-Received: by 2002:a0c:8a23:: with SMTP id 32mr4732749qvt.231.1560448395630;
- Thu, 13 Jun 2019 10:53:15 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=NbtgBFNRjapeV7XwkkOgD05mL4VUy7Y9ZUCxRxVNsds=;
+        b=MnLyyq+yKSZwK0fZAlbfvWuUGIDnYWJd6TlNwv1++uP+Hecn6tWZ091PEPq6yiKuLt
+         IeDgyn7496nbVdQ58ZjPB+aPl7pHVEsIwregO6ybhhXMVG4FwN6dAA/e9zT9/pVPBZTE
+         7CpRXiylhhUioXGXFyOu5WpdPLNuwPKmEcsFX/wdKFKh3i0p3qVLOnJkynzUlhFzDlaf
+         SbKEQYg/j/IQWEjOCm04YvdMXybAWHUm5rZNBQJtJHoPmnUsuHZc5V8FkmI3Fz91dh8+
+         IjLNKQxHwwxVuvny2Yk6/VWdktEzcKAFlJb/SImWZQ7HO6dxFIdsXCTxh8Wa4JFYYkIK
+         WUIA==
+X-Gm-Message-State: APjAAAWtrpjzX57LleZxWynKdd9ONIFyR97eRm3Hfn3My3NNR3xrxNkJ
+        mbmSyr44PwtqHTFOV3NcGinuieNikh3oelBK
+X-Google-Smtp-Source: APXvYqxTH3uAS+kmQajroEyFVVfbiTZJmL46A/FfpP+b7ES0UhN2/WJHP71DUtnWI0I+69ErmdQzOw==
+X-Received: by 2002:a62:ac11:: with SMTP id v17mr32157513pfe.236.1560448476115;
+        Thu, 13 Jun 2019 10:54:36 -0700 (PDT)
+Received: from localhost ([128.107.241.189])
+        by smtp.gmail.com with ESMTPSA id p27sm338705pfq.136.2019.06.13.10.54.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 10:54:35 -0700 (PDT)
+References: <20190613065102.GA16334@mwanda>
+User-agent: mu4e 1.0; emacs 26.1
+From:   Ruslan Babayev <ruslan@babayev.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Ruslan Babayev <ruslan@babayev.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: sfp: clean up a condition
+In-reply-to: <20190613065102.GA16334@mwanda>
+Date:   Thu, 13 Jun 2019 10:54:40 -0700
+Message-ID: <87pnnh9xr3.fsf@babayev.com>
 MIME-Version: 1.0
-From:   Nathan Huckleberry <nhuck@google.com>
-Date:   Thu, 13 Jun 2019 10:53:05 -0700
-Message-ID: <CAJkfWY5ZuDsmV6u1p=DPZF84ijYS3Mu2NeySGgfCXgLGnruu_A@mail.gmail.com>
-Subject: Cleanup of -Wunused-const-variable in drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-To:     maxime.chevallier@bootlin.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey all,
 
-I'm looking into cleaning up ignored warnings in the kernel so we can
-remove compiler flags to ignore warnings.
+Dan Carpenter writes:
 
-There's an unused variable 'mvpp2_dbgfs_prs_pmap_fops' in
-mvpp2_debugfs.c. It looks like this code is for dumping useful
-information into userspace. I'd like to either remove the variable or
-dump it to userspace in the same way the other variables are.
+> The acpi_node_get_property_reference() doesn't return ACPI error codes,
+> it just returns regular negative kernel error codes.  This patch doesn't
+> affect run time, it's just a clean up.
+>
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
 
-Wanted to reach out for opinions on the best course of action before
-submitting a patch.
-
-https://github.com/ClangBuiltLinux/linux/issues/529
-
-Thanks,
-Nathan Huckleberry
+Reviewed-by: Ruslan Babayev <ruslan@babayev.com>
