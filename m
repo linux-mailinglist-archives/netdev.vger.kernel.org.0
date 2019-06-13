@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A5343B83
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D05C43B8C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729696AbfFMP3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:29:54 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36749 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728843AbfFMLR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 07:17:26 -0400
-Received: by mail-ed1-f65.google.com with SMTP id k21so27301972edq.3
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 04:17:25 -0700 (PDT)
+        id S1732061AbfFMPaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:30:10 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38699 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728818AbfFMLRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 07:17:24 -0400
+Received: by mail-ed1-f68.google.com with SMTP id g13so30651983edu.5
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 04:17:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=Py/RfLiR57GPcY12mJh69w03VHwJbFQfV62LrL2d9DE=;
-        b=de4rbraXtR2pQUpjyqp5gsg0gD1WbhpQF3vkjCIaPgngJnaARzrHDY1xh4tbdRGMNs
-         3LJIK8pRiRCMTXVQawvXxaJ/ywPCoR85UaRobiY8l76KIw8ELBMG4MEjZ8dCDmRyfnrx
-         iNCqZP2BAiJv1GRDwmI4Edehu/s/IKIhGv6MkwOV75tCclv+yms4ROwriSIl2Ip9m0/v
-         t9hRJodkXtuzMzhoUo6x+oQ8k+Grryqzqtrd5jTb0vrc2xEZz52yFhtGj88TUiUc5bCq
-         RSL0q4z2ttcYHpKe/bxRK8j0q7Vd6YpOI7OVA1MvjDbeVl+CElz2M2dlEjBNy5kfuT20
-         zgmg==
-X-Gm-Message-State: APjAAAU7kyEhobZFDg0CFFOEhj/zXthyG6wWLmQL+MndTPdxt2Gzq+Vk
-        Zang7iQ/FAhUNERxxP59rXkYgA==
-X-Google-Smtp-Source: APXvYqwC+c0WeG0Zof7Yg+uMhnQR6gFqSuU7NBIdfeW5jKl1lvXy+KlBAhPLiJUWIk8Z7Jjsjuoizw==
-X-Received: by 2002:a17:906:4995:: with SMTP id p21mr76162530eju.140.1560424644844;
-        Thu, 13 Jun 2019 04:17:24 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id p3sm834439eda.43.2019.06.13.04.17.22
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=GHlkqM/XQzstZCoC0NFCkjg0Zsjh22ckk61fEw4KSz4=;
+        b=UPBmBYiicrJ7vc5IM72tpcdnWx4BgsvMRgFSHnWmZZ+DSgyHJ7xve7bSA10UNiP5mn
+         hlV88+IbTQRDPzfF1TymW32OIJHbqiB3lxEuPOJdtYYn9CtjDj8xPAu82onZEjgaD4DG
+         mKBXmr02upwuV7SG36t6paEiIRXmT8SNI128i0AHEIEehjF5a6hKyGjEKQOBTkgUjuG3
+         jOT3VezIA0QXrrXqDnP6x79v9vjau2CCoxV8FpzGxgrK5LnL4L8mDo32aZYq2VOZ4La6
+         jTajHs3HagVeOMpiFXSp8ZyG0wFpxZaNWEM4CKx74uBBCIMMxXzQLkRxLrKQajtxO0Ju
+         FyNw==
+X-Gm-Message-State: APjAAAU4Dt3e5tz9vXGxj/plg0T1p8uU/E7ioC9Jxgk2iIZ9mLjTBm2B
+        wkpK9Vv33/KUgz4Jhrcf/g0caw==
+X-Google-Smtp-Source: APXvYqzUM41GKsSEJS2S1ru85u7Il/wjzDW7ByFzdhr61/4pcMU61FwRwDBsFv0aQPDGWubbgkRxSw==
+X-Received: by 2002:a17:906:1806:: with SMTP id v6mr11130578eje.134.1560424643178;
+        Thu, 13 Jun 2019 04:17:23 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id j3sm798871edh.82.2019.06.13.04.17.22
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
         Thu, 13 Jun 2019 04:17:22 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7887A1804AF; Thu, 13 Jun 2019 13:17:21 +0200 (CEST)
-Subject: [PATCH bpf-next v4 0/3] xdp: Allow lookup into devmaps before
- redirect
+        id 9D35C181CC7; Thu, 13 Jun 2019 13:17:21 +0200 (CEST)
+Subject: [PATCH bpf-next v4 2/3] bpf_xdp_redirect_map: Perform map lookup in
+ eBPF helper
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
@@ -45,7 +45,9 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
         David Miller <davem@davemloft.net>,
         Jonathan Lemon <jonathan.lemon@gmail.com>
 Date:   Thu, 13 Jun 2019 13:17:21 +0200
-Message-ID: <156042464138.25684.15061870566905680617.stgit@alrua-x1>
+Message-ID: <156042464155.25684.9001494922674130772.stgit@alrua-x1>
+In-Reply-To: <156042464138.25684.15061870566905680617.stgit@alrua-x1>
+References: <156042464138.25684.15061870566905680617.stgit@alrua-x1>
 User-Agent: StGit/0.19-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -55,59 +57,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using the bpf_redirect_map() helper to redirect packets from XDP, the eBPF
-program cannot currently know whether the redirect will succeed, which makes it
-impossible to gracefully handle errors. To properly fix this will probably
-require deeper changes to the way TX resources are allocated, but one thing that
-is fairly straight forward to fix is to allow lookups into devmaps, so programs
-can at least know when a redirect is *guaranteed* to fail because there is no
-entry in the map. Currently, programs work around this by keeping a shadow map
-of another type which indicates whether a map index is valid.
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This series contains two changes that are complementary ways to fix this issue:
+The bpf_redirect_map() helper used by XDP programs doesn't return any
+indication of whether it can successfully redirect to the map index it was
+given. Instead, BPF programs have to track this themselves, leading to
+programs using duplicate maps to track which entries are populated in the
+devmap.
 
-- Moving the map lookup into the bpf_redirect_map() helper (and caching the
-  result), so the helper can return an error if no value is found in the map.
-  This includes a refactoring of the devmap and cpumap code to not care about
-  the index on enqueue.
+This patch fixes this by moving the map lookup into the bpf_redirect_map()
+helper, which makes it possible to return failure to the eBPF program. The
+lower bits of the flags argument is used as the return code, which means
+that existing users who pass a '0' flag argument will get XDP_ABORTED.
 
-- Allowing regular lookups into devmaps from eBPF programs, using the read-only
-  flag to make sure they don't change the values.
+With this, a BPF program can check the return code from the helper call and
+react by, for instance, substituting a different redirect. This works for
+any type of map used for redirect.
 
-The performance impact of the series is negligible, in the sense that I cannot
-measure it because the variance between test runs is higher than the difference
-pre/post series.
-
-Changelog:
-
-v4:
-  - Fix a few nits from Andrii
-  - Lose the #defines in bpf.h and just compare the flags argument directly to
-    XDP_TX in bpf_xdp_redirect_map().
-
-v3:
-  - Adopt Jonathan's idea of using the lower two bits of the flag value as the
-    return code.
-  - Always do the lookup, and cache the result for use in xdp_do_redirect(); to
-    achieve this, refactor the devmap and cpumap code to get rid the bitmap for
-    selecting which devices to flush.
-v2:
-  - For patch 1, make it clear that the change works for any map type.
-  - For patch 2, just use the new BPF_F_RDONLY_PROG flag to make the return
-    value read-only.
-
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
+ include/linux/filter.h |    1 +
+ net/core/filter.c      |   27 +++++++++++++--------------
+ 2 files changed, 14 insertions(+), 14 deletions(-)
 
-Toke Høiland-Jørgensen (3):
-      devmap/cpumap: Use flush list instead of bitmap
-      bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-      devmap: Allow map lookups from eBPF
-
-
- include/linux/filter.h |    1 
- kernel/bpf/cpumap.c    |  106 +++++++++++++++++++++------------------------
- kernel/bpf/devmap.c    |  112 +++++++++++++++++++++++-------------------------
- kernel/bpf/verifier.c  |    7 +--
- net/core/filter.c      |   29 ++++++------
- 5 files changed, 118 insertions(+), 137 deletions(-)
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 43b45d6db36d..f31ae8b9035a 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -580,6 +580,7 @@ struct bpf_skb_data_end {
+ struct bpf_redirect_info {
+ 	u32 ifindex;
+ 	u32 flags;
++	void *item;
+ 	struct bpf_map *map;
+ 	struct bpf_map *map_to_flush;
+ 	u32 kern_flags;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7a996887c500..7d742ea61e2d 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_device *dev, struct xdp_buff *xdp,
+ 			       struct bpf_redirect_info *ri)
+ {
+ 	u32 index = ri->ifindex;
+-	void *fwd = NULL;
++	void *fwd = ri->item;
+ 	int err;
+ 
+ 	ri->ifindex = 0;
++	ri->item = NULL;
+ 	WRITE_ONCE(ri->map, NULL);
+ 
+-	fwd = __xdp_map_lookup_elem(map, index);
+-	if (unlikely(!fwd)) {
+-		err = -EINVAL;
+-		goto err;
+-	}
+ 	if (ri->map_to_flush && unlikely(ri->map_to_flush != map))
+ 		xdp_do_flush_map();
+ 
+@@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+ {
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+ 	u32 index = ri->ifindex;
+-	void *fwd = NULL;
++	void *fwd = ri->item;
+ 	int err = 0;
+ 
+ 	ri->ifindex = 0;
++	ri->item = NULL;
+ 	WRITE_ONCE(ri->map, NULL);
+ 
+-	fwd = __xdp_map_lookup_elem(map, index);
+-	if (unlikely(!fwd)) {
+-		err = -EINVAL;
+-		goto err;
+-	}
+-
+ 	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
+ 		struct bpf_dtab_netdev *dst = fwd;
+ 
+@@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
+ 
+ 	ri->ifindex = ifindex;
+ 	ri->flags = flags;
++	ri->item = NULL;
+ 	WRITE_ONCE(ri->map, NULL);
+ 
+ 	return XDP_REDIRECT;
+@@ -3753,9 +3745,16 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+ {
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+ 
+-	if (unlikely(flags))
++	/* Lower bits of the flags are used as return code on lookup failure */
++	if (unlikely(flags > XDP_TX))
+ 		return XDP_ABORTED;
+ 
++	ri->item = __xdp_map_lookup_elem(map, ifindex);
++	if (unlikely(!ri->item)) {
++		WRITE_ONCE(ri->map, NULL);
++		return flags;
++	}
++
+ 	ri->ifindex = ifindex;
+ 	ri->flags = flags;
+ 	WRITE_ONCE(ri->map, map);
 
