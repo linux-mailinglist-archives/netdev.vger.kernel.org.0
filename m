@@ -2,155 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C0A44E44
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E89844E48
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727339AbfFMVUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 17:20:23 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:37197 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfFMVUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:20:22 -0400
-Received: by mail-pl1-f193.google.com with SMTP id bh12so65741plb.4
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:20:22 -0700 (PDT)
+        id S1728172AbfFMVVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 17:21:13 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:42740 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfFMVVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 17:21:13 -0400
+Received: by mail-ed1-f66.google.com with SMTP id z25so224222edq.9
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 14:21:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uSZRQ5JFckbl2yH+4beDjUiPmzf2p41Uo+IA2IwXq+o=;
-        b=Fxs9EEjGxpUvaW9DJi6f+WYDmAU/2UQgL/ohdVF8R6qOT/hp+IDyblrZaEVQF/f0mr
-         vVS6yWOWujrFEDza45YQLYH6lrNNERrqqjqhywaF1FlliSAdymE1s0NVxuNxxRIN87W8
-         lhiIfAKfxYgoXS07cz/xRKWTE77XQ8l+vUgZEurbd5CjYurKNAu36UcPORmUckXhByFa
-         UENirVX4oEmG2RAU3XoswvPWj2ZetLGhjFfHkFALAFWz/8DJ+m80cUupM4/D2z6JQv/B
-         Fwjr7WEbeIMrOMC8UbH9JMNMIHTG24lW2qUOm/uHZ3tJiaypnloGZrtQ2gBzO8mTe/NB
-         DNAQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fxn+ibphcAr7J3R+3rpIzdXpvz9eQJikpP99DaqAPb4=;
+        b=qrp/ydJ6WgN1pljL7lJdv7GY//Rum9OhB0Pu/pbKSbfGtf4scxxqGuiEceiBzt3JNi
+         jZW3/FJL9MBjIJsTaI1Zqvrw2tSbFN6XxTOL0Aajauv7O4CNuEzxU5c6+68exSchUbM3
+         uSdyDQh++j1yZGdCdBY9tjeda1+3CLozjjpOyCMgOfX8JLFyMbrlkesbVQCvJnzzQKar
+         5FmSw73ZNq95wpJbxcsLksRUjdm+KBTFyaYszrowdhpPHE6xRhRTVYeTF5ffyrixM/Ri
+         nPEy9k1JEytwspvrSYZ/Yab7z++5kMNciWq7t7QiGqsD8aBBynRm9QHzHaHtZTpilfHk
+         sKXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uSZRQ5JFckbl2yH+4beDjUiPmzf2p41Uo+IA2IwXq+o=;
-        b=GLZJ3FXl03ZvlZ3SsqGE9IINSaKd2n+EU5um8tcxcDleGVW3EOCCRPAI4Xn0BtoB4m
-         vYRlOzoOE68wyDLAbJzr/7FU22HaFQI0mSiNI6cZ+GbQjoLXLp3jyQKsD1Gf0kqCMQyz
-         XdjWUwYjpIFbVL17Kz4w27xOqsW+VvrfgNjKkruzs/LVoTs+jzsRzlsXT7DxvEJmu2vp
-         5LmZhg2jBS1VYmk70gSxAp2N1ty7ABNS9YzKZyD5PxAWrXzZRylFdhY3nLgZq+dU5IWl
-         52ztCEsVB4gqciL8EV4fSdw8EebT9A9ucm0o+sLJjW78xBb2fUlFosJlfV/KS7GFvcZV
-         w9Qg==
-X-Gm-Message-State: APjAAAVKtLGB6nS1nH/6ucAkwEUYDxNtfhsy1plEo/OpMEUcEnbmVG4g
-        6H+h1zYMhRWMEUlGtdTrv2yw7w==
-X-Google-Smtp-Source: APXvYqyTsrHFm1KThlgoKTCyn6j+PWJEer+sJ0ZKrUjVNbokFLpvczwxibqDiz57y8cL6Bc7aXrj1w==
-X-Received: by 2002:a17:902:2a26:: with SMTP id i35mr50891578plb.315.1560460821708;
-        Thu, 13 Jun 2019 14:20:21 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id a12sm707942pgq.0.2019.06.13.14.20.20
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 14:20:20 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 14:20:20 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, Martin Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: implement getsockopt and setsockopt
- hooks
-Message-ID: <20190613212020.GB9636@mini-arch>
-References: <20190610210830.105694-1-sdf@google.com>
- <20190610210830.105694-2-sdf@google.com>
- <20190613201632.t7npizqhtnohzwmc@ast-mbp.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fxn+ibphcAr7J3R+3rpIzdXpvz9eQJikpP99DaqAPb4=;
+        b=CH6hWvBEzzOqv75T9yk9B0VDDAAj3TtMYqpoxMqpprtSUG71vNVLzG398TGfxpwBHY
+         GiAYzQwNSaLUAZH0iph9DkuzYrU85JMmrCHGX8MtK5SToMwf4CWubdf/wcRLOo63jeXv
+         R+U/MmQ/A8TUGmRED2BlnLI3PlNkC6dWokpKeJOzKUtBoSxmxWU/BCFgPceTYQwb92Yd
+         Kz3TmrxWfDr0bON94bCNO1fed3uJFR4Hxkc1PT9BaTWBwp0UUoGL3nyVE7+ZDroN7Kbj
+         ClIWZPnlOC2mOCaWY90PmFyxn1GnRM1aM7Fr5XdhHF2HnXb/l6Rk/mp8Zer8W5+oSi8h
+         tIIg==
+X-Gm-Message-State: APjAAAVWR/dVqMyS2comSvqvkkyfjRbBeohPZQrWOSqcrWhXpffEpI1e
+        lMMomjUpg4RNQFO8ZsuiMb9xH+ZCxsbgaO2j+1g=
+X-Google-Smtp-Source: APXvYqw80biAjyZ4B7KBL+E0rtPJEQ8Z3bFRXzJdf3eE9xeIKUQFE33bhfJFGTFmNwfFsBqWudlZtsm/XcYeUivSmA8=
+X-Received: by 2002:a50:b1db:: with SMTP id n27mr52099586edd.62.1560460871342;
+ Thu, 13 Jun 2019 14:21:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190613201632.t7npizqhtnohzwmc@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+References: <1560381160-19584-1-git-send-email-jbaron@akamai.com>
+ <CAKgT0Uej5CkBJpqsBnB61ozo2kAFKyAH8WY9KVbFQ67ZxPiDag@mail.gmail.com> <3af1e0da-8eb4-8462-3107-27917fec9286@akamai.com>
+In-Reply-To: <3af1e0da-8eb4-8462-3107-27917fec9286@akamai.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 13 Jun 2019 17:20:35 -0400
+Message-ID: <CAF=yD-+BMvToWvRwayTrxQBQ-Lgq7QVA6E+rGe3e5ic7rQ_gSg@mail.gmail.com>
+Subject: Re: [PATCH net-next] gso: enable udp gso for virtual devices
+To:     Jason Baron <jbaron@akamai.com>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Joshua Hunt <johunt@akamai.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/13, Alexei Starovoitov wrote:
-> C based example doesn't use ret=1.
-> imo that's a sign that something is odd in the api.
-I decided not to test ret=1 it because there are tests in the test_sockopt.c
-for ret=1 usecase. But I can certainly extend C based test to cover
-ret=1 as well. I agree that C based test can be used as an example,
-will extend that to cover ret=0/1/2.
+> >> @@ -237,6 +237,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+> >>                                  NETIF_F_GSO_GRE_CSUM |                 \
+> >>                                  NETIF_F_GSO_IPXIP4 |                   \
+> >>                                  NETIF_F_GSO_IPXIP6 |                   \
+> >> +                                NETIF_F_GSO_UDP_L4 |                   \
+> >>                                  NETIF_F_GSO_UDP_TUNNEL |               \
+> >>                                  NETIF_F_GSO_UDP_TUNNEL_CSUM)
+> >
+> > Are you adding this to NETIF_F_GSO_ENCAP_ALL? Wouldn't it make more
+> > sense to add it to NETIF_F_GSO_SOFTWARE?
+> >
+>
+> Yes, I'm adding to NETIF_F_GSO_ENCAP_ALL (not very clear from the
+> context). I will fix the commit log.
+>
+> In: 83aa025 udp: add gso support to virtual devices, the support was
+> also added to NETIF_F_GSO_ENCAP_ALL (although subsequently reverted due
+> to UDP GRO not being in place), so I wonder what the reason was for that?
 
-> In particular ret=1 doesn't prohibit bpf prog to modify the optval.
-That's a good point, Martin brought that up as well. We were trying
-to remedy it by doing copy_to_user only if any program returned 2 ("BPF
-handled that, bypass the kernel"). But I agree, the fact that the prog in
-the chain can modify optval and return 1 is suboptimal. Especially if
-the previous one filled in some valid data and returned 2.
+That was probably just a bad choice on my part.
 
-> Multiple progs can overwrite it and still return 1.
-> But that optval is not going to be processed by the kernel.
-> Should we do copy_to_user(optval, ctx.optval, ctx.optlen) here
-> and let kernel pick it up from there?
-I was thinking initially about that, that kernel can "transparently"
-modify user buffer and then kernel (or next BPF program in the chain)
-can run standard getsockopt on that.
+It worked in practice, but if NETIF_F_GSO_SOFTWARE works the same
+without unexpected side effects, then I agree that it is the better choice.
 
-But it sounds a bit complicated and I don't really have a good use case
-for that.
+That choice does appear to change behavior when sending over tunnel
+devices. Might it send tunneled GSO packets over loopback?
 
-> Should bpf prog be allowed to change optlen as well?
-> ret=1 would mean that bpf prog did something and needs kernel
-> to continue.
-> 
-> Now consider a sequence of bpf progs.
-> Some are doing ret=1. Some others are doing ret=2
-> ret=2 will supersede.
-> If first executed prog (child in cgroup) did ret=2
-> the parent has no way to tell kernel to handle it.
-> Even if parent does ret=1, it's effectively ignored.
-> Parent can enforce rejection with ret=0, but it's a weird
-> discrepancy.
-> The rule for cgroup progs was 'all yes is yes, any no is no'.
-My canonical example when reasoning about multiple progs was that each one
-of them would implement handling for a particular level+optname. So only
-a single one form the chain would return 2 or 0, the rest would return 1
-without touching the buffer. I can't come up with a good use-case where
-two programs in the chain can both return 2 and fill out the buffer.
-The majority of the sockopts would still be handled by the kernel,
-we'd have only a handful of bpf progs that handle a tiny subset
-and delegate the rest to the kernel.
 
-How about we stop further processing as soon as some program in the chain
-returned 2? I think that would address most of the concerns?
-Maybe, in this case, also stop further processing as soon as
-we get ret=0 (EPERM) for consistency?
 
-> So if ret=1 means 'kernel handles it'. Should it be almost
-> as strong as 'reject it': any prog doing ret=1 means 'kernel does it'
-> (unless some prog did ret=0. then reject it) ?
-> if ret=1 means 'bpf did some and needs kernel to continue' that's
-> another story.
-> For ret=2 being 'bpf handled it completely', should parent overwrite it?
-See above, I was thinking the opposite. Treat ret=1 from the BPF
-program as "I'm not interested in this level+optname, other BPF
-program or kernel should do the job". Essentially, as soon as bpf program
-returns 2, that means BPF had consumed the request and no further processing
-from neither BPF, nor kernel is requred; we can return to userspace.
-
-There is a problem that some prog in the chain might do some
-"background" work and still return 1, but so far I don't see why
-that can be useful. The pattern should be: filter the option
-you want, handle it, otherwise return 1 to let the other progs/kernel
-run.
-
-That BPF_F_ALLOW_MULTI use-case probably deserves another selftest :-/
-
-> May be retval from child prog should be seen by parent prog?
-> 
-> In some sense kernel can be seen as another bpf prog in a sequence.
-> 
-> Whatever new behavior is with 3 values it needs to be
-> documented in uapi/bpf.h
-> We were sloppy with such docs in the past, but that's not
-> a reason to continue.
-Good point on documenting that, I was trying to document everything
-in Documentation/bpf/prog_cgroup_sockopt.rst, uapi/bpf.h seems too
-constrained (I didn't find a good place to put that ret 1 vs 2 info).
-Do you think having a file under Documentation/ with all the details
-is not enough? Where can I put this ret=0/1/2 handing info in the
-uapi/bpf.h?
+> I agree that NETIF_F_GSO_SOFTWARE seems conceptually more logical and
+> further I think it adds support for more 'virtual' devices. For example,
+> I tested loopback with NETIF_F_GSO_UDP_L4 being added to
+> NETIF_F_GSO_SOFTWARE and it shows a nice performance gain, whereas
+> NETIF_F_GSO_ENCAP_ALL isn't included for loopback.
+>
+> Thanks,
+>
+> -Jason
