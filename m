@@ -2,97 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 445CA445EF
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C999D445D7
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389170AbfFMQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:48:02 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36946 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730244AbfFMEug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 00:50:36 -0400
-Received: by mail-wr1-f67.google.com with SMTP id v14so19153475wrr.4
-        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 21:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Dt8CXLyEGW4hbQR5ni3vukx12yipOarAWNOeo5Xq++g=;
-        b=Gwj1XmwzXxS8nJXz6XCpD+ZtXBK0AhCOyNH8LzgH2EPh9ypDDqdjdgumK1/sGVrqXU
-         UAbU94sZq8oObmIAcF7DMFYRicnr+E36n6Her7D7XsxjsAyjXyUvcElwoLNytrpc4/tB
-         m2MojuAoAaBPQ/7HOb8yXXxYIYbjfnB6u152bY9G3lq9tAe9xqUR55BrHaifT81Ju4hZ
-         eGcwazb/RuhK0F/eR/4sESeTnhiJqvyc9NtuuXHj7vL9bMfsJYTfW1gfpfZdVPH7bkFe
-         U9+Y90DNr8IYqGRlyxmryHNexeM35UBR9YI4CbFUizhvBmlWgA3Q1o/voMvx7TqeoZQM
-         KsaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Dt8CXLyEGW4hbQR5ni3vukx12yipOarAWNOeo5Xq++g=;
-        b=JU52/xROJ5oURNzIktN7f4EC2g3HVMgvXSP12ExftvzbTZl/E+5Qqvxn8PTuivlzA8
-         l4yzFpOnjqrl+W6lrZPII8US9ToPlIFtXDzTjMogsejYVxez2ghOEB+5+BOHcpcauV3k
-         JBRCYWiF5Vx/uPu/TUt7wGMSYLmRjPSKeQEExtjWed1qadydiuvnJagDOirkQiiYFIeB
-         KA3izBjYwiD9Mxwk/L/F6dng2e/NVbSvzk4kH1kWDgyJEuUxlkN+qkvQumFtuVK4Sajj
-         5O0cCdN5Sr2fKSJ+DuTs/SN8Ki+PuaMoNxU+/xolErSjaVxckvzU6WQxCNfbZPCcI24u
-         Xbhg==
-X-Gm-Message-State: APjAAAX2k2Iui8oQHC5TXScoEOCtoDT5VBXxq8WrsUsjvHXT8xUIvGAe
-        6gupUEWMyhIWo8Ytg8zvPDLhjA==
-X-Google-Smtp-Source: APXvYqx8cbmWPWTjWGOiCzn1foIDQoATD3i4MUc7w8eHnndgjIHliahu7cRGdj4Oz7AwqdmqDOz3ug==
-X-Received: by 2002:a5d:4843:: with SMTP id n3mr5598852wrs.77.1560401433465;
-        Wed, 12 Jun 2019 21:50:33 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id r12sm663115wrt.95.2019.06.12.21.50.32
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 21:50:33 -0700 (PDT)
-Date:   Thu, 13 Jun 2019 06:50:31 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, vladbu@mellanox.com, pablo@netfilter.org,
-        xiyou.wangcong@gmail.com, jhs@mojatatu.com, mlxsw@mellanox.com,
-        alexanderk@mellanox.com
-Subject: Re: tc tp creation performance degratation since kernel 5.1
-Message-ID: <20190613045031.GA2254@nanopsycho.orion>
-References: <20190612120341.GA2207@nanopsycho>
- <e11118334595e6517e618e80406e0135402cacf1.camel@redhat.com>
+        id S2404187AbfFMQrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:47:04 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38884 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730249AbfFMFFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 01:05:04 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5D552jG024802
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 22:05:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=SI24W5Z8EyLLOK4C9Z6ksLNPnCBwReaLrAALT/kmwL0=;
+ b=HPVyuC10xIfBTonIEfOTQy1g8y2wlBHvj3fiktyUStuBkiGb/9axaNkffAzPGv0nk9Jd
+ ITodZwkSJi71rvt+mreWGxuRx5xhJ6+zE76A0xAhRbTkIg6rS9Jkg34j9EL4ca7EUPia
+ yaeftHx0mwOJhTLTHA9rVes6b+1k+6C00+4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t38w718fd-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 12 Jun 2019 22:05:02 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 12 Jun 2019 22:05:01 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 70D1B861777; Wed, 12 Jun 2019 22:04:59 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <dan.carpenter@oracle.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] libbpf: fix check for presence of associated BTF for map creation
+Date:   Wed, 12 Jun 2019 22:04:57 -0700
+Message-ID: <20190613050457.290884-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e11118334595e6517e618e80406e0135402cacf1.camel@redhat.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-13_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906130041
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jun 12, 2019 at 02:30:37PM CEST, pabeni@redhat.com wrote:
->Hi,
->
->On Wed, 2019-06-12 at 14:03 +0200, Jiri Pirko wrote:
->> I did simple prifiling using perf. Output on 5.1 kernel:
->>     77.85%  tc               [kernel.kallsyms]  [k] tcf_chain_tp_find
->>      3.30%  tc               [kernel.kallsyms]  [k] _raw_spin_unlock_irqrestore
->>      1.33%  tc_pref_scale.s  [kernel.kallsyms]  [k] do_syscall_64
->>      0.60%  tc_pref_scale.s  libc-2.28.so       [.] malloc
->>      0.55%  tc               [kernel.kallsyms]  [k] mutex_spin_on_owner
->>      0.51%  tc               libc-2.28.so       [.] __memset_sse2_unaligned_erms
->>      0.40%  tc_pref_scale.s  libc-2.28.so       [.] __gconv_transform_utf8_internal
->>      0.38%  tc_pref_scale.s  libc-2.28.so       [.] _int_free
->>      0.37%  tc_pref_scale.s  libc-2.28.so       [.] __GI___strlen_sse2
->>      0.37%  tc               [kernel.kallsyms]  [k] idr_get_free
->> 
->> Output on net-next:
->>     39.26%  tc               [kernel.vmlinux]  [k] lock_is_held_type
->
->It looks like you have lockdep enabled here, but not on the 5.1 build.
->
->That would explain such a large perf difference.
->
->Can you please double check?
+Kernel internally checks that either key or value type ID is specified,
+before using btf_fd. Do the same in libbpf's map creation code for
+determining when to retry map creation w/o BTF.
 
-Will do.
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: fba01a0689a9 ("libbpf: use negative fd to specify missing BTF")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
->
->thanks,
->
->Paolo
->
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index dd8b2cd5d3a7..e725fa86b189 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1736,7 +1736,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+ 		create_attr.key_size = def->key_size;
+ 		create_attr.value_size = def->value_size;
+ 		create_attr.max_entries = def->max_entries;
+-		create_attr.btf_fd = -1;
++		create_attr.btf_fd = 0;
+ 		create_attr.btf_key_type_id = 0;
+ 		create_attr.btf_value_type_id = 0;
+ 		if (bpf_map_type__is_map_in_map(def->type) &&
+@@ -1750,11 +1750,12 @@ bpf_object__create_maps(struct bpf_object *obj)
+ 		}
+ 
+ 		*pfd = bpf_create_map_xattr(&create_attr);
+-		if (*pfd < 0 && create_attr.btf_fd >= 0) {
++		if (*pfd < 0 && (create_attr.btf_key_type_id ||
++				 create_attr.btf_value_type_id)) {
+ 			cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+ 			pr_warning("Error in bpf_create_map_xattr(%s):%s(%d). Retrying without BTF.\n",
+ 				   map->name, cp, errno);
+-			create_attr.btf_fd = -1;
++			create_attr.btf_fd = 0;
+ 			create_attr.btf_key_type_id = 0;
+ 			create_attr.btf_value_type_id = 0;
+ 			map->btf_key_type_id = 0;
+@@ -2045,7 +2046,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+ 	load_attr.license = license;
+ 	load_attr.kern_version = kern_version;
+ 	load_attr.prog_ifindex = prog->prog_ifindex;
+-	load_attr.prog_btf_fd = prog->btf_fd;
++	load_attr.prog_btf_fd = prog->btf_fd >= 0 ? prog->btf_fd : 0;
+ 	load_attr.func_info = prog->func_info;
+ 	load_attr.func_info_rec_size = prog->func_info_rec_size;
+ 	load_attr.func_info_cnt = prog->func_info_cnt;
+-- 
+2.17.1
+
