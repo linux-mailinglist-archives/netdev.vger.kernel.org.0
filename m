@@ -2,144 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDCA44EE7
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D83844EE9
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 00:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbfFMWAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 18:00:20 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38214 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727727AbfFMWAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:00:19 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5DLr4L2027996
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:18 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=G9Qvn4W0vyFE+eSObH1gaAkGjLJ6ViJzH32ICMKUTDU=;
- b=GI3of1hD7+DgaWPqoMhbVjt+/+3rKyGadm2HV+uZTzY4lJHh0IfQ7fyFL5zXgHVAKiiW
- YeudCTYUZiJ+fE0q6tgTSI23EdBGADFkLk2gMtKNE++s+WpoxHID6ALe9p7Y299xNAoE
- AASROIxsChK/2PYHPAFS1yt0+NyQIy9O+t8= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t3uh08qgm-13
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 15:00:18 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 13 Jun 2019 15:00:11 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id AF5662943408; Thu, 13 Jun 2019 15:00:05 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 3/3] bpf: Add test for SO_REUSEPORT_DETACH_BPF
-Date:   Thu, 13 Jun 2019 15:00:05 -0700
-Message-ID: <20190613220005.3095815-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190613215959.3095374-1-kafai@fb.com>
-References: <20190613215959.3095374-1-kafai@fb.com>
-X-FB-Internal: Safe
+        id S1728977AbfFMWA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 18:00:58 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38273 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbfFMWA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 18:00:57 -0400
+Received: by mail-pf1-f195.google.com with SMTP id a186so95570pfa.5;
+        Thu, 13 Jun 2019 15:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=o0Xxr326HdVBxJMQJ7yuDvuInC+0DtTaN16E8H3a2bk=;
+        b=iwg9vvI8CIMUZnifphfNAi7MMdiXb5tLze1Wjdtzn7ptvajN7YJIN73rJAnv2SrorO
+         jaB81fzQaDK+JMuvGQwsEE4jwIY44z/DGTKqHsx1Kk/FS9iP+UWfZMMBxHTRuP8CxTpv
+         lE2+2k9L/W9bUVM85tyuyWEiDqRKBGK360DmIiwCIMI03BRlU/cATpcM5f3pZFwONuJG
+         +ECxR2b/P1pdEt88fbls+/HzpMYKTj6mRovaUUUBvLBgzOv5x8mAEGF7A6fKy964hfVf
+         o6Nkds204NQYzmDXEZSD927Lq0tTL+Rk8JstUF21VPd7LrycvbiyHEYwZ81t0J47QGr/
+         9Upg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=o0Xxr326HdVBxJMQJ7yuDvuInC+0DtTaN16E8H3a2bk=;
+        b=FqMKztGuUftCBfuks53GPnwMQDNYPsvqfdyR0p25JyET5RA/XH3NCyskIC87SNLlJN
+         iXrIBKBchbiqzg1Yn6i+/PbVyG73tidckRgfCP+CxwoS3+fzjWyxc8HT6VBzg40doTOQ
+         JbnanzHlVZt1saEkPQYXAPSuVj59KyBHlrbh++rnrYzfO4VNrqT5e6LuEQuLYJDeBKpP
+         vYmkGwm57eLHYFAdT2lwjGUQmEScPIK5cSIw/qPuU8NHVZOOjAnxsgIs/lyylfpbwtOR
+         OTMnXQCl7m3YLZj9sbmk8f/UNr7czFJgOQrpWrJ6/QkeVD5hcAI0/6lflzzc1+s120iJ
+         5F6w==
+X-Gm-Message-State: APjAAAUpzARKrZr5wKItpaFWL2XpAODXi5IT35DyrDbGbkzeEeLx05v2
+        NfRzxjZiuU9g8N/vVqc7/OA=
+X-Google-Smtp-Source: APXvYqwyywNqJkHJDH2mvO+bvRmgBxFaFgJmncdf/zEQvCUIGwjF1LxvkA+ZwyfyqgkYoFfmqTWUOw==
+X-Received: by 2002:a62:82c2:: with SMTP id w185mr75108171pfd.202.1560463257135;
+        Thu, 13 Jun 2019 15:00:57 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:e034])
+        by smtp.gmail.com with ESMTPSA id g8sm723759pgd.29.2019.06.13.15.00.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jun 2019 15:00:56 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 15:00:55 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 7/9] x86/unwind/orc: Fall back to using frame pointers
+ for generated code
+Message-ID: <20190613220054.tmonrgfdeie2kl74@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <4f536ec4facda97406273a22a4c2677f7cb22148.1560431531.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-13_13:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=897 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906130164
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4f536ec4facda97406273a22a4c2677f7cb22148.1560431531.git.jpoimboe@redhat.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a test for the new sockopt SO_REUSEPORT_DETACH_BPF.
+On Thu, Jun 13, 2019 at 08:21:04AM -0500, Josh Poimboeuf wrote:
+> The ORC unwinder can't unwind through BPF JIT generated code because
+> there are no ORC entries associated with the code.
+> 
+> If an ORC entry isn't available, try to fall back to frame pointers.  If
+> BPF and other generated code always do frame pointer setup (even with
+> CONFIG_FRAME_POINTERS=n) then this will allow ORC to unwind through most
+> generated code despite there being no corresponding ORC entries.
+> 
+> Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
+> Reported-by: Song Liu <songliubraving@fb.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> ---
+>  arch/x86/kernel/unwind_orc.c | 26 ++++++++++++++++++++++----
+>  1 file changed, 22 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+> index 33b66b5c5aec..72b997eaa1fc 100644
+> --- a/arch/x86/kernel/unwind_orc.c
+> +++ b/arch/x86/kernel/unwind_orc.c
+> @@ -82,9 +82,9 @@ static struct orc_entry *orc_find(unsigned long ip);
+>   * But they are copies of the ftrace entries that are static and
+>   * defined in ftrace_*.S, which do have orc entries.
+>   *
+> - * If the undwinder comes across a ftrace trampoline, then find the
+> + * If the unwinder comes across a ftrace trampoline, then find the
+>   * ftrace function that was used to create it, and use that ftrace
+> - * function's orc entrie, as the placement of the return code in
+> + * function's orc entry, as the placement of the return code in
+>   * the stack will be identical.
+>   */
+>  static struct orc_entry *orc_ftrace_find(unsigned long ip)
+> @@ -128,6 +128,16 @@ static struct orc_entry null_orc_entry = {
+>  	.type = ORC_TYPE_CALL
+>  };
+>  
+> +/* Fake frame pointer entry -- used as a fallback for generated code */
+> +static struct orc_entry orc_fp_entry = {
+> +	.type		= ORC_TYPE_CALL,
+> +	.sp_reg		= ORC_REG_BP,
+> +	.sp_offset	= 16,
+> +	.bp_reg		= ORC_REG_PREV_SP,
+> +	.bp_offset	= -16,
+> +	.end		= 0,
+> +};
+> +
+>  static struct orc_entry *orc_find(unsigned long ip)
+>  {
+>  	static struct orc_entry *orc;
+> @@ -392,8 +402,16 @@ bool unwind_next_frame(struct unwind_state *state)
+>  	 * calls and calls to noreturn functions.
+>  	 */
+>  	orc = orc_find(state->signal ? state->ip : state->ip - 1);
+> -	if (!orc)
+> -		goto err;
+> +	if (!orc) {
+> +		/*
+> +		 * As a fallback, try to assume this code uses a frame pointer.
+> +		 * This is useful for generated code, like BPF, which ORC
+> +		 * doesn't know about.  This is just a guess, so the rest of
+> +		 * the unwind is no longer considered reliable.
+> +		 */
+> +		orc = &orc_fp_entry;
+> +		state->error = true;
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- .../selftests/bpf/test_select_reuseport.c     | 54 +++++++++++++++++++
- 1 file changed, 54 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
-index 75646d9b34aa..7566c13eb51a 100644
---- a/tools/testing/selftests/bpf/test_select_reuseport.c
-+++ b/tools/testing/selftests/bpf/test_select_reuseport.c
-@@ -523,6 +523,58 @@ static void test_pass_on_err(int type, sa_family_t family)
- 	printf("OK\n");
- }
- 
-+static void test_detach_bpf(int type, sa_family_t family)
-+{
-+#ifdef SO_DETACH_REUSEPORT_BPF
-+	__u32 nr_run_before = 0, nr_run_after = 0, tmp, i;
-+	struct epoll_event ev;
-+	int cli_fd, err, nev;
-+	struct cmd cmd = {};
-+	int optvalue = 0;
-+
-+	printf("%s: ", __func__);
-+	err = setsockopt(sk_fds[0], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
-+			 &optvalue, sizeof(optvalue));
-+	CHECK(err == -1, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
-+	      "err:%d errno:%d\n", err, errno);
-+
-+	err = setsockopt(sk_fds[1], SOL_SOCKET, SO_DETACH_REUSEPORT_BPF,
-+			 &optvalue, sizeof(optvalue));
-+	CHECK(err == 0 || errno != ENOENT, "setsockopt(SO_DETACH_REUSEPORT_BPF)",
-+	      "err:%d errno:%d\n", err, errno);
-+
-+	for (i = 0; i < NR_RESULTS; i++) {
-+		err = bpf_map_lookup_elem(result_map, &i, &tmp);
-+		CHECK(err == -1, "lookup_elem(result_map)",
-+		      "i:%u err:%d errno:%d\n", i, err, errno);
-+		nr_run_before += tmp;
-+	}
-+
-+	cli_fd = send_data(type, family, &cmd, sizeof(cmd), PASS);
-+	nev = epoll_wait(epfd, &ev, 1, 5);
-+	CHECK(nev <= 0, "nev <= 0",
-+	      "nev:%d expected:1 type:%d family:%d data:(0, 0)\n",
-+	      nev,  type, family);
-+
-+	for (i = 0; i < NR_RESULTS; i++) {
-+		err = bpf_map_lookup_elem(result_map, &i, &tmp);
-+		CHECK(err == -1, "lookup_elem(result_map)",
-+		      "i:%u err:%d errno:%d\n", i, err, errno);
-+		nr_run_after += tmp;
-+	}
-+
-+	CHECK(nr_run_before != nr_run_after,
-+	      "nr_run_before != nr_run_after",
-+	      "nr_run_before:%u nr_run_after:%u\n",
-+	      nr_run_before, nr_run_after);
-+
-+	printf("OK\n");
-+	close(cli_fd);
-+#else
-+	printf("%s: SKIP\n", __func__);
-+#endif
-+}
-+
- static void prepare_sk_fds(int type, sa_family_t family, bool inany)
- {
- 	const int first = REUSEPORT_ARRAY_SIZE - 1;
-@@ -664,6 +716,8 @@ static void test_all(void)
- 			test_pass(type, family);
- 			test_syncookie(type, family);
- 			test_pass_on_err(type, family);
-+			/* Must be the last test */
-+			test_detach_bpf(type, family);
- 
- 			cleanup_per_test();
- 			printf("\n");
--- 
-2.17.1
+That seems fragile.
+Can't we populate orc_unwind tables after JIT ?
 
