@@ -2,124 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 273A945018
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 01:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F254502D
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 01:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727038AbfFMXgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 19:36:02 -0400
-Received: from mail-eopbgr1300123.outbound.protection.outlook.com ([40.107.130.123]:37321
-        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726283AbfFMXgB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 19:36:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=tdIKXBL6dSOw2YEXeeucdsA+RL/KHX6S3k0ZQxXwA5lC5d6TZBXMqaVn3O9jKDLqjYIQvISoAMyBXW/0Z0LVSk2Foe2UWaSMWhPlZJapcFeJ9WyOsC/58KG613KJhr6euvYkcCu1ZFwQyUf5Vxb8ChnJLO3epwK9QeT7a4fRnDQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FSjTmiYEtto6t8rXpcplD6OVdR1LgDnRMNjgGnLbQHg=;
- b=LuyWBzen1kclnKR1Q3zi6oR/xNVMFO/4kdiN8lZx5YeBSmz2NYqVpWgY/4clN6rGFkeLMWIXXS+TUJTXUSGw4xqC1ZQ5G3dXormnNoKbgmD3D0EoZE2W0wafxhimp8ksEcHD64wLQY/sN1Kop3NGpAXZ77SMetb86kcjt5ljBTY=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FSjTmiYEtto6t8rXpcplD6OVdR1LgDnRMNjgGnLbQHg=;
- b=PRF9P8SozpFXRunWQtel7/DzrMD3d+JeCFFUH4Dp7q5Ijw0B1/sz+Ap6D8LXNIgaeVCVfCtBa2IQkFRk05pW/DsubpuUfP5v1o8N2Gw3CaItjV5OiJmZSMzTGvsZO6ahKKmMh+cdrOagDakVWBRVfTVgH8spIvBXeQztfKwCGHU=
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
- PU1P153MB0107.APCP153.PROD.OUTLOOK.COM (10.170.188.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.0; Thu, 13 Jun 2019 23:35:54 +0000
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::d896:4219:e493:b04]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::d896:4219:e493:b04%4]) with mapi id 15.20.2008.007; Thu, 13 Jun 2019
- 23:35:54 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Kelley <mikelley@microsoft.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
-Thread-Topic: [PATCH net] hvsock: fix epollout hang from race condition
-Thread-Index: AdUhY/kd1+XRZykcRS6vcxcYhC9DaQA3F6qQ
-Date:   Thu, 13 Jun 2019 23:35:53 +0000
-Message-ID: <PU1P153MB016994A9A0C4C3D1306B8FE4BFEF0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-References: <MW2PR2101MB11164C6EEAA5C511B395EF3AC0EC0@MW2PR2101MB1116.namprd21.prod.outlook.com>
-In-Reply-To: <MW2PR2101MB11164C6EEAA5C511B395EF3AC0EC0@MW2PR2101MB1116.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-06-13T23:35:51.8575032Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=50c95844-09f0-4178-8ae3-887c91853fa5;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2001:4898:80e8:a:51e0:dd5e:82b6:a386]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e44b62cc-a6de-48bb-0d54-08d6f057e0bf
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:PU1P153MB0107;
-x-ms-traffictypediagnostic: PU1P153MB0107:
-x-microsoft-antispam-prvs: <PU1P153MB0107F5C7074A7A064C0484FBBFEF0@PU1P153MB0107.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(136003)(346002)(396003)(189003)(199004)(51914003)(4326008)(55016002)(8676002)(186003)(46003)(74316002)(7736002)(8936002)(5660300002)(81156014)(486006)(76176011)(25786009)(66556008)(81166006)(66476007)(2906002)(64756008)(66946007)(6636002)(478600001)(10290500003)(52536014)(446003)(11346002)(14454004)(73956011)(305945005)(33656002)(71200400001)(1511001)(316002)(6506007)(476003)(66446008)(22452003)(86362001)(4744005)(10090500001)(76116006)(54906003)(9686003)(14444005)(256004)(6436002)(110136005)(6116002)(68736007)(6246003)(53936002)(102836004)(8990500004)(229853002)(99286004)(7696005)(71190400001);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0107;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vZBc9eSyhLatgwvFhnmHyXcCVWvpCnMlUFNwXxB74JEV6jgO0AadUugLD9D+H86yys/WTgZTQsVuUlzjSjMgnRH1+98QzR4AgzN+oTpDlhiGgBmZlDaYDhs6bDFOzjO+/y34bQOdVQ0f271xQkqohA0MxW944b1SgPID6hLrx4Idw0rBMTVcJUfhzSYP1SeDMG2YRBQ9NPX8y/bQWGZ3rjc+n+o3u4FIpGiXSWGS3Tv1TgdGXHVmLl8OAX+Il3o566jHpq36QDQfYxVnNBz2YI8JUDaVbdlYe7AnqXNHo/hhRKbMpwExDwO2YtBBqii276JWFzK0enkK17DxjQYa8zKxM4FzW4AthAdFq7TC6umb9aBcwMTXpAYbiO9YwmIwLwrFuFOHjF2Ina7P1M64QPDryCbKwe9676SksYu5Cx0=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727208AbfFMXmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 19:42:09 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40318 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726797AbfFMXmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 19:42:09 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a93so179951pla.7
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 16:42:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qJQX+GLD4fwd+GCBrIWjKsA+IAvGAyQwTSeSX2BSMJY=;
+        b=LxynRClHhe6x/JL/spDHqC1iBz5ugcvqw4xyZsmxiWuMKvrTOMnUdqDKFM09vDQEXk
+         g8D28Mk39C+APeBjMzbC1os4SM6ZMn7qrCbrNb3T3fGmWaX7RMSCe+s43sy4YLrsZYAK
+         USjKgfZYVdMtiNjE5ywU7CUZvHRcPUBbocn+o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qJQX+GLD4fwd+GCBrIWjKsA+IAvGAyQwTSeSX2BSMJY=;
+        b=FcLN+4o6Q9V1Y78yPZ3KRQFfTG2jRM2aXK7eDM2ZYmMn6gPhz3XZMZxnQmupJn9rf7
+         WYYjRzUfcNITo7Fso8C2rpgZedIz8YA00Z7jisXi9IyD2jNsKWUcwMihOtcG9ovBf1mc
+         g8X0sh6rrMQ1NySRn+xtUQdSg3ERsuQx5buOz72pQ4Yrtpt9FAZFmx08hjGPGwC1NN81
+         6I9uazWxRhQsC2Sfpo/QfQnNfeqww68vfz3pKm++AKNjgRccS7NjlCfwj3WhcBFtgEZO
+         Lq3HIBxwxWuXH0lZAGWSytn28Zh6ffvGQcHa+QMYTlzsYD5cIEfS2l2AtKDFqGy6Shte
+         HV3g==
+X-Gm-Message-State: APjAAAXv5L/PUPH3KJ7/KkL1iuHD7f9u6tS8J/qLAzO3wwNFAeh60ltD
+        Ta7FZKRIA4mNRtNUIZoJbi3vTw==
+X-Google-Smtp-Source: APXvYqyHvmG/55d6riqeb8uT5XjZFjeg3M6IzV8m9M1TGxU2K10/XPwKK4EKmj4io0cDJZmrlM1FDg==
+X-Received: by 2002:a17:902:2a26:: with SMTP id i35mr51358780plb.315.1560469328377;
+        Thu, 13 Jun 2019 16:42:08 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
+        by smtp.gmail.com with ESMTPSA id p7sm781088pfp.131.2019.06.13.16.42.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 13 Jun 2019 16:42:07 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        linux-rockchip@lists.infradead.org,
+        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
+        linux-wireless@vger.kernel.org,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
+        Douglas Anderson <dianders@chromium.org>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ritesh Harjani <riteshh@codeaurora.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Ondrej Jirman <megous@megous.com>,
+        Jiong Wu <lohengrin1024@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Madhan Mohan R <MadhanMohan.R@cypress.com>,
+        Avri Altman <avri.altman@wdc.com>
+Subject: [PATCH v4 0/5] brcmfmac: sdio: Deal better w/ transmission errors related to idle
+Date:   Thu, 13 Jun 2019 16:41:48 -0700
+Message-Id: <20190613234153.59309-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.22.0.rc2.383.gf4fbbf30c2-goog
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e44b62cc-a6de-48bb-0d54-08d6f057e0bf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 23:35:53.8994
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: decui@microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0107
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Sent: Wednesday, June 12, 2019 2:19 PM
->  ...
-> The fix is to set the pending size to the default size and never change i=
-t.
-> This way the host will always notify the guest whenever the writable spac=
-e
-> is bigger than the pending size. The host is already optimized to *only*
-> notify the guest when the pending size threshold boundary is crossed and
-> not everytime.
->=20
-> This change also reduces the cpu usage somewhat since
-> hv_stream_has_space()
-> is in the hotpath of send:
-> vsock_stream_sendmsg()->hv_stream_has_space()
-> Earlier hv_stream_has_space was setting/clearing the pending size on ever=
-y
-> call.
->=20
-> Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
+This series attempts to deal better with the expected transmission
+errors related to the idle states (handled by the Always-On-Subsystem
+or AOS) on the SDIO-based WiFi on rk3288-veyron-minnie,
+rk3288-veyron-speedy, and rk3288-veyron-mickey.
 
-Hi Sunil, thanks for the fix! It looks good.
+Some details about those errors can be found in
+<https://crbug.com/960222>, but to summarize it here: if we try to
+send the wakeup command to the WiFi card at the same time it has
+decided to wake up itself then it will behave badly on the SDIO bus.
+This can cause timeouts or CRC errors.
 
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
+When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
+re-tuning.  Since I am currently developing on 4.19 this was the
+original problem I attempted to solve.
+
+On mainline it turns out that you don't see the retuning errors but
+you see tons of spam about timeouts trying to wakeup from sleep.  I
+tracked down the commit that was causing that and have partially
+reverted it here.  I have no real knowledge about Broadcom WiFi, but
+the commit that was causing problems sounds (from the descriptioin) to
+be a hack commit penalizing all Broadcom WiFi users because of a bug
+in a Cypress SD controller.  I will let others comment if this is
+truly the case and, if so, what the right solution should be.
+
+For v3 of this series I have added 2 patches to the end of the series
+to address errors that would show up on systems with these same SDIO
+WiFi cards when used on controllers that do periodic retuning.  These
+systems need an extra fix to prevent the retuning from happening when
+the card is asleep.
+
+Changes in v4:
+- Moved to SDIO API only (Adrian, Ulf).
+- Renamed to make it less generic, now retune_crc_disable (Ulf).
+- Function header makes it clear host must be claimed (Ulf).
+- No more WARN_ON (Ulf).
+- Adjust to API rename (Adrian, Ulf).
+- Moved retune hold/release to SDIO API (Adrian).
+- Adjust to API rename (Adrian).
+
+Changes in v3:
+- Took out the spinlock since I believe this is all in one context.
+- Expect errors for all of brcmf_sdio_kso_control() (Adrian).
+- ("mmc: core: Export mmc_retune_hold_now() mmc_retune_release()") new for v3.
+- ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
+
+Changes in v2:
+- A full revert, not just a partial one (Arend).  ...with explicit Cc.
+- Updated commit message to clarify based on discussion of v1.
+
+Douglas Anderson (5):
+  Revert "brcmfmac: disable command decode in sdio_aos"
+  mmc: core: API to temporarily disable retuning for SDIO CRC errors
+  brcmfmac: sdio: Disable auto-tuning around commands expected to fail
+  mmc: core: Add sdio_retune_hold_now() and sdio_retune_release()
+  brcmfmac: sdio: Don't tune while the card is off
+
+ drivers/mmc/core/core.c                       |  5 +-
+ drivers/mmc/core/sdio_io.c                    | 76 +++++++++++++++++++
+ .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 +++--
+ include/linux/mmc/core.h                      |  2 +
+ include/linux/mmc/host.h                      |  1 +
+ include/linux/mmc/sdio_func.h                 |  6 ++
+ 6 files changed, 100 insertions(+), 7 deletions(-)
+
+-- 
+2.22.0.rc2.383.gf4fbbf30c2-goog
 
