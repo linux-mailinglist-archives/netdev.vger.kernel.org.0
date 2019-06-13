@@ -2,192 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E69F43EE9
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A92E143ECF
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731605AbfFMPxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:53:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43880 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731597AbfFMI5a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 04:57:30 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1179030872E7;
-        Thu, 13 Jun 2019 08:57:25 +0000 (UTC)
-Received: from [10.72.12.64] (ovpn-12-64.pek2.redhat.com [10.72.12.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9501880C0;
-        Thu, 13 Jun 2019 08:57:16 +0000 (UTC)
-Subject: Re: [PATCH 3/4] vsock/virtio: fix flush of works during the .remove()
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S . Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20190528105623.27983-1-sgarzare@redhat.com>
- <20190528105623.27983-4-sgarzare@redhat.com>
- <9ac9fc4b-5c39-2503-dfbb-660a7bdcfbfd@redhat.com>
- <20190529105832.oz3sagbne5teq3nt@steredhat>
- <8c9998c8-1b9c-aac6-42eb-135fcb966187@redhat.com>
- <20190530101036.wnjphmajrz6nz6zc@steredhat.homenet.telecomitalia.it>
- <4c881585-8fee-0a53-865c-05d41ffb8ed1@redhat.com>
- <20190531081824.p6ylsgvkrbckhqpx@steredhat>
- <dbc9964c-65b1-0993-488b-cb44aea55e90@redhat.com>
- <20190606081109.gdx4rsly5i6gtg57@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b1fa0b2f-f7d0-8117-0bde-0cb78d1a3d07@redhat.com>
-Date:   Thu, 13 Jun 2019 16:57:15 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1732138AbfFMPxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:53:15 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:32831 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731622AbfFMJE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:04:57 -0400
+Received: by mail-qt1-f195.google.com with SMTP id x2so20771957qtr.0;
+        Thu, 13 Jun 2019 02:04:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=nzBa57T0OIAyCAQ1O9RvCN6xb/3FwMwRN6SvgCLPgNg=;
+        b=j0ffML8CyknDu3KfnBFj/WQMQZZFynuLeLWDGUeLp6l3FicB/MW5OIR7Ud0yBDHFa/
+         ZxexagDVif9zNpvQgeWsmdi/sFzZjfB0Eyl2hkiSxKHZYha8CIiLJUWGSboBqVfCZ2ZS
+         O9sh40jRtvswNq/GPJZPyagSPZGGook8X72ixU7ay+tyMHQSTTvm2VqTlkoXrelZBMfL
+         ozfwmIo9AUfUsGBvgDInOJoUB+E3sMgXhU2HsIwe5OrMUzspt/u8Csi3DFNmtQz1vbFC
+         6c/s+OmLUO0GIr8oOh9OAIa4J+IhtV/+0mkVETGvXy1Zt4hl+fiCkzZknnBcx5R1/73n
+         FXOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nzBa57T0OIAyCAQ1O9RvCN6xb/3FwMwRN6SvgCLPgNg=;
+        b=FGQoD3CgXKclRSC1QE100CNDAxV8IpXYUBOHnFtQOpBzIG3QhiWFWIaw+SdzyaBiWk
+         tLPZzJptan0au0df1FxxkOuTb15iZfB7gOofxdQ4vRGGmx0vDQzu9sSPtTj1OO0Q7hhU
+         ahKXOdyCx3A8xNBOuTopCdbZT/f6QMNOOkvqkLdL/j76W0f2Dq+QXd7cdJuWTLBJBQaB
+         hqZOAnUrrPswH+uRHeI40uyO2pTyzNKEpMTSVyLV9VIFeNN2UnpgM7C79EHzuLPvw8k1
+         wv6gcs+ZSE751njb6W+DsuiQ9fIowfxcvKdRCj71rVdiM0j5CU2MQtjvxtvDTp9uEasa
+         6nTQ==
+X-Gm-Message-State: APjAAAXsZuuGGJpxGDsKfem+xhxT2oj8GlrW1xDhoHgTbxSmjTCBd8pD
+        jgDK9wltr3MmwzKbPghARm67Z91/pqjnPlAgi+Y=
+X-Google-Smtp-Source: APXvYqwk0F13xjccym5Gt178pFDO4lYhoTFYCOIlHvKPia2bX3aSKEJFLdRHwBQlOO2fKzcJK9Aid1F2KKXkkvWckwE=
+X-Received: by 2002:ac8:4442:: with SMTP id m2mr52640121qtn.107.1560416696641;
+ Thu, 13 Jun 2019 02:04:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190606081109.gdx4rsly5i6gtg57@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Thu, 13 Jun 2019 08:57:30 +0000 (UTC)
+References: <20190612161405.24064-1-maximmi@mellanox.com> <20190612141506.7900e952@cakuba.netronome.com>
+In-Reply-To: <20190612141506.7900e952@cakuba.netronome.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 13 Jun 2019 11:04:45 +0200
+Message-ID: <CAJ+HfNg8C+teCywDDjKY6_gdPsg_dzm1cMNFhj7gLps6RYMAJQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] net: Don't uninstall an XDP program when none is installed
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/6/6 下午4:11, Stefano Garzarella wrote:
-> On Fri, May 31, 2019 at 05:56:39PM +0800, Jason Wang wrote:
->> On 2019/5/31 下午4:18, Stefano Garzarella wrote:
->>> On Thu, May 30, 2019 at 07:59:14PM +0800, Jason Wang wrote:
->>>> On 2019/5/30 下午6:10, Stefano Garzarella wrote:
->>>>> On Thu, May 30, 2019 at 05:46:18PM +0800, Jason Wang wrote:
->>>>>> On 2019/5/29 下午6:58, Stefano Garzarella wrote:
->>>>>>> On Wed, May 29, 2019 at 11:22:40AM +0800, Jason Wang wrote:
->>>>>>>> On 2019/5/28 下午6:56, Stefano Garzarella wrote:
->>>>>>>>> @@ -690,6 +693,9 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>>>>>       	vsock->event_run = false;
->>>>>>>>>       	mutex_unlock(&vsock->event_lock);
->>>>>>>>> +	/* Flush all pending works */
->>>>>>>>> +	virtio_vsock_flush_works(vsock);
->>>>>>>>> +
->>>>>>>>>       	/* Flush all device writes and interrupts, device will not use any
->>>>>>>>>       	 * more buffers.
->>>>>>>>>       	 */
->>>>>>>>> @@ -726,6 +732,11 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
->>>>>>>>>       	/* Delete virtqueues and flush outstanding callbacks if any */
->>>>>>>>>       	vdev->config->del_vqs(vdev);
->>>>>>>>> +	/* Other works can be queued before 'config->del_vqs()', so we flush
->>>>>>>>> +	 * all works before to free the vsock object to avoid use after free.
->>>>>>>>> +	 */
->>>>>>>>> +	virtio_vsock_flush_works(vsock);
->>>>>>>> Some questions after a quick glance:
->>>>>>>>
->>>>>>>> 1) It looks to me that the work could be queued from the path of
->>>>>>>> vsock_transport_cancel_pkt() . Is that synchronized here?
->>>>>>>>
->>>>>>> Both virtio_transport_send_pkt() and vsock_transport_cancel_pkt() can
->>>>>>> queue work from the upper layer (socket).
->>>>>>>
->>>>>>> Setting the_virtio_vsock to NULL, should synchronize, but after a careful look
->>>>>>> a rare issue could happen:
->>>>>>> we are setting the_virtio_vsock to NULL at the start of .remove() and we
->>>>>>> are freeing the object pointed by it at the end of .remove(), so
->>>>>>> virtio_transport_send_pkt() or vsock_transport_cancel_pkt() may still be
->>>>>>> running, accessing the object that we are freed.
->>>>>> Yes, that's my point.
->>>>>>
->>>>>>
->>>>>>> Should I use something like RCU to prevent this issue?
->>>>>>>
->>>>>>>         virtio_transport_send_pkt() and vsock_transport_cancel_pkt()
->>>>>>>         {
->>>>>>>             rcu_read_lock();
->>>>>>>             vsock = rcu_dereference(the_virtio_vsock_mutex);
->>>>>> RCU is probably a way to go. (Like what vhost_transport_send_pkt() did).
->>>>>>
->>>>> Okay, I'm going this way.
->>>>>
->>>>>>>             ...
->>>>>>>             rcu_read_unlock();
->>>>>>>         }
->>>>>>>
->>>>>>>         virtio_vsock_remove()
->>>>>>>         {
->>>>>>>             rcu_assign_pointer(the_virtio_vsock_mutex, NULL);
->>>>>>>             synchronize_rcu();
->>>>>>>
->>>>>>>             ...
->>>>>>>
->>>>>>>             free(vsock);
->>>>>>>         }
->>>>>>>
->>>>>>> Could there be a better approach?
->>>>>>>
->>>>>>>
->>>>>>>> 2) If we decide to flush after dev_vqs(), is tx_run/rx_run/event_run still
->>>>>>>> needed? It looks to me we've already done except that we need flush rx_work
->>>>>>>> in the end since send_pkt_work can requeue rx_work.
->>>>>>> The main reason of tx_run/rx_run/event_run is to prevent that a worker
->>>>>>> function is running while we are calling config->reset().
->>>>>>>
->>>>>>> E.g. if an interrupt comes between virtio_vsock_flush_works() and
->>>>>>> config->reset(), it can queue new works that can access the device while
->>>>>>> we are in config->reset().
->>>>>>>
->>>>>>> IMHO they are still needed.
->>>>>>>
->>>>>>> What do you think?
->>>>>> I mean could we simply do flush after reset once and without tx_rx/rx_run
->>>>>> tricks?
->>>>>>
->>>>>> rest();
->>>>>>
->>>>>> virtio_vsock_flush_work();
->>>>>>
->>>>>> virtio_vsock_free_buf();
->>>>> My only doubt is:
->>>>> is it safe to call config->reset() while a worker function could access
->>>>> the device?
->>>>>
->>>>> I had this doubt reading the Michael's advice[1] and looking at
->>>>> virtnet_remove() where there are these lines before the config->reset():
->>>>>
->>>>> 	/* Make sure no work handler is accessing the device. */
->>>>> 	flush_work(&vi->config_work);
->>>>>
->>>>> Thanks,
->>>>> Stefano
->>>>>
->>>>> [1] https://lore.kernel.org/netdev/20190521055650-mutt-send-email-mst@kernel.org
->>>> Good point. Then I agree with you. But if we can use the RCU to detect the
->>>> detach of device from socket for these, it would be even better.
->>>>
->>> What about checking 'the_virtio_vsock' in the worker functions in a RCU
->>> critical section?
->>> In this way, I can remove the rx_run/tx_run/event_run.
->>>
->>> Do you think it's cleaner?
->>
->> Yes, I think so.
->>
-> Hi Jason,
-> while I was trying to use RCU also for workers, I discovered that it can
-> not be used if we can sleep. (Workers have mutex, memory allocation, etc.).
-> There is SRCU, but I think the rx_run/tx_run/event_run is cleaner.
+On Wed, 12 Jun 2019 at 23:15, Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
 >
-> So, if you agree I'd send a v2 using RCU only for the
-> virtio_transport_send_pkt() or vsock_transport_cancel_pkt(), and leave
-> this patch as is to be sure that no one is accessing the device while we
-> call config->reset().
+> On Wed, 12 Jun 2019 16:14:18 +0000, Maxim Mikityanskiy wrote:
+> > dev_change_xdp_fd doesn't perform any checks in case it uninstalls an
+> > XDP program. It means that the driver's ndo_bpf can be called with
+> > XDP_SETUP_PROG asking to set it to NULL even if it's already NULL. This
+> > case happens if the user runs `ip link set eth0 xdp off` when there is
+> > no XDP program attached.
+> >
+> > The drivers typically perform some heavy operations on XDP_SETUP_PROG,
+> > so they all have to handle this case internally to return early if it
+> > happens. This patch puts this check into the kernel code, so that all
+> > drivers will benefit from it.
+> >
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> > ---
+> > Bj=C3=B6rn, please take a look at this, Saeed told me you were doing
+> > something related, but I couldn't find it. If this fix is already
+> > covered by your work, please tell about that.
+> >
+> >  net/core/dev.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 66f7508825bd..68b3e3320ceb 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -8089,6 +8089,9 @@ int dev_change_xdp_fd(struct net_device *dev, str=
+uct netlink_ext_ack *extack,
+> >                       bpf_prog_put(prog);
+> >                       return -EINVAL;
+> >               }
+> > +     } else {
+> > +             if (!__dev_xdp_query(dev, bpf_op, query))
+> > +                     return 0;
 >
-> Thanks,
-> Stefano
+> This will mask the error if program is installed with different flags.
+>
 
+Hmm, probably missing something, but I fail to see how the error is
+being masked? This is to catch the NULL-to-NULL case early.
 
-If it work, I don't object to use that consider it was suggested by 
-Michael. You can go this way and let's see.
-
-Personally I would like something more cleaner. E.g RCU + some kind of 
-reference count (kref?).
-
-Thanks
-
+> You driver should do nothing is program installation state did not
+> change.  I.e.:
+>
+>         if (!!prog =3D=3D !!oldprog)
+>
+> You can't remove the active -> active check anyway, this change should
+> make no difference.
+>
+> >       }
+> >
+> >       err =3D dev_xdp_install(dev, bpf_op, extack, flags, prog);
