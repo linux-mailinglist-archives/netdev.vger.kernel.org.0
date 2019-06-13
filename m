@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B064A44E7E
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC9F44E88
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 23:33:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726827AbfFMVaj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 17:30:39 -0400
-Received: from mga14.intel.com ([192.55.52.115]:17200 "EHLO mga14.intel.com"
+        id S1727142AbfFMVdf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jun 2019 17:33:35 -0400
+Received: from mga01.intel.com ([192.55.52.88]:57272 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725747AbfFMVaj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 17:30:39 -0400
+        id S1726766AbfFMVde (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 17:33:34 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 14:30:39 -0700
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 14:33:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,370,1557212400"; 
-   d="scan'208";a="184757505"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga002.fm.intel.com with ESMTP; 13 Jun 2019 14:30:38 -0700
-Received: from orsmsx154.amr.corp.intel.com (10.22.226.12) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Thu, 13 Jun 2019 14:30:38 -0700
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by orsmga007.jf.intel.com with ESMTP; 13 Jun 2019 14:33:33 -0700
+Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Thu, 13 Jun 2019 14:33:33 -0700
 Received: from orsmsx104.amr.corp.intel.com ([169.254.4.84]) by
- ORSMSX154.amr.corp.intel.com ([169.254.11.84]) with mapi id 14.03.0415.000;
- Thu, 13 Jun 2019 14:30:38 -0700
+ ORSMSX112.amr.corp.intel.com ([169.254.3.233]) with mapi id 14.03.0415.000;
+ Thu, 13 Jun 2019 14:33:33 -0700
 From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH] ixgbevf: fix possible divide by zero
- in ixgbevf_update_itr
-Thread-Topic: [Intel-wired-lan] [PATCH] ixgbevf: fix possible divide by zero
- in ixgbevf_update_itr
-Thread-Index: AQHVFf5r7xrgWhY4+UWyPbZJL5Ro+KaaMmgw
-Date:   Thu, 13 Jun 2019 21:30:37 +0000
-Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3ED68F@ORSMSX104.amr.corp.intel.com>
-References: <1559044682-23446-1-git-send-email-92siuyang@gmail.com>
-In-Reply-To: <1559044682-23446-1-git-send-email-92siuyang@gmail.com>
+Subject: RE: [Intel-wired-lan] [PATCH][next] i40e/i40e_virtchnl_pf: Use
+ struct_size() in kzalloc()
+Thread-Topic: [Intel-wired-lan] [PATCH][next] i40e/i40e_virtchnl_pf: Use
+ struct_size() in kzalloc()
+Thread-Index: AQHVG7fxogHfR0kmSkmtlC3JCwMGZqaaJ8Lw
+Date:   Thu, 13 Jun 2019 21:33:33 +0000
+Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3ED69F@ORSMSX104.amr.corp.intel.com>
+References: <20190605154052.GA7571@embeddedor>
+In-Reply-To: <20190605154052.GA7571@embeddedor>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYjFmYjk0MzEtNWY0YS00N2UwLTg5NDQtNDliM2E4NzczM2FhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZkJRSXZEOFBHZTdrczdiXC9NSmZHSHA3ek5CWU1PcmtGcXZ4T1JcL3loZU5xVjBVNk81dmFnNll3WnBNUVozSWN3In0=
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOTk3MWY2ZGQtMWRjOS00MjYxLTkyOWMtMDcxZGQ1ZTZjOWQ5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiVHgyUXRlR2Y2YzhvZHRxWjhZb3VmZFloWFdqODhDcDN5aiswcWU2RHB2N0lPckFtN3hRS1VSQVhoSnBIOG1lQiJ9
 x-ctpclassification: CTP_NT
 dlp-product: dlpe-windows
 dlp-version: 11.0.400.15
@@ -59,24 +57,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Young Xiao
-> Sent: Tuesday, May 28, 2019 4:58 AM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
-> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
+> Behalf Of Gustavo A. R. Silva
+> Sent: Wednesday, June 5, 2019 8:41 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S. Miller
+> <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org; linux-
 > kernel@vger.kernel.org
-> Cc: Young Xiao <92siuyang@gmail.com>
-> Subject: [Intel-wired-lan] [PATCH] ixgbevf: fix possible divide by zero in
-> ixgbevf_update_itr
+> Subject: [Intel-wired-lan] [PATCH][next] i40e/i40e_virtchnl_pf: Use
+> struct_size() in kzalloc()
 > 
-> The next call to ixgbevf_update_itr will continue to dynamically update ITR.
+> One of the more common cases of allocation size calculations is finding the
+> size of a structure that has a zero-sized array at the end, along with memory
+> for some number of elements for that array. For example:
 > 
-> Copy from commit bdbeefe8ea8c ("ixgbe: fix possible divide by zero in
-> ixgbe_update_itr")
+> struct virtchnl_iwarp_qvlist_info {
+> 	...
+>         struct virtchnl_iwarp_qv_info qv_info[1]; };
 > 
-> Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> size = sizeof(struct virtchnl_iwarp_qvlist_info) + (sizeof(struct
+> virtchnl_iwarp_qv_info) * count; instance = kzalloc(size, GFP_KERNEL);
+> 
+> and
+> 
+> struct virtchnl_vf_resource {
+> 	...
+>         struct virtchnl_vsi_resource vsi_res[1]; };
+> 
+> size = sizeof(struct virtchnl_vf_resource) + sizeof(struct
+> virtchnl_vsi_resource) * count; instance = kzalloc(size, GFP_KERNEL);
+> 
+> Instead of leaving these open-coded and prone to type mistakes, we can
+> now use the new struct_size() helper:
+> 
+> instance = kzalloc(struct_size(instance, qv_info, count), GFP_KERNEL);
+> 
+> and
+> 
+> instance = kzalloc(struct_size(instance, vsi_res, count), GFP_KERNEL);
+> 
+> Notice that, in the first case above, variable size is not necessary, hence it is
+> removed.
+> 
+> This code was detected with the help of Coccinelle.
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 > ---
->  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  .../net/ethernet/intel/i40e/i40e_virtchnl_pf.c    | 15 ++++++---------
+>  1 file changed, 6 insertions(+), 9 deletions(-)
 
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
