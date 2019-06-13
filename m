@@ -2,62 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F63944556
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:43:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 507F644553
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 18:43:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfFMQnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 12:43:31 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:47598 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730459AbfFMGiH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 02:38:07 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A17692000C7;
-        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 91E7F20006F;
-        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 34162205DB;
-        Thu, 13 Jun 2019 08:38:05 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
-Date:   Thu, 13 Jun 2019 09:37:51 +0300
-Message-Id: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1730476AbfFMQn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 12:43:28 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38016 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730477AbfFMGnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 02:43:19 -0400
+Received: by mail-qk1-f194.google.com with SMTP id a27so12030084qkk.5;
+        Wed, 12 Jun 2019 23:43:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=flGs/zukBw/aJYyUovVgv99efBK9sWkhQiABa3roI/o=;
+        b=megZvWjY8VwSIokUFMGe+HGyYwiYoCZVf4illXjf2hB0iW1H3Zsh8paEAJVEaCB4Wk
+         sEiHz6cGLfTiVg0ZCP9qp1sKXyvz5ZsW1IlJgwqZuS9Q4WYjYvuP9SfWACFCnVJA0OIO
+         ZT5t4HkobJSBmOUvT+jpWtp33dGEKlD1FFnVRNQqxF71J7pxtWno65N7hbfK6USDiyZN
+         PidDNCrwL5ltud6gpaGrkb7ID2ilV+bFZoESs2LiBYIcFYSu4PgtWtaliNZb2p6bXcBn
+         7junQwok4iSqE1phqZa9GysUKeIBv6cghuX5pUdnzrrtSCNK+m7wr9G2zV7WpUdEjJt5
+         vysQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=flGs/zukBw/aJYyUovVgv99efBK9sWkhQiABa3roI/o=;
+        b=Hc/kUd8NJ7NPrA8juV8tlsUBsE1Pjhji43HJpSrOl9Oifq5FLhzYC8W9lAcDa54OED
+         cfabRjFTXiz4m+xa/WsiSYaHOTvc0rt5PQQwWyv2CXEGDoNlqolTQtA3+u+FmEMKJlZb
+         x/5p3E397BqSEWyo69tzf6Z0AQ30EN7UkwYP1b9K98sExSUZ9VTdPk5RPOvS3+jay3TG
+         ouJbTf+NLyMVvRncyik3XmVlqVfwqlWFWL4G8j5j9qsAUQexiek8M6sJtVbszWrBgLJ2
+         9R6iNPF0nlcgX+16I7RVXioH+TdaUCyfXPwjKo2EQaDsI3ZZVKJjbOcWEDIP6mZSr3W6
+         0l3Q==
+X-Gm-Message-State: APjAAAW03UxT96Mx6xzfycWvZ+QoMPHM4PhZ/cf/8dJWaWxPrqn18QCc
+        qrllUQSH++J8XBDifADvZlGSRuAmttqCxaIhiUA=
+X-Google-Smtp-Source: APXvYqy9qKc3dDKrBdfAu5wW1ZVxAlIFPRi1b+Bo2iiKumfS1L0sMfnIgAQQQwf5oA911kNGLXPTt+Iodu+XLWwluYA=
+X-Received: by 2002:ae9:de81:: with SMTP id s123mr516623qkf.339.1560408197897;
+ Wed, 12 Jun 2019 23:43:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190612160541.2550-1-m@lambda.lt>
+In-Reply-To: <20190612160541.2550-1-m@lambda.lt>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 12 Jun 2019 23:43:06 -0700
+Message-ID: <CAEf4BzZHSP=ua_sO=431PXDjNB6mVn7QXFWL12sQAZDjz1D1PQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 1/2] bpf: simplify definition of BPF_FIB_LOOKUP
+ related flags
+To:     Martynas Pumputis <m@lambda.lt>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The phy_state field of phylink should carry only valid information
-especially when this can be passed to the .mac_config callback.
-Update the an_enabled field with the autoneg state in the
-phylink_phy_change function.
+On Wed, Jun 12, 2019 at 11:06 AM Martynas Pumputis <m@lambda.lt> wrote:
+>
+> Previously, the BPF_FIB_LOOKUP_{DIRECT,OUTPUT} flags were defined
+> with the help of BIT macro. This had the following issues:
+>
+> - In order to user any of the flags, a user was required to depend
+>   on <linux/bits.h>.
+> - No other flag in bpf.h uses the macro, so it seems that an unwritten
+>   convention is to use (1 << (nr)) to define BPF-related flags.
+>
 
-Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/phy/phylink.c | 1 +
- 1 file changed, 1 insertion(+)
+Makes sense!
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 5d0af041b8f9..dd1feb7b5472 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -688,6 +688,7 @@ static void phylink_phy_change(struct phy_device *phydev, bool up,
- 		pl->phy_state.pause |= MLO_PAUSE_ASYM;
- 	pl->phy_state.interface = phydev->interface;
- 	pl->phy_state.link = up;
-+	pl->phy_state.an_enabled = phydev->autoneg;
- 	mutex_unlock(&pl->state_mutex);
- 
- 	phylink_run_resolve(pl);
--- 
-1.9.1
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+> Signed-off-by: Martynas Pumputis <m@lambda.lt>
+> ---
+>  include/uapi/linux/bpf.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 63e0cf66f01a..a8f17bc86732 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3376,8 +3376,8 @@ struct bpf_raw_tracepoint_args {
+>  /* DIRECT:  Skip the FIB rules and go to FIB table associated with device
+>   * OUTPUT:  Do lookup from egress perspective; default is ingress
+>   */
+> -#define BPF_FIB_LOOKUP_DIRECT  BIT(0)
+> -#define BPF_FIB_LOOKUP_OUTPUT  BIT(1)
+> +#define BPF_FIB_LOOKUP_DIRECT  (1U << 0)
+> +#define BPF_FIB_LOOKUP_OUTPUT  (1U << 1)
+>
+>  enum {
+>         BPF_FIB_LKUP_RET_SUCCESS,      /* lookup successful */
+> --
+> 2.21.0
+>
