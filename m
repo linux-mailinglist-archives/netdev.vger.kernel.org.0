@@ -2,94 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC83343AEC
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D06A43A98
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732872AbfFMPYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:24:32 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46866 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731696AbfFMMOB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 08:14:01 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6CED2301E111;
-        Thu, 13 Jun 2019 12:14:01 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F3E167C56F;
-        Thu, 13 Jun 2019 12:13:52 +0000 (UTC)
-Date:   Thu, 13 Jun 2019 14:13:51 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     brouer@redhat.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v3 bpf-next 2/2] veth: Support bulk XDP_TX
-Message-ID: <20190613141351.77747fc1@carbon>
-In-Reply-To: <20190613093959.2796-3-toshiaki.makita1@gmail.com>
-References: <20190613093959.2796-1-toshiaki.makita1@gmail.com>
-        <20190613093959.2796-3-toshiaki.makita1@gmail.com>
+        id S2388551AbfFMPWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:22:23 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:45446 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731983AbfFMMlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 08:41:42 -0400
+Received: by mail-qk1-f194.google.com with SMTP id s22so12583246qkj.12;
+        Thu, 13 Jun 2019 05:41:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7pkx3WNGJ2fGQ9aapC2cYYTAgF2lpZWmmO7WTveiEGM=;
+        b=gYSGicSt78FIgsXMXfEoyTiCZo31sujVNsK6hkwEPKdUv5pP0YPLyB4O6Couyp1x/h
+         x2LHOBd7E8HLhhoct+Tiww0HEnj1Q5IUBmn8DbmSB+KZU4wwDza6uKry+RNLINxjKDsC
+         eP4+j70G33mPVYchVigKSRf+qTxxoR+WgiygQSXXvv/J8BjL9Et3vdUgo4aiIj3ah47I
+         +TzHLkHXjP2ZVxvTSTUlHML6givpE13YVfQAFZPHwaHiUfmkqWxaNhV9RPBrYIc8I/S8
+         obP0P6AaBfWC8YhyVKZjXKOnbpMa1I5GpKbzrxztGP5Es6eEQRQQybGjmV+6jE15sjQw
+         bQ8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7pkx3WNGJ2fGQ9aapC2cYYTAgF2lpZWmmO7WTveiEGM=;
+        b=LmUY56HlnuoIKWuyeuE2pyJTCEn6qQTXIITdWCWZw1tn01IjHY6DVfed2utsI4ZDZd
+         6nLwLWkh1GHd9V8r0QZvtYLV/w2SNNpAUXyTzCiTIqBhThnYxp69h/Rcdhz18q4Py8R4
+         6O6vU30o0C0Uiw4Pki3V0j7yEGUKF6evu9OU1lzp+PX2hsSOw94W/4QUTHyGXYzYjeH+
+         Rgbz6ziGIKSYtt7fLt8jqntCk5u4r6BsvtMrQF5S347doqvotLPqRPijVI9Po/MMfcpJ
+         qYicBAPNSNdptxAEdJK9p+tO/wa+3FU9RvifM2JG3BjAL5IWCgLpCrmxOGzCzQXfWPMG
+         U/LA==
+X-Gm-Message-State: APjAAAXQQdfkcEPNJfkXqfjwor7R3hnrjR+YaW4RfjrYqPNpupJBmqhK
+        PlUjNp/2sTqt3zb9tglu6wW8r8EHujez9jLb5Tw=
+X-Google-Smtp-Source: APXvYqyNtL526WFONEOjo1b23PxNloYxAAbPsKaFBgU5ZylWfilwuUeRaTUaK6QZSgSa6Grqt2pkeO1FUAw9KMItAp0=
+X-Received: by 2002:a37:6282:: with SMTP id w124mr27918552qkb.33.1560429701372;
+ Thu, 13 Jun 2019 05:41:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 13 Jun 2019 12:14:01 +0000 (UTC)
+References: <20190612155605.22450-1-maximmi@mellanox.com> <20190612155605.22450-8-maximmi@mellanox.com>
+ <20190612132352.7ee27bf3@cakuba.netronome.com>
+In-Reply-To: <20190612132352.7ee27bf3@cakuba.netronome.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 13 Jun 2019 14:41:30 +0200
+Message-ID: <CAJ+HfNjp6DJe5xdWxe6pPysXu8D24P4Pp7WcEt4N4EhE1sZNGQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
+ non-combined channels
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Jun 2019 18:39:59 +0900
-Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+On Wed, 12 Jun 2019 at 22:24, Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Wed, 12 Jun 2019 15:56:48 +0000, Maxim Mikityanskiy wrote:
+> > Currently, libbpf uses the number of combined channels as the maximum
+> > queue number. However, the kernel has a different limitation:
+> >
+> > - xdp_reg_umem_at_qid() allows up to max(RX queues, TX queues).
+> >
+> > - ethtool_set_channels() checks for UMEMs in queues up to
+> >   combined_count + max(rx_count, tx_count).
+> >
+> > libbpf shouldn't limit applications to a lower max queue number. Account
+> > for non-combined RX and TX channels when calculating the max queue
+> > number. Use the same formula that is used in ethtool.
+> >
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> > Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+> > Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+>
+> I don't think this is correct.  max_tx tells you how many TX channels
+> there can be, you can't add that to combined.  Correct calculations is:
+>
+> max_num_chans = max(max_combined, max(max_rx, max_tx))
+>
 
-> XDP_TX is similar to XDP_REDIRECT as it essentially redirects packets to
-> the device itself. XDP_REDIRECT has bulk transmit mechanism to avoid the
-> heavy cost of indirect call but it also reduces lock acquisition on the
-> destination device that needs locks like veth and tun.
-> 
-> XDP_TX does not use indirect calls but drivers which require locks can
-> benefit from the bulk transmit for XDP_TX as well.
-> 
-> This patch introduces bulk transmit mechanism in veth using bulk queue
-> on stack, and improves XDP_TX performance by about 9%.
-> 
-> Here are single-core/single-flow XDP_TX test results. CPU consumptions
-> are taken from "perf report --no-child".
-> 
-> - Before:
-> 
->   7.26 Mpps
-> 
->   _raw_spin_lock  7.83%
->   veth_xdp_xmit  12.23%
-> 
-> - After:
-> 
->   7.94 Mpps
-> 
->   _raw_spin_lock  1.08%
->   veth_xdp_xmit   6.10%
-> 
-> v2:
-> - Use stack for bulk queue instead of a global variable.
-> 
-> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
-> ---
->  drivers/net/veth.c | 60 +++++++++++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 48 insertions(+), 12 deletions(-)
+...but the inner max should be min, right?
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Assuming we'd like to receive and send.
