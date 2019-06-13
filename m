@@ -2,272 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D6F43DF1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6245E43D73
+	for <lists+netdev@lfdr.de>; Thu, 13 Jun 2019 17:43:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731927AbfFMPq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 11:46:27 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:34474 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731788AbfFMJkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:40:37 -0400
-Received: by mail-pl1-f196.google.com with SMTP id i2so7898190plt.1;
-        Thu, 13 Jun 2019 02:40:36 -0700 (PDT)
+        id S1732483AbfFMPmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 11:42:15 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:34283 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731865AbfFMJtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jun 2019 05:49:18 -0400
+Received: by mail-vs1-f68.google.com with SMTP id q64so12229082vsd.1
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 02:49:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jX5BJvQUurxukycMtLItq+NU98sEO94qqN9cwopDYrI=;
-        b=ih/CBTQQ9AOP5q4yBoK0+V+LvlNgp23L7bEqbxMlZsa5oBmRtZSfFe/rW5qx7zUT6a
-         oQ5Y986oZzE2YW97BRFYWMAal0u6aczFcNjyUflwp6ufaKLyjIVRK2KZwAEO44VEJBJw
-         TbDgqHXt82nXHD3FtEzxbc+vRqXNdMWJ8CurR0LdqQcuBtWv0DkALP9k0Pe0vThxZdp8
-         1kqVEhAHunrDGgO3dcG5QnRptdZCNBW+i1E50YBDRNfelTwL/ZTbrOfTUXBG9Hsi88FR
-         20aQ9OwX3o5g3L7bNZtIg2K0hlyy5YLVj5W7xs4hHYnZ7Bzu3BpHf/huS+Svj1jzLYC3
-         +k7w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NdS6xN6Z4DlPhoXqfSjLt1MlPeGtM/DFz1IwvW9UGoo=;
+        b=gRY3cBMoBbyhUq/TwCPef50CCDKrv4iYze6tdunxTeCUZpRTxfdIbcrZIu3rL9nBmA
+         IKu5OYITIeL6ltUdiFp9D/dQv5KZKcAv6V+fmHeGkWIe6jriJiht2zz2XO9FjHTjfRib
+         NIvsg+FMfLXlxWpsnz2tVCHJTpT0XY2bvwC63A4K1b6VMqRrNgGbsb2LGvdXDeeBaEPZ
+         m4z3ddfPasyoIKb3AqQ46OdJR6zCS6DXa7xNtmQomcyAaTessCVDKoSiccxpgKSHLEJM
+         v8OJqfkxY2CdFdgcNZGppzV0c9uPWuWj07PpFzImXtu18YgRdm3Z/Qdd3ycwG99TvFSh
+         91pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jX5BJvQUurxukycMtLItq+NU98sEO94qqN9cwopDYrI=;
-        b=fSyPAxyEF6D26K5XWGbWgkFsxvoVY/a6srUK6uW0StvYsDKx8KiVw+Ysf8ajUq5FlY
-         kz0EEYYveNFNCJHParGqozN45smgAZeXFBxGFqEU/dGeHPjxzUKonG7Kx5v6DfX1Y4VK
-         Scyn0P7aWlg/kX1kpQpgF4QGjxwH5Yw94H2Y0qze9jLMUrDS6y7pPZQTCDetCsM+p8KG
-         fVx2/okLcsB89wrdqD/tzLGRBanEJU6D5ktmM1J+V+WG7adbLKTkEHyhO8+yY1c1FGKO
-         ArbC2w3AoKibMcTKePKhGfm45QZu4Rd+qNMzyrfPtNK/zuIsCe/j9rK7FpR7skdwbFw0
-         vp4g==
-X-Gm-Message-State: APjAAAVktS/FAZWDe7vz7ujCVEmj9WVEu2474VrkqYcgl9l4hovTBS5K
-        /kfiG37HJS8JAYYluOZFexo=
-X-Google-Smtp-Source: APXvYqyPbunPFJbilbVra7rTKM+2gSe4EqfbMxdNQaUj7iGz9YHtXyHUMS7Lr1deAkS1oqEz2bLVZQ==
-X-Received: by 2002:a17:902:2926:: with SMTP id g35mr41057968plb.269.1560418836513;
-        Thu, 13 Jun 2019 02:40:36 -0700 (PDT)
-Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id y1sm2501015pfe.19.2019.06.13.02.40.33
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 02:40:36 -0700 (PDT)
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH v3 bpf-next 2/2] veth: Support bulk XDP_TX
-Date:   Thu, 13 Jun 2019 18:39:59 +0900
-Message-Id: <20190613093959.2796-3-toshiaki.makita1@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190613093959.2796-1-toshiaki.makita1@gmail.com>
-References: <20190613093959.2796-1-toshiaki.makita1@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NdS6xN6Z4DlPhoXqfSjLt1MlPeGtM/DFz1IwvW9UGoo=;
+        b=ndaeiZiRsxY8KKsznnripT5fEOACojd498FTZbtTTUhU4hJairq1T/N7uBsbEvw8Pi
+         vTyJZ5E6BylxOUiT6v7OnXcik6GFLHp9vFCROZ7d+Q5I6bka3K0FJ6hpMjBK6iILkWrQ
+         JR8wXtnq7ZRUpc9EmsdMC1PMw/F96zo/YBIqFfI0TNhFL/QcuyCCTXscXZuRPX161uPU
+         TRiguLJUB7MNmkeYJPpezml/VI2mRrMYAi2O3WyxgRI4w6OcDcjeglGyom/wZ9iwej6F
+         f08Lgr9IKlXFwUpd4Ntd51Gj6HZZv/Vo2hjhttJrfcJ8DY2UbgMT70C0xx/TnkDHQbey
+         y/GA==
+X-Gm-Message-State: APjAAAULwFlTpEH0lB6q0Kj48wwcR4aZJiPGigHI5Isr8u3RQlKZKKkK
+        SM5nQbqNCafT7S3yhrapIYnz8gxHI5ETe/NMwHP48Q==
+X-Google-Smtp-Source: APXvYqzWpA6aPKAyHaL8W3hPhJ3CXshgo14ktsq5uXw9v4wanH5DWggs2K573LXj7uMjFiRLQrDiZGsE/zNplvlP1QY=
+X-Received: by 2002:a67:ed8b:: with SMTP id d11mr48182216vsp.35.1560419357888;
+ Thu, 13 Jun 2019 02:49:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190607223716.119277-1-dianders@chromium.org>
+ <20190607223716.119277-4-dianders@chromium.org> <363DA0ED52042842948283D2FC38E4649C52F8A0@IRSMSX106.ger.corp.intel.com>
+ <CAD=FV=U8eo78Ee9xjhGXJMv=8YF9o89KLX024GH3iBRnRjCRvQ@mail.gmail.com>
+ <CAPDyKFo=QMRTkNYUVSE2AqiZgytkTVRXF0Mvznn6trVT4-cR=Q@mail.gmail.com>
+ <c7c6d3f4-ebb1-8964-0616-973fae1ab47d@broadcom.com> <CAPDyKFpM0+FfvoMo8Z_hxM9rzSjeQZHCsA2SPa8WP+SRDhhsPA@mail.gmail.com>
+ <16b4bfb39e0.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+In-Reply-To: <16b4bfb39e0.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 13 Jun 2019 11:48:41 +0200
+Message-ID: <CAPDyKFr+nzy4JrtSrudORfOkFvPa==UtgaokQwigo8+c1L9wbQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/5] brcmfmac: sdio: Disable auto-tuning around
+ commands expected to fail
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        "Hunter, Adrian" <adrian.hunter@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
+        Franky Lin <franky.lin@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP_TX is similar to XDP_REDIRECT as it essentially redirects packets to
-the device itself. XDP_REDIRECT has bulk transmit mechanism to avoid the
-heavy cost of indirect call but it also reduces lock acquisition on the
-destination device that needs locks like veth and tun.
+On Wed, 12 Jun 2019 at 15:58, Arend Van Spriel
+<arend.vanspriel@broadcom.com> wrote:
+>
+>
+> On 6/12/2019 1:48 PM, Ulf Hansson wrote:
+> > On Wed, 12 Jun 2019 at 13:11, Arend Van Spriel
+> > <arend.vanspriel@broadcom.com> wrote:
+> >>
+> >> On 6/12/2019 12:10 PM, Ulf Hansson wrote:
+> >>>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c:
+> >>>>     mmc_set_data_timeout(md, func->card);
+> >>>>     mmc_wait_for_req(func->card->host, mr);
+> >>> These are not okay, none of these things calls should really be done
+> >>> from an SDIO func driver.
+> >>>
+> >>> It tells me that the func driver is a doing workaround for something
+> >>> that should be managed in a common way.
+> >>
+> >> We are using some low-level functions passing chain of skbuff to the
+> >> device using CMD53 with scatterlist. If I recall correctly Marvell made
+> >> an attempt to have a similar function for it in the mmc stack. Not sure
+> >> if that ever made it in. If so I can rework our driver using that API.
+> >> If not, I can make a new attempt.
+> >
+> > I recall there were some patches, but not sure why we didn't merge them.
+> >
+> > Anyway, if you want to move this forward, that would be awesome!
+>
+> Let's scope it before moving forward. Our use-case is to transfer a
+> chain of skbuff's. I am pretty sure that is not something we want to
+> deal with in mmc stack api. So I suppose passing a scatterlist is more
+> sensible, right? Maybe on sdio layer of the stack we could consider
+> dealing with skbuff's for network func drivers?
 
-XDP_TX does not use indirect calls but drivers which require locks can
-benefit from the bulk transmit for XDP_TX as well.
+Passing a scatter gather list seems reasonable. Ideally we should be
+highly influenced with how buffers and dealt with for mmc block
+requests.
 
-This patch introduces bulk transmit mechanism in veth using bulk queue
-on stack, and improves XDP_TX performance by about 9%.
+Some information that may be needed by upper SDIO layers is the
+segment/block constraints set by the MMC/SDIO host controller/driver.
+The below is what we have today (see include/linux/mmc/host.h):
 
-Here are single-core/single-flow XDP_TX test results. CPU consumptions
-are taken from "perf report --no-child".
+max_seg_size;   /* see blk_queue_max_segment_size */
+max_segs;       /* see blk_queue_max_segments */
+max_req_size;   /* maximum number of bytes in one req */
+max_blk_size;   /* maximum size of one mmc block */
+max_blk_count;  /* maximum number of blocks in one req */
 
-- Before:
+Ideally we don't want SDIO func drivers to access these directly from
+the ->host pointer, but rather via new SDIO func APIs.
 
-  7.26 Mpps
+>
+> Let me see if I can find those Marvell patches. Might be a good start.
 
-  _raw_spin_lock  7.83%
-  veth_xdp_xmit  12.23%
+Great! Thanks!
 
-- After:
-
-  7.94 Mpps
-
-  _raw_spin_lock  1.08%
-  veth_xdp_xmit   6.10%
-
-v2:
-- Use stack for bulk queue instead of a global variable.
-
-Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
----
- drivers/net/veth.c | 60 +++++++++++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 48 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 52110e5..b363a84 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -38,6 +38,8 @@
- #define VETH_XDP_TX		BIT(0)
- #define VETH_XDP_REDIR		BIT(1)
- 
-+#define VETH_XDP_TX_BULK_SIZE	16
-+
- struct veth_rq_stats {
- 	u64			xdp_packets;
- 	u64			xdp_bytes;
-@@ -64,6 +66,11 @@ struct veth_priv {
- 	unsigned int		requested_headroom;
- };
- 
-+struct veth_xdp_tx_bq {
-+	struct xdp_frame *q[VETH_XDP_TX_BULK_SIZE];
-+	unsigned int count;
-+};
-+
- /*
-  * ethtool interface
-  */
-@@ -442,13 +449,30 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
- 	return ret;
- }
- 
--static void veth_xdp_flush(struct net_device *dev)
-+static void veth_xdp_flush_bq(struct net_device *dev, struct veth_xdp_tx_bq *bq)
-+{
-+	int sent, i, err = 0;
-+
-+	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
-+	if (sent < 0) {
-+		err = sent;
-+		sent = 0;
-+		for (i = 0; i < bq->count; i++)
-+			xdp_return_frame(bq->q[i]);
-+	}
-+	trace_xdp_bulk_tx(dev, sent, bq->count - sent, err);
-+
-+	bq->count = 0;
-+}
-+
-+static void veth_xdp_flush(struct net_device *dev, struct veth_xdp_tx_bq *bq)
- {
- 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
- 	struct net_device *rcv;
- 	struct veth_rq *rq;
- 
- 	rcu_read_lock();
-+	veth_xdp_flush_bq(dev, bq);
- 	rcv = rcu_dereference(priv->peer);
- 	if (unlikely(!rcv))
- 		goto out;
-@@ -464,19 +488,26 @@ static void veth_xdp_flush(struct net_device *dev)
- 	rcu_read_unlock();
- }
- 
--static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp)
-+static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp,
-+		       struct veth_xdp_tx_bq *bq)
- {
- 	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
- 
- 	if (unlikely(!frame))
- 		return -EOVERFLOW;
- 
--	return veth_xdp_xmit(dev, 1, &frame, 0);
-+	if (unlikely(bq->count == VETH_XDP_TX_BULK_SIZE))
-+		veth_xdp_flush_bq(dev, bq);
-+
-+	bq->q[bq->count++] = frame;
-+
-+	return 0;
- }
- 
- static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 					struct xdp_frame *frame,
--					unsigned int *xdp_xmit)
-+					unsigned int *xdp_xmit,
-+					struct veth_xdp_tx_bq *bq)
- {
- 	void *hard_start = frame->data - frame->headroom;
- 	void *head = hard_start - sizeof(struct xdp_frame);
-@@ -509,7 +540,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 			orig_frame = *frame;
- 			xdp.data_hard_start = head;
- 			xdp.rxq->mem = frame->mem;
--			if (unlikely(veth_xdp_tx(rq->dev, &xdp) < 0)) {
-+			if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
- 				trace_xdp_exception(rq->dev, xdp_prog, act);
- 				frame = &orig_frame;
- 				goto err_xdp;
-@@ -559,7 +590,8 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- }
- 
- static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq, struct sk_buff *skb,
--					unsigned int *xdp_xmit)
-+					unsigned int *xdp_xmit,
-+					struct veth_xdp_tx_bq *bq)
- {
- 	u32 pktlen, headroom, act, metalen;
- 	void *orig_data, *orig_data_end;
-@@ -635,7 +667,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq, struct sk_buff *skb,
- 		get_page(virt_to_page(xdp.data));
- 		consume_skb(skb);
- 		xdp.rxq->mem = rq->xdp_mem;
--		if (unlikely(veth_xdp_tx(rq->dev, &xdp) < 0)) {
-+		if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
- 			trace_xdp_exception(rq->dev, xdp_prog, act);
- 			goto err_xdp;
- 		}
-@@ -690,7 +722,8 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq, struct sk_buff *skb,
- 	return NULL;
- }
- 
--static int veth_xdp_rcv(struct veth_rq *rq, int budget, unsigned int *xdp_xmit)
-+static int veth_xdp_rcv(struct veth_rq *rq, int budget, unsigned int *xdp_xmit,
-+			struct veth_xdp_tx_bq *bq)
- {
- 	int i, done = 0, drops = 0, bytes = 0;
- 
-@@ -706,11 +739,11 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget, unsigned int *xdp_xmit)
- 			struct xdp_frame *frame = veth_ptr_to_xdp(ptr);
- 
- 			bytes += frame->len;
--			skb = veth_xdp_rcv_one(rq, frame, &xdp_xmit_one);
-+			skb = veth_xdp_rcv_one(rq, frame, &xdp_xmit_one, bq);
- 		} else {
- 			skb = ptr;
- 			bytes += skb->len;
--			skb = veth_xdp_rcv_skb(rq, skb, &xdp_xmit_one);
-+			skb = veth_xdp_rcv_skb(rq, skb, &xdp_xmit_one, bq);
- 		}
- 		*xdp_xmit |= xdp_xmit_one;
- 
-@@ -736,10 +769,13 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 	struct veth_rq *rq =
- 		container_of(napi, struct veth_rq, xdp_napi);
- 	unsigned int xdp_xmit = 0;
-+	struct veth_xdp_tx_bq bq;
- 	int done;
- 
-+	bq.count = 0;
-+
- 	xdp_set_return_frame_no_direct();
--	done = veth_xdp_rcv(rq, budget, &xdp_xmit);
-+	done = veth_xdp_rcv(rq, budget, &xdp_xmit, &bq);
- 
- 	if (done < budget && napi_complete_done(napi, done)) {
- 		/* Write rx_notify_masked before reading ptr_ring */
-@@ -751,7 +787,7 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 	}
- 
- 	if (xdp_xmit & VETH_XDP_TX)
--		veth_xdp_flush(rq->dev);
-+		veth_xdp_flush(rq->dev, &bq);
- 	if (xdp_xmit & VETH_XDP_REDIR)
- 		xdp_do_flush_map();
- 	xdp_clear_return_frame_no_direct();
--- 
-1.8.3.1
-
+Kind regards
+Uffe
