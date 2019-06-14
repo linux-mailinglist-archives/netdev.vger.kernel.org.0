@@ -2,200 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC52046C51
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAE4C46C56
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725996AbfFNW2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 18:28:42 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36801 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725812AbfFNW2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:28:42 -0400
-Received: by mail-qt1-f196.google.com with SMTP id p15so4345150qtl.3;
-        Fri, 14 Jun 2019 15:28:41 -0700 (PDT)
+        id S1726140AbfFNWcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 18:32:04 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:39848 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725812AbfFNWcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:32:04 -0400
+Received: by mail-qk1-f195.google.com with SMTP id i125so2713891qkd.6;
+        Fri, 14 Jun 2019 15:32:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LspWOEFgqjQy/K7fxFxEzS+zsZJJ8OBl2jPUqCFmr8A=;
-        b=eZO9xXfmxwDKETkbxsjYtJ4R40aS8qTE6+1ZKGUvkOX3hSp4ma2nuPHTYwM+c+q8nB
-         XHJYl9jLpzjOsiJ+WVShD3HvfeYrTdUwLn27kupVb9UQ7QrZI7Rs4fJVW7m2omNuLNFX
-         Q2QLXCxVzN+RZFTqDdDTT28+hyID0rkM8HPcqMiRZ3Q6Fd+iJlCm7SVNf00d0AK8o25q
-         ReAVbwcmYydkk32kaInMydxj/NcNjYXVik7Wud9osSsFXMe/RsO3EcM0fjyTM78w/6Q7
-         VMCz+yImP7Q1aue0ZrIMCR1fegQZnWqjrvCwRAy6nbmUzrgwMqhs43DIZ5XhgX51xsOB
-         lI3A==
+        bh=rgCpxQhKgcPxKhW1zrmoJ7xR10La2/Y/NCUBA1QHYKg=;
+        b=ikN9b9uDtTN2fuFFRirNtEKSGBtekPBwAtjcFoeDYo/n4GIpdxNrzEGxoDEveSyn8q
+         RvkLP2zVpnhR+bG0cWFd7Tb6iIth3zBxO+iwVI2/QLxamk1wZu7clV00s0UkOQUCz/Fb
+         j3PChAdTCsFcY9tPY8KCPwsoJI7wVqN3kuzQSMxjrHDJTI69ORMqUq9bnvspSjB24Zz1
+         9rCTA/XbPCIIAQ97NmBee5gYHRCHzhfxx/tA2HAk3+2y9F9HVBnMvXzOg/AldoUDnKBA
+         rElPQB/qGT9+XRCAOzJ1+8nqVrO93GSbS0YOViSaszr12PN4+VRaObPuTAL6wKcBOn8P
+         AITg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LspWOEFgqjQy/K7fxFxEzS+zsZJJ8OBl2jPUqCFmr8A=;
-        b=t/U1nSY99x7qEp9lT/L+IaAqCoTSR3MzDIIScTNgODJUGIdxyRdZ7XRTLYKxTkvtTM
-         CkagzsfDDuvx3hJ+s4NaHc8EeMrNRnB6Yjam8K88N8/wNUPJItD8B4PB/FZkLnZqYg2T
-         x8G3MFISAkXBVoVbCMrgHSp9tlHa5xP65/jb+i/rUi74+dp8t5NrU7dXZgTR/x9yU/ZQ
-         TGt6z96/6P7SGvN2pSApXKDIMcXlzCVujwOy1G92v0o6aEBOjZW2WEBXKqtx3cQ0M6dU
-         mzyk+0zSU3yhDoXDZsi5FMB4t/NBgKgrTYNhFT1OdLxM6m9dF41zcO3iaKOxIoIgPPjV
-         Ydfw==
-X-Gm-Message-State: APjAAAV/L27o3kEYAbgodmiPji9rB2fbb5r4LGJo3IPS+npslLkR2dET
-        9VM9J5iOijF7gyuNNlUDl8/BXH3lQgAiF72d+XI=
-X-Google-Smtp-Source: APXvYqxjRKdKvt1fJ1EIIz66gVB0Ko5jWrSApcot4CAYlHF0AGgjVmYT2Wfzf1pAyKOki2GWAJOLOO6+DTcSzYlCXCI=
-X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr59214503qta.93.1560551320907;
- Fri, 14 Jun 2019 15:28:40 -0700 (PDT)
+        bh=rgCpxQhKgcPxKhW1zrmoJ7xR10La2/Y/NCUBA1QHYKg=;
+        b=Jruzngf9Oa7Mpu5e83gMr+wd2rYWiOKg5mbB50oDHLV0sXzdCQsqJQhTu/VsHzQIiA
+         u5/Ne3J0844X/NUOePWpYlEh2RFakrnny/8FlXJIEVa7r0jENeLmepE5iRQdj9FryUN0
+         XW5l3c8b5+Af9d+hmcnC5604CYfhd1TAnIg7Ktzry6iQIhCY5iOCEE9Vd0Vhf+dUNvIq
+         YtgVLiicGFyhs4BgGFIAs8tyDK46a5qA/g28dhHjpKFJbLP+zmVky3T1XHRmW8LMqhae
+         A+GgmY9HyM5y4Pc/C3Vy7Kd8gi76khQpbRsakmoPXNsCg6VYKgga3FiJorH3nMZLH64j
+         u6QA==
+X-Gm-Message-State: APjAAAWv4R/19XfQANNkdsdEARzn6Q9upR74GVovdggBYuEsGA34/onf
+        1dtVfpctSKFbuz/FQPDZiXVS7awBS0lnmMi6mr4=
+X-Google-Smtp-Source: APXvYqxRdVKeHpuHoTUPPVHtYPrH6D+wdvvqXiopjY5+9iDYXwZhVjB0bYX6Tkeyh1IghaRBHtdk0PKTOp+7Id11Ct0=
+X-Received: by 2002:ae9:eb53:: with SMTP id b80mr49509306qkg.172.1560551522210;
+ Fri, 14 Jun 2019 15:32:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
- <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
- <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
- <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
- <87ef3w5hew.fsf@netronome.com> <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
-In-Reply-To: <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
+References: <20190614093728.622-1-afabre@cloudflare.com>
+In-Reply-To: <20190614093728.622-1-afabre@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jun 2019 15:28:29 -0700
-Message-ID: <CAEf4BzaGLJo2y2vUSQaCB7DZtVP3Q89TzbXO0UFvQvUw+Q2kng@mail.gmail.com>
-Subject: Re: [PATCH] bpf: optimize constant blinding
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiong Wang <jiong.wang@netronome.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+Date:   Fri, 14 Jun 2019 15:31:51 -0700
+Message-ID: <CAEf4BzZNO8Px2BRcs5WMxfrfRaekxF=_fz_p2A+eL94L0DrfQg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] bpf: sk_storage: Fix out of bounds memory access
+To:     Arthur Fabre <afabre@cloudflare.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 10:06 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Fri, Jun 14, 2019 at 2:45 AM Arthur Fabre <afabre@cloudflare.com> wrote:
 >
-> On Fri, Jun 14, 2019 at 8:13 AM Jiong Wang <jiong.wang@netronome.com> wrote:
-> >
-> >
-> > Alexei Starovoitov writes:
-> >
-> > > On Wed, Jun 12, 2019 at 8:25 AM Jiong Wang <jiong.wang@netronome.com> wrote:
-> > >>
-> > >>
-> > >> Jiong Wang writes:
-> > >>
-> > >> > Alexei Starovoitov writes:
-> > >> >
-> > >> >> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
-> > >> >> <naveen.n.rao@linux.vnet.ibm.com> wrote:
-> > >> >>>
-> > >> >>> Currently, for constant blinding, we re-allocate the bpf program to
-> > >> >>> account for its new size and adjust all branches to accommodate the
-> > >> >>> same, for each BPF instruction that needs constant blinding. This is
-> > >> >>> inefficient and can lead to soft lockup with sufficiently large
-> > >> >>> programs, such as the new verifier scalability test (ld_dw: xor
-> > >> >>> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
-> > >> >>
-> > >> >> Slowdown you see is due to patch_insn right?
-> > >> >> In such case I prefer to fix the scaling issue of patch_insn instead.
-> > >> >> This specific fix for blinding only is not addressing the core of the problem.
-> > >> >> Jiong,
-> > >> >> how is the progress on fixing patch_insn?
-> > >>
-> > >> And what I have done is I have digested your conversion with Edward, and is
-> > >> slightly incline to the BB based approach as it also exposes the inserted
-> > >> insn to later pass in a natural way, then was trying to find a way that
-> > >> could create BB info in little extra code based on current verifier code,
-> > >> for example as a side effect of check_subprogs which is doing two insn
-> > >> traversal already. (I had some such code before in the historical
-> > >> wip/bpf-loop-detection branch, but feel it might be still too heavy for
-> > >> just improving insn patching)
-> > >
-> > > BB - basic block?
-> > > I'm not sure that was necessary.
-> > > The idea was that patching is adding stuff to linked list instead
-> > > and single pass at the end to linearize it.
-> >
-> > Just an update and keep people posted.
-> >
-> > Working on linked list based approach, the implementation looks like the
-> > following, mostly a combine of discussions happened and Naveen's patch,
-> > please feel free to comment.
-> >
-> >   - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
-> >     BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
-> >
-> >   - Introduce patch pool into bpf_prog->aux to keep all patched insns.
-> >     Pool structure looks like:
-> >
-> >     struct {
-> >       int num;
-> >       int prev;
-> >       int next;
-> >     } head_0;
-> >     NUM patched insns for head_0
-> >     head_1;
-> >     patched insns for head_1
-> >     head_2;
-> >     ...
-> >
-> >   - Now when doing bpf_patch_insn_single, it doesn't change the original
-> >     prog etc, instead, it merely update the insn at patched offset into a
-> >     BPF_LIST_INSN, and pushed the patched insns plus a patch header into
-> >     the patch pool. Fields of BPF_LIST_INSN is updated to setup the links:
-> >
-> >       BPF_LIST_INSN.off += patched_size
-> >       (accumulating the size attached to this list_insn, it is possible a
-> >       later patch pass patches insn in the patch pool, this means insn
-> >       traversal needs to be changed, when seeing BPF_LIST_INSN, should go
-> >       through the list)
-> >
-> >       BPF_LIST_INSN.imm = offset of the patch header in patch pool
-> >       (off is 16-bit, imm is 32-bit, the patch pool is 32-bit length, so
-> >       use imm for keeping offset, meaning a BPF_LIST_INSN can contains no
-> >       more than 8192 insns, guess it is enough)
-> >
-> >   - When doing linearize:
-> >     1. a quick scan of prog->insnsi to know the final
-> >        image size, would be simple as:
-> >
-> >       fini_size = 0;
-> >       for_each_insn:
-> >         if (insn.code == (BPF_ALU | BPF_LIST_HEAD))
-> >           fini_size += insn->off;
-> >         else
-> >           fini_size++;
-> >
-> >     2. Resize prog into fini_size, and a second scan of prog->insnsi to
-> >        copy over all insns and patched insns, at the same time generate a
-> >        auxiliary index array which maps an old index to the new index in
-> >        final image, like the "clone_index" in Naveen's patch.
-> >
-> >     3. Finally, a single pass to update branch target, the same algo used
-> >        by this patch.
-> >
-> >   - The APIs for doing insning patch looks like:
-> >       bpf_patch_insn_init:   init the generic patch pool.
-> >       bpf_patch_insn_single: push patched insns to the pool.
-> >                              link them to the associated BPF_LIST_INSN.
-> >       bpf_patch_insn_fini:   linearize a bpf_prog contains BPF_LIST_INSN.
-> >                              destroy patch pool in prog->aux.
-> >
-> > I am trying to making the implementation working with jit blind first to make
-> > sure basic things are ready. As JIT blinds happens after verification so no
-> > need to both aux update etc. Then will cleanup quite a few things for
-> > example patch a patched insn, adjust aux data, what to do with insn delete
-> > etc.
+> bpf_sk_storage maps use multiple spin locks to reduce contention.
+> The number of locks to use is determined by the number of possible CPUs.
+> With only 1 possible CPU, bucket_log == 0, and 2^0 = 1 locks are used.
 >
-> explicit indices feels like premature optimization.
-> May be use vanilla singly linked list instead?
-> Also do we have a case when patched insn will be patched again?
-> In such case 'patch insn pool' will become recursive?
-> Feels difficult to think through all offsets and indices.
-> Whereas with linked list patching patched insns will be inserting
-> them into link list.
+> When updating elements, the correct lock is determined with hash_ptr().
+> Calling hash_ptr() with 0 bits is undefined behavior, as it does:
 >
-> May be better alternative is to convert the whole program to link list
-> of insns with branch targets becoming pointers and insert patched
-> insns into this single singly linked list ?
+> x >> (64 - bits)
+>
+> Using the value results in an out of bounds memory access.
+> In my case, this manifested itself as a page fault when raw_spin_lock_bh()
+> is called later, when running the self tests:
+>
+> ./tools/testing/selftests/bpf/test_verifier 773 775
+>
+> [   16.366342] BUG: unable to handle page fault for address: ffff8fe7a66f93f8
+> [   16.367139] #PF: supervisor write access in kernel mode
+> [   16.367751] #PF: error_code(0x0002) - not-present page
+> [   16.368323] PGD 35a01067 P4D 35a01067 PUD 0
+> [   16.368796] Oops: 0002 [#1] SMP PTI
+> [   16.369175] CPU: 0 PID: 189 Comm: test_verifier Not tainted 5.2.0-rc2+ #10
+> [   16.369960] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+> [   16.371021] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
+> [ 16.371571] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
+> All code
+> ========
+>    0:   02 00                   add    (%rax),%al
+>    2:   00 31                   add    %dh,(%rcx)
+>    4:   c0 ba ff 00 00 00 3e    sarb   $0x3e,0xff(%rdx)
+>    b:   0f b1 17                cmpxchg %edx,(%rdi)
+>    e:   75 01                   jne    0x11
+>   10:   c3                      retq
+>   11:   e9 82 12 5f ff          jmpq   0xffffffffff5f1298
+>   16:   66 90                   xchg   %ax,%ax
+>   18:   65 81 05 ad 14 6f 41    addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
+>   1f:   00 02 00 00
+>   23:   31 c0                   xor    %eax,%eax
+>   25:   ba 01 00 00 00          mov    $0x1,%edx
+>   2a:   3e 0f b1 17             cmpxchg %edx,%ds:*(%rdi)                <-- trapping instruction
+>   2e:   75 01                   jne    0x31
+>   30:   c3                      retq
+>   31:   89 c6                   mov    %eax,%esi
+>   33:   e9 f0 02 5f ff          jmpq   0xffffffffff5f0328
+>   38:   b8 00 02 00 00          mov    $0x200,%eax
+>   3d:   3e                      ds
+>   3e:   0f                      .byte 0xf
+>   3f:   c1                      .byte 0xc1
+>
+> Code starting with the faulting instruction
+> ===========================================
+>    0:   3e 0f b1 17             cmpxchg %edx,%ds:(%rdi)
+>    4:   75 01                   jne    0x7
+>    6:   c3                      retq
+>    7:   89 c6                   mov    %eax,%esi
+>    9:   e9 f0 02 5f ff          jmpq   0xffffffffff5f02fe
+>    e:   b8 00 02 00 00          mov    $0x200,%eax
+>   13:   3e                      ds
+>   14:   0f                      .byte 0xf
+>   15:   c1                      .byte 0xc1
+> [   16.373398] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
+> [   16.373954] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
+> [   16.374645] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
+> [   16.375338] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
+> [   16.376028] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
+> [   16.376719] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
+> [   16.377413] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
+> [   16.378204] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   16.378763] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
+> [   16.379453] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   16.380144] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   16.380864] Call Trace:
+> [   16.381112] selem_link_map (/home/afabre/linux/./include/linux/compiler.h:221 /home/afabre/linux/net/core/bpf_sk_storage.c:243)
+> [   16.381476] sk_storage_update (/home/afabre/linux/net/core/bpf_sk_storage.c:355 /home/afabre/linux/net/core/bpf_sk_storage.c:414)
+> [   16.381888] bpf_sk_storage_get (/home/afabre/linux/net/core/bpf_sk_storage.c:760 /home/afabre/linux/net/core/bpf_sk_storage.c:741)
+> [   16.382285] ___bpf_prog_run (/home/afabre/linux/kernel/bpf/core.c:1447)
+> [   16.382679] ? __bpf_prog_run32 (/home/afabre/linux/kernel/bpf/core.c:1603)
+> [   16.383074] ? alloc_file_pseudo (/home/afabre/linux/fs/file_table.c:232)
+> [   16.383486] ? kvm_clock_get_cycles (/home/afabre/linux/arch/x86/kernel/kvmclock.c:98)
+> [   16.383906] ? ktime_get (/home/afabre/linux/kernel/time/timekeeping.c:265 /home/afabre/linux/kernel/time/timekeeping.c:369 /home/afabre/linux/kernel/time/timekeeping.c:754)
+> [   16.384243] ? bpf_test_run (/home/afabre/linux/net/bpf/test_run.c:47)
+> [   16.384613] ? bpf_prog_test_run_skb (/home/afabre/linux/net/bpf/test_run.c:313)
+> [   16.385065] ? security_capable (/home/afabre/linux/security/security.c:696 (discriminator 19))
+> [   16.385460] ? __do_sys_bpf (/home/afabre/linux/kernel/bpf/syscall.c:2072 /home/afabre/linux/kernel/bpf/syscall.c:2848)
+> [   16.385854] ? __handle_mm_fault (/home/afabre/linux/mm/memory.c:3507 /home/afabre/linux/mm/memory.c:3532 /home/afabre/linux/mm/memory.c:3666 /home/afabre/linux/mm/memory.c:3897 /home/afabre/linux/mm/memory.c:4021)
+> [   16.386273] ? __dentry_kill (/home/afabre/linux/fs/dcache.c:595)
+> [   16.386652] ? do_syscall_64 (/home/afabre/linux/arch/x86/entry/common.c:301)
+> [   16.387031] ? entry_SYSCALL_64_after_hwframe (/home/afabre/linux/./include/trace/events/initcall.h:10 /home/afabre/linux/./include/trace/events/initcall.h:10)
+> [   16.387541] Modules linked in:
+> [   16.387846] CR2: ffff8fe7a66f93f8
+> [   16.388175] ---[ end trace 891cf27b5b9c9cc6 ]---
+> [   16.388628] RIP: 0010:_raw_spin_lock_bh (/home/afabre/linux/./include/trace/events/initcall.h:48)
+> [ 16.389089] Code: 02 00 00 31 c0 ba ff 00 00 00 3e 0f b1 17 75 01 c3 e9 82 12 5f ff 66 90 65 81 05 ad 14 6f 41 00 02 00 00 31 c0 ba 01 00 00 00 <3e> 0f b1 17 75 01 c3 89 c6 e9 f0 02 5f ff b8 00 02 00 00 3e 0f c1
+> All code
+> ========
+>    0:   02 00                   add    (%rax),%al
+>    2:   00 31                   add    %dh,(%rcx)
+>    4:   c0 ba ff 00 00 00 3e    sarb   $0x3e,0xff(%rdx)
+>    b:   0f b1 17                cmpxchg %edx,(%rdi)
+>    e:   75 01                   jne    0x11
+>   10:   c3                      retq
+>   11:   e9 82 12 5f ff          jmpq   0xffffffffff5f1298
+>   16:   66 90                   xchg   %ax,%ax
+>   18:   65 81 05 ad 14 6f 41    addl   $0x200,%gs:0x416f14ad(%rip)        # 0x416f14d0
+>   1f:   00 02 00 00
+>   23:   31 c0                   xor    %eax,%eax
+>   25:   ba 01 00 00 00          mov    $0x1,%edx
+>   2a:   3e 0f b1 17             cmpxchg %edx,%ds:*(%rdi)                <-- trapping instruction
+>   2e:   75 01                   jne    0x31
+>   30:   c3                      retq
+>   31:   89 c6                   mov    %eax,%esi
+>   33:   e9 f0 02 5f ff          jmpq   0xffffffffff5f0328
+>   38:   b8 00 02 00 00          mov    $0x200,%eax
+>   3d:   3e                      ds
+>   3e:   0f                      .byte 0xf
+>   3f:   c1                      .byte 0xc1
+>
+> Code starting with the faulting instruction
+> ===========================================
+>    0:   3e 0f b1 17             cmpxchg %edx,%ds:(%rdi)
+>    4:   75 01                   jne    0x7
+>    6:   c3                      retq
+>    7:   89 c6                   mov    %eax,%esi
+>    9:   e9 f0 02 5f ff          jmpq   0xffffffffff5f02fe
+>    e:   b8 00 02 00 00          mov    $0x200,%eax
+>   13:   3e                      ds
+>   14:   0f                      .byte 0xf
+>   15:   c1                      .byte 0xc1
+> [   16.390899] RSP: 0018:ffffa759809d3be0 EFLAGS: 00010246
+> [   16.391410] RAX: 0000000000000000 RBX: ffff8fe7a66f93f0 RCX: 0000000000000040
+> [   16.392102] RDX: 0000000000000001 RSI: ffff8fdaf9f0d180 RDI: ffff8fe7a66f93f8
+> [   16.392795] RBP: ffff8fdaf9f0d180 R08: ffff8fdafba2c320 R09: ffff8fdaf9f0d0c0
+> [   16.393481] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8fdafa346700
+> [   16.394169] R13: ffff8fe7a66f93f8 R14: ffff8fdaf9f0d0c0 R15: 0000000000000001
+> [   16.394870] FS:  00007fda724c0740(0000) GS:ffff8fdafba00000(0000) knlGS:0000000000000000
+> [   16.395641] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   16.396193] CR2: ffff8fe7a66f93f8 CR3: 0000000139d1c006 CR4: 0000000000360ef0
+> [   16.396876] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   16.397557] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   16.398246] Kernel panic - not syncing: Fatal exception in interrupt
+> [   16.399067] Kernel Offset: 0x3ce00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> [   16.400098] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+>
 
-I think converting to a singly-linked list is a good, simple and
-straightforward approach. The only downside is 3x more memory (insn +
-next pointer + branch pointer for instructions that branch/call), but
-it shouldn't be a big deal in practice. But it seems like a good
-opportunity to simplify and clean up patching code, so I'd definitely
-vote to start with this approach.
+I think the bug is pretty clear without this detailed example, I'd
+remove it from commit message.
+
+> Force the minimum number of locks to two.
+>
+> Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
+> Fixes: 6ac99e8f23d4 ("bpf: Introduce bpf sk local storage")
+> ---
+
+Thanks for fixing this!
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+
+>  net/core/bpf_sk_storage.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> index f40e3d35fd9c..94c7f77ecb6b 100644
+> --- a/net/core/bpf_sk_storage.c
+> +++ b/net/core/bpf_sk_storage.c
+> @@ -634,7 +634,8 @@ static struct bpf_map *bpf_sk_storage_map_alloc(union bpf_attr *attr)
+>                 return ERR_PTR(-ENOMEM);
+>         bpf_map_init_from_attr(&smap->map, attr);
+>
+> -       smap->bucket_log = ilog2(roundup_pow_of_two(num_possible_cpus()));
+> +       /* Use at least 2 buckets, select_bucket() is undefined behavior with 1 bucket */
+> +       smap->bucket_log = max_t(u32, 1, ilog2(roundup_pow_of_two(num_possible_cpus())));
+>         nbuckets = 1U << smap->bucket_log;
+>         cost = sizeof(*smap->buckets) * nbuckets + sizeof(*smap);
+>
+> --
+> 2.20.1
+>
