@@ -2,103 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA55846CF5
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E6E46CFD
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726108AbfFNXa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 19:30:29 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39398 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725837AbfFNXa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:30:29 -0400
-Received: by mail-lj1-f193.google.com with SMTP id v18so3970698ljh.6;
-        Fri, 14 Jun 2019 16:30:27 -0700 (PDT)
+        id S1726094AbfFNXnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 19:43:53 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35058 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfFNXnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:43:53 -0400
+Received: by mail-qk1-f193.google.com with SMTP id l128so2812368qke.2;
+        Fri, 14 Jun 2019 16:43:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hLRvRyseCoNTnINKGx1gbhdzgE1HlmQyXykkBiBseG4=;
-        b=XsbynDbDNwALY52CArTK5cnvk4mmYDaryXGQacSxkuCC0C8D65Z1opswYES2F8hqFg
-         CFQ84p+YGY1zGY2h+9tqYn6+0MoWuMrQarVQmuoy8vDOEVM+cQrGs8+zFuGOktT5ohLd
-         OUbDI+uM8jrivKmiy6Jo5kJlh9zuJrafznOYrKm5vbV6sjk3saWgdzXVZXEDifzNldEQ
-         znvklcvpQYIiycEhvllN7AdQgxTJBhe1lkDPFy7NtT1q0+iL2/QR9igFkKB25K3ip37h
-         0L6A/n4zRVSwEBIKu0Fh8JGoquUtbaktaShO4Ut63P1MnDFD3JKy6bbu4LGnhM8N8oho
-         P3jg==
+        bh=xJP8PPoAP8r7kaAAybEx4rwl+7jp0GqNz9cJuvREu4w=;
+        b=cy1l53EEUjQ96xI4ecZzikc8ifXIMJLymjZcR3ktedrmxZhXSpT7Ssn7fNIqn3jmkU
+         vpKkRw3MNnmmPyFPUENbWQPjZmrTrzXtGTVNdc7gTum9zvFdq+luRc+vNWb/F9jhBakD
+         N3Mrw9DYzE5eH5bXlTbd36nrHLq4HMZEl+aLuHrCazFBm9ejHqlBpgANPZoiosmdPxKk
+         04DlwPYO2Nb2gGAyOfGBce4fozQcnNB39X5zBgV8b8Uc1EsxXAijB1YoRcARDid8n4/J
+         xjqwKQQx37SciDVkFcJQh4IU3g6CDf4OIZaO68AAgVZq70HvOsT0d7XTK7zEBOegQAjS
+         jINw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hLRvRyseCoNTnINKGx1gbhdzgE1HlmQyXykkBiBseG4=;
-        b=Dt0WPn1g0Y/aPaj/RYz7+JVZ0g3u0iHugwhPpvZCZUomV7Fn2U2fgcJ6b/BPwLz/Je
-         wLb82i0yCecrIt9sNP5iC3dF3xwdDoervKjF9GckYW4w5GHkKnjSRUj0ovDDgxNEoTHK
-         tIqWE6syWqToCrOBxBz978gzwR0znsPbQhWdvBYQb8nb4pMzME9PJx0AugQpVnvUFkhF
-         XWE7stvcaQyV3EW9U3EqGtVm3SAgAjgMhViH2CEhLAJgvTz6PCwt1Bm2lOr+LZqhKlaU
-         zPDSvTepILPjCnsEMngaiRKMeUHfb56yNLGiHs/cz90fnHJg0od6EAYIfRyL5zpB6y7I
-         aaNg==
-X-Gm-Message-State: APjAAAUDtqomHqk32X8Vzwi9NN1u3JhLE1TGAzKh0zIxgwTdmPOU5rwP
-        XF9LqMGBDu64mRRfnXOdSfeMwmPV3JpPM4Y4iZc=
-X-Google-Smtp-Source: APXvYqwbIBfbtHpDcKSqlvtFREHBX4scDcT301yjzhza69EW1cROJWTQO5zNXq0ejKhNBgymyKw0elbWtSfI8kvJ+ys=
-X-Received: by 2002:a2e:968e:: with SMTP id q14mr10593386lji.195.1560555026608;
- Fri, 14 Jun 2019 16:30:26 -0700 (PDT)
+        bh=xJP8PPoAP8r7kaAAybEx4rwl+7jp0GqNz9cJuvREu4w=;
+        b=c5nInkQ+paCj2xxb99kloSbHVEwb5fFOvBoAMMTjbWPGDtMoP1PVFtRkkj4Yblz9XT
+         2/2wIu+qBc9chfCOEuxFdJ4KYM2T3RzG93/IUrORPG4UArzuxEEXO63E9GwTktnIcG97
+         vbWnimqrhcy9YER5gVPwMw4PMyBEt4aM3AQIUyWbmKLlwkC2vWMIpS/ZaZPYNRU51Fop
+         ohh+hK2UZT9I7CIBr1MZ7o3KI9OhZ1PGNw1go4vIkcUyJhJ/K5dT/RAoll1DufSTyO8y
+         8jA60tRJz1ZxBvLNqy/KVuHENm0FXQ5TnvMue2l0IwsSdzsCrioYCVn7W7vqJJVfOc5t
+         qpBw==
+X-Gm-Message-State: APjAAAUaVFB3wqIBTe1mh7tmaN99MvA+BCanJhXyFzitBaiEzXnRdhnS
+        LRjEbpqGSFQoPtuHQXAKav3k8Pzx7jfSS0zbKy7JLZW+
+X-Google-Smtp-Source: APXvYqwCN6MxhnCE5U+1nP/fXMYZShHoZGYTNsYWOWMEbc/6mjZynOFpout8lY0zthY8aVmk9UdFSy4tEIiDQI/BSTk=
+X-Received: by 2002:a05:620a:14a8:: with SMTP id x8mr22990751qkj.35.1560555832116;
+ Fri, 14 Jun 2019 16:43:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1560534694.git.jpoimboe@redhat.com> <c0add777a2e0207c1474ce99baa492a7ce3502d6.1560534694.git.jpoimboe@redhat.com>
- <20190614205841.s4utbpurntpr6aiq@ast-mbp.dhcp.thefacebook.com>
- <20190614210745.kwiqm5pkgabruzuj@treble> <CAADnVQLK3ixK1JWF_mfScZoFzFF=6O8f1WcqkYqiejKeex1GSQ@mail.gmail.com>
- <20190614211929.drnnawbi7guqj2ck@treble> <CAADnVQ+BCxsKEK=ZzYOZkgTJAg_7jz1_f+FCX+Ms0vTOuW8Mxw@mail.gmail.com>
- <20190614231717.xukbfpc2cy47s4xh@treble>
-In-Reply-To: <20190614231717.xukbfpc2cy47s4xh@treble>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 14 Jun 2019 16:30:15 -0700
-Message-ID: <CAADnVQJn+TnSj82MJ0ry1UTNGXD0qzESqfp7E1oi_HAYC-xTXg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] objtool: Fix ORC unwinding in non-JIT BPF
- generated code
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+References: <20190611044747.44839-1-andriin@fb.com> <20190611044747.44839-9-andriin@fb.com>
+ <20190614232329.GF9636@mini-arch>
+In-Reply-To: <20190614232329.GF9636@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 14 Jun 2019 16:43:41 -0700
+Message-ID: <CAEf4BzZ5itJ+toa-3Bm3yNxP=CyvNm=CZ5Dg+=nhU=p4CSu=+g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 8/8] selftests/bpf: switch tests to BTF-defined
+ map definitions
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@aculab.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 4:17 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+On Fri, Jun 14, 2019 at 4:23 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
 >
-> On Fri, Jun 14, 2019 at 02:22:59PM -0700, Alexei Starovoitov wrote:
-> > On Fri, Jun 14, 2019 at 2:19 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> > > > > > >
-> > > > > > > +#define JUMP_TABLE_SYM_PREFIX "jump_table."
-> > > > > >
-> > > > > > since external tool will be looking at it should it be named
-> > > > > > "bpf_jump_table." to avoid potential name conflicts?
-> > > > > > Or even more unique name?
-> > > > > > Like "bpf_interpreter_jump_table." ?
-> > > > >
-> > > > > No, the point is that it's a generic feature which can also be used any
-> > > > > non-BPF code which might also have a jump table.
-> > > >
-> > > > and you're proposing to name all such jump tables in the kernel
-> > > > as static foo jump_table[] ?
-> > >
-> > > That's the idea.
-> >
-> > Then it needs much wider discussion.
+> On 06/10, Andrii Nakryiko wrote:
+> > Switch test map definition to new BTF-defined format.
+> Reiterating my concerns on non-RFC version:
 >
-> Why would it need wider discussion?  It only has one user.  If you
-> honestly believe that it will be controversial to require future users
-> to call a static jump table "jump_table" then we can have that
-> discussion when it comes up.
+> Pretty please, let's not convert everything at once. Let's start
+> with stuff that explicitly depends on BTF (spinlocks?).
 
-It's clearly controversial.
-I nacked it already on pointless name change
-from "jumptable" to "jump_table" and now you're saying
-that no one will complain about "jump_table" name
-for all jump tables in the kernel that will ever appear?
+How about this approach. I can split last commit into two. One
+converting all the stuff that needs BTF (spinlocks, etc). Another part
+- everything else. If it's so important for your use case, you'll be
+able to just back out my last commit. Or we just don't land last
+commit.
+
+>
+> One good argument (aside from the one that we'd like to be able to
+> run tests internally without BTF for a while): libbpf doesn't
+> have any tests as far as I'm aware. If we don't have 'legacy' maps in the
+> selftests, libbpf may bit rot.
+
+I left few legacy maps exactly for that reason. See progs/test_btf_*.c.
+
+>
+> (Andrii, feel free to ignore, since we've already discussed that)
+>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+
+
+<snip>
