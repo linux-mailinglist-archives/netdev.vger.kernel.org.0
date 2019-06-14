@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF79E46CCB
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A836246CCC
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbfFNXWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 19:22:31 -0400
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:34737 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbfFNXWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:22:31 -0400
-Received: by mail-pl1-f201.google.com with SMTP id d19so2465140pls.1
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 16:22:30 -0700 (PDT)
+        id S1726138AbfFNXWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 19:22:34 -0400
+Received: from mail-yw1-f74.google.com ([209.85.161.74]:40026 "EHLO
+        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfFNXWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:22:34 -0400
+Received: by mail-yw1-f74.google.com with SMTP id t203so4214359ywe.7
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 16:22:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ydEopugx+19UA1OI3lYmWdMWzfroaM/vpXteksdE9/o=;
-        b=eSJhvqNV3UIQh5c5N1kekqoJg9sfMdf7ksjkSf52EfIx+C3ho4wqWVeHuCJHhWm1y5
-         mYtf4aj1xBALhxkTptiJnsI1NBHFoJhKwqWWD+wTklExKPkkYy9opVc39KZ4z7A1qE3m
-         9ItTADloNmstd6tq1qpx6Vap7Vl51uXFZiNBtkS6u8IcuGMUzMae5UBX1p5/3AoUd5LQ
-         rxK4Zf1Aw7STtj03hvViYbUf4GLAk7URWJ/86NjhM6QtVfQWc1N67eqdOIeIsXvyfQfn
-         GTq3QvWfyWm3bilL4lCcTfWRX0Iu+WlTCPwfoHM+TugA7Tlv/yd3tAbOH+pm3dHEQaDq
-         VeGg==
+        bh=ArF7Y2tfpeEQe2L/wOI6CBIb7ffTUes1h1n0lPR98II=;
+        b=tLuvaqoEvZLLVqKVuc4+Wj63mUsZEe4q3pO68kvSMPgBiqDKCH/Nt+PUWUyUWHLDlU
+         5Z17EpsAoySds2/aunNzDcqbUzk8wn4BDJcPC3yTx4XW0OelKH9bUyV6BZCAH1DeiDo8
+         w7g5eIAIdH6HQe04UTSIj4awMtkcxvYJTaR493c38pNG9nnHIsSZ6JU6ezu34dFUGVNc
+         7qG06JKB//u6twNMjs1PViw9D8N1nvWHW+wddYaD3xmeowc3LFYWs+l7tfWl//4Nn6dD
+         vqad+IPyCpGTMlrLS9BOOCJTVqYMUCUX09FJN5piSZLQQazjYaPr4+CEKhAlaWz4uei2
+         VcTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ydEopugx+19UA1OI3lYmWdMWzfroaM/vpXteksdE9/o=;
-        b=G/H0BWDAv2XTRrLfscapSc4fs+bDrxX4j1UICIPIagmpdPof6nQlHyCHHwOJxKU+8X
-         AlvdIgb6LWjjA9/t/CG4CYxYincdp0cc2qGQ0hMD5qmoTeUL9sI04pQDWKEOJ3Gqp/2Z
-         5BSZbzN1+CBcYQr6AOzC6HkmgNk73q3vraSfTak2Y5f1rF4atI04nXYIT8lPTTMwvz90
-         Wbg84ST3TiEHtlMx+d4ex4VnXfTszRd68uUPR5DD6vi/wFOlSyqUAP1lT8IeRMKPTzdN
-         eQjjTIpgJjrxLtfxuYuJ/2BqrrbHNTlbYcjUWK6Ya8mK8/ftv2/FlDQu+AQmz/zAky7a
-         Ub0g==
-X-Gm-Message-State: APjAAAW2osJAbcKRlMZ3N3XBr1k0MRJoHijTEY3U+9HEYnOugUm0El9E
-        84BMhXHKIRt63y6PIu6ewh8BGK/G39Ft0w==
-X-Google-Smtp-Source: APXvYqy+XYGGlsHmbzBPexS6ENm2gGAnf5EWEhLkHWy0VubSo4tH6CJ+AH8LQgbYzk+VoEAu1EOi1NWN7NR0iQ==
-X-Received: by 2002:a63:81c6:: with SMTP id t189mr37369705pgd.293.1560554550340;
- Fri, 14 Jun 2019 16:22:30 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 16:22:18 -0700
+        bh=ArF7Y2tfpeEQe2L/wOI6CBIb7ffTUes1h1n0lPR98II=;
+        b=h6zxCLnNS5KPen+7lPt0syQc5Noje0lWcvh7JM3OzjIU+p21Gldibv5rSb/frovjRv
+         MSLss1WiNjrxGmoTmuEFGXvmxi2Hw9sMOcvxG4hABH75Ecnfza7f85IYo5VTmfPcgkAT
+         P38eMOdHVCThk8sYziPwOh0VmVhGabjfOtk9B/VtIwWPY/jKIrg3bi4B8k17QN+3/Ywd
+         s4t6Ha+Kwz0OiU+p27Je4C+seRgm+3hkGx7PWZsCNZrv3ZfHPwT+a28KgjK5aupviRkC
+         1C8QkbJmr/ii/ojIFcyNBkXAOUV6tixxqvopum2fEGpsXZOETT+I1ATd+R5pDkOfLM2w
+         xkFQ==
+X-Gm-Message-State: APjAAAVjCR61dI5mFO+03xbxHCdPxsiZa5iLJYsc2/oPbn6ehYj3kCxb
+        LVMvy/oORfnUA0gM48rjF452XBpbAY4BgQ==
+X-Google-Smtp-Source: APXvYqwW+oOVIi41fh+Mz2PDARALgT36t/bMcFsTZ21die0/JqC0gdSZGPmU19uc2B09P8EIYJbgWmjGUNKVwQ==
+X-Received: by 2002:a0d:cd47:: with SMTP id p68mr52818079ywd.268.1560554553676;
+ Fri, 14 Jun 2019 16:22:33 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 16:22:19 -0700
 In-Reply-To: <20190614232221.248392-1-edumazet@google.com>
-Message-Id: <20190614232221.248392-2-edumazet@google.com>
+Message-Id: <20190614232221.248392-3-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190614232221.248392-1-edumazet@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net 1/4] sysctl: define proc_do_static_key()
+Subject: [PATCH net 2/4] tcp: add tcp_rx_skb_cache sysctl
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -60,137 +60,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert proc_dointvec_minmax_bpf_stats() into a more generic
-helper, since we are going to use jump labels more often.
-
-Note that sysctl_bpf_stats_enabled is removed, since
-it is no longer needed/used.
+Instead of relying on rps_needed, it is safer to use a separate
+static key, since we do not want to enable TCP rx_skb_cache
+by default. This feature can cause huge increase of memory
+usage on hosts with millions of sockets.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/bpf.h    |  1 -
- include/linux/sysctl.h |  3 +++
- kernel/bpf/core.c      |  1 -
- kernel/sysctl.c        | 44 ++++++++++++++++++++++--------------------
- 4 files changed, 26 insertions(+), 23 deletions(-)
+ Documentation/networking/ip-sysctl.txt | 8 ++++++++
+ include/net/sock.h                     | 6 ++----
+ net/ipv4/sysctl_net_ipv4.c             | 9 +++++++++
+ 3 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5df8e9e2a3933949af17dda1d77a4daccd5df611..b92ef9f73e42f1bcf0141aa21d0e9c17c5c7f05b 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -600,7 +600,6 @@ void bpf_map_area_free(void *base);
- void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr);
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 14fe93049d28e965d7349b03c5c8782c3d386e7d..288aa264ac26d98637a5bb1babc334bfc699bef1 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -772,6 +772,14 @@ tcp_challenge_ack_limit - INTEGER
+ 	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
+ 	Default: 100
  
- extern int sysctl_unprivileged_bpf_disabled;
--extern int sysctl_bpf_stats_enabled;
++tcp_rx_skb_cache - BOOLEAN
++	Controls a per TCP socket cache of one skb, that might help
++	performance of some workloads. This might be dangerous
++	on systems with a lot of TCP sockets, since it increases
++	memory usage.
++
++	Default: 0 (disabled)
++
+ UDP variables:
  
- int bpf_map_new_fd(struct bpf_map *map, int flags);
- int bpf_prog_new_fd(struct bpf_prog *prog);
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index b769ecfcc3bd41aad6fd339ba824c6bb622ac24d..aadd310769d080f1d45db14b2a72fc8ad36f1196 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -63,6 +63,9 @@ extern int proc_doulongvec_ms_jiffies_minmax(struct ctl_table *table, int,
- 				      void __user *, size_t *, loff_t *);
- extern int proc_do_large_bitmap(struct ctl_table *, int,
- 				void __user *, size_t *, loff_t *);
-+extern int proc_do_static_key(struct ctl_table *table, int write,
-+			      void __user *buffer, size_t *lenp,
-+			      loff_t *ppos);
- 
- /*
-  * Register a set of sysctl names by calling register_sysctl_table
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 7c473f208a1058de97434a57a2d47e2360ae80a8..080e2bb644ccd761b3d54fbad9b58a881086231e 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2097,7 +2097,6 @@ int __weak skb_copy_bits(const struct sk_buff *skb, int offset, void *to,
- 
- DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- EXPORT_SYMBOL(bpf_stats_enabled_key);
--int sysctl_bpf_stats_enabled __read_mostly;
- 
- /* All definitions of tracepoints related to BPF. */
- #define CREATE_TRACE_POINTS
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 7d1008be6173313c807b2abb23f3171ef05cddc8..1beca96fb6252ddc4af07b6292f9dd95c4f53afd 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -230,11 +230,6 @@ static int proc_dostring_coredump(struct ctl_table *table, int write,
- #endif
- static int proc_dopipe_max_size(struct ctl_table *table, int write,
- 		void __user *buffer, size_t *lenp, loff_t *ppos);
--#ifdef CONFIG_BPF_SYSCALL
--static int proc_dointvec_minmax_bpf_stats(struct ctl_table *table, int write,
--					  void __user *buffer, size_t *lenp,
--					  loff_t *ppos);
--#endif
- 
- #ifdef CONFIG_MAGIC_SYSRQ
- /* Note: sysrq code uses its own private copy */
-@@ -1253,12 +1248,10 @@ static struct ctl_table kern_table[] = {
- 	},
- 	{
- 		.procname	= "bpf_stats_enabled",
--		.data		= &sysctl_bpf_stats_enabled,
--		.maxlen		= sizeof(sysctl_bpf_stats_enabled),
-+		.data		= &bpf_stats_enabled_key.key,
-+		.maxlen		= sizeof(bpf_stats_enabled_key),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax_bpf_stats,
--		.extra1		= &zero,
--		.extra2		= &one,
-+		.proc_handler	= proc_do_static_key,
- 	},
- #endif
- #if defined(CONFIG_TREE_RCU) || defined(CONFIG_PREEMPT_RCU)
-@@ -3374,26 +3367,35 @@ int proc_do_large_bitmap(struct ctl_table *table, int write,
- 
- #endif /* CONFIG_PROC_SYSCTL */
- 
--#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_SYSCTL)
--static int proc_dointvec_minmax_bpf_stats(struct ctl_table *table, int write,
--					  void __user *buffer, size_t *lenp,
--					  loff_t *ppos)
-+#if defined(CONFIG_SYSCTL)
-+int proc_do_static_key(struct ctl_table *table, int write,
-+		       void __user *buffer, size_t *lenp,
-+		       loff_t *ppos)
+ udp_l3mdev_accept - BOOLEAN
+diff --git a/include/net/sock.h b/include/net/sock.h
+index e9d769c04637a3c0b967c9bfa6def724834796b9..b02645e2dfad722769c1455bcde76e46da9fc5ac 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2433,13 +2433,11 @@ static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
+  * This routine must be called with interrupts disabled or with the socket
+  * locked so that the sk_buff queue operation is ok.
+ */
++DECLARE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
+ static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
  {
--	int ret, bpf_stats = *(int *)table->data;
--	struct ctl_table tmp = *table;
-+	struct static_key *key = (struct static_key *)table->data;
-+	static DEFINE_MUTEX(static_key_mutex);
-+	int val, ret;
-+	struct ctl_table tmp = {
-+		.data   = &val,
-+		.maxlen = sizeof(val),
-+		.mode   = table->mode,
-+		.extra1 = &zero,
-+		.extra2 = &one,
-+	};
+ 	__skb_unlink(skb, &sk->sk_receive_queue);
+-	if (
+-#ifdef CONFIG_RPS
+-	    !static_branch_unlikely(&rps_needed) &&
+-#endif
++	if (static_branch_unlikely(&tcp_rx_skb_cache_key) &&
+ 	    !sk->sk_rx_skb_cache) {
+ 		sk->sk_rx_skb_cache = skb;
+ 		skb_orphan(skb);
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 875867b64d6a6597bf4fcd3498ed55741cbe33f7..886b58d31351df44725bdc34081e798bcb89ecf0 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -51,6 +51,9 @@ static int comp_sack_nr_max = 255;
+ static u32 u32_max_div_HZ = UINT_MAX / HZ;
+ static int one_day_secs = 24 * 3600;
  
- 	if (write && !capable(CAP_SYS_ADMIN))
- 		return -EPERM;
++DEFINE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
++EXPORT_SYMBOL(tcp_rx_skb_cache_key);
++
+ /* obsolete */
+ static int sysctl_tcp_low_latency __read_mostly;
  
--	tmp.data = &bpf_stats;
-+	mutex_lock(&static_key_mutex);
-+	val = static_key_enabled(key);
- 	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
- 	if (write && !ret) {
--		*(int *)table->data = bpf_stats;
--		if (bpf_stats)
--			static_branch_enable(&bpf_stats_enabled_key);
-+		if (val)
-+			static_key_enable(key);
- 		else
--			static_branch_disable(&bpf_stats_enabled_key);
-+			static_key_disable(key);
- 	}
-+	mutex_unlock(&static_key_mutex);
- 	return ret;
- }
- #endif
+@@ -559,6 +562,12 @@ static struct ctl_table ipv4_table[] = {
+ 		.extra1		= &sysctl_fib_sync_mem_min,
+ 		.extra2		= &sysctl_fib_sync_mem_max,
+ 	},
++	{
++		.procname	= "tcp_rx_skb_cache",
++		.data		= &tcp_rx_skb_cache_key.key,
++		.mode		= 0644,
++		.proc_handler	= proc_do_static_key,
++	},
+ 	{ }
+ };
+ 
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
