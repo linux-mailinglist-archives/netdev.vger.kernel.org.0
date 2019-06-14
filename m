@@ -2,167 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D1CE45946
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5CD459C1
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbfFNJuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 05:50:54 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:38133 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbfFNJuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 05:50:54 -0400
-X-Originating-IP: 90.88.23.150
-Received: from localhost (aaubervilliers-681-1-81-150.w90-88.abo.wanadoo.fr [90.88.23.150])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id F1BB4C0008;
-        Fri, 14 Jun 2019 09:50:48 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 11:50:48 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 05/11] dt-bindings: net: sun4i-emac: Convert the
- binding to a schemas
-Message-ID: <20190614095048.j2xwdsucucbakkl2@flea>
-References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
- <d198d29119b37b2fdb700d8992b31963e98b6693.1560158667.git-series.maxime.ripard@bootlin.com>
- <20190610143139.GG28724@lunn.ch>
- <CAL_JsqJahCJcdu=+fA=ewbGezuEJ2W6uwMVxkQpdY6w+1OWVVA@mail.gmail.com>
- <20190611145856.ua2ggkn6ccww6vpp@flea>
- <CAL_Jsq+KwH-j8f+r+fWhMuqJPWcHdBQau+nUz3NRAXYTpsyuvg@mail.gmail.com>
+        id S1727325AbfFNJ7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 05:59:33 -0400
+Received: from kadath.azazel.net ([81.187.231.250]:41598 "EHLO
+        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726767AbfFNJ7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 05:59:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
+         s=20190108; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+SqYUowZr52aqAdLPxRNaayVXCYX/FhSATpPUJOhNrw=; b=EJlBGeh1c7hJ9Ws6hHNTKAepg/
+        tgaD0qi533U8Qu9foxsKUShJesrorJjYJNOgEqDWQUtG4vFR2Zb03OMDqWK8TdZGxhLCGQGwebKd8
+        pq+euhq83cOJHmesuPoikyW7vzgsJP6jLvfXKVlIiDF4Ec4+o65kLduKheMcXMmWK869T85lagj2z
+        3SniQ/Gz3ePrx+6k1+aKnO8JqJ/ZCHPTA3fNoNj66ncUYCeka+uEifFIKagcD4N2XBXCgmWTMyRRG
+        7+sQ9vjH/WVuydB0MbDhki5nfmw8j4yc0+64HNCYqYf7yqbvNSNFeyLjkAlcqHR28qOg779JYaLeF
+        DQsVL/0A==;
+Received: from kadath.azazel.net ([2001:8b0:135f:bcd1:e2cb:4eff:fedf:e608] helo=azazel.net)
+        by kadath.azazel.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <jeremy@azazel.net>)
+        id 1hbizT-0006xV-OC; Fri, 14 Jun 2019 10:59:23 +0100
+Date:   Fri, 14 Jun 2019 10:59:22 +0100
+From:   Jeremy Sowden <jeremy@azazel.net>
+To:     Steffen Klassert <steffen.klassert@secunet.com>, g@azazel.net
+Cc:     Young Xiao <92siuyang@gmail.com>, herbert@gondor.apana.org.au,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] af_key: Fix memory leak in key_notify_policy.
+Message-ID: <20190614095922.k5yzeyew2zhrfp7e@azazel.net>
+References: <1560500786-572-1-git-send-email-92siuyang@gmail.com>
+ <20190614085346.GN17989@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="arfnxch5fo5pq4gp"
+        protocol="application/pgp-signature"; boundary="okvcvc2i7gz2dbyk"
 Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+KwH-j8f+r+fWhMuqJPWcHdBQau+nUz3NRAXYTpsyuvg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190614085346.GN17989@gauss3.secunet.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:8b0:135f:bcd1:e2cb:4eff:fedf:e608
+X-SA-Exim-Mail-From: jeremy@azazel.net
+X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---arfnxch5fo5pq4gp
+--okvcvc2i7gz2dbyk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Hi Rob,
-
-On Thu, Jun 13, 2019 at 11:32:30AM -0600, Rob Herring wrote:
-> On Thu, Jun 13, 2019 at 7:25 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
-> > On Mon, Jun 10, 2019 at 12:59:29PM -0600, Rob Herring wrote:
-> > > On Mon, Jun 10, 2019 at 8:31 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> > > >
-> > > > > +required:
-> > > > > +  - compatible
-> > > > > +  - reg
-> > > > > +  - interrupts
-> > > > > +  - clocks
-> > > > > +  - phy
-> > > > > +  - allwinner,sram
-> > > >
-> > > > Quoting ethernet.txt:
-> > > >
-> > > > - phy: the same as "phy-handle" property, not recommended for new bindings.
-> > > >
-> > > > - phy-handle: phandle, specifies a reference to a node representing a PHY
-> > > >   device; this property is described in the Devicetree Specification and so
-> > > >   preferred;
-> > > >
-> > > > Can this be expressed in Yaml? Accept phy, but give a warning. Accept
-> > > > phy-handle without a warning? Enforce that one or the other is
-> > > > present?
-> > >
-> > > The common schema could have 'phy: false'. This works as long as we've
-> > > updated (or plan to) all the dts files to use phy-handle. The issue is
-> > > how far back do you need kernels to work with newer dtbs.
+On 2019-06-14, at 10:53:46 +0200, Steffen Klassert wrote:
+> On Fri, Jun 14, 2019 at 04:26:26PM +0800, Young Xiao wrote:
+> > We leak the allocated out_skb in case pfkey_xfrm_policy2msg() fails.
+> > Fix this by freeing it on error.
 > >
-> > I guess another question being raised by this is how hard do we want
-> > to be a deprecating things, and should the DT validation be a tool to
-> > enforce that validation.
+> > Signed-off-by: Young Xiao <92siuyang@gmail.com>
+> > ---
+> >  net/key/af_key.c | 2 ++
+> >  1 file changed, 2 insertions(+)
 > >
-> > For example, you've used in you GPIO meta-schema false for anything
-> > ending with -gpio, since it's deprecated. This means that we can't
-> > convert any binding using a deprecated property without introducing a
-> > build error in the schemas, which in turn means that you'll have a lot
-> > of friction to support schemas, since you would have to convert your
-> > driver to support the new way of doing things, before being able to
-> > have a schema for your binding.
+> > diff --git a/net/key/af_key.c b/net/key/af_key.c
+> > index 4af1e1d..ec414f6 100644
+> > --- a/net/key/af_key.c
+> > +++ b/net/key/af_key.c
+> > @@ -2443,6 +2443,7 @@ static int key_pol_get_resp(struct sock *sk, struct xfrm_policy *xp, const struc
+> >  	}
+> >  	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+> >  	if (err < 0)
+> > +		kfree_skb(out_skb);
+> >  		goto out;
 >
-> I've err'ed on the stricter side. We may need to back off on some
-> things to get to warning free builds. Really, I'd like to have levels
-> to separate checks for existing bindings, new bindings, and pedantic
-> checks.
-
-That would be awesome. Do you have a plan for that already though? I
-can't really think of a way to implement it at the moment.
-
-> For '-gpio', we may be okay because the suffix is handled in the GPIO
-> core. It should be safe to update the binding to use the preferred
-> form.
-
-It might require a bit of work though in drivers, since the fallback
-is only handled if you're using the gpiod API, and not the legacy one.
-
-> > And then, we need to agree on how to express the deprecation. I guess
-> > we could allow the deprecated keyword that will be there in the
-> > draft-8, instead of ad-hoc solutions?
+> Did you test this?
 >
-> Oh, nice! I hadn't seen that. Seems like we should use that. We can
-> start even without draft-8 support because unknown keywords are
-> ignored (though we probably have to add it to our meta-schema). Then
-> at some point we can add a 'disallow deprecated' flag to the tool.
+> You need to add braces, otherwise 'goto out' will happen unconditionally.
+>
+> >
+> >  	out_hdr = (struct sadb_msg *) out_skb->data;
+> > @@ -2695,6 +2696,7 @@ static int dump_sp(struct xfrm_policy *xp, int dir, int count, void *ptr)
+> >
+> >  	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+> >  	if (err < 0)
+> > +		kfree_skb(out_skb);
+> >  		return err;
+>
+> Same here.
 
-So, in the generic ethernet binding, we would have:
+There's already a patch for this:
 
-properties:
-  phy-handle:
-    $ref: /schemas/types.yaml#definitions/phandle
-    description:
-      Specifies a reference to a node representing a PHY device.
+  https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git/commit/?id=7c80eb1c7e2b8420477fbc998971d62a648035d9
 
-  phy:
-    $ref: "#/properties/phy-handle"
-    deprecated: true
+J.
 
-  phy-device:
-    $ref: "#/properties/phy-handle"
-    deprecated: true
-
-Does that sound good?
-
-Now, how do we handle the case above, in the device specific binding?
-We just require the non-deprecated one, or the three?
-
-Thanks!
-Maxime
-
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---arfnxch5fo5pq4gp
+--okvcvc2i7gz2dbyk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXQNt+AAKCRDj7w1vZxhR
-xc/rAP9oYo3RLFWNkmJJDZDeoHTXzgtXwUn55miw6RmHtD9HuQEAvRCq1//X+pH0
-3IHUv+mhhSTrjKtCcpuBHvJv5oWybg4=
-=S27r
+iQIzBAABCAAdFiEEZ8d+2N/NBLDbUxIF0Z7UzfnX9sMFAl0Db/kACgkQ0Z7UzfnX
+9sO+dg//X5IBarNnBL4+mJo1PVkihtoJNZib7SkyNpJjU74rQ5lfILTPWBKkxOHD
+LFQt62krPp/IUE328UQthubS8BbJWSDJ7BF9HUtHlme2nZoxjgfPxvn3EvAkhQTn
+DjoeP9hOrRgn1ufCqU09n+drVOl/tTxOZIuGK4XT0j0Ycp4PpW3fPng3gs5x4eNS
+YPrLZU51nOU46GQW8b60BSgoG5h2YytLwJ4kicaJGjZxhZZOtKycrX5oc5YnnU8Z
+ki7zUF/eU5Hni231wjhJBLs8uNTtll7g8Nl8oYogDlCo1EwFukScqS9dPXev7SKZ
+4W9Xm8xP2aHAGvylJJhvFpqQ/gR5U9MkXr+gmc6uachuiZrbp3zCDyKgYt+hxZG9
+lnLjLKxNm4Bc+Wwn38BvoBcg03q850BEUGdfANpM1l/aFS+va27MFGX0wnWFsVfV
+ChOS0BfrqrOwpvLFUjFN7Ojvli+9Qs+KWiwHzp7dJFltnntif1J8i27T6v0cjQBL
+irphre+3e96UgilQ/1+ygZQi/h4SwQzt8yEfGXo3Gx8sGb7VSaYS43oW3jzhH4Rm
+WgQWyFnlzbUtaz/SZMXvj5vUaQhTUjpVHG/Ws5vkEE+ED7CGdu0r4J1j0+EfLQOi
+TJPyklntEQv4rzJHQK18+InPJgQ7HTox2Yft8rfjEZ2dSa2R6UI=
+=Llij
 -----END PGP SIGNATURE-----
 
---arfnxch5fo5pq4gp--
+--okvcvc2i7gz2dbyk--
