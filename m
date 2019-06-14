@@ -2,105 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB458452F1
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 05:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E19145364
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726047AbfFND3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 23:29:16 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38632 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725941AbfFND3P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 23:29:15 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 77D113082B5F;
-        Fri, 14 Jun 2019 03:29:05 +0000 (UTC)
-Received: from [10.72.12.57] (ovpn-12-57.pek2.redhat.com [10.72.12.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 165DB6085B;
-        Fri, 14 Jun 2019 03:29:00 +0000 (UTC)
-Subject: Re: [PATCH net-next] virtio_net: enable napi_tx by default
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, mst@redhat.com,
-        Willem de Bruijn <willemb@google.com>
-References: <20190613162457.143518-1-willemdebruijn.kernel@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c43051c5-144a-5aa4-2387-8fb42442f455@redhat.com>
-Date:   Fri, 14 Jun 2019 11:28:59 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726191AbfFNETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 00:19:54 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:47890 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725767AbfFNETx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 00:19:53 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 8F5159BC077B7B45EA24;
+        Fri, 14 Jun 2019 12:19:50 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
+ 12:19:50 +0800
+Subject: Re: [PATCH net v2] tcp: avoid creating multiple req socks with the
+ same tuples
+To:     Eric Dumazet <edumazet@google.com>
+References: <20190612035715.166676-1-maowenan@huawei.com>
+ <CANn89iJH6ZBH774SNrd2sUd_A5OBniiUVX=HBq6H4PXEW4cjwQ@mail.gmail.com>
+ <6de5d6d8-e481-8235-193e-b12e7f511030@huawei.com>
+CC:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <a674e90e-d06f-cb67-604f-30cb736d7c72@huawei.com>
+Date:   Fri, 14 Jun 2019 12:19:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-In-Reply-To: <20190613162457.143518-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 14 Jun 2019 03:29:15 +0000 (UTC)
+In-Reply-To: <6de5d6d8-e481-8235-193e-b12e7f511030@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+>>> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+>>> index 13ec7c3a9c49..fd45ed2fd985 100644
+>>> --- a/net/ipv4/inet_connection_sock.c
+>>> +++ b/net/ipv4/inet_connection_sock.c
+>>> @@ -749,7 +749,7 @@ static void reqsk_timer_handler(struct timer_list *t)
+>>>         inet_csk_reqsk_queue_drop_and_put(sk_listener, req);
+>>>  }
+>>>
+>>> -static void reqsk_queue_hash_req(struct request_sock *req,
+>>> +static bool reqsk_queue_hash_req(struct request_sock *req,
+>>>                                  unsigned long timeout)
+>>>  {
+>>>         req->num_retrans = 0;
+>>> @@ -759,19 +759,27 @@ static void reqsk_queue_hash_req(struct request_sock *req,
+>>>         timer_setup(&req->rsk_timer, reqsk_timer_handler, TIMER_PINNED);
+>>>         mod_timer(&req->rsk_timer, jiffies + timeout);
+>>>
+>>> -       inet_ehash_insert(req_to_sk(req), NULL);
+>>> +       if (!inet_ehash_insert(req_to_sk(req), NULL)) {
+>>> +               if (timer_pending(&req->rsk_timer))
+>>> +                       del_timer_sync(&req->rsk_timer);
+>>> +               return false;
+>>> +       }
+>>>         /* before letting lookups find us, make sure all req fields
+>>>          * are committed to memory and refcnt initialized.
+>>>          */
+>>>         smp_wmb();
+>>>         refcount_set(&req->rsk_refcnt, 2 + 1);
+>>> +       return true;
+>>>  }
+>>>
+>>> -void inet_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
+>>> +bool inet_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
+>>>                                    unsigned long timeout)
+>>>  {
+>>> -       reqsk_queue_hash_req(req, timeout);
+>>> +       if (!reqsk_queue_hash_req(req, timeout))
+>>> +               return false;
+>>> +
+>>>         inet_csk_reqsk_queue_added(sk);
+>>> +       return true;
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(inet_csk_reqsk_queue_hash_add);
+>>>
+>>> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+>>> index c4503073248b..b6a1b5334565 100644
+>>> --- a/net/ipv4/inet_hashtables.c
+>>> +++ b/net/ipv4/inet_hashtables.c
+>>> @@ -477,6 +477,7 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
+>>>         struct inet_ehash_bucket *head;
+>>>         spinlock_t *lock;
+>>>         bool ret = true;
+>>> +       struct sock *reqsk = NULL;
+>>>
+>>>         WARN_ON_ONCE(!sk_unhashed(sk));
+>>>
+>>> @@ -486,6 +487,18 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
+>>>         lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
+>>>
+>>>         spin_lock(lock);
+>>> +       if (!osk)
+>>> +               reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
+>>> +                                                       sk->sk_daddr, sk->sk_dport,
+>>> +                                                       sk->sk_rcv_saddr, sk->sk_num,
+>>> +                                                       sk->sk_bound_dev_if, sk->sk_bound_dev_if);
+>>> +       if (unlikely(reqsk)) {
+>>
+>> What reqsk would be a SYN_RECV socket, and not a ESTABLISH one (or a
+>> TIME_WAIT ?)
+> 
+> It wouldn't be SYN_RECV,ESTABLISH or TIME_WAIT, just TCP_NEW_SYN_RECV.
+> 
+> When server receives the third handshake packet ACK, SYN_RECV sk will insert to hash with osk(!= NULL).
+> The looking up here just avoid to create two or more request sk with TCP_NEW_SYN_RECV when receive syn packet.
+> 
 
-On 2019/6/14 上午12:24, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
->
-> NAPI tx mode improves TCP behavior by enabling TCP small queues (TSQ).
-> TSQ reduces queuing ("bufferbloat") and burstiness.
->
-> Previous measurements have shown significant improvement for
-> TCP_STREAM style workloads. Such as those in commit 86a5df1495cc
-> ("Merge branch 'virtio-net-tx-napi'").
->
-> There has been uncertainty about smaller possible regressions in
-> latency due to increased reliance on tx interrupts.
->
-> The above results did not show that, nor did I observe this when
-> rerunning TCP_RR on Linux 5.1 this week on a pair of guests in the
-> same rack. This may be subject to other settings, notably interrupt
-> coalescing.
->
-> In the unlikely case of regression, we have landed a credible runtime
-> solution. Ethtool can configure it with -C tx-frames [0|1] as of
-> commit 0c465be183c7 ("virtio_net: ethtool tx napi configuration").
->
-> NAPI tx mode has been the default in Google Container-Optimized OS
-> (COS) for over half a year, as of release M70 in October 2018,
-> without any negative reports.
->
-> Link: https://marc.info/?l=linux-netdev&m=149305618416472
-> Link: https://lwn.net/Articles/507065/
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
->
-> ---
->
-> now that we have ethtool support and real production deployment,
-> it seemed like a good time to revisit this discussion.
+
+@Eric, for this issue I only want to check TCP_NEW_SYN_RECV sk, is it OK like below?
+ +       if (!osk && sk->sk_state == TCP_NEW_SYN_RECV)
+ +               reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
+ +                                                       sk->sk_daddr, sk->sk_dport,
+ +                                                       sk->sk_rcv_saddr, sk->sk_num,
+ +                                                       sk->sk_bound_dev_if, sk->sk_bound_dev_if);
+ +       if (unlikely(reqsk)) {
 
 
-I agree to enable it by default. Need inputs from Michael. One possible 
-issue is we may get some regression on the old machine without APICV, 
-but consider most modern CPU has this feature, it probably doesn't matter.
-
-Thanks
 
 
->
-> ---
->   drivers/net/virtio_net.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 0d4115c9e20b..4f3de0ac8b0b 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -26,7 +26,7 @@
->   static int napi_weight = NAPI_POLL_WEIGHT;
->   module_param(napi_weight, int, 0444);
->   
-> -static bool csum = true, gso = true, napi_tx;
-> +static bool csum = true, gso = true, napi_tx = true;
->   module_param(csum, bool, 0444);
->   module_param(gso, bool, 0444);
->   module_param(napi_tx, bool, 0644);
+>>
+>>> +               ret = false;
+>>> +               reqsk_free(inet_reqsk(sk));
+>>> +               spin_unlock(lock);
+>>> +               return ret;
+>>> +       }
+>>> +
+>>>         if (osk) {
+>>
+>> This test should have be a hint here : Sometime we _expect_ to have an
+>> old socket (TIMEWAIT) and remove it
+> I will check TIMEWAIT sk.
+>>
+>>
+>>>                 WARN_ON_ONCE(sk->sk_hash != osk->sk_hash);
+>>>                 ret = sk_nulls_del_node_init_rcu(osk);
+>>> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+>>> index 38dfc308c0fb..358272394590 100644
+>>> --- a/net/ipv4/tcp_input.c
+>>> +++ b/net/ipv4/tcp_input.c
+>>> @@ -6570,9 +6570,10 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>>>                 sock_put(fastopen_sk);
+>>>         } else {
+>>>                 tcp_rsk(req)->tfo_listener = false;
+>>> -               if (!want_cookie)
+>>> -                       inet_csk_reqsk_queue_hash_add(sk, req,
+>>> -                               tcp_timeout_init((struct sock *)req));
+>>> +               if (!want_cookie && !inet_csk_reqsk_queue_hash_add(sk, req,
+>>> +                                       tcp_timeout_init((struct sock *)req)))
+>>> +                       return 0;
+>>> +
+>>>                 af_ops->send_synack(sk, dst, &fl, req, &foc,
+>>>                                     !want_cookie ? TCP_SYNACK_NORMAL :
+>>>                                                    TCP_SYNACK_COOKIE);
+>>> --
+>>> 2.20.1
+>>>
+>>
+>> I believe the proper fix is more complicated.
+> yes, pretty complicated.
+>>
+>> Probably we need to move the locking in a less deeper location.
+
+
+Currently, I find inet_ehash_insert is the most suitable location to do hash looking up,
+because the sk's lock can be found from sk_hash, and there has already existed spin_lock code
+In v1, I put the hash looking up in tcp_connect_request, there will be redundant lock to do looking up.
+
+
+> 
+>>
+>> (Also a similar fix would be needed in IPv6)
+> ok
+
+I find IPv6 has the same call trace, so this fix seems good to IPv6?
+tcp_v6_conn_request
+	tcp_conn_request
+		inet_csk_reqsk_queue_hash_add
+			reqsk_queue_hash_req
+				inet_ehash_insert
+					
+		
+
+>>
+>> Thanks.
+>>
+>> .
+>>
+
