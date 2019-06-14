@@ -2,95 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C31EB462D4
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5DA462E8
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfFNPcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 11:32:08 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44318 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfFNPcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:32:07 -0400
-Received: by mail-lj1-f194.google.com with SMTP id k18so2801171ljc.11;
-        Fri, 14 Jun 2019 08:32:06 -0700 (PDT)
+        id S1726788AbfFNPea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 11:34:30 -0400
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:44202 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbfFNPe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:34:29 -0400
+Received: by mail-yb1-f196.google.com with SMTP id x187so1227522ybc.11
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 08:34:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=GcqXQfqn90yOgwxpieyhK7oJ0+aumlHQ0634Nn5J4Kw=;
-        b=atDCfPz3yHekwYhj4lxblgLO9VqoIo8enhnrXl5IOQjptNffqOHulgaokeINr9ij6A
-         zeXQ0m1S0Ioopw66Vw1JSh/45sSBGILm0jbXuDvjf7MwZdPWA5fvv2rA3XFacLDgQhJ2
-         C3xadlyjmRIFt688FtHLKr8TzOxs+nGQbZe992YqytLyIBoHzCD6lLvrmW+jnTPFh8NP
-         HtDjHwtkq+P8oxkppl24onW5QZujZX8sSh+5d/IFQdXlznax5Oj3V+e9+vXlxJ5v7jC2
-         NfZz6zTKubVwwRDLy87Ek/7rjWx+womQPUGpLw4jRPikrr6wtrR1ui0+q3KYCXLw49Lf
-         uAjA==
+        bh=ZvSLdb4tGoj1KerVcujZWEcT0dZuhjXYXXie7nT7mXw=;
+        b=nxrt4giWUlhE9biCVR+Nf7l0dQrFKvxLWDlX56RbVNxUEL0bUAFHio4l+uzl0nCxh7
+         xXzwrZb2/VMVmB+aSmN56g905HvDn3pCUAGYNxE7lgaqutKZ1nzEtyOuvhGIdaUqZWnO
+         iwxssJBIDgARes03cNAnQxvq0Dawjb1fSsJgBu8clFk87sKOVkvglbqQV3ArKpwt6YEY
+         U0yhmXm8J5eHwfiEs6Vzf64EyDO/hlefYNr8XiDq9Xwgo4Bt8mHGoKc5wR3Umn5k4VRm
+         PysrCqMQJpRReJvso+/R9WYMkI5EyDmBVUwyI4P9kGBArUktyJcbMOmfUlNvfdkoZDtt
+         cflQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=GcqXQfqn90yOgwxpieyhK7oJ0+aumlHQ0634Nn5J4Kw=;
-        b=mIACwlLq4FmNied0gM3TD/IR5XO8z/MFvh5CSwphJniQ2WGgha7bJGT/qCGdLqoaur
-         F2/eO0Ybujr2ncA95TbzJthves2pidL9x6sqSBTDnBDlLgg8eCi/2NEXLrxpULnh+WkT
-         cJEIV9ASxwPuJIE3EyjXfscHJvi7BSqRD7IKNRdagW2TsKGuW7Arkd9WdmnNd0yMq5N0
-         q4zjbLiroKHO+OxGsRp2grY6WafJW6AswaZTFGqoaVBNe9ge6U5EzXuvp/SwvOrjqk4/
-         DYC1Obj8TURMsojd0RKF/n4F4rcusyGnkg6cjkSn4gj0fwcbMwmTDdYOj01Xdy2Z0ZV8
-         91Hg==
-X-Gm-Message-State: APjAAAWDFJh2YESWWV4JIWUEVWRAUu9EdpYezmzyd3D1qPHHn4hGh4ZP
-        oCHbWcTDlwww4Vdmnj7ZV9PTNcTYcXoJzXnmFTI=
-X-Google-Smtp-Source: APXvYqy2q4R1NoVMU3Bs13d6spTKthxrJFzD1KeNaQlccuA4qR72SixDpeARjEfKwq3cVtYZmI6m5Ube96wir0uXDWo=
-X-Received: by 2002:a2e:86d1:: with SMTP id n17mr28267616ljj.58.1560526325382;
- Fri, 14 Jun 2019 08:32:05 -0700 (PDT)
+        bh=ZvSLdb4tGoj1KerVcujZWEcT0dZuhjXYXXie7nT7mXw=;
+        b=hEKCODjXBVT6W3C1E0xl6VcFCfPNVDmo4quHft9QdtH+GLcTJVEgbqPxwsiWP8MK1l
+         vXVbAUiV0tEXiSnrFriUjrysoWLD6bEuesCB71ksEYQCaTfihRTyiXKGygtNbLjscRlD
+         4lf572NchxXAk6qYs3msZ5bA5cH6fq43Dr6amls8QbwEt4j1cFLtREh5VNWrEDFf5gSl
+         JDdXcGpsVCjRscZuf9p8ijrXBRYsTNtzsKf+InmjolMJ4U8IZEbg05rNZZtl/2AhE66R
+         o4slFIIJZhSPhwMe2+Zanh+oym2QB8kDjdn5VKJw2DNQ90flu4PyvjHB2lr6sWwFS5gY
+         hroA==
+X-Gm-Message-State: APjAAAUnJj5LjI6SXQn+j/yIdUr6rP5pc+BehdAjaOnS4YaN0PgnPAtt
+        /tQxPFFQcvcyvSZH+o4sT1lpm7Fbe6H+Cz8JzlgduQ==
+X-Google-Smtp-Source: APXvYqxJrrGfUL+aUSndZe9HBl/gZBDc+JU5kN+yx29GOggyBQLueAHuwXlwxFosnw1LNNcCP2ngQVFfaoX1rv+mQ8E=
+X-Received: by 2002:a25:55d7:: with SMTP id j206mr50996255ybb.234.1560526468360;
+ Fri, 14 Jun 2019 08:34:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1560431531.git.jpoimboe@redhat.com> <4f536ec4facda97406273a22a4c2677f7cb22148.1560431531.git.jpoimboe@redhat.com>
- <20190613220054.tmonrgfdeie2kl74@ast-mbp.dhcp.thefacebook.com>
- <20190614013051.6gnwduy4dsygbamj@treble> <20190614014244.st7fbr6areazmyrb@ast-mbp.dhcp.thefacebook.com>
- <20190614015848.todgfogryjn573nd@treble> <20190614022848.ly4vlgsz6fa4bcbl@treble>
- <20190614045037.zinbi2sivthcfrtg@treble> <20190614060006.na6nfl6shawsyj3i@ast-mbp.dhcp.thefacebook.com>
- <20190614133004.gopjz64vbqmbbzqn@treble>
-In-Reply-To: <20190614133004.gopjz64vbqmbbzqn@treble>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 14 Jun 2019 08:31:53 -0700
-Message-ID: <CAADnVQLp+Eq3fz6u+Q3_2UxDwdn1hKESwS5O856BabJE4wfPJw@mail.gmail.com>
-Subject: Re: [PATCH 7/9] x86/unwind/orc: Fall back to using frame pointers for
- generated code
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>
+References: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
+In-Reply-To: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 14 Jun 2019 08:34:16 -0700
+Message-ID: <CANn89iKP2fQ6Tc0jBW_WdLq3kYQx7NsdVDB5S3y453T+6yp86g@mail.gmail.com>
+Subject: Re: [PATCH v2] net: ipv4: move tcp_fastopen server side code to
+ SipHash library
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc:     netdev <netdev@vger.kernel.org>, linux-crypto@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>, ebiggers@kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jason Baron <jbaron@akamai.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        David Laight <David.Laight@aculab.com>,
+        Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 6:34 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+On Fri, Jun 14, 2019 at 7:01 AM Ard Biesheuvel
+<ard.biesheuvel@linaro.org> wrote:
 >
-> On Thu, Jun 13, 2019 at 11:00:09PM -0700, Alexei Starovoitov wrote:
-> > > +   if (src_reg == BPF_REG_FP) {
-> > > +           /*
-> > > +            * If the value was copied from RBP (real frame pointer),
-> > > +            * adjust it to the BPF program's frame pointer value.
-> > > +            *
-> > > +            * add dst, -40
-> > > +            */
-> > > +           EMIT4(add_1mod(0x48, dst_reg), 0x83, add_1reg(0xC0, dst_reg),
-> > > +                 0xD8);
-> > > +   }
-> > > +
-> >
-> > That won't work. Any register can point to a stack.
+> Using a bare block cipher in non-crypto code is almost always a bad idea,
+> not only for security reasons (and we've seen some examples of this in
+> the kernel in the past), but also for performance reasons.
 >
-> Right, but if the stack pointer comes from BPF_REG_FP then won't the
-> above correct it?  Then if the pointer gets passed around to other
-> registers it will have the correct value.  Or did I miss your point?
+> In the TCP fastopen case, we call into the bare AES block cipher one or
+> two times (depending on whether the connection is IPv4 or IPv6). On most
+> systems, this results in a call chain such as
+>
+>   crypto_cipher_encrypt_one(ctx, dst, src)
+>     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
+>       aesni_encrypt
+>         kernel_fpu_begin();
+>         aesni_enc(ctx, dst, src); // asm routine
+>         kernel_fpu_end();
+>
+> It is highly unlikely that the use of special AES instructions has a
+> benefit in this case, especially since we are doing the above twice
+> for IPv6 connections, instead of using a transform which can process
+> the entire input in one go.
+>
+> We could switch to the cbcmac(aes) shash, which would at least get
+> rid of the duplicated overhead in *some* cases (i.e., today, only
+> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
+> end up using the generic cbcmac template wrapping the AES-NI cipher,
+> which basically ends up doing exactly the above). However, in the given
+> context, it makes more sense to use a light-weight MAC algorithm that
+> is more suitable for the purpose at hand, such as SipHash.
+>
+> Since the output size of SipHash already matches our chosen value for
+> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
+> sizes, this greatly simplifies the code as well.
+>
+> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
-At the beginning of the program frame pointer is bpf_reg_fp,
-but later it can be in any register. It can be spilled into stack.
-Some math done on it and that adjusted pointer passed into
-another jited function.
-It's perfectly fine for one bpf program to modify stack of
-another bpf program. The verifier checks the safety bounds, etc.
+While the patch looks fine (I yet have to run our tests with it), it
+might cause some deployment issues
+for server farms.
+
+They usually share a common fastopen key, so that clients can reuse
+the same token for different sessions.
+
+Changing some servers in the pool will lead to inconsistencies.
+
+Probably not a too big deal, but worth mentioning.
