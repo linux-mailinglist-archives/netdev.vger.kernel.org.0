@@ -2,146 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1AA46BCB
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3D8746BD2
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726346AbfFNVVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 17:21:36 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43532 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726047AbfFNVVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 17:21:36 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5ELHrOs005779;
-        Fri, 14 Jun 2019 14:20:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=kN+TIvxIvsY+ujmB+32Te6EgisXyyxEvtgu16EoVV/w=;
- b=VBBVbX75zkfQNxMFtvCDAEDiDJD/Q4/HAZKb4bm77rjD2ktVYEfqCDVGMV06efigK6yt
- /s/8B7sC8pyo4xFJjg6O4L0+2+jTSfA2/vtxDPQMkcir4hmQcRVg7MNbaWuZxIz8HY5G
- cFrsggClASTg/Cce75W1eYLh/IE7+1F39hI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t4euus0mn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 14 Jun 2019 14:20:18 -0700
-Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
- ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 14 Jun 2019 14:20:16 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 14 Jun 2019 14:20:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kN+TIvxIvsY+ujmB+32Te6EgisXyyxEvtgu16EoVV/w=;
- b=Gm288nW4JOfnItRbjeP07Yzu+L19IkJ6kq3sjV4FiwjF93T9Fg/k4/ew/RRtqmW0fuXcYUJJBeVzeIBh0TffrdJ2CgCQ3bJd5sH6HpeqNpBC8wFm3r/PDkC3KMq386lVEa5Xvl3v0LdQzLZ+HZ4jSU3F01/8VCumnCZ2RDdNLvM=
-Received: from DM5PR15MB1163.namprd15.prod.outlook.com (10.173.215.141) by
- DM5PR15MB1225.namprd15.prod.outlook.com (10.173.214.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Fri, 14 Jun 2019 21:20:15 +0000
-Received: from DM5PR15MB1163.namprd15.prod.outlook.com
- ([fe80::38aa:95ca:d50f:9745]) by DM5PR15MB1163.namprd15.prod.outlook.com
- ([fe80::38aa:95ca:d50f:9745%3]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
- 21:20:15 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1726346AbfFNVXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 17:23:13 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42571 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfFNVXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 17:23:13 -0400
+Received: by mail-lj1-f193.google.com with SMTP id t28so3732308lje.9;
+        Fri, 14 Jun 2019 14:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bep/4mrWNUML8peUzi7R1Kq2GEeDW29a39K0NjVrOn0=;
+        b=K2sw0VY5k9n/J2JOh13BitvJ3EmXOKmOv47A1wo3Qvc1/6Fwyh3Tgr9z563c8cUD3K
+         V1kmSXq5dUNjcv4AXSTg+8cRsuFl+KumG+g6ppjRADdhMRjhfv+J1nGQ7BzEfQo/rRbr
+         l/J+Tx11/GOfLvvkRmrRBV1oj7Ky7DBUFR0TJ52tMefzWNbjORIKmjrvBTrkSXyDv0ou
+         SC6eXnLCeAvFt4BKu/avKeRVmhXpvK120SJa8OVqi8lJq06SQsnbb+QYWcvkotxeFYr3
+         D+vQ8YJJ95PUSN1ZLsZTbt6jVxdyl7Xs4S38f9pF1u5qIOi2gB+KO1LiA1x63lHPzAuO
+         VoKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bep/4mrWNUML8peUzi7R1Kq2GEeDW29a39K0NjVrOn0=;
+        b=b49yp7hGqyxypcoRiiqRliT4A1i+KO/l95P+5NeYk9fq5/qRl7f3HuVnJYZTBLG18i
+         2kCL4xbIb80WG0fLx2uCFg9ZC/oNsC0jwpF9MjaBpQBSh6lFoUaGZcStRFDtGB36m7nc
+         UWT1hFpOcqO7j2XJezd2I7ouxEXqnOcIl8XMIPVhkK4DmAb6E0yERvW8/d3H6hDFPiGZ
+         CmoDZexD0sB+AwXOHVyAPAHcanl902ixMLvw/iAa94rLJJk6WBFcEhqNIbZSaAQI0giB
+         sHG3OoB2HkR1pza3J1L4QwCpBJxQ8K+Dz2zxJ2jvN5PaW3ZGGIjsr4qQFD/0N0dxejdz
+         NkVw==
+X-Gm-Message-State: APjAAAU5Vt7r880Jp6uQbRbL1TGPD2CEMC/hhFcFhQ8etpsZfer639sF
+        qDYrQ0UVOrXzT9H8aQ2HbILJq5L9CK3ytv2WPp4=
+X-Google-Smtp-Source: APXvYqwHVrR1Siq3X5Tl6ZvgYWmmA7hWQVfuMQhfHfIDK9o7BR+sFZQmdjSryoTryG79obaAZf0/ZPS12q6hWntNj5M=
+X-Received: by 2002:a2e:a311:: with SMTP id l17mr31548658lje.214.1560547390878;
+ Fri, 14 Jun 2019 14:23:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1560534694.git.jpoimboe@redhat.com> <c0add777a2e0207c1474ce99baa492a7ce3502d6.1560534694.git.jpoimboe@redhat.com>
+ <20190614205841.s4utbpurntpr6aiq@ast-mbp.dhcp.thefacebook.com>
+ <20190614210745.kwiqm5pkgabruzuj@treble> <CAADnVQLK3ixK1JWF_mfScZoFzFF=6O8f1WcqkYqiejKeex1GSQ@mail.gmail.com>
+ <20190614211929.drnnawbi7guqj2ck@treble>
+In-Reply-To: <20190614211929.drnnawbi7guqj2ck@treble>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 14 Jun 2019 14:22:59 -0700
+Message-ID: <CAADnVQ+BCxsKEK=ZzYOZkgTJAg_7jz1_f+FCX+Ms0vTOuW8Mxw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] objtool: Fix ORC unwinding in non-JIT BPF
+ generated code
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
         Kairui Song <kasong@redhat.com>,
-        David Laight <David.Laight@ACULAB.COM>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@aculab.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH v2 1/5] perf/x86: Always store regs->ip in
- perf_callchain_kernel()
-Thread-Topic: [PATCH v2 1/5] perf/x86: Always store regs->ip in
- perf_callchain_kernel()
-Thread-Index: AQHVItsdAJpQ0uR78USgIdN7QwfW8aaboX+AgAAC0ICAAALTgIAAARKA
-Date:   Fri, 14 Jun 2019 21:20:15 +0000
-Message-ID: <64A24F81-6844-442D-9FA5-DE1835C70529@fb.com>
-References: <cover.1560534694.git.jpoimboe@redhat.com>
- <81b0cdc5aa276dac315a0536df384cc82da86243.1560534694.git.jpoimboe@redhat.com>
- <20190614205614.zr6awljx3qdg2fnb@ast-mbp.dhcp.thefacebook.com>
- <20190614210619.su5cr55eah5ks7ur@treble>
- <20190614171625.470c9e3e@gandalf.local.home>
-In-Reply-To: <20190614171625.470c9e3e@gandalf.local.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [199.201.64.135]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 28dd6e06-0a22-49f2-05fd-08d6f10e184c
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM5PR15MB1225;
-x-ms-traffictypediagnostic: DM5PR15MB1225:
-x-microsoft-antispam-prvs: <DM5PR15MB1225C8711E82F6695765D56FB3EE0@DM5PR15MB1225.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0068C7E410
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(346002)(366004)(376002)(39860400002)(189003)(199004)(86362001)(186003)(7736002)(476003)(486006)(2616005)(6486002)(26005)(6506007)(305945005)(6436002)(53936002)(229853002)(53546011)(66066001)(76176011)(36756003)(446003)(57306001)(99286004)(102836004)(81166006)(81156014)(8936002)(50226002)(8676002)(11346002)(6916009)(316002)(4744005)(68736007)(256004)(7416002)(2906002)(5660300002)(4326008)(6512007)(73956011)(25786009)(66446008)(64756008)(91956017)(6246003)(14454004)(71200400001)(3846002)(54906003)(6116002)(478600001)(71190400001)(76116006)(33656002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1225;H:DM5PR15MB1163.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: u6wac68xdEL615bPGyzEvwANMmfeNJ+KYgjCbnud1h0qQKERpfrKWMiw49MSA1qfj5ylbjbyHTlTyzmM1Jsy7ISpa0/nW1wb2iyD1Bbdc8s17hhkJmbLyGZRu6A0f6MXPZ3TTynp+LVc+NgUo98EC6M+dwZnfDPooQLHI5vBUq9XvlmHjf3rS+r+A3bwLcm+FCD+cgQxugjTgJDJo6mEH+kUf1RsTOLpvoX5b7miBtaAmTk17D6mVXo+1xaJ8cOod1ITzT1nCVgr0V0r3RDlfbGShD6A9YklzrxlQ1WNNgFWML5THh75f3uR/7IZaX1pQNERMg55yTnnt2fW1v53LMZldr3N0mn+u/rjtRhe2x67ostMR3obBoBlh7UR4tI3kprwRD1lO6z9XpOEBhY9BaHRNuxCnZY4MXpjiOD4Q2Y=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2AFB23BE2CE0C343A8276D2C01EBBB5F@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28dd6e06-0a22-49f2-05fd-08d6f10e184c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 21:20:15.7604
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1225
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-14_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=782 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906140165
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 14, 2019 at 2:19 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> > > > >
+> > > > > +#define JUMP_TABLE_SYM_PREFIX "jump_table."
+> > > >
+> > > > since external tool will be looking at it should it be named
+> > > > "bpf_jump_table." to avoid potential name conflicts?
+> > > > Or even more unique name?
+> > > > Like "bpf_interpreter_jump_table." ?
+> > >
+> > > No, the point is that it's a generic feature which can also be used any
+> > > non-BPF code which might also have a jump table.
+> >
+> > and you're proposing to name all such jump tables in the kernel
+> > as static foo jump_table[] ?
+>
+> That's the idea.
 
-
-> On Jun 14, 2019, at 2:16 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
->=20
-> On Fri, 14 Jun 2019 16:06:19 -0500
-> Josh Poimboeuf <jpoimboe@redhat.com> wrote:
->=20
->>> It's not cool to remove people's SOB.
->>> It's Song's patch. His should be first and your second. =20
->>=20
->> His original patch didn't have an SOB.  I preserved the "From" field.
->=20
-> Then it can't be accepted. It needs an SOB from the original author.
->=20
-> Song, Please reply with a Signed-off-by tag.
->=20
-> Thanks!
->=20
-> -- Steve
-
-Yes, Sir!
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
-
-It was my fault to forget it in the first place. Sorry for the confusion.
-
-Song
+Then it needs much wider discussion.
+I suggest to rename it to "bpf_interpreter_jump_table."
+so it can be resolved now for this specific issue.
+While bigger kernel-wide naming convention get resolved.
+Later we can rename it to whatever the "standard name for jump table"
+will be.
