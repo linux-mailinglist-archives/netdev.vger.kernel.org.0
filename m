@@ -2,134 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 761EF45903
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9F545907
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbfFNJmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 05:42:39 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34966 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbfFNJmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 05:42:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=betYeRlAo+7Uy6kRuLjST67ELLBOv3KX9pJKj5ytJj8=; b=Ak0WcQiHBiSeNhK7TimpUvtGa
-        Ca+wzD6o1EDV4FjfHmTsn93lMhzq8QSJUKuRPkZY8G7nmNBqXCjQpY+MJ+yWHiFP9a0CNVKGt+obi
-        wy1WHbYSEUyhO6qtvi9Ks6OKr9V0j3IMhiBeyf6Rw84s6spFEw0Gr+ZSqa2pVtj+HpA5c6F8R/VIL
-        GaP/7mmoVxrnza+t5vSrdsCKiKlMc8at6+X1L4uykCbX49xxLwM0LnAyGHgUDHXL3oaTIV571UDm0
-        l2bUndYntXdK6mXmrjklpAzZhwaiRygTHhIVxZsoeo0rXfrZ3lXGTPDYDVMTTL6gkXMTYdW1MCJ0B
-        9eKlYoCmw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38694)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hbij9-0000Yt-Sj; Fri, 14 Jun 2019 10:42:32 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hbij6-000276-S9; Fri, 14 Jun 2019 10:42:28 +0100
-Date:   Fri, 14 Jun 2019 10:42:28 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     hkallweit1@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        alexandru.marginean@nxp.com, ruxandra.radulescu@nxp.com
-Subject: Re: [PATCH RFC 0/6] DPAA2 MAC Driver
-Message-ID: <20190614094228.mg5khguayhwdu5rh@shell.armlinux.org.uk>
-References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
+        id S1727075AbfFNJnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 05:43:07 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:44284 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727128AbfFNJnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 05:43:06 -0400
+Received: by mail-lj1-f196.google.com with SMTP id k18so1685359ljc.11
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 02:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JPxBfDG20FU9CqI51n1357gs3Z2Yy4u9KLpOGzScF4I=;
+        b=guEX7RPm4dNVjkrnL0euryYs6K0RiV87XT8kWFh7vdk0qQ4D/sW0cXE7C2faPR8aEh
+         PQajMR26RkClfMB/sUKJD635o70Bp2ysCY2SeMKcKWrRWn/rJYYVA49uAQP0Mu/dMCCM
+         /LPtnVg/TrAnocViqcjHCPniJrvmz1weDT36CW1+Z+E+Oyx6+VRQGxceWft+3aTy6YZL
+         L+1cSIyltQyXCCK1ijWa827Fa2aoNSSo95Th3IBp4oskItIV5m5mGUOZS3NsuKT9oHDa
+         XhjGk0L24YXZEOzGvCQt8Pco0iLj889f3+sjeckm6HbuEJQxiTxugiTJPzRnyXZCcoiQ
+         2qBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JPxBfDG20FU9CqI51n1357gs3Z2Yy4u9KLpOGzScF4I=;
+        b=Ff1VX3COnvXYf5tfuuPzJsQoDhElFATZ63XqiA83Y2b2dvk9UGjaALdifHruF9yjB5
+         KEmIPEpkVb7BNBufPhmGVst9/Gp6ZhC4uHnN5PoFntOnISStuFgUynjO13wWhC7AYrfb
+         843CKlzZDv62ZceAWmeRqh0ltvx+ACmmGjbjZQCHOTM43U74wHKJ96r9YN0cWBfyNcrs
+         Hsw3EGQa0vwJ8o/LeNQT5Nq87AiQcGrPWcGXx0VJzr0HVWMvQR1n1q9Zyc9r45u1U98U
+         i5/VxtDhtMIsDprm1Cy9HTf1L+qVPGDCXcMyLEu3jJP4pxkB89B46AogRndW66TUrS+k
+         h60g==
+X-Gm-Message-State: APjAAAUQ56IfebudU/F7nQhTGKt9FME4u+Jd8heEeoMsNtGHhXkBK9Mz
+        1gYP4rACYR+yTerGSSc/Vey41g==
+X-Google-Smtp-Source: APXvYqyPjoKYZc7D7OtfeEj8NDO4IEUq1/77X1lFRq0bKCZ20/Y7r5P4s1W79ajD/9mYxiOPafK4WA==
+X-Received: by 2002:a2e:8741:: with SMTP id q1mr22349489ljj.144.1560505384714;
+        Fri, 14 Jun 2019 02:43:04 -0700 (PDT)
+Received: from [192.168.0.199] ([31.173.84.143])
+        by smtp.gmail.com with ESMTPSA id p27sm400771lfh.8.2019.06.14.02.43.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 02:43:04 -0700 (PDT)
+Subject: Re: [net-next 08/12] i40e: Missing response checks in driver when
+ starting/stopping FW LLDP
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     Piotr Marczak <piotr.marczak@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+References: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
+ <20190613185347.16361-9-jeffrey.t.kirsher@intel.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <4157b306-b663-e20a-8c24-2d91a049e7fb@cogentembedded.com>
+Date:   Fri, 14 Jun 2019 12:42:52 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190613185347.16361-9-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 02:55:47AM +0300, Ioana Ciornei wrote:
-> After today's discussion with Russell King about what phylink exposes in
-> .mac_config(): https://marc.info/?l=linux-netdev&m=156043794316709&w=2
-> I am submitting for initial review the dpaa2-mac driver model.
-> 
-> At the moment, pause frame support is missing so inherently all the USXGMII
-> modes that rely on backpressure applied by the PHY in rate adaptation between
-> network side and system side don't work properly.
-> 
-> As next steps, the driver will have to be integrated with the SFP bus so
-> commands such as 'ethtool --dump-module-eeprom' will have to work through the
-> current callpath through firmware.
+Hello!
 
-From what I understand having read the doc patch, would it be fair to
-say that every operation that is related to the link state has to be
-passed from the ETH driver to the firmware, and then from the firmware
-back to the kernel to the MAC driver?
+On 13.06.2019 21:53, Jeff Kirsher wrote:
 
-Does this mean that "ethtool --dump-module-eeprom" goes through this
-process as well - eth driver into firmware, which then gets forwarded
-out of the formware on the MAC side, via phylink to the SFP cage?
-
-If that is true, what is the proposal - to forward a copy of the EEPROM
-on module insertion into the firmware, so that it is stored there when
-anyone requests it?  What about the diagnostic monitoring that is
-real-time?
-
-Or is the SFP cage entirely handled by firmware?
-
-> This poses somewhat of a problem, as
-> dpaa2-eth lacks any handle to the phy so it will probably need further
-> modification to the API that the firmware exposes (same applies to 'ethtool
-> --phy-statistics').
-
-This again sounds like the eth driver forwards the request to firmware
-which then forwards it to the mac driver for it to process.
-
-Is that correct?
-
+> From: Piotr Marczak <piotr.marczak@intel.com>
 > 
-> The documentation patch provides a more complete view of the software
-> architecture and the current implementation.
+> Driver did not check response on LLDP flag change and always returned
+> SUCCESS.
 > 
-> Ioana Ciornei (4):
->   net: phy: update the autoneg state in phylink_phy_change
->   dpaa2-mac: add MC API for the DPMAC object
->   dpaa2-mac: add initial driver
->   net: documentation: add MAC/PHY proxy driver documentation
+> This patch now checks for an error and returns an error code and has
+> additional information in the log.
 > 
-> Ioana Radulescu (2):
->   dpaa2-eth: add support for new link state APIs
->   dpaa2-eth: add autoneg support
+> Signed-off-by: Piotr Marczak <piotr.marczak@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>   .../net/ethernet/intel/i40e/i40e_ethtool.c    | 27 +++++++++++++++++--
+>   1 file changed, 25 insertions(+), 2 deletions(-)
 > 
->  .../freescale/dpaa2/dpmac-driver.rst               | 159 ++++++
->  .../device_drivers/freescale/dpaa2/index.rst       |   1 +
->  MAINTAINERS                                        |   8 +
->  drivers/net/ethernet/freescale/dpaa2/Kconfig       |  13 +
->  drivers/net/ethernet/freescale/dpaa2/Makefile      |   2 +
->  .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   |  83 +++-
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c   | 541 +++++++++++++++++++++
->  drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h   | 107 ++++
->  drivers/net/ethernet/freescale/dpaa2/dpmac.c       | 369 ++++++++++++++
->  drivers/net/ethernet/freescale/dpaa2/dpmac.h       | 210 ++++++++
->  drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h    |  35 ++
->  drivers/net/ethernet/freescale/dpaa2/dpni.c        |  70 +++
->  drivers/net/ethernet/freescale/dpaa2/dpni.h        |  27 +
->  drivers/net/phy/phylink.c                          |   1 +
->  14 files changed, 1612 insertions(+), 14 deletions(-)
->  create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/dpmac-driver.rst
->  create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
->  create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
->  create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.c
->  create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpmac.h
-> 
-> -- 
-> 1.9.1
-> 
-> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+> index 7f7d04ab1515..0837c6b3e15e 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+[...]
+> @@ -5013,7 +5015,28 @@ static int i40e_set_priv_flags(struct net_device *dev, u32 flags)
+>   			dcbcfg->pfc.willing = 1;
+>   			dcbcfg->pfc.pfccap = I40E_MAX_TRAFFIC_CLASS;
+>   		} else {
+> -			i40e_aq_start_lldp(&pf->hw, false, NULL);
+> +			status = i40e_aq_start_lldp(&pf->hw, false, NULL);
+> +			if (status) {
+> +				adq_err = pf->hw.aq.asq_last_status;
+> +				switch (adq_err) {
+> +				case I40E_AQ_RC_EEXIST:
+> +					dev_warn(&pf->pdev->dev,
+> +						 "FW LLDP agent is already running\n");
+> +					return 0;
+> +				case I40E_AQ_RC_EPERM:
+> +					dev_warn(&pf->pdev->dev,
+> +						 "Device configuration forbids SW from starting the LLDP agent.\n");
+> +					return (-EINVAL);
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+    () not needed. None was used above, so why have them here?
+
+> +				default:
+> +					dev_warn(&pf->pdev->dev,
+> +						 "Starting FW LLDP agent failed: error: %s, %s\n",
+> +						 i40e_stat_str(&pf->hw,
+> +							       status),
+> +						 i40e_aq_str(&pf->hw,
+> +							     adq_err));
+> +					return (-EINVAL);
+
+    Neither they are needed here...
+
+[...]
+
+MBR, Sergei
