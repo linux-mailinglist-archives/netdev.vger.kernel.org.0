@@ -2,211 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E969D464C9
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 18:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F833464F4
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 18:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726660AbfFNQp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 12:45:58 -0400
-Received: from mga14.intel.com ([192.55.52.115]:49994 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725846AbfFNQp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 12:45:57 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jun 2019 09:45:57 -0700
-X-ExtLoop1: 1
-Received: from stinkbox.fi.intel.com (HELO stinkbox) ([10.237.72.174])
-  by fmsmga007.fm.intel.com with SMTP; 14 Jun 2019 09:45:50 -0700
-Received: by stinkbox (sSMTP sendmail emulation); Fri, 14 Jun 2019 19:45:49 +0300
-Date:   Fri, 14 Jun 2019 19:45:49 +0300
-From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-media@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>
-Subject: Re: [Intel-gfx] [PATCH 03/16] drm/i915: stop using drm_pci_alloc
-Message-ID: <20190614164549.GD5942@intel.com>
-References: <20190614134726.3827-1-hch@lst.de>
- <20190614134726.3827-4-hch@lst.de>
+        id S1726096AbfFNQtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 12:49:41 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:37140 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbfFNQtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 12:49:40 -0400
+Received: by mail-qk1-f196.google.com with SMTP id d15so2098644qkl.4;
+        Fri, 14 Jun 2019 09:49:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xGLh1XrgnhZOUucQhhPrW1F8VtojcwkzIIfnOkB9Xtw=;
+        b=Ek7WPW1lT82gNISGED4ZrdfbnFVakB7iseeZxOgr0dowwInMcWw/TnzCBehnEKslBb
+         /SeMG18Ue5q0DTxvZmBjej9s6ot+rwWzyr/4qHv51awGA3qLTOX9rMQUtkDG3sN4L2vH
+         HCQ60CUjzB316QyW9nHePPFMm+5wqbOmdsmY7JtcsFW2EKYsLASfqq95LbvtNROldl5j
+         2rR6Ul3N842yGj/p0LWNGygLsFU3sMXYEslkIw4a9upMN98qz7TWKfG3FETKUddvJ+ut
+         ji2pKTVt65J9ETl9/AFnjnU2lF9r6bTTz0WkJ8ePad4AHmT2yz7BuFesXYwxQx3figMM
+         S+Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xGLh1XrgnhZOUucQhhPrW1F8VtojcwkzIIfnOkB9Xtw=;
+        b=ieOtbkALDTomutPK6wR4En5/O7Dpn5oMmGhidsMVtoQOKJ3PBVBW9CLldfLWVqi3sS
+         NqnGVvjYsEPK7gsshVVSiIlyZt/08sa1eJlS+OS5t62Q4JAAnrGpb6KLfcWBQGXzjUrw
+         fKiXISAXIu1fgqNBUq3L0oWEsXYDVycocmB9/bgOSfp50UqshosbcwjSaM02x6fRagVH
+         B37AbMAAq0pTsy8GCtJv4GNpm2+cxGkhenuqT4Z8VEGcPhUOz+KxlVmmDzIfCdirQMad
+         N2UIRys+LByictYMr4ST7+KDREFxMDlOZnMYza7gWjuOuXE50FTAr2uHedE9bFKojiwU
+         IaAA==
+X-Gm-Message-State: APjAAAVwRrLMTtVUkQAsIqY7stla1Au0lggJp8Va5v2jtCzl4Z0Aq03/
+        V9GvCVDz+yg3WVu0mlG5dXxvKnswN46XEng2Hn8=
+X-Google-Smtp-Source: APXvYqydzFvWyNBnYDV2jM4O9wSxkHYjk1FoOkqXaLGXQLEqVZoBCNXpTw/0HXUyXPzRoOmFtB08NHkgsEkKzg7gQqs=
+X-Received: by 2002:a05:620a:14a8:: with SMTP id x8mr21466070qkj.35.1560530979737;
+ Fri, 14 Jun 2019 09:49:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190614134726.3827-4-hch@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190614072557.196239-1-ast@kernel.org> <20190614072557.196239-9-ast@kernel.org>
+In-Reply-To: <20190614072557.196239-9-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 14 Jun 2019 09:49:28 -0700
+Message-ID: <CAEf4Bzb0fjGFK5-KNM9dzdJ0y6oGR5OVTCC5OJ46kRXkWZvy1A@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 8/9] selftests/bpf: add realistic loop tests
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 03:47:13PM +0200, Christoph Hellwig wrote:
-> Remove usage of the legacy drm PCI DMA wrappers, and with that the
-> incorrect usage cocktail of __GFP_COMP, virt_to_page on DMA allocation
-> and SetPageReserved.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On Fri, Jun 14, 2019 at 12:26 AM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Add a bunch of loop tests. Most of them are created by replacing
+> '#pragma unroll' with '#pragma clang loop unroll(disable)'
+>
+> Several tests are artificially large:
+>   /* partial unroll. llvm will unroll loop ~150 times.
+>    * C loop count -> 600.
+>    * Asm loop count -> 4.
+>    * 16k insns in loop body.
+>    * Total of 5 such loops. Total program size ~82k insns.
+>    */
+>   "./pyperf600.o",
+>
+>   /* no unroll at all.
+>    * C loop count -> 600.
+>    * ASM loop count -> 600.
+>    * ~110 insns in loop body.
+>    * Total of 5 such loops. Total program size ~1500 insns.
+>    */
+>   "./pyperf600_nounroll.o",
+>
+>   /* partial unroll. 19k insn in a loop.
+>    * Total program size 20.8k insn.
+>    * ~350k processed_insns
+>    */
+>   "./strobemeta.o",
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 > ---
->  drivers/gpu/drm/i915/i915_gem.c        | 30 +++++++++++++-------------
->  drivers/gpu/drm/i915/i915_gem_object.h |  3 ++-
->  drivers/gpu/drm/i915/intel_display.c   |  2 +-
->  3 files changed, 18 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
-> index ad01c92aaf74..8f2053c91aff 100644
-> --- a/drivers/gpu/drm/i915/i915_gem.c
-> +++ b/drivers/gpu/drm/i915/i915_gem.c
-> @@ -228,7 +228,6 @@ i915_gem_get_aperture_ioctl(struct drm_device *dev, void *data,
->  static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
->  {
->  	struct address_space *mapping = obj->base.filp->f_mapping;
-> -	drm_dma_handle_t *phys;
->  	struct sg_table *st;
->  	struct scatterlist *sg;
->  	char *vaddr;
-> @@ -242,13 +241,13 @@ static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
->  	 * to handle all possible callers, and given typical object sizes,
->  	 * the alignment of the buddy allocation will naturally match.
->  	 */
-> -	phys = drm_pci_alloc(obj->base.dev,
-> -			     roundup_pow_of_two(obj->base.size),
-> -			     roundup_pow_of_two(obj->base.size));
-> -	if (!phys)
-> +	obj->phys_vaddr = dma_alloc_coherent(&obj->base.dev->pdev->dev,
-> +			roundup_pow_of_two(obj->base.size),
-> +			&obj->phys_handle, GFP_KERNEL);
-> +	if (!obj->phys_vaddr)
->  		return -ENOMEM;
->  
-> -	vaddr = phys->vaddr;
-> +	vaddr = obj->phys_vaddr;
->  	for (i = 0; i < obj->base.size / PAGE_SIZE; i++) {
->  		struct page *page;
->  		char *src;
-> @@ -286,18 +285,17 @@ static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
->  	sg->offset = 0;
->  	sg->length = obj->base.size;
->  
-> -	sg_dma_address(sg) = phys->busaddr;
-> +	sg_dma_address(sg) = obj->phys_handle;
->  	sg_dma_len(sg) = obj->base.size;
->  
-> -	obj->phys_handle = phys;
-> -
->  	__i915_gem_object_set_pages(obj, st, sg->length);
->  
->  	return 0;
->  
->  err_phys:
-> -	drm_pci_free(obj->base.dev, phys);
-> -
-> +	dma_free_coherent(&obj->base.dev->pdev->dev,
-> +			roundup_pow_of_two(obj->base.size), obj->phys_vaddr,
-> +			obj->phys_handle);
 
-Need to undo the damage to obj->phys_vaddr here since
-i915_gem_pwrite_ioctl() will now use that to determine if it's
-dealing with a phys obj.
+<snip>
 
->  	return err;
->  }
->  
-> @@ -335,7 +333,7 @@ i915_gem_object_put_pages_phys(struct drm_i915_gem_object *obj,
->  
->  	if (obj->mm.dirty) {
->  		struct address_space *mapping = obj->base.filp->f_mapping;
-> -		char *vaddr = obj->phys_handle->vaddr;
-> +		char *vaddr = obj->phys_vaddr;
->  		int i;
->  
->  		for (i = 0; i < obj->base.size / PAGE_SIZE; i++) {
-> @@ -363,7 +361,9 @@ i915_gem_object_put_pages_phys(struct drm_i915_gem_object *obj,
->  	sg_free_table(pages);
->  	kfree(pages);
->  
-> -	drm_pci_free(obj->base.dev, obj->phys_handle);
-> +	dma_free_coherent(&obj->base.dev->pdev->dev,
-> +			roundup_pow_of_two(obj->base.size), obj->phys_vaddr,
-> +			obj->phys_handle);
+> diff --git a/tools/testing/selftests/bpf/progs/strobemeta.c b/tools/testing/selftests/bpf/progs/strobemeta.c
+> new file mode 100644
+> index 000000000000..d3df3d86f092
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/strobemeta.c
+> @@ -0,0 +1,10 @@
+> +// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-This one is fine I think since the object remains a phys obj once
-turned into one. At least the current code isn't clearing
-phys_handle here. But my memory is a bit hazy on the details. Chris?
+given strobemeta.h is GPL-2, this should probably be same
 
-Also maybe s/phys_handle/phys_busaddr/ all over?
+> +// Copyright (c) 2019 Facebook
+> +
+> +#define STROBE_MAX_INTS 2
+> +#define STROBE_MAX_STRS 25
+> +#define STROBE_MAX_MAPS 100
+> +#define STROBE_MAX_MAP_ENTRIES 20
+> +/* full unroll by llvm #undef NO_UNROLL */
+> +#include "strobemeta.h"
+> +
+> diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
+> new file mode 100644
+> index 000000000000..1ff73f60a3e4
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/strobemeta.h
+> @@ -0,0 +1,528 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (c) 2019 Facebook
+> +
 
->  }
->  
->  static void
-> @@ -603,7 +603,7 @@ i915_gem_phys_pwrite(struct drm_i915_gem_object *obj,
->  		     struct drm_i915_gem_pwrite *args,
->  		     struct drm_file *file)
->  {
-> -	void *vaddr = obj->phys_handle->vaddr + args->offset;
-> +	void *vaddr = obj->phys_vaddr + args->offset;
->  	char __user *user_data = u64_to_user_ptr(args->data_ptr);
->  
->  	/* We manually control the domain here and pretend that it
-> @@ -1431,7 +1431,7 @@ i915_gem_pwrite_ioctl(struct drm_device *dev, void *data,
->  		ret = i915_gem_gtt_pwrite_fast(obj, args);
->  
->  	if (ret == -EFAULT || ret == -ENOSPC) {
-> -		if (obj->phys_handle)
-> +		if (obj->phys_vaddr)
->  			ret = i915_gem_phys_pwrite(obj, args, file);
->  		else
->  			ret = i915_gem_shmem_pwrite(obj, args);
-> diff --git a/drivers/gpu/drm/i915/i915_gem_object.h b/drivers/gpu/drm/i915/i915_gem_object.h
-> index ca93a40c0c87..14bd2d61d0f6 100644
-> --- a/drivers/gpu/drm/i915/i915_gem_object.h
-> +++ b/drivers/gpu/drm/i915/i915_gem_object.h
-> @@ -290,7 +290,8 @@ struct drm_i915_gem_object {
->  	};
->  
->  	/** for phys allocated objects */
-> -	struct drm_dma_handle *phys_handle;
-> +	dma_addr_t phys_handle;
-> +	void *phys_vaddr;
->  
->  	struct reservation_object __builtin_resv;
->  };
-> diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
-> index 5098228f1302..4f8b368ac4e2 100644
-> --- a/drivers/gpu/drm/i915/intel_display.c
-> +++ b/drivers/gpu/drm/i915/intel_display.c
-> @@ -10066,7 +10066,7 @@ static u32 intel_cursor_base(const struct intel_plane_state *plane_state)
->  	u32 base;
->  
->  	if (INTEL_INFO(dev_priv)->display.cursor_needs_physical)
-> -		base = obj->phys_handle->busaddr;
-> +		base = obj->phys_handle;
->  	else
->  		base = intel_plane_ggtt_offset(plane_state);
->  
-> -- 
-> 2.20.1
-> 
-> _______________________________________________
-> Intel-gfx mailing list
-> Intel-gfx@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/intel-gfx
+<snip>
 
--- 
-Ville Syrjälä
-Intel
+> +char _license[] SEC("license") = "GPL";
+> diff --git a/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c b/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
+> new file mode 100644
+> index 000000000000..f0a1669e11d6
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
+> @@ -0,0 +1,9 @@
+> +// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
+... and here
+
+> +// Copyright (c) 2019 Facebook
+> +
+> +#define STROBE_MAX_INTS 2
+> +#define STROBE_MAX_STRS 25
+> +#define STROBE_MAX_MAPS 13
+> +#define STROBE_MAX_MAP_ENTRIES 20
+> +#define NO_UNROLL
+> +#include "strobemeta.h"
+> diff --git a/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c b/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
+> new file mode 100644
+> index 000000000000..4291a7d642e7
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
+> @@ -0,0 +1,9 @@
+> +// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
+... and here
+
+> +// Copyright (c) 2019 Facebook
+> +
+> +#define STROBE_MAX_INTS 2
+> +#define STROBE_MAX_STRS 25
+> +#define STROBE_MAX_MAPS 30
+> +#define STROBE_MAX_MAP_ENTRIES 20
+> +#define NO_UNROLL
+> +#include "strobemeta.h"
+
+<snip>
