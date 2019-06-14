@@ -2,155 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6368446002
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1C14600A
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:07:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728728AbfFNOGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 10:06:10 -0400
-Received: from mail-eopbgr10041.outbound.protection.outlook.com ([40.107.1.41]:21321
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728034AbfFNOGJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 10:06:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s6jrAa0Qt/C2g+7j0/P38K8SXlNRuohLS54E/U3KIgo=;
- b=StoVC6YRcaEDRPdCnvoYSjnmnb4CCrTkjCcy/laI4sBdMdkB/3zzt5nvAfp0SORLAkDR+ocFcVSzddmaNndpbexvKD8dFLnkUK/b/vHS85CrouHFXXECIl/3BM02bYwvl23bgxURt5P+luAbC+vlpk4wT5ea40eLbGLubUJa004=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB3712.eurprd04.prod.outlook.com (52.134.15.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Fri, 14 Jun 2019 14:06:06 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
- 14:06:06 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-Subject: RE: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
-Thread-Topic: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
-Thread-Index: AQHVIkOh0y3ZPvJmKkWBHedOBEb5YqaaV+sAgADJeTA=
-Date:   Fri, 14 Jun 2019 14:06:05 +0000
-Message-ID: <VI1PR0402MB28002EE1DB0B3FB39B907052E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
- <1560470153-26155-4-git-send-email-ioana.ciornei@nxp.com>
- <20190614011224.GC28822@lunn.ch>
-In-Reply-To: <20190614011224.GC28822@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [92.121.36.198]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 95105192-c1d5-4edf-c0b8-08d6f0d17169
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3712;
-x-ms-traffictypediagnostic: VI1PR0402MB3712:
-x-microsoft-antispam-prvs: <VI1PR0402MB37126D8176888C2693FD77B8E0EE0@VI1PR0402MB3712.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0068C7E410
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(396003)(346002)(136003)(376002)(199004)(189003)(74316002)(71190400001)(54906003)(4326008)(2906002)(229853002)(76116006)(73956011)(6116002)(3846002)(446003)(476003)(25786009)(14454004)(478600001)(6246003)(6436002)(71200400001)(11346002)(86362001)(6916009)(316002)(76176011)(52536014)(33656002)(66066001)(6506007)(99286004)(53936002)(7696005)(68736007)(81166006)(44832011)(8936002)(26005)(66446008)(66476007)(64756008)(81156014)(66556008)(8676002)(9686003)(66946007)(55016002)(486006)(102836004)(5660300002)(186003)(305945005)(256004)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3712;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: xYLLNiJ/fOKe2wj9a3qXzR6KWsNiV9TBKrzAFX2rTwoxY/kI5XzCYu+cNxUQS9m7UosNGrRwIfWdW6FRUqPbJJECJ//043AmRFhCbmN7k9y2FwO6ecGHMhL94Epb83OJFBfvrPsMBbyc5KoHrpbQZF8LtJHJU/iHiclYcJ5S6vFkGDqBYEJFmkDPzRq938hARfVJ+bkSzV9O+5S7Gk+hhIdGyzGJCC2Jd5VbT1X2owANHcxSVjtTSrB9dyVKLW1srBgpis4cDAXFBTPo9MdqBhqsJZolnWJEkM3R4qjjQvp6DBAISXvsNW4Ru8QyS15zF2yow+mabq5I/hAy9prpL7xkhEFUoOCnuApXgsUal6/dQXZWHFs2c5xHWWWW8TxNxcW5Raauu9s702BofnZd4T6JwnnssRkaAgeoQh+8mZY=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728764AbfFNOHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 10:07:10 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43485 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727382AbfFNOHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 10:07:10 -0400
+Received: by mail-pf1-f196.google.com with SMTP id i189so1520525pfg.10;
+        Fri, 14 Jun 2019 07:07:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LJg9268+LDPIRhGrkFTLGpEAlX1lCnLtO8bJQ4QN05M=;
+        b=QJy/6MnsHsECy1HYz/rqZ3HHq3OQroAc6nX9BCwm9YFf2YbvaicxGQ6bvxsH5aqSZa
+         6yEn9yuIgjL95131ax2bk6Pe0PoU3AeVPdqf2QS1c19ftcVhh5zHh1wq7wvqwGxu4MvP
+         O4s1ytatGdrM1WwgTMFFgxxyEVplOnOrE3ydAcx+o9F1Dw3n5E4uHMbJqtLK8zKEJjmY
+         42i0Umlo3Z+ig8IkvNchp8izRNDzR4Mr6YoT9wb5iO+PuscND4uR+e/Fq6S8mKsFykpB
+         bInllyf25qaS7Vgi5WvgHtvepVsxg+HmjvOEycPObi0biMGp1BsUEqhg0MSF2oaKEN8V
+         hpOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LJg9268+LDPIRhGrkFTLGpEAlX1lCnLtO8bJQ4QN05M=;
+        b=rRQfi4eOIYRHtLcmGARFp/JWGvoHqxOQRTz86tUVhFb+u4Qcrg3pMLjDcYQbW33Yy7
+         ZbOA4fyGxmcFwGSTh1oLMOFUnNuIqJESZWJS80zwsiY+ojaOojy0RijuqCJO0JUTaSpE
+         jD+hjQ5RLW1n5ANg0dR0UhRMBP85kQEfmNJDd3qUC2LOKKb4FZcEzUwCUGg/ne8ANJuy
+         NUKGl7Dch5/doIInl0fpBAyk+u4eSO+jLr8xFNmSONIKnkjTnrJZZiY4xN6DQfTbuj54
+         RdE8v8j8UMtvRINRp6l6aIaiD4BPGcI3Rq0T3CTeerX5d4o/KhcEjARjvBX9t1JiayGC
+         IZLg==
+X-Gm-Message-State: APjAAAVX8iLJT+MShvgQ3lgQbOPReFpzKupXw13BNhUXCUi89dkCea6x
+        SyryCSsUjuzbTnttIVdwMH+SXWoZQ9U=
+X-Google-Smtp-Source: APXvYqzcEOiZIn73KTG+EBoUQLrcnli4yGKqfYpCbo2WD10sB9flhtjQ3YZWE5gdb0osUBpoEcTbUA==
+X-Received: by 2002:a62:1ec1:: with SMTP id e184mr8001336pfe.185.1560521229311;
+        Fri, 14 Jun 2019 07:07:09 -0700 (PDT)
+Received: from [172.27.227.167] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id i3sm3418766pfo.138.2019.06.14.07.07.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 07:07:08 -0700 (PDT)
+Subject: Re: [PATCH net] mpls: fix af_mpls dependencies
+To:     Arnd Bergmann <arnd@arndb.de>, Randy Dunlap <rdunlap@infradead.org>
+Cc:     Matteo Croce <mcroce@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>
+References: <20190608125019.417-1-mcroce@redhat.com>
+ <20190609.195742.739339469351067643.davem@davemloft.net>
+ <d19abcd4-799c-ac2f-ffcb-fa749d17950c@infradead.org>
+ <CAGnkfhyS15NPEO2ygkjazECULtUDkJgPk8wCYFhA9zL2+w27pg@mail.gmail.com>
+ <49b58181-90da-4ee4-cbb0-80e226d040fc@infradead.org>
+ <CAK8P3a1mwnDFeD3xnQ6bm1x8C6yX=YEccxN2jknvTbRiCfD=Bg@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <47f1889a-e919-e3fd-f90c-39c26cb1ccbb@gmail.com>
+Date:   Fri, 14 Jun 2019 08:07:06 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95105192-c1d5-4edf-c0b8-08d6f0d17169
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 14:06:06.0230
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3712
+In-Reply-To: <CAK8P3a1mwnDFeD3xnQ6bm1x8C6yX=YEccxN2jknvTbRiCfD=Bg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
->=20
-> > +/**
-> > + * dpmac_set_link_state() - Set the Ethernet link status
-> > + * @mc_io:      Pointer to opaque I/O object
-> > + * @cmd_flags:  Command flags; one or more of 'MC_CMD_FLAG_'
-> > + * @token:      Token of DPMAC object
-> > + * @link_state: Link state configuration
-> > + *
-> > + * Return:      '0' on Success; Error code otherwise.
-> > + */
-> > +int dpmac_set_link_state(struct fsl_mc_io *mc_io,
-> > +			 u32 cmd_flags,
-> > +			 u16 token,
-> > +			 struct dpmac_link_state *link_state) {
-> > +	struct dpmac_cmd_set_link_state *cmd_params;
-> > +	struct fsl_mc_command cmd =3D { 0 };
-> > +
-> > +	/* prepare command */
-> > +	cmd.header =3D
-> mc_encode_cmd_header(DPMAC_CMDID_SET_LINK_STATE,
-> > +					  cmd_flags,
-> > +					  token);
-> > +	cmd_params =3D (struct dpmac_cmd_set_link_state *)cmd.params;
-> > +	cmd_params->options =3D cpu_to_le64(link_state->options);
-> > +	cmd_params->rate =3D cpu_to_le32(link_state->rate);
-> > +	dpmac_set_field(cmd_params->state, STATE, link_state->up);
-> > +	dpmac_set_field(cmd_params->state, STATE_VALID,
-> > +			link_state->state_valid);
-> > +	cmd_params->supported =3D cpu_to_le64(link_state->supported);
-> > +	cmd_params->advertising =3D cpu_to_le64(link_state->advertising);
->=20
-> I don't understand what supported and advertising mean in the context of =
-a
-> MAC. PHY yes, but MAC?
+On 6/14/19 8:01 AM, Arnd Bergmann wrote:
+> On Wed, Jun 12, 2019 at 9:41 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>> On 6/11/19 5:08 PM, Matteo Croce wrote:
+>>> On Wed, Jun 12, 2019 at 1:07 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>> * Configure standard kernel features (expert users)
+>>> *
+>>> Configure standard kernel features (expert users) (EXPERT) [Y/?] y
+>>>   Multiple users, groups and capabilities support (MULTIUSER) [Y/n/?] y
+>>>   sgetmask/ssetmask syscalls support (SGETMASK_SYSCALL) [N/y/?] n
+>>>   Sysfs syscall support (SYSFS_SYSCALL) [N/y/?] n
+>>>   Sysctl syscall support (SYSCTL_SYSCALL) [N/y/?] (NEW)
+>>
+>> So I still say that MPLS_ROUTING should depend on PROC_SYSCTL,
+>> not select it.
+> 
+> It clearly shouldn't select PROC_SYSCTL, but I think it should not
+> have a 'depends on' statement either. I think the correct fix for the
+> original problem would have been something like
+> 
+> --- a/net/mpls/af_mpls.c
+> +++ b/net/mpls/af_mpls.c
+> @@ -2659,6 +2659,9 @@ static int mpls_net_init(struct net *net)
+>         net->mpls.ip_ttl_propagate = 1;
+>         net->mpls.default_ttl = 255;
+> 
+> +       if (!IS_ENABLED(CONFIG_PROC_SYSCTL))
+> +               return 0;
+> +
+>         table = kmemdup(mpls_table, sizeof(mpls_table), GFP_KERNEL);
+>         if (table == NULL)
+>                 return -ENOMEM;
+> 
 
-It's still in the context of the PHY. I see that the choice of function nam=
-e is not great but this is done
-only to convey what the supported and the advertising modes are to the Ethe=
-rnet driver.
-
-
->=20
-> > + * DPMAC link configuration/state options */
-> > +
-> > +/**
-> > + * Enable auto-negotiation
-> > + */
-> > +#define DPMAC_LINK_OPT_AUTONEG			BIT_ULL(0)
-> > +/**
-> > + * Enable half-duplex mode
-> > + */
-> > +#define DPMAC_LINK_OPT_HALF_DUPLEX		BIT_ULL(1)
-> > +/**
-> > + * Enable pause frames
-> > + */
-> > +#define DPMAC_LINK_OPT_PAUSE			BIT_ULL(2)
-> > +/**
-> > + * Enable a-symmetric pause frames
-> > + */
-> > +#define DPMAC_LINK_OPT_ASYM_PAUSE		BIT_ULL(3)
->=20
-> So is this to configure the MAC? The MAC can do half duplex, pause, asym
-> pause?
->=20
-> But from the previous patch, the PHY cannot do half duplex?
->=20
->      Andrew
-
-As stated in the previous reply, the MAC can do pause, asym pause but not h=
-alf duplex or EEE.
-The DPMAC_LINK_OPT_HALF_DUPLEX bit is just a leftover and can be removed.
-
---
-Ioana
+Without sysctl, the entire mpls_router code is disabled. So if sysctl is
+not enabled there is no point in building this file.
