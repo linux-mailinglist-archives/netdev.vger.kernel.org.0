@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C7F4545D
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 07:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 790B14545E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 07:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfFNFzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 01:55:39 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33955 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfFNFzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 01:55:39 -0400
-Received: by mail-wm1-f68.google.com with SMTP id w9so8086094wmd.1
-        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 22:55:37 -0700 (PDT)
+        id S1726289AbfFNFzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 01:55:41 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41909 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbfFNFzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 01:55:40 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c2so1112848wrm.8
+        for <netdev@vger.kernel.org>; Thu, 13 Jun 2019 22:55:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pAJ7oWohp8W4FWHGTQ8Trx7E0W61Srss4A+NiBOsTzQ=;
-        b=jU4OVU/IJAMNvul7gLm1AlFY4+Sfb3R0WJX/H6h0WU3tWcZtfuIzUmtbgStuZH/l4x
-         9ISQdQzqFq37jXqTT7WJpKAplWYiBmrGOUdmtm+xKXupRXJYGfAGmUFOFOqSKNe0KCCi
-         6QdQaq0uajNkofKkVvyRqLR/grPWYGveM4KDbM/ScaZ1ir6P+OhPlQ5X5oWPCeRmfDos
-         nVBIuUVV7Aza2AkKRRjFAWJ99V0oSBQJ6T4VaOpt5iuYIze8IGwTKagh51WuDZaXHDQy
-         /o9f25xGJWNu+rJ6r9Ef1fFoSkuYiwWgLVCb+C1IFhaS0pIqIaSm1Ot+nCWnEkztrW2Q
-         ahDg==
+        bh=g9EGG66pvxXW6mzL7zbyXm5OxkdYUcNvKZgvgnHUWWM=;
+        b=IQnmzfys0r5MPZhm1njhrGeu3eZp4csekN2WObBxllea7ZqpmQ82A19Sr6zij/IJrP
+         VbrwwTg4RcPyf6mN4fLnjC+EkUdSf+//5GdkdKteexdTSxJNsZj95ZcaGvOpM+JP3k0H
+         sk8BwffsUcGjTtXWGlQI6FY1hpAygYO4nH8KFl/WJyeajwRZAlD9T0S5oY1wVy3CYIDc
+         +XdqLunBy2pGTQLTkghNcgtde9F+sc+M+/wXoVecVpK8HJj06csd1Pyv0fEhEcLTJd1X
+         xJFojXaivTd/+psrQqu4sUYMYXJ4SrWE3MrumrEw4rWrujcTS3L63qVz5sVwAgt3PPSm
+         Y0og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=pAJ7oWohp8W4FWHGTQ8Trx7E0W61Srss4A+NiBOsTzQ=;
-        b=L1PrjST3Hw/8f6ZVVYH3MkIfEzCtDfj3oO8529clJQspPJNzqnMOzxnGM+5TD45YrM
-         cIY4wk06alsyoV+es6YcLSlyGR131zC+8kNI6Bau2t9/oS7N+LCOqFEGL9zNRm7Yfqtl
-         sPN5Qq3/DnHcdvrsLwaGpT4YxJhUQDotHo5QVQc3zqYbUpJ6H2XXVEabJrJb+fChf/z0
-         ZGxUHnqwzXfYR29hK2CzyZSzfYtx+kgsDRi2xxAbHP47KsVkE5KDFdeBulOHH/Vu/KVt
-         FCgUno+y+MHEZWbOmX5Lo3ztYA2fhBldon7ZF/Kn8loE0xYrLezQdhahoyQ9tdXCGOxY
-         4+3g==
-X-Gm-Message-State: APjAAAWGzqT3ZsBvUkBw5i3PLnJmBVb3mVM+zwkjCYwjyOlRudTbcfrj
-        zx3zeUhX4D+sJpRKca2wj5alvD0z
-X-Google-Smtp-Source: APXvYqy7Rsi4m2XW4XwuvpJAGyOpb+wnEsxjPeII6vqHOKwSnaBWu1M6YwhmB/t4Rs1ziyXr/bcPyw==
-X-Received: by 2002:a1c:c747:: with SMTP id x68mr6385119wmf.138.1560491736803;
-        Thu, 13 Jun 2019 22:55:36 -0700 (PDT)
+        bh=g9EGG66pvxXW6mzL7zbyXm5OxkdYUcNvKZgvgnHUWWM=;
+        b=sMIn5sP5wfwslLQ91lHtdH9DQAgJ9V+GSZeALWCdpFB+qh/I5kAm++qp7BDXKrnNbL
+         FVwqxplDe/U1MQ581AcTBCzrV/KFSPRPBbeRG8rjeE2Ds7pyv+ASJUHuiY7qHgC/xfOV
+         miuDoJyqHGCOd9zxoxU8hESfnmtTLKXlbsT2o3d1IcheL0Shx2EHxJ2PzTKyRAHJi589
+         J6xZFoxRxEE/xxA3clIG4YyMt4D3gaGNPfEkJ4//meVEF9qDR0vHousCaQga8r4D96Nu
+         0yor//tTw2EEaOUzVi5GS4LtHS68Mp5J/V2HqPstUaBri9q98UePQRkLAOcl1lNmK595
+         ZWtw==
+X-Gm-Message-State: APjAAAV5Yj/J/80bQkyZO7sE0Zv78JfkPiVb4TeUrLfebS9RZesSawmL
+        Q3F4LAqVoOofRfUm0cCIVIhiQ3yX
+X-Google-Smtp-Source: APXvYqxotB/QONhjZo1KvK7il1xEaW9Pb0B8f90TK1ONhpwJmSjM+RFPJBXXCNfIB2XZbu/Q0N6YSg==
+X-Received: by 2002:a5d:62c9:: with SMTP id o9mr29500346wrv.186.1560491738054;
+        Thu, 13 Jun 2019 22:55:38 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bf3:bd00:9178:4599:8cd6:9f81? (p200300EA8BF3BD00917845998CD69F81.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:9178:4599:8cd6:9f81])
-        by smtp.googlemail.com with ESMTPSA id h90sm5264532wrh.15.2019.06.13.22.55.35
+        by smtp.googlemail.com with ESMTPSA id p3sm2781493wrd.47.2019.06.13.22.55.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 13 Jun 2019 22:55:36 -0700 (PDT)
-Subject: [PATCH net-next 1/2] r8169: add helper rtl_is_8168evl_up
+        Thu, 13 Jun 2019 22:55:37 -0700 (PDT)
+Subject: [PATCH net-next 2/2] r8169: use helper rtl_is_8168evl_up for setting
+ register MaxTxPacketSize
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <0c355e89-8e6b-7ea9-4971-21980f9e64da@gmail.com>
-Message-ID: <f7a35192-b456-eb4d-9c8d-498d3b76d21f@gmail.com>
-Date:   Fri, 14 Jun 2019 07:54:07 +0200
+Message-ID: <7ebdce28-2599-935f-f334-8b882f814d8a@gmail.com>
+Date:   Fri, 14 Jun 2019 07:55:21 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
@@ -65,91 +66,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helper rtl_is_8168evl_up to make the code better readable and to
-simplify it.
+>From RTL8168e-vl the value in register MaxTxPacketSize is interpreted
+differently, therefore use new helper rtl_is_8168evl_up to set this
+register.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 29 ++++++++++-------------
- 1 file changed, 12 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 24 ++++-------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8519f88ac..9f851ed99 100644
+index 9f851ed99..ef900ebf9 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -724,6 +724,12 @@ static void rtl_tx_performance_tweak(struct rtl8169_private *tp, u16 force)
- 					   PCI_EXP_DEVCTL_READRQ, force);
- }
- 
-+static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
-+{
-+	return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
-+	       tp->mac_version != RTL_GIGA_MAC_VER_39;
-+}
-+
- struct rtl_cond {
- 	bool (*check)(struct rtl8169_private *);
- 	const char *msg;
-@@ -1389,9 +1395,7 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
- 
- 	rtl_unlock_config_regs(tp);
- 
--	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
-+	if (rtl_is_8168evl_up(tp)) {
- 		tmp = ARRAY_SIZE(cfg) - 1;
- 		if (wolopts & WAKE_MAGIC)
- 			rtl_eri_set_bits(tp, 0x0dc, ERIAR_MASK_0100,
-@@ -1399,10 +1403,8 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
- 		else
- 			rtl_eri_clear_bits(tp, 0x0dc, ERIAR_MASK_0100,
- 					   MagicPacket_v2);
--		break;
--	default:
-+	} else {
- 		tmp = ARRAY_SIZE(cfg);
--		break;
- 	}
- 
- 	for (i = 0; i < tmp; i++) {
-@@ -4101,8 +4103,7 @@ static void rtl_set_tx_config_registers(struct rtl8169_private *tp)
- 	u32 val = TX_DMA_BURST << TxDMAShift |
- 		  InterFrameGap << TxInterFrameGapShift;
- 
--	if (tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
--	    tp->mac_version != RTL_GIGA_MAC_VER_39)
-+	if (rtl_is_8168evl_up(tp))
- 		val |= TXCFG_AUTO_FIFO;
- 
- 	RTL_W32(tp, TxConfig, val);
-@@ -6483,13 +6484,10 @@ static int rtl_alloc_irq(struct rtl8169_private *tp)
- static void rtl_read_mac_address(struct rtl8169_private *tp,
- 				 u8 mac_addr[ETH_ALEN])
+@@ -4331,8 +4331,6 @@ static void rtl_hw_start_8168bef(struct rtl8169_private *tp)
  {
--	u32 value;
+ 	rtl_hw_start_8168bb(tp);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
 -
- 	/* Get MAC address */
--	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_35 ... RTL_GIGA_MAC_VER_38:
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_51:
--		value = rtl_eri_read(tp, 0xe0);
-+	if (rtl_is_8168evl_up(tp) && tp->mac_version != RTL_GIGA_MAC_VER_34) {
-+		u32 value = rtl_eri_read(tp, 0xe0);
-+
- 		mac_addr[0] = (value >>  0) & 0xff;
- 		mac_addr[1] = (value >>  8) & 0xff;
- 		mac_addr[2] = (value >> 16) & 0xff;
-@@ -6498,9 +6496,6 @@ static void rtl_read_mac_address(struct rtl8169_private *tp,
- 		value = rtl_eri_read(tp, 0xe4);
- 		mac_addr[4] = (value >>  0) & 0xff;
- 		mac_addr[5] = (value >>  8) & 0xff;
--		break;
--	default:
--		break;
- 	}
+ 	RTL_W8(tp, Config4, RTL_R8(tp, Config4) & ~(1 << 0));
  }
  
+@@ -4384,8 +4382,6 @@ static void rtl_hw_start_8168cp_3(struct rtl8169_private *tp)
+ 	/* Magic. */
+ 	RTL_W8(tp, DBG_REG, 0x20);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+-
+ 	if (tp->dev->mtu <= ETH_DATA_LEN)
+ 		rtl_tx_performance_tweak(tp, PCI_EXP_DEVCTL_READRQ_4096B);
+ }
+@@ -4439,8 +4435,6 @@ static void rtl_hw_start_8168d(struct rtl8169_private *tp)
+ 
+ 	rtl_disable_clock_request(tp);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+-
+ 	if (tp->dev->mtu <= ETH_DATA_LEN)
+ 		rtl_tx_performance_tweak(tp, PCI_EXP_DEVCTL_READRQ_4096B);
+ }
+@@ -4452,8 +4446,6 @@ static void rtl_hw_start_8168dp(struct rtl8169_private *tp)
+ 	if (tp->dev->mtu <= ETH_DATA_LEN)
+ 		rtl_tx_performance_tweak(tp, PCI_EXP_DEVCTL_READRQ_4096B);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+-
+ 	rtl_disable_clock_request(tp);
+ }
+ 
+@@ -4469,8 +4461,6 @@ static void rtl_hw_start_8168d_4(struct rtl8169_private *tp)
+ 
+ 	rtl_tx_performance_tweak(tp, PCI_EXP_DEVCTL_READRQ_4096B);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+-
+ 	rtl_ephy_init(tp, e_info_8168d_4);
+ 
+ 	rtl_enable_clock_request(tp);
+@@ -4501,8 +4491,6 @@ static void rtl_hw_start_8168e_1(struct rtl8169_private *tp)
+ 	if (tp->dev->mtu <= ETH_DATA_LEN)
+ 		rtl_tx_performance_tweak(tp, PCI_EXP_DEVCTL_READRQ_4096B);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+-
+ 	rtl_disable_clock_request(tp);
+ 
+ 	/* Reset tx FIFO pointer */
+@@ -4534,8 +4522,6 @@ static void rtl_hw_start_8168e_2(struct rtl8169_private *tp)
+ 	rtl_eri_set_bits(tp, 0x1b0, ERIAR_MASK_0001, BIT(4));
+ 	rtl_w0w1_eri(tp, 0x0d4, ERIAR_MASK_0011, 0x0c00, 0xff00);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+-
+ 	rtl_disable_clock_request(tp);
+ 
+ 	RTL_W8(tp, MCU, RTL_R8(tp, MCU) & ~NOW_IS_OOB);
+@@ -4564,8 +4550,6 @@ static void rtl_hw_start_8168f(struct rtl8169_private *tp)
+ 	rtl_eri_write(tp, 0xcc, ERIAR_MASK_1111, 0x00000050);
+ 	rtl_eri_write(tp, 0xd0, ERIAR_MASK_1111, 0x00000060);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+-
+ 	rtl_disable_clock_request(tp);
+ 
+ 	RTL_W8(tp, MCU, RTL_R8(tp, MCU) & ~NOW_IS_OOB);
+@@ -4622,7 +4606,6 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
+ 	rtl_eri_write(tp, 0x2f8, ERIAR_MASK_0011, 0x1d8f);
+ 
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+-	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -4720,7 +4703,6 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+-	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -4796,7 +4778,6 @@ static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+-	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -5068,7 +5049,10 @@ static void rtl_hw_start_8168(struct rtl8169_private *tp)
+ 		pcie_capability_set_word(tp->pci_dev, PCI_EXP_DEVCTL,
+ 					 PCI_EXP_DEVCTL_NOSNOOP_EN);
+ 
+-	RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
++	if (rtl_is_8168evl_up(tp))
++		RTL_W8(tp, MaxTxPacketSize, EarlySize);
++	else
++		RTL_W8(tp, MaxTxPacketSize, TxPacketMax);
+ 
+ 	rtl_hw_config(tp);
+ }
 -- 
 2.22.0
 
