@@ -2,133 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39EE7453AB
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E0A453AE
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:44:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726020AbfFNEmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 00:42:01 -0400
-Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:47766
-        "EHLO cat-porwal-prod-mail1.catalyst.net.nz" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725767AbfFNEmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 00:42:01 -0400
-Received: from timbeale-pc.wgtn.cat-it.co.nz (unknown [IPv6:2404:130:0:1000:ed06:1c1d:e56c:b595])
-        (Authenticated sender: timbeale@catalyst.net.nz)
-        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id 8D35C81546;
-        Fri, 14 Jun 2019 16:41:59 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1560487319;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=SCh5QnKEX/n9xTL/ke/zsYY4Am+WLYmiCEIJreTOxzI=;
-        b=JSmymAO9mNCGWH1fy2D9WI2URxMFXlTbQp9unuL56JRdgTmU1DBki3fyzS6Q9tTNSQqFSH
-        yJ880SsPUJ/Jvz7J0bxFTC1rG/PYgLm9tkkfD8UsgMAdbRtTug+++L0GGF6deVeuUfjIAi
-        Dek9iBOo6kXDVsKxBUFglaFLLCqbqtQRiIfVgqlkHRHI6FqSy1UEeGhluP46Wmo7EZBDuN
-        30l84I5koamOb17dWsyQW/CYgjVP6ghRUSjPDuGFJSs1khX66fAaeDOtFCJddSpWCcgc2P
-        +Y4Utb7Q1/UoBex4VhSi6XLtM81JyYyv2fYDZarPLRGEIPYS0n/hlF3Yon9r6w==
-From:   Tim Beale <timbeale@catalyst.net.nz>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        Tim Beale <timbeale@catalyst.net.nz>
-Subject: [PATCH net next 2/2] udp: Remove unused variable/function (exact_dif)
-Date:   Fri, 14 Jun 2019 16:41:27 +1200
-Message-Id: <1560487287-198694-2-git-send-email-timbeale@catalyst.net.nz>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
-References: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1560487319;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=SCh5QnKEX/n9xTL/ke/zsYY4Am+WLYmiCEIJreTOxzI=;
-        b=q48k+Lq54jbK3h7xiZzmoFTZ8SeJQWvVI6tmMxUP8lleAx/55T3vD6dsdOCXfRa/J8EK70
-        ZeTlV1zk89BFUWOtXDEtjFtZ5Y1T61nHnRQpdE6CYUwc8f7ErObtYXtaqzBizEOxRHURSN
-        Dzpd5WyQluZZ5DgPOovoPGK3zc5bqYF9T6VNzRfr62egaVkwec3taR5buGLGyYDFPUBPfm
-        10MAtuFf7gKfK0QYkPFS9BAY+pTPYw0k33hpq36990IXjTWoVMcdeShOkNP71doDxBuZGj
-        /TmwPBCx7MHkSfH0dZr3uiBbepej7rqX9+dmkwztU3E2pr6wMBq+gOPK/WHLzQ==
-ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1560487319; a=rsa-sha256;
-        cv=none;
-        b=jPVFIKSblpizb5KIQweZfz3exvjainUO58P/i018J9XRpCMV89ggU5bEQH6WGczsxlVmmP
-        j5aWVqf7Ie8jNppf3zwSTNwhDUt8gZYFGAu8Dujg6TrpKkZEWeRFkErF5/nnKXLZyUSDZo
-        9bX66RL2VH+CeVP0zp/SDU5lmGlMCE1tstBM3KKH5JrhHC/QCuDBvXv0yGMlOfbCJYyaim
-        M96Mi0szECNwFG2BcvZC4V/+Us41Sbo4g5tneLHnnCIIivX2wHy71lqLkj+nJ44ZCGztvp
-        AcS/4qrL+I+H1OWhSiN6XaA52R3wN//zFXNc4DRpH+6sIgtK6okuZQ507MSNkA==
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=timbeale@catalyst.net.nz smtp.mailfrom=timbeale@catalyst.net.nz
+        id S1725846AbfFNEoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 00:44:01 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:46790 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbfFNEoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 00:44:00 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5E4ZH0g059549;
+        Fri, 14 Jun 2019 04:43:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=q04xRDu6igdpOSRMxde5qEAa3x6Mql9CiEYVvoEPLv4=;
+ b=sScqjVT5hx7Oh8HF6jjYSH/EfqsP4/BLhSoaU+nHIqsI81OSTBAac+kjwB7AHqte0vEF
+ 6TRHYX0vtUVsk+L92veVHdE8rXcWTnNtk/nt+8Sk/oKKA3imYHYfbltF54nlH72kSXNH
+ eaZlEoWKtQbAE3CcKPmBfmJaJBUoEk3A1/ljMBcoeB1BRQ8OoRjdgOB/g7t/qwmrgA9w
+ dVlci04l1sKBlkSRwOh8T/0+Ev0yZn1ixJaoDGvcg6Cm+eOpCAeF6D26GdUYOmGt5mBp
+ CeQJL1wM+Urk7CgLH9X7aObFOVxXDkFIjDUdbdeSYg8gsVoTUBP4ZGh4Rvta1HSxBaA7 AQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2t05nr54df-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Jun 2019 04:43:42 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5E4h5R2064914;
+        Fri, 14 Jun 2019 04:43:41 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2t0p9ssrkh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Jun 2019 04:43:41 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5E4ha3f023423;
+        Fri, 14 Jun 2019 04:43:36 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 13 Jun 2019 21:43:35 -0700
+Date:   Fri, 14 Jun 2019 07:43:20 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Ruslan Babayev <ruslan@babayev.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: sfp: clean up a condition
+Message-ID: <20190614044320.GI1893@kadam>
+References: <20190613065102.GA16334@mwanda>
+ <20190613180016.ekg55vzkuczapfpl@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190613180016.ekg55vzkuczapfpl@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9287 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906140039
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9287 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906140038
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This was originally passed through to the VRF logic in compute_score().
-But that logic has now been replaced by udp_sk_bound_dev_eq() and so
-this code is no longer used or needed.
+On Thu, Jun 13, 2019 at 07:00:16PM +0100, Russell King - ARM Linux admin wrote:
+> On Thu, Jun 13, 2019 at 09:51:02AM +0300, Dan Carpenter wrote:
+> > The acpi_node_get_property_reference() doesn't return ACPI error codes,
+> > it just returns regular negative kernel error codes.  This patch doesn't
+> > affect run time, it's just a clean up.
+> > 
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/phy/sfp.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> > index a991c80e6567..8a99307c1c39 100644
+> > --- a/drivers/net/phy/sfp.c
+> > +++ b/drivers/net/phy/sfp.c
+> > @@ -1848,7 +1848,7 @@ static int sfp_probe(struct platform_device *pdev)
+> >  		int ret;
+> >  
+> >  		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
+> > -		if (ACPI_FAILURE(ret) || !is_acpi_device_node(args.fwnode)) {
+> > +		if (ret || !is_acpi_device_node(args.fwnode)) {
+> >  			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
+> >  			return -ENODEV;
+> 
+> If "ret" is a Linux error code, should we print its value when reporting
+> the error so we know why the failure occurred, and propagate the error
+> code?
 
-Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
----
- net/ipv4/udp.c | 12 ------------
- net/ipv6/udp.c | 11 -----------
- 2 files changed, 23 deletions(-)
+We can't propagate the error code because we might have failed because
+acpi_node_get_property_reference() succeeded but it's not a device node.
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 21febf1..211a8f3 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -125,17 +125,6 @@ EXPORT_SYMBOL(udp_memory_allocated);
- #define MAX_UDP_PORTS 65536
- #define PORTS_PER_CHAIN (MAX_UDP_PORTS / UDP_HTABLE_SIZE_MIN)
- 
--/* IPCB reference means this can not be used from early demux */
--static bool udp_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
--{
--#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
--	if (!net->ipv4.sysctl_udp_l3mdev_accept &&
--	    skb && ipv4_l3mdev_skb(IPCB(skb)->flags))
--		return true;
--#endif
--	return false;
--}
--
- static int udp_lib_lport_inuse(struct net *net, __u16 num,
- 			       const struct udp_hslot *hslot,
- 			       unsigned long *bitmap,
-@@ -460,7 +449,6 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
- 	unsigned short hnum = ntohs(dport);
- 	unsigned int hash2, slot2;
- 	struct udp_hslot *hslot2;
--	bool exact_dif = udp_lib_exact_dif_match(net, skb);
- 
- 	hash2 = ipv4_portaddr_hash(net, daddr, hnum);
- 	slot2 = hash2 & udptable->mask;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 8acd24e..b50ecac 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -54,16 +54,6 @@
- #include <trace/events/skb.h>
- #include "udp_impl.h"
- 
--static bool udp6_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
--{
--#if defined(CONFIG_NET_L3_MASTER_DEV)
--	if (!net->ipv4.sysctl_udp_l3mdev_accept &&
--	    skb && ipv6_l3mdev_skb(IP6CB(skb)->flags))
--		return true;
--#endif
--	return false;
--}
--
- static u32 udp6_ehashfn(const struct net *net,
- 			const struct in6_addr *laddr,
- 			const u16 lport,
-@@ -195,7 +185,6 @@ struct sock *__udp6_lib_lookup(struct net *net,
- 	unsigned int hash2, slot2;
- 	struct udp_hslot *hslot2;
- 	struct sock *result;
--	bool exact_dif = udp6_lib_exact_dif_match(net, skb);
- 
- 	hash2 = ipv6_portaddr_hash(net, daddr, hnum);
- 	slot2 = hash2 & udptable->mask;
--- 
-2.7.4
+regards,
+dan carpenter
 
