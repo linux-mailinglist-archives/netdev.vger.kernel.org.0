@@ -2,141 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 507EC45FF4
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33CEC45FF3
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbfFNOEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 10:04:10 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:42774 "EHLO huawei.com"
+        id S1728249AbfFNOEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 10:04:02 -0400
+Received: from mail-eopbgr140049.outbound.protection.outlook.com ([40.107.14.49]:3298
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727123AbfFNOEK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 10:04:10 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CD9F47202C52AF18FA28;
-        Fri, 14 Jun 2019 22:04:04 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
- 22:04:00 +0800
-Subject: Re: [PATCH net v2] tcp: avoid creating multiple req socks with the
- same tuples
-To:     Eric Dumazet <edumazet@google.com>
-References: <20190612035715.166676-1-maowenan@huawei.com>
- <CANn89iJH6ZBH774SNrd2sUd_A5OBniiUVX=HBq6H4PXEW4cjwQ@mail.gmail.com>
- <6de5d6d8-e481-8235-193e-b12e7f511030@huawei.com>
- <a674e90e-d06f-cb67-604f-30cb736d7c72@huawei.com>
- <6aa69ab5-ed81-6a7f-2b2b-214e44ff0ada@gmail.com>
- <52025f94-04d3-2a44-11cd-7aa66ebc7e27@huawei.com>
- <CANn89iKzfvZqZRo1pEwqW11DQk1YOPkoAR4tLbjRG9qbKOYEMw@mail.gmail.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <7d0f5a21-717c-74ee-18ad-fc0432dfbe33@huawei.com>
-Date:   Fri, 14 Jun 2019 22:03:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1727123AbfFNOEC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 10:04:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ukf44bf1XqoVm87/MIRIEZkT2f5rQCHTO9iIw8Qc2Ro=;
+ b=PEL5kBKM5zeyAeW2pNHIePoFwOnojuJJ4b5SbKjv/TZncAq+CPNK45soE7IpxVYgMUYlVyeIpvsEZoQmyAGQ1CXE1e8/qx8YSq9mvF2W2Ccow+CSotOeIDD0GvuptvV4IeHN8iWvHOfdStgJ9zrTgfEj1cqBlQekbkUj/1STN8Q=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3712.eurprd04.prod.outlook.com (52.134.15.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Fri, 14 Jun 2019 14:03:59 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
+ 14:03:59 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Valentin-catalin Neacsu <valentin-catalin.neacsu@nxp.com>
+Subject: RE: [PATCH RFC 2/6] dpaa2-eth: add support for new link state APIs
+Thread-Topic: [PATCH RFC 2/6] dpaa2-eth: add support for new link state APIs
+Thread-Index: AQHVIkOh3KM7qC7o8E2+6896w0vbWKaaVMwAgADDs5A=
+Date:   Fri, 14 Jun 2019 14:03:59 +0000
+Message-ID: <VI1PR0402MB2800CB7ABB8DE4472A80D586E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
+ <1560470153-26155-3-git-send-email-ioana.ciornei@nxp.com>
+ <20190614010114.GB28822@lunn.ch>
+In-Reply-To: <20190614010114.GB28822@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [92.121.36.198]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4cc0f044-af00-41d2-f49e-08d6f0d12600
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3712;
+x-ms-traffictypediagnostic: VI1PR0402MB3712:
+x-microsoft-antispam-prvs: <VI1PR0402MB371206DF0EAD8702CAAC4E1EE0EE0@VI1PR0402MB3712.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0068C7E410
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(396003)(346002)(136003)(376002)(199004)(189003)(52314003)(74316002)(71190400001)(54906003)(4326008)(2906002)(229853002)(76116006)(73956011)(6116002)(3846002)(446003)(476003)(25786009)(14454004)(478600001)(6246003)(6436002)(71200400001)(11346002)(86362001)(6916009)(316002)(76176011)(52536014)(33656002)(66066001)(6506007)(99286004)(53936002)(7696005)(68736007)(81166006)(44832011)(8936002)(26005)(66446008)(66476007)(64756008)(81156014)(66556008)(8676002)(9686003)(66946007)(55016002)(486006)(102836004)(5660300002)(186003)(14444005)(305945005)(256004)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3712;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 4XPjy4cGiMXzKDv1D8zqszMetwJCBoMV1ui01iIpjWJH38PSR6Cmiu3soikudlPJygCTmb1T70DG0sjOveQb3y3pXdTo3ojbJ88it8EkzGgbOpT5XO6TtLuCZySvRZ5TM+WxvoL/GZFRNLHNCoRUwHbRp0v/7YdfeGDcrmeFkwCDwmquc9e6xmSWfCM5s6G3Xleu2e8h9YCzpO5Ktl4T2pnWdrXqCh5BYxvLWACPQZMlijHr7gDT4EH60H9GaQ/JZMqhfyTIoSA3Op8t1VmfL+mr1d+Eq320ZKGrxm6Ii4PAOviQ7KOlx+YS3C8oZbSNpUPRtvLwKlS+9Vz1BqOso6DTBlT+cLDZg3EG8kKQSgazGbQOPUz6cnWWsYIKgN5LlMeX9meLXbZ9ew0mz5sgqOxXod3Hj7Hl4uVZPIetbXI=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <CANn89iKzfvZqZRo1pEwqW11DQk1YOPkoAR4tLbjRG9qbKOYEMw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cc0f044-af00-41d2-f49e-08d6f0d12600
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 14:03:59.4780
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3712
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> Subject: Re: [PATCH RFC 2/6] dpaa2-eth: add support for new link state AP=
+Is
+>=20
+> >  /**
+> > + * Advertised link speeds
+> > + */
+> > +#define DPNI_ADVERTISED_10BASET_FULL           BIT_ULL(0)
+> > +#define DPNI_ADVERTISED_100BASET_FULL          BIT_ULL(1)
+> > +#define DPNI_ADVERTISED_1000BASET_FULL         BIT_ULL(2)
+> > +#define DPNI_ADVERTISED_10000BASET_FULL        BIT_ULL(4)
+>=20
+> So 10 Half and 100Half are not supported by the PHYs you use?  What happe=
+ns if
+> somebody does connect a PHY which supports these speeds? Do you need to
+> change the firmware? I suppose you do anyway, since it is the firmware wh=
+ich is
+> driving the PHY.
 
+First of all, if the firmware had access to the open-source PHY driver code=
+, the design wouldn't have been like this. But as it is, the DPMAC object/d=
+river is used squarely as a way to gather this information from the PHY lib=
+rary.
 
-On 2019/6/14 20:27, Eric Dumazet wrote:
-> On Fri, Jun 14, 2019 at 2:35 AM maowenan <maowenan@huawei.com> wrote:
->>
->>
->>
->> On 2019/6/14 12:28, Eric Dumazet wrote:
->>>
->>>
->>> On 6/13/19 9:19 PM, maowenan wrote:
->>>>
->>>>
->>>> @Eric, for this issue I only want to check TCP_NEW_SYN_RECV sk, is it OK like below?
->>>>  +       if (!osk && sk->sk_state == TCP_NEW_SYN_RECV)
->>>>  +               reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
->>>>  +                                                       sk->sk_daddr, sk->sk_dport,
->>>>  +                                                       sk->sk_rcv_saddr, sk->sk_num,
->>>>  +                                                       sk->sk_bound_dev_if, sk->sk_bound_dev_if);
->>>>  +       if (unlikely(reqsk)) {
->>>>
->>>
->>> Not enough.
->>>
->>> If we have many cpus here, there is a chance another cpu has inserted a request socket, then
->>> replaced it by an ESTABLISH socket for the same 4-tuple.
->>
->> I try to get more clear about the scene you mentioned. And I have do some testing about this, it can work well
->> when I use multiple cpus.
->>
->> The ESTABLISH socket would be from tcp_check_req->tcp_v4_syn_recv_sock->tcp_create_openreq_child,
->> and for this path, inet_ehash_nolisten pass osk(NOT NULL), my patch won't call __inet_lookup_established in inet_ehash_insert().
->>
->> When TCP_NEW_SYN_RECV socket try to inset to hash table, it will pass osk with NULL, my patch will check whether reqsk existed
->> in hash table or not. If reqsk is existed, it just removes this reqsk and dose not insert to hash table. Then the synack for this
->> reqsk can't be sent to client, and there is no chance to receive the ack from client, so ESTABLISH socket can't be replaced in hash table.
->>
->> So I don't see the race when there are many cpus. Can you show me some clue?
-> 
-> This is a bit silly.
-> You focus on some crash you got on a given system, but do not see the real bug.
-> 
-> 
-> CPU A
-> 
-> SYN packet
->  lookup finds nothing.
->  Create a NEW_SYN_RECV
->  <long delay, like hardware interrupts calling some buggy driver or something>
+Half duplex modes are not supported in our MAC. This is why the firmware do=
+es not export any advertisement bits for these modes.
+If somebody connects a PHY which supports 10 Half and 100Half modes, the in=
+tersection of the MAC capabilities and the PHY one's will be only the Full =
+duplex modes.
 
-I agree that this is a special case.
-I propose one point about the sequence of synack, if two synack with two different
-sequence since the time elapse 64ns, this issue disappear.
+>=20
+> >  struct dpni_link_state {
+> >  	u32	rate;
+> >  	u64	options;
+> > +	u64	supported;
+> > +	u64	advertising;
+> >  	int	up;
+> > +	int	state_valid;
+> >  };
+>=20
+> Does the firmware report Pause? Asym Pause? EEE? Is this part of options?=
+ Can
+> you control the advertisement of these options?
 
-tcp_conn_request->tcp_v4_init_seq->secure_tcp_seq->seq_scale
-static u32 seq_scale(u32 seq)
-{
-	/*
-	 *	As close as possible to RFC 793, which
-	 *	suggests using a 250 kHz clock.
-	 *	Further reading shows this assumes 2 Mb/s networks.
-	 *	For 10 Mb/s Ethernet, a 1 MHz clock is appropriate.
-	 *	For 10 Gb/s Ethernet, a 1 GHz clock should be ok, but
-	 *	we also need to limit the resolution so that the u32 seq
-	 *	overlaps less than one time per MSL (2 minutes).
-	 *	Choosing a clock of 64 ns period is OK. (period of 274 s)
-	 */
-	return seq + (ktime_get_real_ns() >> 6);
-}
+The firmware knows about conveying the pause and asym pause configuration f=
+rom/to the mac driver.
 
-So if the long delay larger than 64ns, the seq is difference.
+EEE is not a feature supported by our MAC so there is no configuration knob=
+ for this.
 
+--
+Ioana
 
-> 
->              CPU B
->              SYN packet
->                -> inserts a NEW_SYN_RECV  sends a SYNACK
->              ACK packet
->              -> replaces the NEW_SYN_RECV by ESTABLISH socket
-> 
-> CPU A resumes.
->     Basically a lookup (after taking the bucket spinlock) could either find :
->    - Nothing (typical case where there was no race)
->    -  A NEW_SYN_RECV
->    -  A ESTABLISHED socket
->   - A TIME_WAIT socket.
-> 
-> You can not simply fix the "NEW_SYN_RECV" state case, and possibly add
-> hard crashes (instead of current situation leading to RST packets)
-> 
-> .
-> 
-
+>=20
+>      Andrew
