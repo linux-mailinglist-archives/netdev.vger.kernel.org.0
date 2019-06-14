@@ -2,116 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D22B466C6
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 20:00:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B334466EE
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 20:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727482AbfFNSAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 14:00:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37034 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726762AbfFNSAn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 14:00:43 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id EACA330832F4;
-        Fri, 14 Jun 2019 18:00:42 +0000 (UTC)
-Received: from treble.redhat.com (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1CE865D982;
-        Fri, 14 Jun 2019 18:00:40 +0000 (UTC)
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
-Subject: [PATCH v2 5/5] x86/unwind/orc: Fall back to using frame pointers for generated code
-Date:   Fri, 14 Jun 2019 12:56:44 -0500
-Message-Id: <43cce8f734cf8ae1fcd10ea14d67c028c73b1540.1560534694.git.jpoimboe@redhat.com>
-In-Reply-To: <cover.1560534694.git.jpoimboe@redhat.com>
-References: <cover.1560534694.git.jpoimboe@redhat.com>
+        id S1727495AbfFNSDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 14:03:02 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33089 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726835AbfFNSDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 14:03:01 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x15so1918102pfq.0
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 11:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aDQDmrrdbESRd/EZP9QEPVbzMXDWofgJgdBOve8tnOw=;
+        b=NVAY6kuqWEhgNUp5AxEOeWdCvgTHUEX8rABkUOOVavpbQcfe8a2tk7Qx+r0sRJ5Zhy
+         B0XRBN2xPdInfmEn3OjM5ZAd2WH1JbrSjqkE8c4KfzaV9RgWSvrcSIpslf7Hvknp0SrH
+         5WGXRdwGHmgLFRj+yyKH/c+3LyHLtOW2mptEz7lKzGrGwZ7xs3oHRIE4AIVG5nGyJocf
+         KRWIjqhglqbUVADUwJ/CVj11hn9x3+weK0nYobqzqv7HRsGKCr46G/RNUe5WPy0vbJRf
+         mXbqnBmD8NMFL35vyeu09xb1YnJ9q+hCfPLYP6RH6hH3lVx6FE9uosWZME5XJYKH2bn3
+         bWmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aDQDmrrdbESRd/EZP9QEPVbzMXDWofgJgdBOve8tnOw=;
+        b=IDXaYeYZ18oAhS1qOQcAAddrd9V0SCss5AsKLYxWUt6IWH6894HtvgWkXY0VuXj2OA
+         qqgQg+fIUxCox6syUGRCB3GWhFQFm71Eh5CQKvWx3XGEVYEjMPqze76shb6mpwcdk5yc
+         YGhVDinKlygxzITXZltj0aTAq8sB/QTp8Nr32BYAIdMhUHpcSprek7+yw8fRXsgEOjJu
+         0apRa6iUBRySrgMbA3490OBT9jklxx5j/aCmgT95YpFvL+Mj5fCa3LiCLgT1nKdDyEY5
+         44gFY4fqIAUgJlV2MbE5ekz7ty/IIbojKRw7CA5HQvdqHp9e61+6nWooot8MKMWUc1Sy
+         6ZVw==
+X-Gm-Message-State: APjAAAU01MUzDbu/hdCW3pqviusach8xhQZDrGNkFweIv6TI+/4C0O53
+        XIK05UGczfzfuYPMbqcmdT4xONjYY15KVU6gCRE=
+X-Google-Smtp-Source: APXvYqzzioIp7K0M61ERFSL7x48aNc5/P9H/hlMHh/il2yVHhqzfAk4wN+7rGt0UE4cGGpqKzE8flj3AbPsy8X/FEl0=
+X-Received: by 2002:a17:90a:b883:: with SMTP id o3mr4373399pjr.50.1560535380495;
+ Fri, 14 Jun 2019 11:03:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 14 Jun 2019 18:00:43 +0000 (UTC)
+References: <1560259713-25603-1-git-send-email-paulb@mellanox.com> <1560259713-25603-2-git-send-email-paulb@mellanox.com>
+In-Reply-To: <1560259713-25603-2-git-send-email-paulb@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 14 Jun 2019 11:02:48 -0700
+Message-ID: <CAM_iQpXQgJti9faPA5kVV7Ly3LStHf3zwDP5S-PfBz2jR0Y8xA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>,
+        Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ORC unwinder can't unwind through BPF JIT generated code because
-there are no ORC entries associated with the code.
+On Tue, Jun 11, 2019 at 7:05 AM Paul Blakey <paulb@mellanox.com> wrote:
+>
+> Allow sending a packet to conntrack and set conntrack zone, mark,
+> labels and nat parameters.
+>
 
-If an ORC entry isn't available, try to fall back to frame pointers.  If
-BPF and other generated code always do frame pointer setup (even with
-CONFIG_FRAME_POINTERS=n) then this will allow ORC to unwind through most
-generated code despite there being no corresponding ORC entries.
+This is too short to justify why you want to play with L3 stuff in L2.
+Please be as specific as you can.
 
-Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
-Reported-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/kernel/unwind_orc.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+Also, please document its use case too.
 
-diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-index 33b66b5c5aec..72b997eaa1fc 100644
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -82,9 +82,9 @@ static struct orc_entry *orc_find(unsigned long ip);
-  * But they are copies of the ftrace entries that are static and
-  * defined in ftrace_*.S, which do have orc entries.
-  *
-- * If the undwinder comes across a ftrace trampoline, then find the
-+ * If the unwinder comes across a ftrace trampoline, then find the
-  * ftrace function that was used to create it, and use that ftrace
-- * function's orc entrie, as the placement of the return code in
-+ * function's orc entry, as the placement of the return code in
-  * the stack will be identical.
-  */
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
-@@ -128,6 +128,16 @@ static struct orc_entry null_orc_entry = {
- 	.type = ORC_TYPE_CALL
- };
- 
-+/* Fake frame pointer entry -- used as a fallback for generated code */
-+static struct orc_entry orc_fp_entry = {
-+	.type		= ORC_TYPE_CALL,
-+	.sp_reg		= ORC_REG_BP,
-+	.sp_offset	= 16,
-+	.bp_reg		= ORC_REG_PREV_SP,
-+	.bp_offset	= -16,
-+	.end		= 0,
-+};
-+
- static struct orc_entry *orc_find(unsigned long ip)
- {
- 	static struct orc_entry *orc;
-@@ -392,8 +402,16 @@ bool unwind_next_frame(struct unwind_state *state)
- 	 * calls and calls to noreturn functions.
- 	 */
- 	orc = orc_find(state->signal ? state->ip : state->ip - 1);
--	if (!orc)
--		goto err;
-+	if (!orc) {
-+		/*
-+		 * As a fallback, try to assume this code uses a frame pointer.
-+		 * This is useful for generated code, like BPF, which ORC
-+		 * doesn't know about.  This is just a guess, so the rest of
-+		 * the unwind is no longer considered reliable.
-+		 */
-+		orc = &orc_fp_entry;
-+		state->error = true;
-+	}
- 
- 	/* End-of-stack check for kernel threads: */
- 	if (orc->sp_reg == ORC_REG_UNDEFINED) {
--- 
-2.20.1
-
+Thanks.
