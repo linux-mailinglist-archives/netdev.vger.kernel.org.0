@@ -2,77 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B9146477
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 18:39:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5294647B
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 18:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbfFNQjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 12:39:01 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37381 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfFNQjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 12:39:01 -0400
-Received: by mail-qt1-f196.google.com with SMTP id y57so3202456qtk.4;
-        Fri, 14 Jun 2019 09:39:00 -0700 (PDT)
+        id S1725889AbfFNQkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 12:40:31 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35265 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725814AbfFNQkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 12:40:31 -0400
+Received: by mail-pl1-f194.google.com with SMTP id p1so1243991plo.2
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 09:40:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RUt9ZIAlHql3ePIp61CeWNBm915VyMPtcG9oqOy2n3s=;
-        b=bPYxao5jSuP5FMLWnrcirDCo/l03moqmQ72TRfJYZ9AxIExYFPau6dznXulVYHHc3J
-         GpDtsni8PLA7zWoGSHPAFFhHxPPqMTIg71l+deHv3/FMl/oNhflx+4FtvCjlAShqa5x0
-         VR8BqzNQy6CZa+rXiDe6vIXV0ZsH0NOkLrKrv/m9qUub4PjiVpPvp8VZULvzKfLjcWIi
-         QxmYVDWT2BvkbS0uxV8i+5b5L8otuu6eheU4NTCyhxf9KHG6ezm0vulllvBBqC1nxsgq
-         J3WAm/wUwmTwoa1c9S24l8DOxxerbOWNUHUnTjdq8R0gFvT2RKl8yr/vLaWGGn9CwkZi
-         kqpA==
+        bh=IX90swC7hftdPTwLwP0qHVUYL7Fmqz1424fsCkB1o+c=;
+        b=Cm/IFGaNgy0caHy/mW8NywZ1gdQyhTyUwuCO9nV1q9W3kH/492BFsctKCRSvXLS2S4
+         B16cjJ/KGpC9Hhmqjbg4a8difj+MRnX9CwaQb8pVZOrUlpOfLIBWlkhFhrXosoQ+76T/
+         izBcn1XV3EtbNdZoJA0cQ5RwEwBt1qcH6mt6+GqHBSyqUjmg+crSuwOj3fulVI5Hvwzz
+         0H/4R9TCkAX11H12qbzZWgXJiZipGhCR55B0ih8jtR6fdJIELoosrjvyjdQLraNX9VJS
+         oB/QvcZtjpxWtyWKkhpO8Pb2ytJj53JDaqMw0I37CF4y5d8xRLp9lzYaJgcgPW2bOyBj
+         6rmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RUt9ZIAlHql3ePIp61CeWNBm915VyMPtcG9oqOy2n3s=;
-        b=YPOFzE6c/1iE1Ww/WuaabgJd4ZuEbaxjvfw3CZkArorgEhRLKCNb+JxhScOGEXf5+f
-         J9s1al0KBX2sI9PUW9t81tAzZxsmuIaRpajqDB6c6tBHBxpfa75MKEvOI5EjRTJ6MpKZ
-         xouNBPBIuFZ/CyulJqYGIfkxIhSsBlbWDSrevzY1pKUn1XMyNQ2qbkBiF5d/WlAFYvIA
-         m6+qesH2zAOK+aoi/WHWcutpMI1zQ8iMTRxP3iMLBSpvmpN9OjbBILuJD/rc7eAiDJpm
-         UJGfpNqQgjAzuIfnO8HZIfYAJqF24NxK03rlwJTamVgUuUXOFN3rY/E5DT4/YJr27k/V
-         ZrQA==
-X-Gm-Message-State: APjAAAW4XXG0EvOsXNXMn4QqQnjbZ8lhPsztA8v4cXhjgeCIosqtKjl6
-        Ronw2HDXVfkEG8qHdr5xuMgQ6/OvHk9ZzcwAF/Y=
-X-Google-Smtp-Source: APXvYqx2rzfChLGmyZZ4K3hv19hsO11UhuiICP+3Oa1d6mNJh+NiSMalr1ErkVvPuzBcmlYDUkdcWnrfVovSGeELDVs=
-X-Received: by 2002:ac8:21b7:: with SMTP id 52mr62712968qty.59.1560530339953;
- Fri, 14 Jun 2019 09:38:59 -0700 (PDT)
+        bh=IX90swC7hftdPTwLwP0qHVUYL7Fmqz1424fsCkB1o+c=;
+        b=pHMCCBpAWQf6bc/cHKNeFkJi7vgm5UiUUM1d1egFiL2rwSifx963qvyQ9F3cZNAwww
+         XiQvrAYWwnbtSmFxoXu/Z6DHK2hPTs2Euo6b/jfbrpTzhdT5wVqgMO4+uXqC60VFOi2w
+         BxTKBwio6NpRkZgOQHe0x4ffc/SHB40VGQtAtdXq40pV6VW1sMpFlCNYSocIEa2bRxQ5
+         I8Z7zjahScB3FvrZIT5b1bQkn+blVnDDFjH7U391RLA/uRTsDHasa7BY28TdLjHJC9pZ
+         stoRW1Ba2C1ijRH4pKsG9xN/fiJuLvHCOWye7M4Vj1stKvh5LjU6ac1GNNrnQx690nCq
+         us1g==
+X-Gm-Message-State: APjAAAUS4EFc10cfwKIdTSdOvki7ysML3O3G73sNAmPBFJVAt+6TrIL6
+        rCbXsEmHNjSIKUUtzq9ksjKsbfqHNgYtm0VttfY=
+X-Google-Smtp-Source: APXvYqzB9nq144eVvKQuSzykNI79XgdNfSCoBLQ1Inx4t7HgAIEDXpRfeNVvfKuSKiULek/8ZtgOTdK2Ce9VVyCTdZI=
+X-Received: by 2002:a17:902:5c2:: with SMTP id f60mr93714889plf.61.1560530430772;
+ Fri, 14 Jun 2019 09:40:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190614072557.196239-1-ast@kernel.org> <20190614072557.196239-4-ast@kernel.org>
-In-Reply-To: <20190614072557.196239-4-ast@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jun 2019 09:38:48 -0700
-Message-ID: <CAEf4BzZZz49_6SAtgcD+jw8BMV4fGNm+Y69QcQqxpnzknqWkfw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/9] bpf: extend is_branch_taken to registers
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+References: <20190612185121.4175-1-jakub.kicinski@netronome.com>
+In-Reply-To: <20190612185121.4175-1-jakub.kicinski@netronome.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 14 Jun 2019 09:40:18 -0700
+Message-ID: <CAM_iQpXoKnP+Xj0CMQf08nBCnbPEVu=uTbgCk98C380pYSUetA@mail.gmail.com>
+Subject: Re: [PATCH net] net: netem: fix use after free and double free with
+ packet corruption
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        netem@lists.linux-foundation.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Eric Dumazet <edumazet@google.com>,
+        posk@google.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 12:26 AM Alexei Starovoitov <ast@kernel.org> wrote:
+On Wed, Jun 12, 2019 at 11:52 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
 >
-> This patch extends is_branch_taken() logic from JMP+K instructions
-> to JMP+X instructions.
-> Conditional branches are often done when src and dst registers
-> contain known scalars. In such case the verifier can follow
-> the branch that is going to be taken when program executes.
-> That speeds up the verification and is essential feature to support
-> bounded loops.
+> Brendan reports that the use of netem's packet corruption capability
+> leads to strange crashes.  This seems to be caused by
+> commit d66280b12bd7 ("net: netem: use a list in addition to rbtree")
+> which uses skb->next pointer to construct a fast-path queue of
+> in-order skbs.
 >
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  kernel/bpf/verifier.c | 34 +++++++++++++++++++---------------
->  1 file changed, 19 insertions(+), 15 deletions(-)
->
+> Packet corruption code has to invoke skb_gso_segment() in case
+> of skbs in need of GSO.  skb_gso_segment() returns a list of
+> skbs.  If next pointers of the skbs on that list do not get cleared
+> fast path list goes into the weeds and tries to access the next
+> segment skb multiple times.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Mind to be more specific? How could it be accessed multiple times?
+
+>
+> Reported-by: Brendan Galloway <brendan.galloway@netronome.com>
+> Fixes: d66280b12bd7 ("net: netem: use a list in addition to rbtree")
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+> ---
+>  net/sched/sch_netem.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+>
+> diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+> index 956ff3da81f4..1fd4405611e5 100644
+> --- a/net/sched/sch_netem.c
+> +++ b/net/sched/sch_netem.c
+> @@ -494,16 +494,13 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>          */
+>         if (q->corrupt && q->corrupt >= get_crandom(&q->corrupt_cor)) {
+>                 if (skb_is_gso(skb)) {
+> -                       segs = netem_segment(skb, sch, to_free);
+> -                       if (!segs)
+> +                       skb = netem_segment(skb, sch, to_free);
+> +                       if (!skb)
+>                                 return rc_drop;
+> -               } else {
+> -                       segs = skb;
+> +                       segs = skb->next;
+> +                       skb_mark_not_on_list(skb);
+>                 }
+>
+> -               skb = segs;
+> -               segs = segs->next;
+> -
+
+I don't see how this works when we hit goto finish_segs?
+Either goto finish_segs can be removed or needs to be fixed?
+
+Thanks.
