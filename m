@@ -2,76 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C81545AEB
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 12:50:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAA545AFC
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 12:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727326AbfFNKu3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Jun 2019 06:50:29 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:60460 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727054AbfFNKu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 06:50:28 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-84-SRaRB_jZPHixQ5QjJdckwQ-1; Fri, 14 Jun 2019 11:50:24 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 14 Jun 2019 11:50:23 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 14 Jun 2019 11:50:23 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alexei Starovoitov' <alexei.starovoitov@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-CC:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        "Kairui Song" <kasong@redhat.com>
-Subject: RE: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
-Thread-Topic: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
-Thread-Index: AQHVIjMat8Fq1dO6sUKm4aXwvliIEKaa+Ndg
-Date:   Fri, 14 Jun 2019 10:50:23 +0000
-Message-ID: <57f6e69da6b3461a9c39d71aa1b58662@AcuMS.aculab.com>
-References: <cover.1560431531.git.jpoimboe@redhat.com>
- <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
- <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727164AbfFNKzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 06:55:14 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53235 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726900AbfFNKzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 06:55:13 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so1872574wms.2
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 03:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=0oPzPYtTaFOuHYWhgj8M4VnnyQ7SlA1m5MUyLxHdfOs=;
+        b=KuhL19EbUVXWrWNPLyDQP7NuhE22ksX02ygpGm4t0ySiaXCn0RzU1C7+TjOL4InEmV
+         y4Q2b2sM3YNEM5exQG+p8JrN8sR53sMnbF80jw6abIs7/sdD+h83Ky07YNNN/CHNkTMT
+         dL4kCpj13qCEk+eLVKb895/vR5mqCwdV2pXXI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0oPzPYtTaFOuHYWhgj8M4VnnyQ7SlA1m5MUyLxHdfOs=;
+        b=GKzGNtbflFKKVQzB27AXIV0iaJl9vIkmsn4AaH+StiMYLcZH5Z2bSIDZzyCtX5xDTU
+         stQllsQmy9VOgQj7HgrIDMIlD2dPCNne5oib5y9zXTIWx7zyfR8LoCc2wWcNZ9rJeg7r
+         Z6I8SrgRSLulnQiPz82qL6O2AQuh7StC3ejhBxHdhQiQfV+AHSQnByLvxvjKUk/kwowV
+         FRkvbttyy8/x1f5ES4lCI4i13IHte2l63SLNrwdI/h0V7eVz8HED/5oCBO5Alm2764Qz
+         BoHT+VSzlckmcxrSdKlQDzykZurMD5PuU24lNbIwTXmnB6tKj21G5oy4GLn3/Lnwwvkr
+         CRLA==
+X-Gm-Message-State: APjAAAXfKCfJZWavahipG7/uM1OUmiiXazx2J+khZRFifwLQCiSfQW67
+        hHuQacrp0X9mkbU+BhrIqA3/a/fxIdQ=
+X-Google-Smtp-Source: APXvYqwA13eK3hZMJphS71g7jxDQUeGJCR8rzitQf76ypXYx0LE/YtRHk6ujkc8Qmahy4TndBxFqdQ==
+X-Received: by 2002:a1c:a002:: with SMTP id j2mr7387319wme.131.1560509711329;
+        Fri, 14 Jun 2019 03:55:11 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id v204sm4302701wma.20.2019.06.14.03.55.10
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 03:55:10 -0700 (PDT)
+Subject: Re: [PATCH net-next v3] ipv4: Support multipath hashing on inner IP
+ pkts for GRE tunnel
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
+References: <20190613183858.9892-1-ssuryaextr@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <0bd371a1-ac51-ebfd-31f9-e897247c4184@cumulusnetworks.com>
+Date:   Fri, 14 Jun 2019 13:55:09 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MC-Unique: SRaRB_jZPHixQ5QjJdckwQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20190613183858.9892-1-ssuryaextr@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 08:21:03AM -0500, Josh Poimboeuf wrote:
-> The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
-> thus prevents the FP unwinder from unwinding through JIT generated code.
->
-> RBP is currently used as the BPF stack frame pointer register.  The
-> actual register used is opaque to the user, as long as it's a
-> callee-saved register.  Change it to use R12 instead.
+On 13/06/2019 21:38, Stephen Suryaputra wrote:
+> Multipath hash policy value of 0 isn't distributing since the outer IP
+> dest and src aren't varied eventhough the inner ones are. Since the flow
+> is on the inner ones in the case of tunneled traffic, hashing on them is
+> desired.
+> 
+> This is done mainly for IP over GRE, hence only tested for that. But
+> anything else supported by flow dissection should work.
+> 
+> v2: Use skb_flow_dissect_flow_keys() directly so that other tunneling
+>     can be supported through flow dissection (per Nikolay Aleksandrov).
+> v3: Remove accidental inclusion of ports in the hash keys and clarify
+>     the documentation (Nikolay Alexandrov).
+> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt |  1 +
+>  net/ipv4/route.c                       | 17 +++++++++++++++++
+>  net/ipv4/sysctl_net_ipv4.c             |  2 +-
+>  3 files changed, 19 insertions(+), 1 deletion(-)
+> 
 
-Could you maintain the system %rbp chain through the BPF stack?
-It might even be possible to put something relevant in the %rip
-location.
+Looks good to me,
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
