@@ -2,86 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 405CD465A2
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 121FE465B4
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726575AbfFNRXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:23:22 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42818 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbfFNRXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:23:18 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x17so3324948wrl.9;
-        Fri, 14 Jun 2019 10:23:17 -0700 (PDT)
+        id S1726103AbfFNRZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:25:10 -0400
+Received: from mail-pf1-f227.google.com ([209.85.210.227]:35771 "EHLO
+        mail-pf1-f227.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725859AbfFNRZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:25:09 -0400
+Received: by mail-pf1-f227.google.com with SMTP id d126so1860849pfd.2
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 10:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jzZPVNKvIqUnLAnTZJfqYcJAqoVMUTg4RgDz59BwLdo=;
-        b=JpUb+/3G7vn8sY5/+Dq8rBZn6qOeoQXPV+rexL0ETfp4lK+SrRDqsnA+D6sfs03HIP
-         2V7vH+Lo1K6UMwx2qBpp+XBifHJadBX/7WVFtmeHSfmVmpHFSPq2Ll5f6DAs3mFXdizh
-         /qL33pIFXYLoUi1mNITzoX+PJQxiwD4pnkkCOQcWG2Bax5KlZEzONEtIyalouBOgxnvL
-         tGgNfmMyFm7YYA0mwUDuE0kAH+LwaPy/BHiW7LOhQX0cdIoeqWwMk1cZwcbdOXSLgN99
-         9qgR1hQCOwL5KWS94YPi/acIm1vwK2YyEVgoqJJ3bpFI+NYn7cH7fbvbDSKCZ1hhGiAY
-         Bc1A==
+        d=dev295.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Bw/6dgHVXtXqocEdR4XM76GWElXUNRiicyqxK2R08Lg=;
+        b=FOfsK3wJvAq3VWZR34P5uYlee0iB0ddbfk2NEUgIjCKNKDeTgDG+/gZ6ydQHwnzxbE
+         ZKkLc4TxRDKmEHMfPsu3k25CP9Bom+rn1bVTYVqBiMdXE0e6PZnzy04XQCjhqWg9ljeh
+         sQv+uJoZNBM/xYklECIPh8oAs7Q60OPIXFCIs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jzZPVNKvIqUnLAnTZJfqYcJAqoVMUTg4RgDz59BwLdo=;
-        b=UjqZgpEkCd8ZRBGUvqGreOqckUzDgGS5qBrBvFV5QR2LuGD6zHhDG+R+4fd6OBe7H8
-         SLS89mQR4SOui3bAeyhYqqPAXaawyQjvbxFodT7YfIc1MwXBqZQPtM4ect1NQmFntAt9
-         Y/gsgZPjQkHKnlAyvfw08ocCbYfNI2bzRWVagRbGFZJxE3s0Fi+gZwmrLRRYaRSrdhhF
-         l3fBghHs+Y9NVUQ6jmZE0sUd+cUyCVsKEtmY53y7AoutaWafPjGwdEPHlQeKa58+pMq/
-         RP1/3S83jROyODGQRCtFkVxJEGTtPHeOhc7KgkRxchu2fubGbH5aeqfOel3uoEJx1C4n
-         9HfQ==
-X-Gm-Message-State: APjAAAWE1Vkkwr0Y8HItRHj4PY1t/SKwj78DsvB/WlkmEYyr5qJhdhWX
-        ni854ky4MpEhepD59mFarKs=
-X-Google-Smtp-Source: APXvYqzxYP1cbsOOCYPWmIbvJ1xl5Lko+tCkE0rpk+wdhu18dJhKiS/EwaA9FDMz67KxPa+Dn7N5Jg==
-X-Received: by 2002:adf:8044:: with SMTP id 62mr17657298wrk.20.1560532996451;
-        Fri, 14 Jun 2019 10:23:16 -0700 (PDT)
-Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
-        by smtp.googlemail.com with ESMTPSA id r12sm4387641wrt.95.2019.06.14.10.23.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Bw/6dgHVXtXqocEdR4XM76GWElXUNRiicyqxK2R08Lg=;
+        b=oNftj0dYLIMj1gRD9theOqQ0gv0Nuz6+1fqrotjTG46+bgqkm6pitvY3oHljDVl6AL
+         8GcYfLOJInMWAPGZuB6v5GG3HNinM6U9DYomDXwJWK7h4eT7rkB4t45nBsysSLE3g/5U
+         FU5roSBmp59R9AzN/pRVJVTBkbVTvOWDtAgSIzmjd8/yt+t95uQ9Js8glAAH4piyYVIe
+         tpxRyvaf9TDBuIogshoifZAEmMvju2PGTmtVWzk67qzZ/mUAw6LLAkVOpYKK5gz1xgLD
+         eM9XMCC/RKjovwPXyvCsSTAGS2DqG3+OWypZjYuVddEsjlWhTbpTUoYUhQI7qqutGct4
+         PvBw==
+X-Gm-Message-State: APjAAAUcxIH1HEOVukcNx8nzW561nOr5viLAjwZmSEZ/SnBIUXwTwfX0
+        QZ9mOaLjeviF2kfTp7prFLPlept/tShtvBnHjBdhF9TxEeW4Zw==
+X-Google-Smtp-Source: APXvYqyZzBBTEjIPeF9t3jxN8YMow0YrQizwRnOjVuQIqypMuyVuapGpxKKCFThP+ek9bIDipmqtNvgEpTSh
+X-Received: by 2002:a17:90a:216f:: with SMTP id a102mr12441392pje.29.1560533109213;
+        Fri, 14 Jun 2019 10:25:09 -0700 (PDT)
+Received: from neptune.net (c-69-251-140-241.hsd1.md.comcast.net. [69.251.140.241])
+        by smtp-relay.gmail.com with ESMTPS id k103sm384280pje.7.2019.06.14.10.25.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 14 Jun 2019 10:23:15 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 19:23:13 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH net-next] net: stmmac: Fix wrapper drivers not detecting
- PHY
-Message-ID: <20190614172313.GA24955@Red>
-References: <f4f524805a81c6f680b55d8fb084b1070294a0a8.1560524776.git.joabreu@synopsys.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f4f524805a81c6f680b55d8fb084b1070294a0a8.1560524776.git.joabreu@synopsys.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Fri, 14 Jun 2019 10:25:09 -0700 (PDT)
+X-Relaying-Domain: dev295.com
+From:   Pete Morici <pmorici@dev295.com>
+To:     netdev@vger.kernel.org
+Cc:     Pete Morici <pmorici@dev295.com>
+Subject: [PATCH iproute2] Add support for configuring MACsec gcm-aes-256 cipher type.
+Date:   Fri, 14 Jun 2019 13:24:59 -0400
+Message-Id: <1560533099-8276-1-git-send-email-pmorici@dev295.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 05:06:57PM +0200, Jose Abreu wrote:
-> Because of PHYLINK conversion we stopped parsing the phy-handle property
-> from DT. Unfortunatelly, some wrapper drivers still rely on this phy
-> node to configure the PHY.
-> 
-> Let's restore the parsing of PHY handle while these wrapper drivers are
-> not fully converted to PHYLINK.
-> 
-> Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
-> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-> Cc: Joao Pinto <jpinto@synopsys.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Signed-off-by: Pete Morici <pmorici@dev295.com>
+---
+ ip/ipmacsec.c        | 28 +++++++++++++++++++---------
+ man/man8/ip-macsec.8 |  2 +-
+ 2 files changed, 20 insertions(+), 10 deletions(-)
 
-Thanks for the quick fix
+diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
+index 54cd2b8..ad6ad7d 100644
+--- a/ip/ipmacsec.c
++++ b/ip/ipmacsec.c
+@@ -95,7 +95,7 @@ static void ipmacsec_usage(void)
+ 		"       ip macsec show DEV\n"
+ 		"where  OPTS := [ pn <u32> ] [ on | off ]\n"
+ 		"       ID   := 128-bit hex string\n"
+-		"       KEY  := 128-bit hex string\n"
++		"       KEY  := 128-bit or 256-bit hex string\n"
+ 		"       SCI  := { sci <u64> | port { 1..2^16-1 } address <lladdr> }\n");
+ 
+ 	exit(-1);
+@@ -586,14 +586,20 @@ static void print_key(struct rtattr *key)
+ 				   keyid, sizeof(keyid)));
+ }
+ 
+-#define DEFAULT_CIPHER_NAME "GCM-AES-128"
++#define CIPHER_NAME_GCM_AES_128 "GCM-AES-128"
++#define CIPHER_NAME_GCM_AES_256 "GCM-AES-256"
++#define DEFAULT_CIPHER_NAME CIPHER_NAME_GCM_AES_128
+ 
+ static const char *cs_id_to_name(__u64 cid)
+ {
+ 	switch (cid) {
+ 	case MACSEC_DEFAULT_CIPHER_ID:
+-	case MACSEC_DEFAULT_CIPHER_ALT:
+ 		return DEFAULT_CIPHER_NAME;
++	case MACSEC_CIPHER_ID_GCM_AES_128:
++	     /* MACSEC_DEFAULT_CIPHER_ALT: */
++		return CIPHER_NAME_GCM_AES_128;
++	case MACSEC_CIPHER_ID_GCM_AES_256:
++		return CIPHER_NAME_GCM_AES_256;
+ 	default:
+ 		return "(unknown)";
+ 	}
+@@ -1172,7 +1178,7 @@ static void usage(FILE *f)
+ {
+ 	fprintf(f,
+ 		"Usage: ... macsec [ [ address <lladdr> ] port { 1..2^16-1 } | sci <u64> ]\n"
+-		"                  [ cipher { default | gcm-aes-128 } ]\n"
++		"                  [ cipher { default | gcm-aes-128 | gcm-aes-256 } ]\n"
+ 		"                  [ icvlen { 8..16 } ]\n"
+ 		"                  [ encrypt { on | off } ]\n"
+ 		"                  [ send_sci { on | off } ]\n"
+@@ -1217,13 +1223,17 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			NEXT_ARG();
+ 			if (cipher.id)
+ 				duparg("cipher", *argv);
+-			if (strcmp(*argv, "default") == 0 ||
+-			    strcmp(*argv, "gcm-aes-128") == 0 ||
+-			    strcmp(*argv, "GCM-AES-128") == 0)
++			if (strcmp(*argv, "default") == 0)
+ 				cipher.id = MACSEC_DEFAULT_CIPHER_ID;
++			else if (strcmp(*argv, "gcm-aes-128") == 0 ||
++			         strcmp(*argv, "GCM-AES-128") == 0)
++				cipher.id = MACSEC_CIPHER_ID_GCM_AES_128;
++			else if (strcmp(*argv, "gcm-aes-256") == 0 ||
++			         strcmp(*argv, "GCM-AES-256") == 0)
++				cipher.id = MACSEC_CIPHER_ID_GCM_AES_256;
+ 			else
+-				invarg("expected: default or gcm-aes-128",
+-				       *argv);
++				invarg("expected: default, gcm-aes-128 or"
++				       " gcm-aes-256", *argv);
+ 		} else if (strcmp(*argv, "icvlen") == 0) {
+ 			NEXT_ARG();
+ 			if (cipher.icv_len)
+diff --git a/man/man8/ip-macsec.8 b/man/man8/ip-macsec.8
+index 1aca3bd..4fd8a5b 100644
+--- a/man/man8/ip-macsec.8
++++ b/man/man8/ip-macsec.8
+@@ -10,7 +10,7 @@ ip-macsec \- MACsec device configuration
+ |
+ .BI sci " <u64>"
+ ] [
+-.BR cipher " { " default " | " gcm-aes-128 " } ] ["
++.BR cipher " { " default " | " gcm-aes-128 " | "gcm-aes-256" } ] ["
+ .BI icvlen " ICVLEN"
+ ] [
+ .BR encrypt " { " on " | " off " } ] ["
+-- 
+1.8.3.1
 
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
