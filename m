@@ -2,95 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A582F46C91
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D03146C93
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:56:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726063AbfFNWym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 18:54:42 -0400
-Received: from pb-smtp21.pobox.com ([173.228.157.53]:54612 "EHLO
-        pb-smtp21.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbfFNWym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:54:42 -0400
-Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
-        by pb-smtp21.pobox.com (Postfix) with ESMTP id 327116AC9E;
-        Fri, 14 Jun 2019 18:54:40 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=from:to
-        :subject:message-id:date:mime-version:content-type
-        :content-transfer-encoding; s=sasl; bh=iEgu6rTrAwd8u7gHNlrBkvryq
-        eY=; b=YZ+lqTkeSkugtzSRvmxoInb2WwIBaNeAKis6wvs5sax3UuASMTARKrO78
-        P5yvFT1KZ8XX4jXQq1s1woMt67LvL0slc9WsBFLaRV670DDsMELp58+RsnvYX5Az
-        G4WHxzCRim3C4UNQGvfPTCMhIQoxecrxWlF1NSmbxtcATSdViQ=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=from:to:subject
-        :message-id:date:mime-version:content-type
-        :content-transfer-encoding; q=dns; s=sasl; b=YAU6IfALxo5kQq1Q9H1
-        przLHl5bCsei31zJG0kDUgeURf+MTW3PaS4nNuv7N538oYK/eDhH+9bXbOtdPaRw
-        upVRP1EAx3fyODMDAk+lx3Un7tClzbCMSTo3GJ4MvSfQn4abuvA+fnZkKLHrK1y7
-        f93XH/9MVxEcf5Eu6e+NSUDo=
-Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp21.pobox.com (Postfix) with ESMTP id 2A8176AC9D;
-        Fri, 14 Jun 2019 18:54:40 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-Received: from [192.168.1.134] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by pb-smtp21.pobox.com (Postfix) with ESMTPSA id 4812A6AC9C;
-        Fri, 14 Jun 2019 18:54:37 -0400 (EDT)
-        (envelope-from daniel.santos@pobox.com)
-From:   Daniel Santos <daniel.santos@pobox.com>
-To:     Daniel Golle <daniel@makrotopia.org>, Felix Fietkau <nbd@nbd.name>,
-        openwrt-devel <openwrt-devel@lists.openwrt.org>,
-        John Crispin <blogic@openwrt.org>,
-        Michael Lee <igvtee@gmail.com>, netdev@vger.kernel.org
-Subject: Understanding Ethernet Architecture (I/O --> MDIO --> MII vs I/O -->
- MAC) for mt7620 (OpenWRT)
-Message-ID: <2766c2b3-3262-78f5-d736-990aaa385eeb@pobox.com>
-Date:   Fri, 14 Jun 2019 17:53:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726204AbfFNW4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 18:56:53 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34230 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbfFNW4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:56:53 -0400
+Received: by mail-io1-f67.google.com with SMTP id k8so9326821iot.1
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 15:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OxFdnKQOTB7o8G24P/ZswXjyqYk8BQgNmFJixeSSiiQ=;
+        b=dR1+xml6tVVMYfb1alPCsa5fAyHwshQq3XZa/TKZikTJhth8FH+H2JIzt4Tw3HBU8V
+         8Gyt7a+9JAVBQwGOj9IrYUMv/NhQE1gyF8uFibIti7KPOAGGsWNLzmtViRt6JNQ35Gti
+         DwDi7XYHctyhsUNlPFqiSM5E5VWsZIiyGAvMcm2hna8eFqpX4NPmkSZhnPlUNC68Li6M
+         xY+C4kaWXg3FV0LAl4EY7ukcnUX4pC6bmKXkUYwQjgIDzcGZ1C3XXt2qWBW5E40o0bOn
+         ZFyeBnSdJhaV04h/wnTVCnqS+demlH19cUoDtbwmXTl7peu4/yEF0aTUm8QpJvRz1MmD
+         AKRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OxFdnKQOTB7o8G24P/ZswXjyqYk8BQgNmFJixeSSiiQ=;
+        b=SBWpb4Db/5VNjZUdv1je/JIfkVO8jpnnutXOMkCi+8h83zFyM21xgNDHv1cwcgi87y
+         MN2ZBmkRq6dKBBus0iqBzz+auzAUZvCRVbwkS0JKwJ4e9TYV6eNJZY0J7LXk+PHhV/+v
+         HS1/EN+aZivDVW3EUdDU+F0wb+8WY/WkvnSi5/+yvMwypDvZ7qUfkn6+fiHvwLUrGgKY
+         RzM9gSOzPbCCHusRWoH/H9CX3zEGiO73OdGy7LHdFWpShraxMQ1BJXGon+RTikaTFvj7
+         AUBm03piZ+1BqpwTUxI8bG6Ny7iaETHEvnV42M4PkuBXHTUv7vBrG5mgGNLFdd1blUaz
+         TGfw==
+X-Gm-Message-State: APjAAAXf7z8yYaJTePDNg7vteA9+9ngtaa5FQTLdDhTDx+gd/x+YPTZQ
+        rLdX+iHgOanQ6e3nNXwCqXrmHYrRcmh6lcjNnuB9bw==
+X-Google-Smtp-Source: APXvYqxWcRehOHFQ6E+LBZJaY2z4dZmX1WncgrkAXcQm3+OSakv5L31O11sK3qC2tAQbdoKDF5rZnBdFbJhr+xD62x8=
+X-Received: by 2002:a6b:fb10:: with SMTP id h16mr1191044iog.195.1560553012530;
+ Fri, 14 Jun 2019 15:56:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Pobox-Relay-ID: 62C4A350-8EF7-11E9-AA41-8D86F504CC47-06139138!pb-smtp21.pobox.com
-Content-Transfer-Encoding: quoted-printable
+References: <1560447839-8337-1-git-send-email-john.hurley@netronome.com>
+ <1560447839-8337-2-git-send-email-john.hurley@netronome.com> <CAM_iQpU0jZhg60-CVEZ9H1N57ga9jPwVt5tF1fM=uP_sj4kmKQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpU0jZhg60-CVEZ9H1N57ga9jPwVt5tF1fM=uP_sj4kmKQ@mail.gmail.com>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Fri, 14 Jun 2019 23:56:41 +0100
+Message-ID: <CAK+XE=mXVW84MXE5bDYyGhK5XrC_q3ECiaj5=WsXFV0FXBk+eA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/3] net: sched: add mpls manipulation actions
+ to TC
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jun 14, 2019 at 5:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Thu, Jun 13, 2019 at 10:44 AM John Hurley <john.hurley@netronome.com> wrote:
+> > +static inline void tcf_mpls_set_eth_type(struct sk_buff *skb, __be16 ethertype)
+> > +{
+> > +       struct ethhdr *hdr = eth_hdr(skb);
+> > +
+> > +       skb_postpull_rcsum(skb, &hdr->h_proto, ETH_TLEN);
+> > +       hdr->h_proto = ethertype;
+> > +       skb_postpush_rcsum(skb, &hdr->h_proto, ETH_TLEN);
+>
+> So you just want to adjust the checksum with the new ->h_proto
+> value. please use a right csum API, rather than skb_post*_rcsum().
+>
 
-I'm still fairly new to Ethernet drivers and there are a lot of
-interesting pieces.=C2=A0 What I need help with is understanding MDIO -->
-(R)MII vs direct I/O to the MAC (e.g., via ioread32, iowrite32).=C2=A0 Wh=
-y is
-there not always a struct mii_bus to talk to this hardware?=C2=A0 Is it
-because the PHY and/or MAC hardware sometimes attached via an MDIO
-device and sometimes directly to the I/O bus?=C2=A0 Or does some type of
-"indirect access" need to be enabled for that to work?
+Hi Cong,
+Yes, I'm trying to maintain the checksum value if checksum complete
+has been set.
+The function above pulls the old eth type out of the checksum value
+(if it is checksum complete), updates the eth type, and pushes the new
+eth type into the checksum.
+This passes my tests on the checksum.
+I couldn't see an appropriate function to do this other than
+recalculating the whole thing.
+Maybe I missed something?
 
-I might be trying to do something that's unnecessary however, I'm not
-sure yet.=C2=A0 I need to add functionality to change a port's
-auto-negotiate, duplex, etc.=C2=A0 I'm adding it to the swconfig first an=
-d
-then will look at adding it for DSA afterwards.=C2=A0 When I run "swconfi=
-g
-dev switch0 port 0 show", the current mt7530 / mt7620 driver is querying
-the MAC status register (at base + 0x3008 + 0x100 * port, described on
-pages 323-324 of the MT7620 Programming Guide), so I implemented the
-"set" functionality by modifying the MAC's control register (offset
-0x3000 on page 321), but it doesn't seem to change anything.=C2=A0 So I
-figured maybe I need to modify the MII interface's control register for
-the port (page 350), but upon debugging I can see that the struct
-mii_bus *bus member is NULL.
+>
+> > +}
+> > +
+> > +static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+> > +                       struct tcf_result *res)
+> > +{
+> > +       struct tcf_mpls *m = to_mpls(a);
+> > +       struct mpls_shim_hdr *lse;
+> > +       struct tcf_mpls_params *p;
+> > +       u32 temp_lse;
+> > +       int ret;
+> > +       u8 ttl;
+> > +
+> > +       tcf_lastuse_update(&m->tcf_tm);
+> > +       bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
+> > +
+> > +       /* Ensure 'data' points at mac_header prior calling mpls manipulating
+> > +        * functions.
+> > +        */
+> > +       if (skb_at_tc_ingress(skb))
+> > +               skb_push_rcsum(skb, skb->mac_len);
+> > +
+> > +       ret = READ_ONCE(m->tcf_action);
+> > +
+> > +       p = rcu_dereference_bh(m->mpls_p);
+> > +
+> > +       switch (p->tcfm_action) {
+> > +       case TCA_MPLS_ACT_POP:
+> > +               if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                       goto out;
+> > +
+> > +               if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                       goto drop;
+> > +
+> > +               skb_postpull_rcsum(skb, mpls_hdr(skb), MPLS_HLEN);
+> > +               memmove(skb->data + MPLS_HLEN, skb->data, ETH_HLEN);
+> > +
+> > +               __skb_pull(skb, MPLS_HLEN);
+> > +               skb_reset_mac_header(skb);
+> > +               skb_set_network_header(skb, ETH_HLEN);
+> > +
+> > +               tcf_mpls_set_eth_type(skb, p->tcfm_proto);
+> > +               skb->protocol = p->tcfm_proto;
+> > +               break;
+> > +       case TCA_MPLS_ACT_PUSH:
+> > +               if (unlikely(skb_cow_head(skb, MPLS_HLEN)))
+> > +                       goto drop;
+> > +
+> > +               skb_push(skb, MPLS_HLEN);
+> > +               memmove(skb->data, skb->data + MPLS_HLEN, ETH_HLEN);
+> > +               skb_reset_mac_header(skb);
+> > +               skb_set_network_header(skb, ETH_HLEN);
+> > +
+> > +               lse = mpls_hdr(skb);
+> > +               lse->label_stack_entry = 0;
+> > +               tcf_mpls_mod_lse(lse, p, !eth_p_mpls(skb->protocol));
+> > +               skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +
+> > +               tcf_mpls_set_eth_type(skb, p->tcfm_proto);
+> > +               skb->protocol = p->tcfm_proto;
+> > +               break;
+>
+> Is it possible to refactor and reuse the similar code in
+> net/openvswitch/actions.c::pop_mpls()/push_mpls()?
+>
 
-So should I be able to change it via the MAC's control register and
-something else is wrong?=C2=A0 Why is there no struct mii_bus?=C2=A0 Can =
-I talk to
-the MII hardware in some other way?
+This is something I would need to look into
 
-Thanks,
-Daniel
+>
+>
+> > +       case TCA_MPLS_ACT_MODIFY:
+> > +               if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                       goto out;
+> > +
+> > +               if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                       goto drop;
+> > +
+> > +               lse = mpls_hdr(skb);
+> > +               skb_postpull_rcsum(skb, lse, MPLS_HLEN);
+> > +               tcf_mpls_mod_lse(lse, p, false);
+> > +               skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +               break;
+> > +       case TCA_MPLS_ACT_DEC_TTL:
+> > +               if (unlikely(!eth_p_mpls(skb->protocol)))
+> > +                       goto out;
+> > +
+> > +               if (unlikely(skb_ensure_writable(skb, ETH_HLEN + MPLS_HLEN)))
+> > +                       goto drop;
+> > +
+> > +               lse = mpls_hdr(skb);
+> > +               temp_lse = be32_to_cpu(lse->label_stack_entry);
+> > +               ttl = (temp_lse & MPLS_LS_TTL_MASK) >> MPLS_LS_TTL_SHIFT;
+> > +               if (!--ttl)
+> > +                       goto drop;
+> > +
+> > +               temp_lse &= ~MPLS_LS_TTL_MASK;
+> > +               temp_lse |= ttl << MPLS_LS_TTL_SHIFT;
+> > +               skb_postpull_rcsum(skb, lse, MPLS_HLEN);
+> > +               lse->label_stack_entry = cpu_to_be32(temp_lse);
+> > +               skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+> > +               break;
+> > +       default:
+> > +               WARN_ONCE(1, "Invalid MPLS action\n");
+>
+>
+> This warning is not necessary, it must be validated in ->init().
+>
 
-https://download.villagetelco.org/hardware/MT7620/MT7620_ProgrammingGuide=
-.pdf
+ack.
+Thanks for comments
+
+>
+> > +       }
+> > +
+> > +out:
+> > +       if (skb_at_tc_ingress(skb))
+> > +               skb_pull_rcsum(skb, skb->mac_len);
+> > +
+> > +       return ret;
+> > +
+> > +drop:
+> > +       qstats_drop_inc(this_cpu_ptr(m->common.cpu_qstats));
+> > +       return TC_ACT_SHOT;
+> > +}
+>
+>
+> Thanks.
