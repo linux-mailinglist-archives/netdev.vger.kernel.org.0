@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D8746BD2
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E828A46BDC
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726346AbfFNVXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 17:23:13 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42571 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbfFNVXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 17:23:13 -0400
-Received: by mail-lj1-f193.google.com with SMTP id t28so3732308lje.9;
-        Fri, 14 Jun 2019 14:23:11 -0700 (PDT)
+        id S1726297AbfFNV1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 17:27:44 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:46433 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfFNV1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 17:27:44 -0400
+Received: by mail-lf1-f67.google.com with SMTP id z15so2628725lfh.13;
+        Fri, 14 Jun 2019 14:27:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bep/4mrWNUML8peUzi7R1Kq2GEeDW29a39K0NjVrOn0=;
-        b=K2sw0VY5k9n/J2JOh13BitvJ3EmXOKmOv47A1wo3Qvc1/6Fwyh3Tgr9z563c8cUD3K
-         V1kmSXq5dUNjcv4AXSTg+8cRsuFl+KumG+g6ppjRADdhMRjhfv+J1nGQ7BzEfQo/rRbr
-         l/J+Tx11/GOfLvvkRmrRBV1oj7Ky7DBUFR0TJ52tMefzWNbjORIKmjrvBTrkSXyDv0ou
-         SC6eXnLCeAvFt4BKu/avKeRVmhXpvK120SJa8OVqi8lJq06SQsnbb+QYWcvkotxeFYr3
-         D+vQ8YJJ95PUSN1ZLsZTbt6jVxdyl7Xs4S38f9pF1u5qIOi2gB+KO1LiA1x63lHPzAuO
-         VoKw==
+        bh=hXEFS2n2BenNiS8o/HgLZ/cSdtim9gLmbaKcrbohmt0=;
+        b=VelSsATDpC6oRP+ofTLsRbOEDPENrLAKSU+cqejoD8r87nuIw7FzMo/z0+7v1unUCR
+         tvQgCTLFXQtjsMK3NEBKPyzzfNpH5R6TdGG1fk94tcbm0ARDN2VZiJj/A828dSmw5Xtk
+         xhhEJHaDMwSVQ+0OKlHN2a+/v59Pd6qvDX8Zq1k/c24iMDmvOLmF/H5BhU/cpLN2Lxe/
+         mJcoFkUa0WFWSLE3nL6uEdSxf4ncWI1urAbobup1YG/PKtRjTA9F+nYz2zkpOhSC3jY2
+         X5CXxYePOP2WMMfz0WESDK10e+w7fEVv4vlhzDX/nPWn68fzk57JBy5m6VsAMNK4kozj
+         r9Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bep/4mrWNUML8peUzi7R1Kq2GEeDW29a39K0NjVrOn0=;
-        b=b49yp7hGqyxypcoRiiqRliT4A1i+KO/l95P+5NeYk9fq5/qRl7f3HuVnJYZTBLG18i
-         2kCL4xbIb80WG0fLx2uCFg9ZC/oNsC0jwpF9MjaBpQBSh6lFoUaGZcStRFDtGB36m7nc
-         UWT1hFpOcqO7j2XJezd2I7ouxEXqnOcIl8XMIPVhkK4DmAb6E0yERvW8/d3H6hDFPiGZ
-         CmoDZexD0sB+AwXOHVyAPAHcanl902ixMLvw/iAa94rLJJk6WBFcEhqNIbZSaAQI0giB
-         sHG3OoB2HkR1pza3J1L4QwCpBJxQ8K+Dz2zxJ2jvN5PaW3ZGGIjsr4qQFD/0N0dxejdz
-         NkVw==
-X-Gm-Message-State: APjAAAU5Vt7r880Jp6uQbRbL1TGPD2CEMC/hhFcFhQ8etpsZfer639sF
-        qDYrQ0UVOrXzT9H8aQ2HbILJq5L9CK3ytv2WPp4=
-X-Google-Smtp-Source: APXvYqwHVrR1Siq3X5Tl6ZvgYWmmA7hWQVfuMQhfHfIDK9o7BR+sFZQmdjSryoTryG79obaAZf0/ZPS12q6hWntNj5M=
-X-Received: by 2002:a2e:a311:: with SMTP id l17mr31548658lje.214.1560547390878;
- Fri, 14 Jun 2019 14:23:10 -0700 (PDT)
+        bh=hXEFS2n2BenNiS8o/HgLZ/cSdtim9gLmbaKcrbohmt0=;
+        b=AMwnXbj0ahiVOrzH1bueiQW1rz7WZ6/BAQun2M6arfxrWi7P+PPWqhXQVnJ1rkYRZK
+         wM37QNLmIl/JTtsTwXDvqi5MZB+oh4WFmGo9BH9iwarDy4+BRIGLXkbeffvRgjEtxhm5
+         sT4hZ84FpnYJdwi/SPboxwr2RUmpMRMYt7J8+ZaqgPKrRU0KliGg0jD27swvWa3voms5
+         Cm8W+Yqh2dRTZrIWiRVRskJDv2kkYPGU4YXJVP+Lck0rWeWKnbl5CXV9ilB16U8Na1CB
+         uTlkulIOxTivO4b2N7aq/mQyRolRa9+EuP+M9W9NtNsEJyziRHe+EXOabz8M4T15BUI2
+         eKag==
+X-Gm-Message-State: APjAAAUiIjaUau2TgXAFAjHhpkA+BXDGNtaF/+tnxygCea3GFe+DMIzD
+        ey9ucPp/8BI/FDsasF/fHUGYtwytdDVL16hIupM=
+X-Google-Smtp-Source: APXvYqzqPlY0pE2jaUkC6jYMj65kVioh7KwMCjP5u1JUkxbvnByqfBSXhHorBDPiIhDs/9eOdNi/Jb8UmzJAlssKTUQ=
+X-Received: by 2002:ac2:5337:: with SMTP id f23mr9302265lfh.15.1560547662196;
+ Fri, 14 Jun 2019 14:27:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1560534694.git.jpoimboe@redhat.com> <c0add777a2e0207c1474ce99baa492a7ce3502d6.1560534694.git.jpoimboe@redhat.com>
- <20190614205841.s4utbpurntpr6aiq@ast-mbp.dhcp.thefacebook.com>
- <20190614210745.kwiqm5pkgabruzuj@treble> <CAADnVQLK3ixK1JWF_mfScZoFzFF=6O8f1WcqkYqiejKeex1GSQ@mail.gmail.com>
- <20190614211929.drnnawbi7guqj2ck@treble>
-In-Reply-To: <20190614211929.drnnawbi7guqj2ck@treble>
+References: <cover.1560534694.git.jpoimboe@redhat.com> <178097de8c1bd6a877342304f3469eac4067daa4.1560534694.git.jpoimboe@redhat.com>
+ <20190614210555.q4ictql3tzzjio4r@ast-mbp.dhcp.thefacebook.com> <20190614211916.jnxakyfwilcv6r57@treble>
+In-Reply-To: <20190614211916.jnxakyfwilcv6r57@treble>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 14 Jun 2019 14:22:59 -0700
-Message-ID: <CAADnVQ+BCxsKEK=ZzYOZkgTJAg_7jz1_f+FCX+Ms0vTOuW8Mxw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] objtool: Fix ORC unwinding in non-JIT BPF
- generated code
+Date:   Fri, 14 Jun 2019 14:27:30 -0700
+Message-ID: <CAADnVQJ0dmxYTnaQC1UiSo7MhcTy2KRWJWJKw4jyxFWby-JgRg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] x86/bpf: Fix 64-bit JIT frame pointer usage
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
 Cc:     X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -70,25 +67,24 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jun 14, 2019 at 2:19 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> > > > >
-> > > > > +#define JUMP_TABLE_SYM_PREFIX "jump_table."
-> > > >
-> > > > since external tool will be looking at it should it be named
-> > > > "bpf_jump_table." to avoid potential name conflicts?
-> > > > Or even more unique name?
-> > > > Like "bpf_interpreter_jump_table." ?
-> > >
-> > > No, the point is that it's a generic feature which can also be used any
-> > > non-BPF code which might also have a jump table.
-> >
-> > and you're proposing to name all such jump tables in the kernel
-> > as static foo jump_table[] ?
 >
-> That's the idea.
+> On Fri, Jun 14, 2019 at 02:05:56PM -0700, Alexei Starovoitov wrote:
+> > Have you tested it ?
+> > I really doubt, since in my test both CONFIG_UNWINDER_ORC and
+> > CONFIG_UNWINDER_FRAME_POINTER failed to unwind through such odd frame.
+>
+> Hm, are you seeing selftest failures?  They seem to work for me.
+>
+> > Here is much simple patch that I mentioned in the email yesterday,
+> > but you failed to listen instead of focusing on perceived 'code readability'.
+> >
+> > It makes one proper frame and both frame and orc unwinders are happy.
+>
+> I'm on my way out the door and I just skimmed it, but it looks fine.
+>
+> Some of the code and patch description look familiar, please be sure to
+> give me proper credit.
 
-Then it needs much wider discussion.
-I suggest to rename it to "bpf_interpreter_jump_table."
-so it can be resolved now for this specific issue.
-While bigger kernel-wide naming convention get resolved.
-Later we can rename it to whatever the "standard name for jump table"
-will be.
+credit means something positive.
+your contribution to bpf jit fix was negative.
+I'm going to rewrite the fix from relying on patch 3.
