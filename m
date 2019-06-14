@@ -2,143 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BA24624B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:14:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA76F46240
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbfFNPOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 11:14:37 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52440 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725822AbfFNPOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:14:37 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5EF49Zk022999;
-        Fri, 14 Jun 2019 08:13:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=yryuILdBwZnK1CyKNgOJsebOGk8n7E1Kyf0D5bEn2Mw=;
- b=d5LN2vyrypTLi75HEw6JkGoef7T87KdMGcTlHwxT513JsnymgUnrRg2JI4UyjfISLFa+
- 2pgxKD3ZQTP2xyF+5rpgnkzD04z/q+bMS6WyHgzUIsglkQx/gmjEbHy6mjtrTRJEb+Tk
- V0oguA5UebTojN3zxMuL1eQlejX5JB+Nu9Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t4ds0r2aw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 14 Jun 2019 08:13:25 -0700
-Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
- ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 14 Jun 2019 08:13:24 -0700
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 14 Jun 2019 08:13:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yryuILdBwZnK1CyKNgOJsebOGk8n7E1Kyf0D5bEn2Mw=;
- b=dbBmwI8obqTc+QVopdmIMII1d1jfkYO/6+GXwmioxqMGuXrE8gHW+fWFvHmwWb3JcczdIo92Shn+L6n/gK7h1F7JXAsVziPbLX5ZqwIJHfOQCSoy9x1miyMws6/n9+2LlDuEpHdpUHtgA95ls8oknYAAZJ0wyW0bB2Yvv/djyX0=
-Received: from DM5PR15MB1163.namprd15.prod.outlook.com (10.173.215.141) by
- DM5PR15MB1706.namprd15.prod.outlook.com (10.174.108.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Fri, 14 Jun 2019 15:13:23 +0000
-Received: from DM5PR15MB1163.namprd15.prod.outlook.com
- ([fe80::38aa:95ca:d50f:9745]) by DM5PR15MB1163.namprd15.prod.outlook.com
- ([fe80::38aa:95ca:d50f:9745%3]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
- 15:13:23 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-CC:     Josh Poimboeuf <jpoimboe@redhat.com>, X86 ML <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kairui Song <kasong@redhat.com>
-Subject: Re: [PATCH 8/9] x86/bpf: Convert asm comments to AT&T syntax
-Thread-Topic: [PATCH 8/9] x86/bpf: Convert asm comments to AT&T syntax
-Thread-Index: AQHVIetLPIU2acwXW0W72I9U+7dGQaaZ7m6AgADXPYCAAH3nAA==
-Date:   Fri, 14 Jun 2019 15:13:23 +0000
-Message-ID: <38F47DBB-F98F-4C12-B7D0-A363085065F3@fb.com>
-References: <cover.1560431531.git.jpoimboe@redhat.com>
- <77fe02f7d575091b06f68f8eed256da94aee653f.1560431531.git.jpoimboe@redhat.com>
- <E8372F56-269A-48A4-B80B-14FA664F8D41@fb.com>
- <20190614074245.GS3436@hirez.programming.kicks-ass.net>
-In-Reply-To: <20190614074245.GS3436@hirez.programming.kicks-ass.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::2:e3f9]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9f9e4c4c-e9a3-4751-f78e-08d6f0dad7e8
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM5PR15MB1706;
-x-ms-traffictypediagnostic: DM5PR15MB1706:
-x-microsoft-antispam-prvs: <DM5PR15MB17065AAF7DB3C386288FD2CEB3EE0@DM5PR15MB1706.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0068C7E410
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(376002)(366004)(346002)(396003)(136003)(199004)(189003)(6916009)(2616005)(305945005)(476003)(11346002)(46003)(71200400001)(71190400001)(486006)(54906003)(14454004)(446003)(316002)(81156014)(36756003)(68736007)(25786009)(2906002)(81166006)(8676002)(33656002)(6246003)(6436002)(256004)(229853002)(5660300002)(53936002)(57306001)(99286004)(50226002)(4326008)(6116002)(6486002)(6512007)(4744005)(91956017)(186003)(86362001)(7736002)(8936002)(76176011)(66446008)(66476007)(64756008)(53546011)(102836004)(478600001)(66946007)(73956011)(66556008)(6506007)(76116006);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1706;H:DM5PR15MB1163.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UOGSl6SMQCB63dXemZtpAuYVDTrfircjD8Qe550uKjvR77DeuFnM2qdxMLM9ZS53wf4wfQ1e7+K91gx4Ph1G4KsXXUOx20aNrlHyqTAiwhkPJ9I7MTawHzYuC2CotYFU627B5DpVYbYo+R2c63nacj0CrU3zskiZqcCL84PPE5Fnra2CK5EpRo1w/P4v3vZiyvjQKJ2sQeS0vjue9CZKTu5KEllsY+XN6myd0d8ElbYJHuXhO3COKqSdKAxX24lxBgFLLKfeLzrEcMSB+15ndtWQC9q6oycVZnndfAqp2X9SOoBIqiAB+bAOm/tLBGyLD3tuJehq3DKCFG1lCh8W/6GiemwKGrKgnXzLzEwQel+PSKakzUAz2748Zzh7Tsi/FR9Alrt45wd84xcrY0YrPI7TQ7JnIb5+KSeMfXd0PRc=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2A1DC0A2427F574BB2C824E37D7C26A4@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1725869AbfFNPNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 11:13:33 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40635 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725808AbfFNPNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:13:32 -0400
+Received: by mail-wm1-f68.google.com with SMTP id v19so2684698wmj.5
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 08:13:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=8/UkoEae7i35+WwGcIqNoyF5fpe7RMTBxaaVX9AwVQ8=;
+        b=NHsBf+N0llByJ7gXzP+jLIyOpPvVs94SOS9TniPZBF6CahVQFef/IwB6cg0BItEqQF
+         acr9/bpEp14zxvrHKsXkR+/3t7njEHIxmU4GV1dx9VPqgYpZvFAxcOQ7zqwUltzUzCre
+         avlXc88Nc0/fmXW4WBrh2FEjVMKCH++F6nwKm5Yys4kL1EMFAkp6s0N+clhPWuDqIO9W
+         CV2HQ6Aw0Ln4GVMGjYGC0lpHGmh09xwhKKeCi0GfSW8xHGbkN+DDtBANDyc3QGeM7prb
+         gqBwbS6+JXihGKv1843xLHlLTvRtMei2P8SKnzWUv7zJyjAcm/rQ6tRyxCn1JlqIDw76
+         mG5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=8/UkoEae7i35+WwGcIqNoyF5fpe7RMTBxaaVX9AwVQ8=;
+        b=ECWcQ6lbfrZYaz97ZcWsTYhDmRaTcRwvRtPUMghH0W+ZpjM+mg4F/WO/Aru5sxzuXx
+         nNB8pvzya0g9N+mn6Tcdclvwuy2/1c2M9TMi3QHam1LGU/mUrTLUBpP+ktwapDVOxZZy
+         BSXgGbZo+RvBRV+SpbQOAtmWG/lNWt3ltZZO+Hp4HcgGjm40rnTMfYKBxxwV+xbChfWQ
+         scINC7b2o/hd4IjF06qLhLD4+DtBcJ4g03IIehu3VAcijhlrAL80TIoOZ37r36vpf42P
+         rxfLXTR1ou+07JLKvfZ6nrf6jczE+cw/Z7QB6JL7zdk377u5E7iDMFYhHDSupKqy2URC
+         KmDQ==
+X-Gm-Message-State: APjAAAW+it2hq/h453RyyaO8tuXyftaUvqHlv25x936f9/SW7PtS6WF9
+        g6djk9Zt1Xb4TuBIEs1Q4cxUAg==
+X-Google-Smtp-Source: APXvYqzO0Y1Xc0cWXQQTj1NLGVpnm0jynKsbHiTBiCKXTUMaWxMSRMd5vD+H3ZsqxxKtIrIedkn6rA==
+X-Received: by 2002:a1c:3b45:: with SMTP id i66mr8746314wma.48.1560525209702;
+        Fri, 14 Jun 2019 08:13:29 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id j4sm2024717wrx.57.2019.06.14.08.13.28
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 14 Jun 2019 08:13:28 -0700 (PDT)
+References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com> <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com> <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com> <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH] bpf: optimize constant blinding
+In-reply-to: <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
+Date:   Fri, 14 Jun 2019 16:13:27 +0100
+Message-ID: <87ef3w5hew.fsf@netronome.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f9e4c4c-e9a3-4751-f78e-08d6f0dad7e8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 15:13:23.4008
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1706
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-14_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=785 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906140125
-X-FB-Internal: deliver
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Alexei Starovoitov writes:
 
-> On Jun 14, 2019, at 12:42 AM, Peter Zijlstra <peterz@infradead.org> wrote=
-:
->=20
-> On Thu, Jun 13, 2019 at 06:52:24PM +0000, Song Liu wrote:
->>> On Jun 13, 2019, at 6:21 AM, Josh Poimboeuf <jpoimboe@redhat.com> wrote=
-:
->=20
->>> @@ -403,11 +403,11 @@ static void emit_mov_imm64(u8 **pprog, u32 dst_re=
-g,
->>> 		 * For emitting plain u32, where sign bit must not be
->>> 		 * propagated LLVM tends to load imm64 over mov32
->>> 		 * directly, so save couple of bytes by just doing
->>> -		 * 'mov %eax, imm32' instead.
->>> +		 * 'mov imm32, %eax' instead.
->>> 		 */
->>> 		emit_mov_imm32(&prog, false, dst_reg, imm32_lo);
->>> 	} else {
->>> -		/* movabsq %rax, imm64 */
->>> +		/* movabs imm64, %rax */
->>=20
->> 		^^^^^ Should this be moveabsq?=20
->>=20
->>> 		EMIT2(add_1mod(0x48, dst_reg), add_1reg(0xB8, dst_reg));
->>> 		EMIT(imm32_lo, 4);
->>> 		EMIT(imm32_hi, 4);
->=20
-> Song, can you please trim replies; I only found what you said because of
-> Josh's reply.
+> On Wed, Jun 12, 2019 at 8:25 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+>>
+>>
+>> Jiong Wang writes:
+>>
+>> > Alexei Starovoitov writes:
+>> >
+>> >> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
+>> >> <naveen.n.rao@linux.vnet.ibm.com> wrote:
+>> >>>
+>> >>> Currently, for constant blinding, we re-allocate the bpf program to
+>> >>> account for its new size and adjust all branches to accommodate the
+>> >>> same, for each BPF instruction that needs constant blinding. This is
+>> >>> inefficient and can lead to soft lockup with sufficiently large
+>> >>> programs, such as the new verifier scalability test (ld_dw: xor
+>> >>> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
+>> >>
+>> >> Slowdown you see is due to patch_insn right?
+>> >> In such case I prefer to fix the scaling issue of patch_insn instead.
+>> >> This specific fix for blinding only is not addressing the core of the problem.
+>> >> Jiong,
+>> >> how is the progress on fixing patch_insn?
+>>
+>> And what I have done is I have digested your conversion with Edward, and is
+>> slightly incline to the BB based approach as it also exposes the inserted
+>> insn to later pass in a natural way, then was trying to find a way that
+>> could create BB info in little extra code based on current verifier code,
+>> for example as a side effect of check_subprogs which is doing two insn
+>> traversal already. (I had some such code before in the historical
+>> wip/bpf-loop-detection branch, but feel it might be still too heavy for
+>> just improving insn patching)
+>
+> BB - basic block?
+> I'm not sure that was necessary.
+> The idea was that patching is adding stuff to linked list instead
+> and single pass at the end to linearize it.
 
-Sorry for the problem. I will trim in the future.=20
+Just an update and keep people posted.
 
-Song
+Working on linked list based approach, the implementation looks like the
+following, mostly a combine of discussions happened and Naveen's patch,
+please feel free to comment.
+
+  - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
+    BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
+
+  - Introduce patch pool into bpf_prog->aux to keep all patched insns.
+    Pool structure looks like:
+
+    struct {
+      int num;
+      int prev;
+      int next;
+    } head_0;
+    NUM patched insns for head_0
+    head_1;
+    patched insns for head_1
+    head_2;
+    ...
+
+  - Now when doing bpf_patch_insn_single, it doesn't change the original
+    prog etc, instead, it merely update the insn at patched offset into a
+    BPF_LIST_INSN, and pushed the patched insns plus a patch header into
+    the patch pool. Fields of BPF_LIST_INSN is updated to setup the links:
+    
+      BPF_LIST_INSN.off += patched_size
+      (accumulating the size attached to this list_insn, it is possible a
+      later patch pass patches insn in the patch pool, this means insn
+      traversal needs to be changed, when seeing BPF_LIST_INSN, should go
+      through the list)
+      
+      BPF_LIST_INSN.imm = offset of the patch header in patch pool
+      (off is 16-bit, imm is 32-bit, the patch pool is 32-bit length, so
+      use imm for keeping offset, meaning a BPF_LIST_INSN can contains no
+      more than 8192 insns, guess it is enough)
+
+  - When doing linearize:
+    1. a quick scan of prog->insnsi to know the final
+       image size, would be simple as:
+
+      fini_size = 0;
+      for_each_insn:
+        if (insn.code == (BPF_ALU | BPF_LIST_HEAD))
+          fini_size += insn->off;
+        else
+          fini_size++;
+
+    2. Resize prog into fini_size, and a second scan of prog->insnsi to
+       copy over all insns and patched insns, at the same time generate a
+       auxiliary index array which maps an old index to the new index in
+       final image, like the "clone_index" in Naveen's patch.
+
+    3. Finally, a single pass to update branch target, the same algo used
+       by this patch.
+       
+  - The APIs for doing insning patch looks like:
+      bpf_patch_insn_init:   init the generic patch pool.
+      bpf_patch_insn_single: push patched insns to the pool.
+                             link them to the associated BPF_LIST_INSN.
+      bpf_patch_insn_fini:   linearize a bpf_prog contains BPF_LIST_INSN.
+                             destroy patch pool in prog->aux.
+
+I am trying to making the implementation working with jit blind first to make
+sure basic things are ready. As JIT blinds happens after verification so no
+need to both aux update etc. Then will cleanup quite a few things for
+example patch a patched insn, adjust aux data, what to do with insn delete
+etc.
+
+Regards,
+Jiong
