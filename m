@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A98456FD
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 10:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A350B45704
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 10:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfFNIKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 04:10:08 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33334 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726259AbfFNIKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 04:10:07 -0400
-Received: by mail-wr1-f67.google.com with SMTP id n9so1522466wru.0
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 01:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=48589Ux64nCstGUm0j3kMsMx65XgsYNhjQrB8G4KWwI=;
-        b=m46Pj7O6oAzX4Ts6MNfq2lzCyNqp4hcz1p9vSCuSMvnEsOWoWgVoUBzWeCsGwIYcv+
-         sHj+Q7nNKycZkAAqRAjzS9DAdDDwy72r3gOKwplnLgsOvM5Z0ognMDsHTgqvND+z2dxu
-         3ou6iqS0kNakCXrZR+Chb4YmS8h9kowiYJW1pfDvMzW/Bwj1ISXC7aIslfJMGc6q03sC
-         nW9kKqBeMh7NSdvvX783gTOchLP1qR9VfLRZzrLgDIzLwy8PsgcvaIWaKcs/X/UO+5QD
-         8pbqOZ7cmKpWZyPP7riJVmtp+fahUDiABqEhLFmtGFmD7nnlX+fXbcyTF8yZtt0fl2Nl
-         Z6hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=48589Ux64nCstGUm0j3kMsMx65XgsYNhjQrB8G4KWwI=;
-        b=IrfmK9mODJKUyTJihYxjASnW6cTW0BHlZxaGKxPE7pq+RGVsVIAeHliRzr8pCsxLqo
-         86nr55T2Ez9AjHfR0u1hw0s+kDD7eSnbSQrgBU2wzULURwP32kKSn9pgjwbGNYza4Bkv
-         N0kGrotBARuLJC1FLWz+G9odxiVB6dHYBnkrQLXOqhbj14yuiVC/+TYGSjCiX59DLHIi
-         s/rlbU5SbKpuEnhGkEyAf+dfSBa6HyNL62MJC4cniUAQp+oB3nSf4RcjqBfTb0eHT4DH
-         09zUWKHGmhES5GxqE2sQE2124GrpdiEOyNoH/dD48N+u93wup2eo7IOz2AwDnB40LZTc
-         NNOQ==
-X-Gm-Message-State: APjAAAWlhxLSr3W9x/izyouw1GXUqdFz+GqAFKHw0SMeLyq2qeQd/4oX
-        vJ0vfNAGtXDStmIK1VeXZ3j4gJpkqfLbqQ==
-X-Google-Smtp-Source: APXvYqyMgBVHXMWnVEupCT5uf3ePllXsNafDyZ5FzUanAvtErjRTquxWBNSgygUegZFeHtrmdlhszw==
-X-Received: by 2002:adf:fbc2:: with SMTP id d2mr16948371wrs.334.1560499805773;
-        Fri, 14 Jun 2019 01:10:05 -0700 (PDT)
-Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id x6sm3064794wru.0.2019.06.14.01.10.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 14 Jun 2019 01:10:05 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 10:10:04 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     John Hurley <john.hurley@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        xiyou.wangcong@gmail.com, dcaratti@redhat.com,
-        simon.horman@netronome.com, jakub.kicinski@netronome.com,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH net-next v2 1/3] net: sched: add mpls manipulation
- actions to TC
-Message-ID: <20190614081004.GC2242@nanopsycho>
-References: <1560447839-8337-1-git-send-email-john.hurley@netronome.com>
- <1560447839-8337-2-git-send-email-john.hurley@netronome.com>
+        id S1726447AbfFNILa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 04:11:30 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:60474 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726083AbfFNILa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 04:11:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=USG8NWPdVBgY5Ej2X/EDSC1YVY6FY+uYmg/tOOLTTFo=; b=F751dU49JkcOCni8fL2Qt0e2R
+        526jP56gRAGvqGQopmBVt6ByAtqWtTPuVRjmAQFCMc85IhMtr9ojAqwZyKTL7iA6waWtkxWITHOoM
+        f8/MVsucKiaQz/8neYKfB6i7z78g64oPDzJNOqZdb+gRvysCzZrs1dOBUgy7lsVSaw/8ncAORS4d+
+        QEZXCl6TlW53imd7FYTVEMyF7lHl9bQpZ+JYkIV3vFtbfPRLeStaAM7JLFjp/WHsQi6EAi0QhsBDO
+        ZUbBHyY2kvgnsxG+2DA5/RgYbH6JyY1UakyxxTxhjgFqtFxyjSQulKXZdt1OWF3B39o7xiu96x6kK
+        LosCUCu+Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hbhIs-0003ta-Ag; Fri, 14 Jun 2019 08:11:18 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id C40FB20A15636; Fri, 14 Jun 2019 10:11:16 +0200 (CEST)
+Date:   Fri, 14 Jun 2019 10:11:16 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 2/9] objtool: Fix ORC unwinding in non-JIT BPF generated
+ code
+Message-ID: <20190614081116.GU3436@hirez.programming.kicks-ass.net>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <99c22bbd79e72855f4bc9049981602d537a54e70.1560431531.git.jpoimboe@redhat.com>
+ <20190613205710.et5fywop4gfalsa6@ast-mbp.dhcp.thefacebook.com>
+ <20190614012030.b6eujm7b4psu62kj@treble>
+ <20190614070852.GQ3436@hirez.programming.kicks-ass.net>
+ <20190614073536.d3xkhwhq3fuivwt5@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1560447839-8337-2-git-send-email-john.hurley@netronome.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190614073536.d3xkhwhq3fuivwt5@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 13, 2019 at 07:43:57PM CEST, john.hurley@netronome.com wrote:
->Currently, TC offers the ability to match on the MPLS fields of a packet
->through the use of the flow_dissector_key_mpls struct. However, as yet, TC
->actions do not allow the modification or manipulation of such fields.
->
->Add a new module that registers TC action ops to allow manipulation of
->MPLS. This includes the ability to push and pop headers as well as modify
->the contents of new or existing headers. A further action to decrement the
->TTL field of an MPLS header is also provided.
->
->Signed-off-by: John Hurley <john.hurley@netronome.com>
->Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Fri, Jun 14, 2019 at 12:35:38AM -0700, Alexei Starovoitov wrote:
+> On Fri, Jun 14, 2019 at 09:08:52AM +0200, Peter Zijlstra wrote:
+> > On Thu, Jun 13, 2019 at 08:20:30PM -0500, Josh Poimboeuf wrote:
+> > > On Thu, Jun 13, 2019 at 01:57:11PM -0700, Alexei Starovoitov wrote:
+> > 
+> > > > and to patches 8 and 9.
+> > > 
+> > > Well, it's your code, but ... can I ask why?  AT&T syntax is the
+> > > standard for Linux, which is in fact the OS we are developing for.
+> > 
+> > I agree, all assembly in Linux is AT&T, adding Intel notation only
+> > serves to cause confusion.
+> 
+> It's not assembly. It's C code that generates binary and here
+> we're talking about comments.
 
-[...]
+And comments are useless if they don't clarify. Intel syntax confuses.
 
+> I'm sure you're not proposing to do:
+> /* mov src, dst */
+> #define EMIT_mov(DST, SRC)                                                               \
+> right?
 
->+		if (tb[TCA_MPLS_LABEL] || tb[TCA_MPLS_TTL] || tb[TCA_MPLS_TC]) {
->+			NL_SET_ERR_MSG_MOD(extack,
->+					   "MPLS POP: unsupported attrs");
+Which is why Josh reversed both of them. The current Intel order is just
+terribly confusing. And I don't see any of the other JITs having
+confusing comments like this.
 
-No need to break line here and couple other similar places in this code.
-Anyway, looks good otherwise:
+> bpf_jit_comp.c stays as-is. Enough of it.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-
-[...]
+I think you're forgetting this is also arch/x86 code, and no, it needs
+changes because its broken wrt unwinding.
