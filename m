@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8987746BAC
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711D346BC1
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbfFNVQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 17:16:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59806 "EHLO mail.kernel.org"
+        id S1726353AbfFNVT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 17:19:26 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46642 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726836AbfFNVQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 17:16:28 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725908AbfFNVT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 17:19:26 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D25652183E;
-        Fri, 14 Jun 2019 21:16:26 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 17:16:25 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>, x86@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
+        by mx1.redhat.com (Postfix) with ESMTPS id 5BCBC30832CC;
+        Fri, 14 Jun 2019 21:19:21 +0000 (UTC)
+Received: from treble (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CBE6061B7F;
+        Fri, 14 Jun 2019 21:19:17 +0000 (UTC)
+Date:   Fri, 14 Jun 2019 16:19:16 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
         linux-kernel@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
         Song Liu <songliubraving@fb.com>,
         Kairui Song <kasong@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
         David Laight <David.Laight@ACULAB.COM>,
         Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH v2 1/5] perf/x86: Always store regs->ip in
- perf_callchain_kernel()
-Message-ID: <20190614171625.470c9e3e@gandalf.local.home>
-In-Reply-To: <20190614210619.su5cr55eah5ks7ur@treble>
+Subject: Re: [PATCH v2 4/5] x86/bpf: Fix 64-bit JIT frame pointer usage
+Message-ID: <20190614211916.jnxakyfwilcv6r57@treble>
 References: <cover.1560534694.git.jpoimboe@redhat.com>
-        <81b0cdc5aa276dac315a0536df384cc82da86243.1560534694.git.jpoimboe@redhat.com>
-        <20190614205614.zr6awljx3qdg2fnb@ast-mbp.dhcp.thefacebook.com>
-        <20190614210619.su5cr55eah5ks7ur@treble>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <178097de8c1bd6a877342304f3469eac4067daa4.1560534694.git.jpoimboe@redhat.com>
+ <20190614210555.q4ictql3tzzjio4r@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190614210555.q4ictql3tzzjio4r@ast-mbp.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 14 Jun 2019 21:19:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jun 2019 16:06:19 -0500
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+On Fri, Jun 14, 2019 at 02:05:56PM -0700, Alexei Starovoitov wrote:
+> Have you tested it ?
+> I really doubt, since in my test both CONFIG_UNWINDER_ORC and
+> CONFIG_UNWINDER_FRAME_POINTER failed to unwind through such odd frame.
 
-> > It's not cool to remove people's SOB.
-> > It's Song's patch. His should be first and your second.  
+Hm, are you seeing selftest failures?  They seem to work for me.
+
+> Here is much simple patch that I mentioned in the email yesterday,
+> but you failed to listen instead of focusing on perceived 'code readability'.
 > 
-> His original patch didn't have an SOB.  I preserved the "From" field.
+> It makes one proper frame and both frame and orc unwinders are happy.
 
-Then it can't be accepted. It needs an SOB from the original author.
+I'm on my way out the door and I just skimmed it, but it looks fine.
 
-Song, Please reply with a Signed-off-by tag.
+Some of the code and patch description look familiar, please be sure to
+give me proper credit.
 
-Thanks!
-
--- Steve
+-- 
+Josh
