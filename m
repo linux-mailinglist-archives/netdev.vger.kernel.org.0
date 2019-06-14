@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3F8454EA
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 08:43:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5F44552A
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 08:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbfFNGne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 02:43:34 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37483 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfFNGne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 02:43:34 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 19so818607pfa.4;
-        Thu, 13 Jun 2019 23:43:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xVM7uHDg+KZk9kXmmDlQBSRAQfZqX9mBnZVDBrDdd2o=;
-        b=JR4ci2weJXdY4Yr1rp8nmHxtc3440bSzYbiuZw1xHnCeDUFXH6+xf0XXto/oCesTtb
-         SDnpT322XRNzzXh7Q9FYzx+u4n14zwN1sYUISqBx0oodXxA5lgriav8tJdaWgiCHollB
-         PTDhwrF+St77uA8hyrkq6fyw1KBhxlCffvs5ubREEL1VA4wymYjiifxsNMwxSjP+dyTK
-         Cd8cYMp0NYVtS8WxT27C9r6/y3dvsLouViaApv2iGqpW4uMNJL67adyb8xSDlPCkFzSl
-         z5vtbNllR6slIwN31BzTuTnNnb3h2fXNZRD1m8IupoRVwsdXjY9y5SkvGGqFmI+QVjIL
-         szag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xVM7uHDg+KZk9kXmmDlQBSRAQfZqX9mBnZVDBrDdd2o=;
-        b=glYtZlzakwG4cm6Oak6lQQQinvdWHYtrgWiigtA5wVvjPwJZkgeoG5mqRoMgG0PUH0
-         R4XDz6sKbF3XA0g/oDReglWURhO/EWrRoDXVogv+kirYSTMzmQVQtZA3gOvkoKpJuxG1
-         jFbZZaYmQ/FZRtaCk1z6DTh/h5nkZry4a6oNsH1XeY3EPvLI5Vt54csDHNEfczZNzZUh
-         DT4aoZoKW+54I4K7eEIb4ZVzGIHjZ2TMTYs0jxyO8Zy5JL/LLUo2wFMNffxL30XMXClX
-         4p28rUat1yrWSqmkAGazXWFHQTAmNcZgHe86rFtFijpmQousTLbnM2vqL+Ji0hGvfEb5
-         5ErA==
-X-Gm-Message-State: APjAAAVTqKxnV5lFcIuqZpfokcigWH/JMm6V4sVc6xSbOrFoQdBij0cm
-        mjMO5Mnv67W5TmZ1/75t7bM=
-X-Google-Smtp-Source: APXvYqwSwHhZ3QkXqcIqULy1+Ia3M/+j3NBQfVQz1es2BhBCB07UQnuEAaSO/1LXV5MxgdONEbWCng==
-X-Received: by 2002:a17:90a:e38f:: with SMTP id b15mr9610491pjz.85.1560494614123;
-        Thu, 13 Jun 2019 23:43:34 -0700 (PDT)
-Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id c130sm1701289pfc.105.2019.06.13.23.43.32
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 13 Jun 2019 23:43:33 -0700 (PDT)
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next] samples/bpf: fix include path in Makefile
-Date:   Fri, 14 Jun 2019 15:43:18 +0900
-Message-Id: <20190614064318.16313-1-prashantbhole.linux@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726030AbfFNG7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 02:59:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39668 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725835AbfFNG7i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 02:59:38 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 939C92063F;
+        Fri, 14 Jun 2019 06:59:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560495577;
+        bh=GE6kHlZhWjeir7ihj8EED4mH6wyPeJJCUgG+az2TV5k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=1D7uYNsXWMLUv5stOEuz+G6hJ4eG6KlOl07Z79zO2ayNnSFn0OztQDnYNABmyldyI
+         mSY5/Rk+IpihF/caIWfjXeTepLpJi3nLh3jle0uTBTeHqYvEmvI85XBGlbXeI9MwBc
+         8Vg/3H1vye5FuuH0TbiFlghN/xnqbLWX0OYG1eoA=
+Date:   Fri, 14 Jun 2019 08:59:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] mac80211: no need to check return value of debugfs_create
+ functions
+Message-ID: <20190614065934.GA23295@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent commit included libbpf.h in selftests/bpf/bpf_util.h.
-Since some samples use bpf_util.h and samples/bpf/Makefile doesn't
-have libbpf.h path included, build was failing. Let's add the path
-in samples/bpf/Makefile.
+When calling debugfs functions, there is no need to ever check the
+return value.  The function can work or not, but the code logic should
+never do something different based on this.
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/debugfs_key.c    |  3 ---
+ net/mac80211/debugfs_netdev.c | 10 +++-------
+ net/mac80211/debugfs_sta.c    |  2 --
+ 3 files changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 9eb5d733f575..34bc7e17c994 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -170,7 +170,7 @@ always += ibumad_kern.o
- always += hbm_out_kern.o
+diff --git a/net/mac80211/debugfs_key.c b/net/mac80211/debugfs_key.c
+index a2ef95f16f11..1a25de4e7e78 100644
+--- a/net/mac80211/debugfs_key.c
++++ b/net/mac80211/debugfs_key.c
+@@ -342,9 +342,6 @@ void ieee80211_debugfs_key_add(struct ieee80211_key *key)
+ 	key->debugfs.dir = debugfs_create_dir(buf,
+ 					key->local->debugfs.keys);
  
- KBUILD_HOSTCFLAGS += -I$(objtree)/usr/include
--KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/
-+KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/bpf/
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/ -I$(srctree)/tools/include
- KBUILD_HOSTCFLAGS += -I$(srctree)/tools/perf
+-	if (!key->debugfs.dir)
+-		return;
+-
+ 	sta = key->sta;
+ 	if (sta) {
+ 		sprintf(buf, "../../netdev:%s/stations/%pM",
+diff --git a/net/mac80211/debugfs_netdev.c b/net/mac80211/debugfs_netdev.c
+index deb3faf08337..f6508cf67944 100644
+--- a/net/mac80211/debugfs_netdev.c
++++ b/net/mac80211/debugfs_netdev.c
+@@ -818,9 +818,8 @@ void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata)
+ 	sprintf(buf, "netdev:%s", sdata->name);
+ 	sdata->vif.debugfs_dir = debugfs_create_dir(buf,
+ 		sdata->local->hw.wiphy->debugfsdir);
+-	if (sdata->vif.debugfs_dir)
+-		sdata->debugfs.subdir_stations = debugfs_create_dir("stations",
+-			sdata->vif.debugfs_dir);
++	sdata->debugfs.subdir_stations = debugfs_create_dir("stations",
++							sdata->vif.debugfs_dir);
+ 	add_files(sdata);
+ }
+ 
+@@ -845,8 +844,5 @@ void ieee80211_debugfs_rename_netdev(struct ieee80211_sub_if_data *sdata)
+ 		return;
+ 
+ 	sprintf(buf, "netdev:%s", sdata->name);
+-	if (!debugfs_rename(dir->d_parent, dir, dir->d_parent, buf))
+-		sdata_err(sdata,
+-			  "debugfs: failed to rename debugfs dir to %s\n",
+-			  buf);
++	debugfs_rename(dir->d_parent, dir, dir->d_parent, buf);
+ }
+diff --git a/net/mac80211/debugfs_sta.c b/net/mac80211/debugfs_sta.c
+index 8e921281e0d5..b2542bb2814e 100644
+--- a/net/mac80211/debugfs_sta.c
++++ b/net/mac80211/debugfs_sta.c
+@@ -960,8 +960,6 @@ void ieee80211_sta_debugfs_add(struct sta_info *sta)
+ 	 * dir might still be around.
+ 	 */
+ 	sta->debugfs_dir = debugfs_create_dir(mac, stations_dir);
+-	if (!sta->debugfs_dir)
+-		return;
+ 
+ 	DEBUGFS_ADD(flags);
+ 	DEBUGFS_ADD(aid);
 -- 
-2.20.1
+2.22.0
 
