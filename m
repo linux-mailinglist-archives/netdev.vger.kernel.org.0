@@ -2,107 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F2745537
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373FC4553D
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725869AbfFNHEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 03:04:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbfFNHEl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 03:04:41 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B218D2084E;
-        Fri, 14 Jun 2019 07:04:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560495881;
-        bh=3WWtnLjJKzl9IXQdtTIEOivozhXBL7N4KD/OswzeK1Y=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Of8mtxozvfhHAYJlZTd1+bLb+bZWh2JasIO5XWtEz68AyKeT0osw/dY7CHebbz53u
-         rWjZK+qZG7Q4Hg4wM3uHegWyupNsuPodRqX3/05Tz6eBUWdRlUdmxDxN6M+4ITbxCj
-         rYon+h3z8Rg//J0Dc19MIfHVpQFN2FCrNC6YER+U=
-Date:   Fri, 14 Jun 2019 09:04:38 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Guillaume Nault <g.nault@alphalink.fr>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] l2tp: no need to check return value of debugfs_create
- functions
-Message-ID: <20190614070438.GA25351@kroah.com>
+        id S1726140AbfFNHJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 03:09:14 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:35032 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbfFNHJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 03:09:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=k4RbWCbwBcKE2XaM1Q8HPG0quV1RdhqSycPKyg7Zrao=; b=lBEX2ynm4Dm3tZONdLQa1fe75
+        KnebKJCLoxzlvi0RMdFG7oJnvKBMFVyYXunjh3eHJYXL4X3WhyZtUB/2wYMaO3eJ6gQR4JiPmI9E1
+        JiOMxL8PPvdfhoL3ydZJMBiBM6WfZ89J5X5lSqtWW0Gi1yNg+AwzE76UYPZPmMASz000/ZHV3sGeW
+        iAduEXHKODxPrAsPwo3VuIW/4Z4T5xKM00hB9q+Z916GkPNpzOZuIvb+wr5ko4Rmi2wGgi39oUSvf
+        GDxQs5kfwaKjwUn1+fKPKI0zbVm17BfhnJIkpDhkXL0cfsNMCCZqKB87mkKgqQLrDmaO71aeaWWJU
+        QQ96qSbuA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hbgKU-0004cU-Te; Fri, 14 Jun 2019 07:08:55 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 43EA020A15636; Fri, 14 Jun 2019 09:08:52 +0200 (CEST)
+Date:   Fri, 14 Jun 2019 09:08:52 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 2/9] objtool: Fix ORC unwinding in non-JIT BPF generated
+ code
+Message-ID: <20190614070852.GQ3436@hirez.programming.kicks-ass.net>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <99c22bbd79e72855f4bc9049981602d537a54e70.1560431531.git.jpoimboe@redhat.com>
+ <20190613205710.et5fywop4gfalsa6@ast-mbp.dhcp.thefacebook.com>
+ <20190614012030.b6eujm7b4psu62kj@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190614012030.b6eujm7b4psu62kj@treble>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling debugfs functions, there is no need to ever check the
-return value.  The function can work or not, but the code logic should
-never do something different based on this.
+On Thu, Jun 13, 2019 at 08:20:30PM -0500, Josh Poimboeuf wrote:
+> On Thu, Jun 13, 2019 at 01:57:11PM -0700, Alexei Starovoitov wrote:
 
-Also, there is no need to store the individual debugfs file name, just
-remove the whole directory all at once, saving a local variable.
+> > and to patches 8 and 9.
+> 
+> Well, it's your code, but ... can I ask why?  AT&T syntax is the
+> standard for Linux, which is in fact the OS we are developing for.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Guillaume Nault <g.nault@alphalink.fr>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/l2tp/l2tp_debugfs.c | 21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
-
-diff --git a/net/l2tp/l2tp_debugfs.c b/net/l2tp/l2tp_debugfs.c
-index 6e2b4b9267e1..35bb4f3bdbe0 100644
---- a/net/l2tp/l2tp_debugfs.c
-+++ b/net/l2tp/l2tp_debugfs.c
-@@ -31,7 +31,6 @@
- #include "l2tp_core.h"
- 
- static struct dentry *rootdir;
--static struct dentry *tunnels;
- 
- struct l2tp_dfs_seq_data {
- 	struct net *net;
-@@ -326,32 +325,18 @@ static const struct file_operations l2tp_dfs_fops = {
- 
- static int __init l2tp_debugfs_init(void)
- {
--	int rc = 0;
--
- 	rootdir = debugfs_create_dir("l2tp", NULL);
--	if (IS_ERR(rootdir)) {
--		rc = PTR_ERR(rootdir);
--		rootdir = NULL;
--		goto out;
--	}
- 
--	tunnels = debugfs_create_file("tunnels", 0600, rootdir, NULL, &l2tp_dfs_fops);
--	if (tunnels == NULL)
--		rc = -EIO;
-+	debugfs_create_file("tunnels", 0600, rootdir, NULL, &l2tp_dfs_fops);
- 
- 	pr_info("L2TP debugfs support\n");
- 
--out:
--	if (rc)
--		pr_warn("unable to init\n");
--
--	return rc;
-+	return 0;
- }
- 
- static void __exit l2tp_debugfs_exit(void)
- {
--	debugfs_remove(tunnels);
--	debugfs_remove(rootdir);
-+	debugfs_remove_recursive(rootdir);
- }
- 
- module_init(l2tp_debugfs_init);
--- 
-2.22.0
-
+I agree, all assembly in Linux is AT&T, adding Intel notation only
+serves to cause confusion.
