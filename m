@@ -2,84 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D76146936
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89804696E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbfFNUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 16:30:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54438 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727884AbfFNUap (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 16:30:45 -0400
-Received: from sasha-vm.mshome.net (unknown [131.107.159.134])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 68366218BB;
-        Fri, 14 Jun 2019 20:30:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560544245;
-        bh=Zco/AWbpCh4AwsjBYaclLcW+sC1chKVLjFBvVH2lZyU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KlSLAMT2wOUUpKz71VU7d+boOcVvR45vX0Ux0nZ2VGo4QYOdzr/rrcCGiD2OwCmAH
-         8zqgVXaPFkVIUfiIoz5yJFxnwS7ky6J6DIT02Uwpxty0GrZ4Jy6KqMebLZ1lBgxsI1
-         +SW53j4i2rVZG+AtLv9Ae4wOwk8og5HDpni9AJZE=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <mark-mc.lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 12/18] net: ethernet: mediatek: Use NET_IP_ALIGN to judge if HW RX_2BYTE_OFFSET is enabled
-Date:   Fri, 14 Jun 2019 16:30:28 -0400
-Message-Id: <20190614203037.27910-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190614203037.27910-1-sashal@kernel.org>
-References: <20190614203037.27910-1-sashal@kernel.org>
+        id S1727798AbfFNUai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 16:30:38 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33964 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726784AbfFNUah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 16:30:37 -0400
+Received: by mail-qt1-f195.google.com with SMTP id m29so4037537qtu.1;
+        Fri, 14 Jun 2019 13:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AurvGG5md8kdmEphcGq2SiHYTXdU1Fp3TGMe3JSDOo0=;
+        b=ponl8/TKF4625A5i4nwix1bf/BKuWpdnWdsbj1AYGUJeoO6YwVASh4cXNfVx9IvaZa
+         CFwxikzqVVjimctDR05UE41qDDK4m4UYGGq6lT/dI8Ixp9oxQCdYqc2Z3XtJrBBoXrBq
+         umOejNZ+ajnJrFU8/luWxLTc7Lm3AgFpFjiX5f8hfTa03/nmo8RpqMAR3V/rc21lr+pO
+         P0+G+E4MVXjXkkNwPVaW1x6EO7L4vXqTBB1608iq6Bbm2erdxjqToEzmht7mQ7XHe7Ki
+         LsXMlWNkp0G6rLPcPPR+KhweE4x8FfhIUl4x1cZTqJy/9LML7BZbbD8ApalUlsrWEJMI
+         TxRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AurvGG5md8kdmEphcGq2SiHYTXdU1Fp3TGMe3JSDOo0=;
+        b=hmaoyJeeNEhOBOKwg9knm4EQnvki0SP+Cww6MkRFwddDnPnw30mE9gLX2kDBZuL4No
+         mMDyxpoY+8HQgnUxrWE46yVVXHK02+62v53rOPwFCimspnFtaNesk22Mm30tTlq5BMKV
+         S5LoDSd7/DsNMPCWA2Ki7TVeRQqbe2mvWjJlLZ8a8H4C3hCzdtX4k9Gvq+QdTnduLXdf
+         jU+4FWV9qyTMkGvKa/1X37yzNoyFBTMvp2z+uHNvQLXQ4aFjyumXNbzwSYqKHbAaEbu9
+         OYnGtRWMmSSCsaIUOXBfbKuFcdTA4UVIXUmZh71ZPMVS4tFrNNSwQ5H1Nuu+E4iu5OsF
+         wKJw==
+X-Gm-Message-State: APjAAAWo8hlOEMfzT7Pbw05EyYd3W7tF0awUE8K8PzyTlBbrmdZW4cPd
+        iLWE8GGv8Axb3NPIN5qX3kk=
+X-Google-Smtp-Source: APXvYqzw+5pIEwdgx1vf8nomOEwKyVQrAuLI6zJPGXYa+IhlGCCOm1m2SixssVwluHArEdFBBF2Wxg==
+X-Received: by 2002:ac8:1a39:: with SMTP id v54mr83461557qtj.21.1560544236029;
+        Fri, 14 Jun 2019 13:30:36 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::6bab])
+        by smtp.gmail.com with ESMTPSA id e8sm2215252qkn.95.2019.06.14.13.30.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 13:30:35 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 13:30:33 -0700
+From:   Tejun Heo <tj@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Li Zefan <lizefan@huawei.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v4 05/28] docs: cgroup-v1: convert docs to ReST and
+ rename to *.rst
+Message-ID: <20190614203033.GD657710@devbig004.ftw2.facebook.com>
+References: <cover.1560361364.git.mchehab+samsung@kernel.org>
+ <c1dd623359f44f05863456b8bceba0d8f3e42f38.1560361364.git.mchehab+samsung@kernel.org>
+ <20190614141401.48bfb266@lwn.net>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190614141401.48bfb266@lwn.net>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+On Fri, Jun 14, 2019 at 02:14:01PM -0600, Jonathan Corbet wrote:
+> On Wed, 12 Jun 2019 14:52:41 -0300
+> Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
+> 
+> > Convert the cgroup-v1 files to ReST format, in order to
+> > allow a later addition to the admin-guide.
+> > 
+> > The conversion is actually:
+> >   - add blank lines and identation in order to identify paragraphs;
+> >   - fix tables markups;
+> >   - add some lists markups;
+> >   - mark literal blocks;
+> >   - adjust title markups.
+> > 
+> > At its new index.rst, let's add a :orphan: while this is not linked to
+> > the main index.rst file, in order to avoid build warnings.
+> > 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> > Acked-by: Tejun Heo <tj@kernel.org>
+> 
+> This one, too, has linux-next stuff that keeps it from applying to
+> docs-next.  Tejun, would you like to carry it on top of your work?
 
-[ Upstream commit 880c2d4b2fdfd580ebcd6bb7240a8027a1d34751 ]
+Applied to cgroup/for-5.3.
 
-Should only enable HW RX_2BYTE_OFFSET function in the case NET_IP_ALIGN
-equals to 2.
+Thanks.
 
-Signed-off-by: Mark Lee <mark-mc.lee@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 03b599109619..d10c8a8156bc 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1700,6 +1700,7 @@ static void mtk_poll_controller(struct net_device *dev)
- 
- static int mtk_start_dma(struct mtk_eth *eth)
- {
-+	u32 rx_2b_offset = (NET_IP_ALIGN == 2) ? MTK_RX_2B_OFFSET : 0;
- 	int err;
- 
- 	err = mtk_dma_init(eth);
-@@ -1714,7 +1715,7 @@ static int mtk_start_dma(struct mtk_eth *eth)
- 		MTK_QDMA_GLO_CFG);
- 
- 	mtk_w32(eth,
--		MTK_RX_DMA_EN | MTK_RX_2B_OFFSET |
-+		MTK_RX_DMA_EN | rx_2b_offset |
- 		MTK_RX_BT_32DWORDS | MTK_MULTI_EN,
- 		MTK_PDMA_GLO_CFG);
- 
 -- 
-2.20.1
-
+tejun
