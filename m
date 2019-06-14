@@ -2,88 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A58458CD
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E2D458DA
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 11:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727168AbfFNJfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 05:35:10 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:18605 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726083AbfFNJfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 05:35:09 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 975DA7D693A28A8183BE;
-        Fri, 14 Jun 2019 17:35:03 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
- 17:35:01 +0800
-Subject: Re: [PATCH net v2] tcp: avoid creating multiple req socks with the
- same tuples
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20190612035715.166676-1-maowenan@huawei.com>
- <CANn89iJH6ZBH774SNrd2sUd_A5OBniiUVX=HBq6H4PXEW4cjwQ@mail.gmail.com>
- <6de5d6d8-e481-8235-193e-b12e7f511030@huawei.com>
- <a674e90e-d06f-cb67-604f-30cb736d7c72@huawei.com>
- <6aa69ab5-ed81-6a7f-2b2b-214e44ff0ada@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <52025f94-04d3-2a44-11cd-7aa66ebc7e27@huawei.com>
-Date:   Fri, 14 Jun 2019 17:35:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1727038AbfFNJgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 05:36:52 -0400
+Received: from mail-lj1-f171.google.com ([209.85.208.171]:38952 "EHLO
+        mail-lj1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbfFNJgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 05:36:51 -0400
+Received: by mail-lj1-f171.google.com with SMTP id v18so1699702ljh.6
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 02:36:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1ru2KSQjfyG9288qsJetfF2O9SvqawPcSFTT52wjTjs=;
+        b=rill1V7zPm3369J2G1xukVBwuLYUPZ0AfIiWAjtr+WDLla1spYhUr0tZSHabfruZhe
+         nN9t+aljv9Gh6YrRFm+xItS1mTjHyqMU/U4SB+uUW1Sxu7RQulDmEzGgYtNz/WzQsscg
+         wv74JBuhnRTWYoLpDitFQ9DbP3Mo/I4sGQ0cFte9kjYnQFpLw/T9YHPOB7kBZJOQPv9j
+         wl2OyPiRKiNdXpl8i2LNhvbo00OB1l2FHUEuWr+FXzY2jFFRjja0lyFOE8JwncTa+QeS
+         X3nRLQeikC74DtsQ5VOQY/VQhZNJ7k27T3SZg+GY7qZf3sYA1wwW96rVkyPhjlN/3M0h
+         JV8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1ru2KSQjfyG9288qsJetfF2O9SvqawPcSFTT52wjTjs=;
+        b=mqjzCfovTCsAzM0N6jvOHqunl37U2KnbOWKfKzYqsOLyCG3BUk8rqIXAbODKOcV+G5
+         OaLxt3Xe6JsdJutWOVMeg6jJd01FiHAIdQZERZoAB7b37SGbMtSGvxC08liw8zCQboGK
+         oNC8x7Lq9Bmg3ozYQRpZtBAFONkAGcT8TDAxHC9pBBv0SoJi2sp1/t0hpV4vw3+CNxVO
+         j8mnRz4851mceb/ilddm2kDqWYu7SeRn2QjKGEuZCwmMdUS/4GrDtRidWphGDLjSA86p
+         5XnsW/6wR0xIZCYIm6a9O5itDWpVFWBbn6Oof91ZxVKyLCNSI2XkiwcBtlRIK0/u1doG
+         rrZA==
+X-Gm-Message-State: APjAAAU1ojGbnIsTYpVMAK/t2sVuIvtv8kU46tSR6xoWE6PyvjzzYoRI
+        +yyTmfz4U0HDYaWrZGVYViD+2w==
+X-Google-Smtp-Source: APXvYqxFQgBNxUCEDpj1WI2mbKNdN61Z89wiiaBJfiGOme//0IPecMYP63mygyJVf8RKyZznoUIzsg==
+X-Received: by 2002:a2e:959a:: with SMTP id w26mr3889076ljh.150.1560505009702;
+        Fri, 14 Jun 2019 02:36:49 -0700 (PDT)
+Received: from [192.168.0.199] ([31.173.84.143])
+        by smtp.gmail.com with ESMTPSA id g19sm541675lja.9.2019.06.14.02.36.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 02:36:49 -0700 (PDT)
+Subject: Re: [net-next 12/12] i40e: mark expected switch fall-through
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+References: <20190613185347.16361-1-jeffrey.t.kirsher@intel.com>
+ <20190613185347.16361-13-jeffrey.t.kirsher@intel.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <32dbb5fa-7137-781c-c288-88055d0cb938@cogentembedded.com>
+Date:   Fri, 14 Jun 2019 12:36:37 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <6aa69ab5-ed81-6a7f-2b2b-214e44ff0ada@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20190613185347.16361-13-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2019/6/14 12:28, Eric Dumazet wrote:
+On 13.06.2019 21:53, Jeff Kirsher wrote:
+> From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 > 
+> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+> where we are expecting to fall through.
 > 
-> On 6/13/19 9:19 PM, maowenan wrote:
->>
->>
->> @Eric, for this issue I only want to check TCP_NEW_SYN_RECV sk, is it OK like below?
->>  +       if (!osk && sk->sk_state == TCP_NEW_SYN_RECV)
->>  +               reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
->>  +                                                       sk->sk_daddr, sk->sk_dport,
->>  +                                                       sk->sk_rcv_saddr, sk->sk_num,
->>  +                                                       sk->sk_bound_dev_if, sk->sk_bound_dev_if);
->>  +       if (unlikely(reqsk)) {
->>
+> This patch fixes the following warning:
 > 
-> Not enough.
+> drivers/net/ethernet/intel/i40e/i40e_xsk.c: In function ‘i40e_run_xdp_zc’:
+> drivers/net/ethernet/intel/i40e/i40e_xsk.c:217:3: warning: this statement may fall through [-Wimplicit-fallthrough=]
+>     bpf_warn_invalid_xdp_action(act);
+>     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/intel/i40e/i40e_xsk.c:218:2: note: here
+>    case XDP_ABORTED:
+>    ^~~~
 > 
-> If we have many cpus here, there is a chance another cpu has inserted a request socket, then
-> replaced it by an ESTABLISH socket for the same 4-tuple.
+> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+> where we are expecting to fall through.
+> 
+> This patch fixes the following warning:
 
-I try to get more clear about the scene you mentioned. And I have do some testing about this, it can work well
-when I use multiple cpus.
+    Gustavo repeats yourself. :-)
 
-The ESTABLISH socket would be from tcp_check_req->tcp_v4_syn_recv_sock->tcp_create_openreq_child,
-and for this path, inet_ehash_nolisten pass osk(NOT NULL), my patch won't call __inet_lookup_established in inet_ehash_insert().
+> Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+[...]
 
-When TCP_NEW_SYN_RECV socket try to inset to hash table, it will pass osk with NULL, my patch will check whether reqsk existed
-in hash table or not. If reqsk is existed, it just removes this reqsk and dose not insert to hash table. Then the synack for this
-reqsk can't be sent to client, and there is no chance to receive the ack from client, so ESTABLISH socket can't be replaced in hash table.
-
-So I don't see the race when there are many cpus. Can you show me some clue?
-
-thank you.
-> 
-> We need to take the per bucket spinlock much sooner.
-> 
-> And this is fine, all what matters is that we do no longer grab the listener spinlock.
-> 
-> 
-
+MBR, Sergei
