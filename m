@@ -2,194 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 037C346C9C
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A666D46C9E
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbfFNXHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 19:07:21 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44106 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbfFNXHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:07:21 -0400
-Received: by mail-qt1-f195.google.com with SMTP id x47so4379693qtk.11
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 16:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MYCIQVv3qYOxsnI90tP6w1wYQt5KkdY0QPuDwSqvIIA=;
-        b=FGtb93s7+NOcX67MKMLgtCoBBTKuDngdBn9GxjKiaW0kSraHIMCkdkN8Hj5EpdNjKG
-         U11hyDemKbiIB2iKYxxvFrF43ELBFBP4Bvm8xfbQ9o16NdkWGNMpyLVM1U6CamCapIue
-         lFucAUrRhNKM3r2cGZnixLNMzkOoDKDJfvuBz0O3Qj/6tMRtIG2IVsDkXpFoOdAltsZ+
-         kpq9PiegXjqDEOa4OZlGKPKUzad6YNHqluqeyB3QderBsAvJKrkkzw1goE2YWlc63Nx2
-         eTLWYhUXCN7o59O7H56wUIJmSz4Um10NangvYsl3uREUEM31QXB3yaHiT80KMAAhDCO0
-         D7YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MYCIQVv3qYOxsnI90tP6w1wYQt5KkdY0QPuDwSqvIIA=;
-        b=TD6xdUQh6JOsqVlOWyZpKavfL4cR7GkuoxoMpmnF2b/By+DUZ/szlyW2b91sCl23Y2
-         en7yuL+x8yTBAcKsVBaT8WavZ+mtJ9gEVIRlbWLFmCRGUzjV6eJi7Gx4GsGXPhHcAfBA
-         OtezV9ngFi+0D6rHkiNq+z6++tjStTS7iNK/ijy6eX0MtvWRfvIFdRvDAhlyR9EvtsT7
-         KUXvEmcYMQQBHGD9UB6JdGR+kjEmIXOFRX6RVTtNsPNy8ycztf3zIQO/qEZb8eXaKiiR
-         ueDjc3IeshYNSPbWCyw1Tozc0dkE/oFLSKDQjjuCh06j+dS9elQxUhupZNinT0gLxAjC
-         aVpw==
-X-Gm-Message-State: APjAAAWVClyBLRiahpN+pK9YxceItsyW23y5wXUGqaFW60hFJm8i1In9
-        dVAeFuLVSz9FR64ZMGSahCLg1i/wVzXYoxSYmCg=
-X-Google-Smtp-Source: APXvYqw4F1aJ1XomvkPwJb2ul/BwawD/xPlwXKaQO7VSdJnCJgDsCPWMMhAZV2gwmG2Bf46wiug7mUCs3l8qkzXfZDM=
-X-Received: by 2002:ac8:21b7:: with SMTP id 52mr64191092qty.59.1560553639512;
- Fri, 14 Jun 2019 16:07:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <156042464138.25684.15061870566905680617.stgit@alrua-x1> <156042464155.25684.9001494922674130772.stgit@alrua-x1>
-In-Reply-To: <156042464155.25684.9001494922674130772.stgit@alrua-x1>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jun 2019 16:07:08 -0700
-Message-ID: <CAEf4BzZq4FBoFaaUCDnA8p=gRkUtzrDHOuYGibq1_98sPqaRUQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 2/3] bpf_xdp_redirect_map: Perform map lookup
- in eBPF helper
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1726392AbfFNXHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 19:07:30 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38128 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725993AbfFNXHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:07:30 -0400
+Received: from [88.198.220.132] (helo=sslproxy03.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hbvHw-0006Kr-16; Sat, 15 Jun 2019 01:07:16 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hbvHv-0001wk-NH; Sat, 15 Jun 2019 01:07:15 +0200
+Subject: Re: [PATCH bpf 1/3] devmap: Fix premature entry free on destroying
+ map
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+References: <20190614082015.23336-1-toshiaki.makita1@gmail.com>
+ <20190614082015.23336-2-toshiaki.makita1@gmail.com> <877e9octre.fsf@toke.dk>
+ <87sgscbc5d.fsf@toke.dk> <fb895684-c863-e580-f36a-30722c480b41@gmail.com>
+ <87muikb9ev.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5f6efec8-87f8-4ac5-46ee-47788dbf1d44@iogearbox.net>
+Date:   Sat, 15 Jun 2019 01:07:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <87muikb9ev.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25480/Fri Jun 14 10:12:45 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 8:31 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> The bpf_redirect_map() helper used by XDP programs doesn't return any
-> indication of whether it can successfully redirect to the map index it wa=
-s
-> given. Instead, BPF programs have to track this themselves, leading to
-> programs using duplicate maps to track which entries are populated in the
-> devmap.
->
-> This patch fixes this by moving the map lookup into the bpf_redirect_map(=
-)
-> helper, which makes it possible to return failure to the eBPF program. Th=
-e
-> lower bits of the flags argument is used as the return code, which means
-> that existing users who pass a '0' flag argument will get XDP_ABORTED.
+On 06/14/2019 03:09 PM, Toke Høiland-Jørgensen wrote:
+> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+[...]
+>>> Alternatively, since this entire series should probably go to stable, I
+>>> can respin mine on top of it?
+>>
+>> Indeed conflict will happen, as this is for 'bpf' not 'bpf-next'.
+>> Sorry for disturbing your work.
+> 
+> Oh, no worries!
+> 
+>> I'm also not sure how to proceed in this case.
+> 
+> I guess we'll leave that up to the maintainers :)
 
-I see that we have absolutely no documentation for
-bpf_xdp_redirect_map. Can you please add it to
-include/uapi/linux/bpf.h? Don't forget to mention this handling of
-lower bits of flags. Thanks!
+So all three look good to me, I've applied them to bpf tree. Fixes to bpf do
+have precedence over patches to bpf-next given they need to land in the current
+release. I'll get bpf out later tonight and ask David to merge net into net-next
+after that since rebase is also needed for Stanislav's cgroup series. We'll then
+flush out bpf-next so we can fast-fwd to net-next to pull in all the dependencies.
 
->
-> With this, a BPF program can check the return code from the helper call a=
-nd
-> react by, for instance, substituting a different redirect. This works for
-> any type of map used for redirect.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  include/linux/filter.h |    1 +
->  net/core/filter.c      |   27 +++++++++++++--------------
->  2 files changed, 14 insertions(+), 14 deletions(-)
->
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 43b45d6db36d..f31ae8b9035a 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -580,6 +580,7 @@ struct bpf_skb_data_end {
->  struct bpf_redirect_info {
->         u32 ifindex;
->         u32 flags;
-> +       void *item;
-
-This is so generic name that some short comment describing what that
-item is would help a lot.
-
->         struct bpf_map *map;
->         struct bpf_map *map_to_flush;
->         u32 kern_flags;
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 7a996887c500..7d742ea61e2d 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_device =
-*dev, struct xdp_buff *xdp,
->                                struct bpf_redirect_info *ri)
->  {
->         u32 index =3D ri->ifindex;
-> -       void *fwd =3D NULL;
-> +       void *fwd =3D ri->item;
->         int err;
->
->         ri->ifindex =3D 0;
-> +       ri->item =3D NULL;
->         WRITE_ONCE(ri->map, NULL);
->
-> -       fwd =3D __xdp_map_lookup_elem(map, index);
-> -       if (unlikely(!fwd)) {
-> -               err =3D -EINVAL;
-> -               goto err;
-> -       }
->         if (ri->map_to_flush && unlikely(ri->map_to_flush !=3D map))
->                 xdp_do_flush_map();
->
-> @@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct net=
-_device *dev,
->  {
->         struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info)=
-;
->         u32 index =3D ri->ifindex;
-> -       void *fwd =3D NULL;
-> +       void *fwd =3D ri->item;
->         int err =3D 0;
->
->         ri->ifindex =3D 0;
-> +       ri->item =3D NULL;
->         WRITE_ONCE(ri->map, NULL);
->
-> -       fwd =3D __xdp_map_lookup_elem(map, index);
-> -       if (unlikely(!fwd)) {
-> -               err =3D -EINVAL;
-> -               goto err;
-> -       }
-> -
->         if (map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP) {
->                 struct bpf_dtab_netdev *dst =3D fwd;
->
-> @@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, fla=
-gs)
->
->         ri->ifindex =3D ifindex;
->         ri->flags =3D flags;
-> +       ri->item =3D NULL;
->         WRITE_ONCE(ri->map, NULL);
->
->         return XDP_REDIRECT;
-> @@ -3753,9 +3745,16 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *,=
- map, u32, ifindex,
->  {
->         struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info)=
-;
->
-> -       if (unlikely(flags))
-> +       /* Lower bits of the flags are used as return code on lookup fail=
-ure */
-> +       if (unlikely(flags > XDP_TX))
->                 return XDP_ABORTED;
->
-> +       ri->item =3D __xdp_map_lookup_elem(map, ifindex);
-> +       if (unlikely(!ri->item)) {
-> +               WRITE_ONCE(ri->map, NULL);
-> +               return flags;
-> +       }
-> +
->         ri->ifindex =3D ifindex;
->         ri->flags =3D flags;
->         WRITE_ONCE(ri->map, map);
->
+Thanks a lot,
+Daniel
