@@ -2,103 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2A945C40
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 14:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6843F45C6F
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 14:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727589AbfFNML1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 08:11:27 -0400
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:35295 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727522AbfFNML1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 08:11:27 -0400
-Received: from [192.168.1.41] ([92.148.209.44])
-        by mwinf5d40 with ME
-        id QcBN2000a0y1A8U03cBNc2; Fri, 14 Jun 2019 14:11:26 +0200
-X-ME-Helo: [192.168.1.41]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 14 Jun 2019 14:11:26 +0200
-X-ME-IP: 92.148.209.44
-Subject: Re: [PATCH net-next] hinic: Use devm_kasprintf instead of hard coding
- it
-To:     aviad.krawczyk@huawei.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20190613195412.1702-1-christophe.jaillet@wanadoo.fr>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <c55cd76d-2d3e-d9b2-1f1b-4881102c407d@wanadoo.fr>
-Date:   Fri, 14 Jun 2019 14:11:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727865AbfFNMOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 08:14:39 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:37016 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727772AbfFNMOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 08:14:38 -0400
+Received: by mail-yb1-f194.google.com with SMTP id v144so995005ybb.4
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 05:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fxAyGD5vJ/kR9ginAE3Gfq7t4d2qI4aWOePQcKJ48hY=;
+        b=GsreJhurrOR0opg8FhYeHPEU0dU+jqlkQFjq6LaQEUssfUF+4qzJywmHePvgFA6XbY
+         rNfXDi3GrpJHzn9g13UzG8VZiHOunSq5RASabtPNhx7qduZweU+/U8Slp1Q5QBJIklJ/
+         W8BRjk6byvGFN0pp89JDcEdDC/E8CSG2SHo4gBMFP1D7GFvMtrs9tm/RytXVteUrxRX2
+         pIE/i6DCaM3denM4Efj3kbbKJICRrmR3QLJJRvLrpdfFXZXwTEeJw3LGMsd05O/uktw9
+         dv1MWRFzPQcna2OvUGtEhGzIeQUfPUHJnLGuTqshAeTRjmvmWU2pdFUqafamXpJlxeF0
+         clsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fxAyGD5vJ/kR9ginAE3Gfq7t4d2qI4aWOePQcKJ48hY=;
+        b=LpqBsw0LJpLPMSUegxtu8lOAvLPAby8h+usO984p9mXCr9+tyM4Xml0OasFAH9bObk
+         92fM0jIEDutmiysUk9aB2y1fqwO2/XpEPQtzncpOma8H0WHkst63SWX20+YFyfdBVoY3
+         2R1pd778D+0echHErby9zVJElSJqFRMkuaB9kF1N2x8bAs8Hnap6nc2/zpPBukHdnenr
+         kl8FnnDS7OTTj/HNCSO4YCqQQoXggoanyLIklXRddojfH20JVJPELYLOcJ4NGLsGZP7X
+         5pOaWJHfXyjDLSDXwKXmal6w4shes1gRCKLGaPcu2uvWeyr93vrb3Gc90oN8aBCnI7bf
+         DIuA==
+X-Gm-Message-State: APjAAAWziv+uwUuj7f3RhHktlXtFqEJ3g5rpXaUIWzNTKS5EjrlFs9Il
+        yxUGtGF87odiGx/BC8M5xsrDCFGuLWq03s2hw1aEr4Yj5eZFOg==
+X-Google-Smtp-Source: APXvYqwvARY/fYj5Wa7rpR0X0gcbqSHGBnBz7sAevY/M/KUSUEs4MvxCKPaDgDrSHn/HC5ZxJREXKd+gbkeRU62rRpM=
+X-Received: by 2002:a25:7642:: with SMTP id r63mr49787764ybc.253.1560514477257;
+ Fri, 14 Jun 2019 05:14:37 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190613195412.1702-1-christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: fr
+References: <20190614111407.26725-1-ard.biesheuvel@linaro.org>
+In-Reply-To: <20190614111407.26725-1-ard.biesheuvel@linaro.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 14 Jun 2019 05:14:26 -0700
+Message-ID: <CANn89iKNKKCF_yFAwjCvMqscOkRUFeDRXyFT0+s_hRbjG4wi8A@mail.gmail.com>
+Subject: Re: [RFC PATCH] net: ipv4: move tcp_fastopen server side code to
+ SipHash library
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc:     netdev <netdev@vger.kernel.org>, linux-crypto@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>, ebigger@kernel.org,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-I got a:
-
-<aviad.krawczyk@huawei.com>: host huawei.com[103.218.216.136] said: 550
-5.1.1 Error: invalid recipients is found from 80.12.242.127
-
-However, MAINTAINERS has:
-   HUAWEI ETHERNET DRIVER
-   M:	Aviad Krawczyk <aviad.krawczyk@huawei.com>
-   L:	netdev@vger.kernel.org
-   S:	Supported
-   F:	Documentation/networking/hinic.txt
-   F:	drivers/net/ethernet/huawei/hinic/
-
-I don't know how this should be fixed (neither if it should be...), so if s.o. knows, please do.
-
-Best regards,
-Christophe Jaillet
-
-Le 13/06/2019 à 21:54, Christophe JAILLET a écrit :
-> 'devm_kasprintf' is less verbose than:
->     snprintf(NULL, 0, ...);
->     devm_kzalloc(...);
->     sprintf
-> so use it instead.
+On Fri, Jun 14, 2019 at 4:14 AM Ard Biesheuvel
+<ard.biesheuvel@linaro.org> wrote:
 >
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Using a bare block cipher in non-crypto code is almost always a bad idea,
+> not only for security reasons (and we've seen some examples of this in
+> the kernel in the past), but also for performance reasons.
+>
+> In the TCP fastopen case, we call into the bare AES block cipher one or
+> two times (depending on whether the connection is IPv4 or IPv6). On most
+> systems, this results in a call chain such as
+>
+>   crypto_cipher_encrypt_one(ctx, dst, src)
+>     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
+>       aesni_encrypt
+>         kernel_fpu_begin();
+>         aesni_enc(ctx, dst, src); // asm routine
+>         kernel_fpu_end();
+>
+> It is highly unlikely that the use of special AES instructions has a
+> benefit in this case, especially since we are doing the above twice
+> for IPv6 connections, instead of using a transform which can process
+> the entire input in one go.
+>
+> We could switch to the cbcmac(aes) shash, which would at least get
+> rid of the duplicated overhead in *some* cases (i.e., today, only
+> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
+> end up using the generic cbcmac template wrapping the AES-NI cipher,
+> which basically ends up doing exactly the above). However, in the given
+> context, it makes more sense to use a light-weight MAC algorithm that
+> is more suitable for the purpose at hand, such as SipHash.
+>
+> Since the output size of SipHash already matches our chosen value for
+> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
+> sizes, this greatly simplifies the code as well.
+>
+> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 > ---
->   drivers/net/ethernet/huawei/hinic/hinic_rx.c | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
+> NOTE: This approach assumes that there are no external dependencies,
+>       i.e., that there are no tools that implement the same algorithm
+>       to calculate TCP fastopen cookies outside of the kernel.
 >
-> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-> index 9b4082557ad5..95b09fd110d3 100644
-> --- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-> +++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-> @@ -493,7 +493,7 @@ int hinic_init_rxq(struct hinic_rxq *rxq, struct hinic_rq *rq,
->   		   struct net_device *netdev)
->   {
->   	struct hinic_qp *qp = container_of(rq, struct hinic_qp, rq);
-> -	int err, pkts, irqname_len;
-> +	int err, pkts;
->   
->   	rxq->netdev = netdev;
->   	rxq->rq = rq;
-> @@ -502,13 +502,11 @@ int hinic_init_rxq(struct hinic_rxq *rxq, struct hinic_rq *rq,
->   
->   	rxq_stats_init(rxq);
->   
-> -	irqname_len = snprintf(NULL, 0, "hinic_rxq%d", qp->q_id) + 1;
-> -	rxq->irq_name = devm_kzalloc(&netdev->dev, irqname_len, GFP_KERNEL);
-> +	rxq->irq_name = devm_kasprintf(&netdev->dev, GFP_KERNEL,
-> +				       "hinic_rxq%d", qp->q_id);
->   	if (!rxq->irq_name)
->   		return -ENOMEM;
->   
-> -	sprintf(rxq->irq_name, "hinic_rxq%d", qp->q_id);
-> -
->   	pkts = rx_alloc_pkts(rxq);
->   	if (!pkts) {
->   		err = -ENOMEM;
 
+SGTM, but please base your patch on top of David Miller net-next tree,
+since fastopen has changed a bit for 5.3
+with Jason Baron and Christoph Paasch work.
 
+(Also please CC them at next submission)
+
+Thanks !
