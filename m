@@ -2,215 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D28E945399
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B9B453AA
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725843AbfFNEbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 00:31:05 -0400
-Received: from mga17.intel.com ([192.55.52.151]:36143 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbfFNEbE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 00:31:04 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 21:31:02 -0700
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 13 Jun 2019 21:31:00 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hbdrf-0004z3-Ul; Fri, 14 Jun 2019 12:30:59 +0800
-Date:   Fri, 14 Jun 2019 12:30:17 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     kbuild-all@01.org,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH] bpf: optimize constant blinding
-Message-ID: <201906141213.LXZteGuk%lkp@intel.com>
-References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1725973AbfFNEly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 00:41:54 -0400
+Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:47620
+        "EHLO cat-porwal-prod-mail1.catalyst.net.nz" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725767AbfFNEly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 00:41:54 -0400
+Received: from timbeale-pc.wgtn.cat-it.co.nz (unknown [IPv6:2404:130:0:1000:ed06:1c1d:e56c:b595])
+        (Authenticated sender: timbeale@catalyst.net.nz)
+        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id CF1608148B;
+        Fri, 14 Jun 2019 16:41:51 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
+        s=default; t=1560487311;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=CZbQtYJQ75mng+B7XGi300O/A08oqE0teNc/gyrwgvg=;
+        b=qgcfQCGhwF/WIfwYYMAAX60XevySsTnaZPsVbeCcS/k2G8l2L4L0dTz2iC3fmgtD9Eet1Q
+        z7lpF8O6BHp7agTqxhGxiu0Wv2Nx3hVYYWgs4cokOODQjHj/DUEGr0HtD/Zj6CZzHfgAjd
+        d4Sj41D9qBEiyVUl903hMy/PvicwrvL9skNgWNvz0n4KhA3yEmZ5DbySHsrLbEBIJ4PMEh
+        QNN24g+DfIN5rGoWi13XUznBmYhnkhFYeSSZKG+tpJlhU8C/PbKFsjBi5ygPbtPlBgxVNP
+        L/CZjYfPkUOk9g1keg+JHdcRGDIOuubgnUh+qp8J1l+6k0FW0fi5OvHX/A09zw==
+From:   Tim Beale <timbeale@catalyst.net.nz>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Tim Beale <timbeale@catalyst.net.nz>
+Subject: [PATCH net next 1/2] udp: Remove unused parameter (exact_dif)
+Date:   Fri, 14 Jun 2019 16:41:26 +1200
+Message-Id: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
+X-Mailer: git-send-email 2.7.4
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
+        s=default; t=1560487312;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=CZbQtYJQ75mng+B7XGi300O/A08oqE0teNc/gyrwgvg=;
+        b=YeoyecpfWHoHkUn7EmMB6ut5ndK6QgUmBoUNU238kHmrbxumJpFLv54CYfrBaW/UavGmVW
+        hbvMS+hoz4bc1CQaAc5RyEWknWhYNiCrP7xVuabilBag0b4yw0qDTWzlKm85u6vIHuyXBZ
+        GxEqfqf5vGDZlJvfPA1z0jxpk04u9z7A5tnrhSsvWrtLqQT3BbBsUJVq3bZ6pry1vniEyx
+        NnZNkWCT3Trm3DyXNLxxsnHulERWMnaG9jny1iP/XusXZW90+FbUUpGOUA8uDEC2XavcWo
+        +OsORdVqUojTloT5s+oHiZymFTLThBsaqcvjiJWF1eTS9e7C1IJobcNFaNgN2Q==
+ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1560487312; a=rsa-sha256;
+        cv=none;
+        b=WZbQoBqf5qvjOcZw0WG8f7pItXA0mz0LSUhX2wFM5szgj9xWQodHJyHeoc8O3v+vl3fGpJ
+        4Je7ToHlzokOyX/WIiFAZPgMwjmgFRy8yOfhYH3HeHadDgRtv7BYGT+LAREwCZd1W5oIlC
+        8nggahK4r5QTGcCUI59IghP6qNw+atzWYRbqyi5jCTBH1PBHtYDZnY4R8syPRQzLu6kpEO
+        GCqOOguuyJMCKaZcpXHUfRxgS/UjtQRszWXm1yYbxLx4xlNyuRbGUtTAh7xixyzg4p4r9a
+        +coqr8ri/amxZSdDNEiKgUoXWQ/biSscxXC8jD+G6LCMZTRono54E0RACDIXYA==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=timbeale@catalyst.net.nz smtp.mailfrom=timbeale@catalyst.net.nz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Naveen,
+Originally this was used by the VRF logic in compute_score(), but that
+was later replaced by udp_sk_bound_dev_eq() and the parameter became
+unused.
 
-I love your patch! Perhaps something to improve:
+Note this change adds an 'unused variable' compiler warning that will be
+removed in the next patch (I've split the removal in two to make review
+slightly easier).
 
-[auto build test WARNING on bpf-next/master]
-[also build test WARNING on v5.2-rc4 next-20190613]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Naveen-N-Rao/bpf-optimize-constant-blinding/20190614-023948
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
-   kernel/bpf/core.c:210:49: sparse: sparse: arithmetics on pointers to functions
-   include/linux/rbtree.h:120:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   include/linux/rbtree.h:120:9: sparse:    struct rb_node [noderef] <asn:4> *
-   include/linux/rbtree.h:120:9: sparse:    struct rb_node *
-   include/linux/rbtree.h:120:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   include/linux/rbtree.h:120:9: sparse:    struct rb_node [noderef] <asn:4> *
-   include/linux/rbtree.h:120:9: sparse:    struct rb_node *
->> kernel/bpf/core.c:1122:59: sparse: sparse: Using plain integer as NULL pointer
-   kernel/bpf/core.c:1122:62: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:28:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:53:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:111:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:126:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:161:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:196:1: sparse: sparse: Using plain integer as NULL pointer
-   include/trace/events/xdp.h:231:1: sparse: sparse: Using plain integer as NULL pointer
-
-vim +1122 kernel/bpf/core.c
-
-  1101	
-  1102	struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
-  1103	{
-  1104		int i, j, rewritten, new_len, insn_cnt, ret = 0;
-  1105		struct bpf_insn insn_buff[16], aux[2];
-  1106		struct bpf_prog *clone, *tmp;
-  1107		struct bpf_insn *insn;
-  1108		u32 *clone_index;
-  1109	
-  1110		if (!bpf_jit_blinding_enabled(prog) || prog->blinded)
-  1111			return prog;
-  1112	
-  1113		/* Dry run to figure out the final number of instructions */
-  1114		clone_index = vmalloc(prog->len * sizeof(u32));
-  1115		if (!clone_index)
-  1116			return ERR_PTR(-ENOMEM);
-  1117	
-  1118		insn_cnt = prog->len;
-  1119		insn = prog->insnsi;
-  1120		rewritten = 0;
-  1121		for (i = 0; i < insn_cnt; i++, insn++) {
-> 1122			clone_index[i] = bpf_jit_blind_insn(insn, 0, 0);
-  1123			if (clone_index[i] > 1)
-  1124				rewritten += clone_index[i] - 1;
-  1125		}
-  1126	
-  1127		if (rewritten) {
-  1128			/* Needs new allocation, branch adjustment, et al... */
-  1129			clone = bpf_prog_clone_create(prog, GFP_USER);
-  1130			if (!clone) {
-  1131				ret = -ENOMEM;
-  1132				goto err;
-  1133			}
-  1134	
-  1135			new_len = prog->len + rewritten;
-  1136			tmp = bpf_prog_realloc(clone, bpf_prog_size(new_len), GFP_USER);
-  1137			if (!tmp) {
-  1138				ret = -ENOMEM;
-  1139				goto err;
-  1140			}
-  1141			clone = tmp;
-  1142			clone->len = new_len;
-  1143	
-  1144			/* rewrite instructions with constant blinding */
-  1145			insn_cnt = prog->len;
-  1146			insn = prog->insnsi;
-  1147			for (i = 0, j = 0; i < insn_cnt; i++, j++, insn++) {
-  1148				/* capture new instruction index in clone_index */
-  1149				clone_index[i] = j;
-  1150	
-  1151				/* We temporarily need to hold the original ld64 insn
-  1152				 * so that we can still access the first part in the
-  1153				 * second blinding run.
-  1154				 */
-  1155				if (insn[0].code == (BPF_LD | BPF_IMM | BPF_DW) &&
-  1156				    insn[1].code == 0)
-  1157					memcpy(aux, insn, sizeof(aux));
-  1158	
-  1159				rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
-  1160				if (!rewritten) {
-  1161					memcpy(clone->insnsi + j, insn,
-  1162						sizeof(struct bpf_insn));
-  1163				} else {
-  1164					memcpy(clone->insnsi + j, insn_buff,
-  1165						sizeof(struct bpf_insn) * rewritten);
-  1166					j += rewritten - 1;
-  1167				}
-  1168			}
-  1169	
-  1170			/* adjust branches */
-  1171			for (i = 0; i < insn_cnt; i++) {
-  1172				int next_insn_idx = clone->len;
-  1173	
-  1174				if (i < insn_cnt - 1)
-  1175					next_insn_idx = clone_index[i + 1];
-  1176	
-  1177				insn = clone->insnsi + clone_index[i];
-  1178				for (j = clone_index[i]; j < next_insn_idx; j++, insn++) {
-  1179					ret = bpf_jit_blind_adj_imm_off(insn, i, j, clone_index);
-  1180					if (ret) {
-  1181						goto err;
-  1182					}
-  1183				}
-  1184			}
-  1185	
-  1186			/* adjust linfo */
-  1187			if (clone->aux->nr_linfo) {
-  1188				struct bpf_line_info *linfo = clone->aux->linfo;
-  1189	
-  1190				for (i = 0; i < clone->aux->nr_linfo; i++)
-  1191					linfo[i].insn_off = clone_index[linfo[i].insn_off];
-  1192			}
-  1193		} else {
-  1194			/* if prog length remains same, not much work to do */
-  1195			clone = bpf_prog_clone_create(prog, GFP_USER);
-  1196			if (!clone) {
-  1197				ret = -ENOMEM;
-  1198				goto err;
-  1199			}
-  1200	
-  1201			insn_cnt = clone->len;
-  1202			insn = clone->insnsi;
-  1203	
-  1204			for (i = 0; i < insn_cnt; i++, insn++) {
-  1205				if (clone_index[i]) {
-  1206					bpf_jit_blind_insn(insn, aux, insn_buff);
-  1207					memcpy(insn, insn_buff, sizeof(struct bpf_insn));
-  1208				}
-  1209			}
-  1210		}
-  1211	
-  1212		clone->blinded = 1;
-  1213	
-  1214	err:
-  1215		vfree(clone_index);
-  1216	
-  1217		if (ret) {
-  1218			if (clone)
-  1219				bpf_jit_prog_release_other(prog, clone);
-  1220			return ERR_PTR(ret);
-  1221		}
-  1222	
-  1223		return clone;
-  1224	}
-  1225	#endif /* CONFIG_BPF_JIT */
-  1226	
-
+Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ net/ipv4/udp.c | 10 +++++-----
+ net/ipv6/udp.c | 13 ++++++-------
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 86de412..21febf1 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -364,7 +364,7 @@ int udp_v4_get_port(struct sock *sk, unsigned short snum)
+ static int compute_score(struct sock *sk, struct net *net,
+ 			 __be32 saddr, __be16 sport,
+ 			 __be32 daddr, unsigned short hnum,
+-			 int dif, int sdif, bool exact_dif)
++			 int dif, int sdif)
+ {
+ 	int score;
+ 	struct inet_sock *inet;
+@@ -420,7 +420,7 @@ static u32 udp_ehashfn(const struct net *net, const __be32 laddr,
+ static struct sock *udp4_lib_lookup2(struct net *net,
+ 				     __be32 saddr, __be16 sport,
+ 				     __be32 daddr, unsigned int hnum,
+-				     int dif, int sdif, bool exact_dif,
++				     int dif, int sdif,
+ 				     struct udp_hslot *hslot2,
+ 				     struct sk_buff *skb)
+ {
+@@ -432,7 +432,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
+ 	badness = 0;
+ 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+ 		score = compute_score(sk, net, saddr, sport,
+-				      daddr, hnum, dif, sdif, exact_dif);
++				      daddr, hnum, dif, sdif);
+ 		if (score > badness) {
+ 			if (sk->sk_reuseport) {
+ 				hash = udp_ehashfn(net, daddr, hnum,
+@@ -468,7 +468,7 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+ 
+ 	result = udp4_lib_lookup2(net, saddr, sport,
+ 				  daddr, hnum, dif, sdif,
+-				  exact_dif, hslot2, skb);
++				  hslot2, skb);
+ 	if (!result) {
+ 		hash2 = ipv4_portaddr_hash(net, htonl(INADDR_ANY), hnum);
+ 		slot2 = hash2 & udptable->mask;
+@@ -476,7 +476,7 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+ 
+ 		result = udp4_lib_lookup2(net, saddr, sport,
+ 					  htonl(INADDR_ANY), hnum, dif, sdif,
+-					  exact_dif, hslot2, skb);
++					  hslot2, skb);
+ 	}
+ 	if (IS_ERR(result))
+ 		return NULL;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 6935183..8acd24e 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -111,7 +111,7 @@ void udp_v6_rehash(struct sock *sk)
+ static int compute_score(struct sock *sk, struct net *net,
+ 			 const struct in6_addr *saddr, __be16 sport,
+ 			 const struct in6_addr *daddr, unsigned short hnum,
+-			 int dif, int sdif, bool exact_dif)
++			 int dif, int sdif)
+ {
+ 	int score;
+ 	struct inet_sock *inet;
+@@ -155,8 +155,8 @@ static int compute_score(struct sock *sk, struct net *net,
+ static struct sock *udp6_lib_lookup2(struct net *net,
+ 		const struct in6_addr *saddr, __be16 sport,
+ 		const struct in6_addr *daddr, unsigned int hnum,
+-		int dif, int sdif, bool exact_dif,
+-		struct udp_hslot *hslot2, struct sk_buff *skb)
++		int dif, int sdif, struct udp_hslot *hslot2,
++		struct sk_buff *skb)
+ {
+ 	struct sock *sk, *result;
+ 	int score, badness;
+@@ -166,7 +166,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
+ 	badness = -1;
+ 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+ 		score = compute_score(sk, net, saddr, sport,
+-				      daddr, hnum, dif, sdif, exact_dif);
++				      daddr, hnum, dif, sdif);
+ 		if (score > badness) {
+ 			if (sk->sk_reuseport) {
+ 				hash = udp6_ehashfn(net, daddr, hnum,
+@@ -202,7 +202,7 @@ struct sock *__udp6_lib_lookup(struct net *net,
+ 	hslot2 = &udptable->hash2[slot2];
+ 
+ 	result = udp6_lib_lookup2(net, saddr, sport,
+-				  daddr, hnum, dif, sdif, exact_dif,
++				  daddr, hnum, dif, sdif,
+ 				  hslot2, skb);
+ 	if (!result) {
+ 		hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum);
+@@ -212,8 +212,7 @@ struct sock *__udp6_lib_lookup(struct net *net,
+ 
+ 		result = udp6_lib_lookup2(net, saddr, sport,
+ 					  &in6addr_any, hnum, dif, sdif,
+-					  exact_dif, hslot2,
+-					  skb);
++					  hslot2, skb);
+ 	}
+ 	if (IS_ERR(result))
+ 		return NULL;
+-- 
+2.7.4
+
