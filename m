@@ -2,135 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CEC45FF3
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7DB45FF6
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728249AbfFNOEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 10:04:02 -0400
-Received: from mail-eopbgr140049.outbound.protection.outlook.com ([40.107.14.49]:3298
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727123AbfFNOEC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 10:04:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ukf44bf1XqoVm87/MIRIEZkT2f5rQCHTO9iIw8Qc2Ro=;
- b=PEL5kBKM5zeyAeW2pNHIePoFwOnojuJJ4b5SbKjv/TZncAq+CPNK45soE7IpxVYgMUYlVyeIpvsEZoQmyAGQ1CXE1e8/qx8YSq9mvF2W2Ccow+CSotOeIDD0GvuptvV4IeHN8iWvHOfdStgJ9zrTgfEj1cqBlQekbkUj/1STN8Q=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB3712.eurprd04.prod.outlook.com (52.134.15.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Fri, 14 Jun 2019 14:03:59 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
- 14:03:59 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        Valentin-catalin Neacsu <valentin-catalin.neacsu@nxp.com>
-Subject: RE: [PATCH RFC 2/6] dpaa2-eth: add support for new link state APIs
-Thread-Topic: [PATCH RFC 2/6] dpaa2-eth: add support for new link state APIs
-Thread-Index: AQHVIkOh3KM7qC7o8E2+6896w0vbWKaaVMwAgADDs5A=
-Date:   Fri, 14 Jun 2019 14:03:59 +0000
-Message-ID: <VI1PR0402MB2800CB7ABB8DE4472A80D586E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
- <1560470153-26155-3-git-send-email-ioana.ciornei@nxp.com>
- <20190614010114.GB28822@lunn.ch>
-In-Reply-To: <20190614010114.GB28822@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [92.121.36.198]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4cc0f044-af00-41d2-f49e-08d6f0d12600
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3712;
-x-ms-traffictypediagnostic: VI1PR0402MB3712:
-x-microsoft-antispam-prvs: <VI1PR0402MB371206DF0EAD8702CAAC4E1EE0EE0@VI1PR0402MB3712.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0068C7E410
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(396003)(346002)(136003)(376002)(199004)(189003)(52314003)(74316002)(71190400001)(54906003)(4326008)(2906002)(229853002)(76116006)(73956011)(6116002)(3846002)(446003)(476003)(25786009)(14454004)(478600001)(6246003)(6436002)(71200400001)(11346002)(86362001)(6916009)(316002)(76176011)(52536014)(33656002)(66066001)(6506007)(99286004)(53936002)(7696005)(68736007)(81166006)(44832011)(8936002)(26005)(66446008)(66476007)(64756008)(81156014)(66556008)(8676002)(9686003)(66946007)(55016002)(486006)(102836004)(5660300002)(186003)(14444005)(305945005)(256004)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3712;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 4XPjy4cGiMXzKDv1D8zqszMetwJCBoMV1ui01iIpjWJH38PSR6Cmiu3soikudlPJygCTmb1T70DG0sjOveQb3y3pXdTo3ojbJ88it8EkzGgbOpT5XO6TtLuCZySvRZ5TM+WxvoL/GZFRNLHNCoRUwHbRp0v/7YdfeGDcrmeFkwCDwmquc9e6xmSWfCM5s6G3Xleu2e8h9YCzpO5Ktl4T2pnWdrXqCh5BYxvLWACPQZMlijHr7gDT4EH60H9GaQ/JZMqhfyTIoSA3Op8t1VmfL+mr1d+Eq320ZKGrxm6Ii4PAOviQ7KOlx+YS3C8oZbSNpUPRtvLwKlS+9Vz1BqOso6DTBlT+cLDZg3EG8kKQSgazGbQOPUz6cnWWsYIKgN5LlMeX9meLXbZ9ew0mz5sgqOxXod3Hj7Hl4uVZPIetbXI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728688AbfFNOE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 10:04:26 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46210 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727123AbfFNOE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 10:04:26 -0400
+Received: by mail-pg1-f193.google.com with SMTP id v9so1594034pgr.13
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 07:04:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wWTPQIfRgF9Uuxi0qAw/dDjdSK+6G0d2xYwPCHUWXcQ=;
+        b=bsWMMYSSwWAJ8BCr0MWq7mvBCQbxhwNHNmR+2heMj9aoJAskuWEAllBd5BhwhyRZG5
+         kRdVYkznduAkDfLapbzbrBXO8Gco+oPw6kUlz6L8ib9s18BEcmC9SNOMGi+F4U6Q1zcq
+         leUMO+U62ooSbsnfIjclorZ29sFsoRBSX7x5pHn6K2hw11c7NzDq2zYEVM3ymgy+SHh5
+         CH0fTlvX1yGoWPVyfpjsmtlZH4oaOVvy+HRTtANekxktb19PrUGqXOMXMJwMP2O7Nx90
+         Z652U8gIwgBdeuxxstQrhwBy3oJVQsn7TQiVI6lc4m8jmGCcGtpXA0Ar26qXpIOon2LN
+         nDUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wWTPQIfRgF9Uuxi0qAw/dDjdSK+6G0d2xYwPCHUWXcQ=;
+        b=Aa6v+kGReO8SRuVc79eyuGyacGQPmyL3CeaOdTK9CFQ9996IU24Wpo80SwDgqG4GEC
+         9xgv66AHZp9hxtJUWMwkB/YfuH/n9kZ+N/k4UnuPumKlpKUn6NS1dJwA12vnggRUsW9A
+         rOS3iQYIBfyaQa66/DZOVLCE7gGp1yrNY0cDLJyIeGWmF0dPItZ+fC5HvuDpATiNDKk3
+         QkIqsR5FadQhwqTdGKaGlN7Z3N+0lb86+ZYNgirDX+0mAkVefZyMeP7nBKOcPg8ea9bq
+         kBC6sNXJRlzKIO3RB3Gv98ZsmU9esYimeSJtf/o9+7+Z6nBU8MUiHtIXymSXAkHCkG/X
+         GJ7w==
+X-Gm-Message-State: APjAAAVxD+AJ6G9E1fcXVx22d2OIMWLlOIdvsfHJoc4deeV1f3maS3nB
+        DB/azLTRqAayzytCa0ESwltMSMfAmFo=
+X-Google-Smtp-Source: APXvYqwRt7dyftPCeYtwmscGFPAKBcKxojnRX1AHxSFqTGSFsEalT1wp9duxSgmBIt+OYZlri+XAkg==
+X-Received: by 2002:a63:140c:: with SMTP id u12mr35976268pgl.378.1560521065718;
+        Fri, 14 Jun 2019 07:04:25 -0700 (PDT)
+Received: from [172.27.227.167] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id 2sm2932786pff.174.2019.06.14.07.04.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 07:04:24 -0700 (PDT)
+Subject: Re: [iproute2 net-next PATCH] ip: add a new parameter -Numeric
+To:     Roman Mashak <mrv@mojatatu.com>, Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Phil Sutter <phil@nwl.cc>
+References: <20190612092115.30043-1-liuhangbin@gmail.com>
+ <85imtaiyi7.fsf@mojatatu.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c8bb54a4-604e-3082-c0bb-70c2ac1548b2@gmail.com>
+Date:   Fri, 14 Jun 2019 08:04:23 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cc0f044-af00-41d2-f49e-08d6f0d12600
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 14:03:59.4780
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3712
+In-Reply-To: <85imtaiyi7.fsf@mojatatu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH RFC 2/6] dpaa2-eth: add support for new link state AP=
-Is
->=20
-> >  /**
-> > + * Advertised link speeds
-> > + */
-> > +#define DPNI_ADVERTISED_10BASET_FULL           BIT_ULL(0)
-> > +#define DPNI_ADVERTISED_100BASET_FULL          BIT_ULL(1)
-> > +#define DPNI_ADVERTISED_1000BASET_FULL         BIT_ULL(2)
-> > +#define DPNI_ADVERTISED_10000BASET_FULL        BIT_ULL(4)
->=20
-> So 10 Half and 100Half are not supported by the PHYs you use?  What happe=
-ns if
-> somebody does connect a PHY which supports these speeds? Do you need to
-> change the firmware? I suppose you do anyway, since it is the firmware wh=
-ich is
-> driving the PHY.
+On 6/12/19 10:01 AM, Roman Mashak wrote:
+> Hangbin Liu <liuhangbin@gmail.com> writes:
+> 
+>> Add a new parameter '-Numeric' to show the number of protocol, scope,
+>> dsfield, etc directly instead of converting it to human readable name.
+>> Do the same on tc and ss.
+>>
+>> This patch is based on David Ahern's previous patch.
+>>
+> 
+> [...]
+> 
+> It would be good idea to specify the numerical format, e.g. hex or dec,
+> very often hex is more conveninet representation (for example, when
+> skbmark is encoded of IP address or such).
+> 
+> Could you think of extending it '-Numeric' to have an optional argument
+> hex, and use decimal as default.
+> 
 
-First of all, if the firmware had access to the open-source PHY driver code=
-, the design wouldn't have been like this. But as it is, the DPMAC object/d=
-river is used squarely as a way to gather this information from the PHY lib=
-rary.
-
-Half duplex modes are not supported in our MAC. This is why the firmware do=
-es not export any advertisement bits for these modes.
-If somebody connects a PHY which supports 10 Half and 100Half modes, the in=
-tersection of the MAC capabilities and the PHY one's will be only the Full =
-duplex modes.
-
->=20
-> >  struct dpni_link_state {
-> >  	u32	rate;
-> >  	u64	options;
-> > +	u64	supported;
-> > +	u64	advertising;
-> >  	int	up;
-> > +	int	state_valid;
-> >  };
->=20
-> Does the firmware report Pause? Asym Pause? EEE? Is this part of options?=
- Can
-> you control the advertisement of these options?
-
-The firmware knows about conveying the pause and asym pause configuration f=
-rom/to the mac driver.
-
-EEE is not a feature supported by our MAC so there is no configuration knob=
- for this.
-
---
-Ioana
-
->=20
->      Andrew
+I do not see how such an option could work. It would be best for
+iproute2 commands to output fields as hex or decimal based on what makes
+sense for each. That said, I do not see how this patch affects fields
+such as skbmark. Can you give an example? The patch looks fine to me.
