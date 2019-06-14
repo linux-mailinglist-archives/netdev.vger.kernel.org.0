@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A836246CCC
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DAF46CCD
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 01:22:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726138AbfFNXWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 19:22:34 -0400
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:40026 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbfFNXWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:22:34 -0400
-Received: by mail-yw1-f74.google.com with SMTP id t203so4214359ywe.7
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 16:22:34 -0700 (PDT)
+        id S1726187AbfFNXWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 19:22:38 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:43685 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfFNXWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 19:22:38 -0400
+Received: by mail-pf1-f201.google.com with SMTP id j7so2783428pfn.10
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 16:22:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ArF7Y2tfpeEQe2L/wOI6CBIb7ffTUes1h1n0lPR98II=;
-        b=tLuvaqoEvZLLVqKVuc4+Wj63mUsZEe4q3pO68kvSMPgBiqDKCH/Nt+PUWUyUWHLDlU
-         5Z17EpsAoySds2/aunNzDcqbUzk8wn4BDJcPC3yTx4XW0OelKH9bUyV6BZCAH1DeiDo8
-         w7g5eIAIdH6HQe04UTSIj4awMtkcxvYJTaR493c38pNG9nnHIsSZ6JU6ezu34dFUGVNc
-         7qG06JKB//u6twNMjs1PViw9D8N1nvWHW+wddYaD3xmeowc3LFYWs+l7tfWl//4Nn6dD
-         vqad+IPyCpGTMlrLS9BOOCJTVqYMUCUX09FJN5piSZLQQazjYaPr4+CEKhAlaWz4uei2
-         VcTA==
+        bh=O0DjybUunHOj9t2UEUrYQgLa63XXSt0XDtG7sCo6WeU=;
+        b=c2m//nQlmyIncskpDoEZl67brXon8xY3vs4tZcsN9gS4zaw25NByoj6TxHnNM2Gl2Y
+         Hj73BVZvbFt7lIFXvj5xEzqZ/FOAi6tIT0fshKYwHzgExbmCLgf+OQDRf78jzhVv0JtI
+         0HHK+8aKn5BJxZ94k2uaiKI3EueILgJrO8lGPSpasoj+fe9mYExBluKZ1+U5SGVWVM3y
+         uFNoTQKxrJm10z276iBur+z41XgtpRxy3Dj8LDw8ASF10p4SVrD6aKnU2TPBMLXtz7fD
+         i9preQmmfYS0VFVUbGA4V8f6UUaTof0OwP77GEuOCD77GzyIhFNaHSLJvwMoBQqeHtho
+         iQlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ArF7Y2tfpeEQe2L/wOI6CBIb7ffTUes1h1n0lPR98II=;
-        b=h6zxCLnNS5KPen+7lPt0syQc5Noje0lWcvh7JM3OzjIU+p21Gldibv5rSb/frovjRv
-         MSLss1WiNjrxGmoTmuEFGXvmxi2Hw9sMOcvxG4hABH75Ecnfza7f85IYo5VTmfPcgkAT
-         P38eMOdHVCThk8sYziPwOh0VmVhGabjfOtk9B/VtIwWPY/jKIrg3bi4B8k17QN+3/Ywd
-         s4t6Ha+Kwz0OiU+p27Je4C+seRgm+3hkGx7PWZsCNZrv3ZfHPwT+a28KgjK5aupviRkC
-         1C8QkbJmr/ii/ojIFcyNBkXAOUV6tixxqvopum2fEGpsXZOETT+I1ATd+R5pDkOfLM2w
-         xkFQ==
-X-Gm-Message-State: APjAAAVjCR61dI5mFO+03xbxHCdPxsiZa5iLJYsc2/oPbn6ehYj3kCxb
-        LVMvy/oORfnUA0gM48rjF452XBpbAY4BgQ==
-X-Google-Smtp-Source: APXvYqwW+oOVIi41fh+Mz2PDARALgT36t/bMcFsTZ21die0/JqC0gdSZGPmU19uc2B09P8EIYJbgWmjGUNKVwQ==
-X-Received: by 2002:a0d:cd47:: with SMTP id p68mr52818079ywd.268.1560554553676;
- Fri, 14 Jun 2019 16:22:33 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 16:22:19 -0700
+        bh=O0DjybUunHOj9t2UEUrYQgLa63XXSt0XDtG7sCo6WeU=;
+        b=goaUp1Wrl6orQtqxi6BvVS7mghfpTCPzJtVPyTKd6ZsCa6xiJ2/GLiHOqt3jVuVXR/
+         u/V0pVnQekdEKsOsDVg/dPvbt+GP3EqLMoIr4Fgrnp0xi64NH6w9l9Tng0OuhnbRabFm
+         Wb9NHnsIXbQO66MrPOY/CScfP92NbL5YnouGmeJln/7o4lr3UWwNeWF1wO6k2AQ0KxxR
+         ZvpUm3Vu2tDXU3waRO7q566hn6CkQtuAlA8sbV4vJZAUc7x0ZzCJFkYd7C8JhM4LKuSe
+         TLFYZycCJIdmcJcs+sIdDbKb8pU3F46WKjN08GhLBbXO7sTGZkwBi1/4jaLjBKfim21L
+         xNbg==
+X-Gm-Message-State: APjAAAW5nwSZVKMQuKZOl/BLnFceNbIgy6ziUDKKLpFXkG6M/IyFHIRH
+        55VkP0uAkE1ySfbBXzbrnpTFHHig/e4zNQ==
+X-Google-Smtp-Source: APXvYqzTbAhEu2D1xd9lQt++kIwBergkvtZuIqoWhaaTqITOcWDuw7aXZ6qxcf+1zgzqdVAOemGtxAN2igQxwg==
+X-Received: by 2002:a63:8dc4:: with SMTP id z187mr38394459pgd.337.1560554556640;
+ Fri, 14 Jun 2019 16:22:36 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 16:22:20 -0700
 In-Reply-To: <20190614232221.248392-1-edumazet@google.com>
-Message-Id: <20190614232221.248392-3-edumazet@google.com>
+Message-Id: <20190614232221.248392-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190614232221.248392-1-edumazet@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net 2/4] tcp: add tcp_rx_skb_cache sysctl
+Subject: [PATCH net 3/4] tcp: add tcp_tx_skb_cache sysctl
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -60,78 +60,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of relying on rps_needed, it is safer to use a separate
-static key, since we do not want to enable TCP rx_skb_cache
-by default. This feature can cause huge increase of memory
-usage on hosts with millions of sockets.
+Feng Tang reported a performance regression after introduction
+of per TCP socket tx/rx caches, for TCP over loopback (netperf)
 
+There is high chance the regression is caused by a change on
+how well the 32 KB per-thread page (current->task_frag) can
+be recycled, and lack of pcp caches for order-3 pages.
+
+I could not reproduce the regression myself, cpus all being
+spinning on the mm spinlocks for page allocs/freeing, regardless
+of enabling or disabling the per tcp socket caches.
+
+It seems best to disable the feature by default, and let
+admins enabling it.
+
+MM layer either needs to provide scalable order-3 pages
+allocations, or could attempt a trylock on zone->lock if
+the caller only attempts to get a high-order page and is
+able to fallback to order-0 ones in case of pressure.
+
+Tests run on a 56 cores host (112 hyper threads)
+
+-	35.49%	netperf 		 [kernel.vmlinux]	  [k] queued_spin_lock_slowpath
+   - 35.49% queued_spin_lock_slowpath
+	  - 18.18% get_page_from_freelist
+		 - __alloc_pages_nodemask
+			- 18.18% alloc_pages_current
+				 skb_page_frag_refill
+				 sk_page_frag_refill
+				 tcp_sendmsg_locked
+				 tcp_sendmsg
+				 inet_sendmsg
+				 sock_sendmsg
+				 __sys_sendto
+				 __x64_sys_sendto
+				 do_syscall_64
+				 entry_SYSCALL_64_after_hwframe
+				 __libc_send
+	  + 17.31% __free_pages_ok
++	31.43%	swapper 		 [kernel.vmlinux]	  [k] intel_idle
++	 9.12%	netperf 		 [kernel.vmlinux]	  [k] copy_user_enhanced_fast_string
++	 6.53%	netserver		 [kernel.vmlinux]	  [k] copy_user_enhanced_fast_string
++	 0.69%	netserver		 [kernel.vmlinux]	  [k] queued_spin_lock_slowpath
++	 0.68%	netperf 		 [kernel.vmlinux]	  [k] skb_release_data
++	 0.52%	netperf 		 [kernel.vmlinux]	  [k] tcp_sendmsg_locked
+	 0.46%	netperf 		 [kernel.vmlinux]	  [k] _raw_spin_lock_irqsave
+
+Fixes: 472c2e07eef0 ("tcp: add one skb cache for tx")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Feng Tang <feng.tang@intel.com>
 ---
- Documentation/networking/ip-sysctl.txt | 8 ++++++++
- include/net/sock.h                     | 6 ++----
- net/ipv4/sysctl_net_ipv4.c             | 9 +++++++++
- 3 files changed, 19 insertions(+), 4 deletions(-)
+ include/net/sock.h         | 4 +++-
+ net/ipv4/sysctl_net_ipv4.c | 8 ++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 14fe93049d28e965d7349b03c5c8782c3d386e7d..288aa264ac26d98637a5bb1babc334bfc699bef1 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -772,6 +772,14 @@ tcp_challenge_ack_limit - INTEGER
- 	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
- 	Default: 100
- 
-+tcp_rx_skb_cache - BOOLEAN
-+	Controls a per TCP socket cache of one skb, that might help
-+	performance of some workloads. This might be dangerous
-+	on systems with a lot of TCP sockets, since it increases
-+	memory usage.
-+
-+	Default: 0 (disabled)
-+
- UDP variables:
- 
- udp_l3mdev_accept - BOOLEAN
 diff --git a/include/net/sock.h b/include/net/sock.h
-index e9d769c04637a3c0b967c9bfa6def724834796b9..b02645e2dfad722769c1455bcde76e46da9fc5ac 100644
+index b02645e2dfad722769c1455bcde76e46da9fc5ac..7d7f4ce63bb2aae7c87a9445d11339b6e6b19724 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -2433,13 +2433,11 @@ static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
-  * This routine must be called with interrupts disabled or with the socket
-  * locked so that the sk_buff queue operation is ok.
- */
-+DECLARE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
- static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
+@@ -1463,12 +1463,14 @@ static inline void sk_mem_uncharge(struct sock *sk, int size)
+ 		__sk_mem_reclaim(sk, 1 << 20);
+ }
+ 
++DECLARE_STATIC_KEY_FALSE(tcp_tx_skb_cache_key);
+ static inline void sk_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
  {
- 	__skb_unlink(skb, &sk->sk_receive_queue);
--	if (
--#ifdef CONFIG_RPS
--	    !static_branch_unlikely(&rps_needed) &&
--#endif
-+	if (static_branch_unlikely(&tcp_rx_skb_cache_key) &&
- 	    !sk->sk_rx_skb_cache) {
- 		sk->sk_rx_skb_cache = skb;
- 		skb_orphan(skb);
+ 	sock_set_flag(sk, SOCK_QUEUE_SHRUNK);
+ 	sk->sk_wmem_queued -= skb->truesize;
+ 	sk_mem_uncharge(sk, skb->truesize);
+-	if (!sk->sk_tx_skb_cache && !skb_cloned(skb)) {
++	if (static_branch_unlikely(&tcp_tx_skb_cache_key) &&
++	    !sk->sk_tx_skb_cache && !skb_cloned(skb)) {
+ 		skb_zcopy_clear(skb, true);
+ 		sk->sk_tx_skb_cache = skb;
+ 		return;
 diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 875867b64d6a6597bf4fcd3498ed55741cbe33f7..886b58d31351df44725bdc34081e798bcb89ecf0 100644
+index 886b58d31351df44725bdc34081e798bcb89ecf0..08a428a7b2749c4f2a03aa6352e44c053596ef75 100644
 --- a/net/ipv4/sysctl_net_ipv4.c
 +++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -51,6 +51,9 @@ static int comp_sack_nr_max = 255;
- static u32 u32_max_div_HZ = UINT_MAX / HZ;
- static int one_day_secs = 24 * 3600;
+@@ -54,6 +54,8 @@ static int one_day_secs = 24 * 3600;
+ DEFINE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
+ EXPORT_SYMBOL(tcp_rx_skb_cache_key);
  
-+DEFINE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
-+EXPORT_SYMBOL(tcp_rx_skb_cache_key);
++DEFINE_STATIC_KEY_FALSE(tcp_tx_skb_cache_key);
 +
  /* obsolete */
  static int sysctl_tcp_low_latency __read_mostly;
  
-@@ -559,6 +562,12 @@ static struct ctl_table ipv4_table[] = {
- 		.extra1		= &sysctl_fib_sync_mem_min,
- 		.extra2		= &sysctl_fib_sync_mem_max,
+@@ -568,6 +570,12 @@ static struct ctl_table ipv4_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_do_static_key,
  	},
 +	{
-+		.procname	= "tcp_rx_skb_cache",
-+		.data		= &tcp_rx_skb_cache_key.key,
++		.procname	= "tcp_tx_skb_cache",
++		.data		= &tcp_tx_skb_cache_key.key,
 +		.mode		= 0644,
 +		.proc_handler	= proc_do_static_key,
 +	},
