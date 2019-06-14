@@ -2,401 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B18C46C14
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 23:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC52046C51
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726397AbfFNVpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 17:45:39 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42148 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfFNVpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 17:45:39 -0400
-Received: by mail-qt1-f193.google.com with SMTP id s15so4198468qtk.9;
-        Fri, 14 Jun 2019 14:45:38 -0700 (PDT)
+        id S1725996AbfFNW2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 18:28:42 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36801 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725812AbfFNW2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:28:42 -0400
+Received: by mail-qt1-f196.google.com with SMTP id p15so4345150qtl.3;
+        Fri, 14 Jun 2019 15:28:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=N84V6amyzXmuI5NMbfQ0Dim+ey2GqYNptHIaZNRW9us=;
-        b=PTFrWKW28eQJ6d0IdKoPy4CP/4UnBjUyp+Veza+FwPe1/3mXU6qdeQ8gMvwnL0pmtx
-         JU3HiYDUA64/zzAKheRj2iZD0YIlTohymhAD7C0YZ9AO0WPFdRg3vc3dbVPrwIMWfcIc
-         5tiephlyCJb3OMt9a52Vr4zUBcF107ioZbzcgAZoEl5bMr/rux7snhfVRWT68KzE8lTr
-         MysdAtLXzovonMk1Fl0Ej+UbngRFQYW5/yAycXbO8hsTT1iCENxFa84U/sQLfk59D+AA
-         4ZKtNn0GfBcdp8ZBxKekW48Vz/807OdLU2N/p6mxHVjJlKDoB3E2seCezEHbJOJspUPj
-         sPvQ==
+        bh=LspWOEFgqjQy/K7fxFxEzS+zsZJJ8OBl2jPUqCFmr8A=;
+        b=eZO9xXfmxwDKETkbxsjYtJ4R40aS8qTE6+1ZKGUvkOX3hSp4ma2nuPHTYwM+c+q8nB
+         XHJYl9jLpzjOsiJ+WVShD3HvfeYrTdUwLn27kupVb9UQ7QrZI7Rs4fJVW7m2omNuLNFX
+         Q2QLXCxVzN+RZFTqDdDTT28+hyID0rkM8HPcqMiRZ3Q6Fd+iJlCm7SVNf00d0AK8o25q
+         ReAVbwcmYydkk32kaInMydxj/NcNjYXVik7Wud9osSsFXMe/RsO3EcM0fjyTM78w/6Q7
+         VMCz+yImP7Q1aue0ZrIMCR1fegQZnWqjrvCwRAy6nbmUzrgwMqhs43DIZ5XhgX51xsOB
+         lI3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=N84V6amyzXmuI5NMbfQ0Dim+ey2GqYNptHIaZNRW9us=;
-        b=p6yGIg/A0XI63gOhgLJ18f8/MGCPUUvhyPPGJLe8OmKHLv8hvParxlBgVFHbCwjhNO
-         hcYdHuBYwlSqM8VqEMB7nSiYrrKSUAztUU/7Wrl5/XSL0iPcYTU45fWAb2E0tmVutNg3
-         QHycmLjX6TdfAMs26jtO+BKk7Y3HDoZkY7/yopfG9rF1KsupFuqBRwnfNIDVh1e+Zf8H
-         2S4qjeVcZ0juaK6PpUy6lVc+RvfSdmPTPnV8d/bSdWQId7oKgegYLtVgqyQMtWfE7n1/
-         DMBxGr8+6aZg/iwZfIFyxNr5Q+CLhgK2VyR+DQ105TZibA81eDWuhIIs8bzNnZFqFXLY
-         quWg==
-X-Gm-Message-State: APjAAAV2v+QHMeeV+2uyfFeGoM8JvFWR2SsXi0+MnEI/PcPaN8+UlDDU
-        d1d4BP6cRxC4ynHk5NhNjWMfNcg2c7EEi2FrcdI=
-X-Google-Smtp-Source: APXvYqwZrG1W9GZAcWGD6LUDjQN9AKz2V5QvbpGe+mOpAzHRXd/Fr58JvtvaJxBZA9BxQPmfq/GR9/W/RoM97rnnyTY=
-X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr10390342qvh.78.1560548737330;
- Fri, 14 Jun 2019 14:45:37 -0700 (PDT)
+        bh=LspWOEFgqjQy/K7fxFxEzS+zsZJJ8OBl2jPUqCFmr8A=;
+        b=t/U1nSY99x7qEp9lT/L+IaAqCoTSR3MzDIIScTNgODJUGIdxyRdZ7XRTLYKxTkvtTM
+         CkagzsfDDuvx3hJ+s4NaHc8EeMrNRnB6Yjam8K88N8/wNUPJItD8B4PB/FZkLnZqYg2T
+         x8G3MFISAkXBVoVbCMrgHSp9tlHa5xP65/jb+i/rUi74+dp8t5NrU7dXZgTR/x9yU/ZQ
+         TGt6z96/6P7SGvN2pSApXKDIMcXlzCVujwOy1G92v0o6aEBOjZW2WEBXKqtx3cQ0M6dU
+         mzyk+0zSU3yhDoXDZsi5FMB4t/NBgKgrTYNhFT1OdLxM6m9dF41zcO3iaKOxIoIgPPjV
+         Ydfw==
+X-Gm-Message-State: APjAAAV/L27o3kEYAbgodmiPji9rB2fbb5r4LGJo3IPS+npslLkR2dET
+        9VM9J5iOijF7gyuNNlUDl8/BXH3lQgAiF72d+XI=
+X-Google-Smtp-Source: APXvYqxjRKdKvt1fJ1EIIz66gVB0Ko5jWrSApcot4CAYlHF0AGgjVmYT2Wfzf1pAyKOki2GWAJOLOO6+DTcSzYlCXCI=
+X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr59214503qta.93.1560551320907;
+ Fri, 14 Jun 2019 15:28:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190614072557.196239-1-ast@kernel.org> <20190614072557.196239-10-ast@kernel.org>
-In-Reply-To: <20190614072557.196239-10-ast@kernel.org>
+References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
+ <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
+ <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
+ <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
+ <87ef3w5hew.fsf@netronome.com> <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
+In-Reply-To: <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jun 2019 14:45:25 -0700
-Message-ID: <CAEf4Bza-tWx4=sQzkXVFrKDKYrhmrHNfFtRDS3CfDMmPhbGJVg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 9/9] bpf: precise scalar_value tracking
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Date:   Fri, 14 Jun 2019 15:28:29 -0700
+Message-ID: <CAEf4BzaGLJo2y2vUSQaCB7DZtVP3Q89TzbXO0UFvQvUw+Q2kng@mail.gmail.com>
+Subject: Re: [PATCH] bpf: optimize constant blinding
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 12:26 AM Alexei Starovoitov <ast@kernel.org> wrote:
+On Fri, Jun 14, 2019 at 10:06 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Introduce precision tracking logic that
-> helps cilium programs the most:
->                   old clang  old clang    new clang  new clang
->                           with all patches         with all patches
-> bpf_lb-DLB_L3.o      1838     2728         1923      2216
-> bpf_lb-DLB_L4.o      3218     3562         3077      3390
-> bpf_lb-DUNKNOWN.o    1064     544          1062      543
-> bpf_lxc-DDROP_ALL.o  26935    15989        166729    15372
-> bpf_lxc-DUNKNOWN.o   34439    26043        174607    22156
-> bpf_netdev.o         9721     8062         8407      7312
-> bpf_overlay.o        6184     6138         5420      5555
-> bpf_lxc_jit.o        39389    39452        39389     39452
+> On Fri, Jun 14, 2019 at 8:13 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+> >
+> >
+> > Alexei Starovoitov writes:
+> >
+> > > On Wed, Jun 12, 2019 at 8:25 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+> > >>
+> > >>
+> > >> Jiong Wang writes:
+> > >>
+> > >> > Alexei Starovoitov writes:
+> > >> >
+> > >> >> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
+> > >> >> <naveen.n.rao@linux.vnet.ibm.com> wrote:
+> > >> >>>
+> > >> >>> Currently, for constant blinding, we re-allocate the bpf program to
+> > >> >>> account for its new size and adjust all branches to accommodate the
+> > >> >>> same, for each BPF instruction that needs constant blinding. This is
+> > >> >>> inefficient and can lead to soft lockup with sufficiently large
+> > >> >>> programs, such as the new verifier scalability test (ld_dw: xor
+> > >> >>> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
+> > >> >>
+> > >> >> Slowdown you see is due to patch_insn right?
+> > >> >> In such case I prefer to fix the scaling issue of patch_insn instead.
+> > >> >> This specific fix for blinding only is not addressing the core of the problem.
+> > >> >> Jiong,
+> > >> >> how is the progress on fixing patch_insn?
+> > >>
+> > >> And what I have done is I have digested your conversion with Edward, and is
+> > >> slightly incline to the BB based approach as it also exposes the inserted
+> > >> insn to later pass in a natural way, then was trying to find a way that
+> > >> could create BB info in little extra code based on current verifier code,
+> > >> for example as a side effect of check_subprogs which is doing two insn
+> > >> traversal already. (I had some such code before in the historical
+> > >> wip/bpf-loop-detection branch, but feel it might be still too heavy for
+> > >> just improving insn patching)
+> > >
+> > > BB - basic block?
+> > > I'm not sure that was necessary.
+> > > The idea was that patching is adding stuff to linked list instead
+> > > and single pass at the end to linearize it.
+> >
+> > Just an update and keep people posted.
+> >
+> > Working on linked list based approach, the implementation looks like the
+> > following, mostly a combine of discussions happened and Naveen's patch,
+> > please feel free to comment.
+> >
+> >   - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
+> >     BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
+> >
+> >   - Introduce patch pool into bpf_prog->aux to keep all patched insns.
+> >     Pool structure looks like:
+> >
+> >     struct {
+> >       int num;
+> >       int prev;
+> >       int next;
+> >     } head_0;
+> >     NUM patched insns for head_0
+> >     head_1;
+> >     patched insns for head_1
+> >     head_2;
+> >     ...
+> >
+> >   - Now when doing bpf_patch_insn_single, it doesn't change the original
+> >     prog etc, instead, it merely update the insn at patched offset into a
+> >     BPF_LIST_INSN, and pushed the patched insns plus a patch header into
+> >     the patch pool. Fields of BPF_LIST_INSN is updated to setup the links:
+> >
+> >       BPF_LIST_INSN.off += patched_size
+> >       (accumulating the size attached to this list_insn, it is possible a
+> >       later patch pass patches insn in the patch pool, this means insn
+> >       traversal needs to be changed, when seeing BPF_LIST_INSN, should go
+> >       through the list)
+> >
+> >       BPF_LIST_INSN.imm = offset of the patch header in patch pool
+> >       (off is 16-bit, imm is 32-bit, the patch pool is 32-bit length, so
+> >       use imm for keeping offset, meaning a BPF_LIST_INSN can contains no
+> >       more than 8192 insns, guess it is enough)
+> >
+> >   - When doing linearize:
+> >     1. a quick scan of prog->insnsi to know the final
+> >        image size, would be simple as:
+> >
+> >       fini_size = 0;
+> >       for_each_insn:
+> >         if (insn.code == (BPF_ALU | BPF_LIST_HEAD))
+> >           fini_size += insn->off;
+> >         else
+> >           fini_size++;
+> >
+> >     2. Resize prog into fini_size, and a second scan of prog->insnsi to
+> >        copy over all insns and patched insns, at the same time generate a
+> >        auxiliary index array which maps an old index to the new index in
+> >        final image, like the "clone_index" in Naveen's patch.
+> >
+> >     3. Finally, a single pass to update branch target, the same algo used
+> >        by this patch.
+> >
+> >   - The APIs for doing insning patch looks like:
+> >       bpf_patch_insn_init:   init the generic patch pool.
+> >       bpf_patch_insn_single: push patched insns to the pool.
+> >                              link them to the associated BPF_LIST_INSN.
+> >       bpf_patch_insn_fini:   linearize a bpf_prog contains BPF_LIST_INSN.
+> >                              destroy patch pool in prog->aux.
+> >
+> > I am trying to making the implementation working with jit blind first to make
+> > sure basic things are ready. As JIT blinds happens after verification so no
+> > need to both aux update etc. Then will cleanup quite a few things for
+> > example patch a patched insn, adjust aux data, what to do with insn delete
+> > etc.
 >
-> Consider code:
-> 654: (85) call bpf_get_hash_recalc#34
-> 655: (bf) r7 = r0
-> 656: (15) if r8 == 0x0 goto pc+29
-> 657: (bf) r2 = r10
-> 658: (07) r2 += -48
-> 659: (18) r1 = 0xffff8881e41e1b00
-> 661: (85) call bpf_map_lookup_elem#1
-> 662: (15) if r0 == 0x0 goto pc+23
-> 663: (69) r1 = *(u16 *)(r0 +0)
-> 664: (15) if r1 == 0x0 goto pc+21
-> 665: (bf) r8 = r7
-> 666: (57) r8 &= 65535
-> 667: (bf) r2 = r8
-> 668: (3f) r2 /= r1
-> 669: (2f) r2 *= r1
-> 670: (bf) r1 = r8
-> 671: (1f) r1 -= r2
-> 672: (57) r1 &= 255
-> 673: (25) if r1 > 0x1e goto pc+12
->  R0=map_value(id=0,off=0,ks=20,vs=64,imm=0) R1_w=inv(id=0,umax_value=30,var_off=(0x0; 0x1f))
-> 674: (67) r1 <<= 1
-> 675: (0f) r0 += r1
+> explicit indices feels like premature optimization.
+> May be use vanilla singly linked list instead?
+> Also do we have a case when patched insn will be patched again?
+> In such case 'patch insn pool' will become recursive?
+> Feels difficult to think through all offsets and indices.
+> Whereas with linked list patching patched insns will be inserting
+> them into link list.
 >
-> At this point the verifier will notice that scalar R1 is used in map pointer adjustment.
-> R1 has to be precise for later operations on R0 to be validated properly.
->
-> The verifier will backtrack the above code in the following way:
-> last_idx 675 first_idx 664
-> regs=2 stack=0 before 675: (0f) r0 += r1         // started backtracking R1 regs=2 is a bitmask
-> regs=2 stack=0 before 674: (67) r1 <<= 1
-> regs=2 stack=0 before 673: (25) if r1 > 0x1e goto pc+12
-> regs=2 stack=0 before 672: (57) r1 &= 255
-> regs=2 stack=0 before 671: (1f) r1 -= r2         // now both R1 and R2 has to be precise -> regs=6 mask
-> regs=6 stack=0 before 670: (bf) r1 = r8          // after this insn R8 and R2 has to be precise
-> regs=104 stack=0 before 669: (2f) r2 *= r1       // after this one R8, R2, and R1
-> regs=106 stack=0 before 668: (3f) r2 /= r1
-> regs=106 stack=0 before 667: (bf) r2 = r8
-> regs=102 stack=0 before 666: (57) r8 &= 65535
-> regs=102 stack=0 before 665: (bf) r8 = r7
-> regs=82 stack=0 before 664: (15) if r1 == 0x0 goto pc+21
->  // this is the end of verifier state. The following regs will be marked precised:
->  R1_rw=invP(id=0,umax_value=65535,var_off=(0x0; 0xffff)) R7_rw=invP(id=0)
-> parent didn't have regs=82 stack=0 marks         // so backtracking continues into parent state
-> last_idx 663 first_idx 655
-> regs=82 stack=0 before 663: (69) r1 = *(u16 *)(r0 +0)   // R1 was assigned no need to track it further
-> regs=80 stack=0 before 662: (15) if r0 == 0x0 goto pc+23    // keep tracking R7
-> regs=80 stack=0 before 661: (85) call bpf_map_lookup_elem#1  // keep tracking R7
-> regs=80 stack=0 before 659: (18) r1 = 0xffff8881e41e1b00
-> regs=80 stack=0 before 658: (07) r2 += -48
-> regs=80 stack=0 before 657: (bf) r2 = r10
-> regs=80 stack=0 before 656: (15) if r8 == 0x0 goto pc+29
-> regs=80 stack=0 before 655: (bf) r7 = r0                // here the assignment into R7
->  // mark R0 to be precise:
->  R0_rw=invP(id=0)
-> parent didn't have regs=1 stack=0 marks                 // regs=1 -> tracking R0
-> last_idx 654 first_idx 644
-> regs=1 stack=0 before 654: (85) call bpf_get_hash_recalc#34 // and in the parent frame it was a return value
->   // nothing further to backtrack
->
-> Two scalar registers not marked precise are equivalent from state pruning point of view.
-> More details in the patch comments.
->
-> It doesn't support bpf2bpf calls yet and enabled for root only.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+> May be better alternative is to convert the whole program to link list
+> of insns with branch targets becoming pointers and insert patched
+> insns into this single singly linked list ?
 
-<snip>
-
-> @@ -958,6 +983,17 @@ static void __reg_bound_offset(struct bpf_reg_state *reg)
->         reg->var_off = tnum_intersect(reg->var_off,
->                                       tnum_range(reg->umin_value,
->                                                  reg->umax_value));
-> +       /* if register became known constant after a sequence of comparisons
-> +        * or arithmetic operations mark it precise now, since backtracking
-> +        * cannot follow such logic.
-> +        * Example:
-> +        * r0 = get_random();
-> +        * if (r0 < 1) goto ..
-> +        * if (r0 > 1) goto ..
-> +        * r0 is const here
-> +        */
-> +       if (tnum_is_const(reg->var_off))
-> +               reg->precise = true;
-
-I'm not sure you have to do this: r0 value might never be used in a
-"precise" context. But worse, if it is required to be precise,
-backtracking logic will stop here, while it has to continue to the
-previous conditional jumps and keep marking r0 as precise.
-
->  }
->
->  /* Reset the min/max bounds of a register */
-> @@ -967,6 +1003,9 @@ static void __mark_reg_unbounded(struct bpf_reg_state *reg)
->         reg->smax_value = S64_MAX;
->         reg->umin_value = 0;
->         reg->umax_value = U64_MAX;
-> +
-> +       /* constant backtracking is enabled for root only for now */
-> +       reg->precise = capable(CAP_SYS_ADMIN) ? false : true;
->  }
->
->  /* Mark a register as having a completely unknown (scalar) value. */
-> @@ -1457,6 +1496,9 @@ static int check_stack_write(struct bpf_verifier_env *env,
->
->         if (reg && size == BPF_REG_SIZE && register_is_const(reg) &&
->             !register_is_null(reg) && env->allow_ptr_leaks) {
-> +               if (env->prog->insnsi[insn_idx].dst_reg != BPF_REG_FP)
-> +                       /* backtracking logic can only recognize explicit [fp-X] */
-> +                       reg->precise = true;
-
-This has similar problem as above. Every time you proactively mark
-some register/stack slot as precise, you have to do backtrack logic to
-mark relevant register precise.
-
-
->                 save_register_state(state, spi, reg);
->         } else if (reg && is_spillable_regtype(reg->type)) {
->                 /* register containing pointer is being spilled into stack */
-> @@ -1610,6 +1652,10 @@ static int check_stack_read(struct bpf_verifier_env *env,
->                                  * so the whole register == const_zero
->                                  */
->                                 __mark_reg_const_zero(&state->regs[value_regno]);
-> +                               /* backtracking doesn't support STACK_ZERO yet,
-> +                                * so conservatively mark it precise
-> +                                */
-> +                               state->regs[value_regno].precise = true;
-
-This is probably ok without backtracking, because of STACK_ZERO being
-implicitly precise. But flagging just in case.
-
->                         } else {
->                                 /* have read misc data from the stack */
->                                 mark_reg_unknown(env, state->regs, value_regno);
-> @@ -2735,6 +2781,369 @@ static int int_ptr_type_to_size(enum bpf_arg_type type)
->         return -EINVAL;
->  }
->
-> +/* for any branch, call, exit record the history of jmps in the given state */
-> +static int push_jmp_history(struct bpf_verifier_env *env,
-> +                           struct bpf_verifier_state *cur)
-> +{
-> +       struct bpf_idx_pair *p;
-> +       u32 cnt = cur->jmp_history_cnt;
-
-Reverse Christmas tree.
-
-> +
-> +       cnt++;
-> +       p = krealloc(cur->jmp_history, cnt * sizeof(*p), GFP_USER);
-> +       if (!p)
-> +               return -ENOMEM;
-> +       p[cnt - 1].idx = env->insn_idx;
-> +       p[cnt - 1].prev_idx = env->prev_insn_idx;
-> +       cur->jmp_history = p;
-> +       cur->jmp_history_cnt = cnt;
-> +       return 0;
-> +}
-> +
-> +/* Backtrack one insn at a time. If idx is not at the top of recorded
-> + * history then previous instruction came from straight line execution.
-> + */
-> +static int pop_and_get_prev_idx(struct bpf_verifier_state *st, int i)
-
-This operation destroys jmp_history, which is a problem if there is
-another branch yet-to-be-processed, which might need jmp history again
-to mark some other register as precise.
-
-> +{
-> +       u32 cnt = st->jmp_history_cnt;
-> +
-> +       if (cnt && st->jmp_history[cnt - 1].idx == i) {
-> +               i = st->jmp_history[cnt - 1].prev_idx;
-> +               st->jmp_history_cnt--;
-> +       } else {
-> +               i--;
-> +       }
-> +       return i;
-> +}
-> +
-
-<snip>
-
-> +       } else if (class == BPF_JMP || class == BPF_JMP32) {
-> +               if (opcode == BPF_CALL) {
-> +                       if (insn->src_reg == BPF_PSEUDO_CALL)
-> +                               return -ENOTSUPP;
-> +                       else
-> +                               /* regular helper call sets R0 */
-> +                               *reg_mask &= ~1;
-
-Regular helper also clobbers R1-R5, which from the standpoint of
-verifier should be treated as R[1-5] = <UNKNOWN>, so:
-
-*reg_mask &= ~0x3f
-
-> +               } else if (opcode == BPF_EXIT) {
-> +                       return -ENOTSUPP;
-> +               }
-> +       } else if (class == BPF_LD) {
-> +               if (!(*reg_mask & dreg))
-> +                       return 0;
-
-<snip>
-
-> + *
-> + * Note the verifier cannot simply walk register parentage chain,
-> + * since many different registers and stack slots could have been
-> + * used to compute single precise scalar.
-> + *
-> + * It's not safe to start with precise=true and backtrack
-> + * when passing scalar register into a helper that takes ARG_ANYTHING.
-
-It took me many reads to understand what this means (I think). Here
-you are saying that approach of starting with precise=true for
-register and then backtracking to mark it as not precise when we
-detect that we don't care about specific value (e.g., when helper
-takes register as ARG_ANYTHING parameter) is not safe. Is that correct
-interpretation? If yes, slightly less brief comment might be
-appropriate ;)
-
-> + *
-> + * It's ok to walk single parentage chain of the verifier states.
-> + * It's possible that this backtracking will go all the way till 1st insn.
-> + * All other branches will be explored for needing precision later.
-> + *
-> + * The backtracking needs to deal with cases like:
-> + *   R8=map_value(id=0,off=0,ks=4,vs=1952,imm=0) R9_w=map_value(id=0,off=40,ks=4,vs=1952,imm=0)
-> + * r9 -= r8
-> + * r5 = r9
-> + * if r5 > 0x79f goto pc+7
-> + *    R5_w=inv(id=0,umax_value=1951,var_off=(0x0; 0x7ff))
-> + * r5 += 1
-> + * ...
-> + * call bpf_perf_event_output#25
-> + *   where .arg5_type = ARG_CONST_SIZE_OR_ZERO
-> + *
-> + * and this case:
-> + * r6 = 1
-> + * call foo // uses callee's r6 inside to compute r0
-> + * r0 += r6
-> + * if r0 == 0 goto
-> + *
-> + * to track above reg_mask/stack_mask needs to be independent for each frame.
-> + *
-> + * Alslo if parent's curframe > frame where backtracking started,
-
-typo: Alslo -> Also
-
-<snip>
-
-> +
-> +static int mark_chain_precision(struct bpf_verifier_env *env, int regno)
-> +{
-> +       struct bpf_verifier_state *st = env->cur_state, *parent = st->parent;
-> +       int last_idx = env->insn_idx;
-> +       int first_idx = st->first_insn_idx;
-> +       struct bpf_func_state *func;
-> +       struct bpf_reg_state *reg;
-> +       u32 reg_mask = 1u << regno;
-> +       u64 stack_mask = 0;
-> +       int i, err;
-
-reverse Christmas tree :)
-
-> +
-> +       func = st->frame[st->curframe];
-> +       reg = &func->regs[regno];
-> +       if (reg->type != SCALAR_VALUE) {
-
-<snip>
-
-> +                       }
-> +               }
-> +               st = parent;
-
-not sure why you need parent variable, just st = st->parent
-
-> +               if (!st)
-> +                       break;
-> +
-
-<snip>
-
-> +
-> +               if (!new_marks)
-> +                       break;
-> +
-> +               parent = st->parent;
-> +               last_idx = st->last_insn_idx;
-> +               first_idx = st->first_insn_idx;
-> +       }
-> +       return 0;
-> +}
-> +
->  static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
->                           enum bpf_arg_type arg_type,
->                           struct bpf_call_arg_meta *meta)
-> @@ -2925,6 +3334,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
->                 err = check_helper_mem_access(env, regno - 1,
->                                               reg->umax_value,
->                                               zero_size_allowed, meta);
-> +               if (!err)
-> +                       err = mark_chain_precision(env, regno);
->         } else if (arg_type_is_int_ptr(arg_type)) {
->                 int size = int_ptr_type_to_size(arg_type);
->
-> @@ -4120,6 +4531,9 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
->                 return 0;
->         }
->
-> +       if (src_reg.precise)
-> +               dst_reg->precise = true;
-
-This doesn't seem necessary and correct. If dst_reg is never used in a
-precise context, then it doesn't have to be precise.
-
-But if you insist on marking it here, you'd have to do backtracking for dst_reg.
-
-> +
->         switch (opcode) {
->         case BPF_ADD:
->                 ret = sanitize_val_alu(env, insn);
-
-<snip>
+I think converting to a singly-linked list is a good, simple and
+straightforward approach. The only downside is 3x more memory (insn +
+next pointer + branch pointer for instructions that branch/call), but
+it shouldn't be a big deal in practice. But it seems like a good
+opportunity to simplify and clean up patching code, so I'd definitely
+vote to start with this approach.
