@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5F44552A
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 08:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F324552E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbfFNG7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 02:59:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39668 "EHLO mail.kernel.org"
+        id S1726073AbfFNHBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 03:01:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37190 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725835AbfFNG7i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 02:59:38 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725780AbfFNHBa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 03:01:30 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 939C92063F;
-        Fri, 14 Jun 2019 06:59:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560495577;
-        bh=GE6kHlZhWjeir7ihj8EED4mH6wyPeJJCUgG+az2TV5k=;
-        h=Date:From:To:Cc:Subject:From;
-        b=1D7uYNsXWMLUv5stOEuz+G6hJ4eG6KlOl07Z79zO2ayNnSFn0OztQDnYNABmyldyI
-         mSY5/Rk+IpihF/caIWfjXeTepLpJi3nLh3jle0uTBTeHqYvEmvI85XBGlbXeI9MwBc
-         8Vg/3H1vye5FuuH0TbiFlghN/xnqbLWX0OYG1eoA=
-Date:   Fri, 14 Jun 2019 08:59:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] mac80211: no need to check return value of debugfs_create
- functions
-Message-ID: <20190614065934.GA23295@kroah.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 6B8CF30821B2;
+        Fri, 14 Jun 2019 07:01:29 +0000 (UTC)
+Received: from [10.72.12.190] (ovpn-12-190.pek2.redhat.com [10.72.12.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 69070605CF;
+        Fri, 14 Jun 2019 07:01:24 +0000 (UTC)
+Subject: Re: [PATCH net-next] virtio_net: enable napi_tx by default
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        Willem de Bruijn <willemb@google.com>
+References: <20190613162457.143518-1-willemdebruijn.kernel@gmail.com>
+ <c43051c5-144a-5aa4-2387-8fb42442f455@redhat.com>
+ <20190614013506-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8c0317a3-16e2-8246-a25d-3a3f9337edec@redhat.com>
+Date:   Fri, 14 Jun 2019 15:01:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190614013506-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 14 Jun 2019 07:01:29 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling debugfs functions, there is no need to ever check the
-return value.  The function can work or not, but the code logic should
-never do something different based on this.
 
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/mac80211/debugfs_key.c    |  3 ---
- net/mac80211/debugfs_netdev.c | 10 +++-------
- net/mac80211/debugfs_sta.c    |  2 --
- 3 files changed, 3 insertions(+), 12 deletions(-)
+On 2019/6/14 下午2:00, Michael S. Tsirkin wrote:
+> On Fri, Jun 14, 2019 at 11:28:59AM +0800, Jason Wang wrote:
+>> On 2019/6/14 上午12:24, Willem de Bruijn wrote:
+>>> From: Willem de Bruijn <willemb@google.com>
+>>>
+>>> NAPI tx mode improves TCP behavior by enabling TCP small queues (TSQ).
+>>> TSQ reduces queuing ("bufferbloat") and burstiness.
+>>>
+>>> Previous measurements have shown significant improvement for
+>>> TCP_STREAM style workloads. Such as those in commit 86a5df1495cc
+>>> ("Merge branch 'virtio-net-tx-napi'").
+>>>
+>>> There has been uncertainty about smaller possible regressions in
+>>> latency due to increased reliance on tx interrupts.
+>>>
+>>> The above results did not show that, nor did I observe this when
+>>> rerunning TCP_RR on Linux 5.1 this week on a pair of guests in the
+>>> same rack. This may be subject to other settings, notably interrupt
+>>> coalescing.
+>>>
+>>> In the unlikely case of regression, we have landed a credible runtime
+>>> solution. Ethtool can configure it with -C tx-frames [0|1] as of
+>>> commit 0c465be183c7 ("virtio_net: ethtool tx napi configuration").
+>>>
+>>> NAPI tx mode has been the default in Google Container-Optimized OS
+>>> (COS) for over half a year, as of release M70 in October 2018,
+>>> without any negative reports.
+>>>
+>>> Link: https://marc.info/?l=linux-netdev&m=149305618416472
+>>> Link: https://lwn.net/Articles/507065/
+>>> Signed-off-by: Willem de Bruijn <willemb@google.com>
+>>>
+>>> ---
+>>>
+>>> now that we have ethtool support and real production deployment,
+>>> it seemed like a good time to revisit this discussion.
+>>
+>> I agree to enable it by default. Need inputs from Michael. One possible
+>> issue is we may get some regression on the old machine without APICV, but
+>> consider most modern CPU has this feature, it probably doesn't matter.
+>>
+>> Thanks
+>>
+> Right. If the issue does arise we can always add e.g. a feature flag
+> to control the default from the host.
+>
 
-diff --git a/net/mac80211/debugfs_key.c b/net/mac80211/debugfs_key.c
-index a2ef95f16f11..1a25de4e7e78 100644
---- a/net/mac80211/debugfs_key.c
-+++ b/net/mac80211/debugfs_key.c
-@@ -342,9 +342,6 @@ void ieee80211_debugfs_key_add(struct ieee80211_key *key)
- 	key->debugfs.dir = debugfs_create_dir(buf,
- 					key->local->debugfs.keys);
- 
--	if (!key->debugfs.dir)
--		return;
--
- 	sta = key->sta;
- 	if (sta) {
- 		sprintf(buf, "../../netdev:%s/stations/%pM",
-diff --git a/net/mac80211/debugfs_netdev.c b/net/mac80211/debugfs_netdev.c
-index deb3faf08337..f6508cf67944 100644
---- a/net/mac80211/debugfs_netdev.c
-+++ b/net/mac80211/debugfs_netdev.c
-@@ -818,9 +818,8 @@ void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata)
- 	sprintf(buf, "netdev:%s", sdata->name);
- 	sdata->vif.debugfs_dir = debugfs_create_dir(buf,
- 		sdata->local->hw.wiphy->debugfsdir);
--	if (sdata->vif.debugfs_dir)
--		sdata->debugfs.subdir_stations = debugfs_create_dir("stations",
--			sdata->vif.debugfs_dir);
-+	sdata->debugfs.subdir_stations = debugfs_create_dir("stations",
-+							sdata->vif.debugfs_dir);
- 	add_files(sdata);
- }
- 
-@@ -845,8 +844,5 @@ void ieee80211_debugfs_rename_netdev(struct ieee80211_sub_if_data *sdata)
- 		return;
- 
- 	sprintf(buf, "netdev:%s", sdata->name);
--	if (!debugfs_rename(dir->d_parent, dir, dir->d_parent, buf))
--		sdata_err(sdata,
--			  "debugfs: failed to rename debugfs dir to %s\n",
--			  buf);
-+	debugfs_rename(dir->d_parent, dir, dir->d_parent, buf);
- }
-diff --git a/net/mac80211/debugfs_sta.c b/net/mac80211/debugfs_sta.c
-index 8e921281e0d5..b2542bb2814e 100644
---- a/net/mac80211/debugfs_sta.c
-+++ b/net/mac80211/debugfs_sta.c
-@@ -960,8 +960,6 @@ void ieee80211_sta_debugfs_add(struct sta_info *sta)
- 	 * dir might still be around.
- 	 */
- 	sta->debugfs_dir = debugfs_create_dir(mac, stations_dir);
--	if (!sta->debugfs_dir)
--		return;
- 
- 	DEBUGFS_ADD(flags);
- 	DEBUGFS_ADD(aid);
--- 
-2.22.0
+Yes.
+
+So
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
 
