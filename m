@@ -2,76 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 892DE45A30
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 12:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9AD45A38
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 12:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727461AbfFNKRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 06:17:10 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:33758 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726884AbfFNKRK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 06:17:10 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id E0D9E200A3;
-        Fri, 14 Jun 2019 12:17:08 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RRv7952B7TMd; Fri, 14 Jun 2019 12:17:08 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 7A37C200A0;
-        Fri, 14 Jun 2019 12:17:08 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
- 12:17:08 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 200253180B3C;
- Fri, 14 Jun 2019 12:17:08 +0200 (CEST)
-Date:   Fri, 14 Jun 2019 12:17:08 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jeremy Sowden <jeremy@azazel.net>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] af_key: Fix memory leak in key_notify_policy.
-Message-ID: <20190614101708.GP17989@gauss3.secunet.de>
-References: <1560500786-572-1-git-send-email-92siuyang@gmail.com>
- <20190614085346.GN17989@gauss3.secunet.de>
- <20190614095922.k5yzeyew2zhrfp7e@azazel.net>
- <20190614101338.hia635sctr6qjmd2@azazel.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20190614101338.hia635sctr6qjmd2@azazel.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+        id S1727389AbfFNKSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 06:18:46 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:39572 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727181AbfFNKSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 06:18:46 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hbjIB-0005RR-1o; Fri, 14 Jun 2019 12:18:43 +0200
+Message-ID: <68c99662210c8e9e37f198ddf8cb00bccf301c4b.camel@sipsolutions.net>
+Subject: VLAN tags in mac_len
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     bridge@lists.linux-foundation.org, nikolay@cumulusnetworks.com,
+        roopa@cumulusnetworks.com, jhs@mojatatu.com,
+        David Ahern <dsahern@gmail.com>,
+        Zahari Doychev <zahari.doychev@linux.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Alexei Starovoitov <ast@plumgrid.com>
+Date:   Fri, 14 Jun 2019 12:18:41 +0200
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 11:13:38AM +0100, Jeremy Sowden wrote:
-> 
-> That reminds me.  Stephen Rothwell reported a problem with the "Fixes:"
-> tag:
-> 
-> On 2019-05-29, at 07:48:12 +1000, Stephen Rothwell wrote:
-> > In commit
-> >
-> >   7c80eb1c7e2b ("af_key: fix leaks in key_pol_get_resp and dump_sp.")
-> >
-> > Fixes tag
-> >
-> >   Fixes: 55569ce256ce ("Fix conversion between IPSEC_MODE_xxx and XFRM_MODE_xxx.")
-> >
-> > has these problem(s):
-> >
-> >   - Subject does not match target commit subject
-> >     Just use
-> > 	git log -1 --format='Fixes: %h ("%s")'
-> 
-> What's the procedure for fixing this sort of thing?  Do you need me to
-> do anything?
+Hi all,
 
-No, that patch is already commited. We can't change the commit
-message anymore. Just keep it in mind for next time.
+Sorry for the long CC list - it's a bit unclear where the issue is.
+
+Zahari has been looking at this forever, and we keep talking about it,
+but every time we squint and look at it in a different way, the issue
+appears in a different place.
+
+Ultimately, the issue appears to be that we cannot make up our mind
+whether we consider VLAN tags to be covered by mac_len or not.
+
+
+Some history first.
+
+For OVS datapath, Simon evidently considered the VLAN tags to be part of
+the mac_len, since the OVS VLAN push/pop actions manipulate it, see
+commit 25cd9ba0abc07 ("openvswitch: Add basic MPLS support to kernel").
+It's not clear to me, however, why it previously wasn't considered and
+only MPLS needed to consider it this way - perhaps nobody ever tried
+double-VLAN tagging or something.
+
+Anyway, then in commit 93515d53b133 ("net: move vlan pop/push functions
+into common code") Jiri moved the code as is into common code, which
+still kinda made sense since OVS was the only user. Maybe at this point
+we should've asked whether or not the mac_len manipulations make sense
+or not though.
+
+Now clearly Jiri had an agenda (btw, sorry for misspelling your name all
+the time), and followed up with commit c7e2b9689ef8 ("sched: introduce
+vlan action"). I assume this was tested, but probably not in the
+scenario we have now.
+
+There's also commit 4e10df9a60d9 ("bpf: introduce
+bpf_skb_vlan_push/pop() helpers") which then makes all of this get used
+in BPF.
+
+The bridge code, on the other hand, has basically always (I stopped
+looking when I hit the end of current git history) assumed that VLAN
+tags are not part of mac_len, and does skb_push(ETH_HLEN).
+
+
+Next, the scenario.
+
+Basically, what Zahari is trying to do is to use TC to push *two* VLAN
+tags on ingress, before the packet then goes to the bridge.
+
+This results in the following flow:
+
+We start with an ingress skb, somewhere:
+-> eth_type_trans()
+ => skb->mac_len = 14,
+    skb->data = ethhdr + 14
+
+Push the first tag with TC:
+-> tc vlan push (tag1)
+ -> skb_push(mac_len)
+  => skb->data = ethhdr
+
+ -> skb_vlan_push(tag1)
+  -> __vlan_hwaccel_put_tag(tag1)
+
+ -> skb_pull(mac_len)
+  => skb->data = ethhdr + 14
+ => no changes in SKB other than recorded VLAN acceleration
+
+Push the second tag with TC
+-> tc vlan push (tag2)
+ -> skb_push(mac_len)
+   * skb->data = ethhdr
+ -> skb_vlan_push(tag2)
+  -> __vlan_insert_tag()
+  -> skb->mac_len += 4
+   => skb->mac_len = 18
+ -> __vlan_hwaccel_put_tag(tag2)
+ -> skb_pull(mac_len)
+  => skb->data = ethhdr + 18
+
+-> bridge
+ -> br_dev_queue_push_xmit()
+  -> skb_push(14)
+   => skb->data = ethhdr + 4 (!!!)
+  -> dev_queue_xmit()
+
+=> as a result, now the first 4 bytes of the frame are lost, as
+   on xmit drivers expect to start at skb->data
+
+(There's some more complication here if we actually don't have HW
+offload for the VLAN tag, but the end result is basically the same)
+
+
+
+Possible solutions?
+
+So far, Zahari tried three different ways of fixing this:
+
+ 1) Make the bridge code use skb->mac_len instead of ETH_HLEN. This
+    works for this particular case, but breaks some other cases;
+    evidently some places exist where skb->mac_len isn't even set to
+    ETH_HLEN when a packet gets to the bridge. I don't know right now
+    what that was, I think probably somebody who's CC'ed reported that.
+
+ 2) Let tc_act_vlan() just pull ETH_HLEN instead of skb->mac_len, but
+    this is rather asymmetric and strange, and while it works for this
+    case it may cause confusion elsewhere.
+
+ 2b) Toshiaki said it might be better to make that code *remember*
+     mac_len and then use it to push and pull (so not caring about the
+     change made by skb_vlan_push()), but that ultimately leads to
+     confusion and if you have TC push/pop combinations things just get
+     completely out of sync and die
+
+ 3) Make skb_vlan_push()/_pop() just not change mac_len at all. So far
+    this also addresses the issue, but it's likely that this will break
+    OVS, and I don't know how it'd affect BPF. Quite possibly like TC
+    does and is broken, but perhaps not.
+
+
+But now we're stuck. Depending on how you look at it, all of these seem
+sort of reasonable, or not.
+
+Ultimately, the issue seems to be that we couldn't really decide whether
+VLAN tags (and probably MPLS tags, for that matter) are covered by
+mac_len or not. At least not consistently on ingress and egress.
+eth_type_trans() doesn't take them into account, so of course on simple
+ingress mac_len will only cover the ETH_HLEN.
+
+If you have an accelerated tag and then push it into the SKB, it will
+*not* be taken into account in mac_len. OTOH, if you have a new tag and
+use skb_vlan_push() then it *will* be taken into account.
+
+
+I'm trending towards solution (3), because if we consider other
+combinations of VLAN push/pop in TC, I think we can end up in a very
+messy situation today. For example, POP/PUSH seems like it should be a
+no-op, but it isn't due to the mac_len, *unless* it can use the HW accel
+only (i.e. only a single tag).
+
+I think then to propose such a patch though we'd have to figure out
+where the BPF case is, and to keep OVS working probably either add an
+argument ("bool adjust_mac_len") to the function signatures, or just do
+the adjustments in OVS code after calling them?
+
+
+Any other thoughts?
+
+Thanks,
+Zahari & Johannes
+
