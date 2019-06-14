@@ -2,69 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BB746856
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 21:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17AB468A8
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725991AbfFNTvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 15:51:05 -0400
-Received: from mga05.intel.com ([192.55.52.43]:30568 "EHLO mga05.intel.com"
+        id S1726073AbfFNUOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 16:14:04 -0400
+Received: from ms.lwn.net ([45.79.88.28]:53924 "EHLO ms.lwn.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725808AbfFNTvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 15:51:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jun 2019 12:51:04 -0700
-X-ExtLoop1: 1
-Received: from nisrael1-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.255.41.147])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jun 2019 12:50:54 -0700
-Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
- non-combined channels
-To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        id S1725825AbfFNUOD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 16:14:03 -0400
+Received: from lwn.net (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 2474A128A;
+        Fri, 14 Jun 2019 20:14:02 +0000 (UTC)
+Date:   Fri, 14 Jun 2019 14:14:01 -0600
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Tejun Heo <tj@kernel.org>,
+        Li Zefan <lizefan@huawei.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-References: <20190612155605.22450-1-maximmi@mellanox.com>
- <20190612155605.22450-8-maximmi@mellanox.com>
- <20190612132352.7ee27bf3@cakuba.netronome.com>
- <0afd3ef2-d0e3-192b-095e-0f8ae8e6fb5d@mellanox.com>
- <20190613164514.00002f66@gmail.com>
- <eb175575-1ab4-4d29-1dc9-28d85cddd842@mellanox.com>
- <20190614191549.0000374d@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <9ee7363b-508a-4461-1c4f-252c2ba9cf76@intel.com>
-Date:   Fri, 14 Jun 2019 21:50:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v4 05/28] docs: cgroup-v1: convert docs to ReST and
+ rename to *.rst
+Message-ID: <20190614141401.48bfb266@lwn.net>
+In-Reply-To: <c1dd623359f44f05863456b8bceba0d8f3e42f38.1560361364.git.mchehab+samsung@kernel.org>
+References: <cover.1560361364.git.mchehab+samsung@kernel.org>
+        <c1dd623359f44f05863456b8bceba0d8f3e42f38.1560361364.git.mchehab+samsung@kernel.org>
+Organization: LWN.net
 MIME-Version: 1.0
-In-Reply-To: <20190614191549.0000374d@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-14 19:15, Maciej Fijalkowski wrote:
-> Why would I want to run AF_XDP without ZC? The main reason for having AF_XDP
-> support in drivers is the zero copy, right?
+On Wed, 12 Jun 2019 14:52:41 -0300
+Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
 
-In general I agree with you on this point. Short-term, I see copy-mode
-useful for API adoption reasons (as XDP_SKB), so from that perspecitve
-it's important. Longer term I'd like to explore AF_XDP as a faster
-AF_PACKET for pcap functionality.
+> Convert the cgroup-v1 files to ReST format, in order to
+> allow a later addition to the admin-guide.
+> 
+> The conversion is actually:
+>   - add blank lines and identation in order to identify paragraphs;
+>   - fix tables markups;
+>   - add some lists markups;
+>   - mark literal blocks;
+>   - adjust title markups.
+> 
+> At its new index.rst, let's add a :orphan: while this is not linked to
+> the main index.rst file, in order to avoid build warnings.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> Acked-by: Tejun Heo <tj@kernel.org>
 
+This one, too, has linux-next stuff that keeps it from applying to
+docs-next.  Tejun, would you like to carry it on top of your work?
 
-Björn
+(This means I won't be able to apply #6 either, naturally).
 
+Thanks,
+
+jon
