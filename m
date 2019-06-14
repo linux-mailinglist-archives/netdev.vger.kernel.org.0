@@ -2,86 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8895345FE4
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 507EC45FF4
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728708AbfFNOCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 10:02:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50708 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728034AbfFNOCm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 10:02:42 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F10F42064A;
-        Fri, 14 Jun 2019 14:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560520961;
-        bh=yuQRJdK0c0k8QDLCPmaaUBPA4Gh5iMSc87ydddzUjLY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Adj/ubhVrddpf3XNZqH7bla3F/OQLtlWktGpnu78fRXaEWJVclE8EAVB7iVcwuXIj
-         MgEu3GKKHjwm4kv6V7mrBTfmdB65iAPolSabTzDn8Y8MigqQqnxVgShMq6aUvnqaEX
-         cqT5x9DBfftx8QKc8qPay9S9idxZcSOh+UlLdp+0=
-Date:   Fri, 14 Jun 2019 16:02:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH 12/16] staging/comedi: mark as broken
-Message-ID: <20190614140239.GA7234@kroah.com>
-References: <20190614134726.3827-1-hch@lst.de>
- <20190614134726.3827-13-hch@lst.de>
+        id S1728486AbfFNOEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 10:04:10 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:42774 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727123AbfFNOEK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 10:04:10 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id CD9F47202C52AF18FA28;
+        Fri, 14 Jun 2019 22:04:04 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
+ 22:04:00 +0800
+Subject: Re: [PATCH net v2] tcp: avoid creating multiple req socks with the
+ same tuples
+To:     Eric Dumazet <edumazet@google.com>
+References: <20190612035715.166676-1-maowenan@huawei.com>
+ <CANn89iJH6ZBH774SNrd2sUd_A5OBniiUVX=HBq6H4PXEW4cjwQ@mail.gmail.com>
+ <6de5d6d8-e481-8235-193e-b12e7f511030@huawei.com>
+ <a674e90e-d06f-cb67-604f-30cb736d7c72@huawei.com>
+ <6aa69ab5-ed81-6a7f-2b2b-214e44ff0ada@gmail.com>
+ <52025f94-04d3-2a44-11cd-7aa66ebc7e27@huawei.com>
+ <CANn89iKzfvZqZRo1pEwqW11DQk1YOPkoAR4tLbjRG9qbKOYEMw@mail.gmail.com>
+CC:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <7d0f5a21-717c-74ee-18ad-fc0432dfbe33@huawei.com>
+Date:   Fri, 14 Jun 2019 22:03:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190614134726.3827-13-hch@lst.de>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <CANn89iKzfvZqZRo1pEwqW11DQk1YOPkoAR4tLbjRG9qbKOYEMw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 03:47:22PM +0200, Christoph Hellwig wrote:
-> comedi_buf.c abuse the DMA API in gravely broken ways, as it assumes it
-> can call virt_to_page on the result, and the just remap it as uncached
-> using vmap.  Disable the driver until this API abuse has been fixed.
+
+
+On 2019/6/14 20:27, Eric Dumazet wrote:
+> On Fri, Jun 14, 2019 at 2:35 AM maowenan <maowenan@huawei.com> wrote:
+>>
+>>
+>>
+>> On 2019/6/14 12:28, Eric Dumazet wrote:
+>>>
+>>>
+>>> On 6/13/19 9:19 PM, maowenan wrote:
+>>>>
+>>>>
+>>>> @Eric, for this issue I only want to check TCP_NEW_SYN_RECV sk, is it OK like below?
+>>>>  +       if (!osk && sk->sk_state == TCP_NEW_SYN_RECV)
+>>>>  +               reqsk = __inet_lookup_established(sock_net(sk), &tcp_hashinfo,
+>>>>  +                                                       sk->sk_daddr, sk->sk_dport,
+>>>>  +                                                       sk->sk_rcv_saddr, sk->sk_num,
+>>>>  +                                                       sk->sk_bound_dev_if, sk->sk_bound_dev_if);
+>>>>  +       if (unlikely(reqsk)) {
+>>>>
+>>>
+>>> Not enough.
+>>>
+>>> If we have many cpus here, there is a chance another cpu has inserted a request socket, then
+>>> replaced it by an ESTABLISH socket for the same 4-tuple.
+>>
+>> I try to get more clear about the scene you mentioned. And I have do some testing about this, it can work well
+>> when I use multiple cpus.
+>>
+>> The ESTABLISH socket would be from tcp_check_req->tcp_v4_syn_recv_sock->tcp_create_openreq_child,
+>> and for this path, inet_ehash_nolisten pass osk(NOT NULL), my patch won't call __inet_lookup_established in inet_ehash_insert().
+>>
+>> When TCP_NEW_SYN_RECV socket try to inset to hash table, it will pass osk with NULL, my patch will check whether reqsk existed
+>> in hash table or not. If reqsk is existed, it just removes this reqsk and dose not insert to hash table. Then the synack for this
+>> reqsk can't be sent to client, and there is no chance to receive the ack from client, so ESTABLISH socket can't be replaced in hash table.
+>>
+>> So I don't see the race when there are many cpus. Can you show me some clue?
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/staging/comedi/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+> This is a bit silly.
+> You focus on some crash you got on a given system, but do not see the real bug.
 > 
-> diff --git a/drivers/staging/comedi/Kconfig b/drivers/staging/comedi/Kconfig
-> index 049b659fa6ad..e7c021d76cfa 100644
-> --- a/drivers/staging/comedi/Kconfig
-> +++ b/drivers/staging/comedi/Kconfig
-> @@ -1,6 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0
->  config COMEDI
->  	tristate "Data acquisition support (comedi)"
-> +	depends on BROKEN
+> 
+> CPU A
+> 
+> SYN packet
+>  lookup finds nothing.
+>  Create a NEW_SYN_RECV
+>  <long delay, like hardware interrupts calling some buggy driver or something>
 
-Um, that's a huge sledgehammer.
+I agree that this is a special case.
+I propose one point about the sequence of synack, if two synack with two different
+sequence since the time elapse 64ns, this issue disappear.
 
-Perhaps a hint as to how we can fix this up?  This is the first time
-I've heard of the comedi code not handling dma properly.
+tcp_conn_request->tcp_v4_init_seq->secure_tcp_seq->seq_scale
+static u32 seq_scale(u32 seq)
+{
+	/*
+	 *	As close as possible to RFC 793, which
+	 *	suggests using a 250 kHz clock.
+	 *	Further reading shows this assumes 2 Mb/s networks.
+	 *	For 10 Mb/s Ethernet, a 1 MHz clock is appropriate.
+	 *	For 10 Gb/s Ethernet, a 1 GHz clock should be ok, but
+	 *	we also need to limit the resolution so that the u32 seq
+	 *	overlaps less than one time per MSL (2 minutes).
+	 *	Choosing a clock of 64 ns period is OK. (period of 274 s)
+	 */
+	return seq + (ktime_get_real_ns() >> 6);
+}
 
-thanks,
+So if the long delay larger than 64ns, the seq is difference.
 
-greg k-h
+
+> 
+>              CPU B
+>              SYN packet
+>                -> inserts a NEW_SYN_RECV  sends a SYNACK
+>              ACK packet
+>              -> replaces the NEW_SYN_RECV by ESTABLISH socket
+> 
+> CPU A resumes.
+>     Basically a lookup (after taking the bucket spinlock) could either find :
+>    - Nothing (typical case where there was no race)
+>    -  A NEW_SYN_RECV
+>    -  A ESTABLISHED socket
+>   - A TIME_WAIT socket.
+> 
+> You can not simply fix the "NEW_SYN_RECV" state case, and possibly add
+> hard crashes (instead of current situation leading to RST packets)
+> 
+> .
+> 
+
