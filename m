@@ -2,121 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2616446C8D
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A582F46C91
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 00:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbfFNWtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 18:49:42 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:40316 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbfFNWtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:49:42 -0400
-Received: by mail-io1-f68.google.com with SMTP id n5so9156293ioc.7;
-        Fri, 14 Jun 2019 15:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kbewMGFsf3NG5S/ececI7qiEzOBlHXSz9tPVMeP272g=;
-        b=bqyaGulcLlNgacvRyHfISjHg6dWjzEmwltdTXycBch8Y4oCSdOq7s2nUHqFXYTwDoB
-         uBqFbc1NnVFS/tR6NRwD/PK3suBu7MwY9MSTw2swwsSzd/1JlzBFhEF0p8pLBvy4z/sE
-         BkCkDhTgj+3ozKLHavrVqE693cvR+6G2N+tRH34OhwRZEOZBirPbQzKlvYpTirrlHgSO
-         IY2cpLcm27o2iOkem5Nba3n8acmyVTs2bAiiI5hPgwru2TvkM1jQU8dcPX7vwNnAsLs3
-         JgtsN/pOH6GoA15YanxcmIPJNCPZy/GoX1gE4hDgE4hu2lLZriJfgb7MWu2nEis0ebak
-         w/0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kbewMGFsf3NG5S/ececI7qiEzOBlHXSz9tPVMeP272g=;
-        b=hY7yNivUnzPnwvNvofxK7fMsxKxvsG+FrKZyYQGT//ZthGIsLgLuqhOdR9N8u5o6x4
-         T1fAzjHFx4CJiIzSBTPkJJGcOC9tznNzP4NBM+7VlaDSppWLZOxYW5sgskURyOioS+2d
-         cb4XMkYMNKwGkBcJpuOd04SW2ZdaZEFHBNF0hp2ApOid9KEI4qLMp97wpfJR6SoQK59w
-         qKZuCpo42f93UDMmeSwcTfLfpwaQokM2RKa/g36YuBZqDY2HRJKYX0w0GEOE7B4lTewk
-         YUbduI8MvQBc2bB+KUu0iCik06jhrRTBdUH0pYmdryNpYgJUGkvWm+pyLDuvGnJ9Kgkf
-         nMnw==
-X-Gm-Message-State: APjAAAUYLgSSyNh32kPa60oh3C5b1OLm9GnTvWg7UkglfK7Wppy7Oeno
-        sk11i+pYYnEAGG1jKGrJ3US2hQB8CdDuRmik0pY=
-X-Google-Smtp-Source: APXvYqyw/Wjh6jqw3bUrA9vCRsSyj5neH0Fmhh2WLqTNl1s+sdX+cP/PkTIzdmi31EiRVyXkM6kt/hswCisCgAX6XrY=
-X-Received: by 2002:a5e:8618:: with SMTP id z24mr63324703ioj.174.1560552581128;
- Fri, 14 Jun 2019 15:49:41 -0700 (PDT)
+        id S1726063AbfFNWym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 18:54:42 -0400
+Received: from pb-smtp21.pobox.com ([173.228.157.53]:54612 "EHLO
+        pb-smtp21.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbfFNWym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 18:54:42 -0400
+Received: from pb-smtp21.pobox.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 327116AC9E;
+        Fri, 14 Jun 2019 18:54:40 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=from:to
+        :subject:message-id:date:mime-version:content-type
+        :content-transfer-encoding; s=sasl; bh=iEgu6rTrAwd8u7gHNlrBkvryq
+        eY=; b=YZ+lqTkeSkugtzSRvmxoInb2WwIBaNeAKis6wvs5sax3UuASMTARKrO78
+        P5yvFT1KZ8XX4jXQq1s1woMt67LvL0slc9WsBFLaRV670DDsMELp58+RsnvYX5Az
+        G4WHxzCRim3C4UNQGvfPTCMhIQoxecrxWlF1NSmbxtcATSdViQ=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=from:to:subject
+        :message-id:date:mime-version:content-type
+        :content-transfer-encoding; q=dns; s=sasl; b=YAU6IfALxo5kQq1Q9H1
+        przLHl5bCsei31zJG0kDUgeURf+MTW3PaS4nNuv7N538oYK/eDhH+9bXbOtdPaRw
+        upVRP1EAx3fyODMDAk+lx3Un7tClzbCMSTo3GJ4MvSfQn4abuvA+fnZkKLHrK1y7
+        f93XH/9MVxEcf5Eu6e+NSUDo=
+Received: from pb-smtp21.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp21.pobox.com (Postfix) with ESMTP id 2A8176AC9D;
+        Fri, 14 Jun 2019 18:54:40 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+Received: from [192.168.1.134] (unknown [70.142.57.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by pb-smtp21.pobox.com (Postfix) with ESMTPSA id 4812A6AC9C;
+        Fri, 14 Jun 2019 18:54:37 -0400 (EDT)
+        (envelope-from daniel.santos@pobox.com)
+From:   Daniel Santos <daniel.santos@pobox.com>
+To:     Daniel Golle <daniel@makrotopia.org>, Felix Fietkau <nbd@nbd.name>,
+        openwrt-devel <openwrt-devel@lists.openwrt.org>,
+        John Crispin <blogic@openwrt.org>,
+        Michael Lee <igvtee@gmail.com>, netdev@vger.kernel.org
+Subject: Understanding Ethernet Architecture (I/O --> MDIO --> MII vs I/O -->
+ MAC) for mt7620 (OpenWRT)
+Message-ID: <2766c2b3-3262-78f5-d736-990aaa385eeb@pobox.com>
+Date:   Fri, 14 Jun 2019 17:53:02 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20180429104412.22445-1-christian.brauner@ubuntu.com> <20180429104412.22445-3-christian.brauner@ubuntu.com>
-In-Reply-To: <20180429104412.22445-3-christian.brauner@ubuntu.com>
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Date:   Fri, 14 Jun 2019 15:49:30 -0700
-Message-ID: <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2 v5] netns: restrict uevents
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, avagin@virtuozzo.com,
-        ktkhai@virtuozzo.com, "Serge E. Hallyn" <serge@hallyn.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-Pobox-Relay-ID: 62C4A350-8EF7-11E9-AA41-8D86F504CC47-06139138!pb-smtp21.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christian,
+Hello,
 
-On Sun, Apr 29, 2018 at 3:45 AM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
->
-> commit 07e98962fa77 ("kobject: Send hotplug events in all network namespaces")
->abhishekbh@google.com
-> enabled sending hotplug events into all network namespaces back in 2010.
-> Over time the set of uevents that get sent into all network namespaces has
-> shrunk. We have now reached the point where hotplug events for all devices
-> that carry a namespace tag are filtered according to that namespace.
-> Specifically, they are filtered whenever the namespace tag of the kobject
-> does not match the namespace tag of the netlink socket.
-> Currently, only network devices carry namespace tags (i.e. network
-> namespace tags). Hence, uevents for network devices only show up in the
-> network namespace such devices are created in or moved to.
->
-> However, any uevent for a kobject that does not have a namespace tag
-> associated with it will not be filtered and we will broadcast it into all
-> network namespaces. This behavior stopped making sense when user namespaces
-> were introduced.
->
-> This patch simplifies and fixes couple of things:
-> - Split codepath for sending uevents by kobject namespace tags:
->   1. Untagged kobjects - uevent_net_broadcast_untagged():
->      Untagged kobjects will be broadcast into all uevent sockets recorded
->      in uevent_sock_list, i.e. into all network namespacs owned by the
->      intial user namespace.
->   2. Tagged kobjects - uevent_net_broadcast_tagged():
->      Tagged kobjects will only be broadcast into the network namespace they
->      were tagged with.
->   Handling of tagged kobjects in 2. does not cause any semantic changes.
->   This is just splitting out the filtering logic that was handled by
->   kobj_bcast_filter() before.
->   Handling of untagged kobjects in 1. will cause a semantic change. The
->   reasons why this is needed and ok have been discussed in [1]. Here is a
->   short summary:
->   - Userspace ignores uevents from network namespaces that are not owned by
->     the intial user namespace:
->     Uevents are filtered by userspace in a user namespace because the
->     received uid != 0. Instead the uid associated with the event will be
->     65534 == "nobody" because the global root uid is not mapped.
->     This means we can safely and without introducing regressions modify the
->     kernel to not send uevents into all network namespaces whose owning
->     user namespace is not the initial user namespace because we know that
->     userspace will ignore the message because of the uid anyway.
->     I have a) verified that is is true for every udev implementation out
->     there b) that this behavior has been present in all udev
->     implementations from the very beginning.
+I'm still fairly new to Ethernet drivers and there are a lot of
+interesting pieces.=C2=A0 What I need help with is understanding MDIO -->
+(R)MII vs direct I/O to the MAC (e.g., via ioread32, iowrite32).=C2=A0 Wh=
+y is
+there not always a struct mii_bus to talk to this hardware?=C2=A0 Is it
+because the PHY and/or MAC hardware sometimes attached via an MDIO
+device and sometimes directly to the I/O bus?=C2=A0 Or does some type of
+"indirect access" need to be enabled for that to work?
 
-Unfortunately udev is not the only consumer of uevents, for example on
-Android there is healthd that also consumes uevents, and this
-particular change broke Android running in a container on Chrome OS.
-Can this be reverted? Or, if we want to keep this, how can containers
-that use separate user namespace still listen to uevents?
+I might be trying to do something that's unnecessary however, I'm not
+sure yet.=C2=A0 I need to add functionality to change a port's
+auto-negotiate, duplex, etc.=C2=A0 I'm adding it to the swconfig first an=
+d
+then will look at adding it for DSA afterwards.=C2=A0 When I run "swconfi=
+g
+dev switch0 port 0 show", the current mt7530 / mt7620 driver is querying
+the MAC status register (at base + 0x3008 + 0x100 * port, described on
+pages 323-324 of the MT7620 Programming Guide), so I implemented the
+"set" functionality by modifying the MAC's control register (offset
+0x3000 on page 321), but it doesn't seem to change anything.=C2=A0 So I
+figured maybe I need to modify the MII interface's control register for
+the port (page 350), but upon debugging I can see that the struct
+mii_bus *bus member is NULL.
 
-Thanks.
+So should I be able to change it via the MAC's control register and
+something else is wrong?=C2=A0 Why is there no struct mii_bus?=C2=A0 Can =
+I talk to
+the MII hardware in some other way?
 
--- 
-Dmitry
+Thanks,
+Daniel
+
+https://download.villagetelco.org/hardware/MT7620/MT7620_ProgrammingGuide=
+.pdf
