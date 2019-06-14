@@ -2,188 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E99FC46550
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DED3F46559
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726047AbfFNRGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:06:02 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42853 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbfFNRGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:06:02 -0400
-Received: by mail-lj1-f196.google.com with SMTP id t28so3101292lje.9;
-        Fri, 14 Jun 2019 10:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yUyWgMcF8YtqLLCB/ssmwJMUkK3COGkr3CAkr8Pd3Qs=;
-        b=dA3LeS1ezaJ1F1vwaadjQb9osOlxuLnDyjStmvQdrgvQrLp/OVBz0khyBBhGDd96J8
-         pOhDIi4zPFFyWXmAkgs++KXuEQIDcj9uCMPNW+7MfUAIWsZpgFFw0hHu+6upx1merAJX
-         s5+k8IS8MKoyRRduFogPqCueXQ2dg2K+900x1wklHNTgTdjY5hjlOx1oepSxwjBookyy
-         FsxnkBNVe7p1qI3b7CKxyv4JN45XTUEYCpuNyOqeF1VK6+G5Jhcr1gM/49dXfDiEblCN
-         Kwdxvyzi166El4AsCzVkAw6q04spDggjU253Vr2Rfr8LSf6zE7TAMqzinlV+f6BRXAGT
-         0Tsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yUyWgMcF8YtqLLCB/ssmwJMUkK3COGkr3CAkr8Pd3Qs=;
-        b=E1lmaDWxRbAlXL/1XDgVojyYptUX7mgDa+BYelAziyhAEsH3l7RuiBz/Gg67T3fNHb
-         KZss1CIRAo/yLNlAeykqKCLZ90/JVgr+4PTs2iDBGvsKSy23UlhpbjOTgiBNzkW4vBUH
-         dqqXe+kfGpqAIdpnt7Za7+eAYl2elD/PF9U57qkLnRZ7+cKxSW6XQfPuPqpAXxzURfGn
-         eXdd4NTXZtdG2WUbylOyxaZNLe++rvFu8AZtSixmrzTBV6ZZS0H6esGu0et6I0eUs9Fp
-         f41T+Ok3kVFtQrxYiItPTnoWGXEcRptf5XD9iFaZ0ULy+RbeFdqCODStIYsTCBTaPpWA
-         OpOw==
-X-Gm-Message-State: APjAAAX3j2PuvacHSOKSWYPtZpJFXYN1vV7edA2FfbuW8Ig7pcCVZL2G
-        kTSQCnvjlhQ/B69LtMdhFpk8640jN2r8q6TrBRY=
-X-Google-Smtp-Source: APXvYqwKdybAT4jHrPCu6+NoLD+MEDKQbRqUSolbhlNXvlDzQPFNIphIVPS5jQf/wuDND57EHSkU0pOel/p/+sGRJ0U=
-X-Received: by 2002:a2e:86d1:: with SMTP id n17mr28518814ljj.58.1560531960033;
- Fri, 14 Jun 2019 10:06:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
- <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
- <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
- <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com> <87ef3w5hew.fsf@netronome.com>
-In-Reply-To: <87ef3w5hew.fsf@netronome.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 14 Jun 2019 10:05:48 -0700
-Message-ID: <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
-Subject: Re: [PATCH] bpf: optimize constant blinding
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        id S1726278AbfFNRHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:07:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47712 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726028AbfFNRHk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 13:07:40 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1AF94C057E65;
+        Fri, 14 Jun 2019 17:07:25 +0000 (UTC)
+Received: from treble (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BB9D51001B2E;
+        Fri, 14 Jun 2019 17:07:22 +0000 (UTC)
+Date:   Fri, 14 Jun 2019 12:07:20 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Alexei Starovoitov' <alexei.starovoitov@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
+Message-ID: <20190614170720.57yxtxvd4qee337l@treble>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
+ <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
+ <57f6e69da6b3461a9c39d71aa1b58662@AcuMS.aculab.com>
+ <20190614134401.q2wbh6mvo4nzmw2o@treble>
+ <9b8aa912df694d25b581786100d3e2e2@AcuMS.aculab.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <9b8aa912df694d25b581786100d3e2e2@AcuMS.aculab.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 14 Jun 2019 17:07:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 8:13 AM Jiong Wang <jiong.wang@netronome.com> wrote:
->
->
-> Alexei Starovoitov writes:
->
-> > On Wed, Jun 12, 2019 at 8:25 AM Jiong Wang <jiong.wang@netronome.com> wrote:
-> >>
-> >>
-> >> Jiong Wang writes:
-> >>
-> >> > Alexei Starovoitov writes:
-> >> >
-> >> >> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
-> >> >> <naveen.n.rao@linux.vnet.ibm.com> wrote:
-> >> >>>
-> >> >>> Currently, for constant blinding, we re-allocate the bpf program to
-> >> >>> account for its new size and adjust all branches to accommodate the
-> >> >>> same, for each BPF instruction that needs constant blinding. This is
-> >> >>> inefficient and can lead to soft lockup with sufficiently large
-> >> >>> programs, such as the new verifier scalability test (ld_dw: xor
-> >> >>> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
-> >> >>
-> >> >> Slowdown you see is due to patch_insn right?
-> >> >> In such case I prefer to fix the scaling issue of patch_insn instead.
-> >> >> This specific fix for blinding only is not addressing the core of the problem.
-> >> >> Jiong,
-> >> >> how is the progress on fixing patch_insn?
-> >>
-> >> And what I have done is I have digested your conversion with Edward, and is
-> >> slightly incline to the BB based approach as it also exposes the inserted
-> >> insn to later pass in a natural way, then was trying to find a way that
-> >> could create BB info in little extra code based on current verifier code,
-> >> for example as a side effect of check_subprogs which is doing two insn
-> >> traversal already. (I had some such code before in the historical
-> >> wip/bpf-loop-detection branch, but feel it might be still too heavy for
-> >> just improving insn patching)
-> >
-> > BB - basic block?
-> > I'm not sure that was necessary.
-> > The idea was that patching is adding stuff to linked list instead
-> > and single pass at the end to linearize it.
->
-> Just an update and keep people posted.
->
-> Working on linked list based approach, the implementation looks like the
-> following, mostly a combine of discussions happened and Naveen's patch,
-> please feel free to comment.
->
->   - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
->     BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
->
->   - Introduce patch pool into bpf_prog->aux to keep all patched insns.
->     Pool structure looks like:
->
->     struct {
->       int num;
->       int prev;
->       int next;
->     } head_0;
->     NUM patched insns for head_0
->     head_1;
->     patched insns for head_1
->     head_2;
->     ...
->
->   - Now when doing bpf_patch_insn_single, it doesn't change the original
->     prog etc, instead, it merely update the insn at patched offset into a
->     BPF_LIST_INSN, and pushed the patched insns plus a patch header into
->     the patch pool. Fields of BPF_LIST_INSN is updated to setup the links:
->
->       BPF_LIST_INSN.off += patched_size
->       (accumulating the size attached to this list_insn, it is possible a
->       later patch pass patches insn in the patch pool, this means insn
->       traversal needs to be changed, when seeing BPF_LIST_INSN, should go
->       through the list)
->
->       BPF_LIST_INSN.imm = offset of the patch header in patch pool
->       (off is 16-bit, imm is 32-bit, the patch pool is 32-bit length, so
->       use imm for keeping offset, meaning a BPF_LIST_INSN can contains no
->       more than 8192 insns, guess it is enough)
->
->   - When doing linearize:
->     1. a quick scan of prog->insnsi to know the final
->        image size, would be simple as:
->
->       fini_size = 0;
->       for_each_insn:
->         if (insn.code == (BPF_ALU | BPF_LIST_HEAD))
->           fini_size += insn->off;
->         else
->           fini_size++;
->
->     2. Resize prog into fini_size, and a second scan of prog->insnsi to
->        copy over all insns and patched insns, at the same time generate a
->        auxiliary index array which maps an old index to the new index in
->        final image, like the "clone_index" in Naveen's patch.
->
->     3. Finally, a single pass to update branch target, the same algo used
->        by this patch.
->
->   - The APIs for doing insning patch looks like:
->       bpf_patch_insn_init:   init the generic patch pool.
->       bpf_patch_insn_single: push patched insns to the pool.
->                              link them to the associated BPF_LIST_INSN.
->       bpf_patch_insn_fini:   linearize a bpf_prog contains BPF_LIST_INSN.
->                              destroy patch pool in prog->aux.
->
-> I am trying to making the implementation working with jit blind first to make
-> sure basic things are ready. As JIT blinds happens after verification so no
-> need to both aux update etc. Then will cleanup quite a few things for
-> example patch a patched insn, adjust aux data, what to do with insn delete
-> etc.
+On Fri, Jun 14, 2019 at 01:58:21PM +0000, David Laight wrote:
+> From: Josh Poimboeuf
+> > Sent: 14 June 2019 14:44
+> > 
+> > On Fri, Jun 14, 2019 at 10:50:23AM +0000, David Laight wrote:
+> > > On Thu, Jun 13, 2019 at 08:21:03AM -0500, Josh Poimboeuf wrote:
+> > > > The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
+> > > > thus prevents the FP unwinder from unwinding through JIT generated code.
+> > > >
+> > > > RBP is currently used as the BPF stack frame pointer register.  The
+> > > > actual register used is opaque to the user, as long as it's a
+> > > > callee-saved register.  Change it to use R12 instead.
+> > >
+> > > Could you maintain the system %rbp chain through the BPF stack?
+> > 
+> > Do you mean to save RBP again before changing it again, so that we
+> > create another stack frame inside the BPF stack?  That might work.
+> 
+> The unwinder will (IIRC) expect *%rbp to be the previous %rbp value.
+> If you maintain that it will probably all work.
+> 
+> > > It might even be possible to put something relevant in the %rip
+> > > location.
+> > 
+> > I'm not sure what you mean here.
+> 
+> The return address is (again IIRC) %rbp[-8] so the unwinder will
+> expect that address to be a symbol.
 
-explicit indices feels like premature optimization.
-May be use vanilla singly linked list instead?
-Also do we have a case when patched insn will be patched again?
-In such case 'patch insn pool' will become recursive?
-Feels difficult to think through all offsets and indices.
-Whereas with linked list patching patched insns will be inserting
-them into link list.
+Ah, gotcha.  We don't necessarily need the real rip on the stack as the
+unwinder can handle bad text addresses ok.  Though the real one would be
+better.
 
-May be better alternative is to convert the whole program to link list
-of insns with branch targets becoming pointers and insert patched
-insns into this single singly linked list ?
+> I do remember a stack trace printer for x86 this didn't need
+> any annotation of the object code and didn't need frame pointers.
+> The only downside was that it had to 'guess' (ie scan the stack)
+> to get out of functions that couldn't return.
+> Basically it followed the control flow forwards tracking the
+> values of %sp and %bp until it found a return instuction.
+> All it has to do is detect loops and retry from the other
+> target of conditional branches.
+
+That actually sounds kind of cool, though I don't think we need that for
+the kernel.
+
+Anyway here's a patch with your suggestion.  I think it's the best idea
+so far because it doesn't require the use of R12, nor does it require
+abstracting BPF_REG_FP with an offset.  And the diffstat is pretty
+small and self-contained.
+
+It seems to work, though I didn't put a real RIP on the stack yet.  This
+is based on top of the "x86/bpf: Simplify prologue generation" patch.
+
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 485692d4b163..fa1fe65c4cb4 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -186,7 +186,7 @@ struct jit_context {
+ #define BPF_MAX_INSN_SIZE	128
+ #define BPF_INSN_SAFETY		64
+ 
+-#define PROLOGUE_SIZE		20
++#define PROLOGUE_SIZE		24
+ 
+ /*
+  * Emit x86-64 prologue code for BPF program and check its size.
+@@ -197,14 +197,17 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
+ 	u8 *prog = *pprog;
+ 	int cnt = 0;
+ 
++	/* push rbp */
++	EMIT1(0x55);
++	/* mov rbp, rsp */
++	EMIT3(0x48, 0x89, 0xE5);
++
+ 	/* push r15 */
+ 	EMIT2(0x41, 0x57);
+ 	/* push r14 */
+ 	EMIT2(0x41, 0x56);
+ 	/* push r13 */
+ 	EMIT2(0x41, 0x55);
+-	/* push rbp */
+-	EMIT1(0x55);
+ 	/* push rbx */
+ 	EMIT1(0x53);
+ 
+@@ -218,10 +221,13 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
+ 
+ 	/*
+ 	 * RBP is used for the BPF program's FP register.  It points to the end
+-	 * of the program's stack area.
+-	 *
+-	 * mov rbp, rsp
++	 * of the program's stack area.  Create another stack frame so the
++	 * unwinder can unwind through the generated code.  The tail_call_cnt
++	 * value doubles as an (invalid) RIP address.
+ 	 */
++	/* push rbp */
++	EMIT1(0x55);
++	/* mov rbp, rsp */
+ 	EMIT3(0x48, 0x89, 0xE5);
+ 
+ 	/* sub rsp, rounded_stack_depth */
+@@ -237,19 +243,21 @@ static void emit_epilogue(u8 **pprog)
+ 	u8 *prog = *pprog;
+ 	int cnt = 0;
+ 
+-	/* lea rsp, [rbp+0x8] */
+-	EMIT4(0x48, 0x8D, 0x65, 0x08);
++	/* leave (restore rsp and rbp) */
++	EMIT1(0xC9);
++	/* pop rbx (skip over tail_call_cnt) */
++	EMIT1(0x5B);
+ 
+ 	/* pop rbx */
+ 	EMIT1(0x5B);
+-	/* pop rbp */
+-	EMIT1(0x5D);
+ 	/* pop r13 */
+ 	EMIT2(0x41, 0x5D);
+ 	/* pop r14 */
+ 	EMIT2(0x41, 0x5E);
+ 	/* pop r15 */
+ 	EMIT2(0x41, 0x5F);
++	/* pop rbp */
++	EMIT1(0x5D);
+ 
+ 	/* ret */
+ 	EMIT1(0xC3);
+@@ -298,13 +306,13 @@ static void emit_bpf_tail_call(u8 **pprog)
+ 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+ 	 *	goto out;
+ 	 */
+-	EMIT3(0x8B, 0x45, 0x04);                  /* mov eax, dword ptr [rbp + 4] */
++	EMIT3(0x8B, 0x45, 0x0C);                  /* mov eax, dword ptr [rbp + 12] */
+ 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
+ #define OFFSET2 (27 + RETPOLINE_RAX_BPF_JIT_SIZE)
+ 	EMIT2(X86_JA, OFFSET2);                   /* ja out */
+ 	label2 = cnt;
+ 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
+-	EMIT3(0x89, 0x45, 0x04);                  /* mov dword ptr [rbp + 4], eax */
++	EMIT3(0x89, 0x45, 0x0C);                  /* mov dword ptr [rbp + 12], eax */
+ 
+ 	/* prog = array->ptrs[index]; */
+ 	EMIT4_off32(0x48, 0x8B, 0x84, 0xD6,       /* mov rax, [rsi + rdx * 8 + offsetof(...)] */
