@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96195468B2
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D1846A35
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbfFNUQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 16:16:03 -0400
-Received: from mga06.intel.com ([134.134.136.31]:59943 "EHLO mga06.intel.com"
+        id S1727014AbfFNU3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 16:29:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726262AbfFNUQA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 16:16:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Jun 2019 13:15:57 -0700
-X-ExtLoop1: 1
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Jun 2019 13:15:56 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 12/12] i40e: mark expected switch fall-through
-Date:   Fri, 14 Jun 2019 13:16:10 -0700
-Message-Id: <20190614201610.13566-13-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190614201610.13566-1-jeffrey.t.kirsher@intel.com>
-References: <20190614201610.13566-1-jeffrey.t.kirsher@intel.com>
+        id S1726397AbfFNU3g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 16:29:36 -0400
+Received: from sasha-vm.mshome.net (unknown [131.107.159.134])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0E0E21841;
+        Fri, 14 Jun 2019 20:29:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560544176;
+        bh=E3GY73+NvZOKNDdSCl5mj8a8NxwQggH++gAKIFJIZYE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XA9+nVH/b/ZuNGoHALzD84zpoRTnqMkMFOFK+qLaNX/hIBtrMV7kQNSRwN8hdWxrR
+         CpFblRxqA8b+ZuZPGWfZxOzC830yUr0Wg9ZujtTgbyLMjG24cCxCLzWRB/ubrBs4Nd
+         HeQPaY7CBa6l5Animum2Vawi4VSRhSJoAkm0ZFIY=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 34/59] net: dsa: mv88e6xxx: avoid error message on remove from VLAN 0
+Date:   Fri, 14 Jun 2019 16:28:18 -0400
+Message-Id: <20190614202843.26941-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190614202843.26941-1-sashal@kernel.org>
+References: <20190614202843.26941-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 
-In preparation to enabling -Wimplicit-fallthrough, mark switch cases
-where we are expecting to fall through.
+[ Upstream commit 62394708f3e01c9f2be6be74eb6305bae1ed924f ]
 
-This patch fixes the following warning:
+When non-bridged, non-vlan'ed mv88e6xxx port is moving down, error
+message is logged:
 
-drivers/net/ethernet/intel/i40e/i40e_xsk.c: In function ‘i40e_run_xdp_zc’:
-drivers/net/ethernet/intel/i40e/i40e_xsk.c:217:3: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   bpf_warn_invalid_xdp_action(act);
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/intel/i40e/i40e_xsk.c:218:2: note: here
-  case XDP_ABORTED:
-  ^~~~
+failed to kill vid 0081/0 for device eth_cu_1000_4
 
-Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+This is caused by call from __vlan_vid_del() with vin set to zero, over
+call chain this results into _mv88e6xxx_port_vlan_del() called with
+vid=0, and mv88e6xxx_vtu_get() called from there returns -EINVAL.
+
+On symmetric path moving port up, call goes through
+mv88e6xxx_port_vlan_prepare() that calls mv88e6xxx_port_check_hw_vlan()
+that returns -EOPNOTSUPP for zero vid.
+
+This patch changes mv88e6xxx_vtu_get() to also return -EOPNOTSUPP for
+zero vid, then this error code is explicitly cleared in
+dsa_slave_vlan_rx_kill_vid() and error message is no longer logged.
+
+Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/mv88e6xxx/chip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 1b17486543ac..557c565c26fc 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -215,6 +215,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-+		/* fall through */
- 	case XDP_ABORTED:
- 		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
- 		/* fallthrough -- handle aborts by dropping packet */
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 720f1dde2c2d..ae750ab9a4d7 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1517,7 +1517,7 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
+ 	int err;
+ 
+ 	if (!vid)
+-		return -EINVAL;
++		return -EOPNOTSUPP;
+ 
+ 	entry->vid = vid - 1;
+ 	entry->valid = false;
 -- 
-2.21.0
+2.20.1
 
