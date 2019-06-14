@@ -2,103 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C001F4510D
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 03:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A27545121
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 03:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725886AbfFNBMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 21:12:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54120 "EHLO vps0.lunn.ch"
+        id S1727262AbfFNBUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 21:20:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43448 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbfFNBMa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 21:12:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=O1UiBE1s0tMb0CzdEK7VtfLz1osTnXVPdOS0E6pQi9I=; b=KDIm0p71c1im1lUYO6WUL9DAcO
-        pPkFskm5t5KDdLnzgcDWCkk3IlbAr5eF5odqmxplf/XAemNhckk3dZL9h66sRlx74Fp4Dk0TZmj1O
-        /A/RWfWh7A7LZczcAhmEwX5PgrE1aLrulROquCuftOgHFqRqzp09Yb9lTSOBTcrBRz6M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hbalU-0007zk-Vs; Fri, 14 Jun 2019 03:12:24 +0200
-Date:   Fri, 14 Jun 2019 03:12:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     linux@armlinux.org.uk, hkallweit1@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        alexandru.marginean@nxp.com, ruxandra.radulescu@nxp.com
-Subject: Re: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
-Message-ID: <20190614011224.GC28822@lunn.ch>
-References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
- <1560470153-26155-4-git-send-email-ioana.ciornei@nxp.com>
+        id S1725616AbfFNBUe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 21:20:34 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2159E85539;
+        Fri, 14 Jun 2019 01:20:34 +0000 (UTC)
+Received: from treble (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BE45619C67;
+        Fri, 14 Jun 2019 01:20:32 +0000 (UTC)
+Date:   Thu, 13 Jun 2019 20:20:30 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Subject: Re: [PATCH 2/9] objtool: Fix ORC unwinding in non-JIT BPF generated
+ code
+Message-ID: <20190614012030.b6eujm7b4psu62kj@treble>
+References: <cover.1560431531.git.jpoimboe@redhat.com>
+ <99c22bbd79e72855f4bc9049981602d537a54e70.1560431531.git.jpoimboe@redhat.com>
+ <20190613205710.et5fywop4gfalsa6@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1560470153-26155-4-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190613205710.et5fywop4gfalsa6@ast-mbp.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Fri, 14 Jun 2019 01:20:34 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/**
-> + * dpmac_set_link_state() - Set the Ethernet link status
-> + * @mc_io:      Pointer to opaque I/O object
-> + * @cmd_flags:  Command flags; one or more of 'MC_CMD_FLAG_'
-> + * @token:      Token of DPMAC object
-> + * @link_state: Link state configuration
-> + *
-> + * Return:      '0' on Success; Error code otherwise.
-> + */
-> +int dpmac_set_link_state(struct fsl_mc_io *mc_io,
-> +			 u32 cmd_flags,
-> +			 u16 token,
-> +			 struct dpmac_link_state *link_state)
-> +{
-> +	struct dpmac_cmd_set_link_state *cmd_params;
-> +	struct fsl_mc_command cmd = { 0 };
-> +
-> +	/* prepare command */
-> +	cmd.header = mc_encode_cmd_header(DPMAC_CMDID_SET_LINK_STATE,
-> +					  cmd_flags,
-> +					  token);
-> +	cmd_params = (struct dpmac_cmd_set_link_state *)cmd.params;
-> +	cmd_params->options = cpu_to_le64(link_state->options);
-> +	cmd_params->rate = cpu_to_le32(link_state->rate);
-> +	dpmac_set_field(cmd_params->state, STATE, link_state->up);
-> +	dpmac_set_field(cmd_params->state, STATE_VALID,
-> +			link_state->state_valid);
-> +	cmd_params->supported = cpu_to_le64(link_state->supported);
-> +	cmd_params->advertising = cpu_to_le64(link_state->advertising);
+On Thu, Jun 13, 2019 at 01:57:11PM -0700, Alexei Starovoitov wrote:
+> On Thu, Jun 13, 2019 at 08:20:59AM -0500, Josh Poimboeuf wrote:
+> > Objtool currently ignores ___bpf_prog_run() because it doesn't
+> > understand the jump table.  This results in the ORC unwinder not being
+> > able to unwind through non-JIT BPF code.
+> > 
+> > Luckily, the BPF jump table resembles a GCC switch jump table, which
+> > objtool already knows how to read.
+> > 
+> > Add generic support for reading any static local jump table array named
+> > "jump_table", and rename the BPF variable accordingly, so objtool can
+> > generate ORC data for ___bpf_prog_run().
+> > 
+> > Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
+> > Reported-by: Song Liu <songliubraving@fb.com>
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > ---
+> >  kernel/bpf/core.c     |  5 ++---
+> >  tools/objtool/check.c | 16 ++++++++++++++--
+> >  2 files changed, 16 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 7c473f208a10..aa546ef7dbdc 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -1299,7 +1299,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+> >  {
+> >  #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
+> >  #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
+> > -	static const void *jumptable[256] = {
+> > +	static const void *jump_table[256] = {
+> 
+> Nack to the change like above
 
-I don't understand what supported and advertising mean in the context
-of a MAC. PHY yes, but MAC?
+"jump table" is two words, so does it not make sense to separate them
+with an underscore for readability?
 
-> + * DPMAC link configuration/state options
-> + */
-> +
-> +/**
-> + * Enable auto-negotiation
-> + */
-> +#define DPMAC_LINK_OPT_AUTONEG			BIT_ULL(0)
-> +/**
-> + * Enable half-duplex mode
-> + */
-> +#define DPMAC_LINK_OPT_HALF_DUPLEX		BIT_ULL(1)
-> +/**
-> + * Enable pause frames
-> + */
-> +#define DPMAC_LINK_OPT_PAUSE			BIT_ULL(2)
-> +/**
-> + * Enable a-symmetric pause frames
-> + */
-> +#define DPMAC_LINK_OPT_ASYM_PAUSE		BIT_ULL(3)
+I created a generic feature in objtool for this so that other code can
+also use it.  So a generic name (and typical Linux naming convention --
+separating words with an underscore) makes sense here.
 
-So is this to configure the MAC? The MAC can do half duplex, pause,
-asym pause? 
+> and to patches 8 and 9.
 
-But from the previous patch, the PHY cannot do half duplex?
+Well, it's your code, but ... can I ask why?  AT&T syntax is the
+standard for Linux, which is in fact the OS we are developing for.
 
-     Andrew
+It makes the code extra confusing for it to be annotated differently
+than all other Linux asm code.  And due to the inherent complexity of
+generating code at runtime, I'd think we'd want to make the code as
+readable as possible, for as many people as possible (i.e. other Linux
+developers).
+
+-- 
+Josh
