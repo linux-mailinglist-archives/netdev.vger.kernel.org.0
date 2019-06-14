@@ -2,194 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E56545E5B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 15:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE91845E61
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 15:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728072AbfFNNhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 09:37:04 -0400
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:37508 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727808AbfFNNhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 09:37:04 -0400
-Received: by mail-ua1-f66.google.com with SMTP id z13so952261uaa.4
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 06:37:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=eRd9R9cpIJoDNBfuQLMcVDh9lR+PWfBAW4x11YLASUc=;
-        b=RFIshYp4GA3LjNXiFoQFGRJZOrAnZiLFP2q9WlZAgJX4+Z8bJtf7xZVWe+OakjnHoc
-         BSt6YRPdQk5W7Z2w3iOBwaWpZpbvvN3D4NhDfoBswvPizPJZwGVMnpKVbkw1l5dDFHLb
-         oFlNfrtppItGriM4g3JBwruu24cFetuS+Bs9UBHwICX0wbel0dsDfTfX8QY/8iEQimW/
-         yw2pGLs9zAGVoZKqBR9gyU2he3ESbG3SThYUw+7Srz+fz8Mw0iXde9vqLTsoxJIPREpE
-         mgqMCDPKswqhFW78MnoQrIN3jLh3YOQNrhcE2rVStr+k5U4YnjTUChpNB1zi2AL2uRNk
-         yHNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=eRd9R9cpIJoDNBfuQLMcVDh9lR+PWfBAW4x11YLASUc=;
-        b=mmGhfEcRZ6ugO3TXK+F4rSqD2sW3yidnyS+4y4epQtM3N3fUK/PX7YHN0DIwHcIj8x
-         /kh/YBBtWMxa4vzvdtIRea1wxB0DMZRYCBk9fw3GIgKsz9CtgiNRZHwvimmQKZNdswZP
-         nJFq4c8GzE6oUUw/pT6xOYgqPYbYD1MmTysiA779z6PpUD5XJl+O1dookGGzyGA3OM6P
-         TpnyaPldd0B1WeXn8QD9d3PRsDSpxIAPOaJ5j/LoMijRocrvO3R4rvcTFZDqosAHL6v6
-         ASeCSpRkUyiGRj7fEd9+VLXiquwx7kjyzviIXlbpqu3K4CypfvT3YQwUdkgVKdVssD9b
-         fbKw==
-X-Gm-Message-State: APjAAAXcdHYooMTNhS7B6ZgkHP8uvMAg06qIjuXzygvtaOJv/QUk0wmo
-        BtTGmxghCz8dr1TJYOgFDUJB6I9U1CkdXP29xpDJXA==
-X-Google-Smtp-Source: APXvYqzgdXfuhFCaKvvqbastHdT47w295gm70NKdBCPvWF6U6mhEGhT7OtLpkCvbXtA7A0aHbeU68QfzaZ5aBF0450E=
-X-Received: by 2002:ab0:55c4:: with SMTP id w4mr5361241uaa.35.1560519423078;
- Fri, 14 Jun 2019 06:37:03 -0700 (PDT)
+        id S1728127AbfFNNiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 09:38:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38274 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727808AbfFNNiD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 09:38:03 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75ACA2177E;
+        Fri, 14 Jun 2019 13:38:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560519481;
+        bh=5kPUwCBQMbS2M8o+wglPzUUXRhVd4mGNXeo+GKUnF6A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=0pkIZa6kP5BSGUByBNXPb11Mtf9FoTuMz5OP/9UhNutVmICtSUC0evQmkqa7iouuB
+         gnqMfGThUsxcWLoeMeycy32pw31W8V3FRPXUbwnacWCx00mOPxpQA406tg6jwOfjOO
+         cCPg8YY4ve8ySWSx2GrOulpCip2vxl2n5Arfh2Gg=
+Received: by mail-qt1-f182.google.com with SMTP id y57so2460183qtk.4;
+        Fri, 14 Jun 2019 06:38:01 -0700 (PDT)
+X-Gm-Message-State: APjAAAU891oPhSgnye1YQ3evNVnwF3e4KIMj83XFNFq70z39ZvTw3Alv
+        A9FgytHeyP7izlDpTb49AqSR/UkEZwdBEbm93g==
+X-Google-Smtp-Source: APXvYqyAj1odsDjtBwKdPSSywnQwCLoF/jNhPP0/kPXHppC/FT4M38muk0yGeu+a4kpzJwb49v6vKwKl9z5OZO/sjH8=
+X-Received: by 2002:aed:3f10:: with SMTP id p16mr15675043qtf.110.1560519480558;
+ Fri, 14 Jun 2019 06:38:00 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:ab0:108a:0:0:0:0:0 with HTTP; Fri, 14 Jun 2019 06:37:02
- -0700 (PDT)
-X-Originating-IP: [5.35.24.158]
-In-Reply-To: <20190613163941.GK31797@unicorn.suse.cz>
-References: <20190613142003.129391-1-dkirjanov@suse.com> <20190613142003.129391-4-dkirjanov@suse.com>
- <20190613163941.GK31797@unicorn.suse.cz>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Fri, 14 Jun 2019 16:37:02 +0300
-Message-ID: <CAOJe8K1OycscWUKfYKP73bK_eJdmG3=-_yK6ajSUpXpfGEEgwQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/2] ipoib: show VF broadcast address
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     davem@davemloft.net, dledford@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
+References: <91618c7e9a5497462afa74c6d8a947f709f54331.1560158667.git-series.maxime.ripard@bootlin.com>
+ <d198d29119b37b2fdb700d8992b31963e98b6693.1560158667.git-series.maxime.ripard@bootlin.com>
+ <20190610143139.GG28724@lunn.ch> <CAL_JsqJahCJcdu=+fA=ewbGezuEJ2W6uwMVxkQpdY6w+1OWVVA@mail.gmail.com>
+ <20190611145856.ua2ggkn6ccww6vpp@flea> <CAL_Jsq+KwH-j8f+r+fWhMuqJPWcHdBQau+nUz3NRAXYTpsyuvg@mail.gmail.com>
+ <20190614095048.j2xwdsucucbakkl2@flea>
+In-Reply-To: <20190614095048.j2xwdsucucbakkl2@flea>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 14 Jun 2019 07:37:49 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+=yh3WhTg=1G02LUHGLHts6mECR9BQ+n7qHAihFViAxA@mail.gmail.com>
+Message-ID: <CAL_Jsq+=yh3WhTg=1G02LUHGLHts6mECR9BQ+n7qHAihFViAxA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] dt-bindings: net: sun4i-emac: Convert the
+ binding to a schemas
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/13/19, Michal Kubecek <mkubecek@suse.cz> wrote:
-> On Thu, Jun 13, 2019 at 04:20:03PM +0200, Denis Kirjanov wrote:
->> in IPoIB case we can't see a VF broadcast address for but
->> can see for PF
->>
->> Before:
->> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
->> state UP mode DEFAULT group default qlen 256
->>     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->>     vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
->> trust off, query_rss off
->> ...
->>
->> After:
->> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
->> state UP mode DEFAULT group default qlen 256
->>     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->>     vf 0     link/infiniband
->> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
->> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
->> checking off, link-state disable, trust off, query_rss off
->>
->> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
->> ---
->>  include/uapi/linux/if_link.h | 5 +++++
->>  net/core/rtnetlink.c         | 6 ++++++
->>  2 files changed, 11 insertions(+)
->>
->> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
->> index 5b225ff63b48..1f36dd3a45d6 100644
->> --- a/include/uapi/linux/if_link.h
->> +++ b/include/uapi/linux/if_link.h
->> @@ -681,6 +681,7 @@ enum {
->>  enum {
->>  	IFLA_VF_UNSPEC,
->>  	IFLA_VF_MAC,		/* Hardware queue specific attributes */
->> +	IFLA_VF_BROADCAST,
->>  	IFLA_VF_VLAN,		/* VLAN ID and QoS */
->>  	IFLA_VF_TX_RATE,	/* Max TX Bandwidth Allocation */
->>  	IFLA_VF_SPOOFCHK,	/* Spoof Checking on/off switch */
+On Fri, Jun 14, 2019 at 3:50 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
 >
-> Oops, I forgot to mention one important point when reviewing v1: the new
-> attribute type must be added at the end (just before __IFLA_VF_MAX) so
-> that you do not change value of existing IFLA_VF_* constants (this would
-> break compatibility).
+> Hi Rob,
+>
+> On Thu, Jun 13, 2019 at 11:32:30AM -0600, Rob Herring wrote:
+> > On Thu, Jun 13, 2019 at 7:25 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> > > On Mon, Jun 10, 2019 at 12:59:29PM -0600, Rob Herring wrote:
+> > > > On Mon, Jun 10, 2019 at 8:31 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> > > > >
+> > > > > > +required:
+> > > > > > +  - compatible
+> > > > > > +  - reg
+> > > > > > +  - interrupts
+> > > > > > +  - clocks
+> > > > > > +  - phy
+> > > > > > +  - allwinner,sram
+> > > > >
+> > > > > Quoting ethernet.txt:
+> > > > >
+> > > > > - phy: the same as "phy-handle" property, not recommended for new bindings.
+> > > > >
+> > > > > - phy-handle: phandle, specifies a reference to a node representing a PHY
+> > > > >   device; this property is described in the Devicetree Specification and so
+> > > > >   preferred;
+> > > > >
+> > > > > Can this be expressed in Yaml? Accept phy, but give a warning. Accept
+> > > > > phy-handle without a warning? Enforce that one or the other is
+> > > > > present?
+> > > >
+> > > > The common schema could have 'phy: false'. This works as long as we've
+> > > > updated (or plan to) all the dts files to use phy-handle. The issue is
+> > > > how far back do you need kernels to work with newer dtbs.
+> > >
+> > > I guess another question being raised by this is how hard do we want
+> > > to be a deprecating things, and should the DT validation be a tool to
+> > > enforce that validation.
+> > >
+> > > For example, you've used in you GPIO meta-schema false for anything
+> > > ending with -gpio, since it's deprecated. This means that we can't
+> > > convert any binding using a deprecated property without introducing a
+> > > build error in the schemas, which in turn means that you'll have a lot
+> > > of friction to support schemas, since you would have to convert your
+> > > driver to support the new way of doing things, before being able to
+> > > have a schema for your binding.
+> >
+> > I've err'ed on the stricter side. We may need to back off on some
+> > things to get to warning free builds. Really, I'd like to have levels
+> > to separate checks for existing bindings, new bindings, and pedantic
+> > checks.
+>
+> That would be awesome. Do you have a plan for that already though? I
+> can't really think of a way to implement it at the moment.
 
-Right, I've also missed that that the change breaks KABI.
+The only idea I have so far is some sort of 'level' property and then
+we filter schema based on what level we run validation at. I'm not too
+sure if that would take some restructuring of schema though because
+it's all a mixture ATM.
 
->
->> @@ -704,6 +705,10 @@ struct ifla_vf_mac {
->>  	__u8 mac[32]; /* MAX_ADDR_LEN */
->>  };
->>
->> +struct ifla_vf_broadcast {
->> +	__u8 broadcast[32];
->> +};
->> +
->>  struct ifla_vf_vlan {
->>  	__u32 vf;
->>  	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
->
-> My first idea was that to question the need of a wrapping structure as
-> we couldn't modify that structure in the future anyway so that there
-> does not seem to be any gain against simply passing the address as a
-> binary with attribute length equal to address length (like we do with
-> IFLA_ADDRESS and IFLA_BROADCAST).
->
-> But then I checked other IFLA_VF_* attributes and I'm confused. The
-> structure seems to be
->
->     IFLA_VF_INFO_LIST
->         IFLA_VF_INFO
->             IFLA_VF_MAC
->             IFLA_VF_VLAN
->             ...
->         IFLA_VF_INFO
->             IFLA_VF_MAC
->             IFLA_VF_VLAN
->             ...
->         ...
->
-> Each IFLA_VF_INFO corresponds to one virtual function but its number is
-> not determined by an attribute within this nest. Instead, each of the
-> neste IFLA_VF_* attributes is a structure containing "__u32 vf" and it's
-> only matter of convention that within one IFLA_VF_INFO nest, all data
-> belongs to the same VF, neither do_setlink() nor do_setvfinfo() check
-> it.
->
-> I guess you should either follow this weird pattern or introduce proper
-> IFLA_VF_ID to be used for IFLA_VF_BROADCAST and all future IFLA_VF_*
-> attributes. However, each new attribute makes IFLA_VF_INFO bigger and
-> lowers the number of VFs that can be stored in an IFLA_VF_INFO_LIST nest
-> without exceeding the hard limit of 65535 bytes so that we cannot afford
-> to add too many.
+The other aspect is how to set the 'level' per platform so new
+platforms have to pass a higher level. We already have that problem
+just with dtc warnings. Ideally, we should build new platforms with
+'W=1' or 'W=12'. Maybe the soc/board schema's can specify the level.
 
-I've just put it as other attrs for now.
-
+> > For '-gpio', we may be okay because the suffix is handled in the GPIO
+> > core. It should be safe to update the binding to use the preferred
+> > form.
 >
->> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->> index cec60583931f..88304212f127 100644
->> --- a/net/core/rtnetlink.c
->> +++ b/net/core/rtnetlink.c
-> ...
->> @@ -1753,6 +1758,7 @@ static const struct nla_policy
->> ifla_info_policy[IFLA_INFO_MAX+1] = {
->>
->>  static const struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
->>  	[IFLA_VF_MAC]		= { .len = sizeof(struct ifla_vf_mac) },
->> +	[IFLA_VF_BROADCAST]	= {. len = sizeof(struct ifla_vf_broadcast) },
->>  	[IFLA_VF_VLAN]		= { .len = sizeof(struct ifla_vf_vlan) },
->>  	[IFLA_VF_VLAN_LIST]     = { .type = NLA_NESTED },
->>  	[IFLA_VF_TX_RATE]	= { .len = sizeof(struct ifla_vf_tx_rate) },
+> It might require a bit of work though in drivers, since the fallback
+> is only handled if you're using the gpiod API, and not the legacy one.
 >
-> As you do not implement setting the broadcast address (is that possible
-> at all?),
-
-According to rfc4391 it's formed from the components like p_key,
-q_key, mtu and other.
-
- NLA_REJECT would be more appropriate so that the request isn't
-> silently ignored.
-
-Anyway, I've sent v3.
-
-Thanks!
-
+> > > And then, we need to agree on how to express the deprecation. I guess
+> > > we could allow the deprecated keyword that will be there in the
+> > > draft-8, instead of ad-hoc solutions?
+> >
+> > Oh, nice! I hadn't seen that. Seems like we should use that. We can
+> > start even without draft-8 support because unknown keywords are
+> > ignored (though we probably have to add it to our meta-schema). Then
+> > at some point we can add a 'disallow deprecated' flag to the tool.
 >
-> Michal
+> So, in the generic ethernet binding, we would have:
 >
+> properties:
+>   phy-handle:
+>     $ref: /schemas/types.yaml#definitions/phandle
+>     description:
+>       Specifies a reference to a node representing a PHY device.
+>
+>   phy:
+>     $ref: "#/properties/phy-handle"
+>     deprecated: true
+>
+>   phy-device:
+>     $ref: "#/properties/phy-handle"
+>     deprecated: true
+>
+> Does that sound good?
+
+Yes.
+
+> Now, how do we handle the case above, in the device specific binding?
+> We just require the non-deprecated one, or the three?
+
+Wouldn't that just depend if all the instances of the device specific
+binding have been updated?
+
+Rob
