@@ -2,25 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C97444524D
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 05:03:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EC14524F
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 05:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbfFNDDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 23:03:00 -0400
-Received: from mga09.intel.com ([134.134.136.24]:31060 "EHLO mga09.intel.com"
+        id S1725981AbfFNDC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 23:02:57 -0400
+Received: from mga12.intel.com ([192.55.52.136]:22702 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725778AbfFNDC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 23:02:58 -0400
-X-Amp-Result: UNSCANNABLE
+        id S1725778AbfFNDC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 23:02:57 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 20:02:57 -0700
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Jun 2019 20:02:56 -0700
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,371,1557212400"; 
+   d="scan'208";a="184828939"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jun 2019 20:02:55 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 13 Jun 2019 20:02:55 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1hbcUQ-0001eX-Mf; Fri, 14 Jun 2019 11:02:54 +0800
+        id 1hbcUQ-0001e5-Le; Fri, 14 Jun 2019 11:02:54 +0800
 Date:   Fri, 14 Jun 2019 11:02:08 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     Sameeh Jubran <sameehj@amazon.com>
@@ -30,14 +33,13 @@ Cc:     kbuild-all@01.org, Netanel Belgazal <netanel@amazon.com>,
         Arthur Kiyanovski <akiyano@amazon.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH linux-next] net: ena: ena_adjust_intr_moderation() can be
- static
-Message-ID: <20190614030208.GA13281@lkp-kbuild18>
-References: <201906141113.NUYnC1ZG%lkp@intel.com>
+Subject: [linux-next:master 5930/6350]
+ drivers/net/ethernet/amazon/ena/ena_netdev.c:1158:6: sparse: sparse: symbol
+ 'ena_adjust_intr_moderation' was not declared. Should it be static?
+Message-ID: <201906141113.NUYnC1ZG%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <201906141113.NUYnC1ZG%lkp@intel.com>
 X-Patchwork-Hint: ignore
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
@@ -45,23 +47,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   da151e650328dcd37176cf49fc626a7f42bfbe17
+commit: c2b542044761965db0e4cc400ab6abf670fc25b7 [5930/6350] net: ena: remove inline keyword from functions in *.c
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        git checkout c2b542044761965db0e4cc400ab6abf670fc25b7
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-Fixes: c2b542044761 ("net: ena: remove inline keyword from functions in *.c")
-Signed-off-by: kbuild test robot <lkp@intel.com>
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/amazon/ena/ena_netdev.c:1158:6: sparse: sparse: symbol 'ena_adjust_intr_moderation' was not declared. Should it be static?
+   drivers/net/ethernet/amazon/ena/ena_netdev.c:3428:59: sparse: sparse: Using plain integer as NULL pointer
+
+Please review and possibly fold the followup patch.
+
 ---
- ena_netdev.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index b7865ee..b63ae9b 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1155,7 +1155,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 	return 0;
- }
- 
--void ena_adjust_intr_moderation(struct ena_ring *rx_ring,
-+static void ena_adjust_intr_moderation(struct ena_ring *rx_ring,
- 				       struct ena_ring *tx_ring)
- {
- 	/* We apply adaptive moderation on Rx path only.
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
