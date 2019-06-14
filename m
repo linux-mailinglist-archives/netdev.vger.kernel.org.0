@@ -2,282 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 227C04557F
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB7A45631
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbfFNHO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 03:14:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725837AbfFNHO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 03:14:27 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 98F052133D;
-        Fri, 14 Jun 2019 07:14:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560496466;
-        bh=Bal5P6iL++TbtPSugW6o43ucYjkt1vU2cph9JyWx3qo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=c2EbpKDwOIZf3I8CzmUw+kigFOOFCBa4OXSolNx24mJujqKv3WIGk6870uqsJermo
-         5jiNRazFqEgUbdRVGYHRLR3PhFE/oskLDLKvVcS4TnhxgY5zbrWyGVIs1VVNkjhXvn
-         /Ku95deQUUJysn78f/aR0mKUH7miXCXKn/TshtZ8=
-Date:   Fri, 14 Jun 2019 09:14:23 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] 6lowpan: no need to check return value of debugfs_create
- functions
-Message-ID: <20190614071423.GA18533@kroah.com>
+        id S1726283AbfFNH0C convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Jun 2019 03:26:02 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33000 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725846AbfFNH0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 03:26:02 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5E7NU6p018338
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 00:26:01 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t3ru7jqqx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 00:26:01 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 14 Jun 2019 00:25:59 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 4BA8B760F47; Fri, 14 Jun 2019 00:25:57 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <andriin@fb.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/9] bpf: bounded loops and other features
+Date:   Fri, 14 Jun 2019 00:25:48 -0700
+Message-ID: <20190614072557.196239-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-14_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=850 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906140058
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling debugfs functions, there is no need to ever check the
-return value.  The function can work or not, but the code logic should
-never do something different based on this.
+v1->v2: addressed Andrii's feedback.
 
-Because we don't care if debugfs works or not, this trickles back a bit
-so we can clean things up by making some functions return void instead
-of an error value that is never going to fail.
+this patch set introduces verifier support for bounded loops and
+adds several other improvements.
+Ideally they would be introduced one at a time,
+but to support bounded loop the verifier needs to 'step back'
+in the patch 1. That patch introduces tracking of spill/fill
+of constants through the stack. Though it's a useful feature
+it hurts cilium tests.
+Patch 3 introduces another feature by extending is_branch_taken
+logic to 'if rX op rY' conditions. This feature is also
+necessary to support bounded loops.
+Then patch 4 adds support for the loops while adding
+key heuristics with jmp_processed.
+Introduction of parentage chain of verifier states in patch 4
+allows patch 9 to add backtracking of precise scalar registers
+which finally resolves degradation from patch 1.
 
-Cc: Alexander Aring <alex.aring@gmail.com>
-Cc: Jukka Rissanen <jukka.rissanen@linux.intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: linux-wpan@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/6lowpan/6lowpan_i.h | 16 ++-----
- net/6lowpan/core.c      |  8 +---
- net/6lowpan/debugfs.c   | 97 +++++++++++------------------------------
- 3 files changed, 32 insertions(+), 89 deletions(-)
+The end result is much faster verifier for existing programs
+and new support for loops.
+See patch 8 for many kinds of loops that are now validated.
+Patch 9 is the most tricky one and could be rewritten with
+a different algorithm in the future.
 
-diff --git a/net/6lowpan/6lowpan_i.h b/net/6lowpan/6lowpan_i.h
-index 53cf446ce2e3..01853cec0209 100644
---- a/net/6lowpan/6lowpan_i.h
-+++ b/net/6lowpan/6lowpan_i.h
-@@ -18,24 +18,16 @@ extern const struct ndisc_ops lowpan_ndisc_ops;
- int addrconf_ifid_802154_6lowpan(u8 *eui, struct net_device *dev);
- 
- #ifdef CONFIG_6LOWPAN_DEBUGFS
--int lowpan_dev_debugfs_init(struct net_device *dev);
-+void lowpan_dev_debugfs_init(struct net_device *dev);
- void lowpan_dev_debugfs_exit(struct net_device *dev);
- 
--int __init lowpan_debugfs_init(void);
-+void __init lowpan_debugfs_init(void);
- void lowpan_debugfs_exit(void);
- #else
--static inline int lowpan_dev_debugfs_init(struct net_device *dev)
--{
--	return 0;
--}
--
-+static inline void lowpan_dev_debugfs_init(struct net_device *dev) { }
- static inline void lowpan_dev_debugfs_exit(struct net_device *dev) { }
- 
--static inline int __init lowpan_debugfs_init(void)
--{
--	return 0;
--}
--
-+static inline void __init lowpan_debugfs_init(void) { }
- static inline void lowpan_debugfs_exit(void) { }
- #endif /* CONFIG_6LOWPAN_DEBUGFS */
- 
-diff --git a/net/6lowpan/core.c b/net/6lowpan/core.c
-index 2d68351f1ac4..a068757eabaf 100644
---- a/net/6lowpan/core.c
-+++ b/net/6lowpan/core.c
-@@ -42,9 +42,7 @@ int lowpan_register_netdevice(struct net_device *dev,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = lowpan_dev_debugfs_init(dev);
--	if (ret < 0)
--		unregister_netdevice(dev);
-+	lowpan_dev_debugfs_init(dev);
- 
- 	return ret;
- }
-@@ -152,9 +150,7 @@ static int __init lowpan_module_init(void)
- {
- 	int ret;
- 
--	ret = lowpan_debugfs_init();
--	if (ret < 0)
--		return ret;
-+	lowpan_debugfs_init();
- 
- 	ret = register_netdevice_notifier(&lowpan_notifier);
- 	if (ret < 0) {
-diff --git a/net/6lowpan/debugfs.c b/net/6lowpan/debugfs.c
-index f5a8eec9d7a3..1c140af06d52 100644
---- a/net/6lowpan/debugfs.c
-+++ b/net/6lowpan/debugfs.c
-@@ -163,11 +163,11 @@ static const struct file_operations lowpan_ctx_pfx_fops = {
- 	.release	= single_release,
- };
- 
--static int lowpan_dev_debugfs_ctx_init(struct net_device *dev,
--				       struct dentry *ctx, u8 id)
-+static void lowpan_dev_debugfs_ctx_init(struct net_device *dev,
-+					struct dentry *ctx, u8 id)
- {
- 	struct lowpan_dev *ldev = lowpan_dev(dev);
--	struct dentry *dentry, *root;
-+	struct dentry *root;
- 	char buf[32];
- 
- 	WARN_ON_ONCE(id > LOWPAN_IPHC_CTX_TABLE_SIZE);
-@@ -175,34 +175,18 @@ static int lowpan_dev_debugfs_ctx_init(struct net_device *dev,
- 	sprintf(buf, "%d", id);
- 
- 	root = debugfs_create_dir(buf, ctx);
--	if (!root)
--		return -EINVAL;
- 
--	dentry = debugfs_create_file_unsafe("active", 0644, root,
--					    &ldev->ctx.table[id],
--					    &lowpan_ctx_flag_active_fops);
--	if (!dentry)
--		return -EINVAL;
-+	debugfs_create_file("active", 0644, root, &ldev->ctx.table[id],
-+			    &lowpan_ctx_flag_active_fops);
- 
--	dentry = debugfs_create_file_unsafe("compression", 0644, root,
--					    &ldev->ctx.table[id],
--					    &lowpan_ctx_flag_c_fops);
--	if (!dentry)
--		return -EINVAL;
--
--	dentry = debugfs_create_file("prefix", 0644, root,
--				     &ldev->ctx.table[id],
--				     &lowpan_ctx_pfx_fops);
--	if (!dentry)
--		return -EINVAL;
-+	debugfs_create_file("compression", 0644, root, &ldev->ctx.table[id],
-+			    &lowpan_ctx_flag_c_fops);
- 
--	dentry = debugfs_create_file_unsafe("prefix_len", 0644, root,
--					    &ldev->ctx.table[id],
--					    &lowpan_ctx_plen_fops);
--	if (!dentry)
--		return -EINVAL;
-+	debugfs_create_file("prefix", 0644, root, &ldev->ctx.table[id],
-+			    &lowpan_ctx_pfx_fops);
- 
--	return 0;
-+	debugfs_create_file("prefix_len", 0644, root, &ldev->ctx.table[id],
-+			    &lowpan_ctx_plen_fops);
- }
- 
- static int lowpan_context_show(struct seq_file *file, void *offset)
-@@ -242,64 +226,39 @@ static int lowpan_short_addr_get(void *data, u64 *val)
- DEFINE_DEBUGFS_ATTRIBUTE(lowpan_short_addr_fops, lowpan_short_addr_get, NULL,
- 			 "0x%04llx\n");
- 
--static int lowpan_dev_debugfs_802154_init(const struct net_device *dev,
-+static void lowpan_dev_debugfs_802154_init(const struct net_device *dev,
- 					  struct lowpan_dev *ldev)
- {
--	struct dentry *dentry, *root;
-+	struct dentry *root;
- 
- 	if (!lowpan_is_ll(dev, LOWPAN_LLTYPE_IEEE802154))
--		return 0;
-+		return;
- 
- 	root = debugfs_create_dir("ieee802154", ldev->iface_debugfs);
--	if (!root)
--		return -EINVAL;
--
--	dentry = debugfs_create_file_unsafe("short_addr", 0444, root,
--					    lowpan_802154_dev(dev)->wdev->ieee802154_ptr,
--					    &lowpan_short_addr_fops);
--	if (!dentry)
--		return -EINVAL;
- 
--	return 0;
-+	debugfs_create_file("short_addr", 0444, root,
-+			    lowpan_802154_dev(dev)->wdev->ieee802154_ptr,
-+			    &lowpan_short_addr_fops);
- }
- 
--int lowpan_dev_debugfs_init(struct net_device *dev)
-+void lowpan_dev_debugfs_init(struct net_device *dev)
- {
- 	struct lowpan_dev *ldev = lowpan_dev(dev);
--	struct dentry *contexts, *dentry;
--	int ret, i;
-+	struct dentry *contexts;
-+	int i;
- 
- 	/* creating the root */
- 	ldev->iface_debugfs = debugfs_create_dir(dev->name, lowpan_debugfs);
--	if (!ldev->iface_debugfs)
--		goto fail;
- 
- 	contexts = debugfs_create_dir("contexts", ldev->iface_debugfs);
--	if (!contexts)
--		goto remove_root;
--
--	dentry = debugfs_create_file("show", 0644, contexts,
--				     &lowpan_dev(dev)->ctx,
--				     &lowpan_context_fops);
--	if (!dentry)
--		goto remove_root;
--
--	for (i = 0; i < LOWPAN_IPHC_CTX_TABLE_SIZE; i++) {
--		ret = lowpan_dev_debugfs_ctx_init(dev, contexts, i);
--		if (ret < 0)
--			goto remove_root;
--	}
- 
--	ret = lowpan_dev_debugfs_802154_init(dev, ldev);
--	if (ret < 0)
--		goto remove_root;
-+	debugfs_create_file("show", 0644, contexts, &lowpan_dev(dev)->ctx,
-+			    &lowpan_context_fops);
- 
--	return 0;
-+	for (i = 0; i < LOWPAN_IPHC_CTX_TABLE_SIZE; i++)
-+		lowpan_dev_debugfs_ctx_init(dev, contexts, i);
- 
--remove_root:
--	lowpan_dev_debugfs_exit(dev);
--fail:
--	return -EINVAL;
-+	lowpan_dev_debugfs_802154_init(dev, ldev);
- }
- 
- void lowpan_dev_debugfs_exit(struct net_device *dev)
-@@ -307,13 +266,9 @@ void lowpan_dev_debugfs_exit(struct net_device *dev)
- 	debugfs_remove_recursive(lowpan_dev(dev)->iface_debugfs);
- }
- 
--int __init lowpan_debugfs_init(void)
-+void __init lowpan_debugfs_init(void)
- {
- 	lowpan_debugfs = debugfs_create_dir("6lowpan", NULL);
--	if (!lowpan_debugfs)
--		return -EINVAL;
--
--	return 0;
- }
- 
- void lowpan_debugfs_exit(void)
+Alexei Starovoitov (9):
+  bpf: track spill/fill of constants
+  selftests/bpf: fix tests due to const spill/fill
+  bpf: extend is_branch_taken to registers
+  bpf: introduce bounded loops
+  bpf: fix callees pruning callers
+  selftests/bpf: fix tests
+  selftests/bpf: add basic verifier tests for loops
+  selftests/bpf: add realistic loop tests
+  bpf: precise scalar_value tracking
+
+ include/linux/bpf_verifier.h                  |  69 +-
+ kernel/bpf/verifier.c                         | 739 ++++++++++++++++--
+ .../bpf/prog_tests/bpf_verif_scale.c          |  67 +-
+ tools/testing/selftests/bpf/progs/loop1.c     |  28 +
+ tools/testing/selftests/bpf/progs/loop2.c     |  28 +
+ tools/testing/selftests/bpf/progs/loop3.c     |  22 +
+ tools/testing/selftests/bpf/progs/pyperf.h    |   6 +-
+ tools/testing/selftests/bpf/progs/pyperf600.c |   9 +
+ .../selftests/bpf/progs/pyperf600_nounroll.c  |   8 +
+ .../testing/selftests/bpf/progs/strobemeta.c  |  10 +
+ .../testing/selftests/bpf/progs/strobemeta.h  | 528 +++++++++++++
+ .../bpf/progs/strobemeta_nounroll1.c          |   9 +
+ .../bpf/progs/strobemeta_nounroll2.c          |   9 +
+ .../selftests/bpf/progs/test_seg6_loop.c      | 261 +++++++
+ .../selftests/bpf/progs/test_sysctl_loop1.c   |  71 ++
+ .../selftests/bpf/progs/test_sysctl_loop2.c   |  72 ++
+ .../selftests/bpf/progs/test_xdp_loop.c       | 231 ++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  11 +-
+ tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
+ tools/testing/selftests/bpf/verifier/cfg.c    |  11 +-
+ .../bpf/verifier/direct_packet_access.c       |   3 +-
+ .../bpf/verifier/helper_access_var_len.c      |  28 +-
+ tools/testing/selftests/bpf/verifier/loops1.c | 161 ++++
+ 23 files changed, 2289 insertions(+), 114 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/loop1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop3.c
+ create mode 100644 tools/testing/selftests/bpf/progs/pyperf600.c
+ create mode 100644 tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.h
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_seg6_loop.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_loop.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/loops1.c
+
 -- 
-2.22.0
+2.20.0
 
