@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9005A4515B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 03:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DF245199
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 03:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbfFNBwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jun 2019 21:52:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51620 "EHLO mx1.redhat.com"
+        id S1726556AbfFNB6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jun 2019 21:58:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42832 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725813AbfFNBwy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jun 2019 21:52:54 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1726011AbfFNB6w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jun 2019 21:58:52 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1DED081F0C;
-        Fri, 14 Jun 2019 01:52:54 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id A6CBB3083394;
+        Fri, 14 Jun 2019 01:58:51 +0000 (UTC)
 Received: from treble (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EEE8460A9A;
-        Fri, 14 Jun 2019 01:52:52 +0000 (UTC)
-Date:   Thu, 13 Jun 2019 20:52:51 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9918119C67;
+        Fri, 14 Jun 2019 01:58:50 +0000 (UTC)
+Date:   Thu, 13 Jun 2019 20:58:48 -0500
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -28,83 +28,72 @@ Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
         Song Liu <songliubraving@fb.com>,
         Kairui Song <kasong@redhat.com>
-Subject: Re: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
-Message-ID: <20190614015251.xyfzl5djr7zurtvj@treble>
+Subject: Re: [PATCH 7/9] x86/unwind/orc: Fall back to using frame pointers
+ for generated code
+Message-ID: <20190614015848.todgfogryjn573nd@treble>
 References: <cover.1560431531.git.jpoimboe@redhat.com>
- <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
- <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
- <20190614012248.ztruzocusb2vu7bl@treble>
- <20190614013904.v2tpiunrjukzlxsu@ast-mbp.dhcp.thefacebook.com>
+ <4f536ec4facda97406273a22a4c2677f7cb22148.1560431531.git.jpoimboe@redhat.com>
+ <20190613220054.tmonrgfdeie2kl74@ast-mbp.dhcp.thefacebook.com>
+ <20190614013051.6gnwduy4dsygbamj@treble>
+ <20190614014244.st7fbr6areazmyrb@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190614013904.v2tpiunrjukzlxsu@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190614014244.st7fbr6areazmyrb@ast-mbp.dhcp.thefacebook.com>
 User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Fri, 14 Jun 2019 01:52:54 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 14 Jun 2019 01:58:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 06:39:05PM -0700, Alexei Starovoitov wrote:
-> On Thu, Jun 13, 2019 at 08:22:48PM -0500, Josh Poimboeuf wrote:
-> > On Thu, Jun 13, 2019 at 02:58:09PM -0700, Alexei Starovoitov wrote:
-> > > On Thu, Jun 13, 2019 at 08:21:03AM -0500, Josh Poimboeuf wrote:
-> > > > The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
-> > > > thus prevents the FP unwinder from unwinding through JIT generated code.
-> > > > 
-> > > > RBP is currently used as the BPF stack frame pointer register.  The
-> > > > actual register used is opaque to the user, as long as it's a
-> > > > callee-saved register.  Change it to use R12 instead.
-> > > > 
-> > > > Fixes: d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
-> > > > Reported-by: Song Liu <songliubraving@fb.com>
-> > > > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> > > > ---
-> > > >  arch/x86/net/bpf_jit_comp.c | 43 +++++++++++++++++++++----------------
-> > > >  1 file changed, 25 insertions(+), 18 deletions(-)
-> > > > 
-> > > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > > > index e649f977f8e1..bb1968fea50a 100644
-> > > > --- a/arch/x86/net/bpf_jit_comp.c
-> > > > +++ b/arch/x86/net/bpf_jit_comp.c
-> > > > @@ -100,9 +100,8 @@ static int bpf_size_to_x86_bytes(int bpf_size)
-> > > >  /*
-> > > >   * The following table maps BPF registers to x86-64 registers.
-> > > >   *
-> > > > - * x86-64 register R12 is unused, since if used as base address
-> > > > - * register in load/store instructions, it always needs an
-> > > > - * extra byte of encoding and is callee saved.
-> > > > + * RBP isn't used; it needs to be preserved to allow the unwinder to move
-> > > > + * through generated code stacks.
+On Thu, Jun 13, 2019 at 06:42:45PM -0700, Alexei Starovoitov wrote:
+> On Thu, Jun 13, 2019 at 08:30:51PM -0500, Josh Poimboeuf wrote:
+> > On Thu, Jun 13, 2019 at 03:00:55PM -0700, Alexei Starovoitov wrote:
+> > > > @@ -392,8 +402,16 @@ bool unwind_next_frame(struct unwind_state *state)
+> > > >  	 * calls and calls to noreturn functions.
+> > > >  	 */
+> > > >  	orc = orc_find(state->signal ? state->ip : state->ip - 1);
+> > > > -	if (!orc)
+> > > > -		goto err;
+> > > > +	if (!orc) {
+> > > > +		/*
+> > > > +		 * As a fallback, try to assume this code uses a frame pointer.
+> > > > +		 * This is useful for generated code, like BPF, which ORC
+> > > > +		 * doesn't know about.  This is just a guess, so the rest of
+> > > > +		 * the unwind is no longer considered reliable.
+> > > > +		 */
+> > > > +		orc = &orc_fp_entry;
+> > > > +		state->error = true;
 > > > 
-> > > Extra register save/restore is kinda annoying just to fix ORC.
+> > > That seems fragile.
 > > 
-> > It's not just for the ORC unwinder.  It also fixes the frame pointer
-> > unwinder (see above commit msg).  And it's standard frame pointer
-> > practice to not clobber RBP.
-> 
-> not true.
-> generated JITed code has no issues with regular stack unwinder.
-> it breaks down under ORC only.
-> 
-> > > Also every stack access from bpf prog will be encoded via r12 and consume
-> > > extra byte of encoding. I really don't like this approach.
+> > I don't think so.  The unwinder has sanity checks to make sure it
+> > doesn't go off the rails.  And it works just fine.  The beauty is that
+> > it should work for all generated code (not just BPF).
 > > 
-> > Do you have another callee-saved register you'd prefer to use as the
-> > stack pointer?
-> 
-> RBP must be used.
-> 
-> > > Can you teach ORC to understand JIT-ed frames instead?
+> > > Can't we populate orc_unwind tables after JIT ?
 > > 
-> > We could, but it would add a lot more complexity than this.  And anyway,
-> > the frame pointer unwinder would still be broken.
+> > As I mentioned it would introduce a lot more complexity.  For each JIT
+> > function, BPF would have to tell ORC the following:
+> > 
+> > - where the BPF function lives
+> > - how big the stack frame is
+> > - where RBP and other callee-saved regs are on the stack
 > 
-> I disagree. See above. Only ORC is broken. Hence ORC should be fixed.
+> that sounds like straightforward addition that ORC should have anyway.
+> right now we're not using rbp in the jit-ed code,
+> but one day we definitely will.
+> Same goes for r12. It's reserved right now for 'strategic use'.
+> We've been thinking to add another register to bpf isa.
+> It will map to r12 on x86. arm64 and others have plenty of regs to use.
+> The programs are getting bigger and register spill/fill starting to
+> become a performance concern. Extra register will give us more room.
 
-You're clobbering RBP.  Frame pointer unwinding is broken.  Period.
+With CONFIG_FRAME_POINTER, RBP isn't available.  If you look at all the
+code in the entire kernel you'll notice that BPF JIT is pretty much the
+only one still clobbering it.
 
 -- 
 Josh
