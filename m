@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B9B453AA
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39EE7453AB
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 06:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725973AbfFNEly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 00:41:54 -0400
-Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:47620
+        id S1726020AbfFNEmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 00:42:01 -0400
+Received: from cat-porwal-prod-mail1.catalyst.net.nz ([202.78.240.226]:47766
         "EHLO cat-porwal-prod-mail1.catalyst.net.nz" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725767AbfFNEly (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 00:41:54 -0400
+        by vger.kernel.org with ESMTP id S1725767AbfFNEmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 00:42:01 -0400
 Received: from timbeale-pc.wgtn.cat-it.co.nz (unknown [IPv6:2404:130:0:1000:ed06:1c1d:e56c:b595])
         (Authenticated sender: timbeale@catalyst.net.nz)
-        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id CF1608148B;
-        Fri, 14 Jun 2019 16:41:51 +1200 (NZST)
+        by cat-porwal-prod-mail1.catalyst.net.nz (Postfix) with ESMTPSA id 8D35C81546;
+        Fri, 14 Jun 2019 16:41:59 +1200 (NZST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1560487311;
+        s=default; t=1560487319;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=CZbQtYJQ75mng+B7XGi300O/A08oqE0teNc/gyrwgvg=;
-        b=qgcfQCGhwF/WIfwYYMAAX60XevySsTnaZPsVbeCcS/k2G8l2L4L0dTz2iC3fmgtD9Eet1Q
-        z7lpF8O6BHp7agTqxhGxiu0Wv2Nx3hVYYWgs4cokOODQjHj/DUEGr0HtD/Zj6CZzHfgAjd
-        d4Sj41D9qBEiyVUl903hMy/PvicwrvL9skNgWNvz0n4KhA3yEmZ5DbySHsrLbEBIJ4PMEh
-        QNN24g+DfIN5rGoWi13XUznBmYhnkhFYeSSZKG+tpJlhU8C/PbKFsjBi5ygPbtPlBgxVNP
-        L/CZjYfPkUOk9g1keg+JHdcRGDIOuubgnUh+qp8J1l+6k0FW0fi5OvHX/A09zw==
+         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+        bh=SCh5QnKEX/n9xTL/ke/zsYY4Am+WLYmiCEIJreTOxzI=;
+        b=JSmymAO9mNCGWH1fy2D9WI2URxMFXlTbQp9unuL56JRdgTmU1DBki3fyzS6Q9tTNSQqFSH
+        yJ880SsPUJ/Jvz7J0bxFTC1rG/PYgLm9tkkfD8UsgMAdbRtTug+++L0GGF6deVeuUfjIAi
+        Dek9iBOo6kXDVsKxBUFglaFLLCqbqtQRiIfVgqlkHRHI6FqSy1UEeGhluP46Wmo7EZBDuN
+        30l84I5koamOb17dWsyQW/CYgjVP6ghRUSjPDuGFJSs1khX66fAaeDOtFCJddSpWCcgc2P
+        +Y4Utb7Q1/UoBex4VhSi6XLtM81JyYyv2fYDZarPLRGEIPYS0n/hlF3Yon9r6w==
 From:   Tim Beale <timbeale@catalyst.net.nz>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         Tim Beale <timbeale@catalyst.net.nz>
-Subject: [PATCH net next 1/2] udp: Remove unused parameter (exact_dif)
-Date:   Fri, 14 Jun 2019 16:41:26 +1200
-Message-Id: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
+Subject: [PATCH net next 2/2] udp: Remove unused variable/function (exact_dif)
+Date:   Fri, 14 Jun 2019 16:41:27 +1200
+Message-Id: <1560487287-198694-2-git-send-email-timbeale@catalyst.net.nz>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
+References: <1560487287-198694-1-git-send-email-timbeale@catalyst.net.nz>
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catalyst.net.nz;
-        s=default; t=1560487312;
+        s=default; t=1560487319;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=CZbQtYJQ75mng+B7XGi300O/A08oqE0teNc/gyrwgvg=;
-        b=YeoyecpfWHoHkUn7EmMB6ut5ndK6QgUmBoUNU238kHmrbxumJpFLv54CYfrBaW/UavGmVW
-        hbvMS+hoz4bc1CQaAc5RyEWknWhYNiCrP7xVuabilBag0b4yw0qDTWzlKm85u6vIHuyXBZ
-        GxEqfqf5vGDZlJvfPA1z0jxpk04u9z7A5tnrhSsvWrtLqQT3BbBsUJVq3bZ6pry1vniEyx
-        NnZNkWCT3Trm3DyXNLxxsnHulERWMnaG9jny1iP/XusXZW90+FbUUpGOUA8uDEC2XavcWo
-        +OsORdVqUojTloT5s+oHiZymFTLThBsaqcvjiJWF1eTS9e7C1IJobcNFaNgN2Q==
-ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1560487312; a=rsa-sha256;
+         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+        bh=SCh5QnKEX/n9xTL/ke/zsYY4Am+WLYmiCEIJreTOxzI=;
+        b=q48k+Lq54jbK3h7xiZzmoFTZ8SeJQWvVI6tmMxUP8lleAx/55T3vD6dsdOCXfRa/J8EK70
+        ZeTlV1zk89BFUWOtXDEtjFtZ5Y1T61nHnRQpdE6CYUwc8f7ErObtYXtaqzBizEOxRHURSN
+        Dzpd5WyQluZZ5DgPOovoPGK3zc5bqYF9T6VNzRfr62egaVkwec3taR5buGLGyYDFPUBPfm
+        10MAtuFf7gKfK0QYkPFS9BAY+pTPYw0k33hpq36990IXjTWoVMcdeShOkNP71doDxBuZGj
+        /TmwPBCx7MHkSfH0dZr3uiBbepej7rqX9+dmkwztU3E2pr6wMBq+gOPK/WHLzQ==
+ARC-Seal: i=1; s=default; d=catalyst.net.nz; t=1560487319; a=rsa-sha256;
         cv=none;
-        b=WZbQoBqf5qvjOcZw0WG8f7pItXA0mz0LSUhX2wFM5szgj9xWQodHJyHeoc8O3v+vl3fGpJ
-        4Je7ToHlzokOyX/WIiFAZPgMwjmgFRy8yOfhYH3HeHadDgRtv7BYGT+LAREwCZd1W5oIlC
-        8nggahK4r5QTGcCUI59IghP6qNw+atzWYRbqyi5jCTBH1PBHtYDZnY4R8syPRQzLu6kpEO
-        GCqOOguuyJMCKaZcpXHUfRxgS/UjtQRszWXm1yYbxLx4xlNyuRbGUtTAh7xixyzg4p4r9a
-        +coqr8ri/amxZSdDNEiKgUoXWQ/biSscxXC8jD+G6LCMZTRono54E0RACDIXYA==
+        b=jPVFIKSblpizb5KIQweZfz3exvjainUO58P/i018J9XRpCMV89ggU5bEQH6WGczsxlVmmP
+        j5aWVqf7Ie8jNppf3zwSTNwhDUt8gZYFGAu8Dujg6TrpKkZEWeRFkErF5/nnKXLZyUSDZo
+        9bX66RL2VH+CeVP0zp/SDU5lmGlMCE1tstBM3KKH5JrhHC/QCuDBvXv0yGMlOfbCJYyaim
+        M96Mi0szECNwFG2BcvZC4V/+Us41Sbo4g5tneLHnnCIIivX2wHy71lqLkj+nJ44ZCGztvp
+        AcS/4qrL+I+H1OWhSiN6XaA52R3wN//zFXNc4DRpH+6sIgtK6okuZQ507MSNkA==
 ARC-Authentication-Results: i=1;
         ORIGINATING;
         auth=pass smtp.auth=timbeale@catalyst.net.nz smtp.mailfrom=timbeale@catalyst.net.nz
@@ -56,121 +60,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Originally this was used by the VRF logic in compute_score(), but that
-was later replaced by udp_sk_bound_dev_eq() and the parameter became
-unused.
-
-Note this change adds an 'unused variable' compiler warning that will be
-removed in the next patch (I've split the removal in two to make review
-slightly easier).
+This was originally passed through to the VRF logic in compute_score().
+But that logic has now been replaced by udp_sk_bound_dev_eq() and so
+this code is no longer used or needed.
 
 Signed-off-by: Tim Beale <timbeale@catalyst.net.nz>
 ---
- net/ipv4/udp.c | 10 +++++-----
- net/ipv6/udp.c | 13 ++++++-------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ net/ipv4/udp.c | 12 ------------
+ net/ipv6/udp.c | 11 -----------
+ 2 files changed, 23 deletions(-)
 
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 86de412..21febf1 100644
+index 21febf1..211a8f3 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -364,7 +364,7 @@ int udp_v4_get_port(struct sock *sk, unsigned short snum)
- static int compute_score(struct sock *sk, struct net *net,
- 			 __be32 saddr, __be16 sport,
- 			 __be32 daddr, unsigned short hnum,
--			 int dif, int sdif, bool exact_dif)
-+			 int dif, int sdif)
- {
- 	int score;
- 	struct inet_sock *inet;
-@@ -420,7 +420,7 @@ static u32 udp_ehashfn(const struct net *net, const __be32 laddr,
- static struct sock *udp4_lib_lookup2(struct net *net,
- 				     __be32 saddr, __be16 sport,
- 				     __be32 daddr, unsigned int hnum,
--				     int dif, int sdif, bool exact_dif,
-+				     int dif, int sdif,
- 				     struct udp_hslot *hslot2,
- 				     struct sk_buff *skb)
- {
-@@ -432,7 +432,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
- 	badness = 0;
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
- 		score = compute_score(sk, net, saddr, sport,
--				      daddr, hnum, dif, sdif, exact_dif);
-+				      daddr, hnum, dif, sdif);
- 		if (score > badness) {
- 			if (sk->sk_reuseport) {
- 				hash = udp_ehashfn(net, daddr, hnum,
-@@ -468,7 +468,7 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+@@ -125,17 +125,6 @@ EXPORT_SYMBOL(udp_memory_allocated);
+ #define MAX_UDP_PORTS 65536
+ #define PORTS_PER_CHAIN (MAX_UDP_PORTS / UDP_HTABLE_SIZE_MIN)
  
- 	result = udp4_lib_lookup2(net, saddr, sport,
- 				  daddr, hnum, dif, sdif,
--				  exact_dif, hslot2, skb);
-+				  hslot2, skb);
- 	if (!result) {
- 		hash2 = ipv4_portaddr_hash(net, htonl(INADDR_ANY), hnum);
- 		slot2 = hash2 & udptable->mask;
-@@ -476,7 +476,7 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+-/* IPCB reference means this can not be used from early demux */
+-static bool udp_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
+-{
+-#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+-	if (!net->ipv4.sysctl_udp_l3mdev_accept &&
+-	    skb && ipv4_l3mdev_skb(IPCB(skb)->flags))
+-		return true;
+-#endif
+-	return false;
+-}
+-
+ static int udp_lib_lport_inuse(struct net *net, __u16 num,
+ 			       const struct udp_hslot *hslot,
+ 			       unsigned long *bitmap,
+@@ -460,7 +449,6 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+ 	unsigned short hnum = ntohs(dport);
+ 	unsigned int hash2, slot2;
+ 	struct udp_hslot *hslot2;
+-	bool exact_dif = udp_lib_exact_dif_match(net, skb);
  
- 		result = udp4_lib_lookup2(net, saddr, sport,
- 					  htonl(INADDR_ANY), hnum, dif, sdif,
--					  exact_dif, hslot2, skb);
-+					  hslot2, skb);
- 	}
- 	if (IS_ERR(result))
- 		return NULL;
+ 	hash2 = ipv4_portaddr_hash(net, daddr, hnum);
+ 	slot2 = hash2 & udptable->mask;
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 6935183..8acd24e 100644
+index 8acd24e..b50ecac 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -111,7 +111,7 @@ void udp_v6_rehash(struct sock *sk)
- static int compute_score(struct sock *sk, struct net *net,
- 			 const struct in6_addr *saddr, __be16 sport,
- 			 const struct in6_addr *daddr, unsigned short hnum,
--			 int dif, int sdif, bool exact_dif)
-+			 int dif, int sdif)
- {
- 	int score;
- 	struct inet_sock *inet;
-@@ -155,8 +155,8 @@ static int compute_score(struct sock *sk, struct net *net,
- static struct sock *udp6_lib_lookup2(struct net *net,
- 		const struct in6_addr *saddr, __be16 sport,
- 		const struct in6_addr *daddr, unsigned int hnum,
--		int dif, int sdif, bool exact_dif,
--		struct udp_hslot *hslot2, struct sk_buff *skb)
-+		int dif, int sdif, struct udp_hslot *hslot2,
-+		struct sk_buff *skb)
- {
- 	struct sock *sk, *result;
- 	int score, badness;
-@@ -166,7 +166,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
- 	badness = -1;
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
- 		score = compute_score(sk, net, saddr, sport,
--				      daddr, hnum, dif, sdif, exact_dif);
-+				      daddr, hnum, dif, sdif);
- 		if (score > badness) {
- 			if (sk->sk_reuseport) {
- 				hash = udp6_ehashfn(net, daddr, hnum,
-@@ -202,7 +202,7 @@ struct sock *__udp6_lib_lookup(struct net *net,
- 	hslot2 = &udptable->hash2[slot2];
+@@ -54,16 +54,6 @@
+ #include <trace/events/skb.h>
+ #include "udp_impl.h"
  
- 	result = udp6_lib_lookup2(net, saddr, sport,
--				  daddr, hnum, dif, sdif, exact_dif,
-+				  daddr, hnum, dif, sdif,
- 				  hslot2, skb);
- 	if (!result) {
- 		hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum);
-@@ -212,8 +212,7 @@ struct sock *__udp6_lib_lookup(struct net *net,
+-static bool udp6_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
+-{
+-#if defined(CONFIG_NET_L3_MASTER_DEV)
+-	if (!net->ipv4.sysctl_udp_l3mdev_accept &&
+-	    skb && ipv6_l3mdev_skb(IP6CB(skb)->flags))
+-		return true;
+-#endif
+-	return false;
+-}
+-
+ static u32 udp6_ehashfn(const struct net *net,
+ 			const struct in6_addr *laddr,
+ 			const u16 lport,
+@@ -195,7 +185,6 @@ struct sock *__udp6_lib_lookup(struct net *net,
+ 	unsigned int hash2, slot2;
+ 	struct udp_hslot *hslot2;
+ 	struct sock *result;
+-	bool exact_dif = udp6_lib_exact_dif_match(net, skb);
  
- 		result = udp6_lib_lookup2(net, saddr, sport,
- 					  &in6addr_any, hnum, dif, sdif,
--					  exact_dif, hslot2,
--					  skb);
-+					  hslot2, skb);
- 	}
- 	if (IS_ERR(result))
- 		return NULL;
+ 	hash2 = ipv6_portaddr_hash(net, daddr, hnum);
+ 	slot2 = hash2 & udptable->mask;
 -- 
 2.7.4
 
