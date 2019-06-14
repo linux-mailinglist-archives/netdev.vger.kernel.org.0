@@ -2,110 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5DA462E8
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91759462EF
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbfFNPea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 11:34:30 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:44202 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfFNPe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:34:29 -0400
-Received: by mail-yb1-f196.google.com with SMTP id x187so1227522ybc.11
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 08:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZvSLdb4tGoj1KerVcujZWEcT0dZuhjXYXXie7nT7mXw=;
-        b=nxrt4giWUlhE9biCVR+Nf7l0dQrFKvxLWDlX56RbVNxUEL0bUAFHio4l+uzl0nCxh7
-         xXzwrZb2/VMVmB+aSmN56g905HvDn3pCUAGYNxE7lgaqutKZ1nzEtyOuvhGIdaUqZWnO
-         iwxssJBIDgARes03cNAnQxvq0Dawjb1fSsJgBu8clFk87sKOVkvglbqQV3ArKpwt6YEY
-         U0yhmXm8J5eHwfiEs6Vzf64EyDO/hlefYNr8XiDq9Xwgo4Bt8mHGoKc5wR3Umn5k4VRm
-         PysrCqMQJpRReJvso+/R9WYMkI5EyDmBVUwyI4P9kGBArUktyJcbMOmfUlNvfdkoZDtt
-         cflQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZvSLdb4tGoj1KerVcujZWEcT0dZuhjXYXXie7nT7mXw=;
-        b=hEKCODjXBVT6W3C1E0xl6VcFCfPNVDmo4quHft9QdtH+GLcTJVEgbqPxwsiWP8MK1l
-         vXVbAUiV0tEXiSnrFriUjrysoWLD6bEuesCB71ksEYQCaTfihRTyiXKGygtNbLjscRlD
-         4lf572NchxXAk6qYs3msZ5bA5cH6fq43Dr6amls8QbwEt4j1cFLtREh5VNWrEDFf5gSl
-         JDdXcGpsVCjRscZuf9p8ijrXBRYsTNtzsKf+InmjolMJ4U8IZEbg05rNZZtl/2AhE66R
-         o4slFIIJZhSPhwMe2+Zanh+oym2QB8kDjdn5VKJw2DNQ90flu4PyvjHB2lr6sWwFS5gY
-         hroA==
-X-Gm-Message-State: APjAAAUnJj5LjI6SXQn+j/yIdUr6rP5pc+BehdAjaOnS4YaN0PgnPAtt
-        /tQxPFFQcvcyvSZH+o4sT1lpm7Fbe6H+Cz8JzlgduQ==
-X-Google-Smtp-Source: APXvYqxJrrGfUL+aUSndZe9HBl/gZBDc+JU5kN+yx29GOggyBQLueAHuwXlwxFosnw1LNNcCP2ngQVFfaoX1rv+mQ8E=
-X-Received: by 2002:a25:55d7:: with SMTP id j206mr50996255ybb.234.1560526468360;
- Fri, 14 Jun 2019 08:34:28 -0700 (PDT)
+        id S1726797AbfFNPfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 11:35:00 -0400
+Received: from verein.lst.de ([213.95.11.211]:47942 "EHLO newverein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbfFNPfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 11:35:00 -0400
+Received: by newverein.lst.de (Postfix, from userid 2407)
+        id DF91968AFE; Fri, 14 Jun 2019 17:34:28 +0200 (CEST)
+Date:   Fri, 14 Jun 2019 17:34:28 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        linux-media@vger.kernel.org
+Subject: Re: [PATCH 12/16] staging/comedi: mark as broken
+Message-ID: <20190614153428.GA10008@lst.de>
+References: <20190614134726.3827-1-hch@lst.de> <20190614134726.3827-13-hch@lst.de> <20190614140239.GA7234@kroah.com> <20190614144857.GA9088@lst.de> <20190614153032.GD18049@kroah.com>
 MIME-Version: 1.0
-References: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
-In-Reply-To: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 14 Jun 2019 08:34:16 -0700
-Message-ID: <CANn89iKP2fQ6Tc0jBW_WdLq3kYQx7NsdVDB5S3y453T+6yp86g@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ipv4: move tcp_fastopen server side code to
- SipHash library
-To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc:     netdev <netdev@vger.kernel.org>, linux-crypto@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>, ebiggers@kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jason Baron <jbaron@akamai.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        David Laight <David.Laight@aculab.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190614153032.GD18049@kroah.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 7:01 AM Ard Biesheuvel
-<ard.biesheuvel@linaro.org> wrote:
->
-> Using a bare block cipher in non-crypto code is almost always a bad idea,
-> not only for security reasons (and we've seen some examples of this in
-> the kernel in the past), but also for performance reasons.
->
-> In the TCP fastopen case, we call into the bare AES block cipher one or
-> two times (depending on whether the connection is IPv4 or IPv6). On most
-> systems, this results in a call chain such as
->
->   crypto_cipher_encrypt_one(ctx, dst, src)
->     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
->       aesni_encrypt
->         kernel_fpu_begin();
->         aesni_enc(ctx, dst, src); // asm routine
->         kernel_fpu_end();
->
-> It is highly unlikely that the use of special AES instructions has a
-> benefit in this case, especially since we are doing the above twice
-> for IPv6 connections, instead of using a transform which can process
-> the entire input in one go.
->
-> We could switch to the cbcmac(aes) shash, which would at least get
-> rid of the duplicated overhead in *some* cases (i.e., today, only
-> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
-> end up using the generic cbcmac template wrapping the AES-NI cipher,
-> which basically ends up doing exactly the above). However, in the given
-> context, it makes more sense to use a light-weight MAC algorithm that
-> is more suitable for the purpose at hand, such as SipHash.
->
-> Since the output size of SipHash already matches our chosen value for
-> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
-> sizes, this greatly simplifies the code as well.
->
-> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+On Fri, Jun 14, 2019 at 05:30:32PM +0200, Greg KH wrote:
+> On Fri, Jun 14, 2019 at 04:48:57PM +0200, Christoph Hellwig wrote:
+> > On Fri, Jun 14, 2019 at 04:02:39PM +0200, Greg KH wrote:
+> > > Perhaps a hint as to how we can fix this up?  This is the first time
+> > > I've heard of the comedi code not handling dma properly.
+> > 
+> > It can be fixed by:
+> > 
+> >  a) never calling virt_to_page (or vmalloc_to_page for that matter)
+> >     on dma allocation
+> >  b) never remapping dma allocation with conflicting cache modes
+> >     (no remapping should be doable after a) anyway).
+> 
+> Ok, fair enough, have any pointers of drivers/core code that does this
+> correctly?  I can put it on my todo list, but might take a week or so...
 
-While the patch looks fine (I yet have to run our tests with it), it
-might cause some deployment issues
-for server farms.
-
-They usually share a common fastopen key, so that clients can reuse
-the same token for different sessions.
-
-Changing some servers in the pool will lead to inconsistencies.
-
-Probably not a too big deal, but worth mentioning.
+Just about everyone else.  They just need to remove the vmap and
+either do one large allocation, or live with the fact that they need
+helpers to access multiple array elements instead of one net vmap,
+which most of the users already seem to do anyway, with just a few
+using the vmap (which might explain why we didn't see blowups yet).
