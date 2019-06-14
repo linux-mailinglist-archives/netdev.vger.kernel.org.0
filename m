@@ -2,183 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7AB846575
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1774657F
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725996AbfFNRQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:16:05 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35677 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbfFNRQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:16:05 -0400
-Received: by mail-pg1-f195.google.com with SMTP id s27so1917881pgl.2;
-        Fri, 14 Jun 2019 10:16:04 -0700 (PDT)
+        id S1726252AbfFNRRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:17:16 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40962 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfFNRRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:17:16 -0400
+Received: by mail-ed1-f67.google.com with SMTP id p15so4480844eds.8
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 10:17:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=w4xkfhw9P/mZ5Ov6JWcVYWfC+GgKo69/kxNNY20kkhA=;
-        b=aWr1mLGflo4B0gklLMgNG5TQYmjw4KhJEWBX01cWmxiTSa/6niCilaGzLttBFRHtOp
-         eI6X2+PdURC14gRWzkvTDjp77K4JI5B7DdN+vm2c3wvEZgJHciFf4v8HUJSFykc/j+NL
-         Pn99ZlkI9Apd+ki5nEdF3tAXFsRXejPigSGaU3/3+dK9ME1ot1zipNfXKo9pOcUxFUsQ
-         H4nYwQohLLNHE4pDoYjpynzMUr3mjnaUWqKiIxeuVqHkOyfO9IyvbsShpFO8lwIrE54v
-         ROg1lVrLHYxF+R1dWLg6LEXWU8mS7hWT7LVxFNAySd1i9K0hs4nX00Hu1wlApvZV+zLO
-         oAww==
+        d=broadcom.com; s=google;
+        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
+         :subject:mime-version:content-transfer-encoding;
+        bh=7TRyUZx1zoQSYNZ+ER0doTkq7zshmk9cidJxpZCUNN4=;
+        b=LjN3BmyEOgpqPA02mygscd7VyN5kV9cjfsGWeoPqOr1iRbUnCUiGBfBlduft28awjQ
+         3hOd0leEfRmAgFtf7bNKcIe0ghSeeAQFaYXwhsqNKIIS2BnS89LBPnw3azQX+cdslalu
+         89o15ro4zPbbHmZG253IHizn846QyWeXGcwWk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=w4xkfhw9P/mZ5Ov6JWcVYWfC+GgKo69/kxNNY20kkhA=;
-        b=kID4kQxxYUfN3Ly/USSEjQH+SM7KedaZo/IUMT0m5yKeyc5z5jaoma3ssUGKmUvsQo
-         fztuwfH1IcL7HQD2cVmqIwdRl7klZn0GDSWkQmhObr0B7AolWjrUo6rcQ0R/xsObC9cG
-         7Z+2vXKfux3VL/ani1vX3pC2lndBhCVzCFMBhUktim8n3tBRpEOg6KatGHkDaB4tNBa5
-         mB/qjylqGAZZDS+cnAHQXdJMOYDWQGEPTsLm/u3w5vKzWZf082xEtlUhQGQ1ODaXEpk4
-         dwe2GX5ob0PSi8rpskVbBQyaYYOBEHEJHt85DX1vcUVK9yJC1y4djAd1kU5q+Lb5DpS5
-         xgQw==
-X-Gm-Message-State: APjAAAVr1xAwlbZ3I1UMbQx497kCmOpQa0wZv1tPhnE9OBzblAcNf7Y/
-        w7H+kZWBLSD3Ou2HaqjeHuTfeSGdkmM=
-X-Google-Smtp-Source: APXvYqx6xvb15603XcKfdISIGDjP0rvkCDGFkgv6fRaGiehXSy0ZApehsh6pSX46o+Jyo7+dL0zahA==
-X-Received: by 2002:a65:60c2:: with SMTP id r2mr36174586pgv.156.1560532564021;
-        Fri, 14 Jun 2019 10:16:04 -0700 (PDT)
-Received: from localhost ([192.55.54.45])
-        by smtp.gmail.com with ESMTPSA id r4sm2885535pjd.28.2019.06.14.10.16.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 14 Jun 2019 10:16:03 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 19:15:49 +0200
-From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
- non-combined channels
-Message-ID: <20190614191549.0000374d@gmail.com>
-In-Reply-To: <eb175575-1ab4-4d29-1dc9-28d85cddd842@mellanox.com>
-References: <20190612155605.22450-1-maximmi@mellanox.com>
- <20190612155605.22450-8-maximmi@mellanox.com>
- <20190612132352.7ee27bf3@cakuba.netronome.com>
- <0afd3ef2-d0e3-192b-095e-0f8ae8e6fb5d@mellanox.com>
- <20190613164514.00002f66@gmail.com>
- <eb175575-1ab4-4d29-1dc9-28d85cddd842@mellanox.com>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
+        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:subject:mime-version
+         :content-transfer-encoding;
+        bh=7TRyUZx1zoQSYNZ+ER0doTkq7zshmk9cidJxpZCUNN4=;
+        b=g9cs/B2bpvMYr109JfBMnkS5msA5XUDmg+s1F1tymsLIuplKC1UFa3c/KR7Pd0KNMi
+         6DQr0kwzm3iL/QYam8jgYUu/966YGSEdWsojSreT2HD8T5MiJTovNyse45pRSZ56bvAr
+         X8hnUVdBBAaNh12+xQG2q3EiCuaHaXvM9eiHNqhQseG0hwsk28Ie/DhPC0bHRO5M01Ei
+         UbvJyanIq2dXM4bAz+IQzGpLprZmwWYqJVJp4HI/P4Kr4u547VM0u7XV9w2aHQ0P1wfa
+         qZdR2Dw/EcdfLwkqCBOYC37Wv7MiIhRu8J8WlJrTTlMfj0MflB04JwaVbalGAIrvfrf+
+         xJaQ==
+X-Gm-Message-State: APjAAAUR74YBeULYtMsMG2CeY8YTCxPNh9gR01iJw4KvQ2WUau9Ltey9
+        4zrsLiczzDt8IVKwXs/e1xqawQ==
+X-Google-Smtp-Source: APXvYqxoDgfecrMxkY8vCct7UUGvuYQVCrnt17PA6/AGoy/4n4fyf0ayVe4kCK+cV82wiR4wYero6A==
+X-Received: by 2002:a50:d791:: with SMTP id w17mr8370604edi.223.1560532634311;
+        Fri, 14 Jun 2019 10:17:14 -0700 (PDT)
+Received: from [192.168.178.17] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id h10sm764146ede.93.2019.06.14.10.17.13
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 14 Jun 2019 10:17:13 -0700 (PDT)
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+To:     Doug Anderson <dianders@chromium.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>
+CC:     Kalle Valo <kvalo@codeaurora.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        "linux-wireless" <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        "Chi-Hsien Lin" <chi-hsien.lin@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        "brcm80211-dev-list" <brcm80211-dev-list@cypress.com>,
+        <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Avri Altman <avri.altman@wdc.com>
+Date:   Fri, 14 Jun 2019 19:17:10 +0200
+Message-ID: <16b56fe39f0.2764.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+In-Reply-To: <CAD=FV=Wuj=gANR2im_o4ZnoLEB+U6FqzKe4noLdQyi1vw+K2xw@mail.gmail.com>
+References: <20190613234153.59309-1-dianders@chromium.org>
+ <20190613234153.59309-5-dianders@chromium.org>
+ <CAPDyKFrJ4+zn7Ak0tYHkBfXUtH3N7erb5R7Q+hgugchZmCRGrw@mail.gmail.com>
+ <CAD=FV=Wuj=gANR2im_o4ZnoLEB+U6FqzKe4noLdQyi1vw+K2xw@mail.gmail.com>
+User-Agent: AquaMail/1.20.0-1458 (build: 102100001)
+Subject: Re: [PATCH v4 4/5] mmc: core: Add sdio_retune_hold_now() and sdio_retune_release()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jun 2019 13:25:24 +0000
-Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+On June 14, 2019 6:38:51 PM Doug Anderson <dianders@chromium.org> wrote:
 
-> On 2019-06-13 17:45, Maciej Fijalkowski wrote:
-> > On Thu, 13 Jun 2019 14:01:39 +0000
-> > Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
-> >   
-> >> On 2019-06-12 23:23, Jakub Kicinski wrote:  
-> >>> On Wed, 12 Jun 2019 15:56:48 +0000, Maxim Mikityanskiy wrote:  
-> >>>> Currently, libbpf uses the number of combined channels as the maximum
-> >>>> queue number. However, the kernel has a different limitation:
-> >>>>
-> >>>> - xdp_reg_umem_at_qid() allows up to max(RX queues, TX queues).
-> >>>>
-> >>>> - ethtool_set_channels() checks for UMEMs in queues up to
-> >>>>     combined_count + max(rx_count, tx_count).
-> >>>>
-> >>>> libbpf shouldn't limit applications to a lower max queue number. Account
-> >>>> for non-combined RX and TX channels when calculating the max queue
-> >>>> number. Use the same formula that is used in ethtool.
-> >>>>
-> >>>> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >>>> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> >>>> Acked-by: Saeed Mahameed <saeedm@mellanox.com>  
-> >>>
-> >>> I don't think this is correct.  max_tx tells you how many TX channels
-> >>> there can be, you can't add that to combined.  Correct calculations is:
-> >>>
-> >>> max_num_chans = max(max_combined, max(max_rx, max_tx))  
-> >>
-> >> First of all, I'm aligning with the formula in the kernel, which is:
-> >>
-> >>       curr.combined_count + max(curr.rx_count, curr.tx_count);
-> >>
-> >> (see net/core/ethtool.c, ethtool_set_channels()).
-> >>
-> >> The formula in libbpf should match it.
-> >>
-> >> Second, the existing drivers have either combined channels or separate
-> >> rx and tx channels. So, for the first kind of drivers, max_tx doesn't
-> >> tell how many TX channels there can be, it just says 0, and max_combined
-> >> tells how many TX and RX channels are supported. As max_tx doesn't
-> >> include max_combined (and vice versa), we should add them up.
-> >>  
-> >>>>    tools/lib/bpf/xsk.c | 6 +++---
-> >>>>    1 file changed, 3 insertions(+), 3 deletions(-)
-> >>>>
-> >>>> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> >>>> index bf15a80a37c2..86107857e1f0 100644
-> >>>> --- a/tools/lib/bpf/xsk.c
-> >>>> +++ b/tools/lib/bpf/xsk.c
-> >>>> @@ -334,13 +334,13 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
-> >>>>    		goto out;
-> >>>>    	}
-> >>>>    
-> >>>> -	if (channels.max_combined == 0 || errno == EOPNOTSUPP)
-> >>>> +	ret = channels.max_combined + max(channels.max_rx, channels.max_tx);  
-> > 
-> > So in case of 32 HW queues you'd like to get 64 entries in xskmap?  
-> 
-> "32 HW queues" is not quite correct. It will be 32 combined channels, 
-> each with one regular RX queue and one XSK RX queue (regular RX queues 
-> are part of RSS). In this case, I'll have 64 XSKMAP entries.
-> 
-> > Do you still
-> > have a need for attaching the xsksocks to the RSS queues?  
-> 
-> You can attach an XSK to a regular RX queue, but not in zero-copy mode. 
-> The intended use is, of course, to attach XSKs to XSK RX queues in 
-> zero-copy mode.
+> Hi,
 >
-> > I thought you want
-> > them to be separated. So if I'm reading this right, [0, 31] xskmap entries
-> > would be unused for the most of the time, no?  
-> 
-> This is correct, but these entries are still needed if one decides to 
-> run compatibility mode without zero-copy on queues 0..31.
+> On Fri, Jun 14, 2019 at 5:10 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>>
+>> On Fri, 14 Jun 2019 at 01:42, Douglas Anderson <dianders@chromium.org> wrote:
+>> >
+>> > We want SDIO drivers to be able to temporarily stop retuning when the
+>> > driver knows that the SDIO card is not in a state where retuning will
+>> > work (maybe because the card is asleep).  We'll move the relevant
+>> > functions to a place where drivers can call them.
+>> >
+>> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>>
+>> This looks good to me.
+>>
+>> BTW, seems like this series is best funneled via my mmc tree, no? In
+>> such case, I need acks for the brcmfmac driver patches.
+>
+> For patch #1 I think it could just go in directly to the wireless
+> tree.  It should be fine to land the rest of the patches separately.
 
-Why would I want to run AF_XDP without ZC? The main reason for having AF_XDP
-support in drivers is the zero copy, right?
+Agree.
 
-Besides that, are you educating the user in some way which queue ids should be
-used so there's ZC in picture? If that was already asked/answered, then sorry
-about that.
+> For patch #2 - #5 then what you say makes sense to me.  I suppose
+> you'd want at least a Reviewed-by from Arend and an Ack from Kalle on
+> the Broadcom patches?
 
-> 
-> >   
-> >>>> +
-> >>>> +	if (ret == 0 || errno == EOPNOTSUPP)
-> >>>>    		/* If the device says it has no channels, then all traffic
-> >>>>    		 * is sent to a single stream, so max queues = 1.
-> >>>>    		 */
-> >>>>    		ret = 1;
-> >>>> -	else
-> >>>> -		ret = channels.max_combined;
-> >>>>    
-> >>>>    out:
-> >>>>    	close(fd);  
-> >>>      
-> >>  
-> >   
-> 
+Will do.
+
+> I'd also suggest that we Cc stable explicitly when applying.  That's
+> easy for #2 and #3 since they have a Fixes tag.  For #4 and #5 I guess
+> the question is how far back to go.  Maybe Adrian has an opinion here
+> since I think he's the one who experienced these problems.
+
+I see if I can come up wit a fixes tag for #5.
+
+Regards,
+Arend
+
+
 
