@@ -2,115 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4A046067
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AC084606B
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 16:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728716AbfFNOPs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Jun 2019 10:15:48 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:28535 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728367AbfFNOPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 10:15:47 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-171-6ZL5OlDfPHWG6RvRpXiEQg-1; Fri, 14 Jun 2019 15:15:45 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 14 Jun 2019 15:15:44 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 14 Jun 2019 15:15:44 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@lst.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "Ian Abbott" <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>
-CC:     Intel Linux Wireless <linuxwifi@intel.com>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 16/16] dma-mapping: use exact allocation in
- dma_alloc_contiguous
-Thread-Topic: [PATCH 16/16] dma-mapping: use exact allocation in
- dma_alloc_contiguous
-Thread-Index: AQHVIrfpTFjppS25RkWUhwqPPyqZ4qabLzdw
-Date:   Fri, 14 Jun 2019 14:15:44 +0000
-Message-ID: <a90cf7ec5f1c4166b53c40e06d4d832a@AcuMS.aculab.com>
-References: <20190614134726.3827-1-hch@lst.de>
- <20190614134726.3827-17-hch@lst.de>
-In-Reply-To: <20190614134726.3827-17-hch@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-X-MC-Unique: 6ZL5OlDfPHWG6RvRpXiEQg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1728551AbfFNOQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 10:16:55 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:42776 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728470AbfFNOQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 10:16:54 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hbn0W-0002JZ-Q3; Fri, 14 Jun 2019 16:16:44 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2019-06-14
+Date:   Fri, 14 Jun 2019 16:16:37 +0200
+Message-Id: <20190614141638.30018-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 14 June 2019 14:47
-> 
-> Many architectures (e.g. arm, m68 and sh) have always used exact
-> allocation in their dma coherent allocator, which avoids a lot of
-> memory waste especially for larger allocations.  Lift this behavior
-> into the generic allocator so that dma-direct and the generic IOMMU
-> code benefit from this behavior as well.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  include/linux/dma-contiguous.h |  8 +++++---
->  kernel/dma/contiguous.c        | 17 +++++++++++------
->  2 files changed, 16 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-> index c05d4e661489..2e542e314acf 100644
-> --- a/include/linux/dma-contiguous.h
-> +++ b/include/linux/dma-contiguous.h
-> @@ -161,15 +161,17 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
->  		gfp_t gfp)
->  {
->  	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-> -	size_t align = get_order(PAGE_ALIGN(size));
-> +	void *cpu_addr = alloc_pages_exact_node(node, size, gfp);
-> 
-> -	return alloc_pages_node(node, gfp, align);
-> +	if (!cpu_addr)
-> +		return NULL;
-> +	return virt_to_page(p);
->  }
+Hi Dave,
 
-Does this still guarantee that requests for 16k will not cross a 16k boundary?
-It looks like you are losing the alignment parameter.
+And ... here's a -next pull request. Nothing really major here,
+see more details below.
 
-There may be drivers and hardware that also require 12k allocates
-to not cross 16k boundaries (etc).
+Please pull and let me know if there's any problem.
 
-	David
+Thanks,
+johannes
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+
+
+The following changes since commit cec4f328c929f72ad634e8f385b589bd6eac80e5:
+
+  enetc: fix le32/le16 degrading to integer warnings (2019-05-27 10:12:08 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-davem-2019-06-14
+
+for you to fetch changes up to ddb754aa31813fd17d8374eba881827e6e2c85c6:
+
+  mac80211: notify offchannel expire on mgmt_tx (2019-06-14 16:08:28 +0200)
+
+----------------------------------------------------------------
+Many changes all over:
+ * HE (802.11ax) work continues
+ * WPA3 offloads
+ * work on extended key ID handling continues
+ * fixes to honour AP supported rates with auth/assoc frames
+ * nl80211 netlink policy improvements to fix some issues
+   with strict validation on new commands with old attrs
+
+----------------------------------------------------------------
+Alexander Wetzel (1):
+      mac80211: AMPDU handling for Extended Key ID
+
+Chaitanya Tata (1):
+      cfg80211: Handle bss expiry during connection
+
+Chung-Hsien Hsu (3):
+      nl80211: add NL80211_ATTR_IFINDEX to port authorized event
+      nl80211: add WPA3 definition for SAE authentication
+      nl80211: add support for SAE authentication offload
+
+Greg Kroah-Hartman (1):
+      mac80211: no need to check return value of debugfs_create functions
+
+Ilan Peer (2):
+      cfg80211: Add a function to iterate all BSS entries
+      ieee80211: Add a missing extended capability flag definition
+
+James Prestwood (2):
+      nl80211: send event when CMD_FRAME duration expires
+      mac80211: notify offchannel expire on mgmt_tx
+
+Johannes Berg (6):
+      nl80211: fill all policy .type entries
+      nl80211: require and validate vendor command policy
+      mac80211: call rate_control_send_low() internally
+      mac80211: use STA info in rate_control_send_low()
+      mac80211: fill low rate even for HAS_RATE_CONTROL
+      mac80211: extend __rate_control_send_low warning
+
+John Crispin (3):
+      mac80211: add ieee80211_get_he_iftype_cap() helper
+      mac80211: dynamically enable the TWT requester support on STA interfaces
+      mac80211: allow turning TWT responder support on and off via netlink
+
+ .../driver-api/80211/mac80211-advanced.rst         |   3 -
+ drivers/net/wireless/intel/iwlegacy/3945-rs.c      |   3 -
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c      |   4 -
+ drivers/net/wireless/intel/iwlwifi/dvm/rs.c        |   4 -
+ drivers/net/wireless/intel/iwlwifi/mvm/rs.c        |   4 -
+ drivers/net/wireless/mac80211_hwsim.c              |   2 +
+ drivers/net/wireless/realtek/rtlwifi/rc.c          |   3 -
+ include/linux/ieee80211.h                          |   8 ++
+ include/net/cfg80211.h                             |  82 +++++++++--
+ include/net/mac80211.h                             |  32 ++---
+ include/net/netlink.h                              |   9 ++
+ include/uapi/linux/nl80211.h                       |  24 ++++
+ net/mac80211/cfg.c                                 |   8 +-
+ net/mac80211/debugfs.c                             |   1 +
+ net/mac80211/debugfs_key.c                         |   3 -
+ net/mac80211/debugfs_netdev.c                      |  10 +-
+ net/mac80211/debugfs_sta.c                         |   2 -
+ net/mac80211/key.c                                 | 100 +++++++------
+ net/mac80211/mlme.c                                |  25 +++-
+ net/mac80211/offchannel.c                          |   4 +
+ net/mac80211/rate.c                                |  27 ++--
+ net/mac80211/rc80211_minstrel.c                    |   4 -
+ net/mac80211/rc80211_minstrel_ht.c                 |   3 -
+ net/mac80211/sta_info.c                            |  43 +++++-
+ net/wireless/core.c                                |  13 ++
+ net/wireless/core.h                                |   4 +
+ net/wireless/nl80211.c                             | 155 +++++++++++++++++----
+ net/wireless/scan.c                                |  33 ++++-
+ net/wireless/sme.c                                 |  32 ++++-
+ net/wireless/trace.h                               |  18 +++
+ 30 files changed, 495 insertions(+), 168 deletions(-)
 
