@@ -2,99 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB8B467B6
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 20:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25BB467F9
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 21:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbfFNSmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 14:42:12 -0400
-Received: from mail-eopbgr140059.outbound.protection.outlook.com ([40.107.14.59]:42062
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726293AbfFNSmL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 14:42:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aKRlr5TKbad8JOQizcfOsncjh9EOyp4jE+pG0Ete6gA=;
- b=hcChkJqNxto0ernoSSXT/T/Wv+c/CIPf9iE/gAHDUFlsbs4ZvalomnT4KrqmJt5oMn62qwSa5LnrtHV5xPtvHIg609zQaeHEtQTPtsiuKUuBRJcDVYR+aATmx5N+psI2h6spbYu9Gas2lyolLMFY4SLxNjr3Rhr7A059hiEyJRU=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2613.eurprd05.prod.outlook.com (10.172.225.141) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Fri, 14 Jun 2019 18:42:08 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.012; Fri, 14 Jun 2019
- 18:42:08 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH net-next v3 2/2] net/mlx5e: use indirect calls wrapper for
- the rx packet handler
-Thread-Topic: [PATCH net-next v3 2/2] net/mlx5e: use indirect calls wrapper
- for the rx packet handler
-Thread-Index: AQHVIQg+MDMY5dq5G06A+ODXskWpZaabf6oA
-Date:   Fri, 14 Jun 2019 18:42:08 +0000
-Message-ID: <ad481203aabc0c3a5b8e93258711a081b1d799cb.camel@mellanox.com>
-References: <cover.1560333783.git.pabeni@redhat.com>
-         <93f577ed4761c9934acfe073334cbafbd6a6351f.1560333783.git.pabeni@redhat.com>
-In-Reply-To: <93f577ed4761c9934acfe073334cbafbd6a6351f.1560333783.git.pabeni@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 261c446e-56df-4896-9caa-08d6f0f8013d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2613;
-x-ms-traffictypediagnostic: DB6PR0501MB2613:
-x-microsoft-antispam-prvs: <DB6PR0501MB2613FF216115AC7D04FC8A8DBEEE0@DB6PR0501MB2613.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0068C7E410
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(39860400002)(366004)(376002)(346002)(199004)(189003)(8676002)(36756003)(6486002)(7736002)(305945005)(6436002)(53936002)(6246003)(11346002)(6512007)(446003)(2616005)(229853002)(476003)(5660300002)(486006)(66066001)(6506007)(2501003)(76176011)(6116002)(3846002)(81166006)(14454004)(8936002)(118296001)(68736007)(99286004)(26005)(186003)(64756008)(54906003)(66476007)(58126008)(316002)(14444005)(110136005)(66946007)(73956011)(71190400001)(91956017)(71200400001)(256004)(86362001)(4326008)(4744005)(76116006)(478600001)(66446008)(25786009)(2906002)(66556008)(102836004)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2613;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 4jK1i4URqh1PTOqIS0edGVd7poC1KezF/8aQbIDSIxC/BEKR4LPmlncOucjYL85skVaZ/e49VTLlL7ZTerRPyfsRRfr4ZM4Ym4eWlGQAOfWGTLvWsr32RKNZXrPyy2sSiUBE+BTJd6CW3bjcu9wGGSJ9+WpS7XAxA41MOyc7aT3NjGeZlauQnixKGPD7c3APTbrpQxpjIgDvg5ib968j9M3i1Iz+Hn9T0EVzYA8hBo/PmIEsnUDGhXp0133Z0+e3Fmf9Z9GkFBeUv6k1YKWNT/YP/rpAZ7wMAKYcUcU9uc9oNnYUPq1OR0AI/LaTe4wtbCO6grgdOMEs6KjkCL+6u3dzY181XCQIymH70b/7ssixvtee/kRpQF97Nf6oQQeak0XbCV9rWCzSIdr98VYZsq58DRPTLS8S8kSu8RkcTn8=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3F240DC398B6E5429FF54CA497B71B11@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726296AbfFNTAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 15:00:47 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:40258 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726252AbfFNTAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 15:00:47 -0400
+Received: by mail-io1-f66.google.com with SMTP id n5so8003269ioc.7
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 12:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=GviFqp5zxQ3IvPdylfcBBW11sR+2WAKrYJcFtseFB2E=;
+        b=sckt7Phim1kuc7cWk2qC0gpocjKB6N9Q8uKsNC9fXBLiRIlEXGau3DTHZPkB/GTr1Z
+         yXoWGQPNI6sjF3F1ORnt/uZRODJM9S0ASnM5Iq+dTnSf5sn0V2odO2xxaA2MLaj78Cm+
+         sUOkEhQIDG5kbDTHLgdHPL2ySkzZNQweCbKLNHq+saZxpFLcChZ8A+sF27m/5xX6bEt+
+         f9uAmPh117M2NOP6sCbZIsAwItiKaa8oJ7UV19FuyZqeqMBQQNmLsIGY3njSwDGAgodr
+         AIb1t2+tOD9LKy49ERpXPmpgtzQ214qjhVjXYqx4pszmrbA9oyxx1khFKSEWNlUs2nHR
+         cLgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=GviFqp5zxQ3IvPdylfcBBW11sR+2WAKrYJcFtseFB2E=;
+        b=OvrHulkveAcj0eJZ93MeZfolb7byhdORIOvlY/9uIPIClDABetg/heHm/ar+YgxT+n
+         czn3EMNWwEbRxCW/PRJlcD+AIceIqweh+TLtuSy96kCDp9knutONDs/lBiQ6vFAG0YA+
+         DqvCkunWPxUnA4X9LFreZu7SJIOXtEFGKcCH1X2SDyJ2MJoN9gS1cPBpy+Cg6U1GFafr
+         7jshf9VsOc9kNGkSuKXItcQmNgubTDoBL9OAAMFVuWJ2RWF6VOFuShfdSofofYr0nhQd
+         mxHkoUGiP07MfV/VPsgg1r8+ipBaXMQc++sw9+jcJFURasbw1JCXBa/ojoZjcdbhRv2s
+         frSQ==
+X-Gm-Message-State: APjAAAXc1dO34dN2AEXKZQHdX4tPl9qAbl3sCF9rEt0R/S1/EeR1TPNA
+        3/pK6XGp8bhJC+kqmhfGL7rh9Q==
+X-Google-Smtp-Source: APXvYqw1GvAKt+4U2uvzpX9UiEbexildgcvLxEuVXwM11IEWwPvXXDisWfmqomNc3ptCYUpm7WDaKA==
+X-Received: by 2002:a6b:7606:: with SMTP id g6mr13069308iom.288.1560538846616;
+        Fri, 14 Jun 2019 12:00:46 -0700 (PDT)
+Received: from sevai ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id w23sm5717747ioa.51.2019.06.14.12.00.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jun 2019 12:00:46 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Phil Sutter <phil@nwl.cc>
+Subject: Re: [iproute2 net-next PATCH] ip: add a new parameter -Numeric
+References: <20190612092115.30043-1-liuhangbin@gmail.com>
+        <85imtaiyi7.fsf@mojatatu.com>
+        <c8bb54a4-604e-3082-c0bb-70c2ac1548b2@gmail.com>
+Date:   Fri, 14 Jun 2019 15:00:45 -0400
+In-Reply-To: <c8bb54a4-604e-3082-c0bb-70c2ac1548b2@gmail.com> (David Ahern's
+        message of "Fri, 14 Jun 2019 08:04:23 -0600")
+Message-ID: <85muikuh42.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 261c446e-56df-4896-9caa-08d6f0f8013d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2019 18:42:08.1713
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2613
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA2LTEyIGF0IDEyOjE4ICswMjAwLCBQYW9sbyBBYmVuaSB3cm90ZToNCj4g
-V2UgY2FuIGF2b2lkIGFub3RoZXIgaW5kaXJlY3QgY2FsbCBwZXIgcGFja2V0IHdyYXBwaW5nIHRo
-ZSByeA0KPiBoYW5kbGVyIGNhbGwgd2l0aCB0aGUgcHJvcGVyIGhlbHBlci4NCj4gDQo+IFRvIGVu
-c3VyZSB0aGF0IGV2ZW4gdGhlIGxhc3QgbGlzdGVkIGRpcmVjdCBjYWxsIGV4cGVyaWVuY2UNCj4g
-bWVhc3VyYWJsZSBnYWluLCBkZXNwaXRlIHRoZSBhZGRpdGlvbmFsIGNvbmRpdGlvbmFscyB3ZSBt
-dXN0DQo+IHRyYXZlcnNlIGJlZm9yZSByZWFjaGluZyBpdCwgSSB0ZXN0ZWQgcmV2ZXJzaW5nIHRo
-ZSBvcmRlciBvZiB0aGUNCj4gbGlzdGVkIG9wdGlvbnMsIHdpdGggcGVyZm9ybWFuY2UgZGlmZmVy
-ZW5jZXMgYmVsb3cgbm9pc2UgbGV2ZWwuDQo+IA0KPiBUb2dldGhlciB3aXRoIHRoZSBwcmV2aW91
-cyBpbmRpcmVjdCBjYWxsIHBhdGNoLCB0aGlzIGdpdmVzDQo+IH42JSBwZXJmb3JtYW5jZSBpbXBy
-b3ZlbWVudCBpbiByYXcgVURQIHRwdXQuDQo+IA0KPiB2MiAtPiB2MzoNCj4gIC0gdXNlIG9ubHkg
-dGhlIGRpcmVjdCBjYWxscyBhbHdheXMgYXZhaWxhYmxlIHJlZ2FyZGxlc3Mgb2YNCj4gICAgdGhl
-IG1seDUgYnVpbGQgb3B0aW9ucw0KPiAgLSBkcm9wIHRoZSBkaXJlY3QgY2FsbCBsaXN0IG1hY3Jv
-LCB0byBrZWVwIHRoZSBjb2RlIGFzIHNpbXBsZQ0KPiAgICBhcyBwb3NzaWJsZSBmb3IgZnV0dXJl
-IHJld29yaw0KPiANCj4gdjEgLT4gdjI6DQo+ICAtIHVwZGF0ZSB0aGUgZGlyZWN0IGNhbGwgbGlz
-dCBhbmQgdXNlIGEgbWFjcm8gdG8gZGVmaW5lIGl0LA0KPiAgICBhcyBwZXIgU2FlZWQgc3VnZ2Vz
-dGlvbi4gQW4gaW50ZXJtZWRpYXRlZCBhZGRpdGlvbmFsDQo+ICAgIG1hY3JvIGlzIG5lZWRlZCB0
-byBhbGxvdyBhcmcgbGlzdCBleHBhbnNpb24NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFBhb2xvIEFi
-ZW5pIDxwYWJlbmlAcmVkaGF0LmNvbT4NCj4gDQoNCkFja2VkLWJ5OiBTYWVlZCBNYWhhbWVlZCA8
-c2FlZWRtQG1lbGxhbm94LmNvbT4NCg==
+David Ahern <dsahern@gmail.com> writes:
+
+> On 6/12/19 10:01 AM, Roman Mashak wrote:
+>> Hangbin Liu <liuhangbin@gmail.com> writes:
+>> 
+>>> Add a new parameter '-Numeric' to show the number of protocol, scope,
+>>> dsfield, etc directly instead of converting it to human readable name.
+>>> Do the same on tc and ss.
+>>>
+>>> This patch is based on David Ahern's previous patch.
+>>>
+>> 
+>> [...]
+>> 
+>> It would be good idea to specify the numerical format, e.g. hex or dec,
+>> very often hex is more conveninet representation (for example, when
+>> skbmark is encoded of IP address or such).
+>> 
+>> Could you think of extending it '-Numeric' to have an optional argument
+>> hex, and use decimal as default.
+>> 
+>
+> I do not see how such an option could work.
+
+'numeric' is extern object, so can be accessible from other modules. But
+yes, it would require to add some wrappers around print_*int() APIs to
+take into account this new parameter.
+
+Yes, it is all-or-nothing approach, one can't have filters dumping their
+integers values in hex but actions attached to the filters in decimal
+(or the other way around).
+
+> It would be best for iproute2 commands to output fields as hex
+> or decimal based on what makes sense for each.
+
+For example, m_police.c historically dumps its index value in hex,
+although it's not very sensible IMHO :) Now it's risky to change the code,
+because many scripts will likely break.
+
+> That said, I do not see how this patch affects fields
+> such as skbmark. Can you give an example? The patch looks fine to me.
+
+The patch only exposes 'numeric' to tc, so yes -- it does not affect
+anything. I only suggested to think of more generic approach.
+
+On the 2nd thought: there already exists argument "-raw" for tc which
+currently instructs printing handles in hex representation. Why not to
+adopt this for ip and ss as well rather then adding new key?
