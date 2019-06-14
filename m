@@ -2,198 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DED3F46559
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7AB846575
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:16:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfFNRHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:07:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47712 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726028AbfFNRHk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 13:07:40 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1AF94C057E65;
-        Fri, 14 Jun 2019 17:07:25 +0000 (UTC)
-Received: from treble (ovpn-121-232.rdu2.redhat.com [10.10.121.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BB9D51001B2E;
-        Fri, 14 Jun 2019 17:07:22 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 12:07:20 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Alexei Starovoitov' <alexei.starovoitov@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1725996AbfFNRQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:16:05 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35677 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbfFNRQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:16:05 -0400
+Received: by mail-pg1-f195.google.com with SMTP id s27so1917881pgl.2;
+        Fri, 14 Jun 2019 10:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=w4xkfhw9P/mZ5Ov6JWcVYWfC+GgKo69/kxNNY20kkhA=;
+        b=aWr1mLGflo4B0gklLMgNG5TQYmjw4KhJEWBX01cWmxiTSa/6niCilaGzLttBFRHtOp
+         eI6X2+PdURC14gRWzkvTDjp77K4JI5B7DdN+vm2c3wvEZgJHciFf4v8HUJSFykc/j+NL
+         Pn99ZlkI9Apd+ki5nEdF3tAXFsRXejPigSGaU3/3+dK9ME1ot1zipNfXKo9pOcUxFUsQ
+         H4nYwQohLLNHE4pDoYjpynzMUr3mjnaUWqKiIxeuVqHkOyfO9IyvbsShpFO8lwIrE54v
+         ROg1lVrLHYxF+R1dWLg6LEXWU8mS7hWT7LVxFNAySd1i9K0hs4nX00Hu1wlApvZV+zLO
+         oAww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=w4xkfhw9P/mZ5Ov6JWcVYWfC+GgKo69/kxNNY20kkhA=;
+        b=kID4kQxxYUfN3Ly/USSEjQH+SM7KedaZo/IUMT0m5yKeyc5z5jaoma3ssUGKmUvsQo
+         fztuwfH1IcL7HQD2cVmqIwdRl7klZn0GDSWkQmhObr0B7AolWjrUo6rcQ0R/xsObC9cG
+         7Z+2vXKfux3VL/ani1vX3pC2lndBhCVzCFMBhUktim8n3tBRpEOg6KatGHkDaB4tNBa5
+         mB/qjylqGAZZDS+cnAHQXdJMOYDWQGEPTsLm/u3w5vKzWZf082xEtlUhQGQ1ODaXEpk4
+         dwe2GX5ob0PSi8rpskVbBQyaYYOBEHEJHt85DX1vcUVK9yJC1y4djAd1kU5q+Lb5DpS5
+         xgQw==
+X-Gm-Message-State: APjAAAVr1xAwlbZ3I1UMbQx497kCmOpQa0wZv1tPhnE9OBzblAcNf7Y/
+        w7H+kZWBLSD3Ou2HaqjeHuTfeSGdkmM=
+X-Google-Smtp-Source: APXvYqx6xvb15603XcKfdISIGDjP0rvkCDGFkgv6fRaGiehXSy0ZApehsh6pSX46o+Jyo7+dL0zahA==
+X-Received: by 2002:a65:60c2:: with SMTP id r2mr36174586pgv.156.1560532564021;
+        Fri, 14 Jun 2019 10:16:04 -0700 (PDT)
+Received: from localhost ([192.55.54.45])
+        by smtp.gmail.com with ESMTPSA id r4sm2885535pjd.28.2019.06.14.10.16.00
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 14 Jun 2019 10:16:03 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 19:15:49 +0200
+From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>
-Subject: Re: [PATCH 6/9] x86/bpf: Fix JIT frame pointer usage
-Message-ID: <20190614170720.57yxtxvd4qee337l@treble>
-References: <cover.1560431531.git.jpoimboe@redhat.com>
- <03ddea21a533b7b0e471c1d73ebff19dacdcf7e3.1560431531.git.jpoimboe@redhat.com>
- <20190613215807.wjcop6eaadirz5xm@ast-mbp.dhcp.thefacebook.com>
- <57f6e69da6b3461a9c39d71aa1b58662@AcuMS.aculab.com>
- <20190614134401.q2wbh6mvo4nzmw2o@treble>
- <9b8aa912df694d25b581786100d3e2e2@AcuMS.aculab.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v4 07/17] libbpf: Support drivers with
+ non-combined channels
+Message-ID: <20190614191549.0000374d@gmail.com>
+In-Reply-To: <eb175575-1ab4-4d29-1dc9-28d85cddd842@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com>
+ <20190612155605.22450-8-maximmi@mellanox.com>
+ <20190612132352.7ee27bf3@cakuba.netronome.com>
+ <0afd3ef2-d0e3-192b-095e-0f8ae8e6fb5d@mellanox.com>
+ <20190613164514.00002f66@gmail.com>
+ <eb175575-1ab4-4d29-1dc9-28d85cddd842@mellanox.com>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9b8aa912df694d25b581786100d3e2e2@AcuMS.aculab.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 14 Jun 2019 17:07:40 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 01:58:21PM +0000, David Laight wrote:
-> From: Josh Poimboeuf
-> > Sent: 14 June 2019 14:44
+On Fri, 14 Jun 2019 13:25:24 +0000
+Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+
+> On 2019-06-13 17:45, Maciej Fijalkowski wrote:
+> > On Thu, 13 Jun 2019 14:01:39 +0000
+> > Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+> >   
+> >> On 2019-06-12 23:23, Jakub Kicinski wrote:  
+> >>> On Wed, 12 Jun 2019 15:56:48 +0000, Maxim Mikityanskiy wrote:  
+> >>>> Currently, libbpf uses the number of combined channels as the maximum
+> >>>> queue number. However, the kernel has a different limitation:
+> >>>>
+> >>>> - xdp_reg_umem_at_qid() allows up to max(RX queues, TX queues).
+> >>>>
+> >>>> - ethtool_set_channels() checks for UMEMs in queues up to
+> >>>>     combined_count + max(rx_count, tx_count).
+> >>>>
+> >>>> libbpf shouldn't limit applications to a lower max queue number. Account
+> >>>> for non-combined RX and TX channels when calculating the max queue
+> >>>> number. Use the same formula that is used in ethtool.
+> >>>>
+> >>>> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> >>>> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+> >>>> Acked-by: Saeed Mahameed <saeedm@mellanox.com>  
+> >>>
+> >>> I don't think this is correct.  max_tx tells you how many TX channels
+> >>> there can be, you can't add that to combined.  Correct calculations is:
+> >>>
+> >>> max_num_chans = max(max_combined, max(max_rx, max_tx))  
+> >>
+> >> First of all, I'm aligning with the formula in the kernel, which is:
+> >>
+> >>       curr.combined_count + max(curr.rx_count, curr.tx_count);
+> >>
+> >> (see net/core/ethtool.c, ethtool_set_channels()).
+> >>
+> >> The formula in libbpf should match it.
+> >>
+> >> Second, the existing drivers have either combined channels or separate
+> >> rx and tx channels. So, for the first kind of drivers, max_tx doesn't
+> >> tell how many TX channels there can be, it just says 0, and max_combined
+> >> tells how many TX and RX channels are supported. As max_tx doesn't
+> >> include max_combined (and vice versa), we should add them up.
+> >>  
+> >>>>    tools/lib/bpf/xsk.c | 6 +++---
+> >>>>    1 file changed, 3 insertions(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> >>>> index bf15a80a37c2..86107857e1f0 100644
+> >>>> --- a/tools/lib/bpf/xsk.c
+> >>>> +++ b/tools/lib/bpf/xsk.c
+> >>>> @@ -334,13 +334,13 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+> >>>>    		goto out;
+> >>>>    	}
+> >>>>    
+> >>>> -	if (channels.max_combined == 0 || errno == EOPNOTSUPP)
+> >>>> +	ret = channels.max_combined + max(channels.max_rx, channels.max_tx);  
 > > 
-> > On Fri, Jun 14, 2019 at 10:50:23AM +0000, David Laight wrote:
-> > > On Thu, Jun 13, 2019 at 08:21:03AM -0500, Josh Poimboeuf wrote:
-> > > > The BPF JIT code clobbers RBP.  This breaks frame pointer convention and
-> > > > thus prevents the FP unwinder from unwinding through JIT generated code.
-> > > >
-> > > > RBP is currently used as the BPF stack frame pointer register.  The
-> > > > actual register used is opaque to the user, as long as it's a
-> > > > callee-saved register.  Change it to use R12 instead.
-> > >
-> > > Could you maintain the system %rbp chain through the BPF stack?
-> > 
-> > Do you mean to save RBP again before changing it again, so that we
-> > create another stack frame inside the BPF stack?  That might work.
+> > So in case of 32 HW queues you'd like to get 64 entries in xskmap?  
 > 
-> The unwinder will (IIRC) expect *%rbp to be the previous %rbp value.
-> If you maintain that it will probably all work.
+> "32 HW queues" is not quite correct. It will be 32 combined channels, 
+> each with one regular RX queue and one XSK RX queue (regular RX queues 
+> are part of RSS). In this case, I'll have 64 XSKMAP entries.
 > 
-> > > It might even be possible to put something relevant in the %rip
-> > > location.
-> > 
-> > I'm not sure what you mean here.
+> > Do you still
+> > have a need for attaching the xsksocks to the RSS queues?  
 > 
-> The return address is (again IIRC) %rbp[-8] so the unwinder will
-> expect that address to be a symbol.
+> You can attach an XSK to a regular RX queue, but not in zero-copy mode. 
+> The intended use is, of course, to attach XSKs to XSK RX queues in 
+> zero-copy mode.
+>
+> > I thought you want
+> > them to be separated. So if I'm reading this right, [0, 31] xskmap entries
+> > would be unused for the most of the time, no?  
+> 
+> This is correct, but these entries are still needed if one decides to 
+> run compatibility mode without zero-copy on queues 0..31.
 
-Ah, gotcha.  We don't necessarily need the real rip on the stack as the
-unwinder can handle bad text addresses ok.  Though the real one would be
-better.
+Why would I want to run AF_XDP without ZC? The main reason for having AF_XDP
+support in drivers is the zero copy, right?
 
-> I do remember a stack trace printer for x86 this didn't need
-> any annotation of the object code and didn't need frame pointers.
-> The only downside was that it had to 'guess' (ie scan the stack)
-> to get out of functions that couldn't return.
-> Basically it followed the control flow forwards tracking the
-> values of %sp and %bp until it found a return instuction.
-> All it has to do is detect loops and retry from the other
-> target of conditional branches.
+Besides that, are you educating the user in some way which queue ids should be
+used so there's ZC in picture? If that was already asked/answered, then sorry
+about that.
 
-That actually sounds kind of cool, though I don't think we need that for
-the kernel.
+> 
+> >   
+> >>>> +
+> >>>> +	if (ret == 0 || errno == EOPNOTSUPP)
+> >>>>    		/* If the device says it has no channels, then all traffic
+> >>>>    		 * is sent to a single stream, so max queues = 1.
+> >>>>    		 */
+> >>>>    		ret = 1;
+> >>>> -	else
+> >>>> -		ret = channels.max_combined;
+> >>>>    
+> >>>>    out:
+> >>>>    	close(fd);  
+> >>>      
+> >>  
+> >   
+> 
 
-Anyway here's a patch with your suggestion.  I think it's the best idea
-so far because it doesn't require the use of R12, nor does it require
-abstracting BPF_REG_FP with an offset.  And the diffstat is pretty
-small and self-contained.
-
-It seems to work, though I didn't put a real RIP on the stack yet.  This
-is based on top of the "x86/bpf: Simplify prologue generation" patch.
-
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 485692d4b163..fa1fe65c4cb4 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -186,7 +186,7 @@ struct jit_context {
- #define BPF_MAX_INSN_SIZE	128
- #define BPF_INSN_SAFETY		64
- 
--#define PROLOGUE_SIZE		20
-+#define PROLOGUE_SIZE		24
- 
- /*
-  * Emit x86-64 prologue code for BPF program and check its size.
-@@ -197,14 +197,17 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
- 	u8 *prog = *pprog;
- 	int cnt = 0;
- 
-+	/* push rbp */
-+	EMIT1(0x55);
-+	/* mov rbp, rsp */
-+	EMIT3(0x48, 0x89, 0xE5);
-+
- 	/* push r15 */
- 	EMIT2(0x41, 0x57);
- 	/* push r14 */
- 	EMIT2(0x41, 0x56);
- 	/* push r13 */
- 	EMIT2(0x41, 0x55);
--	/* push rbp */
--	EMIT1(0x55);
- 	/* push rbx */
- 	EMIT1(0x53);
- 
-@@ -218,10 +221,13 @@ static void emit_prologue(u8 **pprog, u32 stack_depth)
- 
- 	/*
- 	 * RBP is used for the BPF program's FP register.  It points to the end
--	 * of the program's stack area.
--	 *
--	 * mov rbp, rsp
-+	 * of the program's stack area.  Create another stack frame so the
-+	 * unwinder can unwind through the generated code.  The tail_call_cnt
-+	 * value doubles as an (invalid) RIP address.
- 	 */
-+	/* push rbp */
-+	EMIT1(0x55);
-+	/* mov rbp, rsp */
- 	EMIT3(0x48, 0x89, 0xE5);
- 
- 	/* sub rsp, rounded_stack_depth */
-@@ -237,19 +243,21 @@ static void emit_epilogue(u8 **pprog)
- 	u8 *prog = *pprog;
- 	int cnt = 0;
- 
--	/* lea rsp, [rbp+0x8] */
--	EMIT4(0x48, 0x8D, 0x65, 0x08);
-+	/* leave (restore rsp and rbp) */
-+	EMIT1(0xC9);
-+	/* pop rbx (skip over tail_call_cnt) */
-+	EMIT1(0x5B);
- 
- 	/* pop rbx */
- 	EMIT1(0x5B);
--	/* pop rbp */
--	EMIT1(0x5D);
- 	/* pop r13 */
- 	EMIT2(0x41, 0x5D);
- 	/* pop r14 */
- 	EMIT2(0x41, 0x5E);
- 	/* pop r15 */
- 	EMIT2(0x41, 0x5F);
-+	/* pop rbp */
-+	EMIT1(0x5D);
- 
- 	/* ret */
- 	EMIT1(0xC3);
-@@ -298,13 +306,13 @@ static void emit_bpf_tail_call(u8 **pprog)
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
- 	 *	goto out;
- 	 */
--	EMIT3(0x8B, 0x45, 0x04);                  /* mov eax, dword ptr [rbp + 4] */
-+	EMIT3(0x8B, 0x45, 0x0C);                  /* mov eax, dword ptr [rbp + 12] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
- #define OFFSET2 (27 + RETPOLINE_RAX_BPF_JIT_SIZE)
- 	EMIT2(X86_JA, OFFSET2);                   /* ja out */
- 	label2 = cnt;
- 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
--	EMIT3(0x89, 0x45, 0x04);                  /* mov dword ptr [rbp + 4], eax */
-+	EMIT3(0x89, 0x45, 0x0C);                  /* mov dword ptr [rbp + 12], eax */
- 
- 	/* prog = array->ptrs[index]; */
- 	EMIT4_off32(0x48, 0x8B, 0x84, 0xD6,       /* mov rax, [rsi + rdx * 8 + offsetof(...)] */
