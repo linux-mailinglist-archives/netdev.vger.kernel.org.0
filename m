@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2FB469C3
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1143469B2
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 22:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfFNUfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 16:35:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52930 "EHLO mail.kernel.org"
+        id S1727416AbfFNUaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 16:30:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52978 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726327AbfFNUaM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 16:30:12 -0400
+        id S1727385AbfFNUaO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 16:30:14 -0400
 Received: from sasha-vm.mshome.net (unknown [131.107.159.134])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6BF3F21851;
-        Fri, 14 Jun 2019 20:30:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 493F82184C;
+        Fri, 14 Jun 2019 20:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560544211;
-        bh=x+JefYco3A6Yvnzt0RrXPiD3J4MxTnpAWPvOZNFRnqY=;
+        s=default; t=1560544213;
+        bh=Tv5YnLzcv10gj7+ERvoSbSS8XUpgwminviMYIS8JRwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0iaFoqAPm0VeWS3KQf4C2et7ABgyOMorYSxcva7stjRG8TrMXnaz4Vw6NbEFdLyK7
-         X9SYaQVN6pfzoj6+6CQnz5xJGZ3tQylQaPQo2XhUKxDCgurlX4fVZZTXSDwaHH8M8F
-         Dj6HgfqCQpXH8GZF1EgA0Vy0DPfJTt9quS+h26JE=
+        b=v3RV9TRPhsFkFl1+koZ7D6vu1bK9MZjT1brbCo8lbZyKYzw1fyl26v7zpP/C6B406
+         h4FMtpeQlfJzE2C5qdeT80eiGs8Dlg8AsnvKwKjA5n/xY9Zwk27EG/BjKRJvH5CUrT
+         KReGWmGVBhzdtQrz0RufQ/tXWKZr4ybbbwcJqJMo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+Cc:     Yonglong Liu <liuyonglong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 21/39] net: dsa: mv88e6xxx: avoid error message on remove from VLAN 0
-Date:   Fri, 14 Jun 2019 16:29:26 -0400
-Message-Id: <20190614202946.27385-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 22/39] net: hns: Fix loopback test failed at copper ports
+Date:   Fri, 14 Jun 2019 16:29:27 -0400
+Message-Id: <20190614202946.27385-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190614202946.27385-1-sashal@kernel.org>
 References: <20190614202946.27385-1-sashal@kernel.org>
@@ -44,48 +43,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-[ Upstream commit 62394708f3e01c9f2be6be74eb6305bae1ed924f ]
+[ Upstream commit 2e1f164861e500f4e068a9d909bbd3fcc7841483 ]
 
-When non-bridged, non-vlan'ed mv88e6xxx port is moving down, error
-message is logged:
+When doing a loopback test at copper ports, the serdes loopback
+and the phy loopback will fail, because of the adjust link had
+not finished, and phy not ready.
 
-failed to kill vid 0081/0 for device eth_cu_1000_4
+Adds sleep between adjust link and test process to fix it.
 
-This is caused by call from __vlan_vid_del() with vin set to zero, over
-call chain this results into _mv88e6xxx_port_vlan_del() called with
-vid=0, and mv88e6xxx_vtu_get() called from there returns -EINVAL.
-
-On symmetric path moving port up, call goes through
-mv88e6xxx_port_vlan_prepare() that calls mv88e6xxx_port_check_hw_vlan()
-that returns -EOPNOTSUPP for zero vid.
-
-This patch changes mv88e6xxx_vtu_get() to also return -EOPNOTSUPP for
-zero vid, then this error code is explicitly cleared in
-dsa_slave_vlan_rx_kill_vid() and error message is no longer logged.
-
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns/hns_ethtool.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index dfaad1c2c2b8..411cfb806459 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1484,7 +1484,7 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
- 	int err;
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+index e2710ff48fb0..1fa0cd527ead 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+@@ -339,6 +339,7 @@ static int __lb_setup(struct net_device *ndev,
+ static int __lb_up(struct net_device *ndev,
+ 		   enum hnae_loop loop_mode)
+ {
++#define NIC_LB_TEST_WAIT_PHY_LINK_TIME 300
+ 	struct hns_nic_priv *priv = netdev_priv(ndev);
+ 	struct hnae_handle *h = priv->ae_handle;
+ 	int speed, duplex;
+@@ -365,6 +366,9 @@ static int __lb_up(struct net_device *ndev,
  
- 	if (!vid)
--		return -EINVAL;
-+		return -EOPNOTSUPP;
+ 	h->dev->ops->adjust_link(h, speed, duplex);
  
- 	entry->vid = vid - 1;
- 	entry->valid = false;
++	/* wait adjust link done and phy ready */
++	msleep(NIC_LB_TEST_WAIT_PHY_LINK_TIME);
++
+ 	return 0;
+ }
+ 
 -- 
 2.20.1
 
