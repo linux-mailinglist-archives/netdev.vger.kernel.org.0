@@ -2,118 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1EC46549
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E99FC46550
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726252AbfFNRD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:03:29 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40756 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbfFNRD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:03:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=sufpNbI2TvDXrx0wjTmrSfNrCdLHnuRdUOR5wAlySw0=; b=srsO1pM8Yodsu8IF44+hgY8At
-        T/QYSxlUKvNbq4wD/BUER4kAzDrpEglFIk8WkCWPs/n8bgFDhuUvgmkG1mVAxioZ2PH8jCnl32OnF
-        8T2mYx8R/X9ESzsBhaxx3zO4tKq1luYOTqcnEAtKNxCW5OxKHYeV9rxC4NFsAT3nRXKcrFOw6TswR
-        BdXxFwawtL9slBU+BbIUl1L3rkQiBOdK//zydBtfVXbywEvzp1loADkAHbdrttySe5EdgJcj46d4L
-        WeEZvlkTAM23D+Pvr9MVPfk66HodrQI5Fpbx/dxTwzkyJw2AumQsd/qggCyAZlbFVHfXKVHxNjnbn
-        NKeoOe50w==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56402)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hbpbl-0002hx-GT; Fri, 14 Jun 2019 18:03:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hbpbj-0002N0-3A; Fri, 14 Jun 2019 18:03:19 +0100
-Date:   Fri, 14 Jun 2019 18:03:18 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-Subject: Re: [PATCH RFC 4/6] dpaa2-mac: add initial driver
-Message-ID: <20190614170318.rjn72deumf3eyasr@shell.armlinux.org.uk>
-References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
- <1560470153-26155-5-git-send-email-ioana.ciornei@nxp.com>
- <20190614014223.GD28822@lunn.ch>
- <20190614095015.mhs723furhhsaclo@shell.armlinux.org.uk>
- <VI1PR0402MB2800FA7EF554B855F3B90353E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+        id S1726047AbfFNRGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:06:02 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:42853 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfFNRGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:06:02 -0400
+Received: by mail-lj1-f196.google.com with SMTP id t28so3101292lje.9;
+        Fri, 14 Jun 2019 10:06:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yUyWgMcF8YtqLLCB/ssmwJMUkK3COGkr3CAkr8Pd3Qs=;
+        b=dA3LeS1ezaJ1F1vwaadjQb9osOlxuLnDyjStmvQdrgvQrLp/OVBz0khyBBhGDd96J8
+         pOhDIi4zPFFyWXmAkgs++KXuEQIDcj9uCMPNW+7MfUAIWsZpgFFw0hHu+6upx1merAJX
+         s5+k8IS8MKoyRRduFogPqCueXQ2dg2K+900x1wklHNTgTdjY5hjlOx1oepSxwjBookyy
+         FsxnkBNVe7p1qI3b7CKxyv4JN45XTUEYCpuNyOqeF1VK6+G5Jhcr1gM/49dXfDiEblCN
+         Kwdxvyzi166El4AsCzVkAw6q04spDggjU253Vr2Rfr8LSf6zE7TAMqzinlV+f6BRXAGT
+         0Tsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yUyWgMcF8YtqLLCB/ssmwJMUkK3COGkr3CAkr8Pd3Qs=;
+        b=E1lmaDWxRbAlXL/1XDgVojyYptUX7mgDa+BYelAziyhAEsH3l7RuiBz/Gg67T3fNHb
+         KZss1CIRAo/yLNlAeykqKCLZ90/JVgr+4PTs2iDBGvsKSy23UlhpbjOTgiBNzkW4vBUH
+         dqqXe+kfGpqAIdpnt7Za7+eAYl2elD/PF9U57qkLnRZ7+cKxSW6XQfPuPqpAXxzURfGn
+         eXdd4NTXZtdG2WUbylOyxaZNLe++rvFu8AZtSixmrzTBV6ZZS0H6esGu0et6I0eUs9Fp
+         f41T+Ok3kVFtQrxYiItPTnoWGXEcRptf5XD9iFaZ0ULy+RbeFdqCODStIYsTCBTaPpWA
+         OpOw==
+X-Gm-Message-State: APjAAAX3j2PuvacHSOKSWYPtZpJFXYN1vV7edA2FfbuW8Ig7pcCVZL2G
+        kTSQCnvjlhQ/B69LtMdhFpk8640jN2r8q6TrBRY=
+X-Google-Smtp-Source: APXvYqwKdybAT4jHrPCu6+NoLD+MEDKQbRqUSolbhlNXvlDzQPFNIphIVPS5jQf/wuDND57EHSkU0pOel/p/+sGRJ0U=
+X-Received: by 2002:a2e:86d1:: with SMTP id n17mr28518814ljj.58.1560531960033;
+ Fri, 14 Jun 2019 10:06:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB2800FA7EF554B855F3B90353E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
+ <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
+ <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
+ <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com> <87ef3w5hew.fsf@netronome.com>
+In-Reply-To: <87ef3w5hew.fsf@netronome.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 14 Jun 2019 10:05:48 -0700
+Message-ID: <CAADnVQJybVNQofzROiXe1np+zNY3eBduNgFZdquSCdTeckof-g@mail.gmail.com>
+Subject: Re: [PATCH] bpf: optimize constant blinding
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 04:54:56PM +0000, Ioana Ciornei wrote:
-> > Subject: Re: [PATCH RFC 4/6] dpaa2-mac: add initial driver
-> > 
-> > On Fri, Jun 14, 2019 at 03:42:23AM +0200, Andrew Lunn wrote:
-> > > > +static phy_interface_t phy_mode(enum dpmac_eth_if eth_if) {
-> > > > +	switch (eth_if) {
-> > > > +	case DPMAC_ETH_IF_RGMII:
-> > > > +		return PHY_INTERFACE_MODE_RGMII;
-> > >
-> > > So the MAC cannot insert RGMII delays? I didn't see anything in the
-> > > PHY object about configuring the delays. Does the PCB need to add
-> > > delays via squiggles in the tracks?
-> > >
-> > > > +static void dpaa2_mac_validate(struct phylink_config *config,
-> > > > +			       unsigned long *supported,
-> > > > +			       struct phylink_link_state *state) {
-> > > > +	struct dpaa2_mac_priv *priv = to_dpaa2_mac_priv(phylink_config);
-> > > > +	struct dpmac_link_state *dpmac_state = &priv->state;
-> > > > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> > > > +
-> > > > +	phylink_set(mask, Autoneg);
-> > > > +	phylink_set_port_modes(mask);
-> > > > +
-> > > > +	switch (state->interface) {
-> > > > +	case PHY_INTERFACE_MODE_10GKR:
-> > > > +		phylink_set(mask, 10baseT_Full);
-> > > > +		phylink_set(mask, 100baseT_Full);
-> > > > +		phylink_set(mask, 1000baseT_Full);
-> > > > +		phylink_set(mask, 10000baseT_Full);
-> > > > +		break;
-> > 
-> > How does 10GBASE-KR mode support these lesser speeds - 802.3 makes no
-> > provision for slower speeds for a 10GBASE-KR link, it is a fixed speed link.  I
-> > don't see any other possible phy interface mode supported that would allow
-> > for the 1G, 100M and 10M speeds (i.o.w. SGMII).  If SGMII is not supported,
-> > then how do you expect these other speeds to work?
-> > 
-> > Does your PHY do speed conversion - if so, we need to come up with a much
-> > better way of handling that (we need phylib to indicate that the PHY is so
-> > capable.)
-> 
-> These are PHYs connected using an XFI interface that indeed can operate at lower
-> speeds and are capable of rate adaptation using pause frames.
-> 
-> Also, I've used PHY_INTERFACE_MODE_10GKR since a dedicated XFI mode is not available.
+On Fri, Jun 14, 2019 at 8:13 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+>
+>
+> Alexei Starovoitov writes:
+>
+> > On Wed, Jun 12, 2019 at 8:25 AM Jiong Wang <jiong.wang@netronome.com> wrote:
+> >>
+> >>
+> >> Jiong Wang writes:
+> >>
+> >> > Alexei Starovoitov writes:
+> >> >
+> >> >> On Wed, Jun 12, 2019 at 4:32 AM Naveen N. Rao
+> >> >> <naveen.n.rao@linux.vnet.ibm.com> wrote:
+> >> >>>
+> >> >>> Currently, for constant blinding, we re-allocate the bpf program to
+> >> >>> account for its new size and adjust all branches to accommodate the
+> >> >>> same, for each BPF instruction that needs constant blinding. This is
+> >> >>> inefficient and can lead to soft lockup with sufficiently large
+> >> >>> programs, such as the new verifier scalability test (ld_dw: xor
+> >> >>> semi-random 64 bit imms, test 5 -- with net.core.bpf_jit_harden=2)
+> >> >>
+> >> >> Slowdown you see is due to patch_insn right?
+> >> >> In such case I prefer to fix the scaling issue of patch_insn instead.
+> >> >> This specific fix for blinding only is not addressing the core of the problem.
+> >> >> Jiong,
+> >> >> how is the progress on fixing patch_insn?
+> >>
+> >> And what I have done is I have digested your conversion with Edward, and is
+> >> slightly incline to the BB based approach as it also exposes the inserted
+> >> insn to later pass in a natural way, then was trying to find a way that
+> >> could create BB info in little extra code based on current verifier code,
+> >> for example as a side effect of check_subprogs which is doing two insn
+> >> traversal already. (I had some such code before in the historical
+> >> wip/bpf-loop-detection branch, but feel it might be still too heavy for
+> >> just improving insn patching)
+> >
+> > BB - basic block?
+> > I'm not sure that was necessary.
+> > The idea was that patching is adding stuff to linked list instead
+> > and single pass at the end to linearize it.
+>
+> Just an update and keep people posted.
+>
+> Working on linked list based approach, the implementation looks like the
+> following, mostly a combine of discussions happened and Naveen's patch,
+> please feel free to comment.
+>
+>   - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
+>     BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
+>
+>   - Introduce patch pool into bpf_prog->aux to keep all patched insns.
+>     Pool structure looks like:
+>
+>     struct {
+>       int num;
+>       int prev;
+>       int next;
+>     } head_0;
+>     NUM patched insns for head_0
+>     head_1;
+>     patched insns for head_1
+>     head_2;
+>     ...
+>
+>   - Now when doing bpf_patch_insn_single, it doesn't change the original
+>     prog etc, instead, it merely update the insn at patched offset into a
+>     BPF_LIST_INSN, and pushed the patched insns plus a patch header into
+>     the patch pool. Fields of BPF_LIST_INSN is updated to setup the links:
+>
+>       BPF_LIST_INSN.off += patched_size
+>       (accumulating the size attached to this list_insn, it is possible a
+>       later patch pass patches insn in the patch pool, this means insn
+>       traversal needs to be changed, when seeing BPF_LIST_INSN, should go
+>       through the list)
+>
+>       BPF_LIST_INSN.imm = offset of the patch header in patch pool
+>       (off is 16-bit, imm is 32-bit, the patch pool is 32-bit length, so
+>       use imm for keeping offset, meaning a BPF_LIST_INSN can contains no
+>       more than 8192 insns, guess it is enough)
+>
+>   - When doing linearize:
+>     1. a quick scan of prog->insnsi to know the final
+>        image size, would be simple as:
+>
+>       fini_size = 0;
+>       for_each_insn:
+>         if (insn.code == (BPF_ALU | BPF_LIST_HEAD))
+>           fini_size += insn->off;
+>         else
+>           fini_size++;
+>
+>     2. Resize prog into fini_size, and a second scan of prog->insnsi to
+>        copy over all insns and patched insns, at the same time generate a
+>        auxiliary index array which maps an old index to the new index in
+>        final image, like the "clone_index" in Naveen's patch.
+>
+>     3. Finally, a single pass to update branch target, the same algo used
+>        by this patch.
+>
+>   - The APIs for doing insning patch looks like:
+>       bpf_patch_insn_init:   init the generic patch pool.
+>       bpf_patch_insn_single: push patched insns to the pool.
+>                              link them to the associated BPF_LIST_INSN.
+>       bpf_patch_insn_fini:   linearize a bpf_prog contains BPF_LIST_INSN.
+>                              destroy patch pool in prog->aux.
+>
+> I am trying to making the implementation working with jit blind first to make
+> sure basic things are ready. As JIT blinds happens after verification so no
+> need to both aux update etc. Then will cleanup quite a few things for
+> example patch a patched insn, adjust aux data, what to do with insn delete
+> etc.
 
-XFI is basically what that interface mode for - there's a bunch of
-different descriptions for it which seems to depend on the module -
-SFI for SFP, XFI for XFP, but essentially it's just 10GBASE-R over a
-single serdes lane.
+explicit indices feels like premature optimization.
+May be use vanilla singly linked list instead?
+Also do we have a case when patched insn will be patched again?
+In such case 'patch insn pool' will become recursive?
+Feels difficult to think through all offsets and indices.
+Whereas with linked list patching patched insns will be inserting
+them into link list.
 
-My inclusion of the K in there may not be completely correct as that
-is for backplane 10GBASE-R connections, but the public information
-available is very limited and incomplete.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+May be better alternative is to convert the whole program to link list
+of insns with branch targets becoming pointers and insert patched
+insns into this single singly linked list ?
