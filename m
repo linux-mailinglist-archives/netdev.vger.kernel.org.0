@@ -2,311 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 667E8465C0
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:28:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF15F4660B
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 19:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbfFNR24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 13:28:56 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38052 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725852AbfFNR2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 13:28:55 -0400
-Received: by mail-qt1-f194.google.com with SMTP id n11so3375349qtl.5
-        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 10:28:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Z+43Y+rgPNVQRQmI/h6SkgRjixnzUhCABvM0NCx8CzA=;
-        b=EhG0zokhNvNq9kFEZ+EPx9gMjcKl0YOdzbh5iflgkUR6cFztPH9NFhwDqFVkvZ7kI4
-         TI00bi4W+ZCIKVG3KlJjLQssNbb9IRJX+LnqdYOA/kgOmpsL4r7bfyeWE+LW0Az7lWlq
-         6AXSF/tz1sNlHgSHyEDNMBRRzs99whOR47AtlySPWxXHETiZ4LTK4b6yfoM98l49VH1B
-         YtIuGfXaOC/khFDvmzexth9pdfXl7NbyIR0OPjUZERnV3MNO7ILQ//1xbAwc9kb3/3x5
-         Qsa2WQLAM3hRelw9uBEJk5n8LCLGeVRodL3guueAirzHi1nubkMbuIwPrPtIMT8HbW8a
-         Ez5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Z+43Y+rgPNVQRQmI/h6SkgRjixnzUhCABvM0NCx8CzA=;
-        b=jvCBaeFQTdEEQgwH/4BuzjXWs/a7nYdPdiTZJpLQ1p78Qi2c5jaumD2lH2+TtFNfu0
-         v//gSKDpFAajCyc+KbYu9Ptbq1GQSglfSwI0SLMkraHCQGZyXNZuJrFLsCdKkyfUKEPj
-         MXoHyqSm2ENxkqU2tHJsEYlnT8lU2yJCYqaNq2gWtrU7qIf7t35ON77aYkb5zvJRtBrl
-         9ronYhPqUDEgFEfnRcFtDwAPQeaXYXgCuy7SoHsq9tN1Qirm/EKcE+RMv3Pn1hxgmrlt
-         MTJ7to1y7MsT/2CIq6jtEkeuFUDK4ExcCZ6EgMyBbMJrrMckyHA9agXuxlwr7oWX0gY8
-         Lydg==
-X-Gm-Message-State: APjAAAX3lglfo1D39lU8NT4KTSYXDhcWbV9QCDWj+gQZbJVUVFt8h5OJ
-        fZ+v0G9Z+hTLaQwTVakJBaEpgg==
-X-Google-Smtp-Source: APXvYqwlauM6af4P4uZp4c98fQCkwII2Qy7TW9hESnMjgEc7MICxaK8jjd83P8mb/y4b4IXGoInouQ==
-X-Received: by 2002:ac8:2cba:: with SMTP id 55mr65001352qtw.260.1560533334000;
-        Fri, 14 Jun 2019 10:28:54 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id f68sm1883045qtb.83.2019.06.14.10.28.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 14 Jun 2019 10:28:53 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     stephen@networkplumber.org, dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH iproute2-next] tc: q_netem: JSON-ify the output
-Date:   Fri, 14 Jun 2019 10:28:17 -0700
-Message-Id: <20190614172817.14817-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726777AbfFNRq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 13:46:59 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58448 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726082AbfFNRq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 13:46:58 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 91EB430832E6;
+        Fri, 14 Jun 2019 17:46:47 +0000 (UTC)
+Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DD31608A4;
+        Fri, 14 Jun 2019 17:46:46 +0000 (UTC)
+Message-ID: <f91615fe4a883ccb6490aec11ef4ae64cdd9e494.camel@redhat.com>
+Subject: Re: [PATCH 2/2] ipoib: show VF broadcast address
+From:   Doug Ledford <dledford@redhat.com>
+To:     Denis Kirjanov <kda@linux-powerpc.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mkubecek@suse.cz
+Date:   Fri, 14 Jun 2019 13:46:43 -0400
+In-Reply-To: <20190614133249.18308-2-dkirjanov@suse.com>
+References: <20190614133249.18308-1-dkirjanov@suse.com>
+         <20190614133249.18308-2-dkirjanov@suse.com>
+Organization: Red Hat, Inc.
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-2TqKf2wcaxprFekRzaj+"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 14 Jun 2019 17:46:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add JSON output support to q_netem.
 
-The normal output is untouched.
+--=-2TqKf2wcaxprFekRzaj+
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In JSON output always use seconds as the base of time units,
-and non-percentage numbers (0.01 instead of 1%). Try to always
-report the fields, even if they are zero.
-All this should make the output more machine-friendly.
+On Fri, 2019-06-14 at 15:32 +0200, Denis Kirjanov wrote:
+> in IPoIB case we can't see a VF broadcast address for but
+> can see for PF
+>=20
+> Before:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state
+> disable,
+> trust off, query_rss off
+> ...
 
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
----
- tc/q_netem.c | 174 +++++++++++++++++++++++++++++++--------------------
- 1 file changed, 107 insertions(+), 67 deletions(-)
+The above Before: output should be used as the After: portion of the
+previous commit message.  The previos commit does not fully resolve the
+problem, but yet the commit message acts as though it does.
 
-diff --git a/tc/q_netem.c b/tc/q_netem.c
-index 59fb8efae399..aaaaee49de25 100644
---- a/tc/q_netem.c
-+++ b/tc/q_netem.c
-@@ -58,6 +58,35 @@ static void explain1(const char *arg)
-  */
- #define MAX_DIST	(16*1024)
- 
-+/* Percent print prints normally in percentage points, but for JSON prints
-+ * an absolute value (1% vs 0.01).
-+ */
-+#define __PRINT_PERCENT(label_json, label_fp, per)			\
-+	({								\
-+		print_float(PRINT_FP, NULL, label_fp " %g%%",		\
-+			    (100. * (per)) / UINT32_MAX);		\
-+		print_float(PRINT_JSON, label_json, NULL,		\
-+			    (1. * (per)) / UINT32_MAX);			\
-+	})
-+#define PRINT_PERCENT(label, per) __PRINT_PERCENT(label, " " label, (per))
-+
-+/* Time print prints normally with varying units, but for JSON prints
-+ * in seconds (1ms vs 0.001).
-+ */
-+#define __PRINT_TIME64(label_json, label_fp, val)			\
-+	({								\
-+		SPRINT_BUF(b1);						\
-+		print_string(PRINT_FP, NULL, label_fp " %s",		\
-+			     sprint_time64((val), b1));			\
-+		print_float(PRINT_JSON, label_json, NULL, (val) /	\
-+			    1000000000.);				\
-+	})
-+#define PRINT_TIME64(label, val) __PRINT_TIME64(label, " " label, (val))
-+
-+/* Print values only if they are non-zero */
-+#define PRINT_INT_OPT(label, val)		\
-+	print_int(PRINT_ANY, label, (val) ? " " label " %d" : "", (val))
-+
- /* scaled value used to percent of maximum. */
- static void set_percent(__u32 *percent, double per)
- {
-@@ -75,15 +104,14 @@ static int get_percent(__u32 *percent, const char *str)
- 	return 0;
- }
- 
--static void print_percent(char *buf, int len, __u32 per)
--{
--	snprintf(buf, len, "%g%%", (100. * per) / UINT32_MAX);
--}
--
--static char *sprint_percent(__u32 per, char *buf)
-+static void print_corr(bool present, __u32 value)
- {
--	print_percent(buf, SPRINT_BSIZE-1, per);
--	return buf;
-+	if (!is_json_context()) {
-+		if (present)
-+			__PRINT_PERCENT("", "", value);
-+	} else {
-+		PRINT_PERCENT("correlation", value);
-+	}
- }
- 
- /*
-@@ -687,97 +715,109 @@ static int netem_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		}
- 	}
- 
--	fprintf(f, "limit %d", qopt.limit);
-+	print_uint(PRINT_ANY, "limit", "limit %d", qopt.limit);
- 
- 	if (qopt.latency) {
--		fprintf(f, " delay %s", sprint_ticks(qopt.latency, b1));
--
--		if (qopt.jitter) {
--			fprintf(f, "  %s", sprint_ticks(qopt.jitter, b1));
--			if (cor && cor->delay_corr)
--				fprintf(f, " %s", sprint_percent(cor->delay_corr, b1));
-+		open_json_object("delay");
-+		if (!is_json_context()) {
-+			print_string(PRINT_FP, NULL, " delay %s",
-+				     sprint_ticks(qopt.latency, b1));
-+
-+			if (qopt.jitter)
-+				print_string(PRINT_FP, NULL, "  %s",
-+					     sprint_ticks(qopt.jitter, b1));
-+		} else {
-+			print_float(PRINT_JSON, "delay", NULL,
-+				    tc_core_tick2time(qopt.latency) /
-+				    1000000.);
-+			print_float(PRINT_JSON, "jitter", NULL,
-+				    tc_core_tick2time(qopt.jitter) /
-+				    1000000.);
- 		}
-+		print_corr(qopt.jitter && cor && cor->delay_corr,
-+			   cor ? cor->delay_corr : 0);
-+		close_json_object();
- 	}
- 
- 	if (qopt.loss) {
--		fprintf(f, " loss %s", sprint_percent(qopt.loss, b1));
--		if (cor && cor->loss_corr)
--			fprintf(f, " %s", sprint_percent(cor->loss_corr, b1));
-+		open_json_object("loss-random");
-+		PRINT_PERCENT("loss", qopt.loss);
-+		print_corr(cor && cor->loss_corr, cor ? cor->loss_corr : 0);
-+		close_json_object();
- 	}
- 
- 	if (gimodel) {
--		fprintf(f, " loss state p13 %s", sprint_percent(gimodel->p13, b1));
--		fprintf(f, " p31 %s", sprint_percent(gimodel->p31, b1));
--		fprintf(f, " p32 %s", sprint_percent(gimodel->p32, b1));
--		fprintf(f, " p23 %s", sprint_percent(gimodel->p23, b1));
--		fprintf(f, " p14 %s", sprint_percent(gimodel->p14, b1));
-+		open_json_object("loss-state");
-+		__PRINT_PERCENT("p13", " loss state p13", gimodel->p13);
-+		PRINT_PERCENT("p31", gimodel->p31);
-+		PRINT_PERCENT("p32", gimodel->p32);
-+		PRINT_PERCENT("p23", gimodel->p23);
-+		PRINT_PERCENT("p14", gimodel->p14);
-+		close_json_object();
- 	}
- 
- 	if (gemodel) {
--		fprintf(f, " loss gemodel p %s",
--			sprint_percent(gemodel->p, b1));
--		fprintf(f, " r %s", sprint_percent(gemodel->r, b1));
--		fprintf(f, " 1-h %s", sprint_percent(UINT32_MAX -
--						     gemodel->h, b1));
--		fprintf(f, " 1-k %s", sprint_percent(gemodel->k1, b1));
-+		open_json_object("loss-gemodel");
-+		__PRINT_PERCENT("p", " loss gemodel p", gemodel->p);
-+		PRINT_PERCENT("r", gemodel->r);
-+		PRINT_PERCENT("1-h", UINT32_MAX - gemodel->h);
-+		PRINT_PERCENT("1-k", gemodel->k1);
-+		close_json_object();
- 	}
- 
- 	if (qopt.duplicate) {
--		fprintf(f, " duplicate %s",
--			sprint_percent(qopt.duplicate, b1));
--		if (cor && cor->dup_corr)
--			fprintf(f, " %s", sprint_percent(cor->dup_corr, b1));
-+		open_json_object("duplicate");
-+		PRINT_PERCENT("duplicate", qopt.duplicate);
-+		print_corr(cor && cor->dup_corr, cor ? cor->dup_corr : 0);
-+		close_json_object();
- 	}
- 
- 	if (reorder && reorder->probability) {
--		fprintf(f, " reorder %s",
--			sprint_percent(reorder->probability, b1));
--		if (reorder->correlation)
--			fprintf(f, " %s",
--				sprint_percent(reorder->correlation, b1));
-+		open_json_object("reorder");
-+		PRINT_PERCENT("reorder", reorder->probability);
-+		print_corr(reorder->correlation, reorder->correlation);
-+		close_json_object();
- 	}
- 
- 	if (corrupt && corrupt->probability) {
--		fprintf(f, " corrupt %s",
--			sprint_percent(corrupt->probability, b1));
--		if (corrupt->correlation)
--			fprintf(f, " %s",
--				sprint_percent(corrupt->correlation, b1));
-+		open_json_object("corrupt");
-+		PRINT_PERCENT("corrupt", corrupt->probability);
-+		print_corr(corrupt->correlation, corrupt->correlation);
-+		close_json_object();
- 	}
- 
- 	if (rate && rate->rate) {
--		if (rate64)
--			fprintf(f, " rate %s", sprint_rate(rate64, b1));
--		else
--			fprintf(f, " rate %s", sprint_rate(rate->rate, b1));
--		if (rate->packet_overhead)
--			fprintf(f, " packetoverhead %d", rate->packet_overhead);
--		if (rate->cell_size)
--			fprintf(f, " cellsize %u", rate->cell_size);
--		if (rate->cell_overhead)
--			fprintf(f, " celloverhead %d", rate->cell_overhead);
-+		open_json_object("rate");
-+		rate64 = rate64 ? : rate->rate;
-+		print_string(PRINT_FP, NULL, " rate %s",
-+			     sprint_rate(rate64, b1));
-+		print_lluint(PRINT_JSON, "rate", NULL, rate64);
-+		PRINT_INT_OPT("packetoverhead", rate->packet_overhead);
-+		print_uint(PRINT_ANY, "cellsize",
-+			   rate->cell_size ? " cellsize %u" : "",
-+			   rate->cell_size);
-+		PRINT_INT_OPT("celloverhead", rate->cell_overhead);
-+		close_json_object();
- 	}
- 
- 	if (slot) {
-+		open_json_object("slot");
- 		if (slot->dist_jitter > 0) {
--		    fprintf(f, " slot distribution %s", sprint_time64(slot->dist_delay, b1));
--		    fprintf(f, " %s", sprint_time64(slot->dist_jitter, b1));
-+			__PRINT_TIME64("distribution", " slot distribution",
-+				       slot->dist_delay);
-+			__PRINT_TIME64("jitter", "", slot->dist_jitter);
- 		} else {
--		    fprintf(f, " slot %s", sprint_time64(slot->min_delay, b1));
--		    fprintf(f, " %s", sprint_time64(slot->max_delay, b1));
-+			__PRINT_TIME64("min-delay", " slot", slot->min_delay);
-+			__PRINT_TIME64("max-delay", "", slot->max_delay);
- 		}
--		if (slot->max_packets)
--			fprintf(f, " packets %d", slot->max_packets);
--		if (slot->max_bytes)
--			fprintf(f, " bytes %d", slot->max_bytes);
-+		PRINT_INT_OPT("packets", slot->max_packets);
-+		PRINT_INT_OPT("bytes", slot->max_bytes);
-+		close_json_object();
- 	}
- 
--	if (ecn)
--		fprintf(f, " ecn ");
--
--	if (qopt.gap)
--		fprintf(f, " gap %lu", (unsigned long)qopt.gap);
--
-+	print_bool(PRINT_ANY, "ecn", ecn ? " ecn " : "", ecn);
-+	print_luint(PRINT_ANY, "gap", qopt.gap ? " gap %lu" : "",
-+		    (unsigned long)qopt.gap);
- 
- 	return 0;
- }
--- 
-2.21.0
+>=20
+> After:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>     vf 0     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+> checking off, link-state disable, trust off, query_rss off
+
+Ok, I get why the After: should have a valid broadcast.  What I don't
+get is why the Before: shows a MAC and the After: shows a
+link/infiniband?  What change in this patch is responsible for that
+difference?  I honestly expect, by reading this patch, that you would
+have a MAC and Broadcast that look like Ethernet, not that the full
+issue would be resolved.
+
+> v1->v2: add the IFLA_VF_BROADCAST constant
+> v2->v3: put IFLA_VF_BROADCAST at the end
+> to avoid KABI breakage and set NLA_REJECT
+> dev_setlink
+>=20
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> ---
+>  include/uapi/linux/if_link.h | 5 +++++
+>  net/core/rtnetlink.c         | 5 +++++
+>  2 files changed, 10 insertions(+)
+>=20
+> diff --git a/include/uapi/linux/if_link.h
+> b/include/uapi/linux/if_link.h
+> index 5b225ff63b48..6f75bda2c2d7 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -694,6 +694,7 @@ enum {
+>  	IFLA_VF_IB_NODE_GUID,	/* VF Infiniband node GUID */
+>  	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
+>  	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for
+> QinQ */
+> +	IFLA_VF_BROADCAST,	/* VF broadcast */
+>  	__IFLA_VF_MAX,
+>  };
+> =20
+> @@ -704,6 +705,10 @@ struct ifla_vf_mac {
+>  	__u8 mac[32]; /* MAX_ADDR_LEN */
+>  };
+> =20
+> +struct ifla_vf_broadcast {
+> +	__u8 broadcast[32];
+> +};
+> +
+>  struct ifla_vf_vlan {
+>  	__u32 vf;
+>  	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index cec60583931f..8ac81630ab5c 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -908,6 +908,7 @@ static inline int rtnl_vfinfo_size(const struct
+> net_device *dev,
+>  		size +=3D num_vfs *
+>  			(nla_total_size(0) +
+>  			 nla_total_size(sizeof(struct ifla_vf_mac)) +
+> +			 nla_total_size(sizeof(struct
+> ifla_vf_broadcast)) +
+>  			 nla_total_size(sizeof(struct ifla_vf_vlan)) +
+>  			 nla_total_size(0) + /* nest IFLA_VF_VLAN_LIST
+> */
+>  			 nla_total_size(MAX_VLAN_LIST_LEN *
+> @@ -1197,6 +1198,7 @@ static noinline_for_stack int
+> rtnl_fill_vfinfo(struct sk_buff *skb,
+>  	struct ifla_vf_vlan vf_vlan;
+>  	struct ifla_vf_rate vf_rate;
+>  	struct ifla_vf_mac vf_mac;
+> +	struct ifla_vf_broadcast vf_broadcast;
+>  	struct ifla_vf_info ivi;
+> =20
+>  	memset(&ivi, 0, sizeof(ivi));
+> @@ -1231,6 +1233,7 @@ static noinline_for_stack int
+> rtnl_fill_vfinfo(struct sk_buff *skb,
+>  		vf_trust.vf =3D ivi.vf;
+> =20
+>  	memcpy(vf_mac.mac, ivi.mac, sizeof(ivi.mac));
+> +	memcpy(vf_broadcast.broadcast, dev->broadcast, dev->addr_len);
+>  	vf_vlan.vlan =3D ivi.vlan;
+>  	vf_vlan.qos =3D ivi.qos;
+>  	vf_vlan_info.vlan =3D ivi.vlan;
+> @@ -1247,6 +1250,7 @@ static noinline_for_stack int
+> rtnl_fill_vfinfo(struct sk_buff *skb,
+>  	if (!vf)
+>  		goto nla_put_vfinfo_failure;
+>  	if (nla_put(skb, IFLA_VF_MAC, sizeof(vf_mac), &vf_mac) ||
+> +	    nla_put(skb, IFLA_VF_BROADCAST, sizeof(vf_broadcast),
+> &vf_broadcast) ||
+>  	    nla_put(skb, IFLA_VF_VLAN, sizeof(vf_vlan), &vf_vlan) ||
+>  	    nla_put(skb, IFLA_VF_RATE, sizeof(vf_rate),
+>  		    &vf_rate) ||
+> @@ -1753,6 +1757,7 @@ static const struct nla_policy
+> ifla_info_policy[IFLA_INFO_MAX+1] =3D {
+> =20
+>  static const struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] =3D {
+>  	[IFLA_VF_MAC]		=3D { .len =3D sizeof(struct ifla_vf_mac)
+> },
+> +	[IFLA_VF_BROADCAST]	=3D { .type =3D NLA_REJECT },
+>  	[IFLA_VF_VLAN]		=3D { .len =3D sizeof(struct
+> ifla_vf_vlan) },
+>  	[IFLA_VF_VLAN_LIST]     =3D { .type =3D NLA_NESTED },
+>  	[IFLA_VF_TX_RATE]	=3D { .len =3D sizeof(struct ifla_vf_tx_rate) },
+
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57
+2FDD
+
+--=-2TqKf2wcaxprFekRzaj+
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl0D3YMACgkQuCajMw5X
+L90EfQ/+JJh0Hz6r/mLXCvqdNd8wzfuGlJvbgkB+MVsUO+OtEK1sYsnm1SYeib9D
+DKpZub957TzmlKwPvLSAGyxt/7AW2P6TgPigDz2ljudd7TrdaLTPow0vTe/qMuuS
+WYkni0SfWe+iuKvuKuKEoQ96NoVEp/YA0YMvmvklcqN+sN2gkkjNMF07uuifSTiK
+e5D6Y1ju7E6cuxkBPZtY1nyNTIyo2uuAg0Q8Q9Ra+mYXSyJfsGh9AeagpXcYDZFr
+Laf/W1s9dwfynjccSouxPW3dclmfQPT5HLIsrLuDKUfb/SrVFg8qlTVDMDgpshPC
+xXVho7hUdluxOb2PA6Biu/Axg/U3ufWQ6ocZivpIrPzCNCtCFK1zEH1k7Z34p4mR
+FFxFZbpCEZiZ80nQHWfnefokO8xQ1g0+bc/Jh9FvriSWnxT/kZQXoo0XpIZqWCqD
+iWEQ5YQE7rKibvM2xvDBm/9cIQuZEJ+/kgKUfJt/DmQelPn+tFj+D+FmOjlS16O2
++g/a/He6hyoKrSzYpZfXSPTvNHNTM51GD0ea9m9ah5nfkSf93teosRkZdljfyBsa
+2t2yNxi4OOuS8nz9RKqyktBpUOhQmo1P//UTC8KDY4arojQhdd+Sv2DYOB4aSuha
+eNgwqCGTh47fo5UkMcnAsPMTiFQQkBAGIBZpuqubDnzdsLDfdj8=
+=uEhD
+-----END PGP SIGNATURE-----
+
+--=-2TqKf2wcaxprFekRzaj+--
 
