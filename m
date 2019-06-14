@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB05D45D46
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 14:59:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C64D45D67
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 15:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727973AbfFNM72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 08:59:28 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:39874 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727682AbfFNM71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 08:59:27 -0400
-Received: by mail-pl1-f195.google.com with SMTP id b7so996660pls.6;
-        Fri, 14 Jun 2019 05:59:27 -0700 (PDT)
+        id S1728154AbfFNNEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 09:04:04 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46279 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726874AbfFNNEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 09:04:04 -0400
+Received: by mail-pg1-f196.google.com with SMTP id v9so1505858pgr.13;
+        Fri, 14 Jun 2019 06:04:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MQjiqrlFAdKol+khhCuvHUzI6XoeO3twrfahHKAoOkA=;
-        b=iKJCDROoSpEOWeB6BVk1a+gvmvcorZg2HExhdgiuNwu9sezEbA6h/j02SjI7sQ0w/A
-         fzPtmAGtpNRAisPtcbxQYvTysdsmU+csbUX8FnWg+OXPeb56ldpXCVWUzB1OqDrhc0wu
-         RUu7TjxK8qDlk2nEBPwpzY0+bGFB5vz02DelDIPWU43YICpFHrka4BPik1DT7Q3t9Bcb
-         WRYl8BMq5UHeqa8dctpyEEL6eQMrs40lZHqoFAPRkBphA+kjhoSED4cVbuiyUn64hU1h
-         uHGZjAfrLjhffU0k9gAhDrVnlukV7y+3wKIvD3GNWISau1POnxVsx241MwsBi2xBpSfG
-         3/Lw==
+        bh=ThLynGcMuiJhmVWOI3cGwSidDOAHGFZeg80j18C/zIs=;
+        b=hoaabJl1f9tDQFE+qm/hgwa/ZZbqWY5KctknMJ6hxk7tYbQwK8eHxhAKW6nyskdhBm
+         zOYvMNyksXRURSlMGpJlpOimJOJCCW/elkJlpvwCey6bVLouP9uDtRHlikzEU0D5bTSZ
+         Wkop0d6bugHsO7Spbhhaa1xCOo+GntjpyNJWs4r59i/XD6YtPDmB3WMKn36iJGAr/sKn
+         f6pndoqMf2ceq9cM0t1xuIEeASDpqyl3vt31sFJvanEZGX21HTO7LrqCzaBLBtCTwNvg
+         atZJIy9py5XnQgk50fFuxPbzU7dCZSrS2z6fiwc3GQvL9tDXR9N+RwItQ5kZ7aQHaFkC
+         UJuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=MQjiqrlFAdKol+khhCuvHUzI6XoeO3twrfahHKAoOkA=;
-        b=CjEdOCHJBFMkiLIUTsaegsKXht8OmDrFILyzVZVMMrs5c4LeyZppBSFTQFeCPEVZzs
-         r03mDPGBl1E2Z3HjY2wHA5Serb9NTzF0r0p2M6k37iptFr/6rHF2lVdruoHELTPz1HzF
-         yBa+Ifx/IVmyKfBtY3ZrXhn9DkJKK3E/MV/LpLT9uqUUcwDjewjd5ybNnpCeza4pWNs+
-         QEHvnnAsflGpmhdt/nOGhfoRLgunYOPEo6vHBUqHaGfW2qiUB5+MLfp1TmWGBSKzgkNU
-         MNgDKbLWYdm3fkWCCLFmbjOC0r4hcd6kLy2wS+Yv+3RqNnuDonpR/L4IFUTkmAwqvFOy
-         jhDA==
-X-Gm-Message-State: APjAAAXuV/zHCR2klXzSiJzZpn0CVWZd1dipKWtZ7FQycqPn5AMKBO37
-        KY5Du8g336Oax1E98Wo66b8=
-X-Google-Smtp-Source: APXvYqwaZu8yA4W1fCKXREFQZM8zcDc5q7wcLFDysf7br0pNm6awleuZe8uxPvzXnP5dCEyvXMUDuw==
-X-Received: by 2002:a17:902:2aa8:: with SMTP id j37mr51040563plb.316.1560517167161;
-        Fri, 14 Jun 2019 05:59:27 -0700 (PDT)
+        bh=ThLynGcMuiJhmVWOI3cGwSidDOAHGFZeg80j18C/zIs=;
+        b=NoSa9rGxG36IVkhUdiliv3l7bLjUIhqYo0yZ/IUd72PXGFOj/+eVnGIwju5geLcDDO
+         HJ0h5ZU2L241f6HrZGioukDnIcQytNb+Hwkfg4PxeMhloP158++hGMOjnJ5DW3OFZdHm
+         qR5ksFzNDcjy0wzl0/jX+bH1tKsSLyrpmHasvAj5sRw+MR3mDLTJkYnwk4TetBbKCjfW
+         SzLhqDa8RB8Pw0nTkB4orB8poEbvM+LmD7ugNrKqG1Z8EGqlHJs54uMmLeD91F5yPTGR
+         xWbTnQSI4a8u7AvxDlnl2c7X6owKnhb4n2qZxZSUwBwfbcbiZ6L1azMpLxBMGjTZEYAe
+         A4zQ==
+X-Gm-Message-State: APjAAAUOmaSKSbSruv+u0g6UAGQL6QzXian+ZaUoux2jCUGOJwpbXU5f
+        GjNumY6hp8SfEq9rj13AW+joekcl
+X-Google-Smtp-Source: APXvYqzcfhLfnxM95pdx+Arbb2ofJMuHxK6XDf7JZ+N62a+9DnX0T2ooxFDpoEnhsZ7ZPj0qXSjVew==
+X-Received: by 2002:a65:4cce:: with SMTP id n14mr16491026pgt.251.1560517443368;
+        Fri, 14 Jun 2019 06:04:03 -0700 (PDT)
 Received: from [192.168.1.9] (i223-218-240-142.s42.a013.ap.plala.or.jp. [223.218.240.142])
-        by smtp.googlemail.com with ESMTPSA id d6sm2685781pgv.4.2019.06.14.05.59.23
+        by smtp.googlemail.com with ESMTPSA id s12sm2697471pfe.143.2019.06.14.06.03.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 14 Jun 2019 05:59:26 -0700 (PDT)
-Subject: Re: [PATCH bpf 1/3] devmap: Fix premature entry free on destroying
- map
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Fri, 14 Jun 2019 06:04:02 -0700 (PDT)
+Subject: Re: [PATCH bpf 2/3] devmap: Add missing bulk queue free
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
         bpf@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         David Ahern <dsahern@gmail.com>
 References: <20190614082015.23336-1-toshiaki.makita1@gmail.com>
- <20190614082015.23336-2-toshiaki.makita1@gmail.com> <877e9octre.fsf@toke.dk>
- <87sgscbc5d.fsf@toke.dk>
+ <20190614082015.23336-3-toshiaki.makita1@gmail.com>
+ <20190614135806.4bcb1a31@carbon>
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <fb895684-c863-e580-f36a-30722c480b41@gmail.com>
-Date:   Fri, 14 Jun 2019 21:59:20 +0900
+Message-ID: <4ab32fa0-0c79-79c7-141b-9620f844d23b@gmail.com>
+Date:   Fri, 14 Jun 2019 22:03:57 +0900
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <87sgscbc5d.fsf@toke.dk>
+In-Reply-To: <20190614135806.4bcb1a31@carbon>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -76,36 +75,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/06/14 (金) 21:10:38, Toke Høiland-Jørgensen wrote:
-> Toke Høiland-Jørgensen <toke@redhat.com> writes:
+On 19/06/14 (金) 20:58:06, Jesper Dangaard Brouer wrote:
+> On Fri, 14 Jun 2019 17:20:14 +0900
+> Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
 > 
->> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+>> dev_map_free() forgot to free bulk queue when freeing its entries.
 >>
->>> dev_map_free() waits for flush_needed bitmap to be empty in order to
->>> ensure all flush operations have completed before freeing its entries.
->>> However the corresponding clear_bit() was called before using the
->>> entries, so the entries could be used after free.
->>>
->>> All access to the entries needs to be done before clearing the bit.
->>> It seems commit a5e2da6e9787 ("bpf: netdev is never null in
->>> __dev_map_flush") accidentally changed the clear_bit() and memory access
->>> order.
->>>
->>> Note that the problem happens only in __dev_map_flush(), not in
->>> dev_map_flush_old(). dev_map_flush_old() is called only after nulling
->>> out the corresponding netdev_map entry, so dev_map_free() never frees
->>> the entry thus no such race happens there.
->>>
->>> Fixes: a5e2da6e9787 ("bpf: netdev is never null in __dev_map_flush")
->>> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+>> Fixes: 5d053f9da431 ("bpf: devmap prepare xdp frames for bulking")
+>> Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+>> ---
+>>   kernel/bpf/devmap.c | 1 +
+>>   1 file changed, 1 insertion(+)
 >>
->> I recently posted a patch[0] that gets rid of the bitmap entirely, so I
->> think you can drop this one...
+>> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+>> index e001fb1..a126d95 100644
+>> --- a/kernel/bpf/devmap.c
+>> +++ b/kernel/bpf/devmap.c
+>> @@ -186,6 +186,7 @@ static void dev_map_free(struct bpf_map *map)
+>>   		if (!dev)
+>>   			continue;
+>>   
+>> +		free_percpu(dev->bulkq);
+>>   		dev_put(dev->dev);
+>>   		kfree(dev);
+>>   	}
 > 
-> Alternatively, since this entire series should probably go to stable, I
-> can respin mine on top of it?
+> Do we need to call need to call dev_map_flush_old() before
+> free_percpu(dev->bulkq) ?
+> 
+> Looking the code, I guess this is not needed as, above we are ensuring
+> all pending flush operations have completed.
 
-Indeed conflict will happen, as this is for 'bpf' not 'bpf-next'. Sorry 
-for disturbing your work. I'm also not sure how to proceed in this case.
+My understanding is the same. The code waits for NAPI to flush the 
+queue, so no need for dev_map_flush_old().
+
+> 
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Thanks!
 
 Toshiaki Makita
