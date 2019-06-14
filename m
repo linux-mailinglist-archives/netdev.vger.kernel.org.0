@@ -2,91 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA2B4462E5
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:34:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADDF462BC
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 17:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbfFNPe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 11:34:27 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:33167 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfFNPe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:34:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1560526466;
-        s=strato-dkim-0002; d=fpond.eu;
-        h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=2bbreNXRy6dVTi/X+I1wm0LTcrhWDDWbP5P/grVWZLc=;
-        b=tPjADQG7Tb7mAPPhwHD/B+nvgkoyMkLVE2dMb0y0dIMwMbyk/U1+dzuZjDxX+ku3Mi
-        AR2m8p3P4ZPLWTShURRiEKHy/P8WFutppiNJziF4CTct+P0v8ucntd+iIAnab/s2nXR0
-        7hXzCIH8Pz9IUp18kHETUPEuDmUglGhaSytCpVg/i9Ejc6h8sJljUt/P1+dtF+ln/dwq
-        pn6rtmwtDwoM2hhdDb+IXSS+T1AVKmr3YKuZzd/Lb/SBH7BM0nlDOIe7yhjAjtvLkZAn
-        bmxZgL2/ULDaqD+Ub/sVLy5EEHZt8U73GuYndskncA0fj54PXxJlWM2tPt+IS+zaU9JW
-        +jmw==
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzmt2bYDnKIKaws6YXTsc4="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp02-03.back.ox.d0m.de
-        by smtp-ox.front (RZmta 44.23 AUTH)
-        with ESMTPSA id 603925v5EFS96JJ
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-        Fri, 14 Jun 2019 17:28:09 +0200 (CEST)
-Date:   Fri, 14 Jun 2019 17:28:09 +0200 (CEST)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     David Miller <davem@davemloft.net>, uli+renesas@fpond.eu
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        sergei.shtylyov@cogentembedded.com, niklas.soderlund@ragnatech.se,
-        wsa@the-dreams.de, horms@verge.net.au, magnus.damm@gmail.com
-Message-ID: <1736739012.636692.1560526089090@webmail.strato.com>
-In-Reply-To: <20190605.190825.2245741686094611389.davem@davemloft.net>
-References: <1559747660-17875-1-git-send-email-uli+renesas@fpond.eu>
- <20190605.190825.2245741686094611389.davem@davemloft.net>
-Subject: Re: [PATCH v2] ravb: implement MTU change while device is up
+        id S1726480AbfFNP3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 11:29:20 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34831 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbfFNP3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 11:29:19 -0400
+Received: by mail-lf1-f65.google.com with SMTP id a25so2034390lfg.2;
+        Fri, 14 Jun 2019 08:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qNZZnJGaKofn2cHkIBRXjMyNHGsFyy4dzeNzR7jKPw4=;
+        b=e+P5gDSWAKwulncFFhF6v5lyy8ulSp/mGS8oB7e1qQac6yToKhocOhhl+HDGViIdNj
+         Gl08Kiw2dMAsy8dd+MOLIjFrtl2P53mY7Y7k8u9Gz4m7Id2SvL5IW8bdSmuO3v9gYFt8
+         MKte5Rl2qivER/G3ECgRtuhx5fzd9A/+JUKZ1ttH3KyzD+eLtm7PWy70joJqO/+PLBQu
+         mvMwHFcwTt2MNeDTIeArq9pUjN+sEl5GIcYdY5faUP+PZAQhLRBIY+A7FxVJx61Uwcco
+         m7OqmoTDwCc8lyhwNofcEJW7SOMYTR4EJ82Vm+fGTtsfiU3JowL/eqjD4oI3lOgAtT9k
+         Fdvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qNZZnJGaKofn2cHkIBRXjMyNHGsFyy4dzeNzR7jKPw4=;
+        b=YBt0KdiT+EDITLTrJttuKg/+hv62MyhQ5joB0J5uegLuB8Q441FR+Nls+i+vH4JZtZ
+         Z8jpw3Q4YBppEmdAe2HpWH4Wxcr+ERof55KpB3eaappAaILXrcIudp++YWuc4FIEaZ28
+         6/DEGnY/6QCN+BB8UqjT06gkafafDMQZUCGEDcCrl3655NtwgL41U+CfYthtuo5o4jLK
+         5QB56P6rPLoiHay4RrJOhNEYtm48ddGeeEtmpv2CVd0FYTfj/TkqxyiJsGimdhA35vBL
+         i+zmbYeLsg/1T787uAI+L0VmI37nCTwDmi3HKFs4ZSToNXfuBNMpkpmFxXhysX+sFbZE
+         ojhw==
+X-Gm-Message-State: APjAAAXwKll3WzPzFqS8eeauBGdi4AACk3G135lpdu5raRizB5gUzq/K
+        6F0M3HuI9UioLh4A/8G7Dqg0ggwDIv0pA6bncS8=
+X-Google-Smtp-Source: APXvYqxloTnUeXliCBshJ+sHIUsfQSQIoO2O2mNEJ/EaFCec653XsZE6w0JtQhNxw4ZGgos7x1xxJ25NwStuBR77SMU=
+X-Received: by 2002:a19:ab1a:: with SMTP id u26mr10583956lfe.6.1560526157752;
+ Fri, 14 Jun 2019 08:29:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Medium
-X-Mailer: Open-Xchange Mailer v7.8.4-Rev58
-X-Originating-IP: 85.212.196.41
-X-Originating-Client: open-xchange-appsuite
+References: <cover.1560431531.git.jpoimboe@redhat.com> <4f536ec4facda97406273a22a4c2677f7cb22148.1560431531.git.jpoimboe@redhat.com>
+ <20190613220054.tmonrgfdeie2kl74@ast-mbp.dhcp.thefacebook.com>
+ <20190614013051.6gnwduy4dsygbamj@treble> <20190614014244.st7fbr6areazmyrb@ast-mbp.dhcp.thefacebook.com>
+ <20190614015848.todgfogryjn573nd@treble> <20190614022848.ly4vlgsz6fa4bcbl@treble>
+ <20190614045037.zinbi2sivthcfrtg@treble> <20190614060006.na6nfl6shawsyj3i@ast-mbp.dhcp.thefacebook.com>
+ <20190614074136.GR3436@hirez.programming.kicks-ass.net>
+In-Reply-To: <20190614074136.GR3436@hirez.programming.kicks-ass.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 14 Jun 2019 08:29:06 -0700
+Message-ID: <CAADnVQJS2tZr8vVsORm+PF7qJZ-aKsRj5Mbwcim5q7PXCQgU4Q@mail.gmail.com>
+Subject: Re: [PATCH 7/9] x86/unwind/orc: Fall back to using frame pointers for
+ generated code
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 14, 2019 at 12:41 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Thu, Jun 13, 2019 at 11:00:09PM -0700, Alexei Starovoitov wrote:
+>
+> > There is something wrong with
+> > commit d15d356887e7 ("perf/x86: Make perf callchains work without CONFIG_FRAME_POINTER")
+>
+> It assumes we can always unwind stack, which is, imo, not a weird thing.
+>
+> > If I simply revert it and have CONFIG_UNWINDER_FRAME_POINTER=y
+> > JITed stacks work just fine, because
+> > bpf_get_stackid()->get_perf_callchain()
+> > need to start unwinding before any bpf stuff.
+>
+> How does stack unwinding work if we try and unwind from an interrupt
+> that hits inside a BPF program? That too needs to work properly.
+>
+> > After that commit it needs to go through which is a bug on its own.
+> > imo patch 1 doesn't really fix that issue.
+>
+> This we agree on, patch 1 doesn't solve that at all. But we also should
+> not loose the initial regs->ip value.
+>
+> > As far as mangled rbp can we partially undo old
+> > commit 177366bf7ceb ("bpf: change x86 JITed program stack layout")
+> > that introduced that rbp adjustment.
+>
+> > Going through bpf code is only interesting in case of panics somewhere
+> > in bpf helpers. Back then we didn't even have ksym of jited code.
+>
+> I disagree here, interrupts/NMIs hitting inside BPF should be able to
+> reliably unwind the entire stack. Back then is irrelevant, these days we
+> expect a reliable unwind.
+>
+> > Anyhow I agree that we need to make the jited frame proper,
+> > but unwinding need to start before any bpf stuff.
+> > That's a bigger issue.
+>
+> I strongly disagree, we should be able to unwind through bpf.
 
-> On June 6, 2019 at 4:08 AM David Miller <davem@davemloft.net> wrote:
-> 
-> 
-> From: Ulrich Hecht <uli+renesas@fpond.eu>
-> Date: Wed,  5 Jun 2019 17:14:20 +0200
-> 
-> > @@ -1811,11 +1811,14 @@ static int ravb_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
-> >  static int ravb_change_mtu(struct net_device *ndev, int new_mtu)
-> >  {
-> >  	if (netif_running(ndev))
-> > -		return -EBUSY;
-> > +		ravb_close(ndev);
-> >  
-> >  	ndev->mtu = new_mtu;
-> >  	netdev_update_features(ndev);
-> >  
-> > +	if (netif_running(ndev))
-> > +		return ravb_open(ndev);
-> > +
-> 
-> And if ravb_open() fails?  The user sees a failure, but to the user the failure
-> means the MTU change can't be done, yet the device has the new MTU set still.
-> 
-> This really is terrible behavior.
-> 
-> If you must do a prepare/commit kind of sequence for this to work properly if
-> you are going to go down the road of taking the device down to change the MTU
-> when the device is UP.
-
-So would rolling back the MTU change in case of a re-open failure be acceptable?
-
-If so, is there additional action that needs to be taken if a device unexpectedly goes down as a side-effect of an MTU change?
-
-CU
-Uli
+I'm not saying that we should not.
+I'm saying that unwinding through jited code was not working
+for long time and it wasn't an issue. The issue is start of unwind.
+This is user expected behavior that we cannot just break.
+The users expect stack trace to be the same JITed vs interpreted.
+Hence unwinder should start before interpreter/jit.
+That's the first problem to address.
+In parallel we can discuss how to make unwinding work through jited code.
