@@ -2,100 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F324552E
-	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F2745537
+	for <lists+netdev@lfdr.de>; Fri, 14 Jun 2019 09:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbfFNHBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 03:01:30 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37190 "EHLO mx1.redhat.com"
+        id S1725869AbfFNHEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 03:04:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725780AbfFNHBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 03:01:30 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725843AbfFNHEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 03:04:41 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6B8CF30821B2;
-        Fri, 14 Jun 2019 07:01:29 +0000 (UTC)
-Received: from [10.72.12.190] (ovpn-12-190.pek2.redhat.com [10.72.12.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 69070605CF;
-        Fri, 14 Jun 2019 07:01:24 +0000 (UTC)
-Subject: Re: [PATCH net-next] virtio_net: enable napi_tx by default
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        Willem de Bruijn <willemb@google.com>
-References: <20190613162457.143518-1-willemdebruijn.kernel@gmail.com>
- <c43051c5-144a-5aa4-2387-8fb42442f455@redhat.com>
- <20190614013506-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8c0317a3-16e2-8246-a25d-3a3f9337edec@redhat.com>
-Date:   Fri, 14 Jun 2019 15:01:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        by mail.kernel.org (Postfix) with ESMTPSA id B218D2084E;
+        Fri, 14 Jun 2019 07:04:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560495881;
+        bh=3WWtnLjJKzl9IXQdtTIEOivozhXBL7N4KD/OswzeK1Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Of8mtxozvfhHAYJlZTd1+bLb+bZWh2JasIO5XWtEz68AyKeT0osw/dY7CHebbz53u
+         rWjZK+qZG7Q4Hg4wM3uHegWyupNsuPodRqX3/05Tz6eBUWdRlUdmxDxN6M+4ITbxCj
+         rYon+h3z8Rg//J0Dc19MIfHVpQFN2FCrNC6YER+U=
+Date:   Fri, 14 Jun 2019 09:04:38 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Guillaume Nault <g.nault@alphalink.fr>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] l2tp: no need to check return value of debugfs_create
+ functions
+Message-ID: <20190614070438.GA25351@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20190614013506-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 14 Jun 2019 07:01:29 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When calling debugfs functions, there is no need to ever check the
+return value.  The function can work or not, but the code logic should
+never do something different based on this.
 
-On 2019/6/14 下午2:00, Michael S. Tsirkin wrote:
-> On Fri, Jun 14, 2019 at 11:28:59AM +0800, Jason Wang wrote:
->> On 2019/6/14 上午12:24, Willem de Bruijn wrote:
->>> From: Willem de Bruijn <willemb@google.com>
->>>
->>> NAPI tx mode improves TCP behavior by enabling TCP small queues (TSQ).
->>> TSQ reduces queuing ("bufferbloat") and burstiness.
->>>
->>> Previous measurements have shown significant improvement for
->>> TCP_STREAM style workloads. Such as those in commit 86a5df1495cc
->>> ("Merge branch 'virtio-net-tx-napi'").
->>>
->>> There has been uncertainty about smaller possible regressions in
->>> latency due to increased reliance on tx interrupts.
->>>
->>> The above results did not show that, nor did I observe this when
->>> rerunning TCP_RR on Linux 5.1 this week on a pair of guests in the
->>> same rack. This may be subject to other settings, notably interrupt
->>> coalescing.
->>>
->>> In the unlikely case of regression, we have landed a credible runtime
->>> solution. Ethtool can configure it with -C tx-frames [0|1] as of
->>> commit 0c465be183c7 ("virtio_net: ethtool tx napi configuration").
->>>
->>> NAPI tx mode has been the default in Google Container-Optimized OS
->>> (COS) for over half a year, as of release M70 in October 2018,
->>> without any negative reports.
->>>
->>> Link: https://marc.info/?l=linux-netdev&m=149305618416472
->>> Link: https://lwn.net/Articles/507065/
->>> Signed-off-by: Willem de Bruijn <willemb@google.com>
->>>
->>> ---
->>>
->>> now that we have ethtool support and real production deployment,
->>> it seemed like a good time to revisit this discussion.
->>
->> I agree to enable it by default. Need inputs from Michael. One possible
->> issue is we may get some regression on the old machine without APICV, but
->> consider most modern CPU has this feature, it probably doesn't matter.
->>
->> Thanks
->>
-> Right. If the issue does arise we can always add e.g. a feature flag
-> to control the default from the host.
->
+Also, there is no need to store the individual debugfs file name, just
+remove the whole directory all at once, saving a local variable.
 
-Yes.
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Guillaume Nault <g.nault@alphalink.fr>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/l2tp/l2tp_debugfs.c | 21 +++------------------
+ 1 file changed, 3 insertions(+), 18 deletions(-)
 
-So
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
+diff --git a/net/l2tp/l2tp_debugfs.c b/net/l2tp/l2tp_debugfs.c
+index 6e2b4b9267e1..35bb4f3bdbe0 100644
+--- a/net/l2tp/l2tp_debugfs.c
++++ b/net/l2tp/l2tp_debugfs.c
+@@ -31,7 +31,6 @@
+ #include "l2tp_core.h"
+ 
+ static struct dentry *rootdir;
+-static struct dentry *tunnels;
+ 
+ struct l2tp_dfs_seq_data {
+ 	struct net *net;
+@@ -326,32 +325,18 @@ static const struct file_operations l2tp_dfs_fops = {
+ 
+ static int __init l2tp_debugfs_init(void)
+ {
+-	int rc = 0;
+-
+ 	rootdir = debugfs_create_dir("l2tp", NULL);
+-	if (IS_ERR(rootdir)) {
+-		rc = PTR_ERR(rootdir);
+-		rootdir = NULL;
+-		goto out;
+-	}
+ 
+-	tunnels = debugfs_create_file("tunnels", 0600, rootdir, NULL, &l2tp_dfs_fops);
+-	if (tunnels == NULL)
+-		rc = -EIO;
++	debugfs_create_file("tunnels", 0600, rootdir, NULL, &l2tp_dfs_fops);
+ 
+ 	pr_info("L2TP debugfs support\n");
+ 
+-out:
+-	if (rc)
+-		pr_warn("unable to init\n");
+-
+-	return rc;
++	return 0;
+ }
+ 
+ static void __exit l2tp_debugfs_exit(void)
+ {
+-	debugfs_remove(tunnels);
+-	debugfs_remove(rootdir);
++	debugfs_remove_recursive(rootdir);
+ }
+ 
+ module_init(l2tp_debugfs_init);
+-- 
+2.22.0
 
