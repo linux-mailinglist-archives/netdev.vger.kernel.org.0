@@ -2,55 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B0D47211
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 22:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EEE247213
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 22:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfFOUcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 16:32:42 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:39354 "EHLO
+        id S1727004AbfFOUfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 16:35:15 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39400 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfFOUcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 16:32:42 -0400
+        with ESMTP id S1726841AbfFOUfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 16:35:15 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id F126814EB8616;
-        Sat, 15 Jun 2019 13:32:41 -0700 (PDT)
-Date:   Sat, 15 Jun 2019 13:32:41 -0700 (PDT)
-Message-Id: <20190615.133241.1697724537695155418.davem@davemloft.net>
-To:     houjingyi647@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fix double-fetch bug in sock_getsockopt()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8909F14EB8625;
+        Sat, 15 Jun 2019 13:35:14 -0700 (PDT)
+Date:   Sat, 15 Jun 2019 13:35:13 -0700 (PDT)
+Message-Id: <20190615.133513.1319708433379449899.davem@davemloft.net>
+To:     linux@armlinux.org.uk
+Cc:     vivien.didelot@gmail.com, netdev@vger.kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: do not flood CPU with
+ unknown multicast
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190613104457.GA6296@hjy-HP-Notebook>
-References: <20190613104457.GA6296@hjy-HP-Notebook>
+In-Reply-To: <20190615202810.m6ulgcv4uhffhd2a@shell.armlinux.org.uk>
+References: <20190612223344.28781-1-vivien.didelot@gmail.com>
+        <20190615.132555.265052877492424062.davem@davemloft.net>
+        <20190615202810.m6ulgcv4uhffhd2a@shell.armlinux.org.uk>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 15 Jun 2019 13:32:42 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 15 Jun 2019 13:35:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: JingYi Hou <houjingyi647@gmail.com>
-Date: Thu, 13 Jun 2019 18:44:57 +0800
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Date: Sat, 15 Jun 2019 21:28:10 +0100
 
-> In sock_getsockopt(), 'optlen' is fetched the first time from userspace.
-> 'len < 0' is then checked. Then in condition 'SO_MEMINFO', 'optlen' is
-> fetched the second time from userspace without check.
+> On Sat, Jun 15, 2019 at 01:25:55PM -0700, David Miller wrote:
+>> From: Vivien Didelot <vivien.didelot@gmail.com>
+>> Date: Wed, 12 Jun 2019 18:33:44 -0400
+>> 
+>> > The DSA ports must flood unknown unicast and multicast, but the switch
+>> > must not flood the CPU ports with unknown multicast, as this results
+>> > in a lot of undesirable traffic that the network stack needs to filter
+>> > in software.
+>> > 
+>> > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+>> 
+>> Applied.
 > 
-> if a malicious user can change it between two fetches may cause security
-> problems or unexpected behaivor.
+> Hi Dave,
 > 
-> To fix this, we need to recheck it in the second fetch.
+> We found this breaks IPv6, so it shouldn't have been applied (which is
+> the point I raised when I replied to Vivien).  Vivien is now able to
+> reproduce that.
 > 
-> Signed-off-by: JingYi Hou <houjingyi647@gmail.com>
+> I guess you need a revert patch now?
 
-THere is no reason to fetch len a second time, so please just remove
-the get_user() call here instead.
-
-Also, please format your Subject line properly with appropriate subsystem
-prefixes etc.
+Yep, I'll revert, thanks for letting me know.
