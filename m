@@ -2,109 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDCAC46E05
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 05:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A041446E48
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 06:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726289AbfFOD1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 23:27:13 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49182 "EHLO mx1.redhat.com"
+        id S1725943AbfFOE1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 00:27:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46554 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726046AbfFOD1N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 23:27:13 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        id S1725805AbfFOE1z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Jun 2019 00:27:55 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id ABDAB3082AE5;
-        Sat, 15 Jun 2019 03:27:12 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4E53919C67;
-        Sat, 15 Jun 2019 03:27:09 +0000 (UTC)
-Date:   Sat, 15 Jun 2019 05:27:05 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
- ip_valid_fib_dump_req, provide non-strict version
-Message-ID: <20190615052705.66f3fe62@redhat.com>
-In-Reply-To: <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
-References: <cover.1560561432.git.sbrivio@redhat.com>
-        <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
-        <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
-        <20190615051342.7e32c2bb@redhat.com>
-        <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
-Organization: Red Hat
+        by mx1.redhat.com (Postfix) with ESMTPS id C8CD43082E06;
+        Sat, 15 Jun 2019 04:27:54 +0000 (UTC)
+Received: from treble (ovpn-120-9.rdu2.redhat.com [10.10.120.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6B4A01001B23;
+        Sat, 15 Jun 2019 04:27:50 +0000 (UTC)
+Date:   Fri, 14 Jun 2019 23:27:47 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kairui Song <kasong@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@aculab.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH v2 4/5] x86/bpf: Fix 64-bit JIT frame pointer usage
+Message-ID: <20190615042747.awyy4djqe6vfmles@treble>
+References: <cover.1560534694.git.jpoimboe@redhat.com>
+ <178097de8c1bd6a877342304f3469eac4067daa4.1560534694.git.jpoimboe@redhat.com>
+ <20190614210555.q4ictql3tzzjio4r@ast-mbp.dhcp.thefacebook.com>
+ <20190614211916.jnxakyfwilcv6r57@treble>
+ <CAADnVQJ0dmxYTnaQC1UiSo7MhcTy2KRWJWJKw4jyxFWby-JgRg@mail.gmail.com>
+ <20190614231311.gfeb47rpjoholuov@treble>
+ <CAADnVQKOjvhpMQqjHvF-oX2U99WRCi+repgqmt6hiSObovxoaQ@mail.gmail.com>
+ <20190614235417.7oagddee75xo7otp@treble>
+ <CAADnVQ+mjtgZExhtKDu6bbaVSHUfOYb=XeJodPB5+WdjtLYvCA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Sat, 15 Jun 2019 03:27:12 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAADnVQ+mjtgZExhtKDu6bbaVSHUfOYb=XeJodPB5+WdjtLYvCA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Sat, 15 Jun 2019 04:27:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jun 2019 21:16:54 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 6/14/19 9:13 PM, Stefano Brivio wrote:
-> > On Fri, 14 Jun 2019 20:54:49 -0600
-> > David Ahern <dsahern@gmail.com> wrote:
-> >   
-> >> On 6/14/19 7:32 PM, Stefano Brivio wrote:  
-> >>> ip_valid_fib_dump_req() does two things: performs strict checking on
-> >>> netlink attributes for dump requests, and sets a dump filter if netlink
-> >>> attributes require it.
-> >>>
-> >>> We might want to just set a filter, without performing strict validation.
-> >>>
-> >>> Rename it to ip_filter_fib_dump_req(), and add a 'strict' boolean
-> >>> argument that must be set if strict validation is requested.
-> >>>
-> >>> This patch doesn't introduce any functional changes.
-> >>>
-> >>> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-> >>> ---
-> >>> v4: New patch
-> >>>     
-> >>
-> >> Can you explain why this patch is needed? The existing function requires
-> >> strict mode and is needed to enable any of the kernel side filtering
-> >> beyond the RTM_F_CLONED setting in rtm_flags.  
-> > 
-> > It's mostly to have proper NLM_F_MATCH support. Let's pick an iproute2
-> > version without strict checking support (< 5.0), that sets NLM_F_MATCH
-> > though. Then we need this check:
-> > 
-> > 	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm)))  
+On Fri, Jun 14, 2019 at 05:02:36PM -0700, Alexei Starovoitov wrote:
+> On Fri, Jun 14, 2019 at 4:54 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> > The previous patch you posted has my patch description, push/pop and
+> > comment changes, with no credit:
+> >
+> > https://lkml.kernel.org/r/20190614210555.q4ictql3tzzjio4r@ast-mbp.dhcp.thefacebook.com
 > 
-> but that check existed long before any of the strict checking and kernel
-> side filtering was added.
+> I'm sorry for reusing one sentence from your commit log and
+> not realizing you want credit for that.
+> Will not happen again.
 
-Indeed. And now I'm recycling it, even if strict checking is not
-requested.
+Um.  What are you talking about?  The entire patch was clearly derived
+from mine.  Not just "one sentence from your commit log".  The title,
+the pushes/pops in the prologue/epilogue, the removal of the
+"ebpf_from_cbpf" argument, the code spacing, and some of the non trivial
+comment changes were the same.
 
-> > and to set filter parameters not just based on flags (i.e. RTM_F_CLONED),
-> > but also on table, protocol, etc.  
-> 
-> and to do that you *must* have strict checking. There is no way to trust
-> userspace without that strict flag set because iproute2 for the longest
-> time sent the wrong header for almost all dump requests.
+> I also suggest you never touch anything bpf related.
+> Just to avoid this credit claims and threads like this one.
 
-So you're implying that:
-
-- we shouldn't support NLM_F_MATCH
-
-- we should keep this broken for iproute2 < 5.0.0?
-
-I guess this might be acceptable, but please state it clearly.
-
-By the way, if really needed, we can do strict checking even if not
-requested. But this might add more and more userspace breakage, I guess.
+Wth.  I made a simple request for credit.  Anybody can see the patch was
+derived from mine.  It's not like I really care.  It's just basic human
+decency.
 
 -- 
-Stefano
+Josh
