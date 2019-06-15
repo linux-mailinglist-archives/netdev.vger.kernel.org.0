@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 761DE46FCC
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 13:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 542B846FCD
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 13:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbfFOLlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 07:41:13 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:34356 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbfFOLlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 07:41:13 -0400
-Received: by mail-ed1-f65.google.com with SMTP id s49so7722637edb.1
-        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 04:41:11 -0700 (PDT)
+        id S1726582AbfFOLlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 07:41:15 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:32914 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfFOLlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 07:41:14 -0400
+Received: by mail-ed1-f66.google.com with SMTP id i11so7719823edq.0
+        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 04:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
         bh=9I46tGBbT9+w35m5bJ1ncVHQch6rXn7H0BYLUD7m83g=;
-        b=kE4WtVk0ZupsjJ7FT24vcNGaNcUuF66uNeZDhbhwuJFQQWK7cw+4Tb4WqR5ODQ6J44
-         8j67UOGPyTTpQjW0U5uGFmfec3NwOEKI6kLv8puA6/LRwVWUOMX7zLjRfL8DTGwVT6T/
-         x6ClN1YqlXTCmyOsO5GoLGU91STn/UJr6roR8wFpjyRlwv0M2+PkyBNiHOlzbGgkb14x
-         m9dfHCIXBWVVx/4dBoyqjnr+RWgZ2z90vi9cd4VJ+eLMRT2pZ5W9JzfzWobpJgbcwP6/
-         S7EwXvnA7cNM4nMTf8A8klngW/ES1sk4ZWyBzgCVKyWu5s9O7kW5YLm3CRu1USdpSvRE
-         Qy+A==
+        b=MXQhnkbWWMn4wWKzCWhDUIKpzLwmRHO6KFIG+MXtEyCJJtVxrp9lsvIIxEk7c1jMXd
+         UPnk88JkcPwAE/BKpyR+wQ0tn0xTnOB4iBPYHujjmcVS9Tf7W8M41Skihq/NZcNVRk+l
+         teEJqIYdzn/kyX31T4uCrt+2O1fqcTHap/8oXlWbJZwcS0m6YmIFSmeKJ4Bx9H64zC4n
+         w7ZLIykJMClU2dOZzQ4SIJtAcPqfa0Vr6C4lSb78/LWgw65u2W6qKV9aPpnMp9fLQT4V
+         svgECmEXQVimJGNXRvje1WDlJBsko2gNHA2C2vmJLZphR0EcMLJrKfEFlTod/w1iSntF
+         Mm9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
         bh=9I46tGBbT9+w35m5bJ1ncVHQch6rXn7H0BYLUD7m83g=;
-        b=El1RU1M9ys7mmvnQW1BDrgx51CVhuZFLxiRGxzuichf3OplWDzmMuVv//p7TTQs2xG
-         Nu7RrTzqjcARk/uDJmS3rVoaapJ81sP5Rb0O7YKxKEgli3EmseubpHdAXTeRdoyQjgiK
-         Elgp4PVy7Y+2XxTdzef3ohMUe8LeC94uRG3G4lGcWPaebO3+1Gr7wqAz7W/IBfmabPFJ
-         5C6+cAti1ZZsnZP3B+Q43yqf9JywZpINWFl9n1juPR7X4E57WLDJ1fFOjAQasyscsyql
-         Hc+WVjnOL8z1M/AUEhujYTOcmblXeiK7SOvbbZsbTKwy4L0LDMXvIkbZM2nFmhSWtGFQ
-         K3NQ==
-X-Gm-Message-State: APjAAAXaE0AyitDCm5IjvkKvR49ph/WzqhuoYxG9xw/o1TgeAuCObTTT
-        qPuCcioZM9w0e8UgVHaw6Tv1yZ5YZ76RMA==
-X-Google-Smtp-Source: APXvYqwvoZiDmf1bysiIEwN+mSwG76z/6m5hss0LlQOXFfoi61EJ91KgPqe1RWmU9DXZI28tA1md+w==
-X-Received: by 2002:a17:906:1f48:: with SMTP id d8mr57724775ejk.288.1560598871190;
-        Sat, 15 Jun 2019 04:41:11 -0700 (PDT)
+        b=Uffa7qcIwpHTnQ6q48N6a2Sf1SJ760g2u/Rd1rm5wqzva8D4/DvXAi1fDmTQbWbuZi
+         Og1aLXBiQGHjp+cdwqPcEYXG4hVeAWK+qJXs8QX3/JY2u0kwiAglwYzolXPiUXwnU1Vl
+         MrDPXcl68JjMM0nyF4EilPSip7qgv14KmWrC6eXjKJhLZiefIdQMQ5Q89WGLt5MN2wU1
+         dNvmZa9OHLA5c/jQxsxb0j9TqmCalvsOyiPbrzlOD4TP4fBho03ZAhXbPAAb7BhTNDun
+         PD/iqCZmCu5IoAShAncORUrWjxu+mzZ2q8TmWoRxxbzQisyBoNMFjaqsmE6Me5ziHCWF
+         yxmg==
+X-Gm-Message-State: APjAAAXA+HSgztgnd9UR6ipntjTHj4FZC6HDZ7BoMBauaobjjEKOWI4B
+        FlULcnUFd88Qz8Sg31+uag7WxA==
+X-Google-Smtp-Source: APXvYqxC7s4NhnDKU0zM15B9pf/egXT8Pc5WOE8jeEDVVYwWBI7bxf48eLFpOjkfEfmNbawkcEPz8A==
+X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr86211450eje.31.1560598872241;
+        Sat, 15 Jun 2019 04:41:12 -0700 (PDT)
 Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
-        by smtp.gmail.com with ESMTPSA id y18sm1107229ejh.84.2019.06.15.04.41.10
+        by smtp.gmail.com with ESMTPSA id y18sm1107229ejh.84.2019.06.15.04.41.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 15 Jun 2019 04:41:10 -0700 (PDT)
+        Sat, 15 Jun 2019 04:41:11 -0700 (PDT)
 From:   Denis Kirjanov <kda@linux-powerpc.org>
 X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
 To:     stephen@networkplumber.org
 Cc:     dledford@redhat.com, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, mkubecek@suse.cz,
         Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH] ipaddress: correctly print a VF hw address in the IPoIB case
-Date:   Sat, 15 Jun 2019 13:40:55 +0200
-Message-Id: <20190615114056.100808-1-dkirjanov@suse.com>
+Subject: [iproute2] ipaddress: correctly print a VF hw address in the IPoIB case
+Date:   Sat, 15 Jun 2019 13:40:56 +0200
+Message-Id: <20190615114056.100808-2-dkirjanov@suse.com>
 X-Mailer: git-send-email 2.12.3
+In-Reply-To: <20190615114056.100808-1-dkirjanov@suse.com>
+References: <20190615114056.100808-1-dkirjanov@suse.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
