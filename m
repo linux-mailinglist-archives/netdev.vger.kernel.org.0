@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDDE247051
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 16:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607FB47052
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 16:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfFOOJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 10:09:33 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50783 "EHLO
+        id S1727008AbfFOOJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 10:09:37 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:34901 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726400AbfFOOJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 10:09:33 -0400
+        by vger.kernel.org with ESMTP id S1726400AbfFOOJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 10:09:36 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 87BCB21EAE;
-        Sat, 15 Jun 2019 10:09:32 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id B61AE21EAE;
+        Sat, 15 Jun 2019 10:09:35 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 15 Jun 2019 10:09:32 -0400
+  by compute3.internal (MEProxy); Sat, 15 Jun 2019 10:09:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=PNjEL9NgRlmRfio2zVd0VgYsZO+aCYvHZKgBOwz5+ok=; b=PCy7wmir
-        JfE2jRZDPh4XRI0T1KoZCiLm7sfI6Xv/LcZqHyQcaeiva8AI3HeftpvARv4y7pAq
-        KfbPzCG1MMYx/ETuxp0ogtPm32qI8POao9/+aM9R442PvlmUSnbPHdtqNnYXHg9d
-        lN+BBDIE4L44zqflL6uswBlqC8Fq5h5JZsONYSHZb40Bu+E9bAhe5G+Tm3qBaRh4
-        J4KX6n/uuBmL1DeP27inbUSRBicP0FSN3vTzkSPv4K7vBMU0HrsdhRlDSaGFXFyC
-        cUkIzSQ2qrJzW0BmTl+F3xffHf/vqZCIvSH7Leofma4K9NdsS0+vhcc8KeMut91a
-        5RM11LQoAlLo/Q==
-X-ME-Sender: <xms:HPwEXQlXDNykugTB6aqyi_7bDnUpUW_gEht-Z6hgcBfnghPsAV1bAg>
+        fm3; bh=27sQkn6yoAvtsuzVC551sy8YfyGENAmGXrhU+IuKqt4=; b=wUJCRACE
+        4Yuov0DTQJXzdhG4qFNAXqeJtYVr9h6vktgSNDQY5lOmVoj3m1dw+Gsx/aFQv8vp
+        RgaGxIC9x7wwrIrEmtha1yxlbI/phEJagqdyWS+P5VGo5XPagndNfqS1NiZDR7zB
+        a+cwNLZMIXIau/AmoNuQn8JNEkRxVgkfHvHic18ZaCPkYwziypE9sq0arC2vNDyB
+        bZZUOhZDSOUgRSnV0T5Gbl5KfVqVs8rH58tqtrzrtR+1BD8S3hDTqqvKEznN+bEw
+        VSZ9Ph5nLnngMhDumlu9lkftwDpdcHlluoWl/doapFbc63IsUVYl6l7mzYKewHe9
+        vDiy+nHqkmQkTQ==
+X-ME-Sender: <xms:H_wEXX89i7CUkv4ks46SFkr05o8DqerO1xsSk1zKWvAuVAb1tk5oRw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeifedgjeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeifedgjeefucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudejkedrgeefrddvudeknecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepje
-X-ME-Proxy: <xmx:HPwEXRFBGU0UL9lNgIefYC_vysFqxDOreevhIv7F4OsBb8_2MCLKug>
-    <xmx:HPwEXXH-qcBrwfB40fNKx29V3uPNcRPTjI-3aoUqtNQhjGeQNil6HA>
-    <xmx:HPwEXSztl6O_w997-b2VNL1gP7qyHEUx8QDD-GmAzjwB8hrgONWudA>
-    <xmx:HPwEXdMpaxUDVCNfOwlig0QlXSPtJVIiBHhpzrePRVCFVeEjM5BLoA>
+X-ME-Proxy: <xmx:H_wEXaiuvbu0On0bsxQfGNsKfluqGz9YHhTXTEDKM_QB2rawTnngNQ>
+    <xmx:H_wEXd_jG-tAmgVG5hWZfUAGg2_sZiEP4sGgUUjlddeqKkJ_Xxmelw>
+    <xmx:H_wEXWQrMLWcwA_ikhRORqV3sOmOztRtcMJtTi5OzDPd1XlscOzpDA>
+    <xmx:H_wEXf-gw_XNPtoqZJMm8epkebcyN6ycywiStV-ckMepv9uPBujx7A>
 Received: from splinter.mtl.com (bzq-79-178-43-218.red.bezeqint.net [79.178.43.218])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A3675380085;
-        Sat, 15 Jun 2019 10:09:29 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id B74CA380085;
+        Sat, 15 Jun 2019 10:09:32 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, jiri@mellanox.com,
         alexpe@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 08/17] netdevsim: Adjust accounting for IPv6 multipath notifications
-Date:   Sat, 15 Jun 2019 17:07:42 +0300
-Message-Id: <20190615140751.17661-9-idosch@idosch.org>
+Subject: [PATCH net-next 09/17] mlxsw: spectrum_router: Remove processing of IPv6 append notifications
+Date:   Sat, 15 Jun 2019 17:07:43 +0300
+Message-Id: <20190615140751.17661-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190615140751.17661-1-idosch@idosch.org>
 References: <20190615140751.17661-1-idosch@idosch.org>
@@ -62,68 +62,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Prepare the driver to process IPv6 multipath routes.
-
-Increase / decrease the resource usage based on the number of nexthops
-notified in an IPv6 multipath notification.
+No such notifications are sent by the IPv6 code, so remove them.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/netdevsim/fib.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index 83ba5113210d..6e5498ef3855 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -137,19 +137,20 @@ static int nsim_fib_rule_event(struct nsim_fib_data *data,
- }
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 99a2caccd0fe..b7e839a88449 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -5898,7 +5898,6 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
  
- static int nsim_fib_account(struct nsim_fib_entry *entry, bool add,
-+			    unsigned int num_rt,
- 			    struct netlink_ext_ack *extack)
- {
- 	int err = 0;
+ 	switch (fib_work->event) {
+ 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
+-	case FIB_EVENT_ENTRY_APPEND: /* fall through */
+ 	case FIB_EVENT_ENTRY_ADD:
+ 		replace = fib_work->event == FIB_EVENT_ENTRY_REPLACE;
+ 		err = mlxsw_sp_router_fib6_add(mlxsw_sp,
+@@ -6005,7 +6004,6 @@ static void mlxsw_sp_router_fib6_event(struct mlxsw_sp_fib_event_work *fib_work,
  
- 	if (add) {
--		if (entry->num < entry->max) {
--			entry->num++;
-+		if (entry->num + num_rt < entry->max) {
-+			entry->num += num_rt;
- 		} else {
- 			err = -ENOSPC;
- 			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported fib entries");
- 		}
- 	} else {
--		entry->num--;
-+		entry->num -= num_rt;
- 	}
- 
- 	return err;
-@@ -159,14 +160,20 @@ static int nsim_fib_event(struct nsim_fib_data *data,
- 			  struct fib_notifier_info *info, bool add)
- {
- 	struct netlink_ext_ack *extack = info->extack;
-+	struct fib6_entry_notifier_info *fen6_info;
-+	unsigned int num_rt = 1;
- 	int err = 0;
- 
- 	switch (info->family) {
- 	case AF_INET:
--		err = nsim_fib_account(&data->ipv4.fib, add, extack);
-+		err = nsim_fib_account(&data->ipv4.fib, add, num_rt, extack);
- 		break;
- 	case AF_INET6:
--		err = nsim_fib_account(&data->ipv6.fib, add, extack);
-+		fen6_info = container_of(info, struct fib6_entry_notifier_info,
-+					 info);
-+		if (fen6_info->multipath_rt)
-+			num_rt = fen6_info->nsiblings + 1;
-+		err = nsim_fib_account(&data->ipv6.fib, add, num_rt, extack);
- 		break;
- 	}
- 
+ 	switch (fib_work->event) {
+ 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
+-	case FIB_EVENT_ENTRY_APPEND: /* fall through */
+ 	case FIB_EVENT_ENTRY_ADD: /* fall through */
+ 	case FIB_EVENT_ENTRY_DEL:
+ 		fen6_info = container_of(info, struct fib6_entry_notifier_info,
 -- 
 2.20.1
 
