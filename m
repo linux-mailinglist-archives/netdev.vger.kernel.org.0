@@ -2,240 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 542B846FCD
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 13:41:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE0C46FE0
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 14:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbfFOLlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 07:41:15 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:32914 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbfFOLlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 07:41:14 -0400
-Received: by mail-ed1-f66.google.com with SMTP id i11so7719823edq.0
-        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 04:41:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9I46tGBbT9+w35m5bJ1ncVHQch6rXn7H0BYLUD7m83g=;
-        b=MXQhnkbWWMn4wWKzCWhDUIKpzLwmRHO6KFIG+MXtEyCJJtVxrp9lsvIIxEk7c1jMXd
-         UPnk88JkcPwAE/BKpyR+wQ0tn0xTnOB4iBPYHujjmcVS9Tf7W8M41Skihq/NZcNVRk+l
-         teEJqIYdzn/kyX31T4uCrt+2O1fqcTHap/8oXlWbJZwcS0m6YmIFSmeKJ4Bx9H64zC4n
-         w7ZLIykJMClU2dOZzQ4SIJtAcPqfa0Vr6C4lSb78/LWgw65u2W6qKV9aPpnMp9fLQT4V
-         svgECmEXQVimJGNXRvje1WDlJBsko2gNHA2C2vmJLZphR0EcMLJrKfEFlTod/w1iSntF
-         Mm9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=9I46tGBbT9+w35m5bJ1ncVHQch6rXn7H0BYLUD7m83g=;
-        b=Uffa7qcIwpHTnQ6q48N6a2Sf1SJ760g2u/Rd1rm5wqzva8D4/DvXAi1fDmTQbWbuZi
-         Og1aLXBiQGHjp+cdwqPcEYXG4hVeAWK+qJXs8QX3/JY2u0kwiAglwYzolXPiUXwnU1Vl
-         MrDPXcl68JjMM0nyF4EilPSip7qgv14KmWrC6eXjKJhLZiefIdQMQ5Q89WGLt5MN2wU1
-         dNvmZa9OHLA5c/jQxsxb0j9TqmCalvsOyiPbrzlOD4TP4fBho03ZAhXbPAAb7BhTNDun
-         PD/iqCZmCu5IoAShAncORUrWjxu+mzZ2q8TmWoRxxbzQisyBoNMFjaqsmE6Me5ziHCWF
-         yxmg==
-X-Gm-Message-State: APjAAAXA+HSgztgnd9UR6ipntjTHj4FZC6HDZ7BoMBauaobjjEKOWI4B
-        FlULcnUFd88Qz8Sg31+uag7WxA==
-X-Google-Smtp-Source: APXvYqxC7s4NhnDKU0zM15B9pf/egXT8Pc5WOE8jeEDVVYwWBI7bxf48eLFpOjkfEfmNbawkcEPz8A==
-X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr86211450eje.31.1560598872241;
-        Sat, 15 Jun 2019 04:41:12 -0700 (PDT)
-Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
-        by smtp.gmail.com with ESMTPSA id y18sm1107229ejh.84.2019.06.15.04.41.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 15 Jun 2019 04:41:11 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
-To:     stephen@networkplumber.org
-Cc:     dledford@redhat.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, mkubecek@suse.cz,
-        Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [iproute2] ipaddress: correctly print a VF hw address in the IPoIB case
-Date:   Sat, 15 Jun 2019 13:40:56 +0200
-Message-Id: <20190615114056.100808-2-dkirjanov@suse.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20190615114056.100808-1-dkirjanov@suse.com>
-References: <20190615114056.100808-1-dkirjanov@suse.com>
+        id S1726686AbfFOMO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 08:14:29 -0400
+Received: from m97179.mail.qiye.163.com ([220.181.97.179]:42625 "EHLO
+        m97179.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbfFOMO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 08:14:28 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m97179.mail.qiye.163.com (Hmail) with ESMTPA id D34E2E00D7F;
+        Sat, 15 Jun 2019 20:14:22 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     pablo@netfilter.org, fw@strlen.de
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next] netfilter: bridge: add nft_bridge_pvid to tag the default pvid for non-tagged packet
+Date:   Sat, 15 Jun 2019 20:14:21 +0800
+Message-Id: <1560600861-8848-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVJQ0hCQkJCSkJDQkpITVlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mk06Hjo4Czg*MhI3SzoMOAJD
+        DwoKCy1VSlVKTk1LTUtLQ01JQk1LVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQU9NTk83Bg++
+X-HM-Tid: 0a6b5b0f60a320bdkuqyd34e2e00d7f
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current code assumes that we print Etheret mac and
-that doesn't work in IPoIB case with SRIOV-enabled hardware
+From: wenxu <wenxu@ucloud.cn>
 
-Before:
-11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-state UP mode DEFAULT group default qlen 256
-    link/infiniband
-80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
-    vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
-trust off, query_rss off
-...
+bridge vlan add dev veth1 vid 200 pvid untagged
+bridge vlan add dev veth2 vid 200 pvid untagged
 
-After:
-11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-state UP mode DEFAULT group default qlen 256
-    link/infiniband
-80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
-    vf 0     link/infiniband
-80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
-checking off, link-state disable, trust off, query_rss off
+nft add table bridge firewall
+nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
+nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+As above set the bridge port with pvid, the received packet don't contain
+the vlan tag which means the packet should belong to vlan 200 through pvid.
+With this pacth user can set the pvid in the prerouting hook before set zone id and
+conntrack. So the conntrack can only base on vlan id and map the vlan id to zone id
+in the prerouting hook.
+
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- include/uapi/linux/if_infiniband.h | 29 +++++++++++++++++++++++++++
- include/uapi/linux/if_link.h       |  5 +++++
- include/uapi/linux/netdevice.h     |  2 +-
- ip/ipaddress.c                     | 41 +++++++++++++++++++++++++++++++++-----
- 4 files changed, 71 insertions(+), 6 deletions(-)
- create mode 100644 include/uapi/linux/if_infiniband.h
+ net/bridge/netfilter/Kconfig           |  6 ++++
+ net/bridge/netfilter/Makefile          |  1 +
+ net/bridge/netfilter/nft_bridge_pvid.c | 63 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 70 insertions(+)
+ create mode 100644 net/bridge/netfilter/nft_bridge_pvid.c
 
-diff --git a/include/uapi/linux/if_infiniband.h b/include/uapi/linux/if_infiniband.h
+diff --git a/net/bridge/netfilter/Kconfig b/net/bridge/netfilter/Kconfig
+index f4fb0b9..61f2a31 100644
+--- a/net/bridge/netfilter/Kconfig
++++ b/net/bridge/netfilter/Kconfig
+@@ -33,6 +33,12 @@ config NF_CONNTRACK_BRIDGE
+ 
+ 	  To compile it as a module, choose M here.  If unsure, say N.
+ 
++config NFT_BRIDGE_PVID
++	tristate "Netfilter nf_tables bridge pvid support"
++	depends on BRIDGE_VLAN_FILTERING
++	help
++	  Add support to add vlan-pvid tag for non-tagged packets.
++
+ endif # NF_TABLES_BRIDGE
+ 
+ menuconfig BRIDGE_NF_EBTABLES
+diff --git a/net/bridge/netfilter/Makefile b/net/bridge/netfilter/Makefile
+index 9d77673..e0d6c59 100644
+--- a/net/bridge/netfilter/Makefile
++++ b/net/bridge/netfilter/Makefile
+@@ -4,6 +4,7 @@
+ #
+ 
+ obj-$(CONFIG_NFT_BRIDGE_REJECT)  += nft_reject_bridge.o
++obj-$(CONFIG_NFT_BRIDGE_PVID)  += nft_bridge_pvid.o
+ 
+ # connection tracking
+ obj-$(CONFIG_NF_CONNTRACK_BRIDGE) += nf_conntrack_bridge.o
+diff --git a/net/bridge/netfilter/nft_bridge_pvid.c b/net/bridge/netfilter/nft_bridge_pvid.c
 new file mode 100644
-index 00000000..7d958475
+index 0000000..93a4d38
 --- /dev/null
-+++ b/include/uapi/linux/if_infiniband.h
-@@ -0,0 +1,29 @@
-+/*
-+ * This software is available to you under a choice of one of two
-+ * licenses.  You may choose to be licensed under the terms of the GNU
-+ * General Public License (GPL) Version 2, available at
-+ * <http://www.fsf.org/copyleft/gpl.html>, or the OpenIB.org BSD
-+ * license, available in the LICENSE.TXT file accompanying this
-+ * software.  These details are also available at
-+ * <http://www.openfabrics.org/software_license.htm>.
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-+ * SOFTWARE.
-+ *
-+ * Copyright (c) 2004 Topspin Communications.  All rights reserved.
-+ *
-+ * $Id$
-+ */
++++ b/net/bridge/netfilter/nft_bridge_pvid.c
+@@ -0,0 +1,63 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/netfilter_bridge.h>
++#include <net/netfilter/nf_tables.h>
++#include "../br_private.h"
 +
-+#ifndef _LINUX_IF_INFINIBAND_H
-+#define _LINUX_IF_INFINIBAND_H
++static void nft_bridge_pvid_eval(const struct nft_expr *expr,
++				 struct nft_regs *regs,
++				 const struct nft_pktinfo *pkt)
++{
++	struct sk_buff *skb = pkt->skb;
++	struct net_bridge_port *p;
 +
-+#define INFINIBAND_ALEN		20	/* Octets in IPoIB HW addr	*/
++	p = br_port_get_rtnl_rcu(skb->dev);
 +
-+#endif /* _LINUX_IF_INFINIBAND_H */
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index bfe7f9e6..831f1849 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -692,6 +692,7 @@ enum {
- 	IFLA_VF_IB_NODE_GUID,	/* VF Infiniband node GUID */
- 	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
- 	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for QinQ */
-+	IFLA_VF_BROADCAST,	/* VF broadcast */
- 	__IFLA_VF_MAX,
- };
- 
-@@ -702,6 +703,10 @@ struct ifla_vf_mac {
- 	__u8 mac[32]; /* MAX_ADDR_LEN */
- };
- 
-+struct ifla_vf_broadcast {
-+       __u8 broadcast[32];
++	if (p && br_opt_get(p->br, BROPT_VLAN_ENABLED) &&
++	    !skb_vlan_tag_present(skb)) {
++		u16 pvid = br_get_pvid(nbp_vlan_group_rcu(p));
++
++		if (pvid)
++			__vlan_hwaccel_put_tag(skb, p->br->vlan_proto, pvid);
++	}
++}
++
++static int nft_bridge_pvid_validate(const struct nft_ctx *ctx,
++				    const struct nft_expr *expr,
++				    const struct nft_data **data)
++{
++	return nft_chain_validate_hooks(ctx->chain, 1 << NF_BR_PRE_ROUTING);
++}
++
++static struct nft_expr_type nft_bridge_pvid_type;
++static const struct nft_expr_ops nft_bridge_pvid_ops = {
++	.type		= &nft_bridge_pvid_type,
++	.size		= NFT_EXPR_SIZE(0),
++	.eval		= nft_bridge_pvid_eval,
++	.validate	= nft_bridge_pvid_validate,
 +};
 +
- struct ifla_vf_vlan {
- 	__u32 vf;
- 	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
-diff --git a/include/uapi/linux/netdevice.h b/include/uapi/linux/netdevice.h
-index 86d961c9..aaa48818 100644
---- a/include/uapi/linux/netdevice.h
-+++ b/include/uapi/linux/netdevice.h
-@@ -30,7 +30,7 @@
- #include <linux/if_ether.h>
- #include <linux/if_packet.h>
- #include <linux/if_link.h>
--
-+#include <linux/if_infiniband.h>
- 
- #define MAX_ADDR_LEN	32		/* Largest hardware address length */
- 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index b504200b..99e62621 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -349,9 +349,10 @@ static void print_af_spec(FILE *fp, struct rtattr *af_spec_attr)
- 
- static void print_vf_stats64(FILE *fp, struct rtattr *vfstats);
- 
--static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
-+static void print_vfinfo(struct ifinfomsg *ifi, FILE *fp, struct rtattr *vfinfo)
- {
- 	struct ifla_vf_mac *vf_mac;
-+	struct ifla_vf_broadcast *vf_broadcast;
- 	struct ifla_vf_tx_rate *vf_tx_rate;
- 	struct rtattr *vf[IFLA_VF_MAX + 1] = {};
- 
-@@ -365,13 +366,43 @@ static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
- 	parse_rtattr_nested(vf, IFLA_VF_MAX, vfinfo);
- 
- 	vf_mac = RTA_DATA(vf[IFLA_VF_MAC]);
-+	vf_broadcast = RTA_DATA(vf[IFLA_VF_BROADCAST]);
- 	vf_tx_rate = RTA_DATA(vf[IFLA_VF_TX_RATE]);
- 
- 	print_string(PRINT_FP, NULL, "%s    ", _SL_);
- 	print_int(PRINT_ANY, "vf", "vf %d ", vf_mac->vf);
--	print_string(PRINT_ANY, "mac", "MAC %s",
--		     ll_addr_n2a((unsigned char *) &vf_mac->mac,
--				 ETH_ALEN, 0, b1, sizeof(b1)));
++static struct nft_expr_type nft_bridge_pvid_type __read_mostly = {
++	.family		= NFPROTO_BRIDGE,
++	.name		= "pvid",
++	.ops		= &nft_bridge_pvid_ops,
++	.owner		= THIS_MODULE,
++};
 +
-+	print_string(PRINT_ANY,
-+			"link_type",
-+			"    link/%s ",
-+			ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
++static int __init nft_bridge_pvid_module_init(void)
++{
++	return nft_register_expr(&nft_bridge_pvid_type);
++}
 +
-+	print_color_string(PRINT_ANY,
-+				COLOR_MAC,
-+				"address",
-+				"%s",
-+				ll_addr_n2a((unsigned char *) &vf_mac->mac,
-+					ifi->ifi_type == ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
-+					ifi->ifi_type,
-+					b1, sizeof(b1)));
++static void __exit nft_bridge_pvid_module_exit(void)
++{
++	nft_unregister_expr(&nft_bridge_pvid_type);
++}
 +
-+	if (vf[IFLA_VF_BROADCAST]) {
-+		if (ifi->ifi_flags&IFF_POINTOPOINT) {
-+			print_string(PRINT_FP, NULL, " peer ", NULL);
-+			print_bool(PRINT_JSON,
-+					"link_pointtopoint", NULL, true);
-+                        } else {
-+				print_string(PRINT_FP, NULL, " brd ", NULL);
-+                        }
-+                        print_color_string(PRINT_ANY,
-+                                           COLOR_MAC,
-+                                           "broadcast",
-+                                           "%s",
-+                                           ll_addr_n2a((unsigned char *) &vf_broadcast->broadcast,
-+                                                       ifi->ifi_type == ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
-+                                                       ifi->ifi_type,
-+                                                       b1, sizeof(b1)));
-+	}
- 
- 	if (vf[IFLA_VF_VLAN_LIST]) {
- 		struct rtattr *i, *vfvlanlist = vf[IFLA_VF_VLAN_LIST];
-@@ -1102,7 +1133,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 		open_json_array(PRINT_JSON, "vfinfo_list");
- 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
- 			open_json_object(NULL);
--			print_vfinfo(fp, i);
-+			print_vfinfo(ifi, fp, i);
- 			close_json_object();
- 		}
- 		close_json_array(PRINT_JSON, NULL);
++module_init(nft_bridge_pvid_module_init);
++module_exit(nft_bridge_pvid_module_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_ALIAS_NFT_AF_EXPR(AF_BRIDGE, "pvid");
 -- 
-2.12.3
+1.8.3.1
 
