@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 992AC4704C
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 16:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4093F4704D
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 16:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbfFOOJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 10:09:18 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:48105 "EHLO
+        id S1726935AbfFOOJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 10:09:20 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39959 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726400AbfFOOJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 10:09:17 -0400
+        by vger.kernel.org with ESMTP id S1726400AbfFOOJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 10:09:20 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 93FD221F41;
-        Sat, 15 Jun 2019 10:09:16 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 8500521EAE;
+        Sat, 15 Jun 2019 10:09:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 15 Jun 2019 10:09:16 -0400
+  by compute3.internal (MEProxy); Sat, 15 Jun 2019 10:09:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=JJX5MAWwp6Er0wEvZXBmD9JuQSWfBKYhv8wUtOnu9mw=; b=I8Rf8Suo
-        Fu8DxXMW4bls9wkPbXmo6V4MoDHRn2fJkIz0znNebACint07tJV9UoQS6D/lGfIm
-        h56i9Qwectl/A7iAIts3XiiRtXoIeNIpTIe5ddEVQ5QLhRyWYZiO7hx/XniDoqw5
-        xJneMcBH3AVUUvog0xscJAQ6Oq2RhFqO9FUAZ6LYNUWt5WJMcgOOjX/ZBTfPtEnD
-        xdT8GTxlgdzengAIBDKiqfKCIksZKcdsLUPrXgtKu9rgZgw4DHriFenCR2+OeDhO
-        1EXRmHeYXFcZrq07qFW/yyMo1koSr0elF/zn77DvnYt8aeTkLAjJYcrwURGzoVdx
-        MRHPh0vgQFVzig==
-X-ME-Sender: <xms:DPwEXcic1hb4gR4qECVJRJJZkZyRHEJIS62JIxehlhJE4ZSw5s_SuQ>
+        fm3; bh=mJ50WNQT/ltCGC83dPmi/YXk07Zibsi4X4KbK/0zQ0A=; b=yEhiu8Wm
+        C5iZ55zI2sWmNbFynnNCIiasBnkUJA+ilIgoDhHd6uhnIO1ehd2/6idczLnWg5jV
+        7zq7l0XtlDmoDoz8ecn8X6Z4EZIdU0/d2tNFtS2sM5tF90LOk62ARTKv8a0dFJoF
+        cJqzFqO04wh+VafsAsp1KBzBH0fpvgEzmeijK/GN2rPivowgCXwO6/FKd3L2f19S
+        JfyrsREaUJ2xmXNQE+HPERu+k16/krIwdUyp4BMPfXSVQJEK8I0uL0WykbHWPVzA
+        WI8OvzDD7Hcpp6PCmCzqQrXaA1yfPEtWycvnvKG5NlncxfncTuJ/0/pBB+MgSgyI
+        /spaxjG9VGgS/w==
+X-ME-Sender: <xms:D_wEXYANlCDLXfY5prQpIKgH1HLRaFtBaYGEYSNaanofj7S8EO8VnA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeifedgjeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeifedgjeefucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudejkedrgeefrddvudeknecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgepvd
-X-ME-Proxy: <xmx:DPwEXR0YBKumXuJ0YRtNnt-cSY1d7MV2GNa4SAW-y--EHjF7k7SDVA>
-    <xmx:DPwEXe82zIOzEw_0KikN9a8wcx59s4BXLTrN2nUuksyEvnAN2jp1Ag>
-    <xmx:DPwEXYI_NayNcusYbmHZr-eSv6dM_40HoIkHtiZ9IrfHu7PmC0Zzmw>
-    <xmx:DPwEXU7DVyG0oVwYlT8qbWXy-0SK8iXzPkAZUrzp5yBzjTnKt3TtyA>
+X-ME-Proxy: <xmx:D_wEXR-3_AbUEERWsPzNP5s1zvflC9rEzRKki0ZurYiXfrwUc0Qehg>
+    <xmx:D_wEXY_aMe340fdk8F3MP_E500JSNxk5A1kjidfGwTVocKNIqHWKiQ>
+    <xmx:D_wEXYcMNS8XeqZ0h-XeRUu10bfceIc3BZGKRNbZ8bgWtNO3uION-g>
+    <xmx:D_wEXZOd5MQD0PgVc394YuczNlYA1-zj5XyLNjBQ6M7CWpxUXjv-zw>
 Received: from splinter.mtl.com (bzq-79-178-43-218.red.bezeqint.net [79.178.43.218])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 77CB4380085;
-        Sat, 15 Jun 2019 10:09:13 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id B1617380085;
+        Sat, 15 Jun 2019 10:09:16 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, jiri@mellanox.com,
         alexpe@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 03/17] ipv6: Extend notifier info for multipath routes
-Date:   Sat, 15 Jun 2019 17:07:37 +0300
-Message-Id: <20190615140751.17661-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/17] mlxsw: spectrum_router: Ignore IPv6 multipath notifications
+Date:   Sat, 15 Jun 2019 17:07:38 +0300
+Message-Id: <20190615140751.17661-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190615140751.17661-1-idosch@idosch.org>
 References: <20190615140751.17661-1-idosch@idosch.org>
@@ -62,72 +62,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Extend the IPv6 FIB notifier info with number of sibling routes being
-notified.
+IPv6 multipath notifications are about to be sent, but mlxsw is not
+ready to process them, so ignore them.
 
-This will later allow listeners to process one notification for a
-multipath routes instead of N, where N is the number of nexthops.
+The limitation will be lifted by a subsequent patch which will also stop
+the kernel from sending a notification for each nexthop.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/ip6_fib.h |  7 +++++++
- net/ipv6/ip6_fib.c    | 17 +++++++++++++++++
- 2 files changed, 24 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 1e92f1500b87..a0c91fc59eea 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -377,6 +377,8 @@ typedef struct rt6_info *(*pol_lookup_t)(struct net *,
- struct fib6_entry_notifier_info {
- 	struct fib_notifier_info info; /* must be first */
- 	struct fib6_info *rt;
-+	unsigned int nsiblings;	/* Only valid when 'multipath_rt' is set */
-+	bool multipath_rt;
- };
- 
- /*
-@@ -450,6 +452,11 @@ int call_fib6_entry_notifiers(struct net *net,
- 			      enum fib_event_type event_type,
- 			      struct fib6_info *rt,
- 			      struct netlink_ext_ack *extack);
-+int call_fib6_multipath_entry_notifiers(struct net *net,
-+					enum fib_event_type event_type,
-+					struct fib6_info *rt,
-+					unsigned int nsiblings,
-+					struct netlink_ext_ack *extack);
- void fib6_rt_update(struct net *net, struct fib6_info *rt,
- 		    struct nl_info *info);
- void inet6_rt_notify(int event, struct fib6_info *rt, struct nl_info *info,
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 1cce2082279c..df08ba8fe6fc 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -381,6 +381,23 @@ int call_fib6_entry_notifiers(struct net *net,
- 	return call_fib6_notifiers(net, event_type, &info.info);
- }
- 
-+int call_fib6_multipath_entry_notifiers(struct net *net,
-+					enum fib_event_type event_type,
-+					struct fib6_info *rt,
-+					unsigned int nsiblings,
-+					struct netlink_ext_ack *extack)
-+{
-+	struct fib6_entry_notifier_info info = {
-+		.info.extack = extack,
-+		.rt = rt,
-+		.nsiblings = nsiblings,
-+		.multipath_rt = true,
-+	};
-+
-+	rt->fib6_table->fib_seq++;
-+	return call_fib6_notifiers(net, event_type, &info.info);
-+}
-+
- struct fib6_dump_arg {
- 	struct net *net;
- 	struct notifier_block *nb;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 23f17ea52061..99a2caccd0fe 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -6136,6 +6136,8 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
+ 				NL_SET_ERR_MSG_MOD(info->extack, "IPv6 route with nexthop objects is not supported");
+ 				return notifier_from_errno(-EINVAL);
+ 			}
++			if (fen6_info->multipath_rt)
++				return NOTIFY_DONE;
+ 		}
+ 		break;
+ 	}
 -- 
 2.20.1
 
