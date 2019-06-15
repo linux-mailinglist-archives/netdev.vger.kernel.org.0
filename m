@@ -2,183 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6B046F7A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E154546F9D
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:39:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbfFOKLJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 15 Jun 2019 06:11:09 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:34154 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726893AbfFOKLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:11:08 -0400
-Received: by mail-ed1-f68.google.com with SMTP id s49so7473844edb.1
-        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 03:11:06 -0700 (PDT)
+        id S1726755AbfFOKjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 06:39:15 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:32943 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725927AbfFOKjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:39:15 -0400
+Received: by mail-wm1-f65.google.com with SMTP id h19so1087079wme.0;
+        Sat, 15 Jun 2019 03:39:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EWaWjBLfgDeqQMeH6hpzSxjXl2/kKEQOmTgrAj3YJGg=;
+        b=q4/8iFDv/T3DcaMC2SysEKqDtCxF3c7gcO9kFC6QhAQ8Ex2o7CwvTeaOo3VXylWkt4
+         YtbxW1khkg1DKRwBV1F2J2Dx7XsWT6rv7r8yWVXm4CBoo4yVH/vislaPW/LkR2ChisMx
+         j8czCpHUS5RtVrKyJjtzW8TPdYApVAt6hXdf+z+bEjCgoussLKr8dbuyIZnjrvJBzU8p
+         3v1fwA87rIJQ0l4yCuDEVLyQ0HIrdeB/ovFmI7Cx42GS4Xq9b+WPRwNLXlVje9c09Tz5
+         dHtJbavxvfEoLGIDWDTzo/YLgR9zA5T8dPelO8cn3of6uTO2tuh8JYZLTaaRzEE+JYEG
+         D2dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=SNdEBshCOsJboiHjLOe41pUIm5ydYkFCGBOmQC+KlkA=;
-        b=YqDLnrSPujctUMYS0CoH4d67jMk5dgq2RaD5n4gqM2XzlWgH46ISnzpY1wocWtsf46
-         Xw7h4UkFuyF06Xxd/SYuGJHi6seKHuZVCzJ65/8p0Rn1fNZdbzJqWU8UQfaZOUMIDd+3
-         2Fgc2FCp1QpoaJbeMC2NoxQX30+7+oZprhrvdKy8gtf+XBaX1MKx07fppnrnryzDC2rf
-         tmmdGnFWgGhP8me9wlhv6X3KKUBiXzeEmeaalOrebYYgcS0leOThF7J9FLXNu3sQzWJV
-         V7ddV7/IspyWgg418IHipfrBZh5mWTKeetJRFLQ64XtDKKSyh+4/15p0PrVs7zUfzoJw
-         WNVw==
-X-Gm-Message-State: APjAAAWQVmC8gTCHeI6/d9YOP6mzTuFtHeoy0s+HuEuGhZJuwX6hvuJ7
-        CNnfynk8uq7YvvNgmfhTK2YiTg==
-X-Google-Smtp-Source: APXvYqxOAnlznkzWWsHQuk0RLhPesllsndn8wg5sK5+YN2fYWaobgWD/F52EUsOtYkseS8Xnwb9/zQ==
-X-Received: by 2002:a50:ca89:: with SMTP id x9mr106006961edh.164.1560593466355;
-        Sat, 15 Jun 2019 03:11:06 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id s27sm1703407eda.36.2019.06.15.03.11.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EWaWjBLfgDeqQMeH6hpzSxjXl2/kKEQOmTgrAj3YJGg=;
+        b=U9dNjMEpGeSwFxz5YsOYLqpFRibipKnf76hCsljSQ/fubkLIF/cAZ10ZBb/e1eKvKS
+         gOcQTw/+KbdnYeij1slxoYaPqngNeHvgRlXRtJ4e9gAPDxX/78wj4yqQuBPDfeolZxkW
+         BuVsEc/UZlpOyd7y+B7KZpYtT+hN1YmSCZSkNpakP6Fw6qO7efTRpnFuGdBWheuVVbf7
+         VsswocGDwunJsZsHrTFkBmHmAo9IbKxHxrzYqls47ESNnCJKQYyMqt0cEmLfKwNlqkTJ
+         OqszgZy1xPaxFK4ImGfHaFwteU3ZBk9Fh6lEr33LeK/rSPIruvrWFOYj1WTzEMlsmZuI
+         43Tw==
+X-Gm-Message-State: APjAAAXHO2bvTtMt/VeVO9fnSxOjkRFuPYVowD+FYT7HX/pjDITUKQFL
+        UL5rQtrBVQ8LkozBhqagmZQ=
+X-Google-Smtp-Source: APXvYqw7KUGm67auqn07Aq7kGxt/BE4gLpTyvUOVo7p1zIlBqBC3k9rX5VurjgaPLbfEwXXhKwRLZw==
+X-Received: by 2002:a1c:2dd2:: with SMTP id t201mr10541354wmt.136.1560595152890;
+        Sat, 15 Jun 2019 03:39:12 -0700 (PDT)
+Received: from blackbox.darklights.net (p200300F133C20E00A9A405DFDBBC0790.dip0.t-ipconnect.de. [2003:f1:33c2:e00:a9a4:5df:dbbc:790])
+        by smtp.googlemail.com with ESMTPSA id o126sm12209031wmo.31.2019.06.15.03.39.11
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 15 Jun 2019 03:11:05 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 389C91804AF; Sat, 15 Jun 2019 12:11:05 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v4 2/3] bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-In-Reply-To: <CAEf4BzZq4FBoFaaUCDnA8p=gRkUtzrDHOuYGibq1_98sPqaRUQ@mail.gmail.com>
-References: <156042464138.25684.15061870566905680617.stgit@alrua-x1> <156042464155.25684.9001494922674130772.stgit@alrua-x1> <CAEf4BzZq4FBoFaaUCDnA8p=gRkUtzrDHOuYGibq1_98sPqaRUQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 15 Jun 2019 12:11:05 +0200
-Message-ID: <87o92z9n0m.fsf@toke.dk>
+        Sat, 15 Jun 2019 03:39:12 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-amlogic@lists.infradead.org, khilman@baylibre.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
+        robin.murphy@arm.com, narmstrong@baylibre.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 0/4] Ethernet PHY reset GPIO updates for Amlogic SoCs
+Date:   Sat, 15 Jun 2019 12:38:28 +0200
+Message-Id: <20190615103832.5126-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+While trying to add the Ethernet PHY interrupt on the X96 Max I found
+that the current reset line definition is incorrect. Patch #1 fixes
+this.
 
-> On Thu, Jun 13, 2019 at 8:31 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>
->> The bpf_redirect_map() helper used by XDP programs doesn't return any
->> indication of whether it can successfully redirect to the map index it was
->> given. Instead, BPF programs have to track this themselves, leading to
->> programs using duplicate maps to track which entries are populated in the
->> devmap.
->>
->> This patch fixes this by moving the map lookup into the bpf_redirect_map()
->> helper, which makes it possible to return failure to the eBPF program. The
->> lower bits of the flags argument is used as the return code, which means
->> that existing users who pass a '0' flag argument will get XDP_ABORTED.
->
-> I see that we have absolutely no documentation for
-> bpf_xdp_redirect_map. Can you please add it to
-> include/uapi/linux/bpf.h? Don't forget to mention this handling of
-> lower bits of flags. Thanks!
+Since the fix requires moving from the deprecated "snps,reset-gpio"
+property to the generic Ethernet PHY reset bindings I decided to move
+all Amlogic boards over to the non-deprecated bindings. That's what
+patches #2 and #3 do.
 
-Can do.
+Finally I found that Odroid-N2 doesn't define the Ethernet PHY's reset
+GPIO yet. I don't have that board so I can't test whether it really
+works but based on the schematics it should. 
 
->> With this, a BPF program can check the return code from the helper call and
->> react by, for instance, substituting a different redirect. This works for
->> any type of map used for redirect.
->>
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>  include/linux/filter.h |    1 +
->>  net/core/filter.c      |   27 +++++++++++++--------------
->>  2 files changed, 14 insertions(+), 14 deletions(-)
->>
->> diff --git a/include/linux/filter.h b/include/linux/filter.h
->> index 43b45d6db36d..f31ae8b9035a 100644
->> --- a/include/linux/filter.h
->> +++ b/include/linux/filter.h
->> @@ -580,6 +580,7 @@ struct bpf_skb_data_end {
->>  struct bpf_redirect_info {
->>         u32 ifindex;
->>         u32 flags;
->> +       void *item;
->
-> This is so generic name that some short comment describing what that
-> item is would help a lot.
+This series is a partial successor to "stmmac: honor the GPIO flags
+for the PHY reset GPIO" from [0]. I decided not to take Linus W.'s
+Reviewed-by from patch #4 of that series because I had to change the
+wording and I want to be sure that he's happy with that now.
 
-Can also just rename it to something more descriptive? Like 'map_entry?
+One quick note regarding patches #1 and #4: I decided to violate the
+"max 80 characters per line" (by 4 characters) limit because I find
+that the result is easier to read then it would be if I split the
+line.
 
->
->>         struct bpf_map *map;
->>         struct bpf_map *map_to_flush;
->>         u32 kern_flags;
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 7a996887c500..7d742ea61e2d 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -3608,17 +3608,13 @@ static int xdp_do_redirect_map(struct net_device *dev, struct xdp_buff *xdp,
->>                                struct bpf_redirect_info *ri)
->>  {
->>         u32 index = ri->ifindex;
->> -       void *fwd = NULL;
->> +       void *fwd = ri->item;
->>         int err;
->>
->>         ri->ifindex = 0;
->> +       ri->item = NULL;
->>         WRITE_ONCE(ri->map, NULL);
->>
->> -       fwd = __xdp_map_lookup_elem(map, index);
->> -       if (unlikely(!fwd)) {
->> -               err = -EINVAL;
->> -               goto err;
->> -       }
->>         if (ri->map_to_flush && unlikely(ri->map_to_flush != map))
->>                 xdp_do_flush_map();
->>
->> @@ -3655,18 +3651,13 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
->>  {
->>         struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>         u32 index = ri->ifindex;
->> -       void *fwd = NULL;
->> +       void *fwd = ri->item;
->>         int err = 0;
->>
->>         ri->ifindex = 0;
->> +       ri->item = NULL;
->>         WRITE_ONCE(ri->map, NULL);
->>
->> -       fwd = __xdp_map_lookup_elem(map, index);
->> -       if (unlikely(!fwd)) {
->> -               err = -EINVAL;
->> -               goto err;
->> -       }
->> -
->>         if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
->>                 struct bpf_dtab_netdev *dst = fwd;
->>
->> @@ -3735,6 +3726,7 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
->>
->>         ri->ifindex = ifindex;
->>         ri->flags = flags;
->> +       ri->item = NULL;
->>         WRITE_ONCE(ri->map, NULL);
->>
->>         return XDP_REDIRECT;
->> @@ -3753,9 +3745,16 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>  {
->>         struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>
->> -       if (unlikely(flags))
->> +       /* Lower bits of the flags are used as return code on lookup failure */
->> +       if (unlikely(flags > XDP_TX))
->>                 return XDP_ABORTED;
->>
->> +       ri->item = __xdp_map_lookup_elem(map, ifindex);
->> +       if (unlikely(!ri->item)) {
->> +               WRITE_ONCE(ri->map, NULL);
->> +               return flags;
->> +       }
->> +
->>         ri->ifindex = ifindex;
->>         ri->flags = flags;
->>         WRITE_ONCE(ri->map, map);
->>
+
+Changes since v1 at [1]:
+- fixed the reset deassert delay for RTL8211F PHYs - spotted by Robin
+  Murphy (thank you). according to the public RTL8211E datasheet the
+  correct values seem to be: 10ms assert, 30ms deassert
+- fixed the reset assert and deassert delays for IP101GR PHYs. There
+  are two values given in the public datasheet, use the higher one
+  (10ms instead of 2.5)
+- update the patch descriptions to quote the datasheets (the RTL8211F
+  quotes are taken from the public RTL8211E datasheet because as far
+  as I can tell the reset sequence is identical on both PHYs)
+
+Changes since v2 at [2]:
+- add Neil's Reviewed/Acked/Tested-by's (thank you!)
+- rebased on top of "arm64: dts: meson-g12a-x96-max: add sound card"
+
+
+[0] https://patchwork.kernel.org/cover/10983801/
+[1] https://patchwork.kernel.org/cover/10985155/
+[2] https://patchwork.kernel.org/cover/10990863/
+
+
+Martin Blumenstingl (4):
+  arm64: dts: meson: g12a: x96-max: fix the Ethernet PHY reset line
+  ARM: dts: meson: switch to the generic Ethernet PHY reset bindings
+  arm64: dts: meson: use the generic Ethernet PHY reset GPIO bindings
+  arm64: dts: meson: g12b: odroid-n2: add the Ethernet PHY reset line
+
+ arch/arm/boot/dts/meson8b-ec100.dts                   |  9 +++++----
+ arch/arm/boot/dts/meson8b-mxq.dts                     |  9 +++++----
+ arch/arm/boot/dts/meson8b-odroidc1.dts                |  9 +++++----
+ arch/arm/boot/dts/meson8m2-mxiii-plus.dts             |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts    |  7 ++++---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts  |  4 ++++
+ arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts  |  9 +++++----
+ .../arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts   |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts       |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi  |  9 +++++----
+ arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi     |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts  | 11 ++++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts | 10 +++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts   |  8 ++++----
+ arch/arm64/boot/dts/amlogic/meson-gxm-q200.dts        | 11 ++++++-----
+ arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts    |  8 ++++----
+ 17 files changed, 80 insertions(+), 66 deletions(-)
+
+-- 
+2.22.0
+
