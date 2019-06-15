@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA3D446D96
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E8E46D97
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbfFOBi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 21:38:29 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40508 "EHLO mx1.redhat.com"
+        id S1726435AbfFOBid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 21:38:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57422 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726167AbfFOBi2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 21:38:28 -0400
+        id S1726167AbfFOBic (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jun 2019 21:38:32 -0400
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2E7002F8BD7;
-        Sat, 15 Jun 2019 01:38:28 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 07A053091755;
+        Sat, 15 Jun 2019 01:38:32 +0000 (UTC)
 Received: from epycfail.redhat.com (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AC57F5C542;
-        Sat, 15 Jun 2019 01:38:25 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 99A8F5C257;
+        Sat, 15 Jun 2019 01:38:28 +0000 (UTC)
 From:   Stefano Brivio <sbrivio@redhat.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
@@ -27,115 +27,81 @@ Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 1/2] selftests: pmtu: Introduce list_flush_ipv4_exception test case
-Date:   Sat, 15 Jun 2019 03:38:17 +0200
-Message-Id: <047e723ea493be8cb6a72b1003e12001839f3b98.1560562631.git.sbrivio@redhat.com>
+Subject: [PATCH net-next 2/2] selftests: pmtu: Make list_flush_ipv6_exception test more demanding
+Date:   Sat, 15 Jun 2019 03:38:18 +0200
+Message-Id: <9b481caa3e09a3227b4c98f453b4bb2d8998550d.1560562631.git.sbrivio@redhat.com>
 In-Reply-To: <cover.1560562631.git.sbrivio@redhat.com>
 References: <cover.1560562631.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Sat, 15 Jun 2019 01:38:28 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Sat, 15 Jun 2019 01:38:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test checks that route exceptions can be successfully listed and
-flushed using ip -6 route {list,flush} cache.
+Instead of just listing and flushing two cached exceptions, create
+a relatively big number of them, and count how many are listed. Single
+netlink dump messages contain approximately 25 entries each, and this
+way we can make sure the partial dump tracking mechanism is working
+properly.
+
+While at it, also ensure that no cached routes can be listed after
+flush, and remove 'sleep 1' calls, they are not actually needed.
 
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 ---
- tools/testing/selftests/net/pmtu.sh | 62 +++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ tools/testing/selftests/net/pmtu.sh | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 269e839b747e..6c063b17d7d0 100755
+index 6c063b17d7d0..8998a7c03d3e 100755
 --- a/tools/testing/selftests/net/pmtu.sh
 +++ b/tools/testing/selftests/net/pmtu.sh
-@@ -112,6 +112,10 @@
- # - cleanup_ipv6_exception
- #	Same as above, but use IPv6 transport from A to B
- #
-+# - list_flush_ipv4_exception
-+#	Using the same topology as in pmtu_ipv4, create exceptions, and check
-+#	they are shown when listing exception caches, gone after flushing them
-+#
- # - list_flush_ipv6_exception
- #	Using the same topology as in pmtu_ipv6, create exceptions, and check
- #	they are shown when listing exception caches, gone after flushing them
-@@ -156,6 +160,7 @@ tests="
- 	pmtu_vti6_link_change_mtu	vti6: MTU changes on link changes	0
- 	cleanup_ipv4_exception		ipv4: cleanup of cached exceptions	1
- 	cleanup_ipv6_exception		ipv6: cleanup of cached exceptions	1
-+	list_flush_ipv4_exception	ipv4: list and flush cached exceptions	1
- 	list_flush_ipv6_exception	ipv6: list and flush cached exceptions	1"
+@@ -1276,7 +1276,7 @@ test_list_flush_ipv6_exception() {
+ 	      "${ns_a}"  veth_A-R2    "${ns_r2}" veth_R2-A \
+ 	      "${ns_r2}" veth_R2-B    "${ns_b}"  veth_B-R2
  
- NS_A="ns-A"
-@@ -1207,6 +1212,63 @@ run_test_nh() {
- 	USE_NH=no
- }
+-	dst1="${prefix6}:${b_r1}::1"
++	dst_prefix1="${prefix6}:${b_r1}::"
+ 	dst2="${prefix6}:${b_r2}::1"
  
-+test_list_flush_ipv4_exception() {
-+	setup namespaces routing || return 2
-+	trace "${ns_a}"  veth_A-R1    "${ns_r1}" veth_R1-A \
-+	      "${ns_r1}" veth_R1-B    "${ns_b}"  veth_B-R1 \
-+	      "${ns_a}"  veth_A-R2    "${ns_r2}" veth_R2-A \
-+	      "${ns_r2}" veth_R2-B    "${ns_b}"  veth_B-R2
-+
-+	dst_prefix1="${prefix4}.${b_r1}."
-+	dst2="${prefix4}.${b_r2}.1"
-+
-+	# Set up initial MTU values
-+	mtu "${ns_a}"  veth_A-R1 2000
-+	mtu "${ns_r1}" veth_R1-A 2000
-+	mtu "${ns_r1}" veth_R1-B 1500
-+	mtu "${ns_b}"  veth_B-R1 1500
-+
-+	mtu "${ns_a}"  veth_A-R2 2000
-+	mtu "${ns_r2}" veth_R2-A 2000
-+	mtu "${ns_r2}" veth_R2-B 1500
-+	mtu "${ns_b}"  veth_B-R2 1500
-+
-+	fail=0
-+
+ 	# Set up initial MTU values
+@@ -1292,20 +1292,26 @@ test_list_flush_ipv6_exception() {
+ 
+ 	fail=0
+ 
+-	# Create route exceptions
+-	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst1}
+-	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst2}
 +	# Add 100 addresses for veth endpoint on B reached by default A route
 +	for i in $(seq 100 199); do
 +		run_cmd ${ns_b} ip addr add "${dst_prefix1}${i}" dev veth_B-R1
 +	done
-+
-+	# Create 100 cached route exceptions for path via R1, one via R2. Note
-+	# that with IPv4 we need to actually cause a route lookup that matches
-+	# the exception caused by ICMP, in order to actually have a cached
-+	# route, so we need to ping each destination twice
+ 
+-	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 2 ]; then
++	# Create 100 cached route exceptions for path via R1, one via R2
 +	for i in $(seq 100 199); do
-+		run_cmd ${ns_a} ping -q -M want -i 0.1 -c 2 -s 1800 "${dst_prefix1}${i}"
++		run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst_prefix1}${i}"
 +	done
-+	run_cmd ${ns_a} ping -q -M want -i 0.1 -c 2 -s 1800 "${dst2}"
-+
-+	${ns_a} ip route list cache | wc -l
-+
-+	# Each exception is printed as two lines
-+	if [ "$(${ns_a} ip route list cache | wc -l)" -ne 202 ]; then
-+		err "  can't list cached exceptions"
-+		fail=1
-+	fi
-+
-+	run_cmd ${ns_a} ip route flush cache
-+	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst_prefix}1)"
-+	pmtu2="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst_prefix}2)"
++	run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst2}"
++	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 101 ]; then
+ 		err "  can't list cached exceptions"
+ 		fail=1
+ 	fi
+ 
+ 	run_cmd ${ns_a} ip -6 route flush cache
+-	sleep 1
+-	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst1})"
++	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" "${dst_prefix1}100")"
+ 	pmtu2="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst2})"
+-	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ]; then
 +	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ] || \
-+	   [ -n "$(${ns_a} ip route list cache)" ]; then
-+		err "  can't flush cached exceptions"
-+		fail=1
-+	fi
-+
-+	return ${fail}
-+}
-+
- test_list_flush_ipv6_exception() {
- 	setup namespaces routing || return 2
- 	trace "${ns_a}"  veth_A-R1    "${ns_r1}" veth_R1-A \
++	   [ -n "$(${ns_a} ip -6 route list cache)" ]; then
+ 		err "  can't flush cached exceptions"
+ 		fail=1
+ 	fi
 -- 
 2.20.1
 
