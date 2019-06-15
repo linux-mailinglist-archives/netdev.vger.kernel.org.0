@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5691746F9B
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B09B46F9A
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfFOKjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 06:39:16 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54890 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbfFOKjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:39:16 -0400
-Received: by mail-wm1-f67.google.com with SMTP id g135so4724307wme.4;
-        Sat, 15 Jun 2019 03:39:14 -0700 (PDT)
+        id S1726859AbfFOKjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 06:39:17 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41114 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725927AbfFOKjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:39:17 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c2so5007785wrm.8;
+        Sat, 15 Jun 2019 03:39:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TimQLf28BUhZs7uT+zSn3k4UT1AmjQyz4dSffxOSscE=;
-        b=Btqc98H+zDiJhMTSNooCyVZM9aw+pT4W+2uxs0k/OeuS36XxZEW051BU6h7xdaBrUG
-         5Uzt2aab/JcjIMwv4AHm4gtCN4Hcq5YvM7+De3x5C3q8PPSat2rMOpsIw9SN2Az7ErjH
-         agfpdpnAiV36T1nn8jLuFfeGJ0QMqYPYu0+yKwQ3BnmW9ALpL1Dp0hEW3EbXXqvCyWOa
-         vORmOUX82p8xMWAjWhIHe9IkS0ELSg4PPKoCr/GBlXYoZzlbyDR46CU6IAXjarJwPqkK
-         Tc9Ifcr4EwB/ORSQoYqwV5crbHealtm8dd9y5YEJod5p2Bk6bVxxNbuuDtSN4QqRPxBi
-         0QEw==
+        bh=P/QzgniEGEGclZRpn0KBLWO6OR92A4BDuZ9FnJJVEA8=;
+        b=AlwC1tIRdEsAvi9VVVpHVrUDgkd8VLGzLgaMll9PnQSGv07Pe2vtxIA5N5sa7FsK4A
+         ogctEvFj/2UQNv+OCPc1MY1BZmqc75dANmN5GPWp87gpSX45JyHnt0GSOGH/ik1LBG8L
+         jjPNqzWbzZi8U2sW1kNzvwbXo3iBEIy+zsmcz56B+MJILExti5aVzJZfA2wSavQtrQNO
+         tTbCGpk2n8Liq4IGjGaYipznJwoOoQIVbEcbfBQQUcHrYJ4gf+6dHC8PgfR/SdzuEbVI
+         7MUhILIiS2VjtnzyBEWuhO0dQwhVmwS7fgY0zmMhfTAUz3YJfT0bHx8Q+35A/0gBrshn
+         HjzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TimQLf28BUhZs7uT+zSn3k4UT1AmjQyz4dSffxOSscE=;
-        b=rGYnXQtWZpUy6veHoIxCMGqEMG1NjjVQy67YuMvwEmimy0sZfaOgvifqGekQ0Kx6wY
-         4O1mLV3wRrsbHXu1aLZZ2beXNNbMYx0p+VA0K4nC4pJSmoRThfokwFs5aNTC0j51Ey7+
-         PQyax+BoZG4pRy0nqEfpqeyiwd4u7yOvwA+QVy6SS7iUQF18tNgfIvqk/uLR9wV3Uc9l
-         00zok9ysXXwTmsZaC/d9He7Xq3rEBkJYsngUBuy5A5kThfLQzJIJ3LOq5PkYouWPzKno
-         9ZgIaGANBNd3yZ0DLZdpb8+/BFGmqxL7C0tQOEw+Yew6lMZK49ErPE0naJiFFfPwpcVb
-         u+rQ==
-X-Gm-Message-State: APjAAAUunVibUL0fhmn3yGMGpsfDUPSzzrsDr6625M8Kw3sToEPCP1rW
-        7JnYJRrfrdRbRN2o5XLRe2A=
-X-Google-Smtp-Source: APXvYqwkD9m2q7CAv0eVVlX2vVh1T0OsigTsOfcpg3MUm3XGrTqG0vi6zVwW39+OYE5y/KWeTyIo9w==
-X-Received: by 2002:a1c:6c08:: with SMTP id h8mr11776798wmc.62.1560595154046;
-        Sat, 15 Jun 2019 03:39:14 -0700 (PDT)
+        bh=P/QzgniEGEGclZRpn0KBLWO6OR92A4BDuZ9FnJJVEA8=;
+        b=Kbo+gGSliC/0LuiUQuSBgihGE+rO9+UkG/XyYf0zUzZC/nOOMmICjjejSXSYoP4Sz/
+         NJxPjClNtVrJl0IM0R/8ZIIOftZT74mkze+YXMtNiFWOTGQU+htOJ2s0zDqF8rHzragM
+         tmGkiyDNZQp+AZyzlQL2lzsQfCWNE9BhzfEO0bSUMZREgy8LYGBHYzkRmzDpE7PemVBo
+         ad0wKO/8I3XU5mCkIn6P2pCCoxvf4/7I1fVsSpR3gHGnil24KC0nSqrnPqQfMnEHMPZ2
+         DsY+YjE6WozhcCYskXtSYEKFARU9XQcfExOshVWHLK+qCFXg+KdfNCZkfh+NxIoOXk2l
+         8nag==
+X-Gm-Message-State: APjAAAXyo1gD1N7ASeGaGlQJ/70NWOPNcWvZ5Ofjk5hlycZ5O+Sp834e
+        s246LGKD5A54U1/F5p2qing=
+X-Google-Smtp-Source: APXvYqxwZcfDY15BDA87kog2PnIW1s/kC9IFZFwJu8gtBOIDtptJuvKR7G46QVBVuO6F98UWNpQdYQ==
+X-Received: by 2002:a5d:4087:: with SMTP id o7mr54775869wrp.277.1560595155210;
+        Sat, 15 Jun 2019 03:39:15 -0700 (PDT)
 Received: from blackbox.darklights.net (p200300F133C20E00A9A405DFDBBC0790.dip0.t-ipconnect.de. [2003:f1:33c2:e00:a9a4:5df:dbbc:790])
-        by smtp.googlemail.com with ESMTPSA id o126sm12209031wmo.31.2019.06.15.03.39.12
+        by smtp.googlemail.com with ESMTPSA id o126sm12209031wmo.31.2019.06.15.03.39.14
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 15 Jun 2019 03:39:13 -0700 (PDT)
+        Sat, 15 Jun 2019 03:39:14 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-amlogic@lists.infradead.org, khilman@baylibre.com
 Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
         robin.murphy@arm.com, narmstrong@baylibre.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 1/4] arm64: dts: meson: g12a: x96-max: fix the Ethernet PHY reset line
-Date:   Sat, 15 Jun 2019 12:38:29 +0200
-Message-Id: <20190615103832.5126-2-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 2/4] ARM: dts: meson: switch to the generic Ethernet PHY reset bindings
+Date:   Sat, 15 Jun 2019 12:38:30 +0200
+Message-Id: <20190615103832.5126-3-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190615103832.5126-1-martin.blumenstingl@googlemail.com>
 References: <20190615103832.5126-1-martin.blumenstingl@googlemail.com>
@@ -63,68 +63,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Odroid-N2 schematics show that the following pins are used for the
-reset and interrupt lines:
-- GPIOZ_14 is the PHY interrupt line
-- GPIOZ_15 is the PHY reset line
+The snps,reset-gpio bindings are deprecated in favour of the generic
+"Ethernet PHY reset" bindings.
 
-The GPIOZ_14 and GPIOZ_15 pins are special. The datasheet describes that
-they are "3.3V input tolerant open drain (OD) output pins". This means
-the GPIO controller can drive the output LOW to reset the PHY. To
-release the reset it can only switch the pin to input mode. The output
-cannot be driven HIGH for these pins.
-This requires configuring the reset line as GPIO_OPEN_DRAIN because
-otherwise the PHY will be stuck in "reset" state (because driving the
-pin HIGH seems to result in the same signal as driving it LOW).
+Replace snps,reset-gpio from the &ethmac node with reset-gpios in the
+ethernet-phy node. The old snps,reset-active-low property is now encoded
+directly as GPIO flag inside the reset-gpios property.
 
-The reset line works together with a pull-up resistor (R143 in the
-Odroid-N2 schematics). The SoC can drive GPIOZ_14 LOW to assert the PHY
-reset. However, since the SoC can't drive the pin HIGH (to release the
-reset) we switch the mode to INPUT and let the pull-up resistor take
-care of driving the reset line HIGH.
+snps,reset-delays-us is converted to reset-assert-us and
+reset-deassert-us. reset-assert-us is the second cell from
+snps,reset-delays-us while reset-deassert-us was the third cell.
+Instead of blindly copying the old values (which seems strange since
+they gave the PHY one second to come out of reset) over this also
+updates the delays based on the datasheets:
+- RTL8211F PHY on the Odroid-C1 and MXIII-Plus needs a 10ms assert
+  delay (the datasheet mentions: "For a complete PHY reset, this pin
+  must be asserted low for at least 10ms") and a 30ms deassert delay
+  (the datasheet mentions: "Wait for a further 30ms (for internal
+  circuits settling time) before accessing the PHY register"). The
+  old settings used 10ms for assert and 1000ms for deassert.
+- IP101GR PHY on the EC-100 and MXQ needs a 10ms assert delay (the
+  datasheet mentions: "Trst | Reset period | 10ms") and a 10ms deassert
+  delay as well (the datasheet mentions: "Tclk_MII_rdy | MII/RMII clock
+  output ready after reset released | 10ms")). The old settings used
+  10ms for assert and 1000ms for deassert.
 
-Switch to GPIOZ_15 for the PHY reset line instead of using GPIOZ_14
-(which actually is the interrupt line).
-Move from the "snps" specific resets to the MDIO framework's
-reset-gpios because only the latter honors the GPIO flags.
-Use the GPIO flags (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN) to match with
-the pull-up resistor because this will:
-- drive the output LOW to reset the PHY (= active low)
-- switch the pin to INPUT mode so the pull-up will take the PHY out of
-  reset
+No functional changes intended.
 
-Fixes: 51d116557b2044 ("arm64: dts: meson-g12a-x96-max: Add Gigabit Ethernet Support")
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/meson8b-ec100.dts       | 9 +++++----
+ arch/arm/boot/dts/meson8b-mxq.dts         | 9 +++++----
+ arch/arm/boot/dts/meson8b-odroidc1.dts    | 9 +++++----
+ arch/arm/boot/dts/meson8m2-mxiii-plus.dts | 8 ++++----
+ 4 files changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
-index d37868d21114..3f9385553132 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
-@@ -285,6 +285,10 @@
- 		reg = <0>;
- 		max-speed = <1000>;
- 		eee-broken-1000t;
-+
-+		reset-assert-us = <10000>;
-+		reset-deassert-us = <30000>;
-+		reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
- 	};
- };
+diff --git a/arch/arm/boot/dts/meson8b-ec100.dts b/arch/arm/boot/dts/meson8b-ec100.dts
+index 9bf4249cb60d..96d239d8334e 100644
+--- a/arch/arm/boot/dts/meson8b-ec100.dts
++++ b/arch/arm/boot/dts/meson8b-ec100.dts
+@@ -234,10 +234,6 @@
+ 	phy-handle = <&eth_phy0>;
+ 	phy-mode = "rmii";
  
-@@ -295,9 +299,6 @@
- 	phy-mode = "rgmii";
- 	phy-handle = <&external_phy>;
- 	amlogic,tx-delay-ns = <2>;
--	snps,reset-gpio = <&gpio GPIOZ_14 0>;
+-	snps,reset-gpio = <&gpio GPIOH_4 0>;
 -	snps,reset-delays-us = <0 10000 1000000>;
 -	snps,reset-active-low;
- };
+-
+ 	mdio {
+ 		compatible = "snps,dwmac-mdio";
+ 		#address-cells = <1>;
+@@ -246,6 +242,11 @@
+ 		eth_phy0: ethernet-phy@0 {
+ 			/* IC Plus IP101A/G (0x02430c54) */
+ 			reg = <0>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <10000>;
++			reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>;
++
+ 			icplus,select-interrupt;
+ 			interrupt-parent = <&gpio_intc>;
+ 			/* GPIOH_3 */
+diff --git a/arch/arm/boot/dts/meson8b-mxq.dts b/arch/arm/boot/dts/meson8b-mxq.dts
+index ef602ab45efd..bb27b34eb346 100644
+--- a/arch/arm/boot/dts/meson8b-mxq.dts
++++ b/arch/arm/boot/dts/meson8b-mxq.dts
+@@ -91,10 +91,6 @@
+ 	phy-handle = <&eth_phy0>;
+ 	phy-mode = "rmii";
  
- &pwm_ef {
+-	snps,reset-gpio = <&gpio GPIOH_4 0>;
+-	snps,reset-delays-us = <0 10000 1000000>;
+-	snps,reset-active-low;
+-
+ 	mdio {
+ 		compatible = "snps,dwmac-mdio";
+ 		#address-cells = <1>;
+@@ -103,6 +99,11 @@
+ 		eth_phy0: ethernet-phy@0 {
+ 			/* IC Plus IP101A/G (0x02430c54) */
+ 			reg = <0>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <10000>;
++			reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>;
++
+ 			icplus,select-interrupt;
+ 			interrupt-parent = <&gpio_intc>;
+ 			/* GPIOH_3 */
+diff --git a/arch/arm/boot/dts/meson8b-odroidc1.dts b/arch/arm/boot/dts/meson8b-odroidc1.dts
+index 018695b2b83a..86c4614e0a38 100644
+--- a/arch/arm/boot/dts/meson8b-odroidc1.dts
++++ b/arch/arm/boot/dts/meson8b-odroidc1.dts
+@@ -176,10 +176,6 @@
+ &ethmac {
+ 	status = "okay";
+ 
+-	snps,reset-gpio = <&gpio GPIOH_4 GPIO_ACTIVE_HIGH>;
+-	snps,reset-active-low;
+-	snps,reset-delays-us = <0 10000 30000>;
+-
+ 	pinctrl-0 = <&eth_rgmii_pins>;
+ 	pinctrl-names = "default";
+ 
+@@ -195,6 +191,11 @@
+ 		/* Realtek RTL8211F (0x001cc916) */
+ 		eth_phy: ethernet-phy@0 {
+ 			reg = <0>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <30000>;
++			reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>;
++
+ 			interrupt-parent = <&gpio_intc>;
+ 			/* GPIOH_3 */
+ 			interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
+diff --git a/arch/arm/boot/dts/meson8m2-mxiii-plus.dts b/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
+index 59b07a55e461..d54477b1001c 100644
+--- a/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
++++ b/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
+@@ -73,10 +73,6 @@
+ 
+ 	amlogic,tx-delay-ns = <4>;
+ 
+-	snps,reset-gpio = <&gpio GPIOH_4 0>;
+-	snps,reset-delays-us = <0 10000 1000000>;
+-	snps,reset-active-low;
+-
+ 	mdio {
+ 		compatible = "snps,dwmac-mdio";
+ 		#address-cells = <1>;
+@@ -85,6 +81,10 @@
+ 		eth_phy0: ethernet-phy@0 {
+ 			/* Realtek RTL8211F (0x001cc916) */
+ 			reg = <0>;
++
++			reset-assert-us = <10000>;
++			reset-deassert-us = <30000>;
++			reset-gpios = <&gpio GPIOH_4 GPIO_ACTIVE_LOW>;
+ 		};
+ 	};
+ };
 -- 
 2.22.0
 
