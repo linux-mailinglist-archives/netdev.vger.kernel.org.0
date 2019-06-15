@@ -2,112 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6009046F6C
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF7446F76
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 12:10:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfFOKJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 06:09:55 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:54580 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726740AbfFOKJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:09:49 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g135so4678746wme.4;
-        Sat, 15 Jun 2019 03:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+2oD/T2gc6N24fqNrzj6/wc7vB4Laq1g0xwvSr2ZKbs=;
-        b=Tbn+fRxNzDPqt3dXwDOHmhvz1KRUKIeLE15UwPS7Aw07mlz4dq/T6LF2SVTNLz5mLZ
-         PyoiOmkF/joUJFS6kUJ/0/MNwgoN57I6kkVuBeqWRwohMevKvE0F+dc/FzuBAMUyJ03v
-         G8NweV2l51cLh0h8qJzK5Geqx3lDnoFEsPCKeP40L1LFRZuaIN8LHPrOhi4qaviSZvp6
-         94HWbfFXG67h7zj8SJU0KrYlQ3HXdv1/j3vkRASNTrog5v0F+YrNvVeNrAs89dV6alZ4
-         TI+WxthFrtSJ7iIYfJihpbsm66zotMRodljmY2LmrEbb64uArTJ3SjgFlzJhFZsHCgv0
-         SZ3Q==
+        id S1726917AbfFOKKF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 15 Jun 2019 06:10:05 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46329 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726893AbfFOKKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 06:10:04 -0400
+Received: by mail-ed1-f67.google.com with SMTP id d4so7371692edr.13
+        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 03:10:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+2oD/T2gc6N24fqNrzj6/wc7vB4Laq1g0xwvSr2ZKbs=;
-        b=VFHw0lndQu5+L6FEs7P9aSd1mcO7HlLsd7uN9PitwFbsoIkPQ9k1Xh/RgoTQ4ETI5v
-         VKaPr/OB2P7sb98mIxQAY3hI76SZZOTpvuLrLTrDTdJiDUd4FYSlOYkEJu/Ku25/DLD4
-         jKbLYtdJh+xi3WesGEOsLVpXJBwGuCG6j64i33c2axJqujuDUfWE+P14i8D/7h++SQyC
-         hgxzCdGBpkuDmJP3uzpOSQStztVj1i2Y6cKnc78e4vR3jxW83rCpkMT1lfqV6iYzRne0
-         t+80jJrjIupv6lPT4El5SL1RNgGe2V3CYi+zMExUZwj+Ehr006VCprImVsFdbDN2535q
-         cp5g==
-X-Gm-Message-State: APjAAAXfUeyQxnFMwp4ryj/lktxD6IbFmAY6LLB9fArYCQrZBKehFviQ
-        oWsDU7OgrdhVoEqKmyfc9/70Sr/h0Xo=
-X-Google-Smtp-Source: APXvYqyWy5DuzLQIfgqm/qwN02Z8iZMe0vr3d729+Ve1oTg2V8Q3d6yjtc0DL1CeTDaOZ2WQ3MBHCw==
-X-Received: by 2002:a1c:b6d4:: with SMTP id g203mr11100015wmf.19.1560593387236;
-        Sat, 15 Jun 2019 03:09:47 -0700 (PDT)
-Received: from blackbox.darklights.net (p200300F133C20E00A9A405DFDBBC0790.dip0.t-ipconnect.de. [2003:f1:33c2:e00:a9a4:5df:dbbc:790])
-        by smtp.googlemail.com with ESMTPSA id f2sm9270513wrq.48.2019.06.15.03.09.46
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=E5g/m2oNw0FmOnRwBHRfp/fjjyfTq1G4GJO9NWyBiak=;
+        b=Pop3jTbkpg2c9rOdgGtksEa/wSDwhAKnjSy4XqyNBWxH1ksi02x8W0ZB8UIYUh/K7z
+         vnFPhD93EZqW4LzP7MWiUnedCc9unDaCtb+TXxVs4NB/F70tFBTD1HxmwlsAkQnS5oBG
+         NVZyBlarkPYwXux28XRx9++ohEGhg5iJ0uzHt8xH+d5WlyGVSAVSC84sllkTbL5GGbeF
+         wCh+fk/9RagM3vMjxUqcgMbFbFoI1nsHQ75XHU61on+wH0fY1VtCQdSqcy+j+g+cT0lc
+         X1wUEy7l7Jaf2Mzzuf5UR9qNFM4LNEZ0YcLSGGDGA9BHKN9wOqOYvvdHg1cMuZIk/vIY
+         kv7g==
+X-Gm-Message-State: APjAAAUUA/uZqhFOmDxPEooC1sfLEYy9tnTS3ss+7fYvEGbn+cVRiHTz
+        +9hYP7/zqjqQVMfLkaVG4DQvpA==
+X-Google-Smtp-Source: APXvYqzCPAU0G5SPBb3xNUalstBRFbSLtXj+BEgB2SaVj0rv4Pog5MGdF0GDUelBpwAAa2JHfqQ8Qg==
+X-Received: by 2002:a50:8974:: with SMTP id f49mr52230644edf.95.1560593402393;
+        Sat, 15 Jun 2019 03:10:02 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id k51sm1753562edb.7.2019.06.15.03.10.01
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 15 Jun 2019 03:09:46 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH net-next v1 5/5] net: stmmac: drop the phy_reset hook from struct stmmac_mdio_bus_data
-Date:   Sat, 15 Jun 2019 12:09:32 +0200
-Message-Id: <20190615100932.27101-6-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190615100932.27101-1-martin.blumenstingl@googlemail.com>
-References: <20190615100932.27101-1-martin.blumenstingl@googlemail.com>
+        Sat, 15 Jun 2019 03:10:01 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 013981804AF; Sat, 15 Jun 2019 12:10:00 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH bpf 1/3] devmap: Fix premature entry free on destroying map
+In-Reply-To: <5f6efec8-87f8-4ac5-46ee-47788dbf1d44@iogearbox.net>
+References: <20190614082015.23336-1-toshiaki.makita1@gmail.com> <20190614082015.23336-2-toshiaki.makita1@gmail.com> <877e9octre.fsf@toke.dk> <87sgscbc5d.fsf@toke.dk> <fb895684-c863-e580-f36a-30722c480b41@gmail.com> <87muikb9ev.fsf@toke.dk> <5f6efec8-87f8-4ac5-46ee-47788dbf1d44@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 15 Jun 2019 12:10:00 +0200
+Message-ID: <87r27v9n2f.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The phy_reset hook is not set anywhere. Drop it to make
-stmmac_mdio_reset() smaller.
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 6 ------
- include/linux/stmmac.h                            | 1 -
- 2 files changed, 7 deletions(-)
+> On 06/14/2019 03:09 PM, Toke Høiland-Jørgensen wrote:
+>> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+> [...]
+>>>> Alternatively, since this entire series should probably go to stable, I
+>>>> can respin mine on top of it?
+>>>
+>>> Indeed conflict will happen, as this is for 'bpf' not 'bpf-next'.
+>>> Sorry for disturbing your work.
+>> 
+>> Oh, no worries!
+>> 
+>>> I'm also not sure how to proceed in this case.
+>> 
+>> I guess we'll leave that up to the maintainers :)
+>
+> So all three look good to me, I've applied them to bpf tree. Fixes to
+> bpf do have precedence over patches to bpf-next given they need to
+> land in the current release. I'll get bpf out later tonight and ask
+> David to merge net into net-next after that since rebase is also
+> needed for Stanislav's cgroup series. We'll then flush out bpf-next so
+> we can fast-fwd to net-next to pull in all the dependencies.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index c9454cf4f189..14aa3ee14082 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -247,7 +247,6 @@ int stmmac_mdio_reset(struct mii_bus *bus)
- 	struct net_device *ndev = bus->priv;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
- 	unsigned int mii_address = priv->hw->mii.addr;
--	struct stmmac_mdio_bus_data *data = priv->plat->mdio_bus_data;
- 
- #ifdef CONFIG_OF
- 	if (priv->device->of_node) {
-@@ -277,11 +276,6 @@ int stmmac_mdio_reset(struct mii_bus *bus)
- 	}
- #endif
- 
--	if (data->phy_reset) {
--		netdev_dbg(ndev, "stmmac_mdio_reset: calling phy_reset\n");
--		data->phy_reset(priv->plat->bsp_priv);
--	}
--
- 	/* This is a workaround for problems with the STE101P PHY.
- 	 * It doesn't complete its reset until at least one clock cycle
- 	 * on MDC, so perform a dummy mdio read. To be updated for GMAC4
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 96d97c908595..9aad16c379e7 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -92,7 +92,6 @@
- /* Platfrom data for platform device structure's platform_data field */
- 
- struct stmmac_mdio_bus_data {
--	int (*phy_reset)(void *priv);
- 	unsigned int phy_mask;
- 	int *irqs;
- 	int probed_phy_irq;
--- 
-2.22.0
+Right, I'll wait for that, then rebase my series and resubmit
 
+-Toke
