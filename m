@@ -2,49 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F32D46DA1
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7722446DA4
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbfFOBrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 21:47:03 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56910 "EHLO
+        id S1725944AbfFOBxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 21:53:02 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56966 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbfFOBrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 21:47:02 -0400
+        with ESMTP id S1725809AbfFOBxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 21:53:01 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4A7B412B05D2C;
-        Fri, 14 Jun 2019 18:47:02 -0700 (PDT)
-Date:   Fri, 14 Jun 2019 18:47:01 -0700 (PDT)
-Message-Id: <20190614.184701.104242108912142211.davem@davemloft.net>
-To:     hancock@sedsystems.ca
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH net-next] net: phy: Add more 1000BaseX support detection
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1DB9212D69F7B;
+        Fri, 14 Jun 2019 18:53:01 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 18:53:00 -0700 (PDT)
+Message-Id: <20190614.185300.694618024091547290.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     willemb@google.com, maheshb@google.com, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com
+Subject: Re: [PATCH net-next 0/8] net/packet: better behavior under DDOS
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1560290769-11858-1-git-send-email-hancock@sedsystems.ca>
-References: <1560290769-11858-1-git-send-email-hancock@sedsystems.ca>
+In-Reply-To: <20190612165233.109749-1-edumazet@google.com>
+References: <20190612165233.109749-1-edumazet@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Jun 2019 18:47:02 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Jun 2019 18:53:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Robert Hancock <hancock@sedsystems.ca>
-Date: Tue, 11 Jun 2019 16:06:09 -0600
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 12 Jun 2019 09:52:25 -0700
 
-> Commit "net: phy: Add detection of 1000BaseX link mode support" added
-> support for not filtering out 1000BaseX mode from the PHY's supported
-> modes in genphy_config_init, but we have to make a similar change in
-> genphy_read_abilities in order to actually detect it as a supported mode
-> in the first place. Add this in.
+> Using tcpdump (or other af_packet user) on a busy host can lead to
+> catastrophic consequences, because suddenly, potentially all cpus
+> are spinning on a contended spinlock.
 > 
-> Signed-off-by: Robert Hancock <hancock@sedsystems.ca>
+> Both packet_rcv() and tpacket_rcv() grab the spinlock
+> to eventually find there is no room for an additional packet.
+> 
+> This patch series align packet_rcv() and tpacket_rcv() to both
+> check if the queue is full before grabbing the spinlock.
+> 
+> If the queue is full, they both increment a new atomic counter
+> placed on a separate cache line to let readers drain the queue faster.
+> 
+> There is still false sharing on this new atomic counter,
+> we might in the future make it per cpu if there is interest.
 
-Applied.
+Series applied.
+
