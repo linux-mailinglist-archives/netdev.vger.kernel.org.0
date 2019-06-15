@@ -2,430 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4394705A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 16:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D6747098
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 17:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbfFOOKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 10:10:04 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42811 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726400AbfFOOKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 10:10:03 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D922121EBC;
-        Sat, 15 Jun 2019 10:10:02 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 15 Jun 2019 10:10:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=rYafY9OI7BTovqplsreQg6oMyvWQDcLIAzz0nxUbXXE=; b=sbvey9pV
-        GzrNEYzSZW0BILFXQj6/ObwaqykQ3Z4wXB9G0dlst6IvAJL/HgV8o3Duw8SpoiRB
-        NitRmC/VpNfGP0OEcykVaqV0GJ3+yDIxsSdpGnQlVJXF3H3yiOZ1/wpj4k9YDb2F
-        MNyozsOJYnGvymgPrydE9jKTG1HtwpPr2ytact4nqo/LL7sZk8sZytlEtMwEqC7f
-        TDOsBGK7KQuvNixoJQjeOAzULT4tN/eYkg9Co1Aln85io3xWrzSERZdI1A/JV95y
-        Dl9EuHzdtHlChp3wxwx1ygzi/r/nDqFsQdtrpkocJVdtiaAWapbR3IbaDdjo6ki7
-        3DFKvkjdz2vztA==
-X-ME-Sender: <xms:OvwEXVIn5LbIX8JEjNxDaB5HXHiICrFpgt9R7kvqByrPEWvT5FdSkg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeifedgjeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeejledrudejkedrgeefrddvudeknecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepge
-X-ME-Proxy: <xmx:OvwEXc5TeE_mxSEGVBS7shjmBk8FEd5zY00rtEBotBWdGOL8FhVF3w>
-    <xmx:OvwEXRT4D2p18KEQ8BRKdche39s1VN8c32nW0OEpbrbnk6xok46NWQ>
-    <xmx:OvwEXSEuRsGI_TNCYSfeWk6TB_751FmWEQr3k4ZNJedYBUfNZF2C3w>
-    <xmx:OvwEXfNbn5Qu3Ecg8LeZ79ZUXlc92FKfrPiV_BGiC0Qc8PZj2M6nwQ>
-Received: from splinter.mtl.com (bzq-79-178-43-218.red.bezeqint.net [79.178.43.218])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 40E99380085;
-        Sat, 15 Jun 2019 10:09:58 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@gmail.com, jiri@mellanox.com,
-        alexpe@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 17/17] selftests: mlxsw: Add a test for FIB offload indication
-Date:   Sat, 15 Jun 2019 17:07:51 +0300
-Message-Id: <20190615140751.17661-18-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190615140751.17661-1-idosch@idosch.org>
-References: <20190615140751.17661-1-idosch@idosch.org>
+        id S1726660AbfFOPEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 11:04:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43854 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725944AbfFOPEg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Jun 2019 11:04:36 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8F0B059451;
+        Sat, 15 Jun 2019 15:04:34 +0000 (UTC)
+Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2BFFA7C5E3;
+        Sat, 15 Jun 2019 15:04:33 +0000 (UTC)
+Message-ID: <348d854d2717899906ad8779270449a06b5701de.camel@redhat.com>
+Subject: Re: [PATCH 2/2] ipoib: show VF broadcast address
+From:   Doug Ledford <dledford@redhat.com>
+To:     Denis Kirjanov <kirjanov@gmail.com>
+Cc:     Denis Kirjanov <kda@linux-powerpc.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mkubecek@suse.cz
+Date:   Sat, 15 Jun 2019 11:04:30 -0400
+In-Reply-To: <CAHj3AVny9PijUD7_bWM2-fDNF9n4YZ5xgnG-_O9rZhr1cNVicw@mail.gmail.com>
+References: <20190614133249.18308-1-dkirjanov@suse.com>
+         <20190614133249.18308-2-dkirjanov@suse.com>
+         <f91615fe4a883ccb6490aec11ef4ae64cdd9e494.camel@redhat.com>
+         <CAHj3AVny9PijUD7_bWM2-fDNF9n4YZ5xgnG-_O9rZhr1cNVicw@mail.gmail.com>
+Organization: Red Hat, Inc.
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-VLNM8+Kt3BokOZUjxe4Y"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Sat, 15 Jun 2019 15:04:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
 
-Test that the offload indication for unicast routes is correctly set in
-different scenarios. IPv4 support will be added in the future.
+--=-VLNM8+Kt3BokOZUjxe4Y
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/fib_offload.sh          | 349 ++++++++++++++++++
- 1 file changed, 349 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
+On Sat, 2019-06-15 at 11:49 +0300, Denis Kirjanov wrote:
+> On 6/14/19, Doug Ledford <dledford@redhat.com> wrote:
+> > On Fri, 2019-06-14 at 15:32 +0200, Denis Kirjanov wrote:
+> > > in IPoIB case we can't see a VF broadcast address for but
+> > > can see for PF
+> > >=20
+> > > Before:
+> > > 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc
+> > > pfifo_fast
+> > > state UP mode DEFAULT group default qlen 256
+> > >     link/infiniband
+> > > 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> > > 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+> > >     vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state
+> > > disable,
+> > > trust off, query_rss off
+> > > ...
+> >=20
+> > The above Before: output should be used as the After: portion of
+> > the
+> > previous commit message.  The previos commit does not fully resolve
+> > the
+> > problem, but yet the commit message acts as though it does.
+> >=20
+> > > After:
+> > > 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc
+> > > pfifo_fast
+> > > state UP mode DEFAULT group default qlen 256
+> > >     link/infiniband
+> > > 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> > > 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+> > >     vf 0     link/infiniband
+> > > 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> > > 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
+> > > spoof
+> > > checking off, link-state disable, trust off, query_rss off
+> >=20
+> > Ok, I get why the After: should have a valid broadcast.  What I
+> > don't
+> > get is why the Before: shows a MAC and the After: shows a
+> > link/infiniband?  What change in this patch is responsible for that
+> > difference?  I honestly expect, by reading this patch, that you
+> > would
+> > have a MAC and Broadcast that look like Ethernet, not that the full
+> > issue would be resolved.
+>=20
+> Hi Doug,
+> it's the patch for iproute2 that I'm going to send
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh b/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
-new file mode 100755
-index 000000000000..e99ae500f387
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
-@@ -0,0 +1,349 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test unicast FIB offload indication.
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	ipv6_route_add
-+	ipv6_route_replace
-+	ipv6_route_nexthop_group_share
-+	ipv6_route_rate
-+"
-+NUM_NETIFS=4
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+tor1_create()
-+{
-+	simple_if_init $tor1_p1 2001:db8:1::2/128 2001:db8:1::3/128
-+}
-+
-+tor1_destroy()
-+{
-+	simple_if_fini $tor1_p1 2001:db8:1::2/128 2001:db8:1::3/128
-+}
-+
-+tor2_create()
-+{
-+	simple_if_init $tor2_p1 2001:db8:2::2/128 2001:db8:2::3/128
-+}
-+
-+tor2_destroy()
-+{
-+	simple_if_fini $tor2_p1 2001:db8:2::2/128 2001:db8:2::3/128
-+}
-+
-+spine_create()
-+{
-+	ip link set dev $spine_p1 up
-+	ip link set dev $spine_p2 up
-+
-+	__addr_add_del $spine_p1 add 2001:db8:1::1/64
-+	__addr_add_del $spine_p2 add 2001:db8:2::1/64
-+}
-+
-+spine_destroy()
-+{
-+	__addr_add_del $spine_p2 del 2001:db8:2::1/64
-+	__addr_add_del $spine_p1 del 2001:db8:1::1/64
-+
-+	ip link set dev $spine_p2 down
-+	ip link set dev $spine_p1 down
-+}
-+
-+ipv6_offload_check()
-+{
-+	local pfx="$1"; shift
-+	local expected_num=$1; shift
-+	local num
-+
-+	# Try to avoid races with route offload
-+	sleep .1
-+
-+	num=$(ip -6 route show match ${pfx} | grep "offload" | wc -l)
-+
-+	if [ $num -eq $expected_num ]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
-+ipv6_route_add_prefix()
-+{
-+	RET=0
-+
-+	# Add a prefix route and check that it is offloaded.
-+	ip -6 route add 2001:db8:3::/64 dev $spine_p1 metric 100
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 1
-+	check_err $? "prefix route not offloaded"
-+
-+	# Append an identical prefix route with an higher metric and check that
-+	# offload indication did not change.
-+	ip -6 route append 2001:db8:3::/64 dev $spine_p1 metric 200
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 1
-+	check_err $? "lowest metric not offloaded after append"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Prepend an identical prefix route with lower metric and check that
-+	# it is offloaded and the others are not.
-+	ip -6 route append 2001:db8:3::/64 dev $spine_p1 metric 10
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 10" 1
-+	check_err $? "lowest metric not offloaded after prepend"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 0
-+	check_err $? "mid metric offloaded when should not"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Delete the routes and add the same route with a different nexthop
-+	# device. Check that it is offloaded.
-+	ip -6 route flush 2001:db8:3::/64 dev $spine_p1
-+	ip -6 route add 2001:db8:3::/64 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p2" 1
-+
-+	log_test "IPv6 prefix route add"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_add_mpath()
-+{
-+	RET=0
-+
-+	# Add a multipath route and check that it is offloaded.
-+	ip -6 route add 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded when should"
-+
-+	# Append another nexthop and check that it is offloaded as well.
-+	ip -6 route append 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 3
-+	check_err $? "appended nexthop not offloaded when should"
-+
-+	# Mimic route replace by removing the route and adding it back with
-+	# only two nexthops.
-+	ip -6 route del 2001:db8:3::/64
-+	ip -6 route add 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after delete & add"
-+
-+	# Append a nexthop with an higher metric and check that the offload
-+	# indication did not change.
-+	ip -6 route append 2001:db8:3::/64 metric 200 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "lowest metric not offloaded after append"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Prepend a nexthop with a lower metric and check that it is offloaded
-+	# and the others are not.
-+	ip -6 route append 2001:db8:3::/64 metric 10 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 10" 1
-+	check_err $? "lowest metric not offloaded after prepend"
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 0
-+	check_err $? "mid metric offloaded when should not"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	log_test "IPv6 multipath route add"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_add()
-+{
-+	ipv6_route_add_prefix
-+	ipv6_route_add_mpath
-+}
-+
-+ipv6_route_replace()
-+{
-+	RET=0
-+
-+	# Replace prefix route with prefix route.
-+	ip -6 route add 2001:db8:3::/64 metric 100 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 1
-+	check_err $? "prefix route not offloaded when should"
-+	ip -6 route replace 2001:db8:3::/64 metric 100 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 1
-+	check_err $? "prefix route not offloaded after replace"
-+
-+	# Replace prefix route with multipath route.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after replace"
-+
-+	# Replace multipath route with prefix route. A prefix route cannot
-+	# replace a multipath route, so it is appended.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100 dev $spine_p1" 0
-+	check_err $? "prefix route offloaded after 'replacing' multipath route"
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after being 'replaced' by prefix route"
-+
-+	# Replace multipath route with multipath route.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1 \
-+		nexthop via 2001:db8:2::3 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after replacing multipath route"
-+
-+	# Replace a non-existing multipath route with a multipath route and
-+	# check that it is appended and not offloaded.
-+	ip -6 route replace 2001:db8:3::/64 metric 200 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1 \
-+		nexthop via 2001:db8:2::3 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after non-existing route was 'replaced'"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "multipath route offloaded after 'replacing' non-existing route"
-+
-+	log_test "IPv6 route replace"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_nexthop_group_share()
-+{
-+	RET=0
-+
-+	# The driver consolidates identical nexthop groups in order to reduce
-+	# the resource usage in its adjacency table. Check that the deletion
-+	# of one multipath route using the group does not affect the other.
-+	ip -6 route add 2001:db8:3::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ip -6 route add 2001:db8:4::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64" 2
-+	check_err $? "multipath route not offloaded when should"
-+	ipv6_offload_check "2001:db8:4::/64" 2
-+	check_err $? "multipath route not offloaded when should"
-+	ip -6 route del 2001:db8:3::/64
-+	ipv6_offload_check "2001:db8:4::/64" 2
-+	check_err $? "multipath route not offloaded after deletion of route sharing the nexthop group"
-+
-+	# Check that after unsharing a nexthop group the routes are still
-+	# marked as offloaded.
-+	ip -6 route add 2001:db8:3::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ip -6 route del 2001:db8:4::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1
-+	ipv6_offload_check "2001:db8:4::/64" 1
-+	check_err $? "singlepath route not offloaded after unsharing the nexthop group"
-+	ipv6_offload_check "2001:db8:3::/64" 2
-+	check_err $? "multipath route not offloaded after unsharing the nexthop group"
-+
-+	log_test "IPv6 nexthop group sharing"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+	ip -6 route flush 2001:db8:4::/64
-+}
-+
-+ipv6_route_rate()
-+{
-+	local batch_dir=$(mktemp -d)
-+	local num_rts=$((40 * 1024))
-+	local num_nhs=16
-+	local total
-+	local start
-+	local diff
-+	local end
-+	local nhs
-+	local i
-+
-+	RET=0
-+
-+	# Prepare 40K /64 multipath routes with 16 nexthops each and check how
-+	# long it takes to add them. A limit of 60 seconds is set. It is much
-+	# higher than insertion should take and meant to flag a serious
-+	# regression.
-+	total=$((nums_nhs * num_rts))
-+
-+	for i in $(seq 1 $num_nhs); do
-+		ip -6 address add 2001:db8:1::10:$i/128 dev $tor1_p1
-+		nexthops+=" nexthop via 2001:db8:1::10:$i dev $spine_p1"
-+	done
-+
-+	for i in $(seq 1 $num_rts); do
-+		echo "route add 2001:db8:8:$(printf "%x" $i)::/64$nexthops" \
-+			>> $batch_dir/add.batch
-+		echo "route del 2001:db8:8:$(printf "%x" $i)::/64$nexthops" \
-+			>> $batch_dir/del.batch
-+	done
-+
-+	start=$(date +%s.%N)
-+
-+	ip -batch $batch_dir/add.batch
-+	count=$(ip -6 route show | grep offload | wc -l)
-+	while [ $count -lt $total ]; do
-+		sleep .01
-+		count=$(ip -6 route show | grep offload | wc -l)
-+	done
-+
-+	end=$(date +%s.%N)
-+
-+	diff=$(echo "$end - $start" | bc -l)
-+	test "$(echo "$diff > 60" | bc -l)" -eq 0
-+	check_err $? "route insertion took too long"
-+	log_info "inserted $num_rts routes in $diff seconds"
-+
-+	log_test "IPv6 routes insertion rate"
-+
-+	ip -batch $batch_dir/del.batch
-+	for i in $(seq 1 $num_nhs); do
-+		ip -6 address del 2001:db8:1::10:$i/128 dev $tor1_p1
-+	done
-+	rm -rf $batch_dir
-+}
-+
-+setup_prepare()
-+{
-+	spine_p1=${NETIFS[p1]}
-+	tor1_p1=${NETIFS[p2]}
-+
-+	spine_p2=${NETIFS[p3]}
-+	tor2_p1=${NETIFS[p4]}
-+
-+	vrf_prepare
-+	forwarding_enable
-+
-+	tor1_create
-+	tor2_create
-+	spine_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	spine_destroy
-+	tor2_destroy
-+	tor1_destroy
-+
-+	forwarding_restore
-+	vrf_cleanup
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.20.1
+Ahh, ok, then please mention that in the commit message or else the
+commit message and the patch won't quite make sense together.  Maybe do
+a before: and after: without the iproute2 patch, then a after-with-
+userspace-fix: that is the final result and mention the fix to iproute2
+to print out the right link layer and size of address/broadcast.
+
+> > > v1->v2: add the IFLA_VF_BROADCAST constant
+> > > v2->v3: put IFLA_VF_BROADCAST at the end
+> > > to avoid KABI breakage and set NLA_REJECT
+> > > dev_setlink
+> > >=20
+> > > Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> > > ---
+> > >  include/uapi/linux/if_link.h | 5 +++++
+> > >  net/core/rtnetlink.c         | 5 +++++
+> > >  2 files changed, 10 insertions(+)
+> > >=20
+> > > diff --git a/include/uapi/linux/if_link.h
+> > > b/include/uapi/linux/if_link.h
+> > > index 5b225ff63b48..6f75bda2c2d7 100644
+> > > --- a/include/uapi/linux/if_link.h
+> > > +++ b/include/uapi/linux/if_link.h
+> > > @@ -694,6 +694,7 @@ enum {
+> > >  	IFLA_VF_IB_NODE_GUID,	/* VF Infiniband node GUID */
+> > >  	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
+> > >  	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for
+> > > QinQ */
+> > > +	IFLA_VF_BROADCAST,	/* VF broadcast */
+> > >  	__IFLA_VF_MAX,
+> > >  };
+> > >=20
+> > > @@ -704,6 +705,10 @@ struct ifla_vf_mac {
+> > >  	__u8 mac[32]; /* MAX_ADDR_LEN */
+> > >  };
+> > >=20
+> > > +struct ifla_vf_broadcast {
+> > > +	__u8 broadcast[32];
+> > > +};
+> > > +
+> > >  struct ifla_vf_vlan {
+> > >  	__u32 vf;
+> > >  	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
+> > > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> > > index cec60583931f..8ac81630ab5c 100644
+> > > --- a/net/core/rtnetlink.c
+> > > +++ b/net/core/rtnetlink.c
+> > > @@ -908,6 +908,7 @@ static inline int rtnl_vfinfo_size(const
+> > > struct
+> > > net_device *dev,
+> > >  		size +=3D num_vfs *
+> > >  			(nla_total_size(0) +
+> > >  			 nla_total_size(sizeof(struct ifla_vf_mac)) +
+> > > +			 nla_total_size(sizeof(struct
+> > > ifla_vf_broadcast)) +
+> > >  			 nla_total_size(sizeof(struct ifla_vf_vlan)) +
+> > >  			 nla_total_size(0) + /* nest IFLA_VF_VLAN_LIST
+> > > */
+> > >  			 nla_total_size(MAX_VLAN_LIST_LEN *
+> > > @@ -1197,6 +1198,7 @@ static noinline_for_stack int
+> > > rtnl_fill_vfinfo(struct sk_buff *skb,
+> > >  	struct ifla_vf_vlan vf_vlan;
+> > >  	struct ifla_vf_rate vf_rate;
+> > >  	struct ifla_vf_mac vf_mac;
+> > > +	struct ifla_vf_broadcast vf_broadcast;
+> > >  	struct ifla_vf_info ivi;
+> > >=20
+> > >  	memset(&ivi, 0, sizeof(ivi));
+> > > @@ -1231,6 +1233,7 @@ static noinline_for_stack int
+> > > rtnl_fill_vfinfo(struct sk_buff *skb,
+> > >  		vf_trust.vf =3D ivi.vf;
+> > >=20
+> > >  	memcpy(vf_mac.mac, ivi.mac, sizeof(ivi.mac));
+> > > +	memcpy(vf_broadcast.broadcast, dev->broadcast, dev->addr_len);
+> > >  	vf_vlan.vlan =3D ivi.vlan;
+> > >  	vf_vlan.qos =3D ivi.qos;
+> > >  	vf_vlan_info.vlan =3D ivi.vlan;
+> > > @@ -1247,6 +1250,7 @@ static noinline_for_stack int
+> > > rtnl_fill_vfinfo(struct sk_buff *skb,
+> > >  	if (!vf)
+> > >  		goto nla_put_vfinfo_failure;
+> > >  	if (nla_put(skb, IFLA_VF_MAC, sizeof(vf_mac), &vf_mac) ||
+> > > +	    nla_put(skb, IFLA_VF_BROADCAST, sizeof(vf_broadcast),
+> > > &vf_broadcast) ||
+> > >  	    nla_put(skb, IFLA_VF_VLAN, sizeof(vf_vlan), &vf_vlan) ||
+> > >  	    nla_put(skb, IFLA_VF_RATE, sizeof(vf_rate),
+> > >  		    &vf_rate) ||
+> > > @@ -1753,6 +1757,7 @@ static const struct nla_policy
+> > > ifla_info_policy[IFLA_INFO_MAX+1] =3D {
+> > >=20
+> > >  static const struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] =3D {
+> > >  	[IFLA_VF_MAC]		=3D { .len =3D sizeof(struct ifla_vf_mac)
+> > > },
+> > > +	[IFLA_VF_BROADCAST]	=3D { .type =3D NLA_REJECT },
+> > >  	[IFLA_VF_VLAN]		=3D { .len =3D sizeof(struct
+> > > ifla_vf_vlan) },
+> > >  	[IFLA_VF_VLAN_LIST]     =3D { .type =3D NLA_NESTED },
+> > >  	[IFLA_VF_TX_RATE]	=3D { .len =3D sizeof(struct ifla_vf_tx_rate)
+> > > },
+> >=20
+> > --
+> > Doug Ledford <dledford@redhat.com>
+> >     GPG KeyID: B826A3330E572FDD
+> >     Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57
+> > 2FDD
+> >=20
+>=20
+>=20
+
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57
+2FDD
+
+--=-VLNM8+Kt3BokOZUjxe4Y
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl0FCP4ACgkQuCajMw5X
+L90jxQ//ZmDmaE0Zwa1LEJDfgNHOz4QPU4vszfGyKI7PxZEp3vg2DzChw0i3C0R/
+MLKfUHNIEkn13XV4wxyQn7reNOAN0en3kcygUXd5RPzerxFX8FVbREi4FOtE7riN
+r610Qp3uzKeJkhJHiBXxYj7i1jwyoT2jDKYc3SoY34TtjFQAV1m36sxrzIrE/zyU
+6fjK3G7jItQ2dlfKCFG8gtBjKPQEuX2PcnYyGZ2wIgJ1Gn5z2rZkRQIy4cqCokrU
+8EP7nytEyOIAhL9UrQJTDhkkNjrz83X/IVmRLckKmjOKtPuVg/g8Trs4Ja9uvmO5
+93ooqhGzaF0uSGVfTp/WSaNWhiGqZYaW74Jwu9Dz14DQzDkYK4uZR3lvsvyErHhH
+Lnp+lQMBqEduw63Q6yCG0/PwZRNqKpnz88FpIvf2L+ubpHaeticQD0g7FUFidIF5
+tIi0m4ntukMbcbTgPLJ+hWb6LxgW9gjCXUeq7AcEt+offatpdItg2gNpCPXk7/P9
+fnr52Wmgeetvhnte/qnpz3QbskiIMTH45z7OAcZKm0+NQ2Z1C4xGvsCwk6ccO7kV
+2iUo2CEsuOFRGa8BjOQ42MVuGGco1ddGfhHE28LelcRAwY29eedMAo1O5IbNcoxE
+8v7KHAzEwpR33uTuYmeRmUMbUo+HKSF43caIIQ4HgoYI0U+331s=
+=QyNF
+-----END PGP SIGNATURE-----
+
+--=-VLNM8+Kt3BokOZUjxe4Y--
 
