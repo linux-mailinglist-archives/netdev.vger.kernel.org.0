@@ -2,178 +2,314 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D6547205
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 22:26:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9228A47208
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 22:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfFOU0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 16:26:00 -0400
-Received: from mail-io1-f49.google.com ([209.85.166.49]:38744 "EHLO
-        mail-io1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfFOUZ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 16:25:59 -0400
-Received: by mail-io1-f49.google.com with SMTP id d12so5235279iod.5
-        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 13:25:59 -0700 (PDT)
+        id S1726936AbfFOU0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 16:26:07 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37699 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726490AbfFOU0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 16:26:07 -0400
+Received: by mail-qt1-f194.google.com with SMTP id y57so6581688qtk.4;
+        Sat, 15 Jun 2019 13:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=S/i4Du4fuKRLTLc/3rUKIe9r7Kic1xy01Mqy1CmOKf8=;
-        b=yT8tu5R3X6eEu3ubgi/L60FQSBH63zHtPfk4r5K8OYPEkFFz1wdi9IhGkn2bnz1Me8
-         ry3B7Pvmw99gDwkhlYwGr/5NN2jC41/BQGd9Di/slZP3VaArvml9LUa4lgKRKLfqaGBQ
-         MjirgcB5COBV3iWweq7IyH+cy4G03bLa2LFUOujPKOMHvxUC6kqmsWBSrlS/St5OkXgU
-         WThnQiC2bSzL8ZKtyRudaJhuyTMIpC2YwBXDP6yF3IhVSC8NYXTYE1ooGyQyZRrnDeo+
-         0TjlcBPG7lBZ6fOX1caye7GySCYN7pT2RDg+Bud9vIZoJxDAjrN0bREE1FgOyvAPdw/a
-         5/gg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tztss1Atv+Qv/wnnZUDfxaVfbZCH7GTnWYFuwVOsx1o=;
+        b=HkuPypsy9bzw0HTYQpkur8CbqO3h9mMXwqmb+kL0AnKP+DFhIfspOtT9uq2dew61+o
+         /Lxen/sNUexp2Cw5KrcJLw9IG95KQRP0/oWuHvcQg2rKB3MNFqQSSMhC2+adkbEizW3h
+         H/wERFRn/DcmxvG8Sh068iiUUJ/5014ipnCHPE4otfid7UEXT+dcV8KNRCiqwzXfYK/A
+         pKAjVMtckFXN1L2VhJT0Fvtcr8/oIKIgGIS17Ykqi8fIUZRNuZA8mJHcejqw4VtECYVW
+         GhxhJQkXHgpySJDMeBw4dCmJLjWV7pwYdh3o7xsXoqOiWEGyYtWgokL3ucUJro5lOvSB
+         E+mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=S/i4Du4fuKRLTLc/3rUKIe9r7Kic1xy01Mqy1CmOKf8=;
-        b=sRfW2QUyTHDt95mr9tJbR/4VDf3WuQedHEKhuFBjW24lR2CqYGEH65khEnIZ+NLXu0
-         vQfB5O72iJAV+xBRF6wHwESIHNugwE/KV9IQzJxaG6XVsKgucMsccjADKaHqoBZ8OdFc
-         wyaGlkxbW3qYcd/zRPbVkKcjgPcDrXcGF/V0PCVNv0NE31LwlvcN/iYgUgayQOZ6CIhR
-         8SuE2q+eoNBAMUWyPAfWwhOEY0rldNW17qGLF7BHcyP+aDk6kUnY/U5IfPhRsju7VJk3
-         8m6jXc6LhpENDoNRu5UoZyJ+eo8gAAxhLAE2yFjIKiFAOPYQp//6xdYTMgBtQuvi48xG
-         fkPg==
-X-Gm-Message-State: APjAAAXIka8L+kXxP4YIaIC6jMA/IwwH9Vwu+4d0/QHFGrwZsLE9lfi7
-        bunsh5uJG2txumkrQ9iuhlVokg==
-X-Google-Smtp-Source: APXvYqxC4qcjA6wO0rD3WVbrUC+dKmebFDRihiP0+yXdMnkLlJwUHcN6glRX0mgS/0kvzuNhFvEr3w==
-X-Received: by 2002:a6b:2c96:: with SMTP id s144mr51791630ios.57.1560630358919;
-        Sat, 15 Jun 2019 13:25:58 -0700 (PDT)
-Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id h18sm5598081iob.80.2019.06.15.13.25.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 15 Jun 2019 13:25:58 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next 1/1] tc-tests: updated skbedit tests
-Date:   Sat, 15 Jun 2019 16:25:50 -0400
-Message-Id: <1560630350-23799-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tztss1Atv+Qv/wnnZUDfxaVfbZCH7GTnWYFuwVOsx1o=;
+        b=QKfG/NS8h1MMs99EXCs63SquTgeQCcQDtBlGFOuKcFZi8MO1AWtJUWhgZ6+id7tsiL
+         YAVBr0PujGh4+QCVKAtP82tXkPHXdDtUyACwOgArZfwduuIRQ4NxBvg/fyhOBy9ersns
+         0K0ZAXj8HSDC7Ijnfyd8/sSgM38OHocxIHFNm6gRh4G9F3JtH6pnpPoAZGafUEvwq3Ok
+         +O1F1DMyo1dNMbAjroWgr86YapMcGCnz8HBNjpoNoVWZRZDq1aHjem9zNefTfvvGI/1I
+         pe5fETVA4HVdGKktBM8MuK/9p5f339loAleip0BgqD2H+NMBeZHd22/++163IC/GT5KV
+         c87A==
+X-Gm-Message-State: APjAAAUXiCz8OsM8V0ZKelYdzMb+dqoZl50qxeIJEv/7+EavhDE4aJkK
+        iVOrhgyM0DfhPudQNGc7qi9c7vxB1N7xuitIfhk=
+X-Google-Smtp-Source: APXvYqySo8VvdQwuHVD9Sk3pzgbLTqImqeVyXdsKz/AVJYfNMZdUtexXZUqM5TH43XSLg9YaCc2IYQEpPSPayS6cdNM=
+X-Received: by 2002:a0c:c68d:: with SMTP id d13mr14322637qvj.145.1560630365877;
+ Sat, 15 Jun 2019 13:26:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190611044747.44839-1-andriin@fb.com> <20190611044747.44839-3-andriin@fb.com>
+In-Reply-To: <20190611044747.44839-3-andriin@fb.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Sat, 15 Jun 2019 13:25:54 -0700
+Message-ID: <CAPhsuW6kAN=gMjtXiAJazDFTszuq4xE-9OQTP_GhDX2cxym0NQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/8] libbpf: extract BTF loading and simplify ELF
+ parsing logic
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Added index upper bound test case
-- Added mark upper bound test case
-- Re-worded descriptions to few cases for clarity
+On Mon, Jun 10, 2019 at 9:49 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> As a preparation for adding BTF-based BPF map loading, extract .BTF and
+> .BTF.ext loading logic. Also simplify error handling in
+> bpf_object__elf_collect() by returning early, as there is no common
+> clean up to be done.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 137 ++++++++++++++++++++++-------------------
+>  1 file changed, 75 insertions(+), 62 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ba89d9727137..9e39a0a33aeb 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -1078,6 +1078,58 @@ static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
+>         }
+>  }
+>
+> +static int bpf_object__load_btf(struct bpf_object *obj,
+> +                               Elf_Data *btf_data,
+> +                               Elf_Data *btf_ext_data)
+> +{
+> +       int err = 0;
+> +
+> +       if (btf_data) {
+> +               obj->btf = btf__new(btf_data->d_buf, btf_data->d_size);
+> +               if (IS_ERR(obj->btf)) {
+> +                       pr_warning("Error loading ELF section %s: %d.\n",
+> +                                  BTF_ELF_SEC, err);
+> +                       goto out;
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- .../tc-testing/tc-tests/actions/skbedit.json       | 62 ++++++++++++++++++----
- 1 file changed, 53 insertions(+), 9 deletions(-)
+If we goto out here, we will return 0.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-index ecd96eda7f6a..45e7e89928a5 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/skbedit.json
-@@ -24,8 +24,32 @@
-         ]
-     },
-     {
-+        "id": "c8cf",
-+        "name": "Add skbedit action with 32-bit maximum mark",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 4294967295 pipe index 1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions get action skbedit index 1",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 4294967295.*pipe.*index 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action skbedit"
-+        ]
-+    },
-+    {
-         "id": "407b",
--        "name": "Add skbedit action with invalid mark",
-+        "name": "Add skbedit action with mark exceeding 32-bit maximum",
-         "category": [
-             "actions",
-             "skbedit"
-@@ -43,9 +67,7 @@
-         "verifyCmd": "$TC actions list action skbedit",
-         "matchPattern": "action order [0-9]*:  skbedit mark",
-         "matchCount": "0",
--        "teardown": [
--            "$TC actions flush action skbedit"
--        ]
-+        "teardown": []
-     },
-     {
-         "id": "081d",
-@@ -121,7 +143,7 @@
-     },
-     {
-         "id": "985c",
--        "name": "Add skbedit action with invalid queue_mapping",
-+        "name": "Add skbedit action with queue_mapping exceeding 16-bit maximum",
-         "category": [
-             "actions",
-             "skbedit"
-@@ -413,7 +435,7 @@
-     },
-     {
-         "id": "a6d6",
--        "name": "Add skbedit action with index",
-+        "name": "Add skbedit action with index at 32-bit maximum",
-         "category": [
-             "actions",
-             "skbedit"
-@@ -426,16 +448,38 @@
-                 255
-             ]
-         ],
--        "cmdUnderTest": "$TC actions add action skbedit mark 808 index 4040404040",
-+        "cmdUnderTest": "$TC actions add action skbedit mark 808 index 4294967295",
-         "expExitCode": "0",
--        "verifyCmd": "$TC actions list action skbedit",
--        "matchPattern": "index 4040404040",
-+        "verifyCmd": "$TC actions get action skbedit index 4294967295",
-+        "matchPattern": "action order [0-9]*: skbedit  mark 808.*index 4294967295",
-         "matchCount": "1",
-         "teardown": [
-             "$TC actions flush action skbedit"
-         ]
-     },
-     {
-+        "id": "f0f4",
-+        "name": "Add skbedit action with index exceeding 32-bit maximum",
-+        "category": [
-+            "actions",
-+            "skbedit"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action skbedit",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action skbedit mark 808 pass index 4294967297",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC actions get action skbedit index 4294967297",
-+        "matchPattern": "action order [0-9]*:.*skbedit.*mark 808.*pass.*index 4294967297",
-+        "matchCount": "0",
-+        "teardown": []
-+    },
-+    {
-         "id": "38f3",
-         "name": "Delete skbedit action",
-         "category": [
--- 
-2.7.4
+> +               }
+> +               err = btf__finalize_data(obj, obj->btf);
+> +               if (err) {
+> +                       pr_warning("Error finalizing %s: %d.\n",
+> +                                  BTF_ELF_SEC, err);
+> +                       goto out;
+> +               }
+> +               bpf_object__sanitize_btf(obj);
+> +               err = btf__load(obj->btf);
+> +               if (err) {
+> +                       pr_warning("Error loading %s into kernel: %d.\n",
+> +                                  BTF_ELF_SEC, err);
+> +                       goto out;
+> +               }
+> +       }
+> +       if (btf_ext_data) {
+> +               if (!obj->btf) {
+> +                       pr_debug("Ignore ELF section %s because its depending ELF section %s is not found.\n",
+> +                                BTF_EXT_ELF_SEC, BTF_ELF_SEC);
+> +                       goto out;
 
+We will also return 0 when goto out here.
+
+> +               }
+> +               obj->btf_ext = btf_ext__new(btf_ext_data->d_buf,
+> +                                           btf_ext_data->d_size);
+> +               if (IS_ERR(obj->btf_ext)) {
+> +                       pr_warning("Error loading ELF section %s: %ld. Ignored and continue.\n",
+> +                                  BTF_EXT_ELF_SEC, PTR_ERR(obj->btf_ext));
+> +                       obj->btf_ext = NULL;
+> +                       goto out;
+And, here. And we will not free obj->btf.
+
+> +               }
+> +               bpf_object__sanitize_btf_ext(obj);
+> +       }
+> +out:
+> +       if (err || IS_ERR(obj->btf)) {
+> +               if (!IS_ERR_OR_NULL(obj->btf))
+> +                       btf__free(obj->btf);
+> +               obj->btf = NULL;
+> +       }
+> +       return 0;
+> +}
+> +
+>  static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>  {
+>         Elf *elf = obj->efile.elf;
+> @@ -1102,24 +1154,21 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>                 if (gelf_getshdr(scn, &sh) != &sh) {
+>                         pr_warning("failed to get section(%d) header from %s\n",
+>                                    idx, obj->path);
+> -                       err = -LIBBPF_ERRNO__FORMAT;
+> -                       goto out;
+> +                       return -LIBBPF_ERRNO__FORMAT;
+>                 }
+>
+>                 name = elf_strptr(elf, ep->e_shstrndx, sh.sh_name);
+>                 if (!name) {
+>                         pr_warning("failed to get section(%d) name from %s\n",
+>                                    idx, obj->path);
+> -                       err = -LIBBPF_ERRNO__FORMAT;
+> -                       goto out;
+> +                       return -LIBBPF_ERRNO__FORMAT;
+>                 }
+>
+>                 data = elf_getdata(scn, 0);
+>                 if (!data) {
+>                         pr_warning("failed to get section(%d) data from %s(%s)\n",
+>                                    idx, name, obj->path);
+> -                       err = -LIBBPF_ERRNO__FORMAT;
+> -                       goto out;
+> +                       return -LIBBPF_ERRNO__FORMAT;
+>                 }
+>                 pr_debug("section(%d) %s, size %ld, link %d, flags %lx, type=%d\n",
+>                          idx, name, (unsigned long)data->d_size,
+> @@ -1130,10 +1179,14 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>                         err = bpf_object__init_license(obj,
+>                                                        data->d_buf,
+>                                                        data->d_size);
+> +                       if (err)
+> +                               return err;
+>                 } else if (strcmp(name, "version") == 0) {
+>                         err = bpf_object__init_kversion(obj,
+>                                                         data->d_buf,
+>                                                         data->d_size);
+> +                       if (err)
+> +                               return err;
+>                 } else if (strcmp(name, "maps") == 0) {
+>                         obj->efile.maps_shndx = idx;
+>                 } else if (strcmp(name, BTF_ELF_SEC) == 0) {
+> @@ -1144,11 +1197,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>                         if (obj->efile.symbols) {
+>                                 pr_warning("bpf: multiple SYMTAB in %s\n",
+>                                            obj->path);
+> -                               err = -LIBBPF_ERRNO__FORMAT;
+> -                       } else {
+> -                               obj->efile.symbols = data;
+> -                               obj->efile.strtabidx = sh.sh_link;
+> +                               return -LIBBPF_ERRNO__FORMAT;
+>                         }
+> +                       obj->efile.symbols = data;
+> +                       obj->efile.strtabidx = sh.sh_link;
+>                 } else if (sh.sh_type == SHT_PROGBITS && data->d_size > 0) {
+>                         if (sh.sh_flags & SHF_EXECINSTR) {
+>                                 if (strcmp(name, ".text") == 0)
+> @@ -1162,6 +1214,7 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>
+>                                         pr_warning("failed to alloc program %s (%s): %s",
+>                                                    name, obj->path, cp);
+> +                                       return err;
+>                                 }
+>                         } else if (strcmp(name, ".data") == 0) {
+>                                 obj->efile.data = data;
+> @@ -1173,8 +1226,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>                                 pr_debug("skip section(%d) %s\n", idx, name);
+>                         }
+>                 } else if (sh.sh_type == SHT_REL) {
+> +                       int nr_reloc = obj->efile.nr_reloc;
+>                         void *reloc = obj->efile.reloc;
+> -                       int nr_reloc = obj->efile.nr_reloc + 1;
+>                         int sec = sh.sh_info; /* points to other section */
+>
+>                         /* Only do relo for section with exec instructions */
+> @@ -1184,79 +1237,39 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+>                                 continue;
+>                         }
+>
+> -                       reloc = reallocarray(reloc, nr_reloc,
+> +                       reloc = reallocarray(reloc, nr_reloc + 1,
+>                                              sizeof(*obj->efile.reloc));
+>                         if (!reloc) {
+>                                 pr_warning("realloc failed\n");
+> -                               err = -ENOMEM;
+> -                       } else {
+> -                               int n = nr_reloc - 1;
+> +                               return -ENOMEM;
+> +                       }
+>
+> -                               obj->efile.reloc = reloc;
+> -                               obj->efile.nr_reloc = nr_reloc;
+> +                       obj->efile.reloc = reloc;
+> +                       obj->efile.nr_reloc++;
+>
+> -                               obj->efile.reloc[n].shdr = sh;
+> -                               obj->efile.reloc[n].data = data;
+> -                       }
+> +                       obj->efile.reloc[nr_reloc].shdr = sh;
+> +                       obj->efile.reloc[nr_reloc].data = data;
+>                 } else if (sh.sh_type == SHT_NOBITS && strcmp(name, ".bss") == 0) {
+>                         obj->efile.bss = data;
+>                         obj->efile.bss_shndx = idx;
+>                 } else {
+>                         pr_debug("skip section(%d) %s\n", idx, name);
+>                 }
+> -               if (err)
+> -                       goto out;
+>         }
+>
+>         if (!obj->efile.strtabidx || obj->efile.strtabidx >= idx) {
+>                 pr_warning("Corrupted ELF file: index of strtab invalid\n");
+>                 return -LIBBPF_ERRNO__FORMAT;
+>         }
+> -       if (btf_data) {
+> -               obj->btf = btf__new(btf_data->d_buf, btf_data->d_size);
+> -               if (IS_ERR(obj->btf)) {
+> -                       pr_warning("Error loading ELF section %s: %ld. Ignored and continue.\n",
+> -                                  BTF_ELF_SEC, PTR_ERR(obj->btf));
+> -                       obj->btf = NULL;
+> -               } else {
+> -                       err = btf__finalize_data(obj, obj->btf);
+> -                       if (!err) {
+> -                               bpf_object__sanitize_btf(obj);
+> -                               err = btf__load(obj->btf);
+> -                       }
+> -                       if (err) {
+> -                               pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
+> -                                          BTF_ELF_SEC, err);
+> -                               btf__free(obj->btf);
+> -                               obj->btf = NULL;
+> -                               err = 0;
+> -                       }
+> -               }
+> -       }
+> -       if (btf_ext_data) {
+> -               if (!obj->btf) {
+> -                       pr_debug("Ignore ELF section %s because its depending ELF section %s is not found.\n",
+> -                                BTF_EXT_ELF_SEC, BTF_ELF_SEC);
+> -               } else {
+> -                       obj->btf_ext = btf_ext__new(btf_ext_data->d_buf,
+> -                                                   btf_ext_data->d_size);
+> -                       if (IS_ERR(obj->btf_ext)) {
+> -                               pr_warning("Error loading ELF section %s: %ld. Ignored and continue.\n",
+> -                                          BTF_EXT_ELF_SEC,
+> -                                          PTR_ERR(obj->btf_ext));
+> -                               obj->btf_ext = NULL;
+> -                       } else {
+> -                               bpf_object__sanitize_btf_ext(obj);
+> -                       }
+> -               }
+> -       }
+> +       err = bpf_object__load_btf(obj, btf_data, btf_ext_data);
+> +       if (err)
+> +               return err;
+>         if (bpf_object__has_maps(obj)) {
+>                 err = bpf_object__init_maps(obj, flags);
+>                 if (err)
+> -                       goto out;
+> +                       return err;
+>         }
+>         err = bpf_object__init_prog_names(obj);
+> -out:
+>         return err;
+>  }
+>
+> --
+> 2.17.1
+>
