@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2E8E46D97
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 664E846D99
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 03:41:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbfFOBid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 21:38:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57422 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726167AbfFOBic (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 21:38:32 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 07A053091755;
-        Sat, 15 Jun 2019 01:38:32 +0000 (UTC)
-Received: from epycfail.redhat.com (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 99A8F5C257;
-        Sat, 15 Jun 2019 01:38:28 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        David Ahern <dsahern@gmail.com>,
+        id S1726346AbfFOBk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 21:40:59 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36147 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbfFOBk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 21:40:59 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g18so2920267qkl.3
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 18:40:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=JCtPFOpGgpLnJj5u7TUubJgflp/D3UgmWZAzwuTJhFI=;
+        b=cAg6aC53fWdVHMimgqrp+V/6NZ5KX+T197tVW/IXhZDpHLZEFmFD126LOI4+MjqxW/
+         rCW5MSaiVayASrkawU0H6x3XrIe4ZxiDbsZR7kQ5rLh8L4Du9OLEHim4ksfYsJZr/jcu
+         nakRy9GnBnj0iZLI/XehAGN7jLmjENQipavtzuYEVqjWDFocraI8qwATDwKLWrMQmS/H
+         5173jro9GqoY6vu129QTTM0WX75srS/dkMWhMmnrk1jmgCdfTHk7w+P0qCz4pByffanC
+         Sx3ZqQq+qzzWUjeJ0mrCgqWe5mZXVPn3Q87E5WssMEUcCyXDl89d6mHli9kno61UiUuG
+         ovyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=JCtPFOpGgpLnJj5u7TUubJgflp/D3UgmWZAzwuTJhFI=;
+        b=Hv8mlWAtrKtNhRymwxvry1ndc0n/XcATmiM/JoMUBEs0AIFfT84zL745lWbsQrav3R
+         yt0H4U6RasjXu561u8YqaXWCKPxe9cVy+Nnr1RTiX3kKsTtU+zxIA42YgWs/HJ+0J2+F
+         qsFO4lOgT8u7zO70A6t/zPcI4nvIUtVTCfnGOu4giVh+wINWHZml1dEhpKe0UyNBechj
+         IIi+r+oUYf+OE/t8NR4FqWnTuYolEE0SlKK+bARl2pCx9sSH627zEgfqZPG3p/fVumes
+         qhP6HIhpQj03Pjvsy8MhcvPQLB7OSL7UDc9U4tYzPr17lshLa37G9JvMbi+/jhr9CGEs
+         mqjw==
+X-Gm-Message-State: APjAAAUEZJm7S9kIM6oobub+7ra4ea2vJT36xcT/bPR+vw4EVB9saSUF
+        LCJK7EkdD/GRkrlxQq/DRI+lDw==
+X-Google-Smtp-Source: APXvYqwtOAaP+SjrI33mbw9cPNL7U0/YfRUqczCN+4x5jmjaTAm3hA0felUDjRw3xvx5iM9bhxWt1A==
+X-Received: by 2002:ae9:f209:: with SMTP id m9mr58715974qkg.251.1560562858276;
+        Fri, 14 Jun 2019 18:40:58 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id k6sm2137673qkd.21.2019.06.14.18.40.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 14 Jun 2019 18:40:58 -0700 (PDT)
+Date:   Fri, 14 Jun 2019 18:40:52 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?Qmo=?= =?UTF-8?B?w7ZybiBUw7ZwZWw=?= 
+        <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] selftests: pmtu: Make list_flush_ipv6_exception test more demanding
-Date:   Sat, 15 Jun 2019 03:38:18 +0200
-Message-Id: <9b481caa3e09a3227b4c98f453b4bb2d8998550d.1560562631.git.sbrivio@redhat.com>
-In-Reply-To: <cover.1560562631.git.sbrivio@redhat.com>
-References: <cover.1560562631.git.sbrivio@redhat.com>
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Subject: Re: [PATCH bpf-next v4 05/17] xsk: Change the default frame size to
+ 4096 and allow controlling it
+Message-ID: <20190614184052.7de9471b@cakuba.netronome.com>
+In-Reply-To: <161cec62-103f-c87c-52b7-8a627940622b@mellanox.com>
+References: <20190612155605.22450-1-maximmi@mellanox.com>
+        <20190612155605.22450-6-maximmi@mellanox.com>
+        <20190612131017.766b4e82@cakuba.netronome.com>
+        <b7217210-1ce6-4b27-9964-b4daa4929e8b@mellanox.com>
+        <20190613102936.2c8979ed@cakuba.netronome.com>
+        <161cec62-103f-c87c-52b7-8a627940622b@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Sat, 15 Jun 2019 01:38:32 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of just listing and flushing two cached exceptions, create
-a relatively big number of them, and count how many are listed. Single
-netlink dump messages contain approximately 25 entries each, and this
-way we can make sure the partial dump tracking mechanism is working
-properly.
+On Fri, 14 Jun 2019 13:25:28 +0000, Maxim Mikityanskiy wrote:
+> On 2019-06-13 20:29, Jakub Kicinski wrote:
+> > On Thu, 13 Jun 2019 14:01:39 +0000, Maxim Mikityanskiy wrote:  
+> > 
+> > Yes, okay, I get that.  But I still don't know what's the exact use you
+> > have for AF_XDP buffers being 4k..  Could you point us in the code to
+> > the place which relies on all buffers being 4k in any XDP scenario?  
 
-While at it, also ensure that no cached routes can be listed after
-flush, and remove 'sleep 1' calls, they are not actually needed.
+Okay, I still don't get it, but that's for explaining :)  Perhaps it
+will become clearer when you resping with patch 17 split into
+reviewable chunks :)
 
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
- tools/testing/selftests/net/pmtu.sh | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+> 1. An XDP program is set on all queues, so to support non-4k AF_XDP 
+> frames, we would also need to support multiple-packet-per-page XDP for 
+> regular queues.
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 6c063b17d7d0..8998a7c03d3e 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -1276,7 +1276,7 @@ test_list_flush_ipv6_exception() {
- 	      "${ns_a}"  veth_A-R2    "${ns_r2}" veth_R2-A \
- 	      "${ns_r2}" veth_R2-B    "${ns_b}"  veth_B-R2
- 
--	dst1="${prefix6}:${b_r1}::1"
-+	dst_prefix1="${prefix6}:${b_r1}::"
- 	dst2="${prefix6}:${b_r2}::1"
- 
- 	# Set up initial MTU values
-@@ -1292,20 +1292,26 @@ test_list_flush_ipv6_exception() {
- 
- 	fail=0
- 
--	# Create route exceptions
--	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst1}
--	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst2}
-+	# Add 100 addresses for veth endpoint on B reached by default A route
-+	for i in $(seq 100 199); do
-+		run_cmd ${ns_b} ip addr add "${dst_prefix1}${i}" dev veth_B-R1
-+	done
- 
--	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 2 ]; then
-+	# Create 100 cached route exceptions for path via R1, one via R2
-+	for i in $(seq 100 199); do
-+		run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst_prefix1}${i}"
-+	done
-+	run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst2}"
-+	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 101 ]; then
- 		err "  can't list cached exceptions"
- 		fail=1
- 	fi
- 
- 	run_cmd ${ns_a} ip -6 route flush cache
--	sleep 1
--	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst1})"
-+	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" "${dst_prefix1}100")"
- 	pmtu2="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst2})"
--	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ]; then
-+	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ] || \
-+	   [ -n "$(${ns_a} ip -6 route list cache)" ]; then
- 		err "  can't flush cached exceptions"
- 		fail=1
- 	fi
--- 
-2.20.1
+Mm.. do you have some materials of how the mlx5 DMA/RX works?  I'd think
+that if you do single packet per buffer as long as all packets are
+guaranteed to fit in the buffer (based on MRU) the HW shouldn't care
+what the size of the buffer is.
 
+> 2. Page allocation in mlx5e perfectly fits page-sized XDP frames. Some 
+> examples in the code are:
+> 
+> 2.1. mlx5e_free_rx_mpwqe calls a generic mlx5e_page_release to release 
+> the pages of a MPWQE (multi-packet work queue element), which is 
+> implemented as xsk_umem_fq_reuse for the case of XSK. We avoid extra 
+> overhead by using the fact that packet == page.
+> 
+> 2.2. mlx5e_free_xdpsq_desc performs cleanup after XDP transmits. In case 
+> of XDP_TX, we can free/recycle the pages without having a refcount 
+> overhead, by using the fact that packet == page.
