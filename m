@@ -2,159 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D834728E
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 01:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8E247290
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 01:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727122AbfFOXgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 19:36:07 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:48225 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726754AbfFOXgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 19:36:07 -0400
-Received: by mail-io1-f71.google.com with SMTP id z19so7525234ioi.15
-        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 16:36:06 -0700 (PDT)
+        id S1726800AbfFOXk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 19:40:57 -0400
+Received: from mail-qt1-f201.google.com ([209.85.160.201]:34743 "EHLO
+        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726434AbfFOXk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 19:40:57 -0400
+Received: by mail-qt1-f201.google.com with SMTP id p34so5770963qtp.1
+        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 16:40:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=mcPP9X0QiWlF7GplY3izZlSJgOg6V70Xq/Tk5xaoY94=;
+        b=bT1Ena+yyg8qmF4pBNNphlEtlsVYaMETxXrjcqC83f4KAnoyAIVSKok01F9/Whn1zx
+         0Ac6KRIL4RyzS3S4ZhZVB2+HrVh6mNBiSIln5ERguJRsf8iodxuMWXLhPvEGrcBrLct6
+         LT5nSt1eDvE2jTHKQ9NE3cAJgQsJDLtrVB37vrc8mmOLTgB6BPypvjaQBGTLENA7F75j
+         Mcb9IpmINMgGmIA6TpPgRDan0iPTDHC/imvpNe2p1PZYYwpqXslNF4f2o+FN53WvEru9
+         8lFAv846TJ6JQ+UYJEY3VHbiF9iE69Lv9oxV/oc2koyooseT+rq1TYG+kK5iqzqam05E
+         Jl1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=A0xxLEpAS6xzeE3IwS+rre1Bstu3yn+UJKPxvopq0AE=;
-        b=rZdXehrwcbeMgBKK4dNuEenJ6oNyUEwj/EOhbyR3RNqUewoAZSvcG76a02HAD8WMT/
-         SgzbCTlYHY03NnO/8ik8TqwhZWzMVgA7RS8oARxWrHKcJ5QEtnEb4/vqHX2bsIukKQh9
-         XWuf6IXzDddLz1WzckU3NlvrxnE/KydQfQmKyTWqbK3UCeLXn4ijYp6iUomcST0njymy
-         NBiPT/XZbUbgShV+7DxGzWmhW83/jLpQVP5/ztkl1BkZ35S/vRI1XBHDjjs6TGsae67r
-         jixGwy2HCo/H8ehvbYvGU5nVI6YhYObQxlm9/gaV8hosGO+rDsfQOYLJM5tZhT3WD6Bq
-         JW3Q==
-X-Gm-Message-State: APjAAAUpF+0BN0ohyritBcM/CqGKUUfLIXaN3Sq1Qt2KI+IQtV79QKRq
-        v9bf+xyFgtDlsMasw/6LzxPY1kXl+F3O4R3d0jFRxQ5hoTp+
-X-Google-Smtp-Source: APXvYqw15q1PS+pa+HxNorc6r9EeGlkrFu+2dK/kQTJ2k7U2BiQnU/gI0aXvWrXQHdWa/7vNJQUOhd9jPLLa1uVcQB5rX7hiT5wr
-MIME-Version: 1.0
-X-Received: by 2002:a6b:90c1:: with SMTP id s184mr35599437iod.244.1560641766135;
- Sat, 15 Jun 2019 16:36:06 -0700 (PDT)
-Date:   Sat, 15 Jun 2019 16:36:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000017a264058b653a58@google.com>
-Subject: general protection fault in sctp_sched_prio_sched
-From:   syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=mcPP9X0QiWlF7GplY3izZlSJgOg6V70Xq/Tk5xaoY94=;
+        b=RRgcqkHib7kMZwqpaypOdmnUQu75pjiXO1Y3f+dfKyF/5RRAPfqxUaghEUbHuQcuNE
+         Hpq65w74u4oGYuuj/VjGpAEwjqJS//99+jk2XiWm5MAGAtKjcIJghPT0JydTzHqoNci+
+         Z4ZimN2qkzmkdn/5PvwMTYwpVvw0FjTNMITitsJCni0wQ32ZWswm4K9kH+erQoKLmXhN
+         t4dHquGuiWZRI6hPKn6dHfFPon0Phg7PR4wPtGRrFP/LLLtCPWu6lIgsbMoPtpD4p5fL
+         AMWUs2Wlky0y1s8U8DoSiClCoi7tWf3WzPZcprqJ7FBpcigk11EFkLJ2wLbtwtoBIRzh
+         WWcQ==
+X-Gm-Message-State: APjAAAUMbX2c6VVl9NZZC0Q/kPvMZswE3Vk3D6FHDqwduUqAh/JsCE39
+        hZANGNgQTguexbGSvysKmUSP4NjhA9Rutw==
+X-Google-Smtp-Source: APXvYqzKbtKby6BoADt+LI+3VLl5hUy4HJRtA90kbNC5v9Gzcf7XlMkRZtGyAWjzLeGbeXbW4acnN85yDjt3JA==
+X-Received: by 2002:ac8:38a8:: with SMTP id f37mr87191125qtc.150.1560642055634;
+ Sat, 15 Jun 2019 16:40:55 -0700 (PDT)
+Date:   Sat, 15 Jun 2019 16:40:52 -0700
+Message-Id: <20190615234052.155231-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH net] ax25: fix inconsistent lock state in ax25_destroy_timer
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Before thread in process context uses bh_lock_sock()
+we must disable bh.
 
-syzbot found the following crash on:
+sysbot reported :
 
-HEAD commit:    35fc07ae Merge branch 'tcp-add-three-static-keys'
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=118e5caea00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e8b7a9cd7feeb720
-dashboard link: https://syzkaller.appspot.com/bug?extid=c1a380d42b190ad1e559
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11551df1a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12417076a00000
+WARNING: inconsistent lock state
+5.2.0-rc3+ #32 Not tainted
 
-The bug was bisected to:
-
-commit 4ff40b86262b73553ee47cc3784ce8ba0f220bd8
-Author: Xin Long <lucien.xin@gmail.com>
-Date:   Mon Jan 21 18:42:09 2019 +0000
-
-     sctp: set chunk transport correctly when it's a new asoc
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=104d1df1a00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=124d1df1a00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=144d1df1a00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com
-Fixes: 4ff40b86262b ("sctp: set chunk transport correctly when it's a new  
-asoc")
-
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 8330 Comm: syz-executor666 Not tainted 5.2.0-rc3+ #52
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:sctp_sched_prio_sched+0x96/0x6f0 net/sctp/stream_sched_prio.c:132
-Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 0d 05 00 00 48 b8 00 00 00 00  
-00 fc ff df 4c 8b 73 50 4d 8d 6e 20 4c 89 ea 48 c1 ea 03 <80> 3c 02 00 0f  
-85 f4 04 00 00 4d 8b 7e 20 4d 85 ff 0f 84 f8 00 00
-RSP: 0018:ffff88809e4e7448 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff8880a9533b80 RCX: 1ffff11010347201
-RDX: 0000000000000004 RSI: ffffffff8696a77e RDI: ffff8880a9533bd0
-RBP: ffff88809e4e7488 R08: ffff88808bf8e300 R09: ffff88809e4e7580
-R10: ffffed1013c9cee2 R11: 0000000000000003 R12: ffff8880a9533bc0
-R13: 0000000000000020 R14: 0000000000000000 R15: ffff8880a4e92380
-FS:  00007f48c9337700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f48c9315e78 CR3: 000000009db54000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  sctp_sched_prio_enqueue+0x117/0x170 net/sctp/stream_sched_prio.c:243
-  sctp_cmd_send_msg net/sctp/sm_sideeffect.c:1101 [inline]
-  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1748 [inline]
-  sctp_side_effects net/sctp/sm_sideeffect.c:1184 [inline]
-  sctp_do_sm+0x2fd0/0x5190 net/sctp/sm_sideeffect.c:1155
-  sctp_primitive_SEND+0xa0/0xd0 net/sctp/primitive.c:163
-  sctp_sendmsg_to_asoc+0x1118/0x1f10 net/sctp/socket.c:1944
-  sctp_sendmsg+0x109a/0x17d0 net/sctp/socket.c:2102
-  inet_sendmsg+0x141/0x5d0 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:665
-  sock_write_iter+0x27c/0x3e0 net/socket.c:994
-  call_write_iter include/linux/fs.h:1872 [inline]
-  new_sync_write+0x4d3/0x770 fs/read_write.c:483
-  __vfs_write+0xe1/0x110 fs/read_write.c:496
-  vfs_write+0x20c/0x580 fs/read_write.c:558
-  ksys_write+0x14f/0x290 fs/read_write.c:611
-  __do_sys_write fs/read_write.c:623 [inline]
-  __se_sys_write fs/read_write.c:620 [inline]
-  __x64_sys_write+0x73/0xb0 fs/read_write.c:620
+inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+blkid/26581 [HC0[0]:SC1[1]:HE1:SE0] takes:
+00000000e0da85ee (slock-AF_AX25){+.?.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+00000000e0da85ee (slock-AF_AX25){+.?.}, at: ax25_destroy_timer+0x53/0xc0 net/ax25/af_ax25.c:275
+{SOFTIRQ-ON-W} state was registered at:
+  lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
+  __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+  _raw_spin_lock+0x2f/0x40 kernel/locking/spinlock.c:151
+  spin_lock include/linux/spinlock.h:338 [inline]
+  ax25_rt_autobind+0x3ca/0x720 net/ax25/ax25_route.c:429
+  ax25_connect.cold+0x30/0xa4 net/ax25/af_ax25.c:1221
+  __sys_connect+0x264/0x330 net/socket.c:1834
+  __do_sys_connect net/socket.c:1845 [inline]
+  __se_sys_connect net/socket.c:1842 [inline]
+  __x64_sys_connect+0x73/0xb0 net/socket.c:1842
   do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x447a69
-Code: e8 cc e7 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 3b 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f48c9336d88 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00000000006ddc38 RCX: 0000000000447a69
-RDX: 0000000000010094 RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 00000000006ddc30 R08: 00007f48c9337700 R09: 0000000000000000
-R10: 00007f48c9337700 R11: 0000000000000246 R12: 00000000006ddc3c
-R13: 00007f48c9336d90 R14: 00007f48c93379c0 R15: 00000000006ddc3c
-Modules linked in:
----[ end trace 01e405583d741588 ]---
-RIP: 0010:sctp_sched_prio_sched+0x96/0x6f0 net/sctp/stream_sched_prio.c:132
-Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 0d 05 00 00 48 b8 00 00 00 00  
-00 fc ff df 4c 8b 73 50 4d 8d 6e 20 4c 89 ea 48 c1 ea 03 <80> 3c 02 00 0f  
-85 f4 04 00 00 4d 8b 7e 20 4d 85 ff 0f 84 f8 00 00
-RSP: 0018:ffff88809e4e7448 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff8880a9533b80 RCX: 1ffff11010347201
-RDX: 0000000000000004 RSI: ffffffff8696a77e RDI: ffff8880a9533bd0
-RBP: ffff88809e4e7488 R08: ffff88808bf8e300 R09: ffff88809e4e7580
-R10: ffffed1013c9cee2 R11: 0000000000000003 R12: ffff8880a9533bc0
-R13: 0000000000000020 R14: 0000000000000000 R15: ffff8880a4e92380
-FS:  00007f48c9337700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000460687 CR3: 000000009db54000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+irq event stamp: 2272
+hardirqs last  enabled at (2272): [<ffffffff810065f3>] trace_hardirqs_on_thunk+0x1a/0x1c
+hardirqs last disabled at (2271): [<ffffffff8100660f>] trace_hardirqs_off_thunk+0x1a/0x1c
+softirqs last  enabled at (1522): [<ffffffff87400654>] __do_softirq+0x654/0x94c kernel/softirq.c:320
+softirqs last disabled at (2267): [<ffffffff81449010>] invoke_softirq kernel/softirq.c:374 [inline]
+softirqs last disabled at (2267): [<ffffffff81449010>] irq_exit+0x180/0x1d0 kernel/softirq.c:414
 
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
+       CPU0
+       ----
+  lock(slock-AF_AX25);
+  <Interrupt>
+    lock(slock-AF_AX25);
+
+ *** DEADLOCK ***
+
+1 lock held by blkid/26581:
+ #0: 0000000010fd154d ((&ax25->dtimer)){+.-.}, at: lockdep_copy_map include/linux/lockdep.h:175 [inline]
+ #0: 0000000010fd154d ((&ax25->dtimer)){+.-.}, at: call_timer_fn+0xe0/0x720 kernel/time/timer.c:1312
+
+stack backtrace:
+CPU: 1 PID: 26581 Comm: blkid Not tainted 5.2.0-rc3+ #32
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ print_usage_bug.cold+0x393/0x4a2 kernel/locking/lockdep.c:2935
+ valid_state kernel/locking/lockdep.c:2948 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3138 [inline]
+ mark_lock+0xd46/0x1370 kernel/locking/lockdep.c:3513
+ mark_irqflags kernel/locking/lockdep.c:3391 [inline]
+ __lock_acquire+0x159f/0x5490 kernel/locking/lockdep.c:3745
+ lock_acquire+0x16f/0x3f0 kernel/locking/lockdep.c:4303
+ __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock+0x2f/0x40 kernel/locking/spinlock.c:151
+ spin_lock include/linux/spinlock.h:338 [inline]
+ ax25_destroy_timer+0x53/0xc0 net/ax25/af_ax25.c:275
+ call_timer_fn+0x193/0x720 kernel/time/timer.c:1322
+ expire_timers kernel/time/timer.c:1366 [inline]
+ __run_timers kernel/time/timer.c:1685 [inline]
+ __run_timers kernel/time/timer.c:1653 [inline]
+ run_timer_softirq+0x66f/0x1740 kernel/time/timer.c:1698
+ __do_softirq+0x25c/0x94c kernel/softirq.c:293
+ invoke_softirq kernel/softirq.c:374 [inline]
+ irq_exit+0x180/0x1d0 kernel/softirq.c:414
+ exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+ smp_apic_timer_interrupt+0x13b/0x550 arch/x86/kernel/apic/apic.c:1068
+ apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:806
+ </IRQ>
+RIP: 0033:0x7f858d5c3232
+Code: 8b 61 08 48 8b 84 24 d8 00 00 00 4c 89 44 24 28 48 8b ac 24 d0 00 00 00 4c 8b b4 24 e8 00 00 00 48 89 7c 24 68 48 89 4c 24 78 <48> 89 44 24 58 8b 84 24 e0 00 00 00 89 84 24 84 00 00 00 8b 84 24
+RSP: 002b:00007ffcaf0cf5c0 EFLAGS: 00000206 ORIG_RAX: ffffffffffffff13
+RAX: 00007f858d7d27a8 RBX: 00007f858d7d8820 RCX: 00007f858d3940d8
+RDX: 00007ffcaf0cf798 RSI: 00000000f5e616f3 RDI: 00007f858d394fee
+RBP: 0000000000000000 R08: 00007ffcaf0cf780 R09: 00007f858d7db480
+R10: 0000000000000000 R11: 0000000009691a75 R12: 0000000000000005
+R13: 00000000f5e616f3 R14: 0000000000000000 R15: 00007ffcaf0cf798
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/ax25/ax25_route.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+index 09fdd0aac4b907b926b3ecc70d3cdde207b73b12..b40e0bce67ead7d1dd36f435aa51bb9c53fa0e19 100644
+--- a/net/ax25/ax25_route.c
++++ b/net/ax25/ax25_route.c
+@@ -426,9 +426,11 @@ int ax25_rt_autobind(ax25_cb *ax25, ax25_address *addr)
+ 	}
+ 
+ 	if (ax25->sk != NULL) {
++		local_bh_disable();
+ 		bh_lock_sock(ax25->sk);
+ 		sock_reset_flag(ax25->sk, SOCK_ZAPPED);
+ 		bh_unlock_sock(ax25->sk);
++		local_bh_enable();
+ 	}
+ 
+ put:
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
