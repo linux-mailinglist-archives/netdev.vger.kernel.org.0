@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A7E46EB3
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 09:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0F6946EB7
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 09:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbfFOHTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 03:19:38 -0400
-Received: from mail-eopbgr750123.outbound.protection.outlook.com ([40.107.75.123]:42438
+        id S1726289AbfFOHXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 03:23:33 -0400
+Received: from mail-eopbgr750124.outbound.protection.outlook.com ([40.107.75.124]:14718
         "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725825AbfFOHTi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Jun 2019 03:19:38 -0400
+        id S1725830AbfFOHXc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Jun 2019 03:23:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=gCwszHyBqr2yuVBq9mK8lgszeA6Q7BQq7wApbNKqm9CnZkHZYmQbmaxDvB23N4lvjKK49LigjEkEsmYEEFquv2Bd3C0lvAEuv8bTBmlEwawtgkI/hQIc/HIFgf1uTILciM0elAT+XV+jmdJHuu0FDqJ/x/Q8iqSPDT6sffVE+JI=
+ b=i06LbdBSVox+wjziFZFjoNW+aWI8f1HmAWJBPd4oyLiWLdBeEHXm02zSYaYfxqHIVLr85FvgvwQs4hyuCDG3GcX54gWRMtGOEhCzFBnF81naJ80H/ixlG4GffkYmuA9w5ILWnlTgOVpOAtLzeJ+SAiH/x0JWAcnMySyCY8qJe60=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=testarcselector01;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wSAGMq0DMdK9Fk47IySGrWzf7qOm4l0hJnhsCRnHzcU=;
- b=SlN2iWahqVv52Pk1+1dzberXPSTNelG2Lrce3gHL2rdC44cHdlmR3snTkDSEd0RYOf1xjkHhYKUQTXSbT8tS2kjw0FoVblS1Tv2z635pUkmjPyAbgr+O0KmWBv7TupRmbCoKvwAdzL9GhpGzXmQ7OJATVl5vh4Ybxctn3ZzQ2Kw=
+ bh=4kA3zSugUnzuTsVAN/90ZlWxV2CXr5trvTClPydmXB4=;
+ b=irHw4rvFliQlZs5i61a3F/FmtJB3NUckTI/D3MJl0uQQrw4xhnNQHFp30jP7sDyU7acVgPJfUNbWUu5Jfd1nEa1fAQQY+NfU+lpL9VeFa44aWVu5O+n6CBIAfpcwYSqHCVYK6mYahPq0s3vjyBU36THxTDAW8spbbhDuwG/xONk=
 ARC-Authentication-Results: i=1; test.office365.com
  1;spf=none;dmarc=none;dkim=none;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wSAGMq0DMdK9Fk47IySGrWzf7qOm4l0hJnhsCRnHzcU=;
- b=JB5FiZwD5LgQ+IvlYj5DXtmsf1E5PXCxRwPvk0vPSAaMyqvBs9wLIFYylT3Lq+uY20htglYtLSjmEv9px3PdL026lg90mrlOsOu+XHypyIJeEI1VJIeRmDRAgKCUGHIlNOcOeWPjmv27li6FEMdMrsc3r/72XnL9cRE4wqctC14=
+ bh=4kA3zSugUnzuTsVAN/90ZlWxV2CXr5trvTClPydmXB4=;
+ b=MvayYrpQoE2nbkZXHij4hgLviM1/MsWJwGspyg4e+aHt+nGADgQVt1jf2cFqxh3d6VAHYHQkoyGZux9NBIfvDZ15oMJFitJ8/VxgcGHzcuGgiujCNTNt5pk3ACZhqcvBHMS94QT6KgdpmclUvwk7UrOeK5KvtUu/iXD+hmRXrE4=
 Received: from MW2PR2101MB1116.namprd21.prod.outlook.com (2603:10b6:302:a::33)
  by MW2PR2101MB0985.namprd21.prod.outlook.com (2603:10b6:302:4::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.4; Sat, 15 Jun
- 2019 07:19:32 +0000
+ 2019 07:23:29 +0000
 Received: from MW2PR2101MB1116.namprd21.prod.outlook.com
  ([fe80::a1f6:c002:82ba:ad47]) by MW2PR2101MB1116.namprd21.prod.outlook.com
  ([fe80::a1f6:c002:82ba:ad47%9]) with mapi id 15.20.2008.002; Sat, 15 Jun 2019
- 07:19:32 +0000
+ 07:23:29 +0000
 From:   Sunil Muthuswamy <sunilmut@microsoft.com>
 To:     Dexuan Cui <decui@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Michael Kelley <mikelley@microsoft.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
+        David Miller <davem@davemloft.net>
+CC:     KY Srinivasan <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
-        Sasha Levin <Alexander.Levin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>,
-        "apw@canonical.com" <apw@canonical.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        vkuznets <vkuznets@redhat.com>,
-        "marcelo.cerri@canonical.com" <marcelo.cerri@canonical.com>
-Subject: RE: [PATCH net] hv_sock: Suppress bogus "may be used uninitialized"
- warnings
-Thread-Topic: [PATCH net] hv_sock: Suppress bogus "may be used uninitialized"
- warnings
-Thread-Index: AQHVIzdRyJ4h5bYUQkOiYCme+G2mp6acTflg
-Date:   Sat, 15 Jun 2019 07:19:31 +0000
-Message-ID: <MW2PR2101MB1116B911C7CAF2BF9884004FC0E90@MW2PR2101MB1116.namprd21.prod.outlook.com>
-References: <1560574826-99551-1-git-send-email-decui@microsoft.com>
-In-Reply-To: <1560574826-99551-1-git-send-email-decui@microsoft.com>
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
+Thread-Topic: [PATCH net] hvsock: fix epollout hang from race condition
+Thread-Index: AdUhY/kd1+XRZykcRS6vcxcYhC9DaQBvCbgAAAJcZAAAA4dPAAAEw2pg
+Date:   Sat, 15 Jun 2019 07:23:29 +0000
+Message-ID: <MW2PR2101MB111678811A8761515B669A47C0E90@MW2PR2101MB1116.namprd21.prod.outlook.com>
+References: <MW2PR2101MB11164C6EEAA5C511B395EF3AC0EC0@MW2PR2101MB1116.namprd21.prod.outlook.com>
+ <20190614.191456.407433636343988177.davem@davemloft.net>
+ <PU1P153MB0169BACDA500F94910849770BFE90@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+ <PU1P153MB0169810F29C473D44C090F6ABFE90@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+In-Reply-To: <PU1P153MB0169810F29C473D44C090F6ABFE90@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=sunilmut@ntdev.microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-06-15T07:19:31.3753016Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-06-15T03:22:30.1109385Z;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
  Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4641602a-4424-4841-ac5c-b9f806288a66;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5a22ec33-d84a-451d-b0f2-0c7166ab82c0;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=sunilmut@microsoft.com; 
 x-originating-ip: [2001:4898:80e8:0:24b4:540:3de4:fc8f]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3980b8e0-3ab7-4bde-ba70-08d6f161d034
+x-ms-office365-filtering-correlation-id: 93dd8923-327e-41a6-72ee-08d6f1625d49
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:MW2PR2101MB0985;
 x-ms-traffictypediagnostic: MW2PR2101MB0985:
 x-ms-exchange-purlcount: 1
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MW2PR2101MB09853D664258F03A69D7791FC0E90@MW2PR2101MB0985.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:758;
+x-microsoft-antispam-prvs: <MW2PR2101MB0985EAAB88A2CA3A550AAE71C0E90@MW2PR2101MB0985.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
 x-forefront-prvs: 0069246B74
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(376002)(346002)(39860400002)(396003)(366004)(136003)(13464003)(189003)(199004)(305945005)(10290500003)(64756008)(99286004)(2201001)(229853002)(6636002)(478600001)(6506007)(76176011)(53546011)(2501003)(966005)(52536014)(25786009)(6246003)(66556008)(71190400001)(71200400001)(66446008)(2906002)(66476007)(8676002)(4326008)(6116002)(81166006)(81156014)(8936002)(74316002)(86362001)(7736002)(33656002)(55016002)(6306002)(14454004)(446003)(9686003)(11346002)(186003)(73956011)(66946007)(14444005)(256004)(76116006)(110136005)(53936002)(1511001)(7696005)(54906003)(10090500001)(102836004)(22452003)(46003)(52396003)(8990500004)(476003)(316002)(6436002)(5660300002)(486006)(68736007)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR2101MB0985;H:MW2PR2101MB1116.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(39860400002)(396003)(366004)(136003)(13464003)(189003)(199004)(305945005)(10290500003)(64756008)(99286004)(229853002)(478600001)(6506007)(76176011)(53546011)(966005)(52536014)(25786009)(6246003)(66556008)(71190400001)(71200400001)(66446008)(2906002)(66476007)(8676002)(4326008)(6116002)(81166006)(81156014)(8936002)(74316002)(86362001)(7736002)(33656002)(55016002)(6306002)(14454004)(446003)(9686003)(11346002)(66574012)(186003)(73956011)(66946007)(14444005)(256004)(76116006)(110136005)(53936002)(1511001)(7696005)(54906003)(10090500001)(102836004)(22452003)(46003)(52396003)(8990500004)(476003)(316002)(6436002)(5660300002)(486006)(68736007);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR2101MB0985;H:MW2PR2101MB1116.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: microsoft.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: cwRmHz/PY714c9cGgVoo1rDuGTao2ZdCw1PPNfLk7bZNWU1XNBTMdHaJk7P104KULikKsbFeBo6eYbF5BlJ51zoaJ5EKZH/7laBQP/El5QRH0qfWZeaEudqFtnVCacnT7ekA790hsAAp4qzizC5HwkIEPGjO/xEcH+CKchMsaVBvYnuOi/z9j9V/ZlfZKaqvdR+7yGGVFChXFdBE6UxiT7QUzFf7hGs23GlVvDgtW3DpYg3lvMh1TY8ixLBxVxj4ykQl2CWJFAoStmubRr4LwXfuISwjubVg39P3+Gm3wV/zo28i3VWLGjX83XJ5YniUZOMXd/+KHKIL9/sLDwWaOPlQzvS+KxTAx+kQ/kOYbkgub7x6PIzUZgCQYZSGYzafLO2jFy4P57UtSMRNeKNe7Cya90NyiIjebxmAFstCSiA=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: KcMPcc32TsXdKqXfIQxYTJXy0PasIAhomOCxiSKFaLQx8hJZzSlh3aylEFVWs+nq3/u04eBAqUjXhns6ab+WC3sLFVRMfwp0FUY/fd2XwRSME8BDIICZIRPRvVc+K5kZNuEv4bRH66KBqUd33oh+HZdEMYUnB07vn1wqDL7f0Afe+Pe4dOr93Ap1RkSb36bDzNFeQupYhGUib5KWqbn+xkY5yC4vXUP3gWr8RQY1DEWauceLFWjc91ae19xlXvNwAxPBlpbAX5BAwJJ4T/DtCVi73Wm3sgNzqbtEyuX6S/PoICagp+y0x25LT72bguSKLO0SvGLJZqscBbPNCUgBdtTDR612DmyNWm/N9hEk3LSO5W3/9JzRqACByE/VNX79n0eNY4c7yoHR6n1n9MgemWbIu4dIYWUFgsb3rCcuTSY=
+Content-Type: text/plain; charset="iso-8859-7"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3980b8e0-3ab7-4bde-ba70-08d6f161d034
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2019 07:19:32.5342
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93dd8923-327e-41a6-72ee-08d6f1625d49
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2019 07:23:29.2098
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
@@ -108,40 +103,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtaHlwZXJ2LW93
-bmVyQHZnZXIua2VybmVsLm9yZyA8bGludXgtaHlwZXJ2LW93bmVyQHZnZXIua2VybmVsLm9yZz4g
-T24gQmVoYWxmIE9mIERleHVhbiBDdWkNCj4gU2VudDogRnJpZGF5LCBKdW5lIDE0LCAyMDE5IDEw
-OjAxIFBNDQo+IFRvOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBkYXZlbUBkYXZlbWxvZnQubmV0
-OyBNaWNoYWVsIEtlbGxleSA8bWlrZWxsZXlAbWljcm9zb2Z0LmNvbT4NCj4gQ2M6IGxpbnV4LWh5
-cGVydkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IEtZIFNy
-aW5pdmFzYW4gPGt5c0BtaWNyb3NvZnQuY29tPjsgU3RlcGhlbiBIZW1taW5nZXINCj4gPHN0aGVt
-bWluQG1pY3Jvc29mdC5jb20+OyBIYWl5YW5nIFpoYW5nIDxoYWl5YW5nekBtaWNyb3NvZnQuY29t
-PjsgU2FzaGEgTGV2aW4gPEFsZXhhbmRlci5MZXZpbkBtaWNyb3NvZnQuY29tPjsNCj4gb2xhZkBh
-ZXBmbGUuZGU7IGFwd0BjYW5vbmljYWwuY29tOyBqYXNvd2FuZ0ByZWRoYXQuY29tOyB2a3V6bmV0
-cyA8dmt1em5ldHNAcmVkaGF0LmNvbT47IG1hcmNlbG8uY2VycmlAY2Fub25pY2FsLmNvbTsNCj4g
-RGV4dWFuIEN1aSA8ZGVjdWlAbWljcm9zb2Z0LmNvbT4NCj4gU3ViamVjdDogW1BBVENIIG5ldF0g
-aHZfc29jazogU3VwcHJlc3MgYm9ndXMgIm1heSBiZSB1c2VkIHVuaW5pdGlhbGl6ZWQiIHdhcm5p
-bmdzDQo+IA0KPiBnY2MgOC4yLjAgbWF5IHJlcG9ydCB0aGVzZSBib2d1cyB3YXJuaW5ncyB1bmRl
-ciBzb21lIGNvbmRpdGlvbjoNCj4gDQo+IHdhcm5pbmc6IOKAmHZuZXfigJkgbWF5IGJlIHVzZWQg
-dW5pbml0aWFsaXplZCBpbiB0aGlzIGZ1bmN0aW9uDQo+IHdhcm5pbmc6IOKAmGh2c19uZXfigJkg
-bWF5IGJlIHVzZWQgdW5pbml0aWFsaXplZCBpbiB0aGlzIGZ1bmN0aW9uDQo+IA0KPiBBY3R1YWxs
-eSwgdGhlIDIgcG9pbnRlcnMgYXJlIG9ubHkgaW5pdGlhbGl6ZWQgYW5kIHVzZWQgaWYgdGhlIHZh
-cmlhYmxlDQo+ICJjb25uX2Zyb21faG9zdCIgaXMgdHJ1ZS4gVGhlIGNvZGUgaXMgbm90IGJ1Z2d5
-IGhlcmUuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBEZXh1YW4gQ3VpIDxkZWN1aUBtaWNyb3NvZnQu
-Y29tPg0KPiAtLS0NCj4gIG5ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIHwgNCArKy0t
-DQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiAN
-Cj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIGIvbmV0L3Zt
-d192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCj4gaW5kZXggOGQxZWE5ZWRhOGEyLi5jZDNmNDdm
-NTRmYTcgMTAwNjQ0DQo+IC0tLSBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQo+
-ICsrKyBiL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQo+IEBAIC0zMjksOCArMzI5
-LDggQEAgc3RhdGljIHZvaWQgaHZzX29wZW5fY29ubmVjdGlvbihzdHJ1Y3Qgdm1idXNfY2hhbm5l
-bCAqY2hhbikNCj4gDQo+ICAJc3RydWN0IHNvY2thZGRyX3ZtIGFkZHI7DQo+ICAJc3RydWN0IHNv
-Y2sgKnNrLCAqbmV3ID0gTlVMTDsNCj4gLQlzdHJ1Y3QgdnNvY2tfc29jayAqdm5ldzsNCj4gLQlz
-dHJ1Y3QgaHZzb2NrICpodnMsICpodnNfbmV3Ow0KPiArCXN0cnVjdCB2c29ja19zb2NrICp2bmV3
-ID0gTlVMTDsNCj4gKwlzdHJ1Y3QgaHZzb2NrICpodnMsICpodnNfbmV3ID0gTlVMTDsNCj4gIAlp
-bnQgcmV0Ow0KPiANClRoZXNlIGFyZSBhbGwgYWxyZWFkeSBmaXhlZCB1bmRlciANCmh0dHBzOi8v
-Z2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L2RhdmVtL25ldC1uZXh0Lmdp
-dC9jb21taXQvP2lkPWFjMzgzZjU4ZjNjOThkZTM3ZmE2NzQ1MmFjYzViZDY3NzM5NmU5ZjMgDQpJ
-dHMganVzdCB0aGF0IHRoYXQgY29tbWl0IGhhc24ndCBtZXJnZWQgd2l0aCB0aGUgJ25ldCcgYnJh
-bmNoIHlldC4NCj4gIAlpZl90eXBlID0gJmNoYW4tPm9mZmVybXNnLm9mZmVyLmlmX3R5cGU7DQo+
-IC0tDQo+IDIuMTkuMQ0KDQo=
+
+
+> -----Original Message-----
+> From: Dexuan Cui <decui@microsoft.com>
+> Sent: Friday, June 14, 2019 10:04 PM
+> To: David Miller <davem@davemloft.net>; Sunil Muthuswamy <sunilmut@micros=
+oft.com>
+> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.=
+com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; sashal@kernel.org; Michael Kelley <mikelley@mic=
+rosoft.com>; netdev@vger.kernel.org; linux-
+> hyperv@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
+>=20
+> > From: linux-hyperv-owner@vger.kernel.org
+> > <linux-hyperv-owner@vger.kernel.org> On Behalf Of Dexuan Cui
+> > Sent: Friday, June 14, 2019 8:23 PM
+> > To: David Miller <davem@davemloft.net>; Sunil Muthuswamy
+> > <sunilmut@microsoft.com>
+> > Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> > <haiyangz@microsoft.com>; Stephen Hemminger
+> > <sthemmin@microsoft.com>; sashal@kernel.org; Michael Kelley
+> > <mikelley@microsoft.com>; netdev@vger.kernel.org;
+> > linux-hyperv@vger.kernel.org; linux-kernel@vger.kernel.org
+> > Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
+> >
+> > > From: linux-hyperv-owner@vger.kernel.org
+> > > <linux-hyperv-owner@vger.kernel.org> On Behalf Of David Miller
+> > > Sent: Friday, June 14, 2019 7:15 PM
+> > > To: Sunil Muthuswamy <sunilmut@microsoft.com>
+> > >
+> > > This adds lots of new warnings:
+> > >
+> > > net/vmw_vsock/hyperv_transport.c: In function =A1hvs_probe=A2:
+> > > net/vmw_vsock/hyperv_transport.c:205:20: warning: =A1vnew=A2 may be u=
+sed
+> > > uninitialized in this function [-Wmaybe-uninitialized]
+> > >    remote->svm_port =3D host_ephemeral_port++;
+> > >    ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+> > > net/vmw_vsock/hyperv_transport.c:332:21: note: =A1vnew=A2 was declare=
+d
+> > here
+> > >   struct vsock_sock *vnew;
+> > >                      ^~~~
+> > > net/vmw_vsock/hyperv_transport.c:406:22: warning: =A1hvs_new=A2 may b=
+e
+> > > used uninitialized in this function [-Wmaybe-uninitialized]
+> > >    hvs_new->vm_srv_id =3D *if_type;
+> > >    ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+> > > net/vmw_vsock/hyperv_transport.c:333:23: note: =A1hvs_new=A2 was decl=
+ared
+> > > here
+> > >   struct hvsock *hvs, *hvs_new;
+> > >                        ^~~~~~~
+> >
+> > Hi David,
+> > These warnings are not introduced by this patch from Sunil.
+>=20
+> Well, technically speaking, the warnings are caused by Suni's patch, but =
+I think it should
+> be a bug of gcc (I'm using "gcc (Ubuntu 8.2.0-12ubuntu1) 8.2.0"). As you =
+can see, the
+> line numbers given by gcc, i.e. line 205, line 406, are not related to th=
+e warnings.
+>=20
+> Actually, the same warnings can repro with the below one-line patch on th=
+is commit of
+> today's net.git:
+>     9a33629ba6b2 ("hv_netvsc: Set probe mode to sync")
+>=20
+> --- a/net/vmw_vsock/hyperv_transport.c
+> +++ b/net/vmw_vsock/hyperv_transport.c
+> @@ -403,6 +403,7 @@ static void hvs_open_connection(struct vmbus_channel =
+*chan)
+>=20
+>         set_per_channel_state(chan, conn_from_host ? new : sk);
+>         vmbus_set_chn_rescind_callback(chan, hvs_close_connection);
+> +       asm ("nop");
+>=20
+>         if (conn_from_host) {
+>                 new->sk_state =3D TCP_ESTABLISHED;
+>=20
+> It looks a simple inline assembly code can confuse gcc. I'm not sure if I=
+ should
+> report a bug for gcc...
+>=20
+> I posted a patch to suppress these bogus warnings just now. The Subject i=
+s:
+>=20
+> [PATCH net] hv_sock: Suppress bogus "may be used uninitialized" warnings
+>=20
+> Thanks,
+> -- Dexuan
+
+Yes, these warnings are not specific to this patch. And, additionally these
+should already addressed in the commit=20
+https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?=
+id=3Dac383f58f3c98de37fa67452acc5bd677396e9f3
+I was trying to avoid making the same changes here to avoid merge
+conflicts when 'net-next' merges with 'net' next.
