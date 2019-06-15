@@ -2,101 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E891046D10
-	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 02:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC74B46D18
+	for <lists+netdev@lfdr.de>; Sat, 15 Jun 2019 02:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbfFOACt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jun 2019 20:02:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51714 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726126AbfFOACt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jun 2019 20:02:49 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3CCA83082E4F;
-        Sat, 15 Jun 2019 00:02:49 +0000 (UTC)
-Received: from treble (ovpn-112-39.rdu2.redhat.com [10.10.112.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1BA0B1001B23;
-        Sat, 15 Jun 2019 00:02:44 +0000 (UTC)
-Date:   Fri, 14 Jun 2019 19:02:42 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kairui Song <kasong@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@aculab.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH v2 2/5] objtool: Fix ORC unwinding in non-JIT BPF
- generated code
-Message-ID: <20190615000242.e5tcogffvyuuhnrs@treble>
-References: <cover.1560534694.git.jpoimboe@redhat.com>
- <c0add777a2e0207c1474ce99baa492a7ce3502d6.1560534694.git.jpoimboe@redhat.com>
- <20190614205841.s4utbpurntpr6aiq@ast-mbp.dhcp.thefacebook.com>
- <20190614210745.kwiqm5pkgabruzuj@treble>
- <CAADnVQLK3ixK1JWF_mfScZoFzFF=6O8f1WcqkYqiejKeex1GSQ@mail.gmail.com>
- <20190614211929.drnnawbi7guqj2ck@treble>
- <CAADnVQ+BCxsKEK=ZzYOZkgTJAg_7jz1_f+FCX+Ms0vTOuW8Mxw@mail.gmail.com>
- <20190614231717.xukbfpc2cy47s4xh@treble>
- <CAADnVQJn+TnSj82MJ0ry1UTNGXD0qzESqfp7E1oi_HAYC-xTXg@mail.gmail.com>
+        id S1726617AbfFOAEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jun 2019 20:04:47 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:43705 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbfFOAEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jun 2019 20:04:47 -0400
+Received: by mail-lf1-f65.google.com with SMTP id j29so2809371lfk.10
+        for <netdev@vger.kernel.org>; Fri, 14 Jun 2019 17:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RUc6aybVSmfgt+Ryn6DHj05g9oP7kpQC3F+3kYf5eCo=;
+        b=Dg09vgPKDdjNcvltoNBK87TgfbvZARVpMn+NSf0ZB3yKiCchPRQq2HwkGZ9zcAP1SP
+         9mWvsJYPdHELiIZuNtyYG+LV2tC2KCbRqXtmLjO+AKl+SO24/HImdl1GRmm+NOkzbGrf
+         4fiUBIfofEngPQmumqmxhZnZLl4U1P51Bo8udahkkXj4K5sSxx7vdooG8REuy1umSMuW
+         tPiTjZLURtWQ0lWkTQ2LwKx1whdEvRWJ8KpsmqmTfvhzFnuYmIwqhfDIlB62ntNLC8n0
+         9h46vJ/znSeletBHrb+3n5ftOSieIcO6D7mxiEl6NHmt1cwVGAFUx6K3EV7vJXMgUUU6
+         Ga0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RUc6aybVSmfgt+Ryn6DHj05g9oP7kpQC3F+3kYf5eCo=;
+        b=FVDKI5XZY5XRvlBpKYFsR/un5OeiSJQSvBsbMqiGPigxd9JEU6rULiarQIjQJVg1H1
+         XMeeVmNE5PZbK1FwhgLJEKT76Zg15cOeK4g/kG5r/QhKr2VBLbGo0fDmjTaSJvI/A4bB
+         zz0/HV8ZuqZ0yKmlJbTbwIT4/TWutcNyQazXEaBormtZ6mFE8xvvy4VI19/9emxRBOkr
+         sAgUBn04QYn3PJAdisBz5a23ZmNFj3Q9y+U/iWA783Xq0PTh8pKlL4wmdQluhnpy7NhT
+         G4b3/Rdu+iXOfbcFSaBhtLw2wnwqc3x/oIg+USqNWIlPIq8jOaFYAPZ5cA9TR+F/t4Dx
+         7Ofg==
+X-Gm-Message-State: APjAAAXgYFgjQRGqtSsP4pzSU0jxU3oDiEdxaxGh4Sl9Z+r9Hy4Sy7Pv
+        wrKohZhpN9R6JE/d81XwxkWr0B/YZZz6qSSgFss=
+X-Google-Smtp-Source: APXvYqyNrXV3lWblsk44w3RzkGD3Eq/GDe06fCy801fYdaMaoxJu2/XJe8gxz4szEmyBhjWx/JwDV3AI1hq42Ui5MG4=
+X-Received: by 2002:a19:ab1a:: with SMTP id u26mr11525522lfe.6.1560557085297;
+ Fri, 14 Jun 2019 17:04:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJn+TnSj82MJ0ry1UTNGXD0qzESqfp7E1oi_HAYC-xTXg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Sat, 15 Jun 2019 00:02:49 +0000 (UTC)
+References: <20190614232221.248392-1-edumazet@google.com> <20190614232221.248392-2-edumazet@google.com>
+ <20190614234506.n3kuojutoaqxhyox@ast-mbp.dhcp.thefacebook.com> <a98fd64c-48b4-d008-d563-24cea01822d2@gmail.com>
+In-Reply-To: <a98fd64c-48b4-d008-d563-24cea01822d2@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 14 Jun 2019 17:04:33 -0700
+Message-ID: <CAADnVQJKpTJitoPernxEHP+R0tMAqwdOuDMcQAszu-ZM4D9Oow@mail.gmail.com>
+Subject: Re: [PATCH net 1/4] sysctl: define proc_do_static_key()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Feng Tang <feng.tang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 04:30:15PM -0700, Alexei Starovoitov wrote:
-> On Fri, Jun 14, 2019 at 4:17 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> >
-> > On Fri, Jun 14, 2019 at 02:22:59PM -0700, Alexei Starovoitov wrote:
-> > > On Fri, Jun 14, 2019 at 2:19 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > +#define JUMP_TABLE_SYM_PREFIX "jump_table."
-> > > > > > >
-> > > > > > > since external tool will be looking at it should it be named
-> > > > > > > "bpf_jump_table." to avoid potential name conflicts?
-> > > > > > > Or even more unique name?
-> > > > > > > Like "bpf_interpreter_jump_table." ?
-> > > > > >
-> > > > > > No, the point is that it's a generic feature which can also be used any
-> > > > > > non-BPF code which might also have a jump table.
-> > > > >
-> > > > > and you're proposing to name all such jump tables in the kernel
-> > > > > as static foo jump_table[] ?
-> > > >
-> > > > That's the idea.
-> > >
-> > > Then it needs much wider discussion.
-> >
-> > Why would it need wider discussion?  It only has one user.  If you
-> > honestly believe that it will be controversial to require future users
-> > to call a static jump table "jump_table" then we can have that
-> > discussion when it comes up.
-> 
-> It's clearly controversial.
-> I nacked it already on pointless name change
-> from "jumptable" to "jump_table" and now you're saying
-> that no one will complain about "jump_table" name
-> for all jump tables in the kernel that will ever appear?
+On Fri, Jun 14, 2019 at 4:55 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 6/14/19 4:45 PM, Alexei Starovoitov wrote:
+> > On Fri, Jun 14, 2019 at 04:22:18PM -0700, Eric Dumazet wrote:
+>
+> > maxlen is ignored by proc_do_static_key(), right?
+>
+> That is right, I was not sure putting a zero or sizeof(int)
+> would make sense here.
+>
+> Using sizeof(...key) is consistent with other sysctls,
 
-Let me get this straight.  You're saying that "jumptable" and
-"bpf_interpreter_jump_table" are both acceptable.
+yes. that makes sense. I was just curious whether I missed something.
 
-But NACK to "jump_table".
+> even of proc_do_static_key() uses a temporary structure and
+> a temporary integer in its current implementation.
 
-Ok...
-
--- 
-Josh
+yep.
+Acked-by: Alexei Starovoitov <ast@kernel.org>
