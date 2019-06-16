@@ -2,142 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC38947382
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3E44739E
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727094AbfFPHFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 03:05:47 -0400
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:46856 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725860AbfFPHFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 03:05:47 -0400
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5G742GH012380;
-        Sun, 16 Jun 2019 00:05:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=proofpoint;
- bh=btibZ4CwVccBYDGblYXVjuLjX+4kKoSQLrCMgw/R1lg=;
- b=RDTfg5dPcJjFhxllt3fzj2l1Gb3xt9+RG9HyfucCVpWPJ8M/0RoujL+jzSVVj75ArRDr
- NDZ/b1lJywyZFDjKTp1eEpCEmoFvHm1ga3PEX97Cn8r3ebxanEdrjArT1RoMthYHug85
- itGBW1xrfGQbmze82dhqT5ziq6TrnyRWtxX+cWQYbh0SYOYAZzjlKcfRPZYeCqjUhIMS
- jgAOtV5VVUeI1EYvrxnPu0zyG9wCybfKjmnWLY6hH6t4Pz9wkYbErR1f/Qtojp3IW5cC
- B8NY3JPNT/cykulQe09e6ZObjSEpNcYTvyBMUaOApyfMT/ujGKqtsAJOvruKPRTmsuO3 0Q== 
-Authentication-Results: cadence.com;
-        spf=pass smtp.mailfrom=pthombar@cadence.com
-Received: from nam03-by2-obe.outbound.protection.outlook.com (mail-by2nam03lp2050.outbound.protection.outlook.com [104.47.42.50])
-        by mx0b-0014ca01.pphosted.com with ESMTP id 2t4v8w2uqt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 16 Jun 2019 00:05:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector1;
+        id S1726012AbfFPHaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 03:30:05 -0400
+Received: from mail-eopbgr70089.outbound.protection.outlook.com ([40.107.7.89]:45518
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725860AbfFPHaE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 03:30:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=btibZ4CwVccBYDGblYXVjuLjX+4kKoSQLrCMgw/R1lg=;
- b=ZBPl/wYXcDWiRC+vqbqRiB6f5IWYHc8w3UPhvZmuUXlCJRZQdZLrKFVRuKNKkjUncS2zyPjU+BDjgfkEWb/YHfhZgPSLjgR2REvIXxGNP6fShQd6pou6rzC17qde0JQFVhjCNaRO5b3h5i2DWz0csbzKlgFy6PPzHwJxyu7y5Yw=
-Received: from DM5PR07CA0070.namprd07.prod.outlook.com (2603:10b6:4:ad::35) by
- MN2PR07MB6976.namprd07.prod.outlook.com (2603:10b6:208:1a8::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1987.12; Sun, 16 Jun
- 2019 07:05:38 +0000
-Received: from CO1NAM05FT034.eop-nam05.prod.protection.outlook.com
- (2a01:111:f400:7e50::200) by DM5PR07CA0070.outlook.office365.com
- (2603:10b6:4:ad::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1987.13 via Frontend
- Transport; Sun, 16 Jun 2019 07:05:38 +0000
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
- cadence.com discourages use of 199.43.4.28 as permitted sender)
-Received: from rmmaillnx1.cadence.com (199.43.4.28) by
- CO1NAM05FT034.mail.protection.outlook.com (10.152.96.146) with Microsoft SMTP
+ bh=gg/NeHwQUNIIdYSvnPKLFucqa35gVK2p4WgqFrnTD+k=;
+ b=pVtYOcbgJxRth/zzjt1qm0Oxs7aZJTAOGue0o5H9HfPGNWIDxUlpr/jSw/vggKP4U0BgmvPOQpn73QfiUVxEmDjHFqNAgEw0QMN9q21617kTBbAkGQeAmVhFRaC5pm/AskQhsNR0vNxmVApNWsNsQ156JIu0GYE+KGiqXKnQJ1c=
+Received: from DB6PR05MB3413.eurprd05.prod.outlook.com (10.175.233.14) by
+ DB6PR05MB3430.eurprd05.prod.outlook.com (10.170.222.23) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.7 via Frontend Transport; Sun, 16 Jun 2019 07:05:35 +0000
-Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
-        by rmmaillnx1.cadence.com (8.14.4/8.14.4) with ESMTP id x5G75W5m009035
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Sun, 16 Jun 2019 03:05:33 -0400
-X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
-Received: from maileu3.global.cadence.com (10.160.88.99) by
- maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3; Sun, 16 Jun 2019 09:05:31 +0200
-Received: from lvlogina.cadence.com (10.165.176.102) by
- maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Sun, 16 Jun 2019 09:05:31 +0200
-Received: from lvlogina.cadence.com (localhost.localdomain [127.0.0.1])
-        by lvlogina.cadence.com (8.14.4/8.14.4) with ESMTP id x5G75VPi022894;
-        Sun, 16 Jun 2019 08:05:31 +0100
-From:   Parshuram Thombare <pthombar@cadence.com>
-To:     <andrew@lunn.ch>, <nicolas.ferre@microchip.com>,
-        <davem@davemloft.net>, <f.fainelli@gmail.com>
-CC:     <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <rafalc@cadence.com>,
-        <aniljoy@cadence.com>, <piotrs@cadence.com>, <pthombar@cadence.com>
-Subject: [PATCH 6/6] net: macb: parameter added to cadence ethernet controller DT binding
-Date:   Sun, 16 Jun 2019 08:05:28 +0100
-Message-ID: <1560668728-22834-1-git-send-email-pthombar@cadence.com>
-X-Mailer: git-send-email 2.2.2
-In-Reply-To: <1560639680-19049-1-git-send-email-pthombar@cadence.com>
-References: <1560639680-19049-1-git-send-email-pthombar@cadence.com>
+ 15.20.1987.11; Sun, 16 Jun 2019 07:29:59 +0000
+Received: from DB6PR05MB3413.eurprd05.prod.outlook.com
+ ([fe80::9446:96ac:1ddf:b118]) by DB6PR05MB3413.eurprd05.prod.outlook.com
+ ([fe80::9446:96ac:1ddf:b118%5]) with mapi id 15.20.1987.014; Sun, 16 Jun 2019
+ 07:29:59 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>,
+        Rony Efraim <ronye@mellanox.com>,
+        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
+Thread-Topic: [PATCH net-next 1/3] net/sched: Introduce action ct
+Thread-Index: AQHVIFmsY/4/azwa5kOjF2Jw4P/H36abdgwAgAJz1oA=
+Date:   Sun, 16 Jun 2019 07:29:59 +0000
+Message-ID: <7152c343-63e6-aa7f-82c7-ad63725c3bc8@mellanox.com>
+References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
+ <1560259713-25603-2-git-send-email-paulb@mellanox.com>
+ <CAM_iQpXQgJti9faPA5kVV7Ly3LStHf3zwDP5S-PfBz2jR0Y8xA@mail.gmail.com>
+In-Reply-To: <CAM_iQpXQgJti9faPA5kVV7Ly3LStHf3zwDP5S-PfBz2jR0Y8xA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6PR0102CA0012.eurprd01.prod.exchangelabs.com
+ (2603:10a6:209:14::25) To DB6PR05MB3413.eurprd05.prod.outlook.com
+ (2603:10a6:6:21::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 27809bd4-4b51-4fbb-021d-08d6f22c7004
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR05MB3430;
+x-ms-traffictypediagnostic: DB6PR05MB3430:
+x-microsoft-antispam-prvs: <DB6PR05MB3430B2EE11E326E372E393BECFE80@DB6PR05MB3430.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0070A8666B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39850400004)(376002)(136003)(366004)(346002)(199004)(189003)(229853002)(64756008)(66446008)(4326008)(66946007)(8676002)(73956011)(66066001)(71190400001)(71200400001)(66476007)(66556008)(81166006)(81156014)(256004)(446003)(11346002)(52116002)(186003)(2616005)(26005)(476003)(486006)(386003)(6506007)(6246003)(53546011)(76176011)(102836004)(25786009)(4744005)(99286004)(54906003)(2906002)(14454004)(36756003)(6512007)(31686004)(305945005)(86362001)(6486002)(5660300002)(7736002)(478600001)(68736007)(8936002)(7416002)(6916009)(53936002)(6116002)(3846002)(31696002)(6436002)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR05MB3430;H:DB6PR05MB3413.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 9PcVFGzdld4OQMUHL8O4YSopaoau6CMYWVlo5bOwR3Od5U2cd36v2qgxJfU9Vqy+4EX21tjEvsV4VoJKk7YqabuvMRMw4sFYEgMKLoFJmJAxgJDIF1Eh+QpQaFondvJG40vjhcGIFhzQO4mArPXp0LVOSGs6Bpz3lOOwJhPI8580n4nwYhtEcxUh0Kb4NeRHPwIAlVWwqd9j6Dmb0t8HfZnVYRGZ+bWKIidrg9Oha6JW4krOGPfx8ru7Z7cTUsED/gxv8kN0PSRCUEQF5ilGg/OLUgCDJLABHJoJsnbkG6zWZXME7eb/4XftXJZfrZDWdtGU3ZrzTUPRRCiES/6bkgC2Z5stfl23jOLifuKBf+p6cfhFTvVvARNxjErmZsbA9zlgd11QFt7lfILvMprB/7Pi+xjVYXFogIY2/40AhYg=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <39CFF2B09FE4464ABE8D88893CA8B963@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-OrganizationHeadersPreserved: maileu3.global.cadence.com
-X-EOPAttributedMessage: 0
-X-Forefront-Antispam-Report: CIP:199.43.4.28;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(39850400004)(396003)(136003)(376002)(2980300002)(36092001)(199004)(189003)(6666004)(336012)(305945005)(76130400001)(426003)(186003)(77096007)(70206006)(446003)(70586007)(26005)(53416004)(11346002)(8936002)(81166006)(81156014)(8676002)(53936002)(50226002)(4326008)(107886003)(50466002)(51416003)(7696005)(48376002)(2906002)(76176011)(54906003)(26826003)(36756003)(478600001)(16586007)(316002)(110136005)(69596002)(486006)(47776003)(2201001)(5660300002)(126002)(356004)(476003)(2616005)(7126003)(86362001)(4744005);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR07MB6976;H:rmmaillnx1.cadence.com;FPR:;SPF:SoftFail;LANG:en;PTR:ErrorRetry;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9709b7c1-e08a-4ded-a8f2-08d6f2290800
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328);SRVR:MN2PR07MB6976;
-X-MS-TrafficTypeDiagnostic: MN2PR07MB6976:
-X-Microsoft-Antispam-PRVS: <MN2PR07MB6976A479C57B1AB41D813F20C1E80@MN2PR07MB6976.namprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-Forefront-PRVS: 0070A8666B
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: RBOTit8qKPjZy9eeaG9MxG2/yN6xsSD5kF6GvWIJe8ox2Z/K9x+PojLIVI9y/SXLQ/wdxwWnmD6W3ni2SkrtYOdhErtKqfJRuz69NtkI+0qQAph8ISjq535NpvhQ3/qFqJMzSMQ+bjeFJrww8gVOJLqEJ8IgvRL64f7l4tc4UMGKXyUG/Fma5WkDgIjXWuy8gBxRUCab1V5li6+YD5wathqAGR2u32p0vsu3dnV/y6qbFffnHY3+ocbY6UW44k3ja7TR/BrtQ2oqHN19VvsGYtCoVfrVlukPtrr2hP5UXAoy84hNIRHSqr2XmJTkdrQgFN89wSgQLY9SDxc8FxHW/rL4Q5mduVi2B9VsUU/Web0pd0s3+pPmo++V0Og9dyMXGsu095TJjRbXO7w7aw7/sfTyK0LmAgzgtX7yYDSB8ZI=
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2019 07:05:35.7662
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27809bd4-4b51-4fbb-021d-08d6f22c7004
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2019 07:29:59.7803
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9709b7c1-e08a-4ded-a8f2-08d6f2290800
-X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[199.43.4.28];Helo=[rmmaillnx1.cadence.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR07MB6976
-X-Proofpoint-SPF-Result: pass
-X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
- include:mktomail.com include:spf-0014ca01.pphosted.com
- include:spf.protection.outlook.com include:auth.msgapp.com
- include:spf.mandrillapp.com ~all
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-16_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906160068
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: paulb@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB3430
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New parameters added to Cadence ethernet controller DT binding
-for USXGMII interface.
-
-Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
----
- Documentation/devicetree/bindings/net/macb.txt | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-index 9c5e94482b5f..cd79ec9dddfb 100644
---- a/Documentation/devicetree/bindings/net/macb.txt
-+++ b/Documentation/devicetree/bindings/net/macb.txt
-@@ -25,6 +25,10 @@ Required properties:
- 	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
- 	Optional elements: 'tsu_clk'
- - clocks: Phandles to input clocks.
-+- serdes-rate External serdes rate.Mandatory for USXGMII mode.
-+	0 - 5G
-+	1 - 10G
-+- fixed-speed Speed for fixed mode UXSGMII interface based link
- 
- The MAC address will be determined using the optional properties
- defined in ethernet.txt.
--- 
-2.17.1
-
+DQpPbiA2LzE0LzIwMTkgOTowMiBQTSwgQ29uZyBXYW5nIHdyb3RlOg0KPiBPbiBUdWUsIEp1biAx
+MSwgMjAxOSBhdCA3OjA1IEFNIFBhdWwgQmxha2V5IDxwYXVsYkBtZWxsYW5veC5jb20+IHdyb3Rl
+Og0KPj4gQWxsb3cgc2VuZGluZyBhIHBhY2tldCB0byBjb25udHJhY2sgYW5kIHNldCBjb25udHJh
+Y2sgem9uZSwgbWFyaywNCj4+IGxhYmVscyBhbmQgbmF0IHBhcmFtZXRlcnMuDQo+Pg0KPiBUaGlz
+IGlzIHRvbyBzaG9ydCB0byBqdXN0aWZ5IHdoeSB5b3Ugd2FudCB0byBwbGF5IHdpdGggTDMgc3R1
+ZmYgaW4gTDIuDQo+IFBsZWFzZSBiZSBhcyBzcGVjaWZpYyBhcyB5b3UgY2FuLg0KPg0KPiBBbHNv
+LCBwbGVhc2UgZG9jdW1lbnQgaXRzIHVzZSBjYXNlIHRvby4NCj4NCj4gVGhhbmtzLg0KDQpTdXJl
+IEknbGwgYWRkIHRoYXQuDQoNCg==
