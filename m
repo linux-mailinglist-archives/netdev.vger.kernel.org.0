@@ -2,161 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A95547465
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 13:50:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E500A47481
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 14:44:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727044AbfFPLuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 07:50:50 -0400
-Received: from out03.mta.xmission.com ([166.70.13.233]:56399 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725879AbfFPLuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 07:50:50 -0400
-Received: from in01.mta.xmission.com ([166.70.13.51])
-        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.87)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1hcTgN-0001c7-5f; Sun, 16 Jun 2019 05:50:47 -0600
-Received: from ip72-206-97-68.om.om.cox.net ([72.206.97.68] helo=x220.xmission.com)
-        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.87)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1hcTgM-00045G-4G; Sun, 16 Jun 2019 05:50:46 -0600
-From:   ebiederm@xmission.com (Eric W. Biederman)
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, avagin@virtuozzo.com,
-        ktkhai@virtuozzo.com, "Serge E. Hallyn" <serge@hallyn.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20180429104412.22445-1-christian.brauner@ubuntu.com>
-        <20180429104412.22445-3-christian.brauner@ubuntu.com>
-        <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
-Date:   Sun, 16 Jun 2019 06:50:20 -0500
-In-Reply-To: <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
-        (Dmitry Torokhov's message of "Fri, 14 Jun 2019 15:49:30 -0700")
-Message-ID: <875zp5rbpf.fsf@xmission.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.1 (gnu/linux)
+        id S1726012AbfFPMoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 08:44:05 -0400
+Received: from mail-eopbgr00059.outbound.protection.outlook.com ([40.107.0.59]:11011
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725865AbfFPMoF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 08:44:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bMLxMjOgWa9g+34T5f8m9E1V/tJIfnT1FwKxNWO5+8s=;
+ b=Qj8BxVKEM48uoxRWeCJUezrXp0GsG7xFkxUOBQHEcUW7va/oLG5p/eHsRc2okyWdL+c8lRgEakt2gksSOyy8KKnJQExCXLYT86w4pQucnjlZ3khEGmVFKyNnIvoF17LBsMZn08o1SisT1RR9RsCHocj/aKcncvTIemGPvmFMZh0=
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.186.14) by
+ AM4PR05MB3202.eurprd05.prod.outlook.com (10.171.186.31) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.10; Sun, 16 Jun 2019 12:44:01 +0000
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6%6]) with mapi id 15.20.1987.014; Sun, 16 Jun 2019
+ 12:44:01 +0000
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+CC:     RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Mark Bloch <markb@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>, Petr Vorel <pvorel@suse.cz>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH rdma-next v1 0/4] Expose ENCAP mode to mlx5_ib
+Thread-Topic: [PATCH rdma-next v1 0/4] Expose ENCAP mode to mlx5_ib
+Thread-Index: AQHVIRk18/J41ozP+EePM2PV1Ubi36aeQCGA
+Date:   Sun, 16 Jun 2019 12:44:01 +0000
+Message-ID: <20190616124357.GH4694@mtr-leonro.mtl.com>
+References: <20190612122014.22359-1-leon@kernel.org>
+In-Reply-To: <20190612122014.22359-1-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2PR09CA0020.eurprd09.prod.outlook.com
+ (2603:10a6:101:16::32) To AM4PR05MB3137.eurprd05.prod.outlook.com
+ (2603:10a6:205:3::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d238620f-2d37-480c-ed75-08d6f2584e64
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3202;
+x-ms-traffictypediagnostic: AM4PR05MB3202:
+x-microsoft-antispam-prvs: <AM4PR05MB3202EFE40BC091915C31AF61B0E80@AM4PR05MB3202.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0070A8666B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(136003)(346002)(396003)(39860400002)(366004)(376002)(54534003)(189003)(199004)(8676002)(4326008)(52116002)(76176011)(6436002)(73956011)(66946007)(386003)(66476007)(66556008)(64756008)(66446008)(6486002)(81156014)(81166006)(6506007)(186003)(1076003)(6512007)(14454004)(6636002)(26005)(102836004)(25786009)(9686003)(33656002)(3846002)(6116002)(229853002)(107886003)(8936002)(53936002)(99286004)(305945005)(5660300002)(256004)(110136005)(66066001)(2906002)(54906003)(316002)(71200400001)(11346002)(6246003)(478600001)(476003)(68736007)(446003)(7736002)(486006)(71190400001)(86362001)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3202;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: khmL8PIeg4pNfvxg84PUpw+Yk6Q90RqSNBqfsBYBddo7FFfUkybDrnHhrotW8DQurubcduArEiNBCfFzyrWlL8+vFsoa3DIWwe4yJ4U7y0+c3xknDeOhX9vymZneEiCG+dLANxIrjo9LR8i+vBZydHcT/lP7LXgM/pVxzk1DT7DjiKFftOGZwGay0vVYdisv5jtrOwBrbKAc6u0CdR3whiSFGeCR1ML3cwCI7X9JlSWJJyVwX9/YASszmo0jk+XUt4A4GLXYJMP7nCOWdcVnn9oysF9xD8lGCr5FgYwMfWO2yNT/ho7LTO/d/GTgujADo/yQjJVG2m8ItCpQ300yCii3NBewccKH18Mryg/J9UbDHqjwhDF/J2i1LZFUGPUMdQuO5jjWtnhFkPICFt8PI4zBI/22RZW46L1rflnoVc8=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <37A744EF553FF2438A01E5C4BF8E415C@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1hcTgM-00045G-4G;;;mid=<875zp5rbpf.fsf@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=72.206.97.68;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/ysRzW/DjZLfSr+JJImozwhbNa5pFmzHw=
-X-SA-Exim-Connect-IP: 72.206.97.68
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa07.xmission.com
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=8.0 tests=ALL_TRUSTED,BAYES_50,
-        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,T_TooManySym_01,
-        T_XMDrugObfuBody_14 autolearn=disabled version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4827]
-        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-        *      [sa07 1397; Body=1 Fuz1=1 Fuz2=1]
-        *  0.2 T_XMDrugObfuBody_14 obfuscated drug references
-        *  0.0 T_TooManySym_01 4+ unique symbols in subject
-X-Spam-DCC: XMission; sa07 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Dmitry Torokhov <dmitry.torokhov@gmail.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 625 ms - load_scoreonly_sql: 0.08 (0.0%),
-        signal_user_changed: 4.1 (0.7%), b_tie_ro: 2.9 (0.5%), parse: 1.24
-        (0.2%), extract_message_metadata: 17 (2.6%), get_uri_detail_list: 3.5
-        (0.6%), tests_pri_-1000: 6 (1.0%), tests_pri_-950: 1.40 (0.2%),
-        tests_pri_-900: 1.15 (0.2%), tests_pri_-90: 29 (4.7%), check_bayes: 27
-        (4.4%), b_tokenize: 9 (1.5%), b_tok_get_all: 9 (1.4%), b_comp_prob:
-        3.3 (0.5%), b_tok_touch_all: 3.6 (0.6%), b_finish: 0.65 (0.1%),
-        tests_pri_0: 550 (88.0%), check_dkim_signature: 0.81 (0.1%),
-        check_dkim_adsp: 2.3 (0.4%), poll_dns_idle: 0.36 (0.1%), tests_pri_10:
-        2.3 (0.4%), tests_pri_500: 8 (1.3%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH net-next 2/2 v5] netns: restrict uevents
-X-Spam-Flag: No
-X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d238620f-2d37-480c-ed75-08d6f2584e64
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2019 12:44:01.2381
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3202
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Torokhov <dmitry.torokhov@gmail.com> writes:
-
-> Hi Christian,
+On Wed, Jun 12, 2019 at 03:20:10PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 >
-> On Sun, Apr 29, 2018 at 3:45 AM Christian Brauner
-> <christian.brauner@ubuntu.com> wrote:
->>
->> commit 07e98962fa77 ("kobject: Send hotplug events in all network namespaces")
->>abhishekbh@google.com
->> enabled sending hotplug events into all network namespaces back in 2010.
->> Over time the set of uevents that get sent into all network namespaces has
->> shrunk. We have now reached the point where hotplug events for all devices
->> that carry a namespace tag are filtered according to that namespace.
->> Specifically, they are filtered whenever the namespace tag of the kobject
->> does not match the namespace tag of the netlink socket.
->> Currently, only network devices carry namespace tags (i.e. network
->> namespace tags). Hence, uevents for network devices only show up in the
->> network namespace such devices are created in or moved to.
->>
->> However, any uevent for a kobject that does not have a namespace tag
->> associated with it will not be filtered and we will broadcast it into all
->> network namespaces. This behavior stopped making sense when user namespaces
->> were introduced.
->>
->> This patch simplifies and fixes couple of things:
->> - Split codepath for sending uevents by kobject namespace tags:
->>   1. Untagged kobjects - uevent_net_broadcast_untagged():
->>      Untagged kobjects will be broadcast into all uevent sockets recorded
->>      in uevent_sock_list, i.e. into all network namespacs owned by the
->>      intial user namespace.
->>   2. Tagged kobjects - uevent_net_broadcast_tagged():
->>      Tagged kobjects will only be broadcast into the network namespace they
->>      were tagged with.
->>   Handling of tagged kobjects in 2. does not cause any semantic changes.
->>   This is just splitting out the filtering logic that was handled by
->>   kobj_bcast_filter() before.
->>   Handling of untagged kobjects in 1. will cause a semantic change. The
->>   reasons why this is needed and ok have been discussed in [1]. Here is a
->>   short summary:
->>   - Userspace ignores uevents from network namespaces that are not owned by
->>     the intial user namespace:
->>     Uevents are filtered by userspace in a user namespace because the
->>     received uid != 0. Instead the uid associated with the event will be
->>     65534 == "nobody" because the global root uid is not mapped.
->>     This means we can safely and without introducing regressions modify the
->>     kernel to not send uevents into all network namespaces whose owning
->>     user namespace is not the initial user namespace because we know that
->>     userspace will ignore the message because of the uid anyway.
->>     I have a) verified that is is true for every udev implementation out
->>     there b) that this behavior has been present in all udev
->>     implementations from the very beginning.
+> Changelog v0->v1:
+>  * Added patch to devlink to use declared enum for encap mode instead of =
+u8
+>  * Constify input argumetn to encap mode function
+>  * fix encap variable type to be boolean
 >
-> Unfortunately udev is not the only consumer of uevents, for example on
-> Android there is healthd that also consumes uevents, and this
-> particular change broke Android running in a container on Chrome OS.
-> Can this be reverted? Or, if we want to keep this, how can containers
-> that use separate user namespace still listen to uevents?
+> ---------------------------------------------------------------------
+> Hi,
+>
+> This is short series from Maor to expose and use enacap mode inside mlx5_=
+ib.
+>
+> Thanks
+>
+> Leon Romanovsky (1):
+>   net/mlx5: Declare more strictly devlink encap mode
+>
+> Maor Gottlieb (3):
+>   net/mlx5: Expose eswitch encap mode
 
-The code has been in the main tree for over a year so at a minimum
-reverting this has the real chance of causing a regression for
-folks like lxc.
+Those two applied to mlx5-next
+82b11f071936 net/mlx5: Expose eswitch encap mode
+98fdbea55037 net/mlx5: Declare more strictly devlink encap mode
 
-I don't think Android running in a container on Chrome OS was even
-available when this change was merged.  So I don't think this falls
-under the ordinary no regression rules.
+>   RDMA/mlx5: Consider eswitch encap mode
+>   RDMA/mlx5: Enable decap and packet reformat on FDB
 
-I may be wrong but I think this is a case of developing new code on an
-old kernel and developing a dependence on a bug that had already been
-fixed in newer kernels.  I know Christian did his best to reach out to
-everyone when this change came through, so only getting a bug report
-over a year after the code was merged is concerning.
+Doug, Jason
 
-That said uevents should be completely useless in a user namespace
-except as letting you know something happened.  Is that what healthd
-is using them for?
+Can you please take those two patches in addition to latest mlx5-next?
 
+Thanks
 
-One solution would be to tweak the container userspace on ChromeOS to
-listen to the uevents outside the container and to relay them into the
-Android container.
-
-Eric
+>
+>  drivers/infiniband/hw/mlx5/main.c             | 25 ++++++++++++++-----
+>  .../net/ethernet/mellanox/mlx5/core/eswitch.c | 11 ++++++++
+>  .../net/ethernet/mellanox/mlx5/core/eswitch.h |  8 +++---
+>  .../mellanox/mlx5/core/eswitch_offloads.c     |  6 +++--
+>  include/linux/mlx5/eswitch.h                  | 12 +++++++++
+>  include/net/devlink.h                         |  6 +++--
+>  net/core/devlink.c                            |  6 +++--
+>  7 files changed, 59 insertions(+), 15 deletions(-)
+>
+> --
+> 2.20.1
+>
