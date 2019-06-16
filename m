@@ -2,107 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E9447669
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 20:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F894769C
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 21:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfFPS36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 14:29:58 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:35810 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725947AbfFPS36 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Jun 2019 14:29:58 -0400
-X-Greylist: delayed 569 seconds by postgrey-1.27 at vger.kernel.org; Sun, 16 Jun 2019 14:29:56 EDT
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id F2C1160743;
-        Sun, 16 Jun 2019 20:20:29 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="FN0hLvbF";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id B867D1C65C75;
-        Sun, 16 Jun 2019 20:20:29 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com B867D1C65C75
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1560709229;
-        bh=FVz7Hn4FLBbfcWH9mwHn/c+q2RITenYFgIKX1MKhYCQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FN0hLvbFuwlQgK6xPtWy5fqR54Ff84xdsrphIIXG+WUQ4QJW72tqJF6p8YfBf+aJ7
-         3GW2x6uBRW9ejmGind7x0drMPvLDJ0NKrSbxj4svV54M9YuSeUm3pIMUjJK+J2YzCc
-         1TnUt1XpdxYQworIBPiKx/+Yrm7N9t/cAHDwy5DteKdYG6VFyqHImr+By1CxmiG2Pg
-         AWwkbHe7zuowI7rpLBqhGAF8c8tfoGXcbmrWcwMaXavwRp4NfUsCrV326WThnk+JH5
-         LIgLQ7g6/C3PCQsdxd/Y7+AduwmUIMrs1ZiVbY+rVS5Chz0mUBTMzhKumHFBQbZVMT
-         xFVogJiQQt5Ww==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, john@phrozen.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net-next 2/2] net: dsa: mt7530: Add MT7621 TRGMII mode support
-Date:   Sun, 16 Jun 2019 20:20:10 +0200
-Message-Id: <20190616182010.18778-3-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190616182010.18778-1-opensource@vdorst.com>
-References: <20190616182010.18778-1-opensource@vdorst.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1727382AbfFPTpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 15:45:01 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:48736 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726411AbfFPTpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 15:45:01 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hcb5G-0002aY-2r; Sun, 16 Jun 2019 21:44:58 +0200
+Message-ID: <d16897007cee0561127c3155f90a83deb2853cfa.camel@sipsolutions.net>
+Subject: Re: VLAN tags in mac_len
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        roopa@cumulusnetworks.com, jhs@mojatatu.com,
+        David Ahern <dsahern@gmail.com>,
+        Zahari Doychev <zahari.doychev@linux.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Date:   Sun, 16 Jun 2019 21:44:55 +0200
+In-Reply-To: <9e3261a9-0fd2-aa36-d739-9f1adca1408b@cumulusnetworks.com> (sfid-20190616_105201_738030_DAEF0153)
+References: <68c99662210c8e9e37f198ddf8cb00bccf301c4b.camel@sipsolutions.net>
+         <20190615151913.cgrfyflwwnhym4u2@ast-mbp.dhcp.thefacebook.com>
+         <e487656b854ca999d14eb8072e5553eb2676a9f4.camel@sipsolutions.net>
+         <9e3261a9-0fd2-aa36-d739-9f1adca1408b@cumulusnetworks.com>
+         (sfid-20190616_105201_738030_DAEF0153)
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MT7621 internal MT7530 switch also supports TRGMII mode.
-TRGMII speed is 1200MBit.
+On Sun, 2019-06-16 at 11:51 +0300, Nikolay Aleksandrov wrote:
 
-Signed-off-by: René van Dorst <opensource@vdorst.com>
----
- drivers/net/dsa/mt7530.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+> > Thinking along those lines, I sort of ended up with the following scheme
+> > (just for the skb head, not the frags/fraglist):
+> > 
+> >           +------------------+----------------+---------------+
+> >  headroom | eth | vlan | ... | IP  | TCP      | payload       | tailroom
+> >           +------------------+----------------+---------------+
+> > ^ skb->head_ptr
+> >           ^ skb->l2_ptr
+> >                              ^ skb->l3_ptr == skb->l2_ptr + skb->l2_len
+> >                                     ...
+> >                                               ^ skb->payload_ptr
+> >                                                               ^ skb->tail
+[...]
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c7d352da5448..88de4e880417 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -435,11 +435,20 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
- 		trgint = 0;
- 		ncpo1 = 0x0c80;
- 		ssc_delta = 0x87;
-+
-+		/* Port 6 delay settings RGMII central align */
-+		mt7530_rmw(priv, MT7530_TRGMII_TXCTRL, BIT(30) | BIT(28), 0);
-+		mt7530_write(priv, MT7530_TRGMII_TCK_CTRL, 0x0855);
- 		break;
- 	case PHY_INTERFACE_MODE_TRGMII:
- 		trgint = 1;
--		ncpo1 = 0x1400;
-+		/* PLL frequency: MT7621 150MHz, other 162.5MHz */
-+		ncpo1 = (priv->id == ID_MT7621 ? 0x0780 : 0x1400);
- 		ssc_delta = 0x57;
-+
-+		/* Port 6 delay settings TRGMII central align */
-+		mt7530_rmw(priv, MT7530_TRGMII_TXCTRL, 0, BIT(30));
-+		mt7530_write(priv, MT7530_TRGMII_TCK_CTRL, 0x0055);
- 		break;
- 	default:
- 		dev_err(priv->dev, "xMII mode %d not supported\n", mode);
-@@ -507,7 +516,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
- 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
- 				   RD_TAP_MASK, RD_TAP(16));
- 	else
--		mt7623_trgmii_set(priv, GSW_INTF_MODE, INTF_MODE_TRGMII);
-+		if (priv->id != ID_MT7621)
-+			mt7623_trgmii_set(priv, GSW_INTF_MODE,
-+					  INTF_MODE_TRGMII);
- 
- 	return 0;
- }
--- 
-2.20.1
+> > (Now, if you wanted to implement this, you probably wouldn't have l2_ptr
+> > but l2_offset etc. but that's an implementation detail.)
+> > 
+> 
+> I do like the scheme outlined above, it makes it easier to reason about
+> all of this, but obviously it'd require quite some changes.
+
+Yeah. I'm not really ready to suggest something as radical.
+
+But as you found out below, I even got confused *again* while
+*carefully* looking at this, and messed up mac_len vs. mac_header_len.
+
+In fact, even looking at it now, I'm not entirely sure I see the
+difference. Why do we need both? They have different implementation
+semantics, but shouldn't they sort of be the same?
+
+> > > It breaks connectivity between bridge and
+> > > members when vlans are used. The host generated packets going out of the bridge
+> > > have mac_len = 0.
+> > 
+> > Which probably indicates that we're not even consistent with the egress
+> > scheme I pointed out above, probably because we *also* have
+> > hard_header_len?
+> > 
+> 
+> IIRC, mac_len is only set on Rx, while on Tx it usually isn't. More below.
+
+Yes, looks like.
+
+> > I'm not even sure I understand the bug that Nikolay described, because
+> > br_dev_xmit() does:
+> > 
+> >         skb_reset_mac_header(skb);
+> >         eth = eth_hdr(skb);
+> >         skb_pull(skb, ETH_HLEN);
+> > 
+> > so after this we *do* end up with an SKB that has mac_len == ETH_HLEN,
+> > if it was transmitted out the bridge netdev itself, and thus how would
+> > the bug happen?
+> > 
+> 
+> I said *mac_len*. :) 
+
+Yes, I confused myself here.
+
+> The above sets mac_header, at that point you'll have
+> the following values: mac_len = 0, mac_header_len = 14 (skb_mac_header_len
+> uses network_header - mac_header which is set there), but that is easy
+> to overcome and if you do go down the path of consistently using and updating
+> mac_len it should work.
+
+Yeah, so basically all we really need is to actually call
+skb_reset_mac_len() in addition to skb_reset_mac_header().
+
+Which, is, "slightly" confusing (to say the least) - why are mac_len and
+mac_header two completely separate concepts? It almost seems like they
+should be two sides of the same coin (len/ptr) but we also have
+mac_header_len...
+
+Oh well.
+
+So maybe we should go back to square 1 and resend the patches Zahari had
+originally, but with the added skb_reset_mac_len()?
+
+johannes
 
