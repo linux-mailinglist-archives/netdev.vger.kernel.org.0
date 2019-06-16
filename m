@@ -2,41 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B89476E7
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 23:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49009476F0
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 23:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727464AbfFPVEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 17:04:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52136 "EHLO
+        id S1727225AbfFPVNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 17:13:46 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52280 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725920AbfFPVEE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 17:04:04 -0400
+        with ESMTP id S1725920AbfFPVNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 17:13:46 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CD22C151C321C;
-        Sun, 16 Jun 2019 14:04:03 -0700 (PDT)
-Date:   Sun, 16 Jun 2019 14:04:03 -0700 (PDT)
-Message-Id: <20190616.140403.421351967333052868.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, jiri@mellanox.com,
-        alexpe@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/17] mlxsw: Improve IPv6 route insertion rate
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9D2D2151C344E;
+        Sun, 16 Jun 2019 14:13:45 -0700 (PDT)
+Date:   Sun, 16 Jun 2019 14:13:45 -0700 (PDT)
+Message-Id: <20190616.141345.1132798019172535158.davem@davemloft.net>
+To:     mrv@mojatatu.com
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH net-next 1/1] tc-tests: added path to ip command in tdc
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190615140751.17661-1-idosch@idosch.org>
-References: <20190615140751.17661-1-idosch@idosch.org>
+In-Reply-To: <1560627703-1844-1-git-send-email-mrv@mojatatu.com>
+References: <1560627703-1844-1-git-send-email-mrv@mojatatu.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Jun 2019 14:04:04 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Jun 2019 14:13:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Roman Mashak <mrv@mojatatu.com>
+Date: Sat, 15 Jun 2019 15:41:43 -0400
 
-David A., please review the ipv6 notification changes.
+> This macro $IP will be used in upcoming tc tests, which require
+> to create interfaces etc.
+> 
+> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
 
-Thank you.
+Applied.
