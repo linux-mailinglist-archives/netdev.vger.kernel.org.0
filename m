@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8334E4737A
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:05:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27CA64737C
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725945AbfFPHE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 03:04:58 -0400
-Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:45352 "EHLO
+        id S1726266AbfFPHFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 03:05:18 -0400
+Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:45460 "EHLO
         mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725860AbfFPHE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 03:04:57 -0400
+        by vger.kernel.org with ESMTP id S1725860AbfFPHFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 03:05:18 -0400
 Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
-        by mx0a-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5G722On015307;
-        Sun, 16 Jun 2019 00:04:49 -0700
+        by mx0a-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5G723km015343;
+        Sun, 16 Jun 2019 00:05:12 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=proofpoint;
- bh=2/bx3m8FETN51Y5DUPgQ1/H96hRuyHuTG8xY+mj1W9U=;
- b=g1uatCF8bjE6kKs2ABxBEhmy/en70aoMlluxjXpWuwMXguUMXmbaseRxPv95JZl+id3O
- KvJ94UUf6ksavDtx55fUpnw6llzFofve8cgPhJcmIbDjMItU84gdO2nwVj4L9mXbh4Ql
- /dFSlGUJC2+GGsc8arlh+2AXXXibx7qgUceoE+ws/vPOwlslwlluJtoy0GhDcfjUeZQR
- HzJSaRSfs6DdPmcGH1wvtGnJ+XSCoMuhpxlZGW/dmee7nnd407VFB3ydqpRjhIFB0FD7
- t49QczKOJJr2Ka7E1J1qKd9Lg/lIaZpFdE7rcwgujXTRriYzLKQXxI108+VI1ATjXUxF 6Q== 
+ bh=2871iQuj6mhD0LeWxbihfTlXitwpwttJ3+TrYK5cMjw=;
+ b=DI8QVidCozASU3rBKQnFWEQs3MamCt9D2WgBUCBq8FuvBwOXEllR67eeKrEyCD0SjjDt
+ Br3sPkOtr/kg3zhIOvHcCXG+Ip6lRDhDud5amTx47CTgDO3AX6qT1uLsyU9W1D9z9q9C
+ /IejymaDwUgrca1UADYYxV8n+g1CZ26I5oZdnDnTOMjmxjlIBcV29Lmo4PzRl6hPcWXC
+ 6Y7gySHOokUMEUqi31zHDcT7ymdyWMxzfngknik43W5HkWfrJI5bynqkHB6nIXUyfyrs
+ 8//9mRFyHbjATYuzo4+UlQXbmNoaxsHx1kGo9H5Jmv8hrboKi/sv0euoBnN+yp8bFHfD /g== 
 Authentication-Results: cadence.com;
         spf=pass smtp.mailfrom=pthombar@cadence.com
-Received: from nam04-bn3-obe.outbound.protection.outlook.com (mail-bn3nam04lp2052.outbound.protection.outlook.com [104.47.46.52])
-        by mx0a-0014ca01.pphosted.com with ESMTP id 2t4w7v2gm3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 16 Jun 2019 00:04:48 -0700
+Received: from nam03-by2-obe.outbound.protection.outlook.com (mail-by2nam03lp2051.outbound.protection.outlook.com [104.47.42.51])
+        by mx0a-0014ca01.pphosted.com with ESMTP id 2t4w7v2gn5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 16 Jun 2019 00:05:11 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2/bx3m8FETN51Y5DUPgQ1/H96hRuyHuTG8xY+mj1W9U=;
- b=HhhnxVF68MQZPh6SwQWijEvD46x2+mOPv+iAe8QwF6wjRMfONO8KCOLU+7WjQAvUEpv7cSi37s7l19tIC+Jbdmhp0HHWyt2HhzCy2NwcUFgkgOnT5gXaUwhnSImmOqwZlfi3ZKctlHbgBVvsmYp2VK5QPZbLLEf1HcAFzU8E1b8=
-Received: from DM6PR07CA0008.namprd07.prod.outlook.com (2603:10b6:5:94::21) by
- DM6PR07MB6826.namprd07.prod.outlook.com (2603:10b6:5:159::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.11; Sun, 16 Jun 2019 07:04:46 +0000
-Received: from DM3NAM05FT019.eop-nam05.prod.protection.outlook.com
- (2a01:111:f400:7e51::202) by DM6PR07CA0008.outlook.office365.com
- (2603:10b6:5:94::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1965.17 via Frontend
- Transport; Sun, 16 Jun 2019 07:04:45 +0000
+ bh=2871iQuj6mhD0LeWxbihfTlXitwpwttJ3+TrYK5cMjw=;
+ b=l86Y4sfsjLdAa9xZxQRQZvAzOuOJWc+vwoNutTzYkmxgZH3oxVqMTNhzSNosyRQcYY++hn98/Cq9Hp597Xyq0+m0ZN6Uuy4x+WXAhEXc0ycB7yfT0Gzet3Du80JIFqXOAvTaomXxD54p2vRJyDy6NNhCClhxEbIG7IjpHyOg2xs=
+Received: from BYAPR07CA0094.namprd07.prod.outlook.com (2603:10b6:a03:12b::35)
+ by BYAPR07MB6821.namprd07.prod.outlook.com (2603:10b6:a03:128::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1987.12; Sun, 16 Jun
+ 2019 07:05:09 +0000
+Received: from DM3NAM05FT047.eop-nam05.prod.protection.outlook.com
+ (2a01:111:f400:7e51::208) by BYAPR07CA0094.outlook.office365.com
+ (2603:10b6:a03:12b::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1987.13 via Frontend
+ Transport; Sun, 16 Jun 2019 07:05:09 +0000
 Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
  cadence.com discourages use of 158.140.1.28 as permitted sender)
-Received: from sjmaillnx1.cadence.com (158.140.1.28) by
- DM3NAM05FT019.mail.protection.outlook.com (10.152.98.128) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.7 via Frontend Transport; Sun, 16 Jun 2019 07:04:45 +0000
+Received: from sjmaillnx2.cadence.com (158.140.1.28) by
+ DM3NAM05FT047.mail.protection.outlook.com (10.152.98.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.2008.7 via Frontend Transport; Sun, 16 Jun 2019 07:05:08 +0000
 Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
-        by sjmaillnx1.cadence.com (8.14.4/8.14.4) with ESMTP id x5G74gxk007612
+        by sjmaillnx2.cadence.com (8.14.4/8.14.4) with ESMTP id x5G756et022175
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Sun, 16 Jun 2019 00:04:43 -0700
+        Sun, 16 Jun 2019 00:05:07 -0700
 X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
 Received: from maileu3.global.cadence.com (10.160.88.99) by
  maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3; Sun, 16 Jun 2019 09:04:41 +0200
+ 15.0.1367.3; Sun, 16 Jun 2019 09:05:05 +0200
 Received: from lvlogina.cadence.com (10.165.176.102) by
  maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Sun, 16 Jun 2019 09:04:41 +0200
+ 15.0.1367.3 via Frontend Transport; Sun, 16 Jun 2019 09:05:04 +0200
 Received: from lvlogina.cadence.com (localhost.localdomain [127.0.0.1])
-        by lvlogina.cadence.com (8.14.4/8.14.4) with ESMTP id x5G74cLu022046;
-        Sun, 16 Jun 2019 08:04:39 +0100
+        by lvlogina.cadence.com (8.14.4/8.14.4) with ESMTP id x5G755q1022400;
+        Sun, 16 Jun 2019 08:05:05 +0100
 From:   Parshuram Thombare <pthombar@cadence.com>
 To:     <andrew@lunn.ch>, <nicolas.ferre@microchip.com>,
         <davem@davemloft.net>, <f.fainelli@gmail.com>
 CC:     <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
         <linux-kernel@vger.kernel.org>, <rafalc@cadence.com>,
         <aniljoy@cadence.com>, <piotrs@cadence.com>, <pthombar@cadence.com>
-Subject: [PATCH 2/6] net: macb: add support for sgmii MAC-PHY interface
-Date:   Sun, 16 Jun 2019 08:04:37 +0100
-Message-ID: <1560668677-21935-1-git-send-email-pthombar@cadence.com>
+Subject: [PATCH 3/6] net: macb: add PHY configuration in MACB PCI wrapper
+Date:   Sun, 16 Jun 2019 08:05:03 +0100
+Message-ID: <1560668703-22357-1-git-send-email-pthombar@cadence.com>
 X-Mailer: git-send-email 2.2.2
 In-Reply-To: <1560639680-19049-1-git-send-email-pthombar@cadence.com>
 References: <1560639680-19049-1-git-send-email-pthombar@cadence.com>
@@ -79,24 +80,24 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-OrganizationHeadersPreserved: maileu3.global.cadence.com
 X-EOPAttributedMessage: 0
-X-Forefront-Antispam-Report: CIP:158.140.1.28;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(39860400002)(396003)(346002)(136003)(2980300002)(199004)(36092001)(189003)(2906002)(8676002)(77096007)(356004)(48376002)(336012)(2201001)(7636002)(53416004)(50466002)(86362001)(11346002)(478600001)(50226002)(26826003)(54906003)(14444005)(476003)(305945005)(30864003)(426003)(2616005)(446003)(7126003)(126002)(486006)(51416003)(7696005)(76176011)(8936002)(36756003)(5660300002)(246002)(76130400001)(316002)(186003)(4326008)(110136005)(107886003)(26005)(16586007)(47776003)(70586007)(70206006);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR07MB6826;H:sjmaillnx1.cadence.com;FPR:;SPF:SoftFail;LANG:en;PTR:corp.Cadence.COM;A:1;MX:1;
+X-Forefront-Antispam-Report: CIP:158.140.1.28;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(396003)(39860400002)(346002)(376002)(2980300002)(189003)(199004)(36092001)(2906002)(7636002)(16586007)(26005)(316002)(26826003)(70206006)(70586007)(76130400001)(356004)(5660300002)(486006)(2201001)(478600001)(4326008)(107886003)(8676002)(7696005)(47776003)(11346002)(476003)(126002)(305945005)(51416003)(186003)(86362001)(336012)(446003)(54906003)(426003)(8936002)(7126003)(2616005)(50226002)(246002)(53416004)(76176011)(77096007)(50466002)(48376002)(110136005)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR07MB6821;H:sjmaillnx2.cadence.com;FPR:;SPF:SoftFail;LANG:en;PTR:corp.cadence.com;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9184f4e7-56bc-469d-5f63-08d6f228ea00
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328);SRVR:DM6PR07MB6826;
-X-MS-TrafficTypeDiagnostic: DM6PR07MB6826:
-X-Microsoft-Antispam-PRVS: <DM6PR07MB68265B0CBC005FA98ADF7799C1E80@DM6PR07MB6826.namprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Office365-Filtering-Correlation-Id: a710c3ce-3bd1-4114-b3ca-08d6f228f7d8
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328);SRVR:BYAPR07MB6821;
+X-MS-TrafficTypeDiagnostic: BYAPR07MB6821:
+X-Microsoft-Antispam-PRVS: <BYAPR07MB68219790F2ADD37D930C3FBBC1E80@BYAPR07MB6821.namprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
 X-Forefront-PRVS: 0070A8666B
 X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: 2ubam9zcCc5pDhWNgupZIf0TAecT4hWIQsYntUuYU/8Drg0l2T3pOSUyI06lmnS6ofBgfCfBg4z5bYpvyPg3113FbmPK20SIOJanX3DCMfHSepbh+p/FFLUAtiqW9A8pH1gaNdEE6lr/9tGZShzM/9MinBn4Xm044dyzvusMNT+q8iTbLF/ebhTUND/TWzUwXoLuelYEWeddYoVkVx8sKjSbeuqQaa8jiucAvXSO5C4EcRcSREhEcws6yvFDdjpFAsjINhykIcTiFIiP68zFk6qgZZayBHFoqr/JeAkn529SkREfDWObBWkghbX44g4jeFY6mMjd+JVtXwoJS19EjJuhG/YyKB+IAIu/K3l5EwkbH/CZjc4b4FaGid1VsYwNOwYyW04spLTR2uAB9ba9IbZPixnEa06CbaZzd3VCcUQ=
+X-Microsoft-Antispam-Message-Info: oSHxJtYjOdi82COqV4v84feTNkrFyxPwPtYnU1H13RkAKjObNadJGAERR+/Hjhq5chJS0s6JCGshmGrc1ZjTjBESjCgIZet0HVm4v21tOlc/LClWI2kDZ6uPdQV+7fTxm8MrcbcGZwQjlYk2aumu+0VA9c0wQMocidRIzQTTTBNN9mfZ5IWvQ6xswyVnUpZD4qHR2pmME5sduy/E0WLxV/ULtWW8GbeLSaYhWeMBqg1gFuBptm68YIvcu1dwjZRT1MsP+GV8stla47pXzA2cL3XKjn9ouFOVSu1JtXHeGLub7Y6NfXKVdyPqA5sYsimTdZQdVQaFFfUXQv8R4+n3hu1+xyHk/MO0aDyL7JG0t3nzMcS17jjnaZqN1LHRn43ruWGR1XJudV6n2xDdK+jzjDHysWoHKdABdCgqDV7hnKA=
 X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2019 07:04:45.3115
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2019 07:05:08.5418
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9184f4e7-56bc-469d-5f63-08d6f228ea00
+X-MS-Exchange-CrossTenant-Network-Message-Id: a710c3ce-3bd1-4114-b3ca-08d6f228f7d8
 X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.28];Helo=[sjmaillnx1.cadence.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.28];Helo=[sjmaillnx2.cadence.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR07MB6826
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR07MB6821
 X-Proofpoint-SPF-Result: pass
 X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
  include:mktomail.com include:spf-0014ca01.pphosted.com
@@ -105,7 +106,7 @@ X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-16_03:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- priorityscore=1501 malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
  spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1906160067
@@ -114,405 +115,271 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is version 2 of patch to add support for SGMII interface) and
-2.5Gbps MAC in Cadence ethernet controller driver.
+This patch add TI PHY DP83867 configuration for SGMII link in
+Cadence MACB PCI wrapper.
 
 Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
 ---
- drivers/net/ethernet/cadence/macb.h      |  76 +++++++++--
- drivers/net/ethernet/cadence/macb_main.c | 157 ++++++++++++++++++++---
- 2 files changed, 202 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/cadence/macb_pci.c | 225 ++++++++++++++++++++++++
+ 1 file changed, 225 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 35ed13236c8b..85c7e4cb1057 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -80,6 +80,7 @@
- #define MACB_RBQPH		0x04D4
+diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
+index 248a8fc45069..1001e03191a1 100644
+--- a/drivers/net/ethernet/cadence/macb_pci.c
++++ b/drivers/net/ethernet/cadence/macb_pci.c
+@@ -24,6 +24,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/iopoll.h>
+ #include <linux/platform_data/macb.h>
+ #include <linux/platform_device.h>
+ #include "macb.h"
+@@ -37,6 +38,224 @@
+ #define GEM_PCLK_RATE 50000000
+ #define GEM_HCLK_RATE 50000000
  
- /* GEM register offsets. */
-+#define GEM_NCR			0x0000 /* Network Control */
- #define GEM_NCFGR		0x0004 /* Network Config */
- #define GEM_USRIO		0x000c /* User IO */
- #define GEM_DMACFG		0x0010 /* DMA Configuration */
-@@ -159,6 +160,9 @@
- #define GEM_PEFTN		0x01f4 /* PTP Peer Event Frame Tx Ns */
- #define GEM_PEFRSL		0x01f8 /* PTP Peer Event Frame Rx Sec Low */
- #define GEM_PEFRN		0x01fc /* PTP Peer Event Frame Rx Ns */
-+#define GEM_PCS_CTRL		0x0200 /* PCS Control */
-+#define GEM_PCS_STATUS          0x0204 /* PCS Status */
-+#define GEM_PCS_AN_LP_BASE      0x0214 /* PCS AN LP BASE*/
- #define GEM_DCFG1		0x0280 /* Design Config 1 */
- #define GEM_DCFG2		0x0284 /* Design Config 2 */
- #define GEM_DCFG3		0x0288 /* Design Config 3 */
-@@ -274,6 +278,10 @@
- #define MACB_IRXFCS_OFFSET	19
- #define MACB_IRXFCS_SIZE	1
- 
-+/* GEM specific NCR bitfields. */
-+#define GEM_TWO_PT_FIVE_GIG_OFFSET	29
-+#define GEM_TWO_PT_FIVE_GIG_SIZE	1
++#define TI_PHY_DP83867_ID	0x2000a231
++#define TI_PHY_DEVADDR		0x1f
++#define PHY_REGCR 0x0D
++#define PHY_ADDAR 0x0E
 +
- /* GEM specific NCFGR bitfields. */
- #define GEM_GBE_OFFSET		10 /* Gigabit mode enable */
- #define GEM_GBE_SIZE		1
-@@ -326,6 +334,9 @@
- #define MACB_MDIO_SIZE		1
- #define MACB_IDLE_OFFSET	2 /* The PHY management logic is idle */
- #define MACB_IDLE_SIZE		1
-+#define MACB_DUPLEX_OFFSET      3
-+#define MACB_DUPLEX_SIZE        1
++#define MACB_MDIO_TIMEOUT	1000000 /* in usecs */
 +
- 
- /* Bitfields in TSR */
- #define MACB_UBR_OFFSET		0 /* Used bit read */
-@@ -459,11 +470,37 @@
- #define MACB_REV_OFFSET				0
- #define MACB_REV_SIZE				16
- 
-+/* Bitfields in PCS_CONTROL. */
-+#define GEM_PCS_CTRL_RST_OFFSET			15
-+#define GEM_PCS_CTRL_RST_SIZE			1
-+#define GEM_PCS_CTRL_EN_AN_OFFSET		12
-+#define GEM_PCS_CTRL_EN_AN_SIZE			1
-+#define GEM_PCS_CTRL_RESTART_AN_OFFSET		9
-+#define GEM_PCS_CTRL_RESTART_AN_SIZE		1
++#define MACB_REGCR_OP_OFFSET		14
++#define MACB_REGCR_OP_SIZE		2
++#define MACB_REGCR_DEVADDR_OFFSET	0
++#define MACB_REGCR_DEVADDR_SIZE		5
 +
-+/* Bitfields in PCS_STATUS. */
-+#define GEM_PCS_STATUS_AN_DONE_OFFSET           5
-+#define GEM_PCS_STATUS_AN_DONE_SIZE             1
-+#define GEM_PCS_STATUS_AN_SUPPORT_OFFSET        3
-+#define GEM_PCS_STATUS_AN_SUPPORT_SIZE          1
-+#define GEM_PCS_STATUS_LINK_OFFSET              2
-+#define GEM_PCS_STATUS_LINK_SIZE                1
++#define MACB_REGCR_OP_ADDR	0
++#define MACB_REGCR_OP_DATA	1
 +
-+/* Bitfield in PCS_AN_LP_BASE */
-+#define GEM_PCS_AN_LP_BASE_LINK_OFFSET          15
-+#define GEM_PCS_AN_LP_BASE_LINK_SIZE            1
-+#define GEM_PCS_AN_LP_BASE_DUPLEX_OFFSET        12
-+#define GEM_PCS_AN_LP_BASE_DUPLEX_SIZE          1
-+#define GEM_PCS_AN_LP_BASE_SPEED_OFFSET         10
-+#define GEM_PCS_AN_LP_BASE_SPEED_SIZE           2
-+
- /* Bitfields in DCFG1. */
- #define GEM_IRQCOR_OFFSET			23
- #define GEM_IRQCOR_SIZE				1
- #define GEM_DBWDEF_OFFSET			25
- #define GEM_DBWDEF_SIZE				3
-+#define GEM_NO_PCS_OFFSET			0
-+#define GEM_NO_PCS_SIZE				1
- 
- /* Bitfields in DCFG2. */
- #define GEM_RX_PKT_BUFF_OFFSET			20
-@@ -636,19 +673,32 @@
- #define MACB_MAN_CODE				2
- 
- /* Capability mask bits */
--#define MACB_CAPS_ISR_CLEAR_ON_WRITE		0x00000001
--#define MACB_CAPS_USRIO_HAS_CLKEN		0x00000002
--#define MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII	0x00000004
--#define MACB_CAPS_NO_GIGABIT_HALF		0x00000008
--#define MACB_CAPS_USRIO_DISABLED		0x00000010
--#define MACB_CAPS_JUMBO				0x00000020
--#define MACB_CAPS_GEM_HAS_PTP			0x00000040
--#define MACB_CAPS_BD_RD_PREFETCH		0x00000080
--#define MACB_CAPS_NEEDS_RSTONUBR		0x00000100
--#define MACB_CAPS_FIFO_MODE			0x10000000
--#define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
--#define MACB_CAPS_SG_DISABLED			0x40000000
--#define MACB_CAPS_MACB_IS_GEM			0x80000000
-+#define MACB_CAPS_ISR_CLEAR_ON_WRITE		BIT(0)
-+#define MACB_CAPS_USRIO_HAS_CLKEN		BIT(1)
-+#define MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII	BIT(2)
-+#define MACB_CAPS_NO_GIGABIT_HALF		BIT(3)
-+#define MACB_CAPS_USRIO_DISABLED		BIT(4)
-+#define MACB_CAPS_JUMBO				BIT(5)
-+#define MACB_CAPS_GEM_HAS_PTP			BIT(6)
-+#define MACB_CAPS_BD_RD_PREFETCH		BIT(7)
-+#define MACB_CAPS_NEEDS_RSTONUBR		BIT(8)
-+#define MACB_CAPS_FIFO_MODE			BIT(28)
-+#define MACB_CAPS_GIGABIT_MODE_AVAILABLE	BIT(29)
-+#define MACB_CAPS_SG_DISABLED			BIT(30)
-+#define MACB_CAPS_MACB_IS_GEM			BIT(31)
-+#define MACB_CAPS_PCS				BIT(24)
-+#define MACB_CAPS_MACB_IS_GEM_GXL		BIT(25)
-+
-+#define MACB_GEM7010_IDNUM			0x009
-+#define MACB_GEM7014_IDNUM			0x107
-+#define MACB_GEM7014A_IDNUM			0x207
-+#define MACB_GEM7016_IDNUM			0x10a
-+#define MACB_GEM7017_IDNUM			0x00a
-+#define MACB_GEM7017A_IDNUM			0x20a
-+#define MACB_GEM7020_IDNUM			0x003
-+#define MACB_GEM7021_IDNUM			0x00c
-+#define MACB_GEM7021A_IDNUM			0x20c
-+#define MACB_GEM7022_IDNUM			0x00b
- 
- /* LSO settings */
- #define MACB_LSO_UFO_ENABLE			0x01
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 52d5e5efe2ad..5b3e7d9f4384 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -394,6 +394,7 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
- {
- 	long ferr, rate, rate_rounded;
-+	struct macb *bp = netdev_priv(dev);
- 
- 	if (!clk)
- 		return;
-@@ -408,6 +409,12 @@ static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
- 	case SPEED_1000:
- 		rate = 125000000;
- 		break;
-+	case SPEED_2500:
-+		if (bp->caps & MACB_CAPS_MACB_IS_GEM_GXL)
-+			rate = 312500000;
-+		else
-+			rate = 125000000;
-+		break;
- 	default:
- 		return;
- 	}
-@@ -438,15 +445,16 @@ static void gem_phylink_validate(struct phylink_config *pl_config,
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
- 
- 	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
-+			phylink_set(mask, 2500baseT_Full);
-+	/* fallthrough */
- 	case PHY_INTERFACE_MODE_GMII:
- 	case PHY_INTERFACE_MODE_RGMII:
- 		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
- 			phylink_set(mask, 1000baseT_Full);
--			phylink_set(mask, 1000baseX_Full);
--			if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF)) {
--				phylink_set(mask, 1000baseT_Half);
-+			if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
- 				phylink_set(mask, 1000baseT_Half);
--			}
- 		}
- 	/* fallthrough */
- 	case PHY_INTERFACE_MODE_MII:
-@@ -456,6 +464,16 @@ static void gem_phylink_validate(struct phylink_config *pl_config,
- 		phylink_set(mask, 100baseT_Half);
- 		phylink_set(mask, 100baseT_Full);
- 		break;
-+
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
-+			phylink_set(mask, 2500baseX_Full);
-+	/* fallthrough */
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
-+			phylink_set(mask, 1000baseX_Full);
-+		break;
-+
- 	default:
- 		break;
- 	}
-@@ -468,15 +486,54 @@ static void gem_phylink_validate(struct phylink_config *pl_config,
- static int gem_phylink_mac_link_state(struct phylink_config *pl_config,
- 				      struct phylink_link_state *state)
- {
-+	u32 status;
- 	struct net_device *netdev = to_net_dev(pl_config->dev);
- 	struct macb *bp = netdev_priv(netdev);
- 
--	state->speed = bp->speed;
--	state->duplex = bp->duplex;
--	state->link = bp->link;
-+	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
-+		status = gem_readl(bp, PCS_STATUS);
-+		state->an_complete = GEM_BFEXT(PCS_STATUS_AN_DONE, status);
-+		status = gem_readl(bp, PCS_AN_LP_BASE);
-+		switch (GEM_BFEXT(PCS_AN_LP_BASE_SPEED, status)) {
-+		case 0:
-+			state->speed = 10;
-+			break;
-+		case 1:
-+			state->speed = 100;
-+			break;
-+		case 2:
-+			state->speed = 1000;
-+			break;
-+		default:
-+			break;
-+		}
-+		state->duplex = MACB_BFEXT(DUPLEX, macb_readl(bp, NSR));
-+		state->link = MACB_BFEXT(NSR_LINK, macb_readl(bp, NSR));
-+	} else if (bp->phy_interface == PHY_INTERFACE_MODE_2500BASEX) {
-+		state->speed = SPEED_2500;
-+		state->duplex = MACB_BFEXT(DUPLEX, macb_readl(bp, NSR));
-+		state->link = MACB_BFEXT(NSR_LINK, macb_readl(bp, NSR));
-+	} else if (bp->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
-+		state->speed = SPEED_1000;
-+		state->duplex = MACB_BFEXT(DUPLEX, macb_readl(bp, NSR));
-+		state->link = MACB_BFEXT(NSR_LINK, macb_readl(bp, NSR));
-+	}
- 	return 1;
- }
- 
-+static void gem_mac_an_restart(struct phylink_config *pl_config)
++static int macb_mdio_wait_for_idle(void __iomem *macb_base_addr)
 +{
-+	struct net_device *netdev = to_net_dev(pl_config->dev);
-+	struct macb *bp = netdev_priv(netdev);
++	u32 val;
 +
-+	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_2500BASEX) {
-+		gem_writel(bp, PCS_CTRL, gem_readl(bp, PCS_CTRL) |
-+			   GEM_BIT(PCS_CTRL_RESTART_AN));
++	return readx_poll_timeout(readl, macb_base_addr + MACB_NSR, val,
++				  val & MACB_BIT(IDLE), 1, MACB_MDIO_TIMEOUT);
++}
++
++static int macb_mdiobus_read(void __iomem *macb_base_addr,
++			     u32 phy_id,
++			     u32 regnum)
++{
++	u32 i;
++	int status;
++
++	if (regnum < 32) {
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_READ) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, regnum) |
++			MACB_BF(CODE, MACB_MAN_CODE);
++
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++	} else {
++		u16 reg;
++
++		reg = MACB_BF(REGCR_OP, MACB_REGCR_OP_ADDR) |
++				MACB_BF(REGCR_DEVADDR, TI_PHY_DEVADDR);
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_REGCR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, reg);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_ADDAR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, regnum);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		reg = MACB_BF(REGCR_OP, MACB_REGCR_OP_DATA) |
++				MACB_BF(REGCR_DEVADDR, TI_PHY_DEVADDR);
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_REGCR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, reg);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_READ) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_ADDAR) |
++			MACB_BF(CODE, MACB_MAN_CODE);
++
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++	}
++
++	return readl(macb_base_addr + MACB_MAN);
++}
++
++static int macb_mdiobus_write(void __iomem *macb_base_addr, u32 phy_id,
++			      u32 regnum, u16 value)
++{
++	u32 i;
++	int status;
++
++	if (regnum < 32) {
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, regnum) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, value);
++
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++	} else {
++		u16 reg;
++
++		reg = MACB_BF(REGCR_OP, MACB_REGCR_OP_ADDR) |
++				MACB_BF(REGCR_DEVADDR, TI_PHY_DEVADDR);
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_REGCR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, reg);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_ADDAR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, regnum);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		reg = MACB_BF(REGCR_OP, MACB_REGCR_OP_DATA) |
++				MACB_BF(REGCR_DEVADDR, TI_PHY_DEVADDR);
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_REGCR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, reg);
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++
++		i = MACB_BF(SOF, MACB_MAN_SOF) |
++			MACB_BF(RW, MACB_MAN_WRITE) |
++			MACB_BF(PHYA, phy_id) |
++			MACB_BF(REGA, PHY_ADDAR) |
++			MACB_BF(CODE, MACB_MAN_CODE) |
++			MACB_BF(DATA, value);
++
++		writel(i, macb_base_addr + MACB_MAN);
++		status = macb_mdio_wait_for_idle(macb_base_addr);
++		if (status < 0)
++			return status;
++	}
++
++	return 0;
++}
++
++static int macb_scan_mdio(void __iomem *macb_base_addr)
++{
++	int i;
++	int phy_reg;
++	int phy_id;
++
++	for (i = 0; i < PHY_MAX_ADDR; i++) {
++		phy_reg = macb_mdiobus_read(macb_base_addr, i, MII_PHYSID1);
++		if (phy_reg < 0)
++			continue;
++
++		phy_id = (phy_reg & 0xffff) << 16;
++		phy_reg = macb_mdiobus_read(macb_base_addr, i, MII_PHYSID2);
++		if (phy_reg < 0)
++			continue;
++
++		phy_id |= (phy_reg & 0xffff);
++		if ((phy_id & 0x1fffffff) != 0x1fffffff &&
++		    phy_id == TI_PHY_DP83867_ID)
++			return i;
++	}
++
++	return -1;
++}
++
++static void macb_setup_phy(void __iomem *macb_base_addr)
++{
++	int phy_id;
++
++	// Enable MDIO
++	writel(readl(macb_base_addr + MACB_NCR) | MACB_BIT(MPE),
++	       macb_base_addr + MACB_NCR);
++
++	phy_id = macb_scan_mdio(macb_base_addr);
++	if (phy_id >= 0) {
++		if (macb_mdiobus_write(macb_base_addr, phy_id, 0xd3, 0x4000))
++			return;
++		if (macb_mdiobus_write(macb_base_addr, phy_id, 0x14, 0x29c7))
++			return;
++		if (macb_mdiobus_write(macb_base_addr, phy_id, 0x32, 0x0000))
++			return;
++		if (macb_mdiobus_write(macb_base_addr, phy_id, 0x10, 0x0800))
++			return;
++		if (macb_mdiobus_write(macb_base_addr, phy_id, 0x31, 0x1170))
++			return;
 +	}
 +}
 +
- static void gem_mac_config(struct phylink_config *pl_config, unsigned int mode,
- 			   const struct phylink_link_state *state)
+ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  {
-@@ -494,17 +551,23 @@ static void gem_mac_config(struct phylink_config *pl_config, unsigned int mode,
- 		reg &= ~(MACB_BIT(SPD) | MACB_BIT(FD));
- 		if (macb_is_gem(bp))
- 			reg &= ~GEM_BIT(GBE);
--
- 		if (state->duplex)
- 			reg |= MACB_BIT(FD);
--		if (state->speed == SPEED_100)
--			reg |= MACB_BIT(SPD);
--		if (state->speed == SPEED_1000 &&
--		    bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
--			reg |= GEM_BIT(GBE);
--
- 		macb_or_gem_writel(bp, NCFGR, reg);
+ 	int err;
+@@ -44,6 +263,7 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	struct platform_device_info plat_info;
+ 	struct macb_platform_data plat_data;
+ 	struct resource res[2];
++	void __iomem *addr;
  
-+		if (state->speed == SPEED_2500) {
-+			gem_writel(bp, NCFGR, GEM_BIT(GBE) |
-+				   gem_readl(bp, NCFGR));
-+			gem_writel(bp, NCR, GEM_BIT(TWO_PT_FIVE_GIG) |
-+				   gem_readl(bp, NCR));
-+		} else if (state->speed == SPEED_1000) {
-+			gem_writel(bp, NCFGR, GEM_BIT(GBE) |
-+				   gem_readl(bp, NCFGR));
-+		} else if (state->speed == SPEED_100) {
-+			macb_writel(bp, NCFGR, MACB_BIT(SPD) |
-+				    macb_readl(bp, NCFGR));
-+		}
-+
- 		bp->speed = state->speed;
- 		bp->duplex = state->duplex;
+ 	/* enable pci device */
+ 	err = pcim_enable_device(pdev);
+@@ -66,6 +286,11 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  
-@@ -541,6 +604,7 @@ static void gem_mac_link_down(struct phylink_config *pl_config,
- static const struct phylink_mac_ops gem_phylink_ops = {
- 	.validate = gem_phylink_validate,
- 	.mac_link_state = gem_phylink_mac_link_state,
-+	.mac_an_restart = gem_mac_an_restart,
- 	.mac_config = gem_mac_config,
- 	.mac_link_up = gem_mac_link_up,
- 	.mac_link_down = gem_mac_link_down,
-@@ -2245,7 +2309,9 @@ static void macb_init_hw(struct macb *bp)
- 	macb_set_hwaddr(bp);
- 
- 	config = macb_mdc_clk_div(bp);
--	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII)
-+	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_2500BASEX)
- 		config |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
- 	config |= MACB_BF(RBOF, NET_IP_ALIGN);	/* Make eth data aligned */
- 	config |= MACB_BIT(PAE);		/* PAuse Enable */
-@@ -2270,6 +2336,17 @@ static void macb_init_hw(struct macb *bp)
- 	if (bp->caps & MACB_CAPS_JUMBO)
- 		bp->rx_frm_len_mask = MACB_RX_JFRMLEN_MASK;
- 
-+	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_2500BASEX) {
-+		//Enable PCS AN
-+		gem_writel(bp, PCS_CTRL, gem_readl(bp, PCS_CTRL) |
-+			   GEM_BIT(PCS_CTRL_EN_AN));
-+		//Reset PCS block
-+		gem_writel(bp, PCS_CTRL, gem_readl(bp, PCS_CTRL) |
-+			   GEM_BIT(PCS_CTRL_RST));
-+	}
-+
- 	macb_configure_dma(bp);
- 
- 	/* Initialize TX and RX buffers */
-@@ -3361,6 +3438,22 @@ static void macb_configure_caps(struct macb *bp,
- 		dcfg = gem_readl(bp, DCFG1);
- 		if (GEM_BFEXT(IRQCOR, dcfg) == 0)
- 			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
-+		if (GEM_BFEXT(NO_PCS, dcfg) == 0)
-+			bp->caps |= MACB_CAPS_PCS;
-+		switch (MACB_BFEXT(IDNUM, macb_readl(bp, MID))) {
-+		case MACB_GEM7016_IDNUM:
-+		case MACB_GEM7017_IDNUM:
-+		case MACB_GEM7017A_IDNUM:
-+		case MACB_GEM7020_IDNUM:
-+		case MACB_GEM7021_IDNUM:
-+		case MACB_GEM7021A_IDNUM:
-+		case MACB_GEM7022_IDNUM:
-+			bp->caps |= MACB_CAPS_USRIO_DISABLED;
-+			bp->caps |= MACB_CAPS_MACB_IS_GEM_GXL;
-+			break;
-+		default:
-+			break;
-+		}
- 		dcfg = gem_readl(bp, DCFG2);
- 		if ((dcfg & (GEM_BIT(RX_PKT_BUFF) | GEM_BIT(TX_PKT_BUFF))) == 0)
- 			bp->caps |= MACB_CAPS_FIFO_MODE;
-@@ -3649,7 +3742,9 @@ static int macb_init(struct platform_device *pdev)
- 	/* Set MII management clock divider */
- 	val = macb_mdc_clk_div(bp);
- 	val |= macb_dbw(bp);
--	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII)
-+	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    bp->phy_interface == PHY_INTERFACE_MODE_2500BASEX)
- 		val |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
- 	macb_writel(bp, NCFGR, val);
- 
-@@ -4232,11 +4327,37 @@ static int macb_probe(struct platform_device *pdev)
- 	}
- 
- 	err = of_get_phy_mode(np);
--	if (err < 0)
-+	if (err < 0) {
- 		/* not found in DT, MII by default */
- 		bp->phy_interface = PHY_INTERFACE_MODE_MII;
--	else
-+	} else if (bp->caps & MACB_CAPS_MACB_IS_GEM_GXL) {
-+		u32 interface_supported = 1;
-+
-+		if (err == PHY_INTERFACE_MODE_SGMII ||
-+		    err == PHY_INTERFACE_MODE_1000BASEX ||
-+		    err == PHY_INTERFACE_MODE_2500BASEX) {
-+			if (!(bp->caps & MACB_CAPS_PCS))
-+				interface_supported = 0;
-+		} else if (err == PHY_INTERFACE_MODE_GMII ||
-+			   err == PHY_INTERFACE_MODE_RGMII) {
-+			if (!macb_is_gem(bp))
-+				interface_supported = 0;
-+		} else if (err != PHY_INTERFACE_MODE_RMII &&
-+			   err != PHY_INTERFACE_MODE_MII) {
-+			/* Add new mode before this */
-+			interface_supported = 0;
-+		}
-+
-+		if (!interface_supported) {
-+			netdev_err(dev, "Phy mode %s not supported",
-+				   phy_modes(err));
-+			goto err_out_free_netdev;
-+		}
-+
- 		bp->phy_interface = err;
-+	} else {
-+		bp->phy_interface = err;
+ 	dev_info(&pdev->dev, "EMAC physical base addr: %pa\n",
+ 		 &res[0].start);
++	addr = ioremap(res[0].start, resource_size(&res[0]));
++	if (addr) {
++		macb_setup_phy(addr);
++		iounmap(addr);
 +	}
  
- 	/* IP specific init */
- 	err = init(pdev);
+ 	/* set up macb platform data */
+ 	memset(&plat_data, 0, sizeof(plat_data));
 -- 
 2.17.1
 
