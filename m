@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 374D2473F1
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 11:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3073F47403
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 11:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725888AbfFPJYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 05:24:17 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43753 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725766AbfFPJYR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 05:24:17 -0400
-Received: by mail-pf1-f196.google.com with SMTP id i189so4000456pfg.10
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 02:24:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=QIw02wXd+ThSQCSaJvt5xwy2HCbNq0tOfROK68zcA00=;
-        b=naC+sKMNw9PAUsBUUfby7TlSCKkllJYXr9Ll2TIt2fO9IviNMrV+/S0uSYAl6Z1oQd
-         EG9uzuliWahYJjnjRBVTvyHnEupcNld58uBElFjbJc2GCcBsCfrG9+SR94klCuy8Vlfn
-         GoT3UZQznBe8tf5ve5ix9co2K1y7wJs2+S5mQLvl7dfKGvPcAlBznBwjwoSQj7K2nuxM
-         DyhZ+JmDra/DWJhk76rFK/bDpXpifYTHUfchbDtwSoXrnkYsG7KW3gCtHiH4zFt1elDE
-         8688B2XNR8rIW3WRGUwwNMPuEnOx2Ih+KGqlasde8hRA+tE2yt0rfIhwDA2GvDJz9agW
-         SKoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QIw02wXd+ThSQCSaJvt5xwy2HCbNq0tOfROK68zcA00=;
-        b=FR0GOUfZ/7ovxmieuCUTs8crKoJiFJSsrYRXGmirLtgkZq0zN+DsrWjE5EYMZzlzck
-         tkplKQtWhY2VbjLg3QTySGKK9/OEpHK/YcmkWduRN6VC2GUzDdj/fz9D+gk/7VnY2KWL
-         cwvmx7CKLtA4Uc67nfTOEIMfNZxxAq8bpbBj4RTlcWnq735zapRa39bz9IE9qJbamdLc
-         kP2cXLR1Tiwq8AMuiZZ+JFHHo4cQiQW/noGf248pI5Stf0o+rdZE6NMGd6T43NyMu6YG
-         Vt+r6nV6JgCQuoEIF3JdLu1lztNHRzFoHtKySUo80zCuj7wO9T6V+rm3oSzjUGUco7Mw
-         NDAw==
-X-Gm-Message-State: APjAAAUBkE/jxaunYtOqK18TRSbKelfwgeCJPeINFcbV4ijuElSlSkrN
-        FDpPG3B6/zg1sspKrW+NlbHwDvIx
-X-Google-Smtp-Source: APXvYqy6KB+JyBjKSDuuyZGYgoHVzndzU19StpYZVklNw+y57wsD0TvskWBTLIz2kvLSfGDjwpzCPg==
-X-Received: by 2002:aa7:80d9:: with SMTP id a25mr9718632pfn.50.1560677056010;
-        Sun, 16 Jun 2019 02:24:16 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l7sm9564543pfl.9.2019.06.16.02.24.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 16 Jun 2019 02:24:15 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCH net] tipc: purge deferredq list for each grp member in tipc_group_delete
-Date:   Sun, 16 Jun 2019 17:24:07 +0800
-Message-Id: <14ff2b79da7b9098fbff2919f0bc5a1afa33fe32.1560677047.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1726069AbfFPJmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 05:42:36 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:38694 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725888AbfFPJmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 05:42:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=EfrySKu19SISsRCiMT890kLcP5VO6QdbSWtZB5o1StI=; b=i3IhCPFBJr0BcpZASr7JAVg4Z
+        7uJYk0sVjchEZYLsOHGPUAqIuHhrF6k708aQUeEU+eQNucR/WumEIVVZ8JoguyxUYBV8jD2ZZ9a1D
+        4ded6TgWpZRDKtgg0XdWGc/4IZ71qlKBu63p8gzB6Rikz1cMfl2SuJbasafipuEyxKEbXU0I9gIu6
+        vikU1jaM0ubaqE/VaDjvEY70Vbu7HsYS2nOfQxNaV8CnXPm0l1UHE8rHnBme8gshS1cF+00gqO0NU
+        T2zEMUnDIk6ZbNABFFeo7deD15x5RYXBOVPlT7/JJGQYNK3FETzMLrUW02GL6XaWUxlXENF/U2uIk
+        Uldue465A==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:56430)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hcRgD-0004sp-VY; Sun, 16 Jun 2019 10:42:30 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hcRgA-0003rx-Jj; Sun, 16 Jun 2019 10:42:26 +0100
+Date:   Sun, 16 Jun 2019 10:42:26 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     ioana.ciornei@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
+Message-ID: <20190616094226.bnhivshhnzeokplu@shell.armlinux.org.uk>
+References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
+ <20190615.133021.572699563162351841.davem@davemloft.net>
+ <20190615221328.4diebpopfzyfi4og@shell.armlinux.org.uk>
+ <20190615.180854.999160704288745945.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190615.180854.999160704288745945.davem@davemloft.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported a memleak caused by grp members' deferredq list not
-purged when the grp is be deleted.
+On Sat, Jun 15, 2019 at 06:08:54PM -0700, David Miller wrote:
+> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Date: Sat, 15 Jun 2019 23:13:28 +0100
+> 
+> > On Sat, Jun 15, 2019 at 01:30:21PM -0700, David Miller wrote:
+> >> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> >> Date: Thu, 13 Jun 2019 09:37:51 +0300
+> >> 
+> >> > The phy_state field of phylink should carry only valid information
+> >> > especially when this can be passed to the .mac_config callback.
+> >> > Update the an_enabled field with the autoneg state in the
+> >> > phylink_phy_change function.
+> >> > 
+> >> > Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> >> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> >> 
+> >> Applied and queued up for -stable, thanks.
+> > 
+> > This is not a fix; it is an attempt to make phylink work differently
+> > from how it's been designed for the dpaa2 driver.  I've already stated
+> > that this field is completely meaningless, so I'm surprised you
+> > applied it.
+> 
+> I'm sorry, I did wait a day or so to see any direct responses to this
+> patch and I saw no feedback.
+> 
+> I'll revert.
 
-The issue occurs when more(msg_grp_bc_seqno(hdr), m->bc_rcv_nxt) in
-tipc_group_filter_msg() and the skb will stay in deferredq.
+Hi Dave,
 
-So fix it by calling __skb_queue_purge for each member's deferredq
-in tipc_group_delete() when a tipc sk leaves the grp.
+Thanks for the revert.  There was discussion surrounding this patch:
 
-Fixes: b87a5ea31c93 ("tipc: guarantee group unicast doesn't bypass group broadcast")
-Reported-by: syzbot+78fbe679c8ca8d264a8d@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/tipc/group.c | 1 +
- 1 file changed, 1 insertion(+)
+https://www.mail-archive.com/netdev@vger.kernel.org/thrd2.html#302220
 
-diff --git a/net/tipc/group.c b/net/tipc/group.c
-index 992be61..5f98d38 100644
---- a/net/tipc/group.c
-+++ b/net/tipc/group.c
-@@ -218,6 +218,7 @@ void tipc_group_delete(struct net *net, struct tipc_group *grp)
- 
- 	rbtree_postorder_for_each_entry_safe(m, tmp, tree, tree_node) {
- 		tipc_group_proto_xmit(grp, m, GRP_LEAVE_MSG, &xmitq);
-+		__skb_queue_purge(&m->deferredq);
- 		list_del(&m->list);
- 		kfree(m);
- 	}
+It was then re-posted as part of a later RFC series ("DPAA2 MAC
+Driver") which shows why the change was proposed, where the discussion
+continued on Friday.  The patch ended up with a slightly different
+subject line.
+
+There is still further discussion required to try and work out a way
+forward.
+
+Thanks.
+
 -- 
-2.1.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
