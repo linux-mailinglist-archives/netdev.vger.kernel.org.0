@@ -2,281 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7157047457
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 13:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A95547465
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 13:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbfFPLSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 07:18:47 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38387 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726087AbfFPLSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 07:18:47 -0400
-Received: by mail-wm1-f68.google.com with SMTP id s15so6251343wmj.3
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 04:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7FbJuY8/5Yrt1z9ceKgv7A+9Qlc1C1UZ61mJOrVO+3g=;
-        b=mv9oZaLlNsz3s7uPuWNBUJ+xJeZ/CIGZkKZwptOgeCW4BXDjHVMx90uOJEA6y24zUn
-         ykiqFWw0aTjybz/BV+F+XeOf2rixwPqoCm0L0vkNJNDsDDs1uIWPgXc3LfzzniZuc91F
-         9w3wYRDNuSODoZrgnXYFVTbp82SbNRtB0kiCy5WpTPMTJW84tDbG+kXWIQuZ5f5gYvYA
-         bMDWEPzeRZkGkxusZPiJ8mWInv3CltdUdVu4NweR2qcyzDotQcsqXgtsRJHwE/aIIOpq
-         zhOnCnuE6xpmNx/jTCJ1Dy2pmEBmEmRoiZHVWAxKClvEOEg/ktqjccsOBBz0a9ScpuKO
-         BLhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7FbJuY8/5Yrt1z9ceKgv7A+9Qlc1C1UZ61mJOrVO+3g=;
-        b=aurKLVM66txTbwu8txQpadfY5c3I5UicJrHHp4B1ZpmHzt6QH05EPW+Xt9PNeXRvV4
-         xTc9r/yaHxZe8f4kUyjWzwuvBoRR8OdQB4r60k9l2MXcUTUdLRUx+2B/UJYwVHabqLGc
-         K5Opie2n26cEafCd6M0aZJXsWYUzUzNIeyR0rxtn/MrnrRKR7FArcUUvHgeeS1FZzIT3
-         rtoldLVK/5v3s6xRYfMDr/+ZQhZIvzh30sb50XWSlxdA03bsub+xZsqMWtslnMWhBSHX
-         JsFXjXNJUNjJ0qSLFCZJ8HAUbN4EoBx0DFxH7+EfW4hYnLuhs/EJzShC2jNWcDkRnpYd
-         ftIA==
-X-Gm-Message-State: APjAAAXjBuvxULQuVesXW7rnymbhe1orRCnecVTqhjJH8PWiRCmfnAjM
-        kVZ8pY9WVSrdQ8xQSb4e3PZ2Ng==
-X-Google-Smtp-Source: APXvYqyeh4qMx/WXJnfIFFvbFBfSqtV05JI2SOKdwFdtjmj8UG5sVCxKE+QS+cfdTQlguVjB2+SVBQ==
-X-Received: by 2002:a1c:544d:: with SMTP id p13mr15541132wmi.78.1560683923763;
-        Sun, 16 Jun 2019 04:18:43 -0700 (PDT)
-Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id x17sm9802659wrq.64.2019.06.16.04.18.42
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 16 Jun 2019 04:18:43 -0700 (PDT)
-Date:   Sun, 16 Jun 2019 13:18:42 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>, Petr Vorel <pvorel@suse.cz>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH mlx5-next v1 1/4] net/mlx5: Declare more strictly devlink
- encap mode
-Message-ID: <20190616111842.GD2511@nanopsycho>
-References: <20190612122014.22359-1-leon@kernel.org>
- <20190612122014.22359-2-leon@kernel.org>
- <VI1PR0501MB2271FF8A570DDBBD26CF7100D1EF0@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <20190613055954.GV6369@mtr-leonro.mtl.com>
- <20190616100707.GB2511@nanopsycho>
- <20190616101507.GF4694@mtr-leonro.mtl.com>
- <20190616103939.GC2511@nanopsycho>
- <20190616105327.GG4694@mtr-leonro.mtl.com>
+        id S1727044AbfFPLuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 07:50:50 -0400
+Received: from out03.mta.xmission.com ([166.70.13.233]:56399 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725879AbfFPLuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 07:50:50 -0400
+Received: from in01.mta.xmission.com ([166.70.13.51])
+        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1hcTgN-0001c7-5f; Sun, 16 Jun 2019 05:50:47 -0600
+Received: from ip72-206-97-68.om.om.cox.net ([72.206.97.68] helo=x220.xmission.com)
+        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1hcTgM-00045G-4G; Sun, 16 Jun 2019 05:50:46 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, avagin@virtuozzo.com,
+        ktkhai@virtuozzo.com, "Serge E. Hallyn" <serge@hallyn.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20180429104412.22445-1-christian.brauner@ubuntu.com>
+        <20180429104412.22445-3-christian.brauner@ubuntu.com>
+        <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
+Date:   Sun, 16 Jun 2019 06:50:20 -0500
+In-Reply-To: <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
+        (Dmitry Torokhov's message of "Fri, 14 Jun 2019 15:49:30 -0700")
+Message-ID: <875zp5rbpf.fsf@xmission.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190616105327.GG4694@mtr-leonro.mtl.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain
+X-XM-SPF: eid=1hcTgM-00045G-4G;;;mid=<875zp5rbpf.fsf@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=72.206.97.68;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/ysRzW/DjZLfSr+JJImozwhbNa5pFmzHw=
+X-SA-Exim-Connect-IP: 72.206.97.68
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa07.xmission.com
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=8.0 tests=ALL_TRUSTED,BAYES_50,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,T_TooManySym_01,
+        T_XMDrugObfuBody_14 autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4827]
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa07 1397; Body=1 Fuz1=1 Fuz2=1]
+        *  0.2 T_XMDrugObfuBody_14 obfuscated drug references
+        *  0.0 T_TooManySym_01 4+ unique symbols in subject
+X-Spam-DCC: XMission; sa07 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ;Dmitry Torokhov <dmitry.torokhov@gmail.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 625 ms - load_scoreonly_sql: 0.08 (0.0%),
+        signal_user_changed: 4.1 (0.7%), b_tie_ro: 2.9 (0.5%), parse: 1.24
+        (0.2%), extract_message_metadata: 17 (2.6%), get_uri_detail_list: 3.5
+        (0.6%), tests_pri_-1000: 6 (1.0%), tests_pri_-950: 1.40 (0.2%),
+        tests_pri_-900: 1.15 (0.2%), tests_pri_-90: 29 (4.7%), check_bayes: 27
+        (4.4%), b_tokenize: 9 (1.5%), b_tok_get_all: 9 (1.4%), b_comp_prob:
+        3.3 (0.5%), b_tok_touch_all: 3.6 (0.6%), b_finish: 0.65 (0.1%),
+        tests_pri_0: 550 (88.0%), check_dkim_signature: 0.81 (0.1%),
+        check_dkim_adsp: 2.3 (0.4%), poll_dns_idle: 0.36 (0.1%), tests_pri_10:
+        2.3 (0.4%), tests_pri_500: 8 (1.3%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH net-next 2/2 v5] netns: restrict uevents
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Jun 16, 2019 at 12:53:27PM CEST, leon@kernel.org wrote:
->On Sun, Jun 16, 2019 at 12:39:40PM +0200, Jiri Pirko wrote:
->> Sun, Jun 16, 2019 at 12:15:07PM CEST, leon@kernel.org wrote:
->> >On Sun, Jun 16, 2019 at 12:07:07PM +0200, Jiri Pirko wrote:
->> >> Thu, Jun 13, 2019 at 07:59:54AM CEST, leon@kernel.org wrote:
->> >> >On Thu, Jun 13, 2019 at 04:32:25AM +0000, Parav Pandit wrote:
->> >> >>
->> >> >>
->> >> >> > -----Original Message-----
->> >> >> > From: Leon Romanovsky <leon@kernel.org>
->> >> >> > Sent: Wednesday, June 12, 2019 5:50 PM
->> >> >> > To: Doug Ledford <dledford@redhat.com>; Jason Gunthorpe
->> >> >> > <jgg@mellanox.com>
->> >> >> > Cc: Leon Romanovsky <leonro@mellanox.com>; RDMA mailing list <linux-
->> >> >> > rdma@vger.kernel.org>; Maor Gottlieb <maorg@mellanox.com>; Mark Bloch
->> >> >> > <markb@mellanox.com>; Parav Pandit <parav@mellanox.com>; Petr Vorel
->> >> >> > <pvorel@suse.cz>; Saeed Mahameed <saeedm@mellanox.com>; linux-
->> >> >> > netdev <netdev@vger.kernel.org>; Jiri Pirko <jiri@mellanox.com>
->> >> >> > Subject: [PATCH mlx5-next v1 1/4] net/mlx5: Declare more strictly devlink
->> >> >> > encap mode
->> >> >> >
->> >> >> > From: Leon Romanovsky <leonro@mellanox.com>
->> >> >> >
->> >> >> > Devlink has UAPI declaration for encap mode, so there is no need to be
->> >> >> > loose on the data get/set by drivers.
->> >> >> >
->> >> >> > Update call sites to use enum devlink_eswitch_encap_mode instead of plain
->> >> >> > u8.
->> >> >> >
->> >> >> > Suggested-by: Parav Pandit <parav@mellanox.com>
->> >> >> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->> >> >> > ---
->> >> >> >  drivers/net/ethernet/mellanox/mlx5/core/eswitch.h         | 8 +++++---
->> >> >> >  .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c    | 6 ++++--
->> >> >> >  include/net/devlink.h                                     | 6 ++++--
->> >> >> >  net/core/devlink.c                                        | 6 ++++--
->> >> >> >  4 files changed, 17 insertions(+), 9 deletions(-)
->> >> >> >
->> >> >> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
->> >> >> > b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
->> >> >> > index ed3fad689ec9..e264dfc64a6e 100644
->> >> >> > --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
->> >> >> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
->> >> >> > @@ -175,7 +175,7 @@ struct mlx5_esw_offload {
->> >> >> >  	DECLARE_HASHTABLE(mod_hdr_tbl, 8);
->> >> >> >  	u8 inline_mode;
->> >> >> >  	u64 num_flows;
->> >> >> > -	u8 encap;
->> >> >> > +	enum devlink_eswitch_encap_mode encap;
->> >> >> >  };
->> >> >> >
->> >> >> >  /* E-Switch MC FDB table hash node */
->> >> >> > @@ -356,9 +356,11 @@ int mlx5_devlink_eswitch_inline_mode_set(struct
->> >> >> > devlink *devlink, u8 mode,
->> >> >> >  					 struct netlink_ext_ack *extack);
->> >> >> >  int mlx5_devlink_eswitch_inline_mode_get(struct devlink *devlink, u8
->> >> >> > *mode);  int mlx5_eswitch_inline_mode_get(struct mlx5_eswitch *esw, int
->> >> >> > nvfs, u8 *mode); -int mlx5_devlink_eswitch_encap_mode_set(struct devlink
->> >> >> > *devlink, u8 encap,
->> >> >> > +int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
->> >> >> > +					enum devlink_eswitch_encap_mode
->> >> >> > encap,
->> >> >> >  					struct netlink_ext_ack *extack);
->> >> >> > -int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink, u8
->> >> >> > *encap);
->> >> >> > +int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
->> >> >> > +					enum devlink_eswitch_encap_mode
->> >> >> > *encap);
->> >> >> >  void *mlx5_eswitch_get_uplink_priv(struct mlx5_eswitch *esw, u8
->> >> >> > rep_type);
->> >> >> >
->> >> >> >  int mlx5_eswitch_add_vlan_action(struct mlx5_eswitch *esw, diff --git
->> >> >> > a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->> >> >> > b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->> >> >> > index e09ae27485ee..f1571163143d 100644
->> >> >> > --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->> >> >> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->> >> >> > @@ -2137,7 +2137,8 @@ int mlx5_eswitch_inline_mode_get(struct
->> >> >> > mlx5_eswitch *esw, int nvfs, u8 *mode)
->> >> >> >  	return 0;
->> >> >> >  }
->> >> >> >
->> >> >> > -int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink, u8
->> >> >> > encap,
->> >> >> > +int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
->> >> >> > +					enum devlink_eswitch_encap_mode
->> >> >> > encap,
->> >> >> >  					struct netlink_ext_ack *extack)
->> >> >> >  {
->> >> >> >  	struct mlx5_core_dev *dev = devlink_priv(devlink); @@ -2186,7
->> >> >> > +2187,8 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink
->> >> >> > *devlink, u8 encap,
->> >> >> >  	return err;
->> >> >> >  }
->> >> >> >
->> >> >> > -int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink, u8
->> >> >> > *encap)
->> >> >> > +int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
->> >> >> > +					enum devlink_eswitch_encap_mode
->> >> >> > *encap)
->> >> >> >  {
->> >> >> >  	struct mlx5_core_dev *dev = devlink_priv(devlink);
->> >> >> >  	struct mlx5_eswitch *esw = dev->priv.eswitch; diff --git
->> >> >> > a/include/net/devlink.h b/include/net/devlink.h index
->> >> >> > 1c4adfb4195a..7a34fc586def 100644
->> >> >> > --- a/include/net/devlink.h
->> >> >> > +++ b/include/net/devlink.h
->> >> >> > @@ -530,8 +530,10 @@ struct devlink_ops {
->> >> >> >  	int (*eswitch_inline_mode_get)(struct devlink *devlink, u8
->> >> >> > *p_inline_mode);
->> >> >> >  	int (*eswitch_inline_mode_set)(struct devlink *devlink, u8
->> >> >> > inline_mode,
->> >> >> >  				       struct netlink_ext_ack *extack);
->> >> >> > -	int (*eswitch_encap_mode_get)(struct devlink *devlink, u8
->> >> >> > *p_encap_mode);
->> >> >> > -	int (*eswitch_encap_mode_set)(struct devlink *devlink, u8
->> >> >> > encap_mode,
->> >> >> > +	int (*eswitch_encap_mode_get)(struct devlink *devlink,
->> >> >> > +				      enum devlink_eswitch_encap_mode
->> >> >> > *p_encap_mode);
->> >> >> > +	int (*eswitch_encap_mode_set)(struct devlink *devlink,
->> >> >> > +				      enum devlink_eswitch_encap_mode
->> >> >> > encap_mode,
->> >> >> >  				      struct netlink_ext_ack *extack);
->> >> >> >  	int (*info_get)(struct devlink *devlink, struct devlink_info_req *req,
->> >> >> >  			struct netlink_ext_ack *extack);
->> >> >> > diff --git a/net/core/devlink.c b/net/core/devlink.c index
->> >> >> > d43bc52b8840..47ae69363b07 100644
->> >> >> > --- a/net/core/devlink.c
->> >> >> > +++ b/net/core/devlink.c
->> >> >> > @@ -1552,7 +1552,8 @@ static int devlink_nl_eswitch_fill(struct sk_buff
->> >> >> > *msg, struct devlink *devlink,
->> >> >> >  				   u32 seq, int flags)
->> >> >> >  {
->> >> >> >  	const struct devlink_ops *ops = devlink->ops;
->> >> >> > -	u8 inline_mode, encap_mode;
->> >> >> > +	enum devlink_eswitch_encap_mode encap_mode;
->> >> >> > +	u8 inline_mode;
->> >> >> >  	void *hdr;
->> >> >> >  	int err = 0;
->> >> >> >  	u16 mode;
->> >> >> > @@ -1628,7 +1629,8 @@ static int devlink_nl_cmd_eswitch_set_doit(struct
->> >> >> > sk_buff *skb,  {
->> >> >> >  	struct devlink *devlink = info->user_ptr[0];
->> >> >> >  	const struct devlink_ops *ops = devlink->ops;
->> >> >> > -	u8 inline_mode, encap_mode;
->> >> >> > +	enum devlink_eswitch_encap_mode encap_mode;
->> >> >> > +	u8 inline_mode;
->> >> >> >  	int err = 0;
->> >> >> >  	u16 mode;
->> >> >> >
->> >> >> > --
->> >> >> > 2.20.1
->> >> >>
->> >> >> Netdev follows reverse Christmas tree, but otherwise,
->> >> >
->> >> >It was before this patch, if Jiri is ok with that, I'll change this
->> >> >"const struct devlink_ops *ops = devlink->ops;" line while I'll apply
->> >> >this patchset to mlx5-net. If not, I'll leave it as is.
->> >>
->> >> Change to what? I don't follow. The patch looks completely fine to me as
->> >> it is.
->> >
->> >Thanks Jiri,
->> >
->> >Parav mentioned that two lines above my change were already not in Christmas
->> >tree format.
->> >
->> >   struct devlink *devlink = info->user_ptr[0];
->> >   const struct devlink_ops *ops = devlink->ops;
->>
->> As there is a dependency between those 2 lines, I don't see how you can
->> fix this.
->
->I don't want to do it, but this is possible solution:
->
->	const struct devlink_ops *ops:
->	struct devlink *devlink;
->	..... extra declarations ....
->
->	devlink = info->user_ptr[0];
->	ops = devlink->ops;
->	... rest of the code ...
+Dmitry Torokhov <dmitry.torokhov@gmail.com> writes:
 
-Please don't.
+> Hi Christian,
+>
+> On Sun, Apr 29, 2018 at 3:45 AM Christian Brauner
+> <christian.brauner@ubuntu.com> wrote:
+>>
+>> commit 07e98962fa77 ("kobject: Send hotplug events in all network namespaces")
+>>abhishekbh@google.com
+>> enabled sending hotplug events into all network namespaces back in 2010.
+>> Over time the set of uevents that get sent into all network namespaces has
+>> shrunk. We have now reached the point where hotplug events for all devices
+>> that carry a namespace tag are filtered according to that namespace.
+>> Specifically, they are filtered whenever the namespace tag of the kobject
+>> does not match the namespace tag of the netlink socket.
+>> Currently, only network devices carry namespace tags (i.e. network
+>> namespace tags). Hence, uevents for network devices only show up in the
+>> network namespace such devices are created in or moved to.
+>>
+>> However, any uevent for a kobject that does not have a namespace tag
+>> associated with it will not be filtered and we will broadcast it into all
+>> network namespaces. This behavior stopped making sense when user namespaces
+>> were introduced.
+>>
+>> This patch simplifies and fixes couple of things:
+>> - Split codepath for sending uevents by kobject namespace tags:
+>>   1. Untagged kobjects - uevent_net_broadcast_untagged():
+>>      Untagged kobjects will be broadcast into all uevent sockets recorded
+>>      in uevent_sock_list, i.e. into all network namespacs owned by the
+>>      intial user namespace.
+>>   2. Tagged kobjects - uevent_net_broadcast_tagged():
+>>      Tagged kobjects will only be broadcast into the network namespace they
+>>      were tagged with.
+>>   Handling of tagged kobjects in 2. does not cause any semantic changes.
+>>   This is just splitting out the filtering logic that was handled by
+>>   kobj_bcast_filter() before.
+>>   Handling of untagged kobjects in 1. will cause a semantic change. The
+>>   reasons why this is needed and ok have been discussed in [1]. Here is a
+>>   short summary:
+>>   - Userspace ignores uevents from network namespaces that are not owned by
+>>     the intial user namespace:
+>>     Uevents are filtered by userspace in a user namespace because the
+>>     received uid != 0. Instead the uid associated with the event will be
+>>     65534 == "nobody" because the global root uid is not mapped.
+>>     This means we can safely and without introducing regressions modify the
+>>     kernel to not send uevents into all network namespaces whose owning
+>>     user namespace is not the initial user namespace because we know that
+>>     userspace will ignore the message because of the uid anyway.
+>>     I have a) verified that is is true for every udev implementation out
+>>     there b) that this behavior has been present in all udev
+>>     implementations from the very beginning.
+>
+> Unfortunately udev is not the only consumer of uevents, for example on
+> Android there is healthd that also consumes uevents, and this
+> particular change broke Android running in a container on Chrome OS.
+> Can this be reverted? Or, if we want to keep this, how can containers
+> that use separate user namespace still listen to uevents?
+
+The code has been in the main tree for over a year so at a minimum
+reverting this has the real chance of causing a regression for
+folks like lxc.
+
+I don't think Android running in a container on Chrome OS was even
+available when this change was merged.  So I don't think this falls
+under the ordinary no regression rules.
+
+I may be wrong but I think this is a case of developing new code on an
+old kernel and developing a dependence on a bug that had already been
+fixed in newer kernels.  I know Christian did his best to reach out to
+everyone when this change came through, so only getting a bug report
+over a year after the code was merged is concerning.
+
+That said uevents should be completely useless in a user namespace
+except as letting you know something happened.  Is that what healthd
+is using them for?
 
 
->>
->>
->> >
->> >Thanks
->> >
->> >>
->> >> Acked-by: Jiri Pirko <jiri@mellanox.com>
->> >>
->> >>
->> >>
->> >> >
->> >> >> Reviewed-by: Parav Pandit <parav@mellanox.com>
->> >> >
->> >> >Thanks
->> >> >
->> >> >>
+One solution would be to tweak the container userspace on ChromeOS to
+listen to the uevents outside the container and to relay them into the
+Android container.
+
+Eric
