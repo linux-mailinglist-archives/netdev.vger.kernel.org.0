@@ -2,67 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D022472AA
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 03:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49214472AF
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 03:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbfFPBI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jun 2019 21:08:58 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41746 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726434AbfFPBI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 21:08:58 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7679014FB1D7A;
-        Sat, 15 Jun 2019 18:08:57 -0700 (PDT)
-Date:   Sat, 15 Jun 2019 18:08:54 -0700 (PDT)
-Message-Id: <20190615.180854.999160704288745945.davem@davemloft.net>
-To:     linux@armlinux.org.uk
-Cc:     ioana.ciornei@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phylink: set the autoneg state in
- phylink_phy_change
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190615221328.4diebpopfzyfi4og@shell.armlinux.org.uk>
-References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
-        <20190615.133021.572699563162351841.davem@davemloft.net>
-        <20190615221328.4diebpopfzyfi4og@shell.armlinux.org.uk>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 15 Jun 2019 18:08:57 -0700 (PDT)
+        id S1726683AbfFPBNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jun 2019 21:13:04 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:44376 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726434AbfFPBNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jun 2019 21:13:04 -0400
+Received: by mail-io1-f71.google.com with SMTP id i133so7680213ioa.11
+        for <netdev@vger.kernel.org>; Sat, 15 Jun 2019 18:13:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=fHKEKHdPjoZhYVJRZoCAKKckDq3mCm+7VXF61UEPMbE=;
+        b=IdinvP3riV1Zu6MpZJLjG/EUPFGiNsAl9RlU81anwd8GPN72kK7yT4O5F1f+jPfb9a
+         gMcYlslKqJBCCA8fbf4SlMl43SJl95kgbnvw7ogC61oV1JdQJoj4fHKeBHMFarisjq+M
+         8XfMV5+E7ODNYZDwTrIT3vX04/+DRL54RbT9nPZnB48nzd8irMnyrfuxniTMZqGTvj17
+         WCA5Jv4+pywsdXexZtLribvGN8TyH97hmQYKCKZ0rCt6nctNsbyMyYFfwCWFTizQ+AnA
+         YJf8nmwCYjR3tDd++JmLDzAKzCeBzChoqCz4USYH34/TRSbmh/mdvJDjSG6/9lF62GvH
+         SpQw==
+X-Gm-Message-State: APjAAAUlmCUrDK7SQQ1oZ1h8WOR5MsCsTp8D4+NASzFFWgB+naxhdUOW
+        gLC3fgI8u41tjd3Tcts37FNL0QLMyD/YH1CxNG5TR5YD4qU2
+X-Google-Smtp-Source: APXvYqz+u2Q7L7tpyT3UhpeYici7WM0yHAFm2QcnK/gM8n2t0zuxn0/rjGJlweypay4YtWjQna/l8FT8aJISslAwXlPKu0BSusit
+MIME-Version: 1.0
+X-Received: by 2002:a05:6602:158:: with SMTP id v24mr8817233iot.114.1560647583626;
+ Sat, 15 Jun 2019 18:13:03 -0700 (PDT)
+Date:   Sat, 15 Jun 2019 18:13:03 -0700
+In-Reply-To: <00000000000009e6a5057d453454@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d7818e058b669414@google.com>
+Subject: Re: KASAN: stack-out-of-bounds Read in apparmor_cred_prepare
+From:   syzbot <syzbot+59722316960a71d9695b@syzkaller.appspotmail.com>
+To:     netdev@vger.kernel.org,
+        syzkaller-upstream-moderation@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Date: Sat, 15 Jun 2019 23:13:28 +0100
-
-> On Sat, Jun 15, 2019 at 01:30:21PM -0700, David Miller wrote:
->> From: Ioana Ciornei <ioana.ciornei@nxp.com>
->> Date: Thu, 13 Jun 2019 09:37:51 +0300
->> 
->> > The phy_state field of phylink should carry only valid information
->> > especially when this can be passed to the .mac_config callback.
->> > Update the an_enabled field with the autoneg state in the
->> > phylink_phy_change function.
->> > 
->> > Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
->> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->> 
->> Applied and queued up for -stable, thanks.
-> 
-> This is not a fix; it is an attempt to make phylink work differently
-> from how it's been designed for the dpaa2 driver.  I've already stated
-> that this field is completely meaningless, so I'm surprised you
-> applied it.
-
-I'm sorry, I did wait a day or so to see any direct responses to this
-patch and I saw no feedback.
-
-I'll revert.
-
+Auto-closing this bug as obsolete.
+Crashes did not happen for a while, no reproducer and no activity.
