@@ -2,102 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3294760B
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 19:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF1F47667
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 20:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbfFPRPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 13:15:05 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:35692 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725895AbfFPRPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 13:15:05 -0400
-Received: by mail-qk1-f196.google.com with SMTP id l128so4860876qke.2
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 10:15:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EhF6MN43aTSzEpvd4U2cKVhLxUc43hI7bAyD4Ixl+AI=;
-        b=LwqLEzQpvvRro9h8Hoy0z22HvnSANLLyHrDJ7mK83ITfyvM8eTVbAZcycd/W24oTDy
-         XGtfsnoAJqy/CwIx5rNY0Sqc1n6CgrCRhH9hLtPgMIPkpvDIjoC8t3lyWn1CmtiN/0OO
-         PkL1JcqHJHhfSdikKTi2T3gCJx30buEJMrgT0oT3UqTqMX6rwERcZ0DxOQSO8btUueDi
-         gke3Nkv4n9FKzO1k4D5nLwG7RiNsIG27UWBqrXlsMoS5y1gP0VNeklnnn+0uB6icLgcT
-         iQxScjiNVXF1UFoPFUwvTlAhqh6eUSMxg49TaZx2qXPqjIlO3oAcxSYvoQB4fAvFIRvR
-         jv8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EhF6MN43aTSzEpvd4U2cKVhLxUc43hI7bAyD4Ixl+AI=;
-        b=bfPcAMFPnQebwDXgcQhrxTarIfwpxTF+DFVrTPip3flIZGebsvch5h+sA3Z4kaQ7fd
-         GVjTwKNyWZhQPX8jr2o//3QeRcoUtr8lsAH7pfuB0X3whIv3pKvG9YCnaRzKETzBRl/o
-         R2WLnHvVYFL+hAuy9JpZq14KuHg8mfWdmmP5yK168qA1L2rI/q3gLgN6OClgcoPfr2Hs
-         yCZzY9XeYCBAvljI4CXCvMP276UoUDyQUKLHxgHItT8SWUR14CGeJeuhu2qwUZCmYE9I
-         6R5HMrySEKeKe5FdKA9gFVRNhqN6YNniMuBP0EtYFmcycVfQzX7bc5ctjo9aJJqC+5l2
-         RWQg==
-X-Gm-Message-State: APjAAAUxugw8ZFG8fuvb8zL+RX1gO+eliDhFV4I/Ao0nNEyx8wWeCj/K
-        Kcj8GoFoAPBoUiUe2iCTobz8Dm0Q
-X-Google-Smtp-Source: APXvYqy4FdGdjLMhYr6KydgQ9w3Tzh7qBQqcN/Dm24eQadOhAwGTvWmQu+qefdvSk+TREvtVeW46RQ==
-X-Received: by 2002:a37:66cb:: with SMTP id a194mr66061810qkc.312.1560705304011;
-        Sun, 16 Jun 2019 10:15:04 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id n10sm5340708qke.72.2019.06.16.10.15.02
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 16 Jun 2019 10:15:03 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jbaron@akamai.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] selftests/net: fix warnings in TFO key rotation selftest
-Date:   Sun, 16 Jun 2019 13:15:01 -0400
-Message-Id: <20190616171501.142551-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+        id S1726515AbfFPS35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 14:29:57 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:35812 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726038AbfFPS35 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 14:29:57 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id BCECC6049A;
+        Sun, 16 Jun 2019 20:20:26 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="bqVTw9z6";
+        dkim-atps=neutral
+Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
+        by mail.vdorst.com (Postfix) with ESMTPA id 811721C65C71;
+        Sun, 16 Jun 2019 20:20:26 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 811721C65C71
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1560709226;
+        bh=cJxXS1s1q+LMki6wCGzDmpmkzhZ9t4IB5EDQoDNc6yk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bqVTw9z692OAlhlk9cyH0sN8FA7xgd/gcSZ5xYPoe0qxdzbA1VYG2t6dk2bJc1zhl
+         Duz6MfC4CsYL+iqWMsMOrksePP77I7PQdNZfBwCkfW6q9jHvWq/sLrqsayusUd/fPG
+         TvyBc/hFJZJShV1Qi4joz193cV8PgD+Si8aRIMX+wmyb1KAc5nauFVeUFbRXL9AQQq
+         pZnPGVkayXzb7J8nwUckN265BOX6DFuRYWmzJDhlw49Ym7PzIG19GeG9EfHw1DJ0xl
+         TGkF7dANVFkm8CHkEc9vE6W3MIT8OhVpCx6jPY3KWF1XHZCqpdglnVV9y8DL+Gut6P
+         nbXHCjke3gWeQ==
+From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Subject: [PATCH net-next 0/2] net: mediatek: Add MT7621 TRGMII mode support
+Date:   Sun, 16 Jun 2019 20:20:08 +0200
+Message-Id: <20190616182010.18778-1-opensource@vdorst.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+Like many other mediatek SOCs, the MT7621 SOC and the internal MT7530 switch both
+supports TRGMII mode. MT7621 TRGMII speed is 1200MBit.
 
-One warning each on signedness, unused variable and return type.
+René van Dorst (2):
+  net: ethernet: mediatek: Add MT7621 TRGMII mode support
+  net: dsa: mt7530: Add MT7621 TRGMII mode support
 
-Fixes: 10fbcdd12aa2 ("selftests/net: add TFO key rotation selftest")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/net/tcp_fastopen_backup_key.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mt7530.c                    | 15 ++++++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 38 ++++++++++++++++++---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 11 ++++++
+ 3 files changed, 58 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/net/tcp_fastopen_backup_key.c b/tools/testing/selftests/net/tcp_fastopen_backup_key.c
-index 58bb77d9e7e1..9c55ec44fc43 100644
---- a/tools/testing/selftests/net/tcp_fastopen_backup_key.c
-+++ b/tools/testing/selftests/net/tcp_fastopen_backup_key.c
-@@ -51,7 +51,7 @@ static const int PORT = 8891;
- static void get_keys(int fd, uint32_t *keys)
- {
- 	char buf[128];
--	int len = KEY_LENGTH * 2;
-+	socklen_t len = KEY_LENGTH * 2;
- 
- 	if (do_sockopt) {
- 		if (getsockopt(fd, SOL_TCP, TCP_FASTOPEN_KEY, keys, &len))
-@@ -210,14 +210,13 @@ static bool is_listen_fd(int fd)
- 	return false;
- }
- 
--static int rotate_key(int fd)
-+static void rotate_key(int fd)
- {
- 	static int iter;
- 	static uint32_t new_key[4];
- 	uint32_t keys[8];
- 	uint32_t tmp_key[4];
- 	int i;
--	int len = KEY_LENGTH * 2;
- 
- 	if (iter < N_LISTEN) {
- 		/* first set new key as backups */
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+2.20.1
 
