@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30E9B475FB
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 18:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7393A4760A
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 19:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727200AbfFPQvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 12:51:09 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:42839 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbfFPQvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 12:51:09 -0400
-Received: by mail-io1-f66.google.com with SMTP id u19so16163322ior.9;
-        Sun, 16 Jun 2019 09:51:08 -0700 (PDT)
+        id S1726085AbfFPROo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 13:14:44 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:41425 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbfFPROo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 13:14:44 -0400
+Received: by mail-io1-f67.google.com with SMTP id w25so16235330ioc.8;
+        Sun, 16 Jun 2019 10:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=w6TP4T8h79xYAM6vhz8nFJIILK3DXaaGMEt/QJTcPbQ=;
-        b=H/Ap2zml9P/uhQ9c39FdZwPhUy5OJ3CFcICEXN5n08rwBlBq99GyUeVZ7/0qGWH62P
-         FhJ9C/KcqugGiH63xv1HkOk+sAUJTZPes9svsENA+3eWs6zknLCo3+HSyxXCHDkHq+jz
-         RBQ3aJYLoruRV39M8teyFeoWvDTYT5K/9Dr8rfbIF5DAgb7rzEVXFjmI7vgLTh5YMzys
-         f3zyG4gynelNSwMsnzUU57d0purTb8z2WElm/Gwd/b30RAwutB8hVYzLFCJmd1dtbY4E
-         C/6YSDpVP0d4aCKo+sA+TdhO1ctVrmTAzL3jc03bsCdFCr3jJkHsDwIryDRveJpq5sQh
-         EoZA==
+        bh=X4WrkjaQQpTlNjMoovx5rY40SD+a9Kp8afFJnM+fxs8=;
+        b=DtBTpHDxVxOt6zVeqDkWmoLKrJvKKvlWytU3DSb5/ZSiXl+/GarLsfhGOsI6Pcn5ra
+         GnfkKgJx3VCEcKFn/yeXmTIdvisj1Id7d4a77IVLU3J8O08ruqLOX8wU20skBO2JkTLm
+         Evwp1+BKfbLnXv2plxC4a/RfZZ8Rm4KvwfqJFCC7aM9JptlI62Emd//AWbsTsaa6hDd8
+         5AJL4twEvTNC6MvcVg6lAP3LP88o1Wu3Y0znNnzYt5E7Ly2190Qz4TnuvLPZgZRPMCP1
+         Kga65S72qqbFLX6jh/cnVjvFIIeYrsuEkfgsmdUm5qMnHM3VCBgcMKeo8cMwE3i5AwTA
+         vNhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=w6TP4T8h79xYAM6vhz8nFJIILK3DXaaGMEt/QJTcPbQ=;
-        b=kobryh8jkBwWNzQg68+IDUINB1tJ2y75lZQiMS9WmzF18ZjINGen2EJwcayPWd0Nkn
-         jiRvY5/w9ehV6374Xl9fSwppqoEDhCRRBxv87SYDG21BtxIdWAB7XZ4+t5YraYVo1WUU
-         zxOxADcbG4KdqLkozooH3Rm0KTE11ZpJuitu6J6CYHl9FlIvMw7gBBitxBPvTLuKSh6n
-         MJQH36zkc4VdMiGmY8BBhd4aPBFTqNoZcCQB46gVfBYjWUV4pbWEOdKTzT/N+qUcZhZT
-         SfFaLIpHutJJXZLY4yow8f3LfFLhyUFtaauNHITIEGb/l6f7j0Lax75Q+kwWRQSyADDT
-         EYTQ==
-X-Gm-Message-State: APjAAAXAQuB7iP6dEMQI8F4eYgNI+wBkzixWXG5DEv49TV/2wt3ECqRc
-        Nz3lBcdWmhDZHcgbjFovK7k7PMSX4QadNTDHrn54//7G
-X-Google-Smtp-Source: APXvYqw6ovqPfWsKYMv5rJk8TEsX/+POsuRX7K9Rqq2vZ2NhVoFjpVCHooqGJDcaTUiNlbOehYe32FQsVFdLtkBHupQ=
-X-Received: by 2002:a5e:8508:: with SMTP id i8mr7822782ioj.108.1560703867606;
- Sun, 16 Jun 2019 09:51:07 -0700 (PDT)
+        bh=X4WrkjaQQpTlNjMoovx5rY40SD+a9Kp8afFJnM+fxs8=;
+        b=H+wTOCHZs04e4/F2q2Pm3BmFLdWZwJzig20GxNMjsQOnd+UbhB1cW+3iIA/IfiPnPh
+         2ZmdPFOz4FxzgNisbwZ6AUTsglwbFgBlyh8JoFOSMVrq77pofAqXI2y1NocdNK81+/IQ
+         jjWkHBOzFhRi6ui/gHZuv0lJtuKiq5eyScoDwbgoQ5smWTjyCo6hcBvGkfAJdrrHqsf/
+         GRT7FGokM5WaI8IBi/fc6oIJ39l2HpePADMPrKoWZ2ZiKbQbW9JGPeqLnn2QsQx9asG+
+         xadeDKZkjvxaEeDAYbwY5P4g1cGkHDxIwIkq+saBfP+MZaEz814SWjmtGHg8xXbgzfCb
+         iZew==
+X-Gm-Message-State: APjAAAU9s6FvdfI8Vn2qHERpbCvc+Eu33rBJi/DoiU1fNdSAk9kkVmvT
+        RB9dsQI8vuuVobdGQa9EjxiYxX9VYIvfP8U54qs=
+X-Google-Smtp-Source: APXvYqyxtZq0gEu9LqJooDjhP0+ruL974qi24V0L/KYODE0xHaWL2snu4Y8IU+laFHrkpbIPTIhYimHeI9K/beK7Gac=
+X-Received: by 2002:a5e:8618:: with SMTP id z24mr72484671ioj.174.1560705283278;
+ Sun, 16 Jun 2019 10:14:43 -0700 (PDT)
 MIME-Version: 1.0
 References: <20180429104412.22445-1-christian.brauner@ubuntu.com>
  <20180429104412.22445-3-christian.brauner@ubuntu.com> <CAKdAkRTtffEQfZLnSW9CwzX_oYzHdOE816OvciGadqV7RHaV1Q@mail.gmail.com>
- <875zp5rbpf.fsf@xmission.com>
-In-Reply-To: <875zp5rbpf.fsf@xmission.com>
+ <875zp5rbpf.fsf@xmission.com> <20190616165027.prdbshnipwphqtis@gmail.com>
+In-Reply-To: <20190616165027.prdbshnipwphqtis@gmail.com>
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Date:   Sun, 16 Jun 2019 09:50:57 -0700
-Message-ID: <CAKdAkRRp49Qwz0CtNA6JsHdMe4Cw9tiD-ppXgqhZMBA23MzBgA@mail.gmail.com>
+Date:   Sun, 16 Jun 2019 10:14:32 -0700
+Message-ID: <CAKdAkRT98DmxCHPL+1+COinSEDU0_87GMDL6ZiQEiBJSd286yw@mail.gmail.com>
 Subject: Re: [PATCH net-next 2/2 v5] netns: restrict uevents
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+To:     Christian Brauner <christian.brauner@canonical.com>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
         "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         lkml <linux-kernel@vger.kernel.org>, avagin@virtuozzo.com,
@@ -62,102 +62,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+Hi Christian,
 
-On Sun, Jun 16, 2019 at 4:50 AM Eric W. Biederman <ebiederm@xmission.com> wrote:
+On Sun, Jun 16, 2019 at 9:50 AM Christian Brauner
+<christian.brauner@canonical.com> wrote:
 >
-> Dmitry Torokhov <dmitry.torokhov@gmail.com> writes:
+> Hey Dmitry,
 >
-> > Hi Christian,
-> >
-> > On Sun, Apr 29, 2018 at 3:45 AM Christian Brauner
-> > <christian.brauner@ubuntu.com> wrote:
-> >>
-> >> commit 07e98962fa77 ("kobject: Send hotplug events in all network namespaces")
-> >>abhishekbh@google.com
-> >> enabled sending hotplug events into all network namespaces back in 2010.
-> >> Over time the set of uevents that get sent into all network namespaces has
-> >> shrunk. We have now reached the point where hotplug events for all devices
-> >> that carry a namespace tag are filtered according to that namespace.
-> >> Specifically, they are filtered whenever the namespace tag of the kobject
-> >> does not match the namespace tag of the netlink socket.
-> >> Currently, only network devices carry namespace tags (i.e. network
-> >> namespace tags). Hence, uevents for network devices only show up in the
-> >> network namespace such devices are created in or moved to.
-> >>
-> >> However, any uevent for a kobject that does not have a namespace tag
-> >> associated with it will not be filtered and we will broadcast it into all
-> >> network namespaces. This behavior stopped making sense when user namespaces
-> >> were introduced.
-> >>
-> >> This patch simplifies and fixes couple of things:
-> >> - Split codepath for sending uevents by kobject namespace tags:
-> >>   1. Untagged kobjects - uevent_net_broadcast_untagged():
-> >>      Untagged kobjects will be broadcast into all uevent sockets recorded
-> >>      in uevent_sock_list, i.e. into all network namespacs owned by the
-> >>      intial user namespace.
-> >>   2. Tagged kobjects - uevent_net_broadcast_tagged():
-> >>      Tagged kobjects will only be broadcast into the network namespace they
-> >>      were tagged with.
-> >>   Handling of tagged kobjects in 2. does not cause any semantic changes.
-> >>   This is just splitting out the filtering logic that was handled by
-> >>   kobj_bcast_filter() before.
-> >>   Handling of untagged kobjects in 1. will cause a semantic change. The
-> >>   reasons why this is needed and ok have been discussed in [1]. Here is a
-> >>   short summary:
-> >>   - Userspace ignores uevents from network namespaces that are not owned by
-> >>     the intial user namespace:
-> >>     Uevents are filtered by userspace in a user namespace because the
-> >>     received uid != 0. Instead the uid associated with the event will be
-> >>     65534 == "nobody" because the global root uid is not mapped.
-> >>     This means we can safely and without introducing regressions modify the
-> >>     kernel to not send uevents into all network namespaces whose owning
-> >>     user namespace is not the initial user namespace because we know that
-> >>     userspace will ignore the message because of the uid anyway.
-> >>     I have a) verified that is is true for every udev implementation out
-> >>     there b) that this behavior has been present in all udev
-> >>     implementations from the very beginning.
-> >
-> > Unfortunately udev is not the only consumer of uevents, for example on
-> > Android there is healthd that also consumes uevents, and this
-> > particular change broke Android running in a container on Chrome OS.
-> > Can this be reverted? Or, if we want to keep this, how can containers
-> > that use separate user namespace still listen to uevents?
+> Crostini on ChromeOS is making heavy use of this patchset and of LXD. So
+> reverting this almost 1.5 years after the fact will regress all of
+> Google's ChromeOS Crostini users, and all LXD/LXC users.
 >
-> The code has been in the main tree for over a year so at a minimum
-> reverting this has the real chance of causing a regression for
-> folks like lxc.
+> LXD and Crostini by using LXD (through Concierge/Tremplin etc. [2]) are
+> using this whole series e.g. when hotplugging usb devices into the
+> container.
 >
-> I don't think Android running in a container on Chrome OS was even
-> available when this change was merged.  So I don't think this falls
-> under the ordinary no regression rules.
+> When a usb hotplug happens, LXD will receive the relevant uevent and
+> will forward it to the container. Any process listening on a uevent
+> socket inside the container will now be able to see it.
 >
-> I may be wrong but I think this is a case of developing new code on an
-> old kernel and developing a dependence on a bug that had already been
-> fixed in newer kernels.
+> Now, to talk briefly about solutions:
+> From what I gather from talking to the ChromeOS guys and from your
+> ChromeOS bugtracker and recent patchsets to ARC you are moving your
+> Android workloads into Crostini? So like Eric said this seems like a new
+> feature you're implementing.
 
-No, this is not quite the case. We have been shipping Android on
-Chrome OS since 2016, the concept of running Android in a container
-definitely predates these series of patches.
-
-> I know Christian did his best to reach out to
-> everyone when this change came through, so only getting a bug report
-> over a year after the code was merged is concerning.
-
-This only proves that it is hard to change userspace-visible behavior
-as one can't really know who might be using the interfaces and for
-what reason. Again, udev is not the only consumer of uevents; as fat
-as I know Android does not use udev and there are other users of
-uevents as well. For example, libusb can be compiled to listen to
-uevents directly.
+No, I am talking about ARC, not Crostini here.
 
 >
-> That said uevents should be completely useless in a user namespace
-> except as letting you know something happened.  Is that what healthd
-> is using them for?
+> If you need to be able to listen to uevents inside of a user namespace
+> and plan on using Crostini going forward then you can have Crostini
+> forward battery uevents to the container. The logic for doing this can
+> be found in the LXD codebase (cf. [3]). It's pretty simple. If you want
+> to go this route I'm happy to guide you. :)
+> Note, both options are a version of what Eric suggested in his last
+> paragraph!
+>
+> What astonishes me is that healthd couldn't have possibly received
+> battery uevents for a long time even if Android already was run in user
+> namespaces prior to the new feature you're working on and the healthd I
+> see in master is not even using uevents anymore (cf. [8]) but rather is
+> using sysfs it seems. :)
+> Before that healthd was using (cf. [7])
+>
+> uevent_kernel_multicast_recv()
+> |
+> -> uevent_kernel_multicast_uid_recv
+>
+> the latter containing the check
+>
+> if (cred->uid != 0) {
+>     /* ignoring netlink message from non-root user */
+>     goto out;
+> }
+>
+> Before my patchset here the uevents sent out came with cred->uid == INVALID_UID
+> and so healthd never received those events until very recently.
 
-Yes, that is one of the use cases. Appearance of AC power supply can
-be used to adjust system behavior, for example.
+I see. OK, let me try digging into this to figure out what exactly changed.
 
 Thanks.
 
