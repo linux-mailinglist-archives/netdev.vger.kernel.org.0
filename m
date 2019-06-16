@@ -2,127 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 901B7473AD
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A12EC473AF
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 09:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbfFPHif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 03:38:35 -0400
-Received: from mga05.intel.com ([192.55.52.43]:61026 "EHLO mga05.intel.com"
+        id S1726062AbfFPHmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 03:42:04 -0400
+Received: from mga03.intel.com ([134.134.136.65]:18597 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725860AbfFPHif (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Jun 2019 03:38:35 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1725860AbfFPHmD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 03:42:03 -0400
+X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jun 2019 00:38:34 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jun 2019 00:42:03 -0700
 X-ExtLoop1: 1
 Received: from shbuild888.sh.intel.com (HELO localhost) ([10.239.147.114])
-  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2019 00:38:33 -0700
-Date:   Sun, 16 Jun 2019 15:38:43 +0800
+  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2019 00:42:01 -0700
+Date:   Sun, 16 Jun 2019 15:42:12 +0800
 From:   Feng Tang <feng.tang@intel.com>
 To:     Eric Dumazet <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net 2/4] tcp: add tcp_rx_skb_cache sysctl
-Message-ID: <20190616073843.l7ba4oaokzuxk6sp@shbuild888>
+Subject: Re: [PATCH net 3/4] tcp: add tcp_tx_skb_cache sysctl
+Message-ID: <20190616074212.2cgkb324wkf6c4in@shbuild888>
 References: <20190614232221.248392-1-edumazet@google.com>
- <20190614232221.248392-3-edumazet@google.com>
+ <20190614232221.248392-4-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190614232221.248392-3-edumazet@google.com>
+In-Reply-To: <20190614232221.248392-4-edumazet@google.com>
 User-Agent: NeoMutt/20170609 (1.8.3)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 04:22:19PM -0700, Eric Dumazet wrote:
-> Instead of relying on rps_needed, it is safer to use a separate
-> static key, since we do not want to enable TCP rx_skb_cache
-> by default. This feature can cause huge increase of memory
-> usage on hosts with millions of sockets.
+Hi Eric,
 
-Thanks for the effort!
+On Fri, Jun 14, 2019 at 04:22:20PM -0700, Eric Dumazet wrote:
+> Feng Tang reported a performance regression after introduction
+> of per TCP socket tx/rx caches, for TCP over loopback (netperf)
+> 
+> There is high chance the regression is caused by a change on
+> how well the 32 KB per-thread page (current->task_frag) can
+> be recycled, and lack of pcp caches for order-3 pages.
 
-Acked-by: Feng Tang <feng.tang@intel.com>
+Exactly! When I checked the regression, I did several experiments,
+and thought of the simliar idea to add the per-CPU orderX pcp list,
+the other idea is to add a order3 list in per-cpu softnet_data as
+local cache.
+
+Thanks,
+Feng
 
 > 
+> I could not reproduce the regression myself, cpus all being
+> spinning on the mm spinlocks for page allocs/freeing, regardless
+> of enabling or disabling the per tcp socket caches.
+> 
+> It seems best to disable the feature by default, and let
+> admins enabling it.
+> 
+> MM layer either needs to provide scalable order-3 pages
+> allocations, or could attempt a trylock on zone->lock if
+> the caller only attempts to get a high-order page and is
+> able to fallback to order-0 ones in case of pressure.
+> 
+> Tests run on a 56 cores host (112 hyper threads)
+> 
+> -	35.49%	netperf 		 [kernel.vmlinux]	  [k] queued_spin_lock_slowpath
+>    - 35.49% queued_spin_lock_slowpath
+> 	  - 18.18% get_page_from_freelist
+> 		 - __alloc_pages_nodemask
+> 			- 18.18% alloc_pages_current
+> 				 skb_page_frag_refill
+> 				 sk_page_frag_refill
+> 				 tcp_sendmsg_locked
+> 				 tcp_sendmsg
+> 				 inet_sendmsg
+> 				 sock_sendmsg
+> 				 __sys_sendto
+> 				 __x64_sys_sendto
+> 				 do_syscall_64
+> 				 entry_SYSCALL_64_after_hwframe
+> 				 __libc_send
+> 	  + 17.31% __free_pages_ok
+> +	31.43%	swapper 		 [kernel.vmlinux]	  [k] intel_idle
+> +	 9.12%	netperf 		 [kernel.vmlinux]	  [k] copy_user_enhanced_fast_string
+> +	 6.53%	netserver		 [kernel.vmlinux]	  [k] copy_user_enhanced_fast_string
+> +	 0.69%	netserver		 [kernel.vmlinux]	  [k] queued_spin_lock_slowpath
+> +	 0.68%	netperf 		 [kernel.vmlinux]	  [k] skb_release_data
+> +	 0.52%	netperf 		 [kernel.vmlinux]	  [k] tcp_sendmsg_locked
+> 	 0.46%	netperf 		 [kernel.vmlinux]	  [k] _raw_spin_lock_irqsave
+> 
+> Fixes: 472c2e07eef0 ("tcp: add one skb cache for tx")
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Feng Tang <feng.tang@intel.com>
 > ---
->  Documentation/networking/ip-sysctl.txt | 8 ++++++++
->  include/net/sock.h                     | 6 ++----
->  net/ipv4/sysctl_net_ipv4.c             | 9 +++++++++
->  3 files changed, 19 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-> index 14fe93049d28e965d7349b03c5c8782c3d386e7d..288aa264ac26d98637a5bb1babc334bfc699bef1 100644
-> --- a/Documentation/networking/ip-sysctl.txt
-> +++ b/Documentation/networking/ip-sysctl.txt
-> @@ -772,6 +772,14 @@ tcp_challenge_ack_limit - INTEGER
->  	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
->  	Default: 100
->  
-> +tcp_rx_skb_cache - BOOLEAN
-> +	Controls a per TCP socket cache of one skb, that might help
-> +	performance of some workloads. This might be dangerous
-> +	on systems with a lot of TCP sockets, since it increases
-> +	memory usage.
-> +
-> +	Default: 0 (disabled)
-> +
->  UDP variables:
->  
->  udp_l3mdev_accept - BOOLEAN
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index e9d769c04637a3c0b967c9bfa6def724834796b9..b02645e2dfad722769c1455bcde76e46da9fc5ac 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2433,13 +2433,11 @@ static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
->   * This routine must be called with interrupts disabled or with the socket
->   * locked so that the sk_buff queue operation is ok.
->  */
-> +DECLARE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
->  static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
->  {
->  	__skb_unlink(skb, &sk->sk_receive_queue);
-> -	if (
-> -#ifdef CONFIG_RPS
-> -	    !static_branch_unlikely(&rps_needed) &&
-> -#endif
-> +	if (static_branch_unlikely(&tcp_rx_skb_cache_key) &&
->  	    !sk->sk_rx_skb_cache) {
->  		sk->sk_rx_skb_cache = skb;
->  		skb_orphan(skb);
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 875867b64d6a6597bf4fcd3498ed55741cbe33f7..886b58d31351df44725bdc34081e798bcb89ecf0 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -51,6 +51,9 @@ static int comp_sack_nr_max = 255;
->  static u32 u32_max_div_HZ = UINT_MAX / HZ;
->  static int one_day_secs = 24 * 3600;
->  
-> +DEFINE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
-> +EXPORT_SYMBOL(tcp_rx_skb_cache_key);
-> +
->  /* obsolete */
->  static int sysctl_tcp_low_latency __read_mostly;
->  
-> @@ -559,6 +562,12 @@ static struct ctl_table ipv4_table[] = {
->  		.extra1		= &sysctl_fib_sync_mem_min,
->  		.extra2		= &sysctl_fib_sync_mem_max,
->  	},
-> +	{
-> +		.procname	= "tcp_rx_skb_cache",
-> +		.data		= &tcp_rx_skb_cache_key.key,
-> +		.mode		= 0644,
-> +		.proc_handler	= proc_do_static_key,
-> +	},
->  	{ }
->  };
->  
-> -- 
-> 2.22.0.410.gd8fdbe21b5-goog
+>  include/net/sock.h         | 4 +++-
+>  net/ipv4/sysctl_net_ipv4.c | 8 ++++++++
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+ 
