@@ -2,127 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F894769C
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 21:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BB32476A7
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 22:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbfFPTpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 15:45:01 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:48736 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726411AbfFPTpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 15:45:01 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hcb5G-0002aY-2r; Sun, 16 Jun 2019 21:44:58 +0200
-Message-ID: <d16897007cee0561127c3155f90a83deb2853cfa.camel@sipsolutions.net>
-Subject: Re: VLAN tags in mac_len
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        roopa@cumulusnetworks.com, jhs@mojatatu.com,
-        David Ahern <dsahern@gmail.com>,
-        Zahari Doychev <zahari.doychev@linux.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Date:   Sun, 16 Jun 2019 21:44:55 +0200
-In-Reply-To: <9e3261a9-0fd2-aa36-d739-9f1adca1408b@cumulusnetworks.com> (sfid-20190616_105201_738030_DAEF0153)
-References: <68c99662210c8e9e37f198ddf8cb00bccf301c4b.camel@sipsolutions.net>
-         <20190615151913.cgrfyflwwnhym4u2@ast-mbp.dhcp.thefacebook.com>
-         <e487656b854ca999d14eb8072e5553eb2676a9f4.camel@sipsolutions.net>
-         <9e3261a9-0fd2-aa36-d739-9f1adca1408b@cumulusnetworks.com>
-         (sfid-20190616_105201_738030_DAEF0153)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
+        id S1727438AbfFPUEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 16:04:25 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51528 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727394AbfFPUEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 16:04:25 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3C02F308404B;
+        Sun, 16 Jun 2019 20:04:24 +0000 (UTC)
+Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9590852DC;
+        Sun, 16 Jun 2019 20:04:21 +0000 (UTC)
+Date:   Sun, 16 Jun 2019 22:04:17 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
+ ip_valid_fib_dump_req, provide non-strict version
+Message-ID: <20190616220417.573be9a6@redhat.com>
+In-Reply-To: <20190615052705.66f3fe62@redhat.com>
+References: <cover.1560561432.git.sbrivio@redhat.com>
+        <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
+        <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
+        <20190615051342.7e32c2bb@redhat.com>
+        <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
+        <20190615052705.66f3fe62@redhat.com>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Sun, 16 Jun 2019 20:04:24 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2019-06-16 at 11:51 +0300, Nikolay Aleksandrov wrote:
+On Sat, 15 Jun 2019 05:27:05 +0200
+Stefano Brivio <sbrivio@redhat.com> wrote:
 
-> > Thinking along those lines, I sort of ended up with the following scheme
-> > (just for the skb head, not the frags/fraglist):
-> > 
-> >           +------------------+----------------+---------------+
-> >  headroom | eth | vlan | ... | IP  | TCP      | payload       | tailroom
-> >           +------------------+----------------+---------------+
-> > ^ skb->head_ptr
-> >           ^ skb->l2_ptr
-> >                              ^ skb->l3_ptr == skb->l2_ptr + skb->l2_len
-> >                                     ...
-> >                                               ^ skb->payload_ptr
-> >                                                               ^ skb->tail
-[...]
-
-> > (Now, if you wanted to implement this, you probably wouldn't have l2_ptr
-> > but l2_offset etc. but that's an implementation detail.)
-> > 
+> On Fri, 14 Jun 2019 21:16:54 -0600
+> David Ahern <dsahern@gmail.com> wrote:
 > 
-> I do like the scheme outlined above, it makes it easier to reason about
-> all of this, but obviously it'd require quite some changes.
-
-Yeah. I'm not really ready to suggest something as radical.
-
-But as you found out below, I even got confused *again* while
-*carefully* looking at this, and messed up mac_len vs. mac_header_len.
-
-In fact, even looking at it now, I'm not entirely sure I see the
-difference. Why do we need both? They have different implementation
-semantics, but shouldn't they sort of be the same?
-
-> > > It breaks connectivity between bridge and
-> > > members when vlans are used. The host generated packets going out of the bridge
-> > > have mac_len = 0.
+> > On 6/14/19 9:13 PM, Stefano Brivio wrote:  
+> > > On Fri, 14 Jun 2019 20:54:49 -0600
+> > > David Ahern <dsahern@gmail.com> wrote:
+> > >     
+> > >> On 6/14/19 7:32 PM, Stefano Brivio wrote:    
+> > >>> ip_valid_fib_dump_req() does two things: performs strict checking on
+> > >>> netlink attributes for dump requests, and sets a dump filter if netlink
+> > >>> attributes require it.
+> > >>>
+> > >>> We might want to just set a filter, without performing strict validation.
+> > >>>
+> > >>> Rename it to ip_filter_fib_dump_req(), and add a 'strict' boolean
+> > >>> argument that must be set if strict validation is requested.
+> > >>>
+> > >>> This patch doesn't introduce any functional changes.
+> > >>>
+> > >>> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> > >>> ---
+> > >>> v4: New patch
+> > >>>       
+> > >>
+> > >> Can you explain why this patch is needed? The existing function requires
+> > >> strict mode and is needed to enable any of the kernel side filtering
+> > >> beyond the RTM_F_CLONED setting in rtm_flags.    
+> > > 
+> > > It's mostly to have proper NLM_F_MATCH support. Let's pick an iproute2
+> > > version without strict checking support (< 5.0), that sets NLM_F_MATCH
+> > > though. Then we need this check:
+> > > 
+> > > 	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm)))    
 > > 
-> > Which probably indicates that we're not even consistent with the egress
-> > scheme I pointed out above, probably because we *also* have
-> > hard_header_len?
-> > 
+> > but that check existed long before any of the strict checking and kernel
+> > side filtering was added.  
 > 
-> IIRC, mac_len is only set on Rx, while on Tx it usually isn't. More below.
-
-Yes, looks like.
-
-> > I'm not even sure I understand the bug that Nikolay described, because
-> > br_dev_xmit() does:
-> > 
-> >         skb_reset_mac_header(skb);
-> >         eth = eth_hdr(skb);
-> >         skb_pull(skb, ETH_HLEN);
-> > 
-> > so after this we *do* end up with an SKB that has mac_len == ETH_HLEN,
-> > if it was transmitted out the bridge netdev itself, and thus how would
-> > the bug happen?
-> > 
+> Indeed. And now I'm recycling it, even if strict checking is not
+> requested.
 > 
-> I said *mac_len*. :) 
+> > > and to set filter parameters not just based on flags (i.e. RTM_F_CLONED),
+> > > but also on table, protocol, etc.    
+> > 
+> > and to do that you *must* have strict checking. There is no way to trust
+> > userspace without that strict flag set because iproute2 for the longest
+> > time sent the wrong header for almost all dump requests.  
+> 
+> So you're implying that:
+> 
+> - we shouldn't support NLM_F_MATCH
+> 
+> - we should keep this broken for iproute2 < 5.0.0?
+> 
+> I guess this might be acceptable, but please state it clearly.
+> 
+> By the way, if really needed, we can do strict checking even if not
+> requested. But this might add more and more userspace breakage, I guess.
 
-Yes, I confused myself here.
+Maybe I have a simpler alternative, that doesn't allow filters without
+strict checking (your concern above) and fixes the issue for most
+iproute2 versions (except for 'ip -6 route cache flush' from 5.0.0 to
+current, unpatched version). I would also like to avoid introducing
+this bug:
 
-> The above sets mac_header, at that point you'll have
-> the following values: mac_len = 0, mac_header_len = 14 (skb_mac_header_len
-> uses network_header - mac_header which is set there), but that is easy
-> to overcome and if you do go down the path of consistently using and updating
-> mac_len it should work.
+- 'ip route list cache table main' currently returns nothing (bug)
 
-Yeah, so basically all we really need is to actually call
-skb_reset_mac_len() in addition to skb_reset_mac_header().
+- 'ip route list cache table main' with v1-v3 would return all cached
+  routes (new bug)
 
-Which, is, "slightly" confusing (to say the least) - why are mac_len and
-mac_header two completely separate concepts? It almost seems like they
-should be two sides of the same coin (len/ptr) but we also have
-mac_header_len...
+and retain this feature from v4:
 
-Oh well.
+- if neither NLM_F_MATCH nor other filters are set, dump all cached and
+  uncached routes. There's no way to get cached and uncached ones with
+  a single request, otherwise. This would also fit RFC 3549.
 
-So maybe we should go back to square 1 and resend the patches Zahari had
-originally, but with the added skb_reset_mac_len()?
+We could do this:
 
-johannes
+- strict checking enabled (iproute2 >= 5.0.0):
+  - in inet{,6}_dump_fib(): if NLM_F_MATCH is set, set
+    filter->filter_set in any case
 
+  - in fn_trie_dump_leaf() and rt6_dump_route(): use filter->filter_set
+    to decide if we want to filter depending on RTM_F_CLONED being
+    set/unset. If other filters (rt_type, dev, protocol) are not set,
+    they are still wildcards (existing implementation)
+
+- no strict checking (iproute2 < 5.0.0):
+  - we can't filter consistently, so apply no filters at all: dump all
+    the routes (filter->filter_set not set), cached and uncached. That
+    means more netlink messages, but no spam as iproute2 filters them
+    anyway, and list/flush cache commands work again.
+
+I would drop 1/8, turn 2/8 and 6/8 into a straightforward:
+
+ 	if (cb->strict_check) {
+ 		err = ip_valid_fib_dump_req(net, nlh, &filter, cb);
+ 		if (err < 0)
+ 			return err;
++		if (nlh->nlmsg_flags & NLM_F_MATCH)
++			filter.filter_set = 1;
+ 	} else if (nlmsg_len(nlh) >= sizeof(struct rtmsg)) {
+ 		struct rtmsg *rtm = nlmsg_data(nlh);
+
+and other patches remain the same.
+
+What do you think?
+
+-- 
+Stefano
