@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18AF847446
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 12:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C18847447
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 12:43:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbfFPKmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 06:42:03 -0400
-Received: from kadath.azazel.net ([81.187.231.250]:46370 "EHLO
+        id S1726453AbfFPKne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 06:43:34 -0400
+Received: from kadath.azazel.net ([81.187.231.250]:46390 "EHLO
         kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbfFPKmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 06:42:03 -0400
+        with ESMTP id S1725947AbfFPKne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 06:43:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
          s=20190108; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
         :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
         Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
         In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=bdCeIrTIdSE9xmVYhRdd1SVbjVAPDQT/qMUOLAS4y2Q=; b=fr7VfNJEX2vWe3SCD4smjcKsF3
-        Lqkn91Vttb+8cysg5efqqAg7Hp/7t3mzEWxXMhZKbZc4uyqMlj2Vw7Sk7teEcIcyXS62M/s8Mw+Ep
-        lEnR4e3hb6Tmy2ZBar/vkxfcAP3eHkrsJ8lTgaNc706S8/Y8R6sjeALZoyiyGq515dC/Zxm40qR0L
-        YfIMrSivKrOSGHcMUBdpuyI7ERz/kWOEggoSPXB0pkZFpN/38plyJwUKtuv4uKwH1O8IF0ln4E4VV
-        Wezql30sAC6SDWHoSXcfxLMSsOLe+N+v/tGaxipqcXGHa1DNwknCcaibHvzu11enCzFvN2LWKVUA3
-        r7eXt2Fg==;
+        bh=X2ZJjUrpmLI/k0p1CCuDVRehHC/AHtceZzE7yAAt2rI=; b=jfEMHIaDopccmWn0dKG07Kjf5B
+        vDt1gkxkVWeoB90V5D0hX2tLKg86dsEfk8AavdEDPD4hBX7Dsby8pD5r4r0g64FVNuWg+l3cruisA
+        93JGhEF0p7NKuYY21ufUoejEN2vTngYNgmIbHOcIE5hLXuC/+4yl8BfPy/JK26JECuX/yfWMSnnv1
+        vlG6nZUxUKRzGEW1tZu3nNQu+xdUQxaDWLkkyaua1MAejaqCE2aOjOCcqCA5p/t0M8MBxfIAbyRwh
+        JPcu1i+9tsgKHGsHlaBkelDA0ThwiRYcCtnqaSDcV2HUdVVOQQNUFs7niNEKrsxwDUMDjFFT5As0Q
+        ZLj1DupA==;
 Received: from ulthar.dreamlands ([192.168.96.2])
         by kadath.azazel.net with esmtp (Exim 4.89)
         (envelope-from <jeremy@azazel.net>)
-        id 1hcSbn-000640-SO; Sun, 16 Jun 2019 11:41:59 +0100
+        id 1hcSdI-00065Q-Kw; Sun, 16 Jun 2019 11:43:32 +0100
 From:   Jeremy Sowden <jeremy@azazel.net>
 To:     "David S. Miller" <davem@davemloft.net>
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] lapb: moved export of lapb_register.
-Date:   Sun, 16 Jun 2019 11:41:59 +0100
-Message-Id: <20190616104159.20268-1-jeremy@azazel.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] x25_asy: fixed function name in error message.
+Date:   Sun, 16 Jun 2019 11:43:32 +0100
+Message-Id: <20190616104332.20315-1-jeremy@azazel.net>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,42 +44,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The EXPORT_SYMBOL for lapb_register was next to a different function.
-Moved it to the right place.
+Replaced incorrect hard-coded function-name in error message with
+__func__.
 
 Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
 ---
- net/lapb/lapb_iface.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wan/x25_asy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
-index 03f0cd872dce..600d754a1700 100644
---- a/net/lapb/lapb_iface.c
-+++ b/net/lapb/lapb_iface.c
-@@ -68,7 +68,6 @@ static void __lapb_remove_cb(struct lapb_cb *lapb)
- 		lapb_put(lapb);
- 	}
- }
--EXPORT_SYMBOL(lapb_register);
+diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
+index d78bc838d631..914be5847386 100644
+--- a/drivers/net/wan/x25_asy.c
++++ b/drivers/net/wan/x25_asy.c
+@@ -602,8 +602,8 @@ static void x25_asy_close_tty(struct tty_struct *tty)
  
- /*
-  *	Add a socket to the bound sockets list.
-@@ -115,7 +114,6 @@ static struct lapb_cb *lapb_create_cb(void)
- {
- 	struct lapb_cb *lapb = kzalloc(sizeof(*lapb), GFP_ATOMIC);
+ 	err = lapb_unregister(sl->dev);
+ 	if (err != LAPB_OK)
+-		pr_err("x25_asy_close: lapb_unregister error: %d\n",
+-		       err);
++		pr_err("%s: lapb_unregister error: %d\n",
++		       __func__, err);
  
--
- 	if (!lapb)
- 		goto out;
- 
-@@ -167,6 +165,7 @@ int lapb_register(struct net_device *dev,
- 	write_unlock_bh(&lapb_list_lock);
- 	return rc;
- }
-+EXPORT_SYMBOL(lapb_register);
- 
- int lapb_unregister(struct net_device *dev)
- {
+ 	tty->disc_data = NULL;
+ 	sl->tty = NULL;
 -- 
 2.20.1
 
