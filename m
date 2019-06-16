@@ -2,61 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43D31476C8
-	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 22:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60617476CB
+	for <lists+netdev@lfdr.de>; Sun, 16 Jun 2019 22:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfFPUpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 16:45:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:51924 "EHLO
+        id S1726267AbfFPUrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 16:47:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:51940 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725920AbfFPUpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 16:45:31 -0400
+        with ESMTP id S1725920AbfFPUrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 16:47:07 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 64197151C2844;
-        Sun, 16 Jun 2019 13:45:30 -0700 (PDT)
-Date:   Sun, 16 Jun 2019 13:45:29 -0700 (PDT)
-Message-Id: <20190616.134529.452171251313252288.davem@davemloft.net>
-To:     gvaradar@cisco.com
-Cc:     benve@cisco.com, netdev@vger.kernel.org, govind.varadar@gmail.com,
-        ssuryaextr@gmail.com, toshiaki.makita1@gmail.com
-Subject: Re: [PATCH net v2] net: handle 802.1P vlan 0 packets properly
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5B627151C2854;
+        Sun, 16 Jun 2019 13:47:06 -0700 (PDT)
+Date:   Sun, 16 Jun 2019 13:47:05 -0700 (PDT)
+Message-Id: <20190616.134705.1682820035874057137.davem@davemloft.net>
+To:     ard.biesheuvel@linaro.org
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        herbert@gondor.apana.org.au, ebiggers@kernel.org,
+        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        jbaron@akamai.com, cpaasch@apple.com, David.Laight@aculab.com
+Subject: Re: [PATCH v2] net: ipv4: move tcp_fastopen server side code to
+ SipHash library
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190614131354.8287-1-gvaradar@cisco.com>
-References: <20190614131354.8287-1-gvaradar@cisco.com>
+In-Reply-To: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
+References: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Jun 2019 13:45:30 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Jun 2019 13:47:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Govindarajulu Varadarajan <gvaradar@cisco.com>
-Date: Fri, 14 Jun 2019 06:13:54 -0700
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Date: Fri, 14 Jun 2019 16:01:22 +0200
 
-> When stack receives pkt: [802.1P vlan 0][802.1AD vlan 100][IPv4],
-> vlan_do_receive() returns false if it does not find vlan_dev. Later
-> __netif_receive_skb_core() fails to find packet type handler for
-> skb->protocol 801.1AD and drops the packet.
+> Using a bare block cipher in non-crypto code is almost always a bad idea,
+> not only for security reasons (and we've seen some examples of this in
+> the kernel in the past), but also for performance reasons.
 > 
-> 801.1P header with vlan id 0 should be handled as untagged packets.
-> This patch fixes it by checking if vlan_id is 0 and processes next vlan
-> header.
+> In the TCP fastopen case, we call into the bare AES block cipher one or
+> two times (depending on whether the connection is IPv4 or IPv6). On most
+> systems, this results in a call chain such as
 > 
-> Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
-> ---
-> v2:	Move the check out of vlan_do_receive() to
-> 	__netif_receive_skb_core(). This way, we do not change the
-> 	behaviour when rx_handler is registered. i.e do not strip off
-> 	802.1P header when bridge (or rx_handler) is registered.
+>   crypto_cipher_encrypt_one(ctx, dst, src)
+>     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
+>       aesni_encrypt
+>         kernel_fpu_begin();
+>         aesni_enc(ctx, dst, src); // asm routine
+>         kernel_fpu_end();
 > 
-> Previous discussions:
-> http://patchwork.ozlabs.org/patch/1113413/
-> http://patchwork.ozlabs.org/patch/1113347/
+> It is highly unlikely that the use of special AES instructions has a
+> benefit in this case, especially since we are doing the above twice
+> for IPv6 connections, instead of using a transform which can process
+> the entire input in one go.
+> 
+> We could switch to the cbcmac(aes) shash, which would at least get
+> rid of the duplicated overhead in *some* cases (i.e., today, only
+> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
+> end up using the generic cbcmac template wrapping the AES-NI cipher,
+> which basically ends up doing exactly the above). However, in the given
+> context, it makes more sense to use a light-weight MAC algorithm that
+> is more suitable for the purpose at hand, such as SipHash.
+> 
+> Since the output size of SipHash already matches our chosen value for
+> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
+> sizes, this greatly simplifies the code as well.
+> 
+> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
-Looks good, applied, thanks.
+Please add some text to the commit message explaining the potential
+partial deployment problems Eric mentioned.
+
+Thank you.
