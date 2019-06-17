@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 202F848997
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EAA748998
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728405AbfFQREh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:04:37 -0400
-Received: from mail-qt1-f201.google.com ([209.85.160.201]:50350 "EHLO
-        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbfFQREg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:36 -0400
-Received: by mail-qt1-f201.google.com with SMTP id g30so9791853qtm.17
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:36 -0700 (PDT)
+        id S1728454AbfFQREk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:04:40 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:54997 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbfFQREj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:39 -0400
+Received: by mail-pf1-f201.google.com with SMTP id c17so7391904pfb.21
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Zm3dsp+4c4Dzvg1A7uPwIxj0li9zDT8Y3ELdlF7uors=;
-        b=evLjwvEGgiNgQBesTmz3yPZnfhbYobecnwlOmxNpXpo1yaICUAljUHct8f82HuboO7
-         otBebs7eeDdLizzJc7mgJbNqQ4pJAw7LYu6SZpWr3IxPiZvLb8369y0YUtEY4yhgdFfH
-         TXorT8lhAY4P3fpBzXliaxkkuW8wTpg9+OjoEOqMFJo//wCg8U/hB+O+xR/pVByZ3HdM
-         7R2r5WFzyHbK+gqLWlrFx9vl/a+ytw2BzxMxfRXwHuTJKTi1unP9XvScTwa49itDTus2
-         I9i5T7hj/1VlBeezf5SuA2GfF+hMTKbOLh9nnG9XkhO2TJ0JH/10DFZpENej/tqvz/Pv
-         ZNcA==
+        bh=s/yt2MZn3lhqf5If+V/X5T032GhqPMuSrwqeKHY0rAM=;
+        b=E5AGGoXmmUDclMe71r+VWlSZ5kYnwGFtskBNEunBagmbV/Xo92KWMu9Fz8uQcLu60i
+         M97x+3bPV4ZRHT3tFvCe4BItkGmrhsildxE3QhSV280jRsfKy6kM7r+wX8CYA8UeaRx9
+         ngKVXKs/tc59q4MMVLi5tnzQ5NHvKfpcR1Jgx4eOZFmeO6q9GHcJByZzbt8P7+A9cPRJ
+         nDN5pvpPXThLjsLohFah5s1v6sMtnWMJ+U6qIJe/JgvypeANkjSO3BDmi3RoyNTq+3aJ
+         iz7QyuEDs8yp6rgzgq+GGxhVSCrSt5ev7UPGJmMjTewuUma4FYQop45J5KEOIL6ysCAc
+         qV9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Zm3dsp+4c4Dzvg1A7uPwIxj0li9zDT8Y3ELdlF7uors=;
-        b=pUwmil+NlOsSiwcf+inPtDnfBY0126HYDK+1lyCXcYI2tXdwTS4MgAFdpW1HmXnL6L
-         cO+rGTlNAxj7kpd+OjJs2wjuiw9B+rnS7MkiWRacCh63YMM5OUQM8gKTpRreiR2DogMu
-         iwmQCHU3H70pTUzJSdCMbK7Tnkx3710oAisJMem3PFCA6+ZDjZiWJEaPhv6ICm20pArB
-         SIyEcOqL7nDS3W+zjMguLqghJ0pLuaoWQn2RLy9zYEoWH+tUP8DQUxKuqovHOndoAfxs
-         hoXI0JqLBz7e016NxeS1jjDqIH7Kn4PdSfVE1aXDeikHKm6rbcqvnoTZOlT1MRRSeulY
-         MQOQ==
-X-Gm-Message-State: APjAAAVrDKAstR3LizlnnJ5JaNb59DTblN8lFmlwXoQaNF3L6NGSoLss
-        VecUrkNKgGoSCMGjIhMklMbhYG/F5TdDoA==
-X-Google-Smtp-Source: APXvYqwAgZqsi5C1NKJbo4OBxYDCKIS24DbNUFKebKjpOEapkfCxXuIT+3a636BE02j2zQpxd4bTmlzJ2OOB9Q==
-X-Received: by 2002:ac8:82a:: with SMTP id u39mr38710867qth.370.1560791075610;
- Mon, 17 Jun 2019 10:04:35 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 10:03:52 -0700
+        bh=s/yt2MZn3lhqf5If+V/X5T032GhqPMuSrwqeKHY0rAM=;
+        b=H6xrP3Mc0ZWMcKvvyxBezeA1gA78gG99QpRQpVh7iIOueLk8VhuXVHIFzZr+dQaA5Y
+         iqm5aLATreSdkhqGMlLufzS3nkJFUQ7bHwncQvBs+6ZNz/dvluhUtlgA/kBFiH+wbqcP
+         INR7HDpBChW67i1X/VkzgKkxqM5kqry3HtyphWP/y5IvVwvEBDC0Gkkx/GoOuXP0DEA1
+         x2ykNO/5+yZo1fNS2UFnDJ/2NQ+vzIpvGjFNhmExxApFEGVvbzTVeUg++pAT6bX3oDnN
+         uMZh0pfaNmoc9BRHPJZjL5xzcZ6Ixl5ugUILqzcNxhIKdrEQM/gbFdULW4dt4imUglS6
+         ax1g==
+X-Gm-Message-State: APjAAAWIO9bhrIdeYzSL6dmwJYFPsG7WNGGHK/eLs/wKY5jHtZHbrDRc
+        KYt6ibp0t5oaa1DJchqFE8n732fzMOVARA==
+X-Google-Smtp-Source: APXvYqzr0jAgo++zh+qkmfbtsPJGZrBVfK46+5xWHCnr9B1N+/PIbrlUiOjOLJlVtYFbb8LUcDmn4QLegHaN2Q==
+X-Received: by 2002:a63:d008:: with SMTP id z8mr50466224pgf.335.1560791078660;
+ Mon, 17 Jun 2019 10:04:38 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 10:03:53 -0700
 In-Reply-To: <20190617170354.37770-1-edumazet@google.com>
-Message-Id: <20190617170354.37770-3-edumazet@google.com>
+Message-Id: <20190617170354.37770-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190617170354.37770-1-edumazet@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory limits
+Subject: [PATCH net 3/4] tcp: add tcp_min_snd_mss sysctl
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -65,75 +65,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Looney reported that a malicious peer can force a sender
-to fragment its retransmit queue into tiny skbs, inflating memory
-usage and/or overflow 32bit counters.
+Some TCP peers announce a very small MSS option in their SYN and/or
+SYN/ACK messages.
 
-TCP allows an application to queue up to sk_sndbuf bytes,
-so we need to give some allowance for non malicious splitting
-of retransmit queue.
+This forces the stack to send packets with a very high network/cpu
+overhead.
 
-A new SNMP counter is added to monitor how many times TCP
-did not allow to split an skb if the allowance was exceeded.
+Linux has enforced a minimal value of 48. Since this value includes
+the size of TCP options, and that the options can consume up to 40
+bytes, this means that each segment can include only 8 bytes of payload.
 
-Note that this counter might increase in the case applications
-use SO_SNDBUF socket option to lower sk_sndbuf.
+In some cases, it can be useful to increase the minimal value
+to a saner value.
 
-CVE-2019-11478 : tcp_fragment, prevent fragmenting a packet when the
-	socket is already using more than half the allowed space
+We still let the default to 48 (TCP_MIN_SND_MSS), for compatibility
+reasons.
+
+Note that TCP_MAXSEG socket option enforces a minimal value
+of (TCP_MIN_MSS). David Miller increased this minimal value
+in commit c39508d6f118 ("tcp: Make TCP_MAXSEG minimum more correct.")
+from 64 to 88.
+
+We might in the future merge TCP_MIN_SND_MSS and TCP_MIN_MSS.
+
+CVE-2019-11479 -- tcp mss hardcoded to 48
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Jonathan Looney <jtl@netflix.com>
+Suggested-by: Jonathan Looney <jtl@netflix.com>
 Acked-by: Neal Cardwell <ncardwell@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Reviewed-by: Tyler Hicks <tyhicks@canonical.com>
+Cc: Yuchung Cheng <ycheng@google.com>
+Cc: Tyler Hicks <tyhicks@canonical.com>
 Cc: Bruce Curtis <brucec@netflix.com>
 Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- include/uapi/linux/snmp.h | 1 +
- net/ipv4/proc.c           | 1 +
- net/ipv4/tcp_output.c     | 5 +++++
- 3 files changed, 7 insertions(+)
+ Documentation/networking/ip-sysctl.txt |  8 ++++++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/sysctl_net_ipv4.c             | 11 +++++++++++
+ net/ipv4/tcp_ipv4.c                    |  1 +
+ net/ipv4/tcp_output.c                  |  3 +--
+ 5 files changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 86dc24a96c90ab047d5173d625450facd6c6dd79..fd42c1316d3d112ecd8a00d2b499d6f6901c5e81 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -283,6 +283,7 @@ enum
- 	LINUX_MIB_TCPACKCOMPRESSED,		/* TCPAckCompressed */
- 	LINUX_MIB_TCPZEROWINDOWDROP,		/* TCPZeroWindowDrop */
- 	LINUX_MIB_TCPRCVQDROP,			/* TCPRcvQDrop */
-+	LINUX_MIB_TCPWQUEUETOOBIG,		/* TCPWqueueTooBig */
- 	__LINUX_MIB_MAX
- };
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 288aa264ac26d98637a5bb1babc334bfc699bef1..22f6b8b1110ad20c36e7ceea6d67fd2cc938eb7b 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -255,6 +255,14 @@ tcp_base_mss - INTEGER
+ 	Path MTU discovery (MTU probing).  If MTU probing is enabled,
+ 	this is the initial MSS used by the connection.
  
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 4370f4246e86dfe06a9e07cace848baeaf6cc4da..073273b751f8fcda1c9c79cd1ab566f2939b2517 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -287,6 +287,7 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TCPAckCompressed", LINUX_MIB_TCPACKCOMPRESSED),
- 	SNMP_MIB_ITEM("TCPZeroWindowDrop", LINUX_MIB_TCPZEROWINDOWDROP),
- 	SNMP_MIB_ITEM("TCPRcvQDrop", LINUX_MIB_TCPRCVQDROP),
-+	SNMP_MIB_ITEM("TCPWqueueTooBig", LINUX_MIB_TCPWQUEUETOOBIG),
- 	SNMP_MIB_SENTINEL
- };
++tcp_min_snd_mss - INTEGER
++	TCP SYN and SYNACK messages usually advertise an ADVMSS option,
++	as described in RFC 1122 and RFC 6691.
++	If this ADVMSS option is smaller than tcp_min_snd_mss,
++	it is silently capped to tcp_min_snd_mss.
++
++	Default : 48 (at least 8 bytes of payload per segment)
++
+ tcp_congestion_control - STRING
+ 	Set the congestion control algorithm to be used for new
+ 	connections. The algorithm "reno" is always available, but
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 7698460a3dd1e5070e12d406b3ee58834688cdc9..623cfbb7b8dcbb2a6d8325ec010aff78bbdf8839 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -117,6 +117,7 @@ struct netns_ipv4 {
+ #endif
+ 	int sysctl_tcp_mtu_probing;
+ 	int sysctl_tcp_base_mss;
++	int sysctl_tcp_min_snd_mss;
+ 	int sysctl_tcp_probe_threshold;
+ 	u32 sysctl_tcp_probe_interval;
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index fa213bd8e233b577114815ca2227f08264e7df06..b6f14af926faf80f1686549bee7154c584dc63e6 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -39,6 +39,8 @@ static int ip_local_port_range_min[] = { 1, 1 };
+ static int ip_local_port_range_max[] = { 65535, 65535 };
+ static int tcp_adv_win_scale_min = -31;
+ static int tcp_adv_win_scale_max = 31;
++static int tcp_min_snd_mss_min = TCP_MIN_SND_MSS;
++static int tcp_min_snd_mss_max = 65535;
+ static int ip_privileged_port_min;
+ static int ip_privileged_port_max = 65535;
+ static int ip_ttl_min = 1;
+@@ -769,6 +771,15 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "tcp_min_snd_mss",
++		.data		= &init_net.ipv4.sysctl_tcp_min_snd_mss,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= &tcp_min_snd_mss_min,
++		.extra2		= &tcp_min_snd_mss_max,
++	},
+ 	{
+ 		.procname	= "tcp_probe_threshold",
+ 		.data		= &init_net.ipv4.sysctl_tcp_probe_threshold,
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index bc86f9735f4577d50d94f42b10edb6ba95bb7a05..cfa81190a1b1af30d05f4f6cd84c05b025a6afeb 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2628,6 +2628,7 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
+ 
+ 	net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
++	net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+ 	net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+ 	net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
  
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index b8e3bbb852117459d131fbb41d69ae63bd251a3e..1bb1c46b4abad100622d3f101a0a3ca0a6c8e881 100644
+index 1bb1c46b4abad100622d3f101a0a3ca0a6c8e881..00c01a01b547ec67c971dc25a74c9258563cf871 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1296,6 +1296,11 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
- 	if (nsize < 0)
- 		nsize = 0;
+@@ -1459,8 +1459,7 @@ static inline int __tcp_mtu_to_mss(struct sock *sk, int pmtu)
+ 	mss_now -= icsk->icsk_ext_hdr_len;
  
-+	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
-+		return -ENOMEM;
-+	}
-+
- 	if (skb_unclone(skb, gfp))
- 		return -ENOMEM;
+ 	/* Then reserve room for full set of TCP options and 8 bytes of data */
+-	if (mss_now < TCP_MIN_SND_MSS)
+-		mss_now = TCP_MIN_SND_MSS;
++	mss_now = max(mss_now, sock_net(sk)->ipv4.sysctl_tcp_min_snd_mss);
+ 	return mss_now;
+ }
  
 -- 
 2.22.0.410.gd8fdbe21b5-goog
