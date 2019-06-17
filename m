@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED37489CF
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3888B489D1
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbfFQRPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:15:05 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42216 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfFQRPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:15:05 -0400
-Received: by mail-pg1-f194.google.com with SMTP id l19so6158175pgh.9
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:15:05 -0700 (PDT)
+        id S1726292AbfFQRPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:15:49 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:38291 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726005AbfFQRPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:15:49 -0400
+Received: by mail-pl1-f193.google.com with SMTP id f97so4354962plb.5
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:15:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=u3DYi4uMVuOh5kCk1w5xLbtHzFmVEUXY2eL3dhMZabE=;
-        b=ponQyp9Zcpbgy5Yc0Y0QMdiH5bC4U/Dmp6aY1jM9kWqyRYa5ukPyHLFh0WIKu4Ihmn
-         5/HxxeMi37zUYGLbMlZFMsCg3gdljYXe7g7z8g4X5Ho3NDIeLdz7GaK9B+yDhOB2IzWH
-         7GKwmbDKuwDAmT9nI/j6nWSw3HGMXgdFUOqtqxR8DoO25N+AFuUvMolI4wMgHWUqZfBf
-         iMx4rvCm2X6D4Z9+y2QLxMOfvLP+CViJvMZn5Ql3canSJzzRkpRshuoen0mLyorn3VpS
-         YtwQgbJKL3kz4M96mbcPBX3mhGqcTI1jL4LFdjVXVO1ghG2AkypotYuVyuG4181+sOHd
-         gD/A==
+        bh=DgOicHKWVUzDMqvZ9egverk9UhTEZ7cuxcnhjeTk4Ys=;
+        b=HpL20dTkbtvYY6ekwYl9D2Q8F5lOGzABCnOu3i8uN7kPopJJBSpvYhmOeVVTyxmNuK
+         fusdVPDMtKcmUVgXG1hI6ZhDF/WhdU3P7tzNa3iG063WXtQImR2/IfluuK5TjglRWBtL
+         YuTMOssEAoLebnwmCDdTHznecg5fPfopuYGCj2cR6jiyvP44gkdjUayvg6s3MkX6e9/Y
+         acM9ZsNlHM9NugdVnnR9Ag93Uuw2d+UhS8HM9TxN0Y8IjlcIeDFPc1L5AzCjY8fz3hNx
+         R4WfNN2d/Peme8aintrOvRg+vZicePglfGDAQhVkdyJ8rqCZMTNUfP/ILbThwvxJspDh
+         iTxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=u3DYi4uMVuOh5kCk1w5xLbtHzFmVEUXY2eL3dhMZabE=;
-        b=aUcYCLrwqEtu9y9j2tehws/UkSOSIbyPzBSzctAuBzAHMFmXELe5e/UNXYKeU+q8Tz
-         muOn28Ts8cVE3lDVzs+A6X6cGJ038sYZsDabdZXgo5t644sxqDDfVlSA/LIJ64LtDcEt
-         2jSniTAnBbBEFMxc/2A02+8VXF9L3UE7+iby8y2gpaU6vXIryQP1qnuNAmBwdVzZVMYU
-         HG+raKeGRenXd+0Qikcokmspz9eox5kuH5KN6ZEYSaM85pbB30MG4CHLGogGG7qyy0HK
-         3l8TqtdyjPPWJOJPT9x1qyMk3TQJkM+6SJKLYTUroERQMbUWh/T6dlZb6Mcwmy7GFaB3
-         rZvA==
-X-Gm-Message-State: APjAAAWg/uVLo3SN50tZJ1QnGyT1q6CTaEpphOrPkCm0HhJlukVgwCol
-        ZhQWu2FEbj2/kDLzkGKIwc0=
-X-Google-Smtp-Source: APXvYqxkbZmlVTgqCwr2OygWSXSXmiJEnD5s51tfA3xSL/5WZfwXu8tekx/3lG5+zE32Qh0vBmNzfQ==
-X-Received: by 2002:aa7:9190:: with SMTP id x16mr101823698pfa.86.1560791696732;
-        Mon, 17 Jun 2019 10:14:56 -0700 (PDT)
+        bh=DgOicHKWVUzDMqvZ9egverk9UhTEZ7cuxcnhjeTk4Ys=;
+        b=iA/IaB5HQH8CzzxuJcvMfJm8z+Op4rDPXXKAyTQeM06Qg931kF924HdXQ14RGPrZGz
+         mmekpMKLgh+038hGwxRjstRf9vTQDgtdhRjf1JOHbSdvckNWuqzsukH/S+9s6rqQhQRS
+         HHsurEb+95sFp6ZgQm9PGZTGJjap8eC0pLKEv7l8fireBXH6srGdWof9aZne19Zpj2UF
+         gTXj78Smxy0sOZf5rKjiyXm4q2K+jhEInmZ2oAcriRcnGGfGkDLLvw5TIgaQ13s9p5xN
+         +1kVX5mXQpaELqvNDXPgSvaQWDOWyef248j2dnwlOyJ60j8OZCbLSn/K5t9m+1dyGmde
+         Rdjw==
+X-Gm-Message-State: APjAAAU62KJr/udwQdEGQBUwknVfCly8R49sA14owBFf5nl6UjjDSx53
+        VuC3e5p02sHG9IwI3Kg0zPg=
+X-Google-Smtp-Source: APXvYqzeQ1iXHsczH8nYvuF9lOKISI/b2B/vqymGJeIjNjb3jE63CYuHJocc7uwMuG4ptNZ+XnHsog==
+X-Received: by 2002:a17:902:aa88:: with SMTP id d8mr97613679plr.73.1560791748459;
+        Mon, 17 Jun 2019 10:15:48 -0700 (PDT)
 Received: from [172.26.125.68] ([2620:10d:c090:180::1:e1dd])
-        by smtp.gmail.com with ESMTPSA id 132sm12523758pfw.124.2019.06.17.10.14.55
+        by smtp.gmail.com with ESMTPSA id k22sm9329709pfg.77.2019.06.17.10.15.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 10:14:56 -0700 (PDT)
+        Mon, 17 Jun 2019 10:15:48 -0700 (PDT)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
 To:     "Eric Dumazet" <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -55,14 +55,13 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         "Tyler Hicks" <tyhicks@canonical.com>,
         "Yuchung Cheng" <ycheng@google.com>,
         "Bruce Curtis" <brucec@netflix.com>
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Date:   Mon, 17 Jun 2019 10:14:55 -0700
+Subject: Re: [PATCH net 3/4] tcp: add tcp_min_snd_mss sysctl
+Date:   Mon, 17 Jun 2019 10:15:46 -0700
 X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <22211F2C-7381-4548-A3C6-E3AA097C9011@gmail.com>
-In-Reply-To: <20190617170354.37770-3-edumazet@google.com>
+Message-ID: <DDC9B07B-14FD-41D4-A6F8-725957CEA023@gmail.com>
+In-Reply-To: <20190617170354.37770-4-edumazet@google.com>
 References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
+ <20190617170354.37770-4-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -74,28 +73,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 17 Jun 2019, at 10:03, Eric Dumazet wrote:
 
-> Jonathan Looney reported that a malicious peer can force a sender
-> to fragment its retransmit queue into tiny skbs, inflating memory
-> usage and/or overflow 32bit counters.
+> Some TCP peers announce a very small MSS option in their SYN and/or
+> SYN/ACK messages.
 >
-> TCP allows an application to queue up to sk_sndbuf bytes,
-> so we need to give some allowance for non malicious splitting
-> of retransmit queue.
+> This forces the stack to send packets with a very high network/cpu
+> overhead.
 >
-> A new SNMP counter is added to monitor how many times TCP
-> did not allow to split an skb if the allowance was exceeded.
+> Linux has enforced a minimal value of 48. Since this value includes
+> the size of TCP options, and that the options can consume up to 40
+> bytes, this means that each segment can include only 8 bytes of payload.
 >
-> Note that this counter might increase in the case applications
-> use SO_SNDBUF socket option to lower sk_sndbuf.
+> In some cases, it can be useful to increase the minimal value
+> to a saner value.
 >
-> CVE-2019-11478 : tcp_fragment, prevent fragmenting a packet when the
-> 	socket is already using more than half the allowed space
+> We still let the default to 48 (TCP_MIN_SND_MSS), for compatibility
+> reasons.
+>
+> Note that TCP_MAXSEG socket option enforces a minimal value
+> of (TCP_MIN_MSS). David Miller increased this minimal value
+> in commit c39508d6f118 ("tcp: Make TCP_MAXSEG minimum more correct.")
+> from 64 to 88.
+>
+> We might in the future merge TCP_MIN_SND_MSS and TCP_MIN_MSS.
+>
+> CVE-2019-11479 -- tcp mss hardcoded to 48
 >
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Jonathan Looney <jtl@netflix.com>
+> Suggested-by: Jonathan Looney <jtl@netflix.com>
 > Acked-by: Neal Cardwell <ncardwell@google.com>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> Reviewed-by: Tyler Hicks <tyhicks@canonical.com>
+> Cc: Yuchung Cheng <ycheng@google.com>
+> Cc: Tyler Hicks <tyhicks@canonical.com>
 > Cc: Bruce Curtis <brucec@netflix.com>
 > Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
 Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
