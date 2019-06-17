@@ -2,103 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E404950F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8631A49514
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728801AbfFQWUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 18:20:47 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:40638 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728676AbfFQWUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 18:20:46 -0400
-Received: by mail-ed1-f68.google.com with SMTP id k8so18412674eds.7
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 15:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=USll/BQoEMD9h/5s/gE0+mUmlLpHN4EGkzRtmNYNT3A=;
-        b=XXCcsuXdBLEAzoW4Q0iFd/MXLh5QWWfm78sqt3zu2fHUonh0V8LavMmoN01/z5QdJx
-         /ed5/IyPxtpljecFaqRxB1Q3YdFaUgv4b/Y11K02MMu4S7luK9GzzAhiGD9bBrppB/s1
-         G1orGY3AX26Go/+3eRWO0azz4qITQUxmGOZKI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=USll/BQoEMD9h/5s/gE0+mUmlLpHN4EGkzRtmNYNT3A=;
-        b=Du/9GznJYlGthV3KDqskYmNz7M2T2j4m+WysteHOmp3E4b0hrycXD1lJLs5BWiPYKj
-         1kP+Z8tYQ+9lAaUEFWSrdr8ohFifXP2sPJFZKPG6Dp+Kh54UyTZnKJybwGGb5dF70kB7
-         b1kLWLEPmrOx+LHB3Z9wKVoc5pDcQGihhKpDXLY+sPUbuCEoUvaQQfAybrUWJnJLZV4j
-         RwO5uixqgb+KqN5ZJuUzL9H59BZSgQnoXwNCjCQE3IBl69m5CkAzfN5wTNGFFbuV1+tV
-         vRrnMiPdNjCfmDxWfFvj0cDc0Wt1GH4CBsI5ZVqu7C+E5nAMbYAJv+bKne6oFGQkafD5
-         +QgQ==
-X-Gm-Message-State: APjAAAU2F0qX7BK1lW/NIlpUGkd4Lpg6U+3VM+r0Fhf211Tz0o8evNVW
-        0TiFWJ19OQLYXC0yRem3J08/dQ==
-X-Google-Smtp-Source: APXvYqxILhC7W+hcTx2f5lyVXRTW0CzNQaSIZVhNA5PQLCCOyRUjqKrrJhYzf/q6cehRDbaouKMMTw==
-X-Received: by 2002:a05:6402:1557:: with SMTP id p23mr45110600edx.207.1560810044811;
-        Mon, 17 Jun 2019 15:20:44 -0700 (PDT)
-Received: from prevas-ravi.prevas.se (ip-5-186-113-204.cgn.fibianet.dk. [5.186.113.204])
-        by smtp.gmail.com with ESMTPSA id 9sm1034852ejg.49.2019.06.17.15.20.43
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 15:20:44 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jason Baron <jbaron@akamai.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        netdev@vger.kernel.org
-Subject: [PATCH v6 2/8] linux/net.h: use unique identifier for each struct _ddebug
-Date:   Tue, 18 Jun 2019 00:20:28 +0200
-Message-Id: <20190617222034.10799-3-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190617222034.10799-1-linux@rasmusvillemoes.dk>
-References: <20190617222034.10799-1-linux@rasmusvillemoes.dk>
+        id S1728972AbfFQWVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 18:21:03 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33272 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728754AbfFQWUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 18:20:52 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hczzb-0006Fj-Pk; Tue, 18 Jun 2019 00:20:47 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hczzb-0001l0-Ig; Tue, 18 Jun 2019 00:20:47 +0200
+Subject: Re: [PATCH v2 bpf-next 09/11] selftests/bpf: switch
+ BPF_ANNOTATE_KV_PAIR tests to BTF-defined maps
+To:     Song Liu <songliubraving@fb.com>, Andrii Nakryiko <andriin@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+References: <20190617192700.2313445-1-andriin@fb.com>
+ <20190617192700.2313445-10-andriin@fb.com>
+ <4DCC6EC0-9B6A-49D9-8664-ADC557C5DD36@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a1f1efc8-c280-1305-72c6-e8533840b615@iogearbox.net>
+Date:   Tue, 18 Jun 2019 00:20:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <4DCC6EC0-9B6A-49D9-8664-ADC557C5DD36@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25483/Mon Jun 17 09:56:00 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes on x86-64 later in this series require that all struct _ddebug
-descriptors in a translation unit uses distinct identifiers. Realize
-that for net_dbg_ratelimited by generating such an identifier via
-__UNIQUE_ID and pass that to an extra level of macros.
+On 06/17/2019 11:41 PM, Song Liu wrote:
+>> On Jun 17, 2019, at 12:26 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+>>
+>> Switch tests that already rely on BTF to BTF-defined map definitions.
+>>
+>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> For 09 to 11:
+> 
+> Acked-by: Song Liu <songliubraving@fb.com>
 
-No functional change.
-
-Cc: netdev@vger.kernel.org
-Acked-by: Jason Baron <jbaron@akamai.com>
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- include/linux/net.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/net.h b/include/linux/net.h
-index f7d672cf25b5..a080ede95b47 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -264,7 +264,7 @@ do {								\
- #define net_info_ratelimited(fmt, ...)				\
- 	net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
- #if defined(CONFIG_DYNAMIC_DEBUG)
--#define net_dbg_ratelimited(fmt, ...)					\
-+#define _net_dbg_ratelimited(descriptor, fmt, ...)			\
- do {									\
- 	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);			\
- 	if (DYNAMIC_DEBUG_BRANCH(descriptor) &&				\
-@@ -272,6 +272,8 @@ do {									\
- 		__dynamic_pr_debug(&descriptor, pr_fmt(fmt),		\
- 		                   ##__VA_ARGS__);			\
- } while (0)
-+#define net_dbg_ratelimited(fmt, ...)					\
-+	_net_dbg_ratelimited(__UNIQUE_ID(ddebug), fmt, ##__VA_ARGS__)
- #elif defined(DEBUG)
- #define net_dbg_ratelimited(fmt, ...)				\
- 	net_ratelimited_function(pr_debug, fmt, ##__VA_ARGS__)
--- 
-2.20.1
-
+I've added it to patch 10 by hand given the manual labor for dropping 11 anyway.
+Please keep in mind that patchwork doesn't understand/propagate 'for 09 to 11',
+and explicitly ack in future, thanks.
