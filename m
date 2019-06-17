@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 910994959F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE63049592
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728999AbfFQW7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 18:59:40 -0400
-Received: from mga18.intel.com ([134.134.136.126]:10995 "EHLO mga18.intel.com"
+        id S1728769AbfFQW65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 18:58:57 -0400
+Received: from mga18.intel.com ([134.134.136.126]:10998 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728293AbfFQW6w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727516AbfFQW6w (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 17 Jun 2019 18:58:52 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -23,9 +23,9 @@ To:     edumazet@google.com, netdev@vger.kernel.org
 Cc:     Peter Krystad <peter.krystad@linux.intel.com>, cpaasch@apple.com,
         fw@strlen.de, pabeni@redhat.com, dcaratti@redhat.com,
         matthieu.baerts@tessares.net
-Subject: [RFC PATCH net-next 12/33] mptcp: Add shutdown() socket operation
-Date:   Mon, 17 Jun 2019 15:57:47 -0700
-Message-Id: <20190617225808.665-13-mathew.j.martineau@linux.intel.com>
+Subject: [RFC PATCH net-next 13/33] mptcp: Add setsockopt()/getsockopt() socket operations
+Date:   Mon, 17 Jun 2019 15:57:48 -0700
+Message-Id: <20190617225808.665-14-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190617225808.665-1-mathew.j.martineau@linux.intel.com>
 References: <20190617225808.665-1-mathew.j.martineau@linux.intel.com>
@@ -40,48 +40,75 @@ From: Peter Krystad <peter.krystad@linux.intel.com>
 
 Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
 ---
- net/mptcp/protocol.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ net/mptcp/protocol.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 2f340ef8e281..6596e594fa5f 100644
+index 6596e594fa5f..3215601b9c43 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -296,6 +296,26 @@ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
- 	return tcp_poll(file, msk->connection_list, wait);
+@@ -131,6 +131,52 @@ static void mptcp_destroy(struct sock *sk)
+ 	token_destroy(msk->token);
  }
  
-+static int mptcp_shutdown(struct socket *sock, int how)
++static int mptcp_setsockopt(struct sock *sk, int level, int optname,
++			    char __user *uoptval, unsigned int optlen)
 +{
-+	struct mptcp_sock *msk = mptcp_sk(sock->sk);
-+	int ret = 0;
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	struct socket *subflow;
++	char __kernel *optval;
 +
-+	pr_debug("sk=%p, how=%d", msk, how);
-+
-+	if (msk->subflow) {
-+		pr_debug("subflow=%p", msk->subflow->sk);
-+		ret = kernel_sock_shutdown(msk->subflow, how);
-+	}
-+
++	pr_debug("msk=%p", msk);
 +	if (msk->connection_list) {
-+		pr_debug("conn_list->subflow=%p", msk->connection_list->sk);
-+		ret = kernel_sock_shutdown(msk->connection_list, how);
++		subflow = msk->connection_list;
++		pr_debug("conn_list->subflow=%p", subflow_ctx(subflow->sk));
++	} else {
++		subflow = msk->subflow;
++		pr_debug("subflow=%p", subflow_ctx(subflow->sk));
 +	}
 +
-+	return ret;
++	/* will be treated as __user in tcp_setsockopt */
++	optval = (char __kernel __force *)uoptval;
++
++	return kernel_setsockopt(subflow, level, optname, optval, optlen);
 +}
 +
- static struct proto_ops mptcp_stream_ops;
- 
- static struct inet_protosw mptcp_protosw = {
-@@ -316,6 +336,7 @@ void __init mptcp_init(void)
- 	mptcp_stream_ops.accept = mptcp_stream_accept;
- 	mptcp_stream_ops.getname = mptcp_getname;
- 	mptcp_stream_ops.listen = mptcp_listen;
-+	mptcp_stream_ops.shutdown = mptcp_shutdown;
- 
- 	token_init();
- 	crypto_init();
++static int mptcp_getsockopt(struct sock *sk, int level, int optname,
++			    char __user *uoptval, int __user *uoption)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	struct socket *subflow;
++	char __kernel *optval;
++	int __kernel *option;
++
++	pr_debug("msk=%p", msk);
++	if (msk->connection_list) {
++		subflow = msk->connection_list;
++		pr_debug("conn_list->subflow=%p", subflow_ctx(subflow->sk));
++	} else {
++		subflow = msk->subflow;
++		pr_debug("subflow=%p", subflow_ctx(subflow->sk));
++	}
++
++	/* will be treated as __user in tcp_getsockopt */
++	optval = (char __kernel __force *)uoptval;
++	option = (int __kernel __force *)uoption;
++
++	return kernel_getsockopt(subflow, level, optname, optval, option);
++}
++
+ static int mptcp_get_port(struct sock *sk, unsigned short snum)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+@@ -162,6 +208,8 @@ static struct proto mptcp_prot = {
+ 	.init		= mptcp_init_sock,
+ 	.close		= mptcp_close,
+ 	.accept		= mptcp_accept,
++	.setsockopt	= mptcp_setsockopt,
++	.getsockopt	= mptcp_getsockopt,
+ 	.shutdown	= tcp_shutdown,
+ 	.destroy	= mptcp_destroy,
+ 	.sendmsg	= mptcp_sendmsg,
 -- 
 2.22.0
 
