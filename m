@@ -2,160 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C1947FE0
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4148148002
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbfFQKks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 06:40:48 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35586 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfFQKks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:40:48 -0400
-Received: by mail-lj1-f195.google.com with SMTP id x25so8818099ljh.2
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:40:46 -0700 (PDT)
+        id S1727685AbfFQKw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 06:52:57 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53465 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727253AbfFQKw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:52:56 -0400
+Received: by mail-wm1-f67.google.com with SMTP id x15so8736505wmj.3
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:52:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qjyOm5jUlTHrm3VcdpTzvNXJzoC5FF0ZBV+AJFqfwy8=;
-        b=gy5kjwRSDGUmg+loUcjvpvKLKPjh8DRZE092YszFWVPKk36tVOMTs3TvbNA+0dsR91
-         WIJqH6O9/9sAJonxuI1Bo9pqATokUYLTsE1xdKNrqKtwtSTXwCgpvj3D8O1DiTtBa3OY
-         7xZj8JVm4zw7NsxAfSMv8gX5XE/N8Pv+2B//BpaRBjwYD/V+pD2KBQL9EJtpdJJJVRYL
-         kJ8RyTd6iaFhRuRtxAHlUP0QKB81uQQochdQfknajVs8eplC+0XzPhRvBq7uNQTewY69
-         guVmNzppj2Bst0zPUgPbjO0Eu3gjErwfwbcJnGaIMYQB9AmjG1hKKz01MiNje2MoOaMG
-         QOtQ==
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZrGsAut7uTsx4N98mpJ5emxcDiHoXMt2HeuGIHuHDuY=;
+        b=ZmPOJv+uNeM7+bNBeQqLGswxWW9SMhfKnc014mIavxJdV79s0wjtcZT2VyUWK+UWrD
+         Movw97H2zsJ+JBlhl315a19BTQrUa1M7tC7Gn1UzYUsnywZm6KraZ77S5sjMvTlk+U8Z
+         LBfBBRYF8bxGvs2tbraE55QLhVFojz1qPLIU8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qjyOm5jUlTHrm3VcdpTzvNXJzoC5FF0ZBV+AJFqfwy8=;
-        b=o3yYxvJUVY9kXfhPd2TQ5pcLtTDSwXP9FcrzmeCq8TpG2zPhaRoSnMomZo5st6qgrL
-         RdxIQLLvXM/Kig3rfbPmnCPoIsq7vwQQChs1Jv2aVHxxqz8/NjPGowiHBCdDRwjvZL4t
-         nq3U0hcsnbDssHzWjCeY2L+xl7EM0bJbxkt8awWgemELOFe+8dtnNxQhtR8scfRvlo+W
-         yThg9wYayh0L7FX8jbehyGyEMywmVEO7mRvZeWKszGAOzzzmEDMAaJVG0dyOGf3Mm+sU
-         FJ8kl1Giiwi5yyBV5K5HS4qj8Lo2Ej0b9+kKTLz6BnbR3vI+eCh71IYNhzSwhkRP+NeU
-         IZqA==
-X-Gm-Message-State: APjAAAXcrRD+ZTgmkCwOGUmMIH055ztUEVXCZ7RhHD/CHta7MmXYHthx
-        98aczKGOmKWE7RgCVuiC+FyKD2p+WnhIKBETWVOV3Q==
-X-Google-Smtp-Source: APXvYqyJ/4NlVGen9mEDEJFgUwywW3Ugc4Zau5rMZozFcJhZbBt5k0iq0dveVQb3h5/rYoTvJhHb9pQlQGGet7oAI54=
-X-Received: by 2002:a2e:6c14:: with SMTP id h20mr1705967ljc.38.1560768045802;
- Mon, 17 Jun 2019 03:40:45 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZrGsAut7uTsx4N98mpJ5emxcDiHoXMt2HeuGIHuHDuY=;
+        b=f+GnW81QKzvd+HoyD4MD/tHjnUjte8JtMgoT5OnHOmmUj0JvHTpC9cnQl7kX7gP0RB
+         HqMReUidX+ZPexR3LQqCz7QgDHxlRFi8aCdTPU3+eDOg3donOKQE5W3h7j7l22Y/uJY9
+         vvW5Jd7i1KVBucDQDDTLFKO4OC1A9f4dgSb0leYg1vPMapfNlqE31NYSDM6TDaWOdJ3m
+         7/Oylm4MTaTrZY0Pllsaok2xXdD0aalRVD/N+ygLyAbh/nkLotep1JfvHIi9iNfLIq6R
+         s6mBoDA6njJg0uOZ6HbAt1Es6eGGb/3+zGKvzF/dtJ07xADTGTGIu1u0jDA58edP7kIp
+         HhUA==
+X-Gm-Message-State: APjAAAXmsYCsN4YXqoI/TmJ2j00QOme2kSJobV9g6wbDN8FAzTCvwPx0
+        fzmJmt00FtzilRwfIBXCI2x68Q==
+X-Google-Smtp-Source: APXvYqxwU5akwxSHDxkkxP8iCz4MY4SSgr81eWPc6HIAiFo2nQ2pP4CVo+hHo0NsY+yWo6H1GCq6JQ==
+X-Received: by 2002:a1c:96c7:: with SMTP id y190mr16834836wmd.87.1560768773522;
+        Mon, 17 Jun 2019 03:52:53 -0700 (PDT)
+Received: from [10.176.68.244] ([192.19.248.250])
+        by smtp.gmail.com with ESMTPSA id y184sm9396231wmg.14.2019.06.17.03.52.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jun 2019 03:52:52 -0700 (PDT)
+Subject: Re: [PATCH v4 5/5] brcmfmac: sdio: Don't tune while the card is off
+To:     Douglas Anderson <dianders@chromium.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        linux-rockchip@lists.infradead.org,
+        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
+        linux-wireless@vger.kernel.org,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
+        Franky Lin <franky.lin@broadcom.com>,
+        linux-kernel@vger.kernel.org,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20190613234153.59309-1-dianders@chromium.org>
+ <20190613234153.59309-6-dianders@chromium.org>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <f0dc6ef8-b339-8656-14d6-cf7c4e872b22@broadcom.com>
+Date:   Mon, 17 Jun 2019 12:52:51 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-References: <20190617073320.69015-1-lifei.shirley@bytedance.com>
- <28bef625-ce70-20a1-7d8b-296cd43015c4@redhat.com> <2d05dce3-e19a-2f0f-8b74-8defae38640d@redhat.com>
- <CA+=e4K6_EGK+r4RXWpK2wZ5OW9JNQS9NfGpZtG3grjhApAFCEw@mail.gmail.com>
-In-Reply-To: <CA+=e4K6_EGK+r4RXWpK2wZ5OW9JNQS9NfGpZtG3grjhApAFCEw@mail.gmail.com>
-From:   =?UTF-8?B?5p2O6I+y?= <lifei.shirley@bytedance.com>
-Date:   Mon, 17 Jun 2019 18:40:34 +0800
-Message-ID: <CA+=e4K7VCqJD_g_a3GHpjqAKhJxs3T+88tBjyabRTh2SzB=cOw@mail.gmail.com>
-Subject: Re: [External Email] Re: [PATCH] Fix tun: wake up waitqueues after
- IFF_UP is set
-To:     Jason Wang <jasowang@redhat.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     zhengfeiran@bytedance.com, duanxiongchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190613234153.59309-6-dianders@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On 6/14/2019 1:41 AM, Douglas Anderson wrote:
+> When Broadcom SDIO cards are idled they go to sleep and a whole
+> separate subsystem takes over their SDIO communication.  This is the
+> Always-On-Subsystem (AOS) and it can't handle tuning requests.
+> 
+> Specifically, as tested on rk3288-veyron-minnie (which reports having
+> BCM4354/1 in dmesg), if I force a retune in brcmf_sdio_kso_control()
+> when "on = 1" (aka we're transition from sleep to wake) by whacking:
+>    bus->sdiodev->func1->card->host->need_retune = 1
+> ...then I can often see tuning fail.  In this case dw_mmc reports "All
+> phases bad!").  Note that I don't get 100% failure, presumably because
+> sometimes the card itself has already transitioned away from the AOS
+> itself by the time we try to wake it up.  If I force retuning when "on
+> = 0" (AKA force retuning right before sending the command to go to
+> sleep) then retuning is always OK.
+> 
+> NOTE: we need _both_ this patch and the patch to avoid triggering
+> tuning due to CRC errors in the sleep/wake transition, AKA ("brcmfmac:
+> sdio: Disable auto-tuning around commands expected to fail").  Though
+> both patches handle issues with Broadcom's AOS, the problems are
+> distinct:
+> 1. We want to defer (but not ignore) asynchronous (like
+>     timer-requested) tuning requests till the card is awake.  However,
+>     we want to ignore CRC errors during the transition, we don't want
+>     to queue deferred tuning request.
+> 2. You could imagine that the AOS could implement retuning but we
+>     could still get errors while transitioning in and out of the AOS.
+>     Similarly you could imagine a seamless transition into and out of
+>     the AOS (with no CRC errors) even if the AOS couldn't handle
+>     tuning.
+> 
+> ALSO NOTE: presumably there is never a desperate need to retune in
+> order to wake up the card, since doing so is impossible.  Luckily the
+> only way the card can get into sleep state is if we had a good enough
+> tuning to send it a sleep command, so presumably that "good enough"
+> tuning is enough to wake us up, at least with a few retries.
 
-On Mon, Jun 17, 2019 at 5:32 PM =E6=9D=8E=E8=8F=B2 <lifei.shirley@bytedance=
-.com> wrote:
->
-> Ok, thanks for detail suggestion! :)
->
-> On Mon, Jun 17, 2019 at 4:16 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->>
->> On 2019/6/17 =E4=B8=8B=E5=8D=884:10, Jason Wang wrote:
->> >
->> > On 2019/6/17 =E4=B8=8B=E5=8D=883:33, Fei Li wrote:
->> >> Currently after setting tap0 link up, the tun code wakes tx/rx waited
->> >> queues up in tun_net_open() when .ndo_open() is called, however the
->> >> IFF_UP flag has not been set yet. If there's already a wait queue, it
->> >> would fail to transmit when checking the IFF_UP flag in tun_sendmsg()=
-.
->> >> Then the saving vhost_poll_start() will add the wq into wqh until it
->> >> is waken up again. Although this works when IFF_UP flag has been set
->> >> when tun_chr_poll detects; this is not true if IFF_UP flag has not
->> >> been set at that time. Sadly the latter case is a fatal error, as
->> >> the wq will never be waken up in future unless later manually
->> >> setting link up on purpose.
->> >>
->> >> Fix this by moving the wakeup process into the NETDEV_UP event
->> >> notifying process, this makes sure IFF_UP has been set before all
->> >> waited queues been waken up.
->>
->>
->> Btw, the title needs some tweak. E.g you need use "net" as prefix since
->> it's a fix for net.git and "Fix" could be removed like:
->>
->> [PATCH net] tun: wake up waitqueues after IFF_UP is set.
->>
->> Thanks
->>
->>
->> >>
->> >> Signed-off-by: Fei Li <lifei.shirley@bytedance.com>
->> >> ---
->> >>   drivers/net/tun.c | 17 +++++++++--------
->> >>   1 file changed, 9 insertions(+), 8 deletions(-)
->> >>
->> >> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> >> index c452d6d831dd..a3c9cab5a4d0 100644
->> >> --- a/drivers/net/tun.c
->> >> +++ b/drivers/net/tun.c
->> >> @@ -1015,17 +1015,9 @@ static void tun_net_uninit(struct net_device
->> >> *dev)
->> >>   static int tun_net_open(struct net_device *dev)
->> >>   {
->> >>       struct tun_struct *tun =3D netdev_priv(dev);
-Will remove the above unused struct in next version.
-Sorry for the negligence!
+The term "sleep command" is a bit confusing. There actually is a CMD14 
+defined in the eSD spec, but that is not what we are using (unless we 
+program the chip to do so) here. It is simply a specific register access 
+using CMD52.
 
-Have a nice day, thanks
-Fei
+Apart from that....
 
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
->> >> -    int i;
->> >>         netif_tx_start_all_queues(dev);
->> >>   -    for (i =3D 0; i < tun->numqueues; i++) {
->> >> -        struct tun_file *tfile;
->> >> -
->> >> -        tfile =3D rtnl_dereference(tun->tfiles[i]);
->> >> - tfile->socket.sk->sk_write_space(tfile->socket.sk);
->> >> -    }
->> >> -
->> >>       return 0;
->> >>   }
->> >>   @@ -3634,6 +3626,7 @@ static int tun_device_event(struct
->> >> notifier_block *unused,
->> >>   {
->> >>       struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
->> >>       struct tun_struct *tun =3D netdev_priv(dev);
->> >> +    int i;
->> >>         if (dev->rtnl_link_ops !=3D &tun_link_ops)
->> >>           return NOTIFY_DONE;
->> >> @@ -3643,6 +3636,14 @@ static int tun_device_event(struct
->> >> notifier_block *unused,
->> >>           if (tun_queue_resize(tun))
->> >>               return NOTIFY_BAD;
->> >>           break;
->> >> +    case NETDEV_UP:
->> >> +        for (i =3D 0; i < tun->numqueues; i++) {
->> >> +            struct tun_file *tfile;
->> >> +
->> >> +            tfile =3D rtnl_dereference(tun->tfiles[i]);
->> >> + tfile->socket.sk->sk_write_space(tfile->socket.sk);
->> >> +        }
->> >> +        break;
->> >>       default:
->> >>           break;
->> >>       }
->> >
->> >
->> > Acked-by: Jason Wang <jasowang@redhat.com)
->> >
+I think the stable version is mostly determined by change in MMC/SDIO so 
+4.18 as mentioned Adrian seems most sensible. bcm4354 support was 
+introduced in 3.14 and there were some earlier devices (4335) using same 
+sleep mechanism.
+
+Regards,
+Arend
