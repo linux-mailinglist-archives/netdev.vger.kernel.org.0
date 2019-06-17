@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3338F48996
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 202F848997
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbfFQREd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:04:33 -0400
-Received: from mail-yb1-f202.google.com ([209.85.219.202]:46766 "EHLO
-        mail-yb1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbfFQREd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:33 -0400
-Received: by mail-yb1-f202.google.com with SMTP id v15so11278921ybe.13
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:33 -0700 (PDT)
+        id S1728405AbfFQREh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:04:37 -0400
+Received: from mail-qt1-f201.google.com ([209.85.160.201]:50350 "EHLO
+        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbfFQREg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:36 -0400
+Received: by mail-qt1-f201.google.com with SMTP id g30so9791853qtm.17
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ZWi+a+h1F7JSKoGZGugQTAEE1gevuEuH0Hoa8w4oacw=;
-        b=sWuL1ht6WSML6G23cNq3htXh8Qs6sLCTkSPrRPUgJ2A8+ZCkp9bU+PPMli0ckcyAQq
-         S9T5SC6k7yep5w3fTskNgzBO8ySPbZOIOAMZfv01kRhBwDWaXHDqWnAx14qijo3FPH+Z
-         lxpJGGZMb3OM+L5NqsXnf9Myg2Nt0fC/Mvs0N4e8MW3vU6T/zZFwa3uzeQwQScgR7T2n
-         4saSVhlDC37Z0bmIaW8x0v4sRHxZDYEZC/BcghcrVNltxnQMLbgLbi7jnSG6VMnMAPUG
-         hnGS79iDb25+YnZSJTsmbG/8NUWYxHwiGJJxtfRW+9P1CmC5pkr2UBeUTRjG1D+DESL/
-         MK1A==
+        bh=Zm3dsp+4c4Dzvg1A7uPwIxj0li9zDT8Y3ELdlF7uors=;
+        b=evLjwvEGgiNgQBesTmz3yPZnfhbYobecnwlOmxNpXpo1yaICUAljUHct8f82HuboO7
+         otBebs7eeDdLizzJc7mgJbNqQ4pJAw7LYu6SZpWr3IxPiZvLb8369y0YUtEY4yhgdFfH
+         TXorT8lhAY4P3fpBzXliaxkkuW8wTpg9+OjoEOqMFJo//wCg8U/hB+O+xR/pVByZ3HdM
+         7R2r5WFzyHbK+gqLWlrFx9vl/a+ytw2BzxMxfRXwHuTJKTi1unP9XvScTwa49itDTus2
+         I9i5T7hj/1VlBeezf5SuA2GfF+hMTKbOLh9nnG9XkhO2TJ0JH/10DFZpENej/tqvz/Pv
+         ZNcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ZWi+a+h1F7JSKoGZGugQTAEE1gevuEuH0Hoa8w4oacw=;
-        b=Be3PUaGHGkArAKI2LszGueKaElU7UrgnERv05X5i+6JkYqa1UY/WBZa+PQgh5K+Xjg
-         uG22KNd7Ph73KIXE6jajvF3LrE87f4MjPshzxyg3j60S/qjtO3VSo4qUE0SQidhkpcdO
-         N3sIAvWPYqAaXq8nPSLLP8UBZdW1nsy8Mf36L/AJ2rmKsTAeQ2pBk1yTzWZ4c4Rj14mw
-         ACp5aNaXEt6KS6zb/vbh7DWSLPk9iTdW8EeP/t8vtw6xitNMg9ZGHbB0Ev3LYbblFvNf
-         A3JJQ71MSAvQ/AvgUsIXsgfNFfNyHCsuvQm7RNQBYnFwsiQ/O8LeFV7IJ2X4U5pqx7Aq
-         Tv6g==
-X-Gm-Message-State: APjAAAVo2vXQdjKZYgF+0BtYKQvOq7AvRVejy7cyv6WwcFh2DvAVxgUz
-        GTBwHf8UBuMCAbbxLOlmHPKga1a7FrCc6g==
-X-Google-Smtp-Source: APXvYqx6QJrlucdGBiIStUk3tw7sURYJt2r5GI38qf7dX8qPv35VITWkOEGbLxli6GYzLWAJCMYZyiECcjN8/A==
-X-Received: by 2002:a25:fc15:: with SMTP id v21mr46823381ybd.463.1560791072501;
- Mon, 17 Jun 2019 10:04:32 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 10:03:51 -0700
+        bh=Zm3dsp+4c4Dzvg1A7uPwIxj0li9zDT8Y3ELdlF7uors=;
+        b=pUwmil+NlOsSiwcf+inPtDnfBY0126HYDK+1lyCXcYI2tXdwTS4MgAFdpW1HmXnL6L
+         cO+rGTlNAxj7kpd+OjJs2wjuiw9B+rnS7MkiWRacCh63YMM5OUQM8gKTpRreiR2DogMu
+         iwmQCHU3H70pTUzJSdCMbK7Tnkx3710oAisJMem3PFCA6+ZDjZiWJEaPhv6ICm20pArB
+         SIyEcOqL7nDS3W+zjMguLqghJ0pLuaoWQn2RLy9zYEoWH+tUP8DQUxKuqovHOndoAfxs
+         hoXI0JqLBz7e016NxeS1jjDqIH7Kn4PdSfVE1aXDeikHKm6rbcqvnoTZOlT1MRRSeulY
+         MQOQ==
+X-Gm-Message-State: APjAAAVrDKAstR3LizlnnJ5JaNb59DTblN8lFmlwXoQaNF3L6NGSoLss
+        VecUrkNKgGoSCMGjIhMklMbhYG/F5TdDoA==
+X-Google-Smtp-Source: APXvYqwAgZqsi5C1NKJbo4OBxYDCKIS24DbNUFKebKjpOEapkfCxXuIT+3a636BE02j2zQpxd4bTmlzJ2OOB9Q==
+X-Received: by 2002:ac8:82a:: with SMTP id u39mr38710867qth.370.1560791075610;
+ Mon, 17 Jun 2019 10:04:35 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 10:03:52 -0700
 In-Reply-To: <20190617170354.37770-1-edumazet@google.com>
-Message-Id: <20190617170354.37770-2-edumazet@google.com>
+Message-Id: <20190617170354.37770-3-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190617170354.37770-1-edumazet@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net 1/4] tcp: limit payload size of sacked skbs
+Subject: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory limits
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -65,164 +65,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Looney reported that TCP can trigger the following crash
-in tcp_shifted_skb() :
+Jonathan Looney reported that a malicious peer can force a sender
+to fragment its retransmit queue into tiny skbs, inflating memory
+usage and/or overflow 32bit counters.
 
-	BUG_ON(tcp_skb_pcount(skb) < pcount);
+TCP allows an application to queue up to sk_sndbuf bytes,
+so we need to give some allowance for non malicious splitting
+of retransmit queue.
 
-This can happen if the remote peer has advertized the smallest
-MSS that linux TCP accepts : 48
+A new SNMP counter is added to monitor how many times TCP
+did not allow to split an skb if the allowance was exceeded.
 
-An skb can hold 17 fragments, and each fragment can hold 32KB
-on x86, or 64KB on PowerPC.
+Note that this counter might increase in the case applications
+use SO_SNDBUF socket option to lower sk_sndbuf.
 
-This means that the 16bit witdh of TCP_SKB_CB(skb)->tcp_gso_segs
-can overflow.
+CVE-2019-11478 : tcp_fragment, prevent fragmenting a packet when the
+	socket is already using more than half the allowed space
 
-Note that tcp_sendmsg() builds skbs with less than 64KB
-of payload, so this problem needs SACK to be enabled.
-SACK blocks allow TCP to coalesce multiple skbs in the retransmit
-queue, thus filling the 17 fragments to maximal capacity.
-
-CVE-2019-11477 -- u16 overflow of TCP_SKB_CB(skb)->tcp_gso_segs
-
-Fixes: 832d11c5cd07 ("tcp: Try to restore large SKBs while SACK processing")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reported-by: Jonathan Looney <jtl@netflix.com>
 Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
 Reviewed-by: Tyler Hicks <tyhicks@canonical.com>
-Cc: Yuchung Cheng <ycheng@google.com>
 Cc: Bruce Curtis <brucec@netflix.com>
 Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- include/linux/tcp.h   |  4 ++++
- include/net/tcp.h     |  2 ++
- net/ipv4/tcp.c        |  1 +
- net/ipv4/tcp_input.c  | 26 ++++++++++++++++++++------
- net/ipv4/tcp_output.c |  6 +++---
- 5 files changed, 30 insertions(+), 9 deletions(-)
+ include/uapi/linux/snmp.h | 1 +
+ net/ipv4/proc.c           | 1 +
+ net/ipv4/tcp_output.c     | 5 +++++
+ 3 files changed, 7 insertions(+)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 711361af9ce019f08c8b6accc33220b673b34d56..9a478a0cd3a20b40ed344f178e35228a0b8ee203 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -484,4 +484,8 @@ static inline u16 tcp_mss_clamp(const struct tcp_sock *tp, u16 mss)
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 86dc24a96c90ab047d5173d625450facd6c6dd79..fd42c1316d3d112ecd8a00d2b499d6f6901c5e81 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -283,6 +283,7 @@ enum
+ 	LINUX_MIB_TCPACKCOMPRESSED,		/* TCPAckCompressed */
+ 	LINUX_MIB_TCPZEROWINDOWDROP,		/* TCPZeroWindowDrop */
+ 	LINUX_MIB_TCPRCVQDROP,			/* TCPRcvQDrop */
++	LINUX_MIB_TCPWQUEUETOOBIG,		/* TCPWqueueTooBig */
+ 	__LINUX_MIB_MAX
+ };
  
- 	return (user_mss && user_mss < mss) ? user_mss : mss;
- }
-+
-+int tcp_skb_shift(struct sk_buff *to, struct sk_buff *from, int pcount,
-+		  int shiftlen);
-+
- #endif	/* _LINUX_TCP_H */
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index ac2f53fbfa6b4cbf1fc615c952a5e1cac1124300..582c0caa98116740b5bde8c5dbb5d94fc69d1caa 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -51,6 +51,8 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 4370f4246e86dfe06a9e07cace848baeaf6cc4da..073273b751f8fcda1c9c79cd1ab566f2939b2517 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -287,6 +287,7 @@ static const struct snmp_mib snmp4_net_list[] = {
+ 	SNMP_MIB_ITEM("TCPAckCompressed", LINUX_MIB_TCPACKCOMPRESSED),
+ 	SNMP_MIB_ITEM("TCPZeroWindowDrop", LINUX_MIB_TCPZEROWINDOWDROP),
+ 	SNMP_MIB_ITEM("TCPRcvQDrop", LINUX_MIB_TCPRCVQDROP),
++	SNMP_MIB_ITEM("TCPWqueueTooBig", LINUX_MIB_TCPWQUEUETOOBIG),
+ 	SNMP_MIB_SENTINEL
+ };
  
- #define MAX_TCP_HEADER	(128 + MAX_HEADER)
- #define MAX_TCP_OPTION_SPACE 40
-+#define TCP_MIN_SND_MSS		48
-+#define TCP_MIN_GSO_SIZE	(TCP_MIN_SND_MSS - MAX_TCP_OPTION_SPACE)
- 
- /*
-  * Never offer a window over 32767 without using window scaling. Some
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f448a288d158c4baa6d8d5ed82c4b129404233a1..7dc9ab84bb69aa90953e98f9763287fcee3a1659 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3873,6 +3873,7 @@ void __init tcp_init(void)
- 	unsigned long limit;
- 	unsigned int i;
- 
-+	BUILD_BUG_ON(TCP_MIN_SND_MSS <= MAX_TCP_OPTION_SPACE);
- 	BUILD_BUG_ON(sizeof(struct tcp_skb_cb) >
- 		     FIELD_SIZEOF(struct sk_buff, cb));
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 38dfc308c0fb9832facadb0aeec8f3e4931901f4..d95ee40df6c2b020d590018bc41833b8a6aefa4a 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1302,7 +1302,7 @@ static bool tcp_shifted_skb(struct sock *sk, struct sk_buff *prev,
- 	TCP_SKB_CB(skb)->seq += shifted;
- 
- 	tcp_skb_pcount_add(prev, pcount);
--	BUG_ON(tcp_skb_pcount(skb) < pcount);
-+	WARN_ON_ONCE(tcp_skb_pcount(skb) < pcount);
- 	tcp_skb_pcount_add(skb, -pcount);
- 
- 	/* When we're adding to gso_segs == 1, gso_size will be zero,
-@@ -1368,6 +1368,21 @@ static int skb_can_shift(const struct sk_buff *skb)
- 	return !skb_headlen(skb) && skb_is_nonlinear(skb);
- }
- 
-+int tcp_skb_shift(struct sk_buff *to, struct sk_buff *from,
-+		  int pcount, int shiftlen)
-+{
-+	/* TCP min gso_size is 8 bytes (TCP_MIN_GSO_SIZE)
-+	 * Since TCP_SKB_CB(skb)->tcp_gso_segs is 16 bits, we need
-+	 * to make sure not storing more than 65535 * 8 bytes per skb,
-+	 * even if current MSS is bigger.
-+	 */
-+	if (unlikely(to->len + shiftlen >= 65535 * TCP_MIN_GSO_SIZE))
-+		return 0;
-+	if (unlikely(tcp_skb_pcount(to) + pcount > 65535))
-+		return 0;
-+	return skb_shift(to, from, shiftlen);
-+}
-+
- /* Try collapsing SACK blocks spanning across multiple skbs to a single
-  * skb.
-  */
-@@ -1473,7 +1488,7 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
- 	if (!after(TCP_SKB_CB(skb)->seq + len, tp->snd_una))
- 		goto fallback;
- 
--	if (!skb_shift(prev, skb, len))
-+	if (!tcp_skb_shift(prev, skb, pcount, len))
- 		goto fallback;
- 	if (!tcp_shifted_skb(sk, prev, skb, state, pcount, len, mss, dup_sack))
- 		goto out;
-@@ -1491,11 +1506,10 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
- 		goto out;
- 
- 	len = skb->len;
--	if (skb_shift(prev, skb, len)) {
--		pcount += tcp_skb_pcount(skb);
--		tcp_shifted_skb(sk, prev, skb, state, tcp_skb_pcount(skb),
-+	pcount = tcp_skb_pcount(skb);
-+	if (tcp_skb_shift(prev, skb, pcount, len))
-+		tcp_shifted_skb(sk, prev, skb, state, pcount,
- 				len, mss, 0);
--	}
- 
- out:
- 	return prev;
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index f429e856e2631a9e6de1d2e060406742f97e538e..b8e3bbb852117459d131fbb41d69ae63bd251a3e 100644
+index b8e3bbb852117459d131fbb41d69ae63bd251a3e..1bb1c46b4abad100622d3f101a0a3ca0a6c8e881 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1454,8 +1454,8 @@ static inline int __tcp_mtu_to_mss(struct sock *sk, int pmtu)
- 	mss_now -= icsk->icsk_ext_hdr_len;
+@@ -1296,6 +1296,11 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+ 	if (nsize < 0)
+ 		nsize = 0;
  
- 	/* Then reserve room for full set of TCP options and 8 bytes of data */
--	if (mss_now < 48)
--		mss_now = 48;
-+	if (mss_now < TCP_MIN_SND_MSS)
-+		mss_now = TCP_MIN_SND_MSS;
- 	return mss_now;
- }
++	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
++		return -ENOMEM;
++	}
++
+ 	if (skb_unclone(skb, gfp))
+ 		return -ENOMEM;
  
-@@ -2747,7 +2747,7 @@ static bool tcp_collapse_retrans(struct sock *sk, struct sk_buff *skb)
- 		if (next_skb_size <= skb_availroom(skb))
- 			skb_copy_bits(next_skb, 0, skb_put(skb, next_skb_size),
- 				      next_skb_size);
--		else if (!skb_shift(skb, next_skb, next_skb_size))
-+		else if (!tcp_skb_shift(skb, next_skb, 1, next_skb_size))
- 			return false;
- 	}
- 	tcp_highest_sack_replace(sk, next_skb, skb);
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
