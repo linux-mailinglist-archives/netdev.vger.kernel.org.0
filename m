@@ -2,174 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E7AE495C4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FAA495C8
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:22:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbfFQXUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 19:20:07 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:39954 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726121AbfFQXUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 19:20:07 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 6DE175FEE7;
-        Tue, 18 Jun 2019 01:20:04 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="uOfUPqnK";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 31DC51C7A096;
-        Tue, 18 Jun 2019 01:20:04 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 31DC51C7A096
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1560813604;
-        bh=1V+kDFbsQWF2yVaPvwyK9QrJHGtmWAERQrJ9w82bGkI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uOfUPqnKv2RKjGgsDvHezjQzYlcYRsBbJMIJqRIRlElb40ISlrs11soXd5jC2zl81
-         E4Chur7eznaSsLZUUQd4Zycv0OIrADj61duD/0a/tkO2bnpzEP8qJMrF2unh8/Dhwj
-         t0zoZSCha0UrGy9vZU84+INmpA6qSBnXCDKCEOnXgVmI/+b1EMr8T7AtWafEUhHcC6
-         cBforI4Gh6/zPaOZ+crSgSzbRU8Oy/1flM116u1Yli3so42GglBPFuF0hRrat835Rc
-         PP2IbTv2l5l66RYGnRKbWLlzyE0fqkQKigHvu1GmqdyYzwD5WpKWyKXcI6qfiR1NR0
-         jz9VWQKuREyIg==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Mon, 17 Jun 2019 23:20:04 +0000
-Date:   Mon, 17 Jun 2019 23:20:04 +0000
-Message-ID: <20190617232004.Horde.mAVymZdeb9Jjf29W2PeOggU@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, john@phrozen.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: mediatek: Add MT7621 TRGMII mode
- support
-References: <20190616182010.18778-1-opensource@vdorst.com>
- <20190617140223.GC25211@lunn.ch>
- <20190617213312.Horde.fcb9-g80Zzfd-IMC8EQy50h@www.vdorst.com>
- <20190617214428.GO17551@lunn.ch>
-In-Reply-To: <20190617214428.GO17551@lunn.ch>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S1727903AbfFQXWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 19:22:47 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39944 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbfFQXWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 19:22:46 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D9C35151BE52E;
+        Mon, 17 Jun 2019 16:22:45 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 16:22:45 -0700 (PDT)
+Message-Id: <20190617.162245.717911211395007022.davem@davemloft.net>
+To:     vedang.patel@intel.com
+Cc:     netdev@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org
+Subject: Re: [PATCH net-next v3 4/6] taprio: Add support for txtime-assist
+ mode.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1560799870-18956-5-git-send-email-vedang.patel@intel.com>
+References: <1560799870-18956-1-git-send-email-vedang.patel@intel.com>
+        <1560799870-18956-5-git-send-email-vedang.patel@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 16:22:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Andrew Lunn <andrew@lunn.ch>:
+From: Vedang Patel <vedang.patel@intel.com>
+Date: Mon, 17 Jun 2019 12:31:08 -0700
 
-Hi Andrew,
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index a41d7d4434ee..ab6080013666 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+ ...
+> +/* Get how much time has been already elapsed in the current cycle. */
+> +static inline s32 get_cycle_time_elapsed(struct sched_gate_list *sched, ktime_t time)
+> +{
 
-> On Mon, Jun 17, 2019 at 09:33:12PM +0000, René van Dorst wrote:
->> Quoting Andrew Lunn <andrew@lunn.ch>:
->>
->> >On Sun, Jun 16, 2019 at 08:20:08PM +0200, René van Dorst wrote:
->> >>Like many other mediatek SOCs, the MT7621 SOC and the internal MT7530
->> >>switch both
->> >>supports TRGMII mode. MT7621 TRGMII speed is 1200MBit.
->> >
->> >Hi René
->> >
->>
->> Hi Andrew,
->>
->> >Is TRGMII used only between the SoC and the Switch? Or does external
->> >ports of the switch also support 1200Mbit/s? If external ports support
->> >this, what does ethtool show for Speed?
->>
->> Only the first GMAC of the SOC and port 6 of the switch supports this mode.
->> The switch can be internal in the SOC but also a separate chip.
->>
->> PHYLINK and ethertool reports the link as 1Gbit.
->> The link is fixed-link with speed = 1000.
->>
->> dmesg output with unposted PHYLINK patches:
->> [    5.236763] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
->> [    5.249813] mt7530 mdio-bus:1f: phylink_mac_config:
->> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12 link=1 an=1
->> [    6.389435] mtk_soc_eth 1e100000.ethernet eth0: phylink_mac_config:
->> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12 link=1 an=1
->
-> With PHYLINK, you can probably set the fixed link to the true 1.2Gbps.
+Please do not use the inline directive in foo.c files, let the compiler decide.
 
-By adding some extra speed states in the code it seems to work.
+ ...
+> +static inline int length_to_duration(struct taprio_sched *q, int len)
+> +{
+> +	return (len * atomic64_read(&q->picos_per_byte)) / 1000;
+> +}
 
-+               if (state->speed == 1200)
-+                       mcr |= PMCR_FORCE_SPEED_1000;
+Likewise.
 
-dmesg:
-[    5.261375] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
-[    5.274390] mt7530 mdio-bus:1f: phylink_mac_config:  
-mode=fixed/trgmii/Unsupported (update phy-core.c)/Full  
-adv=00,00000000,00000200 pause=12 link=1 an=1
-[    6.296614] mtk_soc_eth 1e100000.ethernet eth0: configuring for  
-fixed/trgmii link mode
-[    6.313608] mtk_soc_eth 1e100000.ethernet eth0: phylink_mac_config:  
-mode=fixed/trgmii/Unsupported (update phy core.c)/Full  
-adv=00,00000000,00000200 pause=12 link=1 an=1
+ ...
+> +static inline ktime_t get_cycle_start(struct sched_gate_list *sched,
+> +				      ktime_t time)
+> +{
 
-# ethtool eth0
-Settings for eth0:
-         Supported ports: [ MII ]
-         Supported link modes:   Not reported
-         Supported pause frame use: No
-         Supports auto-negotiation: No
-         Supported FEC modes: Not reported
-         Advertised link modes:  Not reported
-         Advertised pause frame use: No
-         Advertised auto-negotiation: No
-         Advertised FEC modes: Not reported
-         Speed: 1200Mb/s
-         Duplex: Full
-         Port: MII
-         PHYAD: 0
-         Transceiver: internal
-         Auto-negotiation: on
-         Current message level: 0x000000ff (255)
-                                drv probe link timer ifdown ifup rx_err tx_err
-         Link detected: yes
-
-
->> # ethtool eth0
->> Settings for eth0:
->>          Supported ports: [ MII ]
->>          Supported link modes:   1000baseT/Full
->>          Supported pause frame use: No
->>          Supports auto-negotiation: No
->>          Supported FEC modes: Not reported
->>          Advertised link modes:  1000baseT/Full
->>          Advertised pause frame use: No
->>          Advertised auto-negotiation: No
->>          Advertised FEC modes: Not reported
->>          Speed: 1000Mb/s
->
-> We could consider adding 1200BaseT/Full?
-
-I don't have any opinion about this.
-It is great that it shows nicely in ethtool but I think supporting more
-speeds in phy_speed_to_str() is enough.
-
-Also you may want to add other SOCs trgmii ranges too:
-- 1200BaseT/Full for mt7621 only
-- 2000BaseT/Full for mt7623 and mt7683
-- 2600BaseT/Full for mt7623 only
-
-I leave the decision to you.
-
-Greats,
-
-René
-
->
->    Andrew
-
-
+Likewise.
