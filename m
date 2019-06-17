@@ -2,86 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A28E548379
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 172294837A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbfFQNGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:06:21 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:38923 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbfFQNGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:06:21 -0400
-Received: by mail-io1-f65.google.com with SMTP id r185so14983591iod.6
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:06:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VSYhfVHQih+M4629Cya7JjEf6OR4ILXJD3sjGw7DdoE=;
-        b=SkLCDnIrCeVuWKnbjBCcE04BCi/veP5JEy/tLTerTEbi7XB/6wKKHGoSIGDe/BuL5W
-         TNgcV0gELa6hetSEhrO/SC98VZCGwTpMcExuhbGolHVszaZTeE1vZ/gGpAozrGoy/cn7
-         99GFOz/ynsb26v84D8a8GTPfOMOqj5Ydtj1biqUgc6uhIcE7n7U1vMQwqJE1qhGVl+55
-         KeO6xGg6t2wRrwQ0WJaVN8//H0ALqjNOk08uURSd4Nj3v1YdBL85S4bHk002jTAi/oCc
-         iK1y74BbGM6bUHFyqUz5ezNKk6Cli3a+Y7tS7R1nA+KFExg7R0b/VrrdEvageW1XfqBV
-         oohw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VSYhfVHQih+M4629Cya7JjEf6OR4ILXJD3sjGw7DdoE=;
-        b=SO7Nw2Vxj70XAD7b6Mbag6LOzRgpZFBLQPuK0TLCdws2PTL6VTG+8UIL1TVJVPyAJi
-         6eU/5avXVc9suI6gxhwpKA7ig1szwAR+9xSayJcumaKxKHx4Xn43OqWPJuUS7JPMqhh+
-         PoahJLgBSfJLpqhLNgyyv5T04Ca4psKi1GW/l1rHVFM9nHGouu6Zn22ztJ9BdPRR0jQC
-         GVkSSZOCUDS3pTHrD3y+i2LGemsjnOFowIy2hidzE2pTcfgDYyzQKi/cVow5alqhpNrX
-         TlDdiUhcVhcwwWFwSJfFyLwkxti/q/0JmZZiugn3dTBfewuBmjNtomKEiBLbl/W7tTx2
-         woyA==
-X-Gm-Message-State: APjAAAV5OYDdPaH59qpAYE1zbUJfSnUXzZml2/iv2rzMPr8f0nROEs+e
-        QQmemEIOjOlfYHskaK54cXQ=
-X-Google-Smtp-Source: APXvYqwKT2Au9o8HD550ni0N9AqFWvGIbdQnDB1Z3UGWGWMYRn2DkRoMFIiHq4P7EQMsf2CzCusyuQ==
-X-Received: by 2002:a6b:b987:: with SMTP id j129mr19323522iof.166.1560776780312;
-        Mon, 17 Jun 2019 06:06:20 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
-        by smtp.googlemail.com with ESMTPSA id a1sm9165146ioo.5.2019.06.17.06.06.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 06:06:19 -0700 (PDT)
-Subject: Re: [PATCH net-next 16/17] ipv6: Stop sending in-kernel notifications
- for each nexthop
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, alexpe@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20190615140751.17661-1-idosch@idosch.org>
- <20190615140751.17661-17-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4f7ef3ac-d3f8-60bf-dc92-e405d2a1770b@gmail.com>
-Date:   Mon, 17 Jun 2019 07:06:15 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190615140751.17661-17-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1726849AbfFQNGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:06:43 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52248 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725983AbfFQNGn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 09:06:43 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8FB2E308623F;
+        Mon, 17 Jun 2019 13:06:42 +0000 (UTC)
+Received: from ovpn-204-244.brq.redhat.com (ovpn-204-244.brq.redhat.com [10.40.204.244])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 09A781001E61;
+        Mon, 17 Jun 2019 13:06:34 +0000 (UTC)
+Message-ID: <d840dc535ab546408f6280e04b8d492fa2b0c24c.camel@redhat.com>
+Subject: Re: [RFC PATCH net-next 1/2] tcp: ulp: add functions to dump
+ ulp-specific information
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Dave Watson <davejwatson@fb.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+In-Reply-To: <20190605161400.6c87d173@cakuba.netronome.com>
+References: <cover.1559747691.git.dcaratti@redhat.com>
+         <a1feba1a1c03a331047d3a7a3a7acefdbee51735.1559747691.git.dcaratti@redhat.com>
+         <20190605161400.6c87d173@cakuba.netronome.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 17 Jun 2019 15:06:33 +0200
+Mime-Version: 1.0
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Mon, 17 Jun 2019 13:06:42 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/19 8:07 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> Both listeners - mlxsw and netdevsim - of IPv6 FIB notifications are now
-> ready to handle IPv6 multipath notifications.
-> 
-> Therefore, stop ignoring such notifications in both drivers and stop
-> sending notification for each added / deleted nexthop.
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  .../ethernet/mellanox/mlxsw/spectrum_router.c |  2 --
->  drivers/net/netdevsim/fib.c                   |  7 -----
->  net/ipv6/ip6_fib.c                            | 28 +++++++++++--------
->  3 files changed, 17 insertions(+), 20 deletions(-)
+On Wed, 2019-06-05 at 16:14 -0700, Jakub Kicinski wrote:
+> On Wed,  5 Jun 2019 17:39:22 +0200, Davide Caratti wrote:
+> > currently, only getsockopt(TCP_ULP) can be invoked to know if a ULP is on
+> > top of a TCP socket. Extend idiag_get_aux() and idiag_get_aux_size(),
+> > introduced by commit b37e88407c1d ("inet_diag: allow protocols to provide
+> > additional data"), to report the ULP name and other information that can
+> > be made available by the ULP through optional functions.
+> > 
+> > Users having CAP_NET_ADMIN privileges will then be able to retrieve this
+> > information through inet_diag_handler, if they specify INET_DIAG_INFO in
+> > the request.
+> > 
+> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> > ---
+> >  include/net/tcp.h              |  3 +++
+> >  include/uapi/linux/inet_diag.h |  8 ++++++++
+> >  net/ipv4/tcp_diag.c            | 34 ++++++++++++++++++++++++++++++++--
+> >  3 files changed, 43 insertions(+), 2 deletions(-)
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+hi Jakub, thanks a lot for reviewing!
+
+[...]
+> > --- a/include/uapi/linux/inet_diag.h
+> > +++ b/include/uapi/linux/inet_diag.h
+> > @@ -153,11 +153,19 @@ enum {
+> >  	INET_DIAG_BBRINFO,	/* request as INET_DIAG_VEGASINFO */
+> >  	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
+> >  	INET_DIAG_MD5SIG,
+> > +	INET_DIAG_ULP_INFO,
+> >  	__INET_DIAG_MAX,
+> >  };
+> >  
+> >  #define INET_DIAG_MAX (__INET_DIAG_MAX - 1)
+> >  
+> > +enum {
+> 
+> Value of 0 is commonly defined as UNSPEC (or NONE), so:
+> 
+> 	ULP_UNSPEC,
+> 
+> here.  Also perhaps INET_ULP_..?
+
+ok, will fix that in patch v1.
+
+> > +	ULP_INFO_NAME,
+> > +	__ULP_INFO_MAX,
+> > +};
+> > +
+> > +#define ULP_INFO_MAX (__ULP_INFO_MAX - 1)
+> > +
+> >  /* INET_DIAG_MEM */
+> >  
+
+[...]
+
+> > @@ -103,11 +105,33 @@ static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
+> >  	}
+> >  #endif
+> >  
+> > -	return 0;
+> > +	if (net_admin && icsk->icsk_ulp_ops) {
+> > +		struct nlattr *nest;
+> > +
+> > +		nest = nla_nest_start_noflag(skb, INET_DIAG_ULP_INFO);
+> > +		if (!nest) {
+> > +			err = -EMSGSIZE;
+> > +			goto nla_failure;
+> > +		}
+> > +		err = nla_put_string(skb, ULP_INFO_NAME,
+> > +				     icsk->icsk_ulp_ops->name);
+> > +		if (err < 0)
+> 
+> nit: nla_put_string() does not return positive non-zero codes
+
+so, I will replace the test above with 
+
+if (err)
+
+> > +			goto nla_failure;
+> > +		if (icsk->icsk_ulp_ops->get_info)
+> > +			err = icsk->icsk_ulp_ops->get_info(sk, skb);
+> 
+> And neither should this, probably.
+
+> > +		if (err < 0) {
+
+same here.
+
+> > +nla_failure:
+> > +			nla_nest_cancel(skb, nest);
+> > +			return err;
+> > +		}
+> > +		nla_nest_end(skb, nest);
+> > +	}
+> > +	return err;
+> 
+> So just return 0 here.
+
+ok, I found comfortable with 'return err' because of the initialization at
+the beginning of the function (this patch extends the scope of 'err' to
+the whole function). But I'm not against return 0.
+
+> >  }
+> >  
+> >  static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
+> >  {
+> > +	struct inet_connection_sock *icsk = inet_csk(sk);
+> >  	size_t size = 0;
+> >  
+> >  #ifdef CONFIG_TCP_MD5SIG
+> > @@ -128,6 +152,12 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
+> >  	}
+> >  #endif
+> >  
+> > +	if (net_admin && icsk->icsk_ulp_ops) {
+> > +		size +=   nla_total_size(0) /* INET_DIAG_ULP_INFO */
+> 
+>                        ^^^ not sure we want those multiple spaces here.
+> 
+> > +			+ nla_total_size(TCP_ULP_NAME_MAX); /* ULP_INFO_NAME */
+> 
+> + usually goes at the end of previous line
+
+I took the inspiration from the caller of .idiag_get_aux_size(). But you are right,
+vxlan_get_size() has a better formatting: will fix that in patch v1.
+
+> > +		if (icsk->icsk_ulp_ops->get_info_size)
+> > +			size += icsk->icsk_ulp_ops->get_info_size(sk);
+> 
+> I don't know the diag code, is the socket locked at this point?
+
+as far as I can see, it's not. Thanks a lot for noticing this!
+
+anyway, I see a similar pattern for icsk_ca_ops: when we set the congestion
+control with do_tcp_setsockopt(), the socket is locked - but then, when 'ss'
+reads a diag request with INET_DIAG_CONG bit set, the value of icsk->icsk_ca_ops
+is accessed with READ_ONCE(), surrounded by rcu_read_{,un}lock(). 
+
+Maybe it's sufficient to do something similar, and then the socket lock can be
+optionally taken within icsk_ulp_ops->get_info(), only in case we need to access
+members of sk that are protected with the socket lock?
+
+-- 
+davide
+
