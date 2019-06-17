@@ -2,113 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A0B4903A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:47:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C904909A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbfFQTrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:47:32 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:36230 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726514AbfFQTrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:47:31 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2EB3A80057;
-        Mon, 17 Jun 2019 19:47:30 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 17 Jun
- 2019 12:47:26 -0700
-Subject: Re: [PATCH] bpf: optimize constant blinding
-To:     Jiong Wang <jiong.wang@netronome.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>
-References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
- <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
- <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
- <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
- <87ef3w5hew.fsf@netronome.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <41dfe080-be03-3344-d279-e638a5a6168d@solarflare.com>
-Date:   Mon, 17 Jun 2019 20:47:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728917AbfFQTyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:54:31 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:40146 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725878AbfFQTyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:54:31 -0400
+Received: by mail-qk1-f196.google.com with SMTP id c70so6993132qkg.7;
+        Mon, 17 Jun 2019 12:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xtD34BI+vrOR7JucDAJ9tu3vs6a298a0lx7kQQSa3yc=;
+        b=KTzDSwZ1yy1nJQOYBucAoW72auHwAOIEY5sMRGzgr2WKEQSgOUuh7LHOqgkgwruSo0
+         PmttiIWDpJqtIHZOabWmb5YfLWMt5cdWfRPWqcYOwbI7ItiGBdt6+6v490EnqToT5Gge
+         mb04RJdWpQiAF9dpWjirMZ609LArpoZ2a5BvRjfc8x6eqgWque5LndFse42MKT+Q33s1
+         feHdUD/WND5P2qk7r+J1fAqQ+L+pJjgnAByB8hBB9kRd+mpl4TAPni8/5IBnfjBQYc2X
+         hwraQ0Kes3uFo8yzLC9bRzl/nUaZVTviqfSPMb7+0pP8AGzCeSjnYiXLcWUIAOho628g
+         jZ7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xtD34BI+vrOR7JucDAJ9tu3vs6a298a0lx7kQQSa3yc=;
+        b=N+gWRCTys37uPQE/30Wh231OqZ6Gjfu7XgLnCTcYHSz0XegxguyX3lp6Py76uOU2Uj
+         OU//hQrr6A2LDLNIseppHn5ZLGNHRTXdoluBUAikf0eAIC06eEiRTbCm6PmaesRe2tlR
+         fnJRHTdJqmKrV/LSl6rocGdNhiP/tdn8UHN90sShRNYiYabQ4jMFAgrfO9xik7TFuQKI
+         JE4fNSsEiDULerUnCurxqOhS2+fTz5YzoFeMFaiQZfBXfHVulOfX6c/p3XOjRqJSJhWG
+         jgvx9F0odUhAaq2XV9HD8nTyvpX4dKIAQz5VEPCwNkw4me1wJlSbYYRv4fdWNdOALX99
+         pNKA==
+X-Gm-Message-State: APjAAAUwv33KQcNGto7PArDibLUyz7D8mZj6CYVnBcFs+/o/os6oYVjd
+        Mjz4G1ZpZOOqUpIsnyRfc1k=
+X-Google-Smtp-Source: APXvYqxC+QVDUdcmTZ129xnM091bQ2vjaS8JVt0YpWL93xXEY+lsGPJxYoOW2ZzsqtQm/CYdS2IuHA==
+X-Received: by 2002:ae9:c30e:: with SMTP id n14mr85350845qkg.220.1560801269520;
+        Mon, 17 Jun 2019 12:54:29 -0700 (PDT)
+Received: from localhost.localdomain (mtrlpq02hsy-lp140-01-174-93-144-21.dsl.bell.ca. [174.93.144.21])
+        by smtp.gmail.com with ESMTPSA id z18sm8522078qka.12.2019.06.17.12.54.28
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 12:54:28 -0700 (PDT)
+From:   Detlev Casanova <detlev.casanova@gmail.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Detlev Casanova <detlev.casanova@gmail.com>
+Subject: [PATCH] e1000e: Make watchdog use delayed work
+Date:   Mon, 17 Jun 2019 15:54:18 -0400
+Message-Id: <20190617195418.3499-1-detlev.casanova@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <87ef3w5hew.fsf@netronome.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24684.005
-X-TM-AS-Result: No-8.347200-4.000000-10
-X-TMASE-MatchedRID: 6otD/cJAac1EgaBf5eVRwvZvT2zYoYOwC/ExpXrHizwL9Tj77wy87IIU
-        G7/tZy4d4hJuRL3IxSAgvQTVRkNXhIZKkFFIbQIAsJribvbshQ9bD9LQcHt6g6zG9MIKeG/Ghvw
-        7+mblsJsR3sN5fyQI1UAFcnpD9mZelX+iQruz3vGqNnzrkU+2mnyuCDd9Nsmvy5JfHvVu9Iswx8
-        Z6+aQbcHW2ld4lwNr1B9P/R5ohxlWj9HPhXvu25Bcr91Fo5aW9yeUl7aCTy8ifuM4lD6uC8XpQU
-        RdMc/iv1SIZGfg1hgkr8CenrAzEVzi6anTfkmiZmq+iLtFCY9LOFaObL3St25soi2XrUn/JmTDw
-        p0zM3zoqtq5d3cxkNZd/mwLf2BVUGVWtjHyckC2QDRt+p3R08Pt4JMe+q1RNRa+hecZfLuLFhXM
-        jdQIJpg==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.347200-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24684.005
-X-MDID: 1560800850-oyJf9GqgC5yH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/06/2019 16:13, Jiong Wang wrote:
-> Just an update and keep people posted.
->
-> Working on linked list based approach, the implementation looks like the
-> following, mostly a combine of discussions happened and Naveen's patch,
-> please feel free to comment.
->
->   - Use the reserved opcode 0xf0 with BPF_ALU as new pseudo insn code
->     BPF_LIST_INSN. (0xf0 is also used with BPF_JMP class for tail call).
->
->   - Introduce patch pool into bpf_prog->aux to keep all patched insns.
-It's not clear to me what the point of the patch pool is, rather than just
- doing the patch straight away.  Idea is that when prog is half-patched,
- insn idxs / jump offsets / etc. all refer to the original locations, only
- some of those might now be a list rather than a single insn.  Concretely:
+Use delayed work instead of timers to run the watchdog of the e1000e
+driver.
 
-struct bpf_insn_list { bpf_insn insn; struct list_head list; }
-orig prog: array bpf_insn[3] = {cond jump +1, insn_foo, exit};
-start of day verifier converts this into array bpf_insn_list[3],
- each with new.insn = orig.insn; INIT_LIST_HEAD(new.list)
+Simplify the code with one less middle function.
 
-verifier decides to patch insn_foo into {insn_bar, insn_baz}.
-so we allocate bpf_insn_list *x;
-insn_foo.insn = insn_bar;
-x->insn = insn_baz;
-list_add_tail(&x->list, &insn_foo.list);
+Signed-off-by: Detlev Casanova <detlev.casanova@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000e/e1000.h  |  3 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c | 52 +++++++++++-----------
+ 2 files changed, 28 insertions(+), 27 deletions(-)
 
-the cond jump +1 is _not_ changed at this point, because it counts
- bpf_insn_lists and not insns.
+diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
+index be13227f1697..942ab74030ca 100644
+--- a/drivers/net/ethernet/intel/e1000e/e1000.h
++++ b/drivers/net/ethernet/intel/e1000e/e1000.h
+@@ -186,12 +186,11 @@ struct e1000_phy_regs {
+ 
+ /* board specific private data structure */
+ struct e1000_adapter {
+-	struct timer_list watchdog_timer;
+ 	struct timer_list phy_info_timer;
+ 	struct timer_list blink_timer;
+ 
+ 	struct work_struct reset_task;
+-	struct work_struct watchdog_task;
++	struct delayed_work watchdog_task;
+ 
+ 	const struct e1000_info *ei;
+ 
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 0e09bede42a2..f62434aa24ad 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -39,6 +39,8 @@ static int debug = -1;
+ module_param(debug, int, 0);
+ MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
+ 
++static struct workqueue_struct *e1000_workqueue;
++
+ static const struct e1000_info *e1000_info_tbl[] = {
+ 	[board_82571]		= &e1000_82571_info,
+ 	[board_82572]		= &e1000_82572_info,
+@@ -1780,7 +1782,7 @@ static irqreturn_t e1000_intr_msi(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(e1000_workqueue, &adapter->watchdog_task, 1);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1860,7 +1862,7 @@ static irqreturn_t e1000_intr(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(e1000_workqueue, &adapter->watchdog_task, 1);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1905,7 +1907,7 @@ static irqreturn_t e1000_msix_other(int __always_unused irq, void *data)
+ 		hw->mac.get_link_status = true;
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(e1000_workqueue, &adapter->watchdog_task, 0);
+ 	}
+ 
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+@@ -4278,7 +4280,6 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
+ 
+ 	napi_synchronize(&adapter->napi);
+ 
+-	del_timer_sync(&adapter->watchdog_timer);
+ 	del_timer_sync(&adapter->phy_info_timer);
+ 
+ 	spin_lock(&adapter->stats64_lock);
+@@ -5150,25 +5151,11 @@ static void e1000e_check_82574_phy_workaround(struct e1000_adapter *adapter)
+ 	}
+ }
+ 
+-/**
+- * e1000_watchdog - Timer Call-back
+- * @data: pointer to adapter cast into an unsigned long
+- **/
+-static void e1000_watchdog(struct timer_list *t)
+-{
+-	struct e1000_adapter *adapter = from_timer(adapter, t, watchdog_timer);
+-
+-	/* Do the rest outside of interrupt context */
+-	schedule_work(&adapter->watchdog_task);
+-
+-	/* TODO: make this use queue_delayed_work() */
+-}
+-
+ static void e1000_watchdog_task(struct work_struct *work)
+ {
+ 	struct e1000_adapter *adapter = container_of(work,
+ 						     struct e1000_adapter,
+-						     watchdog_task);
++						     watchdog_task.work);
+ 	struct net_device *netdev = adapter->netdev;
+ 	struct e1000_mac_info *mac = &adapter->hw.mac;
+ 	struct e1000_phy_info *phy = &adapter->hw.phy;
+@@ -5395,8 +5382,8 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 
+ 	/* Reset the timer */
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+-		mod_timer(&adapter->watchdog_timer,
+-			  round_jiffies(jiffies + 2 * HZ));
++		queue_delayed_work(e1000_workqueue, &adapter->watchdog_task,
++				   round_jiffies(2 * HZ));
+ }
+ 
+ #define E1000_TX_FLAGS_CSUM		0x00000001
+@@ -7251,11 +7238,21 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_eeprom;
+ 	}
+ 
+-	timer_setup(&adapter->watchdog_timer, e1000_watchdog, 0);
++	e1000_workqueue = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0,
++			                  e1000e_driver_name);
++
++	if (!e1000_workqueue)
++	{
++		err = -ENOMEM;
++		goto err_workqueue;
++	}
++
++	INIT_DELAYED_WORK(&adapter->watchdog_task, e1000_watchdog_task);
++	queue_delayed_work(e1000_workqueue, &adapter->watchdog_task, 0);
++
+ 	timer_setup(&adapter->phy_info_timer, e1000_update_phy_info, 0);
+ 
+ 	INIT_WORK(&adapter->reset_task, e1000_reset_task);
+-	INIT_WORK(&adapter->watchdog_task, e1000_watchdog_task);
+ 	INIT_WORK(&adapter->downshift_task, e1000e_downshift_workaround);
+ 	INIT_WORK(&adapter->update_phy_task, e1000e_update_phy_task);
+ 	INIT_WORK(&adapter->print_hang_task, e1000_print_hw_hang);
+@@ -7349,6 +7346,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_register:
++	flush_workqueue(e1000_workqueue);
++	destroy_workqueue(e1000_workqueue);
++err_workqueue:
+ 	if (!(adapter->flags & FLAG_HAS_AMT))
+ 		e1000e_release_hw_control(adapter);
+ err_eeprom:
+@@ -7395,15 +7395,17 @@ static void e1000_remove(struct pci_dev *pdev)
+ 	 */
+ 	if (!down)
+ 		set_bit(__E1000_DOWN, &adapter->state);
+-	del_timer_sync(&adapter->watchdog_timer);
+ 	del_timer_sync(&adapter->phy_info_timer);
+ 
+ 	cancel_work_sync(&adapter->reset_task);
+-	cancel_work_sync(&adapter->watchdog_task);
+ 	cancel_work_sync(&adapter->downshift_task);
+ 	cancel_work_sync(&adapter->update_phy_task);
+ 	cancel_work_sync(&adapter->print_hang_task);
+ 
++	cancel_delayed_work(&adapter->watchdog_task);
++	flush_workqueue(e1000_workqueue);
++	destroy_workqueue(e1000_workqueue);
++
+ 	if (adapter->flags & FLAG_HAS_HW_TIMESTAMP) {
+ 		cancel_work_sync(&adapter->tx_hwtstamp_work);
+ 		if (adapter->tx_hwtstamp_skb) {
+-- 
+2.22.0
 
-Then at end of day to linearise we just have int new_idx[3];
- populate it by iterating over the array of bpf_insn_list and adding on
- the list length each time (so we get {0, 1, 3})
- then allocate output prog of the total length (here 4, calculated by
- that same pass as effectively off-the-end entry of new_idx)
- then iterate again to write out the output prog, when we see that 'cond
- jump +1' in old_idx 0 we see that (new_idx[2] - new_idx[0] - 1) = 2, so
- it becomes 'cond jump +2'.
-
-
-This seems to me like it'd be easier to work with than making the whole
- program one big linked list (where you have to separately keep track of
- what each insn's idx was before patching).  But I haven't tried to code
- it yet, so anything could happen ;-)  It does rely on the assumption
- that only original insns (or the first insn of a list they get patched
- with) will ever be jump targets or otherwise need their insn_idx taken.
-
--Ed
