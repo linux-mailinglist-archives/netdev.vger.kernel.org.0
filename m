@@ -2,126 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F85489A4
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C4F489AD
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbfFQRG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:06:58 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:42276 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfFQRG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:06:58 -0400
-Received: by mail-io1-f67.google.com with SMTP id u19so22747369ior.9
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:06:58 -0700 (PDT)
+        id S1726822AbfFQRIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:08:19 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41985 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726489AbfFQRIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:08:18 -0400
+Received: by mail-qt1-f194.google.com with SMTP id s15so11578375qtk.9
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hso2hpDSUoMsb1JjQK0z24V+CPw4Dn9wVIbzzerRy3I=;
-        b=NnlFyRsTJy4BTSuh2noKJ48qrkmfquHevpe/EexO7CMG3W+Ee29081houiX2avjbZy
-         hfmW52G++wFkU59alc/vnjuuPpbQmuFhG+WPzr3/aD7VSKb9JbGcU/8FOYFrVyUfZYeu
-         OthGpn9I/P5SBTwbaIy0mvgLXK1DEZV0zsCawij2VGmaUMo92nIDfb5RcfgKzg428bLV
-         5PaTTkgcNzyTJFN42964szHHdQ2FxnPFuuxUzisKPReFYcjvJC9tGwtqdJ8vMrjM3tSb
-         cWH/dn/guwTeqgO7Jm31gk8NXwZVf7JdP7HpYIPgD0CMgH6B4cqnCSV7iFnWwG5OK4ut
-         kqPA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aZJF2WxJETDdDqs4xOl7auM1FXoTrxtt57vRxOFFuJc=;
+        b=pvJO5JBbyAeFlkroQzOmvl4fi0RWwK+6jp121t7h8ADHYgEZh4DEL2J0Uyy+dkifJo
+         i8k9YbtiVWRZAJJiQdxcPorAsZBbMkpNeqfR1z1T3fyT7tO5Y5V1tgZfQb1itQmNPIij
+         PQCiT+jAX34BpMNlFlkY1fdAPgxHzcdWn7XBt2msWYHZo4nKZ/DPNdyaT4Nsq0svbBCw
+         NMMfVmeE/SdihwEIB0WRTRzH1M5gNZbwCm9szNs3FcXziSG2kPWKeFbKIlF50e/06Cal
+         ZtOuXsiHD9esueLXF7GvHUqVAfhcLNiYfu5D/tENDnEUcjsRJ6ENQxmiQnWMYtCz3Smq
+         BmoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hso2hpDSUoMsb1JjQK0z24V+CPw4Dn9wVIbzzerRy3I=;
-        b=QS/xA0qY0mjx1VVb+VIzmj/C3K/ES8zlG5+0gW4sKfGDqoEgzc5ZG1+WXN8a6UsWwh
-         hcQcsnwAiYdCtb8C/N+zapSfH+1bWeTyLFgk492Pxj2SXhtjCHCntah5K08KZmMubJPT
-         Uc0d3jn2BgjJIpizijl+Q1ZSpHLEWhZUqvX7Vyx42hDluIYAaNy19erX6y99xxBUGxIY
-         bOp+7CHRhY0/11TEOECoC7SJtwqWyzfqp3z+v7LwtgOWsOeyjanIkPNCbWFb9hpBG6J9
-         tAivA5sgry2kCg1tY++7/AKGk8txzgl5lwot8wOfzSJIV2TM6AtvNyuAuZLLeJu3sl6z
-         UGkw==
-X-Gm-Message-State: APjAAAXRkhGpyAuws6uGE9kdcPb89Jt9wj39yWk15WvVBFSEa65DH9O1
-        Kesqw741QfudKqI3x8EjmQkyAnHr
-X-Google-Smtp-Source: APXvYqw1kXdaZjXZZ7QcPfozEJvQm3rrbCb0rEk8FsG0B5L/U3D5RCCb6vzqzl6P87ODjJDV3TB2HQ==
-X-Received: by 2002:a02:40c8:: with SMTP id n191mr56571755jaa.14.1560791217085;
-        Mon, 17 Jun 2019 10:06:57 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
-        by smtp.googlemail.com with ESMTPSA id c23sm11862049iod.11.2019.06.17.10.06.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 10:06:55 -0700 (PDT)
-Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
- ip_valid_fib_dump_req, provide non-strict version
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560561432.git.sbrivio@redhat.com>
- <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
- <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
- <20190615051342.7e32c2bb@redhat.com>
- <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
- <20190615052705.66f3fe62@redhat.com> <20190616220417.573be9a6@redhat.com>
- <d3527e70-15aa-abf8-4451-91e5bae4f1ab@gmail.com>
- <20190617161333.29cab4d7@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <43a9b0c7-27b4-733c-d3f2-60ad894e8aeb@gmail.com>
-Date:   Mon, 17 Jun 2019 11:06:51 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aZJF2WxJETDdDqs4xOl7auM1FXoTrxtt57vRxOFFuJc=;
+        b=JxEaApmwM+OdM5TbvGWgLt9L8mX3tXDc66AVg0bhVTcv+vpdhmQnB+N6g9DRmrx4Wz
+         SaDrC0578CtwPvS12L5Q6zGTAPyQKXeY5kgPkmM/5wezxwRMcvO63lsu57Adz9yweLBJ
+         A2VNfN7gcJRsL+SnpV35huIwl6kOLu7VLWmIvvoOzLfsZAaedClDfOeESOIDROS6tEce
+         5qezX5YGQtw54QuNHtfDZSIxDMjlRxLgkdnXBp4yQZcm0maEcx2NSqLyM9RuK2kLXDXV
+         OWJgiBWqBLYNMUTPSBWcC5Muq4PT5eWFasnDvnayiuG6xAwi6tof1kZspp0M3NdQHww5
+         z4Vg==
+X-Gm-Message-State: APjAAAVLzzwVPh3NVauCoBPjDE/THo91crSLiMTvPLKEOaZYXjIkwYTz
+        wuMhgKCZy22gitB77CvH/wNPJ6s=
+X-Google-Smtp-Source: APXvYqzVfBVz/mz45elzIJPVFZ2VPAupQwWHDU6KMCDMUtQeC6KcPUiQVfjcRvKpcWj3g0hR/Ii4uQ==
+X-Received: by 2002:ac8:c45:: with SMTP id l5mr78620764qti.63.1560791294629;
+        Mon, 17 Jun 2019 10:08:14 -0700 (PDT)
+Received: from ubuntu ([104.238.32.106])
+        by smtp.gmail.com with ESMTPSA id q29sm6788314qkq.77.2019.06.17.10.08.13
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 17 Jun 2019 10:08:13 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 13:08:05 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        nikolay@cumulusnetworks.com
+Subject: Re: [PATCH net-next v3] ipv4: Support multipath hashing on inner IP
+ pkts for GRE tunnel
+Message-ID: <20190617170805.GA5736@ubuntu>
+References: <20190613183858.9892-1-ssuryaextr@gmail.com>
+ <20190617143932.GA9828@splinter>
+ <e56ca29f-8d80-b9ae-112a-4ff55847313d@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190617161333.29cab4d7@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e56ca29f-8d80-b9ae-112a-4ff55847313d@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/17/19 8:13 AM, Stefano Brivio wrote:
->>
->> With strict checking (5.0 and forward):
->> - RTM_F_CLONED NOT set means dump only FIB entries
->> - RTM_F_CLONED set means dump only exceptions
+On Mon, Jun 17, 2019 at 09:53:06AM -0600, David Ahern wrote:
+> On 6/17/19 8:39 AM, Ido Schimmel wrote:
+> > 
+> > Do you plan to add IPv6 support? Would be good to have the same features
+> > in both stacks.
 > 
-> Okay. Should we really ignore the RFC and NLM_F_MATCH though? If we add
-> field(s) to the filter, it comes almost for free, something like:
+> we really should be mandating equal support for all new changes like this.
 > 
-> 	if (nlh->nlmsg_flags & NLM_F_MATCH)
-> 		filter->dump_exceptions = rtm->rtm_flags & RTM_F_CLONED;
-> 
-> instead of:
-> 
-> 	filter->dump_exceptions = rtm->rtm_flags & RTM_F_CLONED;
+I will add that.
+> > 
+> > Also, we have tests for these sysctls under
+> > tools/testing/selftests/net/forwarding/router_multipath.sh
+> > 
+> > Can you add a test for this change as well? You'll probably need to
+> > create a new file given the topology created by router_multipath.sh does
+> > not include tunnels.
 
-This is where you keep losing me. iproute2 has always set NLM_F_MATCH on
-dump requests, so that flag can not be used as a discriminator here.
+I never looked at the selftests scripts, but will attempt.
 
-> 
->> Without strict checking (old iproute2 on any kernel):
->> - dump all, userspace has to sort
->>
->> Kernel side this can be handled with new field, dump_exceptions, in the
->> filter that defaults to true and then is reset in the strict path if the
->> flag is not set.
-> 
-> I guess we need to add two fields, we'll need a 'dump_routes' too.
-> 
-> Otherwise, the dump functions can't distinguish between the three cases
-> ('no strict checking', 'strict checking and RTM_F_CLONED', 'strict
-> checking and no RTM_F_CLONED'). How would you do this with a single
-> additional field?
-> 
-
-sure, separate fields are needed for the pre-strict mode use case. So, I
-take it we are converging on this:
-
-1. non-strict mode, dump both (FIB entries and exceptions). Userspace
-has to filter. This is the legacy behavior you are trying to restore.
-
-2. strict mode:
-   a. dump only FIB entries if RTM_F_CLONED is not set
-   b. dump only exception entries if RTM_F_CLONED is set
-
-Agreed?
-
-Martin, others, ok with this?
+Stephen.
