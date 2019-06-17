@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EAA748998
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B8348999
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728454AbfFQREk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:04:40 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:54997 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbfFQREj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:39 -0400
-Received: by mail-pf1-f201.google.com with SMTP id c17so7391904pfb.21
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:39 -0700 (PDT)
+        id S1728483AbfFQREm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:04:42 -0400
+Received: from mail-ot1-f74.google.com ([209.85.210.74]:43473 "EHLO
+        mail-ot1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbfFQREm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:42 -0400
+Received: by mail-ot1-f74.google.com with SMTP id w110so5169026otb.10
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=s/yt2MZn3lhqf5If+V/X5T032GhqPMuSrwqeKHY0rAM=;
-        b=E5AGGoXmmUDclMe71r+VWlSZ5kYnwGFtskBNEunBagmbV/Xo92KWMu9Fz8uQcLu60i
-         M97x+3bPV4ZRHT3tFvCe4BItkGmrhsildxE3QhSV280jRsfKy6kM7r+wX8CYA8UeaRx9
-         ngKVXKs/tc59q4MMVLi5tnzQ5NHvKfpcR1Jgx4eOZFmeO6q9GHcJByZzbt8P7+A9cPRJ
-         nDN5pvpPXThLjsLohFah5s1v6sMtnWMJ+U6qIJe/JgvypeANkjSO3BDmi3RoyNTq+3aJ
-         iz7QyuEDs8yp6rgzgq+GGxhVSCrSt5ev7UPGJmMjTewuUma4FYQop45J5KEOIL6ysCAc
-         qV9g==
+        bh=PvuXpDexDxPOK/auQF0wWfSUrVmG9Xj+h27GpJM7Sy4=;
+        b=p5s7QoBHhbmOEU0Sfoa60z30RPlpLUnxf1r3uhj7BvtzHRJa16yzK8ztXBMrvzpT9C
+         QwgCbVTVeK8tKzII6Yd5bJMbZPZVvPvTLVx8UZmxc6o8LeY4GCyzge7yztVUR7ZqJQd1
+         IFtBFu6w2DjCOjIXuTWAw9jjEQda42+KfJIsrMEGVBsb46oVV1j9Oh/3dzt+zx1UTshw
+         eQOhfjdFdXjXe5eA+PvbfRFgqxPPXpJ9k7kGCJaZ85A6QZ7CZxcAEto3B2XsbD9Esfxg
+         BaoFjym8DXI3e9HqguxdpAkTvwKEl1b9cpI9lRzWCD4xS5Q3NSeG5dZbozXDsnUjgrvw
+         XnwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=s/yt2MZn3lhqf5If+V/X5T032GhqPMuSrwqeKHY0rAM=;
-        b=H6xrP3Mc0ZWMcKvvyxBezeA1gA78gG99QpRQpVh7iIOueLk8VhuXVHIFzZr+dQaA5Y
-         iqm5aLATreSdkhqGMlLufzS3nkJFUQ7bHwncQvBs+6ZNz/dvluhUtlgA/kBFiH+wbqcP
-         INR7HDpBChW67i1X/VkzgKkxqM5kqry3HtyphWP/y5IvVwvEBDC0Gkkx/GoOuXP0DEA1
-         x2ykNO/5+yZo1fNS2UFnDJ/2NQ+vzIpvGjFNhmExxApFEGVvbzTVeUg++pAT6bX3oDnN
-         uMZh0pfaNmoc9BRHPJZjL5xzcZ6Ixl5ugUILqzcNxhIKdrEQM/gbFdULW4dt4imUglS6
-         ax1g==
-X-Gm-Message-State: APjAAAWIO9bhrIdeYzSL6dmwJYFPsG7WNGGHK/eLs/wKY5jHtZHbrDRc
-        KYt6ibp0t5oaa1DJchqFE8n732fzMOVARA==
-X-Google-Smtp-Source: APXvYqzr0jAgo++zh+qkmfbtsPJGZrBVfK46+5xWHCnr9B1N+/PIbrlUiOjOLJlVtYFbb8LUcDmn4QLegHaN2Q==
-X-Received: by 2002:a63:d008:: with SMTP id z8mr50466224pgf.335.1560791078660;
- Mon, 17 Jun 2019 10:04:38 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 10:03:53 -0700
+        bh=PvuXpDexDxPOK/auQF0wWfSUrVmG9Xj+h27GpJM7Sy4=;
+        b=VH7gD1qMw/6lUghbMA4nGY31RPL4hRyPDahhIGRf0RGZ1KequOU06Yw1RzzKkyjZHC
+         Y35fRxRMcfUs23Fv8Jqje0m4L1000HX9wbO2ZZYzGA0zZp/kxrtRIS0fjKnuJODZCkrC
+         W3wGOrGe4nJ11QsSPKydeaPJfmy781gvl+CuBBLnATyOb6n7eDudLWqp1xojqV9ajfUK
+         x26l8kLH1NrX+rLvMx9kALQXRbaDmzZCohS38sQSHFGg1oDX1TiIazWYzdYh815+LvR4
+         SxV/XppXEyAUcJwMWRSjtzxwq+YkgDiAnzB78AsnPEfxRW3Q4guiH9K/0QKfUbmrruyO
+         p0jA==
+X-Gm-Message-State: APjAAAXDDNuD4+uO/aUSpKANHaePzQeNjuJ0vcqjgEymEHhyXte+EIq2
+        SmNpILu/rMypGT5vhIQlWYM5zIhmTgoqUg==
+X-Google-Smtp-Source: APXvYqzjnCkcb0+fvWRAklbERaImcL+p8gDfyTNonXyRYf3nWm8e+PW/Zf9ObHGpfARU9FD5G1Xm1W3ZKwSmCA==
+X-Received: by 2002:a9d:61c7:: with SMTP id h7mr2154746otk.357.1560791081576;
+ Mon, 17 Jun 2019 10:04:41 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 10:03:54 -0700
 In-Reply-To: <20190617170354.37770-1-edumazet@google.com>
-Message-Id: <20190617170354.37770-4-edumazet@google.com>
+Message-Id: <20190617170354.37770-5-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190617170354.37770-1-edumazet@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net 3/4] tcp: add tcp_min_snd_mss sysctl
+Subject: [PATCH net 4/4] tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -65,132 +65,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some TCP peers announce a very small MSS option in their SYN and/or
-SYN/ACK messages.
+If mtu probing is enabled tcp_mtu_probing() could very well end up
+with a too small MSS.
 
-This forces the stack to send packets with a very high network/cpu
-overhead.
-
-Linux has enforced a minimal value of 48. Since this value includes
-the size of TCP options, and that the options can consume up to 40
-bytes, this means that each segment can include only 8 bytes of payload.
-
-In some cases, it can be useful to increase the minimal value
-to a saner value.
-
-We still let the default to 48 (TCP_MIN_SND_MSS), for compatibility
-reasons.
-
-Note that TCP_MAXSEG socket option enforces a minimal value
-of (TCP_MIN_MSS). David Miller increased this minimal value
-in commit c39508d6f118 ("tcp: Make TCP_MAXSEG minimum more correct.")
-from 64 to 88.
-
-We might in the future merge TCP_MIN_SND_MSS and TCP_MIN_MSS.
+Use the new sysctl tcp_min_snd_mss to make sure MSS search
+is performed in an acceptable range.
 
 CVE-2019-11479 -- tcp mss hardcoded to 48
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Suggested-by: Jonathan Looney <jtl@netflix.com>
+Reported-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc: Jonathan Looney <jtl@netflix.com>
 Acked-by: Neal Cardwell <ncardwell@google.com>
 Cc: Yuchung Cheng <ycheng@google.com>
 Cc: Tyler Hicks <tyhicks@canonical.com>
 Cc: Bruce Curtis <brucec@netflix.com>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- Documentation/networking/ip-sysctl.txt |  8 ++++++++
- include/net/netns/ipv4.h               |  1 +
- net/ipv4/sysctl_net_ipv4.c             | 11 +++++++++++
- net/ipv4/tcp_ipv4.c                    |  1 +
- net/ipv4/tcp_output.c                  |  3 +--
- 5 files changed, 22 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_timer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 288aa264ac26d98637a5bb1babc334bfc699bef1..22f6b8b1110ad20c36e7ceea6d67fd2cc938eb7b 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -255,6 +255,14 @@ tcp_base_mss - INTEGER
- 	Path MTU discovery (MTU probing).  If MTU probing is enabled,
- 	this is the initial MSS used by the connection.
- 
-+tcp_min_snd_mss - INTEGER
-+	TCP SYN and SYNACK messages usually advertise an ADVMSS option,
-+	as described in RFC 1122 and RFC 6691.
-+	If this ADVMSS option is smaller than tcp_min_snd_mss,
-+	it is silently capped to tcp_min_snd_mss.
-+
-+	Default : 48 (at least 8 bytes of payload per segment)
-+
- tcp_congestion_control - STRING
- 	Set the congestion control algorithm to be used for new
- 	connections. The algorithm "reno" is always available, but
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 7698460a3dd1e5070e12d406b3ee58834688cdc9..623cfbb7b8dcbb2a6d8325ec010aff78bbdf8839 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -117,6 +117,7 @@ struct netns_ipv4 {
- #endif
- 	int sysctl_tcp_mtu_probing;
- 	int sysctl_tcp_base_mss;
-+	int sysctl_tcp_min_snd_mss;
- 	int sysctl_tcp_probe_threshold;
- 	u32 sysctl_tcp_probe_interval;
- 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index fa213bd8e233b577114815ca2227f08264e7df06..b6f14af926faf80f1686549bee7154c584dc63e6 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -39,6 +39,8 @@ static int ip_local_port_range_min[] = { 1, 1 };
- static int ip_local_port_range_max[] = { 65535, 65535 };
- static int tcp_adv_win_scale_min = -31;
- static int tcp_adv_win_scale_max = 31;
-+static int tcp_min_snd_mss_min = TCP_MIN_SND_MSS;
-+static int tcp_min_snd_mss_max = 65535;
- static int ip_privileged_port_min;
- static int ip_privileged_port_max = 65535;
- static int ip_ttl_min = 1;
-@@ -769,6 +771,15 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
-+	{
-+		.procname	= "tcp_min_snd_mss",
-+		.data		= &init_net.ipv4.sysctl_tcp_min_snd_mss,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= &tcp_min_snd_mss_min,
-+		.extra2		= &tcp_min_snd_mss_max,
-+	},
- 	{
- 		.procname	= "tcp_probe_threshold",
- 		.data		= &init_net.ipv4.sysctl_tcp_probe_threshold,
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index bc86f9735f4577d50d94f42b10edb6ba95bb7a05..cfa81190a1b1af30d05f4f6cd84c05b025a6afeb 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2628,6 +2628,7 @@ static int __net_init tcp_sk_init(struct net *net)
- 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
- 
- 	net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
-+	net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
- 	net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
- 	net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
- 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 1bb1c46b4abad100622d3f101a0a3ca0a6c8e881..00c01a01b547ec67c971dc25a74c9258563cf871 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1459,8 +1459,7 @@ static inline int __tcp_mtu_to_mss(struct sock *sk, int pmtu)
- 	mss_now -= icsk->icsk_ext_hdr_len;
- 
- 	/* Then reserve room for full set of TCP options and 8 bytes of data */
--	if (mss_now < TCP_MIN_SND_MSS)
--		mss_now = TCP_MIN_SND_MSS;
-+	mss_now = max(mss_now, sock_net(sk)->ipv4.sysctl_tcp_min_snd_mss);
- 	return mss_now;
- }
- 
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 5bad937ce779ef8dca42a26dcbb5f1d60a571c73..c801cd37cc2a9c11f2dd4b9681137755e501a538 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -155,6 +155,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+ 		mss = min(net->ipv4.sysctl_tcp_base_mss, mss);
+ 		mss = max(mss, 68 - tcp_sk(sk)->tcp_header_len);
++		mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
+ 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+ 	}
+ 	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
