@@ -2,91 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54888488A9
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 18:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06FE948929
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 18:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728283AbfFQQQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 12:16:11 -0400
-Received: from mail-eopbgr80043.outbound.protection.outlook.com ([40.107.8.43]:34309
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726215AbfFQQQK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 12:16:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/wR0HcazLafLkNPnj+pBxHlA4FxI9NiEJ4KxFHfwG40=;
- b=BcVh9b0bSJpS6y3P6fAdAeQsOckZNIyVA0HL1nSzkqvcaOCq5uZw/MWG2z/36EVwI6B2E5HbitFRfgrx9uKVs83r4ZUBkKjgNrCDWOBkWZ8JM+okwvzWY2Uip/dOPtd+w5O+u1KXATlsfi+OeyFa01j/u2MhW76MgB1d/UiURXU=
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.40.84) by
- DBBPR05MB6329.eurprd05.prod.outlook.com (20.179.41.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.13; Mon, 17 Jun 2019 16:16:07 +0000
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::50a0:251f:78ce:22c6]) by DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::50a0:251f:78ce:22c6%6]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
- 16:16:07 +0000
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Ran Rozenstein <ranro@mellanox.com>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: Re: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
- list pointer
-Thread-Topic: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
- list pointer
-Thread-Index: AQHVJRbrHUrhwGqQr0+x3eZzc8WnvaagBb2A
-Date:   Mon, 17 Jun 2019 16:16:07 +0000
-Message-ID: <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
-References: <20190617140228.12523-1-fw@strlen.de>
-In-Reply-To: <20190617140228.12523-1-fw@strlen.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM6PR05CA0005.eurprd05.prod.outlook.com
- (2603:10a6:20b:2e::18) To DBBPR05MB6283.eurprd05.prod.outlook.com
- (2603:10a6:10:c1::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=tariqt@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fa46a657-a7ae-4701-c0ee-08d6f33f1a37
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6329;
-x-ms-traffictypediagnostic: DBBPR05MB6329:
-x-microsoft-antispam-prvs: <DBBPR05MB632974CED808E35289090713AEEB0@DBBPR05MB6329.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0071BFA85B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(346002)(366004)(376002)(136003)(39860400002)(189003)(199004)(8676002)(486006)(229853002)(110136005)(68736007)(2501003)(25786009)(99286004)(186003)(53936002)(6246003)(76176011)(52116002)(6116002)(3846002)(4326008)(31686004)(66066001)(8936002)(54906003)(53546011)(316002)(86362001)(31696002)(66946007)(6436002)(6486002)(26005)(102836004)(66446008)(64756008)(66476007)(66556008)(73956011)(4744005)(36756003)(7736002)(71200400001)(71190400001)(256004)(305945005)(386003)(6506007)(11346002)(446003)(81166006)(2906002)(476003)(2616005)(81156014)(14454004)(478600001)(6512007)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6329;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Qz2hjuwTYnNz2b7sQREFKUy8uHFN5aiwR8lL01mKeL/1h3XLGsWNDOtxGCp8h3/R29Zgbny1Pc4TyfQWh0qPpho6zO8j1ako/0LWPUK9dlZvnUW4FUxDuioOvQxghfGlWNHVvJIRKErM7Vgl0wMu5Owm324t9foRcVpaZA6HkhMn7teWGIiwhCcCwjZJdodPeNgAW3rOcbCwfZTcIbW5Gw71Q7BWEqX2eGSVVZvtPXwVW3N/z4TIGD3M76tbUie4hgAirWVuU7Uws6uesq5fDsaNXKOQJ6R2yPCW/4a3J5rSOnbKA5fnJRorfatFIqCXSJ9sapeuQW9k06fy1MmWLCHjqFfnm7ckSNw001aXBCvSK1SHZRtkE3DTXXXX6GkAibYjSaPhY54WNbCtC7j6OdKW1cgmnakWd3jV4cjwcDs=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C280CFDD1D1FE643B5ABE6EB86715302@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728307AbfFQQkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 12:40:04 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:34742 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbfFQQkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 12:40:03 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m29so11518982qtu.1;
+        Mon, 17 Jun 2019 09:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RtKQD5KCL3Sdi76sMeUICHmGljmolJuDbOd9hJJpAIQ=;
+        b=W9Z6EePXV/FyVDN0Q1qHK1X2jA0Pz4Fpj30Hu2UhLE1akGze3sAccuef9ea+rltawd
+         ayu0saigMgUovp2Xvx7KWk26R57NoHbYVgoaVQ4m7GEbWoBSagzq8e1E8lg1Ggl/i6Vw
+         913KktPJFel1l1hBf/byuHB8Qc3qjQdBjYOJnH9pmxw5HnC2Mwh8YTlOxi+MKIYeVkhI
+         h+KxwXcFl70O+FunH8Ds7Q6VGPtYwPerMNcc3Ep/b/+ppw3/zrcN5XvH8W1R9Z0Asl5R
+         CXuQaJFM9M9+MOrp4rko5WjqLxDFUoaLGaYZAes5Jg8ILWssoehQ1O8emyKrPLSMAmjR
+         2wUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RtKQD5KCL3Sdi76sMeUICHmGljmolJuDbOd9hJJpAIQ=;
+        b=cbV/SesTurUSXu15HLcwfadOkFNs1hZ2Ecqm86xnu8ZECPmmjnjEOFDMhonpi8xamY
+         +GDxbAWQo3vGawKUsxn06AQGR24L85ENvT1USk0rtZ9Um48HjqdKKVMp56DuVjLn4RCv
+         H6hp57NaqS3H0i9bAeqXfYNDZfn1ubafPqqUUII4m11IjmfUr5sq19/KrUFC0U26dZnO
+         4HEWISD8JdJ2XR+K+TZGAe31dyz9JiPk9kcKxRM3MZbR5MyYNqa4M9dHep7yIrMSsb4Y
+         h/CS3LlW4vW7XZjKy3zOgYXRc9hgz8DKrw4FlHS/ESc8lQ8HcozcVWArz4xHkHxSJTEz
+         EWIQ==
+X-Gm-Message-State: APjAAAXLFpMITQNspRGV1PLNtCm0Mc5JZWIQTxMcD5iVA0ki3Q1nB2IH
+        TbWlzCS1tSyiFjDKjtWa+IrFrh50sd2AuGDL48E=
+X-Google-Smtp-Source: APXvYqwpxxsRDZfcjfR6u0A0LwR3CXk1cvZPgXhbvJGNknlC175M7kH37ZY7HR7ZvIqO4ompTvTBebJhkTcYvUE/BzA=
+X-Received: by 2002:ac8:2a63:: with SMTP id l32mr75714552qtl.117.1560789601848;
+ Mon, 17 Jun 2019 09:40:01 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa46a657-a7ae-4701-c0ee-08d6f33f1a37
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 16:16:07.1872
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tariqt@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6329
+References: <20190615191225.2409862-1-ast@kernel.org>
+In-Reply-To: <20190615191225.2409862-1-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 17 Jun 2019 09:39:50 -0700
+Message-ID: <CAEf4BzY_w-tTQFy_MfSvRwS4uDziNLRN+Jax4WXidP9R-s961w@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/9] bpf: bounded loops and other features
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDYvMTcvMjAxOSA1OjAyIFBNLCBGbG9yaWFuIFdlc3RwaGFsIHdyb3RlOg0KPiBUYXJp
-cSByZXBvcnRlZCBhIHNvZnQgbG9ja3VwIG9uIG5ldC1uZXh0IHRoYXQgTWVsbGFub3ggd2FzIGFi
-bGUgdG8NCj4gYmlzZWN0IHRvIDI2MzhlYjhiNTBjZiAoIm5ldDogaXB2NDogcHJvdmlkZSBfX3Jj
-dSBhbm5vdGF0aW9uIGZvciBpZmFfbGlzdCIpLg0KPiANCj4gV2hpbGUgcmV2aWV3aW5nIGFib3Zl
-IHBhdGNoIEkgZm91bmQgYSByZWdyZXNzaW9uIHdoZW4gYWRkcmVzc2VzIGhhdmUgYQ0KPiBsaWZl
-dGltZSBzcGVjaWZpZWQuDQo+IA0KPiBTZWNvbmQgcGF0Y2ggZXh0ZW5kcyBydG5ldGxpbmsuc2gg
-dG8gdHJpZ2dlciBjcmFzaA0KPiAod2l0aG91dCBmaXJzdCBwYXRjaCBhcHBsaWVkKS4NCj4gDQoN
-ClRoYW5rcyBGbG9yaWFuLg0KDQpSYW4sIGNhbiB5b3UgcGxlYXNlIHRlc3Q/DQoNCg==
+On Sat, Jun 15, 2019 at 12:12 PM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> v2->v3: fixed issues in backtracking pointed out by Andrii.
+> The next step is to add a lot more tests for backtracking.
+>
+
+Tests would be great, verifier complexity is at the level, where it's
+very easy to miss issues.
+
+Was fuzzying approach ever discussed for BPF verifier? I.e., have a
+fuzzer to generate both legal and illegal random small programs. Then
+re-implement verifier as user-level program with straightforward
+recursive exhaustive verification (so no state pruning logic, no
+precise/coarse, etc, just register/stack state tracking) of all
+possible branches. If kernel verifier's verdict differs from
+user-level verifier's verdict - flag that as a test case and figure
+out why they differ. Obviously that would work well only for small
+programs, but that should be a good first step already.
+
+In addition, if this is done, that user-land verifier can be a HUGE
+help to BPF application developers, as libbpf would (potentially) be
+able to generate better error messages using it as well.
+
+
+> v1->v2: addressed Andrii's feedback.
+>
+> this patch set introduces verifier support for bounded loops and
+> adds several other improvements.
+> Ideally they would be introduced one at a time,
+> but to support bounded loop the verifier needs to 'step back'
+> in the patch 1. That patch introduces tracking of spill/fill
+> of constants through the stack. Though it's a useful feature
+> it hurts cilium tests.
+> Patch 3 introduces another feature by extending is_branch_taken
+> logic to 'if rX op rY' conditions. This feature is also
+> necessary to support bounded loops.
+> Then patch 4 adds support for the loops while adding
+> key heuristics with jmp_processed.
+> Introduction of parentage chain of verifier states in patch 4
+> allows patch 9 to add backtracking of precise scalar registers
+> which finally resolves degradation from patch 1.
+>
+> The end result is much faster verifier for existing programs
+> and new support for loops.
+> See patch 8 for many kinds of loops that are now validated.
+> Patch 9 is the most tricky one and could be rewritten with
+> a different algorithm in the future.
+>
+> Alexei Starovoitov (9):
+>   bpf: track spill/fill of constants
+>   selftests/bpf: fix tests due to const spill/fill
+>   bpf: extend is_branch_taken to registers
+>   bpf: introduce bounded loops
+>   bpf: fix callees pruning callers
+>   selftests/bpf: fix tests
+>   selftests/bpf: add basic verifier tests for loops
+>   selftests/bpf: add realistic loop tests
+>   bpf: precise scalar_value tracking
+>
+>  include/linux/bpf_verifier.h                  |  69 +-
+>  kernel/bpf/verifier.c                         | 767 ++++++++++++++++--
+>  .../bpf/prog_tests/bpf_verif_scale.c          |  67 +-
+>  tools/testing/selftests/bpf/progs/loop1.c     |  28 +
+>  tools/testing/selftests/bpf/progs/loop2.c     |  28 +
+>  tools/testing/selftests/bpf/progs/loop3.c     |  22 +
+>  tools/testing/selftests/bpf/progs/pyperf.h    |   6 +-
+>  tools/testing/selftests/bpf/progs/pyperf600.c |   9 +
+>  .../selftests/bpf/progs/pyperf600_nounroll.c  |   8 +
+>  .../testing/selftests/bpf/progs/strobemeta.c  |  10 +
+>  .../testing/selftests/bpf/progs/strobemeta.h  | 528 ++++++++++++
+>  .../bpf/progs/strobemeta_nounroll1.c          |   9 +
+>  .../bpf/progs/strobemeta_nounroll2.c          |   9 +
+>  .../selftests/bpf/progs/test_seg6_loop.c      | 261 ++++++
+>  .../selftests/bpf/progs/test_sysctl_loop1.c   |  71 ++
+>  .../selftests/bpf/progs/test_sysctl_loop2.c   |  72 ++
+>  .../selftests/bpf/progs/test_xdp_loop.c       | 231 ++++++
+>  tools/testing/selftests/bpf/test_verifier.c   |  11 +-
+>  tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
+>  tools/testing/selftests/bpf/verifier/cfg.c    |  11 +-
+>  .../bpf/verifier/direct_packet_access.c       |   3 +-
+>  .../bpf/verifier/helper_access_var_len.c      |  28 +-
+>  tools/testing/selftests/bpf/verifier/loops1.c | 161 ++++
+>  23 files changed, 2317 insertions(+), 114 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/loop1.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/loop2.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/loop3.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/pyperf600.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.h
+>  create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_seg6_loop.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_loop.c
+>  create mode 100644 tools/testing/selftests/bpf/verifier/loops1.c
+>
+> --
+> 2.20.0
+>
