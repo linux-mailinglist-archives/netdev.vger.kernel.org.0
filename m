@@ -2,173 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1DA48B14
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F2B48B1D
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728776AbfFQR71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:59:27 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36657 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728750AbfFQR7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:59:19 -0400
-Received: by mail-pf1-f193.google.com with SMTP id r7so6099398pfl.3
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:59:19 -0700 (PDT)
+        id S1726243AbfFQSBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:01:13 -0400
+Received: from mail-oi1-f201.google.com ([209.85.167.201]:38424 "EHLO
+        mail-oi1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726048AbfFQSBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:01:12 -0400
+Received: by mail-oi1-f201.google.com with SMTP id u8so3842935oie.5
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 11:01:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FlnZzdiFf1S0YMLoCTFEyV12ust5Dpo7bSpHKMU0s0k=;
-        b=VIWj2CuRQEFDLQTpFrEiwh7JmnmIdikL7iboXsKITUDu17jDFvklPt+TErOhzcT4hL
-         M45V1hxQGm9U+GrK+lQYDYIj2Ak6M6/DRUgQHo+Eh2Be+W6dF0MnnCpH29uTjmn+fKMv
-         tP1d85wAvCnpc6uw+HsZKe4wc8XeCeeqZFD8c=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=aylUCySTNEKJOP8yIf7R50JrzoL6yFjGGe08TnHjVYY=;
+        b=Ai/imhiQkdaviyPUTXYiRAKTbr+6kz6b8/sY7JfeYmo170pr1V1gKLB3VaqgIFni28
+         6TqbH+pJ1yBAJfYb8LyCJyK98unJIQ0aqEyVLm2s3LLEj4AUoyS2TZRt4CelIqQw93ND
+         MPYscrh2BSg4ODcQLWicLiOEcG/t+DHcpE1EPEP/s6aUcgHyWTgInceCGg+i2d0yoESl
+         WEuJ1+pQH4Xy/SzAk774gr4UI2t7DQh1sc+H2ClTd159gpYqyLAGTYxyjPYwx0soCQ1y
+         2pQbZpxK+RPTbtZYFw0hz9LfhFFu/GfUm+UzYcWDmQuA1lOWgDi6S4zna4SD2nyRjGPZ
+         3O4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FlnZzdiFf1S0YMLoCTFEyV12ust5Dpo7bSpHKMU0s0k=;
-        b=nClANRumORbmymtpvp8BKi7+TRgF5Z3SzE0+X7Z+hEWFVWMZR98fuBCDTaQM8BGMP/
-         IHw/zIpL7BMy7uOGCaTQQNEykPD6oLt/kI7BN0KHZRJSkaYEMABwl485s3n9E6sYvBtd
-         G09fGi6lbdV8u+4ZhhxHTxvZOANDkNX5YQNdFnb1Yv/RlQdkkC4MfxIhSa3BOfkbqB7+
-         Y61josS7BgfO/xdwdZfvsYnAA7sjl+XTwQeA0uVewUOVRXCIoxcJZt4mm2ICYz3OaP/P
-         L5n5QUUTwpC69d9YAkY/QJN0Cp1iVUW7HbPoEIM7M/dT6oyy8FFs3d4BEgpaoaJ4GxLe
-         AvOw==
-X-Gm-Message-State: APjAAAWlDLYCM3LEnaK9sN2iBb1/eS4qbyLuj2+GX9OOJMH4nGp1d6Oa
-        Akel7Rf5onVibqj2jMNXkLDInA==
-X-Google-Smtp-Source: APXvYqyaVs3fvyMpOLZjM3c8dSSZ0GNGbc2/XbFy4Qlb/yNERuegnQR6T/3bb+Lh0yT+fdVq5jr3Gw==
-X-Received: by 2002:a62:b40f:: with SMTP id h15mr107121375pfn.57.1560794358391;
-        Mon, 17 Jun 2019 10:59:18 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id q1sm15145809pfn.178.2019.06.17.10.59.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 10:59:16 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        linux-wireless@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        Douglas Anderson <dianders@chromium.org>,
-        stable@vger.kernel.org, Franky Lin <franky.lin@broadcom.com>,
-        linux-kernel@vger.kernel.org,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Ondrej Jirman <megous@megous.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v5 5/5] brcmfmac: sdio: Don't tune while the card is off
-Date:   Mon, 17 Jun 2019 10:56:53 -0700
-Message-Id: <20190617175653.21756-6-dianders@chromium.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=aylUCySTNEKJOP8yIf7R50JrzoL6yFjGGe08TnHjVYY=;
+        b=Q2eELacgBkNLxUpvbxHiQZuVLEsN1OV6O9gNZMqhl7UOCcGn5JK9a8mfTO2sEaRSgD
+         7bP7xwPzbuRsQWhbEw9H+hCMw4O0RuAh/NSKpOAK7WNUX3MN31BhAAk/22erElH3ZmrU
+         f+Gi5H02HtlMk9Qag5NQu7REk95Fr5lfY6Hl91WDbdy+TfBzWwipFm1ZVZScrygWrj+r
+         RidOnwoon/39CmC1m3jj9vA9kiTCCnCrK/Mbo4dmR9PDhObBspsn/EEQ5+JvPGnITx1v
+         9Jre291jWtsCeT6EFbHjhy+tKdHnlGDKXOACNc1edp385dp7cf+HD5YBo4BmIEwZQkOn
+         hJzQ==
+X-Gm-Message-State: APjAAAWIpfhM8Wf8hUF6aDeLIMGMUKnXn0I8oSh6T1L4vjkvBVedC4/P
+        k7IC+74hVW6UUDbL1V55ZFDY4XyofF5hYFRXIVmynVy4SqxlW2zJZjvVp0nB29NRVlRubvnQFYs
+        xxEtSyrUSpgZgbVR9brH6VOWUWBdeXix9/O0v60lsoU4ybOblMKvXKA==
+X-Google-Smtp-Source: APXvYqyDhEbCzPGAXg3K2dUWjcpazmj1/cuBZM9zVCD5WooJN61Q+bu/FG7JU1l17BxncuVXzCwv9CY=
+X-Received: by 2002:aca:b788:: with SMTP id h130mr4957050oif.85.1560794471847;
+ Mon, 17 Jun 2019 11:01:11 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 11:01:00 -0700
+Message-Id: <20190617180109.34950-1-sdf@google.com>
+Mime-Version: 1.0
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-In-Reply-To: <20190617175653.21756-1-dianders@chromium.org>
-References: <20190617175653.21756-1-dianders@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH bpf-next v6 0/9] bpf: getsockopt and setsockopt hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When Broadcom SDIO cards are idled they go to sleep and a whole
-separate subsystem takes over their SDIO communication.  This is the
-Always-On-Subsystem (AOS) and it can't handle tuning requests.
+This series implements two new per-cgroup hooks: getsockopt and
+setsockopt along with a new sockopt program type. The idea is pretty
+similar to recently introduced cgroup sysctl hooks, but
+implementation is simpler (no need to convert to/from strings).
 
-Specifically, as tested on rk3288-veyron-minnie (which reports having
-BCM4354/1 in dmesg), if I force a retune in brcmf_sdio_kso_control()
-when "on = 1" (aka we're transition from sleep to wake) by whacking:
-  bus->sdiodev->func1->card->host->need_retune = 1
-...then I can often see tuning fail.  In this case dw_mmc reports "All
-phases bad!").  Note that I don't get 100% failure, presumably because
-sometimes the card itself has already transitioned away from the AOS
-itself by the time we try to wake it up.  If I force retuning when "on
-= 0" (AKA force retuning right before sending the command to go to
-sleep) then retuning is always OK.
+What this can be applied to:
+* move business logic of what tos/priority/etc can be set by
+  containers (either pass or reject)
+* handle existing options (or introduce new ones) differently by
+  propagating some information in cgroup/socket local storage
 
-NOTE: we need _both_ this patch and the patch to avoid triggering
-tuning due to CRC errors in the sleep/wake transition, AKA ("brcmfmac:
-sdio: Disable auto-tuning around commands expected to fail").  Though
-both patches handle issues with Broadcom's AOS, the problems are
-distinct:
-1. We want to defer (but not ignore) asynchronous (like
-   timer-requested) tuning requests till the card is awake.  However,
-   we want to ignore CRC errors during the transition, we don't want
-   to queue deferred tuning request.
-2. You could imagine that the AOS could implement retuning but we
-   could still get errors while transitioning in and out of the AOS.
-   Similarly you could imagine a seamless transition into and out of
-   the AOS (with no CRC errors) even if the AOS couldn't handle
-   tuning.
+Compared to a simple syscall/{g,s}etsockopt tracepoint, those
+hooks are context aware. Meaning, they can access underlying socket
+and use cgroup and socket local storage.
 
-ALSO NOTE: presumably there is never a desperate need to retune in
-order to wake up the card, since doing so is impossible.  Luckily the
-only way the card can get into sleep state is if we had a good enough
-tuning to send it the command to put it into sleep, so presumably that
-"good enough" tuning is enough to wake us up, at least with a few
-retries.
+v6:
+* rework cgroup chaining; stop as soon as bpf program returns
+  0 or 2; see patch with the documentation for the details
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
----
-Patches #2 - #5 will go through Ulf's tree.
+Stanislav Fomichev (9):
+  bpf: implement getsockopt and setsockopt hooks
+  bpf: sync bpf.h to tools/
+  libbpf: support sockopt hooks
+  selftests/bpf: test sockopt section name
+  selftests/bpf: add sockopt test
+  selftests/bpf: add sockopt test that exercises sk helpers
+  selftests/bpf: add sockopt test that exercises BPF_F_ALLOW_MULTI
+  bpf: add sockopt documentation
+  bpftool: support cgroup sockopt
 
-This patch is still lacking Kalle Valo's Ack, which should probably be
-received before landing in Ulf's tree.
+ Documentation/bpf/index.rst                   |   1 +
+ Documentation/bpf/prog_cgroup_sockopt.rst     |  72 ++
+ include/linux/bpf-cgroup.h                    |  29 +
+ include/linux/bpf.h                           |  46 ++
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/filter.h                        |  13 +
+ include/uapi/linux/bpf.h                      |  13 +
+ kernel/bpf/cgroup.c                           | 260 ++++++
+ kernel/bpf/core.c                             |   9 +
+ kernel/bpf/syscall.c                          |  19 +
+ kernel/bpf/verifier.c                         |  15 +
+ net/core/filter.c                             |   2 +-
+ net/socket.c                                  |  18 +
+ .../bpftool/Documentation/bpftool-cgroup.rst  |   7 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   2 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   8 +-
+ tools/bpf/bpftool/cgroup.c                    |   5 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      |   3 +-
+ tools/include/uapi/linux/bpf.h                |  14 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   3 +
+ tools/testing/selftests/bpf/Makefile          |   6 +-
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  82 ++
+ .../selftests/bpf/test_section_names.c        |  10 +
+ tools/testing/selftests/bpf/test_sockopt.c    | 773 ++++++++++++++++++
+ .../selftests/bpf/test_sockopt_multi.c        | 264 ++++++
+ tools/testing/selftests/bpf/test_sockopt_sk.c | 185 +++++
+ 29 files changed, 1857 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/bpf/prog_cgroup_sockopt.rst
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_sk.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_multi.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_sk.c
 
-I've CCed stable@ here without a version tag.  As per Adrian Hunter
-this patch applies cleanly to 4.18+ so that would be an easy first
-target.  However, if someone were so inclined they could provide
-further backports.  As per Adrian [1] the root problem has existed for
-~4 years.
-
-[1] https://lkml.kernel.org/r/4f39e152-04ba-a64e-985a-df93e6d15ff8@intel.com
-
-Changes in v5:
-- Rewording of "sleep command" in commit message (Arend).
-
-Changes in v4:
-- Adjust to API rename (Adrian).
-
-Changes in v3:
-- ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
-
-Changes in v2: None
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ee76593259a7..629140b6d7e2 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -669,6 +669,10 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 
- 	sdio_retune_crc_disable(bus->sdiodev->func1);
- 
-+	/* Cannot re-tune if device is asleep; defer till we're awake */
-+	if (on)
-+		sdio_retune_hold_now(bus->sdiodev->func1);
-+
- 	wr_val = (on << SBSDIO_FUNC1_SLEEPCSR_KSO_SHIFT);
- 	/* 1st KSO write goes to AOS wake up core if device is asleep  */
- 	brcmf_sdiod_writeb(bus->sdiodev, SBSDIO_FUNC1_SLEEPCSR, wr_val, &err);
-@@ -729,6 +733,9 @@ brcmf_sdio_kso_control(struct brcmf_sdio *bus, bool on)
- 	if (try_cnt > MAX_KSO_ATTEMPTS)
- 		brcmf_err("max tries: rd_val=0x%x err=%d\n", rd_val, err);
- 
-+	if (on)
-+		sdio_retune_release(bus->sdiodev->func1);
-+
- 	sdio_retune_crc_enable(bus->sdiodev->func1);
- 
- 	return err;
 -- 
 2.22.0.410.gd8fdbe21b5-goog
-
