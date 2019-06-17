@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50AB247793
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 03:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB62847795
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 03:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbfFQBWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 21:22:52 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:43747 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727238AbfFQBWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 21:22:52 -0400
-Received: by mail-io1-f66.google.com with SMTP id k20so17601216ios.10
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 18:22:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2EZMn5anbPLfRQBVWd21SeZYbpeivIhOwGvH9CL6loc=;
-        b=Vxivjzb2iCHKuNxWBaJyPUpZMaKC0XKvVuUk3lBAprG0+HouSMSFw3IB6hjILFxtQQ
-         bc21hgDVS9SfIRkArrAJzsMZMolhYbs3n4HMWRmJcGaJgWChUPqVdBXPOFoXNPnilM8y
-         aAL8U4rGHfK3S3rDDyhhqYkZggdCHavvQ6Xto8Trkn9PloaGoakI6stJzEOJqtcoGUxD
-         Wbs9toBnzyGaTEYJPtieK606LFcI7TD9zREE5XVW6LOyEW3xboMaPlb3aJb822IT0Pfs
-         tosbBpQCSn9K/Eb14/HjWBQ1IgFLH+Bhs8Kr7ZaiaroYSsAMWTmYApZIhkHskyFn6h1A
-         XnOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2EZMn5anbPLfRQBVWd21SeZYbpeivIhOwGvH9CL6loc=;
-        b=P93+JsXua+0UtD5PR1bX6TaugXOC4geebXGMnjKKwmmfj7MFe/UAk3bg0qy3gx+8Dd
-         Cj+n/4SQ5KzSoCoZLHikrTS65MFjFzMR/lKToQ0qQdtmEdCR6Q5OYcFpCCOzV/+wfPRj
-         pG4b0fjPFoHYa2gEip96oUUXLYfq2vfFWQImwTpVEkLpc2F+Nm5rkLHTwAs/hqvzIVHI
-         2rMLKsCNOAp3Qy+HztzOIeEZTtbNvLjkuEGuNh7M8+7H/jfDV0GG8CAJbMYUhiyMUjZN
-         /AgsBst/RHZLxJ2ldeE6fLLezVMyGz6EE91GztdZM/FMVSesDdaaa8+292YBeR0Lm4i3
-         ftuQ==
-X-Gm-Message-State: APjAAAUL8WxdisFUQH1UUl+N2GYXzKaRdR7cTRdqxkRbuMC3gwPRvg77
-        +nVBzSjzk8qd4ABpEF35waU=
-X-Google-Smtp-Source: APXvYqysPlXQlVQhkqPByMhrXRzfO5XHuWAjXY9tlQ5Rdb6cauiVO/5Bumjl2bihilKfU4W9DHp5Ag==
-X-Received: by 2002:a5e:a708:: with SMTP id b8mr8760033iod.25.1560734571361;
-        Sun, 16 Jun 2019 18:22:51 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:e47c:7f99:12d2:ca2e? ([2601:282:800:fd80:e47c:7f99:12d2:ca2e])
-        by smtp.googlemail.com with ESMTPSA id u26sm12779570iol.1.2019.06.16.18.22.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 16 Jun 2019 18:22:50 -0700 (PDT)
-Subject: Re: [PATCH net-next 03/17] ipv6: Extend notifier info for multipath
- routes
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, alexpe@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20190615140751.17661-1-idosch@idosch.org>
- <20190615140751.17661-4-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0bd8a588-0c6a-de20-c2d4-39e46e433a7e@gmail.com>
-Date:   Sun, 16 Jun 2019 19:22:44 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1727506AbfFQBXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 21:23:09 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:34174 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727238AbfFQBXI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jun 2019 21:23:08 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
+        id 1hcgMV-00043D-2o; Mon, 17 Jun 2019 09:23:07 +0800
+Received: from herbert by gondobar with local (Exim 4.89)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1hcgMH-0002MA-Gw; Mon, 17 Jun 2019 09:22:53 +0800
+Date:   Mon, 17 Jun 2019 09:22:53 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        ebiggers@kernel.org, edumazet@google.com, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, jbaron@akamai.com,
+        cpaasch@apple.com, David.Laight@aculab.com
+Subject: Re: [PATCH v2] net: ipv4: move tcp_fastopen server side code to
+ SipHash library
+Message-ID: <20190617012253.4hgfdwvurskstz4o@gondor.apana.org.au>
+References: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20190615140751.17661-4-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190614140122.20934-1-ard.biesheuvel@linaro.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/19 8:07 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
+On Fri, Jun 14, 2019 at 04:01:22PM +0200, Ard Biesheuvel wrote:
+> Using a bare block cipher in non-crypto code is almost always a bad idea,
+> not only for security reasons (and we've seen some examples of this in
+> the kernel in the past), but also for performance reasons.
 > 
-> Extend the IPv6 FIB notifier info with number of sibling routes being
-> notified.
+> In the TCP fastopen case, we call into the bare AES block cipher one or
+> two times (depending on whether the connection is IPv4 or IPv6). On most
+> systems, this results in a call chain such as
 > 
-> This will later allow listeners to process one notification for a
-> multipath routes instead of N, where N is the number of nexthops.
+>   crypto_cipher_encrypt_one(ctx, dst, src)
+>     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
+>       aesni_encrypt
+>         kernel_fpu_begin();
+>         aesni_enc(ctx, dst, src); // asm routine
+>         kernel_fpu_end();
 > 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> It is highly unlikely that the use of special AES instructions has a
+> benefit in this case, especially since we are doing the above twice
+> for IPv6 connections, instead of using a transform which can process
+> the entire input in one go.
+> 
+> We could switch to the cbcmac(aes) shash, which would at least get
+> rid of the duplicated overhead in *some* cases (i.e., today, only
+> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
+> end up using the generic cbcmac template wrapping the AES-NI cipher,
+> which basically ends up doing exactly the above). However, in the given
+> context, it makes more sense to use a light-weight MAC algorithm that
+> is more suitable for the purpose at hand, such as SipHash.
+> 
+> Since the output size of SipHash already matches our chosen value for
+> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
+> sizes, this greatly simplifies the code as well.
+> 
+> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 > ---
->  include/net/ip6_fib.h |  7 +++++++
->  net/ipv6/ip6_fib.c    | 17 +++++++++++++++++
->  2 files changed, 24 insertions(+)
+> v2: rebase onto net-next
+>     reverse order of operands in BUILD_BUG_ON() comparison expression
 > 
+>  include/linux/tcp.h     |  7 +-
+>  include/net/tcp.h       | 10 +-
+>  net/ipv4/tcp_fastopen.c | 97 +++++++-------------
+>  3 files changed, 36 insertions(+), 78 deletions(-)
 
-The need for a second notifier stems from the append case? versus using
-call_fib6_entry_notifiers and letting the nsiblings fallout from
-rt->fib6_nsiblings? The append case is a weird thing for userspace to
-maintain order, but it seems like the offload case should not care.
+You should also revert commit 798b2cbf9227 in your patch:
 
-Also, .multipath_rt seems redundant with .nsiblings > 1
+commit 798b2cbf9227b1bd7d37ae9af4d9c750e6f4de9c
+Author: David S. Miller <davem@davemloft.net>
+Date:   Tue Sep 4 14:20:14 2012 -0400
+
+    net: Add INET dependency on aes crypto for the sake of TCP fastopen.
+
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
