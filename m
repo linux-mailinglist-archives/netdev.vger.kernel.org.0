@@ -2,55 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2CF495AE
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38514495B1
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727450AbfFQXIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 19:08:51 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:39778 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbfFQXIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 19:08:51 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 36CDE151BDB40;
-        Mon, 17 Jun 2019 16:08:50 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 16:08:47 -0700 (PDT)
-Message-Id: <20190617.160847.1537731072625436124.davem@davemloft.net>
-To:     linux@rasmusvillemoes.dk
-Cc:     mingo@kernel.org, akpm@linux-foundation.org, jbaron@akamai.com,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v6 2/8] linux/net.h: use unique identifier for each
- struct _ddebug
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190617222034.10799-3-linux@rasmusvillemoes.dk>
-References: <20190617222034.10799-1-linux@rasmusvillemoes.dk>
-        <20190617222034.10799-3-linux@rasmusvillemoes.dk>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 16:08:50 -0700 (PDT)
+        id S1728259AbfFQXJY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Jun 2019 19:09:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52132 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726001AbfFQXJY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 19:09:24 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7CA392089E;
+        Mon, 17 Jun 2019 23:09:22 +0000 (UTC)
+Date:   Mon, 17 Jun 2019 19:09:20 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Matt Mullins <mmullins@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bpf: hide do_bpf_send_signal when unused
+Message-ID: <20190617190920.71c21a6c@gandalf.local.home>
+In-Reply-To: <CAADnVQ+LzuNHFyLae0vUAudZpOFQ4cA02OC0zu3ypis+gqnjew@mail.gmail.com>
+References: <20190617125724.1616165-1-arnd@arndb.de>
+        <CAADnVQ+LzuNHFyLae0vUAudZpOFQ4cA02OC0zu3ypis+gqnjew@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Date: Tue, 18 Jun 2019 00:20:28 +0200
+On Mon, 17 Jun 2019 08:26:29 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> Changes on x86-64 later in this series require that all struct _ddebug
-> descriptors in a translation unit uses distinct identifiers. Realize
-> that for net_dbg_ratelimited by generating such an identifier via
-> __UNIQUE_ID and pass that to an extra level of macros.
+> On Mon, Jun 17, 2019 at 5:59 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > When CONFIG_MODULES is disabled, this function is never called:
+> >
+> > kernel/trace/bpf_trace.c:581:13: error: 'do_bpf_send_signal' defined but not used [-Werror=unused-function]  
 > 
-> No functional change.
-> 
-> Cc: netdev@vger.kernel.org
-> Acked-by: Jason Baron <jbaron@akamai.com>
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> hmm. it should work just fine without modules.
+> the bug is somewhere else.
 
-Acked-by: David S. Miller <davem@davemloft.net>
+From what I see, the only use of do_bpf_send_signal is within a
+#ifdef CONFIG_MODULES, which means that you will get a warning about a
+static unused when CONFIG_MODULES is not defined.
+
+In kernel/trace/bpf_trace.c we have:
+
+static void do_bpf_send_signal(struct irq_work *entry)
+
+[..]
+
+#ifdef CONFIG_MODULES
+
+[..]
+
+        for_each_possible_cpu(cpu) {
+                work = per_cpu_ptr(&send_signal_work, cpu);
+                init_irq_work(&work->irq_work, do_bpf_send_signal);  <-- on use of do_bpf_send_signal
+        }
+[..]
+#endif /* CONFIG_MODULES */
+
+The bug (really just a warning) reported is exactly here.
+
+-- Steve
