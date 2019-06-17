@@ -2,51 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE93495DC
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:28:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE7A495E2
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728722AbfFQX2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 19:28:00 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40046 "EHLO
+        id S1728350AbfFQXaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 19:30:52 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40092 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbfFQX2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 19:28:00 -0400
+        with ESMTP id S1726121AbfFQXaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 19:30:52 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A53E2151BAEDC;
-        Mon, 17 Jun 2019 16:27:59 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 16:27:59 -0700 (PDT)
-Message-Id: <20190617.162759.1679095918480150552.davem@davemloft.net>
-To:     fw@strlen.de
-Cc:     netdev@vger.kernel.org, tariqt@mellanox.com, ranro@mellanox.com,
-        maorg@mellanox.com, edumazet@google.com
-Subject: Re: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement
- of list pointer
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 84676151BEF25;
+        Mon, 17 Jun 2019 16:30:51 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 16:30:50 -0700 (PDT)
+Message-Id: <20190617.163050.1853001451258961153.davem@davemloft.net>
+To:     willemdebruijn.kernel@gmail.com
+Cc:     fklassen@appneta.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        willemb@google.com
+Subject: Re: [PATCH net-next v3 0/3] UDP GSO audit tests
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190617140228.12523-1-fw@strlen.de>
-References: <20190617140228.12523-1-fw@strlen.de>
+In-Reply-To: <CAF=yD-KQ1dxmNbR8-xoiNTfwHXzO-wQRpz+0ZFN9o36+UE_e6A@mail.gmail.com>
+References: <20190617190837.13186-1-fklassen@appneta.com>
+        <CAF=yD-KQ1dxmNbR8-xoiNTfwHXzO-wQRpz+0ZFN9o36+UE_e6A@mail.gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 16:27:59 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 16:30:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
-Date: Mon, 17 Jun 2019 16:02:26 +0200
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Mon, 17 Jun 2019 16:29:37 -0400
 
-> Tariq reported a soft lockup on net-next that Mellanox was able to
-> bisect to 2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list").
+> On Mon, Jun 17, 2019 at 3:09 PM Fred Klassen <fklassen@appneta.com> wrote:
+>>
+>> Updates to UDP GSO selftests ot optionally stress test CMSG
+>> subsytem, and report the reliability and performance of both
+>> TX Timestamping and ZEROCOPY messages.
+>>
+>> Fred Klassen (3):
+>>   net/udpgso_bench_tx: options to exercise TX CMSG
+>>   net/udpgso_bench.sh add UDP GSO audit tests
+>>   net/udpgso_bench.sh test fails on error
+>>
+>>  tools/testing/selftests/net/udpgso_bench.sh   |  52 ++++-
+>>  tools/testing/selftests/net/udpgso_bench_tx.c | 291 ++++++++++++++++++++++++--
+>>  2 files changed, 327 insertions(+), 16 deletions(-)
+>>
+>> --
 > 
-> While reviewing above patch I found a regression when addresses have a
-> lifetime specified.
+> For the series:
 > 
-> Second patch extends rtnetlink.sh to trigger crash
-> (without first patch applied).
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-Series applied, thanks Florian.
+Series applied, thanks everyone.
