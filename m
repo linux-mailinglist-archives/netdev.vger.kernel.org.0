@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE994958B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C458249586
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:59:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728835AbfFQW7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728847AbfFQW7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 17 Jun 2019 18:59:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:10995 "EHLO mga18.intel.com"
+Received: from mga18.intel.com ([134.134.136.126]:10994 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728689AbfFQW6z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727762AbfFQW6z (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 17 Jun 2019 18:58:55 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -20,13 +20,12 @@ Received: from mjmartin-nuc01.amr.corp.intel.com (HELO mjmartin-nuc01.sea.intel.
   by orsmga002.jf.intel.com with ESMTP; 17 Jun 2019 15:58:51 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     edumazet@google.com, netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        cpaasch@apple.com, fw@strlen.de, pabeni@redhat.com,
+Cc:     Paolo Abeni <pabeni@redhat.com>, cpaasch@apple.com, fw@strlen.de,
         peter.krystad@linux.intel.com, dcaratti@redhat.com,
         matthieu.baerts@tessares.net
-Subject: [RFC PATCH net-next 24/33] mptcp: selftests: Add capture option
-Date:   Mon, 17 Jun 2019 15:57:59 -0700
-Message-Id: <20190617225808.665-25-mathew.j.martineau@linux.intel.com>
+Subject: [RFC PATCH net-next 25/33] mptcp: use sk_page_frag() in sendmsg
+Date:   Mon, 17 Jun 2019 15:58:00 -0700
+Message-Id: <20190617225808.665-26-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190617225808.665-1-mathew.j.martineau@linux.intel.com>
 References: <20190617225808.665-1-mathew.j.martineau@linux.intel.com>
@@ -37,118 +36,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added a "-c" command line option for mptcp_connect.sh to make it easier
-to capture packets from each test. The script will use tcpdump to create
-one .pcap file per test case, named according to the namespaces,
-protocols, and connect address in use. For example, the first test case
-writes the capture to ns1-ns1-MPTCP-MPTCP-10.0.1.1.pcap
+From: Paolo Abeni <pabeni@redhat.com>
 
-The stderr output from tcpdump is printed after the test completes to
-show tcpdump's "packets dropped by kernel" information.
+This clean-up a bit the send path, and allows better performances.
 
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- .../selftests/net/mptcp/mptcp_connect.sh      | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ net/mptcp/protocol.c | 41 ++++++++++++++++++++---------------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-index e694dc9d312c..4418163af001 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-@@ -7,6 +7,7 @@ sout=""
- cin=""
- cout=""
- ksft_skip=4
-+capture=0
- timeout=30
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 0db4099d9c13..98257a70ac2b 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -52,10 +52,11 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 	int mss_now, size_goal, poffset, ret;
+ 	struct mptcp_ext *mpext = NULL;
+-	struct page *page = NULL;
++	struct page_frag *pfrag;
+ 	struct sk_buff *skb;
+ 	struct sock *ssk;
+ 	size_t psize;
++	long timeo;
  
- TEST_COUNT=0
-@@ -15,12 +16,19 @@ cleanup()
- {
- 	rm -f "$cin" "$cout"
- 	rm -f "$sin" "$sout"
-+	rm -f "$capout"
+ 	pr_debug("msk=%p", msk);
+ 	if (msk->subflow) {
+@@ -80,33 +81,33 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		goto put_out;
+ 	}
  
- 	for i in 1 2 3 4; do
- 		ip netns del ns$i
- 	done
+-	/* Initial experiment: new page per send.  Real code will
+-	 * maintain list of active pages and DSS mappings, append to the
+-	 * end and honor zerocopy
++	lock_sock(sk);
++	lock_sock(ssk);
++	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
++
++	/* use the mptcp page cache so that we can easily move the data
++	 * from one substream to another, but do per subflow memory accounting
+ 	 */
+-	page = alloc_page(GFP_KERNEL);
+-	if (!page) {
+-		ret = -ENOMEM;
+-		goto put_out;
++	pfrag = sk_page_frag(sk);
++	while (!sk_page_frag_refill(ssk, pfrag)) {
++		ret = sk_stream_wait_memory(ssk, &timeo);
++		if (ret)
++			goto release_out;
+ 	}
+ 
+ 	/* Copy to page */
+-	poffset = 0;
++	poffset = pfrag->offset;
+ 	pr_debug("left=%zu", msg_data_left(msg));
+-	psize = copy_page_from_iter(page, poffset,
++	psize = copy_page_from_iter(pfrag->page, poffset,
+ 				    min_t(size_t, msg_data_left(msg),
+-					  PAGE_SIZE),
++					  pfrag->size - poffset),
+ 				    &msg->msg_iter);
+ 	pr_debug("left=%zu", msg_data_left(msg));
+-
+ 	if (!psize) {
+ 		ret = -EINVAL;
+-		goto put_out;
++		goto release_out;
+ 	}
+ 
+-	lock_sock(sk);
+-	lock_sock(ssk);
+-
+ 	/* Mark the end of the previous write so the beginning of the
+ 	 * next write (with its own mptcp skb extension data) is not
+ 	 * collapsed.
+@@ -116,8 +117,8 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		TCP_SKB_CB(skb)->eor = 1;
+ 
+ 	mss_now = tcp_send_mss(ssk, &size_goal, msg->msg_flags);
+-
+-	ret = do_tcp_sendpages(ssk, page, poffset, min_t(int, size_goal, psize),
++	psize = min_t(int, size_goal, psize);
++	ret = do_tcp_sendpages(ssk, pfrag->page, poffset, psize,
+ 			       msg->msg_flags | MSG_SENDPAGE_NOTLAST);
+ 	if (ret <= 0)
+ 		goto release_out;
+@@ -143,6 +144,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			 mpext->checksum, mpext->dsn64);
+ 	} /* TODO: else fallback */
+ 
++	pfrag->offset += ret;
+ 	msk->write_seq += ret;
+ 	subflow_ctx(ssk)->rel_write_seq += ret;
+ 
+@@ -153,9 +155,6 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	release_sock(sk);
+ 
+ put_out:
+-	if (page)
+-		put_page(page);
+-
+ 	sock_put(ssk);
+ 	return ret;
  }
- 
-+for arg in "$@"; do
-+    if [ "$arg" = "-c" ]; then
-+	capture=1
-+    fi
-+done
-+
- ip -Version > /dev/null 2>&1
- if [ $? -ne 0 ];then
- 	echo "SKIP: Could not run test without ip tool"
-@@ -31,6 +39,7 @@ sin=$(mktemp)
- sout=$(mktemp)
- cin=$(mktemp)
- cout=$(mktemp)
-+capout=$(mktemp)
- trap cleanup EXIT
- 
- for i in 1 2 3 4;do
-@@ -123,9 +132,25 @@ do_transfer()
- 
- 	:> "$cout"
- 	:> "$sout"
-+	:> "$capout"
- 
- 	printf "%-4s %-5s -> %-4s (%s:%d) %-5s\t" ${connector_ns} ${cl_proto} ${listener_ns} ${connect_addr} ${port} ${srv_proto}
- 
-+	if [ $capture -eq 1 ]; then
-+	    if [ -z $SUDO_USER ] ; then
-+		capuser=""
-+	    else
-+		capuser="-Z $SUDO_USER"
-+	    fi
-+
-+	    capfile="${listener_ns}-${connector_ns}-${cl_proto}-${srv_proto}-${connect_addr}.pcap"
-+
-+	    ip netns exec ${listener_ns} tcpdump -i any -s 65535 -B 32768 $capuser -w $capfile > "$capout" 2>&1 &
-+	    cappid=$!
-+
-+	    sleep 1
-+	fi
-+
- 	ip netns exec ${listener_ns} ./mptcp_connect -t $timeout -l -p $port -s ${srv_proto} 0.0.0.0 < "$sin" > "$sout" &
- 	spid=$!
- 
-@@ -139,6 +164,11 @@ do_transfer()
- 	wait $spid
- 	rets=$?
- 
-+	if [ $capture -eq 1 ]; then
-+	    sleep 1
-+	    kill $cappid
-+	fi
-+
- 	if [ ${rets} -ne 0 ] || [ ${retc} -ne 0 ]; then
- 		echo "[ FAIL ] client exit code $retc, server $rets" 1>&2
- 		echo "\nnetns ${listener_ns} socket stat for $port:" 1>&2
-@@ -146,6 +176,7 @@ do_transfer()
- 		echo "\nnetns ${connector_ns} socket stat for $port:" 1>&2
- 		ip netns exec ${connector_ns} ss -nita 1>&2 -o "dport = :$port"
- 
-+		cat "$capout"
- 		return 1
- 	fi
- 
-@@ -156,9 +187,11 @@ do_transfer()
- 
- 	if [ $retc -eq 0 ] && [ $rets -eq 0 ];then
- 		echo "[ OK ]"
-+		cat "$capout"
- 		return 0
- 	fi
- 
-+	cat "$capout"
- 	return 1
- }
- 
 -- 
 2.22.0
 
