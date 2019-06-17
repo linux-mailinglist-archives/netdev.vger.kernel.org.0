@@ -2,201 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0D248B37
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:02:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0085D48B4A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727663AbfFQSCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 14:02:48 -0400
-Received: from mail-eopbgr70041.outbound.protection.outlook.com ([40.107.7.41]:16256
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726047AbfFQSCr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 14:02:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jkufSlZtR/doI2i9JGVAB+EIPkNh3B/DBUvFPV3YXXY=;
- b=lEgjLzVKoNY/2mGOQ8F44dZBgdorr48LYyHH3KJS8enTCNDLXPOoNGPLbPk4HVYRlWJKNAnt8GQuDegycZBD0XjF4gQTlK0G7GoW/0SY0Ha/9voj52PENCeJ66r9395Zk32kTKYbHcnJNTmc9eCpEoanZ6PQhhAyBIuxw1tG5Lw=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2358.eurprd05.prod.outlook.com (10.168.57.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.15; Mon, 17 Jun 2019 18:02:40 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
- 18:02:40 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eli Britstein <elibr@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5e: reduce stack usage in
- mlx5_eswitch_termtbl_create
-Thread-Topic: [PATCH] net/mlx5e: reduce stack usage in
- mlx5_eswitch_termtbl_create
-Thread-Index: AQHVJP0SzELjx0H8KE2MySy85rN5zKagI7gA
-Date:   Mon, 17 Jun 2019 18:02:39 +0000
-Message-ID: <9efb76f79369b8577ef425c7f6e694132719353e.camel@mellanox.com>
-References: <20190617110855.2085326-1-arnd@arndb.de>
-In-Reply-To: <20190617110855.2085326-1-arnd@arndb.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5b3efb5c-f1a7-404e-dfdf-08d6f34dfcee
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2358;
-x-ms-traffictypediagnostic: DB6PR0501MB2358:
-x-microsoft-antispam-prvs: <DB6PR0501MB2358677401C6C48725DCCFEABEEB0@DB6PR0501MB2358.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0071BFA85B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(396003)(39860400002)(376002)(366004)(199004)(189003)(102836004)(6506007)(5660300002)(256004)(14444005)(446003)(478600001)(2201001)(2501003)(476003)(71200400001)(2616005)(76116006)(73956011)(486006)(26005)(66446008)(64756008)(66556008)(66476007)(66946007)(91956017)(186003)(11346002)(71190400001)(7736002)(305945005)(99286004)(86362001)(76176011)(53936002)(8936002)(81166006)(81156014)(8676002)(2906002)(6116002)(229853002)(6436002)(6246003)(316002)(58126008)(110136005)(54906003)(36756003)(6512007)(25786009)(4326008)(118296001)(6486002)(3846002)(14454004)(66066001)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2358;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: zWQ05mirM+arWaUN8UQpU8+QeeGmTb+XLX3d4pIDf4tkgdDMji++Orc81hfWwquOUqZ80pbb4BVGAu94TwWcGvfPUI5y8Dwt4EjDHt+qGZZd16VvN3p4VhNfHAQfDdzEswNXTnDeKa6BUQAzRZ8tcIQwVBEAddJIwpfVohg8xlMkk76CJ0HvCGJuBbqmbndnEhfQSdQVstubR10WCEpfJAlcYRYqRVTS22q5JqbR7MwlIB5q7zGlMR9LjX5gWqfmgttxT3UlK4/sbx/sfRICU2+4SDWbOezOWHnmDKYBGMOP0NI9O8EUqnFoxVAmPlkLeQUBIk5RsaR/q/Rv7C99hNBtq5+f8nBadyI7bmXZvrK1sf5QGPwEpFuVsNdGlNCHe4VBgeC9s/tIYpWTYUDj4oh+DxVEpVre6hXMJA4aC2s=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CFBCB1D1BC494C42B39E3E83FA66E39B@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726443AbfFQSGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:06:33 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:34066 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725764AbfFQSGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:06:33 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m29so11890757qtu.1;
+        Mon, 17 Jun 2019 11:06:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x/k8eKYiIdf0sFnvjjeqBqcsktW5rmY6n4/4xjkC5T8=;
+        b=UmBJUuY0JIN00jivRTr0brZhUquHn7WW8tnA3ufQpXx7EEalv5yboJgNkCBIQkoatr
+         k28Q22yx8WiBAUmjxUEQwGu8fuakuPy5YOZ05ooYzDZSBCJoTbK1zQqoAjWf0ku0n9h5
+         MjnGtiDPFuJ0Gkpl0T6RD1vmBnX+FLYFcPvpZLK8DmpLQ/YUNvtEJFevacIYQv/TKUYu
+         BILw2TnI1UDQpNbBWV+fALPwx9yfVhjOzYG8lwh10g6HCvde1d78L81kkNXrH+zry08Y
+         joO6dEmJekNaAKCAyAOyPL/awFWLFLhWiIb6PMxWIZMOaQxnmA77izE86wJ1BvRFGMu2
+         vC0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x/k8eKYiIdf0sFnvjjeqBqcsktW5rmY6n4/4xjkC5T8=;
+        b=KbaVxJsw7LnWVnDPHYVo6H1TLBbWMg0USZ8OzjHFc1Gp+CGfleHfMzuEawtJQ+3RXp
+         04/iKGpQqFRMQAVbixM8BIi4hTV2klDrLWvsY/gF+Ulvmaf/blHMljU1RANBTIIQ295Z
+         QDApyUGdGaDpD1jjI/j0mL7+m0RQ35Y3ytldPiZqUIDX437kHegDkrrkuzlLNCZ9JIDy
+         DvdlgO/cXQLTcIWUWps3VTKcinUx2qw+T9xdOyCdAicQo6ZIUEoDoh5KGf88ue+7Cf8K
+         Bwy1o5bqXXaLBcC70ILyvSKQyvg1g+GxTKp4yrn2Rz/0pTG4YIbIeJYNBgSZhoH+OLpZ
+         EgxQ==
+X-Gm-Message-State: APjAAAUA59qUdDszwl0+BAgUSR4PguJRA8CfbHKRuFRgs+52rqbYl4ts
+        3mO9ye/2NvbTvjyw7DQs16ZWL9zS+XQTQ48+MFQ=
+X-Google-Smtp-Source: APXvYqwpOGlK/Owzn+XZLyF7qTeY8QUv7Xok1nVDr+7fRt8LSB7aiUVEvVwdvaUep16QtpM82UBOJPk3pl+t7N1/dOM=
+X-Received: by 2002:ac8:21b7:: with SMTP id 52mr76571921qty.59.1560794792326;
+ Mon, 17 Jun 2019 11:06:32 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b3efb5c-f1a7-404e-dfdf-08d6f34dfcee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 18:02:39.9507
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2358
+References: <20190611043505.14664-1-andriin@fb.com> <20190611043505.14664-5-andriin@fb.com>
+ <CAPhsuW6iicoRN3Sk6Uv-ten4xjjmqG1qmfmXyKngqVSYC9qbEQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW6iicoRN3Sk6Uv-ten4xjjmqG1qmfmXyKngqVSYC9qbEQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 17 Jun 2019 11:06:21 -0700
+Message-ID: <CAEf4BzYKtA9Hk5oswZVD_pZ-VxjXXd_OV_bRs+42cfgf8dqodw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 4/8] libbpf: identify maps by section index
+ in addition to offset
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA2LTE3IGF0IDEzOjA4ICswMjAwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
-PiBQdXR0aW5nIGFuIGVtcHR5ICdtbHg1X2Zsb3dfc3BlYycgc3RydWN0dXJlIG9uIHRoZSBzdGFj
-ayBpcyBhIGJpdA0KPiB3YXN0ZWZ1bCBhbmQgY2F1c2VzIGEgd2FybmluZyBvbiAzMi1iaXQgYXJj
-aGl0ZWN0dXJlcyB3aGVuIGJ1aWxkaW5nDQo+IHdpdGggY2xhbmcgLWZzYW5pdGl6ZS1jb3ZlcmFn
-ZToNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNo
-X29mZmxvYWRzX3Rlcm10YmwuYzoNCj4gSW4gZnVuY3Rpb24gJ21seDVfZXN3aXRjaF90ZXJtdGJs
-X2NyZWF0ZSc6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dp
-dGNoX29mZmxvYWRzX3Rlcm10YmwuYzo5MA0KPiA6MTogZXJyb3I6IHRoZSBmcmFtZSBzaXplIG9m
-IDEwMzIgYnl0ZXMgaXMgbGFyZ2VyIHRoYW4gMTAyNCBieXRlcyBbLQ0KPiBXZXJyb3I9ZnJhbWUt
-bGFyZ2VyLXRoYW49XQ0KPiANCj4gU2luY2UgdGhlIHN0cnVjdHVyZSBpcyBuZXZlciB3cml0dGVu
-IHRvLCB3ZSBjYW4gc3RhdGljYWxseSBhbGxvY2F0ZQ0KPiBpdCB0byBhdm9pZCB0aGUgc3RhY2sg
-dXNhZ2UuIFRvIGJlIG9uIHRoZSBzYWZlIHNpZGUsIG1hcmsgYWxsDQo+IHN1YnNlcXVlbnQgZnVu
-Y3Rpb24gYXJndW1lbnRzIHRoYXQgd2UgcGFzcyBpdCBpbnRvIGFzICdjb25zdCcNCj4gYXMgd2Vs
-bC4NCj4gDQo+IEZpeGVzOiAxMGNhYWJkYWFkNWEgKCJuZXQvbWx4NWU6IFVzZSB0ZXJtaW5hdGlv
-biB0YWJsZSBmb3IgVkxBTiBwdXNoDQo+IGFjdGlvbnMiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBBcm5k
-IEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiAtLS0NCj4gIC4uLi9tbHg1L2NvcmUvZXN3aXRj
-aF9vZmZsb2Fkc190ZXJtdGJsLmMgICAgICB8ICAyICstDQo+ICAuLi4vbmV0L2V0aGVybmV0L21l
-bGxhbm94L21seDUvY29yZS9mc19jb3JlLmMgfCAyMCArKysrKysrKystLS0tLS0NCj4gLS0tLQ0K
-PiAgaW5jbHVkZS9saW51eC9tbHg1L2ZzLmggICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0N
-Cj4gIDMgZmlsZXMgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgMTIgZGVsZXRpb25zKC0pDQo+
-IA0KPiBkaWZmIC0tZ2l0DQo+IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2Vzd2l0Y2hfb2ZmbG9hZHNfdGVybXRibC5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-bWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0Y2hfb2ZmbG9hZHNfdGVybXRibC5jDQo+IGluZGV4IGNi
-N2Q4ZWJlMmM5NS4uMTcxZjNkNGVmOWFjIDEwMDY0NA0KPiAtLS0NCj4gYS9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkc190ZXJtdGJsLmMNCj4g
-KysrDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0Y2hf
-b2ZmbG9hZHNfdGVybXRibC5jDQo+IEBAIC01MCw3ICs1MCw3IEBAIG1seDVfZXN3aXRjaF90ZXJt
-dGJsX2NyZWF0ZShzdHJ1Y3QgbWx4NV9jb3JlX2Rldg0KPiAqZGV2LA0KPiAgCQkJICAgIHN0cnVj
-dCBtbHg1X2Zsb3dfYWN0ICpmbG93X2FjdCkNCj4gIHsNCj4gIAlzdHJ1Y3QgbWx4NV9mbG93X25h
-bWVzcGFjZSAqcm9vdF9uczsNCj4gLQlzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgc3BlYyA9IHt9Ow0K
-PiArCXN0YXRpYyBjb25zdCBzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgc3BlYyA9IHt9Ow0KDQpMR1RN
-LCBqdXN0IG1ha2Ugc3VyZSBwbGVhc2UgdG8gaGF2ZSBhIHJldmVyc2UgeG1hcyB0cmVlIGhlcmUu
-DQoNCk1hcmssIHBsZWFzZSBsZXQgbWUga25vdyBpZiB5b3UgYXJlIG9rIHdpdGggc3VjaCBBUEkg
-Y29uc3RyYWluIHRvIGZsb3cNCnN0ZWVyaW5nIChzcGVjIG11c3QgYmUgY29uc3QpLg0KDQpUaGFu
-a3MsDQpTYWVlZC4NCg0KPiAgCWludCBwcmlvLCBmbGFnczsNCj4gIAlpbnQgZXJyOw0KPiAgDQo+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZnNf
-Y29yZS5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2Nv
-cmUuYw0KPiBpbmRleCBmZTc2YzZmZDZkODAuLjczOTEyM2UxMzYzYiAxMDA2NDQNCj4gLS0tIGEv
-ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2NvcmUuYw0KPiArKysg
-Yi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZnNfY29yZS5jDQo+IEBA
-IC01ODQsNyArNTg0LDcgQEAgc3RhdGljIGludCBpbnNlcnRfZnRlKHN0cnVjdCBtbHg1X2Zsb3df
-Z3JvdXAgKmZnLA0KPiBzdHJ1Y3QgZnNfZnRlICpmdGUpDQo+ICB9DQo+ICANCj4gIHN0YXRpYyBz
-dHJ1Y3QgZnNfZnRlICphbGxvY19mdGUoc3RydWN0IG1seDVfZmxvd190YWJsZSAqZnQsDQo+IC0J
-CQkJdTMyICptYXRjaF92YWx1ZSwNCj4gKwkJCQljb25zdCB1MzIgKm1hdGNoX3ZhbHVlLA0KPiAg
-CQkJCXN0cnVjdCBtbHg1X2Zsb3dfYWN0ICpmbG93X2FjdCkNCj4gIHsNCj4gIAlzdHJ1Y3QgbWx4
-NV9mbG93X3N0ZWVyaW5nICpzdGVlcmluZyA9IGdldF9zdGVlcmluZygmZnQtPm5vZGUpOw0KPiBA
-QCAtNjEyLDcgKzYxMiw3IEBAIHN0YXRpYyB2b2lkIGRlYWxsb2NfZmxvd19ncm91cChzdHJ1Y3QN
-Cj4gbWx4NV9mbG93X3N0ZWVyaW5nICpzdGVlcmluZywNCj4gIA0KPiAgc3RhdGljIHN0cnVjdCBt
-bHg1X2Zsb3dfZ3JvdXAgKmFsbG9jX2Zsb3dfZ3JvdXAoc3RydWN0DQo+IG1seDVfZmxvd19zdGVl
-cmluZyAqc3RlZXJpbmcsDQo+ICAJCQkJCQl1OA0KPiBtYXRjaF9jcml0ZXJpYV9lbmFibGUsDQo+
-IC0JCQkJCQl2b2lkICptYXRjaF9jcml0ZXJpYSwNCj4gKwkJCQkJCWNvbnN0IHZvaWQNCj4gKm1h
-dGNoX2NyaXRlcmlhLA0KPiAgCQkJCQkJaW50IHN0YXJ0X2luZGV4LA0KPiAgCQkJCQkJaW50IGVu
-ZF9pbmRleCkNCj4gIHsNCj4gQEAgLTY0Miw3ICs2NDIsNyBAQCBzdGF0aWMgc3RydWN0IG1seDVf
-Zmxvd19ncm91cA0KPiAqYWxsb2NfZmxvd19ncm91cChzdHJ1Y3QgbWx4NV9mbG93X3N0ZWVyaW5n
-ICpzdGVlcg0KPiAgDQo+ICBzdGF0aWMgc3RydWN0IG1seDVfZmxvd19ncm91cCAqYWxsb2NfaW5z
-ZXJ0X2Zsb3dfZ3JvdXAoc3RydWN0DQo+IG1seDVfZmxvd190YWJsZSAqZnQsDQo+ICAJCQkJCQkg
-ICAgICAgdTgNCj4gbWF0Y2hfY3JpdGVyaWFfZW5hYmxlLA0KPiAtCQkJCQkJICAgICAgIHZvaWQN
-Cj4gKm1hdGNoX2NyaXRlcmlhLA0KPiArCQkJCQkJICAgICAgIGNvbnN0IHZvaWQNCj4gKm1hdGNo
-X2NyaXRlcmlhLA0KPiAgCQkJCQkJICAgICAgIGludCBzdGFydF9pbmRleCwNCj4gIAkJCQkJCSAg
-ICAgICBpbnQgZW5kX2luZGV4LA0KPiAgCQkJCQkJICAgICAgIHN0cnVjdCBsaXN0X2hlYWQNCj4g
-KnByZXYpDQo+IEBAIC0xMjg1LDcgKzEyODUsNyBAQCBhZGRfcnVsZV9mdGUoc3RydWN0IGZzX2Z0
-ZSAqZnRlLA0KPiAgfQ0KPiAgDQo+ICBzdGF0aWMgc3RydWN0IG1seDVfZmxvd19ncm91cCAqYWxs
-b2NfYXV0b19mbG93X2dyb3VwKHN0cnVjdA0KPiBtbHg1X2Zsb3dfdGFibGUgICpmdCwNCj4gLQkJ
-CQkJCSAgICAgc3RydWN0DQo+IG1seDVfZmxvd19zcGVjICpzcGVjKQ0KPiArCQkJCQkJICAgICBj
-b25zdCBzdHJ1Y3QNCj4gbWx4NV9mbG93X3NwZWMgKnNwZWMpDQo+ICB7DQo+ICAJc3RydWN0IGxp
-c3RfaGVhZCAqcHJldiA9ICZmdC0+bm9kZS5jaGlsZHJlbjsNCj4gIAlzdHJ1Y3QgbWx4NV9mbG93
-X2dyb3VwICpmZzsNCj4gQEAgLTE0NTEsNyArMTQ1MSw3IEBAIHN0YXRpYyBpbnQgY2hlY2tfY29u
-ZmxpY3RpbmdfZnRlcyhzdHJ1Y3QgZnNfZnRlDQo+ICpmdGUsIGNvbnN0IHN0cnVjdCBtbHg1X2Zs
-b3dfYWN0DQo+ICB9DQo+ICANCj4gIHN0YXRpYyBzdHJ1Y3QgbWx4NV9mbG93X2hhbmRsZSAqYWRk
-X3J1bGVfZmcoc3RydWN0IG1seDVfZmxvd19ncm91cA0KPiAqZmcsDQo+IC0JCQkJCSAgICB1MzIg
-Km1hdGNoX3ZhbHVlLA0KPiArCQkJCQkgICAgY29uc3QgdTMyICptYXRjaF92YWx1ZSwNCj4gIAkJ
-CQkJICAgIHN0cnVjdCBtbHg1X2Zsb3dfYWN0DQo+ICpmbG93X2FjdCwNCj4gIAkJCQkJICAgIHN0
-cnVjdA0KPiBtbHg1X2Zsb3dfZGVzdGluYXRpb24gKmRlc3QsDQo+ICAJCQkJCSAgICBpbnQgZGVz
-dF9udW0sDQo+IEBAIC0xNTM2LDcgKzE1MzYsNyBAQCBzdGF0aWMgdm9pZCBmcmVlX21hdGNoX2xp
-c3Qoc3RydWN0DQo+IG1hdGNoX2xpc3RfaGVhZCAqaGVhZCkNCj4gIA0KPiAgc3RhdGljIGludCBi
-dWlsZF9tYXRjaF9saXN0KHN0cnVjdCBtYXRjaF9saXN0X2hlYWQgKm1hdGNoX2hlYWQsDQo+ICAJ
-CQkgICAgc3RydWN0IG1seDVfZmxvd190YWJsZSAqZnQsDQo+IC0JCQkgICAgc3RydWN0IG1seDVf
-Zmxvd19zcGVjICpzcGVjKQ0KPiArCQkJICAgIGNvbnN0IHN0cnVjdCBtbHg1X2Zsb3dfc3BlYyAq
-c3BlYykNCj4gIHsNCj4gIAlzdHJ1Y3QgcmhsaXN0X2hlYWQgKnRtcCwgKmxpc3Q7DQo+ICAJc3Ry
-dWN0IG1seDVfZmxvd19ncm91cCAqZzsNCj4gQEAgLTE1ODksNyArMTU4OSw3IEBAIHN0YXRpYyB1
-NjQgbWF0Y2hlZF9mZ3NfZ2V0X3ZlcnNpb24oc3RydWN0DQo+IGxpc3RfaGVhZCAqbWF0Y2hfaGVh
-ZCkNCj4gIA0KPiAgc3RhdGljIHN0cnVjdCBmc19mdGUgKg0KPiAgbG9va3VwX2Z0ZV9sb2NrZWQo
-c3RydWN0IG1seDVfZmxvd19ncm91cCAqZywNCj4gLQkJICB1MzIgKm1hdGNoX3ZhbHVlLA0KPiAr
-CQkgIGNvbnN0IHUzMiAqbWF0Y2hfdmFsdWUsDQo+ICAJCSAgYm9vbCB0YWtlX3dyaXRlKQ0KPiAg
-ew0KPiAgCXN0cnVjdCBmc19mdGUgKmZ0ZV90bXA7DQo+IEBAIC0xNjIyLDcgKzE2MjIsNyBAQCBs
-b29rdXBfZnRlX2xvY2tlZChzdHJ1Y3QgbWx4NV9mbG93X2dyb3VwICpnLA0KPiAgc3RhdGljIHN0
-cnVjdCBtbHg1X2Zsb3dfaGFuZGxlICoNCj4gIHRyeV9hZGRfdG9fZXhpc3RpbmdfZmcoc3RydWN0
-IG1seDVfZmxvd190YWJsZSAqZnQsDQo+ICAJCSAgICAgICBzdHJ1Y3QgbGlzdF9oZWFkICptYXRj
-aF9oZWFkLA0KPiAtCQkgICAgICAgc3RydWN0IG1seDVfZmxvd19zcGVjICpzcGVjLA0KPiArCQkg
-ICAgICAgY29uc3Qgc3RydWN0IG1seDVfZmxvd19zcGVjICpzcGVjLA0KPiAgCQkgICAgICAgc3Ry
-dWN0IG1seDVfZmxvd19hY3QgKmZsb3dfYWN0LA0KPiAgCQkgICAgICAgc3RydWN0IG1seDVfZmxv
-d19kZXN0aW5hdGlvbiAqZGVzdCwNCj4gIAkJICAgICAgIGludCBkZXN0X251bSwNCj4gQEAgLTE3
-MTUsNyArMTcxNSw3IEBAIHRyeV9hZGRfdG9fZXhpc3RpbmdfZmcoc3RydWN0IG1seDVfZmxvd190
-YWJsZQ0KPiAqZnQsDQo+ICANCj4gIHN0YXRpYyBzdHJ1Y3QgbWx4NV9mbG93X2hhbmRsZSAqDQo+
-ICBfbWx4NV9hZGRfZmxvd19ydWxlcyhzdHJ1Y3QgbWx4NV9mbG93X3RhYmxlICpmdCwNCj4gLQkJ
-ICAgICBzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgKnNwZWMsDQo+ICsJCSAgICAgY29uc3Qgc3RydWN0
-IG1seDVfZmxvd19zcGVjICpzcGVjLA0KPiAgCQkgICAgIHN0cnVjdCBtbHg1X2Zsb3dfYWN0ICpm
-bG93X2FjdCwNCj4gIAkJICAgICBzdHJ1Y3QgbWx4NV9mbG93X2Rlc3RpbmF0aW9uICpkZXN0LA0K
-PiAgCQkgICAgIGludCBkZXN0X251bSkNCj4gQEAgLTE4MjMsNyArMTgyMyw3IEBAIHN0YXRpYyBi
-b29sIGZ3ZF9uZXh0X3ByaW9fc3VwcG9ydGVkKHN0cnVjdA0KPiBtbHg1X2Zsb3dfdGFibGUgKmZ0
-KQ0KPiAgDQo+ICBzdHJ1Y3QgbWx4NV9mbG93X2hhbmRsZSAqDQo+ICBtbHg1X2FkZF9mbG93X3J1
-bGVzKHN0cnVjdCBtbHg1X2Zsb3dfdGFibGUgKmZ0LA0KPiAtCQkgICAgc3RydWN0IG1seDVfZmxv
-d19zcGVjICpzcGVjLA0KPiArCQkgICAgY29uc3Qgc3RydWN0IG1seDVfZmxvd19zcGVjICpzcGVj
-LA0KPiAgCQkgICAgc3RydWN0IG1seDVfZmxvd19hY3QgKmZsb3dfYWN0LA0KPiAgCQkgICAgc3Ry
-dWN0IG1seDVfZmxvd19kZXN0aW5hdGlvbiAqZGVzdCwNCj4gIAkJICAgIGludCBudW1fZGVzdCkN
-Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbWx4NS9mcy5oIGIvaW5jbHVkZS9saW51eC9t
-bHg1L2ZzLmgNCj4gaW5kZXggMmRkYWE5N2YyMTc5Li5jMGMwMjk2NjQ1MjcgMTAwNjQ0DQo+IC0t
-LSBhL2luY2x1ZGUvbGludXgvbWx4NS9mcy5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvbWx4NS9m
-cy5oDQo+IEBAIC0yMDAsNyArMjAwLDcgQEAgc3RydWN0IG1seDVfZmxvd19hY3Qgew0KPiAgICov
-DQo+ICBzdHJ1Y3QgbWx4NV9mbG93X2hhbmRsZSAqDQo+ICBtbHg1X2FkZF9mbG93X3J1bGVzKHN0
-cnVjdCBtbHg1X2Zsb3dfdGFibGUgKmZ0LA0KPiAtCQkgICAgc3RydWN0IG1seDVfZmxvd19zcGVj
-ICpzcGVjLA0KPiArCQkgICAgY29uc3Qgc3RydWN0IG1seDVfZmxvd19zcGVjICpzcGVjLA0KPiAg
-CQkgICAgc3RydWN0IG1seDVfZmxvd19hY3QgKmZsb3dfYWN0LA0KPiAgCQkgICAgc3RydWN0IG1s
-eDVfZmxvd19kZXN0aW5hdGlvbiAqZGVzdCwNCj4gIAkJICAgIGludCBudW1fZGVzdCk7DQo=
+On Sat, Jun 15, 2019 at 2:08 PM Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Mon, Jun 10, 2019 at 9:37 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > To support maps to be defined in multiple sections, it's important to
+> > identify map not just by offset within its section, but section index as
+> > well. This patch adds tracking of section index.
+> >
+> > For global data, we record section index of corresponding
+> > .data/.bss/.rodata ELF section for uniformity, and thus don't need
+> > a special value of offset for those maps.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 42 ++++++++++++++++++++++++++----------------
+> >  1 file changed, 26 insertions(+), 16 deletions(-)
+> >
+
+<snip>
+
+> > @@ -3472,13 +3488,7 @@ bpf_object__find_map_fd_by_name(struct bpf_object *obj, const char *name)
+> >  struct bpf_map *
+> >  bpf_object__find_map_by_offset(struct bpf_object *obj, size_t offset)
+> >  {
+> > -       int i;
+> > -
+> > -       for (i = 0; i < obj->nr_maps; i++) {
+> > -               if (obj->maps[i].offset == offset)
+> > -                       return &obj->maps[i];
+> > -       }
+> > -       return ERR_PTR(-ENOENT);
+> > +       return ERR_PTR(-ENOTSUP);
+>
+> I probably missed some discussion. But is it OK to stop supporting
+> this function?
+
+This function was added long time ago for some perf (the tool)
+specific use case. But I haven't found any uses of that in kernel
+code, as well as anywhere on github/internal FB code base. It appears
+it's not used anywhere.
+
+Also, this function makes bad assumption that map can be identified by
+single offset, while we are going to support maps in two (or more, if
+necessary) different ELF sections, so offset is not unique anymore.
+It's not clear what's the intended use case for this API is, looking
+up by name should be the way to do this. Given it's not used, but we
+still need to preserve ABI, I switched it to return -ENOTSUP.
+
+>
+> Thanks,
+> Song
+>
+> >  }
+> >
+> >  long libbpf_get_error(const void *ptr)
+> > --
+> > 2.17.1
+> >
