@@ -2,120 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0085D48B4A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 303C648B51
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfFQSGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 14:06:33 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34066 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725764AbfFQSGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:06:33 -0400
-Received: by mail-qt1-f193.google.com with SMTP id m29so11890757qtu.1;
-        Mon, 17 Jun 2019 11:06:32 -0700 (PDT)
+        id S1726593AbfFQSHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:07:15 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46436 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725764AbfFQSHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:07:15 -0400
+Received: by mail-qt1-f196.google.com with SMTP id h21so11816196qtn.13
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 11:07:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x/k8eKYiIdf0sFnvjjeqBqcsktW5rmY6n4/4xjkC5T8=;
-        b=UmBJUuY0JIN00jivRTr0brZhUquHn7WW8tnA3ufQpXx7EEalv5yboJgNkCBIQkoatr
-         k28Q22yx8WiBAUmjxUEQwGu8fuakuPy5YOZ05ooYzDZSBCJoTbK1zQqoAjWf0ku0n9h5
-         MjnGtiDPFuJ0Gkpl0T6RD1vmBnX+FLYFcPvpZLK8DmpLQ/YUNvtEJFevacIYQv/TKUYu
-         BILw2TnI1UDQpNbBWV+fALPwx9yfVhjOzYG8lwh10g6HCvde1d78L81kkNXrH+zry08Y
-         joO6dEmJekNaAKCAyAOyPL/awFWLFLhWiIb6PMxWIZMOaQxnmA77izE86wJ1BvRFGMu2
-         vC0Q==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=0YGsj9terTeLEeLEBRMl5YlUmvd9mUf+KVtTWQDgY2Y=;
+        b=pXApNlOzqYRbCirrBtIjM/DJ9+PolGZSmFSJuZ9zwxx5t4oMuss2bsqTW2dvCNQzqy
+         i+daTtgAtc5TSYCi6c/ZMACCDnmXO8UNlvRmXSan4U+3YJdH8lqbZrs0rERCgu/cppwE
+         kdavwC9WEN7QOFfCP6RLKK+pmfkoqyfe/AHdEmYJMNOS4Wako5sNXDaRn3nXbbQNHo10
+         zaiXKD1Vs/1V3QpqeEpn3KhLyzIlgFDvQZxix5h5MfCYbNTSZjF6lx8tHIrqrXp59Yjx
+         P3e3SFx/KguYtjrYvi3zkXl6vhpKZrUHsTZXhRp1NjSQrBy2pllhdYHu/y2FLT6fw4C9
+         P2mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x/k8eKYiIdf0sFnvjjeqBqcsktW5rmY6n4/4xjkC5T8=;
-        b=KbaVxJsw7LnWVnDPHYVo6H1TLBbWMg0USZ8OzjHFc1Gp+CGfleHfMzuEawtJQ+3RXp
-         04/iKGpQqFRMQAVbixM8BIi4hTV2klDrLWvsY/gF+Ulvmaf/blHMljU1RANBTIIQ295Z
-         QDApyUGdGaDpD1jjI/j0mL7+m0RQ35Y3ytldPiZqUIDX437kHegDkrrkuzlLNCZ9JIDy
-         DvdlgO/cXQLTcIWUWps3VTKcinUx2qw+T9xdOyCdAicQo6ZIUEoDoh5KGf88ue+7Cf8K
-         Bwy1o5bqXXaLBcC70ILyvSKQyvg1g+GxTKp4yrn2Rz/0pTG4YIbIeJYNBgSZhoH+OLpZ
-         EgxQ==
-X-Gm-Message-State: APjAAAUA59qUdDszwl0+BAgUSR4PguJRA8CfbHKRuFRgs+52rqbYl4ts
-        3mO9ye/2NvbTvjyw7DQs16ZWL9zS+XQTQ48+MFQ=
-X-Google-Smtp-Source: APXvYqwpOGlK/Owzn+XZLyF7qTeY8QUv7Xok1nVDr+7fRt8LSB7aiUVEvVwdvaUep16QtpM82UBOJPk3pl+t7N1/dOM=
-X-Received: by 2002:ac8:21b7:: with SMTP id 52mr76571921qty.59.1560794792326;
- Mon, 17 Jun 2019 11:06:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=0YGsj9terTeLEeLEBRMl5YlUmvd9mUf+KVtTWQDgY2Y=;
+        b=ISZFP5Pv9zFcaWh1zF3vfI85wN2E0GRmdG7xeVno4g27Qa4NTvlG6DBd++lDKazYNh
+         TIC6JpYaBsyyVkMhN+j7JhbmUSyzgWwVwwE+AhJ4e3DjXQ5bn/Gh5IorLC2NQ+blhVYJ
+         TDcbL8WqSiXx37xAQfPc3oXJq251WkcftC4AyRef60Rq5GT4rRz3TxF4TcDelUiJ9oPy
+         SMwRH5g7tyQ4bImm/wzOi206E6EGGwl7ndw9xOyyETT8NsMVTD8Tw+9UXGwWL3SQOsGt
+         33gvHuu2tdF0DMky0efDOUz5sscwUZ1D6bD7wmO0FjVk0eg7eF3QrZYusiCWgwVcCmWb
+         ahlw==
+X-Gm-Message-State: APjAAAXSOcrB/0ZA2PJg37K/y885fi65tVNdMnNgUxYWU9qhlJLDhzjq
+        DDF90lOvLyvsc3z8wuubxS4LLA==
+X-Google-Smtp-Source: APXvYqx4pyBTvzL8LZB1filpj0uJvYAUgDAD81rHOm2VKWZYlUhuqhUaDXjRy6fIWRiFW0TKbpZEGg==
+X-Received: by 2002:ac8:1a8d:: with SMTP id x13mr96823682qtj.114.1560794832060;
+        Mon, 17 Jun 2019 11:07:12 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i35sm833844qtc.9.2019.06.17.11.07.10
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 11:07:11 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 11:07:06 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Dave Watson <davejwatson@fb.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 2/2] net: tls: export protocol version and
+ cipher to socket diag
+Message-ID: <20190617110706.7c269328@cakuba.netronome.com>
+In-Reply-To: <5ed5d6b3356c505ece2a354847e3aafd09fb82f3.camel@redhat.com>
+References: <cover.1559747691.git.dcaratti@redhat.com>
+        <4262dd2617a24b66f24ec5ddc73f817e683e14e0.1559747691.git.dcaratti@redhat.com>
+        <20190605162555.59b4fb3e@cakuba.netronome.com>
+        <5ed5d6b3356c505ece2a354847e3aafd09fb82f3.camel@redhat.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190611043505.14664-1-andriin@fb.com> <20190611043505.14664-5-andriin@fb.com>
- <CAPhsuW6iicoRN3Sk6Uv-ten4xjjmqG1qmfmXyKngqVSYC9qbEQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW6iicoRN3Sk6Uv-ten4xjjmqG1qmfmXyKngqVSYC9qbEQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 17 Jun 2019 11:06:21 -0700
-Message-ID: <CAEf4BzYKtA9Hk5oswZVD_pZ-VxjXXd_OV_bRs+42cfgf8dqodw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 4/8] libbpf: identify maps by section index
- in addition to offset
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 15, 2019 at 2:08 PM Song Liu <liu.song.a23@gmail.com> wrote:
->
-> On Mon, Jun 10, 2019 at 9:37 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > To support maps to be defined in multiple sections, it's important to
-> > identify map not just by offset within its section, but section index as
-> > well. This patch adds tracking of section index.
-> >
-> > For global data, we record section index of corresponding
-> > .data/.bss/.rodata ELF section for uniformity, and thus don't need
-> > a special value of offset for those maps.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 42 ++++++++++++++++++++++++++----------------
-> >  1 file changed, 26 insertions(+), 16 deletions(-)
-> >
+On Mon, 17 Jun 2019 18:04:06 +0200, Davide Caratti wrote:
+> On Wed, 2019-06-05 at 16:25 -0700, Jakub Kicinski wrote:
+> > On Wed,  5 Jun 2019 17:39:23 +0200, Davide Caratti wrote:  
+> > We need some indication of the directions in which kTLS is active
+> > (none, rx, tx, rx/tx).
+> > 
+> > Also perhaps could you add TLS_SW vs TLS_HW etc. ? :)  
+> 
+> I can add a couple of u16 (or larger?) bitmasks to dump txconf and rxconf.
+> do you think this is sufficient?
 
-<snip>
+SGTM!
 
-> > @@ -3472,13 +3488,7 @@ bpf_object__find_map_fd_by_name(struct bpf_object *obj, const char *name)
-> >  struct bpf_map *
-> >  bpf_object__find_map_by_offset(struct bpf_object *obj, size_t offset)
-> >  {
-> > -       int i;
-> > -
-> > -       for (i = 0; i < obj->nr_maps; i++) {
-> > -               if (obj->maps[i].offset == offset)
-> > -                       return &obj->maps[i];
-> > -       }
-> > -       return ERR_PTR(-ENOENT);
-> > +       return ERR_PTR(-ENOTSUP);
->
-> I probably missed some discussion. But is it OK to stop supporting
-> this function?
+> > > +	int err = 0;  
+> > 
+> > There should be no need to init this.
+> >   
+> > > +	if (sk->sk_state != TCP_ESTABLISHED)  
+> > 
+> > Hmm.. why this check?  We never clean up the state once installed until
+> > the socket dies completely (currently, pending John's unhash work).  
+> 
+> the goal was to ensure that we don't read ctx anymore after
+> tls_sk_proto_close() has freed ctx, and I thought that a test on the value
+> of sk_state was sufficient.
+> 
+> If it's not, then we might invent something else. For example, we might
+> defer freeing kTLS ctx, so that it's called as the very last thing with
+> tcp_cleanup_ulp().
 
-This function was added long time ago for some perf (the tool)
-specific use case. But I haven't found any uses of that in kernel
-code, as well as anywhere on github/internal FB code base. It appears
-it's not used anywhere.
+Mm.. I was hoping the user space can no longer access a socket once
+it reaches sk_prot->close :S  Perhaps I got this wrong.  If it can 
+we need to make sure we don't free context before calling tcp_close()
+otherwise the state may still be established, no?
 
-Also, this function makes bad assumption that map can be identified by
-single offset, while we are going to support maps in two (or more, if
-necessary) different ELF sections, so offset is not unique anymore.
-It's not clear what's the intended use case for this API is, looking
-up by name should be the way to do this. Given it's not used, but we
-still need to preserve ABI, I switched it to return -ENOTSUP.
+In particular:
 
->
-> Thanks,
-> Song
->
-> >  }
-> >
-> >  long libbpf_get_error(const void *ptr)
-> > --
-> > 2.17.1
-> >
+#ifdef CONFIG_TLS_DEVICE
+	if (ctx->rx_conf == TLS_HW)
+		tls_device_offload_cleanup_rx(sk);
+
+	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW) {
+#else
+	{
+#endif
+		tls_ctx_free(ctx);        <<<  <<<   <<<   <<< kfree()
+		ctx = NULL;
+	}
+
+skip_tx_cleanup:
+	release_sock(sk);
+	sk_proto_close(sk, timeout);      <<<  <<<   <<<   <<< tcp_close()
+	/* free ctx for TLS_HW_RECORD, used by tcp_set_state
+	 * for sk->sk_prot->unhash [tls_hw_unhash]
+	 */
+	if (free_ctx)
+		tls_ctx_free(ctx);
