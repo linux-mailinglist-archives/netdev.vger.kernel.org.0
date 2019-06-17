@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F4804836D
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A28E548379
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbfFQNFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:05:21 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:56847 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbfFQNFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:05:21 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MxHLs-1iaB902HqC-00xXc6; Mon, 17 Jun 2019 15:05:06 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Ariel Elior <ariel.elior@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Denis Bolotin <dbolotin@marvell.com>,
-        Tomer Tayar <tomer.tayar@cavium.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] qed: Fix -Wmaybe-uninitialized false positive
-Date:   Mon, 17 Jun 2019 15:04:49 +0200
-Message-Id: <20190617130504.1906523-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1726694AbfFQNGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:06:21 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:38923 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725983AbfFQNGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:06:21 -0400
+Received: by mail-io1-f65.google.com with SMTP id r185so14983591iod.6
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:06:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VSYhfVHQih+M4629Cya7JjEf6OR4ILXJD3sjGw7DdoE=;
+        b=SkLCDnIrCeVuWKnbjBCcE04BCi/veP5JEy/tLTerTEbi7XB/6wKKHGoSIGDe/BuL5W
+         TNgcV0gELa6hetSEhrO/SC98VZCGwTpMcExuhbGolHVszaZTeE1vZ/gGpAozrGoy/cn7
+         99GFOz/ynsb26v84D8a8GTPfOMOqj5Ydtj1biqUgc6uhIcE7n7U1vMQwqJE1qhGVl+55
+         KeO6xGg6t2wRrwQ0WJaVN8//H0ALqjNOk08uURSd4Nj3v1YdBL85S4bHk002jTAi/oCc
+         iK1y74BbGM6bUHFyqUz5ezNKk6Cli3a+Y7tS7R1nA+KFExg7R0b/VrrdEvageW1XfqBV
+         oohw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VSYhfVHQih+M4629Cya7JjEf6OR4ILXJD3sjGw7DdoE=;
+        b=SO7Nw2Vxj70XAD7b6Mbag6LOzRgpZFBLQPuK0TLCdws2PTL6VTG+8UIL1TVJVPyAJi
+         6eU/5avXVc9suI6gxhwpKA7ig1szwAR+9xSayJcumaKxKHx4Xn43OqWPJuUS7JPMqhh+
+         PoahJLgBSfJLpqhLNgyyv5T04Ca4psKi1GW/l1rHVFM9nHGouu6Zn22ztJ9BdPRR0jQC
+         GVkSSZOCUDS3pTHrD3y+i2LGemsjnOFowIy2hidzE2pTcfgDYyzQKi/cVow5alqhpNrX
+         TlDdiUhcVhcwwWFwSJfFyLwkxti/q/0JmZZiugn3dTBfewuBmjNtomKEiBLbl/W7tTx2
+         woyA==
+X-Gm-Message-State: APjAAAV5OYDdPaH59qpAYE1zbUJfSnUXzZml2/iv2rzMPr8f0nROEs+e
+        QQmemEIOjOlfYHskaK54cXQ=
+X-Google-Smtp-Source: APXvYqwKT2Au9o8HD550ni0N9AqFWvGIbdQnDB1Z3UGWGWMYRn2DkRoMFIiHq4P7EQMsf2CzCusyuQ==
+X-Received: by 2002:a6b:b987:: with SMTP id j129mr19323522iof.166.1560776780312;
+        Mon, 17 Jun 2019 06:06:20 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
+        by smtp.googlemail.com with ESMTPSA id a1sm9165146ioo.5.2019.06.17.06.06.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jun 2019 06:06:19 -0700 (PDT)
+Subject: Re: [PATCH net-next 16/17] ipv6: Stop sending in-kernel notifications
+ for each nexthop
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, alexpe@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20190615140751.17661-1-idosch@idosch.org>
+ <20190615140751.17661-17-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4f7ef3ac-d3f8-60bf-dc92-e405d2a1770b@gmail.com>
+Date:   Mon, 17 Jun 2019 07:06:15 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:+mmC7KynQ+2sddMylzq2+ftuxPNGFt1OtXTkR+yN566PmwzbyDo
- bXQTUjpA9qOlN2+o2T1d4PREWunObLscF9GhNcjtYqOM3Oila0QWRY6wCKPGXk5HnxX83mB
- 7J7bfPlUP8j0k/MjxhJD/WSqEDpN54R9a9VwehJ4Qr9g0Ds9smgkEjTt6wtr7EAr8pPis3L
- gP0aW5mBEp4KV+qgU77kw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:d5ZO6L8lGYg=:7/TFzafs/62j0Fn1qTS/5b
- stiTggZP23rEne6LpCi6BMHiVDqL2ELZLWImG7czTF87WsvjcAfOhtY8rQMFn65Dzc6jQIYzU
- Ms2fme/NnUJJtAJEVUDRYKLdQTiJ9mP+YcMrW+9AYiDDcnHxiZg6KepwSm8SeRPtByUri7MUD
- QvfhlXHmOpnFPAVQ0lSk+ITH736cojeZilzk9rZYHbx/rHdssa5qQNvJYjxF4RJsMJX5qMrlQ
- WIo2u9j2j0Z0IMSovIHTV+bh5ankUjIQqgZ8sAsieey3tX/8NTGo/U6JbpVGYnEId+0eGLWrM
- Zo2YPQZ1uuNJQd1m8kP2SYWjz2HrMhSJ8KpGfCO4rG9ymOJ0nAxXNgzg7jxI7In1fFyubMxEK
- iYNs/BxcvRs7IXte7L5IUrkv+kxb9YCBiVjl+Sp/Y9IxOYNz+3N5LCe4cKJ/gtBZ06W4E/yDb
- 1eIlTGu64vZQvYzDmPS9y3LRsJcubJ8qRrKzVHiX9AdTFmXmA6NshSODuB7X8Fn7tFk+fNI7F
- 4JWeQfzj/FIasmqD/o0vVAKs4k0zZdYuZ6rMtWMAga351UuqtWhhpeyCh3zUkTGOktCVtcQkG
- nWopkC8tgRYW10M5jqJdpZW4+Ylhaa8nvEU4Du0dEX4zGfRJqW7+ja7dZRQkoBWk1zXGP8ks1
- QEGtNDw9EetWIfPwFGowXEYELXq1QKpcC8/0CbTZb7k4cLGKYTOUzHh2f3oM3fR3lOdYO4vp/
- eKqqTg6LjCNnc4SF2Lw5baa4n7VeYfaotyUnjA==
+In-Reply-To: <20190615140751.17661-17-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A previous attempt to shut up the uninitialized variable use
-warning was apparently insufficient. When CONFIG_PROFILE_ANNOTATED_BRANCHES
-is set, gcc-8 still warns, because the unlikely() check in DP_NOTICE()
-causes it to no longer track the state of all variables correctly:
+On 6/15/19 8:07 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Both listeners - mlxsw and netdevsim - of IPv6 FIB notifications are now
+> ready to handle IPv6 multipath notifications.
+> 
+> Therefore, stop ignoring such notifications in both drivers and stop
+> sending notification for each added / deleted nexthop.
+> 
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>  .../ethernet/mellanox/mlxsw/spectrum_router.c |  2 --
+>  drivers/net/netdevsim/fib.c                   |  7 -----
+>  net/ipv6/ip6_fib.c                            | 28 +++++++++++--------
+>  3 files changed, 17 insertions(+), 20 deletions(-)
 
-drivers/net/ethernet/qlogic/qed/qed_dev.c: In function 'qed_llh_set_ppfid_affinity':
-drivers/net/ethernet/qlogic/qed/qed_dev.c:798:47: error: 'abs_ppfid' may be used uninitialized in this function [-Werror=maybe-uninitialized]
-  addr = NIG_REG_PPF_TO_ENGINE_SEL + abs_ppfid * 0x4;
-                                     ~~~~~~~~~~^~~~~
-
-This is not a nice workaround, but always initializing the output from
-qed_llh_abs_ppfid() at least shuts up the false positive reliably.
-
-Fixes: 79284adeb99e ("qed: Add llh ppfid interface and 100g support for offload protocols")
-Fixes: 8e2ea3ea9625 ("qed: Fix static checker warning")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/qlogic/qed/qed_dev.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index eec7cb65c7e6..a1ebc2b1ca0b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -652,6 +652,7 @@ static int qed_llh_abs_ppfid(struct qed_dev *cdev, u8 ppfid, u8 *p_abs_ppfid)
- 		DP_NOTICE(cdev,
- 			  "ppfid %d is not valid, available indices are 0..%hhd\n",
- 			  ppfid, p_llh_info->num_ppfid - 1);
-+		*p_abs_ppfid = 0;
- 		return -EINVAL;
- 	}
- 
--- 
-2.20.0
-
+Reviewed-by: David Ahern <dsahern@gmail.com>
