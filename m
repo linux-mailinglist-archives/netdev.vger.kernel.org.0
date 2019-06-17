@@ -2,92 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A1C4850A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593CA48507
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728111AbfFQOOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 10:14:31 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41340 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728036AbfFQOO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 10:14:29 -0400
-Received: by mail-io1-f65.google.com with SMTP id w25so21410540ioc.8;
-        Mon, 17 Jun 2019 07:14:29 -0700 (PDT)
+        id S1728018AbfFQOO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 10:14:28 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:41333 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbfFQOO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 10:14:28 -0400
+Received: by mail-io1-f66.google.com with SMTP id w25so21410388ioc.8
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 07:14:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=IfMMacDCEm5DrweDwYWF788XFS0vnRBrlp52D5AlxZY=;
-        b=cvDCotR4yV8JD1WStg2ykTBlVb4D2EG+aZ2eHDNyE16zkhSPlS2rll6A433QvIP+d4
-         bOOvG5/lQk7Nmm8XPRstaeQaKmAZQpQ3aOtqCYm5QMpmnB4CibSiIs8shiNUR+PaayL8
-         XLaZgRgffRrooFzRlk1rwZjsuWQ29sGtlX9Xt97KVc4KQfulmtO7QP1bBy1IVXaHVH7Q
-         m1Sd3enQWqzrYyV6ukMmH8BM3PljZUidJXSCWguBo2b43klrYzfWDenXLJh+mIJ1HtuW
-         AP9R2FaDWaT1PzKSxKn7/Qr7nq+k24gVBYiH/GiBuxZzT3NXZJ87zpOpFmoTNY8MuBHU
-         DO9w==
+        d=sifive.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JohzNFDqmktDG38rF4I6wEqhVEhI+kZN53amqkDtO9w=;
+        b=iLTj9CW1lG44z6zG4g72qDio7OVGQ1qANRuf1odp+rHFRdGUwpC/crqtmZviZTJjha
+         UtbuW0PlSUt3tPiVOOOGTLydHXo9gGuO4n6AjAd9Ui2JaV31NFPjV2LvjHM7Lc94hAj3
+         2NoQNsPbAu20BCZqt728HIJTa2HSnRFbDzZ5I8vHPDybVf1pkrTRlkIQTt7rthVHXrAM
+         lHS78Ey4P/EiXWCuhSzCFdoxrAgtO7jORwoA76aPcjYfK1cFsylabCMWL2k6C+IUbYR4
+         GFg6aCzi53pHsNhbAN3fRtSC15Up6LfUVSf/tWR82B4diNQ+xrqBZiH+dX91u+09QU+k
+         cDxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IfMMacDCEm5DrweDwYWF788XFS0vnRBrlp52D5AlxZY=;
-        b=c6J7ORjsIKnrm1TGhhpQYNPUmQFBH8Ngr2zpSCCWZ/QCAL+wCqfOqg6nbkmOT+Ia7h
-         j2ufpY7fW9eE6l/KABQWUJtlKk7X+DtryQJS2IgFbe2Gl7oL2ToLdTTlPptVt7Htf3o7
-         Yo0ca8Rx0Vkkxk8OxMDhgTOJsww5ncxF8QQo/PekHxJ/6tuHnJiszJfZ1YarX2Hxb/RD
-         aphO+pjCpn6MiPsqiSEDtpuuKEwvGnO+vN1lMP5Rhnrg1Cx/yK2VYMO5ltwbftJkpJUN
-         US3epsDZ1iqLoCyngsaiRxFKVsfONN/LjhGw0gtnjyGOpkGuDZN8ofX5D3qOTCBMLxBI
-         nQ4Q==
-X-Gm-Message-State: APjAAAUh0xOq5ORtVc3rUVcRXB7I6114ptqjWJ6GWfVBFMVCii/o4EQt
-        ETYRA6ZSC4vWoITy2BxIxmYTCidD
-X-Google-Smtp-Source: APXvYqywv7Qg7K8EwUy9WHIF+e+y9mecZODBz68uw3BKpbhaVJihQPyccQ1HKXKUJqa9r6c0yOI4JQ==
-X-Received: by 2002:a05:6602:2253:: with SMTP id o19mr30456906ioo.297.1560780868559;
-        Mon, 17 Jun 2019 07:14:28 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
-        by smtp.googlemail.com with ESMTPSA id a2sm8888533iod.57.2019.06.17.07.14.27
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JohzNFDqmktDG38rF4I6wEqhVEhI+kZN53amqkDtO9w=;
+        b=OFKoYrCdeitDSvbnhDlflKQ5MOcOHYbuGdiK4cFAJRrTg8azeyVNN2f/ctGgJlLGm8
+         f3V6Lb7xG4ungr1W+Fr0eb5WBLmCu9VUjS83/9sm71uijeFpjAmeNz/x64nkh3cMF7fB
+         ikrkJMCCwyTTB8YJpc1k538V48kuyY1Wh8wsKunJIIlezxq7wQkjgsQUBn8dUFAVFuwO
+         D/YY+hec9FVIL55oimzJOKMujPoVJLVFhdL+QF+D7xbLy1ePxtBfvj3YhwoiM+NyQz6V
+         R/2awDiW0u65UmF8PYRTfb5Lb6viobcGnfkj+cxFwbFVWpZiVdIkPz8mQqf6OdNVZ4tc
+         AwvA==
+X-Gm-Message-State: APjAAAW6w1g1/DKTZcwGjsWTgt/wuWFFWcdWfBw0BVeoX54aLc1YF//X
+        Z4H86izDUTxVZwD01k/N8ZOi1Q==
+X-Google-Smtp-Source: APXvYqzNuUBfwfuXW1mSryelHWlKsBM9fYoJ3JGS5e7VGKacU4dkepDULY1G4gM/fW95GIKtGZpt+Q==
+X-Received: by 2002:a6b:fb02:: with SMTP id h2mr14476535iog.289.1560780867625;
+        Mon, 17 Jun 2019 07:14:27 -0700 (PDT)
+Received: from [192.168.1.196] ([216.160.37.230])
+        by smtp.gmail.com with ESMTPSA id c2sm8811901iok.53.2019.06.17.07.14.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Mon, 17 Jun 2019 07:14:27 -0700 (PDT)
-Subject: Re: [PATCH bpf] bpf: fix the check that forwarding is enabled in
- bpf_ipv6_fib_lookup
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Anton Protopopov <a.s.protopopov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190615225348.2539-1-a.s.protopopov@gmail.com>
- <877e9ka2aj.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <df5297c5-87c5-5f2f-e22b-d35d6448d82c@gmail.com>
-Date:   Mon, 17 Jun 2019 08:14:23 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <877e9ka2aj.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
+From:   Troy Benjegerdes <troy.benjegerdes@sifive.com>
+In-Reply-To: <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>
+Date:   Mon, 17 Jun 2019 09:14:25 -0500
+Cc:     Andreas Schwab <schwab@suse.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
+        netdev@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        nicolas.ferre@microchip.com,
+        Sachin Ghadi <sachin.ghadi@sifive.com>,
+        Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org,
+        ynezz@true.cz, linux-riscv@lists.infradead.org,
+        davem@davemloft.net, Jim Jacobsen <jamez@wit.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com>
+References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
+ <mvmtvco62k9.fsf@suse.de>
+ <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com>
+ <mvmpnnc5y49.fsf@suse.de>
+ <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com>
+ <mvmh88o5xi5.fsf@suse.de>
+ <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>
+X-Mailer: Apple Mail (2.3445.9.1)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/17/19 5:17 AM, Toke Høiland-Jørgensen wrote:
-> Anton Protopopov <a.s.protopopov@gmail.com> writes:
-> 
->> The bpf_ipv6_fib_lookup function should return BPF_FIB_LKUP_RET_FWD_DISABLED
->> when forwarding is disabled for the input device.  However instead of checking
->> if forwarding is enabled on the input device, it checked the global
->> net->ipv6.devconf_all->forwarding flag.  Change it to behave as expected.
->>
->> Signed-off-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> 
-> Thanks!
-> 
-> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> 
 
-Fixes: 87f5fc7e48dd ("bpf: Provide helper to do forwarding lookups in
-kernel FIB table")
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+> On Jun 17, 2019, at 6:34 AM, Paul Walmsley <paul.walmsley@sifive.com> =
+wrote:
+>=20
+> On Mon, 17 Jun 2019, Andreas Schwab wrote:
+>=20
+>> On Jun 17 2019, Paul Walmsley <paul.walmsley@sifive.com> wrote:
+>>=20
+>>> On Mon, 17 Jun 2019, Andreas Schwab wrote:
+>>>=20
+>>>> On Jun 17 2019, Paul Walmsley <paul.walmsley@sifive.com> wrote:
+>>>>=20
+>>>>> Looks to me that it shouldn't have an impact unless the DT string =
+is=20
+>>>>> present, and even then, the impact might simply be that the MACB =
+driver=20
+>>>>> may not work?
+>>>>=20
+>>>> If the macb driver doesn't work you have an unusable system, of =
+course.
+>>>=20
+>>> Why?
+>>=20
+>> Because a system is useless without network.
+>=20
+> =46rom an upstream Linux point of view, Yash's patches should be an=20
+> improvement over the current mainline kernel situation, since there's=20=
+
+> currently no upstream support for the (SiFive-specific) TX clock =
+switch=20
+> register.  With the right DT data, and a bootloader that handles the =
+PHY=20
+> reset, I think networking should work after his patches are upstream =
+--=20
+> although I myself haven't tried this yet.
+>=20
+
+Have we documented this tx clock switch register in something with a
+direct URL link (rather than a PDF)?
+
+I=E2=80=99d like to update freedom-u-sdk (or yocto) to create bootable =
+images
+with a working U-boot (upstream or not, I don=E2=80=99t care, as long as =
+it works),
+and what I have right now is the old legacy HiFive U-boot[1] and a 4.19
+kernel with a bunch of extra patches.
+
+The legacy M-mode U-boot handles the phy reset already, and I=E2=80=99ve =
+been
+able to load upstream S-mode uboot as a payload via TFTP, and then=20
+load and boot a 4.19 kernel.=20
+
+It would be nice to get this all working with 5.x, however there are =
+still
+several missing pieces to really have it work well.
+
+
+[1] https://github.com/sifive/HiFive_U-Boot=
