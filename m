@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8046547F16
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B91F47F2E
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbfFQKDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 06:03:54 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33585 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbfFQKDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:03:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id h19so4138725wme.0
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:03:51 -0700 (PDT)
+        id S1728227AbfFQKFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 06:05:10 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:32988 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728052AbfFQKFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:05:09 -0400
+Received: by mail-ed1-f68.google.com with SMTP id i11so15360976edq.0
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=darbyshire-bryant.me.uk; s=google;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XSnr4K06XaXQiHBSG5XsdS31khp1+3dvwaPcAvNNqU8=;
-        b=NBJe3jqCLrwaHd9uU5nWZbSuPq1B+Emtmz9e84Agb0hKsEUkA1CT1i6m9qw8MB1BSI
-         uM/KO+iCFK4D0D6j3B/0B2wJq87pGBOLbBCQWCI9aqiA/ktGqKoGpuiyTGshX4aHhyV1
-         5dfvX1qEfOjEY/+b/itlGOM7GvCCa2FlpVWsk=
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=VGA9c22y9jIlHDQMx4uvOibs7sOik31ZYkHYuUn6B2A=;
+        b=JyNz3YrQXeZQihiVS68RHnnLZ6o5UO46RUXYmjIXxMarXHjp3quUe0sTP89h2RU8qd
+         t9xqv9wTj260UdX5wH35ZuuOvUBtisoit/qwfK5Kgpmzpzqi1hm9ICfiSCaa6aeOrD/O
+         fnDMZPUTZVNhS3eCTNHUSRvBTwqgFi5qzNsMPubsWuJaAZyy/bf3WT0jpYzk5F3cpjGJ
+         VbGYngxQwu3kBOwmupErYz+LZog68KzmNfkuKtjTK6pxTOoD474ZOc4ZxGlZV/+5UV+C
+         b3tIuf1NKkxfHiXsESOMMHBxCIMFfYJ0qDfMiA9QurTcSwBttbk/tx5IZROKrZGAFOrw
+         XN3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=XSnr4K06XaXQiHBSG5XsdS31khp1+3dvwaPcAvNNqU8=;
-        b=l00d3+ILtdo3LCuIR8siTFhH5lwkt+132fHfrJHGVwtMzySd6hqqls/DX9TdSUllT1
-         3u7H9rKskACJiB6V7zTOJw1wEG9kw7obHX5UUfJ8GomFZEYYzaatrBqUqoKxW4mcfoRS
-         HyR256/jE69yUDQxWxa4X7VQuU4YaCdWL3tvUlW8DekK7zY5tAjfO5o6S+LIDcuO65cE
-         mguixibd2Li7haXbBrirUck8EBw4cAJR578zqmprqo0osVYs2/AL+HF91ABJhtzDhcd3
-         4z9zXUL+yfTX6ISVFW9kKI9ikhL6kpfoKS43ziDWZnvzRVVY62miHIo4MbVB2c99Hgaf
-         ZG5g==
-X-Gm-Message-State: APjAAAXHy9leJ5mkA/2bPguPbnbpKqAsHlq0UwllPt5X4hZavxn68ZVU
-        6w7ECqopJI/S/2PH0oULdLj6+7qrtNDh7A==
-X-Google-Smtp-Source: APXvYqyGbj4M19gSaNLhT8SPwwtGdksRoz7QOa2Q+F/OpvfwgZj1B3v1YNoNlPzDeg+fyJ/qmm4p+g==
-X-Received: by 2002:a1c:a6d1:: with SMTP id p200mr18644743wme.169.1560765830616;
-        Mon, 17 Jun 2019 03:03:50 -0700 (PDT)
-Received: from Kevins-MBP.lan.darbyshire-bryant.me.uk ([2a02:c7f:1268:6500::dc83])
-        by smtp.gmail.com with ESMTPSA id n1sm9791302wrx.39.2019.06.17.03.03.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 03:03:49 -0700 (PDT)
-From:   Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-To:     netdev@vger.kernel.org
-Cc:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Subject: [PATCH net-next 2/2] net: sched: act_ctinfo: fix policy validation
-Date:   Mon, 17 Jun 2019 11:03:27 +0100
-Message-Id: <20190617100327.24796-3-ldir@darbyshire-bryant.me.uk>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-In-Reply-To: <20190617100327.24796-1-ldir@darbyshire-bryant.me.uk>
-References: <20190617100327.24796-1-ldir@darbyshire-bryant.me.uk>
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=VGA9c22y9jIlHDQMx4uvOibs7sOik31ZYkHYuUn6B2A=;
+        b=m5COZmoHen8J3ZLfbkQv7llXWCNHuOlRygS47eIR35mQS+XhpW2x337XJBo/K4FUld
+         KeR0VVUMV32sNamygChBBPtXcekPVKRKV9LSrzcy9bP5QEMVBW4pOsYdYJIptfhFDD07
+         s2KHXdL+kuW4A0INQ6WP5LGUcRfcbr1fp1cn3WsA583kW80kTMCC9/J6OCh7oydVz2I2
+         IyztH6alay/i1ayIHTcgxyTR3H/2QOzYUC+onD2QTVmn8R/X5mEkrunh9It+2lHbDeyo
+         6kitlcsnzpbas+DddK/HEzg0OFDRADMUwXTDDHHAJTsFv+dPc/6+a1jCE7xEJnUIIqEv
+         BxtA==
+X-Gm-Message-State: APjAAAU66wNEIxKvkLm6P+683fBhrA80aQ+TMaO4xqd/0FZ0IPma5sek
+        jvQ3ebsCgP+YkhR1cCaIWaZse2gFyf4=
+X-Google-Smtp-Source: APXvYqxgX3WrGXoEnt9ZLFi/AcNRTFEhFUprMEbyI8apql360t1iTkxRuRY3ryohJKMoEwBxTzhyYw==
+X-Received: by 2002:a50:b962:: with SMTP id m89mr53812367ede.104.1560765907918;
+        Mon, 17 Jun 2019 03:05:07 -0700 (PDT)
+Received: from localhost ([81.92.102.43])
+        by smtp.gmail.com with ESMTPSA id m3sm3433752edi.33.2019.06.17.03.05.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 03:05:07 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 03:05:06 -0700 (PDT)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     Andreas Schwab <schwab@suse.de>
+cc:     Yash Shah <yash.shah@sifive.com>, davem@davemloft.net,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        nicolas.ferre@microchip.com, palmer@sifive.com,
+        aou@eecs.berkeley.edu, ynezz@true.cz, sachin.ghadi@sifive.com
+Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
+In-Reply-To: <mvmpnnc5y49.fsf@suse.de>
+Message-ID: <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com>
+References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com> <mvmtvco62k9.fsf@suse.de> <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com> <mvmpnnc5y49.fsf@suse.de>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix nla_policy definition by specifying an exact length type attribute
-to CTINFO action paraneter block structure.  Without this change,
-netlink parsing will fail validation and the action will not be
-instantiated.
+On Mon, 17 Jun 2019, Andreas Schwab wrote:
 
-8cb081746c03 ("netlink: make validation more configurable for future")
-introduced much stricter checking to attributes being passed via
-netlink.  Existing actions were updated to use less restrictive
-deprecated versions of nla_parse_nested.
+> On Jun 17 2019, Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> 
+> > Looks to me that it shouldn't have an impact unless the DT string is 
+> > present, and even then, the impact might simply be that the MACB driver 
+> > may not work?
+> 
+> If the macb driver doesn't work you have an unusable system, of course.
 
-As a new module, act_ctinfo should be designed to use the strict
-checking model otherwise, well, what was the point of implementing it.
+Why?
 
-Confession time: Until very recently, development of this module has
-been done on 'net-next' tree to 'clean compile' level with run-time
-testing on backports to 4.14 & 4.19 kernels under openwrt.  This is how
-I managed to miss the run-time impacts of the new strict
-nla_parse_nested function.  I hopefully have learned something from this
-(glances toward laptop running a net-next kernel)
-
-There is however a still outstanding implication on iproute2 user space
-in that it needs to be told to pass nested netlink messages with the
-nested attribute actually set.  So even with this kernel fix to do
-things correctly you still cannot instantiate a new 'strict'
-nla_parse_nested based action such as act_ctinfo with iproute2's tc.
-
-Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
----
- net/sched/act_ctinfo.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/sched/act_ctinfo.c b/net/sched/act_ctinfo.c
-index 2c17f6843107..10eb2bb99861 100644
---- a/net/sched/act_ctinfo.c
-+++ b/net/sched/act_ctinfo.c
-@@ -141,7 +141,8 @@ static int tcf_ctinfo_act(struct sk_buff *skb, const struct tc_action *a,
- }
- 
- static const struct nla_policy ctinfo_policy[TCA_CTINFO_MAX + 1] = {
--	[TCA_CTINFO_ACT]		  = { .len = sizeof(struct
-+	[TCA_CTINFO_ACT]		  = { .type = NLA_EXACT_LEN,
-+					      .len = sizeof(struct
- 							    tc_ctinfo) },
- 	[TCA_CTINFO_ZONE]		  = { .type = NLA_U16 },
- 	[TCA_CTINFO_PARMS_DSCP_MASK]	  = { .type = NLA_U32 },
--- 
-2.20.1 (Apple Git-117)
-
+- Paul
